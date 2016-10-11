@@ -16,7 +16,9 @@ var Plotly = require('../plotly');
 var Registry = require('../registry');
 var Lib = require('../lib');
 var Color = require('../components/color');
+
 var plots = module.exports = {};
+
 var animationAttrs = require('./animation_attributes');
 var frameAttrs = require('./frame_attributes');
 
@@ -420,6 +422,9 @@ plots.supplyDefaults = function(gd) {
         ax.setScale();
     }
 
+    // relink / initialize subplot axis objects
+    plots.linkSubplots(newFullData, newFullLayout, oldFullData, oldFullLayout);
+
     // update object references in calcdata
     if((gd.calcdata || []).length === newFullData.length) {
         for(i = 0; i < newFullData.length; i++) {
@@ -564,6 +569,35 @@ function relinkPrivateKeys(toContainer, fromContainer) {
         }
     }
 }
+
+plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    var oldSubplots = oldFullLayout._plots || {},
+        newSubplots = newFullLayout._plots = {};
+
+    var mockGd = {
+        data: newFullData,
+        _fullLayout: newFullLayout
+    };
+
+    var ids = Plotly.Axes.getSubplots(mockGd);
+
+    for(var i = 0; i < ids.length; i++) {
+        var id = ids[i],
+            oldSubplot = oldSubplots[id],
+            plotinfo;
+
+        if(oldSubplot) {
+            plotinfo = newSubplots[id] = oldSubplot;
+        }
+        else {
+            plotinfo = newSubplots[id] = {};
+            plotinfo.id = id;
+        }
+
+        plotinfo.xaxis = Plotly.Axes.getFromId(mockGd, id, 'x');
+        plotinfo.yaxis = Plotly.Axes.getFromId(mockGd, id, 'y');
+    }
+};
 
 plots.supplyDataDefaults = function(dataIn, dataOut, layout) {
     var modules = layout._modules = [],
@@ -792,52 +826,15 @@ function applyTransforms(fullTrace, fullData, layout) {
     var container = fullTrace.transforms,
         dataOut = [fullTrace];
 
-    var attributeSets = dataOut.map(function(trace) {
-
-        var arraySplitAttributes = [];
-
-        var stack = [];
-
-        /**
-         * A closure that gathers attribute paths into its enclosed arraySplitAttributes
-         * Attribute paths are collected iff their leaf node is a splittable attribute
-         * @callback callback
-         * @param {object} attr an attribute
-         * @param {String} attrName name string
-         * @param {object[]} attrs all the attributes
-         * @param {Number} level the recursion level, 0 at the root
-         * @closureVariable {String[][]} arraySplitAttributes the set of gathered attributes
-         *   Example of filled closure variable (expected to be initialized to []):
-         *        [["marker","size"],["marker","line","width"],["marker","line","color"]]
-         */
-        function callback(attr, attrName, attrs, level) {
-
-            stack = stack.slice(0, level).concat([attrName]);
-
-            var splittableAttr = attr.valType === 'data_array' || attr.arrayOk === true;
-            if(splittableAttr) {
-                arraySplitAttributes.push(stack.slice());
-            }
-        }
-
-        Lib.crawl(trace._module.attributes, callback);
-
-        return arraySplitAttributes.map(function(path) {
-            return path.join('.');
-        });
-    });
-
     for(var i = 0; i < container.length; i++) {
         var transform = container[i],
-            type = transform.type,
-            _module = transformsRegistry[type];
+            _module = transformsRegistry[transform.type];
 
-        if(_module) {
+        if(_module && _module.transform) {
             dataOut = _module.transform(dataOut, {
                 transform: transform,
                 fullTrace: fullTrace,
                 fullData: fullData,
-                attributeSets: attributeSets,
                 layout: layout,
                 transformIndex: i
             });
@@ -1406,7 +1403,8 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
     var transitionedTraces = [];
 
     function prepareTransitions() {
-        var plotinfo, i;
+        var i;
+
         for(i = 0; i < traceIndices.length; i++) {
             var traceIdx = traceIndices[i];
             var trace = gd._fullData[traceIdx];
@@ -1452,19 +1450,6 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
         // supplyDefaults even though it's heavier than would otherwise be desired for
         // transitions:
         plots.supplyDefaults(gd);
-
-        // This step fies the .xaxis and .yaxis references that otherwise
-        // aren't updated by the supplyDefaults step:
-        var subplots = Plotly.Axes.getSubplots(gd);
-
-        // Polar does not have _plots:
-        if(gd._fullLayout._plots) {
-            for(i = 0; i < subplots.length; i++) {
-                plotinfo = gd._fullLayout._plots[subplots[i]];
-                plotinfo.xaxis = plotinfo.x();
-                plotinfo.yaxis = plotinfo.y();
-            }
-        }
 
         plots.doCalcdata(gd);
 
@@ -1623,7 +1608,7 @@ plots.doCalcdata = function(gd, traces) {
     var axList = Plotly.Axes.list(gd),
         fullData = gd._fullData,
         fullLayout = gd._fullLayout,
-        i;
+        i, j;
 
     // XXX: Is this correct? Needs a closer look so that *some* traces can be recomputed without
     // *all* needing doCalcdata:
@@ -1661,7 +1646,6 @@ plots.doCalcdata = function(gd, traces) {
         }
 
         var trace = fullData[i],
-            _module = trace._module,
             cd = [];
 
         // If traces were specified and this trace was not included, then transfer it over from
@@ -1671,14 +1655,42 @@ plots.doCalcdata = function(gd, traces) {
             continue;
         }
 
-        if(_module && trace.visible === true) {
-            if(_module.calc) cd = _module.calc(gd, trace);
+        var _module;
+        if(trace.visible === true) {
+
+            // call calcTransform method if any
+            if(trace.transforms) {
+
+                // we need one round of trace module calc before
+                // the calc transform to 'fill in' the categories list
+                // used for example in the data-to-coordinate method
+                _module = trace._module;
+                if(_module && _module.calc) _module.calc(gd, trace);
+
+                for(j = 0; j < trace.transforms.length; j++) {
+                    var transform = trace.transforms[j];
+
+                    _module = transformsRegistry[transform.type];
+                    if(_module && _module.calcTransform) {
+                        _module.calcTransform(gd, trace, transform);
+                    }
+                }
+            }
+
+            _module = trace._module;
+            if(_module && _module.calc) cd = _module.calc(gd, trace);
         }
 
-        // make sure there is a first point
-        // this ensures there is a calcdata item for every trace,
-        // even if cartesian logic doesn't handle it
-        if(!Array.isArray(cd) || !cd[0]) cd = [{x: false, y: false}];
+        // Make sure there is a first point.
+        //
+        // This ensures there is a calcdata item for every trace,
+        // even if cartesian logic doesn't handle it (for things like legends).
+        //
+        // Tag this artificial calc point with 'placeholder: true',
+        // to make it easier to skip over them in during the plot and hover step.
+        if(!Array.isArray(cd) || !cd[0]) {
+            cd = [{x: false, y: false, placeholder: true}];
+        }
 
         // add the trace-wide properties to the first point,
         // per point properties to every point

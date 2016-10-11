@@ -58,7 +58,10 @@ plotChoropleth.calcGeoJSON = function(trace, topojson) {
     return cdi;
 };
 
-plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
+plotChoropleth.plot = function(geo, calcData, geoLayout) {
+
+    function keyFunc(d) { return d[0].trace.uid; }
+
     var framework = geo.framework,
         gChoropleth = framework.select('g.choroplethlayer'),
         gBaseLayer = framework.select('g.baselayer'),
@@ -68,15 +71,16 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
 
     var gChoroplethTraces = gChoropleth
         .selectAll('g.trace.choropleth')
-        .data(choroplethData, function(trace) { return trace.uid; });
+        .data(calcData, keyFunc);
 
     gChoroplethTraces.enter().append('g')
         .attr('class', 'trace choropleth');
 
     gChoroplethTraces.exit().remove();
 
-    gChoroplethTraces.each(function(trace) {
-        var cdi = plotChoropleth.calcGeoJSON(trace, geo.topojson),
+    gChoroplethTraces.each(function(calcTrace) {
+        var trace = calcTrace[0].trace,
+            cdi = plotChoropleth.calcGeoJSON(trace, geo.topojson),
             cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),
             eventDataFunc = makeEventDataFunc(trace);
 
@@ -143,8 +147,9 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
 
 plotChoropleth.style = function(geo) {
     geo.framework.selectAll('g.trace.choropleth')
-        .each(function(trace) {
-            var s = d3.select(this),
+        .each(function(calcTrace) {
+            var trace = calcTrace[0].trace,
+                s = d3.select(this),
                 marker = trace.marker || {},
                 markerLine = marker.line || {},
                 zmin = trace.zmin,

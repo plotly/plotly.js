@@ -206,9 +206,11 @@ describe('the register function', function() {
         expect(function() {
             Plotly.register([invalidTrace]);
         }).toThrowError(Error, 'Invalid module was attempted to be registered!');
+
+        expect(Registry.transformsRegistry['mah-transform']).toBeUndefined();
     });
 
-    it('should throw when if transform module is invalid', function() {
+    it('should throw when if transform module is invalid (1)', function() {
         var missingTransformName = {
             moduleType: 'transform'
         };
@@ -217,6 +219,10 @@ describe('the register function', function() {
             Plotly.register(missingTransformName);
         }).toThrowError(Error, 'Transform module *name* must be a string.');
 
+        expect(Registry.transformsRegistry['mah-transform']).toBeUndefined();
+    });
+
+    it('should throw when if transform module is invalid (2)', function() {
         var missingTransformFunc = {
             moduleType: 'transform',
             name: 'mah-transform'
@@ -224,12 +230,45 @@ describe('the register function', function() {
 
         expect(function() {
             Plotly.register(missingTransformFunc);
-        }).toThrowError(Error, 'Transform module mah-transform is missing a *transform* function.');
+        }).toThrowError(Error, 'Transform module mah-transform is missing a *transform* or *calcTransform* method.');
 
+        expect(Registry.transformsRegistry['mah-transform']).toBeUndefined();
+    });
+
+    it('should not throw when transform module is valid (1)', function() {
         var transformModule = {
             moduleType: 'transform',
             name: 'mah-transform',
             transform: function() {}
+        };
+
+        expect(function() {
+            Plotly.register(transformModule);
+        }).not.toThrow();
+
+        expect(Registry.transformsRegistry['mah-transform']).toBeDefined();
+    });
+
+    it('should not throw when transform module is valid (2)', function() {
+        var transformModule = {
+            moduleType: 'transform',
+            name: 'mah-transform',
+            calcTransform: function() {}
+        };
+
+        expect(function() {
+            Plotly.register(transformModule);
+        }).not.toThrow();
+
+        expect(Registry.transformsRegistry['mah-transform']).toBeDefined();
+    });
+
+    it('should not throw when transform module is valid (3)', function() {
+        var transformModule = {
+            moduleType: 'transform',
+            name: 'mah-transform',
+            transform: function() {},
+            calcTransform: function() {}
         };
 
         expect(function() {

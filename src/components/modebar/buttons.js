@@ -420,7 +420,7 @@ function handleGeo(gd, ev) {
         geoIds = Plots.getSubplotIds(fullLayout, 'geo');
 
     for(var i = 0; i < geoIds.length; i++) {
-        var geo = fullLayout[geoIds[i]]._geo;
+        var geo = fullLayout[geoIds[i]]._subplot;
 
         if(attr === 'zoom') {
             var scale = geo.projection.scale();

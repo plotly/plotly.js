@@ -695,8 +695,7 @@ describe('mapbox plots', function() {
             return _mouseEvent('mousemove', pointPos, function() {
                 expect(hoverData).not.toBe(undefined, 'firing on data points');
                 expect(Object.keys(hoverData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber',
-                    'x', 'y', 'xaxis', 'yaxis'
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'lon', 'lat'
                 ], 'returning the correct event data keys');
                 expect(hoverData.curveNumber).toEqual(0, 'returning the correct curve number');
                 expect(hoverData.pointNumber).toEqual(0, 'returning the correct point number');
@@ -706,8 +705,7 @@ describe('mapbox plots', function() {
             return _mouseEvent('mousemove', blankPos, function() {
                 expect(unhoverData).not.toBe(undefined, 'firing on data points');
                 expect(Object.keys(unhoverData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber',
-                    'x', 'y', 'xaxis', 'yaxis'
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'lon', 'lat'
                 ], 'returning the correct event data keys');
                 expect(unhoverData.curveNumber).toEqual(0, 'returning the correct curve number');
                 expect(unhoverData.pointNumber).toEqual(0, 'returning the correct point number');
@@ -804,8 +802,7 @@ describe('mapbox plots', function() {
             return _click(pointPos, function() {
                 expect(ptData).not.toBe(undefined, 'firing on data points');
                 expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber',
-                    'x', 'y', 'xaxis', 'yaxis'
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'lon', 'lat'
                 ], 'returning the correct event data keys');
                 expect(ptData.curveNumber).toEqual(0, 'returning the correct curve number');
                 expect(ptData.pointNumber).toEqual(0, 'returning the correct point number');

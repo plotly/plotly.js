@@ -409,3 +409,53 @@ exports.crawl = function(attrs, callback, specifiedLevel) {
         if(isPlainObject(attr)) exports.crawl(attr, callback, level + 1);
     });
 };
+
+/**
+ * Find all data array attributes in a given trace object - including
+ * `arrayOk` attributes.
+ *
+ * @param {object} trace
+ *  full trace object that contains a reference to `_module.attributes`
+ *
+ * @return {array} arrayAttributes
+ *  list of array attributes for the given trace
+ */
+exports.findArrayAttributes = function(trace) {
+    var arrayAttributes = [],
+        stack = [];
+
+    /**
+     * A closure that gathers attribute paths into its enclosed arraySplitAttributes
+     * Attribute paths are collected iff their leaf node is a splittable attribute
+     *
+     * @callback callback
+     * @param {object} attr an attribute
+     * @param {String} attrName name string
+     * @param {object[]} attrs all the attributes
+     * @param {Number} level the recursion level, 0 at the root
+     *
+     * @closureVariable {String[][]} arrayAttributes the set of gathered attributes
+     *   Example of filled closure variable (expected to be initialized to []):
+     *        [["marker","size"],["marker","line","width"],["marker","line","color"]]
+     */
+    function callback(attr, attrName, attrs, level) {
+        stack = stack.slice(0, level).concat([attrName]);
+
+        var splittableAttr = attr.valType === 'data_array' || attr.arrayOk === true;
+        if(!splittableAttr) return;
+
+        var astr = toAttrString(stack);
+        var val = nestedProperty(trace, astr).get();
+        if(!Array.isArray(val)) return;
+
+        arrayAttributes.push(astr);
+    }
+
+    function toAttrString(stack) {
+        return stack.join('.');
+    }
+
+    exports.crawl(trace._module.attributes, callback);
+
+    return arrayAttributes;
+};

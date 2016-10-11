@@ -60,20 +60,24 @@ function Contour(scene, uid) {
 var proto = Contour.prototype;
 
 proto.handlePick = function(pickResult) {
-    var index = pickResult.pointId,
-        options = this.heatmapOptions,
-        shape = options.shape;
+    var options = this.heatmapOptions,
+        shape = options.shape,
+        index = pickResult.pointId,
+        xIndex = index % shape[0],
+        yIndex = Math.floor(index / shape[0]),
+        zIndex = index;
 
     return {
         trace: this,
         dataCoord: pickResult.dataCoord,
         traceCoord: [
-            options.x[index % shape[0]],
-            options.y[Math.floor(index / shape[0])],
-            options.z[index]
+            options.x[xIndex],
+            options.y[yIndex],
+            options.z[zIndex]
         ],
         textLabel: this.textLabels[index],
         name: this.name,
+        pointIndex: [xIndex, yIndex],
         hoverinfo: this.hoverinfo
     };
 };

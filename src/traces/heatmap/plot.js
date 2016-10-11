@@ -30,8 +30,8 @@ module.exports = function(gd, plotinfo, cdheatmaps) {
 function plotOne(gd, plotinfo, cd) {
     var trace = cd[0].trace,
         uid = trace.uid,
-        xa = plotinfo.x(),
-        ya = plotinfo.y(),
+        xa = plotinfo.xaxis,
+        ya = plotinfo.yaxis,
         fullLayout = gd._fullLayout,
         id = 'hm' + uid;
 

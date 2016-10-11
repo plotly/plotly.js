@@ -37,8 +37,8 @@ var JITTERCOUNT = 5, // points either side of this to include
 
 module.exports = function plot(gd, plotinfo, cdbox) {
     var fullLayout = gd._fullLayout,
-        xa = plotinfo.x(),
-        ya = plotinfo.y(),
+        xa = plotinfo.xaxis,
+        ya = plotinfo.yaxis,
         posAxis, valAxis;
 
     var boxtraces = plotinfo.plot.select('.boxlayer')

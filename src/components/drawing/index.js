@@ -343,6 +343,7 @@ drawing.textPointStyle = function(s, trace) {
     s.each(function(d) {
         var p = d3.select(this),
             text = d.tx || trace.text;
+
         if(!text || Array.isArray(text)) {
             // isArray test handles the case of (intentionally) missing
             // or empty text within a text array

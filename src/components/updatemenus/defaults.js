@@ -11,9 +11,9 @@
 var Lib = require('../../lib');
 
 var attributes = require('./attributes');
-var contants = require('./constants');
+var constants = require('./constants');
 
-var name = contants.name;
+var name = constants.name;
 var buttonAttrs = attributes.buttons;
 
 

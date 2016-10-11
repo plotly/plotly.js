@@ -15,6 +15,7 @@ var subTypes = require('../scatter/subtypes');
 var handleMarkerDefaults = require('../scatter/marker_defaults');
 var handleLineDefaults = require('../scatter/line_defaults');
 var handleTextDefaults = require('../scatter/text_defaults');
+var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
 
 var attributes = require('./attributes');
 
@@ -35,6 +36,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     if(subTypes.hasLines(traceOut)) {
         handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+        coerce('connectgaps');
     }
 
     if(subTypes.hasMarkers(traceOut)) {
@@ -43,6 +45,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     if(subTypes.hasText(traceOut)) {
         handleTextDefaults(traceIn, traceOut, layout, coerce);
+    }
+
+    coerce('fill');
+    if(traceOut.fill !== 'none') {
+        handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 
     coerce('hoverinfo', (layout._dataLength === 1) ? 'lon+lat+location+text' : undefined);

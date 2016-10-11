@@ -20,8 +20,8 @@ var arraysToCalcdata = require('./arrays_to_calcdata');
 
 
 module.exports = function plot(gd, plotinfo, cdbar) {
-    var xa = plotinfo.x(),
-        ya = plotinfo.y(),
+    var xa = plotinfo.xaxis,
+        ya = plotinfo.yaxis,
         fullLayout = gd._fullLayout;
 
     var bartraces = plotinfo.plot.select('.barlayer')

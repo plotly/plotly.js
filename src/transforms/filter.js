@@ -8,129 +8,146 @@
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-
-// var Lib = require('@src/lib');
 var Lib = require('../lib');
+var axisIds = require('../plots/cartesian/axis_ids');
 
-/* eslint no-unused-vars: 0*/
+var INEQUALITY_OPS = ['=', '<', '>=', '>', '<='];
+var INTERVAL_OPS = ['[]', '()', '[)', '(]', '][', ')(', '](', ')['];
+var SET_OPS = ['{}', '}{'];
 
-// so that Plotly.register knows what to do with it
 exports.moduleType = 'transform';
 
-// determines to link between transform type and transform module
 exports.name = 'filter';
 
-// ... as trace attributes
 exports.attributes = {
+    enabled: {
+        valType: 'boolean',
+        dflt: true,
+        description: [
+            'Determines whether this filter transform is enabled or disabled.'
+        ].join(' ')
+    },
+    filtersrc: {
+        valType: 'string',
+        strict: true,
+        noBlank: true,
+        dflt: 'x',
+        description: [
+            'Sets the variable in the parent trace object',
+            'by which the filter will be applied.',
+
+            'To filter about nested variables, use *.* to access them.',
+            'For example, set `filtersrc` to *marker.color* to filter',
+            'about the marker color array.'
+        ].join(' ')
+    },
     operation: {
         valType: 'enumerated',
-        values: ['=', '<', '>', 'within', 'notwithin', 'in', 'notin'],
-        dflt: '='
+        values: [].concat(INEQUALITY_OPS).concat(INTERVAL_OPS).concat(SET_OPS),
+        dflt: '=',
+        description: [
+            'Sets the filter operation.',
+
+            '*=* keeps items equal to `value`',
+
+            '*<* keeps items less than `value`',
+            '*<=* keeps items less than or equal to `value`',
+
+            '*>* keeps items greater than `value`',
+            '*>=* keeps items greater than or equal to `value`',
+
+            '*[]* keeps items inside `value[0]` to value[1]` including both bounds`',
+            '*()* keeps items inside `value[0]` to value[1]` excluding both bounds`',
+            '*[)* keeps items inside `value[0]` to value[1]` including `value[0]` but excluding `value[1]',
+            '*(]* keeps items inside `value[0]` to value[1]` excluding `value[0]` but including `value[1]',
+
+            '*][* keeps items outside `value[0]` to value[1]` and equal to both bounds`',
+            '*)(* keeps items outside `value[0]` to value[1]`',
+            '*](* keeps items outside `value[0]` to value[1]` and equal to `value[0]`',
+            '*)[* keeps items outside `value[0]` to value[1]` and equal to `value[1]`',
+
+            '*{}* keeps items present in a set of values',
+            '*}{* keeps items not present in a set of values'
+        ].join(' ')
     },
     value: {
         valType: 'any',
-        dflt: 0
-    },
-    filtersrc: {
-        valType: 'enumerated',
-        values: ['x', 'y', 'ids'],
-        dflt: 'x',
-        ids: {
-            valType: 'data_array',
-            description: 'A list of keys for object constancy of data points during animation'
-        }
+        dflt: 0,
+        description: [
+            'Sets the value or values by which to filter by.',
+
+            'Values are expected to be in the same type as the data linked',
+            'to *filtersrc*.',
+
+            'When `operation` is set to one of the inequality values',
+            '(' + INEQUALITY_OPS + ')',
+            '*value* is expected to be a number or a string.',
+
+            'When `operation` is set to one of the interval value',
+            '(' + INTERVAL_OPS + ')',
+            '*value* is expected to be 2-item array where the first item',
+            'is the lower bound and the second item is the upper bound.',
+
+            'When `operation`, is set to one of the set value',
+            '(' + SET_OPS + ')',
+            '*value* is expected to be an array with as many items as',
+            'the desired set elements.'
+        ].join(' ')
     }
 };
 
-/**
- * Supply transform attributes defaults
- *
- * @param {object} transformIn
- *  object linked to trace.transforms[i] with 'type' set to exports.name
- * @param {object} fullData
- *  the plot's full data
- * @param {object} layout
- *  the plot's (not-so-full) layout
- *
- * @return {object} transformOut
- *  copy of transformIn that contains attribute defaults
- */
-exports.supplyDefaults = function(transformIn, fullData, layout) {
+exports.supplyDefaults = function(transformIn) {
     var transformOut = {};
 
     function coerce(attr, dflt) {
         return Lib.coerce(transformIn, transformOut, exports.attributes, attr, dflt);
     }
 
-    coerce('operation');
-    coerce('value');
-    coerce('filtersrc');
+    var enabled = coerce('enabled');
 
-    // numeric values as character should be converted to numeric
-    if(Array.isArray(transformOut.value)) {
-        transformOut.value = transformOut.value.map(function(v) {
-            if(isNumeric(v)) v = +v;
-            return v;
-        });
-    } else {
-        if(isNumeric(transformOut.value)) transformOut.value = +transformOut.value;
+    if(enabled) {
+        coerce('operation');
+        coerce('value');
+        coerce('filtersrc');
     }
-
-    // or some more complex logic using fullData and layout
 
     return transformOut;
 };
 
-/**
- * Apply transform !!!
- *
- * @param {array} data
- *  array of transformed traces (is [fullTrace] upon first transform)
- *
- * @param {object} state
- *  state object which includes:
- *      - transform {object} full transform attributes
- *      - fullTrace {object} full trace object which is being transformed
- *      - fullData {array} full pre-transform(s) data array
- *      - layout {object} the plot's (not-so-full) layout
- *
- * @return {object} newData
- *  array of transformed traces
- */
-exports.transform = function(data, state) {
+exports.calcTransform = function(gd, trace, opts) {
+    var filtersrc = opts.filtersrc,
+        filtersrcOk = filtersrc && Array.isArray(Lib.nestedProperty(trace, filtersrc).get());
 
-    // one-to-one case
+    if(!opts.enabled || !filtersrcOk) return;
 
-    var newData = data.map(function(trace) {
-        return transformOne(trace, state);
-    });
+    var dataToCoord = getDataToCoordFunc(gd, trace, filtersrc),
+        filterFunc = getFilterFunc(opts, dataToCoord);
 
-    return newData;
-};
+    var filterArr = Lib.nestedProperty(trace, filtersrc).get(),
+        len = filterArr.length;
 
-function transformOne(trace, state) {
-    var newTrace = Lib.extendDeep({}, trace);
+    var arrayAttrs = Lib.findArrayAttributes(trace),
+        originalArrays = {};
 
-    var opts = state.transform;
-    var src = opts.filtersrc;
-    var filterFunc = getFilterFunc(opts);
-    var len = trace[src].length;
-    var arrayAttrs = findArrayAttributes(trace);
+    // copy all original array attribute values,
+    // and clear arrays in trace
+    for(var k = 0; k < arrayAttrs.length; k++) {
+        var attr = arrayAttrs[k],
+            np = Lib.nestedProperty(trace, attr);
 
-    arrayAttrs.forEach(function(attr) {
-        Lib.nestedProperty(newTrace, attr).set([]);
-    });
+        originalArrays[attr] = Lib.extendDeep([], np.get());
+        np.set([]);
+    }
 
     function fill(attr, i) {
-        var arr = Lib.nestedProperty(trace, attr).get();
-        var newArr = Lib.nestedProperty(newTrace, attr).get();
+        var oldArr = originalArrays[attr],
+            newArr = Lib.nestedProperty(trace, attr).get();
 
-        newArr.push(arr[i]);
+        newArr.push(oldArr[i]);
     }
 
     for(var i = 0; i < len; i++) {
-        var v = trace[src][i];
+        var v = filterArr[i];
 
         if(!filterFunc(v)) continue;
 
@@ -138,81 +155,120 @@ function transformOne(trace, state) {
             fill(arrayAttrs[j], i);
         }
     }
+};
 
-    return newTrace;
+function getDataToCoordFunc(gd, trace, filtersrc) {
+    var ax = axisIds.getFromTrace(gd, trace, filtersrc);
+
+    // if 'filtersrc' has corresponding axis
+    // -> use setConvert method
+    if(ax) return ax.d2c;
+
+    // special case for 'ids'
+    // -> cast to String
+    if(filtersrc === 'ids') return function(v) { return String(v); };
+
+    // otherwise
+    // -> cast to Number
+    return function(v) { return +v; };
 }
 
-function getFilterFunc(opts) {
-    var value = opts.value;
-    // if value is not array then coerce to
-    //   an array of [value,value] so the
-    //   filter function will work
-    //   but perhaps should just error out
-    var valueArr = [];
-    if(!Array.isArray(value)) {
-        valueArr = [value, value];
-    } else {
-        valueArr = value;
+function getFilterFunc(opts, d2c) {
+    var operation = opts.operation,
+        value = opts.value,
+        hasArrayValue = Array.isArray(value);
+
+    function isOperationIn(array) {
+        return array.indexOf(operation) !== -1;
     }
 
-    switch(opts.operation) {
+    var coercedValue;
+
+    if(isOperationIn(INEQUALITY_OPS)) {
+        coercedValue = hasArrayValue ? d2c(value[0]) : d2c(value);
+    }
+    else if(isOperationIn(INTERVAL_OPS)) {
+        coercedValue = hasArrayValue ?
+            [d2c(value[0]), d2c(value[1])] :
+            [d2c(value), d2c(value)];
+    }
+    else if(isOperationIn(SET_OPS)) {
+        coercedValue = hasArrayValue ? value.map(d2c) : [d2c(value)];
+    }
+
+    switch(operation) {
+
         case '=':
-            return function(v) { return v === value; };
+            return function(v) { return d2c(v) === coercedValue; };
+
         case '<':
-            return function(v) { return v < value; };
+            return function(v) { return d2c(v) < coercedValue; };
+
+        case '<=':
+            return function(v) { return d2c(v) <= coercedValue; };
+
         case '>':
-            return function(v) { return v > value; };
-        case 'within':
-            return function(v) {
-                // if character then ignore with no side effect
-                function notDateNumber(d) {
-                    return !(isNumeric(d) || Lib.isDateTime(d));
-                }
-                if(valueArr.some(notDateNumber)) {
-                    return true;
-                }
+            return function(v) { return d2c(v) > coercedValue; };
 
-                // keep the = ?
-                return v >= Math.min.apply(null, valueArr) &&
-                      v <= Math.max.apply(null, valueArr);
-            };
-        case 'notwithin':
+        case '>=':
+            return function(v) { return d2c(v) >= coercedValue; };
+
+        case '[]':
             return function(v) {
-                // keep the = ?
-                return !(v >= Math.min.apply(null, valueArr) &&
-                      v <= Math.max.apply(null, valueArr));
+                var cv = d2c(v);
+                return cv >= coercedValue[0] && cv <= coercedValue[1];
             };
-        case 'in':
-            return function(v) { return valueArr.indexOf(v) >= 0; };
-        case 'notin':
-            return function(v) { return valueArr.indexOf(v) === -1; };
+
+        case '()':
+            return function(v) {
+                var cv = d2c(v);
+                return cv > coercedValue[0] && cv < coercedValue[1];
+            };
+
+        case '[)':
+            return function(v) {
+                var cv = d2c(v);
+                return cv >= coercedValue[0] && cv < coercedValue[1];
+            };
+
+        case '(]':
+            return function(v) {
+                var cv = d2c(v);
+                return cv > coercedValue[0] && cv <= coercedValue[1];
+            };
+
+        case '][':
+            return function(v) {
+                var cv = d2c(v);
+                return cv <= coercedValue[0] || cv >= coercedValue[1];
+            };
+
+        case ')(':
+            return function(v) {
+                var cv = d2c(v);
+                return cv < coercedValue[0] || cv > coercedValue[1];
+            };
+
+        case '](':
+            return function(v) {
+                var cv = d2c(v);
+                return cv <= coercedValue[0] || cv > coercedValue[1];
+            };
+
+        case ')[':
+            return function(v) {
+                var cv = d2c(v);
+                return cv < coercedValue[0] || cv >= coercedValue[1];
+            };
+
+        case '{}':
+            return function(v) {
+                return coercedValue.indexOf(d2c(v)) !== -1;
+            };
+
+        case '}{':
+            return function(v) {
+                return coercedValue.indexOf(d2c(v)) === -1;
+            };
     }
-}
-
-function findArrayAttributes(obj, root) {
-    root = root || '';
-
-    var list = [];
-
-    Object.keys(obj).forEach(function(k) {
-        var val = obj[k];
-
-        if(k.charAt(0) === '_') return;
-
-        if(k === 'transforms') {
-            val.forEach(function(item, i) {
-                list = list.concat(
-                    findArrayAttributes(item, root + k + '[' + i + ']' + '.')
-                );
-            });
-        }
-        else if(Lib.isPlainObject(val)) {
-            list = list.concat(findArrayAttributes(val, root + k + '.'));
-        }
-        else if(Array.isArray(val)) {
-            list.push(root + k);
-        }
-    });
-
-    return list;
 }

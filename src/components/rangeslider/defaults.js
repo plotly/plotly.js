@@ -15,15 +15,19 @@ var attributes = require('./attributes');
 module.exports = function handleDefaults(layoutIn, layoutOut, axName, counterAxes) {
     if(!layoutIn[axName].rangeslider) return;
 
-    var containerIn = Lib.isPlainObject(layoutIn[axName].rangeslider) ?
-            layoutIn[axName].rangeslider : {},
+    // not super proud of this (maybe store _ in axis object instead
+    if(!Lib.isPlainObject(layoutIn[axName].rangeslider)) {
+        layoutIn[axName].rangeslider = {};
+    }
+
+    var containerIn = layoutIn[axName].rangeslider,
         containerOut = layoutOut[axName].rangeslider = {};
 
     function coerce(attr, dflt) {
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
     }
 
-    coerce('bgcolor');
+    coerce('bgcolor', layoutOut.plot_bgcolor);
     coerce('bordercolor');
     coerce('borderwidth');
     coerce('thickness');
@@ -48,4 +52,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName, counterAxe
             layoutOut[ax] = opposing;
         });
     }
+
+    // to map back range slider (auto) range
+    containerOut._input = containerIn;
 };

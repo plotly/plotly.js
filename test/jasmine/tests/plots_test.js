@@ -21,7 +21,7 @@ describe('Test Plots', function() {
             }];
 
             var oldFullLayout = {
-                _plots: { xy: {} },
+                _plots: { xy: { plot: {} } },
                 xaxis: { c2p: function() {} },
                 yaxis: { _m: 20 },
                 scene: { _scene: {} },
@@ -54,7 +54,7 @@ describe('Test Plots', function() {
             expect(gd._fullData[1].z).toBe(newData[1].z);
             expect(gd._fullData[1]._empties).toBe(oldFullData[1]._empties);
             expect(gd._fullLayout.scene._scene).toBe(oldFullLayout.scene._scene);
-            expect(gd._fullLayout._plots).toBe(oldFullLayout._plots);
+            expect(gd._fullLayout._plots.plot).toBe(oldFullLayout._plots.plot);
             expect(gd._fullLayout.annotations[0]._min).toBe(oldFullLayout.annotations[0]._min);
             expect(gd._fullLayout.annotations[1]._max).toBe(oldFullLayout.annotations[1]._max);
             expect(gd._fullLayout.someFunc).toBe(oldFullLayout.someFunc);
@@ -304,7 +304,7 @@ describe('Test Plots', function() {
                 '_ev', '_internalEv', 'on', 'once', 'removeListener', 'removeAllListeners',
                 '_internalOn', '_internalOnce', '_removeInternalListener',
                 '_removeAllInternalListeners', 'emit', '_context', '_replotPending',
-                '_mouseDownTime', '_hmpixcount', '_hmlumcount'
+                '_hmpixcount', '_hmlumcount', '_mouseDownTime'
             ];
 
             Plots.purge(gd);

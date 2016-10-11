@@ -156,8 +156,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         return hasTransition ? selection.transition() : selection;
     }
 
-    var xa = plotinfo.x(),
-        ya = plotinfo.y();
+    var xa = plotinfo.xaxis,
+        ya = plotinfo.yaxis;
 
     var trace = cdscatter[0].trace,
         line = trace.line,
@@ -443,20 +443,33 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         }
 
         // text points
-
         selection = s.selectAll('g');
-
         join = selection.data(textFilter, keyFunc);
 
         // each text needs to go in its own 'g' in case
         // it gets converted to mathjax
-        join.enter().append('g')
-            .append('text');
+        join.enter().append('g').append('text');
 
         join.each(function(d) {
-            var sel = d3.select(this).select('text');
+            var sel = transition(d3.select(this).select('text'));
             Drawing.translatePoint(d, sel, xa, ya);
         });
+
+        join.selectAll('text')
+            .call(Drawing.textPointStyle, trace)
+            .each(function(d) {
+
+                // This just *has* to be totally custom becuase of SVG text positioning :(
+                // It's obviously copied from translatePoint; we just can't use that
+                //
+                // put xp and yp into d if pixel scaling is already done
+                var x = d.xp || xa.c2p(d.x),
+                    y = d.yp || ya.c2p(d.y);
+
+                d3.select(this).selectAll('tspan').each(function() {
+                    transition(d3.select(this)).attr({x: x, y: y});
+                });
+            });
 
         join.exit().remove();
     }
@@ -479,8 +492,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 }
 
 function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
-    var xa = plotinfo.x(),
-        ya = plotinfo.y(),
+    var xa = plotinfo.xaxis,
+        ya = plotinfo.yaxis,
         xr = d3.extent(xa.range.map(xa.l2c)),
         yr = d3.extent(ya.range.map(ya.l2c));
 
