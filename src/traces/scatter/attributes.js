@@ -67,7 +67,19 @@ module.exports = {
     },
     ids: {
         valType: 'data_array',
-        description: 'A list of keys for object constancy of data points during animation'
+        description: [
+            'A list of unique string ids for object constancy of data points during animation.' +
+            'For efficiency, the uniqueness of ids is not validated, but unexpected results may' +
+            'occur if ids are not unique. *ids* is equivalent to a *key* in d3.'
+        ].join(' ')
+    },
+    grouping: {
+        valType: 'data_array',
+        description: [
+            'An array of strings corresponding to each respective point. These strings are not' +
+            'inherently used by plotly for any purpose but may be used, for example, with transforms' +
+            'in order to filter or group points by an auxilliary property'
+        ].join(' ')
     },
     text: {
         valType: 'string',
