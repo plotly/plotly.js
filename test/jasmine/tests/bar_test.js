@@ -142,7 +142,7 @@ describe('heatmap calc / setPositions', function() {
         assertPtField(out, 'p', [[0, 1, 2], [0, 1, 2], [0, 1, 2]]);
         assertTraceField(out, 't.barwidth', [0.8, 0.8, 0.8]);
         assertTraceField(out, 't.poffset', [-0.4, -0.4, -0.4]);
-        assertTraceField(out, 't.dbar', [1, 1, 1]);
+        assertTraceField(out, 't.bargroupwidth', [0.8, 0.8, 0.8]);
     });
 
     it('should fill in calc pt fields (overlay case)', function() {
@@ -161,7 +161,7 @@ describe('heatmap calc / setPositions', function() {
         assertPtField(out, 'p', [[0, 1, 2], [0, 1, 2]]);
         assertTraceField(out, 't.barwidth', [0.8, 0.8]);
         assertTraceField(out, 't.poffset', [-0.4, -0.4]);
-        assertTraceField(out, 't.dbar', [1, 1]);
+        assertTraceField(out, 't.bargroupwidth', [0.8, 0.8]);
     });
 
     it('should fill in calc pt fields (group case)', function() {
@@ -170,7 +170,9 @@ describe('heatmap calc / setPositions', function() {
         }, {
             y: [3, 1, 2]
         }], {
-            barmode: 'group'
+            barmode: 'group',
+            // asumming default bargap is 0.2
+            bargroupgap: 0.1
         });
 
         assertPtField(out, 'x', [[-0.2, 0.8, 1.8], [0.2, 1.2, 2.2]]);
@@ -178,9 +180,9 @@ describe('heatmap calc / setPositions', function() {
         assertPtField(out, 'b', [[0, 0, 0], [0, 0, 0]]);
         assertPtField(out, 's', [[2, 1, 2], [3, 1, 2]]);
         assertPtField(out, 'p', [[0, 1, 2], [0, 1, 2]]);
-        assertTraceField(out, 't.barwidth', [0.4, 0.4]);
-        assertTraceField(out, 't.poffset', [-0.4, 0]);
-        assertTraceField(out, 't.dbar', [1, 1]);
+        assertTraceField(out, 't.barwidth', [0.36, 0.36]);
+        assertTraceField(out, 't.poffset', [-0.38, 0.02]);
+        assertTraceField(out, 't.bargroupwidth', [0.8, 0.8]);
     });
 
     it('should fill in calc pt fields (relative case)', function() {
@@ -199,7 +201,7 @@ describe('heatmap calc / setPositions', function() {
         assertPtField(out, 'p', [[0, 1, 2], [0, 1, 2]]);
         assertTraceField(out, 't.barwidth', [0.8, 0.8]);
         assertTraceField(out, 't.poffset', [-0.4, -0.4]);
-        assertTraceField(out, 't.dbar', [1, 1]);
+        assertTraceField(out, 't.bargroupwidth', [0.8, 0.8]);
     });
 
     it('should fill in calc pt fields (relative / percent case)', function() {
@@ -221,6 +223,6 @@ describe('heatmap calc / setPositions', function() {
         assertPtField(out, 'p', [[0, 1, 2, 3], [0, 1, 2, 3]]);
         assertTraceField(out, 't.barwidth', [0.8, 0.8]);
         assertTraceField(out, 't.poffset', [-0.4, -0.4]);
-        assertTraceField(out, 't.dbar', [1, 1]);
+        assertTraceField(out, 't.bargroupwidth', [0.8, 0.8]);
     });
 });

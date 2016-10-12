@@ -105,26 +105,26 @@ function setOffsetAndWidth(gd, pa, pLetter, traces) {
     Axes.expand(pa, distinctPositions, {vpad: minDiff / 2});
 
     // computer bar widths and position offsets
-    var barWidth = minDiff * (1 - fullLayout.bargap);
-    if(overlap) barWidth /= traces.length;
-
-    var barWidthMinusGroupGap = barWidth * (1 - fullLayout.bargroupgap);
+    var barGroupWidth = minDiff * (1 - fullLayout.bargap),
+        barWidthPlusGap = (overlap) ?
+            barGroupWidth / traces.length :
+            barGroupWidth,
+        barWidth = barWidthPlusGap * (1 - fullLayout.bargroupgap);
 
     for(i = 0; i < traces.length; i++) {
         trace = traces[i];
 
         // computer bar group center and bar offset
-        var offsetFromCenter = (
-                (overlap ? (2 * i + 1 - traces.length) * barWidth : 0) -
-                barWidthMinusGroupGap
-            ) / 2,
-            barCenter = offsetFromCenter + barWidthMinusGroupGap / 2;
+        var offsetFromCenter = (overlap) ?
+                ((2 * i + 1 - traces.length) * barWidthPlusGap - barWidth) / 2 :
+                -barWidth / 2,
+            barCenter = offsetFromCenter + barWidth / 2;
 
         // store bar width and offset for this trace
         var t = trace[0].t;
-        t.barwidth = barWidthMinusGroupGap;
+        t.barwidth = barWidth;
         t.poffset = offsetFromCenter;
-        t.dbar = minDiff;
+        t.bargroupwidth = barGroupWidth;
 
         // store the bar center in each calcdata item
         for(j = 0; j < trace.length; j++) {
