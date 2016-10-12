@@ -59,6 +59,8 @@ function makeTrace(traceIn, state, direction) {
         visible: traceIn.visible,
         hoverinfo: traceIn.hoverinfo,
         opacity: traceIn.opacity,
+        xaxis: traceIn.xaxis,
+        yaxis: traceIn.yaxis,
 
         transforms: helpers.makeTransform(traceIn, state, direction)
     };
