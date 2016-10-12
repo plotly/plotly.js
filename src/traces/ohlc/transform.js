@@ -11,6 +11,7 @@
 
 var Lib = require('../../lib');
 var helpers = require('./helpers');
+var Axes = require('../../plots/cartesian/axes');
 var axisIds = require('../../plots/cartesian/axis_ids');
 
 exports.moduleType = 'transform';
@@ -57,11 +58,11 @@ function makeTrace(traceIn, state, direction) {
         connectgaps: false,
 
         visible: traceIn.visible,
-        hoverinfo: traceIn.hoverinfo,
         opacity: traceIn.opacity,
         xaxis: traceIn.xaxis,
         yaxis: traceIn.yaxis,
 
+        hoverinfo: makeHoverInfo(traceIn),
         transforms: helpers.makeTransform(traceIn, state, direction)
     };
 
@@ -94,43 +95,98 @@ function makeTrace(traceIn, state, direction) {
     return traceOut;
 }
 
+// let scatter hoverPoint format 'x' coordinates, if desired
+function makeHoverInfo(traceIn) {
+    var hoverinfo = traceIn.hoverinfo;
+
+    if(hoverinfo === 'all') return 'x+text';
+
+    var parts = hoverinfo.split('+'),
+        hasX = parts.indexOf('x') !== -1,
+        hasText = parts.indexOf('text') !== -1;
+
+    if(hasX) {
+        if(hasText) return 'x+text';
+        else return 'x';
+
+    }
+    else return 'text';
+}
+
 exports.calcTransform = function calcTransform(gd, trace, opts) {
     var direction = opts.direction,
-        filterFn = helpers.getFilterFn(direction),
-        ax = axisIds.getFromTrace(gd, trace, 'x'),
-        tickWidth = convertTickWidth(trace.x, ax, trace._fullInput.tickwidth);
+        filterFn = helpers.getFilterFn(direction);
+
+    var xa = axisIds.getFromTrace(gd, trace, 'x'),
+        ya = axisIds.getFromTrace(gd, trace, 'y'),
+        tickWidth = convertTickWidth(trace.x, xa, trace._fullInput.tickwidth);
 
     var open = trace.open,
         high = trace.high,
         low = trace.low,
-        close = trace.close;
+        close = trace.close,
+        textIn = trace.text;
 
     var len = open.length,
         x = [],
-        y = [];
+        y = [],
+        textOut = [];
 
-    var appendX = trace._fullInput.x ?
-        function(i) {
-            var v = ax.d2c(trace.x[i]);
-            x.push(v - tickWidth, v, v, v, v, v + tickWidth, null);
-        } :
-        function(i) {
-            x.push(i - tickWidth, i, i, i, i, i + tickWidth, null);
-        };
+    var getXItem = trace._fullInput.x ?
+        function(i) { return xa.d2c(trace.x[i]); } :
+        function(i) { return i; };
+
+    var getTextItem = Array.isArray(textIn) ?
+        function(i) { return textIn[i] || ''; } :
+        function() { return textIn; };
+
+    var appendX = function(i) {
+        var v = getXItem(i);
+        x.push(v - tickWidth, v, v, v, v, v + tickWidth, null);
+    };
 
     var appendY = function(o, h, l, c) {
         y.push(o, o, h, l, c, c, null);
+    };
+
+    var format = function(ax, val) {
+        return Axes.tickText(ax, ax.c2l(val), 'hover').text;
+    };
+
+    var hoverinfo = trace._fullInput.hoverinfo,
+        hoverParts = hoverinfo.split('+'),
+        hasAll = hoverinfo === 'all',
+        hasY = hasAll || hoverParts.indexOf('y') !== -1,
+        hasText = hasAll || hoverParts.indexOf('text') !== -1;
+
+    var appendText = function(i, o, h, l, c) {
+        var t = [];
+
+        if(hasY) {
+            t.push('Open: ' + format(ya, o));
+            t.push('High: ' + format(ya, h));
+            t.push('Low: ' + format(ya, l));
+            t.push('Close: ' + format(ya, c));
+        }
+
+        if(hasText) t.push(getTextItem(i));
+
+        var _t = t.join('<br>');
+
+        textOut.push(_t, _t, _t, _t, _t, _t, null);
     };
 
     for(var i = 0; i < len; i++) {
         if(filterFn(open[i], close[i])) {
             appendX(i);
             appendY(open[i], high[i], low[i], close[i]);
+            appendText(i, open[i], high[i], low[i], close[i]);
         }
     }
 
     trace.x = x;
     trace.y = y;
+    trace.text = textOut;
 };
 
 function convertTickWidth(coords, ax, tickWidth) {

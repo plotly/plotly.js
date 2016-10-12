@@ -323,6 +323,58 @@ describe('finance charts calc transforms:', function() {
         ]);
     });
 
+    it('should fill *text* for OHLC hover labels', function() {
+        var trace0 = Lib.extendDeep({}, mock0, {
+            type: 'ohlc',
+            text: ['A', 'B', 'C', 'D']
+        });
+
+        var trace1 = Lib.extendDeep({}, mock1, {
+            type: 'ohlc',
+            text: 'IMPORTANT',
+            hoverinfo: 'x+text',
+            xaxis: 'x2'
+        });
+
+        var trace2 = Lib.extendDeep({}, mock1, {
+            type: 'ohlc',
+            hoverinfo: 'y',
+            xaxis: 'x2'
+        });
+
+        var trace3 = Lib.extendDeep({}, mock0, {
+            type: 'ohlc',
+            hoverinfo: 'x',
+        });
+
+        var out = _calc([trace0, trace1, trace2, trace3]);
+
+        expect(out[0].hoverinfo).toEqual('x+text');
+        expect(out[0].text[0])
+            .toEqual('Open: 33.01<br>High: 34.2<br>Low: 31.7<br>Close: 34.1<br>A');
+        expect(out[0].hoverinfo).toEqual('x+text');
+        expect(out[1].text[0])
+            .toEqual('Open: 33.31<br>High: 34.37<br>Low: 30.75<br>Close: 31.93<br>B');
+
+        expect(out[2].hoverinfo).toEqual('x+text');
+        expect(out[2].text[0]).toEqual('IMPORTANT');
+
+        expect(out[3].hoverinfo).toEqual('x+text');
+        expect(out[3].text[0]).toEqual('IMPORTANT');
+
+        expect(out[4].hoverinfo).toEqual('text');
+        expect(out[4].text[0])
+            .toEqual('Open: 33.01<br>High: 34.2<br>Low: 31.7<br>Close: 34.1');
+        expect(out[5].hoverinfo).toEqual('text');
+        expect(out[5].text[0])
+            .toEqual('Open: 33.31<br>High: 34.37<br>Low: 30.75<br>Close: 31.93');
+
+        expect(out[6].hoverinfo).toEqual('x');
+        expect(out[6].text[0]).toEqual('');
+        expect(out[7].hoverinfo).toEqual('x');
+        expect(out[7].text[0]).toEqual('');
+    });
+
     it('should work with *filter* transforms', function() {
         var trace0 = Lib.extendDeep({}, mock1, {
             type: 'ohlc',
