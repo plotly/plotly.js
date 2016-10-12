@@ -251,8 +251,6 @@ describe('finance charts defaults:', function() {
 
         var out0 = _supply([trace0], layout0);
 
-        expect(out0.layout.hovermode).toEqual('closest');
-        expect(out0._fullLayout.hovermode).toEqual('closest');
         expect(out0.layout.xaxis.rangeslider).toBeDefined();
         expect(out0._fullLayout.xaxis.rangeslider.visible).toBe(true);
 

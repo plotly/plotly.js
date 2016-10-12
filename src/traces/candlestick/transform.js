@@ -42,9 +42,7 @@ exports.transform = function transform(dataIn, state) {
         );
     }
 
-    // add a few layout features
-    var layout = state.layout;
-    helpers.addRangeSlider(layout);
+    helpers.addRangeSlider(state.layout);
 
     return dataOut;
 };

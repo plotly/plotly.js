@@ -44,10 +44,7 @@ exports.transform = function transform(dataIn, state) {
         );
     }
 
-    // add a few layout features
-    var layout = state.layout;
-    if(!layout.hovermode) layout.hovermode = 'closest';
-    helpers.addRangeSlider(layout);
+    helpers.addRangeSlider(state.layout);
 
     return dataOut;
 };
@@ -96,7 +93,15 @@ function makeTrace(traceIn, state, direction) {
     return traceOut;
 }
 
-// let scatter hoverPoint format 'x' coordinates, if desired
+// Let scatter hoverPoint format 'x' coordinates, if desired.
+//
+// Note that, this solution isn't perfect: it shows open and close
+// values at slightly different 'x' coordinates then the rest of the
+// segments, but is for more robust than calling `Axes.tickText` during
+// calcTransform.
+//
+// A future iteration should perhaps try to add a hook for transforms in
+// the hoverPoints handlers.
 function makeHoverInfo(traceIn) {
     var hoverinfo = traceIn.hoverinfo;
 
