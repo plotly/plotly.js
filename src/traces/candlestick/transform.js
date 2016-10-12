@@ -79,12 +79,7 @@ function makeTrace(traceIn, state, direction) {
 
             name: directionOpts.name,
             showlegend: directionOpts.showlegend,
-
-            line: {
-                color: directionOpts.color,
-                width: directionOpts.width
-            },
-
+            line: directionOpts.line,
             fillcolor: directionOpts.fillcolor
         });
     }

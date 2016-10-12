@@ -17,8 +17,11 @@ var directionAttrs = {
     name: OHLCattrs.increasing.name,
     showlegend: OHLCattrs.increasing.showlegend,
 
-    color: Lib.extendFlat({}, boxAttrs.line.color),
-    width: Lib.extendFlat({}, boxAttrs.line.width),
+    line: {
+        color: Lib.extendFlat({}, boxAttrs.line.color),
+        width: Lib.extendFlat({}, boxAttrs.line.width)
+    },
+
     fillcolor: Lib.extendFlat({}, boxAttrs.fillcolor),
 };
 
@@ -29,14 +32,25 @@ module.exports = {
     low: OHLCattrs.low,
     close: OHLCattrs.close,
 
+    line: {
+        width: Lib.extendFlat({}, boxAttrs.line.width, {
+            description: [
+                boxAttrs.line.width.description,
+                'Note that this style setting can also be set per',
+                'direction via `increasing.line.width` and',
+                '`decreasing.line.width`.'
+            ].join(' ')
+        })
+    },
+
     increasing: Lib.extendDeep({}, directionAttrs, {
-        color: { dflt: OHLCattrs.increasing.color.dflt }
+        line: { color: { dflt: OHLCattrs.increasing.line.color.dflt } }
     }),
 
     decreasing: Lib.extendDeep({}, directionAttrs, {
-        color: { dflt: OHLCattrs.decreasing.color.dflt }
+        line: { color: { dflt: OHLCattrs.decreasing.line.color.dflt } }
     }),
 
     text: OHLCattrs.text,
-    whiskerwidth: Lib.extendFlat({}, boxAttrs.whiskerwidth, { dflt: 0 }),
+    whiskerwidth: Lib.extendFlat({}, boxAttrs.whiskerwidth, { dflt: 0 })
 };

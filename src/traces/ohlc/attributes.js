@@ -37,9 +37,11 @@ var directionAttrs = {
         ].join(' ')
     },
 
-    color: Lib.extendFlat({}, lineAttrs.color),
-    width: Lib.extendFlat({}, lineAttrs.width),
-    dash: Lib.extendFlat({}, lineAttrs.dash),
+    line: {
+        color: Lib.extendFlat({}, lineAttrs.color),
+        width: Lib.extendFlat({}, lineAttrs.width),
+        dash: Lib.extendFlat({}, lineAttrs.dash),
+    }
 };
 
 module.exports = {
@@ -76,12 +78,31 @@ module.exports = {
         description: 'Sets the close values.'
     },
 
+    line: {
+        width: Lib.extendFlat({}, lineAttrs.width, {
+            description: [
+                lineAttrs.width,
+                'Note that this style setting can also be set per',
+                'direction via `increasing.line.width` and',
+                '`decreasing.line.width`.'
+            ].join(' ')
+        }),
+        dash: Lib.extendFlat({}, lineAttrs.dash, {
+            description: [
+                lineAttrs.dash,
+                'Note that this style setting can also be set per',
+                'direction via `increasing.line.dash` and',
+                '`decreasing.line.dash`.'
+            ].join(' ')
+        }),
+    },
+
     increasing: Lib.extendDeep({}, directionAttrs, {
-        color: { dflt: INCREASING_COLOR }
+        line: { color: { dflt: INCREASING_COLOR } }
     }),
 
     decreasing: Lib.extendDeep({}, directionAttrs, {
-        color: { dflt: DECREASING_COLOR }
+        line: { color: { dflt: DECREASING_COLOR } }
     }),
 
     text: {

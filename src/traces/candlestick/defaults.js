@@ -28,17 +28,19 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
         return;
     }
 
-    coerce('text');
-    coerce('whiskerwidth');
+    coerce('line.width');
 
     handleDirection(traceIn, traceOut, coerce, 'increasing');
     handleDirection(traceIn, traceOut, coerce, 'decreasing');
+
+    coerce('text');
+    coerce('whiskerwidth');
 };
 
 function handleDirection(traceIn, traceOut, coerce, direction) {
     handleDirectionDefaults(traceIn, traceOut, coerce, direction);
 
-    coerce(direction + '.color');
-    coerce(direction + '.width');
+    coerce(direction + '.line.color');
+    coerce(direction + '.line.width', traceOut.line.width);
     coerce(direction + '.fillcolor');
 }

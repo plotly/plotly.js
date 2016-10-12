@@ -28,17 +28,20 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
         return;
     }
 
-    coerce('text');
-    coerce('tickwidth');
+    coerce('line.width');
+    coerce('line.dash');
 
     handleDirection(traceIn, traceOut, coerce, 'increasing');
     handleDirection(traceIn, traceOut, coerce, 'decreasing');
+
+    coerce('text');
+    coerce('tickwidth');
 };
 
 function handleDirection(traceIn, traceOut, coerce, direction) {
     handleDirectionDefaults(traceIn, traceOut, coerce, direction);
 
-    coerce(direction + '.color');
-    coerce(direction + '.width');
-    coerce(direction + '.dash');
+    coerce(direction + '.line.color');
+    coerce(direction + '.line.width', traceOut.line.width);
+    coerce(direction + '.line.dash', traceOut.line.dash);
 }

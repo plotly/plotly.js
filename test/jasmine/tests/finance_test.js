@@ -220,6 +220,41 @@ describe('finance charts defaults:', function() {
         ]);
     });
 
+    it('trace-wide styling should set default for corresponding per-direction styling', function() {
+        function assertLine(cont, width, dash) {
+            expect(cont.line.width).toEqual(width);
+            if(dash) expect(cont.line.dash).toEqual(dash);
+        }
+
+        var trace0 = Lib.extendDeep({}, mock0, {
+            type: 'ohlc',
+            line: { width: 1, dash: 'dash' },
+            decreasing: { line: { dash: 'dot' } }
+        });
+
+        var trace1 = Lib.extendDeep({}, mock1, {
+            type: 'candlestick',
+            line: { width: 3 },
+            increasing: { line: { width: 0 } }
+        });
+
+        var out = _supply([trace0, trace1]);
+
+
+        var fullData = out._fullData;
+        var fullInput = fullData.map(function(fullTrace) { return fullTrace._fullInput; });
+
+        assertLine(fullInput[0].increasing, 1, 'dash');
+        assertLine(fullInput[0].decreasing, 1, 'dot');
+        assertLine(fullInput[2].increasing, 0);
+        assertLine(fullInput[2].decreasing, 3);
+
+        assertLine(fullData[0], 1, 'dash');
+        assertLine(fullData[1], 1, 'dot');
+        assertLine(fullData[2], 0);
+        assertLine(fullData[3], 3);
+    });
+
     it('trace-wide *visible* should be passed to generated traces', function() {
         var trace0 = Lib.extendDeep({}, mock0, {
             type: 'ohlc',
