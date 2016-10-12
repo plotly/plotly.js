@@ -52,18 +52,32 @@ module.exports = function setPositions(gd, plotinfo) {
 function setGroupPositions(gd, pa, sa, traces) {
     if(!traces.length) return;
 
-    var fullLayout = gd._fullLayout,
-        pLetter = pa._id.charAt(0),
-        sLetter = sa._id.charAt(0);
-
-    if(fullLayout.barmode === 'overlay') {
-        traces.forEach(function(trace) {
-            setOffsetAndWidth(gd, pa, pLetter, [trace]);
-        });
+    if(gd._fullLayout.barmode === 'overlay') {
+        setGroupPositionsInOverlayMode(gd, pa, sa, traces);
     }
-    else setOffsetAndWidth(gd, pa, pLetter, traces);
+    else {
+        setOffsetAndWidth(gd, pa, traces);
+        setBaseAndSize(gd, sa, traces);
+    }
+}
 
-    setBaseAndSize(gd, sa, sLetter, traces);
+
+function setGroupPositionsInOverlayMode(gd, pa, sa, traces) {
+    // set bar offsets and widths
+    traces.forEach(function(trace) {
+        setOffsetAndWidth(gd, pa, [trace]);
+    });
+
+    // for overlaid bars,
+    // just make sure the size axis includes zero,
+    // along with the tops of each bar,
+    // and store these bar tops in calcdata
+    var sLetter = getAxisLetter(sa),
+        fs = function(v) { v[sLetter] = v.s; return v.s; };
+
+    for(var i = 0; i < traces.length; i++) {
+        Axes.expand(sa, traces[i].map(fs), {tozero: true, padded: true});
+    }
 }
 
 
@@ -72,8 +86,9 @@ function setGroupPositions(gd, pa, sa, traces) {
 // to find the maximum width bars that won't overlap
 // for stacked or grouped bars, this is all vertical or horizontal
 // bars for overlaid bars, call this individually on each trace.
-function setOffsetAndWidth(gd, pa, pLetter, traces) {
+function setOffsetAndWidth(gd, pa, traces) {
     var fullLayout = gd._fullLayout,
+        pLetter = getAxisLetter(pa),
         i, trace,
         j, bar;
 
@@ -135,8 +150,9 @@ function setOffsetAndWidth(gd, pa, pLetter, traces) {
 }
 
 
-function setBaseAndSize(gd, sa, sLetter, traces) {
+function setBaseAndSize(gd, sa, traces) {
     var fullLayout = gd._fullLayout,
+        sLetter = getAxisLetter(sa),
         i, trace,
         j, bar;
 
@@ -252,4 +268,9 @@ function setBaseAndSize(gd, sa, sLetter, traces) {
             Axes.expand(sa, traces[i].map(fs), {tozero: true, padded: true});
         }
     }
+}
+
+
+function getAxisLetter(ax) {
+    return ax._id.charAt(0);
 }
