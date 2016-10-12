@@ -137,10 +137,11 @@ function convertTickWidth(coords, ax, tickWidth) {
     if(coords.length < 2) return tickWidth;
 
     var _coords = coords.map(ax.d2c),
-        minDTick = _coords[1] - _coords[0];
+        minDTick = Math.abs(_coords[1] - _coords[0]);
 
     for(var i = 1; i < _coords.length - 1; i++) {
-        minDTick = Math.min(_coords[i + 1] - _coords[i], minDTick);
+        var dist = Math.abs(_coords[i + 1] - _coords[i]);
+        minDTick = Math.min(dist, minDTick);
     }
 
     return minDTick * tickWidth;
