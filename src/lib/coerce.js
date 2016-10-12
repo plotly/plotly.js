@@ -13,6 +13,7 @@ var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 var nestedProperty = require('./nested_property');
 var isPlainObject = require('./is_plain_object');
+var filterUnique = require('./filter_unique');
 
 var getColorscale = require('../components/colorscale/get_scale');
 var colorscaleNames = Object.keys(require('../components/colorscale/scales'));
@@ -466,9 +467,7 @@ exports.findArrayAttributes = function(trace) {
     if(trace._fullInput) {
         exports.crawl(trace._fullInput._module.attributes, callback);
 
-        arrayAttributes = arrayAttributes.filter(function(g, i, self) {
-            return self.indexOf(g) === i;
-        });
+        arrayAttributes = filterUnique(arrayAttributes);
     }
 
     return arrayAttributes;

@@ -75,6 +75,8 @@ lib.error = loggersModule.error;
 
 lib.notifier = require('./notifier');
 
+lib.filterUnique = require('./filter_unique');
+
 /**
  * swap x and y of the same attribute in container cont
  * specify attr with a ? in place of x/y

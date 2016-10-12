@@ -121,12 +121,9 @@ function transformOne(trace, state) {
         return trace;
     }
 
-    var groupNames = groups.filter(function(g, i, self) {
-        return self.indexOf(g) === i;
-    });
-
-    var newData = new Array(groupNames.length);
-    var len = groups.length;
+    var groupNames = Lib.filterUnique(groups),
+        newData = new Array(groupNames.length),
+        len = groups.length;
 
     var arrayAttrs = Lib.findArrayAttributes(trace);
 
