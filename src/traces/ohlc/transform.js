@@ -20,7 +20,8 @@ exports.name = 'ohlc';
 
 exports.attributes = {};
 
-exports.supplyDefaults = function(transformIn, traceOut) {
+exports.supplyDefaults = function(transformIn, traceOut, layout, traceIn) {
+    helpers.clearEphemeralTransformOpts(traceIn);
     helpers.copyOHLC(transformIn, traceOut);
 
     return transformIn;

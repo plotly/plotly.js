@@ -19,7 +19,8 @@ var Lib = require('../../lib');
 // Note that, we must mutate user data (here traceIn) as opposed
 // to full data (here traceOut) as - at the moment - transform
 // defaults (which are called after trace defaults) start
-// from a clear transforms container.
+// from a clear transforms container. The mutations inflicted are
+// cleared in exports.clearEphemeralTransformOpts.
 exports.pushDummyTransformOpts = function(traceIn, traceOut) {
     var transformOpts = {
 
@@ -31,14 +32,6 @@ exports.pushDummyTransformOpts = function(traceIn, traceOut) {
     };
 
     if(Array.isArray(traceIn.transforms)) {
-        var transformsIn = traceIn.transforms;
-
-        // remove all ephemeral transforms,
-        // before adding dummy transform
-        for(var i = 0; i < transformsIn.length; i++) {
-            if(transformsIn[i]._ephemeral) transformsIn.splice(i, 1);
-        }
-
         traceIn.transforms.push(transformOpts);
     }
     else {
@@ -46,14 +39,29 @@ exports.pushDummyTransformOpts = function(traceIn, traceOut) {
     }
 };
 
-// This routine gets called during the transform supply-defaults step,
-// but only has an effect (because of the if-statements) during the
-// second round of transform defaults done on generated traces.
-//
-// This is a hacky way to pass 'ohlc' and 'candlestick' attributes
+// This routine gets called during the transform supply-defaults step
+// where it clears ephemeral transform opts in user data
+// and effectively put back user date in its pre-supplyDefaults state.
+exports.clearEphemeralTransformOpts = function(traceIn) {
+    var transformsIn = traceIn.transforms;
+
+    if(!Array.isArray(transformsIn)) return;
+
+    for(var i = 0; i < transformsIn.length; i++) {
+        if(transformsIn[i]._ephemeral) transformsIn.splice(i, 1);
+    }
+
+    if(transformsIn.length === 0) delete traceIn.transforms;
+};
+
+// This routine gets called during the transform supply-defaults step
+// where it passes 'ohlc' and 'candlestick' attributes
 // (found the transform container via exports.makeTransform)
-// to the traceOut container such that they can be compatible with
-// filter and groupby transforms.
+// to the traceOut container such that they can
+// be compatible with filter and groupby transforms.
+//
+// Note that this routine only has an effect during the
+// second round of transform defaults done on generated traces
 exports.copyOHLC = function(container, traceOut) {
     if(container.open) traceOut.open = container.open;
     if(container.high) traceOut.high = container.high;

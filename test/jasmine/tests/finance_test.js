@@ -55,7 +55,7 @@ describe('finance charts defaults:', function() {
         expect(directions).toEqual(['increasing', 'decreasing', 'increasing', 'decreasing']);
     });
 
-    it('unfortunately mutates user trace', function() {
+    it('should not mutate user data', function() {
         var trace0 = Lib.extendDeep({}, mock0, {
             type: 'ohlc'
         });
@@ -65,18 +65,18 @@ describe('finance charts defaults:', function() {
         });
 
         var out = _supply([trace0, trace1]);
-        expect(out.data[0].transforms.length).toEqual(1);
-        expect(out.data[0].transforms).toEqual([{ type: 'ohlc', _ephemeral: true }]);
-        expect(out.data[1].transforms.length).toEqual(1);
-        expect(out.data[1].transforms).toEqual([{ type: 'candlestick', _ephemeral: true }]);
+        expect(out.data[0]).toBe(trace0);
+        expect(out.data[0].transforms).toBeUndefined();
+        expect(out.data[1]).toBe(trace1);
+        expect(out.data[1].transforms).toBeUndefined();
 
-        // but at least in an idempotent way
+        // ... and in an idempotent way
 
         var out2 = _supply(out.data);
-        expect(out2.data[0].transforms.length).toEqual(1);
-        expect(out2.data[0].transforms).toEqual([{ type: 'ohlc', _ephemeral: true }]);
-        expect(out2.data[0].transforms.length).toEqual(1);
-        expect(out2.data[1].transforms).toEqual([{ type: 'candlestick', _ephemeral: true }]);
+        expect(out2.data[0]).toBe(trace0);
+        expect(out2.data[0].transforms).toBeUndefined();
+        expect(out2.data[1]).toBe(trace1);
+        expect(out2.data[1].transforms).toBeUndefined();
     });
 
     it('should work with transforms', function() {
@@ -99,7 +99,15 @@ describe('finance charts defaults:', function() {
         expect(out.data.length).toEqual(2);
         expect(out._fullData.length).toEqual(4);
 
-        var transformTypes = out._fullData.map(function(fullTrace) {
+        var transformTypesIn = out.data.map(function(trace) {
+            return trace.transforms.map(function(opts) {
+                return opts.type;
+            });
+        });
+
+        expect(transformTypesIn).toEqual([ ['filter'], ['filter'] ]);
+
+        var transformTypesOut = out._fullData.map(function(fullTrace) {
             return fullTrace.transforms.map(function(opts) {
                 return opts.type;
             });
@@ -108,7 +116,7 @@ describe('finance charts defaults:', function() {
         // dummy 'ohlc' and 'candlestick' transforms are pushed at the end
         // of the 'transforms' array container
 
-        expect(transformTypes).toEqual([
+        expect(transformTypesOut).toEqual([
             ['filter', 'ohlc'], ['filter', 'ohlc'],
             ['filter', 'candlestick'], ['filter', 'candlestick']
         ]);
