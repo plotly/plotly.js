@@ -304,16 +304,16 @@ describe('finance charts calc transforms:', function() {
         var out = _calc([trace0, trace1]);
 
         expect(out[0].x).toEqual([
-            -0.05, 0, 0, 0, 0, 0.05, null,
-            2.95, 3, 3, 3, 3, 3.05, null,
-            4.95, 5, 5, 5, 5, 5.05, null,
-            6.95, 7, 7, 7, 7, 7.05, null
+            -0.1, 0, 0, 0, 0, 0.1, null,
+            2.9, 3, 3, 3, 3, 3.1, null,
+            4.9, 5, 5, 5, 5, 5.1, null,
+            6.9, 7, 7, 7, 7, 7.1, null
         ]);
         expect(out[1].x).toEqual([
-            0.95, 1, 1, 1, 1, 1.05, null,
-            1.95, 2, 2, 2, 2, 2.05, null,
-            3.95, 4, 4, 4, 4, 4.05, null,
-            5.95, 6, 6, 6, 6, 6.05, null
+            0.9, 1, 1, 1, 1, 1.1, null,
+            1.9, 2, 2, 2, 2, 2.1, null,
+            3.9, 4, 4, 4, 4, 4.1, null,
+            5.9, 6, 6, 6, 6, 6.1, null
         ]);
         expect(out[2].x).toEqual([
             0, 0, 0, 0, 0, 0,
@@ -384,6 +384,7 @@ describe('finance charts calc transforms:', function() {
     it('should work with *filter* transforms', function() {
         var trace0 = Lib.extendDeep({}, mock1, {
             type: 'ohlc',
+            tickwidth: 0.05,
             transforms: [{
                 type: 'filter',
                 operation: '>',
@@ -450,6 +451,7 @@ describe('finance charts calc transforms:', function() {
 
         var trace0 = Lib.extendDeep({}, mock1, {
             type: 'ohlc',
+            tickwidth: 0.05,
             transforms: [opts]
         });
 
@@ -561,7 +563,7 @@ describe('finance charts updates:', function() {
         var path0;
 
         Plotly.plot(gd, [trace0]).then(function() {
-            expect(gd.calcdata[0][0].x).toEqual(-0.05);
+            expect(gd.calcdata[0][0].x).toEqual(-0.1);
             expect(gd.calcdata[0][0].y).toEqual(33.01);
 
             return Plotly.restyle(gd, 'tickwidth', 0.5);
