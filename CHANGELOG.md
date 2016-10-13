@@ -10,6 +10,35 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.18.0] -- 2016-10-13
+
+### Added
+- Add `ohlc` and `candlestick` trace types [#1020]
+- Add slider layout component [#986, #1029]
+- Add filter and groupby transforms [#936, #978]
+- Add support for all cartesian trace types and subplot configuration in
+  range slider range plots [#946, #1017]
+- Add update menus `'buttons'` type, `direction` and `showactive` options [#974]
+- Add `pad` attributes to update menus for more intuitive positioning [#989]
+- Add `plotly_hover`, `plotly_click` and `plotly_unhover` event emitters
+  on gl2d subplot [#994]
+- Make `'text'` mode  scatter traces animatable [#1011]
+- Add picking for `'line'` mode scattergeo traces [#1004]
+- Add support for `fill: 'toself'` in scattergeo traces [#1004]
+
+### Changed
+- Allow null / undefined frames in `Plotly.addFrames`[#1013]
+
+### Fixed
+- Allow range sliders to properly relayout [#962]
+- Fix handling of `NaN` gaps in range slider range plots [#946, #1017]
+- Properly skip over `NaN`s in scattergeo data arrays [#1004]
+- Fix handling graph div with style `visibility: inherit` [#990]
+- Fix `Plotly.update` for updates that require a full data + layout replot [#971]
+- Let update menus use `Plotly.update` method value [#972]
+- Fix tickfont relayout call on 3D subplot [#982]
+
+
 ## [1.17.3] -- 2016-09-21
 
 ### Fixed
