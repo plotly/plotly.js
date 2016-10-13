@@ -1,16 +1,12 @@
 'use strict';
 
+var getContext = require('webgl-context');
 
 module.exports = function hasWebGLSupport(testName) {
     var gl, canvas;
 
-    try {
-        canvas = document.createElement('canvas');
-        gl = canvas.getContext('webgl');
-    }
-    catch(err) {
-        gl = null;
-    }
+    canvas = document.createElement('canvas');
+    gl = getContext({canvas: canvas});
 
     var hasSupport = !!gl;
 

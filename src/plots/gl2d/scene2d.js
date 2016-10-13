@@ -15,6 +15,7 @@ var Fx = require('../../plots/cartesian/graph_interact');
 var createPlot2D = require('gl-plot2d');
 var createSpikes = require('gl-spikes2d');
 var createSelectBox = require('gl-select-box');
+var getContext = require('webgl-context');
 
 var createOptions = require('./convert');
 var createCamera = require('./camera');
@@ -87,16 +88,15 @@ proto.makeFramework = function() {
         if(!STATIC_CONTEXT) {
             STATIC_CANVAS = document.createElement('canvas');
 
-            try {
-                STATIC_CONTEXT = STATIC_CANVAS.getContext('webgl', {
-                    preserveDrawingBuffer: false,
-                    premultipliedAlpha: true,
-                    antialias: true
-                });
-            } catch(e) {
-                throw new Error([
-                    'Error creating static canvas/context for image server'
-                ].join(' '));
+            STATIC_CONTEXT = getContext({
+                canvas: STATIC_CANVAS,
+                preserveDrawingBuffer: false,
+                premultipliedAlpha: true,
+                antialias: true
+            });
+
+            if(!STATIC_CONTEXT) {
+                throw new Error('Error creating static canvas/context for image server');
             }
         }
 
@@ -104,23 +104,12 @@ proto.makeFramework = function() {
         this.gl = STATIC_CONTEXT;
     }
     else {
-        var liveCanvas = document.createElement('canvas'),
-            glOpts = { premultipliedAlpha: true };
-        var gl;
+        var liveCanvas = document.createElement('canvas');
 
-        try {
-            gl = liveCanvas.getContext('webgl', glOpts);
-        } catch(e) {
-            //
-        }
-
-        if(!gl) {
-            try {
-                gl = liveCanvas.getContext('experimental-webgl', glOpts);
-            } catch(e) {
-                //
-            }
-        }
+        var gl = getContext({
+            canvas: liveCanvas,
+            premultipliedAlpha: true
+        });
 
         if(!gl) showNoWebGlMsg(this);
 
