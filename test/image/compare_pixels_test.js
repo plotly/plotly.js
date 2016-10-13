@@ -58,8 +58,9 @@ if(mockList.length === 0) {
 
 // filter out untestable mocks if no pattern is specified
 if(!pattern) {
-    console.log('Filtering out untestable mocks\n');
+    console.log('Filtering out untestable mocks:');
     mockList = mockList.filter(untestableFilter);
+    console.log('\n');
 }
 
 // main
@@ -81,11 +82,15 @@ else {
  *
  */
 function untestableFilter(mockName) {
-    return !(
+    var cond = !(
         mockName === 'font-wishlist' ||
         mockName.indexOf('gl2d_') !== -1 ||
         mockName.indexOf('mapbox_') !== -1
     );
+
+    if(!cond) console.log(' -', mockName);
+
+    return cond;
 }
 
 function runInBatch(mockList) {
