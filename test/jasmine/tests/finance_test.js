@@ -339,16 +339,16 @@ describe('finance charts calc transforms:', function() {
         var out = _calc([trace0, trace1]);
 
         expect(out[0].x).toEqual([
-            -0.1, 0, 0, 0, 0, 0.1, null,
-            2.9, 3, 3, 3, 3, 3.1, null,
-            4.9, 5, 5, 5, 5, 5.1, null,
-            6.9, 7, 7, 7, 7, 7.1, null
+            -0.3, 0, 0, 0, 0, 0.3, null,
+            2.7, 3, 3, 3, 3, 3.3, null,
+            4.7, 5, 5, 5, 5, 5.3, null,
+            6.7, 7, 7, 7, 7, 7.3, null
         ]);
         expect(out[1].x).toEqual([
-            0.9, 1, 1, 1, 1, 1.1, null,
-            1.9, 2, 2, 2, 2, 2.1, null,
-            3.9, 4, 4, 4, 4, 4.1, null,
-            5.9, 6, 6, 6, 6, 6.1, null
+            0.7, 1, 1, 1, 1, 1.3, null,
+            1.7, 2, 2, 2, 2, 2.3, null,
+            3.7, 4, 4, 4, 4, 4.3, null,
+            5.7, 6, 6, 6, 6, 6.3, null
         ]);
         expect(out[2].x).toEqual([
             0, 0, 0, 0, 0, 0,
@@ -598,7 +598,7 @@ describe('finance charts updates:', function() {
         var path0;
 
         Plotly.plot(gd, [trace0]).then(function() {
-            expect(gd.calcdata[0][0].x).toEqual(-0.1);
+            expect(gd.calcdata[0][0].x).toEqual(-0.3);
             expect(gd.calcdata[0][0].y).toEqual(33.01);
 
             return Plotly.restyle(gd, 'tickwidth', 0.5);

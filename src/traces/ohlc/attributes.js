@@ -123,7 +123,7 @@ module.exports = {
         valType: 'number',
         min: 0,
         max: 0.5,
-        dflt: 0.1,
+        dflt: 0.3,
         role: 'style',
         description: [
             'Sets the width of the open/close tick marks',
