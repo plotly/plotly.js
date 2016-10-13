@@ -13,7 +13,7 @@ var isNumeric = require('fast-isnumeric');
 
 var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
-var Lib = require('../../lib');
+var Sieve = require('./sieve.js');
 
 /*
  * Bar chart stacking/grouping positioning and autoscaling calculations
@@ -52,24 +52,44 @@ module.exports = function setPositions(gd, plotinfo) {
 function setGroupPositions(gd, pa, sa, traces) {
     if(!traces.length) return;
 
-    if(gd._fullLayout.barmode === 'overlay') {
+    var barmode = gd._fullLayout.barmode,
+        overlay = (barmode === 'overlay'),
+        group = (barmode === 'group');
+
+    if(overlay) {
         setGroupPositionsInOverlayMode(gd, pa, sa, traces);
     }
+    else if(group) {
+        setGroupPositionsInGroupMode(gd, pa, sa, traces);
+    }
     else {
-        setOffsetAndWidth(gd, pa, traces);
-        setBaseAndSize(gd, sa, traces);
+        setGroupPositionsInStackOrRelativeMode(gd, pa, sa, traces);
     }
 }
 
 
 function setGroupPositionsInOverlayMode(gd, pa, sa, traces) {
-    // set bar offsets and widths
+    var barnorm = gd._fullLayout.barnorm,
+        separateNegativeValues = false,
+        dontMergeOverlappingData = !barnorm;
+
+    // update position axis and set bar offsets and widths
     traces.forEach(function(trace) {
-        setOffsetAndWidth(gd, pa, [trace]);
+        var sieve = new Sieve(
+                    [trace], separateNegativeValues, dontMergeOverlappingData
+                ),
+            minDiff = sieve.minDiff,
+            distinctPositions = sieve.distinctPositions;
+
+        setOffsetAndWidth(gd, pa, sieve);
+
+        Axes.minDtick(pa, minDiff, distinctPositions[0]);
+        Axes.expand(pa, distinctPositions, {vpad: minDiff / 2});
     });
 
-    // for overlaid bars,
-    // just make sure the size axis includes zero,
+    // update size axis and set bar bases and sizes
+    //
+    // make sure the size axis includes zero,
     // along with the tops of each bar,
     // and store these bar tops in calcdata
     var sLetter = getAxisLetter(sa),
@@ -81,53 +101,112 @@ function setGroupPositionsInOverlayMode(gd, pa, sa, traces) {
 }
 
 
-// bar position offset and width calculation
-// traces is a list of traces (in calcdata) to look at together
-// to find the maximum width bars that won't overlap
-// for stacked or grouped bars, this is all vertical or horizontal
-// bars for overlaid bars, call this individually on each trace.
-function setOffsetAndWidth(gd, pa, traces) {
+function setGroupPositionsInGroupMode(gd, pa, sa, traces) {
     var fullLayout = gd._fullLayout,
-        pLetter = getAxisLetter(pa),
-        i, trace,
-        j, bar;
+        barnorm = fullLayout.barnorm,
+        separateNegativeValues = false,
+        dontMergeOverlappingData = !barnorm,
+        sieve = new Sieve(
+                traces, separateNegativeValues, dontMergeOverlappingData
+            ),
+        minDiff = sieve.minDiff,
+        distinctPositions = sieve.distinctPositions;
 
-    // make list of bar positions
-    var positions = [];
-    for(i = 0; i < traces.length; i++) {
-        trace = traces[i];
-        for(j = 0; j < trace.length; j++) {
-            bar = trace[j];
-            positions.push(bar.p);
-        }
-    }
+    // set bar offsets and widths
+    setOffsetAndWidthInGroupMode(gd, pa, sieve);
 
-    var dv = Lib.distinctVals(positions),
-        distinctPositions = dv.vals,
-        minDiff = dv.minDiff;
-
-    // check if there are any overlapping positions;
-    // if there aren't, let them have full width even if mode is group
-    var overlap = false;
-    if(fullLayout.barmode === 'group') {
-        overlap = (positions.length !== distinctPositions.length);
-    }
-
-    // check forced minimum dtick
-    Axes.minDtick(pa, minDiff, distinctPositions[0], overlap);
-
-    // position axis autorange - always tight fitting
+    // update position axis
+    Axes.minDtick(pa, minDiff, distinctPositions[0]);
     Axes.expand(pa, distinctPositions, {vpad: minDiff / 2});
 
-    // computer bar widths and position offsets
-    var barGroupWidth = minDiff * (1 - fullLayout.bargap),
+    // set bar bases and sizes
+    setBaseAndSize(gd, sa, sieve);
+}
+
+
+function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, traces) {
+    var fullLayout = gd._fullLayout,
+        barmode = fullLayout.barmode,
+        stack = (barmode === 'stack'),
+        relative = (barmode === 'relative'),
+        barnorm = gd._fullLayout.barnorm,
+        separateNegativeValues = relative,
+        dontMergeOverlappingData = !(barnorm || stack || relative),
+        sieve = new Sieve(
+                traces, separateNegativeValues, dontMergeOverlappingData
+            ),
+        minDiff = sieve.minDiff,
+        distinctPositions = sieve.distinctPositions;
+
+    // set bar offsets and widths
+    setOffsetAndWidth(gd, pa, sieve);
+
+    // update position axis
+    Axes.minDtick(pa, minDiff, distinctPositions[0]);
+    Axes.expand(pa, distinctPositions, {vpad: minDiff / 2});
+
+    // set bar bases and sizes
+    setBaseAndSize(gd, sa, sieve);
+}
+
+
+function setOffsetAndWidth(gd, pa, sieve) {
+    var fullLayout = gd._fullLayout,
+        pLetter = getAxisLetter(pa),
+        traces = sieve.traces,
+        bargap = fullLayout.bargap,
+        bargroupgap = fullLayout.bargroupgap,
+        minDiff = sieve.minDiff;
+
+    // set bar offsets and widths
+    var barGroupWidth = minDiff * (1 - bargap),
+        barWidthPlusGap = barGroupWidth,
+        barWidth = barWidthPlusGap * (1 - bargroupgap);
+
+    // computer bar group center and bar offset
+    var offsetFromCenter = -barWidth / 2,
+        barCenter = 0;
+
+    for(var i = 0; i < traces.length; i++) {
+        var trace = traces[i];
+
+        // store bar width and offset for this trace
+        var t = trace[0].t;
+        t.barwidth = barWidth;
+        t.poffset = offsetFromCenter;
+        t.bargroupwidth = barGroupWidth;
+
+        // store the bar center in each calcdata item
+        for(var j = 0; j < trace.length; j++) {
+            var bar = trace[j];
+            bar[pLetter] = bar.p + barCenter;
+        }
+    }
+}
+
+
+function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
+    var fullLayout = gd._fullLayout,
+        pLetter = getAxisLetter(pa),
+        traces = sieve.traces,
+        bargap = fullLayout.bargap,
+        bargroupgap = fullLayout.bargroupgap,
+        positions = sieve.positions,
+        distinctPositions = sieve.distinctPositions,
+        minDiff = sieve.minDiff;
+
+    // if there aren't any overlapping positions,
+    // let them have full width even if mode is group
+    var overlap = (positions.length !== distinctPositions.length);
+
+    var barGroupWidth = minDiff * (1 - bargap),
         barWidthPlusGap = (overlap) ?
             barGroupWidth / traces.length :
             barGroupWidth,
-        barWidth = barWidthPlusGap * (1 - fullLayout.bargroupgap);
+        barWidth = barWidthPlusGap * (1 - bargroupgap);
 
-    for(i = 0; i < traces.length; i++) {
-        trace = traces[i];
+    for(var i = 0; i < traces.length; i++) {
+        var trace = traces[i];
 
         // computer bar group center and bar offset
         var offsetFromCenter = (overlap) ?
@@ -142,17 +221,18 @@ function setOffsetAndWidth(gd, pa, traces) {
         t.bargroupwidth = barGroupWidth;
 
         // store the bar center in each calcdata item
-        for(j = 0; j < trace.length; j++) {
-            bar = trace[j];
+        for(var j = 0; j < trace.length; j++) {
+            var bar = trace[j];
             bar[pLetter] = bar.p + barCenter;
         }
     }
 }
 
 
-function setBaseAndSize(gd, sa, traces) {
+function setBaseAndSize(gd, sa, sieve) {
     var fullLayout = gd._fullLayout,
         sLetter = getAxisLetter(sa),
+        traces = sieve.traces,
         i, trace,
         j, bar;
 
