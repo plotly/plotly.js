@@ -1,0 +1,97 @@
+{
+    "data": [
+        {
+            "x": [
+                0,
+                1,
+                2
+            ],
+            "y": [
+                6,
+                10,
+                2
+            ],
+            "error_y": {
+                "type": "data",
+                "array": [
+                    1,
+                    2,
+                    3
+                ],
+                "visible": true
+            },
+            "type": "scattergl"
+        },
+        {
+            "x": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "y": [
+                2,
+                1,
+                3,
+                4
+            ],
+            "error_y": {
+                "type": "data",
+                "symmetric": false,
+                "array": [
+                    0.1,
+                    0.2,
+                    0.1,
+                    0.1
+                ],
+                "arrayminus": [
+                    0.2,
+                    0.4,
+                    1,
+                    0.2
+                ]
+            },
+            "type": "scattergl"
+        },
+        {
+            "x": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "y": [
+                2,
+                1,
+                3,
+                4
+            ],
+            "error_y": {
+                "type": "percent",
+                "symmetric": false,
+                "value": 15,
+                "valueminus": 25
+            },
+            "type": "scattergl"
+        },
+        {
+            "x": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "y": [
+                2,
+                1,
+                3,
+                4
+            ],
+            "error_x": {
+                "type": "percent",
+                "value": 10
+            },
+            "type": "scattergl"
+        }
+    ]
+}
