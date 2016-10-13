@@ -291,7 +291,7 @@ proto.updateFast = function(options) {
 
     var len = x.length,
         idToIndex = new Array(len),
-        positions = new Float32Array(2 * len),
+        positions = new Float64Array(2 * len),
         bounds = this.bounds,
         pId = 0,
         ptr = 0;
