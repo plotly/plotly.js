@@ -175,7 +175,15 @@ proto.updateFast = function(options) {
 
     markerColor[3] *= opacity;
     this.pointcloudOptions.color = markerColor;
-    this.pointcloudOptions.blend = options.marker.blend;
+
+    // detect blending from the number of points, if undefined
+    // because large data with blending hits performance
+    var blend = options.marker.blend;
+    if(blend === null) {
+        var maxPoints = 100;
+        blend = x.length < maxPoints || y.length < maxPoints;
+    }
+    this.pointcloudOptions.blend = blend;
 
     borderColor[3] *= opacity;
     this.pointcloudOptions.borderColor = borderColor;

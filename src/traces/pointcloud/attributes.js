@@ -75,7 +75,7 @@ module.exports = {
         },
         blend: {
             valType: 'boolean',
-            dflt: false,
+            dflt: null,
             role: 'style',
             description: [
                 'Determines if colors are blended together for a translucency effect',

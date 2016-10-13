@@ -129,18 +129,16 @@ proto.makeFramework = function() {
     }
 
     // position the canvas
-    var canvas = this.canvas,
-        pixelRatio = this.pixelRatio,
-        fullLayout = this.fullLayout;
+    var canvas = this.canvas;
 
-    canvas.width = Math.ceil(pixelRatio * fullLayout.width) |0;
-    canvas.height = Math.ceil(pixelRatio * fullLayout.height) |0;
     canvas.style.width = '100%';
     canvas.style.height = '100%';
     canvas.style.position = 'absolute';
     canvas.style.top = '0px';
     canvas.style.left = '0px';
     canvas.style['pointer-events'] = 'none';
+
+    this.updateSize(canvas);
 
     // disabling user select on the canvas
     // sanitizes double-clicks interactions
@@ -173,6 +171,9 @@ proto.toImage = function(format) {
 
     this.stopped = true;
     if(this.staticPlot) this.container.appendChild(STATIC_CANVAS);
+
+    // update canvas size
+    this.updateSize(this.canvas);
 
     // force redraw
     this.glplot.setDirty();
@@ -224,6 +225,26 @@ proto.toImage = function(format) {
     if(this.staticPlot) this.container.removeChild(STATIC_CANVAS);
 
     return dataURL;
+};
+
+proto.updateSize = function(canvas) {
+    if(!canvas) canvas = this.canvas;
+
+    var pixelRatio = this.pixelRatio,
+        fullLayout = this.fullLayout;
+
+    var width = fullLayout.width,
+        height = fullLayout.height,
+        pixelWidth = Math.ceil(pixelRatio * width) |0,
+        pixelHeight = Math.ceil(pixelRatio * height) |0;
+
+    // check for resize
+    if(canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+        canvas.width = pixelWidth;
+        canvas.height = pixelHeight;
+    }
+
+    return canvas;
 };
 
 proto.computeTickMarks = function() {
@@ -344,24 +365,16 @@ proto.destroy = function() {
 };
 
 proto.plot = function(fullData, calcData, fullLayout) {
-    var glplot = this.glplot,
-        pixelRatio = this.pixelRatio;
+    var glplot = this.glplot;
 
     this.fullLayout = fullLayout;
     this.updateAxes(fullLayout);
     this.updateTraces(fullData, calcData);
 
     var width = fullLayout.width,
-        height = fullLayout.height,
-        pixelWidth = Math.ceil(pixelRatio * width) |0,
-        pixelHeight = Math.ceil(pixelRatio * height) |0;
+        height = fullLayout.height;
 
-    // check for resize
-    var canvas = this.canvas;
-    if(canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
-        canvas.width = pixelWidth;
-        canvas.height = pixelHeight;
-    }
+    this.updateSize(this.canvas);
 
     var options = this.glplotOptions;
     options.merge(fullLayout);
