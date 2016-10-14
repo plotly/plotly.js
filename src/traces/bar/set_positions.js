@@ -249,17 +249,12 @@ function setBaseAndSize(gd, sa, sieve) {
         // so we don't have to redo this later
         var sMax = sa.l2c(sa.c2l(0)),
             sMin = sMax,
-            sums = {},
+            barEnd;
 
-            // make sure if p is different only by rounding,
-            // we still stack
-            sumround = traces[0][0].t.barwidth / 100,
-            sv = 0,
-            padded = true,
-            barEnd,
-            scale;
+        // stack bars that only differ by rounding
+        sieve.binWidth = traces[0][0].t.barwidth / 100;
 
-        for(i = 0; i < traces.length; i++) { // trace index
+        for(i = 0; i < traces.length; i++) {
             trace = traces[i];
 
             for(j = 0; j < trace.length; j++) {
@@ -269,16 +264,11 @@ function setBaseAndSize(gd, sa, sieve) {
                 // so that we don't try to stack them
                 if(!isNumeric(bar.s)) continue;
 
-                sv = Math.round(bar.p / sumround);
+                // stack current bar and get previous sum
+                var previousSum = sieve.put(bar.p, bar.s);
 
-                // store the negative sum value for p at the same key,
-                // with sign flipped using string to ensure -0 !== 0.
-                if(relative && bar.s < 0) sv = '-' + sv;
-
-                var previousSum = sums[sv] || 0;
                 if(stack || relative) bar.b = previousSum;
                 barEnd = bar.b + bar.s;
-                sums[sv] = previousSum + bar.s;
 
                 // store the bar top in each calcdata item
                 if(stack || relative) {
@@ -291,43 +281,36 @@ function setBaseAndSize(gd, sa, sieve) {
             }
         }
 
+        var padded = true;
+
         if(norm) {
-            var top = norm === 'fraction' ? 1 : 100,
-                relAndNegative = false,
-                tiny = top / 1e9; // in case of rounding error in sum
-
             padded = false;
-            sMin = 0;
-            sMax = stack ? top : 0;
 
-            for(i = 0; i < traces.length; i++) { // trace index
+            var sTop = (norm === 'fraction') ? 1 : 100,
+                sTiny = sTop / 1e9; // in case of rounding error in sum
+
+            sMin = 0;
+            sMax = (stack) ? sTop : 0;
+
+            for(i = 0; i < traces.length; i++) {
                 trace = traces[i];
 
                 for(j = 0; j < trace.length; j++) {
                     bar = trace[j];
 
-                    relAndNegative = (relative && bar.s < 0);
+                    var scale = Math.abs(sTop / sieve.get(bar.p, bar.s));
 
-                    sv = Math.round(bar.p / sumround);
-
-                    // locate negative sum amount for this p val
-                    if(relAndNegative) sv = '-' + sv;
-
-                    scale = top / sums[sv];
-
-                    // preserve sign if negative
-                    if(relAndNegative) scale *= -1;
                     bar.b *= scale;
                     bar.s *= scale;
                     barEnd = bar.b + bar.s;
                     bar[sLetter] = barEnd;
 
                     if(isNumeric(sa.c2l(barEnd))) {
-                        if(barEnd < sMin - tiny) {
+                        if(barEnd < sMin - sTiny) {
                             padded = true;
                             sMin = barEnd;
                         }
-                        if(barEnd > sMax + tiny) {
+                        if(barEnd > sMax + sTiny) {
                             padded = true;
                             sMax = barEnd;
                         }
