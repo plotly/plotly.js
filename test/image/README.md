@@ -1,6 +1,6 @@
 # plotly.js image testing
 
-Test plotly.js with Plotly's image testing docker container.
+Test plotly.js with Plotly's image testing docker container. Before starting, don't forget to [set up your testing environment with `npm run pretest`](https://github.com/plotly/plotly.js/blob/master/CONTRIBUTING.md#development).
 
 Requirements:
 - `docker` | [installation guidelines][docker-install]
