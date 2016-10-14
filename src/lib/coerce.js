@@ -13,6 +13,7 @@ var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 var nestedProperty = require('./nested_property');
 var isPlainObject = require('./is_plain_object');
+var filterUnique = require('./filter_unique');
 
 var getColorscale = require('../components/colorscale/get_scale');
 var colorscaleNames = Object.keys(require('../components/colorscale/scales'));
@@ -456,6 +457,18 @@ exports.findArrayAttributes = function(trace) {
     }
 
     exports.crawl(trace._module.attributes, callback);
+
+    // Look into the fullInput module attributes for array attributes
+    // to make sure that 'custom' array attributes are detected.
+    //
+    // At the moment, we need this block to make sure that
+    // ohlc and candlestick 'open', 'high', 'low', 'close' can be
+    // used with filter ang groupby transforms.
+    if(trace._fullInput) {
+        exports.crawl(trace._fullInput._module.attributes, callback);
+
+        arrayAttributes = filterUnique(arrayAttributes);
+    }
 
     return arrayAttributes;
 };

@@ -89,6 +89,8 @@ function Axes2DOptions(scene) {
 
     this.borderColor = [0, 0, 0, 0];
     this.backgroundColor = [0, 0, 0, 0];
+
+    this.static = this.scene.staticPlot;
 }
 
 var proto = Axes2DOptions.prototype;

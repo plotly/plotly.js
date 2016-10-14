@@ -11,6 +11,7 @@
 var fontAttrs = require('../../plots/font_attributes');
 var padAttrs = require('../../plots/pad_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
+var extendDeep = require('../../lib/extend').extendDeep;
 var animationAttrs = require('../../plots/animation_attributes');
 var constants = require('./constants');
 
@@ -105,13 +106,13 @@ module.exports = {
         valType: 'number',
         min: -2,
         max: 3,
-        dflt: -0.05,
+        dflt: 0,
         role: 'style',
         description: 'Sets the x position (in normalized coordinates) of the slider.'
     },
-    pad: extendFlat({}, padAttrs, {
+    pad: extendDeep({}, padAttrs, {
         description: 'Set the padding of the slider component along each side.'
-    }),
+    }, {t: {dflt: 20}}),
     xanchor: {
         valType: 'enumerated',
         values: ['auto', 'left', 'center', 'right'],
@@ -127,14 +128,14 @@ module.exports = {
         valType: 'number',
         min: -2,
         max: 3,
-        dflt: 1,
+        dflt: 0,
         role: 'style',
         description: 'Sets the y position (in normalized coordinates) of the slider.'
     },
     yanchor: {
         valType: 'enumerated',
         values: ['auto', 'top', 'middle', 'bottom'],
-        dflt: 'bottom',
+        dflt: 'top',
         role: 'info',
         description: [
             'Sets the slider\'s vertical position anchor',

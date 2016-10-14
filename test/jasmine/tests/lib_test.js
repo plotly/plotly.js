@@ -1367,6 +1367,37 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('filterUnique', function() {
+
+        it('should return array containing unique values', function() {
+            expect(
+                Lib.filterUnique(['a', 'a', 'b', 'b'])
+            )
+            .toEqual(['a', 'b']);
+
+            expect(
+                Lib.filterUnique(['1', ['1'], 1])
+            )
+            .toEqual(['1']);
+
+            expect(
+                Lib.filterUnique([1, '1', [1]])
+            )
+            .toEqual([1]);
+
+            expect(
+                Lib.filterUnique([ { a: 1 }, { b: 2 }])
+            )
+            .toEqual([{ a: 1 }]);
+
+            expect(
+                Lib.filterUnique([null, undefined, null, null, undefined])
+            )
+            .toEqual([null, undefined]);
+        });
+
+    });
+
     describe('numSeparate', function() {
 
         it('should work on numbers and strings', function() {

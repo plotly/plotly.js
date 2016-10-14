@@ -10,6 +10,7 @@
 'use strict';
 
 var createPlot = require('gl-plot3d');
+var getContext = require('webgl-context');
 
 var Lib = require('../../lib');
 
@@ -143,13 +144,13 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
     if(scene.staticMode) {
         if(!STATIC_CONTEXT) {
             STATIC_CANVAS = document.createElement('canvas');
-            try {
-                STATIC_CONTEXT = STATIC_CANVAS.getContext('webgl', {
-                    preserveDrawingBuffer: true,
-                    premultipliedAlpha: true,
-                    antialias: true
-                });
-            } catch(e) {
+            STATIC_CONTEXT = getContext({
+                canvas: STATIC_CANVAS,
+                preserveDrawingBuffer: true,
+                premultipliedAlpha: true,
+                antialias: true
+            });
+            if(!STATIC_CONTEXT) {
                 throw new Error('error creating static canvas/context for image server');
             }
         }

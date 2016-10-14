@@ -81,6 +81,8 @@ var constantsModule = require('./constants');
 lib.BADNUM = constantsModule.BADNUM,
 lib.FP_SAFE = constantsModule.FP_SAFE;
 
+lib.filterUnique = require('./filter_unique');
+
 /**
  * swap x and y of the same attribute in container cont
  * specify attr with a ? in place of x/y

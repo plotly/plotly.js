@@ -57,6 +57,12 @@ The image testing docker container allows plotly.js developers to
 ([B](#b-run-image-export-tests)) run image export tests and
 ([C](#c-generate-or-update-existing-baseline-image)) generate baseline images.
 
+Before starting, don't forget to [set up your testing environment](https://github.com/plotly/plotly.js/blob/master/CONTRIBUTING.md#development):
+
+```bash
+$ npm run pretest
+```
+
 **IMPORTANT:** the image tests scripts do **not** bundle the source files before
 running the image tests. We recommend running `npm run watch` or `npm start` in
 a separate tab to ensure that the most up-to-date code is used.
