@@ -36,6 +36,8 @@ lib.dateTime2ms = datesModule.dateTime2ms;
 lib.isDateTime = datesModule.isDateTime;
 lib.ms2DateTime = datesModule.ms2DateTime;
 lib.parseDate = datesModule.parseDate;
+lib.MIN_MS = datesModule.MIN_MS;
+lib.MAX_MS = datesModule.MAX_MS;
 
 var searchModule = require('./search');
 lib.findBin = searchModule.findBin;
@@ -74,6 +76,10 @@ lib.warn = loggersModule.warn;
 lib.error = loggersModule.error;
 
 lib.notifier = require('./notifier');
+
+var constantsModule = require('./constants');
+lib.BADNUM = constantsModule.BADNUM,
+lib.FP_SAFE = constantsModule.FP_SAFE;
 
 /**
  * swap x and y of the same attribute in container cont

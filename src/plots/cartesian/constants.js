@@ -21,14 +21,6 @@ module.exports = {
         y: /^yaxis([2-9]|[1-9][0-9]+)?$/
     },
 
-    /**
-     * standardize all missing data in calcdata to use undefined
-     * never null or NaN.
-     * that way we can use !==undefined, or !== BADNUM,
-     * to test for real data
-     */
-    BADNUM: undefined,
-
     // axis match regular expression
     xAxisMatch: /^xaxis[0-9]*$/,
     yAxisMatch: /^yaxis[0-9]*$/,

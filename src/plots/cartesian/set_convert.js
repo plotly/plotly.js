@@ -13,6 +13,8 @@ var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
+var FP_SAFE = Lib.FP_SAFE;
+var BADNUM = Lib.BADNUM;
 
 var constants = require('./constants');
 var cleanDatum = require('./clean_datum');
@@ -128,7 +130,7 @@ module.exports = function setConvert(ax) {
     };
 
     ax.l2p = function(v) {
-        if(!isNumeric(v)) return constants.BADNUM;
+        if(!isNumeric(v)) return BADNUM;
 
         // include 2 fractional digits on pixel, for PDF zooming etc
         return d3.round(ax._b + ax._m * v, 2);
@@ -197,7 +199,7 @@ module.exports = function setConvert(ax) {
             }
 
             var c = ax._categories.indexOf(v);
-            return c === -1 ? constants.BADNUM : c;
+            return c === -1 ? BADNUM : c;
         };
 
         ax.d2l = ax.d2c;
