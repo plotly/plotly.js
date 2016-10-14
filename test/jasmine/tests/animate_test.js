@@ -84,7 +84,7 @@ describe('Test animate API', function() {
         });
 
         Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-            Plotly.addFrames(gd, mockCopy.frames);
+            return Plotly.addFrames(gd, mockCopy.frames);
         }).then(done);
     });
 
@@ -470,7 +470,7 @@ describe('animation with non-mocked transitions', function() {
         mockCopy = Lib.extendDeep({}, mock);
 
         Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-            Plotly.addFrames(gd, mockCopy.frames);
+            return Plotly.addFrames(gd, mockCopy.frames);
         }).then(done);
     });
 
@@ -501,8 +501,8 @@ describe('animation with non-mocked transitions', function() {
             return Plotly.animate(gd, [{
                 data: [{'transforms[0].operation': '>'}]
             }], {
-                frame: {redraw: true, duration: 100},
-                transition: {duration: 100}
+                frame: {redraw: true, duration: 0},
+                transition: {duration: 0}
             });
         }).then(function() {
             expect(gd._fullData[0].transforms).toEqual([{
