@@ -1326,9 +1326,7 @@ plots.computeFrame = function(gd, frameName) {
     // Merge, starting with the last and ending with the desired frame:
     while((framePtr = frameStack.pop())) {
         if(framePtr.layout) {
-            copy = Lib.extendDeepNoArrays({}, framePtr.layout);
-            expandedObj = Lib.expandObjectPaths(copy);
-            result.layout = Lib.extendDeepNoArrays(result.layout || {}, expandedObj);
+            result.layout = plots.extendLayout(result.layout, framePtr.layout);
         }
 
         if(framePtr.data) {
@@ -1363,14 +1361,49 @@ plots.computeFrame = function(gd, frameName) {
                     result.traces[destIndex] = traceIndex;
                 }
 
-                copy = Lib.extendDeepNoArrays({}, framePtr.data[i]);
-                expandedObj = Lib.expandObjectPaths(copy);
-                result.data[destIndex] = Lib.extendDeepNoArrays(result.data[destIndex] || {}, expandedObj);
+                try {
+                    result.data[destIndex] = plots.extendTrace(result.data[destIndex], framePtr.data[i]);
+                } catch (e) {
+                    console.error(e);
+                }
             }
         }
     }
 
     return result;
+};
+
+plots.extendObjectWithContainers = function (dest, src, containerPaths) {
+    var copy = Lib.extendDeepNoArrays({}, src || {});
+    var expandedObj = Lib.expandObjectPaths(copy);
+
+    if (containerPaths && containerPaths.length) {
+        for (var i = 0; i < containerPaths.length; i++) {
+            var srcProp = Lib.nestedProperty(src, containerPaths[i]);
+            var srcVal = srcProp.get();
+
+            console.log('src, containerPaths[i], srcVal:', src, containerPaths[i], srcVal);
+
+
+            if (!srcVal) continue;
+
+            var destProp = Lib.nestedProperty(src, containerPaths[i]);
+            var destVal = destProp.get();
+
+
+
+        }
+    }
+
+    return Lib.extendDeepNoArrays(dest || {}, expandedObj);
+};
+
+plots.extendTrace = function (destTrace, srcTrace) {
+    return plots.extendObjectWithContainers(destTrace, srcTrace, ['transforms']);
+};
+
+plots.extendLayout = function (destLayout, srcLayout) {
+    return plots.extendObjectWithContainers(destLayout, srcLayout, []);
 };
 
 /**
@@ -1411,16 +1444,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
             transitionedTraces.push(traceIdx);
 
-            // This is a multi-step process. First clone w/o arrays so that
-            // we're not modifying the original:
-            var update = Lib.extendDeepNoArrays({}, data[i]);
-
-            // Then expand object paths since we don't obey object-overwrite
-            // semantics here:
-            update = Lib.expandObjectPaths(update);
-
-            // Finally apply the update (without copying arrays, of course):
-            Lib.extendDeepNoArrays(gd.data[traceIndices[i]], update);
+            gd.data[traceIndices[i]] = plots.extendTrace(gd.data[traceIndices[i]], data[i]);
         }
 
         // Follow the same procedure. Clone it so we don't mangle the input, then
