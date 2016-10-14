@@ -1299,7 +1299,7 @@ plots.modifyFrames = function(gd, operations) {
  */
 plots.computeFrame = function(gd, frameName) {
     var frameLookup = gd._transitionData._frameHash;
-    var i, traceIndices, traceIndex, expandedObj, destIndex, copy;
+    var i, traceIndices, traceIndex, destIndex;
 
     var framePtr = frameLookup[frameName];
 
@@ -1361,11 +1361,7 @@ plots.computeFrame = function(gd, frameName) {
                     result.traces[destIndex] = traceIndex;
                 }
 
-                try {
-                    result.data[destIndex] = plots.extendTrace(result.data[destIndex], framePtr.data[i]);
-                } catch (e) {
-                    console.error(e);
-                }
+                result.data[destIndex] = plots.extendTrace(result.data[destIndex], framePtr.data[i]);
             }
         }
     }
@@ -1373,37 +1369,86 @@ plots.computeFrame = function(gd, frameName) {
     return result;
 };
 
-plots.extendObjectWithContainers = function (dest, src, containerPaths) {
+/**
+ * Extend an object, treating container arrays very differently by extracting
+ * their contents and merging them separately.
+ *
+ * This exists so that we can extendDeepNoArrays and avoid stepping into data
+ * arrays without knowledge of the plot schema, but so that we may also manually
+ * recurse into known container arrays, such as transforms.
+ *
+ * See extendTrace and extendLayout below for usage.
+ */
+plots.extendObjectWithContainers = function(dest, src, containerPaths) {
+    var containerProp, containerVal, i, j, srcProp, destProp, srcContainer, destContainer;
     var copy = Lib.extendDeepNoArrays({}, src || {});
     var expandedObj = Lib.expandObjectPaths(copy);
+    var containerObj = {};
 
-    if (containerPaths && containerPaths.length) {
-        for (var i = 0; i < containerPaths.length; i++) {
-            var srcProp = Lib.nestedProperty(src, containerPaths[i]);
-            var srcVal = srcProp.get();
-
-            console.log('src, containerPaths[i], srcVal:', src, containerPaths[i], srcVal);
-
-
-            if (!srcVal) continue;
-
-            var destProp = Lib.nestedProperty(src, containerPaths[i]);
-            var destVal = destProp.get();
-
-
-
+    // Step through and extract any container properties. Otherwise extendDeepNoArrays
+    // will clobber any existing properties with an empty array and then supplyDefaults
+    // will reset everything to defaults.
+    if(containerPaths && containerPaths.length) {
+        for(i = 0; i < containerPaths.length; i++) {
+            containerProp = Lib.nestedProperty(expandedObj, containerPaths[i]);
+            containerVal = containerProp.get();
+            containerProp.set(null);
+            Lib.nestedProperty(containerObj, containerPaths[i]).set(containerVal);
         }
     }
 
-    return Lib.extendDeepNoArrays(dest || {}, expandedObj);
+    dest = Lib.extendDeepNoArrays(dest || {}, expandedObj);
+
+    if(containerPaths && containerPaths.length) {
+        for(i = 0; i < containerPaths.length; i++) {
+            srcProp = Lib.nestedProperty(containerObj, containerPaths[i]);
+            srcContainer = srcProp.get();
+
+            if(!srcContainer) continue;
+
+            destProp = Lib.nestedProperty(dest, containerPaths[i]);
+
+            destContainer = destProp.get();
+            if(!Array.isArray(destContainer)) {
+                destContainer = [];
+                destProp.set(destContainer);
+            }
+
+            for(j = 0; j < srcContainer.length; j++) {
+                destContainer[j] = plots.extendObjectWithContainers(destContainer[j], srcContainer[j]);
+            }
+        }
+    }
+
+    return dest;
 };
 
-plots.extendTrace = function (destTrace, srcTrace) {
+/*
+ * Extend a trace definition. This method:
+ *
+ *  1. directly transfers any array references
+ *  2. manually recurses into container arrays like transforms
+ *
+ * The result is the original object reference with the new contents merged in.
+ */
+plots.extendTrace = function(destTrace, srcTrace) {
     return plots.extendObjectWithContainers(destTrace, srcTrace, ['transforms']);
 };
 
-plots.extendLayout = function (destLayout, srcLayout) {
-    return plots.extendObjectWithContainers(destLayout, srcLayout, []);
+/*
+ * Extend a layout definition. This method:
+ *
+ *  1. directly transfers any array references (not critically important for
+ *     layout since there aren't really data arrays)
+ *  2. manually recurses into container arrays like annotations
+ *
+ * The result is the original object reference with the new contents merged in.
+ */
+plots.extendLayout = function(destLayout, srcLayout) {
+    return plots.extendObjectWithContainers(destLayout, srcLayout, [
+        'annotations',
+        'shapes'
+    ]);
 };
 
 /**

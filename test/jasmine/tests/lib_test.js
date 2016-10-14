@@ -537,6 +537,54 @@ describe('Test lib.js:', function() {
             expect(input).toBe(expanded);
             expect(origArray).toBe(newArray);
         });
+
+        it('expands bracketed array notation', function() {
+            var input = {'marker[1]': {color: 'red'}};
+            var expected = {marker: [undefined, {color: 'red'}]};
+            expect(Lib.expandObjectPaths(input)).toEqual(expected);
+        });
+
+        it('expands nested arrays', function() {
+            var input = {'marker[1].range[1]': 5};
+            var expected = {marker: [undefined, {range: [undefined, 5]}]};
+            var computed = Lib.expandObjectPaths(input);
+            expect(computed).toEqual(expected);
+        });
+
+        it('expands bracketed array with more nested attributes', function() {
+            var input = {'marker[1]': {'color.alpha': 2}};
+            var expected = {marker: [undefined, {color: {alpha: 2}}]};
+            var computed = Lib.expandObjectPaths(input);
+            expect(computed).toEqual(expected);
+        });
+
+        it('expands bracketed array notation without further nesting', function() {
+            var input = {'marker[1]': 8};
+            var expected = {marker: [undefined, 8]};
+            var computed = Lib.expandObjectPaths(input);
+            expect(computed).toEqual(expected);
+        });
+
+        it('expands bracketed array notation with further nesting', function() {
+            var input = {'marker[1].size': 8};
+            var expected = {marker: [undefined, {size: 8}]};
+            var computed = Lib.expandObjectPaths(input);
+            expect(computed).toEqual(expected);
+        });
+
+        it('expands bracketed array notation with further nesting', function() {
+            var input = {'marker[1].size.magnitude': 8};
+            var expected = {marker: [undefined, {size: {magnitude: 8}}]};
+            var computed = Lib.expandObjectPaths(input);
+            expect(computed).toEqual(expected);
+        });
+
+        it('combines changes', function() {
+            var input = {'marker[1].range[1]': 5, 'marker[1].range[0]': 4};
+            var expected = {marker: [undefined, {range: [4, 5]}]};
+            var computed = Lib.expandObjectPaths(input);
+            expect(computed).toEqual(expected);
+        });
     });
 
     describe('coerce', function() {
