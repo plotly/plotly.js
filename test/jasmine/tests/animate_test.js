@@ -458,3 +458,60 @@ describe('Test animate API', function() {
         });
     });
 });
+
+describe('animation with non-mocked transitions', function() {
+    'use strict';
+
+    var gd, mockCopy;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+
+        mockCopy = Lib.extendDeep({}, mock);
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.addFrames(gd, mockCopy.frames);
+        }).then(done);
+    });
+
+    afterEach(function() {
+        // *must* purge between tests otherwise dangling async events might not get cleaned up properly:
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('animates a transform', function(done) {
+        Plotly.restyle(gd, {
+            'transforms[0]': {
+                enabled: true,
+                type: 'filter',
+                operation: '<',
+                filtersrc: 'x',
+                value: 10
+            }
+        }, [0]).then(function() {
+            expect(gd._fullData[0].transforms).toEqual([{
+                enabled: true,
+                type: 'filter',
+                operation: '<',
+                filtersrc: 'x',
+                value: 10
+            }]);
+
+            return Plotly.animate(gd, [{
+                data: [{'transforms[0].operation': '>'}]
+            }], {
+                frame: {redraw: true, duration: 100},
+                transition: {duration: 100}
+            });
+        }).then(function() {
+            expect(gd._fullData[0].transforms).toEqual([{
+                enabled: true,
+                type: 'filter',
+                operation: '>',
+                filtersrc: 'x',
+                value: 10
+            }]);
+        }).catch(fail).then(done);
+    });
+});
