@@ -82,16 +82,16 @@ module.exports = {
         valType: 'info_array',
         role: 'info',
         items: [
-            {valType: 'number'},
-            {valType: 'number'}
+            {valType: 'any'},
+            {valType: 'any'}
         ],
         description: [
             'Sets the range of this axis.',
             'If the axis `type` is *log*, then you must take the log of your desired range',
             '(e.g. to set the range from 1 to 100, set the range from 0 to 2).',
-            'If the axis `type` is *date*, then you must convert the date to unix time in milliseconds',
-            '(the number of milliseconds since January 1st, 1970). For example, to set the date range from',
-            'January 1st 1970 to November 4th, 2013, set the range from 0 to 1380844800000.0'
+            'If the axis `type` is *date*, it should be date strings, like date data.',
+            'If the axis `type` is *category*, it should be numbers, using the scale where',
+            'each category is assigned a serial number from zero in the order it appears.'
         ].join(' ')
     },
 
@@ -141,10 +141,9 @@ module.exports = {
             'Use with `dtick`.',
             'If the axis `type` is *log*, then you must take the log of your starting tick',
             '(e.g. to set the starting tick to 100, set the `tick0` to 2).',
-            'If the axis `type` is *date*, then you must convert the date to unix time in milliseconds',
-            '(the number of milliseconds since January 1st, 1970).',
-            'For example, to set the starting tick to',
-            'November 4th, 2013, set the range to 1380844800000.0.'
+            'If the axis `type` is *date*, it should be a date string, like date data.',
+            'If the axis `type` is *category*, it should be a number, using the scale where',
+            'each category is assigned a serial number from zero in the order it appears.'
         ].join(' ')
     },
     dtick: {

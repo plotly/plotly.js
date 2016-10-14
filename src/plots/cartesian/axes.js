@@ -132,6 +132,19 @@ axes.minDtick = function(ax, newDiff, newFirst, allow) {
     }
 };
 
+// Find the autorange for this axis
+//
+// assumes ax._min and ax._max have already been set by calling axes.expand
+// using calcdata from all traces. These are arrays of:
+// {val: calcdata value, pad: extra pixels beyond this value}
+//
+// Returns an array of [min, max]. These are calcdata for log and category axes
+// and data for linear and date axes.
+//
+// TODO: we want to change log to data as well, but it's hard to do this
+// maintaining backward compatibility. category will always have to use calcdata
+// though, because otherwise values between categories (or outside all categories)
+// would be impossible.
 axes.getAutoRange = function(ax) {
     var newRange = [];
 
@@ -150,7 +163,12 @@ axes.getAutoRange = function(ax) {
 
     var j, minpt, maxpt, minbest, maxbest, dp, dv,
         mbest = 0,
-        axReverse = (ax.range && ax.range[1] < ax.range[0]);
+        axReverse = false;
+
+    if(ax.range) {
+        var rng = ax.range.map(ax.r2l);
+        axReverse = rng[1] < rng[0];
+    }
 
     // one-time setting to easily reverse the axis
     // when plotting from code
@@ -239,11 +257,9 @@ axes.getAutoRange = function(ax) {
     }
 
     // maintain reversal
-    if(axReverse) {
-        newRange.reverse();
-    }
+    if(axReverse) newRange.reverse();
 
-    return newRange;
+    return newRange.map(ax.l2r || Number);
 };
 
 axes.doAutoRange = function(ax) {
@@ -444,10 +460,22 @@ axes.autoBin = function(data, ax, nbins, is2d) {
     }
 
     // piggyback off autotick code to make "nice" bin sizes
-    var dummyax = {
-        type: ax.type === 'log' ? 'linear' : ax.type,
-        range: [datamin, datamax]
-    };
+    var dummyax;
+    if(ax.type === 'log') {
+        dummyax = {
+            type: 'linear',
+            range: [datamin, datamax]
+        };
+    }
+    else {
+        dummyax = {
+            type: ax.type,
+            // conversion below would be ax.c2r but that's only different from l2r
+            // for log, and this is the only place (so far?) we would want c2r.
+            range: [datamin, datamax].map(ax.l2r)
+        };
+    }
+
     axes.autoTicks(dummyax, size0);
     var binstart = axes.tickIncrement(
             axes.tickFirst(dummyax), dummyax.dtick, 'reverse'),
@@ -529,6 +557,8 @@ axes.autoBin = function(data, ax, nbins, is2d) {
 axes.calcTicks = function calcTicks(ax) {
     if(ax.tickmode === 'array') return arrayTicks(ax);
 
+    var rng = ax.range.map(ax.r2l);
+
     // calculate max number of (auto) ticks to display based on plot size
     if(ax.tickmode === 'auto' || !ax.dtick) {
         var nt = ax.nticks,
@@ -543,7 +573,7 @@ axes.calcTicks = function calcTicks(ax) {
                 nt = Lib.constrain(ax._length / minPx, 4, 9) + 1;
             }
         }
-        axes.autoTicks(ax, Math.abs(ax.range[1] - ax.range[0]) / nt);
+        axes.autoTicks(ax, Math.abs(rng[1] - rng[0]) / nt);
         // check for a forced minimum dtick
         if(ax._minDtick > 0 && ax.dtick < ax._minDtick * 2) {
             ax.dtick = ax._minDtick;
@@ -553,8 +583,7 @@ axes.calcTicks = function calcTicks(ax) {
 
     // check for missing tick0
     if(!ax.tick0) {
-        ax.tick0 = (ax.type === 'date') ?
-            new Date(2000, 0, 1).getTime() : 0;
+        ax.tick0 = (ax.type === 'date') ? '2000-01-01' : 0;
     }
 
     // now figure out rounding of tick values
@@ -564,12 +593,12 @@ axes.calcTicks = function calcTicks(ax) {
     ax._tmin = axes.tickFirst(ax);
 
     // check for reversed axis
-    var axrev = (ax.range[1] < ax.range[0]);
+    var axrev = (rng[1] < rng[0]);
 
     // return the full set of tick vals
     var vals = [],
         // add a tiny bit so we get ticks which may have rounded out
-        endtick = ax.range[1] * 1.0001 - ax.range[0] * 0.0001;
+        endtick = rng[1] * 1.0001 - rng[0] * 0.0001;
     if(ax.type === 'category') {
         endtick = (axrev) ? Math.max(-0.5, endtick) :
             Math.min(ax._categories.length - 0.5, endtick);
@@ -597,14 +626,14 @@ function arrayTicks(ax) {
     var vals = ax.tickvals,
         text = ax.ticktext,
         ticksOut = new Array(vals.length),
-        r0expanded = ax.range[0] * 1.0001 - ax.range[1] * 0.0001,
-        r1expanded = ax.range[1] * 1.0001 - ax.range[0] * 0.0001,
+        rng = ax.range.map(ax.r2l),
+        r0expanded = rng[0] * 1.0001 - rng[1] * 0.0001,
+        r1expanded = rng[1] * 1.0001 - rng[0] * 0.0001,
         tickMin = Math.min(r0expanded, r1expanded),
         tickMax = Math.max(r0expanded, r1expanded),
         vali,
         i,
         j = 0;
-
 
     // without a text array, just format the given values as any other ticks
     // except with more precision to the numbers
@@ -658,7 +687,7 @@ axes.autoTicks = function(ax, roughDTick) {
     var base;
 
     if(ax.type === 'date') {
-        ax.tick0 = new Date(2000, 0, 1).getTime();
+        ax.tick0 = '2000-01-01';
 
         if(roughDTick > 15778800000) {
             // years if roughDTick > 6mo
@@ -675,7 +704,7 @@ axes.autoTicks = function(ax, roughDTick) {
             // days if roughDTick > 12h
             ax.dtick = roundDTick(roughDTick, 86400000, roundDays);
             // get week ticks on sunday
-            ax.tick0 = new Date(2000, 0, 2).getTime();
+            ax.tick0 = '2000-01-01';
         }
         else if(roughDTick > 1800000) {
             // hours if roughDTick > 30m
@@ -697,16 +726,19 @@ axes.autoTicks = function(ax, roughDTick) {
     }
     else if(ax.type === 'log') {
         ax.tick0 = 0;
+        var rng = ax.range.map(ax.r2l);
 
-        // only show powers of 10
-        if(roughDTick > 0.7) ax.dtick = Math.ceil(roughDTick);
-        else if(Math.abs(ax.range[1] - ax.range[0]) < 1) {
+        if(roughDTick > 0.7) {
+            // only show powers of 10
+            ax.dtick = Math.ceil(roughDTick);
+        }
+        else if(Math.abs(rng[1] - rng[0]) < 1) {
             // span is less than one power of 10
-            var nt = 1.5 * Math.abs((ax.range[1] - ax.range[0]) / roughDTick);
+            var nt = 1.5 * Math.abs((rng[1] - rng[0]) / roughDTick);
 
             // ticks on a linear scale, labeled fully
-            roughDTick = Math.abs(Math.pow(10, ax.range[1]) -
-                Math.pow(10, ax.range[0])) / nt;
+            roughDTick = Math.abs(Math.pow(10, rng[1]) -
+                Math.pow(10, rng[0])) / nt;
             base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
             ax.dtick = 'L' + roundDTick(roughDTick, base, roundBase10);
         }
@@ -745,13 +777,16 @@ axes.autoTicks = function(ax, roughDTick) {
 //   for date ticks, the last date part to show (y,m,d,H,M,S)
 //      or an integer # digits past seconds
 function autoTickRound(ax) {
-    var dtick = ax.dtick,
-        maxend;
+    var dtick = ax.dtick;
 
     ax._tickexponent = 0;
-    if(!isNumeric(dtick) && typeof dtick !== 'string') dtick = 1;
+    if(!isNumeric(dtick) && typeof dtick !== 'string') {
+        dtick = 1;
+    }
 
-    if(ax.type === 'category') ax._tickround = null;
+    if(ax.type === 'category') {
+        ax._tickround = null;
+    }
     else if(isNumeric(dtick) || dtick.charAt(0) === 'L') {
         if(ax.type === 'date') {
             if(dtick >= 86400000) ax._tickround = 'd';
@@ -761,14 +796,13 @@ function autoTickRound(ax) {
             else ax._tickround = 3 - Math.round(Math.log(dtick / 2) / Math.LN10);
         }
         else {
+            // linear or log
+            var rng = ax.range.map(ax.r2d || Number);
             if(!isNumeric(dtick)) dtick = Number(dtick.substr(1));
             // 2 digits past largest digit of dtick
             ax._tickround = 2 - Math.floor(Math.log(dtick) / Math.LN10 + 0.01);
 
-            if(ax.type === 'log') {
-                maxend = Math.pow(10, Math.max(ax.range[0], ax.range[1]));
-            }
-            else maxend = Math.max(Math.abs(ax.range[0]), Math.abs(ax.range[1]));
+            var maxend = Math.max(Math.abs(rng[0]), Math.abs(rng[1]));
 
             var rangeexp = Math.floor(Math.log(maxend) / Math.LN10 + 0.01);
             if(Math.abs(rangeexp) > 3) {
@@ -824,13 +858,16 @@ axes.tickIncrement = function(x, dtick, axrev) {
 
 // calculate the first tick on an axis
 axes.tickFirst = function(ax) {
-    var axrev = ax.range[1] < ax.range[0],
+    var r2l = ax.r2l || Number,
+        rng = ax.range.map(r2l),
+        axrev = rng[1] < rng[0],
         sRound = axrev ? Math.floor : Math.ceil,
         // add a tiny extra bit to make sure we get ticks
         // that may have been rounded out
-        r0 = ax.range[0] * 1.0001 - ax.range[1] * 0.0001,
+        r0 = rng[0] * 1.0001 - rng[1] * 0.0001,
         dtick = ax.dtick,
-        tick0 = ax.tick0;
+        tick0 = r2l(ax.tick0);
+
     if(isNumeric(dtick)) {
         var tmin = sRound((r0 - tick0) / dtick) * dtick + tick0;
 
@@ -916,7 +953,8 @@ axes.tickText = function(ax, x, hover) {
         i;
 
     if(arrayMode && Array.isArray(ax.ticktext)) {
-        var minDiff = Math.abs(ax.range[1] - ax.range[0]) / 10000;
+        var rng = ax.range.map(ax.r2l),
+            minDiff = Math.abs(rng[1] - rng[0]) / 10000;
         for(i = 0; i < ax.ticktext.length; i++) {
             if(Math.abs(x - ax.d2l(ax.tickvals[i])) < minDiff) break;
         }
@@ -1106,7 +1144,7 @@ function numFormat(v, ax, fmtoverride, hover) {
                 (isNumeric(v) ? Math.abs(v) || 1 : 1),
             // if not showing any exponents, don't change the exponent
             // from what we calculate
-            range: ax.showexponent === 'none' ? ax.range : [0, v || 1]
+            range: ax.showexponent === 'none' ? ax.range.map(ax.r2d) : [0, v || 1]
         };
         autoTickRound(ah);
         tickRound = (Number(ah._tickround) || 0) + 4;
@@ -1354,8 +1392,9 @@ axes.makeClipPaths = function(gd) {
 // doTicks: draw ticks, grids, and tick labels
 // axid: 'x', 'y', 'x2' etc,
 //     blank to do all,
-//     'redraw' to force full redraw, and reset ax._r
-//          (stored range for use by zoom/pan)
+//     'redraw' to force full redraw, and reset:
+//          ax._r (stored range for use by zoom/pan)
+//          ax._rl (stored linearized range for use by zoom/pan)
 //     or can pass in an axis object directly
 axes.doTicks = function(gd, axid, skipTitle) {
     var fullLayout = gd._fullLayout,
@@ -1393,7 +1432,10 @@ axes.doTicks = function(gd, axid, skipTitle) {
                 return function() {
                     if(!ax._id) return;
                     var axDone = axes.doTicks(gd, ax._id);
-                    if(axid === 'redraw') ax._r = ax.range.slice();
+                    if(axid === 'redraw') {
+                        ax._r = ax.range.slice();
+                        ax._rl = ax._r.map(ax.r2l);
+                    }
                     return axDone;
                 };
             }));
@@ -1410,9 +1452,6 @@ axes.doTicks = function(gd, axid, skipTitle) {
             ax.showexponent = 'all';
         }
     }
-
-    // in case a val turns into string somehow
-    ax.range = [+ax.range[0], +ax.range[1]];
 
     // set scaling to pixels
     ax.setScale();
@@ -1802,7 +1841,8 @@ axes.doTicks = function(gd, axid, skipTitle) {
                     break;
                 }
             }
-            var showZl = (ax.range[0] * ax.range[1] <= 0) && ax.zeroline &&
+            var rng = ax.range.map(ax.r2l),
+                showZl = (rng[0] * rng[1] <= 0) && ax.zeroline &&
                 (ax.type === 'linear' || ax.type === '-') && gridvals.length &&
                 (hasBarsOrFill || clipEnds({x: 0}) || !ax.showline);
             var zl = zlcontainer.selectAll('path.' + zcls)

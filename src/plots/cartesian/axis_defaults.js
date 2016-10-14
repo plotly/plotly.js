@@ -25,6 +25,7 @@ var setConvert = require('./set_convert');
 var orderedCategories = require('./ordered_categories');
 var cleanDatum = require('./clean_datum');
 var axisIds = require('./axis_ids');
+var constants = require('./constants');
 
 
 /**
@@ -96,7 +97,13 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     var autoRange = coerce('autorange', !validRange);
 
     if(autoRange) coerce('rangemode');
-    var range = coerce('range', [-1, letter === 'x' ? 6 : 4]);
+
+    var dfltRange;
+    if(axType === 'date') dfltRange = constants.DFLTRANGEDATE;
+    else if(letter === 'x') dfltRange = constants.DFLTRANGEX;
+    else dfltRange = constants.DFLTRANGEY;
+
+    var range = coerce('range', dfltRange.slice());
     if(range[0] === range[1]) {
         containerOut.range = [range[0] - 1, range[0] + 1];
     }

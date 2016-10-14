@@ -22,15 +22,24 @@ var axisIds = require('./axis_ids');
 
 
 /**
- * Define the conversion functions for an axis data is used in 4 ways:
+ * Define the conversion functions for an axis data is used in 5 ways:
  *
  *  d: data, in whatever form it's provided
  *  c: calcdata: turned into numbers, but not linearized
- *  l: linearized - same as c except for log axes (and other
- *      mappings later?) this is used by ranges, and when we
- *      need to know if it's *possible* to show some data on
- *      this axis, without caring about the current range
+ *  l: linearized - same as c except for log axes (and other nonlinear
+ *      mappings later?) this is used when we need to know if it's
+ *      *possible* to show some data on this axis, without caring about
+ *      the current range
  *  p: pixel value - mapped to the screen with current size and zoom
+ *  r: ranges, tick0, and annotation positions match one of the above
+ *     but are handled differently for different types:
+ *     - linear and date: data format (d)
+ *     - category: calcdata format (c), and will stay that way because
+ *       the data format has no continuous mapping
+ *     - log: linearized (l) format
+ *       TODO: in v2.0 we plan to change it to data format. At that point
+ *       shapes will work the same way as ranges, tick0, and annotations
+ *       so they can use this conversion too.
  *
  * Creates/updates these conversion functions
  * also clears the autorange bounds ._min and ._max
@@ -55,10 +64,39 @@ module.exports = function setConvert(ax) {
             return 0.5 * (r0 + r1 - 3 * clipMult * Math.abs(r0 - r1));
         }
 
-        else return constants.BADNUM;
+        else return BADNUM;
     }
-    function fromLog(v) { return Math.pow(10, v); }
-    function num(v) { return isNumeric(v) ? Number(v) : constants.BADNUM; }
+
+    function fromLog(v) {
+        return Math.pow(10, v);
+    }
+
+    function num(v) {
+        if(!isNumeric(v)) return BADNUM;
+        v = Number(v);
+        if(v < -FP_SAFE || v > FP_SAFE) return BADNUM;
+        return isNumeric(v) ? Number(v) : BADNUM;
+    }
+
+    function cleanNum(v) {
+        v = cleanDatum(v);
+        return num(v);
+    }
+
+    // normalize date format to date string, in case it starts as
+    // a Date object or milliseconds
+    function cleanDate(v) {
+        if(v.getTime || typeof v === 'number') {
+            // NOTE: if someone puts in a year as a number rather than a string,
+            // this will mistakenly convert it thinking it's milliseconds from 1970
+            // that is: '2012' -> Jan. 1, 2012, but 2012 -> 2012 epoch milliseconds
+            return Lib.ms2DateTime(+v);
+        }
+        else if(!Lib.isDateTime(v)) {
+            Lib.error('unrecognized date', v);
+        }
+        return v;
+    }
 
     ax.c2l = (ax.type === 'log') ? toLog : num;
     ax.l2c = (ax.type === 'log') ? fromLog : num;
@@ -68,7 +106,12 @@ module.exports = function setConvert(ax) {
     // set scaling to pixels
     ax.setScale = function(usePrivateRange) {
         var gs = ax._gd._fullLayout._size,
-            i;
+            axLetter = ax._id.charAt(0),
+            i, dflt;
+
+        if(ax.type === 'date') dflt = constants.DFLTRANGEDATE;
+        else if(axLetter === 'y') dflt = constants.DFLTRANGEY;
+        else dflt = constants.DFLTRANGEX;
 
         // TODO cleaner way to handle this case
         if(!ax._categories) ax._categories = [];
@@ -84,40 +127,66 @@ module.exports = function setConvert(ax) {
         // issue if we transform the drawn layer *and* use the new axis range to
         // draw the data. This allows us to construct setConvert using the pre-
         // interaction values of the range:
-        var range = (usePrivateRange && ax._r) ? ax._r : ax.range;
+        var rangeAttr = (usePrivateRange && ax._r) ? '_r' : 'range';
+        var range = ax[rangeAttr];
 
         // make sure we have a range (linearized data values)
         // and that it stays away from the limits of javascript numbers
-        if(!range || range.length !== 2 || range[0] === range[1]) {
-            range = [-1, 1];
+        if(!range || range.length !== 2) {
+            ax[rangeAttr] = range = dflt;
         }
         for(i = 0; i < 2; i++) {
-            if(!isNumeric(range[i])) {
-                range[i] = isNumeric(range[1 - i]) ?
-                    (range[1 - i] * (i ? 10 : 0.1)) :
-                    (i ? 1 : -1);
-            }
+            if(ax.type === 'date') {
+                if(!Lib.isDateTime(range[i])) {
+                    ax[rangeAttr] = range = dflt;
+                    break;
+                }
 
-            if(range[i] < -(Number.MAX_VALUE / 2)) {
-                range[i] = -(Number.MAX_VALUE / 2);
-            }
-            else if(range[i] > Number.MAX_VALUE / 2) {
-                range[i] = Number.MAX_VALUE / 2;
-            }
+                if(range[i] < Lib.MIN_MS) range[i] = Lib.MIN_MS;
+                if(range[i] > Lib.MAX_MS) range[i] = Lib.MAX_MS;
 
+                if(range[0] === range[1]) {
+                    // split by +/- 1 second
+                    range[0] = ax.l2r(ax.r2l(range[0]) - 1000);
+                    range[1] = ax.l2r(ax.r2l(range[1]) + 1000);
+                    break;
+                }
+            }
+            else {
+                if(!isNumeric(range[i])) {
+                    if(isNumeric(range[1 - i])) {
+                        range[i] = range[1 - i] * (i ? 10 : 0.1);
+                    }
+                    else {
+                        ax[rangeAttr] = range = dflt;
+                        break;
+                    }
+                }
+
+                if(range[i] < -FP_SAFE) range[i] = -FP_SAFE;
+                else if(range[i] > FP_SAFE) range[i] = FP_SAFE;
+
+                if(range[0] === range[1]) {
+                    var inc = Math.max(1, Math.abs(range[0] * 1e-6));
+                    range[0] -= inc;
+                    range[1] += inc;
+                }
+            }
         }
 
-        if(ax._id.charAt(0) === 'y') {
+        var rangeLinear = range.map(ax.r2l);
+
+        if(axLetter === 'y') {
             ax._offset = gs.t + (1 - ax.domain[1]) * gs.h;
             ax._length = gs.h * (ax.domain[1] - ax.domain[0]);
-            ax._m = ax._length / (range[0] - range[1]);
-            ax._b = -ax._m * range[1];
+            ax._m = ax._length / (rangeLinear[0] - rangeLinear[1]);
+            ax._b = -ax._m * rangeLinear[1];
         }
         else {
             ax._offset = gs.l + ax.domain[0] * gs.w;
             ax._length = gs.w * (ax.domain[1] - ax.domain[0]);
-            ax._m = ax._length / (range[1] - range[0]);
-            ax._b = -ax._m * range[0];
+            ax._m = ax._length / (rangeLinear[1] - rangeLinear[0]);
+            ax._b = -ax._m * rangeLinear[0];
         }
 
         if(!isFinite(ax._m) || !isFinite(ax._b)) {
@@ -143,39 +212,53 @@ module.exports = function setConvert(ax) {
 
     if(['linear', 'log', '-'].indexOf(ax.type) !== -1) {
         ax.c2d = num;
-        ax.d2c = function(v) {
-            v = cleanDatum(v);
-            return isNumeric(v) ? Number(v) : constants.BADNUM;
-        };
-        ax.d2l = function(v, clip) {
-            if(ax.type === 'log') return ax.c2l(ax.d2c(v), clip);
-            else return ax.d2c(v);
-        };
+        ax.d2c = cleanNum;
+        if(ax.type === 'log') {
+            ax.d2l = function(v, clip) {
+                return ax.c2l(ax.d2c(v), clip);
+            };
+            ax.d2r = ax.d2l;
+            ax.r2d = ax.l2d;
+        }
+        else {
+            ax.d2l = cleanNum;
+            ax.d2r = cleanNum;
+            ax.r2d = num;
+        }
+        ax.r2l = num;
+        ax.l2r = num;
     }
     else if(ax.type === 'date') {
         ax.c2d = function(v) {
-            return isNumeric(v) ? Lib.ms2DateTime(v) : constants.BADNUM;
+            return isNumeric(v) ? Lib.ms2DateTime(v) : BADNUM;
         };
 
         ax.d2c = function(v) {
-            return (isNumeric(v)) ? Number(v) : Lib.dateTime2ms(v);
+            // NOTE: Changed this behavior: previously we took any numeric value
+            // to be a ms, even if it was a string that could be a bare year.
+            // Now we convert it as a date if at all possible, and only try
+            // as ms if that fails.
+            var ms_from_str = Lib.dateTime2ms(v);
+            if(ms_from_str === false) {
+                if(isNumeric(v)) return Number(v);
+                return BADNUM;
+            }
+            return ms_from_str;
         };
 
         ax.d2l = ax.d2c;
+        ax.r2l = ax.d2c;
+        ax.l2r = ax.c2d;
+        ax.d2r = Lib.identity; // TODO: do we want this to validate?
+        ax.r2d = Lib.identity;
 
-        // check if date strings or js date objects are provided for range
-        // and convert to ms
+        // check if milliseconds or js date objects are provided for range
+        // or tick0 and convert to date strings
         if(ax.range && ax.range.length > 1) {
-            try {
-                var ar1 = ax.range.map(Lib.dateTime2ms);
-                if(!isNumeric(ax.range[0]) && isNumeric(ar1[0])) {
-                    ax.range[0] = ar1[0];
-                }
-                if(!isNumeric(ax.range[1]) && isNumeric(ar1[1])) {
-                    ax.range[1] = ar1[1];
-                }
-            }
-            catch(e) { Lib.error(e, ax.range); }
+            ax.range = ax.range.map(cleanDate);
+        }
+        if(ax.tick0 !== undefined) {
+            ax.tick0 = cleanDate(ax.tick0);
         }
     }
     else if(ax.type === 'category') {
@@ -203,6 +286,10 @@ module.exports = function setConvert(ax) {
         };
 
         ax.d2l = ax.d2c;
+        ax.r2l = num;
+        ax.l2r = num;
+        ax.d2r = ax.d2c;
+        ax.r2d = ax.c2d;
     }
 
     // makeCalcdata: takes an x or y array and converts it
