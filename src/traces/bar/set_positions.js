@@ -81,23 +81,27 @@ function setGroupPositionsInOverlayMode(gd, pa, sa, traces) {
             minDiff = sieve.minDiff,
             distinctPositions = sieve.distinctPositions;
 
+        // set bar offsets and widths
         setOffsetAndWidth(gd, pa, sieve);
 
+        // update position axis
         Axes.minDtick(pa, minDiff, distinctPositions[0]);
         Axes.expand(pa, distinctPositions, {vpad: minDiff / 2});
+
+        // update size axis and set bar bases and sizes
+        if(barnorm) {
+            stackBars(gd, sa, sieve);
+        }
+        else {
+            // make sure the size axis includes zero,
+            // along with the tops of each bar,
+            // and store these bar tops in calcdata
+            var sLetter = getAxisLetter(sa),
+                fs = function(v) { v[sLetter] = v.s; return v.s; };
+
+            Axes.expand(sa, trace.map(fs), {tozero: true, padded: true});
+        }
     });
-
-    // update size axis and set bar bases and sizes
-    //
-    // make sure the size axis includes zero,
-    // along with the tops of each bar,
-    // and store these bar tops in calcdata
-    var sLetter = getAxisLetter(sa),
-        fs = function(v) { v[sLetter] = v.s; return v.s; };
-
-    for(var i = 0; i < traces.length; i++) {
-        Axes.expand(sa, traces[i].map(fs), {tozero: true, padded: true});
-    }
 }
 
 
@@ -119,8 +123,21 @@ function setGroupPositionsInGroupMode(gd, pa, sa, traces) {
     Axes.minDtick(pa, minDiff, distinctPositions[0]);
     Axes.expand(pa, distinctPositions, {vpad: minDiff / 2});
 
-    // set bar bases and sizes
-    setBaseAndSize(gd, sa, sieve);
+    // update size axis and set bar bases and sizes
+    if(barnorm) {
+        stackBars(gd, sa, sieve);
+    }
+    else {
+        // make sure the size axis includes zero,
+        // along with the tops of each bar,
+        // and store these bar tops in calcdata
+        var sLetter = getAxisLetter(sa),
+            fs = function(v) { v[sLetter] = v.s; return v.s; };
+
+        for(var i = 0; i < traces.length; i++) {
+            Axes.expand(sa, traces[i].map(fs), {tozero: true, padded: true});
+        }
+    }
 }
 
 
@@ -146,7 +163,7 @@ function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, traces) {
     Axes.expand(pa, distinctPositions, {vpad: minDiff / 2});
 
     // set bar bases and sizes
-    setBaseAndSize(gd, sa, sieve);
+    stackBars(gd, sa, sieve);
 }
 
 
@@ -229,7 +246,7 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
 }
 
 
-function setBaseAndSize(gd, sa, sieve) {
+function stackBars(gd, sa, sieve) {
     var fullLayout = gd._fullLayout,
         sLetter = getAxisLetter(sa),
         traces = sieve.traces,
@@ -241,96 +258,88 @@ function setBaseAndSize(gd, sa, sieve) {
         norm = fullLayout.barnorm;
 
     // bar size range and stacking calculation
-    if(stack || relative || norm) {
-        // for stacked bars, we need to evaluate every step in every
-        // stack, because negative bars mean the extremes could be
-        // anywhere
-        // also stores the base (b) of each bar in calcdata
-        // so we don't have to redo this later
-        var sMax = sa.l2c(sa.c2l(0)),
-            sMin = sMax,
-            barEnd;
+    // for stacked bars, we need to evaluate every step in every
+    // stack, because negative bars mean the extremes could be
+    // anywhere
+    // also stores the base (b) of each bar in calcdata
+    // so we don't have to redo this later
+    var sMax = sa.l2c(sa.c2l(0)),
+        sMin = sMax;
 
-        // stack bars that only differ by rounding
-        sieve.binWidth = traces[0][0].t.barwidth / 100;
+    // stack bars that only differ by rounding
+    sieve.binWidth = traces[0][0].t.barwidth / 100;
 
-        for(i = 0; i < traces.length; i++) {
-            trace = traces[i];
+    for(i = 0; i < traces.length; i++) {
+        trace = traces[i];
 
-            for(j = 0; j < trace.length; j++) {
-                bar = trace[j];
+        for(j = 0; j < trace.length; j++) {
+            bar = trace[j];
 
-                // skip over bars with no size,
-                // so that we don't try to stack them
-                if(!isNumeric(bar.s)) continue;
+            // skip over bars with no size,
+            // so that we don't try to stack them
+            if(!isNumeric(bar.s)) continue;
 
-                // stack current bar and get previous sum
-                var previousSum = sieve.put(bar.p, bar.s);
+            // stack current bar and get previous sum
+            var previousSum = sieve.put(bar.p, bar.s);
 
-                if(stack || relative) bar.b = previousSum;
-                barEnd = bar.b + bar.s;
+            if(stack || relative) bar.b = previousSum;
 
-                // store the bar top in each calcdata item
-                if(stack || relative) {
-                    bar[sLetter] = barEnd;
-                    if(!norm && isNumeric(sa.c2l(barEnd))) {
-                        sMax = Math.max(sMax, barEnd);
-                        sMin = Math.min(sMin, barEnd);
-                    }
+            // store the bar top in each calcdata item
+            if(stack || relative) {
+                var barEnd = bar.b + bar.s;
+                bar[sLetter] = barEnd;
+                if(!norm && isNumeric(sa.c2l(barEnd))) {
+                    sMax = Math.max(sMax, barEnd);
+                    sMin = Math.min(sMin, barEnd);
                 }
             }
         }
+    }
 
-        var padded = true;
-
-        if(norm) {
-            padded = false;
-
-            var sTop = (norm === 'fraction') ? 1 : 100,
-                sTiny = sTop / 1e9; // in case of rounding error in sum
-
-            sMin = 0;
-            sMax = (stack) ? sTop : 0;
-
-            for(i = 0; i < traces.length; i++) {
-                trace = traces[i];
-
-                for(j = 0; j < trace.length; j++) {
-                    bar = trace[j];
-
-                    var scale = Math.abs(sTop / sieve.get(bar.p, bar.s));
-
-                    bar.b *= scale;
-                    bar.s *= scale;
-                    barEnd = bar.b + bar.s;
-                    bar[sLetter] = barEnd;
-
-                    if(isNumeric(sa.c2l(barEnd))) {
-                        if(barEnd < sMin - sTiny) {
-                            padded = true;
-                            sMin = barEnd;
-                        }
-                        if(barEnd > sMax + sTiny) {
-                            padded = true;
-                            sMax = barEnd;
-                        }
-                    }
-                }
-            }
-        }
-
-        Axes.expand(sa, [sMin, sMax], {tozero: true, padded: padded});
+    if(norm) {
+        normalizeBars(gd, sa, sieve);
     }
     else {
-        // for grouped or overlaid bars, just make sure zero is
-        // included, along with the tops of each bar, and store
-        // these bar tops in calcdata
-        var fs = function(v) { v[sLetter] = v.s; return v.s; };
+        Axes.expand(sa, [sMin, sMax], {tozero: true, padded: true});
+    }
+}
 
-        for(i = 0; i < traces.length; i++) {
-            Axes.expand(sa, traces[i].map(fs), {tozero: true, padded: true});
+
+function normalizeBars(gd, sa, sieve) {
+    var traces = sieve.traces,
+        sLetter = getAxisLetter(sa),
+        sTop = (gd._fullLayout.barnorm === 'fraction') ? 1 : 100,
+        sTiny = sTop / 1e9, // in case of rounding error in sum
+        sMin = 0,
+        sMax = (gd._fullLayout.barmode === 'stack') ? sTop : 0,
+        padded = false;
+
+    for(var i = 0; i < traces.length; i++) {
+        var trace = traces[i];
+
+        for(var j = 0; j < trace.length; j++) {
+            var bar = trace[j],
+                scale = Math.abs(sTop / sieve.get(bar.p, bar.s));
+
+            bar.b *= scale;
+            bar.s *= scale;
+            var barEnd = bar.b + bar.s;
+            bar[sLetter] = barEnd;
+
+            if(isNumeric(sa.c2l(barEnd))) {
+                if(barEnd < sMin - sTiny) {
+                    padded = true;
+                    sMin = barEnd;
+                }
+                if(barEnd > sMax + sTiny) {
+                    padded = true;
+                    sMax = barEnd;
+                }
+            }
         }
     }
+
+    Axes.expand(sa, [sMin, sMax], {tozero: true, padded: padded});
 }
 
 
