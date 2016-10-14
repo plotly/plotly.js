@@ -1,6 +1,6 @@
 # plotly.js image testing
 
-Test plotly.js with Plotly's image testing docker container. Before starting, don't forget to [set up your testing environment with `npm run pretest`](https://github.com/plotly/plotly.js/blob/master/CONTRIBUTING.md#development).
+Test plotly.js with Plotly's image testing docker container.
 
 Requirements:
 - `docker` | [installation guidelines][docker-install]
@@ -56,6 +56,12 @@ The image testing docker container allows plotly.js developers to
 ([A](#a-run-image-comparison-tests)) run image comparison tests,
 ([B](#b-run-image-export-tests)) run image export tests and
 ([C](#c-generate-or-update-existing-baseline-image)) generate baseline images.
+
+Before starting, don't forget to [set up your testing environment](https://github.com/plotly/plotly.js/blob/master/CONTRIBUTING.md#development):
+
+```bash
+$ npm run pretest
+```
 
 **IMPORTANT:** the image tests scripts do **not** bundle the source files before
 running the image tests. We recommend running `npm run watch` or `npm start` in
