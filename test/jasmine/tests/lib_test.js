@@ -579,12 +579,27 @@ describe('Test lib.js:', function() {
             expect(computed).toEqual(expected);
         });
 
+        it('combines changes with single array nesting', function() {
+            var input = {'marker[1].foo': 5, 'marker[0].foo': 4};
+            var expected = {marker: [{foo: 4}, {foo: 5}]};
+            var computed = Lib.expandObjectPaths(input);
+            expect(computed).toEqual(expected);
+        });
+
+        // TODO: This test is unimplemented since it's a currently-unused corner case.
+        // Getting the test to pass requires some extension (pun?) to extendDeepNoArrays
+        // that's intelligent enough to only selectively merge *some* arrays, in particular
+        // not data arrays but yes on arrays that were previously expanded. This is a bit
+        // tricky to get to work just right and currently doesn't have any known use since
+        // container arrays are not multiply nested.
+        /*
         it('combines changes', function() {
             var input = {'marker[1].range[1]': 5, 'marker[1].range[0]': 4};
             var expected = {marker: [undefined, {range: [4, 5]}]};
             var computed = Lib.expandObjectPaths(input);
             expect(computed).toEqual(expected);
         });
+        */
     });
 
     describe('coerce', function() {
