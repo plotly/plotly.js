@@ -12,39 +12,6 @@ var Plots = PlotlyInternal.Plots;
 describe('Test lib.js:', function() {
     'use strict';
 
-    describe('parseDate() should', function() {
-        it('return false on bad (number) input:', function() {
-            expect(Lib.parseDate(0)).toBe(false);
-        });
-        it('return false on bad (string) input:', function() {
-            expect(Lib.parseDate('toto')).toBe(false);
-        });
-        it('work with yyyy-mm-dd string input:', function() {
-            var input = '2014-12-01',
-                res = Lib.parseDate(input),
-                res0 = new Date(2014, 11, 1);
-            expect(res.getTime()).toEqual(res0.getTime());
-        });
-        it('work with mm/dd/yyyy string input:', function() {
-            var input = '12/01/2014',
-                res = Lib.parseDate(input),
-                res0 = new Date(2014, 11, 1);
-            expect(res.getTime()).toEqual(res0.getTime());
-        });
-        it('work with yyyy-mm-dd HH:MM:SS.sss string input:', function() {
-            var input = '2014-12-01 09:50:05.124',
-                res = Lib.parseDate(input),
-                res0 = new Date(2014, 11, 1, 9, 50, 5, 124);
-            expect(res.getTime()).toEqual(res0.getTime());
-        });
-        it('work with mm/dd/yyyy HH:MM:SS string input:', function() {
-            var input = '2014-12-01 09:50:05',
-                res = Lib.parseDate(input),
-                res0 = new Date(2014, 11, 1, 9, 50, 5);
-            expect(res.getTime()).toEqual(res0.getTime());
-        });
-    });
-
     describe('interp() should', function() {
         it('return 1.75 as Q1 of [1, 2, 3, 4, 5]:', function() {
             var input = [1, 2, 3, 4, 5],
