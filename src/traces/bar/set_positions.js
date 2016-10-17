@@ -77,18 +77,12 @@ function setGroupPositionsInOverlayMode(gd, pa, sa, traces) {
     traces.forEach(function(trace) {
         var sieve = new Sieve(
                     [trace], separateNegativeValues, dontMergeOverlappingData
-                ),
-            minDiff = sieve.minDiff,
-            distinctPositions = sieve.distinctPositions;
+                );
 
-        // set bar offsets and widths
+        // set bar offsets and widths, and update position axis
         setOffsetAndWidth(gd, pa, sieve);
 
-        // update position axis
-        Axes.minDtick(pa, minDiff, distinctPositions[0]);
-        Axes.expand(pa, distinctPositions, {vpad: minDiff / 2});
-
-        // update size axis and set bar bases and sizes
+        // set bar bases and sizes, and update size axis
         if(barnorm) {
             stackBars(gd, sa, sieve);
         }
@@ -112,18 +106,12 @@ function setGroupPositionsInGroupMode(gd, pa, sa, traces) {
         dontMergeOverlappingData = !barnorm,
         sieve = new Sieve(
                 traces, separateNegativeValues, dontMergeOverlappingData
-            ),
-        minDiff = sieve.minDiff,
-        distinctPositions = sieve.distinctPositions;
+            );
 
-    // set bar offsets and widths
+    // set bar offsets and widths, and update position axis
     setOffsetAndWidthInGroupMode(gd, pa, sieve);
 
-    // update position axis
-    Axes.minDtick(pa, minDiff, distinctPositions[0]);
-    Axes.expand(pa, distinctPositions, {vpad: minDiff / 2});
-
-    // update size axis and set bar bases and sizes
+    // set bar bases and sizes, and update size axis
     if(barnorm) {
         stackBars(gd, sa, sieve);
     }
@@ -151,18 +139,12 @@ function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, traces) {
         dontMergeOverlappingData = !(barnorm || stack || relative),
         sieve = new Sieve(
                 traces, separateNegativeValues, dontMergeOverlappingData
-            ),
-        minDiff = sieve.minDiff,
-        distinctPositions = sieve.distinctPositions;
+            );
 
-    // set bar offsets and widths
+    // set bar offsets and widths, and update position axis
     setOffsetAndWidth(gd, pa, sieve);
 
-    // update position axis
-    Axes.minDtick(pa, minDiff, distinctPositions[0]);
-    Axes.expand(pa, distinctPositions, {vpad: minDiff / 2});
-
-    // set bar bases and sizes
+    // set bar bases and sizes, and update size axis
     stackBars(gd, sa, sieve);
 }
 
@@ -173,6 +155,7 @@ function setOffsetAndWidth(gd, pa, sieve) {
         traces = sieve.traces,
         bargap = fullLayout.bargap,
         bargroupgap = fullLayout.bargroupgap,
+        distinctPositions = sieve.distinctPositions,
         minDiff = sieve.minDiff;
 
     // set bar offsets and widths
@@ -199,6 +182,10 @@ function setOffsetAndWidth(gd, pa, sieve) {
             bar[pLetter] = bar.p + barCenter;
         }
     }
+
+    // update position axes
+    Axes.minDtick(pa, minDiff, distinctPositions[0]);
+    Axes.expand(pa, distinctPositions, {vpad: minDiff / 2});
 }
 
 
@@ -243,6 +230,10 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
             bar[pLetter] = bar.p + barCenter;
         }
     }
+
+    // update position axes
+    Axes.minDtick(pa, minDiff, distinctPositions[0], overlap);
+    Axes.expand(pa, distinctPositions, {vpad: minDiff / 2});
 }
 
 
