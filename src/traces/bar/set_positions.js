@@ -309,9 +309,11 @@ function normalizeBars(gd, sa, sieve) {
         var trace = traces[i];
 
         for(var j = 0; j < trace.length; j++) {
-            var bar = trace[j],
-                scale = Math.abs(sTop / sieve.get(bar.p, bar.s));
+            var bar = trace[j];
 
+            if(!isNumeric(bar.s)) continue;
+
+            var scale = Math.abs(sTop / sieve.get(bar.p, bar.s));
             bar.b *= scale;
             bar.s *= scale;
             var barEnd = bar.b + bar.s;
