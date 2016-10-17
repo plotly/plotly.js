@@ -491,7 +491,6 @@ describe('Test lib.js:', function() {
             var expected = {marker: {color: 'red', size: [1, 2, 4]}};
             expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
         });
-        return;
 
         it('unpacks recursively', function() {
             var input = {'marker.color': {'red.certainty': 'definitely'}};
