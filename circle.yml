@@ -20,4 +20,4 @@ dependencies:
 
 test:
   override:
-    - npm run test-image -- gl2d_pointcloud-basic
+    - npm run test-image -- gl2d_*
