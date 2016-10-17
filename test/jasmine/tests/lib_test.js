@@ -7,34 +7,7 @@ var PlotlyInternal = require('@src/plotly');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var Plots = PlotlyInternal.Plots;
-
-/* This is a one-off function to fully populate sparse arrays. This arises
- * because:
- *
- *   var x = new Array(2)
- *   expect(x).toEqual([undefined, undefined])
- *
- * will fail assertion even though x[0] === undefined and x[1] === undefined.
- * This is because the array elements don't exist until assigned.
- */
-function populateUndefinedArrayEls(x) {
-    var i;
-    if(Array.isArray(x)) {
-        for(i = 0; i < x.length; i++) {
-            x[i] = x[i];
-        }
-    } else if(Lib.isPlainObject(x)) {
-        var keys = Object.keys(x);
-        for(i = 0; i < keys.length; i++) {
-            populateUndefinedArrayEls(x[keys[i]]);
-        }
-    }
-}
-
-function expectLooseDeepEqual(a, b) {
-    expect(populateUndefinedArrayEls(a)).toEqual(populateUndefinedArrayEls(b));
-}
-
+var customMatchers = require('../assets/custom_matchers');
 
 describe('Test lib.js:', function() {
     'use strict';
@@ -504,6 +477,10 @@ describe('Test lib.js:', function() {
     });
 
     describe('expandObjectPaths', function() {
+        beforeAll(function() {
+            jasmine.addMatchers(customMatchers);
+        });
+
         it('returns the original object', function() {
             var x = {};
             expect(Lib.expandObjectPaths(x)).toBe(x);
@@ -511,38 +488,39 @@ describe('Test lib.js:', function() {
 
         it('unpacks top-level paths', function() {
             var input = {'marker.color': 'red', 'marker.size': [1, 2, 3]};
-            var expected = {marker: {color: 'red', size: [1, 2, 3]}};
-            expectLooseDeepEqual(Lib.expandObjectPaths(input), expected);
+            var expected = {marker: {color: 'red', size: [1, 2, 4]}};
+            expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
         });
+        return;
 
         it('unpacks recursively', function() {
             var input = {'marker.color': {'red.certainty': 'definitely'}};
             var expected = {marker: {color: {red: {certainty: 'definitely'}}}};
-            expectLooseDeepEqual(Lib.expandObjectPaths(input), expected);
+            expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
         });
 
         it('unpacks deep paths', function() {
             var input = {'foo.bar.baz': 'red'};
             var expected = {foo: {bar: {baz: 'red'}}};
-            expectLooseDeepEqual(Lib.expandObjectPaths(input), expected);
+            expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
         });
 
         it('unpacks non-top-level deep paths', function() {
             var input = {color: {'foo.bar.baz': 'red'}};
             var expected = {color: {foo: {bar: {baz: 'red'}}}};
-            expectLooseDeepEqual(Lib.expandObjectPaths(input), expected);
+            expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
         });
 
         it('merges dotted properties into objects', function() {
             var input = {marker: {color: 'red'}, 'marker.size': 8};
             var expected = {marker: {color: 'red', size: 8}};
-            expectLooseDeepEqual(Lib.expandObjectPaths(input), expected);
+            expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
         });
 
         it('merges objects into dotted properties', function() {
             var input = {'marker.size': 8, marker: {color: 'red'}};
             var expected = {marker: {color: 'red', size: 8}};
-            expectLooseDeepEqual(Lib.expandObjectPaths(input), expected);
+            expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
         });
 
         it('retains the identity of nested objects', function() {
@@ -568,49 +546,49 @@ describe('Test lib.js:', function() {
         it('expands bracketed array notation', function() {
             var input = {'marker[1]': {color: 'red'}};
             var expected = {marker: [undefined, {color: 'red'}]};
-            expectLooseDeepEqual(Lib.expandObjectPaths(input), expected);
+            expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
         });
 
         it('expands nested arrays', function() {
             var input = {'marker[1].range[1]': 5};
             var expected = {marker: [undefined, {range: [undefined, 5]}]};
             var computed = Lib.expandObjectPaths(input);
-            expectLooseDeepEqual(computed, expected);
+            expect(computed).toLooseDeepEqual(expected);
         });
 
         it('expands bracketed array with more nested attributes', function() {
             var input = {'marker[1]': {'color.alpha': 2}};
             var expected = {marker: [undefined, {color: {alpha: 2}}]};
             var computed = Lib.expandObjectPaths(input);
-            expectLooseDeepEqual(computed, expected);
+            expect(computed).toLooseDeepEqual(expected);
         });
 
         it('expands bracketed array notation without further nesting', function() {
             var input = {'marker[1]': 8};
             var expected = {marker: [undefined, 8]};
             var computed = Lib.expandObjectPaths(input);
-            expectLooseDeepEqual(computed, expected);
+            expect(computed).toLooseDeepEqual(expected);
         });
 
         it('expands bracketed array notation with further nesting', function() {
             var input = {'marker[1].size': 8};
             var expected = {marker: [undefined, {size: 8}]};
             var computed = Lib.expandObjectPaths(input);
-            expectLooseDeepEqual(computed, expected);
+            expect(computed).toLooseDeepEqual(expected);
         });
 
         it('expands bracketed array notation with further nesting', function() {
             var input = {'marker[1].size.magnitude': 8};
             var expected = {marker: [undefined, {size: {magnitude: 8}}]};
             var computed = Lib.expandObjectPaths(input);
-            expectLooseDeepEqual(computed, expected);
+            expect(computed).toLooseDeepEqual(expected);
         });
 
         it('combines changes with single array nesting', function() {
             var input = {'marker[1].foo': 5, 'marker[0].foo': 4};
             var expected = {marker: [{foo: 4}, {foo: 5}]};
             var computed = Lib.expandObjectPaths(input);
-            expectLooseDeepEqual(computed, expected);
+            expect(computed).toLooseDeepEqual(expected);
         });
 
         // TODO: This test is unimplemented since it's a currently-unused corner case.
