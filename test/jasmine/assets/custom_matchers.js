@@ -1,9 +1,53 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-
+var Lib = require('@src/lib');
+var deepEqual = require('deep-equal');
 
 module.exports = {
+    // toEqual except with sparse arrays populated. This arises because:
+    //
+    //   var x = new Array(2)
+    //   expect(x).toEqual([undefined, undefined])
+    //
+    // will fail assertion even though x[0] === undefined and x[1] === undefined.
+    // This is because the array elements don't exist until assigned. Of course it
+    // only fails on *some* platforms (old firefox, looking at you), which is why
+    // this is worth all the footwork.
+    toLooseDeepEqual: function() {
+        function populateUndefinedArrayEls(x) {
+            var i;
+            if(Array.isArray(x)) {
+                for(i = 0; i < x.length; i++) {
+                    x[i] = x[i];
+                }
+            } else if(Lib.isPlainObject(x)) {
+                var keys = Object.keys(x);
+                for(i = 0; i < keys.length; i++) {
+                    populateUndefinedArrayEls(x[keys[i]]);
+                }
+            }
+            return x;
+        }
+
+        return {
+            compare: function(actual, expected, msgExtra) {
+                var actualExpanded = populateUndefinedArrayEls(Lib.extendDeep({}, actual));
+                var expectedExpanded = populateUndefinedArrayEls(Lib.extendDeep({}, expected));
+
+                var passed = deepEqual(actualExpanded, expectedExpanded);
+
+                var message = [
+                    'Expected', JSON.stringify(actual), 'to be close to', JSON.stringify(expected), msgExtra
+                ].join(' ');
+
+                return {
+                    pass: passed,
+                    message: message
+                };
+            }
+        };
+    },
 
     // toBeCloseTo... but for arrays
     toBeCloseToArray: function() {
