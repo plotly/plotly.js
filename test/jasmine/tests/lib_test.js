@@ -488,7 +488,7 @@ describe('Test lib.js:', function() {
 
         it('unpacks top-level paths', function() {
             var input = {'marker.color': 'red', 'marker.size': [1, 2, 3]};
-            var expected = {marker: {color: 'red', size: [1, 2, 4]}};
+            var expected = {marker: {color: 'red', size: [1, 2, 3]}};
             expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
         });
 
