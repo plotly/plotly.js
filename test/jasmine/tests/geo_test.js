@@ -2,8 +2,11 @@ var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
 var Geo = require('@src/plots/geo');
+var GeoAssets = require('@src/assets/geo_assets');
 var params = require('@src/plots/geo/constants');
 var supplyLayoutDefaults = require('@src/plots/geo/layout/axis_defaults');
+var geoLocationUtils = require('@src/lib/geo_location_utils');
+var topojsonUtils = require('@src/lib/topojson_utils');
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -332,6 +335,49 @@ describe('Test Geo layout defaults', function() {
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutIn.geo).toBe(undefined);
+        });
+    });
+});
+
+describe('geojson / topojson utils', function() {
+    'use strict';
+
+    function _locationToFeature(topojson, loc, locationmode) {
+        var trace = { locationmode: locationmode };
+        var features = topojsonUtils.getTopojsonFeatures(trace, topojson);
+
+        var feature = geoLocationUtils.locationToFeature(locationmode, loc, features);
+        return feature;
+    }
+
+    describe('should be able to extract topojson feature from *locations* items', function() {
+        var topojsonName = 'world_110m';
+        var topojson = GeoAssets.topojson[topojsonName];
+
+        it('with *ISO-3* locationmode', function() {
+            var out = _locationToFeature(topojson, 'CAN', 'ISO-3');
+
+            expect(Object.keys(out)).toEqual(['type', 'id', 'properties', 'geometry']);
+            expect(out.id).toEqual('CAN');
+        });
+
+        it('with *ISO-3* locationmode (not-found case)', function() {
+            var out = _locationToFeature(topojson, 'XXX', 'ISO-3');
+
+            expect(out).toEqual(false);
+        });
+
+        it('with *country names* locationmode', function() {
+            var out = _locationToFeature(topojson, 'United States', 'country names');
+
+            expect(Object.keys(out)).toEqual(['type', 'id', 'properties', 'geometry']);
+            expect(out.id).toEqual('USA');
+        });
+
+        it('with *country names* locationmode (not-found case)', function() {
+            var out = _locationToFeature(topojson, 'XXX', 'country names');
+
+            expect(out).toEqual(false);
         });
     });
 });
