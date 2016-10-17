@@ -42,7 +42,7 @@ var commandModule = require('./command');
 plots.executeAPICommand = commandModule.executeAPICommand;
 plots.computeAPICommandBindings = commandModule.computeAPICommandBindings;
 plots.evaluateAPICommandBinding = commandModule.evaluateAPICommandBinding;
-plots.bindingsAreConsistent = commandModule.bindingsAreConsistent;
+plots.hasSimpleBindings = commandModule.hasSimpleBindings;
 
 /**
  * Find subplot ids in data.

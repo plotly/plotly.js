@@ -75,6 +75,95 @@ describe('Plots.executeAPICommand', function() {
     });
 });
 
+describe('Plots.hasSimpleBindings', function() {
+    'use strict';
+    var gd;
+    beforeEach(function() {
+        gd = createGraphDiv();
+
+        Plotly.plot(gd, [
+            {x: [1, 2, 3], y: [1, 2, 3]},
+            {x: [1, 2, 3], y: [4, 5, 6]},
+        ]);
+    });
+
+    afterEach(function() {
+        destroyGraphDiv(gd);
+    });
+
+    it('return true when bindings are simple', function() {
+        var isSimple = Plots.hasSimpleBindings(gd, [{
+            method: 'restyle',
+            args: [{'marker.size': 10}]
+        }, {
+            method: 'restyle',
+            args: [{'marker.size': 20}]
+        }]);
+
+        expect(isSimple).toBe(true);
+    });
+
+    it('return false when properties are not the same', function() {
+        var isSimple = Plots.hasSimpleBindings(gd, [{
+            method: 'restyle',
+            args: [{'marker.size': 10}]
+        }, {
+            method: 'restyle',
+            args: [{'marker.color': 20}]
+        }]);
+
+        expect(isSimple).toBe(false);
+    });
+
+    it('return false when a command binds to more than one property', function() {
+        var isSimple = Plots.hasSimpleBindings(gd, [{
+            method: 'restyle',
+            args: [{'marker.color': 10, 'marker.size': 12}]
+        }, {
+            method: 'restyle',
+            args: [{'marker.color': 20}]
+        }]);
+
+        expect(isSimple).toBe(false);
+    });
+
+    it('return false when commands affect different traces', function() {
+        var isSimple = Plots.hasSimpleBindings(gd, [{
+            method: 'restyle',
+            args: [{'marker.color': 10}, [0]]
+        }, {
+            method: 'restyle',
+            args: [{'marker.color': 20}, [1]]
+        }]);
+
+        expect(isSimple).toBe(false);
+    });
+
+    it('return true when commands affect the same traces', function() {
+        var isSimple = Plots.hasSimpleBindings(gd, [{
+            method: 'restyle',
+            args: [{'marker.color': 10}, [1]]
+        }, {
+            method: 'restyle',
+            args: [{'marker.color': 20}, [1]]
+        }]);
+
+        expect(isSimple).toBe(true);
+    });
+
+    it('return true when commands affect the same traces in different order', function() {
+        var isSimple = Plots.hasSimpleBindings(gd, [{
+            method: 'restyle',
+            args: [{'marker.color': 10}, [1, 2]]
+        }, {
+            method: 'restyle',
+            args: [{'marker.color': 20}, [2, 1]]
+        }]);
+
+        expect(isSimple).toBe(true);
+    });
+});
+
 describe('Plots.computeAPICommandBindings', function() {
     'use strict';
 

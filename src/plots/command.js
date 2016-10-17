@@ -15,26 +15,64 @@ var Lib = require('../lib');
 var attrPrefixRegex = /^(data|layout)(\[(-?[0-9]*)\])?\.(.*)$/;
 
 /*
- * This function checks to see if a set of bindings is compatible
- * with automatic two-way binding. The criteria right now are that
+ * This function checks to see if an array of objects containing
+ * method and args properties is compatible with automatic two-way
+ * binding. The criteria right now are that
  *
  *   1. multiple traces may be affected
  *   2. only one property may be affected
+ *   3. the same property must be affected by all commands
  */
-exports.bindingsAreConsistent = function(currentBindings, newBindings) {
-    // If they're not both arrays of equal length, return false:
-    if(!newBindings || !currentBindings || currentBindings.length !== newBindings.length) {
-        return false;
-    }
+exports.hasSimpleBindings = function(gd, commandList) {
+    var n = commandList.length;
 
-    var n = currentBindings.length;
+    var refBinding;
 
     for(var i = 0; i < n; i++) {
-        // This is not the most efficient check, but the pathological case where there
-        // are an excessive number of bindings should be rare, and at any rate we really
-        // try to bail out early at every opportunity.
-        if(currentBindings.indexOf(newBindings[i]) === -1) {
+        var command = commandList[i];
+        var method = command.method;
+        var args = command.args;
+
+        // If any command has no method, refuse to bind:
+        if(!method) {
             return false;
+        }
+        var bindings = exports.computeAPICommandBindings(gd, method, args);
+
+        // Right now, handle one and *only* one property being set:
+        if(bindings.length !== 1) {
+            return false;
+        }
+
+        if(!refBinding) {
+            refBinding = bindings[0];
+            if(Array.isArray(refBinding.traces)) {
+                refBinding.traces.sort();
+            }
+        } else {
+            var binding = bindings[0];
+            if(binding.type !== refBinding.type) {
+                return false;
+            }
+            if(binding.prop !== refBinding.prop) {
+                return false;
+            }
+            if(Array.isArray(refBinding.traces)) {
+                if(Array.isArray(binding.traces)) {
+                    binding.traces.sort();
+                    for(var j = 0; j < refBinding.traces.length; j++) {
+                        if(refBinding.traces[j] !== binding.traces[j]) {
+                            return false;
+                        }
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                if(binding.prop !== refBinding.prop) {
+                    return false;
+                }
+            }
         }
     }
 
