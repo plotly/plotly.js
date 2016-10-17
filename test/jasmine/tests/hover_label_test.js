@@ -653,21 +653,29 @@ describe('hover after resizing', function() {
 
         Plotly.plot(gd, data, layout).then(function() {
             return assertLabelCount(pos0, 1, 'before resize, showing pt label');
-        }).then(function() {
+        })
+        .then(function() {
             return assertLabelCount(pos1, 0, 'before resize, not showing blank spot');
-        }).then(function() {
+        })
+        .then(function() {
             return Plotly.relayout(gd, 'width', 500);
-        }).then(function() {
+        })
+        .then(function() {
             return assertLabelCount(pos0, 0, 'after resize, not showing blank spot');
-        }).then(function() {
+        })
+        .then(function() {
             return assertLabelCount(pos1, 1, 'after resize, showing pt label');
-        }).then(function() {
+        })
+        .then(function() {
             return Plotly.relayout(gd, 'width', 600);
-        }).then(function() {
+        })
+        .then(function() {
             return assertLabelCount(pos0, 1, 'back to initial, showing pt label');
-        }).then(function() {
+        })
+        .then(function() {
             return assertLabelCount(pos1, 0, 'back to initial, not showing blank spot');
-        }).then(done);
+        })
+        .then(done);
     });
 });
 
