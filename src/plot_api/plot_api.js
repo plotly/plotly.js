@@ -196,11 +196,15 @@ Plotly.plot = function(gd, data, layout, config) {
         return Plots.previousPromises(gd);
     }
 
+    // in case the margins changed, draw margin pushers again
     function marginPushersAgain() {
-        // in case the margins changed, draw margin pushers again
         var seq = JSON.stringify(fullLayout._size) === oldmargins ?
             [] :
             [marginPushers, subroutines.layoutStyles];
+
+        // re-initialize cartesian interaction,
+        // which are sometimes cleared during marginPushers
+        seq = seq.concat(Fx.init);
 
         return Lib.syncOrAsync(seq, gd);
     }

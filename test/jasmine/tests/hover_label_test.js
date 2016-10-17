@@ -8,6 +8,7 @@ var Lib = require('@src/lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
+var click = require('../assets/click');
 var doubleClick = require('../assets/double_click');
 
 describe('hover info', function() {
@@ -630,6 +631,16 @@ describe('hover after resizing', function() {
 
     afterEach(destroyGraphDiv);
 
+    function _click(pos) {
+        return new Promise(function(resolve) {
+            click(pos[0], pos[1]);
+
+            setTimeout(function() {
+                resolve();
+            }, constants.HOVERMINTIME);
+        });
+    }
+
     function assertLabelCount(pos, cnt, msg) {
         return new Promise(function(resolve) {
             mouseEvent('mousemove', pos[0], pos[1]);
@@ -652,6 +663,12 @@ describe('hover after resizing', function() {
             pos1 = [401, 122];
 
         Plotly.plot(gd, data, layout).then(function() {
+
+            // to test https://github.com/plotly/plotly.js/issues/1044
+
+            return _click(pos0);
+        })
+        .then(function() {
             return assertLabelCount(pos0, 1, 'before resize, showing pt label');
         })
         .then(function() {
