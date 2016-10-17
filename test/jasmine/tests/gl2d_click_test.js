@@ -17,7 +17,7 @@ describe('Test hover and click interactions', function() {
     if(!hasWebGLSupport('gl2d_click_test')) return;
 
     var mock = require('@mocks/gl2d_14.json');
-    var mock2 = require('@mocks/gl2d_pointcloud-basic.json');
+    var mock2 = require('@mocks/gl2d_000_lets_start_with_it_pointcloud-basic.json');
     var mock3 = {
         'data': [
             {
