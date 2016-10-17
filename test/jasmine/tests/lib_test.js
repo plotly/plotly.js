@@ -592,6 +592,27 @@ describe('Test lib.js:', function() {
         // not data arrays but yes on arrays that were previously expanded. This is a bit
         // tricky to get to work just right and currently doesn't have any known use since
         // container arrays are not multiply nested.
+        //
+        // Additional notes on what works or what doesn't work. This case does *not* work
+        // because the two nested arrays that would result from the expansion need to be
+        // deep merged.
+        //
+        //   Lib.expandObjectPaths({'marker.range[0]': 5, 'marker.range[1]': 2})
+        //
+        //   // => {marker: {range: [null, 2]}}
+        //
+        // This case *does* work becuase the array merging does not require a deep extend:
+        //
+        //   Lib.expandObjectPaths({'range[0]': 5, 'range[1]': 2}
+        //
+        //   // => {range: [5, 2]}
+        //
+        // Finally note that this case works fine becuase there's no merge necessary:
+        //
+        //   Lib.expandObjectPaths({'marker.range[1]': 2})
+        //
+        //   // => {marker: {range: [null, 2]}}
+        //
         /*
         it('combines changes', function() {
             var input = {'marker[1].range[1]': 5, 'marker[1].range[0]': 4};
