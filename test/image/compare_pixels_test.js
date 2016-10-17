@@ -121,10 +121,7 @@ function untestableGL2DonCIfilter(mockName) {
         'gl2d_multiple_subplots',
         'gl2d_simple_inset',
         'gl2d_stacked_coupled_subplots',
-        'gl2d_stacked_subplots',
-
-        // not sure why this one still fails on CircleCI
-        'gl2d_pointcloud-basic'
+        'gl2d_stacked_subplots'
     ].indexOf(mockName) === -1;
 
     if(!cond) console.log(' -', mockName);
