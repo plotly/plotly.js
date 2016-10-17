@@ -1447,7 +1447,10 @@ plots.extendTrace = function(destTrace, srcTrace) {
 plots.extendLayout = function(destLayout, srcLayout) {
     return plots.extendObjectWithContainers(destLayout, srcLayout, [
         'annotations',
-        'shapes'
+        'shapes',
+        'images',
+        'sliders',
+        'updatemenus'
     ]);
 };
 
