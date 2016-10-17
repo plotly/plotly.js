@@ -111,6 +111,10 @@ proto.plot = function(geoCalcData, fullLayout, promises) {
         Fx.hover(_this.graphDiv, evt, _this.id);
     });
 
+    _this.framework.on('mouseout', function() {
+        Fx.loneUnhover(fullLayout._toppaper);
+    });
+
     _this.framework.on('click', function() {
         Fx.click(_this.graphDiv, { target: true });
     });
