@@ -248,7 +248,7 @@ describe('Test Plots', function() {
     describe('Plots.resize', function() {
         var gd;
 
-        beforeEach(function(done) {
+        beforeAll(function(done) {
             gd = createGraphDiv();
 
             Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
@@ -286,6 +286,17 @@ describe('Test Plots', function() {
                 expect(svgWidth).toBe(400);
                 expect(svgHeight).toBe(400);
             }
+        });
+
+        it('should update the axis scales', function() {
+            var fullLayout = gd._fullLayout,
+                plotinfo = fullLayout._plots.xy;
+
+            expect(fullLayout.xaxis._length).toEqual(240);
+            expect(fullLayout.yaxis._length).toEqual(220);
+
+            expect(plotinfo.xaxis._length).toEqual(240);
+            expect(plotinfo.yaxis._length).toEqual(220);
         });
     });
 
