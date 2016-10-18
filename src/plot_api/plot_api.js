@@ -2305,6 +2305,8 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
             var newFrame = trans._currentFrame = trans._frameQueue.shift();
 
             if(newFrame) {
+                gd._fullLayout._currentFrame = newFrame.name;
+
                 gd.emit('plotly_animatingframe', {
                     name: newFrame.name,
                     frame: newFrame.frame,
