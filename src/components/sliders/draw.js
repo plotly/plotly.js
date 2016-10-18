@@ -52,6 +52,9 @@ module.exports = function draw(gd) {
     sliderGroups.exit().each(function(sliderOpts) {
         d3.select(this).remove();
 
+        sliderOpts._bindingObserver.remove();
+        delete sliderOpts._bindingObserver;
+
         Plots.autoMargin(gd, constants.autoMarginIdRoot + sliderOpts._index);
     });
 
@@ -67,10 +70,15 @@ module.exports = function draw(gd) {
 
         computeLabelSteps(sliderOpts);
 
+        if(!sliderOpts._bindingObserver) {
+            sliderOpts._bindingObserver = Plots.createBindingObserver(gd, sliderOpts.steps, function(data) {
+                setActive(gd, d3.select(this), sliderOpts, data.index, false, true);
+            }.bind(this));
+        }
+
         drawSlider(gd, d3.select(this), sliderOpts);
 
         // makeInputProxy(gd, d3.select(this), sliderOpts);
-
     });
 };
 

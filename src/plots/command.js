@@ -23,12 +23,13 @@ var attrPrefixRegex = /^(data|layout)(\[(-?[0-9]*)\])?\.(.*)$/;
  *   2. only one property may be affected
  *   3. the same property must be affected by all commands
  */
-exports.hasSimpleBindings = function(gd, commandList) {
+exports.hasSimpleBindings = function(gd, commandList, bindingsByValue) {
     var n = commandList.length;
 
     var refBinding;
 
     for(var i = 0; i < n; i++) {
+        var binding;
         var command = commandList[i];
         var method = command.method;
         var args = command.args;
@@ -50,7 +51,7 @@ exports.hasSimpleBindings = function(gd, commandList) {
                 refBinding.traces.sort();
             }
         } else {
-            var binding = bindings[0];
+            binding = bindings[0];
             if(binding.type !== refBinding.type) {
                 return false;
             }
@@ -74,9 +75,129 @@ exports.hasSimpleBindings = function(gd, commandList) {
                 }
             }
         }
+
+        binding = bindings[0];
+        var value = binding.value[0];
+        if(Array.isArray(value)) {
+            value = value[0];
+        }
+        bindingsByValue[value] = i;
     }
 
-    return true;
+    return refBinding;
+};
+
+exports.createBindingObserver = function(gd, commandList, onchange) {
+    var cache = {};
+    var lookupTable = {};
+    var check, remove;
+    var enabled = true;
+
+    // Determine whether there's anything to do for this binding:
+    var binding;
+    if((binding = exports.hasSimpleBindings(gd, commandList, lookupTable))) {
+        exports.bindingValueHasChanged(gd, binding, cache);
+
+        check = function check() {
+            if(!enabled) return;
+
+            var container, value, obj;
+            var changed = false;
+
+            if(binding.type === 'data') {
+                // If it's data, we need to get a trace. Based on the limited scope
+                // of what we cover, we can just take the first trace from the list,
+                // or otherwise just the first trace:
+                container = gd._fullData[binding.traces !== null ? binding.traces[0] : 0];
+            } else if(binding.type === 'layout') {
+                container = gd._fullLayout;
+            } else {
+                return false;
+            }
+
+            value = Lib.nestedProperty(container, binding.prop).get();
+
+            obj = cache[binding.type] = cache[binding.type] || {};
+
+            if(obj.hasOwnProperty(binding.prop)) {
+                if(obj[binding.prop] !== value) {
+                    changed = true;
+                }
+            }
+
+            obj[binding.prop] = value;
+
+            if(changed && onchange) {
+                // Disable checks for the duration of this command in order to avoid
+                // infinite loops:
+                if(lookupTable[value] !== undefined) {
+                    disable();
+                    Promise.resolve(onchange({
+                        value: value,
+                        type: binding.type,
+                        prop: binding.prop,
+                        traces: binding.traces,
+                        index: lookupTable[value]
+                    })).then(enable, enable);
+                }
+            }
+
+            return changed;
+        };
+
+        gd._internalOn('plotly_plotmodified', check);
+
+        remove = function() {
+            gd._removeInternalListener('plotly_plotmodified', check);
+        };
+    } else {
+        lookupTable = {};
+        remove = function() {};
+    }
+
+    function disable() {
+        enabled = false;
+    }
+
+    function enable() {
+        enabled = true;
+    }
+
+    return {
+        disable: disable,
+        enable: enable,
+        remove: remove
+    };
+};
+
+exports.bindingValueHasChanged = function(gd, binding, cache) {
+    var container, value, obj;
+    var changed = false;
+
+    if(binding.type === 'data') {
+        // If it's data, we need to get a trace. Based on the limited scope
+        // of what we cover, we can just take the first trace from the list,
+        // or otherwise just the first trace:
+        container = gd._fullData[binding.traces !== null ? binding.traces[0] : 0];
+    } else if(binding.type === 'layout') {
+        container = gd._fullLayout;
+    } else {
+        return false;
+    }
+
+    value = Lib.nestedProperty(container, binding.prop).get();
+
+    obj = cache[binding.type] = cache[binding.type] || {};
+
+    if(obj.hasOwnProperty(binding.prop)) {
+        if(obj[binding.prop] !== value) {
+            changed = true;
+        }
+    }
+
+    obj[binding.prop] = value;
+
+    return changed;
 };
 
 exports.evaluateAPICommandBinding = function(gd, attrName) {
@@ -133,10 +254,7 @@ exports.computeAPICommandBindings = function(gd, method, args) {
                 .concat(computeLayoutBindings(gd, [args[1]]));
             break;
         case 'animate':
-            // This case could be analyzed more in-depth, but for a start,
-            // we'll assume that the only relevant modification an animation
-            // makes that's meaningfully tracked is the frame:
-            bindings = [{type: 'layout', prop: '_currentFrame'}];
+            bindings = computeAnimateBindings(gd, args);
             break;
         default:
             // We'll elect to fail-non-fatal since this is a correct
@@ -145,6 +263,16 @@ exports.computeAPICommandBindings = function(gd, method, args) {
     }
     return bindings;
 };
+
+function computeAnimateBindings(gd, args) {
+    // We'll assume that the only relevant modification an animation
+    // makes that's meaningfully tracked is the frame:
+    if(Array.isArray(args[0]) && args[0].length === 1 && typeof args[0][0] === 'string') {
+        return [{type: 'layout', prop: '_currentFrame', value: args[0][0]}];
+    } else {
+        return [];
+    }
+}
 
 function computeLayoutBindings(gd, args) {
     var bindings = [];
@@ -159,8 +287,8 @@ function computeLayoutBindings(gd, args) {
         return bindings;
     }
 
-    crawl(aobj, function(path) {
-        bindings.push({type: 'layout', prop: path});
+    crawl(aobj, function(path, attrName, attr) {
+        bindings.push({type: 'layout', prop: path, value: attr});
     }, '', 0);
 
     return bindings;
@@ -208,10 +336,27 @@ function computeDataBindings(gd, args) {
             thisTraces = traces ? traces.slice(0) : null;
         }
 
+        // Convert [7] to just 7 when traces is null:
+        if(thisTraces === null) {
+            if(Array.isArray(attr)) {
+                attr = attr[0];
+            }
+        } else if(Array.isArray(thisTraces)) {
+            if(!Array.isArray(attr)) {
+                var tmp = attr;
+                attr = [];
+                for(var i = 0; i < thisTraces.length; i++) {
+                    attr[i] = tmp;
+                }
+            }
+            attr.length = Math.min(thisTraces.length, attr.length);
+        }
+
         bindings.push({
             type: 'data',
             prop: path,
-            traces: thisTraces
+            traces: thisTraces,
+            value: attr
         });
     }, '', 0);
 

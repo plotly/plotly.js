@@ -43,6 +43,8 @@ plots.executeAPICommand = commandModule.executeAPICommand;
 plots.computeAPICommandBindings = commandModule.computeAPICommandBindings;
 plots.evaluateAPICommandBinding = commandModule.evaluateAPICommandBinding;
 plots.hasSimpleBindings = commandModule.hasSimpleBindings;
+plots.bindingValueHasChanged = commandModule.bindingValueHasChanged;
+plots.createBindingObserver = commandModule.createBindingObserver;
 
 /**
  * Find subplot ids in data.
