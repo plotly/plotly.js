@@ -73,14 +73,6 @@ module.exports = {
             'occur if ids are not unique. *ids* is equivalent to a *key* in d3.'
         ].join(' ')
     },
-    grouping: {
-        valType: 'data_array',
-        description: [
-            'An array of strings corresponding to each respective point. These strings are not' +
-            'inherently used by plotly for any purpose but may be used, for example, with transforms' +
-            'in order to filter or group points by an auxilliary property'
-        ].join(' ')
-    },
     text: {
         valType: 'string',
         role: 'info',

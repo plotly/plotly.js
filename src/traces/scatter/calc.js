@@ -121,12 +121,6 @@ module.exports = function calc(gd, trace) {
                 cd[i].id = String(trace.ids[i]);
             }
         }
-
-        if(trace.grouping) {
-            if(trace.grouping[i] !== undefined && trace.grouping[i] !== null) {
-                cd[i].grouping = String(trace.grouping[i]);
-            }
-        }
     }
 
     // this has migrated up from arraysToCalcdata as we have a reference to 's' here
