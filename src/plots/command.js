@@ -87,7 +87,7 @@ exports.hasSimpleBindings = function(gd, commandList, bindingsByValue) {
     return refBinding;
 };
 
-exports.createBindingObserver = function(gd, commandList, onchange) {
+exports.createCommandObserver = function(gd, commandList, onchange) {
     var cache = {};
     var lookupTable = {};
     var check, remove;
