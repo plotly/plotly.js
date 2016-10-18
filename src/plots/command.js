@@ -77,7 +77,7 @@ exports.hasSimpleBindings = function(gd, commandList, bindingsByValue) {
         }
 
         binding = bindings[0];
-        var value = binding.value[0];
+        var value = binding.value;
         if(Array.isArray(value)) {
             value = value[0];
         }

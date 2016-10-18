@@ -21,29 +21,6 @@ var anchorUtils = require('../legend/anchor_utils');
 
 var constants = require('./constants');
 
-function computeBindings(gd, menuOpts) {
-    var bindings = [], newBindings;
-    var buttons = menuOpts.buttons;
-    for(var i = 0; i < buttons.length; i++) {
-        newBindings = Plots.computeAPICommandBindings(gd, buttons[i].method, buttons[i].args);
-
-        if(i > 0 && !Plots.bindingsAreConsistent(bindings, newBindings)) {
-            bindings = null;
-            break;
-        }
-
-        for(var j = 0; j < newBindings.length; j++) {
-            var b = newBindings[j];
-
-            if(bindings.indexOf(b) === -1) {
-                bindings.push(b);
-            }
-        }
-    }
-
-    return bindings;
-}
-
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout,
         menuData = makeMenuData(fullLayout);
@@ -137,7 +114,12 @@ module.exports = function draw(gd) {
     headerGroups.each(function(menuOpts) {
         var gHeader = d3.select(this);
 
-        computeBindings(gd, menuOpts);
+        if(!menuOpts._commandObserver) {
+            var _gButton = menuOpts.type === 'dropdown' ? gButton : null;
+            menuOpts._commandObserver = Plots.createCommandObserver(gd, menuOpts.buttons, function(data) {
+                setActive(gd, menuOpts, menuOpts.buttons[data.index], gHeader, _gButton, data.index, true);
+            });
+        }
 
         if(menuOpts.type === 'dropdown') {
             drawHeader(gd, gHeader, gButton, menuOpts);
@@ -317,17 +299,7 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
             .call(setItemPosition, menuOpts, posOpts);
 
         button.on('click', function() {
-            // update 'active' attribute in menuOpts
-            menuOpts._input.active = menuOpts.active = buttonIndex;
-
-            // fold up buttons and redraw header
-            gButton.attr(constants.menuIndexAttrName, '-1');
-
-            if(menuOpts.type === 'dropdown') {
-                drawHeader(gd, gHeader, gButton, menuOpts);
-            }
-
-            drawButtons(gd, gHeader, gButton, menuOpts);
+            setActive(gd, menuOpts, buttonOpts, gHeader, gButton, buttonIndex);
 
             // call button method
             var args = buttonOpts.args;
@@ -348,6 +320,22 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
 
     // translate button group
     Lib.setTranslate(gButton, menuOpts.lx, menuOpts.ly);
+}
+
+function setActive(gd, menuOpts, buttonOpts, gHeader, gButton, buttonIndex, isSilentUpdate) {
+    // update 'active' attribute in menuOpts
+    menuOpts._input.active = menuOpts.active = buttonIndex;
+
+    if(menuOpts.type === 'dropdown') {
+        // fold up buttons and redraw header
+        gButton.attr(constants.menuIndexAttrName, '-1');
+
+        drawHeader(gd, gHeader, gButton, menuOpts);
+    }
+
+    if(!isSilentUpdate || menuOpts.type === 'buttons') {
+        drawButtons(gd, gHeader, gButton, menuOpts);
+    }
 }
 
 function drawItem(item, menuOpts, itemOpts) {

@@ -68,12 +68,14 @@ module.exports = function draw(gd) {
         // If it has fewer than two options, it's not really a slider:
         if(sliderOpts.steps.length < 2) return;
 
+        var gSlider = d3.select(this);
+
         computeLabelSteps(sliderOpts);
 
         if(!sliderOpts._commandObserver) {
             sliderOpts._commandObserver = Plots.createCommandObserver(gd, sliderOpts.steps, function(data) {
-                setActive(gd, d3.select(this), sliderOpts, data.index, false, true);
-            }.bind(this));
+                setActive(gd, gSlider, sliderOpts, data.index, false, true);
+            });
         }
 
         drawSlider(gd, d3.select(this), sliderOpts);
