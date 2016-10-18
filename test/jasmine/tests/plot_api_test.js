@@ -59,6 +59,31 @@ describe('Test plot api', function() {
                 expect(gd._context.editable).toBe(true);
             }).catch(fail).then(done);
         });
+
+        it('allows adding more frames to the initial set', function(done) {
+            Plotly.plot(gd, {
+                data: [{x: [1, 2, 3], y: [1, 2, 3]}],
+                layout: {width: 500, height: 500},
+                config: {editable: true},
+                frames: [{y: [7, 7, 7], name: 'frame1'}]
+            }).then(function() {
+                expect(gd.layout.width).toEqual(500);
+                expect(gd.layout.height).toEqual(500);
+                expect(gd.data.length).toEqual(1);
+                expect(gd._transitionData._frames.length).toEqual(1);
+                expect(gd._context.editable).toBe(true);
+
+                return Plotly.addFrames(gd, [
+                    {y: [8, 8, 8], name: 'frame2'},
+                    {y: [9, 9, 9], name: 'frame3'}
+                ]);
+            }).then(function() {
+                expect(gd._transitionData._frames.length).toEqual(3);
+                expect(gd._transitionData._frames[0].name).toEqual('frame1');
+                expect(gd._transitionData._frames[1].name).toEqual('frame2');
+                expect(gd._transitionData._frames[2].name).toEqual('frame3');
+            }).catch(fail).then(done);
+        });
     });
 
     describe('Plotly.relayout', function() {
