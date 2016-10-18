@@ -345,8 +345,8 @@ Plotly.plot = function(gd, data, layout, config) {
 
     Lib.syncOrAsync([
         Plots.previousPromises,
-        drawFramework,
         addFrames,
+        drawFramework,
         marginPushers,
         marginPushersAgain,
         positionAndAutorange,
