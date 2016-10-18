@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v1.18.0
+* plotly.js (finance) v1.18.1
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -24907,7 +24907,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.18.0';
+exports.version = '1.18.1';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -26685,18 +26685,36 @@ lib.objectFromPath = function(path, value) {
 /**
  * Iterate through an object in-place, converting dotted properties to objects.
  *
- * @example
- * lib.expandObjectPaths({'nested.test.path': 'value'});
- * // returns { nested: { test: {path: 'value'}}}
+ * Examples:
+ *
+ *   lib.expandObjectPaths({'nested.test.path': 'value'});
+ *     => { nested: { test: {path: 'value'}}}
+ *
+ * It also handles array notation, e.g.:
+ *
+ *   lib.expandObjectPaths({'foo[1].bar': 'value'});
+ *     => { foo: [null, {bar: value}] }
+ *
+ * It handles merges the results when two properties are specified in parallel:
+ *
+ *   lib.expandObjectPaths({'foo[1].bar': 10, 'foo[0].bar': 20});
+ *     => { foo: [{bar: 10}, {bar: 20}] }
+ *
+ * It does NOT, however, merge mulitple mutliply-nested arrays::
+ *
+ *   lib.expandObjectPaths({'marker[1].range[1]': 5, 'marker[1].range[0]': 4})
+ *     => { marker: [null, {range: 4}] }
  */
 
-// Store this to avoid recompiling regex on every prop since this may happen many
-// many times for animations.
-// TODO: Premature optimization? Remove?
-var dottedPropertyRegex = /^([^\.]*)\../;
+// Store this to avoid recompiling regex on *every* prop since this may happen many
+// many times for animations. Could maybe be inside the function. Not sure about
+// scoping vs. recompilation tradeoff, but at least it's not just inlining it into
+// the inner loop.
+var dottedPropertyRegex = /^([^\[\.]+)\.(.+)?/;
+var indexedPropertyRegex = /^([^\.]+)\[([0-9]+)\](\.)?(.+)?/;
 
 lib.expandObjectPaths = function(data) {
-    var match, key, prop, datum;
+    var match, key, prop, datum, idx, dest, trailingPath;
     if(typeof data === 'object' && !Array.isArray(data)) {
         for(key in data) {
             if(data.hasOwnProperty(key)) {
@@ -26707,12 +26725,47 @@ lib.expandObjectPaths = function(data) {
                     delete data[key];
 
                     data[prop] = lib.extendDeepNoArrays(data[prop] || {}, lib.objectFromPath(key, lib.expandObjectPaths(datum))[prop]);
+                } else if((match = key.match(indexedPropertyRegex))) {
+                    datum = data[key];
+
+                    prop = match[1];
+                    idx = parseInt(match[2]);
+
+                    delete data[key];
+
+                    data[prop] = data[prop] || [];
+
+                    if(match[3] === '.') {
+                        // This is the case where theere are subsequent properties into which
+                        // we must recurse, e.g. transforms[0].value
+                        trailingPath = match[4];
+                        dest = data[prop][idx] = data[prop][idx] || {};
+
+                        // NB: Extend deep no arrays prevents this from working on multiple
+                        // nested properties in the same object, e.g.
+                        //
+                        // {
+                        //   foo[0].bar[1].range
+                        //   foo[0].bar[0].range
+                        // }
+                        //
+                        // In this case, the extendDeepNoArrays will overwrite one array with
+                        // the other, so that both properties *will not* be present in the
+                        // result. Fixing this would require a more intelligent tracking
+                        // of changes and merging than extendDeepNoArrays currently accomplishes.
+                        lib.extendDeepNoArrays(dest, lib.objectFromPath(trailingPath, lib.expandObjectPaths(datum)));
+                    } else {
+                        // This is the case where this property is the end of the line,
+                        // e.g. xaxis.range[0]
+                        data[prop][idx] = lib.expandObjectPaths(datum);
+                    }
                 } else {
                     data[key] = lib.expandObjectPaths(data[key]);
                 }
             }
         }
     }
+
     return data;
 };
 
@@ -29147,11 +29200,15 @@ Plotly.plot = function(gd, data, layout, config) {
         return Plots.previousPromises(gd);
     }
 
+    // in case the margins changed, draw margin pushers again
     function marginPushersAgain() {
-        // in case the margins changed, draw margin pushers again
         var seq = JSON.stringify(fullLayout._size) === oldmargins ?
             [] :
             [marginPushers, subroutines.layoutStyles];
+
+        // re-initialize cartesian interaction,
+        // which are sometimes cleared during marginPushers
+        seq = seq.concat(Fx.init);
 
         return Lib.syncOrAsync(seq, gd);
     }
@@ -40709,6 +40766,9 @@ plots.supplyDefaults = function(gd) {
     // clean subplots and other artifacts from previous plot calls
     plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
+    // relink / initialize subplot axis objects
+    plots.linkSubplots(newFullData, newFullLayout, oldFullData, oldFullLayout);
+
     // relink functions and _ attributes to promote consistency between plots
     relinkPrivateKeys(newFullLayout, oldFullLayout);
 
@@ -40722,9 +40782,6 @@ plots.supplyDefaults = function(gd) {
         ax._gd = gd;
         ax.setScale();
     }
-
-    // relink / initialize subplot axis objects
-    plots.linkSubplots(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
     // update object references in calcdata
     if((gd.calcdata || []).length === newFullData.length) {
@@ -41606,7 +41663,7 @@ plots.modifyFrames = function(gd, operations) {
  */
 plots.computeFrame = function(gd, frameName) {
     var frameLookup = gd._transitionData._frameHash;
-    var i, traceIndices, traceIndex, expandedObj, destIndex, copy;
+    var i, traceIndices, traceIndex, destIndex;
 
     var framePtr = frameLookup[frameName];
 
@@ -41633,9 +41690,7 @@ plots.computeFrame = function(gd, frameName) {
     // Merge, starting with the last and ending with the desired frame:
     while((framePtr = frameStack.pop())) {
         if(framePtr.layout) {
-            copy = Lib.extendDeepNoArrays({}, framePtr.layout);
-            expandedObj = Lib.expandObjectPaths(copy);
-            result.layout = Lib.extendDeepNoArrays(result.layout || {}, expandedObj);
+            result.layout = plots.extendLayout(result.layout, framePtr.layout);
         }
 
         if(framePtr.data) {
@@ -41670,14 +41725,97 @@ plots.computeFrame = function(gd, frameName) {
                     result.traces[destIndex] = traceIndex;
                 }
 
-                copy = Lib.extendDeepNoArrays({}, framePtr.data[i]);
-                expandedObj = Lib.expandObjectPaths(copy);
-                result.data[destIndex] = Lib.extendDeepNoArrays(result.data[destIndex] || {}, expandedObj);
+                result.data[destIndex] = plots.extendTrace(result.data[destIndex], framePtr.data[i]);
             }
         }
     }
 
     return result;
+};
+
+/**
+ * Extend an object, treating container arrays very differently by extracting
+ * their contents and merging them separately.
+ *
+ * This exists so that we can extendDeepNoArrays and avoid stepping into data
+ * arrays without knowledge of the plot schema, but so that we may also manually
+ * recurse into known container arrays, such as transforms.
+ *
+ * See extendTrace and extendLayout below for usage.
+ */
+plots.extendObjectWithContainers = function(dest, src, containerPaths) {
+    var containerProp, containerVal, i, j, srcProp, destProp, srcContainer, destContainer;
+    var copy = Lib.extendDeepNoArrays({}, src || {});
+    var expandedObj = Lib.expandObjectPaths(copy);
+    var containerObj = {};
+
+    // Step through and extract any container properties. Otherwise extendDeepNoArrays
+    // will clobber any existing properties with an empty array and then supplyDefaults
+    // will reset everything to defaults.
+    if(containerPaths && containerPaths.length) {
+        for(i = 0; i < containerPaths.length; i++) {
+            containerProp = Lib.nestedProperty(expandedObj, containerPaths[i]);
+            containerVal = containerProp.get();
+            containerProp.set(null);
+            Lib.nestedProperty(containerObj, containerPaths[i]).set(containerVal);
+        }
+    }
+
+    dest = Lib.extendDeepNoArrays(dest || {}, expandedObj);
+
+    if(containerPaths && containerPaths.length) {
+        for(i = 0; i < containerPaths.length; i++) {
+            srcProp = Lib.nestedProperty(containerObj, containerPaths[i]);
+            srcContainer = srcProp.get();
+
+            if(!srcContainer) continue;
+
+            destProp = Lib.nestedProperty(dest, containerPaths[i]);
+
+            destContainer = destProp.get();
+            if(!Array.isArray(destContainer)) {
+                destContainer = [];
+                destProp.set(destContainer);
+            }
+
+            for(j = 0; j < srcContainer.length; j++) {
+                destContainer[j] = plots.extendObjectWithContainers(destContainer[j], srcContainer[j]);
+            }
+        }
+    }
+
+    return dest;
+};
+
+/*
+ * Extend a trace definition. This method:
+ *
+ *  1. directly transfers any array references
+ *  2. manually recurses into container arrays like transforms
+ *
+ * The result is the original object reference with the new contents merged in.
+ */
+plots.extendTrace = function(destTrace, srcTrace) {
+    return plots.extendObjectWithContainers(destTrace, srcTrace, ['transforms']);
+};
+
+/*
+ * Extend a layout definition. This method:
+ *
+ *  1. directly transfers any array references (not critically important for
+ *     layout since there aren't really data arrays)
+ *  2. manually recurses into container arrays like annotations
+ *
+ * The result is the original object reference with the new contents merged in.
+ */
+plots.extendLayout = function(destLayout, srcLayout) {
+    return plots.extendObjectWithContainers(destLayout, srcLayout, [
+        'annotations',
+        'shapes',
+        'images',
+        'sliders',
+        'updatemenus'
+    ]);
 };
 
 /**
@@ -41718,16 +41856,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
             transitionedTraces.push(traceIdx);
 
-            // This is a multi-step process. First clone w/o arrays so that
-            // we're not modifying the original:
-            var update = Lib.extendDeepNoArrays({}, data[i]);
-
-            // Then expand object paths since we don't obey object-overwrite
-            // semantics here:
-            update = Lib.expandObjectPaths(update);
-
-            // Finally apply the update (without copying arrays, of course):
-            Lib.extendDeepNoArrays(gd.data[traceIndices[i]], update);
+            gd.data[traceIndices[i]] = plots.extendTrace(gd.data[traceIndices[i]], data[i]);
         }
 
         // Follow the same procedure. Clone it so we don't mangle the input, then
@@ -47622,18 +47751,19 @@ function makeTrace(traceIn, state, direction) {
 function makeHoverInfo(traceIn) {
     var hoverinfo = traceIn.hoverinfo;
 
-    if(hoverinfo === 'all') return 'x+text';
+    if(hoverinfo === 'all') return 'x+text+name';
 
     var parts = hoverinfo.split('+'),
-        hasX = parts.indexOf('x') !== -1,
-        hasText = parts.indexOf('text') !== -1;
+        indexOfY = parts.indexOf('y'),
+        indexOfText = parts.indexOf('text');
 
-    if(hasX) {
-        if(hasText) return 'x+text';
-        else return 'x';
+    if(indexOfY !== -1) {
+        parts.splice(indexOfY, 1);
 
+        if(indexOfText === -1) parts.push('text');
     }
-    else return 'text';
+
+    return parts.join('+');
 }
 
 exports.calcTransform = function calcTransform(gd, trace, opts) {
