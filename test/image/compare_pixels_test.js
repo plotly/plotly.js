@@ -73,7 +73,9 @@ if(pattern === 'gl2d_*') {
 
     if(isCI) {
         console.log('Filtering out multiple-subplot gl2d mocks:');
-        mockList = mockList.filter(untestableGL2DonCIfilter);
+        mockList = mockList
+            .filter(untestableGL2DonCIfilter)
+            .sort(sortForGL2DonCI);
         console.log('\n');
     }
 }
@@ -121,15 +123,35 @@ function untestableGL2DonCIfilter(mockName) {
         'gl2d_multiple_subplots',
         'gl2d_simple_inset',
         'gl2d_stacked_coupled_subplots',
-        'gl2d_stacked_subplots',
-
-        // not sure why this one still fails on CircleCI
-        'gl2d_pointcloud-basic'
+        'gl2d_stacked_subplots'
     ].indexOf(mockName) === -1;
 
     if(!cond) console.log(' -', mockName);
 
     return cond;
+}
+
+/* gl2d pointcloud mock(s) must be tested first
+ * on CircleCI in order to work; sort them here.
+ *
+ * Pointcloud relies on gl-shader@4.2.1 whereas
+ * other gl2d trace modules rely on gl-shader@4.2.0,
+ * we suspect that the lone gl context on CircleCI is
+ * having issues with dealing with the two different
+ * gl-shader versions.
+ *
+ * More info here:
+ * https://github.com/plotly/plotly.js/pull/1037
+ */
+function sortForGL2DonCI(a, b) {
+    var root = 'gl2d_pointcloud',
+        ai = a.indexOf(root),
+        bi = b.indexOf(root);
+
+    if(ai < bi) return 1;
+    if(ai > bi) return -1;
+
+    return 0;
 }
 
 function runInBatch(mockList) {
