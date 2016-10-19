@@ -11,13 +11,11 @@
 
 /* global MathJax:false */
 
-var Plotly = require('../plotly');
 var d3 = require('d3');
 
 var Lib = require('../lib');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
-
-var util = module.exports = {};
+var stringMappings = require('../constants/string_mappings');
 
 // Append SVG
 
@@ -45,7 +43,7 @@ d3.selection.prototype.appendSVG = function(_svgString) {
 
 // Text utilities
 
-util.html_entity_decode = function(s) {
+exports.html_entity_decode = function(s) {
     var hiddenDiv = d3.select('body').append('div').style({display: 'none'}).html('');
     var replaced = s.replace(/(&[^;]*;)/gi, function(d) {
         if(d === '&lt;') { return '&#60;'; } // special handling for brackets
@@ -56,7 +54,7 @@ util.html_entity_decode = function(s) {
     return replaced;
 };
 
-util.xml_entity_encode = function(str) {
+exports.xml_entity_encode = function(str) {
     return str.replace(/&(?!\w+;|\#[0-9]+;| \#x[0-9A-F]+;)/g, '&amp;');
 };
 
@@ -66,10 +64,11 @@ function getSize(_selection, _dimension) {
     return _selection.node().getBoundingClientRect()[_dimension];
 }
 
-util.convertToTspans = function(_context, _callback) {
+exports.convertToTspans = function(_context, _callback) {
     var str = _context.text();
     var converted = convertToSVG(str);
     var that = _context;
+
     // Until we get tex integrated more fully (so it can be used along with non-tex)
     // allow some elements to prohibit it by attaching 'data-notex' to the original
     var tex = (!that.attr('data-notex')) && converted.match(/([^$]*)([$]+[^$]*[$]+)([^$]*)/);
@@ -92,11 +91,14 @@ util.convertToTspans = function(_context, _callback) {
         }
         _context.text('')
             .style({
-                visibility: 'visible',
+                visibility: 'inherit',
                 'white-space': 'pre'
             });
+
         result = _context.appendSVG(converted);
+
         if(!result) _context.text(str);
+
         if(_context.select('a').size()) {
             // at least in Chrome, pointer-events does not seem
             // to be honored in children of <text> elements
@@ -109,7 +111,7 @@ util.convertToTspans = function(_context, _callback) {
     }
 
     if(tex) {
-        var td = Plotly.Lib.getPlotDiv(that.node());
+        var td = Lib.getPlotDiv(that.node());
         ((td && td._promises) || []).push(new Promise(function(resolve) {
             that.style({visibility: 'hidden'});
             var config = {fontSize: parseInt(that.style('font-size'), 10)};
@@ -192,7 +194,7 @@ function cleanEscapesForTex(s) {
 }
 
 function texToSVG(_texString, _config, _callback) {
-    var randomID = 'math-output-' + Plotly.Lib.randstr([], 64);
+    var randomID = 'math-output-' + Lib.randstr([], 64);
     var tmpDiv = d3.select('body').append('div')
         .attr({id: randomID})
         .style({visibility: 'hidden', position: 'absolute'})
@@ -233,19 +235,54 @@ var PROTOCOLS = ['http:', 'https:', 'mailto:'];
 
 var STRIP_TAGS = new RegExp('</?(' + Object.keys(TAG_STYLES).join('|') + ')( [^>]*)?/?>', 'g');
 
-util.plainText = function(_str) {
+var ENTITY_TO_UNICODE = Object.keys(stringMappings.entityToUnicode).map(function(k) {
+    return {
+        regExp: new RegExp('&' + k + ';', 'g'),
+        sub: stringMappings.entityToUnicode[k]
+    };
+});
+
+var UNICODE_TO_ENTITY = Object.keys(stringMappings.unicodeToEntity).map(function(k) {
+    return {
+        regExp: new RegExp(k, 'g'),
+        sub: '&' + stringMappings.unicodeToEntity[k] + ';'
+    };
+});
+
+exports.plainText = function(_str) {
     // strip out our pseudo-html so we have a readable
     // version to put into text fields
     return (_str || '').replace(STRIP_TAGS, ' ');
 };
 
+function replaceFromMapObject(_str, list) {
+    var out = _str || '';
+
+    for(var i = 0; i < list.length; i++) {
+        var item = list[i];
+        out = out.replace(item.regExp, item.sub);
+    }
+
+    return out;
+}
+
+function convertEntities(_str) {
+    return replaceFromMapObject(_str, ENTITY_TO_UNICODE);
+}
+
+function encodeForHTML(_str) {
+    return replaceFromMapObject(_str, UNICODE_TO_ENTITY);
+}
+
 function convertToSVG(_str) {
-    var htmlEntitiesDecoded = Plotly.util.html_entity_decode(_str);
-    var result = htmlEntitiesDecoded
+    _str = convertEntities(_str);
+
+    var result = _str
         .split(/(<[^<>]*>)/).map(function(d) {
             var match = d.match(/<(\/?)([^ >]*)\s*(.*)>/i),
                 tag = match && match[2].toLowerCase(),
                 style = TAG_STYLES[tag];
+
             if(style !== undefined) {
                 var close = match[1],
                     extra = match[3],
@@ -258,17 +295,23 @@ function convertToSVG(_str) {
                      * resurrect it.
                      */
                     extraStyle = extra.match(/^style\s*=\s*"([^"]+)"\s*/i);
+
                 // anchor and br are the only ones that don't turn into a tspan
                 if(tag === 'a') {
                     if(close) return '</a>';
                     else if(extra.substr(0, 4).toLowerCase() !== 'href') return '<a>';
                     else {
-                        var dummyAnchor = document.createElement('a');
-                        dummyAnchor.href = extra.substr(4).replace(/["'=]/g, '');
+                        // remove quotes, leading '=', replace '&' with '&amp;'
+                        var href = extra.substr(4)
+                            .replace(/["']/g, '')
+                            .replace(/=/, '');
 
+                        // check protocol
+                        var dummyAnchor = document.createElement('a');
+                        dummyAnchor.href = href;
                         if(PROTOCOLS.indexOf(dummyAnchor.protocol) === -1) return '<a>';
 
-                        return '<a xlink:show="new" xlink:href' + extra.substr(4) + '>';
+                        return '<a xlink:show="new" xlink:href="' + encodeForHTML(href) + '">';
                     }
                 }
                 else if(tag === 'br') return '<br>';
@@ -292,14 +335,14 @@ function convertToSVG(_str) {
                         // most of the svg css users will care about is just like html,
                         // but font color is different. Let our users ignore this.
                         extraStyle = extraStyle[1].replace(/(^|;)\s*color:/, '$1 fill:');
-                        style = (style ? style + ';' : '') + extraStyle;
+                        style = (style ? style + ';' : '') + encodeForHTML(extraStyle);
                     }
 
                     return tspanStart + (style ? ' style="' + style + '"' : '') + '>';
                 }
             }
             else {
-                return Plotly.util.xml_entity_encode(d).replace(/</g, '&lt;');
+                return exports.xml_entity_encode(d).replace(/</g, '&lt;');
             }
         });
 
@@ -380,7 +423,7 @@ function alignHTMLWith(_base, container, options) {
 
 // Editable title
 
-util.makeEditable = function(context, _delegate, options) {
+exports.makeEditable = function(context, _delegate, options) {
     if(!options) options = {};
     var that = this;
     var dispatch = d3.dispatch('edit', 'input', 'cancel');
@@ -414,7 +457,7 @@ util.makeEditable = function(context, _delegate, options) {
     }
 
     function appendEditable() {
-        var plotDiv = d3.select(Plotly.Lib.getPlotDiv(that.node())),
+        var plotDiv = d3.select(Lib.getPlotDiv(that.node())),
             container = plotDiv.select('.svg-container'),
             div = container.append('div');
         div.classed('plugin-editable editable', true)

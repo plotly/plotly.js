@@ -18,15 +18,15 @@ describe('calculated data and points', function() {
         it('should exclude null and undefined points when false', function() {
             Plotly.plot(gd, [{ x: [1, 2, 3, undefined, 5], y: [1, null, 3, 4, 5]}], {});
 
-            expect(gd.calcdata[0][1]).toEqual({ x: false, y: false});
-            expect(gd.calcdata[0][3]).toEqual({ x: false, y: false});
+            expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({ x: false, y: false}));
+            expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: false, y: false}));
         });
 
         it('should exclude null and undefined points as categories when false', function() {
             Plotly.plot(gd, [{ x: [1, 2, 3, undefined, 5], y: [1, null, 3, 4, 5] }], { xaxis: { type: 'category' }});
 
-            expect(gd.calcdata[0][1]).toEqual({ x: false, y: false});
-            expect(gd.calcdata[0][3]).toEqual({ x: false, y: false});
+            expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({ x: false, y: false}));
+            expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: false, y: false}));
         });
     });
 
@@ -137,6 +137,18 @@ describe('calculated data and points', function() {
                 expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({x: 0, y: 13}));
                 expect(gd.calcdata[0][4]).toEqual(jasmine.objectContaining({x: 2, y: 14}));
             });
+
+            it('should combine duplicate categories', function() {
+                Plotly.plot(gd, [{x: [ '1', '1'], y: [10, 20]}], { xaxis: {
+                    type: 'category',
+                    categoryorder: 'category ascending'
+                }});
+
+                expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 0, y: 10}));
+                expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({x: 0, y: 20}));
+
+                expect(gd._fullLayout.xaxis._categories).toEqual(['1']);
+            });
         });
 
         describe('explicit category ordering', function() {
@@ -180,9 +192,9 @@ describe('calculated data and points', function() {
                 }});
 
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 4, y: 15}));
-                expect(gd.calcdata[0][1]).toEqual({ x: false, y: false});
+                expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({ x: false, y: false}));
                 expect(gd.calcdata[0][2]).toEqual(jasmine.objectContaining({x: 3, y: 12}));
-                expect(gd.calcdata[0][3]).toEqual({ x: false, y: false});
+                expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: false, y: false}));
                 expect(gd.calcdata[0][4]).toEqual(jasmine.objectContaining({x: 2, y: 14}));
             });
 
@@ -257,7 +269,7 @@ describe('calculated data and points', function() {
                 }});
 
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 6, y: 15}));
-                expect(gd.calcdata[0][1]).toEqual({x: false, y: false});
+                expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({x: false, y: false}));
                 expect(gd.calcdata[0][2]).toEqual(jasmine.objectContaining({x: 5, y: 12}));
                 expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({x: 0, y: 13}));
                 expect(gd.calcdata[0][4]).toEqual(jasmine.objectContaining({x: 3, y: 14}));

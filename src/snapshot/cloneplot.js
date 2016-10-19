@@ -9,10 +9,11 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
+var Lib = require('../lib');
+var Plots = require('../plots/plots');
 
-var extendFlat = Plotly.Lib.extendFlat;
-var extendDeep = Plotly.Lib.extendDeep;
+var extendFlat = Lib.extendFlat;
+var extendDeep = Lib.extendDeep;
 
 // Put default plotTile layouts here
 function cloneLayoutOverride(tileClass) {
@@ -99,7 +100,7 @@ module.exports = function clonePlot(graphObj, options) {
         }
     }
 
-    var sceneIds = Plotly.Plots.getSubplotIds(newLayout, 'gl3d');
+    var sceneIds = Plots.getSubplotIds(newLayout, 'gl3d');
 
     if(sceneIds.length) {
         var axesImageOverride = {};

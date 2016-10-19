@@ -16,8 +16,7 @@ var d3 = require('d3');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Axes = require('../../plots/cartesian/axes');
-
-var filterVisible = require('../../lib/filter_visible');
+var Fx = require('../../plots/cartesian/graph_interact');
 
 var addProjectionsToD3 = require('./projections');
 var createGeoScale = require('./set_scale');
@@ -29,16 +28,15 @@ var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var topojsonUtils = require('../../lib/topojson_utils');
 var topojsonFeature = require('topojson').feature;
 
+// add a few projection types to d3.geo
+addProjectionsToD3(d3);
+
 
 function Geo(options, fullLayout) {
-
     this.id = options.id;
     this.graphDiv = options.graphDiv;
     this.container = options.container;
     this.topojsonURL = options.topojsonURL;
-
-    // add a few projection types to d3.geo
-    addProjectionsToD3(d3);
 
     this.hoverContainer = null;
 
@@ -55,6 +53,9 @@ function Geo(options, fullLayout) {
     this.zoom = null;
     this.zoomReset = null;
 
+    this.xaxis = null;
+    this.yaxis = null;
+
     this.makeFramework();
     this.updateFx(fullLayout.hovermode);
 
@@ -65,7 +66,7 @@ module.exports = Geo;
 
 var proto = Geo.prototype;
 
-proto.plot = function(geoData, fullLayout, promises) {
+proto.plot = function(geoCalcData, fullLayout, promises) {
     var _this = this,
         geoLayout = fullLayout[_this.id],
         graphSize = fullLayout._size;
@@ -90,6 +91,34 @@ proto.plot = function(geoData, fullLayout, promises) {
         .call(_this.zoom)
         .on('dblclick.zoom', _this.zoomReset);
 
+    _this.framework.on('mousemove', function() {
+        var mouse = d3.mouse(this),
+            lonlat = _this.projection.invert(mouse);
+
+        if(isNaN(lonlat[0]) || isNaN(lonlat[1])) return;
+
+        var evt = {
+            target: true,
+            xpx: mouse[0],
+            ypx: mouse[1]
+        };
+
+        _this.xaxis.c2p = function() { return mouse[0]; };
+        _this.xaxis.p2c = function() { return lonlat[0]; };
+        _this.yaxis.c2p = function() { return mouse[1]; };
+        _this.yaxis.p2c = function() { return lonlat[1]; };
+
+        Fx.hover(_this.graphDiv, evt, _this.id);
+    });
+
+    _this.framework.on('mouseout', function() {
+        Fx.loneUnhover(fullLayout._toppaper);
+    });
+
+    _this.framework.on('click', function() {
+        Fx.click(_this.graphDiv, { target: true });
+    });
+
     topojsonNameNew = topojsonUtils.getTopojsonName(geoLayout);
 
     if(_this.topojson === null || topojsonNameNew !== _this.topojsonName) {
@@ -97,7 +126,7 @@ proto.plot = function(geoData, fullLayout, promises) {
 
         if(PlotlyGeoAssets.topojson[_this.topojsonName] !== undefined) {
             _this.topojson = PlotlyGeoAssets.topojson[_this.topojsonName];
-            _this.onceTopojsonIsLoaded(geoData, geoLayout);
+            _this.onceTopojsonIsLoaded(geoCalcData, geoLayout);
         }
         else {
             topojsonPath = topojsonUtils.getTopojsonPath(
@@ -128,19 +157,19 @@ proto.plot = function(geoData, fullLayout, promises) {
                     _this.topojson = topojson;
                     PlotlyGeoAssets.topojson[_this.topojsonName] = topojson;
 
-                    _this.onceTopojsonIsLoaded(geoData, geoLayout);
+                    _this.onceTopojsonIsLoaded(geoCalcData, geoLayout);
                     resolve();
                 });
             }));
         }
     }
-    else _this.onceTopojsonIsLoaded(geoData, geoLayout);
+    else _this.onceTopojsonIsLoaded(geoCalcData, geoLayout);
 
     // TODO handle topojson-is-loading case
     // to avoid making multiple request while streaming
 };
 
-proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
+proto.onceTopojsonIsLoaded = function(geoCalcData, geoLayout) {
     var i;
 
     this.drawLayout(geoLayout);
@@ -148,11 +177,12 @@ proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
     var traceHashOld = this.traceHash;
     var traceHash = {};
 
-    for(i = 0; i < geoData.length; i++) {
-        var trace = geoData[i];
+    for(i = 0; i < geoCalcData.length; i++) {
+        var calcData = geoCalcData[i],
+            trace = calcData[0].trace;
 
         traceHash[trace.type] = traceHash[trace.type] || [];
-        traceHash[trace.type].push(trace);
+        traceHash[trace.type].push(calcData);
     }
 
     var moduleNamesOld = Object.keys(traceHashOld);
@@ -165,25 +195,40 @@ proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
         var moduleName = moduleNamesOld[i];
 
         if(moduleNames.indexOf(moduleName) === -1) {
-            var fakeModule = traceHashOld[moduleName][0];
-            fakeModule.visible = false;
-            traceHash[moduleName] = [fakeModule];
+            var fakeCalcTrace = traceHashOld[moduleName][0],
+                fakeTrace = fakeCalcTrace[0].trace;
+
+            fakeTrace.visible = false;
+            traceHash[moduleName] = [fakeCalcTrace];
         }
     }
 
     moduleNames = Object.keys(traceHash);
 
     for(i = 0; i < moduleNames.length; i++) {
-        var moduleData = traceHash[moduleNames[i]];
-        var _module = moduleData[0]._module;
+        var moduleCalcData = traceHash[moduleNames[i]],
+            _module = moduleCalcData[0][0].trace._module;
 
-        _module.plot(this, filterVisible(moduleData), geoLayout);
+        _module.plot(this, filterVisible(moduleCalcData), geoLayout);
     }
 
     this.traceHash = traceHash;
 
     this.render();
 };
+
+function filterVisible(calcDataIn) {
+    var calcDataOut = [];
+
+    for(var i = 0; i < calcDataIn.length; i++) {
+        var calcTrace = calcDataIn[i],
+            trace = calcTrace[0].trace;
+
+        if(trace.visible === true) calcDataOut.push(calcTrace);
+    }
+
+    return calcDataOut;
+}
 
 proto.updateFx = function(hovermode) {
     this.showHover = (hovermode !== false);
@@ -251,6 +296,8 @@ proto.makeFramework = function() {
         .attr('id', this.id)
         .style('position', 'absolute');
 
+    // only choropleth traces use this,
+    // scattergeo traces use Fx.hover and fullLayout._hoverlayer
     var hoverContainer = this.hoverContainer = geoDiv.append('svg');
     hoverContainer
         .attr(xmlnsNamespaces.svgAttrs)
@@ -280,14 +327,20 @@ proto.makeFramework = function() {
     framework.on('dblclick.zoom', null);
 
     // TODO use clip paths instead of nested SVG
+
+    this.xaxis = { _id: 'x' };
+    this.yaxis = { _id: 'y' };
 };
 
 proto.adjustLayout = function(geoLayout, graphSize) {
     var domain = geoLayout.domain;
 
+    var left = graphSize.l + graphSize.w * domain.x[0] + geoLayout._marginX,
+        top = graphSize.t + graphSize.h * (1 - domain.y[1]) + geoLayout._marginY;
+
     this.geoDiv.style({
-        left: graphSize.l + graphSize.w * domain.x[0] + geoLayout._marginX + 'px',
-        top: graphSize.t + graphSize.h * (1 - domain.y[1]) + geoLayout._marginY + 'px',
+        left: left + 'px',
+        top: top + 'px',
         width: geoLayout._width + 'px',
         height: geoLayout._height + 'px'
     });
@@ -308,6 +361,12 @@ proto.adjustLayout = function(geoLayout, graphSize) {
             height: geoLayout._height
         })
         .call(Color.fill, geoLayout.bgcolor);
+
+    this.xaxis._offset = left;
+    this.xaxis._length = geoLayout._width;
+
+    this.yaxis._offset = top;
+    this.yaxis._length = geoLayout._height;
 };
 
 proto.drawTopo = function(selection, layerName, geoLayout) {
@@ -431,27 +490,36 @@ proto.styleLayout = function(geoLayout) {
     }
 };
 
+proto.isLonLatOverEdges = function(lonlat) {
+    var clipAngle = this.clipAngle;
+
+    if(clipAngle === null) return false;
+
+    var p = this.projection.rotate(),
+        angle = d3.geo.distance(lonlat, [-p[0], -p[1]]),
+        maxAngle = clipAngle * Math.PI / 180;
+
+    return angle > maxAngle;
+};
+
 // [hot code path] (re)draw all paths which depend on the projection
 proto.render = function() {
-    var framework = this.framework,
+    var _this = this,
+        framework = _this.framework,
         gChoropleth = framework.select('g.choroplethlayer'),
         gScatterGeo = framework.select('g.scattergeolayer'),
-        projection = this.projection,
-        path = this.path,
-        clipAngle = this.clipAngle;
+        path = _this.path;
 
     function translatePoints(d) {
-        var lonlat = projection([d.lon, d.lat]);
-        if(!lonlat) return null;
-        return 'translate(' + lonlat[0] + ',' + lonlat[1] + ')';
+        var lonlatPx = _this.projection(d.lonlat);
+        if(!lonlatPx) return null;
+
+        return 'translate(' + lonlatPx[0] + ',' + lonlatPx[1] + ')';
     }
 
     // hide paths over edges of clipped projections
     function hideShowPoints(d) {
-        var p = projection.rotate(),
-            angle = d3.geo.distance([d.lon, d.lat], [-p[0], -p[1]]),
-            maxAngle = clipAngle * Math.PI / 180;
-        return (angle > maxAngle) ? '0' : '1.0';
+        return _this.isLonLatOverEdges(d.lonlat) ? '0' : '1.0';
     }
 
     framework.selectAll('path.basepath').attr('d', path);
@@ -462,7 +530,7 @@ proto.render = function() {
 
     gScatterGeo.selectAll('path.js-line').attr('d', path);
 
-    if(clipAngle !== null) {
+    if(_this.clipAngle !== null) {
         gScatterGeo.selectAll('path.point')
             .style('opacity', hideShowPoints)
             .attr('transform', translatePoints);

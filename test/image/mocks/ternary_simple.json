@@ -16,8 +16,7 @@
                 1,
                 2.12345
             ],
-            "type": "scatterternary",
-            "uid": "412fa8"
+            "type": "scatterternary"
         }
     ],
     "layout": {

@@ -10,13 +10,14 @@
 'use strict';
 
 var createHeatmap2D = require('gl-heatmap2d');
-
+var Axes = require('../../plots/cartesian/axes');
 var str2RGBArray = require('../../lib/str2rgbarray');
 
 
 function Heatmap(scene, uid) {
     this.scene = scene;
     this.uid = uid;
+    this.type = 'heatmapgl';
 
     this.name = '';
     this.hoverinfo = 'all';
@@ -45,19 +46,24 @@ function Heatmap(scene, uid) {
 var proto = Heatmap.prototype;
 
 proto.handlePick = function(pickResult) {
-    var index = pickResult.pointId,
-        shape = this.options.shape;
+    var options = this.options,
+        shape = options.shape,
+        index = pickResult.pointId,
+        xIndex = index % shape[0],
+        yIndex = Math.floor(index / shape[0]),
+        zIndex = index;
 
     return {
         trace: this,
         dataCoord: pickResult.dataCoord,
         traceCoord: [
-            this.options.x[index % shape[0]],
-            this.options.y[Math.floor(index / shape[0])],
-            this.options.z[index]
+            options.x[xIndex],
+            options.y[yIndex],
+            options.z[zIndex]
         ],
         textLabel: this.textLabels[index],
         name: this.name,
+        pointIndex: [xIndex, yIndex],
         hoverinfo: this.hoverinfo
     };
 };
@@ -87,6 +93,9 @@ proto.update = function(fullTrace, calcTrace) {
     this.textLabels = [].concat.apply([], fullTrace.text);
 
     this.heatmap.update(this.options);
+
+    Axes.expand(this.scene.xaxis, calcPt.x);
+    Axes.expand(this.scene.yaxis, calcPt.y);
 };
 
 proto.dispose = function() {

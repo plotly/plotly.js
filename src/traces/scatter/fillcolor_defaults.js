@@ -12,7 +12,6 @@
 var Color = require('../../components/color');
 
 
-// common to 'scatter' and 'scattergl'
 module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coerce) {
     var inheritColorFromMarker = false;
 

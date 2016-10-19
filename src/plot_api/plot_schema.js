@@ -10,61 +10,49 @@
 'use strict';
 
 var Plotly = require('../plotly');
+var Registry = require('../registry');
 var Plots = require('../plots/plots');
 var Lib = require('../lib');
+
+// FIXME polar attribute are not part of Plotly yet
+var polarAreaAttrs = require('../plots/polar/area_attributes');
+var polarAxisAttrs = require('../plots/polar/axis_attributes');
 
 var extendFlat = Lib.extendFlat;
 var extendDeep = Lib.extendDeep;
 var extendDeepAll = Lib.extendDeepAll;
 
 var NESTED_MODULE = '_nestedModules',
-    COMPOSED_MODULE = '_composedModules',
-    IS_SUBPLOT_OBJ = '_isSubplotObj',
-    IS_LINKED_TO_ARRAY = '_isLinkedToArray',
-    DEPRECATED = '_deprecated';
-
-// list of underscore attributes to keep in schema as is
-var UNDERSCORE_ATTRS = [IS_SUBPLOT_OBJ, IS_LINKED_TO_ARRAY, DEPRECATED];
+    COMPOSED_MODULE = '_composedModules';
 
 var plotSchema = {
     traces: {},
     layout: {},
+    transforms: {},
     defs: {}
 };
 
-// FIXME polar attribute are not part of Plotly yet
-var polarAreaAttrs = require('../plots/polar/area_attributes'),
-    polarAxisAttrs = require('../plots/polar/axis_attributes');
 
 var PlotSchema = module.exports = {};
 
 
 PlotSchema.get = function() {
-    Plots.allTypes
+    Registry.allTypes
         .concat('area')  // FIXME polar 'area' attributes
         .forEach(getTraceAttributes);
 
     getLayoutAttributes();
+
+    Object.keys(Registry.transformsRegistry).forEach(getTransformAttributes);
+
     getDefs();
+
     return plotSchema;
 };
 
-PlotSchema.crawl = function(attrs, callback) {
-    Object.keys(attrs).forEach(function(attrName) {
-        var attr = attrs[attrName];
+PlotSchema.crawl = Lib.crawl;
 
-        if(UNDERSCORE_ATTRS.indexOf(attrName) !== -1) return;
-
-        callback(attr, attrName, attrs);
-
-        if(PlotSchema.isValObject(attr)) return;
-        if(Lib.isPlainObject(attr)) PlotSchema.crawl(attr, callback);
-    });
-};
-
-PlotSchema.isValObject = function(obj) {
-    return obj && obj.valType !== undefined;
-};
+PlotSchema.isValObject = Lib.isValObject;
 
 function getTraceAttributes(type) {
     var globalAttributes = Plots.attributes,
@@ -124,22 +112,34 @@ function getLayoutAttributes() {
     // FIXME polar layout attributes
     layoutAttributes = assignPolarLayoutAttrs(layoutAttributes);
 
-    // add IS_SUBPLOT_OBJ attribute
+    // add crawler.IS_SUBPLOT_OBJ attribute
     layoutAttributes = handleSubplotObjs(layoutAttributes);
 
     layoutAttributes = removeUnderscoreAttrs(layoutAttributes);
     mergeValTypeAndRole(layoutAttributes);
 
-    // generate IS_LINKED_TO_ARRAY structure
+    // generate crawler.IS_LINKED_TO_ARRAY structure
     handleLinkedToArray(layoutAttributes);
 
     plotSchema.layout = { layoutAttributes: layoutAttributes };
 }
 
+function getTransformAttributes(name) {
+    var _module = Registry.transformsRegistry[name],
+        _schema = {};
+
+    _schema = coupleAttrs(_schema, _module.attributes || {}, 'attributes', '*');
+    _schema = removeUnderscoreAttrs(_schema);
+    mergeValTypeAndRole(_schema);
+    handleLinkedToArray(_schema);
+
+    plotSchema.transforms[name] = { attributes: _schema };
+}
+
 function getDefs() {
     plotSchema.defs = {
         valObjects: Lib.valObjects,
-        metaKeys: UNDERSCORE_ATTRS.concat(['description', 'role'])
+        metaKeys: Lib.UNDERSCORE_ATTRS.concat(['description', 'role'])
     };
 }
 
@@ -151,7 +151,7 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
 
         if(k === NESTED_MODULE) {
             Object.keys(attrsIn[k]).forEach(function(kk) {
-                nestedModule = getModule({module: attrsIn[k][kk]});
+                nestedModule = getModule({_module: attrsIn[k][kk]});
                 if(nestedModule === undefined) return;
 
                 nestedAttrs = nestedModule[whichAttrs];
@@ -169,7 +169,7 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
             Object.keys(attrsIn[k]).forEach(function(kk) {
                 if(kk !== type) return;
 
-                composedModule = getModule({module: attrsIn[k][kk]});
+                composedModule = getModule({_module: attrsIn[k][kk]});
                 if(composedModule === undefined) return;
 
                 composedAttrs = composedModule[whichAttrs];
@@ -222,7 +222,7 @@ function mergeValTypeAndRole(attrs) {
         }
     }
 
-    PlotSchema.crawl(attrs, callback);
+    Lib.crawl(attrs, callback);
 }
 
 // helper methods
@@ -231,27 +231,31 @@ function getModule(arg) {
     if('type' in arg) {
         return (arg.type === 'area') ?  // FIXME
             { attributes: polarAreaAttrs } :
-            Plots.getModule({type: arg.type});
+            Registry.getModule({type: arg.type});
     }
 
-    var subplotsRegistry = Plots.subplotsRegistry,
-        _module = arg.module;
+    var subplotsRegistry = Registry.subplotsRegistry,
+        componentsRegistry = Registry.componentsRegistry,
+        _module = arg._module;
 
     if(subplotsRegistry[_module]) return subplotsRegistry[_module];
-    else if('module' in arg) return Plotly[_module];
+    else if(componentsRegistry[_module]) return componentsRegistry[_module];
+
+    // look it internal Plotly if all previous attempts fail
+    return Plotly[_module];
 }
 
 function removeUnderscoreAttrs(attributes) {
     Object.keys(attributes).forEach(function(k) {
         if(k.charAt(0) === '_' &&
-            UNDERSCORE_ATTRS.indexOf(k) === -1) delete attributes[k];
+            Lib.UNDERSCORE_ATTRS.indexOf(k) === -1) delete attributes[k];
     });
     return attributes;
 }
 
 function getMeta(type) {
     if(type === 'area') return {};  // FIXME
-    return Plots.modules[type].meta || {};
+    return Registry.modules[type].meta || {};
 }
 
 function assignPolarLayoutAttrs(layoutAttributes) {
@@ -268,9 +272,9 @@ function assignPolarLayoutAttrs(layoutAttributes) {
 function getSubplotRegistry(traceType) {
     if(traceType === 'area') return {};  // FIXME
 
-    var subplotsRegistry = Plots.subplotsRegistry,
+    var subplotsRegistry = Registry.subplotsRegistry,
         subplotType = Object.keys(subplotsRegistry).filter(function(subplotType) {
-            return Plots.traceIs({type: traceType}, subplotType);
+            return Registry.traceIs({type: traceType}, subplotType);
         })[0];
 
     if(subplotType === undefined) return {};
@@ -279,7 +283,7 @@ function getSubplotRegistry(traceType) {
 }
 
 function handleSubplotObjs(layoutAttributes) {
-    var subplotsRegistry = Plots.subplotsRegistry;
+    var subplotsRegistry = Registry.subplotsRegistry;
 
     Object.keys(layoutAttributes).forEach(function(k) {
         Object.keys(subplotsRegistry).forEach(function(subplotType) {
@@ -298,7 +302,7 @@ function handleSubplotObjs(layoutAttributes) {
                 isSubplotObj = subplotRegistry.attrRegex.test(k);
             }
 
-            if(isSubplotObj) layoutAttributes[k][IS_SUBPLOT_OBJ] = true;
+            if(isSubplotObj) layoutAttributes[k][Lib.IS_SUBPLOT_OBJ] = true;
         });
     });
 
@@ -308,17 +312,17 @@ function handleSubplotObjs(layoutAttributes) {
 function handleLinkedToArray(layoutAttributes) {
 
     function callback(attr, attrName, attrs) {
-        if(attr[IS_LINKED_TO_ARRAY] !== true) return;
+        if(attr[Lib.IS_LINKED_TO_ARRAY] !== true) return;
 
         // TODO more robust logic
         var itemName = attrName.substr(0, attrName.length - 1);
 
-        delete attr[IS_LINKED_TO_ARRAY];
+        delete attr[Lib.IS_LINKED_TO_ARRAY];
 
         attrs[attrName] = { items: {} };
         attrs[attrName].items[itemName] = attr;
         attrs[attrName].role = 'object';
     }
 
-    PlotSchema.crawl(layoutAttributes, callback);
+    Lib.crawl(layoutAttributes, callback);
 }

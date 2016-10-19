@@ -116,7 +116,7 @@ module.exports = {
         ].join(' ')
     },
 
-    //Color field
+    // Color field
     color: {
         valType: 'color',
         role: 'style',
@@ -139,10 +139,10 @@ module.exports = {
         ].join(' ')
     },
 
-    //Opacity
+    // Opacity
     opacity: extendFlat({}, surfaceAtts.opacity),
 
-    //Flat shaded mode
+    // Flat shaded mode
     flatshading: {
         valType: 'boolean',
         role: 'style',

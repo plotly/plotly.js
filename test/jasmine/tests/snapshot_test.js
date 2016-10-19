@@ -1,6 +1,9 @@
 var Plotly = require('@lib/index');
+
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+
 var subplotMock = require('../../image/mocks/multiple_subplots.json');
 var annotationMock = require('../../image/mocks/annotations.json');
 
@@ -180,6 +183,29 @@ describe('Plotly.Snapshot', function() {
 
                 expect(svgElements.length).toBe(1);
             }).then(done);
+        });
+
+        it('should force *visibility: visible* for text elements with *visibility: inherit*', function(done) {
+            d3.select(gd).style('visibility', 'inherit');
+
+            Plotly.plot(gd, subplotMock.data, subplotMock.layout).then(function() {
+
+                d3.select(gd).selectAll('text').each(function() {
+                    expect(d3.select(this).style('visibility')).toEqual('visible');
+                });
+
+                return Plotly.Snapshot.toSVG(gd);
+            })
+            .then(function(svg) {
+                var svgDOM = parser.parseFromString(svg, 'image/svg+xml'),
+                    textElements = svgDOM.getElementsByTagName('text');
+
+                for(var i = 0; i < textElements.length; i++) {
+                    expect(textElements[i].style.visibility).toEqual('visible');
+                }
+
+                done();
+            });
         });
     });
 });

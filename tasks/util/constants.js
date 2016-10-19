@@ -1,5 +1,4 @@
 var path = require('path');
-
 var pkg = require('../../package.json');
 
 var pathToRoot = path.join(__dirname, '../../');
@@ -13,6 +12,19 @@ var pathToTopojsonSrc = path.join(
     path.dirname(require.resolve('sane-topojson')), 'dist/'
 );
 
+var partialBundleNames = [
+    'basic', 'cartesian', 'geo', 'gl3d', 'gl2d', 'mapbox', 'finance'
+];
+
+var partialBundlePaths = partialBundleNames.map(function(name) {
+    return {
+        name: name,
+        index: path.join(pathToLib, 'index-' + name + '.js'),
+        dist: path.join(pathToDist, 'plotly-' + name + '.js'),
+        distMin: path.join(pathToDist, 'plotly-' + name + '.min.js')
+    };
+});
+
 var year = (new Date()).getFullYear();
 
 module.exports = {
@@ -20,6 +32,7 @@ module.exports = {
     pathToSrc: pathToSrc,
     pathToLib: pathToLib,
     pathToBuild: pathToBuild,
+    pathToDist: pathToDist,
 
     pathToPlotlyIndex: path.join(pathToLib, 'index.js'),
     pathToPlotlyCore: path.join(pathToSrc, 'core.js'),
@@ -27,6 +40,9 @@ module.exports = {
     pathToPlotlyDist: path.join(pathToDist, 'plotly.js'),
     pathToPlotlyDistMin: path.join(pathToDist, 'plotly.min.js'),
     pathToPlotlyDistWithMeta: path.join(pathToDist, 'plotly-with-meta.js'),
+
+    partialBundleNames: partialBundleNames,
+    partialBundlePaths: partialBundlePaths,
 
     pathToTopojsonSrc: pathToTopojsonSrc,
     pathToTopojsonDist: path.join(pathToDist, 'topojson/'),
@@ -50,6 +66,20 @@ module.exports = {
 
     pathToJasmineTests: path.join(pathToRoot, 'test/jasmine/tests'),
     pathToJasmineBundleTests: path.join(pathToRoot, 'test/jasmine/bundle_tests'),
+    pathToRequireJS: path.join(pathToRoot, 'node_modules', 'requirejs', 'require.js'),
+    pathToRequireJSFixture: path.join(pathToBuild, 'requirejs_fixture.js'),
+
+    // this mapbox access token is 'public', no need to hide it
+    // more info: https://www.mapbox.com/help/define-access-token/
+    mapboxAccessToken: 'pk.eyJ1IjoiZXRwaW5hcmQiLCJhIjoiY2luMHIzdHE0MGFxNXVubTRxczZ2YmUxaCJ9.hwWZful0U2CQxit4ItNsiQ',
+    pathToCredentials: path.join(pathToBuild, 'credentials.json'),
+    pathToSetPlotConfig: path.join(pathToBuild, 'set_plot_config.js'),
+
+    testContainerImage: 'plotly/testbed:latest',
+    testContainerName: process.env.PLOTLYJS_TEST_CONTAINER_NAME || 'imagetest',
+    testContainerPort: '9010',
+    testContainerUrl: 'http://localhost:9010/',
+    testContainerHome: '/var/www/streambed/image_server/plotly.js',
 
     uglifyOptions: {
         fromString: true,

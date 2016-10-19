@@ -17,7 +17,6 @@ var layoutAttributes = require('./axis_attributes');
 var handleAxisDefaults = require('../../cartesian/axis_defaults');
 
 var axesNames = ['xaxis', 'yaxis', 'zaxis'];
-var noop = function() {};
 
 // TODO: hard-coded lightness fraction based on gridline default colors
 // that differ from other subplot types.
@@ -53,7 +52,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
         coerce('gridcolor', colorMix(containerOut.color, options.bgColor, gridLightness).toRgbString());
         coerce('title', axName[0]);  // shouldn't this be on-par with 2D?
 
-        containerOut.setScale = noop;
+        containerOut.setScale = Lib.noop;
 
         if(coerce('showspikes')) {
             coerce('spikesides');

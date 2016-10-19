@@ -15,7 +15,7 @@ var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 
 var subTypes = require('./subtypes');
-var calcMarkerColorscale = require('./marker_colorscale_calc');
+var calcColorscale = require('./colorscale_calc');
 
 
 module.exports = function calc(gd, trace) {
@@ -73,7 +73,7 @@ module.exports = function calc(gd, trace) {
             s.map(markerTrans) : markerTrans(s);
     }
 
-    calcMarkerColorscale(trace);
+    calcColorscale(trace);
 
     // TODO: text size
 
@@ -115,10 +115,14 @@ module.exports = function calc(gd, trace) {
     for(i = 0; i < serieslen; i++) {
         cd[i] = (isNumeric(x[i]) && isNumeric(y[i])) ?
             {x: x[i], y: y[i]} : {x: false, y: false};
+
+        if(trace.ids) {
+            cd[i].id = String(trace.ids[i]);
+        }
     }
 
     // this has migrated up from arraysToCalcdata as we have a reference to 's' here
-    if(typeof s !== undefined) Lib.mergeArray(s, cd, 'ms');
+    if(typeof s !== 'undefined') Lib.mergeArray(s, cd, 'ms');
 
     gd.firstscatter = false;
     return cd;

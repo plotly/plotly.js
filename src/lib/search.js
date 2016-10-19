@@ -10,8 +10,7 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-
-var Lib = require('../lib');
+var loggers = require('./loggers');
 
 
 /**
@@ -47,7 +46,7 @@ exports.findBin = function(val, bins, linelow) {
             if(test(bins[n], val)) n1 = n + 1;
             else n2 = n;
         }
-        if(c > 90) Lib.log('Long binary search...');
+        if(c > 90) loggers.log('Long binary search...');
         return n1 - 1;
     }
 };

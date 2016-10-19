@@ -9,12 +9,11 @@
 
 'use strict';
 
+var Lib = require('../../lib');
 var Axes = require('../cartesian/axes');
-
-var noop = function() {};
 
 
 module.exports = function setConvert(containerOut) {
     Axes.setConvert(containerOut);
-    containerOut.setScale = noop;
+    containerOut.setScale = Lib.noop;
 };

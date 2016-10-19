@@ -1,10 +1,18 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
+
 var RangeSlider = require('@src/components/rangeslider');
+var constants = require('@src/components/rangeslider/constants');
+var mock = require('../../image/mocks/range_slider.json');
+
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var mock = require('../../image/mocks/range_slider.json');
 var mouseEvent = require('../assets/mouse_event');
+var customMatchers = require('../assets/custom_matchers');
+
+var TOL = 6;
+
 
 describe('the range slider', function() {
 
@@ -12,7 +20,31 @@ describe('the range slider', function() {
         rangeSlider,
         children;
 
+    var sliderY = 393;
+
+    function getRangeSlider() {
+        var className = constants.containerClassName;
+        return document.getElementsByClassName(className)[0];
+    }
+
+    function countRangeSliderClipPaths() {
+        return d3.selectAll('defs').selectAll('*').filter(function() {
+            return this.id.indexOf('rangeslider') !== -1;
+        }).size();
+    }
+
+    function testTranslate1D(node, val) {
+        var transformParts = node.getAttribute('transform').split('(');
+
+        expect(transformParts[0]).toEqual('translate');
+        expect(+transformParts[1].split(',0)')[0]).toBeWithin(val, TOL);
+    }
+
     describe('when specified as visible', function() {
+
+        beforeAll(function() {
+            jasmine.addMatchers(customMatchers);
+        });
 
         beforeEach(function(done) {
             gd = createGraphDiv();
@@ -20,8 +52,9 @@ describe('the range slider', function() {
             var mockCopy = Lib.extendDeep({}, mock);
 
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-                rangeSlider = document.getElementsByClassName('range-slider')[0];
+                rangeSlider = getRangeSlider();
                 children = rangeSlider.children;
+
                 done();
             });
         });
@@ -54,67 +87,73 @@ describe('the range slider', function() {
         it('should react to resizing the minimum handle', function(done) {
             var start = 85,
                 end = 140,
-                dataMinStart = rangeSlider.getAttribute('data-min'),
                 diff = end - start;
 
-            slide(start, 400, end, 400).then(function() {
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49]);
+
+            slide(start, sliderY, end, sliderY).then(function() {
                 var maskMin = children[2],
                     handleMin = children[5];
 
-                expect(rangeSlider.getAttribute('data-min')).toEqual(String(+dataMinStart + diff));
+                expect(gd.layout.xaxis.range).toBeCloseToArray([4, 49], -0.5);
                 expect(maskMin.getAttribute('width')).toEqual(String(diff));
-                expect(handleMin.getAttribute('transform')).toBe('translate(' + (diff - 3) + ')');
+                expect(handleMin.getAttribute('transform')).toBe('translate(' + (diff - 3) + ',0)');
             }).then(done);
         });
 
         it('should react to resizing the maximum handle', function(done) {
-            var start = 705,
-                end = 500,
-                dataMaxStart = rangeSlider.getAttribute('data-max'),
+            var start = 695,
+                end = 490,
+                dataMaxStart = gd._fullLayout.xaxis.rangeslider.d2p(49),
                 diff = end - start;
 
-            slide(start, 400, end, 400).then(function() {
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49]);
+
+            slide(start, sliderY, end, sliderY).then(function() {
                 var maskMax = children[3],
                     handleMax = children[6];
 
-                expect(rangeSlider.getAttribute('data-max')).toEqual(String(+dataMaxStart + diff));
-                expect(maskMax.getAttribute('width')).toEqual(String(-diff));
-                expect(handleMax.getAttribute('transform')).toBe('translate(' + (+dataMaxStart + diff) + ')');
+                expect(gd.layout.xaxis.range).toBeCloseToArray([0, 32.77], -0.5);
+                expect(+maskMax.getAttribute('width')).toBeCloseTo(-diff);
+
+                testTranslate1D(handleMax, dataMaxStart + diff);
             }).then(done);
         });
 
         it('should react to moving the slidebox left to right', function(done) {
             var start = 250,
                 end = 300,
-                dataMinStart = rangeSlider.getAttribute('data-min'),
+                dataMinStart = gd._fullLayout.xaxis.rangeslider.d2p(0),
                 diff = end - start;
 
-            slide(start, 400, end, 400).then(function() {
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49]);
+
+            slide(start, sliderY, end, sliderY).then(function() {
                 var maskMin = children[2],
                     handleMin = children[5];
 
-                expect(rangeSlider.getAttribute('data-min')).toEqual(String(+dataMinStart + diff));
-                expect(maskMin.getAttribute('width')).toEqual(String(diff));
-                expect(handleMin.getAttribute('transform')).toEqual('translate(' + (+dataMinStart + diff - 3) + ')');
+                expect(gd.layout.xaxis.range).toBeCloseToArray([3.96, 49], -0.5);
+                expect(+maskMin.getAttribute('width')).toBeCloseTo(String(diff));
+                testTranslate1D(handleMin, dataMinStart + diff - 3);
             }).then(done);
         });
 
         it('should react to moving the slidebox right to left', function(done) {
             var start = 300,
                 end = 250,
-                dataMaxStart = rangeSlider.getAttribute('data-max'),
+                dataMaxStart = gd._fullLayout.xaxis.rangeslider.d2p(49),
                 diff = end - start;
 
-            slide(start, 400, end, 400).then(function() {
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49]);
+
+            slide(start, sliderY, end, sliderY).then(function() {
                 var maskMax = children[3],
                     handleMax = children[6];
 
-                expect(rangeSlider.getAttribute('data-max')).toEqual(String(+dataMaxStart + diff));
-                expect(maskMax.getAttribute('width')).toEqual(String(-diff));
-                expect(handleMax.getAttribute('transform')).toEqual('translate(' + (+dataMaxStart + diff) + ')');
+                expect(gd.layout.xaxis.range).toBeCloseToArray([0, 45.04], -0.5);
+                expect(+maskMax.getAttribute('width')).toBeCloseTo(-diff);
+                testTranslate1D(handleMax, dataMaxStart + diff);
             }).then(done);
-
-
         });
 
         it('should resize the main plot when rangeslider has moved', function(done) {
@@ -124,14 +163,14 @@ describe('the range slider', function() {
                 rangeDiff2,
                 rangeDiff3;
 
-            slide(start, 400, end, 400).then(function() {
+            slide(start, sliderY, end, sliderY).then(function() {
                 rangeDiff2 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
                 expect(rangeDiff2).toBeLessThan(rangeDiff1);
             }).then(function() {
                 start = 400;
                 end = 200;
 
-                return slide(start, 400, end, 400);
+                return slide(start, sliderY, end, sliderY);
             }).then(function() {
                 rangeDiff3 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
                 expect(rangeDiff3).toBeLessThan(rangeDiff2);
@@ -139,22 +178,107 @@ describe('the range slider', function() {
         });
 
         it('should relayout with relayout "array syntax"', function(done) {
-            Plotly.relayout(gd, 'xaxis.range', [10, 20])
-                .then(function() {
-                    expect(gd._fullLayout.xaxis.range).toEqual([10, 20]);
-                    expect(+rangeSlider.getAttribute('data-min')).toBeCloseTo(125.51, 0);
-                    expect(+rangeSlider.getAttribute('data-max')).toBeCloseTo(251.02, 0);
-                })
-                .then(done);
+            Plotly.relayout(gd, 'xaxis.range', [10, 20]).then(function() {
+                var maskMin = children[2],
+                    maskMax = children[3],
+                    handleMin = children[5],
+                    handleMax = children[6];
+
+                expect(+maskMin.getAttribute('width')).toBeWithin(125, TOL);
+                expect(+maskMax.getAttribute('width')).toBeWithin(365, TOL);
+                testTranslate1D(handleMin, 123.32);
+                testTranslate1D(handleMax, 252.65);
+            })
+            .then(done);
         });
 
         it('should relayout with relayout "element syntax"', function(done) {
-            Plotly.relayout(gd, 'xaxis.range[0]', 10)
-                .then(function() {
-                    expect(gd._fullLayout.xaxis.range[0]).toEqual(10);
-                    expect(+rangeSlider.getAttribute('data-min')).toBeCloseTo(125.51, 0);
-                })
-                .then(done);
+            Plotly.relayout(gd, 'xaxis.range[0]', 10).then(function() {
+                var maskMin = children[2],
+                    maskMax = children[3],
+                    handleMin = children[5],
+                    handleMax = children[6];
+
+                expect(+maskMin.getAttribute('width')).toBeWithin(126, TOL);
+                expect(+maskMax.getAttribute('width')).toEqual(0);
+                testTranslate1D(handleMin, 123.32);
+                testTranslate1D(handleMax, 619);
+            })
+            .then(done);
+        });
+
+        it('should relayout with style options', function(done) {
+            var bg = children[0],
+                maskMin = children[2],
+                maskMax = children[3];
+
+            var maskMinWidth, maskMaxWidth;
+
+            Plotly.relayout(gd, 'xaxis.range', [5, 10]).then(function() {
+                maskMinWidth = +maskMin.getAttribute('width'),
+                maskMaxWidth = +maskMax.getAttribute('width');
+
+                return Plotly.relayout(gd, 'xaxis.rangeslider.bgcolor', 'red');
+            })
+            .then(function() {
+                expect(+maskMin.getAttribute('width')).toEqual(maskMinWidth);
+                expect(+maskMax.getAttribute('width')).toEqual(maskMaxWidth);
+
+                expect(bg.getAttribute('fill')).toBe('red');
+                expect(bg.getAttribute('stroke')).toBe('black');
+                expect(bg.getAttribute('stroke-width')).toBe('2');
+
+                return Plotly.relayout(gd, 'xaxis.rangeslider.bordercolor', 'blue');
+            })
+            .then(function() {
+                expect(+maskMin.getAttribute('width')).toEqual(maskMinWidth);
+                expect(+maskMax.getAttribute('width')).toEqual(maskMaxWidth);
+
+                expect(bg.getAttribute('fill')).toBe('red');
+                expect(bg.getAttribute('stroke')).toBe('blue');
+                expect(bg.getAttribute('stroke-width')).toBe('2');
+
+                return Plotly.relayout(gd, 'xaxis.rangeslider.borderwidth', 3);
+            })
+            .then(function() {
+                expect(+maskMin.getAttribute('width')).toEqual(maskMinWidth);
+                expect(+maskMax.getAttribute('width')).toEqual(maskMaxWidth);
+
+                expect(bg.getAttribute('fill')).toBe('red');
+                expect(bg.getAttribute('stroke')).toBe('blue');
+                expect(bg.getAttribute('stroke-width')).toBe('3');
+            })
+            .then(done);
+        });
+
+        it('should relayout on size / domain udpate', function(done) {
+            var maskMin = children[2],
+                maskMax = children[3];
+
+            Plotly.relayout(gd, 'xaxis.range', [5, 10]).then(function() {
+                expect(+maskMin.getAttribute('width')).toBeWithin(63.16, TOL);
+                expect(+maskMax.getAttribute('width')).toBeWithin(492.67, TOL);
+
+                return Plotly.relayout(gd, 'xaxis.domain', [0.3, 0.7]);
+            })
+            .then(function() {
+                var maskMin = children[2],
+                    maskMax = children[3];
+
+                expect(+maskMin.getAttribute('width')).toBeWithin(25.26, TOL);
+                expect(+maskMax.getAttribute('width')).toBeWithin(197.06, TOL);
+
+                return Plotly.relayout(gd, 'width', 400);
+            })
+            .then(function() {
+                var maskMin = children[2],
+                    maskMax = children[3];
+
+                expect(+maskMin.getAttribute('width')).toBeWithin(9.22, TOL);
+                expect(+maskMax.getAttribute('width')).toBeWithin(71.95, TOL);
+
+            })
+            .then(done);
         });
     });
 
@@ -169,7 +293,7 @@ describe('the range slider', function() {
         it('should not add the slider to the DOM by default', function(done) {
             Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
                 .then(function() {
-                    var rangeSlider = document.getElementsByClassName('range-slider')[0];
+                    var rangeSlider = getRangeSlider();
                     expect(rangeSlider).not.toBeDefined();
                 })
                 .then(done);
@@ -179,7 +303,7 @@ describe('the range slider', function() {
             Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
                 .then(function() { Plotly.relayout(gd, 'xaxis.rangeslider', 'exists'); })
                 .then(function() {
-                    var rangeSlider = document.getElementsByClassName('range-slider')[0];
+                    var rangeSlider = getRangeSlider();
                     expect(rangeSlider).toBeDefined();
                 })
                 .then(done);
@@ -189,8 +313,9 @@ describe('the range slider', function() {
             Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
                 .then(function() { Plotly.relayout(gd, 'xaxis.rangeslider.visible', true); })
                 .then(function() {
-                    var rangeSlider = document.getElementsByClassName('range-slider')[0];
+                    var rangeSlider = getRangeSlider();
                     expect(rangeSlider).toBeDefined();
+                    expect(countRangeSliderClipPaths()).toEqual(1);
                 })
                 .then(done);
         });
@@ -199,14 +324,15 @@ describe('the range slider', function() {
             Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], { xaxis: { rangeslider: { visible: true }}})
                 .then(function() { Plotly.relayout(gd, 'xaxis.rangeslider.visible', false); })
                 .then(function() {
-                    var rangeSlider = document.getElementsByClassName('range-slider')[0];
+                    var rangeSlider = getRangeSlider();
                     expect(rangeSlider).not.toBeDefined();
+                    expect(countRangeSliderClipPaths()).toEqual(0);
                 })
                 .then(done);
         });
     });
 
-    describe('supplyLayoutDefaults function', function() {
+    describe('handleDefaults function', function() {
 
         it('should not coerce anything if rangeslider isn\'t set', function() {
             var layoutIn = { xaxis: {}, yaxis: {}},
@@ -215,7 +341,7 @@ describe('the range slider', function() {
                 counterAxes = ['yaxis'],
                 expected = { xaxis: {}, yaxis: {}};
 
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+            RangeSlider.handleDefaults(layoutIn, layoutOut, axName, counterAxes);
 
             expect(layoutIn).toEqual(expected);
         });
@@ -227,7 +353,7 @@ describe('the range slider', function() {
                 counterAxes = ['yaxis'],
                 expected = { xaxis: { rangeslider: { visible: true }}, yaxis: {}};
 
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+            RangeSlider.handleDefaults(layoutIn, layoutOut, axName, counterAxes);
 
             expect(layoutIn).toEqual(expected);
         });
@@ -244,16 +370,17 @@ describe('the range slider', function() {
                             thickness: 0.15,
                             bgcolor: '#fff',
                             borderwidth: 0,
-                            bordercolor: '#444'
+                            bordercolor: '#444',
+                            _input: layoutIn.xaxis.rangeslider
                         },
                         _needsExpand: true
                     },
                     yaxis: {
                         fixedrange: true
-                    }
+                    },
                 };
 
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+            RangeSlider.handleDefaults(layoutIn, layoutOut, axName, counterAxes);
 
             expect(layoutOut).toEqual(expected);
         });
@@ -270,7 +397,8 @@ describe('the range slider', function() {
                             thickness: 0.15,
                             bgcolor: '#fff',
                             borderwidth: 0,
-                            bordercolor: '#444'
+                            bordercolor: '#444',
+                            _input: layoutIn.xaxis.rangeslider
                         },
                         _needsExpand: true
                     },
@@ -279,7 +407,7 @@ describe('the range slider', function() {
                     }
                 };
 
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+            RangeSlider.handleDefaults(layoutIn, layoutOut, axName, counterAxes);
 
             expect(layoutOut).toEqual(expected);
         });
@@ -302,7 +430,8 @@ describe('the range slider', function() {
                             thickness: 0.15,
                             bgcolor: '#fff',
                             borderwidth: 0,
-                            bordercolor: '#444'
+                            bordercolor: '#444',
+                            _input: layoutIn.xaxis.rangeslider
                         },
                         _needsExpand: true
                     },
@@ -311,7 +440,7 @@ describe('the range slider', function() {
                     }
                 };
 
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+            RangeSlider.handleDefaults(layoutIn, layoutOut, axName, counterAxes);
 
             expect(layoutOut).toEqual(expected);
         });
@@ -328,7 +457,8 @@ describe('the range slider', function() {
                             thickness: 0.15,
                             bgcolor: '#fff',
                             borderwidth: 0,
-                            bordercolor: '#444'
+                            bordercolor: '#444',
+                            _input: {}
                         },
                         _needsExpand: true
                     },
@@ -336,7 +466,7 @@ describe('the range slider', function() {
                     yaxis2: { fixedrange: true }
                 };
 
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+            RangeSlider.handleDefaults(layoutIn, layoutOut, axName, counterAxes);
 
             expect(layoutOut).toEqual(expected);
         });
@@ -354,14 +484,15 @@ describe('the range slider', function() {
                             bgcolor: '#fff',
                             borderwidth: 0,
                             bordercolor: '#444',
-                            range: [1, 10]
+                            range: [1, 10],
+                            _input: layoutIn.xaxis.rangeslider
                         },
                         range: [1, 10]
                     },
                     yaxis: { fixedrange: true }
                 };
 
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+            RangeSlider.handleDefaults(layoutIn, layoutOut, axName, counterAxes);
 
             expect(layoutOut).toEqual(expected);
         });
@@ -378,7 +509,8 @@ describe('the range slider', function() {
                             thickness: 0.15,
                             bgcolor: '#fff',
                             borderwidth: 0,
-                            bordercolor: '#444'
+                            bordercolor: '#444',
+                            _input: {}
                         },
                         range: [2, 40],
                         _needsExpand: true
@@ -386,9 +518,29 @@ describe('the range slider', function() {
                     yaxis: { fixedrange: true }
                 };
 
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+            RangeSlider.handleDefaults(layoutIn, layoutOut, axName, counterAxes);
 
             expect(layoutOut).toEqual(expected);
+        });
+
+        it('should default \'bgcolor\' to layout \'plot_bgcolor\'', function() {
+            var layoutIn = {
+                xaxis: { rangeslider: true },
+                yaxis: {},
+            };
+
+            var layoutOut = {
+                xaxis: { range: [2, 40]},
+                yaxis: {},
+                plot_bgcolor: 'blue'
+            };
+
+            var axName = 'xaxis',
+                counterAxes = ['yaxis'];
+
+            RangeSlider.handleDefaults(layoutIn, layoutOut, axName, counterAxes);
+
+            expect(layoutOut.xaxis.rangeslider.bgcolor).toEqual('blue');
         });
     });
 
@@ -403,9 +555,9 @@ describe('the range slider', function() {
         it('should plot when only x data is provided', function(done) {
             Plotly.plot(gd, [{ x: [1, 2, 3] }], { xaxis: { rangeslider: {} }})
                 .then(function() {
-                    var rangeslider = document.getElementsByClassName('range-slider');
+                    var rangeSlider = getRangeSlider();
 
-                    expect(rangeslider.length).toBe(1);
+                    expect(rangeSlider).toBeDefined();
                 })
                 .then(done);
         });
@@ -413,9 +565,9 @@ describe('the range slider', function() {
         it('should plot when only y data is provided', function(done) {
             Plotly.plot(gd, [{ y: [1, 2, 3] }], { xaxis: { rangeslider: {} }})
                 .then(function() {
-                    var rangeslider = document.getElementsByClassName('range-slider');
+                    var rangeSlider = getRangeSlider();
 
-                    expect(rangeslider.length).toBe(1);
+                    expect(rangeSlider).toBeDefined();
                 })
                 .then(done);
         });

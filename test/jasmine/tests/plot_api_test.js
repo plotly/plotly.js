@@ -6,7 +6,9 @@ var Scatter = require('@src/traces/scatter');
 var Bar = require('@src/traces/bar');
 var Legend = require('@src/components/legend');
 var pkg = require('../../../package.json');
+var subroutines = require('@src/plot_api/subroutines');
 
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -48,11 +50,45 @@ describe('Test plot api', function() {
                 })
                 .then(done);
         });
+
+        it('sets null values to their default', function(done) {
+            var defaultWidth;
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }])
+                .then(function() {
+                    defaultWidth = gd._fullLayout.width;
+                    return Plotly.relayout(gd, { width: defaultWidth - 25});
+                })
+                .then(function() {
+                    expect(gd._fullLayout.width).toBe(defaultWidth - 25);
+                    return Plotly.relayout(gd, { width: null });
+                })
+                .then(function() {
+                    expect(gd._fullLayout.width).toBe(defaultWidth);
+                })
+                .then(done);
+        });
+
+        it('ignores undefined values', function(done) {
+            var defaultWidth;
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }])
+                .then(function() {
+                    defaultWidth = gd._fullLayout.width;
+                    return Plotly.relayout(gd, { width: defaultWidth - 25});
+                })
+                .then(function() {
+                    expect(gd._fullLayout.width).toBe(defaultWidth - 25);
+                    return Plotly.relayout(gd, { width: undefined });
+                })
+                .then(function() {
+                    expect(gd._fullLayout.width).toBe(defaultWidth - 25);
+                })
+                .then(done);
+        });
     });
 
     describe('Plotly.restyle', function() {
         beforeEach(function() {
-            spyOn(Plotly, 'plot');
+            spyOn(PlotlyInternal, 'plot');
             spyOn(Plots, 'previousPromises');
             spyOn(Scatter, 'arraysToCalcdata');
             spyOn(Bar, 'arraysToCalcdata');
@@ -77,7 +113,7 @@ describe('Test plot api', function() {
             expect(Scatter.arraysToCalcdata).toHaveBeenCalled();
             expect(Bar.arraysToCalcdata).not.toHaveBeenCalled();
             expect(Plots.style).toHaveBeenCalled();
-            expect(Plotly.plot).not.toHaveBeenCalled();
+            expect(PlotlyInternal.plot).not.toHaveBeenCalled();
             // "docalc" deletes gd.calcdata - make sure this didn't happen
             expect(gd.calcdata).toBeDefined();
         });
@@ -92,8 +128,80 @@ describe('Test plot api', function() {
             expect(Scatter.arraysToCalcdata).not.toHaveBeenCalled();
             expect(Bar.arraysToCalcdata).toHaveBeenCalled();
             expect(Plots.style).toHaveBeenCalled();
-            expect(Plotly.plot).not.toHaveBeenCalled();
+            expect(PlotlyInternal.plot).not.toHaveBeenCalled();
             expect(gd.calcdata).toBeDefined();
+        });
+
+        it('calls plot on xgap and ygap styling', function() {
+            var gd = {
+                data: [{z: [[1, 2, 3], [4, 5, 6], [7, 8, 9]], showscale: false, type: 'heatmap'}],
+                layout: {}
+            };
+
+            mockDefaultsAndCalc(gd);
+            Plotly.restyle(gd, {'xgap': 2});
+            expect(PlotlyInternal.plot).toHaveBeenCalled();
+
+            Plotly.restyle(gd, {'ygap': 2});
+            expect(PlotlyInternal.plot.calls.count()).toEqual(2);
+        });
+
+        it('ignores undefined values', function() {
+            var gd = {
+                data: [{x: [1, 2, 3], y: [1, 2, 3], type: 'scatter'}],
+                layout: {}
+            };
+
+            mockDefaultsAndCalc(gd);
+
+            // Check to see that the color is updated:
+            Plotly.restyle(gd, {'marker.color': 'blue'});
+            expect(gd._fullData[0].marker.color).toBe('blue');
+
+            // Check to see that the color is unaffected:
+            Plotly.restyle(gd, {'marker.color': undefined});
+            expect(gd._fullData[0].marker.color).toBe('blue');
+        });
+
+        it('restores null values to defaults', function() {
+            var gd = {
+                data: [{x: [1, 2, 3], y: [1, 2, 3], type: 'scatter'}],
+                layout: {}
+            };
+
+            mockDefaultsAndCalc(gd);
+            var colorDflt = gd._fullData[0].marker.color;
+
+            // Check to see that the color is updated:
+            Plotly.restyle(gd, {'marker.color': 'blue'});
+            expect(gd._fullData[0].marker.color).toBe('blue');
+
+            // Check to see that the color is restored to the original default:
+            Plotly.restyle(gd, {'marker.color': null});
+            expect(gd._fullData[0].marker.color).toBe(colorDflt);
+        });
+
+        it('can target specific traces by leaving properties undefined', function() {
+            var gd = {
+                data: [
+                    {x: [1, 2, 3], y: [1, 2, 3], type: 'scatter'},
+                    {x: [1, 2, 3], y: [3, 4, 5], type: 'scatter'}
+                ],
+                layout: {}
+            };
+
+            mockDefaultsAndCalc(gd);
+            var colorDflt = [gd._fullData[0].marker.color, gd._fullData[1].marker.color];
+
+            // Check only second trace's color has been changed:
+            Plotly.restyle(gd, {'marker.color': [undefined, 'green']});
+            expect(gd._fullData[0].marker.color).toBe(colorDflt[0]);
+            expect(gd._fullData[1].marker.color).toBe('green');
+
+            // Check both colors restored to the original default:
+            Plotly.restyle(gd, {'marker.color': [null, null]});
+            expect(gd._fullData[0].marker.color).toBe(colorDflt[0]);
+            expect(gd._fullData[1].marker.color).toBe(colorDflt[1]);
         });
 
     });
@@ -420,6 +528,7 @@ describe('Test plot api', function() {
 
     describe('Plotly.ExtendTraces', function() {
         var gd;
+
         beforeEach(function() {
             gd = {
                 data: [
@@ -671,6 +780,43 @@ describe('Test plot api', function() {
         });
     });
 
+    describe('Plotly.redraw', function() {
+
+        afterEach(destroyGraphDiv);
+
+        it('', function(done) {
+            var gd = createGraphDiv(),
+                initialData = [],
+                layout = { title: 'Redraw' };
+
+            Plotly.newPlot(gd, initialData, layout);
+
+            var trace1 = {
+                x: [1, 2, 3, 4],
+                y: [4, 1, 5, 3],
+                name: 'First Trace'
+            };
+            var trace2 = {
+                x: [1, 2, 3, 4],
+                y: [14, 11, 15, 13],
+                name: 'Second Trace'
+            };
+            var trace3 = {
+                x: [1, 2, 3, 4],
+                y: [5, 3, 7, 1],
+                name: 'Third Trace'
+            };
+
+            var newData = [trace1, trace2, trace3];
+            gd.data = newData;
+
+            Plotly.redraw(gd).then(function() {
+                expect(d3.selectAll('g.trace.scatter').size()).toEqual(3);
+            })
+            .then(done);
+        });
+    });
+
     describe('cleanData', function() {
         var gd;
 
@@ -814,6 +960,106 @@ describe('Test plot api', function() {
                     expect(fullLayout.height).toBe(height);
                     expect(+svg.getAttribute('height')).toBe(height);
                 }).then(done);
+            });
+        });
+    });
+
+    describe('Plotly.update should', function() {
+        var gd, data, layout, calcdata;
+
+        beforeAll(function() {
+            Object.keys(subroutines).forEach(function(k) {
+                spyOn(subroutines, k).and.callThrough();
+            });
+        });
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            Plotly.plot(gd, [{ y: [2, 1, 2] }]).then(function() {
+                data = gd.data;
+                layout = gd.layout;
+                calcdata = gd.calcdata;
+                done();
+            });
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('call doTraceStyle on trace style updates', function(done) {
+            expect(subroutines.doTraceStyle).not.toHaveBeenCalled();
+
+            Plotly.update(gd, { 'marker.color': 'blue' }).then(function() {
+                expect(subroutines.doTraceStyle).toHaveBeenCalledTimes(1);
+                expect(calcdata).toBe(gd.calcdata);
+                done();
+            });
+        });
+
+        it('clear calcdata on data updates', function(done) {
+            Plotly.update(gd, { x: [[3, 1, 3]] }).then(function() {
+                expect(data).toBe(gd.data);
+                expect(layout).toBe(gd.layout);
+                expect(calcdata).not.toBe(gd.calcdata);
+                done();
+            });
+        });
+
+        it('clear calcdata on data + axis updates w/o extending current gd.data', function(done) {
+            var traceUpdate = {
+                x: [[3, 1, 3]]
+            };
+
+            var layoutUpdate = {
+                xaxis: {title: 'A', type: '-'}
+            };
+
+            Plotly.update(gd, traceUpdate, layoutUpdate).then(function() {
+                expect(data).toBe(gd.data);
+                expect(layout).toBe(gd.layout);
+                expect(calcdata).not.toBe(gd.calcdata);
+
+                expect(gd.data.length).toEqual(1);
+
+                done();
+            });
+        });
+
+        it('call doLegend on legend updates', function(done) {
+            expect(subroutines.doLegend).not.toHaveBeenCalled();
+
+            Plotly.update(gd, {}, { 'showlegend': true }).then(function() {
+                expect(subroutines.doLegend).toHaveBeenCalledTimes(1);
+                expect(calcdata).toBe(gd.calcdata);
+                done();
+            });
+        });
+
+        it('call layoutReplot when adding update menu', function(done) {
+            expect(subroutines.layoutReplot).not.toHaveBeenCalled();
+
+            var layoutUpdate = {
+                updatemenus: [{
+                    buttons: [{
+                        method: 'relayout',
+                        args: ['title', 'Hello World']
+                    }]
+                }]
+            };
+
+            Plotly.update(gd, {}, layoutUpdate).then(function() {
+                expect(subroutines.doLegend).toHaveBeenCalledTimes(1);
+                expect(calcdata).toBe(gd.calcdata);
+                done();
+            });
+        });
+
+        it('call doModeBar when updating \'dragmode\'', function(done) {
+            expect(subroutines.doModeBar).not.toHaveBeenCalled();
+
+            Plotly.update(gd, {}, { 'dragmode': 'pan' }).then(function() {
+                expect(subroutines.doModeBar).toHaveBeenCalledTimes(1);
+                expect(calcdata).toBe(gd.calcdata);
+                done();
             });
         });
     });

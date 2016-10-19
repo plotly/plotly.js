@@ -109,8 +109,8 @@ fx.init = function(gd) {
 
         if(!fullLayout._has('cartesian')) return;
 
-        var xa = plotinfo.x(),
-            ya = plotinfo.y(),
+        var xa = plotinfo.xaxis,
+            ya = plotinfo.yaxis,
 
             // the y position of the main x axis line
             y0 = (xa._linepositions[subplot] || [])[3],
@@ -379,6 +379,7 @@ function hover(gd, evt, subplot) {
         curvenum,
         cd,
         trace,
+        subplotId,
         subploti,
         mode,
         xval,
@@ -394,14 +395,16 @@ function hover(gd, evt, subplot) {
         hovermode = 'array';
         for(itemnum = 0; itemnum < evt.length; itemnum++) {
             cd = gd.calcdata[evt[itemnum].curveNumber||0];
-            searchData.push(cd);
+            if(cd[0].trace.hoverinfo !== 'skip') {
+                searchData.push(cd);
+            }
         }
     }
     else {
         for(curvenum = 0; curvenum < gd.calcdata.length; curvenum++) {
             cd = gd.calcdata[curvenum];
             trace = cd[0].trace;
-            if(subplots.indexOf(getSubplot(trace)) !== -1) {
+            if(trace.hoverinfo !== 'skip' && subplots.indexOf(getSubplot(trace)) !== -1) {
                 searchData.push(cd);
             }
         }
@@ -447,7 +450,7 @@ function hover(gd, evt, subplot) {
         else yvalArray = p2c(yaArray, ypx);
 
         if(!isNumeric(xvalArray[0]) || !isNumeric(yvalArray[0])) {
-            Lib.warn('Plotly.Fx.hover failed', evt, gd);
+            Lib.warn('Fx.hover failed', evt, gd);
             return dragElement.unhoverRaw(gd, evt);
         }
     }
@@ -466,7 +469,8 @@ function hover(gd, evt, subplot) {
         if(!cd || !cd[0] || !cd[0].trace || cd[0].trace.visible !== true) continue;
 
         trace = cd[0].trace;
-        subploti = subplots.indexOf(getSubplot(trace));
+        subplotId = getSubplot(trace);
+        subploti = subplots.indexOf(subplotId);
 
         // within one trace mode can sometimes be overridden
         mode = hovermode;
@@ -492,6 +496,11 @@ function hover(gd, evt, subplot) {
             zLabelVal: undefined,
             text: undefined
         };
+
+        // add ref to subplot object (non-cartesian case)
+        if(fullLayout[subplotId]) {
+            pointData.subplot = fullLayout[subplotId]._subplot;
+        }
 
         closedataPreviousLength = hoverData.length;
 
@@ -543,7 +552,6 @@ function hover(gd, evt, subplot) {
             hoverData.splice(0, closedataPreviousLength);
             distance = hoverData[0].distance;
         }
-
     }
 
     // nothing left: remove all labels and quit
@@ -581,31 +589,35 @@ function hover(gd, evt, subplot) {
     // other people and send it to the event
     for(itemnum = 0; itemnum < hoverData.length; itemnum++) {
         var pt = hoverData[itemnum];
+
         var out = {
             data: pt.trace._input,
             fullData: pt.trace,
             curveNumber: pt.trace.index,
-            pointNumber: pt.index,
-            x: pt.xVal,
-            y: pt.yVal,
-            xaxis: pt.xa,
-            yaxis: pt.ya
+            pointNumber: pt.index
         };
-        if(pt.zLabelVal !== undefined) out.z = pt.zLabelVal;
+
+        if(pt.trace._module.eventData) out = pt.trace._module.eventData(out, pt);
+        else {
+            out.x = pt.xVal;
+            out.y = pt.yVal;
+            out.xaxis = pt.xa;
+            out.yaxis = pt.ya;
+
+            if(pt.zLabelVal !== undefined) out.z = pt.zLabelVal;
+        }
+
         newhoverdata.push(out);
     }
+
     gd._hoverdata = newhoverdata;
 
     if(!hoverChanged(gd, evt, oldhoverdata)) return;
 
-    /* Emit the custom hover handler. Bind this like:
-     *  gd.on('hover.plotly', function(extras) {
-     *      // do something with extras.data
-     *  });
-     */
     if(oldhoverdata) {
         gd.emit('plotly_unhover', { points: oldhoverdata });
     }
+
     gd.emit('plotly_hover', {
         points: gd._hoverdata,
         xaxes: xaArray,
@@ -618,7 +630,7 @@ function hover(gd, evt, subplot) {
 // look for either .subplot (currently just ternary)
 // or xaxis and yaxis attributes
 function getSubplot(trace) {
-    return trace.subplot || (trace.xaxis + trace.yaxis);
+    return trace.subplot || (trace.xaxis + trace.yaxis) || trace.geo;
 }
 
 fx.getDistanceFunction = function(mode, dx, dy, dxy) {
@@ -695,7 +707,7 @@ function cleanPoint(d, hovermode) {
             d.xLabel += ' +' + xeText + ' / -' +
                 Axes.tickText(d.xa, d.xa.c2l(d.xerrneg), 'hover').text;
         }
-        else d.xLabel += ' &plusmn; ' + xeText;
+        else d.xLabel += ' ± ' + xeText;
 
         // small distance penalty for error bars, so that if there are
         // traces with errors and some without, the error bar label will
@@ -708,7 +720,7 @@ function cleanPoint(d, hovermode) {
             d.yLabel += ' +' + yeText + ' / -' +
                 Axes.tickText(d.ya, d.ya.c2l(d.yerrneg), 'hover').text;
         }
-        else d.yLabel += ' &plusmn; ' + yeText;
+        else d.yLabel += ' ± ' + yeText;
 
         if(hovermode === 'y') d.distance += 1;
     }
@@ -722,6 +734,7 @@ function cleanPoint(d, hovermode) {
         if(infomode.indexOf('text') === -1) d.text = undefined;
         if(infomode.indexOf('name') === -1) d.name = undefined;
     }
+
     return d;
 }
 
@@ -1208,7 +1221,7 @@ function hoverAvoidOverlaps(hoverData, ax) {
                 p1 = g1[0];
             topOverlap = p0.pos + p0.dp + p0.size - p1.pos - p1.dp + p1.size;
 
-            //Only group points that lie on the same axes
+            // Only group points that lie on the same axes
             if(topOverlap > 0.01 && (p0.pmin === p1.pmin) && (p0.pmax === p1.pmax)) {
                 // push the new point(s) added to this group out of the way
                 for(j = g1.length - 1; j >= 0; j--) g1[j].dp += topOverlap;

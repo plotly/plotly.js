@@ -11,7 +11,7 @@
 
 var isNumeric = require('fast-isnumeric');
 
-var Plots = require('../../plots/plots');
+var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 
@@ -24,20 +24,20 @@ var Lib = require('../../lib');
 
 module.exports = function setPositions(gd, plotinfo) {
     var fullLayout = gd._fullLayout,
-        xa = plotinfo.x(),
-        ya = plotinfo.y(),
+        xa = plotinfo.xaxis,
+        ya = plotinfo.yaxis,
         i, j;
 
     ['v', 'h'].forEach(function(dir) {
         var bl = [],
             pLetter = {v: 'x', h: 'y'}[dir],
             sLetter = {v: 'y', h: 'x'}[dir],
-            pa = plotinfo[pLetter](),
-            sa = plotinfo[sLetter]();
+            pa = plotinfo[pLetter + 'axis'],
+            sa = plotinfo[sLetter + 'axis'];
 
         gd._fullData.forEach(function(trace, i) {
             if(trace.visible === true &&
-                    Plots.traceIs(trace, 'bar') &&
+                    Registry.traceIs(trace, 'bar') &&
                     trace.orientation === dir &&
                     trace.xaxis === xa._id &&
                     trace.yaxis === ya._id) {
@@ -142,9 +142,17 @@ module.exports = function setPositions(gd, plotinfo) {
             for(i = 0; i < bl.length; i++) { // trace index
                 ti = gd.calcdata[bl[i]];
                 for(j = 0; j < ti.length; j++) {
+
+                    // skip over bars with no size,
+                    // so that we don't try to stack them
+                    if(!isNumeric(ti[j].s)) continue;
+
                     sv = Math.round(ti[j].p / sumround);
-                    // store the negative sum value for p at the same key, with sign flipped
-                    if(relative && ti[j].s < 0) sv = -sv;
+
+                    // store the negative sum value for p at the same key,
+                    // with sign flipped using string to ensure -0 !== 0.
+                    if(relative && ti[j].s < 0) sv = '-' + sv;
+
                     var previousSum = sums[sv] || 0;
                     if(stack || relative) ti[j].b = previousSum;
                     barEnd = ti[j].b + ti[j].s;
@@ -162,20 +170,29 @@ module.exports = function setPositions(gd, plotinfo) {
             }
 
             if(norm) {
-                padded = false;
                 var top = norm === 'fraction' ? 1 : 100,
                     relAndNegative = false,
                     tiny = top / 1e9; // in case of rounding error in sum
+
+                padded = false;
                 sMin = 0;
                 sMax = stack ? top : 0;
+
                 for(i = 0; i < bl.length; i++) { // trace index
                     ti = gd.calcdata[bl[i]];
+
                     for(j = 0; j < ti.length; j++) {
-                        relAndNegative = relative && ti[j].s < 0;
+                        relAndNegative = (relative && ti[j].s < 0);
+
                         sv = Math.round(ti[j].p / sumround);
-                        if(relAndNegative) sv = -sv;  // locate negative sum amount for this p val
+
+                        // locate negative sum amount for this p val
+                        if(relAndNegative) sv = '-' + sv;
+
                         scale = top / sums[sv];
-                        if(relAndNegative) scale *= -1; // preserve sign if negative
+
+                        // preserve sign if negative
+                        if(relAndNegative) scale *= -1;
                         ti[j].b *= scale;
                         ti[j].s *= scale;
                         barEnd = ti[j].b + ti[j].s;

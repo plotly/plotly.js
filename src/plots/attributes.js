@@ -72,9 +72,13 @@ module.exports = {
         valType: 'flaglist',
         role: 'info',
         flags: ['x', 'y', 'z', 'text', 'name'],
-        extras: ['all', 'none'],
+        extras: ['all', 'none', 'skip'],
         dflt: 'all',
-        description: 'Determines which trace information appear on hover.'
+        description: [
+            'Determines which trace information appear on hover.',
+            'If `none` or `skip` are set, no information is displayed upon hovering.',
+            'But, if `none` is set, click and hover events are still fired.'
+        ].join(' ')
     },
     stream: {
         token: {
@@ -90,6 +94,8 @@ module.exports = {
         maxpoints: {
             valType: 'number',
             min: 0,
+            max: 10000,
+            dflt: 500,
             role: 'info',
             description: [
                 'Sets the maximum number of points to keep on the plots from an',

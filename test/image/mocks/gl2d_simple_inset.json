@@ -30,6 +30,8 @@
         }
     ],
     "layout": {
+        "width": 700,
+        "height": 500,
         "yaxis2": {
             "domain": [
                 0.6,

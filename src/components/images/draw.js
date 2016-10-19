@@ -11,6 +11,7 @@
 var d3 = require('d3');
 var Drawing = require('../drawing');
 var Axes = require('../../plots/cartesian/axes');
+var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 module.exports = function draw(gd) {
 
@@ -52,8 +53,9 @@ module.exports = function draw(gd) {
 
     // Images must be converted to dataURL's for exporting.
     function setImage(d) {
-
         var thisImage = d3.select(this);
+
+        thisImage.attr('xmlns', xmlnsNamespaces.svg);
 
         var imagePromise = new Promise(function(resolve) {
 
@@ -92,7 +94,6 @@ module.exports = function draw(gd) {
     }
 
     function applyAttributes(d) {
-
         var thisImage = d3.select(this);
 
         // Axes if specified
@@ -104,14 +105,14 @@ module.exports = function draw(gd) {
             height = yref ? Math.abs(yref.l2p(d.sizey) - yref.l2p(0)) : d.sizey * size.h;
 
         // Offsets for anchor positioning
-        var xOffset = width * anchors.x[d.xanchor].offset + size.l,
-            yOffset = height * anchors.y[d.yanchor].offset + size.t;
+        var xOffset = width * anchors.x[d.xanchor].offset,
+            yOffset = height * anchors.y[d.yanchor].offset;
 
         var sizing = anchors.x[d.xanchor].sizing + anchors.y[d.yanchor].sizing;
 
         // Final positions
-        var xPos = (xref ? xref.l2p(d.x) : d.x * size.w) + xOffset,
-            yPos = (yref ? yref.l2p(d.y) : size.h - d.y * size.h) + yOffset;
+        var xPos = (xref ? xref.l2p(d.x) + xref._offset : d.x * size.w + size.l) + xOffset,
+            yPos = (yref ? yref.l2p(d.y) + yref._offset : size.h - d.y * size.h + size.t) + yOffset;
 
 
         // Construct the proper aspectRatio attribute
@@ -140,13 +141,15 @@ module.exports = function draw(gd) {
             yId = yref ? yref._id : '',
             clipAxes = xId + yId;
 
-        thisImage.call(Drawing.setClipUrl, 'clip' + fullLayout._uid + clipAxes);
+        if(clipAxes) {
+            thisImage.call(Drawing.setClipUrl, 'clip' + fullLayout._uid + clipAxes);
+        }
     }
 
 
     // Required for updating images
-    function keyFunction(d) {
-        return d.source;
+    function keyFunction(d, i) {
+        return d.source + i;
     }
 
 

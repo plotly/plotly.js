@@ -9,30 +9,11 @@
 
 'use strict';
 
-function getDelay(fullLayout) {
-
-    // polar clears fullLayout._has for some reason
-    if(!fullLayout._has) return 0;
-
-    // maybe we should add a 'gl' (and 'svg') layoutCategory ??
-    return (fullLayout._has('gl3d') || fullLayout._has('gl2d')) ? 500 : 0;
-}
-
-function getRedrawFunc(gd) {
-
-    // do not work if polar is present
-    if((gd.data && gd.data[0] && gd.data[0].r)) return;
-
-    return function() {
-        (gd.calcdata || []).forEach(function(d) {
-            if(d[0] && d[0].t && d[0].t.cb) d[0].t.cb();
-        });
-    };
-}
+var helpers = require('./helpers');
 
 var Snapshot = {
-    getDelay: getDelay,
-    getRedrawFunc: getRedrawFunc,
+    getDelay: helpers.getDelay,
+    getRedrawFunc: helpers.getRedrawFunc,
     clone: require('./cloneplot'),
     toSVG: require('./tosvg'),
     svgToImg: require('./svgtoimg'),

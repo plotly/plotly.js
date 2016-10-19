@@ -12,11 +12,17 @@
 var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 var nestedProperty = require('./nested_property');
+var isPlainObject = require('./is_plain_object');
+var filterUnique = require('./filter_unique');
 
 var getColorscale = require('../components/colorscale/get_scale');
 var colorscaleNames = Object.keys(require('../components/colorscale/scales'));
 
 var idRegex = /^([2-9]|[1-9][0-9]+)$/;
+
+function isValObject(obj) {
+    return obj && obj.valType !== undefined;
+}
 
 exports.valObjects = {
     data_array: {
@@ -99,16 +105,14 @@ exports.valObjects = {
         // TODO 'values shouldn't be in there (edge case: 'dash' in Scatter)
         otherOpts: ['dflt', 'noBlank', 'strict', 'arrayOk', 'values'],
         coerceFunction: function(v, propOut, dflt, opts) {
-            if(opts.strict === true && typeof v !== 'string') {
-                propOut.set(dflt);
-                return;
-            }
+            if(typeof v !== 'string') {
+                var okToCoerce = (typeof v === 'number');
 
-            var s = String(v);
-            if(v === undefined || (opts.noBlank === true && !s)) {
-                propOut.set(dflt);
+                if(opts.strict === true || !okToCoerce) propOut.set(dflt);
+                else propOut.set(String(v));
             }
-            else propOut.set(s);
+            else if(opts.noBlank && !v) propOut.set(dflt);
+            else propOut.set(v);
         }
     },
     color: {
@@ -162,11 +166,11 @@ exports.valObjects = {
     subplotid: {
         description: [
             'An id string of a subplot type (given by dflt), optionally',
-            'followed by an integer >1. e.g. if dflt=\'geo\', we can  have',
+            'followed by an integer >1. e.g. if dflt=\'geo\', we can have',
             '\'geo\', \'geo2\', \'geo3\', ...'
         ].join(' '),
-        requiredOpts: [],
-        otherOpts: ['dflt'],
+        requiredOpts: ['dflt'],
+        otherOpts: [],
         coerceFunction: function(v, propOut, dflt) {
             var dlen = dflt.length;
             if(typeof v === 'string' && v.substr(0, dlen) === dflt &&
@@ -175,6 +179,18 @@ exports.valObjects = {
                 return;
             }
             propOut.set(dflt);
+        },
+        validateFunction: function(v, opts) {
+            var dflt = opts.dflt,
+                dlen = dflt.length;
+
+            if(v === dflt) return true;
+            if(typeof v !== 'string') return false;
+            if(v.substr(0, dlen) === dflt && idRegex.test(v.substr(dlen))) {
+                return true;
+            }
+
+            return false;
         }
     },
     flaglist: {
@@ -192,7 +208,7 @@ exports.valObjects = {
                 propOut.set(dflt);
                 return;
             }
-            if(opts.extras.indexOf(v) !== -1) {
+            if((opts.extras || []).indexOf(v) !== -1) {
                 propOut.set(v);
                 return;
             }
@@ -212,7 +228,7 @@ exports.valObjects = {
     any: {
         description: 'Any type.',
         requiredOpts: [],
-        otherOpts: ['dflt'],
+        otherOpts: ['dflt', 'values'],
         coerceFunction: function(v, propOut, dflt) {
             if(v === undefined) propOut.set(dflt);
             else propOut.set(v);
@@ -223,7 +239,7 @@ exports.valObjects = {
             'An {array} of plot information.'
         ].join(' '),
         requiredOpts: ['items'],
-        otherOpts: ['dflt'],
+        otherOpts: ['dflt', 'freeLength'],
         coerceFunction: function(v, propOut, dflt, opts) {
             if(!Array.isArray(v)) {
                 propOut.set(dflt);
@@ -239,6 +255,23 @@ exports.valObjects = {
             }
 
             propOut.set(vOut);
+        },
+        validateFunction: function(v, opts) {
+            if(!Array.isArray(v)) return false;
+
+            var items = opts.items;
+
+            // when free length is off, input and declared lengths must match
+            if(!opts.freeLength && v.length !== items.length) return false;
+
+            // valid when all input items are valid
+            for(var i = 0; i < v.length; i++) {
+                var isItemValid = exports.validate(v[i], opts.items[i]);
+
+                if(!isItemValid) return false;
+            }
+
+            return true;
         }
     }
 };
@@ -308,4 +341,134 @@ exports.coerceFont = function(coerce, attr, dfltObj) {
     out.color = coerce(attr + '.color', dfltObj.color);
 
     return out;
+};
+
+exports.validate = function(value, opts) {
+    var valObject = exports.valObjects[opts.valType];
+
+    if(opts.arrayOk && Array.isArray(value)) return true;
+
+    if(valObject.validateFunction) {
+        return valObject.validateFunction(value, opts);
+    }
+
+    var failed = {},
+        out = failed,
+        propMock = { set: function(v) { out = v; } };
+
+    // 'failed' just something mutable that won't be === anything else
+
+    valObject.coerceFunction(value, propMock, failed, opts);
+    return out !== failed;
+};
+
+/*
+ * returns true for a valid value object and false for tree nodes in the attribute hierarchy
+ */
+exports.isValObject = isValObject;
+
+exports.IS_SUBPLOT_OBJ = '_isSubplotObj';
+exports.IS_LINKED_TO_ARRAY = '_isLinkedToArray';
+exports.DEPRECATED = '_deprecated';
+
+// list of underscore attributes to keep in schema as is
+exports.UNDERSCORE_ATTRS = [exports.IS_SUBPLOT_OBJ, exports.IS_LINKED_TO_ARRAY, exports.DEPRECATED];
+
+/**
+ * Crawl the attribute tree, recursively calling a callback function
+ *
+ * @param {object} attrs
+ *  The node of the attribute tree (e.g. the root) from which recursion originates
+ * @param {Function} callback
+ *  A callback function with the signature:
+ *          @callback callback
+ *          @param {object} attr an attribute
+ *          @param {String} attrName name string
+ *          @param {object[]} attrs all the attributes
+ *          @param {Number} level the recursion level, 0 at the root
+ * @param {Number} [specifiedLevel]
+ *  The level in the tree, in order to let the callback function detect descend or backtrack,
+ *  typically unsupplied (implied 0), just used by the self-recursive call.
+ *  The necessity arises because the tree traversal is not controlled by callback return values.
+ *  The decision to not use callback return values for controlling tree pruning arose from
+ *  the goal of keeping the crawler backwards compatible. Observe that one of the pruning conditions
+ *  precedes the callback call.
+ *
+ * @return {object} transformOut
+ *  copy of transformIn that contains attribute defaults
+ */
+exports.crawl = function(attrs, callback, specifiedLevel) {
+    var level = specifiedLevel || 0;
+    Object.keys(attrs).forEach(function(attrName) {
+        var attr = attrs[attrName];
+
+        if(exports.UNDERSCORE_ATTRS.indexOf(attrName) !== -1) return;
+
+        callback(attr, attrName, attrs, level);
+
+        if(isValObject(attr)) return;
+        if(isPlainObject(attr)) exports.crawl(attr, callback, level + 1);
+    });
+};
+
+/**
+ * Find all data array attributes in a given trace object - including
+ * `arrayOk` attributes.
+ *
+ * @param {object} trace
+ *  full trace object that contains a reference to `_module.attributes`
+ *
+ * @return {array} arrayAttributes
+ *  list of array attributes for the given trace
+ */
+exports.findArrayAttributes = function(trace) {
+    var arrayAttributes = [],
+        stack = [];
+
+    /**
+     * A closure that gathers attribute paths into its enclosed arraySplitAttributes
+     * Attribute paths are collected iff their leaf node is a splittable attribute
+     *
+     * @callback callback
+     * @param {object} attr an attribute
+     * @param {String} attrName name string
+     * @param {object[]} attrs all the attributes
+     * @param {Number} level the recursion level, 0 at the root
+     *
+     * @closureVariable {String[][]} arrayAttributes the set of gathered attributes
+     *   Example of filled closure variable (expected to be initialized to []):
+     *        [["marker","size"],["marker","line","width"],["marker","line","color"]]
+     */
+    function callback(attr, attrName, attrs, level) {
+        stack = stack.slice(0, level).concat([attrName]);
+
+        var splittableAttr = attr.valType === 'data_array' || attr.arrayOk === true;
+        if(!splittableAttr) return;
+
+        var astr = toAttrString(stack);
+        var val = nestedProperty(trace, astr).get();
+        if(!Array.isArray(val)) return;
+
+        arrayAttributes.push(astr);
+    }
+
+    function toAttrString(stack) {
+        return stack.join('.');
+    }
+
+    exports.crawl(trace._module.attributes, callback);
+
+    // Look into the fullInput module attributes for array attributes
+    // to make sure that 'custom' array attributes are detected.
+    //
+    // At the moment, we need this block to make sure that
+    // ohlc and candlestick 'open', 'high', 'low', 'close' can be
+    // used with filter ang groupby transforms.
+    if(trace._fullInput) {
+        exports.crawl(trace._fullInput._module.attributes, callback);
+
+        arrayAttributes = filterUnique(arrayAttributes);
+    }
+
+    return arrayAttributes;
 };

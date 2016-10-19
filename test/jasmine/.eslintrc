@@ -3,8 +3,5 @@
   "env": {
     "browser": true,
     "jasmine": true
-  },
-  "globals": {
-    "Promise": true
   }
 }

@@ -2,40 +2,11 @@
 
 ## Opening issues
 
-Search for existing and closed issues. If your problem or idea is not addressed
-yet, [please open a new issue](https://github.com/plotly/plotly.js/issues/new).
-
-Bug reports must be accompanied with a reproducible example. We recommend using
-[codepen](http://codepen.io/), [jsfiddle](https://jsfiddle.net/) or
-[jsbin](https://jsbin.com) to share your example.
-
-Note that GitHub issues are reserved for bug reports and feature requests only.
-Implementation questions should be asked on
-community.plot.ly (tagged [`plotly-js`](http://community.plot.ly/c/plotly-js)) or on Stack Overflow (tagged
-[`plotly`](https://stackoverflow.com/questions/tagged/plotly)).
-
-Comments on GitHub issues or pull requests should add content to the discussions. 
-Approbation comments such as *+1* or *I would like this feature to be implemented as well* 
-will be deleted by the maintainers. Please use 
-[GitHub reactions](https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments) 
-instead.
+Please read the [issue guidelines](./.github/ISSUE_TEMPLATE.md).
 
 ## Making pull requests
 
-Developers are strongly encouraged to first make a PR to their own plotly.js
-fork and ask one of the maintainers to review the modifications there. Once the
-pull request is deemed satisfactory, the developer will be asked to make a pull
-request to the main plotly.js repo and may be asked to squash some commits
-before doing so.
-
-Developers should `git rebase` their local branch off the latest `master` before 
-opening a pull request.
-
-Note that it is forbidden to force push (i.e. `git push -f`) to remote branches
-associated with opened pull requests. Force pushes make it hard for maintainers 
-to keep track of updates. Therefore, if required, please
-`git merge master` into your PR branch instead of `git rebase master`.
-
+Please read the [pull request guidelines](./.github/PULL_REQUEST_TEMPLATE.md).
 
 ## GitHub labels
 
@@ -46,7 +17,8 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 | `type: bug` | bug report confirmed by a plotly team member |
 | `type: feature` | planned feature additions |
 | `type: performance` | performance related tasks |
-| `type: maintenace` | source code cleanup resulting in no enhancement for users |
+| `type: maintenance` | source code cleanup resulting in no enhancement for users |
+| `type: documentation` | API doc or attribute description improvements |
 | `type: community` | issue left open for community input and pull requests |
 | `type: duplicate` | *self-explanatory* |
 | `type: wontfix` | *self-explanatory* |
@@ -66,15 +38,21 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 
 #### Step 1: Clone the plotly.js repo and install its dependencies
 
-```
+```bash
 git clone https://github.com/plotly/plotly.js.git
 cd plotly.js
 npm install
 ```
 
-#### Step 2: Start the test dashboard
+#### Step 2: Setup test environment
 
+```bash
+npm run pretest
 ```
+
+#### Step 3: Start the test dashboard
+
+```bash
 npm start
 ```
 
@@ -84,7 +62,7 @@ This command bundles up the source files with source maps using
 dev plotly.js bundle update every time a source file is saved) and opens up a
 tab in your browser.
 
-#### Step 3: Open up the console and start developing
+#### Step 4: Open up the console and start developing
 
 A typical workflow is to make some modifications to the source, update the
 test dashboard, inspect and debug the changes, then repeat. The test dashboard
@@ -139,7 +117,13 @@ To run a specific suite, use:
 npm run test-jasmine -- tests/<suite>.js
 ```
 
-where the `<suite>` corresponds to the suite's file name as found in [`test/jasmine/tests/`](https://github.com/plotly/plotly.js/tree/master/test/jasmine/tests).
+where the `<suite>` corresponds to the suite's file name as found in [`test/jasmine/tests/`](https://github.com/plotly/plotly.js/tree/master/test/jasmine/tests). In certain situations, you may find that the default reporting is not verbose enough to pin down the source of the failing test. In this situation, you may wish to use [karma-verbose-reporter](https://www.npmjs.com/package/karma-verbose-reporter). You can use it without adding as a dev dependency by running:
+
+```
+npm install karma-verbose-reporter
+```
+
+and adding `reporters: ['verbose']` to the corresponding karma configuration file. (You should disable the `progress` reporter when using `verbose`.)
 
 
 Image pixel comparison tests are run in a docker container. For more

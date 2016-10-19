@@ -23,7 +23,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, layout) {
 
     handleSampleDefaults(traceIn, traceOut, coerce);
 
-    coerce('zsmooth');
+    var zsmooth = coerce('zsmooth');
+    if(zsmooth === false) {
+        // ensure that xgap and ygap are coerced only when zsmooth allows them to have an effect.
+        coerce('xgap');
+        coerce('ygap');
+    }
 
     colorscaleDefaults(
         traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}

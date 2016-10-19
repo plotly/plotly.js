@@ -2,11 +2,12 @@ var Lib = require('@src/lib');
 var setCursor = require('@src/lib/setcursor');
 
 var d3 = require('d3');
+var Plotly = require('@lib');
 var PlotlyInternal = require('@src/plotly');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var Plots = PlotlyInternal.Plots;
-
+var customMatchers = require('../assets/custom_matchers');
 
 describe('Test lib.js:', function() {
     'use strict';
@@ -475,6 +476,157 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('expandObjectPaths', function() {
+        beforeAll(function() {
+            jasmine.addMatchers(customMatchers);
+        });
+
+        it('returns the original object', function() {
+            var x = {};
+            expect(Lib.expandObjectPaths(x)).toBe(x);
+        });
+
+        it('unpacks top-level paths', function() {
+            var input = {'marker.color': 'red', 'marker.size': [1, 2, 3]};
+            var expected = {marker: {color: 'red', size: [1, 2, 3]}};
+            expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
+        });
+
+        it('unpacks recursively', function() {
+            var input = {'marker.color': {'red.certainty': 'definitely'}};
+            var expected = {marker: {color: {red: {certainty: 'definitely'}}}};
+            expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
+        });
+
+        it('unpacks deep paths', function() {
+            var input = {'foo.bar.baz': 'red'};
+            var expected = {foo: {bar: {baz: 'red'}}};
+            expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
+        });
+
+        it('unpacks non-top-level deep paths', function() {
+            var input = {color: {'foo.bar.baz': 'red'}};
+            var expected = {color: {foo: {bar: {baz: 'red'}}}};
+            expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
+        });
+
+        it('merges dotted properties into objects', function() {
+            var input = {marker: {color: 'red'}, 'marker.size': 8};
+            var expected = {marker: {color: 'red', size: 8}};
+            expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
+        });
+
+        it('merges objects into dotted properties', function() {
+            var input = {'marker.size': 8, marker: {color: 'red'}};
+            var expected = {marker: {color: 'red', size: 8}};
+            expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
+        });
+
+        it('retains the identity of nested objects', function() {
+            var input = {marker: {size: 8}};
+            var origNested = input.marker;
+            var expanded = Lib.expandObjectPaths(input);
+            var newNested = expanded.marker;
+
+            expect(input).toBe(expanded);
+            expect(origNested).toBe(newNested);
+        });
+
+        it('retains the identity of nested arrays', function() {
+            var input = {'marker.size': [1, 2, 3]};
+            var origArray = input['marker.size'];
+            var expanded = Lib.expandObjectPaths(input);
+            var newArray = expanded.marker.size;
+
+            expect(input).toBe(expanded);
+            expect(origArray).toBe(newArray);
+        });
+
+        it('expands bracketed array notation', function() {
+            var input = {'marker[1]': {color: 'red'}};
+            var expected = {marker: [undefined, {color: 'red'}]};
+            expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
+        });
+
+        it('expands nested arrays', function() {
+            var input = {'marker[1].range[1]': 5};
+            var expected = {marker: [undefined, {range: [undefined, 5]}]};
+            var computed = Lib.expandObjectPaths(input);
+            expect(computed).toLooseDeepEqual(expected);
+        });
+
+        it('expands bracketed array with more nested attributes', function() {
+            var input = {'marker[1]': {'color.alpha': 2}};
+            var expected = {marker: [undefined, {color: {alpha: 2}}]};
+            var computed = Lib.expandObjectPaths(input);
+            expect(computed).toLooseDeepEqual(expected);
+        });
+
+        it('expands bracketed array notation without further nesting', function() {
+            var input = {'marker[1]': 8};
+            var expected = {marker: [undefined, 8]};
+            var computed = Lib.expandObjectPaths(input);
+            expect(computed).toLooseDeepEqual(expected);
+        });
+
+        it('expands bracketed array notation with further nesting', function() {
+            var input = {'marker[1].size': 8};
+            var expected = {marker: [undefined, {size: 8}]};
+            var computed = Lib.expandObjectPaths(input);
+            expect(computed).toLooseDeepEqual(expected);
+        });
+
+        it('expands bracketed array notation with further nesting', function() {
+            var input = {'marker[1].size.magnitude': 8};
+            var expected = {marker: [undefined, {size: {magnitude: 8}}]};
+            var computed = Lib.expandObjectPaths(input);
+            expect(computed).toLooseDeepEqual(expected);
+        });
+
+        it('combines changes with single array nesting', function() {
+            var input = {'marker[1].foo': 5, 'marker[0].foo': 4};
+            var expected = {marker: [{foo: 4}, {foo: 5}]};
+            var computed = Lib.expandObjectPaths(input);
+            expect(computed).toLooseDeepEqual(expected);
+        });
+
+        // TODO: This test is unimplemented since it's a currently-unused corner case.
+        // Getting the test to pass requires some extension (pun?) to extendDeepNoArrays
+        // that's intelligent enough to only selectively merge *some* arrays, in particular
+        // not data arrays but yes on arrays that were previously expanded. This is a bit
+        // tricky to get to work just right and currently doesn't have any known use since
+        // container arrays are not multiply nested.
+        //
+        // Additional notes on what works or what doesn't work. This case does *not* work
+        // because the two nested arrays that would result from the expansion need to be
+        // deep merged.
+        //
+        //   Lib.expandObjectPaths({'marker.range[0]': 5, 'marker.range[1]': 2})
+        //
+        //   // => {marker: {range: [null, 2]}}
+        //
+        // This case *does* work becuase the array merging does not require a deep extend:
+        //
+        //   Lib.expandObjectPaths({'range[0]': 5, 'range[1]': 2}
+        //
+        //   // => {range: [5, 2]}
+        //
+        // Finally note that this case works fine becuase there's no merge necessary:
+        //
+        //   Lib.expandObjectPaths({'marker.range[1]': 2})
+        //
+        //   // => {marker: {range: [null, 2]}}
+        //
+        /*
+        it('combines changes', function() {
+            var input = {'marker[1].range[1]': 5, 'marker[1].range[0]': 4};
+            var expected = {marker: [undefined, {range: [4, 5]}]};
+            var computed = Lib.expandObjectPaths(input);
+            expect(computed).toEqual(expected);
+        });
+        */
+    });
+
     describe('coerce', function() {
         var coerce = Lib.coerce,
             out;
@@ -526,13 +678,13 @@ describe('Test lib.js:', function() {
                     .toEqual('42');
 
                 expect(coerce({s: [1, 2, 3]}, {}, stringAttrs, 's'))
-                    .toEqual('1,2,3');
+                    .toEqual(dflt);
 
                 expect(coerce({s: true}, {}, stringAttrs, 's'))
-                    .toEqual('true');
+                    .toEqual(dflt);
 
                 expect(coerce({s: {1: 2}}, {}, stringAttrs, 's'))
-                    .toEqual('[object Object]'); // useless, but that's what it does!!
+                    .toEqual(dflt);
             });
         });
 
@@ -626,7 +778,22 @@ describe('Test lib.js:', function() {
                     .toEqual([0.5, 1]);
             });
 
+            it('should coerce unexpected input as best as it can', function() {
+                expect(coerce({range: [12]}, {}, infoArrayAttrs, 'range'))
+                    .toEqual([12]);
 
+                expect(coerce({range: [12]}, {}, infoArrayAttrs, 'range', [-1, 20]))
+                    .toEqual([12, 20]);
+
+                expect(coerce({domain: [0.5]}, {}, infoArrayAttrs, 'domain'))
+                    .toEqual([0.5, 1]);
+
+                expect(coerce({range: ['-10', 100, 12]}, {}, infoArrayAttrs, 'range'))
+                    .toEqual([-10, 100]);
+
+                expect(coerce({domain: [0, 0.5, 1]}, {}, infoArrayAttrs, 'domain'))
+                    .toEqual([0, 0.5]);
+            });
         });
 
         describe('subplotid valtype', function() {
@@ -752,6 +919,245 @@ describe('Test lib.js:', function() {
             expect(array.length).toEqual(4);
             expect(array[0].length).toEqual(5);
             expect(array[3].length).toEqual(5);
+        });
+    });
+
+    describe('validate', function() {
+
+        function assert(shouldPass, shouldFail, valObject) {
+            shouldPass.forEach(function(v) {
+                var res = Lib.validate(v, valObject);
+                expect(res).toBe(true, JSON.stringify(v) + ' should pass');
+            });
+
+            shouldFail.forEach(function(v) {
+                var res = Lib.validate(v, valObject);
+                expect(res).toBe(false, JSON.stringify(v) + ' should fail');
+            });
+        }
+
+        it('should work for valType \'data_array\' where', function() {
+            var shouldPass = [[20], []],
+                shouldFail = ['a', {}, 20, undefined, null];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'data_array'
+            });
+
+            assert(shouldPass, shouldFail, {
+                valType: 'data_array',
+                dflt: [1, 2]
+            });
+        });
+
+        it('should work for valType \'enumerated\' where', function() {
+            assert(['a', 'b'], ['c', 1, null, undefined, ''], {
+                valType: 'enumerated',
+                values: ['a', 'b'],
+                dflt: 'a'
+            });
+
+            assert([1, '1', 2, '2'], ['c', 3, null, undefined, ''], {
+                valType: 'enumerated',
+                values: [1, 2],
+                coerceNumber: true,
+                dflt: 1
+            });
+
+            assert(['a', 'b', [1, 2]], ['c', 1, null, undefined, ''], {
+                valType: 'enumerated',
+                values: ['a', 'b'],
+                arrayOk: true,
+                dflt: 'a'
+            });
+        });
+
+        it('should work for valType \'boolean\' where', function() {
+            var shouldPass = [true, false],
+                shouldFail = ['a', 1, {}, [], null, undefined, ''];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'boolean',
+                dflt: true
+            });
+
+            assert(shouldPass, shouldFail, {
+                valType: 'boolean',
+                dflt: false
+            });
+        });
+
+        it('should work for valType \'number\' where', function() {
+            var shouldPass = [20, '20', 1e6],
+                shouldFail = ['a', [], {}, null, undefined, ''];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'number'
+            });
+
+            assert(shouldPass, shouldFail, {
+                valType: 'number',
+                dflt: null
+            });
+
+            assert([20, '20'], [-10, '-10', 25, '25'], {
+                valType: 'number',
+                dflt: 20,
+                min: 0,
+                max: 21
+            });
+
+            assert([20, '20', [1, 2]], ['a', {}], {
+                valType: 'number',
+                dflt: 20,
+                arrayOk: true
+            });
+        });
+
+        it('should work for valType \'integer\' where', function() {
+            assert([1, 2, '3', '4'], ['a', 1.321321, {}, [], null, 2 / 3, undefined, null], {
+                valType: 'integer',
+                dflt: 1
+            });
+
+            assert([1, 2, '3', '4'], [-1, '-2', 2.121, null, undefined, [], {}], {
+                valType: 'integer',
+                min: 0,
+                dflt: 1
+            });
+        });
+
+        it('should work for valType \'string\' where', function() {
+            var date = new Date(2016, 1, 1);
+
+            assert(['3', '4', 'a', 3, 1.2113, ''], [undefined, {}, [], null, date, false], {
+                valType: 'string',
+                dflt: 'a'
+            });
+
+            assert(['3', '4', 'a', 3, 1.2113], ['', undefined, {}, [], null, date, true], {
+                valType: 'string',
+                dflt: 'a',
+                noBlank: true
+            });
+
+            assert(['3', '4', ''], [undefined, 1, {}, [], null, date, true, false], {
+                valType: 'string',
+                dflt: 'a',
+                strict: true
+            });
+
+            assert(['3', '4'], [undefined, 1, {}, [], null, date, '', true, false], {
+                valType: 'string',
+                dflt: 'a',
+                strict: true,
+                noBlank: true
+            });
+        });
+
+        it('should work for valType \'color\' where', function() {
+            var shouldPass = ['red', '#d3d3d3', 'rgba(0,255,255,0.1)'],
+                shouldFail = [1, {}, [], 'rgq(233,122,332,1)', null, undefined];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'color'
+            });
+        });
+
+        it('should work for valType \'colorscale\' where', function() {
+            var good = [ [0, 'red'], [1, 'blue'] ],
+                bad = [ [0.1, 'red'], [1, 'blue'] ],
+                bad2 = [ [0], [1] ],
+                bad3 = [ ['red'], ['blue']],
+                bad4 = ['red', 'blue'];
+
+            var shouldPass = ['Viridis', 'Greens', good],
+                shouldFail = ['red', 1, undefined, null, {}, [], bad, bad2, bad3, bad4];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'colorscale'
+            });
+        });
+
+        it('should work for valType \'angle\' where', function() {
+            var shouldPass = ['auto', '120', 270],
+                shouldFail = [{}, [], 'red', null, undefined, ''];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'angle',
+                dflt: 0
+            });
+        });
+
+        it('should work for valType \'subplotid\' where', function() {
+            var shouldPass = ['sp', 'sp4', 'sp10'],
+                shouldFail = [{}, [], 'sp1', 'sp0', 'spee1', null, undefined, true];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'subplotid',
+                dflt: 'sp'
+            });
+        });
+
+        it('should work for valType \'flaglist\' where', function() {
+            var shouldPass = ['a', 'b', 'a+b', 'b+a', 'c'],
+                shouldFail = [{}, [], 'red', null, undefined, '', 'a + b'];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'flaglist',
+                flags: ['a', 'b'],
+                extras: ['c']
+            });
+        });
+
+        it('should work for valType \'any\' where', function() {
+            var shouldPass = ['', '120', null, false, {}, []],
+                shouldFail = [undefined];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'any'
+            });
+        });
+
+        it('should work for valType \'info_array\' where', function() {
+            var shouldPass = [[1, 2], [-20, '20']],
+                shouldFail = [
+                    {}, [], [10], [null, 10], ['aads', null],
+                    'red', null, undefined, '',
+                    [1, 10, null]
+                ];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'info_array',
+                items: [{
+                    valType: 'number', dflt: -20
+                }, {
+                    valType: 'number', dflt: 20
+                }]
+            });
+        });
+
+        it('should work for valType \'info_array\' (freeLength case)', function() {
+            var shouldPass = [
+                ['marker.color', 'red'],
+                [{ 'marker.color': 'red' }, [1, 2]]
+            ];
+            var shouldFail = [
+                ['marker.color', 'red', 'red'],
+                [{ 'marker.color': 'red' }, [1, 2], 'blue']
+            ];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'info_array',
+                freeLength: true,
+                items: [{
+                    valType: 'any'
+                }, {
+                    valType: 'any'
+                }, {
+                    valType: 'number'
+                }]
+            });
         });
     });
 
@@ -970,6 +1376,44 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('setPointGroupScale', function() {
+        var el, sel;
+
+        beforeEach(function() {
+            el = document.createElement('div');
+            sel = d3.select(el);
+        });
+
+        it('sets the scale of a point', function() {
+            Lib.setPointGroupScale(sel, 2, 2);
+            expect(el.getAttribute('transform')).toBe('scale(2,2)');
+        });
+
+        it('appends the scale of a point', function() {
+            el.setAttribute('transform', 'translate(1,2)');
+            Lib.setPointGroupScale(sel, 2, 2);
+            expect(el.getAttribute('transform')).toBe('translate(1,2) scale(2,2)');
+        });
+
+        it('modifies the scale of a point', function() {
+            el.setAttribute('transform', 'translate(1,2) scale(3,4)');
+            Lib.setPointGroupScale(sel, 2, 2);
+            expect(el.getAttribute('transform')).toBe('translate(1,2) scale(2,2)');
+        });
+
+        it('does not apply the scale of a point if scale (1, 1)', function() {
+            el.setAttribute('transform', 'translate(1,2)');
+            Lib.setPointGroupScale(sel, 1, 1);
+            expect(el.getAttribute('transform')).toBe('translate(1,2)');
+        });
+
+        it('removes the scale of a point if scale (1, 1)', function() {
+            el.setAttribute('transform', 'translate(1,2) scale(3,4)');
+            Lib.setPointGroupScale(sel, 1, 1);
+            expect(el.getAttribute('transform')).toBe('translate(1,2)');
+        });
+    });
+
     describe('pushUnique', function() {
 
         beforeEach(function() {
@@ -1011,6 +1455,37 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('filterUnique', function() {
+
+        it('should return array containing unique values', function() {
+            expect(
+                Lib.filterUnique(['a', 'a', 'b', 'b'])
+            )
+            .toEqual(['a', 'b']);
+
+            expect(
+                Lib.filterUnique(['1', ['1'], 1])
+            )
+            .toEqual(['1']);
+
+            expect(
+                Lib.filterUnique([1, '1', [1]])
+            )
+            .toEqual([1]);
+
+            expect(
+                Lib.filterUnique([ { a: 1 }, { b: 2 }])
+            )
+            .toEqual([{ a: 1 }]);
+
+            expect(
+                Lib.filterUnique([null, undefined, null, null, undefined])
+            )
+            .toEqual([null, undefined]);
+        });
+
+    });
+
     describe('numSeparate', function() {
 
         it('should work on numbers and strings', function() {
@@ -1020,6 +1495,10 @@ describe('Test lib.js:', function() {
 
         it('should ignore years', function() {
             expect(Lib.numSeparate(2016, '.,')).toBe('2016');
+        });
+
+        it('should work even for 4-digit integer if third argument is true', function() {
+            expect(Lib.numSeparate(3000, '.,', true)).toBe('3,000');
         });
 
         it('should work for multiple thousands', function() {
@@ -1045,6 +1524,76 @@ describe('Test lib.js:', function() {
     describe('isPlotDiv', function() {
         it('should work on plain objects', function() {
             expect(Lib.isPlotDiv({})).toBe(false);
+        });
+    });
+});
+
+describe('Queue', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        destroyGraphDiv();
+        Plotly.setPlotConfig({ queueLength: 0 });
+    });
+
+    it('should not fill in undoQueue by default', function(done) {
+        Plotly.plot(gd, [{
+            y: [2, 1, 2]
+        }]).then(function() {
+            expect(gd.undoQueue).toBeUndefined();
+
+            return Plotly.restyle(gd, 'marker.color', 'red');
+        }).then(function() {
+            expect(gd.undoQueue.index).toEqual(0);
+            expect(gd.undoQueue.queue).toEqual([]);
+
+            return Plotly.relayout(gd, 'title', 'A title');
+        }).then(function() {
+            expect(gd.undoQueue.index).toEqual(0);
+            expect(gd.undoQueue.queue).toEqual([]);
+
+            done();
+        });
+    });
+
+    it('should fill in undoQueue up to value found in *queueLength* config', function(done) {
+        Plotly.setPlotConfig({ queueLength: 2 });
+
+        Plotly.plot(gd, [{
+            y: [2, 1, 2]
+        }]).then(function() {
+            expect(gd.undoQueue).toBeUndefined();
+
+            return Plotly.restyle(gd, 'marker.color', 'red');
+        }).then(function() {
+            expect(gd.undoQueue.index).toEqual(1);
+            expect(gd.undoQueue.queue[0].undo.args[0][1]['marker.color']).toEqual([undefined]);
+            expect(gd.undoQueue.queue[0].redo.args[0][1]['marker.color']).toEqual('red');
+
+            return Plotly.relayout(gd, 'title', 'A title');
+        }).then(function() {
+            expect(gd.undoQueue.index).toEqual(2);
+            expect(gd.undoQueue.queue[1].undo.args[0][1].title).toEqual(undefined);
+            expect(gd.undoQueue.queue[1].redo.args[0][1].title).toEqual('A title');
+
+            return Plotly.restyle(gd, 'mode', 'markers');
+        }).then(function() {
+            expect(gd.undoQueue.index).toEqual(2);
+            expect(gd.undoQueue.queue[2]).toBeUndefined();
+
+            expect(gd.undoQueue.queue[1].undo.args[0][1].mode).toEqual([undefined]);
+            expect(gd.undoQueue.queue[1].redo.args[0][1].mode).toEqual('markers');
+
+            expect(gd.undoQueue.queue[0].undo.args[0][1].title).toEqual(undefined);
+            expect(gd.undoQueue.queue[0].redo.args[0][1].title).toEqual('A title');
+
+            done();
         });
     });
 });

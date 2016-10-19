@@ -3,11 +3,6 @@
   "env": {
     "browser": true
   },
-  "globals": {
-    "Promise": true,
-    "Float32Array": true,
-    "Uint8Array": true
-  },
   "rules": {
     "strict": [2, "global"],
     "no-console": [2]

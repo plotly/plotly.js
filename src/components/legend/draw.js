@@ -14,9 +14,11 @@ var d3 = require('d3');
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 var Plots = require('../../plots/plots');
+var Registry = require('../../registry');
 var dragElement = require('../dragelement');
 var Drawing = require('../drawing');
 var Color = require('../color');
+var svgTextUtils = require('../../lib/svg_text_utils');
 
 var constants = require('./constants');
 var getLegendData = require('./get_legend_data');
@@ -62,14 +64,14 @@ module.exports = function draw(gd) {
     var bg = legend.selectAll('rect.bg')
         .data([0]);
 
-    bg.enter().append('rect')
-        .attr({
-            'class': 'bg',
-            'shape-rendering': 'crispEdges'
-        })
-        .call(Color.stroke, opts.bordercolor)
-        .call(Color.fill, opts.bgcolor)
-        .style('stroke-width', opts.borderwidth + 'px');
+    bg.enter().append('rect').attr({
+        'class': 'bg',
+        'shape-rendering': 'crispEdges'
+    });
+
+    bg.call(Color.stroke, opts.bordercolor);
+    bg.call(Color.fill, opts.bgcolor);
+    bg.style('stroke-width', opts.borderwidth + 'px');
 
     var scrollBox = legend.selectAll('g.scrollbox')
         .data([0]);
@@ -107,7 +109,7 @@ module.exports = function draw(gd) {
     traces.call(style)
         .style('opacity', function(d) {
             var trace = d[0].trace;
-            if(Plots.traceIs(trace, 'pie')) {
+            if(Registry.traceIs(trace, 'pie')) {
                 return hiddenSlices.indexOf(d[0].label) !== -1 ? 0.5 : 1;
             } else {
                 return trace.visible === 'legendonly' ? 0.5 : 1;
@@ -336,7 +338,7 @@ function drawTexts(g, gd) {
     var legendItem = g.data()[0][0],
         fullLayout = gd._fullLayout,
         trace = legendItem.trace,
-        isPie = Plots.traceIs(trace, 'pie'),
+        isPie = Registry.traceIs(trace, 'pie'),
         traceIndex = trace.index,
         name = isPie ? legendItem.label : trace.name;
 
@@ -354,21 +356,39 @@ function drawTexts(g, gd) {
     .text(name);
 
     function textLayout(s) {
-        Plotly.util.convertToTspans(s, function() {
+        svgTextUtils.convertToTspans(s, function() {
             s.selectAll('tspan.line').attr({x: s.attr('x')});
             g.call(computeTextDimensions, gd);
         });
     }
 
     if(gd._context.editable && !isPie) {
-        text.call(Plotly.util.makeEditable)
+        text.call(svgTextUtils.makeEditable)
             .call(textLayout)
             .on('edit', function(text) {
                 this.attr({'data-unformatted': text});
+
                 this.text(text)
                     .call(textLayout);
+
                 if(!this.text()) text = ' \u0020\u0020 ';
-                Plotly.restyle(gd, 'name', text, traceIndex);
+
+                var fullInput = legendItem.trace._fullInput || {},
+                    astr;
+
+                // N.B. this block isn't super clean,
+                // is unfortunately untested at the moment,
+                // and only works for for 'ohlc' and 'candlestick',
+                // but should be generalized for other one-to-many transforms
+                if(['ohlc', 'candlestick'].indexOf(fullInput.type) !== -1) {
+                    var transforms = legendItem.trace.transforms,
+                        direction = transforms[transforms.length - 1].direction;
+
+                    astr = direction + '.legenditem.name';
+                }
+                else astr = 'name';
+
+                Plotly.restyle(gd, astr, text, traceIndex);
             });
     }
     else text.call(textLayout);
@@ -399,7 +419,7 @@ function setupTraceToggle(g, gd) {
             tracei,
             newVisible;
 
-        if(Plots.traceIs(trace, 'pie')) {
+        if(Registry.traceIs(trace, 'pie')) {
             var thisLabel = legendItem.label,
                 thisLabelIndex = hiddenSlices.indexOf(thisLabel);
 
@@ -427,7 +447,6 @@ function setupTraceToggle(g, gd) {
 
 function computeTextDimensions(g, gd) {
     var legendItem = g.data()[0][0],
-        bg = g.selectAll('.legendtoggle'),
         mathjaxGroup = g.select('g[class*=math-group]'),
         opts = gd._fullLayout.legend,
         lineHeight = opts.font.size * 1.3,
@@ -463,8 +482,6 @@ function computeTextDimensions(g, gd) {
     }
 
     height = Math.max(height, 16) + 3;
-
-    bg.attr({x: 0, y: -height / 2, height: height});
 
     legendItem.height = height;
     legendItem.width = width;
@@ -506,12 +523,21 @@ function computeLegendDimensions(gd, groups, traces) {
             opts.height += (opts._lgroupsLength - 1) * opts.tracegroupgap;
         }
 
-        traces.selectAll('.legendtoggle')
-            .attr('width', (gd._context.editable ? 0 : opts.width) + 40);
-
         // make sure we're only getting full pixels
         opts.width = Math.ceil(opts.width);
         opts.height = Math.ceil(opts.height);
+
+        traces.each(function(d) {
+            var legendItem = d[0],
+                bg = d3.select(this).select('.legendtoggle');
+
+            bg.call(Drawing.setRect,
+                0,
+                -legendItem.height / 2,
+                (gd._context.editable ? 0 : opts.width) + 40,
+                legendItem.height
+            );
+        });
     }
     else if(isGrouped) {
         opts.width = 0;
@@ -562,24 +588,54 @@ function computeLegendDimensions(gd, groups, traces) {
         opts.width = Math.ceil(opts.width);
         opts.height = Math.ceil(opts.height);
 
-        traces.selectAll('.legendtoggle')
-            .attr('width', (gd._context.editable ? 0 : opts.width));
+        traces.each(function(d) {
+            var legendItem = d[0],
+                bg = d3.select(this).select('.legendtoggle');
+
+            bg.call(Drawing.setRect,
+                0,
+                -legendItem.height / 2,
+                (gd._context.editable ? 0 : opts.width),
+                legendItem.height
+            );
+        });
     }
     else {
         opts.width = 0;
         opts.height = 0;
+        var rowHeight = 0,
+            maxTraceHeight = 0,
+            maxTraceWidth = 0,
+            offsetX = 0;
+
+        // calculate largest width for traces and use for width of all legend items
+        traces.each(function(d) {
+            maxTraceWidth = Math.max(40 + d[0].width, maxTraceWidth);
+        });
 
         traces.each(function(d) {
             var legendItem = d[0],
-                traceWidth = 40 + legendItem.width,
+                traceWidth = maxTraceWidth,
                 traceGap = opts.tracegroupgap || 5;
 
+            if((borderwidth + offsetX + traceGap + traceWidth) > (fullLayout.width - (fullLayout.margin.r + fullLayout.margin.l))) {
+                offsetX = 0;
+                rowHeight = rowHeight + maxTraceHeight;
+                opts.height = opts.height + maxTraceHeight;
+                // reset for next row
+                maxTraceHeight = 0;
+            }
+
             Lib.setTranslate(this,
-                (borderwidth + opts.width),
-                (5 + borderwidth + legendItem.height / 2));
+                (borderwidth + offsetX),
+                (5 + borderwidth + legendItem.height / 2) + rowHeight);
 
             opts.width += traceGap + traceWidth;
             opts.height = Math.max(opts.height, legendItem.height);
+
+            // keep track of tallest trace in group
+            offsetX += traceGap + traceWidth;
+            maxTraceHeight = Math.max(legendItem.height, maxTraceHeight);
         });
 
         opts.width += borderwidth * 2;
@@ -589,8 +645,17 @@ function computeLegendDimensions(gd, groups, traces) {
         opts.width = Math.ceil(opts.width);
         opts.height = Math.ceil(opts.height);
 
-        traces.selectAll('.legendtoggle')
-            .attr('width', (gd._context.editable ? 0 : opts.width));
+        traces.each(function(d) {
+            var legendItem = d[0],
+                bg = d3.select(this).select('.legendtoggle');
+
+            bg.call(Drawing.setRect,
+                0,
+                -legendItem.height / 2,
+                (gd._context.editable ? 0 : opts.width),
+                legendItem.height
+            );
+        });
     }
 }
 

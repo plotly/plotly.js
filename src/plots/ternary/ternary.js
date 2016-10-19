@@ -169,7 +169,9 @@ proto.makeFramework = function() {
     _this.plotContainer.selectAll('.backplot,.frontplot,.grids')
         .call(Drawing.setClipUrl, clipId);
 
-    _this.initInteractions();
+    if(!_this.graphDiv._context.staticPlot) {
+        _this.initInteractions();
+    }
 };
 
 var w_over_h = Math.sqrt(4 / 3);
@@ -254,7 +256,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         domain: [yDomain0, yDomain0 + yDomainFinal * w_over_h],
         _axislayer: _this.layers.aaxis,
         _gridlayer: _this.layers.agrid,
-        _pos: 0, //_this.xaxis.domain[0] * graphSize.w,
+        _pos: 0, // _this.xaxis.domain[0] * graphSize.w,
         _gd: _this.graphDiv,
         _id: 'y',
         _length: w,
@@ -272,7 +274,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         _axislayer: _this.layers.baxis,
         _gridlayer: _this.layers.bgrid,
         _counteraxis: _this.aaxis,
-        _pos: 0, //(1 - yDomain0) * graphSize.h,
+        _pos: 0, // (1 - yDomain0) * graphSize.h,
         _gd: _this.graphDiv,
         _id: 'x',
         _length: w,
@@ -292,7 +294,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         _axislayer: _this.layers.caxis,
         _gridlayer: _this.layers.cgrid,
         _counteraxis: _this.baxis,
-        _pos: 0, //_this.xaxis.domain[1] * graphSize.w,
+        _pos: 0, // _this.xaxis.domain[1] * graphSize.w,
         _gd: _this.graphDiv,
         _id: 'y',
         _length: w,
@@ -657,9 +659,9 @@ proto.initInteractions = function() {
         Plotly.relayout(gd, attrs);
     }
 
-    dragElement.init(dragOptions);
-
     // finally, set up hover and click
+    // these event handlers must already be set before dragElement.init
+    // so it can stash them and override them.
     dragger.onmousemove = function(evt) {
         fx.hover(gd, evt, _this.id);
         gd._fullLayout._lasthover = dragger;
@@ -675,6 +677,8 @@ proto.initInteractions = function() {
     dragger.onclick = function(evt) {
         fx.click(gd, evt);
     };
+
+    dragElement.init(dragOptions);
 };
 
 function removeZoombox(gd) {

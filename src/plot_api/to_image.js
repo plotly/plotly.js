@@ -13,6 +13,10 @@ var isNumeric = require('fast-isnumeric');
 var Plotly = require('../plotly');
 var Lib = require('../lib');
 
+var helpers = require('../snapshot/helpers');
+var clonePlot = require('../snapshot/cloneplot');
+var toSVG = require('../snapshot/tosvg');
+var svgToImg = require('../snapshot/svgtoimg');
 
 /**
  * @param {object} gd figure Object
@@ -22,7 +26,6 @@ var Lib = require('../lib');
  * @param opts.height height of snapshot in px
  */
 function toImage(gd, opts) {
-    var Snapshot = require('../snapshot');
 
     var promise = new Promise(function(resolve, reject) {
         // check for undefined opts
@@ -48,7 +51,7 @@ function toImage(gd, opts) {
         }
 
         // first clone the GD so we can operate in a clean environment
-        var clone = Snapshot.clone(gd, {format: 'png', height: opts.height, width: opts.width});
+        var clone = clonePlot(gd, {format: 'png', height: opts.height, width: opts.width});
         var clonedGd = clone.td;
 
         // put the cloned div somewhere off screen before attaching to DOM
@@ -57,16 +60,16 @@ function toImage(gd, opts) {
         document.body.appendChild(clonedGd);
 
         function wait() {
-            var delay = Snapshot.getDelay(clonedGd._fullLayout);
+            var delay = helpers.getDelay(clonedGd._fullLayout);
 
             return new Promise(function(resolve, reject) {
                 setTimeout(function() {
-                    var svg = Snapshot.toSVG(clonedGd);
+                    var svg = toSVG(clonedGd);
 
                     var canvas = document.createElement('canvas');
                     canvas.id = Lib.randstr();
 
-                    Snapshot.svgToImg({
+                    svgToImg({
                         format: opts.format,
                         width: clonedGd._fullLayout.width,
                         height: clonedGd._fullLayout.height,
@@ -88,15 +91,9 @@ function toImage(gd, opts) {
             });
         }
 
-        var redrawFunc = Snapshot.getRedrawFunc(clonedGd);
+        var redrawFunc = helpers.getRedrawFunc(clonedGd);
 
         Plotly.plot(clonedGd, clone.data, clone.layout, clone.config)
-            // TODO: the following is Plotly.Plots.redrawText but without the waiting.
-            // we shouldn't need to do this, but in *occasional* cases we do. Figure
-            // out why and take it out.
-
-            // not sure the above TODO makes sense anymore since
-            //   we have converted to promises
             .then(redrawFunc)
             .then(wait)
             .then(function(url) { resolve(url); })

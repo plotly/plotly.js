@@ -9,8 +9,7 @@
 
 'use strict';
 
-var Plots = require('../../plots/plots');
-
+var Registry = require('../../registry');
 var helpers = require('./helpers');
 
 
@@ -49,7 +48,7 @@ module.exports = function getLegendData(calcdata, opts) {
 
         if(!helpers.legendGetsTrace(trace) || !trace.showlegend) continue;
 
-        if(Plots.traceIs(trace, 'pie')) {
+        if(Registry.traceIs(trace, 'pie')) {
             if(!slicesShown[lgroup]) slicesShown[lgroup] = {};
 
             for(j = 0; j < cd.length; j++) {

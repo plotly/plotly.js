@@ -13,6 +13,7 @@ var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 
 var Plotly = require('../../plotly');
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var Color = require('../../components/color');
@@ -47,16 +48,17 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     var fullLayout = gd._fullLayout,
         // if we're dragging two axes at once, also drag overlays
         subplots = [plotinfo].concat((ns && ew) ? plotinfo.overlays : []),
-        xa = [plotinfo.x()],
-        ya = [plotinfo.y()],
+        xa = [plotinfo.xaxis],
+        ya = [plotinfo.yaxis],
         pw = xa[0]._length,
         ph = ya[0]._length,
         MINDRAG = constants.MINDRAG,
-        MINZOOM = constants.MINZOOM;
+        MINZOOM = constants.MINZOOM,
+        isMainDrag = (ns + ew === 'nsew');
 
     for(var i = 1; i < subplots.length; i++) {
-        var subplotXa = subplots[i].x(),
-            subplotYa = subplots[i].y();
+        var subplotXa = subplots[i].xaxis,
+            subplotYa = subplots[i].yaxis;
         if(xa.indexOf(subplotXa) === -1) xa.push(subplotXa);
         if(ya.indexOf(subplotYa) === -1) ya.push(subplotYa);
     }
@@ -75,21 +77,24 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         dragClass = ns + ew + 'drag';
 
     var dragger3 = plotinfo.draglayer.selectAll('.' + dragClass).data([0]);
+
     dragger3.enter().append('rect')
         .classed('drag', true)
         .classed(dragClass, true)
         .style({fill: 'transparent', 'stroke-width': 0})
         .attr('data-subplot', plotinfo.id);
+
     dragger3.call(Drawing.setRect, x, y, w, h)
         .call(setCursor, cursor);
+
     var dragger = dragger3.node();
 
     // still need to make the element if the axes are disabled
     // but nuke its events (except for maindrag which needs them for hover)
     // and stop there
-    if(!yActive && !xActive) {
+    if(!yActive && !xActive && !isSelectOrLasso(fullLayout.dragmode)) {
         dragger.onmousedown = null;
-        dragger.style.pointerEvents = (ns + ew === 'nsew') ? 'all' : 'none';
+        dragger.style.pointerEvents = isMainDrag ? 'all' : 'none';
         return dragger;
     }
 
@@ -107,7 +112,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         doubleclick: doubleClick,
         prepFn: function(e, startX, startY) {
             var dragModeNow = gd._fullLayout.dragmode;
-            if(ns + ew === 'nsew') {
+
+            if(isMainDrag) {
                 // main dragger handles all drag modes, and changes
                 // to pan (or to zoom if it already is pan) on shift
                 if(e.shiftKey) {
@@ -131,7 +137,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 dragOptions.doneFn = dragDone;
                 clearSelect();
             }
-            else if(dragModeNow === 'select' || dragModeNow === 'lasso') {
+            else if(isSelectOrLasso(dragModeNow)) {
                 prepSelect(e, startX, startY, dragOptions, dragModeNow);
             }
         }
@@ -140,8 +146,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     dragElement.init(dragOptions);
 
     var zoomlayer = gd._fullLayout._zoomlayer,
-        xs = plotinfo.x()._offset,
-        ys = plotinfo.y()._offset,
+        xs = plotinfo.xaxis._offset,
+        ys = plotinfo.yaxis._offset,
         x0,
         y0,
         box,
@@ -151,6 +157,28 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         zoomMode,
         zb,
         corners;
+
+    function recomputeAxisLists() {
+        xa = [plotinfo.xaxis];
+        ya = [plotinfo.yaxis];
+        pw = xa[0]._length;
+        ph = ya[0]._length;
+
+        for(var i = 1; i < subplots.length; i++) {
+            var subplotXa = subplots[i].xaxis,
+                subplotYa = subplots[i].yaxis;
+            if(xa.indexOf(subplotXa) === -1) xa.push(subplotXa);
+            if(ya.indexOf(subplotYa) === -1) ya.push(subplotYa);
+        }
+        allaxes = xa.concat(ya);
+        xActive = isDirectionActive(xa, ew);
+        yActive = isDirectionActive(ya, ns);
+        cursor = getDragCursor(yActive + xActive, fullLayout.dragmode);
+        xs = plotinfo.xaxis._offset;
+        ys = plotinfo.yaxis._offset;
+        dragOptions.xa = xa;
+        dragOptions.ya = ya;
+    }
 
     function zoomPrep(e, startX, startY) {
         var dragBBox = dragger.getBoundingClientRect();
@@ -196,6 +224,10 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     function zoomMove(dx0, dy0) {
+        if(gd._transitioningWithDuration) {
+            return false;
+        }
+
         var x1 = Math.max(0, Math.min(pw, dx0 + x0)),
             y1 = Math.max(0, Math.min(ph, dy0 + y0)),
             dx = Math.abs(x1 - x0),
@@ -358,7 +390,15 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(!gd._context.scrollZoom && !fullLayout._enablescrollzoom) {
             return;
         }
+
+        // If a transition is in progress, then disable any behavior:
+        if(gd._transitioningWithDuration) {
+            return Lib.pauseEvent(e);
+        }
+
         var pc = gd.querySelector('.plotly');
+
+        recomputeAxisLists();
 
         // if the plot has scrollbars (more than a tiny excess)
         // disable scrollzoom too.
@@ -427,6 +467,13 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     // plotDrag: move the plot in response to a drag
     function plotDrag(dx, dy) {
+        // If a transition is in progress, then disable any behavior:
+        if(gd._transitioningWithDuration) {
+            return;
+        }
+
+        recomputeAxisLists();
+
         function dragAxList(axList, pix) {
             for(var i = 0; i < axList.length; i++) {
                 var axi = axList[i];
@@ -507,23 +554,28 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             Axes.doTicks(gd, activeAxIds[i], true);
         }
 
-        function redrawObjs(objArray, module) {
-            var obji;
+        function redrawObjs(objArray, method) {
             for(i = 0; i < objArray.length; i++) {
-                obji = objArray[i];
+                var obji = objArray[i];
+
                 if((ew && activeAxIds.indexOf(obji.xref) !== -1) ||
                     (ns && activeAxIds.indexOf(obji.yref) !== -1)) {
-                    module.draw(gd, i);
+                    method(gd, i);
                 }
             }
         }
 
-        redrawObjs(fullLayout.annotations || [], Plotly.Annotations);
-        redrawObjs(fullLayout.shapes || [], Plotly.Shapes);
-        redrawObjs(fullLayout.images || [], Plotly.Images);
+        // annotations and shapes 'draw' method is slow,
+        // use the finer-grained 'drawOne' method instead
+
+        redrawObjs(fullLayout.annotations || [], Registry.getComponentMethod('annotations', 'drawOne'));
+        redrawObjs(fullLayout.shapes || [], Registry.getComponentMethod('shapes', 'drawOne'));
+        redrawObjs(fullLayout.images || [], Registry.getComponentMethod('images', 'draw'));
     }
 
     function doubleClick() {
+        if(gd._transitioningWithDuration) return;
+
         var doubleClickConfig = gd._context.doubleClick,
             axList = (xActive ? xa : []).concat(yActive ? ya : []),
             attrs = {};
@@ -597,17 +649,39 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     // affected by this drag, and update them. look for all plots
     // sharing an affected axis (including the one being dragged)
     function updateSubplots(viewBox) {
+        var j;
         var plotinfos = fullLayout._plots,
             subplots = Object.keys(plotinfos);
 
         for(var i = 0; i < subplots.length; i++) {
 
             var subplot = plotinfos[subplots[i]],
-                xa2 = subplot.x(),
-                ya2 = subplot.y(),
-                editX = ew && xa.indexOf(xa2) !== -1 && !xa2.fixedrange,
-                editY = ns && ya.indexOf(ya2) !== -1 && !ya2.fixedrange;
+                xa2 = subplot.xaxis,
+                ya2 = subplot.yaxis,
+                editX = ew && !xa2.fixedrange,
+                editY = ns && !ya2.fixedrange;
 
+            if(editX) {
+                var isInX = false;
+                for(j = 0; j < xa.length; j++) {
+                    if(xa[j]._id === xa2._id) {
+                        isInX = true;
+                        break;
+                    }
+                }
+                editX = editX && isInX;
+            }
+
+            if(editY) {
+                var isInY = false;
+                for(j = 0; j < ya.length; j++) {
+                    if(ya[j]._id === ya2._id) {
+                        isInY = true;
+                        break;
+                    }
+                }
+                editY = editY && isInY;
+            }
 
             var xScaleFactor = editX ? xa2._length / viewBox[2] : 1,
                 yScaleFactor = editY ? ya2._length / viewBox[3] : 1;
@@ -621,14 +695,19 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             var plotDx = xa2._offset - fracDx,
                 plotDy = ya2._offset - fracDy;
 
-
             fullLayout._defs.selectAll('#' + subplot.clipId)
                 .call(Lib.setTranslate, clipDx, clipDy)
                 .call(Lib.setScale, 1 / xScaleFactor, 1 / yScaleFactor);
 
             subplot.plot
                 .call(Lib.setTranslate, plotDx, plotDy)
-                .call(Lib.setScale, xScaleFactor, yScaleFactor);
+                .call(Lib.setScale, xScaleFactor, yScaleFactor)
+
+                // This is specifically directed at scatter traces, applying an inverse
+                // scale to individual points to counteract the scale of the trace
+                // as a whole:
+                .selectAll('.points').selectAll('.point')
+                    .call(Lib.setPointGroupScale, 1 / xScaleFactor, 1 / yScaleFactor);
         }
     }
 
@@ -667,4 +746,10 @@ function removeZoombox(gd) {
     d3.select(gd)
         .selectAll('.zoombox,.js-zoombox-backdrop,.js-zoombox-menu,.zoombox-corners')
         .remove();
+}
+
+function isSelectOrLasso(dragmode) {
+    var modes = ['lasso', 'select'];
+
+    return modes.indexOf(dragmode) !== -1;
 }

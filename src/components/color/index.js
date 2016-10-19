@@ -57,6 +57,16 @@ color.combine = function(front, back) {
     return tinycolor(fcflat).toRgbString();
 };
 
+color.contrast = function(cstr, lightAmount, darkAmount) {
+    var tc = tinycolor(cstr);
+
+    var newColor = tc.isLight() ?
+        tc.darken(darkAmount) :
+        tc.lighten(lightAmount);
+
+    return newColor.toString();
+};
+
 color.stroke = function(s, c) {
     var tc = tinycolor(c);
     s.style({'stroke': color.tinyRGB(tc), 'stroke-opacity': tc.getAlpha()});
@@ -64,7 +74,10 @@ color.stroke = function(s, c) {
 
 color.fill = function(s, c) {
     var tc = tinycolor(c);
-    s.style({'fill': color.tinyRGB(tc), 'fill-opacity': tc.getAlpha()});
+    s.style({
+        'fill': color.tinyRGB(tc),
+        'fill-opacity': tc.getAlpha()
+    });
 };
 
 // search container for colors with the deprecated rgb(fractions) format

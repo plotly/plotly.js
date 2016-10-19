@@ -18,5 +18,12 @@
  *    See ./with_setup_teardown.js for a different example.
  */
 module.exports = function failTest(error) {
-    expect(error).toBeUndefined();
+    if(error === undefined) {
+        expect(error).not.toBeUndefined();
+    } else {
+        expect(error).toBeUndefined();
+    }
+    if(error && error.stack) {
+        console.error(error.stack);
+    }
 };

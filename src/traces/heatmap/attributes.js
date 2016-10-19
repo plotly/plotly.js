@@ -76,7 +76,20 @@ module.exports = extendFlat({},
                 'in the `z` data are filled in.'
             ].join(' ')
         },
-
+        xgap: {
+            valType: 'number',
+            dflt: 0,
+            min: 0,
+            role: 'style',
+            description: 'Sets the horizontal gap (in pixels) between bricks.'
+        },
+        ygap: {
+            valType: 'number',
+            dflt: 0,
+            min: 0,
+            role: 'style',
+            description: 'Sets the vertical gap (in pixels) between bricks.'
+        },
         _nestedModules: {
             'colorbar': 'Colorbar'
         }

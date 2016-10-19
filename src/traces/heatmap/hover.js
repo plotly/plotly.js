@@ -12,10 +12,12 @@
 var Fx = require('../../plots/cartesian/graph_interact');
 var Lib = require('../../lib');
 
+var MAXDIST = require('../../plots/cartesian/constants').MAXDIST;
+
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour) {
     // never let a heatmap override another type as closest point
-    if(pointData.distance < Fx.MAXDIST) return;
+    if(pointData.distance < MAXDIST) return;
 
     var cd0 = pointData.cd[0],
         trace = cd0.trace,
@@ -46,8 +48,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
             return;
         }
     }
-    else if(Fx.inbox(xval - x[0], xval - x[x.length - 1]) > Fx.MAXDIST ||
-            Fx.inbox(yval - y[0], yval - y[y.length - 1]) > Fx.MAXDIST) {
+    else if(Fx.inbox(xval - x[0], xval - x[x.length - 1]) > MAXDIST ||
+            Fx.inbox(yval - y[0], yval - y[y.length - 1]) > MAXDIST) {
         return;
     }
     else {
@@ -69,10 +71,12 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
         nx = Math.max(0, Math.min(x2.length - 2, Lib.findBin(xval, x2)));
         ny = Math.max(0, Math.min(y2.length - 2, Lib.findBin(yval, y2)));
     }
+
     var x0 = xa.c2p(x[nx]),
         x1 = xa.c2p(x[nx + 1]),
         y0 = ya.c2p(y[ny]),
         y1 = ya.c2p(y[ny + 1]);
+
     if(contour) {
         x1 = x0;
         xl = x[nx];
@@ -99,7 +103,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
     return [Lib.extendFlat(pointData, {
         index: [ny, nx],
         // never let a 2D override 1D type as closest point
-        distance: Fx.MAXDIST + 10,
+        distance: MAXDIST + 10,
         x0: x0,
         x1: x1,
         y0: y0,

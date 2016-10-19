@@ -3,8 +3,20 @@
   "extends": [
     "eslint:recommended"
   ],
+  "parserOptions": {
+    "ecmaVersion": 5,
+  },
   "env": {
     "commonjs": true
+  },
+  "globals": {
+    "Promise": true,
+    "Float32Array": true,
+    "Float64Array": true,
+    "Uint8Array": true,
+    "Int16Array": true,
+    "Int32Array": true,
+    "ArrayBuffer": true
   },
   "rules": {
     "no-trailing-spaces": [2],
@@ -14,7 +26,7 @@
     "indent": [2, 4, {"SwitchCase": 1}],
     "max-len": [0, 80],
     "brace-style": [0, "stroustrup", {"allowSingleLine": true}],
-    "curly": [0, "multi"],
+    "curly": [2, "multi-line"],
     "camelcase": [0, {"properties": "never"}],
     "comma-spacing": [2, {"before": false, "after": true}],
     "comma-style": [2, "last"],
@@ -32,6 +44,8 @@
     "space-in-parens": [2, "never"],
     "space-before-function-paren": [2, "never"],
     "space-before-blocks": [2],
+    "spaced-comment": [2, "always"],
+    "no-tabs": [2],
     "no-multi-spaces": [2],
     "no-whitespace-before-property": [2],
     "no-unexpected-multiline": [2],
@@ -39,13 +53,15 @@
     "space-infix-ops": [2, {"int32Hint": true}],
     "quotes": [2, "single"],
     "dot-notation": [2],
+    "dot-location": [2, "property"],
     "operator-linebreak": [2, "after"],
     "eqeqeq": [2],
-    "new-cap": [0],
+    "new-cap": [2, { "capIsNewExceptionPattern": "^MathJax\\.." }],
     "no-redeclare": [2, {"builtinGlobals": true}],
     "no-shadow": [0, {"builtinGlobals": true}],
     "block-scoped-var": [2],
     "no-unused-vars": [2],
+    "no-undef-init": [2],
     "no-use-before-define": [2, "nofunc"],
     "no-loop-func": [2],
     "no-console": [0],

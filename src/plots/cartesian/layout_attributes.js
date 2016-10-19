@@ -11,8 +11,6 @@
 var fontAttrs = require('../font_attributes');
 var colorAttrs = require('../../components/color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
-var rangeSliderAttrs = require('../../components/rangeslider/attributes');
-var rangeSelectorAttrs = require('../../components/rangeselector/attributes');
 
 var constants = require('./constants');
 
@@ -97,9 +95,6 @@ module.exports = {
         ].join(' ')
     },
 
-    rangeslider: rangeSliderAttrs,
-    rangeselector: rangeSelectorAttrs,
-
     fixedrange: {
         valType: 'boolean',
         dflt: false,
@@ -131,7 +126,9 @@ module.exports = {
         dflt: 0,
         role: 'style',
         description: [
-            'Sets the number of ticks.',
+            'Specifies the maximum number of ticks for the particular axis.',
+            'The actual number of ticks will be chosen automatically to be',
+            'less than or equal to `nticks`.',
             'Has an effect only if `tickmode` is set to *auto*.'
         ].join(' ')
     },
@@ -308,6 +305,14 @@ module.exports = {
             'If *B*, 1B.'
         ].join(' ')
     },
+    separatethousands: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'style',
+        description: [
+            'If "true", even 4-digit integers are separated'
+        ].join(' ')
+    },
     tickformat: {
         valType: 'string',
         dflt: '',
@@ -470,7 +475,7 @@ module.exports = {
         valType: 'enumerated',
         values: [
             'trace', 'category ascending', 'category descending', 'array'
-            /*, 'value ascending', 'value descending'*/ // value ascending / descending to be implemented later
+            /* , 'value ascending', 'value descending'*/ // value ascending / descending to be implemented later
         ],
         dflt: 'trace',
         role: 'info',
@@ -479,7 +484,7 @@ module.exports = {
             'By default, plotly uses *trace*, which specifies the order that is present in the data supplied.',
             'Set `categoryorder` to *category ascending* or *category descending* if order should be determined by',
             'the alphanumerical order of the category names.',
-            /*'Set `categoryorder` to *value ascending* or *value descending* if order should be determined by the',
+            /* 'Set `categoryorder` to *value ascending* or *value descending* if order should be determined by the',
             'numerical order of the values.',*/ // // value ascending / descending to be implemented later
             'Set `categoryorder` to *array* to derive the ordering from the attribute `categoryarray`. If a category',
             'is not found in the `categoryarray` array, the sorting behavior for that attribute will be identical to',
@@ -496,6 +501,10 @@ module.exports = {
         ].join(' ')
     },
 
+    _nestedModules: {
+        'rangeslider': 'rangeslider',
+        'rangeselector': 'rangeselector',
+    },
 
     _deprecated: {
         autotick: {

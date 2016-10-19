@@ -40,7 +40,7 @@ plotChoropleth.calcGeoJSON = function(trace, topojson) {
     for(var i = 0; i < len; i++) {
         feature = locationToFeature(trace.locationmode, locations[i], features);
 
-        if(feature === undefined) continue;  // filter the blank features here
+        if(!feature) continue;  // filter the blank features here
 
         // 'data_array' attributes
         feature.z = trace.z[i];
@@ -58,7 +58,10 @@ plotChoropleth.calcGeoJSON = function(trace, topojson) {
     return cdi;
 };
 
-plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
+plotChoropleth.plot = function(geo, calcData, geoLayout) {
+
+    function keyFunc(d) { return d[0].trace.uid; }
+
     var framework = geo.framework,
         gChoropleth = framework.select('g.choroplethlayer'),
         gBaseLayer = framework.select('g.baselayer'),
@@ -68,15 +71,16 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
 
     var gChoroplethTraces = gChoropleth
         .selectAll('g.trace.choropleth')
-        .data(choroplethData, function(trace) { return trace.uid; });
+        .data(calcData, keyFunc);
 
     gChoroplethTraces.enter().append('g')
         .attr('class', 'trace choropleth');
 
     gChoroplethTraces.exit().remove();
 
-    gChoroplethTraces.each(function(trace) {
-        var cdi = plotChoropleth.calcGeoJSON(trace, geo.topojson),
+    gChoroplethTraces.each(function(calcTrace) {
+        var trace = calcTrace[0].trace,
+            cdi = plotChoropleth.calcGeoJSON(trace, geo.topojson),
             cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),
             eventDataFunc = makeEventDataFunc(trace);
 
@@ -143,8 +147,9 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
 
 plotChoropleth.style = function(geo) {
     geo.framework.selectAll('g.trace.choropleth')
-        .each(function(trace) {
-            var s = d3.select(this),
+        .each(function(calcTrace) {
+            var trace = calcTrace[0].trace,
+                s = d3.select(this),
                 marker = trace.marker || {},
                 markerLine = marker.line || {},
                 zmin = trace.zmin,
@@ -165,7 +170,7 @@ plotChoropleth.style = function(geo) {
 function makeCleanHoverLabelsFunc(geo, trace) {
     var hoverinfo = trace.hoverinfo;
 
-    if(hoverinfo === 'none') {
+    if(hoverinfo === 'none' || hoverinfo === 'skip') {
         return function cleanHoverLabelsFunc(pt) {
             delete pt.nameLabel;
             delete pt.textLabel;

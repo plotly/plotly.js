@@ -117,6 +117,7 @@ module.exports = {
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['a', 'b', 'c', 'text', 'name']
     }),
+    hoveron: scatterAttrs.hoveron,
     _nestedModules: {
         'marker.colorbar': 'Colorbar'
     }

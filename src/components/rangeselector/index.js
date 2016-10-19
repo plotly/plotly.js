@@ -9,8 +9,12 @@
 'use strict';
 
 
-exports.attributes = require('./attributes');
+exports.moduleType = 'component';
 
-exports.supplyLayoutDefaults = require('./defaults');
+exports.name = 'rangeselector';
+
+exports.layoutAttributes = require('./attributes');
+
+exports.handleDefaults = require('./defaults');
 
 exports.draw = require('./draw');

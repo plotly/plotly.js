@@ -8,6 +8,8 @@
 
 'use strict';
 
+/* eslint-disable no-console */
+
 var config = require('../plot_api/plot_config');
 
 var loggers = module.exports = {};
@@ -18,7 +20,6 @@ var loggers = module.exports = {};
  * ------------------------------------------
  */
 
-/* eslint-disable no-console */
 loggers.log = function() {
     if(config.logging > 1) {
         var messages = ['LOG:'];
@@ -62,4 +63,3 @@ loggers.error = function() {
         console.error.apply(console, arguments);
     }
 };
-/* eslint-enable no-console */

@@ -10,8 +10,9 @@
 'use strict';
 
 var Plotly = require('../../plotly');
+var Plots = require('../../plots/plots');
+var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
-var setCursor = require('../../lib/setcursor');
 var downloadImage = require('../../snapshot/download');
 var Icons = require('../../../build/ploticon');
 
@@ -73,7 +74,7 @@ modeBarButtons.sendDataToCloud = {
     title: 'Save and edit plot in cloud',
     icon: Icons.disk,
     click: function(gd) {
-        Plotly.Plots.sendDataToCloud(gd);
+        Plots.sendDataToCloud(gd);
     }
 };
 
@@ -171,13 +172,6 @@ modeBarButtons.hoverCompareCartesian = {
     click: handleCartesian
 };
 
-var DRAGCURSORS = {
-    pan: 'move',
-    zoom: 'crosshair',
-    select: 'crosshair',
-    lasso: 'crosshair'
-};
-
 function handleCartesian(gd, ev) {
     var button = ev.currentTarget,
         astr = button.getAttribute('data-attr'),
@@ -189,7 +183,7 @@ function handleCartesian(gd, ev) {
         var mag = (val === 'in') ? 0.5 : 2,
             r0 = (1 + mag) / 2,
             r1 = (1 - mag) / 2,
-            axList = Plotly.Axes.list(gd, null, true);
+            axList = Axes.list(gd, null, true);
 
         var ax, axName;
 
@@ -227,18 +221,7 @@ function handleCartesian(gd, ev) {
         aobj[astr] = val;
     }
 
-    Plotly.relayout(gd, aobj).then(function() {
-        if(astr === 'dragmode') {
-            if(fullLayout._has('cartesian')) {
-                setCursor(
-                    fullLayout._paper.select('.nsewdrag'),
-                    DRAGCURSORS[val]
-                );
-            }
-            Plotly.Fx.supplyLayoutDefaults(gd.layout, fullLayout, gd._fullData);
-            Plotly.Fx.init(gd);
-        }
-    });
+    Plotly.relayout(gd, aobj);
 }
 
 modeBarButtons.zoom3d = {
@@ -282,7 +265,7 @@ function handleDrag3d(gd, ev) {
         attr = button.getAttribute('data-attr'),
         val = button.getAttribute('data-val') || true,
         fullLayout = gd._fullLayout,
-        sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d'),
+        sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d'),
         layoutUpdate = {};
 
     var parts = attr.split('.');
@@ -314,7 +297,7 @@ function handleCamera3d(gd, ev) {
     var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
         fullLayout = gd._fullLayout,
-        sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
+        sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d');
 
     for(var i = 0; i < sceneIds.length; i++) {
         var sceneId = sceneIds[i],
@@ -346,7 +329,7 @@ function handleHover3d(gd, ev) {
         val = button._previousVal || false,
         layout = gd.layout,
         fullLayout = gd._fullLayout,
-        sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
+        sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d');
 
     var axes = ['xaxis', 'yaxis', 'zaxis'],
         spikeAttrs = ['showspikes', 'spikesides', 'spikethickness', 'spikecolor'];
@@ -434,10 +417,10 @@ function handleGeo(gd, ev) {
         attr = button.getAttribute('data-attr'),
         val = button.getAttribute('data-val') || true,
         fullLayout = gd._fullLayout,
-        geoIds = Plotly.Plots.getSubplotIds(fullLayout, 'geo');
+        geoIds = Plots.getSubplotIds(fullLayout, 'geo');
 
     for(var i = 0; i < geoIds.length; i++) {
-        var geo = fullLayout[geoIds[i]]._geo;
+        var geo = fullLayout[geoIds[i]]._subplot;
 
         if(attr === 'zoom') {
             var scale = geo.projection.scale();

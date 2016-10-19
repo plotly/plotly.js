@@ -15,12 +15,21 @@ var lib = module.exports = {};
 
 lib.nestedProperty = require('./nested_property');
 lib.isPlainObject = require('./is_plain_object');
+lib.isArray = require('./is_array');
 
 var coerceModule = require('./coerce');
 lib.valObjects = coerceModule.valObjects;
 lib.coerce = coerceModule.coerce;
 lib.coerce2 = coerceModule.coerce2;
 lib.coerceFont = coerceModule.coerceFont;
+lib.validate = coerceModule.validate;
+lib.isValObject = coerceModule.isValObject;
+lib.crawl = coerceModule.crawl;
+lib.findArrayAttributes = coerceModule.findArrayAttributes;
+lib.IS_SUBPLOT_OBJ = coerceModule.IS_SUBPLOT_OBJ;
+lib.IS_LINKED_TO_ARRAY = coerceModule.IS_LINKED_TO_ARRAY;
+lib.DEPRECATED = coerceModule.DEPRECATED;
+lib.UNDERSCORE_ATTRS = coerceModule.UNDERSCORE_ATTRS;
 
 var datesModule = require('./dates');
 lib.dateTime2ms = datesModule.dateTime2ms;
@@ -57,6 +66,7 @@ var extendModule = require('./extend');
 lib.extendFlat = extendModule.extendFlat;
 lib.extendDeep = extendModule.extendDeep;
 lib.extendDeepAll = extendModule.extendDeepAll;
+lib.extendDeepNoArrays = extendModule.extendDeepNoArrays;
 
 var loggersModule = require('./loggers');
 lib.log = loggersModule.log;
@@ -64,6 +74,8 @@ lib.warn = loggersModule.warn;
 lib.error = loggersModule.error;
 
 lib.notifier = require('./notifier');
+
+lib.filterUnique = require('./filter_unique');
 
 /**
  * swap x and y of the same attribute in container cont
@@ -118,6 +130,9 @@ lib.bBoxIntersect = function(a, b, pad) {
 
 // minor convenience/performance booster for d3...
 lib.identity = function(d) { return d; };
+
+// minor convenience helper
+lib.noop = function() {};
 
 // random string generator
 lib.randstr = function randstr(existing, bits, base) {
@@ -485,6 +500,35 @@ lib.setScale = function(element, x, y) {
     return transform;
 };
 
+lib.setPointGroupScale = function(selection, x, y) {
+    var t, scale, re;
+
+    x = x || 1;
+    y = y || 1;
+
+    if(x === 1 && y === 1) {
+        scale = '';
+    } else {
+        // The same scale transform for every point:
+        scale = ' scale(' + x + ',' + y + ')';
+    }
+
+    // A regex to strip any existing scale:
+    re = /\s*sc.*/;
+
+    selection.each(function() {
+        // Get the transform:
+        t = (this.getAttribute('transform') || '').replace(re, '');
+        t += scale;
+        t = t.trim();
+
+        // Append the scale transform
+        this.setAttribute('transform', t);
+    });
+
+    return scale;
+};
+
 lib.isIE = function() {
     return typeof window.navigator.msSaveBlob !== 'undefined';
 };
@@ -545,6 +589,93 @@ lib.objectFromPath = function(path, value) {
 };
 
 /**
+ * Iterate through an object in-place, converting dotted properties to objects.
+ *
+ * Examples:
+ *
+ *   lib.expandObjectPaths({'nested.test.path': 'value'});
+ *     => { nested: { test: {path: 'value'}}}
+ *
+ * It also handles array notation, e.g.:
+ *
+ *   lib.expandObjectPaths({'foo[1].bar': 'value'});
+ *     => { foo: [null, {bar: value}] }
+ *
+ * It handles merges the results when two properties are specified in parallel:
+ *
+ *   lib.expandObjectPaths({'foo[1].bar': 10, 'foo[0].bar': 20});
+ *     => { foo: [{bar: 10}, {bar: 20}] }
+ *
+ * It does NOT, however, merge mulitple mutliply-nested arrays::
+ *
+ *   lib.expandObjectPaths({'marker[1].range[1]': 5, 'marker[1].range[0]': 4})
+ *     => { marker: [null, {range: 4}] }
+ */
+
+// Store this to avoid recompiling regex on *every* prop since this may happen many
+// many times for animations. Could maybe be inside the function. Not sure about
+// scoping vs. recompilation tradeoff, but at least it's not just inlining it into
+// the inner loop.
+var dottedPropertyRegex = /^([^\[\.]+)\.(.+)?/;
+var indexedPropertyRegex = /^([^\.]+)\[([0-9]+)\](\.)?(.+)?/;
+
+lib.expandObjectPaths = function(data) {
+    var match, key, prop, datum, idx, dest, trailingPath;
+    if(typeof data === 'object' && !Array.isArray(data)) {
+        for(key in data) {
+            if(data.hasOwnProperty(key)) {
+                if((match = key.match(dottedPropertyRegex))) {
+                    datum = data[key];
+                    prop = match[1];
+
+                    delete data[key];
+
+                    data[prop] = lib.extendDeepNoArrays(data[prop] || {}, lib.objectFromPath(key, lib.expandObjectPaths(datum))[prop]);
+                } else if((match = key.match(indexedPropertyRegex))) {
+                    datum = data[key];
+
+                    prop = match[1];
+                    idx = parseInt(match[2]);
+
+                    delete data[key];
+
+                    data[prop] = data[prop] || [];
+
+                    if(match[3] === '.') {
+                        // This is the case where theere are subsequent properties into which
+                        // we must recurse, e.g. transforms[0].value
+                        trailingPath = match[4];
+                        dest = data[prop][idx] = data[prop][idx] || {};
+
+                        // NB: Extend deep no arrays prevents this from working on multiple
+                        // nested properties in the same object, e.g.
+                        //
+                        // {
+                        //   foo[0].bar[1].range
+                        //   foo[0].bar[0].range
+                        // }
+                        //
+                        // In this case, the extendDeepNoArrays will overwrite one array with
+                        // the other, so that both properties *will not* be present in the
+                        // result. Fixing this would require a more intelligent tracking
+                        // of changes and merging than extendDeepNoArrays currently accomplishes.
+                        lib.extendDeepNoArrays(dest, lib.objectFromPath(trailingPath, lib.expandObjectPaths(datum)));
+                    } else {
+                        // This is the case where this property is the end of the line,
+                        // e.g. xaxis.range[0]
+                        data[prop][idx] = lib.expandObjectPaths(datum);
+                    }
+                } else {
+                    data[key] = lib.expandObjectPaths(data[key]);
+                }
+            }
+        }
+    }
+
+    return data;
+};
+
+/**
  * Converts value to string separated by the provided separators.
  *
  * @example
@@ -552,15 +683,21 @@ lib.objectFromPath = function(path, value) {
  * // returns '2016'
  *
  * @example
+ * lib.numSeparate(3000, '.,', true);
+ * // returns '3,000'
+ *
+ * @example
  * lib.numSeparate(1234.56, '|,')
  * // returns '1,234|56'
  *
  * @param   {string|number} value       the value to be converted
  * @param   {string}    separators  string of decimal, then thousands separators
+ * @param   {boolean}    separatethousands  boolean, 4-digit integers are separated if true
  *
  * @return  {string}    the value that has been separated
  */
-lib.numSeparate = function(value, separators) {
+lib.numSeparate = function(value, separators, separatethousands) {
+    if(!separatethousands) separatethousands = false;
 
     if(typeof separators !== 'string' || separators.length === 0) {
         throw new Error('Separator string required for formatting!');
@@ -579,7 +716,7 @@ lib.numSeparate = function(value, separators) {
         x2 = x.length > 1 ? decimalSep + x[1] : '';
 
     // Years are ignored for thousands separators
-    if(thouSep && (x.length > 1 || x1.length > 4)) {
+    if(thouSep && (x.length > 1 || x1.length > 4 || separatethousands)) {
         while(thousandsRe.test(x1)) {
             x1 = x1.replace(thousandsRe, '$1' + thouSep + '$2');
         }

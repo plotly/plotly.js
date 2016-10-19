@@ -8,14 +8,20 @@ var mouseEvent = require('../assets/mouse_event');
 var getRectCenter = require('../assets/get_rect_center');
 var customMatchers = require('../assets/custom_matchers');
 
+// cartesian click events events use the hover data
+// from the mousemove events and then simulate
+// a click event on mouseup
+var click = require('../assets/click');
+var doubleClick = require('../assets/double_click');
+
 
 describe('Test click interactions:', function() {
     var mock = require('@mocks/14.json');
 
     var mockCopy, gd;
 
-    var pointPos = [351, 223],
-        blankPos = [70, 363];
+    var pointPos = [344, 216],
+        blankPos = [63, 356];
 
     var autoRangeX = [-3.011967491973726, 2.1561305597186564],
         autoRangeY = [-0.9910086301469277, 1.389382716298284];
@@ -30,26 +36,6 @@ describe('Test click interactions:', function() {
     });
 
     afterEach(destroyGraphDiv);
-
-    // cartesian click events events use the hover data
-    // from the mousemove events and then simulate
-    // a click event on mouseup
-    function click(x, y) {
-        mouseEvent('mousemove', x, y);
-        mouseEvent('mousedown', x, y);
-        mouseEvent('mouseup', x, y);
-    }
-
-    function doubleClick(x, y) {
-        return new Promise(function(resolve) {
-            click(x, y);
-
-            setTimeout(function() {
-                click(x, y);
-                resolve();
-            }, DBLCLICKDELAY / 2);
-        });
-    }
 
     function drag(fromX, fromY, toX, toY, delay) {
         return new Promise(function(resolve) {
@@ -93,6 +79,48 @@ describe('Test click interactions:', function() {
             expect(pt.pointNumber).toEqual(11);
             expect(pt.x).toEqual(0.125);
             expect(pt.y).toEqual(2.125);
+        });
+    });
+
+    describe('click event with hoverinfo set to skip - plotly_click', function() {
+        var futureData = null;
+
+        beforeEach(function(done) {
+
+            var modifiedMockCopy = Lib.extendDeep({}, mockCopy);
+            modifiedMockCopy.data[0].hoverinfo = 'skip';
+            Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
+                .then(done);
+
+            gd.on('plotly_click', function(data) {
+                futureData = data;
+            });
+        });
+
+        it('should not register the click', function() {
+            click(pointPos[0], pointPos[1]);
+            expect(futureData).toEqual(null);
+        });
+    });
+
+    describe('click events with hoverinfo set to skip - plotly_hover', function() {
+        var futureData = null;
+
+        beforeEach(function(done) {
+
+            var modifiedMockCopy = Lib.extendDeep({}, mockCopy);
+            modifiedMockCopy.data[0].hoverinfo = 'skip';
+            Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
+                .then(done);
+
+            gd.on('plotly_hover', function(data) {
+                futureData = data;
+            });
+        });
+
+        it('should not register the hover', function() {
+            click(pointPos[0], pointPos[1]);
+            expect(futureData).toEqual(null);
         });
     });
 
@@ -530,8 +558,8 @@ describe('Test click interactions:', function() {
 
                 return drag(100, 100, 200, 200, DBLCLICKDELAY / 2);
             }).then(function() {
-                expect(gd.layout.xaxis.range).toBeCloseToArray([-2.70624901567643, -1.9783478816352495]);
-                expect(gd.layout.yaxis.range).toBeCloseToArray([0.5007032802920716, 1.2941670624404753]);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-2.6480169249531356, -1.920115790911955]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.4372261777201992, 1.2306899598686027]);
 
                 done();
             });
@@ -697,14 +725,14 @@ describe('Test click interactions:', function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
             expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-            drag(100, 100, 400, 300).then(function() {
-                expect(gd.layout.xaxis.range).toBeCloseToArray([-2.70624901, -0.52254561]);
-                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.29276050, 1.294167062]);
+            drag(93, 93, 393, 293).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-2.69897000, -0.515266602]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.30069513, 1.2862324246]);
 
-                return drag(100, 100, 400, 300);
+                return drag(93, 93, 393, 293);
             }).then(function() {
-                expect(gd.layout.xaxis.range).toBeCloseToArray([-2.57707219, -1.65438061]);
-                expect(gd.layout.yaxis.range).toBeCloseToArray([0.172738250, 1.230689959]);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-2.56671754, -1.644025966]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.159513853, 1.2174655634]);
 
                 done();
             });
@@ -721,8 +749,8 @@ describe('Test click interactions:', function() {
 
             var plot = gd._fullLayout._plots.xy.plot;
 
-            mouseEvent('mousemove', 400, 250);
-            mouseEvent('scroll', 400, 250, { deltaX: 0, deltaY: -1000 });
+            mouseEvent('mousemove', 393, 243);
+            mouseEvent('scroll', 393, 243, { deltaX: 0, deltaY: -1000 });
 
             var transform = plot.attr('transform');
 
@@ -735,7 +763,7 @@ describe('Test click interactions:', function() {
             var translate = Lib.getTranslate(mockEl),
                 scale = Lib.getScale(mockEl);
 
-            expect([translate.x, translate.y]).toBeCloseToArray([62.841, 99.483]);
+            expect([translate.x, translate.y]).toBeCloseToArray([61.070, 97.712]);
             expect([scale.x, scale.y]).toBeCloseToArray([1.221, 1.221]);
         });
     });
@@ -751,11 +779,11 @@ describe('Test click interactions:', function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
             expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-            drag(100, 100, 400, 300).then(function() {
+            drag(93, 93, 393, 293).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([-5.19567089, -0.02757284]);
                 expect(gd.layout.yaxis.range).toBeCloseToArray([0.595918934, 2.976310280]);
 
-                return drag(100, 100, 400, 300);
+                return drag(93, 93, 393, 293);
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([-7.37937429, -2.21127624]);
                 expect(gd.layout.yaxis.range).toBeCloseToArray([2.182846498, 4.563237844]);

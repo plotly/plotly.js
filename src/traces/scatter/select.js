@@ -27,7 +27,8 @@ module.exports = function selectPoints(searchInfo, polygon) {
         y;
 
     // TODO: include lines? that would require per-segment line properties
-    if(!subtypes.hasMarkers(trace) && ! subtypes.hasText(trace)) return;
+    var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
+    if(trace.visible !== true || hasOnlyLines) return;
 
     var opacity = Array.isArray(marker.opacity) ? 1 : marker.opacity;
 
@@ -44,7 +45,8 @@ module.exports = function selectPoints(searchInfo, polygon) {
                     curveNumber: curveNumber,
                     pointNumber: i,
                     x: di.x,
-                    y: di.y
+                    y: di.y,
+                    id: di.id
                 });
                 di.dim = 0;
             }

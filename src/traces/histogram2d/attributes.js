@@ -39,6 +39,8 @@ module.exports = extendFlat({},
         nbinsy: histogramAttrs.nbinsy,
         ybins: histogramAttrs.ybins,
 
+        xgap: heatmapAttrs.xgap,
+        ygap: heatmapAttrs.ygap,
         zsmooth: heatmapAttrs.zsmooth,
 
         _nestedModules: {

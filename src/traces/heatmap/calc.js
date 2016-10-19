@@ -11,9 +11,9 @@
 
 var isNumeric = require('fast-isnumeric');
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
-var Plots = require('../../plots/plots');
 
 var histogram2dCalc = require('../histogram2d/calc');
 var colorscaleCalc = require('../../components/colorscale/calc');
@@ -27,8 +27,9 @@ module.exports = function calc(gd, trace) {
     // run makeCalcdata on x and y even for heatmaps, in case of category mappings
     var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
         ya = Axes.getFromId(gd, trace.yaxis || 'y'),
-        isContour = Plots.traceIs(trace, 'contour'),
-        isHist = Plots.traceIs(trace, 'histogram'),
+        isContour = Registry.traceIs(trace, 'contour'),
+        isHist = Registry.traceIs(trace, 'histogram'),
+        isGL2D = Registry.traceIs(trace, 'gl2d'),
         zsmooth = isContour ? 'best' : trace.zsmooth,
         x,
         x0,
@@ -112,8 +113,11 @@ module.exports = function calc(gd, trace) {
         yIn = trace.ytype === 'scaled' ? '' : trace.y,
         yArray = makeBoundArray(trace, yIn, y0, dy, z.length, ya);
 
-    Axes.expand(xa, xArray);
-    Axes.expand(ya, yArray);
+    // handled in gl2d convert step
+    if(!isGL2D) {
+        Axes.expand(xa, xArray);
+        Axes.expand(ya, yArray);
+    }
 
     var cd0 = {x: xArray, y: yArray, z: z};
 
@@ -166,35 +170,42 @@ function cleanZ(trace) {
 
 function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
     var arrayOut = [],
-        isContour = Plots.traceIs(trace, 'contour'),
-        isHist = Plots.traceIs(trace, 'histogram'),
-        isGL2D = Plots.traceIs(trace, 'gl2d'),
+        isContour = Registry.traceIs(trace, 'contour'),
+        isHist = Registry.traceIs(trace, 'histogram'),
+        isGL2D = Registry.traceIs(trace, 'gl2d'),
         v0,
         dv,
         i;
 
-    if(Array.isArray(arrayIn) && !isHist && (ax.type !== 'category')) {
+    var isArrayOfTwoItemsOrMore = Array.isArray(arrayIn) && arrayIn.length > 1;
+
+    if(isArrayOfTwoItemsOrMore && !isHist && (ax.type !== 'category')) {
         arrayIn = arrayIn.map(ax.d2c);
         var len = arrayIn.length;
 
         // given vals are brick centers
-        // hopefully length==numbricks, but use this method even if too few are supplied
+        // hopefully length === numbricks, but use this method even if too few are supplied
         // and extend it linearly based on the last two points
         if(len <= numbricks) {
             // contour plots only want the centers
             if(isContour || isGL2D) arrayOut = arrayIn.slice(0, numbricks);
-            else if(numbricks === 1) arrayOut = [arrayIn[0] - 0.5, arrayIn[0] + 0.5];
+            else if(numbricks === 1) {
+                arrayOut = [arrayIn[0] - 0.5, arrayIn[0] + 0.5];
+            }
             else {
                 arrayOut = [1.5 * arrayIn[0] - 0.5 * arrayIn[1]];
+
                 for(i = 1; i < len; i++) {
                     arrayOut.push((arrayIn[i - 1] + arrayIn[i]) * 0.5);
                 }
+
                 arrayOut.push(1.5 * arrayIn[len - 1] - 0.5 * arrayIn[len - 2]);
             }
 
             if(len < numbricks) {
                 var lastPt = arrayOut[arrayOut.length - 1],
                     delta = lastPt - arrayOut[arrayOut.length - 2];
+
                 for(i = len; i < numbricks; i++) {
                     lastPt += delta;
                     arrayOut.push(lastPt);
@@ -202,7 +213,7 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
             }
         }
         else {
-            // hopefully length==numbricks+1, but do something regardless:
+            // hopefully length === numbricks+1, but do something regardless:
             // given vals are brick boundaries
             return isContour ?
                 arrayIn.slice(0, numbricks) :  // we must be strict for contours
@@ -211,14 +222,17 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
     }
     else {
         dv = dvIn || 1;
-        if(v0In === undefined) v0 = 0;
-        else if(isHist || ax.type === 'category') v0 = v0In;
+
+        if(isHist || ax.type === 'category') v0 = v0In || 0;
+        else if(Array.isArray(arrayIn) && arrayIn.length === 1) v0 = arrayIn[0];
+        else if(v0In === undefined) v0 = 0;
         else v0 = ax.d2c(v0In);
 
         for(i = (isContour || isGL2D) ? 0 : -0.5; i < numbricks; i++) {
             arrayOut.push(v0 + dv * i);
         }
     }
+
     return arrayOut;
 }
 

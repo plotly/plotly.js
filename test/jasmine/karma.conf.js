@@ -1,4 +1,4 @@
-/*eslint-env node*/
+/* eslint-env node*/
 
 // Karma configuration
 
@@ -13,10 +13,13 @@
  *
  */
 
+var constants = require('../../tasks/util/constants');
+
 var arg = process.argv[4];
 
 var testFileGlob = arg ? arg : 'tests/*_test.js';
 var isSingleSuiteRun = (arg && arg.indexOf('bundle_tests/') === -1);
+var isRequireJSTest = (arg && arg.indexOf('bundle_tests/requirejs') !== -1);
 
 var pathToMain = '../../lib/index.js';
 var pathToJQuery = 'assets/jquery-1.8.3.min.js';
@@ -26,6 +29,9 @@ function func(config) {
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
+    //
+    // NB: if you try config.LOG_DEBUG, you may actually be looking for karma-verbose-reporter.
+    //     See CONTRIBUTING.md for additional notes on reporting.
     func.defaultConfig.logLevel = config.LOG_INFO;
 
     config.set(func.defaultConfig);
@@ -56,6 +62,10 @@ func.defaultConfig = {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
+    //
+    // See note in CONTRIBUTING.md about more verbose reporting via karma-verbose-reporter:
+    // https://www.npmjs.com/package/karma-verbose-reporter ('verbose')
+    //
     reporters: ['progress'],
 
     // web server port
@@ -105,6 +115,13 @@ if(isSingleSuiteRun) {
 
     func.defaultConfig.preprocessors[pathToMain] = ['browserify'];
     func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
+}
+else if(isRequireJSTest) {
+    func.defaultConfig.files = [
+        constants.pathToRequireJS,
+        constants.pathToRequireJSFixture,
+        testFileGlob
+    ];
 }
 else {
     func.defaultConfig.files = [

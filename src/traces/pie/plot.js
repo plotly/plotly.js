@@ -37,7 +37,7 @@ module.exports = function plot(gd, cdpie) {
         var pieGroup = d3.select(this),
             cd0 = cd[0],
             trace = cd0.trace,
-            tiltRads = 0, //trace.tilt * Math.PI / 180,
+            tiltRads = 0, // trace.tilt * Math.PI / 180,
             depthLength = (trace.depth||0) * cd0.r * Math.sin(tiltRads) / 2,
             tiltAxis = trace.tiltaxis || 0,
             tiltAxisRads = tiltAxis * Math.PI / 180,
@@ -96,7 +96,7 @@ module.exports = function plot(gd, cdpie) {
                     // in case we dragged over the pie from another subplot,
                     // or if hover is turned off
                     if(gd._dragging || fullLayout2.hovermode === false ||
-                            hoverinfo === 'none' || !hoverinfo) {
+                            hoverinfo === 'none' || hoverinfo === 'skip' || !hoverinfo) {
                         return;
                     }
 

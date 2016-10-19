@@ -9,13 +9,14 @@
 'use strict';
 
 var Lib = require('../../lib');
+var Color = require('../color');
 
 var attributes = require('./attributes');
 var buttonAttrs = require('./button_attributes');
 var constants = require('./constants');
 
 
-module.exports = function rangeSelectorDefaults(containerIn, containerOut, layout, counterAxes) {
+module.exports = function handleDefaults(containerIn, containerOut, layout, counterAxes) {
     var selectorIn = containerIn.rangeselector || {},
         selectorOut = containerOut.rangeselector = {};
 
@@ -38,7 +39,8 @@ module.exports = function rangeSelectorDefaults(containerIn, containerOut, layou
 
     Lib.coerceFont(coerce, 'font', layout.font);
 
-    coerce('bgcolor');
+    var bgColor = coerce('bgcolor');
+    coerce('activecolor', Color.contrast(bgColor, constants.lightAmount, constants.darkAmount));
     coerce('bordercolor');
     coerce('borderwidth');
 };
@@ -57,6 +59,8 @@ function buttonsDefaults(containerIn, containerOut) {
         buttonIn = buttonsIn[i];
         buttonOut = {};
 
+        if(!Lib.isPlainObject(buttonIn)) continue;
+
         var step = coerce('step');
         if(step !== 'all') {
             coerce('stepmode');
@@ -65,6 +69,7 @@ function buttonsDefaults(containerIn, containerOut) {
 
         coerce('label');
 
+        buttonOut._index = i;
         buttonsOut.push(buttonOut);
     }
 
@@ -78,7 +83,8 @@ function getPosDflt(containerOut, layout, counterAxes) {
 
     var posY = 0;
     for(var i = 0; i < anchoredList.length; i++) {
-        posY = Math.max(layout[anchoredList[i]].domain[1], posY);
+        var domain = layout[anchoredList[i]].domain;
+        if(domain) posY = Math.max(domain[1], posY);
     }
 
     return [containerOut.domain[0], posY + constants.yPad];

@@ -20,8 +20,8 @@ module.exports = function plot(ternary, data) {
 
     // mimic cartesian plotinfo
     var plotinfo = {
-        x: function() { return ternary.xaxis; },
-        y: function() { return ternary.yaxis; },
+        xaxis: ternary.xaxis,
+        yaxis: ternary.yaxis,
         plot: plotContainer
     };
 

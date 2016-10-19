@@ -20,6 +20,7 @@ describe('isPlainObject', function() {
         null,
         undefined,
         [],
+        new Float32Array(1),
         'string',
         true,
         false,

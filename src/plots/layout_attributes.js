@@ -8,13 +8,11 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
+var Lib = require('../lib');
+var extendFlat = Lib.extendFlat;
 
 var fontAttrs = require('./font_attributes');
 var colorAttrs = require('../components/color/attributes');
-
-var extendFlat = Plotly.Lib.extendFlat;
-
 
 module.exports = {
     font: {
@@ -177,16 +175,19 @@ module.exports = {
         '*': 'Fx'
     },
 
-    // TODO merge with moduleLayoutDefaults in plots.js
     _nestedModules: {
         'xaxis': 'Axes',
         'yaxis': 'Axes',
         'scene': 'gl3d',
         'geo': 'geo',
-        'legend': 'Legend',
-        'annotations': 'Annotations',
-        'shapes': 'Shapes',
-        'images': 'Images',
-        'ternary': 'ternary'
+        'ternary': 'ternary',
+        'mapbox': 'mapbox',
+
+        'legend': 'legend',
+        'annotations': 'annotations',
+        'shapes': 'shapes',
+        'images': 'images',
+        'updatemenus': 'updatemenus',
+        'sliders': 'sliders'
     }
 };
