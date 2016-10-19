@@ -1803,8 +1803,13 @@ function _relayout(gd, aobj) {
         // op and has no flag.
         undoit[ai] = (pleaf === 'reverse') ? vi : p.get();
 
+        // tweak width / height update value when null such that
+        // new dimensions are honored in Plots.supplyDefaults
+        if(['width', 'height'].indexOf(ai) !== -1 && vi === null) {
+            vi = 'initial';
+        }
         // check autorange vs range
-        if(pleafPlus.match(/^[xyz]axis[0-9]*\.range(\[[0|1]\])?$/)) {
+        else if(pleafPlus.match(/^[xyz]axis[0-9]*\.range(\[[0|1]\])?$/)) {
             doextra(ptrunk + '.autorange', false);
         }
         else if(pleafPlus.match(/^[xyz]axis[0-9]*\.autorange$/)) {

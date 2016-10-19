@@ -307,6 +307,7 @@ function positionPlayWithData(gd, container) {
         });
     }
 }
+
 plots.sendDataToCloud = function(gd) {
     gd.emit('plotly_beforeexport');
 
@@ -372,6 +373,7 @@ plots.supplyDefaults = function(gd) {
     // because fullData needs a few things from layout
 
     if(oldFullLayout._initialAutoSizeIsDone) {
+
         // coerce the updated layout while preserving width and height
         var oldWidth = oldFullLayout.width,
             oldHeight = oldFullLayout.height;
@@ -382,6 +384,7 @@ plots.supplyDefaults = function(gd) {
         if(!newLayout.height) newFullLayout.height = oldHeight;
     }
     else {
+
         // coerce the updated layout and autosize if needed
         plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout);
 
@@ -389,6 +392,7 @@ plots.supplyDefaults = function(gd) {
             autosize = newFullLayout.autosize,
             autosizable = gd._context && gd._context.autosizable,
             initialAutoSize = missingWidthOrHeight && (autosize || autosizable);
+
         if(initialAutoSize) plots.plotAutoSize(gd, newLayout, newFullLayout);
         else if(missingWidthOrHeight) plots.sanitizeMargins(gd);
 
