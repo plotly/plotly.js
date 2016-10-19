@@ -114,11 +114,13 @@ proto.handlePick = function(pickResult) {
         index = this.idToIndex[pickResult.pointId];
     }
 
+    var x = this.pickXData[index];
+
     return {
         trace: this,
         dataCoord: pickResult.dataCoord,
         traceCoord: [
-            Number(this.pickXData[index]), // non-fancy scattergl has Dates
+            isNumeric(x) || !Lib.isDateTime(x) ? x : Lib.dateTime2ms(x),
             this.pickYData[index]
         ],
         textLabel: Array.isArray(this.textLabels) ?
@@ -270,7 +272,7 @@ proto.updateFast = function(options) {
         pId = 0,
         ptr = 0;
 
-    var xx, yy;
+    var xx, yy, fastType;
 
     // TODO add 'very fast' mode that bypasses this loop
     // TODO bypass this on modebar +/- zoom
@@ -279,18 +281,24 @@ proto.updateFast = function(options) {
         yy = y[i];
 
         // check for isNaN is faster but doesn't skip over nulls
-        if(!isNumeric(yy)) continue;
-        if(!isNumeric(xx) && !(xx instanceof Date)) continue;
+        fastType = isNumeric(xx) || xx instanceof Date;
 
-        idToIndex[pId++] = i;
+        if(isNumeric(yy) && (fastType || Lib.isDateTime(xx))) {
 
-        positions[ptr++] = xx;
-        positions[ptr++] = yy;
+            if(!fastType) {
+                xx = Lib.dateTime2ms(xx);
+            }
 
-        bounds[0] = Math.min(bounds[0], xx);
-        bounds[1] = Math.min(bounds[1], yy);
-        bounds[2] = Math.max(bounds[2], xx);
-        bounds[3] = Math.max(bounds[3], yy);
+            idToIndex[pId++] = i;
+
+            positions[ptr++] = xx;
+            positions[ptr++] = yy;
+
+            bounds[0] = Math.min(bounds[0], xx);
+            bounds[1] = Math.min(bounds[1], yy);
+            bounds[2] = Math.max(bounds[2], xx);
+            bounds[3] = Math.max(bounds[3], yy);
+        }
     }
 
     positions = truncate(positions, ptr);

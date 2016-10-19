@@ -81,4 +81,19 @@ describe('date axis', function() {
         expect(gd._fullLayout._plots.xy._scene2d.glplot.objects[3].pointCount).toBe(2);
     });
 
+    it('should use the non-fancy gl-vis/gl-scatter2d with string dates', function() {
+        PlotlyInternal.plot(gd, [{
+            type: 'scattergl',
+            mode: 'markers', // important, as otherwise lines are assumed (which needs fancy)
+            x: ['2016-10-10', '2016-10-11'],
+            y: [15, 16]
+        }]);
+
+        expect(gd._fullLayout.xaxis.type).toBe('date');
+        expect(gd._fullLayout.yaxis.type).toBe('linear');
+        expect(gd._fullData[0].type).toBe('scattergl');
+        expect(gd._fullData[0]._module.basePlotModule.name).toBe('gl2d');
+
+        expect(gd._fullLayout._plots.xy._scene2d.glplot.objects[3].pointCount).toBe(2);
+    });
 });
