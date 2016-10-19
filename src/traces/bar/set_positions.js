@@ -92,7 +92,11 @@ function setGroupPositionsInOverlayMode(gd, pa, sa, traces) {
             // along with the tops of each bar,
             // and store these bar tops in calcdata
             var sLetter = getAxisLetter(sa),
-                fs = function(v) { v[sLetter] = v.s; return v.s; };
+                fs = function(v) {
+                    var barTop = v.b + v.s;
+                    v[sLetter] = barTop;
+                    return barTop;
+                };
 
             Axes.expand(sa, trace.map(fs), {tozero: true, padded: true});
         }
@@ -122,7 +126,11 @@ function setGroupPositionsInGroupMode(gd, pa, sa, traces) {
         // along with the tops of each bar,
         // and store these bar tops in calcdata
         var sLetter = getAxisLetter(sa),
-            fs = function(v) { v[sLetter] = v.s; return v.s; };
+            fs = function(v) {
+                var barTop = v.b + v.s;
+                v[sLetter] = barTop;
+                return barTop;
+            };
 
         for(var i = 0; i < traces.length; i++) {
             Axes.expand(sa, traces[i].map(fs), {tozero: true, padded: true});
@@ -268,7 +276,7 @@ function stackBars(gd, sa, sieve) {
             if(!isNumeric(bar.s)) continue;
 
             // stack current bar and get previous sum
-            var previousSum = sieve.put(bar.p, bar.s);
+            var previousSum = sieve.put(bar.p, bar.b + bar.s);
 
             // store the bar base and top in each calcdata item
             bar.b = previousSum;
@@ -302,7 +310,7 @@ function sieveBars(gd, sa, sieve) {
         for(var j = 0; j < trace.length; j++) {
             var bar = trace[j];
 
-            if(isNumeric(bar.s)) sieve.put(bar.p, bar.s);
+            if(isNumeric(bar.s)) sieve.put(bar.p, bar.b + bar.s);
         }
     }
 }
@@ -330,7 +338,7 @@ function normalizeBars(gd, sa, sieve) {
 
             if(!isNumeric(bar.s)) continue;
 
-            var scale = Math.abs(sTop / sieve.get(bar.p, bar.s));
+            var scale = Math.abs(sTop / sieve.get(bar.p, bar.b + bar.s));
             bar.b *= scale;
             bar.s *= scale;
             var barEnd = bar.b + bar.s;
