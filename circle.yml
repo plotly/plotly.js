@@ -21,6 +21,7 @@ dependencies:
 test:
   override:
     - npm run test-image
+    - npm run test-image-gl2d
     - npm run test-export
     - npm run citest-jasmine
     - npm run test-bundle
