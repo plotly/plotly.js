@@ -84,7 +84,8 @@ function setGroupPositionsInOverlayMode(gd, pa, sa, traces) {
 
         // set bar bases and sizes, and update size axis
         if(barnorm) {
-            stackBars(gd, sa, sieve);
+            sieveBars(gd, sa, sieve);
+            normalizeBars(gd, sa, sieve);
         }
         else {
             // make sure the size axis includes zero,
@@ -113,7 +114,8 @@ function setGroupPositionsInGroupMode(gd, pa, sa, traces) {
 
     // set bar bases and sizes, and update size axis
     if(barnorm) {
-        stackBars(gd, sa, sieve);
+        sieveBars(gd, sa, sieve);
+        normalizeBars(gd, sa, sieve);
     }
     else {
         // make sure the size axis includes zero,
@@ -231,6 +233,9 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
         }
     }
 
+    // stack bars that only differ by rounding
+    sieve.binWidth = traces[0][0].t.barwidth / 100;
+
     // update position axes
     Axes.minDtick(pa, minDiff, distinctPositions[0], overlap);
     Axes.expand(pa, distinctPositions, {vpad: minDiff / 2});
@@ -239,14 +244,11 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
 
 function stackBars(gd, sa, sieve) {
     var fullLayout = gd._fullLayout,
+        barnorm = fullLayout.barnorm,
         sLetter = getAxisLetter(sa),
         traces = sieve.traces,
         i, trace,
         j, bar;
-
-    var stack = (fullLayout.barmode === 'stack'),
-        relative = (fullLayout.barmode === 'relative'),
-        norm = fullLayout.barnorm;
 
     // bar size range and stacking calculation
     // for stacked bars, we need to evaluate every step in every
@@ -257,37 +259,32 @@ function stackBars(gd, sa, sieve) {
     var sMax = sa.l2c(sa.c2l(0)),
         sMin = sMax;
 
-    // stack bars that only differ by rounding
-    sieve.binWidth = traces[0][0].t.barwidth / 100;
-
     for(i = 0; i < traces.length; i++) {
         trace = traces[i];
 
         for(j = 0; j < trace.length; j++) {
             bar = trace[j];
 
-            // skip over bars with no size,
-            // so that we don't try to stack them
             if(!isNumeric(bar.s)) continue;
 
             // stack current bar and get previous sum
             var previousSum = sieve.put(bar.p, bar.s);
 
-            if(stack || relative) bar.b = previousSum;
+            // store the bar base and top in each calcdata item
+            bar.b = previousSum;
 
-            // store the bar top in each calcdata item
-            if(stack || relative) {
-                var barEnd = bar.b + bar.s;
-                bar[sLetter] = barEnd;
-                if(!norm && isNumeric(sa.c2l(barEnd))) {
-                    sMax = Math.max(sMax, barEnd);
-                    sMin = Math.min(sMin, barEnd);
-                }
+            var barEnd = bar.b + bar.s;
+            bar[sLetter] = barEnd;
+
+            if(!barnorm && isNumeric(sa.c2l(barEnd))) {
+                sMax = Math.max(sMax, barEnd);
+                sMin = Math.min(sMin, barEnd);
             }
         }
     }
 
-    if(norm) {
+    // if barnorm is set, let normalizeBars update the axis range
+    if(barnorm) {
         normalizeBars(gd, sa, sieve);
     }
     else {
@@ -296,7 +293,27 @@ function stackBars(gd, sa, sieve) {
 }
 
 
+function sieveBars(gd, sa, sieve) {
+    var traces = sieve.traces;
+
+    for(var i = 0; i < traces.length; i++) {
+        var trace = traces[i];
+
+        for(var j = 0; j < trace.length; j++) {
+            var bar = trace[j];
+
+            if(isNumeric(bar.s)) sieve.put(bar.p, bar.s);
+        }
+    }
+}
+
+
 function normalizeBars(gd, sa, sieve) {
+    // Note:
+    //
+    // normalizeBars requires that either sieveBars or stackBars has been
+    // previously invoked.
+
     var traces = sieve.traces,
         sLetter = getAxisLetter(sa),
         sTop = (gd._fullLayout.barnorm === 'fraction') ? 1 : 100,
@@ -332,6 +349,7 @@ function normalizeBars(gd, sa, sieve) {
         }
     }
 
+    // update range of size axis
     Axes.expand(sa, [sMin, sMax], {tozero: true, padded: padded});
 }
 
