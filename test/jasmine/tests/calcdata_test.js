@@ -30,6 +30,17 @@ describe('calculated data and points', function() {
         });
     });
 
+    describe('ids', function() {
+        it('should assign ids to points and cast them to strings in the process', function() {
+            Plotly.plot(gd, [{ x: [1, 2, 3, 5], y: [1, null, 3, 5], ids: [1, 'a', 'b', undefined]}], {});
+
+            expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({ x: 1, y: 1, id: '1'}));
+            expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({ x: false, y: false, id: 'a'}));
+            expect(gd.calcdata[0][2]).toEqual(jasmine.objectContaining({ x: 3, y: 3, id: 'b'}));
+            expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: 5, y: 5}));
+        });
+    });
+
     describe('category ordering', function() {
 
         describe('default category ordering reified', function() {

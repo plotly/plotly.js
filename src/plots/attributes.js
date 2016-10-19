@@ -28,6 +28,14 @@ module.exports = {
             '(provided that the legend itself is visible).'
         ].join(' ')
     },
+    groups: {
+        valType: 'data_array',
+        description: [
+            'An array of strings corresponding to each respective datum. These strings are not' +
+            'inherently used by plotly for any purpose but may be used, for example, with transforms' +
+            'in order to filter or group points by an auxilliary property.'
+        ].join(' ')
+    },
     showlegend: {
         valType: 'boolean',
         role: 'info',

@@ -67,7 +67,11 @@ module.exports = {
     },
     ids: {
         valType: 'data_array',
-        description: 'A list of keys for object constancy of data points during animation'
+        description: [
+            'A list of unique string ids for object constancy of data points during animation.' +
+            'For efficiency, the uniqueness of ids is not validated, but unexpected results may' +
+            'occur if ids are not unique. *ids* is equivalent to a *key* in d3.'
+        ].join(' ')
     },
     text: {
         valType: 'string',

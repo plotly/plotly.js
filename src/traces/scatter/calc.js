@@ -117,7 +117,9 @@ module.exports = function calc(gd, trace) {
             {x: x[i], y: y[i]} : {x: false, y: false};
 
         if(trace.ids) {
-            cd[i].id = String(trace.ids[i]);
+            if(trace.ids[i] !== undefined && trace.ids[i] !== null) {
+                cd[i].id = String(trace.ids[i]);
+            }
         }
     }
 

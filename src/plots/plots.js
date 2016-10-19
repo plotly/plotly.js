@@ -742,6 +742,7 @@ plots.supplyTraceDefaults = function(traceIn, traceIndex, layout) {
     coerce('type');
     coerce('uid');
     coerce('name', 'trace ' + traceIndex);
+    coerce('groups');
 
     // coerce subplot attributes of all registered subplot types
     var subplotTypes = Object.keys(subplotsRegistry);
