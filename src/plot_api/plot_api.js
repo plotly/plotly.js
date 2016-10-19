@@ -47,10 +47,20 @@ var subroutines = require('./subroutines');
  *
  */
 Plotly.plot = function(gd, data, layout, config) {
+    var frames;
+
     gd = helpers.getGraphDiv(gd);
 
     // Events.init is idempotent and bails early if gd has already been init'd
     Events.init(gd);
+
+    if(Lib.isPlainObject(data)) {
+        var obj = data;
+        data = obj.data;
+        layout = obj.layout;
+        config = obj.config;
+        frames = obj.frames;
+    }
 
     var okToPlot = Events.triggerHandler(gd, 'plotly_beforeplot', [data, layout, config]);
     if(okToPlot === false) return Promise.reject();
@@ -60,6 +70,12 @@ Plotly.plot = function(gd, data, layout, config) {
     if(!data && !layout && !Lib.isPlotDiv(gd)) {
         Lib.warn('Calling Plotly.plot as if redrawing ' +
             'but this container doesn\'t yet have a plot.', gd);
+    }
+
+    function addFrames() {
+        if(frames) {
+            return Plotly.addFrames(gd, frames);
+        }
     }
 
     // transfer configuration options to gd until we move over to
@@ -329,6 +345,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
     Lib.syncOrAsync([
         Plots.previousPromises,
+        addFrames,
         drawFramework,
         marginPushers,
         marginPushersAgain,
