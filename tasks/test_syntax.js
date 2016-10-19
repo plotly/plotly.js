@@ -98,20 +98,21 @@ function assertFileNames() {
 
 // check circular dependencies
 function assertCircularDeps() {
-    var dependencyObject = madge(constants.pathToSrc);
-    var circularDeps = dependencyObject.circular().getArray();
-    var logs = [];
+    madge(constants.pathToSrc).then(function(res) {
+        var circularDeps = res.circular();
+        var logs = [];
 
-    // as of v1.17.0 - 2016/09/08
-    // see https://github.com/plotly/plotly.js/milestone/9
-    // for more details
-    var MAX_ALLOWED_CIRCULAR_DEPS = 34;
+        // as of v1.17.0 - 2016/09/08
+        // see https://github.com/plotly/plotly.js/milestone/9
+        // for more details
+        var MAX_ALLOWED_CIRCULAR_DEPS = 34;
 
-    if(circularDeps.length > MAX_ALLOWED_CIRCULAR_DEPS) {
-        logs.push('some new circular dependencies were added to src/');
-    }
+        if(circularDeps.length > MAX_ALLOWED_CIRCULAR_DEPS) {
+            logs.push('some new circular dependencies were added to src/');
+        }
 
-    log('circular dependencies', logs);
+        log('circular dependencies', logs);
+    });
 }
 
 function combineGlobs(arr) {
