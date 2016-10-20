@@ -389,7 +389,7 @@ proto.updateFancy = function(options) {
 
     var len = x.length,
         idToIndex = new Array(len),
-        positions = new Float32Array(2 * len),
+        positions = new Float64Array(2 * len),
         errorsX = new Float32Array(4 * len),
         errorsY = new Float32Array(4 * len),
         pId = 0,
