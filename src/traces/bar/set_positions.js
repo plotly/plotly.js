@@ -54,7 +54,10 @@ function setGroupPositions(gd, pa, sa, traces) {
 
     var barmode = gd._fullLayout.barmode,
         overlay = (barmode === 'overlay'),
-        group = (barmode === 'group');
+        group = (barmode === 'group'),
+        excluded,
+        included,
+        i, trace;
 
     if(overlay) {
         setGroupPositionsInOverlayMode(gd, pa, sa, traces);
@@ -63,7 +66,21 @@ function setGroupPositions(gd, pa, sa, traces) {
         setGroupPositionsInGroupMode(gd, pa, sa, traces);
     }
     else {
-        setGroupPositionsInStackOrRelativeMode(gd, pa, sa, traces);
+        // exclude from the stack those traces for which the user set a base
+        excluded = [];
+        included = [];
+        for(i = 0; i < traces.length; i++) {
+            trace = traces[i];
+            if(trace.base === undefined) included.push(trace);
+            else excluded.push(trace);
+        }
+
+        if(included.length) {
+            setGroupPositionsInStackOrRelativeMode(gd, pa, sa, included);
+        }
+        if(excluded.length) {
+            setGroupPositionsInOverlayMode(gd, pa, sa, excluded);
+        }
     }
 }
 
