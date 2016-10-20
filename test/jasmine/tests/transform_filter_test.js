@@ -1,4 +1,6 @@
 var Plotly = require('@lib/index');
+var Filter = require('@lib/filter');
+
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
@@ -27,7 +29,8 @@ describe('filter transforms defaults:', function() {
             enabled: true,
             operation: '=',
             value: 0,
-            target: 'x'
+            target: 'x',
+            _module: Filter
         }]);
     });
 
@@ -46,6 +49,7 @@ describe('filter transforms defaults:', function() {
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
             enabled: false,
+            _module: Filter
         }]);
     });
 
