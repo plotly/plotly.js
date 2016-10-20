@@ -88,17 +88,7 @@ function setGroupPositionsInOverlayMode(gd, pa, sa, traces) {
             normalizeBars(gd, sa, sieve);
         }
         else {
-            // make sure the size axis includes zero,
-            // along with the tops of each bar,
-            // and store these bar tops in calcdata
-            var sLetter = getAxisLetter(sa),
-                fs = function(v) {
-                    var barTop = v.b + v.s;
-                    v[sLetter] = barTop;
-                    return barTop;
-                };
-
-            Axes.expand(sa, trace.map(fs), {tozero: true, padded: true});
+            setBaseAndTop(gd, sa, sieve);
         }
     });
 }
@@ -122,19 +112,7 @@ function setGroupPositionsInGroupMode(gd, pa, sa, traces) {
         normalizeBars(gd, sa, sieve);
     }
     else {
-        // make sure the size axis includes zero,
-        // along with the tops of each bar,
-        // and store these bar tops in calcdata
-        var sLetter = getAxisLetter(sa),
-            fs = function(v) {
-                var barTop = v.b + v.s;
-                v[sLetter] = barTop;
-                return barTop;
-            };
-
-        for(var i = 0; i < traces.length; i++) {
-            Axes.expand(sa, traces[i].map(fs), {tozero: true, padded: true});
-        }
+        setBaseAndTop(gd, sa, sieve);
     }
 }
 
@@ -250,6 +228,40 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
 }
 
 
+function setBaseAndTop(gd, sa, sieve) {
+    // store these bar bases and tops in calcdata
+    // and make sure the size axis includes zero,
+    // along with the bases and tops of each bar.
+    var traces = sieve.traces,
+        sLetter = getAxisLetter(sa),
+        sMax = sa.l2c(sa.c2l(0)),
+        sMin = sMax;
+
+    for(var i = 0; i < traces.length; i++) {
+        var trace = traces[i];
+
+        for(var j = 0; j < trace.length; j++) {
+            var bar = trace[j],
+                barBase = bar.b,
+                barTop = barBase + bar.s;
+
+            bar[sLetter] = barTop;
+
+            if(isNumeric(sa.c2l(barTop))) {
+                sMax = Math.max(sMax, barTop);
+                sMin = Math.min(sMin, barTop);
+            }
+            if(isNumeric(sa.c2l(barBase))) {
+                sMax = Math.max(sMax, barBase);
+                sMin = Math.min(sMin, barBase);
+            }
+        }
+    }
+
+    Axes.expand(sa, [sMin, sMax], {tozero: true, padded: true});
+}
+
+
 function stackBars(gd, sa, sieve) {
     var fullLayout = gd._fullLayout,
         barnorm = fullLayout.barnorm,
@@ -258,12 +270,6 @@ function stackBars(gd, sa, sieve) {
         i, trace,
         j, bar;
 
-    // bar size range and stacking calculation
-    // for stacked bars, we need to evaluate every step in every
-    // stack, because negative bars mean the extremes could be
-    // anywhere
-    // also stores the base (b) of each bar in calcdata
-    // so we don't have to redo this later
     var sMax = sa.l2c(sa.c2l(0)),
         sMin = sMax;
 
@@ -276,17 +282,22 @@ function stackBars(gd, sa, sieve) {
             if(!isNumeric(bar.s)) continue;
 
             // stack current bar and get previous sum
-            var previousSum = sieve.put(bar.p, bar.b + bar.s);
+            var barBase = sieve.put(bar.p, bar.b + bar.s),
+                barTop = barBase + bar.s;
 
             // store the bar base and top in each calcdata item
-            bar.b = previousSum;
+            bar.b = barBase;
+            bar[sLetter] = barTop;
 
-            var barEnd = bar.b + bar.s;
-            bar[sLetter] = barEnd;
-
-            if(!barnorm && isNumeric(sa.c2l(barEnd))) {
-                sMax = Math.max(sMax, barEnd);
-                sMin = Math.min(sMin, barEnd);
+            if(!barnorm) {
+                if(isNumeric(sa.c2l(barTop))) {
+                    sMax = Math.max(sMax, barTop);
+                    sMin = Math.min(sMin, barTop);
+                }
+                if(isNumeric(sa.c2l(barBase))) {
+                    sMax = Math.max(sMax, barBase);
+                    sMin = Math.min(sMin, barBase);
+                }
             }
         }
     }
@@ -341,17 +352,30 @@ function normalizeBars(gd, sa, sieve) {
             var scale = Math.abs(sTop / sieve.get(bar.p, bar.b + bar.s));
             bar.b *= scale;
             bar.s *= scale;
-            var barEnd = bar.b + bar.s;
-            bar[sLetter] = barEnd;
 
-            if(isNumeric(sa.c2l(barEnd))) {
-                if(barEnd < sMin - sTiny) {
+            var barBase = bar.b,
+                barTop = barBase + bar.s;
+            bar[sLetter] = barTop;
+
+            if(isNumeric(sa.c2l(barTop))) {
+                if(barTop < sMin - sTiny) {
                     padded = true;
-                    sMin = barEnd;
+                    sMin = barTop;
                 }
-                if(barEnd > sMax + sTiny) {
+                if(barTop > sMax + sTiny) {
                     padded = true;
-                    sMax = barEnd;
+                    sMax = barTop;
+                }
+            }
+
+            if(isNumeric(sa.c2l(barBase))) {
+                if(barBase < sMin - sTiny) {
+                    padded = true;
+                    sMin = barBase;
+                }
+                if(barBase > sMax + sTiny) {
+                    padded = true;
+                    sMax = barBase;
                 }
             }
         }
