@@ -9,6 +9,7 @@
 'use strict';
 
 var Lib = require('../lib');
+var Plots = require('../plots/plots');
 var axisIds = require('../plots/cartesian/axis_ids');
 
 var INEQUALITY_OPS = ['=', '<', '>=', '>', '<='];
@@ -31,6 +32,7 @@ exports.attributes = {
         valType: 'string',
         strict: true,
         noBlank: true,
+        arrayOk: true,
         dflt: 'x',
         description: [
             'Sets the filter target by which the filter is applied.',
@@ -165,12 +167,29 @@ function getFilterArray(trace, target) {
 
         return Array.isArray(array) ? array : [];
     }
+    else if(Array.isArray(target)) return target.slice();
 
     return false;
 }
 
 function getDataToCoordFunc(gd, trace, target) {
-    var ax = axisIds.getFromTrace(gd, trace, target);
+    var ax;
+
+    // In the case of an array target, make a mock data array
+    // and call supplyDefaults to the data type and
+    // setup the data-to-calc method.
+    if(Array.isArray(target)) {
+        var mockGd = {
+            data: [{ x: target }],
+            layout: {}
+        };
+
+        Plots.supplyDefaults(mockGd);
+        ax = mockGd._fullLayout.xaxis;
+    }
+    else {
+        ax = axisIds.getFromTrace(gd, trace, target);
+    }
 
     // if 'target' has corresponding axis
     // -> use setConvert method
@@ -180,7 +199,7 @@ function getDataToCoordFunc(gd, trace, target) {
     // -> cast to String
     if(target === 'ids') return function(v) { return String(v); };
 
-    // otherwise
+    // otherwise (e.g. numeric-array of 'marker.color' or 'marker.size')
     // -> cast to Number
     return function(v) { return +v; };
 }

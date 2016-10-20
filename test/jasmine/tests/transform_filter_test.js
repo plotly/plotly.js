@@ -614,6 +614,74 @@ describe('filter transforms calc:', function() {
         expect(out[0].y).toEqual([2, 2, 3]);
         expect(out[0].ids).toEqual(['n1', 'p1', 'p2']);
     });
+
+    describe('filters should handle array *target* values', function() {
+        var _base = Lib.extendDeep({}, base);
+
+        function _assert(out, x, y, markerColor) {
+            expect(out[0].x).toEqual(x, '- x coords');
+            expect(out[0].y).toEqual(y, '- y coords');
+            expect(out[0].marker.color).toEqual(markerColor, '- marker.color arrayOk');
+            expect(out[0].marker.size).toEqual(20, '- marker.size style');
+        }
+
+        it('with numeric items', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    target: [1, 1, 0, 0, 1, 0, 1],
+                    operation: '{}',
+                    value: 0
+                }]
+            })]);
+
+            _assert(out, [-2, 0, 2], [3, 1, 3], [0.3, 0.1, 0.3]);
+            expect(out[0].transforms[0].target).toEqual([0, 0, 0]);
+        });
+
+        it('with categorical items', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    target: ['a', 'a', 'b', 'b', 'a', 'b', 'a'],
+                    operation: '{}',
+                    value: 'b'
+                }]
+            })]);
+
+            _assert(out, [-2, 0, 2], [3, 1, 3], [0.3, 0.1, 0.3]);
+            expect(out[0].transforms[0].target).toEqual(['b', 'b', 'b']);
+        });
+
+        it('with dates items', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    target: ['2015-07-20', '2016-08-01', '2016-09-01', '2016-10-21', '2016-12-02'],
+                    operation: '<',
+                    value: '2016-01-01'
+                }]
+            })]);
+
+            _assert(out, [-2], [1], [0.1]);
+            expect(out[0].transforms[0].target).toEqual(['2015-07-20']);
+        });
+
+        it('with multiple transforms (dates) ', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    target: ['2015-07-20', '2016-08-01', '2016-09-01', '2016-10-21', '2016-12-02'],
+                    operation: '>',
+                    value: '2016-01-01'
+                }, {
+                    type: 'filter',
+                    target: ['2015-07-20', '2016-08-01', '2016-09-01', '2016-10-21', '2016-12-02'],
+                    operation: '<',
+                    value: '2016-09-01'
+                }]
+            })]);
+
+            _assert(out, [-1], [2], [0.2]);
+            expect(out[0].transforms[0].target).toEqual(['2016-08-01']);
+        });
+    });
 });
 
 describe('filter transforms interactions', function() {
