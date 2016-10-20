@@ -75,13 +75,13 @@ function runTests(transitionDuration) {
                     value: 10
                 }
             }, [0]).then(function() {
-                expect(gd._fullData[0].transforms).toEqual([{
+                expect(gd._fullData[0].transforms).toEqual([jasmine.objectContaining({
                     enabled: true,
                     type: 'filter',
                     operation: '<',
                     target: 'x',
                     value: 10
-                }]);
+                })]);
 
                 return Plots.transition(gd, [{
                     'transforms[0].operation': '>'
@@ -90,13 +90,13 @@ function runTests(transitionDuration) {
                     {duration: transitionDuration, easing: 'cubic-in-out'}
                 );
             }).then(function() {
-                expect(gd._fullData[0].transforms).toEqual([{
+                expect(gd._fullData[0].transforms).toEqual([jasmine.objectContaining({
                     enabled: true,
                     type: 'filter',
                     operation: '>',
                     target: 'x',
                     value: 10
-                }]);
+                })]);
             }).catch(fail).then(done);
         });
 
