@@ -17,6 +17,7 @@ var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
+var autoType = require('../../plots/cartesian/axis_autotype');
 var ErrorBars = require('../../components/errorbars');
 var str2RGBArray = require('../../lib/str2rgbarray');
 var truncate = require('../../lib/float32_truncate');
@@ -261,6 +262,29 @@ proto.update = function(options) {
     this.color = getTraceColor(options, {});
 };
 
+// We'd ideally know that all values are of fast types; sampling gives no certainty but faster
+//     (for the future, typed arrays can guarantee it, and Date values can be done with
+//      representing the epoch milliseconds in a typed array;
+//      also, perhaps the Python / R interfaces take care of String->Date conversions
+//      such that there's no need to check for string dates in plotly.js)
+// Patterned from axis_defaults.js:moreDates
+// Code DRYing is not done to preserve the most direct compilation possible for speed;
+// also, there are quite a few differences
+function allFastTypesLikely(a) {
+    var len = a.length,
+        inc = Math.max(0, (len - 1) / Math.min(Math.max(len, 1), 1000)),
+        ai;
+
+    for(var i = 0; i < len; i += inc) {
+        ai = a[Math.floor(i)];
+        if(!isNumeric(ai) && !(ai instanceof Date)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 proto.updateFast = function(options) {
     var x = this.xData = this.pickXData = options.x;
     var y = this.yData = this.pickYData = options.y;
@@ -272,7 +296,10 @@ proto.updateFast = function(options) {
         pId = 0,
         ptr = 0;
 
-    var xx, yy, fastType;
+    var xx, yy;
+
+    var fastType = allFastTypesLikely(x);
+    var isDateTime = !fastType && autoType(x) === 'date';
 
     // TODO add 'very fast' mode that bypasses this loop
     // TODO bypass this on modebar +/- zoom
@@ -280,10 +307,7 @@ proto.updateFast = function(options) {
         xx = x[i];
         yy = y[i];
 
-        // check for isNaN is faster but doesn't skip over nulls
-        fastType = isNumeric(xx) || xx instanceof Date;
-
-        if(isNumeric(yy) && (fastType || Lib.isDateTime(xx))) {
+        if(isNumeric(yy) && (fastType || isDateTime)) {
 
             if(!fastType) {
                 xx = Lib.dateTime2ms(xx);
