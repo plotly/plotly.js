@@ -385,14 +385,11 @@ function setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition)
                 if(!_step.method) return;
 
                 sliderOpts._invokingCommand = true;
-                Plotly[_step.method](gd, args[0], args[1], args[2]).then(function() {
-                    sliderOpts._invokingCommand = false;
-                }, function() {
-                    sliderOpts._invokingCommand = false;
 
-                    // This is not a disaster. Some methods like `animate` reject if interrupted
-                    // and *should* nicely log a warning.
-                    Lib.warn('Warning: Plotly.' + _step.method + ' was called and rejected.');
+                Plots.executeAPICommand(gd, _step.method, _step.args).then(function() {
+                    sliderOpts._invokingCommand = false;
+                }, function () {
+                    sliderOpts._invokingCommand = false;
                 });
 
                 sliderGroup._nextMethod = null;
@@ -477,8 +474,12 @@ function setGripPosition(sliderGroup, sliderOpts, position, doTransition) {
 
     var x = normalizedValueToPosition(sliderOpts, position);
 
+    // If this is true, then *this component* is already invoking its own command
+    // and has triggered its own animation.
+    if (sliderOpts._invokingCommand) return;
+
     var el = grip;
-    if(doTransition && sliderOpts.transition.duration > 0 && !sliderOpts._invokingCommand) {
+    if(doTransition && sliderOpts.transition.duration > 0) {
         el = el.transition()
             .duration(sliderOpts.transition.duration)
             .ease(sliderOpts.transition.easing);
