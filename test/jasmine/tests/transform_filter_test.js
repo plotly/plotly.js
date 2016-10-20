@@ -7,7 +7,6 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var assertDims = require('../assets/assert_dims');
 var assertStyle = require('../assets/assert_style');
 
-
 describe('filter transforms defaults:', function() {
 
     var traceIn, traceOut;
@@ -28,7 +27,7 @@ describe('filter transforms defaults:', function() {
             enabled: true,
             operation: '=',
             value: 0,
-            filtersrc: 'x'
+            target: 'x'
         }]);
     });
 
@@ -50,29 +49,29 @@ describe('filter transforms defaults:', function() {
         }]);
     });
 
-    it('supplyTraceDefaults should coerce *filtersrc* as a strict / noBlank string', function() {
+    it('supplyTraceDefaults should coerce *target* as a strict / noBlank string', function() {
         traceIn = {
             x: [1, 2, 3],
             transforms: [{
                 type: 'filter',
             }, {
                 type: 'filter',
-                filtersrc: 0
+                target: 0
             }, {
                 type: 'filter',
-                filtersrc: ''
+                target: ''
             }, {
                 type: 'filter',
-                filtersrc: 'marker.color'
+                target: 'marker.color'
             }]
         };
 
         traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
 
-        expect(traceOut.transforms[0].filtersrc).toEqual('x');
-        expect(traceOut.transforms[1].filtersrc).toEqual('x');
-        expect(traceOut.transforms[2].filtersrc).toEqual('x');
-        expect(traceOut.transforms[3].filtersrc).toEqual('marker.color');
+        expect(traceOut.transforms[0].target).toEqual('x');
+        expect(traceOut.transforms[1].target).toEqual('x');
+        expect(traceOut.transforms[2].target).toEqual('x');
+        expect(traceOut.transforms[3].target).toEqual('marker.color');
     });
 });
 
@@ -106,13 +105,13 @@ describe('filter transforms calc:', function() {
         transforms: [{ type: 'filter' }]
     };
 
-    it('filters should skip if *filtersrc* isn\'t present in trace', function() {
+    it('filters should skip if *target* isn\'t present in trace', function() {
         var out = _transform([Lib.extendDeep({}, base, {
             transforms: [{
                 type: 'filter',
                 operation: '>',
                 value: 0,
-                filtersrc: 'z'
+                target: 'z'
             }]
         })]);
 
@@ -128,7 +127,7 @@ describe('filter transforms calc:', function() {
                 type: 'filter',
                 operation: '>',
                 value: '2016-10-01',
-                filtersrc: 'z'
+                target: 'z'
             }]
         })]);
 
@@ -146,7 +145,7 @@ describe('filter transforms calc:', function() {
                 type: 'filter',
                 operation: '>',
                 value: 0,
-                filtersrc: 'lon'
+                target: 'lon'
             }]
         };
 
@@ -158,7 +157,7 @@ describe('filter transforms calc:', function() {
                 type: 'filter',
                 operation: '<',
                 value: 0,
-                filtersrc: 'lat'
+                target: 'lat'
             }]
         };
 
@@ -177,7 +176,7 @@ describe('filter transforms calc:', function() {
                 type: 'filter',
                 operation: '>',
                 value: 0.2,
-                filtersrc: 'marker.color'
+                target: 'marker.color'
             }]
         })]);
 
@@ -193,7 +192,7 @@ describe('filter transforms calc:', function() {
                 enabled: false,
                 operation: '>',
                 value: 0,
-                filtersrc: 'x'
+                target: 'x'
             }]
         })]);
 
@@ -207,12 +206,12 @@ describe('filter transforms calc:', function() {
                 type: 'filter',
                 operation: '>',
                 value: 0,
-                filtersrc: 'x'
+                target: 'x'
             }, {
                 type: 'filter',
                 operation: '<',
                 value: 3,
-                filtersrc: 'x'
+                target: 'x'
             }]
         })]);
 
@@ -226,18 +225,18 @@ describe('filter transforms calc:', function() {
                 type: 'filter',
                 operation: '>',
                 value: 0,
-                filtersrc: 'x'
+                target: 'x'
             }, {
                 type: 'filter',
                 enabled: false,
                 operation: '>',
                 value: 2,
-                filtersrc: 'y'
+                target: 'y'
             }, {
                 type: 'filter',
                 operation: '<',
                 value: 2,
-                filtersrc: 'y'
+                target: 'y'
             }]
         })]);
 
@@ -260,7 +259,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '[]',
                     value: [-1, 1],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -276,7 +275,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '[)',
                     value: [-1, 1],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -288,7 +287,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '(]',
                     value: [-1, 1],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -300,7 +299,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '()',
                     value: [-1, 1],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -312,7 +311,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: ')(',
                     value: [-1, 1],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -328,7 +327,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: ')[',
                     value: [-1, 1],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -344,7 +343,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '](',
                     value: [-1, 1],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -360,7 +359,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '][',
                     value: [-1, 1],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -376,7 +375,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '{}',
                     value: [-2, 0],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -392,7 +391,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '}{',
                     value: [-2, 0],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -409,7 +408,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '>',
                     value: -1,
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })], {
                 xaxis: { type: 'category' }
@@ -443,7 +442,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '()',
                     value: ['a', 'c'],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -455,7 +454,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: ')(',
                     value: ['a', 'c'],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -467,7 +466,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '{}',
                     value: ['b', 'd'],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -479,7 +478,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '}{',
                     value: ['b', 'd'],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -513,7 +512,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '=',
                     value: ['2015-07-20'],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -525,7 +524,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '<',
                     value: '2016-01-01',
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -537,7 +536,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '>=',
                     value: '2016-08-01',
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -553,7 +552,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '[]',
                     value: ['2016-08-01', '2016-10-01'],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -565,7 +564,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: ')(',
                     value: ['2016-08-01', '2016-10-01'],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -577,7 +576,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '{}',
                     value: '2015-07-20',
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -589,7 +588,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '}{',
                     value: ['2016-08-01', '2016-09-01', '2016-10-21', '2016-12-02'],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -603,7 +602,7 @@ describe('filter transforms calc:', function() {
             transforms: [{
                 operation: '{}',
                 value: ['p1', 'p2', 'n1'],
-                filtersrc: 'ids'
+                target: 'ids'
             }]
         })]);
 

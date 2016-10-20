@@ -71,7 +71,7 @@ function runTests(transitionDuration) {
                     enabled: true,
                     type: 'filter',
                     operation: '<',
-                    filtersrc: 'x',
+                    target: 'x',
                     value: 10
                 }
             }, [0]).then(function() {
@@ -79,7 +79,7 @@ function runTests(transitionDuration) {
                     enabled: true,
                     type: 'filter',
                     operation: '<',
-                    filtersrc: 'x',
+                    target: 'x',
                     value: 10
                 }]);
 
@@ -94,7 +94,7 @@ function runTests(transitionDuration) {
                     enabled: true,
                     type: 'filter',
                     operation: '>',
-                    filtersrc: 'x',
+                    target: 'x',
                     value: 10
                 }]);
             }).catch(fail).then(done);

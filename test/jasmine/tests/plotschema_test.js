@@ -176,7 +176,7 @@ describe('plot schema', function() {
         var valObjects = plotSchema.transforms.filter.attributes,
             attrNames = Object.keys(valObjects);
 
-        ['operation', 'value', 'filtersrc'].forEach(function(k) {
+        ['operation', 'value', 'target'].forEach(function(k) {
             expect(attrNames).toContain(k);
         });
     });

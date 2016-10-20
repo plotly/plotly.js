@@ -26,7 +26,7 @@ describe('general transforms:', function() {
             enabled: true,
             operation: '=',
             value: 0,
-            filtersrc: 'x'
+            target: 'x'
         }]);
     });
 
@@ -48,7 +48,7 @@ describe('general transforms:', function() {
                 type: 'filter',
                 operation: '>',
                 value: 0,
-                filtersrc: 'x'
+                target: 'x'
             }]
         };
 
@@ -65,7 +65,7 @@ describe('general transforms:', function() {
             enabled: true,
             operation: '=',
             value: 0,
-            filtersrc: 'x'
+            target: 'x'
         }, '- global first');
 
         expect(traceOut.transforms[1]).toEqual({
@@ -73,7 +73,7 @@ describe('general transforms:', function() {
             enabled: true,
             operation: '>',
             value: 0,
-            filtersrc: 'x'
+            target: 'x'
         }, '- trace second');
     });
 
@@ -88,7 +88,7 @@ describe('general transforms:', function() {
                 type: 'filter',
                 operation: '>',
                 value: 0,
-                filtersrc: 'x'
+                target: 'x'
             }]
         }];
 
@@ -104,7 +104,7 @@ describe('general transforms:', function() {
             type: 'filter',
             operation: '>',
             value: 0,
-            filtersrc: 'x'
+            target: 'x'
         }], msg);
 
         msg = 'supplying the transform defaults';
@@ -113,7 +113,7 @@ describe('general transforms:', function() {
             enabled: true,
             operation: '>',
             value: 0,
-            filtersrc: 'x'
+            target: 'x'
         }, msg);
 
         msg = 'keeping refs to user data';
@@ -123,7 +123,7 @@ describe('general transforms:', function() {
             type: 'filter',
             operation: '>',
             value: 0,
-            filtersrc: 'x'
+            target: 'x'
         }], msg);
 
         msg = 'keeping refs to full transforms array';
@@ -132,7 +132,7 @@ describe('general transforms:', function() {
             enabled: true,
             operation: '>',
             value: 0,
-            filtersrc: 'x'
+            target: 'x'
         }], msg);
 
         msg = 'setting index w.r.t user data';

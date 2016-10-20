@@ -27,18 +27,21 @@ exports.attributes = {
             'Determines whether this filter transform is enabled or disabled.'
         ].join(' ')
     },
-    filtersrc: {
+    target: {
         valType: 'string',
         strict: true,
         noBlank: true,
         dflt: 'x',
         description: [
-            'Sets the variable in the parent trace object',
-            'by which the filter will be applied.',
+            'Sets the filter target by which the filter is applied.',
 
+            'If a string, *target* is assumed to be a reference to a data array',
+            'in the parent trace object.',
             'To filter about nested variables, use *.* to access them.',
-            'For example, set `filtersrc` to *marker.color* to filter',
-            'about the marker color array.'
+            'For example, set `target` to *marker.color* to filter',
+            'about the marker color array.',
+
+            'If an array, *target* is then the data array by which the filter is applied.'
         ].join(' ')
     },
     operation: {
@@ -77,7 +80,7 @@ exports.attributes = {
             'Sets the value or values by which to filter by.',
 
             'Values are expected to be in the same type as the data linked',
-            'to *filtersrc*.',
+            'to *target*.',
 
             'When `operation` is set to one of the inequality values',
             '(' + INEQUALITY_OPS + ')',
@@ -108,25 +111,24 @@ exports.supplyDefaults = function(transformIn) {
     if(enabled) {
         coerce('operation');
         coerce('value');
-        coerce('filtersrc');
+        coerce('target');
     }
 
     return transformOut;
 };
 
 exports.calcTransform = function(gd, trace, opts) {
-    var filtersrc = opts.filtersrc,
-        filtersrcOk = filtersrc && Array.isArray(Lib.nestedProperty(trace, filtersrc).get());
+    if(!opts.enabled) return;
 
-    if(!opts.enabled || !filtersrcOk) return;
+    var target = opts.target,
+        filterArray = getFilterArray(trace, target),
+        len = filterArray.length;
 
-    var dataToCoord = getDataToCoordFunc(gd, trace, filtersrc),
-        filterFunc = getFilterFunc(opts, dataToCoord);
+    if(!len) return;
 
-    var filterArr = Lib.nestedProperty(trace, filtersrc).get(),
-        len = filterArr.length;
-
-    var arrayAttrs = Lib.findArrayAttributes(trace),
+    var dataToCoord = getDataToCoordFunc(gd, trace, target),
+        filterFunc = getFilterFunc(opts, dataToCoord),
+        arrayAttrs = Lib.findArrayAttributes(trace),
         originalArrays = {};
 
     // copy all original array attribute values,
@@ -147,7 +149,7 @@ exports.calcTransform = function(gd, trace, opts) {
     }
 
     for(var i = 0; i < len; i++) {
-        var v = filterArr[i];
+        var v = filterArray[i];
 
         if(!filterFunc(v)) continue;
 
@@ -157,16 +159,26 @@ exports.calcTransform = function(gd, trace, opts) {
     }
 };
 
-function getDataToCoordFunc(gd, trace, filtersrc) {
-    var ax = axisIds.getFromTrace(gd, trace, filtersrc);
+function getFilterArray(trace, target) {
+    if(typeof target === 'string' && target) {
+        var array = Lib.nestedProperty(trace, target).get();
 
-    // if 'filtersrc' has corresponding axis
+        return Array.isArray(array) ? array : [];
+    }
+
+    return false;
+}
+
+function getDataToCoordFunc(gd, trace, target) {
+    var ax = axisIds.getFromTrace(gd, trace, target);
+
+    // if 'target' has corresponding axis
     // -> use setConvert method
     if(ax) return ax.d2c;
 
     // special case for 'ids'
     // -> cast to String
-    if(filtersrc === 'ids') return function(v) { return String(v); };
+    if(target === 'ids') return function(v) { return String(v); };
 
     // otherwise
     // -> cast to Number
