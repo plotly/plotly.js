@@ -4,6 +4,7 @@ var Plots = Plotly.Plots;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
+var Lib = require('@src/lib');
 
 describe('Plots.executeAPICommand', function() {
     'use strict';
@@ -435,5 +436,42 @@ describe('Plots.computeAPICommandBindings', function() {
 
             expect(result).toEqual([]);
         });
+    });
+});
+
+describe('component bindings', function() {
+    'use strict';
+
+    var gd;
+    var mock = require('@mocks/binding.json');
+
+    beforeEach(function(done) {
+        var mockCopy = Lib.extendDeep({}, mock);
+        gd = createGraphDiv();
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+    });
+
+    afterEach(function() {
+        destroyGraphDiv(gd);
+    });
+
+    it('udpates bound components when the value changes', function(done) {
+        expect(gd.layout.sliders[0].active).toBe(0);
+
+        Plotly.restyle(gd, 'marker.color', 'blue').then(function() {
+            expect(gd.layout.sliders[0].active).toBe(4);
+        }).catch(fail).then(done);
+    });
+
+    it('udpates bound components when the computed changes', function(done) {
+        expect(gd.layout.sliders[0].active).toBe(0);
+
+        // The default line color comes from the marker color, if specified.
+        // That is, the fact that the marker color changes is just incidental, but
+        // nonetheless is bound by value to the component.
+        Plotly.restyle(gd, 'line.color', 'blue').then(function() {
+            expect(gd.layout.sliders[0].active).toBe(4);
+        }).catch(fail).then(done);
     });
 });

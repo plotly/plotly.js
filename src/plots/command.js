@@ -145,10 +145,23 @@ exports.createCommandObserver = function(gd, commandList, onchange) {
             return changed;
         };
 
-        gd._internalOn('plotly_plotmodified', check);
+        var checkEvents = [
+            'plotly_relayout',
+            'plotly_redraw',
+            'plotly_restyle',
+            'plotly_update',
+            'plotly_animatingframe',
+            'plotly_afterplot'
+        ];
+
+        for(var i = 0; i < checkEvents.length; i++) {
+            gd._internalOn(checkEvents[i], check);
+        }
 
         remove = function() {
-            gd._removeInternalListener('plotly_plotmodified', check);
+            for(var i = 0; i < checkEvents.length; i++) {
+                gd._removeInternalListener(checkEvents[i], check);
+            }
         };
     } else {
         lookupTable = {};

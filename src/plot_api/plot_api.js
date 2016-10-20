@@ -1204,7 +1204,6 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
 
     return plotDone.then(function() {
         gd.emit('plotly_restyle', specs.eventData);
-        gd.emit('plotly_plotmodified');
         return gd;
     });
 };
@@ -1711,7 +1710,6 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
     return plotDone.then(function() {
         gd.emit('plotly_relayout', specs.eventData);
-        gd.emit('plotly_plotmodified');
         return gd;
     });
 };
@@ -2126,7 +2124,6 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, traces) {
             data: restyleSpecs.eventData,
             layout: relayoutSpecs.eventData
         });
-        gd.emit('plotly_plotmodified');
 
         return gd;
     });
@@ -2307,15 +2304,6 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
             if(newFrame) {
                 gd._fullLayout._currentFrame = newFrame.name;
 
-                gd.emit('plotly_animatingframe', {
-                    name: newFrame.name,
-                    frame: newFrame.frame,
-                    animation: {
-                        frame: newFrame.frameOpts,
-                        transition: newFrame.transitionOpts,
-                    }
-                });
-
                 trans._lastFrameAt = Date.now();
                 trans._timeToNext = newFrame.frameOpts.duration;
 
@@ -2330,7 +2318,14 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
                     newFrame.transitionOpts
                 );
 
-                gd.emit('plotly_plotmodified');
+                gd.emit('plotly_animatingframe', {
+                    name: newFrame.name,
+                    frame: newFrame.frame,
+                    animation: {
+                        frame: newFrame.frameOpts,
+                        transition: newFrame.transitionOpts,
+                    }
+                });
             } else {
                 // If there are no more frames, then stop the RAF loop:
                 stopAnimationLoop();
