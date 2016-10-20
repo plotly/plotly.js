@@ -26,6 +26,7 @@ var orderedCategories = require('./ordered_categories');
 var axisIds = require('./axis_ids');
 var autoType = require('./axis_autotype');
 
+
 /**
  * options: object containing:
  *

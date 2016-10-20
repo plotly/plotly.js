@@ -303,25 +303,28 @@ proto.updateFast = function(options) {
 
     // TODO add 'very fast' mode that bypasses this loop
     // TODO bypass this on modebar +/- zoom
-    for(var i = 0; i < len; ++i) {
-        xx = x[i];
-        yy = y[i];
+    if(fastType || isDateTime) {
 
-        if(isNumeric(yy) && (fastType || isDateTime)) {
+        for(var i = 0; i < len; ++i) {
+            xx = x[i];
+            yy = y[i];
 
-            if(!fastType) {
-                xx = Lib.dateTime2ms(xx);
+            if(isNumeric(yy)) {
+
+                if(!fastType) {
+                    xx = Lib.dateTime2ms(xx);
+                }
+
+                idToIndex[pId++] = i;
+
+                positions[ptr++] = xx;
+                positions[ptr++] = yy;
+
+                bounds[0] = Math.min(bounds[0], xx);
+                bounds[1] = Math.min(bounds[1], yy);
+                bounds[2] = Math.max(bounds[2], xx);
+                bounds[3] = Math.max(bounds[3], yy);
             }
-
-            idToIndex[pId++] = i;
-
-            positions[ptr++] = xx;
-            positions[ptr++] = yy;
-
-            bounds[0] = Math.min(bounds[0], xx);
-            bounds[1] = Math.min(bounds[1], yy);
-            bounds[2] = Math.max(bounds[2], xx);
-            bounds[3] = Math.max(bounds[3], yy);
         }
     }
 
