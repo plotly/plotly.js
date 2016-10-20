@@ -41,10 +41,8 @@ var ErrorBars = require('../components/errorbars');
 var commandModule = require('./command');
 plots.executeAPICommand = commandModule.executeAPICommand;
 plots.computeAPICommandBindings = commandModule.computeAPICommandBindings;
-plots.evaluateAPICommandBinding = commandModule.evaluateAPICommandBinding;
-plots.hasSimpleBindings = commandModule.hasSimpleBindings;
-plots.bindingValueHasChanged = commandModule.bindingValueHasChanged;
 plots.createCommandObserver = commandModule.createCommandObserver;
+plots.hasSimpleAPICommandBindings = commandModule.hasSimpleAPICommandBindings;
 
 /**
  * Find subplot ids in data.

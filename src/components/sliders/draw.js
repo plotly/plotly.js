@@ -11,7 +11,6 @@
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
 var Plots = require('../../plots/plots');
 var Lib = require('../../lib');
 var Color = require('../color');
@@ -381,14 +380,13 @@ function setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition)
             sliderGroup._nextMethod = {step: step, doCallback: doCallback, doTransition: doTransition};
             sliderGroup._nextMethodRaf = window.requestAnimationFrame(function() {
                 var _step = sliderGroup._nextMethod.step;
-                var args = _step.args;
                 if(!_step.method) return;
 
                 sliderOpts._invokingCommand = true;
 
                 Plots.executeAPICommand(gd, _step.method, _step.args).then(function() {
                     sliderOpts._invokingCommand = false;
-                }, function () {
+                }, function() {
                     sliderOpts._invokingCommand = false;
                 });
 
@@ -476,7 +474,7 @@ function setGripPosition(sliderGroup, sliderOpts, position, doTransition) {
 
     // If this is true, then *this component* is already invoking its own command
     // and has triggered its own animation.
-    if (sliderOpts._invokingCommand) return;
+    if(sliderOpts._invokingCommand) return;
 
     var el = grip;
     if(doTransition && sliderOpts.transition.duration > 0) {

@@ -12,8 +12,6 @@
 var Plotly = require('../plotly');
 var Lib = require('../lib');
 
-var attrPrefixRegex = /^(data|layout)(\[(-?[0-9]*)\])?\.(.*)$/;
-
 /*
  * This function checks to see if an array of objects containing
  * method and args properties is compatible with automatic two-way
@@ -23,7 +21,7 @@ var attrPrefixRegex = /^(data|layout)(\[(-?[0-9]*)\])?\.(.*)$/;
  *   2. only one property may be affected
  *   3. the same property must be affected by all commands
  */
-exports.hasSimpleBindings = function(gd, commandList, bindingsByValue) {
+exports.hasSimpleAPICommandBindings = function(gd, commandList, bindingsByValue) {
     var n = commandList.length;
 
     var refBinding;
@@ -81,7 +79,9 @@ exports.hasSimpleBindings = function(gd, commandList, bindingsByValue) {
         if(Array.isArray(value)) {
             value = value[0];
         }
-        bindingsByValue[value] = i;
+        if(bindingsByValue) {
+            bindingsByValue[value] = i;
+        }
     }
 
     return refBinding;
@@ -95,8 +95,8 @@ exports.createCommandObserver = function(gd, commandList, onchange) {
 
     // Determine whether there's anything to do for this binding:
     var binding;
-    if((binding = exports.hasSimpleBindings(gd, commandList, lookupTable))) {
-        exports.bindingValueHasChanged(gd, binding, cache);
+    if((binding = exports.hasSimpleAPICommandBindings(gd, commandList, lookupTable))) {
+        bindingValueHasChanged(gd, binding, cache);
 
         check = function check() {
             if(!enabled) return;
@@ -170,7 +170,7 @@ exports.createCommandObserver = function(gd, commandList, onchange) {
     };
 };
 
-exports.bindingValueHasChanged = function(gd, binding, cache) {
+function bindingValueHasChanged(gd, binding, cache) {
     var container, value, obj;
     var changed = false;
 
@@ -198,32 +198,7 @@ exports.bindingValueHasChanged = function(gd, binding, cache) {
     obj[binding.prop] = value;
 
     return changed;
-};
-
-exports.evaluateAPICommandBinding = function(gd, attrName) {
-    var match = attrName.match(attrPrefixRegex);
-
-    if(!match) {
-        return null;
-    }
-
-    var group = match[1];
-    var propStr = match[4];
-    var container;
-
-    switch(group) {
-        case 'data':
-            container = gd._fullData[parseInt(match[3])];
-            break;
-        case 'layout':
-            container = gd._fullLayout;
-            break;
-        default:
-            return null;
-    }
-
-    return Lib.nestedProperty(container, propStr).get();
-};
+}
 
 exports.executeAPICommand = function(gd, method, args) {
     var apiMethod = Plotly[method];

@@ -5,22 +5,6 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 
-describe('Plots.evaluateAPICommandBinding', function() {
-    it('evaluates a data binding', function() {
-        var gd = {_fullData: [null, {line: {width: 7}}]};
-        var astr = 'data[1].line.width';
-
-        expect(Plots.evaluateAPICommandBinding(gd, astr)).toEqual(7);
-    });
-
-    it('evaluates a layout binding', function() {
-        var gd = {_fullLayout: {margin: {t: 100}}};
-        var astr = 'layout.margin.t';
-
-        expect(Plots.evaluateAPICommandBinding(gd, astr)).toEqual(100);
-    });
-});
-
 describe('Plots.executeAPICommand', function() {
     'use strict';
 
@@ -75,7 +59,7 @@ describe('Plots.executeAPICommand', function() {
     });
 });
 
-describe('Plots.hasSimpleBindings', function() {
+describe('Plots.hasSimpleAPICommandBindings', function() {
     'use strict';
     var gd;
     beforeEach(function() {
@@ -91,8 +75,8 @@ describe('Plots.hasSimpleBindings', function() {
         destroyGraphDiv(gd);
     });
 
-    it('return true when bindings are simple', function() {
-        var isSimple = Plots.hasSimpleBindings(gd, [{
+    it('return the binding when bindings are simple', function() {
+        var isSimple = Plots.hasSimpleAPICommandBindings(gd, [{
             method: 'restyle',
             args: [{'marker.size': 10}]
         }, {
@@ -100,11 +84,16 @@ describe('Plots.hasSimpleBindings', function() {
             args: [{'marker.size': 20}]
         }]);
 
-        expect(isSimple).toBe(true);
+        expect(isSimple).toEqual({
+            type: 'data',
+            prop: 'marker.size',
+            traces: null,
+            value: 10
+        });
     });
 
     it('return false when properties are not the same', function() {
-        var isSimple = Plots.hasSimpleBindings(gd, [{
+        var isSimple = Plots.hasSimpleAPICommandBindings(gd, [{
             method: 'restyle',
             args: [{'marker.size': 10}]
         }, {
@@ -116,7 +105,7 @@ describe('Plots.hasSimpleBindings', function() {
     });
 
     it('return false when a command binds to more than one property', function() {
-        var isSimple = Plots.hasSimpleBindings(gd, [{
+        var isSimple = Plots.hasSimpleAPICommandBindings(gd, [{
             method: 'restyle',
             args: [{'marker.color': 10, 'marker.size': 12}]
         }, {
@@ -128,7 +117,7 @@ describe('Plots.hasSimpleBindings', function() {
     });
 
     it('return false when commands affect different traces', function() {
-        var isSimple = Plots.hasSimpleBindings(gd, [{
+        var isSimple = Plots.hasSimpleAPICommandBindings(gd, [{
             method: 'restyle',
             args: [{'marker.color': 10}, [0]]
         }, {
@@ -139,8 +128,8 @@ describe('Plots.hasSimpleBindings', function() {
         expect(isSimple).toBe(false);
     });
 
-    it('return true when commands affect the same traces', function() {
-        var isSimple = Plots.hasSimpleBindings(gd, [{
+    it('return the binding when commands affect the same traces', function() {
+        var isSimple = Plots.hasSimpleAPICommandBindings(gd, [{
             method: 'restyle',
             args: [{'marker.color': 10}, [1]]
         }, {
@@ -148,11 +137,16 @@ describe('Plots.hasSimpleBindings', function() {
             args: [{'marker.color': 20}, [1]]
         }]);
 
-        expect(isSimple).toBe(true);
+        expect(isSimple).toEqual({
+            type: 'data',
+            prop: 'marker.color',
+            traces: [ 1 ],
+            value: [ 10 ]
+        });
     });
 
-    it('return true when commands affect the same traces in different order', function() {
-        var isSimple = Plots.hasSimpleBindings(gd, [{
+    it('return the binding when commands affect the same traces in different order', function() {
+        var isSimple = Plots.hasSimpleAPICommandBindings(gd, [{
             method: 'restyle',
             args: [{'marker.color': 10}, [1, 2]]
         }, {
@@ -160,7 +154,12 @@ describe('Plots.hasSimpleBindings', function() {
             args: [{'marker.color': 20}, [2, 1]]
         }]);
 
-        expect(isSimple).toBe(true);
+        expect(isSimple).toEqual({
+            type: 'data',
+            prop: 'marker.color',
+            traces: [ 1, 2 ],
+            value: [ 10, 10 ]
+        });
     });
 });
 
