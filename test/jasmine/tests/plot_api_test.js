@@ -995,6 +995,35 @@ describe('Test plot api', function() {
 
             expect(gd.data[1].contours).toBeUndefined();
         });
+
+        it('should rename *filtersrc* to *target* in filter transforms', function() {
+            var data = [{
+                transforms: [{
+                    type: 'filter',
+                    filtersrc: 'y'
+                }, {
+                    type: 'filter',
+                    operation: '<'
+                }]
+            }, {
+                transforms: [{
+                    type: 'filter',
+                    target: 'y'
+                }]
+            }];
+
+            Plotly.plot(gd, data);
+
+            var trace0 = gd.data[0],
+                trace1 = gd.data[1];
+
+            expect(trace0.transforms.length).toEqual(2);
+            expect(trace0.transforms[0].filtersrc).toBeUndefined();
+            expect(trace0.transforms[0].target).toEqual('y');
+
+            expect(trace1.transforms.length).toEqual(1);
+            expect(trace1.transforms[0].target).toEqual('y');
+        });
     });
 
     describe('Plotly.update should', function() {
