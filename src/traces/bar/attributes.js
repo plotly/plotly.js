@@ -50,6 +50,7 @@ module.exports = {
 
     base: {
         valType: 'any',
+        dflt: null,
         arrayOk: true,
         role: 'info',
         description: [
@@ -62,6 +63,7 @@ module.exports = {
 
     offset: {
         valType: 'number',
+        dflt: null,
         arrayOk: true,
         role: 'info',
         description: [
@@ -75,6 +77,7 @@ module.exports = {
 
     width: {
         valType: 'number',
+        dflt: null,
         min: 0,
         arrayOk: true,
         role: 'info',
