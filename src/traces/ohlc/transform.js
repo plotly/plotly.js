@@ -121,7 +121,7 @@ exports.calcTransform = function calcTransform(gd, trace, opts) {
 
     var xa = axisIds.getFromTrace(gd, trace, 'x'),
         ya = axisIds.getFromTrace(gd, trace, 'y'),
-        tickWidth = convertTickWidth(trace.x, xa, trace._fullInput.tickwidth);
+        tickWidth = convertTickWidth(gd, xa, trace._fullInput.tickwidth);
 
     var open = trace.open,
         high = trace.high,
@@ -191,16 +191,23 @@ exports.calcTransform = function calcTransform(gd, trace, opts) {
     trace.text = textOut;
 };
 
-function convertTickWidth(coords, ax, tickWidth) {
-    if(coords.length < 2) return tickWidth;
+function convertTickWidth(gd, xa, tickWidth) {
+    var fullData = gd._fullData,
+        coords = [];
 
-    var _coords = coords.map(ax.d2c),
-        minDTick = Math.abs(_coords[1] - _coords[0]);
+    // find all coordinates attached to this x-axis
+    for(var i = 0; i < fullData.length; i++) {
+        var trace = fullData[i]._fullInput;
 
-    for(var i = 1; i < _coords.length - 1; i++) {
-        var dist = Math.abs(_coords[i + 1] - _coords[i]);
-        minDTick = Math.min(dist, minDTick);
+        if(trace.type === 'ohlc' &&
+            trace.visible === true &&
+            trace.xaxis === xa._id &&
+            trace.x
+        ) {
+            coords = coords.concat(trace.x.map(xa.d2c));
+        }
     }
 
-    return minDTick * tickWidth;
+    var minDiff = Lib.distinctVals(coords).minDiff;
+    return minDiff * tickWidth;
 }

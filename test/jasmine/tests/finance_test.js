@@ -512,7 +512,7 @@ describe('finance charts calc transforms:', function() {
 
         expect(out[2].name).toEqual('trace 0 - increasing');
         expect(out[2].x.map(ms2DateTime)).toEqual([
-            '2016-09-03 23:59:59.999', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04', null
+            '2016-09-03 22:48', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04 01:12', null
         ]);
         expect(out[2].y).toEqual([
             32.06, 32.06, 34.25, 31.62, 33.18, 33.18, null
