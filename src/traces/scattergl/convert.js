@@ -67,8 +67,8 @@ function LineWithMarkers(scene, uid) {
 
     this.hasErrorX = false;
     this.errorXOptions = {
-        positions: new Float32Array(0),
-        errors: new Float32Array(0),
+        positions: new Float64Array(0),
+        errors: new Float64Array(0),
         lineWidth: 1,
         capSize: 0,
         color: [0, 0, 0, 1]
@@ -78,8 +78,8 @@ function LineWithMarkers(scene, uid) {
 
     this.hasErrorY = false;
     this.errorYOptions = {
-        positions: new Float32Array(0),
-        errors: new Float32Array(0),
+        positions: new Float64Array(0),
+        errors: new Float64Array(0),
         lineWidth: 1,
         capSize: 0,
         color: [0, 0, 0, 1]
@@ -89,7 +89,7 @@ function LineWithMarkers(scene, uid) {
 
     this.hasMarkers = false;
     this.scatterOptions = {
-        positions: new Float32Array(0),
+        positions: new Float64Array(0),
         sizes: [],
         colors: [],
         glyphs: [],
@@ -390,8 +390,8 @@ proto.updateFancy = function(options) {
     var len = x.length,
         idToIndex = new Array(len),
         positions = new Float64Array(2 * len),
-        errorsX = new Float32Array(4 * len),
-        errorsY = new Float32Array(4 * len),
+        errorsX = new Float64Array(4 * len),
+        errorsY = new Float64Array(4 * len),
         pId = 0,
         ptr = 0,
         ptrX = 0,
@@ -482,13 +482,13 @@ proto.updateFancy = function(options) {
         this.fancyScatter.update(this.scatterOptions);
     }
     else {
-        this.scatterOptions.positions = new Float32Array(0);
+        this.scatterOptions.positions = new Float64Array(0);
         this.scatterOptions.glyphs = [];
         this.fancyScatter.update(this.scatterOptions);
     }
 
     // turn off fast scatter plot
-    this.scatterOptions.positions = new Float32Array(0);
+    this.scatterOptions.positions = new Float64Array(0);
     this.scatterOptions.glyphs = [];
     this.scatter.update(this.scatterOptions);
 
@@ -565,7 +565,7 @@ proto.updateError = function(axLetter, options, positions, errors) {
         errorObjOptions.color = convertColor(errorOptions.color, 1, 1);
     }
     else {
-        errorObjOptions.positions = new Float32Array(0);
+        errorObjOptions.positions = new Float64Array(0);
     }
 
     errorObj.update(errorObjOptions);
@@ -588,7 +588,7 @@ proto.expandAxesFast = function(bounds, markerSize) {
     }
 };
 
-// not quite on-par with 'scatter' (scatter fill in several other expand options),
+// not quite on-par with 'scatter' (scatter fill in several other expand options)
 // but close enough for now
 proto.expandAxesFancy = function(x, y, ppad) {
     var scene = this.scene,
