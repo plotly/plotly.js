@@ -40,6 +40,7 @@ module.exports = function calc(gd, trace) {
     var serieslen = Math.min(pos.length, size.length),
         cd = [];
 
+    // set position
     for(i = 0; i < serieslen; i++) {
 
         // add bars with non-numeric sizes to calcdata
@@ -47,7 +48,32 @@ module.exports = function calc(gd, trace) {
         // plotted in the correct order
 
         if(isNumeric(pos[i])) {
-            cd.push({p: pos[i], s: size[i], b: 0});
+            cd.push({p: pos[i]});
+        }
+    }
+
+    // set base
+    var base = trace.base;
+
+    if(Array.isArray(base)) {
+        for(i = 0; i < Math.min(base.length, cd.length); i++) {
+            cd[i].b = base[i];
+        }
+        for(; i < cd.length; i++) {
+            cd[i].b = 0;
+        }
+    }
+    else {
+        var b = (base === undefined) ? 0 : base;
+        for(i = 0; i < cd.length; i++) {
+            cd[i].b = b;
+        }
+    }
+
+    // set size
+    for(i = 0; i < cd.length; i++) {
+        if(isNumeric(size[i])) {
+            cd[i].s = size[i] - cd[i].b;
         }
     }
 
