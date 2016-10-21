@@ -124,6 +124,10 @@ function setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces) {
         setOffsetAndWidth(gd, pa, sieve);
 
         // set bar bases and sizes, and update size axis
+        //
+        // (note that `setGroupPositionsInOverlayMode` handles the case barnorm
+        // is defined, because this function is also invoked for traces that
+        // can't be grouped or stacked)
         if(barnorm) {
             sieveBars(gd, sa, sieve);
             normalizeBars(gd, sa, sieve);
