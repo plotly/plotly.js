@@ -51,7 +51,7 @@ function LineWithMarkers(scene, uid) {
 
     this.hasLines = false;
     this.lineOptions = {
-        positions: new Float32Array(0),
+        positions: new Float64Array(0),
         color: [0, 0, 0, 1],
         width: 1,
         fill: [false, false, false, false],
@@ -357,13 +357,13 @@ proto.updateFast = function(options) {
         this.scatter.update(this.scatterOptions);
     }
     else {
-        this.scatterOptions.positions = new Float32Array(0);
+        this.scatterOptions.positions = new Float64Array(0);
         this.scatterOptions.glyphs = [];
         this.scatter.update(this.scatterOptions);
     }
 
     // turn off fancy scatter plot
-    this.scatterOptions.positions = new Float32Array(0);
+    this.scatterOptions.positions = new Float64Array(0);
     this.scatterOptions.glyphs = [];
     this.fancyScatter.update(this.scatterOptions);
 
@@ -506,7 +506,7 @@ proto.updateLines = function(options, positions) {
             var p = 0;
             var x = this.xData;
             var y = this.yData;
-            linePositions = new Float32Array(2 * x.length);
+            linePositions = new Float64Array(2 * x.length);
 
             for(i = 0; i < x.length; ++i) {
                 linePositions[p++] = x[i];
@@ -542,7 +542,7 @@ proto.updateLines = function(options, positions) {
         this.lineOptions.fillColor = [fillColor, fillColor, fillColor, fillColor];
     }
     else {
-        this.lineOptions.positions = new Float32Array(0);
+        this.lineOptions.positions = new Float64Array(0);
     }
 
     this.line.update(this.lineOptions);
