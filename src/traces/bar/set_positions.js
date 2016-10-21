@@ -230,6 +230,11 @@ function setOffsetAndWidth(gd, pa, sieve) {
             // if offset is an array, then clone it into t.poffset.
             newPoffset = offset.slice(0, calcTrace.length);
 
+            // guard against non-numeric items
+            for(j = 0; j < newPoffset.length; j++) {
+                if(!isNumeric(newPoffset[j])) newPoffset[j] = initialPoffset;
+            }
+
             // if the length of the array is too short,
             // then extend it with the initial value of t.poffset
             for(j = newPoffset.length; j < calcTrace.length; j++) {
@@ -247,6 +252,11 @@ function setOffsetAndWidth(gd, pa, sieve) {
         if(Array.isArray(width)) {
             // if width is an array, then clone it into t.barwidth.
             var newBarwidth = width.slice(0, calcTrace.length);
+
+            // guard against non-numeric items
+            for(j = 0; j < newBarwidth.length; j++) {
+                if(!isNumeric(newBarwidth[j])) newBarwidth[j] = initialBarwidth;
+            }
 
             // if the length of the array is too short,
             // then extend it with the initial value of t.barwidth
@@ -347,6 +357,11 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
         if(Array.isArray(width)) {
             // if width is an array, then clone it into t.barwidth.
             var newBarwidth = width.slice(0, calcTrace.length);
+
+            // guard against non-numeric items
+            for(j = 0; j < newBarwidth.length; j++) {
+                if(!isNumeric(newBarwidth[j])) newBarwidth[j] = initialBarwidth;
+            }
 
             // if the length of the array is too short,
             // then extend it with the initial value of t.barwidth
