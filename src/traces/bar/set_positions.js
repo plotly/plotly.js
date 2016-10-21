@@ -113,7 +113,9 @@ function setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces) {
         dontMergeOverlappingData = !barnorm;
 
     // update position axis and set bar offsets and widths
-    calcTraces.forEach(function(calcTrace) {
+    for(var i = 0; i < calcTraces.length; i++) {
+        var calcTrace = calcTraces[i];
+
         var sieve = new Sieve(
             [calcTrace], separateNegativeValues, dontMergeOverlappingData
         );
@@ -129,7 +131,7 @@ function setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces) {
         else {
             setBaseAndTop(gd, sa, sieve);
         }
-    });
+    }
 }
 
 
