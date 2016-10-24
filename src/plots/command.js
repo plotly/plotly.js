@@ -67,53 +67,30 @@ exports.createCommandObserver = function(gd, container, commandList, onchange) {
     // Determine whether there's anything to do for this binding:
 
     if(binding) {
+        // Build the cache:
         bindingValueHasChanged(gd, binding, ret.cache);
 
         ret.check = function check() {
             if(!enabled) return;
 
-            var container, value, obj;
-            var changed = false;
+            var update = bindingValueHasChanged(gd, binding, ret.cache);
 
-            if(binding.type === 'data') {
-                // If it's data, we need to get a trace. Based on the limited scope
-                // of what we cover, we can just take the first trace from the list,
-                // or otherwise just the first trace:
-                container = gd._fullData[binding.traces !== null ? binding.traces[0] : 0];
-            } else if(binding.type === 'layout') {
-                container = gd._fullLayout;
-            } else {
-                return false;
-            }
-
-            value = Lib.nestedProperty(container, binding.prop).get();
-
-            obj = ret.cache[binding.type] = ret.cache[binding.type] || {};
-
-            if(obj.hasOwnProperty(binding.prop)) {
-                if(obj[binding.prop] !== value) {
-                    changed = true;
-                }
-            }
-
-            obj[binding.prop] = value;
-
-            if(changed && onchange) {
+            if(update.changed && onchange) {
                 // Disable checks for the duration of this command in order to avoid
                 // infinite loops:
-                if(ret.lookupTable[value] !== undefined) {
+                if(ret.lookupTable[update.value] !== undefined) {
                     ret.disable();
                     Promise.resolve(onchange({
-                        value: value,
+                        value: update.value,
                         type: binding.type,
                         prop: binding.prop,
                         traces: binding.traces,
-                        index: ret.lookupTable[value]
+                        index: ret.lookupTable[update.value]
                     })).then(ret.enable, ret.enable);
                 }
             }
 
-            return changed;
+            return update.changed;
         };
 
         var checkEvents = [
@@ -260,7 +237,10 @@ function bindingValueHasChanged(gd, binding, cache) {
 
     obj[binding.prop] = value;
 
-    return changed;
+    return {
+        changed: changed,
+        value: value
+    };
 }
 
 /*
