@@ -17,6 +17,7 @@ var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
+var autoType = require('../../plots/cartesian/axis_autotype');
 var ErrorBars = require('../../components/errorbars');
 var str2RGBArray = require('../../lib/str2rgbarray');
 var truncate = require('../../lib/float32_truncate');
@@ -114,11 +115,13 @@ proto.handlePick = function(pickResult) {
         index = this.idToIndex[pickResult.pointId];
     }
 
+    var x = this.pickXData[index];
+
     return {
         trace: this,
         dataCoord: pickResult.dataCoord,
         traceCoord: [
-            this.pickXData[index],
+            isNumeric(x) || !Lib.isDateTime(x) ? x : Lib.dateTime2ms(x),
             this.pickYData[index]
         ],
         textLabel: Array.isArray(this.textLabels) ?
@@ -135,7 +138,7 @@ proto.handlePick = function(pickResult) {
 
 // check if trace is fancy
 proto.isFancy = function(options) {
-    if(this.scene.xaxis.type !== 'linear') return true;
+    if(this.scene.xaxis.type !== 'linear' && this.scene.xaxis.type !== 'date') return true;
     if(this.scene.yaxis.type !== 'linear') return true;
 
     if(!options.x || !options.y) return true;
@@ -259,6 +262,29 @@ proto.update = function(options) {
     this.color = getTraceColor(options, {});
 };
 
+// We'd ideally know that all values are of fast types; sampling gives no certainty but faster
+//     (for the future, typed arrays can guarantee it, and Date values can be done with
+//      representing the epoch milliseconds in a typed array;
+//      also, perhaps the Python / R interfaces take care of String->Date conversions
+//      such that there's no need to check for string dates in plotly.js)
+// Patterned from axis_defaults.js:moreDates
+// Code DRYing is not done to preserve the most direct compilation possible for speed;
+// also, there are quite a few differences
+function allFastTypesLikely(a) {
+    var len = a.length,
+        inc = Math.max(0, (len - 1) / Math.min(Math.max(len, 1), 1000)),
+        ai;
+
+    for(var i = 0; i < len; i += inc) {
+        ai = a[Math.floor(i)];
+        if(!isNumeric(ai) && !(ai instanceof Date)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 proto.updateFast = function(options) {
     var x = this.xData = this.pickXData = options.x;
     var y = this.yData = this.pickYData = options.y;
@@ -272,24 +298,34 @@ proto.updateFast = function(options) {
 
     var xx, yy;
 
+    var fastType = allFastTypesLikely(x);
+    var isDateTime = !fastType && autoType(x) === 'date';
+
     // TODO add 'very fast' mode that bypasses this loop
     // TODO bypass this on modebar +/- zoom
-    for(var i = 0; i < len; ++i) {
-        xx = x[i];
-        yy = y[i];
+    if(fastType || isDateTime) {
 
-        // check for isNaN is faster but doesn't skip over nulls
-        if(!isNumeric(xx) || !isNumeric(yy)) continue;
+        for(var i = 0; i < len; ++i) {
+            xx = x[i];
+            yy = y[i];
 
-        idToIndex[pId++] = i;
+            if(isNumeric(yy)) {
 
-        positions[ptr++] = xx;
-        positions[ptr++] = yy;
+                if(!fastType) {
+                    xx = Lib.dateTime2ms(xx);
+                }
 
-        bounds[0] = Math.min(bounds[0], xx);
-        bounds[1] = Math.min(bounds[1], yy);
-        bounds[2] = Math.max(bounds[2], xx);
-        bounds[3] = Math.max(bounds[3], yy);
+                idToIndex[pId++] = i;
+
+                positions[ptr++] = xx;
+                positions[ptr++] = yy;
+
+                bounds[0] = Math.min(bounds[0], xx);
+                bounds[1] = Math.min(bounds[1], yy);
+                bounds[2] = Math.max(bounds[2], xx);
+                bounds[3] = Math.max(bounds[3], yy);
+            }
+        }
     }
 
     positions = truncate(positions, ptr);
