@@ -13,6 +13,152 @@ var Plotly = require('../plotly');
 var Lib = require('../lib');
 
 /*
+ * Create or update an observer. This function is designed to be
+ * idempotent so that it can be called over and over as the component
+ * updates, and will attach and detach listeners as needed.
+ *
+ * @param {optional object} container
+ *      An object on which the observer is stored. This is the mechanism
+ *      by which it is idempotent. If it already exists, another won't be
+ *      added. Each time it's called, the value lookup table is updated.
+ * @param {array} commandList
+ *      An array of commands, following either `buttons` of `updatemenus`
+ *      or `steps` of `sliders`.
+ * @param {function} onchange
+ *      A listener called when the value is changed. Receives data object
+ *      with information about the new state.
+ */
+exports.createCommandObserver = function(gd, container, commandList, onchange) {
+    var ret = {};
+    var enabled = true;
+
+    if(container && container._commandObserver) {
+        ret = container._commandObserver;
+    }
+
+    if(!ret.cache) {
+        ret.cache = {};
+    }
+
+    // Either create or just recompute this:
+    ret.lookupTable = {};
+
+    var binding = exports.hasSimpleAPICommandBindings(gd, commandList, ret.lookupTable);
+
+    if(container && container._commandObserver) {
+        if(!binding) {
+            // If container exists and there are no longer any bindings,
+            // remove existing:
+            if(container._commandObserver.remove) {
+                container._commandObserver.remove();
+                container._commandObserver = null;
+                return ret;
+            }
+        } else {
+            // If container exists and there *are* bindings, then the lookup
+            // table should have been updated and check is already attached,
+            // so there's nothing to be done:
+            return ret;
+
+
+        }
+    }
+
+    // Determine whether there's anything to do for this binding:
+
+    if(binding) {
+        bindingValueHasChanged(gd, binding, ret.cache);
+
+        ret.check = function check() {
+            if(!enabled) return;
+
+            var container, value, obj;
+            var changed = false;
+
+            if(binding.type === 'data') {
+                // If it's data, we need to get a trace. Based on the limited scope
+                // of what we cover, we can just take the first trace from the list,
+                // or otherwise just the first trace:
+                container = gd._fullData[binding.traces !== null ? binding.traces[0] : 0];
+            } else if(binding.type === 'layout') {
+                container = gd._fullLayout;
+            } else {
+                return false;
+            }
+
+            value = Lib.nestedProperty(container, binding.prop).get();
+
+            obj = ret.cache[binding.type] = ret.cache[binding.type] || {};
+
+            if(obj.hasOwnProperty(binding.prop)) {
+                if(obj[binding.prop] !== value) {
+                    changed = true;
+                }
+            }
+
+            obj[binding.prop] = value;
+
+            if(changed && onchange) {
+                // Disable checks for the duration of this command in order to avoid
+                // infinite loops:
+                if(ret.lookupTable[value] !== undefined) {
+                    ret.disable();
+                    Promise.resolve(onchange({
+                        value: value,
+                        type: binding.type,
+                        prop: binding.prop,
+                        traces: binding.traces,
+                        index: ret.lookupTable[value]
+                    })).then(ret.enable, ret.enable);
+                }
+            }
+
+            return changed;
+        };
+
+        var checkEvents = [
+            'plotly_relayout',
+            'plotly_redraw',
+            'plotly_restyle',
+            'plotly_update',
+            'plotly_animatingframe',
+            'plotly_afterplot'
+        ];
+
+        for(var i = 0; i < checkEvents.length; i++) {
+            gd._internalOn(checkEvents[i], ret.check);
+        }
+
+        ret.remove = function() {
+            for(var i = 0; i < checkEvents.length; i++) {
+                gd._removeInternalListener(checkEvents[i], ret.check);
+            }
+        };
+    } else {
+        // TODO: It'd be really neat to actually give a *reason* for this, but at least a warning
+        // is a start
+        Lib.warn('Unable to automatically bind plot updates to API command');
+
+        ret.lookupTable = {};
+        ret.remove = function() {};
+    }
+
+    ret.disable = function disable() {
+        enabled = false;
+    };
+
+    ret.enable = function enable() {
+        enabled = true;
+    };
+
+    if(container) {
+        container._commandObserver = ret;
+    }
+
+    return ret;
+};
+
+/*
  * This function checks to see if an array of objects containing
  * method and args properties is compatible with automatic two-way
  * binding. The criteria right now are that
@@ -87,102 +233,6 @@ exports.hasSimpleAPICommandBindings = function(gd, commandList, bindingsByValue)
     return refBinding;
 };
 
-exports.createCommandObserver = function(gd, commandList, onchange) {
-    var cache = {};
-    var lookupTable = {};
-    var check, remove;
-    var enabled = true;
-
-    // Determine whether there's anything to do for this binding:
-    var binding;
-    if((binding = exports.hasSimpleAPICommandBindings(gd, commandList, lookupTable))) {
-        bindingValueHasChanged(gd, binding, cache);
-
-        check = function check() {
-            if(!enabled) return;
-
-            var container, value, obj;
-            var changed = false;
-
-            if(binding.type === 'data') {
-                // If it's data, we need to get a trace. Based on the limited scope
-                // of what we cover, we can just take the first trace from the list,
-                // or otherwise just the first trace:
-                container = gd._fullData[binding.traces !== null ? binding.traces[0] : 0];
-            } else if(binding.type === 'layout') {
-                container = gd._fullLayout;
-            } else {
-                return false;
-            }
-
-            value = Lib.nestedProperty(container, binding.prop).get();
-
-            obj = cache[binding.type] = cache[binding.type] || {};
-
-            if(obj.hasOwnProperty(binding.prop)) {
-                if(obj[binding.prop] !== value) {
-                    changed = true;
-                }
-            }
-
-            obj[binding.prop] = value;
-
-            if(changed && onchange) {
-                // Disable checks for the duration of this command in order to avoid
-                // infinite loops:
-                if(lookupTable[value] !== undefined) {
-                    disable();
-                    Promise.resolve(onchange({
-                        value: value,
-                        type: binding.type,
-                        prop: binding.prop,
-                        traces: binding.traces,
-                        index: lookupTable[value]
-                    })).then(enable, enable);
-                }
-            }
-
-            return changed;
-        };
-
-        var checkEvents = [
-            'plotly_relayout',
-            'plotly_redraw',
-            'plotly_restyle',
-            'plotly_update',
-            'plotly_animatingframe',
-            'plotly_afterplot'
-        ];
-
-        for(var i = 0; i < checkEvents.length; i++) {
-            gd._internalOn(checkEvents[i], check);
-        }
-
-        remove = function() {
-            for(var i = 0; i < checkEvents.length; i++) {
-                gd._removeInternalListener(checkEvents[i], check);
-            }
-        };
-    } else {
-        lookupTable = {};
-        remove = function() {};
-    }
-
-    function disable() {
-        enabled = false;
-    }
-
-    function enable() {
-        enabled = true;
-    }
-
-    return {
-        disable: disable,
-        enable: enable,
-        remove: remove
-    };
-};
-
 function bindingValueHasChanged(gd, binding, cache) {
     var container, value, obj;
     var changed = false;
@@ -213,6 +263,17 @@ function bindingValueHasChanged(gd, binding, cache) {
     return changed;
 }
 
+/*
+ * Execute an API command. There's really not much to this; it just provides
+ * a common hook so that implementations don't need to be synchronized across
+ * multiple components with the ability to invoke API commands.
+ *
+ * @param {string} method
+ *      The name of the plotly command to execute. Must be one of 'animate',
+ *      'restyle', 'relayout', 'update'.
+ * @param {array} args
+ *      A list of arguments passed to the API command
+ */
 exports.executeAPICommand = function(gd, method, args) {
     var apiMethod = Plotly[method];
 
@@ -223,6 +284,7 @@ exports.executeAPICommand = function(gd, method, args) {
 
     return apiMethod.apply(null, allArgs).catch(function(err) {
         Lib.warn('API call to Plotly.' + method + ' rejected.', err);
+        return Promise.reject(err);
     });
 };
 
@@ -243,9 +305,10 @@ exports.computeAPICommandBindings = function(gd, method, args) {
             bindings = computeAnimateBindings(gd, args);
             break;
         default:
-            // This is the case where someone forgot to whitelist and implement
-            // a new API method, so focus on failing visibly.
-            throw new Error('Command bindings for Plotly.' + method + ' not implemented');
+            // This is the case where intelligent logic about what affects
+            // this command is not implemented. It causes no ill effects.
+            // For example, addFrames simply won't bind to a control component.
+            bindings = [];
     }
     return bindings;
 };

@@ -456,6 +456,42 @@ describe('component bindings', function() {
         destroyGraphDiv(gd);
     });
 
+    it('creates an observer', function(done) {
+        var count = 0;
+        Plots.createCommandObserver(gd, {}, [
+            { method: 'restyle', args: ['marker.color', 'red'] },
+            { method: 'restyle', args: ['marker.color', 'green'] }
+        ], function(data) {
+            count++;
+            expect(data.index).toEqual(1);
+        });
+
+        // Doesn't trigger the callback:
+        Plotly.relayout(gd, 'width', 400).then(function() {
+            // Triggers the callback:
+            return Plotly.restyle(gd, 'marker.color', 'green');
+        }).then(function() {
+            // Doesn't trigger a callback:
+            return Plotly.restyle(gd, 'marker.width', 8);
+        }).then(function() {
+            expect(count).toEqual(1);
+        }).catch(fail).then(done);
+    });
+
+    it('logs a warning if unable to create an observer', function() {
+        var warnings = 0;
+        spyOn(Lib, 'warn').and.callFake(function() {
+            warnings++;
+        });
+
+        Plots.createCommandObserver(gd, {}, [
+            { method: 'restyle', args: ['marker.color', 'red'] },
+            { method: 'restyle', args: [{'line.color': 'green', 'marker.color': 'green'}] }
+        ]);
+
+        expect(warnings).toEqual(1);
+    });
+
     it('udpates bound components when the value changes', function(done) {
         expect(gd.layout.sliders[0].active).toBe(0);
 
@@ -464,7 +500,7 @@ describe('component bindings', function() {
         }).catch(fail).then(done);
     });
 
-    it('udpates bound components when the computed changes', function(done) {
+    it('udpates bound components when the computed value changes', function(done) {
         expect(gd.layout.sliders[0].active).toBe(0);
 
         // The default line color comes from the marker color, if specified.
@@ -472,6 +508,54 @@ describe('component bindings', function() {
         // nonetheless is bound by value to the component.
         Plotly.restyle(gd, 'line.color', 'blue').then(function() {
             expect(gd.layout.sliders[0].active).toBe(4);
+        }).catch(fail).then(done);
+    });
+});
+
+describe('attaching component bindings', function() {
+    'use strict';
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+        Plotly.plot(gd, [{x: [1, 2, 3], y: [1, 2, 3]}]).then(done);
+    });
+
+    afterEach(function() {
+        destroyGraphDiv(gd);
+    });
+
+    it('attaches bindings when events are added', function(done) {
+        expect(gd._internalEv._events.plotly_animatingframe).toBeUndefined();
+
+        Plotly.relayout(gd, {
+            sliders: [{
+                // This one gets bindings:
+                steps: [
+                    {label: 'first', method: 'restyle', args: ['marker.color', 'red']},
+                    {label: 'first', method: 'restyle', args: ['marker.color', 'blue']},
+                ]
+            }, {
+                // This one does *not*:
+                steps: [
+                    {label: 'first', method: 'restyle', args: ['line.color', 'red']},
+                    {label: 'first', method: 'restyle', args: ['marker.color', 'blue']},
+                ]
+            }]
+        }).then(function() {
+            // Check that it has attached a listener:
+            expect(typeof gd._internalEv._events.plotly_animatingframe).toBe('function');
+
+            return Plotly.relayout(gd, {'sliders[0].steps[0].args[1]': 'green'});
+        }).then(function() {
+            // Check that it still has one attached listener:
+            expect(typeof gd._internalEv._events.plotly_animatingframe).toBe('function');
+
+            return Plotly.relayout(gd, {'sliders[0].steps[0].args[0]': 'line.color'});
+        }).then(function() {
+            // Bindings are no longer simple, so check to ensure they have
+            // been removed
+            expect(gd._internalEv._events.plotly_animatingframe).toBeUndefined();
         }).catch(fail).then(done);
     });
 });

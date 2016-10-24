@@ -113,12 +113,10 @@ module.exports = function draw(gd) {
     headerGroups.each(function(menuOpts) {
         var gHeader = d3.select(this);
 
-        if(!menuOpts._commandObserver) {
-            var _gButton = menuOpts.type === 'dropdown' ? gButton : null;
-            menuOpts._commandObserver = Plots.createCommandObserver(gd, menuOpts.buttons, function(data) {
-                setActive(gd, menuOpts, menuOpts.buttons[data.index], gHeader, _gButton, data.index, true);
-            });
-        }
+        var _gButton = menuOpts.type === 'dropdown' ? gButton : null;
+        Plots.createCommandObserver(gd, menuOpts, menuOpts.buttons, function(data) {
+            setActive(gd, menuOpts, menuOpts.buttons[data.index], gHeader, _gButton, data.index, true);
+        });
 
         if(menuOpts.type === 'dropdown') {
             drawHeader(gd, gHeader, gButton, menuOpts);
