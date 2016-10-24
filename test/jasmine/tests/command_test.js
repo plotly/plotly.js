@@ -546,11 +546,30 @@ describe('attaching component bindings', function() {
             // Check that it has attached a listener:
             expect(typeof gd._internalEv._events.plotly_animatingframe).toBe('function');
 
-            return Plotly.relayout(gd, {'sliders[0].steps[0].args[1]': 'green'});
+            // Confirm the first position is selected:
+            expect(gd.layout.sliders[0].active).toBe(0);
+
+            // Modify the plot
+            return Plotly.restyle(gd, {'marker.color': 'blue'});
+        }).then(function () {
+            // Confirm that this has changed the slider position:
+            expect(gd.layout.sliders[0].active).toBe(1);
+
+            // Swap the values of the components:
+            return Plotly.relayout(gd, {
+                'sliders[0].steps[0].args[1]': 'green',
+                'sliders[0].steps[1].args[1]': 'red'
+            });
         }).then(function() {
+            return Plotly.restyle(gd, {'marker.color': 'green'});
+        }).then(function() {
+            // Confirm that the lookup table has been updated:
+            expect(gd.layout.sliders[0].active).toBe(0);
+
             // Check that it still has one attached listener:
             expect(typeof gd._internalEv._events.plotly_animatingframe).toBe('function');
 
+            // Change this to a non-simple binding:
             return Plotly.relayout(gd, {'sliders[0].steps[0].args[0]': 'line.color'});
         }).then(function() {
             // Bindings are no longer simple, so check to ensure they have
