@@ -220,6 +220,35 @@ describe('finance charts defaults:', function() {
         ]);
     });
 
+    it('trace *name* default should make reference to user data trace indices', function() {
+        var trace0 = Lib.extendDeep({}, mock0, {
+            type: 'ohlc'
+        });
+
+        var trace1 = { type: 'scatter' };
+
+        var trace2 = Lib.extendDeep({}, mock1, {
+            type: 'candlestick',
+        });
+
+        var trace3 = { type: 'bar' };
+
+        var out = _supply([trace0, trace1, trace2, trace3]);
+
+        var names = out._fullData.map(function(fullTrace) {
+            return fullTrace.name;
+        });
+
+        expect(names).toEqual([
+            'trace 0 - increasing',
+            'trace 0 - decreasing',
+            'trace 1',
+            'trace 2 - increasing',
+            'trace 2 - decreasing',
+            'trace 3'
+        ]);
+    });
+
     it('trace-wide styling should set default for corresponding per-direction styling', function() {
         function assertLine(cont, width, dash) {
             expect(cont.line.width).toEqual(width);
