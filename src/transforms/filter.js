@@ -9,8 +9,9 @@
 'use strict';
 
 var Lib = require('../lib');
-var Plots = require('../plots/plots');
 var axisIds = require('../plots/cartesian/axis_ids');
+var autoType = require('../plots/cartesian/axis_autotype');
+var setConvert = require('../plots/cartesian/set_convert');
 
 var INEQUALITY_OPS = ['=', '<', '>=', '>', '<='];
 var INTERVAL_OPS = ['[]', '()', '[)', '(]', '][', ')(', '](', ')['];
@@ -179,13 +180,11 @@ function getDataToCoordFunc(gd, trace, target) {
     // and call supplyDefaults to the data type and
     // setup the data-to-calc method.
     if(Array.isArray(target)) {
-        var mockGd = {
-            data: [{ x: target }],
-            layout: {}
+        ax = {
+            type: autoType(target),
+            _categories: []
         };
-
-        Plots.supplyDefaults(mockGd);
-        ax = mockGd._fullLayout.xaxis;
+        setConvert(ax);
     }
     else {
         ax = axisIds.getFromTrace(gd, trace, target);
