@@ -78,7 +78,7 @@ module.exports = function calc(gd, trace) {
     // set size
     for(i = 0; i < cd.length; i++) {
         if(isNumeric(size[i])) {
-            cd[i].s = size[i] - cd[i].b;
+            cd[i].s = size[i];
         }
     }
 

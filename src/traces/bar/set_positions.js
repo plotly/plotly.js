@@ -499,7 +499,7 @@ function stackBars(gd, sa, sieve) {
             if(!isNumeric(bar.s)) continue;
 
             // stack current bar and get previous sum
-            var barBase = sieve.put(bar.p, bar.b + bar.s),
+            var barBase = sieve.put(bar.p, bar.s),
                 barTop = barBase + bar.s;
 
             // store the bar base and top in each calcdata item
@@ -538,7 +538,7 @@ function sieveBars(gd, sa, sieve) {
         for(var j = 0; j < trace.length; j++) {
             var bar = trace[j];
 
-            if(isNumeric(bar.s)) sieve.put(bar.p, bar.b + bar.s);
+            if(isNumeric(bar.s)) sieve.put(bar.p, bar.s);
         }
     }
 }
@@ -566,7 +566,7 @@ function normalizeBars(gd, sa, sieve) {
 
             if(!isNumeric(bar.s)) continue;
 
-            var scale = Math.abs(sTop / sieve.get(bar.p, bar.b + bar.s));
+            var scale = Math.abs(sTop / sieve.get(bar.p, bar.s));
             bar.b *= scale;
             bar.s *= scale;
 
