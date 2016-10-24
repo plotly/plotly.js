@@ -221,11 +221,9 @@ exports.executeAPICommand = function(gd, method, args) {
         allArgs.push(args[i]);
     }
 
-    if(!apiMethod) {
-        return Promise.reject();
-    }
-
-    return apiMethod.apply(null, allArgs);
+    return apiMethod.apply(null, allArgs).catch(function (err) {
+        Lib.warn('API call to Plotly.' + method + ' rejected.', err)
+    });
 };
 
 exports.computeAPICommandBindings = function(gd, method, args) {
@@ -245,9 +243,9 @@ exports.computeAPICommandBindings = function(gd, method, args) {
             bindings = computeAnimateBindings(gd, args);
             break;
         default:
-            // We'll elect to fail-non-fatal since this is a correct
-            // answer and since this is not a validation method.
-            bindings = [];
+            // This is the case where someone forgot to whitelist and implement
+            // a new API method, so focus on failing visibly.
+            throw new Error('Command bindings for Plotly.' + method + ' not implemented');
     }
     return bindings;
 };
