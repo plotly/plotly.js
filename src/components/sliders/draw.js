@@ -359,7 +359,6 @@ function handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, doTransiti
     var quantizedPosition = Math.round(normalizedPosition * (sliderOpts.steps.length - 1));
 
     if(quantizedPosition !== sliderOpts.active) {
-
         setActive(gd, sliderGroup, sliderOpts, quantizedPosition, true, doTransition);
     }
 }

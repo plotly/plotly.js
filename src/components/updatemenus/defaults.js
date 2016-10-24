@@ -33,6 +33,8 @@ module.exports = function updateMenusDefaults(layoutIn, layoutOut) {
         // used to determine object constancy
         menuOut._index = i;
 
+        menuOut._input.active = menuOut.active;
+
         contOut.push(menuOut);
     }
 };
@@ -48,7 +50,9 @@ function menuDefaults(menuIn, menuOut, layoutOut) {
     var visible = coerce('visible', buttons.length > 0);
     if(!visible) return;
 
-    coerce('active');
+    // Default to zero since active must be *something*:
+    coerce('active', 0);
+
     coerce('direction');
     coerce('type');
     coerce('showactive');
