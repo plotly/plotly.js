@@ -221,8 +221,8 @@ exports.executeAPICommand = function(gd, method, args) {
         allArgs.push(args[i]);
     }
 
-    return apiMethod.apply(null, allArgs).catch(function (err) {
-        Lib.warn('API call to Plotly.' + method + ' rejected.', err)
+    return apiMethod.apply(null, allArgs).catch(function(err) {
+        Lib.warn('API call to Plotly.' + method + ' rejected.', err);
     });
 };
 
