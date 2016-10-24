@@ -328,7 +328,15 @@ describe('Plots.computeAPICommandBindings', function() {
                 expect(result).toEqual([
                     {type: 'data', prop: 'y', traces: [1], value: [[3, 4, 5]]},
                     {type: 'data', prop: 'marker.size', traces: [1, 0], value: [10, 20]},
+
+                    // This result is actually not quite correct. Setting `line` should override
+                    // this—or actually it's technically undefined since the iteration order of
+                    // objects is not strictly defined but is at least consistent across browsers.
+                    // The worst-case scenario right now isn't too bad though since it's an obscure
+                    // case that will definitely cause bailout anyway before any bindings would
+                    // happen.
                     {type: 'data', prop: 'line.color', traces: [1, 0], value: ['red', 'red']},
+
                     {type: 'data', prop: 'line.width', traces: [1, 0], value: [2, 8]}
                 ]);
             });
