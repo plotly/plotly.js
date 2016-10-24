@@ -189,7 +189,7 @@ function setOffsetAndWidth(gd, pa, sieve) {
         bargroupgap = fullLayout.bargroupgap,
         minDiff = sieve.minDiff,
         calcTraces = sieve.traces,
-        i, calcTrace, calcTrace0, fullTrace,
+        i, calcTrace, calcTrace0,
         j, calcBar,
         t;
 
@@ -223,77 +223,7 @@ function setOffsetAndWidth(gd, pa, sieve) {
     sieve.binWidth = calcTraces[0][0].t.barwidth / 100;
 
     // if defined, apply trace offset and width
-    for(i = 0; i < calcTraces.length; i++) {
-        calcTrace = calcTraces[i];
-        calcTrace0 = calcTrace[0];
-        fullTrace = calcTrace0.trace;
-        t = calcTrace0.t;
-
-        var offset = fullTrace.offset,
-            initialPoffset = t.poffset,
-            newPoffset;
-        if(Array.isArray(offset)) {
-            // if offset is an array, then clone it into t.poffset.
-            newPoffset = offset.slice(0, calcTrace.length);
-
-            // guard against non-numeric items
-            for(j = 0; j < newPoffset.length; j++) {
-                if(!isNumeric(newPoffset[j])) newPoffset[j] = initialPoffset;
-            }
-
-            // if the length of the array is too short,
-            // then extend it with the initial value of t.poffset
-            for(j = newPoffset.length; j < calcTrace.length; j++) {
-                newPoffset.push(initialPoffset);
-            }
-
-            t.poffset = newPoffset;
-        }
-        else if(offset !== undefined) {
-            t.poffset = offset;
-        }
-
-        var width = fullTrace.width,
-            initialBarwidth = t.barwidth;
-        if(Array.isArray(width)) {
-            // if width is an array, then clone it into t.barwidth.
-            var newBarwidth = width.slice(0, calcTrace.length);
-
-            // guard against non-numeric items
-            for(j = 0; j < newBarwidth.length; j++) {
-                if(!isNumeric(newBarwidth[j])) newBarwidth[j] = initialBarwidth;
-            }
-
-            // if the length of the array is too short,
-            // then extend it with the initial value of t.barwidth
-            for(j = newBarwidth.length; j < calcTrace.length; j++) {
-                newBarwidth.push(initialBarwidth);
-            }
-
-            t.barwidth = newBarwidth;
-
-            // if user didn't set offset,
-            // then correct t.poffset to ensure bars remain centered
-            if(offset === undefined) {
-                newPoffset = [];
-                for(j = 0; j < calcTrace.length; j++) {
-                    newPoffset.push(
-                        initialPoffset + (initialBarwidth - newBarwidth[j]) / 2
-                    );
-                }
-                t.poffset = newPoffset;
-            }
-        }
-        else if(width !== undefined) {
-            t.barwidth = width;
-
-            // if user didn't set offset,
-            // then correct t.poffset to ensure bars remain centered
-            if(offset === undefined) {
-                t.poffset = initialPoffset + (initialBarwidth - width) / 2;
-            }
-        }
-    }
+    applyAttributes(sieve);
 
     // update position axes
     updatePositionAxis(gd, pa, sieve);
@@ -309,7 +239,7 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
         distinctPositions = sieve.distinctPositions,
         minDiff = sieve.minDiff,
         calcTraces = sieve.traces,
-        i, calcTrace, calcTrace0, fullTrace,
+        i, calcTrace, calcTrace0,
         j, calcBar,
         t;
 
@@ -349,17 +279,55 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
     sieve.binWidth = calcTraces[0][0].t.barwidth / 100;
 
     // if defined, apply trace width
+    applyAttributes(sieve);
+
+    // update position axes
+    updatePositionAxis(gd, pa, sieve, overlap);
+}
+
+
+function applyAttributes(sieve) {
+    var calcTraces = sieve.traces,
+        i, calcTrace, calcTrace0, fullTrace,
+        j,
+        t;
+
     for(i = 0; i < calcTraces.length; i++) {
         calcTrace = calcTraces[i];
         calcTrace0 = calcTrace[0];
         fullTrace = calcTrace0.trace;
-
-        var width = fullTrace.width;
-        if(width === undefined) continue;
-
         t = calcTrace0.t;
-        var initialBarwidth = t.barwidth,
-            initialPoffset = t.poffset;
+
+        var offset = fullTrace.offset,
+            initialPoffset = t.poffset,
+            newPoffset;
+
+        if(Array.isArray(offset)) {
+            // if offset is an array, then clone it into t.poffset.
+            newPoffset = offset.slice(0, calcTrace.length);
+
+            // guard against non-numeric items
+            for(j = 0; j < newPoffset.length; j++) {
+                if(!isNumeric(newPoffset[j])) {
+                    newPoffset[j] = initialPoffset;
+                }
+            }
+
+            // if the length of the array is too short,
+            // then extend it with the initial value of t.poffset
+            for(j = newPoffset.length; j < calcTrace.length; j++) {
+                newPoffset.push(initialPoffset);
+            }
+
+            t.poffset = newPoffset;
+        }
+        else if(offset !== undefined) {
+            t.poffset = offset;
+        }
+
+        var width = fullTrace.width,
+            initialBarwidth = t.barwidth;
+
         if(Array.isArray(width)) {
             // if width is an array, then clone it into t.barwidth.
             var newBarwidth = width.slice(0, calcTrace.length);
@@ -377,25 +345,28 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
 
             t.barwidth = newBarwidth;
 
-            // correct t.poffset to ensure bars remain centered
-            var newPoffset = [];
-            for(j = 0; j < calcTrace.length; j++) {
-                newPoffset.push(
-                    initialPoffset + (initialBarwidth - newBarwidth[j]) / 2
-                );
+            // if user didn't set offset,
+            // then correct t.poffset to ensure bars remain centered
+            if(offset === undefined) {
+                newPoffset = [];
+                for(j = 0; j < calcTrace.length; j++) {
+                    newPoffset.push(
+                        initialPoffset + (initialBarwidth - newBarwidth[j]) / 2
+                    );
+                }
+                t.poffset = newPoffset;
             }
-            t.poffset = newPoffset;
         }
-        else {
+        else if(width !== undefined) {
             t.barwidth = width;
 
-            // correct t.poffset to ensure bars remain centered
-            t.poffset = initialPoffset + (initialBarwidth - width) / 2;
+            // if user didn't set offset,
+            // then correct t.poffset to ensure bars remain centered
+            if(offset === undefined) {
+                t.poffset = initialPoffset + (initialBarwidth - width) / 2;
+            }
         }
     }
-
-    // update position axes
-    updatePositionAxis(gd, pa, sieve, overlap);
 }
 
 
