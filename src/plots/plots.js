@@ -807,6 +807,7 @@ function supplyTransformDefaults(traceIn, traceOut, layout) {
         if(_module && _module.supplyDefaults) {
             transformOut = _module.supplyDefaults(transformIn, traceOut, layout, traceIn);
             transformOut.type = type;
+            transformOut._module = _module;
         }
         else {
             transformOut = Lib.extendFlat({}, transformIn);

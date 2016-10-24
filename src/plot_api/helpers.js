@@ -340,6 +340,24 @@ exports.cleanData = function(data, existingData) {
             }
         }
 
+        // transforms backward compatibility fixes
+        if(Array.isArray(trace.transforms)) {
+            var transforms = trace.transforms;
+
+            for(i = 0; i < transforms.length; i++) {
+                var transform = transforms[i];
+
+                if(!Lib.isPlainObject(transform)) continue;
+
+                if(transform.type === 'filter') {
+                    if(transform.filtersrc) {
+                        transform.target = transform.filtersrc;
+                        delete transform.filtersrc;
+                    }
+                }
+            }
+        }
+
         // prune empty containers made before the new nestedProperty
         if(emptyContainer(trace, 'line')) delete trace.line;
         if('marker' in trace) {

@@ -423,7 +423,7 @@ describe('finance charts calc transforms:', function() {
             transforms: [{
                 type: 'filter',
                 operation: '>',
-                filtersrc: 'open',
+                target: 'open',
                 value: 33
             }]
         });
@@ -433,7 +433,7 @@ describe('finance charts calc transforms:', function() {
             transforms: [{
                 type: 'filter',
                 operation: '{}',
-                filtersrc: 'x',
+                target: 'x',
                 value: ['2016-09-01', '2016-09-10']
             }]
         });

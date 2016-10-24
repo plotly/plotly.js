@@ -1,4 +1,6 @@
 var Plotly = require('@lib/index');
+var Filter = require('@lib/filter');
+
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
@@ -26,7 +28,8 @@ describe('general transforms:', function() {
             enabled: true,
             operation: '=',
             value: 0,
-            filtersrc: 'x'
+            target: 'x',
+            _module: Filter
         }]);
     });
 
@@ -48,7 +51,7 @@ describe('general transforms:', function() {
                 type: 'filter',
                 operation: '>',
                 value: 0,
-                filtersrc: 'x'
+                target: 'x'
             }]
         };
 
@@ -65,7 +68,8 @@ describe('general transforms:', function() {
             enabled: true,
             operation: '=',
             value: 0,
-            filtersrc: 'x'
+            target: 'x',
+            _module: Filter
         }, '- global first');
 
         expect(traceOut.transforms[1]).toEqual({
@@ -73,7 +77,8 @@ describe('general transforms:', function() {
             enabled: true,
             operation: '>',
             value: 0,
-            filtersrc: 'x'
+            target: 'x',
+            _module: Filter
         }, '- trace second');
     });
 
@@ -88,7 +93,7 @@ describe('general transforms:', function() {
                 type: 'filter',
                 operation: '>',
                 value: 0,
-                filtersrc: 'x'
+                target: 'x'
             }]
         }];
 
@@ -104,7 +109,7 @@ describe('general transforms:', function() {
             type: 'filter',
             operation: '>',
             value: 0,
-            filtersrc: 'x'
+            target: 'x'
         }], msg);
 
         msg = 'supplying the transform defaults';
@@ -113,7 +118,8 @@ describe('general transforms:', function() {
             enabled: true,
             operation: '>',
             value: 0,
-            filtersrc: 'x'
+            target: 'x',
+            _module: Filter
         }, msg);
 
         msg = 'keeping refs to user data';
@@ -123,7 +129,7 @@ describe('general transforms:', function() {
             type: 'filter',
             operation: '>',
             value: 0,
-            filtersrc: 'x'
+            target: 'x',
         }], msg);
 
         msg = 'keeping refs to full transforms array';
@@ -132,7 +138,8 @@ describe('general transforms:', function() {
             enabled: true,
             operation: '>',
             value: 0,
-            filtersrc: 'x'
+            target: 'x',
+            _module: Filter
         }], msg);
 
         msg = 'setting index w.r.t user data';

@@ -1,4 +1,6 @@
 var Plotly = require('@lib/index');
+var Filter = require('@lib/filter');
+
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
@@ -6,7 +8,6 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var assertDims = require('../assets/assert_dims');
 var assertStyle = require('../assets/assert_style');
-
 
 describe('filter transforms defaults:', function() {
 
@@ -28,7 +29,8 @@ describe('filter transforms defaults:', function() {
             enabled: true,
             operation: '=',
             value: 0,
-            filtersrc: 'x'
+            target: 'x',
+            _module: Filter
         }]);
     });
 
@@ -47,32 +49,33 @@ describe('filter transforms defaults:', function() {
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
             enabled: false,
+            _module: Filter
         }]);
     });
 
-    it('supplyTraceDefaults should coerce *filtersrc* as a strict / noBlank string', function() {
+    it('supplyTraceDefaults should coerce *target* as a strict / noBlank string', function() {
         traceIn = {
             x: [1, 2, 3],
             transforms: [{
                 type: 'filter',
             }, {
                 type: 'filter',
-                filtersrc: 0
+                target: 0
             }, {
                 type: 'filter',
-                filtersrc: ''
+                target: ''
             }, {
                 type: 'filter',
-                filtersrc: 'marker.color'
+                target: 'marker.color'
             }]
         };
 
         traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
 
-        expect(traceOut.transforms[0].filtersrc).toEqual('x');
-        expect(traceOut.transforms[1].filtersrc).toEqual('x');
-        expect(traceOut.transforms[2].filtersrc).toEqual('x');
-        expect(traceOut.transforms[3].filtersrc).toEqual('marker.color');
+        expect(traceOut.transforms[0].target).toEqual('x');
+        expect(traceOut.transforms[1].target).toEqual('x');
+        expect(traceOut.transforms[2].target).toEqual('x');
+        expect(traceOut.transforms[3].target).toEqual('marker.color');
     });
 });
 
@@ -106,13 +109,13 @@ describe('filter transforms calc:', function() {
         transforms: [{ type: 'filter' }]
     };
 
-    it('filters should skip if *filtersrc* isn\'t present in trace', function() {
+    it('filters should skip if *target* isn\'t present in trace', function() {
         var out = _transform([Lib.extendDeep({}, base, {
             transforms: [{
                 type: 'filter',
                 operation: '>',
                 value: 0,
-                filtersrc: 'z'
+                target: 'z'
             }]
         })]);
 
@@ -128,7 +131,7 @@ describe('filter transforms calc:', function() {
                 type: 'filter',
                 operation: '>',
                 value: '2016-10-01',
-                filtersrc: 'z'
+                target: 'z'
             }]
         })]);
 
@@ -146,7 +149,7 @@ describe('filter transforms calc:', function() {
                 type: 'filter',
                 operation: '>',
                 value: 0,
-                filtersrc: 'lon'
+                target: 'lon'
             }]
         };
 
@@ -158,7 +161,7 @@ describe('filter transforms calc:', function() {
                 type: 'filter',
                 operation: '<',
                 value: 0,
-                filtersrc: 'lat'
+                target: 'lat'
             }]
         };
 
@@ -177,7 +180,7 @@ describe('filter transforms calc:', function() {
                 type: 'filter',
                 operation: '>',
                 value: 0.2,
-                filtersrc: 'marker.color'
+                target: 'marker.color'
             }]
         })]);
 
@@ -193,7 +196,7 @@ describe('filter transforms calc:', function() {
                 enabled: false,
                 operation: '>',
                 value: 0,
-                filtersrc: 'x'
+                target: 'x'
             }]
         })]);
 
@@ -207,12 +210,12 @@ describe('filter transforms calc:', function() {
                 type: 'filter',
                 operation: '>',
                 value: 0,
-                filtersrc: 'x'
+                target: 'x'
             }, {
                 type: 'filter',
                 operation: '<',
                 value: 3,
-                filtersrc: 'x'
+                target: 'x'
             }]
         })]);
 
@@ -226,18 +229,18 @@ describe('filter transforms calc:', function() {
                 type: 'filter',
                 operation: '>',
                 value: 0,
-                filtersrc: 'x'
+                target: 'x'
             }, {
                 type: 'filter',
                 enabled: false,
                 operation: '>',
                 value: 2,
-                filtersrc: 'y'
+                target: 'y'
             }, {
                 type: 'filter',
                 operation: '<',
                 value: 2,
-                filtersrc: 'y'
+                target: 'y'
             }]
         })]);
 
@@ -260,7 +263,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '[]',
                     value: [-1, 1],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -276,7 +279,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '[)',
                     value: [-1, 1],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -288,7 +291,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '(]',
                     value: [-1, 1],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -300,7 +303,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '()',
                     value: [-1, 1],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -312,7 +315,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: ')(',
                     value: [-1, 1],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -328,7 +331,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: ')[',
                     value: [-1, 1],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -344,7 +347,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '](',
                     value: [-1, 1],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -360,7 +363,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '][',
                     value: [-1, 1],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -376,7 +379,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '{}',
                     value: [-2, 0],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -392,7 +395,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '}{',
                     value: [-2, 0],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -409,7 +412,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '>',
                     value: -1,
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })], {
                 xaxis: { type: 'category' }
@@ -443,7 +446,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '()',
                     value: ['a', 'c'],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -455,7 +458,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: ')(',
                     value: ['a', 'c'],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -467,7 +470,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '{}',
                     value: ['b', 'd'],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -479,7 +482,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '}{',
                     value: ['b', 'd'],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -513,7 +516,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '=',
                     value: ['2015-07-20'],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -525,7 +528,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '<',
                     value: '2016-01-01',
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -537,7 +540,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '>=',
                     value: '2016-08-01',
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -553,7 +556,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '[]',
                     value: ['2016-08-01', '2016-10-01'],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -565,7 +568,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: ')(',
                     value: ['2016-08-01', '2016-10-01'],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -577,7 +580,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '{}',
                     value: '2015-07-20',
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -589,7 +592,7 @@ describe('filter transforms calc:', function() {
                 transforms: [{
                     operation: '}{',
                     value: ['2016-08-01', '2016-09-01', '2016-10-21', '2016-12-02'],
-                    filtersrc: 'x'
+                    target: 'x'
                 }]
             })]);
 
@@ -603,13 +606,81 @@ describe('filter transforms calc:', function() {
             transforms: [{
                 operation: '{}',
                 value: ['p1', 'p2', 'n1'],
-                filtersrc: 'ids'
+                target: 'ids'
             }]
         })]);
 
         expect(out[0].x).toEqual([-1, 1, 2]);
         expect(out[0].y).toEqual([2, 2, 3]);
         expect(out[0].ids).toEqual(['n1', 'p1', 'p2']);
+    });
+
+    describe('filters should handle array *target* values', function() {
+        var _base = Lib.extendDeep({}, base);
+
+        function _assert(out, x, y, markerColor) {
+            expect(out[0].x).toEqual(x, '- x coords');
+            expect(out[0].y).toEqual(y, '- y coords');
+            expect(out[0].marker.color).toEqual(markerColor, '- marker.color arrayOk');
+            expect(out[0].marker.size).toEqual(20, '- marker.size style');
+        }
+
+        it('with numeric items', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    target: [1, 1, 0, 0, 1, 0, 1],
+                    operation: '{}',
+                    value: 0
+                }]
+            })]);
+
+            _assert(out, [-2, 0, 2], [3, 1, 3], [0.3, 0.1, 0.3]);
+            expect(out[0].transforms[0].target).toEqual([0, 0, 0]);
+        });
+
+        it('with categorical items', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    target: ['a', 'a', 'b', 'b', 'a', 'b', 'a'],
+                    operation: '{}',
+                    value: 'b'
+                }]
+            })]);
+
+            _assert(out, [-2, 0, 2], [3, 1, 3], [0.3, 0.1, 0.3]);
+            expect(out[0].transforms[0].target).toEqual(['b', 'b', 'b']);
+        });
+
+        it('with dates items', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    target: ['2015-07-20', '2016-08-01', '2016-09-01', '2016-10-21', '2016-12-02'],
+                    operation: '<',
+                    value: '2016-01-01'
+                }]
+            })]);
+
+            _assert(out, [-2], [1], [0.1]);
+            expect(out[0].transforms[0].target).toEqual(['2015-07-20']);
+        });
+
+        it('with multiple transforms (dates) ', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    target: ['2015-07-20', '2016-08-01', '2016-09-01', '2016-10-21', '2016-12-02'],
+                    operation: '>',
+                    value: '2016-01-01'
+                }, {
+                    type: 'filter',
+                    target: ['2015-07-20', '2016-08-01', '2016-09-01', '2016-10-21', '2016-12-02'],
+                    operation: '<',
+                    value: '2016-09-01'
+                }]
+            })]);
+
+            _assert(out, [-1], [2], [0.2]);
+            expect(out[0].transforms[0].target).toEqual(['2016-08-01']);
+        });
     });
 });
 
