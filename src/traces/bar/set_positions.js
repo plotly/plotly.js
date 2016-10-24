@@ -379,8 +379,12 @@ function updatePositionAxis(gd, pa, sieve, allowMinDtick) {
 
     Axes.minDtick(pa, minDiff, distinctPositions0, allowMinDtick);
 
-    // if user set bar width or offset,
-    // then check whether axis needs expanding
+    // If the user set the bar width or the offset,
+    // then bars can be shifted away from their positions
+    // and widths can be larger than minDiff.
+    //
+    // Here, we compute pMin and pMax to expand the position axis,
+    // so that all bars are fully within the axis range.
     var pMin = Math.min.apply(Math, distinctPositions) - vpad,
         pMax = Math.max.apply(Math, distinctPositions) + vpad;
 
