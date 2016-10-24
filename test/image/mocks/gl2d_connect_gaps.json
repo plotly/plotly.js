@@ -12,10 +12,11 @@
       "y": [-2, -2, null, 2, 2],
       "connectgaps": true,
       "mode": "lines",
-      "type": "scattergl"
+      "type": "scattergl",
+      "opacity": 0.4
     }
   ],
   "layout": {
-    "title": "Connect gaps test"
+    "title": "Connect gaps + line opacity test"
   }
 }

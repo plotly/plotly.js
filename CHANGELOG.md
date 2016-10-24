@@ -10,6 +10,17 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.18.1] -- 2016-10-18
+
+### Fixed
+- Fix cartesian subplot resize [#1049]
+- Fix cartesian interactivity after click [#1049]
+- Fix `scattergeo` traces with not-found country names [#1046]
+- Honor `'name'` hoverinfo flag in `ohlc` traces [#1050]
+- Fix animation merging for frames including array containers [#1041. #1048]
+- Fix `requestAnimationFrame` polyfill for script-tag imports [#1039]
+
+
 ## [1.18.0] -- 2016-10-13
 
 ### Added

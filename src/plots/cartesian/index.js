@@ -214,7 +214,7 @@ exports.rangePlot = function(gd, plotinfo, cdSubplot) {
 
 function makeSubplotData(gd) {
     var fullLayout = gd._fullLayout,
-        subplots = Axes.getSubplots(gd);
+        subplots = Object.keys(fullLayout._plots);
 
     var subplotData = [],
         overlays = [];

@@ -188,8 +188,13 @@ describe('contourgl plots', function() {
     });
 
     it('render without raising an error', function(done) {
-        var mock = require('@mocks/gl2d_simple_contour_fill.json');
-        makePlot(gd, mock, done);
+        var mock = require('@mocks/simple_contour.json'),
+            mockCopy = Lib.extendDeep({}, mock);
+
+        mockCopy.data[0].type = 'contourgl';
+        mockCopy.data[0].contours = { coloring: 'fill' };
+
+        makePlot(gd, mockCopy, done);
     });
 
     it('render without raising an error (coloring: "lines")', function(done) {

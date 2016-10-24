@@ -5,7 +5,7 @@ general:
 
 machine:
   node:
-    version: 4.2.1
+    version: 6.1.0
   services:
     - docker
 
@@ -21,6 +21,7 @@ dependencies:
 test:
   override:
     - npm run test-image
+    - npm run test-image-gl2d
     - npm run test-export
     - npm run citest-jasmine
     - npm run test-bundle

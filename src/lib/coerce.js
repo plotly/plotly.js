@@ -458,6 +458,17 @@ exports.findArrayAttributes = function(trace) {
 
     exports.crawl(trace._module.attributes, callback);
 
+    if(trace.transforms) {
+        var transforms = trace.transforms;
+
+        for(var i = 0; i < transforms.length; i++) {
+            var transform = transforms[i];
+
+            stack = ['transforms[' + i + ']'];
+            exports.crawl(transform._module.attributes, callback, 1);
+        }
+    }
+
     // Look into the fullInput module attributes for array attributes
     // to make sure that 'custom' array attributes are detected.
     //

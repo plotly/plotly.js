@@ -40,7 +40,7 @@ plotChoropleth.calcGeoJSON = function(trace, topojson) {
     for(var i = 0; i < len; i++) {
         feature = locationToFeature(trace.locationmode, locations[i], features);
 
-        if(feature === undefined) continue;  // filter the blank features here
+        if(!feature) continue;  // filter the blank features here
 
         // 'data_array' attributes
         feature.z = trace.z[i];

@@ -11,6 +11,7 @@ var subroutines = require('@src/plot_api/subroutines');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
 
 
 describe('Test plot api', function() {
@@ -19,6 +20,69 @@ describe('Test plot api', function() {
     describe('Plotly.version', function() {
         it('should be the same as in the package.json', function() {
             expect(Plotly.version).toEqual(pkg.version);
+        });
+    });
+
+    describe('Plotly.plot', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('accepts gd, data, layout, and config as args', function(done) {
+            Plotly.plot(gd,
+                [{x: [1, 2, 3], y: [1, 2, 3]}],
+                {width: 500, height: 500},
+                {editable: true}
+            ).then(function() {
+                expect(gd.layout.width).toEqual(500);
+                expect(gd.layout.height).toEqual(500);
+                expect(gd.data.length).toEqual(1);
+                expect(gd._context.editable).toBe(true);
+            }).catch(fail).then(done);
+        });
+
+        it('accepts gd and an object as args', function(done) {
+            Plotly.plot(gd, {
+                data: [{x: [1, 2, 3], y: [1, 2, 3]}],
+                layout: {width: 500, height: 500},
+                config: {editable: true},
+                frames: [{y: [2, 1, 0], name: 'frame1'}]
+            }).then(function() {
+                expect(gd.layout.width).toEqual(500);
+                expect(gd.layout.height).toEqual(500);
+                expect(gd.data.length).toEqual(1);
+                expect(gd._transitionData._frames.length).toEqual(1);
+                expect(gd._context.editable).toBe(true);
+            }).catch(fail).then(done);
+        });
+
+        it('allows adding more frames to the initial set', function(done) {
+            Plotly.plot(gd, {
+                data: [{x: [1, 2, 3], y: [1, 2, 3]}],
+                layout: {width: 500, height: 500},
+                config: {editable: true},
+                frames: [{y: [7, 7, 7], name: 'frame1'}]
+            }).then(function() {
+                expect(gd.layout.width).toEqual(500);
+                expect(gd.layout.height).toEqual(500);
+                expect(gd.data.length).toEqual(1);
+                expect(gd._transitionData._frames.length).toEqual(1);
+                expect(gd._context.editable).toBe(true);
+
+                return Plotly.addFrames(gd, [
+                    {y: [8, 8, 8], name: 'frame2'},
+                    {y: [9, 9, 9], name: 'frame3'}
+                ]);
+            }).then(function() {
+                expect(gd._transitionData._frames.length).toEqual(3);
+                expect(gd._transitionData._frames[0].name).toEqual('frame1');
+                expect(gd._transitionData._frames[1].name).toEqual('frame2');
+                expect(gd._transitionData._frames[2].name).toEqual('frame3');
+            }).catch(fail).then(done);
         });
     });
 
@@ -930,6 +994,35 @@ describe('Test plot api', function() {
             expect(contours.z.highlightwidth).toEqual('red');
 
             expect(gd.data[1].contours).toBeUndefined();
+        });
+
+        it('should rename *filtersrc* to *target* in filter transforms', function() {
+            var data = [{
+                transforms: [{
+                    type: 'filter',
+                    filtersrc: 'y'
+                }, {
+                    type: 'filter',
+                    operation: '<'
+                }]
+            }, {
+                transforms: [{
+                    type: 'filter',
+                    target: 'y'
+                }]
+            }];
+
+            Plotly.plot(gd, data);
+
+            var trace0 = gd.data[0],
+                trace1 = gd.data[1];
+
+            expect(trace0.transforms.length).toEqual(2);
+            expect(trace0.transforms[0].filtersrc).toBeUndefined();
+            expect(trace0.transforms[0].target).toEqual('y');
+
+            expect(trace1.transforms.length).toEqual(1);
+            expect(trace1.transforms[0].target).toEqual('y');
         });
     });
 

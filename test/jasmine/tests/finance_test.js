@@ -386,10 +386,10 @@ describe('finance charts calc transforms:', function() {
 
         var out = _calc([trace0, trace1, trace2, trace3]);
 
-        expect(out[0].hoverinfo).toEqual('x+text');
+        expect(out[0].hoverinfo).toEqual('x+text+name');
         expect(out[0].text[0])
             .toEqual('Open: 33.01<br>High: 34.2<br>Low: 31.7<br>Close: 34.1<br>A');
-        expect(out[0].hoverinfo).toEqual('x+text');
+        expect(out[0].hoverinfo).toEqual('x+text+name');
         expect(out[1].text[0])
             .toEqual('Open: 33.31<br>High: 34.37<br>Low: 30.75<br>Close: 31.93<br>B');
 
@@ -419,7 +419,7 @@ describe('finance charts calc transforms:', function() {
             transforms: [{
                 type: 'filter',
                 operation: '>',
-                filtersrc: 'open',
+                target: 'open',
                 value: 33
             }]
         });
@@ -429,7 +429,7 @@ describe('finance charts calc transforms:', function() {
             transforms: [{
                 type: 'filter',
                 operation: '{}',
-                filtersrc: 'x',
+                target: 'x',
                 value: ['2016-09-01', '2016-09-10']
             }]
         });

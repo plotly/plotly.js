@@ -100,18 +100,19 @@ function makeTrace(traceIn, state, direction) {
 function makeHoverInfo(traceIn) {
     var hoverinfo = traceIn.hoverinfo;
 
-    if(hoverinfo === 'all') return 'x+text';
+    if(hoverinfo === 'all') return 'x+text+name';
 
     var parts = hoverinfo.split('+'),
-        hasX = parts.indexOf('x') !== -1,
-        hasText = parts.indexOf('text') !== -1;
+        indexOfY = parts.indexOf('y'),
+        indexOfText = parts.indexOf('text');
 
-    if(hasX) {
-        if(hasText) return 'x+text';
-        else return 'x';
+    if(indexOfY !== -1) {
+        parts.splice(indexOfY, 1);
 
+        if(indexOfText === -1) parts.push('text');
     }
-    else return 'text';
+
+    return parts.join('+');
 }
 
 exports.calcTransform = function calcTransform(gd, trace, opts) {

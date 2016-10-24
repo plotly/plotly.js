@@ -448,11 +448,9 @@ describe('mapbox plots', function() {
             expect(mapInfo.zoom).toBeCloseTo(zoom);
 
             var divStyle = mapInfo.div.style;
-            var expectedDims = ['left', 'top', 'width', 'height'].map(function(p) {
-                return parseFloat(divStyle[p]);
+            ['left', 'top', 'width', 'height'].forEach(function(p, i) {
+                expect(parseFloat(divStyle[p])).toBeWithin(dims[i], 5);
             });
-
-            expect(expectedDims).toBeCloseToArray(dims);
         }
 
         assertLayout('Mapbox Dark', [-4.710, 19.475], 1.234, [80, 100, 908, 270]);
