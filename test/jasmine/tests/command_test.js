@@ -551,7 +551,7 @@ describe('attaching component bindings', function() {
 
             // Modify the plot
             return Plotly.restyle(gd, {'marker.color': 'blue'});
-        }).then(function () {
+        }).then(function() {
             // Confirm that this has changed the slider position:
             expect(gd.layout.sliders[0].active).toBe(1);
 
