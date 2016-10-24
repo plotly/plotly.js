@@ -407,27 +407,26 @@ function updatePositionAxis(gd, pa, sieve, allowMinDtick) {
         vpad = minDiff / 2;
 
     Axes.minDtick(pa, minDiff, distinctPositions0, allowMinDtick);
-    Axes.expand(pa, distinctPositions, {vpad: vpad});
 
     // if user set bar width or offset,
     // then check whether axis needs expanding
-    var minPos = Math.min.apply(Math, distinctPositions) - vpad,
-        maxPos = Math.max.apply(Math, distinctPositions) + vpad,
-        pMin, pMinOffset, pMinWidth,
-        pMax, pMaxOffset, pMaxWidth;
+    var pMin = Math.min.apply(Math, distinctPositions) - vpad,
+        pMax = Math.max.apply(Math, distinctPositions) + vpad;
+
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i],
             calcTrace0 = calcTrace[0],
-            fullTrace = calcTrace0.trace,
-            t = calcTrace0.t,
-            poffset = t.poffset,
-            poffsetIsArray = Array.isArray(poffset),
-            barwidth = t.barwidth,
-            barwidthIsArray = Array.isArray(barwidth);
+            fullTrace = calcTrace0.trace;
 
         if(fullTrace.width === undefined && fullTrace.offset === undefined) {
             continue;
         }
+
+        var t = calcTrace0.t,
+            poffset = t.poffset,
+            barwidth = t.barwidth,
+            poffsetIsArray = Array.isArray(poffset),
+            barwidthIsArray = Array.isArray(barwidth);
 
         for(var j = 0; j < calcTrace.length; j++) {
             var calcBar = calcTrace[j],
@@ -437,29 +436,12 @@ function updatePositionAxis(gd, pa, sieve, allowMinDtick) {
                 l = p + calcBarOffset,
                 r = l + calcBarWidth;
 
-            if(r >= maxPos) {
-                maxPos = r;
-                pMax = p;
-                pMaxOffset = calcBarOffset;
-                pMaxWidth = calcBarWidth;
-            }
-            if(l <= minPos) {
-                minPos = r;
-                pMin = p;
-                pMinOffset = calcBarOffset;
-                pMinWidth = calcBarWidth;
-            }
+            pMin = Math.min(pMin, l);
+            pMax = Math.max(pMax, r);
         }
     }
 
-    if(pMin) {
-        vpad = pMinWidth / 2;
-        Axes.expand(pa, [pMin + pMinOffset + vpad], {vpad: vpad});
-    }
-    if(pMax) {
-        vpad = pMaxWidth / 2;
-        Axes.expand(pa, [pMax + pMaxOffset + vpad], {vpad: vpad});
-    }
+    Axes.expand(pa, [pMin, pMax], {padded: false});
 }
 
 
