@@ -73,6 +73,9 @@ module.exports = function draw(gd) {
 
         if(!sliderOpts._commandObserver) {
             sliderOpts._commandObserver = Plots.createCommandObserver(gd, sliderOpts.steps, function(data) {
+                if (sliderOpts.active === data.index) return;
+                if (sliderOpts._dragging) return;
+
                 setActive(gd, gSlider, sliderOpts, data.index, false, true);
             });
         }
@@ -358,6 +361,7 @@ function handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, doTransiti
     var quantizedPosition = Math.round(normalizedPosition * (sliderOpts.steps.length - 1));
 
     if(quantizedPosition !== sliderOpts.active) {
+
         setActive(gd, sliderGroup, sliderOpts, quantizedPosition, true, doTransition);
     }
 }
@@ -382,13 +386,7 @@ function setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition)
                 var _step = sliderGroup._nextMethod.step;
                 if(!_step.method) return;
 
-                sliderOpts._invokingCommand = true;
-
-                Plots.executeAPICommand(gd, _step.method, _step.args).then(function() {
-                    sliderOpts._invokingCommand = false;
-                }, function() {
-                    sliderOpts._invokingCommand = false;
-                });
+                Plots.executeAPICommand(gd, _step.method, _step.args);
 
                 sliderGroup._nextMethod = null;
                 sliderGroup._nextMethodRaf = null;
@@ -410,6 +408,7 @@ function attachGripEvents(item, gd, sliderGroup, sliderOpts) {
 
         var normalizedPosition = positionToNormalizedValue(sliderOpts, d3.mouse(node)[0]);
         handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, true);
+        sliderOpts._dragging = true;
 
         $gd.on('mousemove', function() {
             var normalizedPosition = positionToNormalizedValue(sliderOpts, d3.mouse(node)[0]);
@@ -417,6 +416,7 @@ function attachGripEvents(item, gd, sliderGroup, sliderOpts) {
         });
 
         $gd.on('mouseup', function() {
+            sliderOpts._dragging = false;
             grip.call(Color.fill, sliderOpts.bgcolor);
             $gd.on('mouseup', null);
             $gd.on('mousemove', null);
