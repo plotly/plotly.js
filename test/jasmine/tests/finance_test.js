@@ -780,4 +780,53 @@ describe('finance charts updates:', function() {
             done();
         });
     });
+
+    it('Plotly.addTraces + Plotly.relayout should update candlestick box position values', function(done) {
+
+        function assertBoxPosFields(dPos) {
+            expect(gd.calcdata.length).toEqual(dPos.length);
+
+            gd.calcdata.forEach(function(calcTrace, i) {
+                if(dPos[i] === undefined) {
+                    expect(calcTrace[0].t.dPos).toBeUndefined();
+                }
+                else {
+                    expect(calcTrace[0].t.dPos).toEqual(dPos[i]);
+                }
+            });
+        }
+
+        var trace0 = {
+            type: 'candlestick',
+            x: ['2011-01-01'],
+            open: [0],
+            high: [3],
+            low: [1],
+            close: [3]
+        };
+
+        Plotly.plot(gd, [trace0]).then(function() {
+            assertBoxPosFields([0.5, undefined]);
+
+            return Plotly.addTraces(gd, {});
+
+        })
+        .then(function() {
+            var update = {
+                type: 'candlestick',
+                x: [['2011-02-02']],
+                open: [[0]],
+                high: [[3]],
+                low: [[1]],
+                close: [[3]]
+            };
+
+            return Plotly.restyle(gd, update);
+        })
+        .then(function() {
+            assertBoxPosFields([0.5, undefined, 0.5, undefined]);
+
+            done();
+        });
+    });
 });
