@@ -121,7 +121,7 @@ exports.calcTransform = function calcTransform(gd, trace, opts) {
 
     var xa = axisIds.getFromTrace(gd, trace, 'x'),
         ya = axisIds.getFromTrace(gd, trace, 'y'),
-        tickWidth = convertTickWidth(gd, xa, trace._fullInput.tickwidth);
+        tickWidth = convertTickWidth(gd, xa, trace);
 
     var open = trace.open,
         high = trace.high,
@@ -191,23 +191,50 @@ exports.calcTransform = function calcTransform(gd, trace, opts) {
     trace.text = textOut;
 };
 
-function convertTickWidth(gd, xa, tickWidth) {
-    var fullData = gd._fullData,
-        coords = [];
+function convertTickWidth(gd, xa, trace) {
+    var fullInput = trace._fullInput,
+        tickWidth = fullInput.tickwidth,
+        minDiff = fullInput._minDiff;
 
-    // find all coordinates attached to this x-axis
-    for(var i = 0; i < fullData.length; i++) {
-        var trace = fullData[i]._fullInput;
+    if(!minDiff) {
+        var fullData = gd._fullData,
+            ohlcTracesOnThisXaxis = [];
 
-        if(trace.type === 'ohlc' &&
-            trace.visible === true &&
-            trace.xaxis === xa._id &&
-            trace.x
-        ) {
-            coords = coords.concat(trace.x.map(xa.d2c));
+        minDiff = Infinity;
+
+        // find min x-coordinates difference of all traces
+        // attached to this x-axis and stash the result
+
+        var i;
+
+        for(i = 0; i < fullData.length; i++) {
+            var _trace = fullData[i]._fullInput;
+
+            if(_trace.type === 'ohlc' &&
+                _trace.visible === true &&
+                _trace.xaxis === xa._id
+            ) {
+                ohlcTracesOnThisXaxis.push(_trace);
+
+                // - _trace.x may be undefined here,
+                // it is filled later in calcTransform
+                //
+                // - handle trace of length 1 separately.
+
+                if(_trace.x && _trace.x.length > 1) {
+                    var _minDiff = Lib.distinctVals(_trace.x.map(xa.d2c)).minDiff;
+                    minDiff = Math.min(minDiff, _minDiff);
+                }
+            }
+        }
+
+        // if minDiff is still Infinity here, set it to 1
+        if(minDiff === Infinity) minDiff = 1;
+
+        for(i = 0; i < ohlcTracesOnThisXaxis.length; i++) {
+            ohlcTracesOnThisXaxis[i]._minDiff = minDiff;
         }
     }
 
-    var minDiff = Lib.distinctVals(coords).minDiff;
     return minDiff * tickWidth;
 }
