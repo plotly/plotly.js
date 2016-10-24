@@ -73,8 +73,8 @@ module.exports = function draw(gd) {
 
         if(!sliderOpts._commandObserver) {
             sliderOpts._commandObserver = Plots.createCommandObserver(gd, sliderOpts.steps, function(data) {
-                if (sliderOpts.active === data.index) return;
-                if (sliderOpts._dragging) return;
+                if(sliderOpts.active === data.index) return;
+                if(sliderOpts._dragging) return;
 
                 setActive(gd, gSlider, sliderOpts, data.index, false, true);
             });
