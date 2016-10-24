@@ -4,6 +4,7 @@ var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var Dates = require('@src/lib/dates');
+var Axes = require('@src/plots/cartesian/axes');
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -23,17 +24,26 @@ describe('Test annotations', function() {
             expect(annotationDefaults.annotations[0].ayref).toEqual('pixel');
         });
 
-        it('should convert ax/ay date coordinates to milliseconds if tail is in axis terms and axis is a date', function() {
-            var annotationOut = { xaxis: { type: 'date', range: ['2000-01-01', '2016-01-01'] }};
-            annotationOut._has = Plots._hasPlotType.bind(annotationOut);
+        it('should convert ax/ay date coordinates to date string if tail is in milliseconds and axis is a date', function() {
+            var layoutOut = { xaxis: { type: 'date', range: ['2000-01-01', '2016-01-01'] }};
+            layoutOut._has = Plots._hasPlotType.bind(layoutOut);
+            Axes.setConvert(layoutOut.xaxis);
 
-            var annotationIn = {
-                annotations: [{ showarrow: true, axref: 'x', ayref: 'y', x: '2008-07-01', ax: '2004-07-01', y: 0, ay: 50}]
+            var layoutIn = {
+                annotations: [{
+                    showarrow: true,
+                    axref: 'x',
+                    ayref: 'y',
+                    x: '2008-07-01',
+                    ax: Dates.dateTime2ms('2004-07-01'),
+                    y: 0,
+                    ay: 50
+                }]
             };
 
-            Annotations.supplyLayoutDefaults(annotationIn, annotationOut);
+            Annotations.supplyLayoutDefaults(layoutIn, layoutOut);
 
-            expect(annotationIn.annotations[0].ax).toEqual(Dates.dateTime2ms('2004-07-01'));
+            expect(layoutOut.annotations[0].ax).toEqual('2004-07-01');
         });
     });
 });

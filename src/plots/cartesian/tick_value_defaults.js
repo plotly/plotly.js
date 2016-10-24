@@ -10,6 +10,7 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
+var Lib = require('../../lib');
 
 
 module.exports = function handleTickValueDefaults(containerIn, containerOut, coerce, axType) {
@@ -28,8 +29,17 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
 
     if(tickmode === 'auto') coerce('nticks');
     else if(tickmode === 'linear') {
-        coerce('tick0');
+        var tick0 = coerce('tick0');
         coerce('dtick');
+
+        // tick0 can have different valType for different axis types, so
+        // validate that now. Also for dates, change milliseconds to date strings
+        if(axType === 'date') {
+            containerOut.tick0 = Lib.cleanDate(tick0, '2000-01-01');
+        }
+        else if(!isNumeric(tick0)) {
+            containerOut.tick0 = 0;
+        }
     }
     else {
         var tickvals = coerce('tickvals');

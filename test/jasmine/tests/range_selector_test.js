@@ -312,7 +312,7 @@ describe('range selector getUpdateObject:', function() {
             count: 5
         };
 
-        assertUpdateCase(buttonLayout, '2015-11-29 19', '2015-11-30');
+        assertUpdateCase(buttonLayout, '2015-11-29 19:00', '2015-11-30');
         assertUpdateCase(buttonLayout, '2015-11-30 07:34:56', '2015-11-30 12:34:56');
     });
 
@@ -346,8 +346,8 @@ describe('range selector getUpdateObject:', function() {
         };
 
         assertUpdateCase(buttonLayout, '2015-11-30', '2015-11-30 12');
-        assertUpdateCase(buttonLayout, '2015-11-30 01', '2015-11-30 12:00:01');
-        assertUpdateCase(buttonLayout, '2015-11-30 01', '2015-11-30 13');
+        assertUpdateCase(buttonLayout, '2015-11-30 01:00', '2015-11-30 12:00:01');
+        assertUpdateCase(buttonLayout, '2015-11-30 01:00', '2015-11-30 13');
     });
 
     it('should return update object (20 minute to-date case)', function() {
@@ -357,7 +357,7 @@ describe('range selector getUpdateObject:', function() {
             count: 20
         };
 
-        assertUpdateCase(buttonLayout, '2015-11-30 12', '2015-11-30 12:20');
+        assertUpdateCase(buttonLayout, '2015-11-30 12:00', '2015-11-30 12:20');
         assertUpdateCase(buttonLayout, '2015-11-30 12:01', '2015-11-30 12:20:01');
         assertUpdateCase(buttonLayout, '2015-11-30 12:01', '2015-11-30 12:21');
     });

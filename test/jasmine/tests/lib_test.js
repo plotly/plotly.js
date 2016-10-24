@@ -1399,6 +1399,42 @@ describe('Test lib.js:', function() {
             }).toThrowError('Separator string required for formatting!');
         });
     });
+
+    describe('cleanNumber', function() {
+        it('should return finite numbers untouched', function() {
+            [
+                0, 1, 2, 1234.567,
+                -1, -100, -999.999,
+                Number.MAX_VALUE, Number.MIN_VALUE, Number.EPSILON,
+                -Number.MAX_VALUE, -Number.MIN_VALUE, -Number.EPSILON
+            ].forEach(function(v) {
+                expect(Lib.cleanNumber(v)).toBe(v);
+            });
+        });
+
+        it('should accept number strings with arbitrary cruft on the outside', function() {
+            [
+                ['0', 0],
+                ['1', 1],
+                ['1.23', 1.23],
+                ['-100.001', -100.001],
+                ['  $4.325  #%\t', 4.325],
+                [' " #1" ', 1],
+                [' \'\n \r -9.2e7   \t\' ', -9.2e7]
+            ].forEach(function(v) {
+                expect(Lib.cleanNumber(v[0])).toBe(v[1], v[0]);
+            });
+        });
+
+        it('should not accept other objects or cruft in the middle', function() {
+            [
+                NaN, Infinity, -Infinity, null, undefined, new Date(), '',
+                ' ', '\t', '2 2', '2%2', '2$2', {1: 2}, [1], ['1'], {}, []
+            ].forEach(function(v) {
+                expect(Lib.cleanNumber(v)).toBeUndefined(v);
+            });
+        });
+    });
 });
 
 describe('Queue', function() {

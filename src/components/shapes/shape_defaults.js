@@ -39,29 +39,54 @@ module.exports = function handleShapeDefaults(shapeIn, fullLayout) {
             tdMock = {_fullLayout: fullLayout};
 
         // xref, yref
-        var axRef = Axes.coerceRef(shapeIn, shapeOut, tdMock, axLetter);
+        var axRef = Axes.coerceRef(shapeIn, shapeOut, tdMock, axLetter, '', 'paper');
 
         if(shapeType !== 'path') {
             var dflt0 = 0.25,
-                dflt1 = 0.75;
+                dflt1 = 0.75,
+                ax,
+                pos2r,
+                r2pos;
 
             if(axRef !== 'paper') {
-                var ax = Axes.getFromId(tdMock, axRef),
-                    convertFn = helpers.linearToData(ax);
+                ax = Axes.getFromId(tdMock, axRef);
+                r2pos = helpers.rangeToShapePosition(ax);
+                pos2r = helpers.shapePositionToRange(ax);
 
-                dflt0 = convertFn(ax.range[0] + dflt0 * (ax.range[1] - ax.range[0]));
-                dflt1 = convertFn(ax.range[0] + dflt1 * (ax.range[1] - ax.range[0]));
+                dflt0 = r2pos(ax.fraction2r(dflt0));
+                dflt1 = r2pos(ax.fraction2r(dflt1));
+            }
+            else {
+                pos2r = r2pos = Lib.identity;
             }
 
+            // hack until V2.0 when log has regular range behavior - make it look like other
+            // ranges to send to coerce, then put it back after
+            // this is all to give reasonable default position behavior on log axes, which is
+            // a pretty unimportant edge case so we could just ignore this.
+            var attr0 = axLetter + '0',
+                attr1 = axLetter + '1',
+                in0 = shapeIn[attr0],
+                in1 = shapeIn[attr1];
+            shapeIn[attr0] = pos2r(shapeIn[attr0], true);
+            shapeIn[attr1] = pos2r(shapeIn[attr1], true);
+
             // x0, x1 (and y0, y1)
-            coerce(axLetter + '0', dflt0);
-            coerce(axLetter + '1', dflt1);
+            Axes.coercePosition(shapeOut, tdMock, coerce, axRef, attr0, dflt0);
+            Axes.coercePosition(shapeOut, tdMock, coerce, axRef, attr1, dflt1);
+
+            // hack part 2
+            shapeOut[attr0] = r2pos(shapeOut[attr0]);
+            shapeOut[attr1] = r2pos(shapeOut[attr1]);
+            shapeIn[attr0] = in0;
+            shapeIn[attr1] = in1;
         }
     }
 
     if(shapeType === 'path') {
         coerce('path');
-    } else {
+    }
+    else {
         Lib.noneOrAll(shapeIn, shapeOut, ['x0', 'x1', 'y0', 'y1']);
     }
 

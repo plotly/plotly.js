@@ -38,43 +38,85 @@ axes.getFromId = axisIds.getFromId;
 axes.getFromTrace = axisIds.getFromTrace;
 
 
-// find the list of possible axes to reference with an xref or yref attribute
-// and coerce it to that list
-axes.coerceRef = function(containerIn, containerOut, gd, axLetter, dflt) {
-    var axlist = gd._fullLayout._has('gl2d') ? [] : axes.listIds(gd, axLetter),
-        refAttr = axLetter + 'ref',
+/*
+ * find the list of possible axes to reference with an xref or yref attribute
+ * and coerce it to that list
+ *
+ * attr: the attribute we're generating a reference for. Should end in 'x' or 'y'
+ *     but can be prefixed, like 'ax' for annotation's arrow x
+ * dflt: the default to coerce to, or blank to use the first axis (falling back on
+ *     extraOption if there is no axis)
+ * extraOption: aside from existing axes with this letter, what non-axis value is allowed?
+ *     Only required if it's different from `dflt`
+ */
+axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption) {
+    var axLetter = attr.charAt(attr.length - 1),
+        axlist = gd._fullLayout._has('gl2d') ? [] : axes.listIds(gd, axLetter),
+        refAttr = attr + 'ref',
         attrDef = {};
+
+    if(!dflt) dflt = axlist[0] || extraOption;
+    if(!extraOption) extraOption = dflt;
 
     // data-ref annotations are not supported in gl2d yet
 
     attrDef[refAttr] = {
         valType: 'enumerated',
-        values: axlist.concat(['paper']),
-        dflt: dflt || axlist[0] || 'paper'
+        values: axlist.concat(extraOption ? [extraOption] : []),
+        dflt: dflt
     };
 
     // xref, yref
     return Lib.coerce(containerIn, containerOut, attrDef, refAttr);
 };
 
-// todo: duplicated per github PR 610. Should be consolidated with axes.coerceRef.
-// find the list of possible axes to reference with an axref or ayref attribute
-// and coerce it to that list
-axes.coerceARef = function(containerIn, containerOut, gd, axLetter, dflt) {
-    var axlist = gd._fullLayout._has('gl2d') ? [] : axes.listIds(gd, axLetter),
-        refAttr = 'a' + axLetter + 'ref',
-        attrDef = {};
+/*
+ * coerce position attributes (range-type) that can be either on axes or absolute
+ * (paper or pixel) referenced. The biggest complication here is that we don't know
+ * before looking at the axis whether the value must be a number or not (it may be
+ * a date string), so we can't use the regular valType='number' machinery
+ *
+ * axRef (string): the axis this position is referenced to, or:
+ *     paper: fraction of the plot area
+ *     pixel: pixels relative to some starting position
+ * attr (string): the attribute in containerOut we are coercing
+ * dflt (number): the default position, as a fraction or pixels. If the attribute
+ *     is to be axis-referenced, this will be converted to an axis data value
+ *
+ * Also cleans the values, since the attribute definition itself has to say
+ * valType: 'any' to handle date axes. This allows us to accept:
+ * - for category axes: category names, and convert them here into serial numbers
+ * - for date axes: JS Dates or milliseconds, and convert to date strings
+ * - for other types: coerce them to numbers
+ */
+axes.coercePosition = function(containerOut, td, coerce, axRef, attr, dflt) {
+    var pos,
+        newPos;
 
-    // data-ref annotations are not supported in gl2d yet
+    if(axRef === 'paper' || axRef === 'pixel') {
+        pos = coerce(attr, dflt);
+    }
+    else {
+        var ax = axes.getFromId(td, axRef);
 
-    attrDef[refAttr] = {
-        valType: 'enumerated',
-        values: axlist.concat(['pixel']),
-        dflt: dflt || 'pixel' || axlist[0]
-    };
+        dflt = ax.fraction2r(dflt);
+        pos = coerce(attr, dflt);
 
-    // axref, ayref
-    return Lib.coerce(containerIn, containerOut, attrDef, refAttr);
+        if(ax.type === 'category') {
+            // if position is given as a category name, convert it to a number
+            if(typeof pos === 'string' && (ax._categories || []).length) {
+                newPos = ax._categories.indexOf(pos);
+                containerOut[attr] = (newPos !== -1) ? dflt : newPos;
+                return;
+            }
+        }
+        else if(ax.type === 'date') {
+            containerOut[attr] = Lib.cleanDate(pos);
+            return;
+        }
+    }
+    // finally make sure we have a number (unless date type already returned a string)
+    containerOut[attr] = isNumeric(pos) ? Number(pos) : dflt;
 };
 
 // empty out types for all axes containing these traces
@@ -106,8 +148,8 @@ axes.minDtick = function(ax, newDiff, newFirst, allow) {
     if(['log', 'category'].indexOf(ax.type) !== -1 || !allow) {
         ax._minDtick = 0;
     }
-    // null means there's nothing there yet
-    else if(ax._minDtick === null) {
+    // undefined means there's nothing there yet
+    else if(ax._minDtick === undefined) {
         ax._minDtick = newDiff;
         ax._forceTick0 = newFirst;
     }
@@ -704,7 +746,9 @@ axes.autoTicks = function(ax, roughDTick) {
             // days if roughDTick > 12h
             ax.dtick = roundDTick(roughDTick, 86400000, roundDays);
             // get week ticks on sunday
-            ax.tick0 = '2000-01-01';
+            // this will also move the base tick off 2000-01-01 if dtick is
+            // 2 or 3 days... but that's a weird enough case that we'll ignore it.
+            ax.tick0 = '2000-01-02';
         }
         else if(roughDTick > 1800000) {
             // hours if roughDTick > 30m

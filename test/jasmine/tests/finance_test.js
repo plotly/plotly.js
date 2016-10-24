@@ -323,10 +323,6 @@ describe('finance charts calc transforms:', function() {
         return gd.calcdata.map(calcDatatoTrace);
     }
 
-    function ms2DateTime(v) {
-        return typeof v === 'number' ? Lib.ms2DateTime(v) : null;
-    }
-
     it('should fill when *x* is not present', function() {
         var trace0 = Lib.extendDeep({}, mock0, {
             type: 'ohlc',
@@ -442,7 +438,7 @@ describe('finance charts calc transforms:', function() {
 
         expect(out.length).toEqual(4);
 
-        expect(out[0].x.map(ms2DateTime)).toEqual([
+        expect(out[0].x).toEqual([
             '2016-08-31 22:48', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01 01:12', null,
             '2016-09-05 22:48', '2016-09-06', '2016-09-06', '2016-09-06', '2016-09-06', '2016-09-06 01:12', null,
             '2016-09-09 22:48', '2016-09-10', '2016-09-10', '2016-09-10', '2016-09-10', '2016-09-10 01:12', null
@@ -452,7 +448,7 @@ describe('finance charts calc transforms:', function() {
             33.05, 33.05, 33.25, 32.75, 33.1, 33.1, null,
             33.5, 33.5, 34.62, 32.87, 33.7, 33.7, null
         ]);
-        expect(out[1].x.map(ms2DateTime)).toEqual([
+        expect(out[1].x).toEqual([
             '2016-09-01 22:48', '2016-09-02', '2016-09-02', '2016-09-02', '2016-09-02', '2016-09-02 01:12', null,
             '2016-09-02 22:48', '2016-09-03', '2016-09-03', '2016-09-03', '2016-09-03', '2016-09-03 01:12', null,
             '2016-09-04 22:48', '2016-09-05', '2016-09-05', '2016-09-05', '2016-09-05', '2016-09-05 01:12', null,
@@ -493,15 +489,15 @@ describe('finance charts calc transforms:', function() {
         var out = _calc([trace0]);
 
         expect(out[0].name).toEqual('trace 0 - increasing');
-        expect(out[0].x.map(ms2DateTime)).toEqual([
-            '2016-08-31 22:48', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01 01:12', null,
+        expect(out[0].x).toEqual([
+            '2016-08-31 22:48', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01 01:12', null
         ]);
         expect(out[0].y).toEqual([
             33.01, 33.01, 34.2, 31.7, 34.1, 34.1, null,
         ]);
 
         expect(out[1].name).toEqual('trace 0 - decreasing');
-        expect(out[1].x.map(ms2DateTime)).toEqual([
+        expect(out[1].x).toEqual([
             '2016-09-01 22:48', '2016-09-02', '2016-09-02', '2016-09-02', '2016-09-02', '2016-09-02 01:12', null,
             '2016-09-02 22:48', '2016-09-03', '2016-09-03', '2016-09-03', '2016-09-03', '2016-09-03 01:12', null
         ]);
@@ -511,15 +507,15 @@ describe('finance charts calc transforms:', function() {
         ]);
 
         expect(out[2].name).toEqual('trace 0 - increasing');
-        expect(out[2].x.map(ms2DateTime)).toEqual([
-            '2016-09-03 23:59:59.999', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04', null
+        expect(out[2].x).toEqual([
+            '2016-09-03 23:59:59.9999', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04 00:00:00.0001', null
         ]);
         expect(out[2].y).toEqual([
             32.06, 32.06, 34.25, 31.62, 33.18, 33.18, null
         ]);
 
         expect(out[3].name).toEqual('trace 0 - decreasing');
-        expect(out[3].x.map(ms2DateTime)).toEqual([]);
+        expect(out[3].x).toEqual([]);
         expect(out[3].y).toEqual([]);
     });
 

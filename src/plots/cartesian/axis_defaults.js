@@ -23,9 +23,7 @@ var handleTickLabelDefaults = require('./tick_label_defaults');
 var handleCategoryOrderDefaults = require('./category_order_defaults');
 var setConvert = require('./set_convert');
 var orderedCategories = require('./ordered_categories');
-var cleanDatum = require('./clean_datum');
 var axisIds = require('./axis_ids');
-var constants = require('./constants');
 
 
 /**
@@ -91,23 +89,15 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     var validRange = (
         (containerIn.range || []).length === 2 &&
-        isNumeric(containerIn.range[0]) &&
-        isNumeric(containerIn.range[1])
+        isNumeric(containerOut.r2l(containerIn.range[0])) &&
+        isNumeric(containerOut.r2l(containerIn.range[1]))
     );
     var autoRange = coerce('autorange', !validRange);
 
     if(autoRange) coerce('rangemode');
 
-    var dfltRange;
-    if(axType === 'date') dfltRange = constants.DFLTRANGEDATE;
-    else if(letter === 'x') dfltRange = constants.DFLTRANGEX;
-    else dfltRange = constants.DFLTRANGEY;
-
-    var range = coerce('range', dfltRange.slice());
-    if(range[0] === range[1]) {
-        containerOut.range = [range[0] - 1, range[0] + 1];
-    }
-    Lib.noneOrAll(containerIn.range, containerOut.range, [0, 1]);
+    coerce('range');
+    containerOut.cleanRange();
 
     coerce('fixedrange');
 
@@ -279,8 +269,8 @@ function category(a) {
         ai;
 
     for(var i = 0; i < a.length; i += inc) {
-        ai = cleanDatum(a[Math.round(i)]);
-        if(isNumeric(ai)) curvenums++;
+        ai = a[Math.round(i)];
+        if(Lib.cleanNumber(ai) !== Lib.BADNUM) curvenums++;
         else if(typeof ai === 'string' && ai !== '' && ai !== 'None') curvecats++;
     }
 
