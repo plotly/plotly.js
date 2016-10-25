@@ -449,7 +449,7 @@ describe('mapbox plots', function() {
 
             var divStyle = mapInfo.div.style;
             ['left', 'top', 'width', 'height'].forEach(function(p, i) {
-                expect(parseFloat(divStyle[p])).toBeWithin(dims[i], 5);
+                expect(parseFloat(divStyle[p])).toBeWithin(dims[i], 8);
             });
         }
 
