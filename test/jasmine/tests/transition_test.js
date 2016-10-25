@@ -127,6 +127,48 @@ function runTests(transitionDuration) {
             }).catch(fail).then(done);
         });
 
+        it('transitions a shape', function(done) {
+            function getPath() {
+                return gd._fullLayout._shapeUpperLayer.select('path').node();
+            }
+            var p1, p2, d1, d2;
+
+            Plotly.relayout(gd, {
+                shapes: [{
+                    type: 'circle',
+                    xref: 'x',
+                    yref: 'y',
+                    x0: 0,
+                    y0: 0,
+                    x1: 2,
+                    y1: 2,
+                    opacity: 0.2,
+                    fillcolor: 'blue',
+                    line: {color: 'blue'}
+                }]
+            }).then(function() {
+                p1 = getPath();
+                d1 = p1.getAttribute('d');
+
+                return Plots.transition(gd, null, {
+                    'shapes[0].x0': 1,
+                    'shapes[0].y0': 1,
+                }, [],
+                    {redraw: true, duration: transitionDuration},
+                    {duration: transitionDuration, easing: 'cubic-in-out'}
+                );
+            }).then(function() {
+                p2 = getPath();
+                d2 = p2.getAttribute('d');
+
+                // If object constancy is implemented, this will then be *equal*:
+                expect(p1).not.toBe(p2);
+
+                expect(d1).not.toEqual(d2);
+            }).catch(fail).then(done);
+        });
+
+
         it('transitions a transform', function(done) {
             Plotly.restyle(gd, {
                 'transforms[0]': {
