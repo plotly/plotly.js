@@ -93,8 +93,8 @@ function runTests(transitionDuration) {
         });
 
         it('transitions an image', function(done) {
-            var whitepx = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-            var blackpx = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=';
+            var jsLogo = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
+            var pythonLogo = 'https://images.plot.ly/language-icons/api-home/python-logo.png';
 
             function imageel() {
                 return gd._fullLayout._imageUpperLayer.select('image').node();
@@ -104,12 +104,12 @@ function runTests(transitionDuration) {
             }
             var p1, p2, e1, e2;
 
-            Plotly.relayout(gd, {images: [{x: 0, y: 0, source: whitepx}]}).then(function() {
+            Plotly.relayout(gd, {images: [{x: 0, y: 0, source: jsLogo}]}).then(function() {
                 p1 = imagesrc();
                 e1 = imageel();
 
                 return Plots.transition(gd, null, {
-                    'images[0].source': blackpx,
+                    'images[0].source': pythonLogo,
                 }, [],
                     {redraw: true, duration: transitionDuration},
                     {duration: transitionDuration, easing: 'cubic-in-out'}
