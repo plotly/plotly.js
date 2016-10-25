@@ -1,3 +1,4 @@
+var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
@@ -6,6 +7,8 @@ var Axes = PlotlyInternal.Axes;
 
 var Bar = require('@src/traces/bar');
 
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customMatchers = require('../assets/custom_matchers');
 
 describe('bar supplyDefaults', function() {
@@ -599,6 +602,80 @@ describe('Bar.setPositions', function() {
         expect(Axes.getAutoRange(ya)).toBeCloseToArray([-1.11, 1.11], undefined, '(ya.range)');
     });
 });
+
+describe('A bar plot', function() {
+    'use strict';
+
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should be able to restyle', function(done) {
+        var gd = createGraphDiv(),
+            mock = Lib.extendDeep({}, require('@mocks/bar_attrs_relative'));
+
+        Plotly.plot(gd, mock.data, mock.layout).then(function() {
+            var cd = gd.calcdata;
+            assertPointField(cd, 'x', [
+                [1, 2, 3, 4], [1, 2, 3, 4],
+                [1, 2, 3, 4], [1, 2, 3, 4]]);
+            assertPointField(cd, 'y', [
+                [1, 2, 3, 4], [4, 4, 4, 4],
+                [-1, -3, -2, -4], [4, -4, -5, -6]]);
+            assertPointField(cd, 'b', [
+                [0, 0, 0, 0], [1, 2, 3, 4],
+                [0, 0, 0, 0], [4, -3, -2, -4]]);
+            assertPointField(cd, 's', [
+                [1, 2, 3, 4], [3, 2, 1, 0],
+                [-1, -3, -2, -4], [0, -1, -3, -2]]);
+            assertPointField(cd, 'p', [
+                [1, 2, 3, 4], [1, 2, 3, 4],
+                [1, 2, 3, 4], [1, 2, 3, 4]]);
+            assertArrayField(cd[0][0], 't.barwidth', [1, 0.8, 0.6, 0.4]);
+            assertArrayField(cd[1][0], 't.barwidth', [0.4, 0.6, 0.8, 1]);
+            expect(cd[2][0].t.barwidth).toBe(1);
+            expect(cd[3][0].t.barwidth).toBe(0.8);
+            assertArrayField(cd[0][0], 't.poffset', [-0.5, -0.4, -0.3, -0.2]);
+            assertArrayField(cd[1][0], 't.poffset', [-0.2, -0.3, -0.4, -0.5]);
+            expect(cd[2][0].t.poffset).toBe(-0.5);
+            expect(cd[3][0].t.poffset).toBe(-0.4);
+            assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8, 0.8, 0.8]);
+
+            return Plotly.restyle(gd, 'offset', 0);
+        }).then(function() {
+            var cd = gd.calcdata;
+            assertPointField(cd, 'x', [
+                [1.5, 2.4, 3.3, 4.2], [1.2, 2.3, 3.4, 4.5],
+                [1.5, 2.5, 3.5, 4.5], [1.4, 2.4, 3.4, 4.4]]);
+            assertPointField(cd, 'y', [
+                [1, 2, 3, 4], [4, 4, 4, 4],
+                [-1, -3, -2, -4], [4, -4, -5, -6]]);
+            assertPointField(cd, 'b', [
+                [0, 0, 0, 0], [1, 2, 3, 4],
+                [0, 0, 0, 0], [4, -3, -2, -4]]);
+            assertPointField(cd, 's', [
+                [1, 2, 3, 4], [3, 2, 1, 0],
+                [-1, -3, -2, -4], [0, -1, -3, -2]]);
+            assertPointField(cd, 'p', [
+                [1, 2, 3, 4], [1, 2, 3, 4],
+                [1, 2, 3, 4], [1, 2, 3, 4]]);
+            assertArrayField(cd[0][0], 't.barwidth', [1, 0.8, 0.6, 0.4]);
+            assertArrayField(cd[1][0], 't.barwidth', [0.4, 0.6, 0.8, 1]);
+            expect(cd[2][0].t.barwidth).toBe(1);
+            expect(cd[3][0].t.barwidth).toBe(0.8);
+            expect(cd[0][0].t.poffset).toBe(0);
+            expect(cd[1][0].t.poffset).toBe(0);
+            expect(cd[2][0].t.poffset).toBe(0);
+            expect(cd[3][0].t.poffset).toBe(0);
+            assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8, 0.8, 0.8]);
+
+            done();
+        });
+    });
+});
+
 
 function mockBarPlot(dataWithoutTraceType, layout) {
     var traceTemplate = { type: 'bar' };
