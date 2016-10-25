@@ -90,7 +90,41 @@ function runTests(transitionDuration) {
                 expect(p1[1]).not.toEqual(p2[1]);
 
             }).catch(fail).then(done);
+        });
 
+        it('transitions an image', function(done) {
+            var whitepx = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+            var blackpx = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=';
+
+            function imageel() {
+                return gd._fullLayout._imageUpperLayer.select('image').node();
+            }
+            function imagesrc() {
+                return imageel().getAttribute('href');
+            }
+            var p1, p2, e1, e2;
+
+            Plotly.relayout(gd, {images: [{x: 0, y: 0, source: whitepx}]}).then(function() {
+                p1 = imagesrc();
+                e1 = imageel();
+
+                return Plots.transition(gd, null, {
+                    'images[0].source': blackpx,
+                }, [],
+                    {redraw: true, duration: transitionDuration},
+                    {duration: transitionDuration, easing: 'cubic-in-out'}
+                );
+            }).then(function() {
+                p2 = imagesrc();
+                e2 = imageel();
+
+                // Test that the image src has changed:
+                expect(p1).not.toEqual(p2);
+
+                // Test that the image element identity has not:
+                expect(e1).toBe(e2);
+
+            }).catch(fail).then(done);
         });
 
         it('transitions a transform', function(done) {
