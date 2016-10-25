@@ -65,6 +65,34 @@ function runTests(transitionDuration) {
                 }).catch(fail).then(done);
         });
 
+        it('transitions an annotation', function(done) {
+            function annotationPosition() {
+                var g = gd._fullLayout._infolayer.select('.annotation').select('.annotation-text-g');
+                return [parseInt(g.attr('x')), parseInt(g.attr('y'))];
+            }
+            var p1, p2;
+
+            Plotly.relayout(gd, {annotations: [{x: 0, y: 0, text: 'test'}]}).then(function() {
+                p1 = annotationPosition();
+
+                return Plots.transition(gd, null, {
+                    'annotations[0].x': 1,
+                    'annotations[0].y': 1
+                }, [],
+                    {redraw: true, duration: transitionDuration},
+                    {duration: transitionDuration, easing: 'cubic-in-out'}
+                );
+            }).then(function() {
+                p2 = annotationPosition();
+
+                // Ensure both coordinates have moved, i.e. that the annotation has transitioned:
+                expect(p1[0]).not.toEqual(p2[0]);
+                expect(p1[1]).not.toEqual(p2[1]);
+
+            }).catch(fail).then(done);
+
+        });
+
         it('transitions a transform', function(done) {
             Plotly.restyle(gd, {
                 'transforms[0]': {
