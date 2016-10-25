@@ -38,6 +38,12 @@ var transformsRegistry = plots.transformsRegistry;
 
 var ErrorBars = require('../components/errorbars');
 
+var commandModule = require('./command');
+plots.executeAPICommand = commandModule.executeAPICommand;
+plots.computeAPICommandBindings = commandModule.computeAPICommandBindings;
+plots.manageCommandObserver = commandModule.manageCommandObserver;
+plots.hasSimpleAPICommandBindings = commandModule.hasSimpleAPICommandBindings;
+
 /**
  * Find subplot ids in data.
  * Meant to be used in the defaults step.
