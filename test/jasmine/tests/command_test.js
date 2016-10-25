@@ -555,7 +555,7 @@ describe('attaching component bindings', function() {
             expect(typeof gd._internalEv._events.plotly_animatingframe).toBe('function');
 
             // Confirm the first position is selected:
-            expect(gd.layout.sliders[0].active).toBe(0);
+            expect(gd.layout.sliders[0].active).toBeUndefined();
 
             // Modify the plot
             return Plotly.restyle(gd, {'marker.color': 'blue'});
@@ -608,7 +608,7 @@ describe('attaching component bindings', function() {
             expect(typeof gd._internalEv._events.plotly_animatingframe).toBe('function');
 
             // Confirm the first position is selected:
-            expect(gd.layout.updatemenus[0].active).toBe(0);
+            expect(gd.layout.updatemenus[0].active).toBeUndefined();
 
             // Modify the plot
             return Plotly.restyle(gd, {'marker.color': 'blue'});

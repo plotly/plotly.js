@@ -225,6 +225,33 @@ describe('update menus buttons', function() {
     }
 });
 
+describe('update menus initialization', function() {
+    'use strict';
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+
+        Plotly.plot(gd, [{x: [1, 2, 3]}], {
+            updatemenus: [{
+                buttons: [
+                    {method: 'restyle', args: [], label: 'first'},
+                    {method: 'restyle', args: [], label: 'second'},
+                ]
+            }]
+        }).then(done);
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('does not set active on initial plot', function() {
+        expect(gd.layout.updatemenus[0].active).toBeUndefined();
+    });
+});
+
 describe('update menus interactions', function() {
     'use strict';
 

@@ -33,8 +33,6 @@ module.exports = function updateMenusDefaults(layoutIn, layoutOut) {
         // used to determine object constancy
         menuOut._index = i;
 
-        menuOut._input.active = menuOut.active;
-
         contOut.push(menuOut);
     }
 };
