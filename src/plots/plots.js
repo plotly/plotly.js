@@ -1567,7 +1567,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
             });
 
             if(frameOpts.redraw) {
-                gd._transitionData._interruptCallbacks.push(function () {
+                gd._transitionData._interruptCallbacks.push(function() {
                     return Plotly.redraw(gd);
                 });
             }
