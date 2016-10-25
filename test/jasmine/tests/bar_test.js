@@ -330,7 +330,7 @@ describe('Bar.setPositions', function() {
         var cd = gd.calcdata;
         assertPointField(cd, 'b', [[0, 0, 0], [0, 0, 0], [0, 0, 0]]);
         assertPointField(cd, 's', [[1, 2, 3], [10, 20, 30], [-1, -2, -3]]);
-        assertPointField(cd, 'x', [[-0.25, 0.75, 1.75], [0.25, 1.25, 2.25], [0, 1, 2]]);
+        assertPointField(cd, 'x', [[-0.25, 0.75, 1.75], [0.25, 1.25, 2.25], [-0.5, 0.5, 1.5]]);
         assertPointField(cd, 'y', [[1, 2, 3], [10, 20, 30], [-1, -2, -3]]);
     });
 
@@ -407,7 +407,7 @@ describe('Bar.setPositions', function() {
         var cd = gd.calcdata;
         assertPointField(cd, 'b', [[0, 0, 0]]);
         assertPointField(cd, 's', [[100, 100, 100]]);
-        assertPointField(cd, 'x', [[0, 1, 2]]);
+        assertPointField(cd, 'x', [[0.5, 1.5, 2.5]]);
         assertPointField(cd, 'y', [[100, 100, 100]]);
     });
 
@@ -426,7 +426,7 @@ describe('Bar.setPositions', function() {
         var cd = gd.calcdata;
         assertPointField(cd, 'b', [[0, 0, 0]]);
         assertPointField(cd, 's', [[100, 100, 100]]);
-        assertPointField(cd, 'x', [[0, 1, 2]]);
+        assertPointField(cd, 'x', [[0.5, 1.5, 2.5]]);
         assertPointField(cd, 'y', [[100, 100, 100]]);
     });
 
