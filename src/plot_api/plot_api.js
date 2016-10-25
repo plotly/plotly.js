@@ -1267,6 +1267,7 @@ function _restyle(gd, aobj, _traces) {
         'x', 'y', 'z',
         'a', 'b', 'c',
         'open', 'high', 'low', 'close',
+        'base', 'width', 'offset',
         'xtype', 'x0', 'dx', 'ytype', 'y0', 'dy', 'xaxis', 'yaxis',
         'line.width',
         'connectgaps', 'transpose', 'zsmooth',

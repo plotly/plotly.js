@@ -48,6 +48,44 @@ module.exports = {
         ].join(' ')
     },
 
+    base: {
+        valType: 'any',
+        dflt: null,
+        arrayOk: true,
+        role: 'info',
+        description: [
+            'Sets where the bar base is drawn (in position axis units).',
+            'In *stack* or *relative* barmode,',
+            'traces that set *base* will be excluded',
+            'and drawn in *overlay* mode instead.'
+        ].join(' ')
+    },
+
+    offset: {
+        valType: 'number',
+        dflt: null,
+        arrayOk: true,
+        role: 'info',
+        description: [
+            'Shifts the position where the bar is drawn',
+            '(in position axis units).',
+            'In *group* barmode,',
+            'traces that set *offset* will be excluded',
+            'and drawn in *overlay* mode instead.'
+        ].join(' ')
+    },
+
+    width: {
+        valType: 'number',
+        dflt: null,
+        min: 0,
+        arrayOk: true,
+        role: 'info',
+        description: [
+            'Sets the bar width (in position axis units).'
+        ].join(' ')
+    },
+
     marker: marker,
 
     r: scatterAttrs.r,

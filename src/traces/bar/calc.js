@@ -25,13 +25,15 @@ module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
         ya = Axes.getFromId(gd, trace.yaxis || 'y'),
         orientation = trace.orientation || ((trace.x && !trace.y) ? 'h' : 'v'),
-        pos, size, i;
+        sa, pos, size, i;
 
     if(orientation === 'h') {
+        sa = xa;
         size = xa.makeCalcdata(trace, 'x');
         pos = ya.makeCalcdata(trace, 'y');
     }
     else {
+        sa = ya;
         size = ya.makeCalcdata(trace, 'y');
         pos = xa.makeCalcdata(trace, 'x');
     }
@@ -40,6 +42,7 @@ module.exports = function calc(gd, trace) {
     var serieslen = Math.min(pos.length, size.length),
         cd = [];
 
+    // set position
     for(i = 0; i < serieslen; i++) {
 
         // add bars with non-numeric sizes to calcdata
@@ -47,7 +50,35 @@ module.exports = function calc(gd, trace) {
         // plotted in the correct order
 
         if(isNumeric(pos[i])) {
-            cd.push({p: pos[i], s: size[i], b: 0});
+            cd.push({p: pos[i]});
+        }
+    }
+
+    // set base
+    var base = trace.base,
+        b;
+
+    if(Array.isArray(base)) {
+        for(i = 0; i < Math.min(base.length, cd.length); i++) {
+            b = sa.d2c(base[i]);
+            cd[i].b = (isNumeric(b)) ? b : 0;
+        }
+        for(; i < cd.length; i++) {
+            cd[i].b = 0;
+        }
+    }
+    else {
+        b = sa.d2c(base);
+        b = (isNumeric(b)) ? b : 0;
+        for(i = 0; i < cd.length; i++) {
+            cd[i].b = b;
+        }
+    }
+
+    // set size
+    for(i = 0; i < cd.length; i++) {
+        if(isNumeric(size[i])) {
+            cd[i].s = size[i];
         }
     }
 

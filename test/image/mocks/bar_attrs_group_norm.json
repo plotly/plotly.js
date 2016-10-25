@@ -1,0 +1,19 @@
+{
+    "data":[
+        {
+            "base":4,
+            "x":[3,2,1,0],
+            "type":"bar"
+        }, {
+            "base":[7,6,5,4],
+            "x":[1,2,3,4],
+            "type":"bar"
+        }
+    ],
+    "layout":{
+        "height":400,
+        "width":400,
+        "barmode":"group",
+        "barnorm":"percent"
+    }
+}
