@@ -184,13 +184,11 @@ function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces) {
 
 function setOffsetAndWidth(gd, pa, sieve) {
     var fullLayout = gd._fullLayout,
-        pLetter = getAxisLetter(pa),
         bargap = fullLayout.bargap,
         bargroupgap = fullLayout.bargroupgap,
         minDiff = sieve.minDiff,
         calcTraces = sieve.traces,
         i, calcTrace, calcTrace0,
-        j, calcBar,
         t;
 
     // set bar offsets and widths
@@ -199,8 +197,7 @@ function setOffsetAndWidth(gd, pa, sieve) {
         barWidth = barWidthPlusGap * (1 - bargroupgap);
 
     // computer bar group center and bar offset
-    var offsetFromCenter = -barWidth / 2,
-        barCenter = 0;
+    var offsetFromCenter = -barWidth / 2;
 
     for(i = 0; i < calcTraces.length; i++) {
         calcTrace = calcTraces[i];
@@ -211,12 +208,6 @@ function setOffsetAndWidth(gd, pa, sieve) {
         t.barwidth = barWidth;
         t.poffset = offsetFromCenter;
         t.bargroupwidth = barGroupWidth;
-
-        // store the bar center in each calcdata item
-        for(j = 0; j < calcTrace.length; j++) {
-            calcBar = calcTrace[j];
-            calcBar[pLetter] = calcBar.p + barCenter;
-        }
     }
 
     // stack bars that only differ by rounding
@@ -225,6 +216,9 @@ function setOffsetAndWidth(gd, pa, sieve) {
     // if defined, apply trace offset and width
     applyAttributes(sieve);
 
+    // store the bar center in each calcdata item
+    setBarCenter(gd, pa, sieve);
+
     // update position axes
     updatePositionAxis(gd, pa, sieve);
 }
@@ -232,7 +226,6 @@ function setOffsetAndWidth(gd, pa, sieve) {
 
 function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
     var fullLayout = gd._fullLayout,
-        pLetter = getAxisLetter(pa),
         bargap = fullLayout.bargap,
         bargroupgap = fullLayout.bargroupgap,
         positions = sieve.positions,
@@ -240,7 +233,6 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
         minDiff = sieve.minDiff,
         calcTraces = sieve.traces,
         i, calcTrace, calcTrace0,
-        j, calcBar,
         t;
 
     // if there aren't any overlapping positions,
@@ -259,20 +251,13 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
         // computer bar group center and bar offset
         var offsetFromCenter = (overlap) ?
                 ((2 * i + 1 - nTraces) * barWidthPlusGap - barWidth) / 2 :
-                -barWidth / 2,
-            barCenter = offsetFromCenter + barWidth / 2;
+                -barWidth / 2;
 
         // store bar width and offset for this trace
         t = calcTrace0.t;
         t.barwidth = barWidth;
         t.poffset = offsetFromCenter;
         t.bargroupwidth = barGroupWidth;
-
-        // store the bar center in each calcdata item
-        for(j = 0; j < calcTrace.length; j++) {
-            calcBar = calcTrace[j];
-            calcBar[pLetter] = calcBar.p + barCenter;
-        }
     }
 
     // stack bars that only differ by rounding
@@ -280,6 +265,9 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
 
     // if defined, apply trace width
     applyAttributes(sieve);
+
+    // store the bar center in each calcdata item
+    setBarCenter(gd, pa, sieve);
 
     // update position axes
     updatePositionAxis(gd, pa, sieve, overlap);
@@ -365,6 +353,29 @@ function applyAttributes(sieve) {
             if(offset === undefined) {
                 t.poffset = initialPoffset + (initialBarwidth - width) / 2;
             }
+        }
+    }
+}
+
+
+function setBarCenter(gd, pa, sieve) {
+    var calcTraces = sieve.traces,
+        pLetter = getAxisLetter(pa);
+
+    for(var i = 0; i < calcTraces.length; i++) {
+        var calcTrace = calcTraces[i],
+            t = calcTrace[0].t,
+            poffset = t.poffset,
+            poffsetIsArray = Array.isArray(poffset),
+            barwidth = t.barwidth,
+            barwidthIsArray = Array.isArray(barwidth);
+
+        for(var j = 0; j < calcTrace.length; j++) {
+            var calcBar = calcTrace[j];
+
+            calcBar[pLetter] = calcBar.p +
+                ((poffsetIsArray) ? poffset[j] : poffset) +
+                ((barwidthIsArray) ? barwidth[j] : barwidth) / 2;
         }
     }
 }
