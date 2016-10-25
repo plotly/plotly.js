@@ -71,7 +71,7 @@ module.exports = function draw(gd) {
 
         computeLabelSteps(sliderOpts);
 
-        Plots.createCommandObserver(gd, sliderOpts, sliderOpts.steps, function(data) {
+        Plots.manageCommandObserver(gd, sliderOpts, sliderOpts.steps, function(data) {
             if(sliderOpts.active === data.index) return;
             if(sliderOpts._dragging) return;
 

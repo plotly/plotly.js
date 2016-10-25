@@ -28,7 +28,7 @@ var Lib = require('../lib');
  *      A listener called when the value is changed. Receives data object
  *      with information about the new state.
  */
-exports.createCommandObserver = function(gd, container, commandList, onchange) {
+exports.manageCommandObserver = function(gd, container, commandList, onchange) {
     var ret = {};
     var enabled = true;
 

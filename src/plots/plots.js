@@ -41,7 +41,7 @@ var ErrorBars = require('../components/errorbars');
 var commandModule = require('./command');
 plots.executeAPICommand = commandModule.executeAPICommand;
 plots.computeAPICommandBindings = commandModule.computeAPICommandBindings;
-plots.createCommandObserver = commandModule.createCommandObserver;
+plots.manageCommandObserver = commandModule.manageCommandObserver;
 plots.hasSimpleAPICommandBindings = commandModule.hasSimpleAPICommandBindings;
 
 /**

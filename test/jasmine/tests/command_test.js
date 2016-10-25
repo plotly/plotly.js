@@ -466,7 +466,7 @@ describe('component bindings', function() {
 
     it('creates an observer', function(done) {
         var count = 0;
-        Plots.createCommandObserver(gd, {}, [
+        Plots.manageCommandObserver(gd, {}, [
             { method: 'restyle', args: ['marker.color', 'red'] },
             { method: 'restyle', args: ['marker.color', 'green'] }
         ], function(data) {
@@ -492,7 +492,7 @@ describe('component bindings', function() {
             warnings++;
         });
 
-        Plots.createCommandObserver(gd, {}, [
+        Plots.manageCommandObserver(gd, {}, [
             { method: 'restyle', args: ['marker.color', 'red'] },
             { method: 'restyle', args: [{'line.color': 'green', 'marker.color': 'green'}] }
         ]);

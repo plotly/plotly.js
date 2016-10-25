@@ -114,7 +114,7 @@ module.exports = function draw(gd) {
         var gHeader = d3.select(this);
 
         var _gButton = menuOpts.type === 'dropdown' ? gButton : null;
-        Plots.createCommandObserver(gd, menuOpts, menuOpts.buttons, function(data) {
+        Plots.manageCommandObserver(gd, menuOpts, menuOpts.buttons, function(data) {
             setActive(gd, menuOpts, menuOpts.buttons[data.index], gHeader, _gButton, data.index, true);
         });
 
