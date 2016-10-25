@@ -131,7 +131,7 @@ function runTests(transitionDuration) {
             function getPath() {
                 return gd._fullLayout._shapeUpperLayer.select('path').node();
             }
-            var p1, p2, d1, d2;
+            var p1, p2, p3, d1, d2, d3, s1, s2, s3;
 
             Plotly.relayout(gd, {
                 shapes: [{
@@ -149,6 +149,7 @@ function runTests(transitionDuration) {
             }).then(function() {
                 p1 = getPath();
                 d1 = p1.getAttribute('d');
+                s1 = p1.getAttribute('style');
 
                 return Plots.transition(gd, null, {
                     'shapes[0].x0': 1,
@@ -160,11 +161,26 @@ function runTests(transitionDuration) {
             }).then(function() {
                 p2 = getPath();
                 d2 = p2.getAttribute('d');
+                s2 = p2.getAttribute('style');
 
                 // If object constancy is implemented, this will then be *equal*:
                 expect(p1).not.toBe(p2);
-
                 expect(d1).not.toEqual(d2);
+                expect(s1).toEqual(s2);
+
+                return Plots.transition(gd, null, {
+                    'shapes[0].color': 'red'
+                }, [],
+                    {redraw: true, duration: transitionDuration},
+                    {duration: transitionDuration, easing: 'cubic-in-out'}
+                );
+            }).then(function() {
+                p3 = getPath();
+                d3 = p3.getAttribute('d');
+                s3 = p3.getAttribute('d');
+
+                expect(d3).toEqual(d2);
+                expect(s3).not.toEqual(s2);
             }).catch(fail).then(done);
         });
 
