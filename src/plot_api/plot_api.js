@@ -1414,9 +1414,6 @@ function _restyle(gd, aobj, _traces) {
             continue;
         }
 
-        // take no chances on transforms
-        if(ai.substr(0, 10) === 'transforms') flags.docalc = true;
-
         // set attribute in gd.data
         undoit[ai] = a0();
         for(i = 0; i < traces.length; i++) {
@@ -1555,6 +1552,10 @@ function _restyle(gd, aobj, _traces) {
                         {v: 'h', h: 'v'}[contFull.orientation];
                 }
                 helpers.swapXYData(cont);
+            }
+            else if(Plots.dataArrayContainers.indexOf(param.parts[0]) !== -1) {
+                helpers.manageArrayContainers(param, newVal, undoit);
+                flags.docalc = true;
             }
             // all the other ones, just modify that one attribute
             else param.set(newVal);
