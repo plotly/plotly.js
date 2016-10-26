@@ -998,6 +998,12 @@ plots.plotAutoSize = function plotAutoSize(gd, layout, fullLayout) {
         if(heightHasChanged) fullLayout.height = newHeight;
     }
 
+    // cache initial autosize value, used in relayout when
+    // width or height values are set to null
+    if(!gd._initialAutoSize) {
+        gd._initialAutoSize = { width: newWidth, height: newHeight };
+    }
+
     plots.sanitizeMargins(fullLayout);
 };
 
@@ -1117,6 +1123,7 @@ plots.purge = function(gd) {
     delete gd._lastHoverTime;
     delete gd._transitionData;
     delete gd._transitioning;
+    delete gd._initialAutoSize;
 
     // remove all event listeners
     if(gd.removeAllListeners) gd.removeAllListeners();
