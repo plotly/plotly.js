@@ -65,23 +65,143 @@ function runTests(transitionDuration) {
                 }).catch(fail).then(done);
         });
 
+        it('transitions an annotation', function(done) {
+            function annotationPosition() {
+                var g = gd._fullLayout._infolayer.select('.annotation').select('.annotation-text-g');
+                return [parseInt(g.attr('x')), parseInt(g.attr('y'))];
+            }
+            var p1, p2;
+
+            Plotly.relayout(gd, {annotations: [{x: 0, y: 0, text: 'test'}]}).then(function() {
+                p1 = annotationPosition();
+
+                return Plots.transition(gd, null, {
+                    'annotations[0].x': 1,
+                    'annotations[0].y': 1
+                }, [],
+                    {redraw: true, duration: transitionDuration},
+                    {duration: transitionDuration, easing: 'cubic-in-out'}
+                );
+            }).then(function() {
+                p2 = annotationPosition();
+
+                // Ensure both coordinates have moved, i.e. that the annotation has transitioned:
+                expect(p1[0]).not.toEqual(p2[0]);
+                expect(p1[1]).not.toEqual(p2[1]);
+
+            }).catch(fail).then(done);
+        });
+
+        it('transitions an image', function(done) {
+            var jsLogo = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
+            var pythonLogo = 'https://images.plot.ly/language-icons/api-home/python-logo.png';
+
+            function imageel() {
+                return gd._fullLayout._imageUpperLayer.select('image').node();
+            }
+            function imagesrc() {
+                return imageel().getAttribute('href');
+            }
+            var p1, p2, e1, e2;
+
+            Plotly.relayout(gd, {images: [{x: 0, y: 0, source: jsLogo}]}).then(function() {
+                p1 = imagesrc();
+                e1 = imageel();
+
+                return Plots.transition(gd, null, {
+                    'images[0].source': pythonLogo,
+                }, [],
+                    {redraw: true, duration: transitionDuration},
+                    {duration: transitionDuration, easing: 'cubic-in-out'}
+                );
+            }).then(function() {
+                p2 = imagesrc();
+                e2 = imageel();
+
+                // Test that the image src has changed:
+                expect(p1).not.toEqual(p2);
+
+                // Test that the image element identity has not:
+                expect(e1).toBe(e2);
+
+            }).catch(fail).then(done);
+        });
+
+        it('transitions a shape', function(done) {
+            function getPath() {
+                return gd._fullLayout._shapeUpperLayer.select('path').node();
+            }
+            var p1, p2, p3, d1, d2, d3, s1, s2, s3;
+
+            Plotly.relayout(gd, {
+                shapes: [{
+                    type: 'circle',
+                    xref: 'x',
+                    yref: 'y',
+                    x0: 0,
+                    y0: 0,
+                    x1: 2,
+                    y1: 2,
+                    opacity: 0.2,
+                    fillcolor: 'blue',
+                    line: {color: 'blue'}
+                }]
+            }).then(function() {
+                p1 = getPath();
+                d1 = p1.getAttribute('d');
+                s1 = p1.getAttribute('style');
+
+                return Plots.transition(gd, null, {
+                    'shapes[0].x0': 1,
+                    'shapes[0].y0': 1,
+                }, [],
+                    {redraw: true, duration: transitionDuration},
+                    {duration: transitionDuration, easing: 'cubic-in-out'}
+                );
+            }).then(function() {
+                p2 = getPath();
+                d2 = p2.getAttribute('d');
+                s2 = p2.getAttribute('style');
+
+                // If object constancy is implemented, this will then be *equal*:
+                expect(p1).not.toBe(p2);
+                expect(d1).not.toEqual(d2);
+                expect(s1).toEqual(s2);
+
+                return Plots.transition(gd, null, {
+                    'shapes[0].color': 'red'
+                }, [],
+                    {redraw: true, duration: transitionDuration},
+                    {duration: transitionDuration, easing: 'cubic-in-out'}
+                );
+            }).then(function() {
+                p3 = getPath();
+                d3 = p3.getAttribute('d');
+                s3 = p3.getAttribute('d');
+
+                expect(d3).toEqual(d2);
+                expect(s3).not.toEqual(s2);
+            }).catch(fail).then(done);
+        });
+
+
         it('transitions a transform', function(done) {
             Plotly.restyle(gd, {
                 'transforms[0]': {
                     enabled: true,
                     type: 'filter',
                     operation: '<',
-                    filtersrc: 'x',
+                    target: 'x',
                     value: 10
                 }
             }, [0]).then(function() {
-                expect(gd._fullData[0].transforms).toEqual([{
+                expect(gd._fullData[0].transforms).toEqual([jasmine.objectContaining({
                     enabled: true,
                     type: 'filter',
                     operation: '<',
-                    filtersrc: 'x',
+                    target: 'x',
                     value: 10
-                }]);
+                })]);
 
                 return Plots.transition(gd, [{
                     'transforms[0].operation': '>'
@@ -90,13 +210,13 @@ function runTests(transitionDuration) {
                     {duration: transitionDuration, easing: 'cubic-in-out'}
                 );
             }).then(function() {
-                expect(gd._fullData[0].transforms).toEqual([{
+                expect(gd._fullData[0].transforms).toEqual([jasmine.objectContaining({
                     enabled: true,
                     type: 'filter',
                     operation: '>',
-                    filtersrc: 'x',
+                    target: 'x',
                     value: 10
-                }]);
+                })]);
             }).catch(fail).then(done);
         });
 

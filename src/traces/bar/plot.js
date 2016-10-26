@@ -34,30 +34,39 @@ module.exports = function plot(gd, plotinfo, cdbar) {
         .attr('class', 'points')
         .each(function(d) {
             var t = d[0].t,
-                trace = d[0].trace;
+                trace = d[0].trace,
+                poffset = t.poffset,
+                poffsetIsArray = Array.isArray(poffset),
+                barwidth = t.barwidth,
+                barwidthIsArray = Array.isArray(barwidth);
 
             arraysToCalcdata(d);
 
             d3.select(this).selectAll('path')
                 .data(Lib.identity)
               .enter().append('path')
-                .each(function(di) {
+                .each(function(di, i) {
                     // now display the bar
                     // clipped xf/yf (2nd arg true): non-positive
                     // log values go off-screen by plotwidth
                     // so you see them continue if you drag the plot
+                    var p0 = di.p + ((poffsetIsArray) ? poffset[i] : poffset),
+                        p1 = p0 + ((barwidthIsArray) ? barwidth[i] : barwidth),
+                        s0 = di.b,
+                        s1 = s0 + di.s;
+
                     var x0, x1, y0, y1;
                     if(trace.orientation === 'h') {
-                        y0 = ya.c2p(t.poffset + di.p, true);
-                        y1 = ya.c2p(t.poffset + di.p + t.barwidth, true);
-                        x0 = xa.c2p(di.b, true);
-                        x1 = xa.c2p(di.s + di.b, true);
+                        y0 = ya.c2p(p0, true);
+                        y1 = ya.c2p(p1, true);
+                        x0 = xa.c2p(s0, true);
+                        x1 = xa.c2p(s1, true);
                     }
                     else {
-                        x0 = xa.c2p(t.poffset + di.p, true);
-                        x1 = xa.c2p(t.poffset + di.p + t.barwidth, true);
-                        y1 = ya.c2p(di.s + di.b, true);
-                        y0 = ya.c2p(di.b, true);
+                        x0 = xa.c2p(p0, true);
+                        x1 = xa.c2p(p1, true);
+                        y0 = ya.c2p(s0, true);
+                        y1 = ya.c2p(s1, true);
                     }
 
                     if(!isNumeric(x0) || !isNumeric(x1) ||

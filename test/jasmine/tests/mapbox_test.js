@@ -448,11 +448,9 @@ describe('mapbox plots', function() {
             expect(mapInfo.zoom).toBeCloseTo(zoom);
 
             var divStyle = mapInfo.div.style;
-            var expectedDims = ['left', 'top', 'width', 'height'].map(function(p) {
-                return parseFloat(divStyle[p]);
+            ['left', 'top', 'width', 'height'].forEach(function(p, i) {
+                expect(parseFloat(divStyle[p])).toBeWithin(dims[i], 5);
             });
-
-            expect(expectedDims).toBeCloseToArray(dims);
         }
 
         assertLayout('Mapbox Dark', [-4.710, 19.475], 1.234, [80, 100, 908, 270]);
@@ -550,18 +548,25 @@ describe('mapbox plots', function() {
         expect(countVisibleLayers(gd)).toEqual(0);
 
         Plotly.relayout(gd, 'mapbox.layers[0]', layer0).then(function() {
+            expect(gd.layout.mapbox.layers.length).toEqual(1);
             expect(countVisibleLayers(gd)).toEqual(1);
 
             return Plotly.relayout(gd, 'mapbox.layers[1]', layer1);
-        }).then(function() {
+        })
+        .then(function() {
+            expect(gd.layout.mapbox.layers.length).toEqual(2);
             expect(countVisibleLayers(gd)).toEqual(2);
 
             return Plotly.relayout(gd, mapUpdate);
-        }).then(function() {
+        })
+        .then(function() {
+            expect(gd.layout.mapbox.layers.length).toEqual(2);
             expect(countVisibleLayers(gd)).toEqual(2);
 
             return Plotly.relayout(gd, styleUpdate0);
-        }).then(function() {
+        })
+        .then(function() {
+            expect(gd.layout.mapbox.layers.length).toEqual(2);
             expect(countVisibleLayers(gd)).toEqual(2);
 
             return assertLayerStyle(gd, {
@@ -569,11 +574,15 @@ describe('mapbox plots', function() {
                 'fill-outline-color': [0, 0, 1, 1],
                 'fill-opacity': 0.3
             }, 0);
-        }).then(function() {
+        })
+        .then(function() {
+            expect(gd.layout.mapbox.layers.length).toEqual(2);
             expect(countVisibleLayers(gd)).toEqual(2);
 
             return Plotly.relayout(gd, styleUpdate1);
-        }).then(function() {
+        })
+        .then(function() {
+            expect(gd.layout.mapbox.layers.length).toEqual(2);
             expect(countVisibleLayers(gd)).toEqual(2);
 
             return assertLayerStyle(gd, {
@@ -581,25 +590,35 @@ describe('mapbox plots', function() {
                 'line-color': [0, 0, 1, 1],
                 'line-opacity': 0.6
             }, 1);
-        }).then(function() {
+        })
+        .then(function() {
+            expect(gd.layout.mapbox.layers.length).toEqual(2);
             expect(countVisibleLayers(gd)).toEqual(2);
 
-            return Plotly.relayout(gd, 'mapbox.layers[1]', 'remove');
-        }).then(function() {
+            return Plotly.relayout(gd, 'mapbox.layers[1]', null);
+        })
+        .then(function() {
+            expect(gd.layout.mapbox.layers.length).toEqual(1);
             expect(countVisibleLayers(gd)).toEqual(1);
 
-            return Plotly.relayout(gd, 'mapbox.layers[0]', 'remove');
-        }).then(function() {
+            return Plotly.relayout(gd, 'mapbox.layers[0]', null);
+        })
+        .then(function() {
+            expect(gd.layout.mapbox.layers.length).toEqual(0);
             expect(countVisibleLayers(gd)).toEqual(0);
 
             return Plotly.relayout(gd, 'mapbox.layers[0]', {});
-        }).then(function() {
+        })
+        .then(function() {
+            expect(gd.layout.mapbox.layers).toEqual([]);
             expect(countVisibleLayers(gd)).toEqual(0);
 
             // layer with no source are not drawn
 
             return Plotly.relayout(gd, 'mapbox.layers[0].source', layer0.source);
-        }).then(function() {
+        })
+        .then(function() {
+            expect(gd.layout.mapbox.layers.length).toEqual(1);
             expect(countVisibleLayers(gd)).toEqual(1);
 
             done();

@@ -1,4 +1,6 @@
 var Plotly = require('@lib/index');
+var Filter = require('@lib/filter');
+
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
@@ -26,7 +28,8 @@ describe('general transforms:', function() {
             enabled: true,
             operation: '=',
             value: 0,
-            filtersrc: 'x'
+            target: 'x',
+            _module: Filter
         }]);
     });
 
@@ -48,7 +51,7 @@ describe('general transforms:', function() {
                 type: 'filter',
                 operation: '>',
                 value: 0,
-                filtersrc: 'x'
+                target: 'x'
             }]
         };
 
@@ -65,7 +68,8 @@ describe('general transforms:', function() {
             enabled: true,
             operation: '=',
             value: 0,
-            filtersrc: 'x'
+            target: 'x',
+            _module: Filter
         }, '- global first');
 
         expect(traceOut.transforms[1]).toEqual({
@@ -73,7 +77,8 @@ describe('general transforms:', function() {
             enabled: true,
             operation: '>',
             value: 0,
-            filtersrc: 'x'
+            target: 'x',
+            _module: Filter
         }, '- trace second');
     });
 
@@ -88,7 +93,7 @@ describe('general transforms:', function() {
                 type: 'filter',
                 operation: '>',
                 value: 0,
-                filtersrc: 'x'
+                target: 'x'
             }]
         }];
 
@@ -104,7 +109,7 @@ describe('general transforms:', function() {
             type: 'filter',
             operation: '>',
             value: 0,
-            filtersrc: 'x'
+            target: 'x'
         }], msg);
 
         msg = 'supplying the transform defaults';
@@ -113,7 +118,8 @@ describe('general transforms:', function() {
             enabled: true,
             operation: '>',
             value: 0,
-            filtersrc: 'x'
+            target: 'x',
+            _module: Filter
         }, msg);
 
         msg = 'keeping refs to user data';
@@ -123,7 +129,7 @@ describe('general transforms:', function() {
             type: 'filter',
             operation: '>',
             value: 0,
-            filtersrc: 'x'
+            target: 'x',
         }], msg);
 
         msg = 'keeping refs to full transforms array';
@@ -132,7 +138,8 @@ describe('general transforms:', function() {
             enabled: true,
             operation: '>',
             value: 0,
-            filtersrc: 'x'
+            target: 'x',
+            _module: Filter
         }], msg);
 
         msg = 'setting index w.r.t user data';
@@ -572,4 +579,71 @@ describe('multiple traces with transforms:', function() {
             done();
         });
     });
+});
+
+describe('restyle applied on transforms:', function() {
+    'use strict';
+
+    afterEach(destroyGraphDiv);
+
+    it('should be able', function(done) {
+        var gd = createGraphDiv();
+
+        var data = [{ y: [2, 1, 2] }];
+
+        var transform0 = {
+            type: 'filter',
+            target: 'y',
+            operation: '>',
+            value: 1
+        };
+
+        var transform1 = {
+            type: 'groupby',
+            groups: ['a', 'b', 'b']
+        };
+
+        Plotly.plot(gd, data).then(function() {
+            expect(gd.data.transforms).toBeUndefined();
+
+            return Plotly.restyle(gd, 'transforms[0]', transform0);
+        })
+        .then(function() {
+            var msg = 'to generate blank transform objects';
+
+            expect(gd.data[0].transforms[0]).toBe(transform0, msg);
+
+            // make sure transform actually works
+            expect(gd._fullData[0].y).toEqual([2, 2], msg);
+
+            return Plotly.restyle(gd, 'transforms[1]', transform1);
+        })
+        .then(function() {
+            var msg = 'to generate blank transform objects (2)';
+
+            expect(gd.data[0].transforms[0]).toBe(transform0, msg);
+            expect(gd.data[0].transforms[1]).toBe(transform1, msg);
+            expect(gd._fullData[0].y).toEqual([2], msg);
+
+            return Plotly.restyle(gd, 'transforms[0]', null);
+        })
+        .then(function() {
+            var msg = 'to remove transform objects';
+
+            expect(gd.data[0].transforms[0]).toBe(transform1, msg);
+            expect(gd.data[0].transforms[1]).toBeUndefined(msg);
+            expect(gd._fullData[0].y).toEqual([2], msg);
+            expect(gd._fullData[1].y).toEqual([1, 2], msg);
+
+            return Plotly.restyle(gd, 'transforms', null);
+        })
+        .then(function() {
+            var msg = 'to remove all transform objects';
+
+            expect(gd.data[0].transforms).toBeUndefined(msg);
+            expect(gd._fullData[0].y).toEqual([2, 1, 2], msg);
+        })
+        .then(done);
+    });
+
 });

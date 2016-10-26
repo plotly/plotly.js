@@ -79,6 +79,33 @@ describe('Test Plots', function() {
                 .not.toBe(oldFullLayout.yaxis._m, '(set during ax.setScale');
         });
 
+        it('should include the correct reference to user data', function() {
+            var trace0 = { y: [1, 2, 3] };
+            var trace1 = { y: [5, 2, 3] };
+
+            var data = [trace0, trace1];
+            var gd = { data: data };
+
+            Plots.supplyDefaults(gd);
+
+            expect(gd.data).toBe(data);
+
+            expect(gd._fullData[0].index).toEqual(0);
+            expect(gd._fullData[1].index).toEqual(1);
+
+            expect(gd._fullData[0]._expandedIndex).toEqual(0);
+            expect(gd._fullData[1]._expandedIndex).toEqual(1);
+
+            expect(gd._fullData[0]._input).toBe(trace0);
+            expect(gd._fullData[1]._input).toBe(trace1);
+
+            expect(gd._fullData[0]._fullInput).toBe(gd._fullData[0]);
+            expect(gd._fullData[1]._fullInput).toBe(gd._fullData[1]);
+
+            expect(gd._fullData[0]._expandedInput).toBe(gd._fullData[0]);
+            expect(gd._fullData[1]._expandedInput).toBe(gd._fullData[1]);
+        });
+
         function testSanitizeMarginsHasBeenCalledOnlyOnce(gd) {
             spyOn(Plots, 'sanitizeMargins').and.callThrough();
             Plots.supplyDefaults(gd);

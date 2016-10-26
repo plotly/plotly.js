@@ -225,6 +225,33 @@ describe('update menus buttons', function() {
     }
 });
 
+describe('update menus initialization', function() {
+    'use strict';
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+
+        Plotly.plot(gd, [{x: [1, 2, 3]}], {
+            updatemenus: [{
+                buttons: [
+                    {method: 'restyle', args: [], label: 'first'},
+                    {method: 'restyle', args: [], label: 'second'},
+                ]
+            }]
+        }).then(done);
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('does not set active on initial plot', function() {
+        expect(gd.layout.updatemenus[0].active).toBeUndefined();
+    });
+});
+
 describe('update menus interactions', function() {
     'use strict';
 
@@ -260,7 +287,8 @@ describe('update menus interactions', function() {
             expect(gd._fullLayout._pushmargin['updatemenu-1']).toBeDefined();
 
             return Plotly.relayout(gd, 'updatemenus[1]', null);
-        }).then(function() {
+        })
+        .then(function() {
             assertNodeCount('.' + constants.containerClassName, 0);
             expect(gd._fullLayout._pushmargin['updatemenu-0']).toBeUndefined();
             expect(gd._fullLayout._pushmargin['updatemenu-1']).toBeUndefined();
@@ -269,7 +297,8 @@ describe('update menus interactions', function() {
                 'updatemenus[0].visible': true,
                 'updatemenus[1].visible': true
             });
-        }).then(function() {
+        })
+        .then(function() {
             assertMenus([0, 0]);
             expect(gd._fullLayout._pushmargin['updatemenu-0']).toBeDefined();
             expect(gd._fullLayout._pushmargin['updatemenu-1']).toBeDefined();
@@ -278,7 +307,8 @@ describe('update menus interactions', function() {
                 'updatemenus[0].visible': false,
                 'updatemenus[1].visible': false
             });
-        }).then(function() {
+        })
+        .then(function() {
             assertNodeCount('.' + constants.containerClassName, 0);
             expect(gd._fullLayout._pushmargin['updatemenu-0']).toBeUndefined();
             expect(gd._fullLayout._pushmargin['updatemenu-1']).toBeUndefined();
@@ -291,21 +321,35 @@ describe('update menus interactions', function() {
                     }]
                 }
             });
-        }).then(function() {
+        })
+        .then(function() {
             assertMenus([0]);
             expect(gd._fullLayout._pushmargin['updatemenu-0']).toBeUndefined();
             expect(gd._fullLayout._pushmargin['updatemenu-1']).toBeUndefined();
             expect(gd._fullLayout._pushmargin['updatemenu-2']).toBeDefined();
 
             return Plotly.relayout(gd, 'updatemenus[0].visible', true);
-        }).then(function() {
+        })
+        .then(function() {
             assertMenus([0, 0]);
             expect(gd._fullLayout._pushmargin['updatemenu-0']).toBeDefined();
             expect(gd._fullLayout._pushmargin['updatemenu-1']).toBeUndefined();
             expect(gd._fullLayout._pushmargin['updatemenu-2']).toBeDefined();
+            expect(gd.layout.updatemenus.length).toEqual(3);
 
-            done();
-        });
+            return Plotly.relayout(gd, 'updatemenus[0]', null);
+        })
+        .then(function() {
+            assertMenus([0]);
+            expect(gd.layout.updatemenus.length).toEqual(2);
+
+            return Plotly.relayout(gd, 'updatemenus', null);
+        })
+        .then(function() {
+            expect(gd.layout.updatemenus).toBeUndefined();
+
+        })
+        .then(done);
     });
 
     it('should drop/fold buttons when clicking on header', function(done) {

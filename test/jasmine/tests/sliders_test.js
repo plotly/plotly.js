@@ -182,7 +182,34 @@ describe('sliders defaults', function() {
     });
 });
 
-describe('update sliders interactions', function() {
+describe('sliders initialization', function() {
+    'use strict';
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+
+        Plotly.plot(gd, [{x: [1, 2, 3]}], {
+            sliders: [{
+                steps: [
+                    {method: 'restyle', args: [], label: 'first'},
+                    {method: 'restyle', args: [], label: 'second'},
+                ]
+            }]
+        }).then(done);
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('does not set active on initial plot', function() {
+        expect(gd.layout.sliders[0].active).toBeUndefined();
+    });
+});
+
+describe('sliders interactions', function() {
     'use strict';
 
     var mock = require('@mocks/sliders.json');
@@ -211,6 +238,7 @@ describe('update sliders interactions', function() {
             assertNodeCount('.' + constants.groupClassName, 1);
             expect(gd._fullLayout._pushmargin['slider-0']).toBeUndefined();
             expect(gd._fullLayout._pushmargin['slider-1']).toBeDefined();
+            expect(gd.layout.sliders.length).toEqual(2);
 
             return Plotly.relayout(gd, 'sliders[1]', null);
         })
@@ -218,6 +246,7 @@ describe('update sliders interactions', function() {
             assertNodeCount('.' + constants.groupClassName, 0);
             expect(gd._fullLayout._pushmargin['slider-0']).toBeUndefined();
             expect(gd._fullLayout._pushmargin['slider-1']).toBeUndefined();
+            expect(gd.layout.sliders.length).toEqual(1);
 
             return Plotly.relayout(gd, {
                 'sliders[0].visible': true,
