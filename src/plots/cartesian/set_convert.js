@@ -315,7 +315,7 @@ module.exports = function setConvert(ax) {
     // makeCalcdata: takes an x or y array and converts it
     // to a position on the axis object "ax"
     // inputs:
-    //      trace - a data object from td.data
+    //      trace - a data object from gd.data
     //      axLetter - a string, either 'x' or 'y', for which item
     //          to convert (TODO: is this now always the same as
     //          the first letter of ax._id?)

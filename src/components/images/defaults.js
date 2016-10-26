@@ -53,11 +53,11 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
     coerce('opacity');
 
     for(var i = 0; i < 2; i++) {
-        var tdMock = { _fullLayout: fullLayout },
+        var gdMock = { _fullLayout: fullLayout },
             axLetter = ['x', 'y'][i];
 
         // 'paper' is the fallback axref
-        Axes.coerceRef(imageIn, imageOut, tdMock, axLetter, 'paper');
+        Axes.coerceRef(imageIn, imageOut, gdMock, axLetter, 'paper');
     }
 
     return imageOut;

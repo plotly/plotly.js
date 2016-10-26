@@ -89,7 +89,7 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
  * - for date axes: JS Dates or milliseconds, and convert to date strings
  * - for other types: coerce them to numbers
  */
-axes.coercePosition = function(containerOut, td, coerce, axRef, attr, dflt) {
+axes.coercePosition = function(containerOut, gd, coerce, axRef, attr, dflt) {
     var pos,
         newPos;
 
@@ -97,7 +97,7 @@ axes.coercePosition = function(containerOut, td, coerce, axRef, attr, dflt) {
         pos = coerce(attr, dflt);
     }
     else {
-        var ax = axes.getFromId(td, axRef);
+        var ax = axes.getFromId(gd, axRef);
 
         dflt = ax.fraction2r(dflt);
         pos = coerce(attr, dflt);

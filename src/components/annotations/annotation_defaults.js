@@ -42,20 +42,20 @@ module.exports = function handleAnnotationDefaults(annIn, fullLayout) {
     // positioning
     var axLetters = ['x', 'y'],
         arrowPosDflt = [-10, -30],
-        tdMock = {_fullLayout: fullLayout};
+        gdMock = {_fullLayout: fullLayout};
     for(var i = 0; i < 2; i++) {
         var axLetter = axLetters[i];
 
         // xref, yref
-        var axRef = Axes.coerceRef(annIn, annOut, tdMock, axLetter, '', 'paper');
+        var axRef = Axes.coerceRef(annIn, annOut, gdMock, axLetter, '', 'paper');
 
         // x, y
-        Axes.coercePosition(annOut, tdMock, coerce, axRef, axLetter, 0.5);
+        Axes.coercePosition(annOut, gdMock, coerce, axRef, axLetter, 0.5);
 
         if(showArrow) {
             var arrowPosAttr = 'a' + axLetter,
                 // axref, ayref
-                aaxRef = Axes.coerceRef(annIn, annOut, tdMock, arrowPosAttr, 'pixel');
+                aaxRef = Axes.coerceRef(annIn, annOut, gdMock, arrowPosAttr, 'pixel');
 
             // for now the arrow can only be on the same axis or specified as pixels
             // TODO: sometime it might be interesting to allow it to be on *any* axis
@@ -66,7 +66,7 @@ module.exports = function handleAnnotationDefaults(annIn, fullLayout) {
 
             // ax, ay
             var aDflt = (aaxRef === 'pixel') ? arrowPosDflt[i] : 0.4;
-            Axes.coercePosition(annOut, tdMock, coerce, aaxRef, arrowPosAttr, aDflt);
+            Axes.coercePosition(annOut, gdMock, coerce, aaxRef, arrowPosAttr, aDflt);
         }
 
         // xanchor, yanchor

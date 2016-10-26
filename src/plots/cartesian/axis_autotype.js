@@ -54,7 +54,7 @@ function moreDates(a) {
     return (dcnt > ncnt * 2);
 }
 
-// are the (x,y)-values in td.data mostly text?
+// are the (x,y)-values in gd.data mostly text?
 // require twice as many categories as numbers
 function category(a) {
     // test at most 1000 points

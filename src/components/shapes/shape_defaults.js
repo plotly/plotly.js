@@ -36,10 +36,10 @@ module.exports = function handleShapeDefaults(shapeIn, fullLayout) {
     var axLetters = ['x', 'y'];
     for(var i = 0; i < 2; i++) {
         var axLetter = axLetters[i],
-            tdMock = {_fullLayout: fullLayout};
+            gdMock = {_fullLayout: fullLayout};
 
         // xref, yref
-        var axRef = Axes.coerceRef(shapeIn, shapeOut, tdMock, axLetter, '', 'paper');
+        var axRef = Axes.coerceRef(shapeIn, shapeOut, gdMock, axLetter, '', 'paper');
 
         if(shapeType !== 'path') {
             var dflt0 = 0.25,
@@ -49,7 +49,7 @@ module.exports = function handleShapeDefaults(shapeIn, fullLayout) {
                 r2pos;
 
             if(axRef !== 'paper') {
-                ax = Axes.getFromId(tdMock, axRef);
+                ax = Axes.getFromId(gdMock, axRef);
                 r2pos = helpers.rangeToShapePosition(ax);
                 pos2r = helpers.shapePositionToRange(ax);
 
@@ -72,8 +72,8 @@ module.exports = function handleShapeDefaults(shapeIn, fullLayout) {
             shapeIn[attr1] = pos2r(shapeIn[attr1], true);
 
             // x0, x1 (and y0, y1)
-            Axes.coercePosition(shapeOut, tdMock, coerce, axRef, attr0, dflt0);
-            Axes.coercePosition(shapeOut, tdMock, coerce, axRef, attr1, dflt1);
+            Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attr0, dflt0);
+            Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attr1, dflt1);
 
             // hack part 2
             shapeOut[attr0] = r2pos(shapeOut[attr0]);
