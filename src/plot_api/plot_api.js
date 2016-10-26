@@ -1415,9 +1415,6 @@ function _restyle(gd, aobj, _traces) {
             continue;
         }
 
-        // take no chances on transforms
-        if(ai.substr(0, 10) === 'transforms') flags.docalc = true;
-
         // set attribute in gd.data
         undoit[ai] = a0();
         for(i = 0; i < traces.length; i++) {
@@ -1556,6 +1553,10 @@ function _restyle(gd, aobj, _traces) {
                         {v: 'h', h: 'v'}[contFull.orientation];
                 }
                 helpers.swapXYData(cont);
+            }
+            else if(Plots.dataArrayContainers.indexOf(param.parts[0]) !== -1) {
+                helpers.manageArrayContainers(param, newVal, undoit);
+                flags.docalc = true;
             }
             // all the other ones, just modify that one attribute
             else param.set(newVal);
@@ -1816,8 +1817,7 @@ function _relayout(gd, aobj) {
             // trunk nodes (everything except the leaf)
             ptrunk = p.parts.slice(0, pend).join('.'),
             parentIn = Lib.nestedProperty(gd.layout, ptrunk).get(),
-            parentFull = Lib.nestedProperty(fullLayout, ptrunk).get(),
-            diff;
+            parentFull = Lib.nestedProperty(fullLayout, ptrunk).get();
 
         if(vi === undefined) continue;
 
@@ -1922,6 +1922,9 @@ function _relayout(gd, aobj) {
                 objList = layout[objType] || [],
                 obji = objList[objNum] || {};
 
+            // new API, remove annotation / shape with `null`
+            if(vi === null) aobj[ai] = 'remove';
+
             // if p.parts is just an annotation number, and val is either
             // 'add' or an entire annotation to add, the undo is 'remove'
             // if val is 'remove' then undo is the whole annotation object
@@ -1951,42 +1954,11 @@ function _relayout(gd, aobj) {
             drawOne(gd, objNum, p.parts.slice(2).join('.'), aobj[ai]);
             delete aobj[ai];
         }
-        else if(p.parts[0] === 'images') {
-            var update = Lib.objectFromPath(ai, vi);
-            Lib.extendDeepAll(gd.layout, update);
-
-            Registry.getComponentMethod('images', 'supplyLayoutDefaults')(gd.layout, gd._fullLayout);
-            Registry.getComponentMethod('images', 'draw')(gd);
-        }
-        else if(p.parts[0] === 'mapbox' && p.parts[1] === 'layers') {
-            Lib.extendDeepAll(gd.layout, Lib.objectFromPath(ai, vi));
-
-            // append empty container to mapbox.layers
-            // so that relinkPrivateKeys does not complain
-
-            var fullLayers = (gd._fullLayout.mapbox || {}).layers || [];
-            diff = (p.parts[2] + 1) - fullLayers.length;
-
-            for(i = 0; i < diff; i++) fullLayers.push({});
-
-            flags.doplot = true;
-        }
-        else if(p.parts[0] === 'updatemenus') {
-            Lib.extendDeepAll(gd.layout, Lib.objectFromPath(ai, vi));
-
-            var menus = gd._fullLayout.updatemenus || [];
-            diff = (p.parts[2] + 1) - menus.length;
-
-            for(i = 0; i < diff; i++) menus.push({});
-            flags.doplot = true;
-        }
-        else if(p.parts[0] === 'sliders') {
-            Lib.extendDeepAll(gd.layout, Lib.objectFromPath(ai, vi));
-
-            var sliders = gd._fullLayout.sliders || [];
-            diff = (p.parts[2] + 1) - sliders.length;
-
-            for(i = 0; i < diff; i++) sliders.push({});
+        else if(
+            Plots.layoutArrayContainers.indexOf(p.parts[0]) !== -1 ||
+            (p.parts[0] === 'mapbox' && p.parts[1] === 'layers')
+        ) {
+            helpers.manageArrayContainers(p, vi, undoit);
             flags.doplot = true;
         }
         // alter gd.layout

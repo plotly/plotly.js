@@ -238,6 +238,7 @@ describe('sliders interactions', function() {
             assertNodeCount('.' + constants.groupClassName, 1);
             expect(gd._fullLayout._pushmargin['slider-0']).toBeUndefined();
             expect(gd._fullLayout._pushmargin['slider-1']).toBeDefined();
+            expect(gd.layout.sliders.length).toEqual(2);
 
             return Plotly.relayout(gd, 'sliders[1]', null);
         })
@@ -245,6 +246,7 @@ describe('sliders interactions', function() {
             assertNodeCount('.' + constants.groupClassName, 0);
             expect(gd._fullLayout._pushmargin['slider-0']).toBeUndefined();
             expect(gd._fullLayout._pushmargin['slider-1']).toBeUndefined();
+            expect(gd.layout.sliders.length).toEqual(1);
 
             return Plotly.relayout(gd, {
                 'sliders[0].visible': true,

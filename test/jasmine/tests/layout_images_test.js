@@ -329,18 +329,22 @@ describe('Layout images', function() {
                 return Plotly.relayout(gd, 'images[2]', makeImage(pythonLogo, 0.2, 0.5));
             }).then(function() {
                 assertImages(3);
+                expect(gd.layout.images.length).toEqual(3);
 
-                return Plotly.relayout(gd, 'images[2]', 'remove');
+                return Plotly.relayout(gd, 'images[2]', null);
             }).then(function() {
                 assertImages(2);
+                expect(gd.layout.images.length).toEqual(2);
 
-                return Plotly.relayout(gd, 'images[1]', 'remove');
+                return Plotly.relayout(gd, 'images[1]', null);
             }).then(function() {
                 assertImages(1);
+                expect(gd.layout.images.length).toEqual(1);
 
-                return Plotly.relayout(gd, 'images[0]', 'remove');
+                return Plotly.relayout(gd, 'images[0]', null);
             }).then(function() {
                 assertImages(0);
+                expect(gd.layout.images).toEqual([]);
 
                 done();
             });
