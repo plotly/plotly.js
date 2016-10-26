@@ -1921,6 +1921,9 @@ function _relayout(gd, aobj) {
                 objList = layout[objType] || [],
                 obji = objList[objNum] || {};
 
+            // new API, remove annotation / shape with `null`
+            if(vi === null) aobj[ai] = 'remove';
+
             // if p.parts is just an annotation number, and val is either
             // 'add' or an entire annotation to add, the undo is 'remove'
             // if val is 'remove' then undo is the whole annotation object
