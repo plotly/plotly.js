@@ -12,6 +12,7 @@
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function autoType(array) {
     if(moreDates(array)) return 'date';
@@ -64,7 +65,7 @@ function category(a) {
 
     for(var i = 0; i < a.length; i += inc) {
         ai = a[Math.round(i)];
-        if(Lib.cleanNumber(ai) !== Lib.BADNUM) curvenums++;
+        if(Lib.cleanNumber(ai) !== BADNUM) curvenums++;
         else if(typeof ai === 'string' && ai !== '' && ai !== 'None') curvecats++;
     }
 

@@ -11,7 +11,7 @@
 
 var isNumeric = require('fast-isnumeric');
 
-var BADNUM = require('./constants').BADNUM;
+var BADNUM = require('../constants/numerical').BADNUM;
 
 // precompile these regex's for speed
 var FRONTJUNK = /^['"%,$#\s']+/;

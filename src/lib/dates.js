@@ -11,7 +11,7 @@
 
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
-var BADNUM = require('./constants').BADNUM;
+var BADNUM = require('../constants/numerical').BADNUM;
 var logError = require('./loggers').error;
 
 // is an object a javascript date?

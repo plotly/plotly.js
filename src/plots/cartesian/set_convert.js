@@ -13,8 +13,9 @@ var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
-var FP_SAFE = Lib.FP_SAFE;
-var BADNUM = Lib.BADNUM;
+var numConstants = require('../../constants/numerical');
+var FP_SAFE = numConstants.FP_SAFE;
+var BADNUM = numConstants.BADNUM;
 
 var constants = require('./constants');
 var axisIds = require('./axis_ids');

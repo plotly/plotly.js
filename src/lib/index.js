@@ -78,10 +78,6 @@ lib.error = loggersModule.error;
 
 lib.notifier = require('./notifier');
 
-var constantsModule = require('./constants');
-lib.BADNUM = constantsModule.BADNUM,
-lib.FP_SAFE = constantsModule.FP_SAFE;
-
 lib.filterUnique = require('./filter_unique');
 
 lib.cleanNumber = require('./clean_number');

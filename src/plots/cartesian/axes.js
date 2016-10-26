@@ -19,7 +19,7 @@ var Titles = require('../../components/titles');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 
-var FP_SAFE = Lib.FP_SAFE;
+var FP_SAFE = require('../../constants/numerical').FP_SAFE;
 
 
 var axes = module.exports = {};
