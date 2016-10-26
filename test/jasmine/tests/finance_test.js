@@ -508,7 +508,7 @@ describe('finance charts calc transforms:', function() {
 
         expect(out[2].name).toEqual('trace 0 - increasing');
         expect(out[2].x).toEqual([
-            '2016-09-03 23:59:59.9999', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04 00:00:00.0001', null
+            '2016-09-03 22:48', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04 01:12', null
         ]);
         expect(out[2].y).toEqual([
             32.06, 32.06, 34.25, 31.62, 33.18, 33.18, null
@@ -559,6 +559,78 @@ describe('finance charts calc transforms:', function() {
             30.75, 33.31, 31.93, 31.93, 31.93, 34.37,
             32.87, 33.5, 33.37, 33.37, 33.37, 33.62
         ]);
+    });
+
+    it('should use the smallest trace minimum x difference to convert *tickwidth* to data coords for all traces attached to a given x-axis', function() {
+        var trace0 = Lib.extendDeep({}, mock1, {
+            type: 'ohlc',
+            tickwidth: 0.5
+        });
+
+        var trace1 = Lib.extendDeep({}, mock1, {
+            type: 'ohlc',
+            tickwidth: 0.5
+        });
+
+        // shift time coordinates by 10 hours
+        trace1.x = trace1.x.map(function(d) {
+            return d + ' 10:00';
+        });
+
+        var out = _calc([trace0, trace1]);
+
+        expect(out[0].x).toEqual([
+            '2016-08-31 12:00', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01 12:00', null,
+            '2016-09-03 12:00', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04 12:00', null,
+            '2016-09-05 12:00', '2016-09-06', '2016-09-06', '2016-09-06', '2016-09-06', '2016-09-06 12:00', null,
+            '2016-09-09 12:00', '2016-09-10', '2016-09-10', '2016-09-10', '2016-09-10', '2016-09-10 12:00', null
+        ]);
+
+        expect(out[1].x).toEqual([
+            '2016-09-01 12:00', '2016-09-02', '2016-09-02', '2016-09-02', '2016-09-02', '2016-09-02 12:00', null,
+            '2016-09-02 12:00', '2016-09-03', '2016-09-03', '2016-09-03', '2016-09-03', '2016-09-03 12:00', null,
+            '2016-09-04 12:00', '2016-09-05', '2016-09-05', '2016-09-05', '2016-09-05', '2016-09-05 12:00', null,
+            '2016-09-06 12:00', '2016-09-07', '2016-09-07', '2016-09-07', '2016-09-07', '2016-09-07 12:00', null
+        ]);
+
+        expect(out[2].x).toEqual([
+            '2016-08-31 22:00', '2016-09-01 10:00', '2016-09-01 10:00', '2016-09-01 10:00', '2016-09-01 10:00', '2016-09-01 22:00', null,
+            '2016-09-03 22:00', '2016-09-04 10:00', '2016-09-04 10:00', '2016-09-04 10:00', '2016-09-04 10:00', '2016-09-04 22:00', null,
+            '2016-09-05 22:00', '2016-09-06 10:00', '2016-09-06 10:00', '2016-09-06 10:00', '2016-09-06 10:00', '2016-09-06 22:00', null,
+            '2016-09-09 22:00', '2016-09-10 10:00', '2016-09-10 10:00', '2016-09-10 10:00', '2016-09-10 10:00', '2016-09-10 22:00', null
+        ]);
+
+        expect(out[3].x).toEqual([
+            '2016-09-01 22:00', '2016-09-02 10:00', '2016-09-02 10:00', '2016-09-02 10:00', '2016-09-02 10:00', '2016-09-02 22:00', null,
+            '2016-09-02 22:00', '2016-09-03 10:00', '2016-09-03 10:00', '2016-09-03 10:00', '2016-09-03 10:00', '2016-09-03 22:00', null,
+            '2016-09-04 22:00', '2016-09-05 10:00', '2016-09-05 10:00', '2016-09-05 10:00', '2016-09-05 10:00', '2016-09-05 22:00', null,
+            '2016-09-06 22:00', '2016-09-07 10:00', '2016-09-07 10:00', '2016-09-07 10:00', '2016-09-07 10:00', '2016-09-07 22:00', null
+        ]);
+    });
+
+    it('should fallback to a minimum x difference of 0.5 in one-item traces', function() {
+        var trace0 = Lib.extendDeep({}, mock1, {
+            type: 'ohlc',
+            tickwidth: 0.5
+        });
+        trace0.x = [ '2016-01-01' ];
+
+        var trace1 = Lib.extendDeep({}, mock0, {
+            type: 'ohlc',
+            tickwidth: 0.5
+        });
+        trace1.x = [ 10 ];
+
+        var out = _calc([trace0, trace1]);
+
+        var x0 = out[0].x.map(Lib.dateTime2ms);
+        expect(x0[x0.length - 2] - x0[0]).toEqual(1);
+
+        var x2 = out[2].x.map(Lib.dateTime2ms);
+        expect(x2[x2.length - 2] - x2[0]).toEqual(1);
+
+        expect(out[1].x).toEqual([]);
+        expect(out[3].x).toEqual([]);
     });
 });
 
@@ -772,6 +844,55 @@ describe('finance charts updates:', function() {
         .then(function() {
             expect(countScatterTraces()).toEqual(2);
             expect(countBoxTraces()).toEqual(2);
+
+            done();
+        });
+    });
+
+    it('Plotly.addTraces + Plotly.relayout should update candlestick box position values', function(done) {
+
+        function assertBoxPosFields(dPos) {
+            expect(gd.calcdata.length).toEqual(dPos.length);
+
+            gd.calcdata.forEach(function(calcTrace, i) {
+                if(dPos[i] === undefined) {
+                    expect(calcTrace[0].t.dPos).toBeUndefined();
+                }
+                else {
+                    expect(calcTrace[0].t.dPos).toEqual(dPos[i]);
+                }
+            });
+        }
+
+        var trace0 = {
+            type: 'candlestick',
+            x: ['2011-01-01'],
+            open: [0],
+            high: [3],
+            low: [1],
+            close: [3]
+        };
+
+        Plotly.plot(gd, [trace0]).then(function() {
+            assertBoxPosFields([0.5, undefined]);
+
+            return Plotly.addTraces(gd, {});
+
+        })
+        .then(function() {
+            var update = {
+                type: 'candlestick',
+                x: [['2011-02-02']],
+                open: [[0]],
+                high: [[3]],
+                low: [[1]],
+                close: [[3]]
+            };
+
+            return Plotly.restyle(gd, update);
+        })
+        .then(function() {
+            assertBoxPosFields([0.5, undefined, 0.5, undefined]);
 
             done();
         });

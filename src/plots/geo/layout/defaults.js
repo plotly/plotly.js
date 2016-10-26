@@ -73,7 +73,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
         coerce('riverwidth');
     }
 
-    show = coerce('showcountries', isScoped);
+    show = coerce('showcountries', isScoped && scope !== 'usa');
     if(show) {
         coerce('countrycolor');
         coerce('countrywidth');

@@ -21,7 +21,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         xa = pointData.xa,
         ya = pointData.ya,
         barDelta = (hovermode === 'closest') ?
-            t.barwidth / 2 : t.dbar * (1 - xa._gd._fullLayout.bargap) / 2,
+            t.barwidth / 2 :
+            t.bargroupwidth,
         barPos;
 
     if(hovermode !== 'closest') barPos = function(di) { return di.p; };

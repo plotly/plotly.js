@@ -11,7 +11,6 @@
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
 var Plots = require('../../plots/plots');
 var Lib = require('../../lib');
 var Color = require('../color');
@@ -52,6 +51,9 @@ module.exports = function draw(gd) {
     sliderGroups.exit().each(function(sliderOpts) {
         d3.select(this).remove();
 
+        sliderOpts._commandObserver.remove();
+        delete sliderOpts._commandObserver;
+
         Plots.autoMargin(gd, constants.autoMarginIdRoot + sliderOpts._index);
     });
 
@@ -65,12 +67,20 @@ module.exports = function draw(gd) {
         // If it has fewer than two options, it's not really a slider:
         if(sliderOpts.steps.length < 2) return;
 
+        var gSlider = d3.select(this);
+
         computeLabelSteps(sliderOpts);
+
+        Plots.manageCommandObserver(gd, sliderOpts, sliderOpts.steps, function(data) {
+            if(sliderOpts.active === data.index) return;
+            if(sliderOpts._dragging) return;
+
+            setActive(gd, gSlider, sliderOpts, data.index, false, true);
+        });
 
         drawSlider(gd, d3.select(this), sliderOpts);
 
         // makeInputProxy(gd, d3.select(this), sliderOpts);
-
     });
 };
 
@@ -227,7 +237,9 @@ function drawSlider(gd, sliderGroup, sliderOpts) {
     // Position the rectangle:
     Lib.setTranslate(sliderGroup, sliderOpts.lx + sliderOpts.pad.l, sliderOpts.ly + sliderOpts.pad.t);
 
-    setActive(gd, sliderGroup, sliderOpts, sliderOpts.active, false, false);
+    sliderGroup.call(setGripPosition, sliderOpts, sliderOpts.active / (sliderOpts.steps.length - 1), false);
+    sliderGroup.call(drawCurrentValue, sliderOpts);
+
 }
 
 function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
@@ -371,19 +383,9 @@ function setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition)
             sliderGroup._nextMethod = {step: step, doCallback: doCallback, doTransition: doTransition};
             sliderGroup._nextMethodRaf = window.requestAnimationFrame(function() {
                 var _step = sliderGroup._nextMethod.step;
-                var args = _step.args;
                 if(!_step.method) return;
 
-                sliderOpts._invokingCommand = true;
-                Plotly[_step.method](gd, args[0], args[1], args[2]).then(function() {
-                    sliderOpts._invokingCommand = false;
-                }, function() {
-                    sliderOpts._invokingCommand = false;
-
-                    // This is not a disaster. Some methods like `animate` reject if interrupted
-                    // and *should* nicely log a warning.
-                    Lib.warn('Warning: Plotly.' + _step.method + ' was called and rejected.');
-                });
+                Plots.executeAPICommand(gd, _step.method, _step.args);
 
                 sliderGroup._nextMethod = null;
                 sliderGroup._nextMethodRaf = null;
@@ -405,6 +407,7 @@ function attachGripEvents(item, gd, sliderGroup, sliderOpts) {
 
         var normalizedPosition = positionToNormalizedValue(sliderOpts, d3.mouse(node)[0]);
         handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, true);
+        sliderOpts._dragging = true;
 
         $gd.on('mousemove', function() {
             var normalizedPosition = positionToNormalizedValue(sliderOpts, d3.mouse(node)[0]);
@@ -412,6 +415,7 @@ function attachGripEvents(item, gd, sliderGroup, sliderOpts) {
         });
 
         $gd.on('mouseup', function() {
+            sliderOpts._dragging = false;
             grip.call(Color.fill, sliderOpts.bgcolor);
             $gd.on('mouseup', null);
             $gd.on('mousemove', null);
@@ -467,8 +471,12 @@ function setGripPosition(sliderGroup, sliderOpts, position, doTransition) {
 
     var x = normalizedValueToPosition(sliderOpts, position);
 
+    // If this is true, then *this component* is already invoking its own command
+    // and has triggered its own animation.
+    if(sliderOpts._invokingCommand) return;
+
     var el = grip;
-    if(doTransition && sliderOpts.transition.duration > 0 && !sliderOpts._invokingCommand) {
+    if(doTransition && sliderOpts.transition.duration > 0) {
         el = el.transition()
             .duration(sliderOpts.transition.duration)
             .ease(sliderOpts.transition.easing);

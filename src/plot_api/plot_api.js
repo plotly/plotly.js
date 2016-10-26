@@ -1267,6 +1267,7 @@ function _restyle(gd, aobj, _traces) {
         'x', 'y', 'z',
         'a', 'b', 'c',
         'open', 'high', 'low', 'close',
+        'base', 'width', 'offset',
         'xtype', 'x0', 'dx', 'ytype', 'y0', 'dy', 'xaxis', 'yaxis',
         'line.width',
         'connectgaps', 'transpose', 'zsmooth',
@@ -2325,14 +2326,7 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
             var newFrame = trans._currentFrame = trans._frameQueue.shift();
 
             if(newFrame) {
-                gd.emit('plotly_animatingframe', {
-                    name: newFrame.name,
-                    frame: newFrame.frame,
-                    animation: {
-                        frame: newFrame.frameOpts,
-                        transition: newFrame.transitionOpts,
-                    }
-                });
+                gd._fullLayout._currentFrame = newFrame.name;
 
                 trans._lastFrameAt = Date.now();
                 trans._timeToNext = newFrame.frameOpts.duration;
@@ -2347,6 +2341,15 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
                     newFrame.frameOpts,
                     newFrame.transitionOpts
                 );
+
+                gd.emit('plotly_animatingframe', {
+                    name: newFrame.name,
+                    frame: newFrame.frame,
+                    animation: {
+                        frame: newFrame.frameOpts,
+                        transition: newFrame.transitionOpts,
+                    }
+                });
             } else {
                 // If there are no more frames, then stop the RAF loop:
                 stopAnimationLoop();
