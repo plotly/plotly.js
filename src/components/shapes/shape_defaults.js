@@ -52,9 +52,6 @@ module.exports = function handleShapeDefaults(shapeIn, fullLayout) {
                 ax = Axes.getFromId(gdMock, axRef);
                 r2pos = helpers.rangeToShapePosition(ax);
                 pos2r = helpers.shapePositionToRange(ax);
-
-                dflt0 = r2pos(ax.fraction2r(dflt0));
-                dflt1 = r2pos(ax.fraction2r(dflt1));
             }
             else {
                 pos2r = r2pos = Lib.identity;

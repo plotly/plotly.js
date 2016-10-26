@@ -1,14 +1,56 @@
 var helpers = require('@src/components/shapes/helpers');
 var constants = require('@src/components/shapes/constants');
+var handleShapeDefaults = require('@src/components/shapes/shape_defaults');
 
 var Plotly = require('@lib/index');
 var PlotlyInternal = require('@src/plotly');
 var Lib = require('@src/lib');
 var Axes = PlotlyInternal.Axes;
+var Plots = require('@src/plots/plots');
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var customMatchers = require('../assets/custom_matchers');
+
+
+describe('shape supplyDefaults', function() {
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
+    it('should provide the right defaults on all axis types', function() {
+        var fullLayout = {
+            xaxis: {type: 'linear', range: [0, 20]},
+            yaxis: {type: 'log', range: [1, 5]},
+            xaxis2: {type: 'date', range: ['2006-06-05', '2006-06-09']},
+            yaxis2: {type: 'category', range: [-0.5, 7.5]}
+        };
+        fullLayout._has = Plots._hasPlotType.bind(fullLayout);
+        Axes.setConvert(fullLayout.xaxis);
+        Axes.setConvert(fullLayout.yaxis);
+        Axes.setConvert(fullLayout.xaxis2);
+        Axes.setConvert(fullLayout.yaxis2);
+
+        var shape1In = {type: 'rect'},
+            shape1Out = handleShapeDefaults(shape1In, fullLayout),
+            shape2In = {type: 'circle', xref: 'x2', yref: 'y2'},
+            shape2Out = handleShapeDefaults(shape2In, fullLayout);
+
+        // default positions are 1/4 and 3/4 of the full range of that axis
+        expect(shape1Out.x0).toBe(5);
+        expect(shape1Out.x1).toBe(15);
+        // shapes use data values for log axes (like everyone will in V2.0)
+        expect(shape1Out.y0).toBeWithin(100, 0.001);
+        expect(shape1Out.y1).toBeWithin(10000, 0.001);
+        // date strings also interpolate
+        expect(shape2Out.x0).toBe('2006-06-06');
+        expect(shape2Out.x1).toBe('2006-06-08');
+        // categories must use serial numbers to get continuous values
+        expect(shape2Out.y0).toBeWithin(1.5, 0.001);
+        expect(shape2Out.y1).toBeWithin(5.5, 0.001);
+    });
+});
 
 
 describe('Test shapes:', function() {
