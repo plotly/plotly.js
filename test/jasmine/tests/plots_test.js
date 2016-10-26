@@ -304,7 +304,7 @@ describe('Test Plots', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], { autosize: true })
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }])
                 .then(function() {
                     gd.style.width = '400px';
                     gd.style.height = '400px';
