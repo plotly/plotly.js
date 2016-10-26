@@ -668,6 +668,8 @@ plots.supplyAnimationDefaults = function(opts) {
     }
 
     coerce('mode');
+    coerce('direction');
+    coerce('fromcurrent');
 
     if(Array.isArray(opts.frame)) {
         optsOut.frame = [];

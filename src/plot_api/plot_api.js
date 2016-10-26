@@ -2431,6 +2431,33 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
             discardExistingFrames();
         }
 
+        if(animationOpts.direction === 'reverse') {
+            frameList.reverse();
+        }
+
+        var currentFrame = gd._fullLayout._currentFrame;
+        if(currentFrame && animationOpts.fromcurrent) {
+            var idx = -1;
+            for(i = 0; i < frameList.length; i++) {
+                frame = frameList[i];
+                if(frame.type === 'byname' && frame.name === currentFrame) {
+                    idx = i;
+                    break;
+                }
+            }
+
+            if(idx > 0 && idx < frameList.length - 1) {
+                var filteredFrameList = [];
+                for(i = 0; i < frameList.length; i++) {
+                    frame = frameList[i];
+                    if(frameList[i].type !== 'byname' || i > idx) {
+                        filteredFrameList.push(frame);
+                    }
+                }
+                frameList = filteredFrameList;
+            }
+        }
+
         if(frameList.length > 0) {
             queueFrames(frameList);
         } else {
