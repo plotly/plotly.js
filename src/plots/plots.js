@@ -1424,6 +1424,9 @@ plots.extendObjectWithContainers = function(dest, src, containerPaths) {
     return dest;
 };
 
+plots.dataArrayContainers = ['transforms'];
+plots.layoutArrayContainers = ['annotations', 'shapes', 'images', 'sliders', 'updatemenus'];
+
 /*
  * Extend a trace definition. This method:
  *
@@ -1433,7 +1436,7 @@ plots.extendObjectWithContainers = function(dest, src, containerPaths) {
  * The result is the original object reference with the new contents merged in.
  */
 plots.extendTrace = function(destTrace, srcTrace) {
-    return plots.extendObjectWithContainers(destTrace, srcTrace, ['transforms']);
+    return plots.extendObjectWithContainers(destTrace, srcTrace, plots.dataArrayContainers);
 };
 
 /*
@@ -1446,13 +1449,7 @@ plots.extendTrace = function(destTrace, srcTrace) {
  * The result is the original object reference with the new contents merged in.
  */
 plots.extendLayout = function(destLayout, srcLayout) {
-    return plots.extendObjectWithContainers(destLayout, srcLayout, [
-        'annotations',
-        'shapes',
-        'images',
-        'sliders',
-        'updatemenus'
-    ]);
+    return plots.extendObjectWithContainers(destLayout, srcLayout, plots.layoutArrayContainers);
 };
 
 /**
