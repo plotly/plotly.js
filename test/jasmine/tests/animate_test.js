@@ -94,14 +94,26 @@ describe('Test animate API', function() {
         destroyGraphDiv();
     });
 
-    it('throws an error if gd is not a graph', function() {
+    it('throws an error on addFrames if gd is not a graph', function() {
         var gd2 = document.createElement('div');
         gd2.id = 'invalidgd';
         document.body.appendChild(gd2);
 
         expect(function() {
             Plotly.addFrames(gd2, [{}]);
-        }).toThrow(new Error('This element is not a Plotly plot: [object HTMLDivElement]'));
+        }).toThrow(new Error('This element is not a Plotly plot: [object HTMLDivElement]. It\'s likely that you\'ve failed to create a plot before adding frames. For more details, see https://plot.ly/javascript/animations/'));
+
+        document.body.removeChild(gd);
+    });
+
+    it('throws an error on animate if gd is not a graph', function() {
+        var gd2 = document.createElement('div');
+        gd2.id = 'invalidgd';
+        document.body.appendChild(gd2);
+
+        expect(function() {
+            Plotly.animate(gd2, {data: [{}]});
+        }).toThrow(new Error('This element is not a Plotly plot: [object HTMLDivElement]. It\'s likely that you\'ve failed to create a plot before animating it. For more details, see https://plot.ly/javascript/animations/'));
 
         document.body.removeChild(gd);
     });
