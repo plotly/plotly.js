@@ -9,8 +9,15 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.19.1] -- 2016-10-27
+
+### Fixed
+- Fix dist bundles [#1094]
+
 
 ## [1.19.0] -- 2016-10-27
+
+**Unpublished on npm and CDN** due to broken dist bundles.
 
 ### Added
 - Add two-argument `Plotly.plot` call signature [#1014]
