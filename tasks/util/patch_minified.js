@@ -1,5 +1,6 @@
-var STR_TO_REPLACE = 'require("+a(r)+");';
-var STR_NEW = 'require("+ a(r) +");';
+var ALPHABET = 'abcdefghijklmnopqrstuvwxyz'.split('');
+var FRONT = 'require("+';
+var BACK = '+");';
 
 /* Uber hacky in-house fix to
  *
@@ -11,5 +12,20 @@ var STR_NEW = 'require("+ a(r) +");';
  *
  */
 module.exports = function patchMinified(minifiedCode) {
-    return minifiedCode.replace(STR_TO_REPLACE, STR_NEW);
+    for(var i = 0; i < ALPHABET.length; i++) {
+        var li = ALPHABET[i];
+
+        for(var j = 0; j < ALPHABET.length; j++) {
+            var lj = ALPHABET[j];
+
+            var MIDDLE = li + '(' + lj + ')';
+
+            var strOld = FRONT + MIDDLE + BACK,
+                strNew = FRONT + ' ' + MIDDLE + ' ' + BACK;
+
+            minifiedCode = minifiedCode.replace(strOld, strNew);
+        }
+    }
+
+    return minifiedCode;
 };
