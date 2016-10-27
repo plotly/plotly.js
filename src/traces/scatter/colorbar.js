@@ -9,12 +9,11 @@
 
 'use strict';
 
-var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var Plots = require('../../plots/plots');
-var getColorscale = require('../../components/colorscale/get_scale');
+var Colorscale = require('../../components/colorscale');
 var drawColorbar = require('../../components/colorbar/draw');
 
 
@@ -25,16 +24,15 @@ module.exports = function colorbar(gd, cd) {
 
     gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
 
-    // TODO unify Scatter.colorbar and Heatmap.colorbar
-    // TODO make Plotly[module].colorbar support multiple colorbar per trace
+    // TODO unify scatter and heatmap colorbar
+    // TODO make Colorbar.draw support multiple colorbar per trace
 
     if((marker === undefined) || !marker.showscale) {
         Plots.autoMargin(gd, cbId);
         return;
     }
 
-    var scl = getColorscale(marker.colorscale),
-        vals = marker.color,
+    var vals = marker.color,
         cmin = marker.cmin,
         cmax = marker.cmax;
 
@@ -42,10 +40,16 @@ module.exports = function colorbar(gd, cd) {
     if(!isNumeric(cmax)) cmax = Lib.aggNums(Math.max, null, vals);
 
     var cb = cd[0].t.cb = drawColorbar(gd, cbId);
+    var sclFunc = Colorscale.makeColorScaleFunc(
+        Colorscale.extractScale(
+            marker.colorscale,
+            cmin,
+            cmax
+        ),
+        { noNumericCheck: true }
+    );
 
-    cb.fillcolor(d3.scale.linear()
-            .domain(scl.map(function(v) { return cmin + v[0] * (cmax - cmin); }))
-            .range(scl.map(function(v) { return v[1]; })))
+    cb.fillcolor(sclFunc)
         .filllevels({start: cmin, end: cmax, size: (cmax - cmin) / 254})
         .options(marker.colorbar)();
 };
