@@ -18,25 +18,28 @@ var Color = require('../color');
 /**
  * General colorscale function generator.
  *
- * By default, the routine compute that domain and range,
- * but optional can be called with pre-computed values.
+ * Can be called in two forms:
+ *
+ *  (1) makeScaleFunction(scl, { cmin: 0, cmax: 20 })
+ *    where cmin and cmax are used to compute the scale domain and range.
+ *
+ *  (2) makeScaleFunction(scl, { domain: [0, 1, 3], range: [ 'red', 'green', 'blue'] })
+ *    where domain and range are the precomputed values.
  *
  * @param {array} scl
  *  plotly.js colorscale array of arrays as found in fullData
- * @param {number} cmin
- *  minimum color value (used to clamp scale)
- * @param {number} cmax
- *  maximum color value (used to clamp scale)
- * @param {object} opts [optional]
- *      - domain {array} precomputed domain
- *      - range {array} precomputed range
- *      - noNumericCheck {boolean} if true, scale func bypasses numeric checks
- *      - returnArray {boolean} if true, scale func return 4-item array instead of color strings
+ *
+ * @param {object} opts
+ *  - cmin {number} minimum color value (used to clamp scale)
+ *  - cmax {number} maximum color value (used to clamp scale)
+ *  - domain {array} precomputed domain
+ *  - range {array} precomputed range
+ *  - noNumericCheck {boolean} if true, scale func bypasses numeric checks
+ *  - returnArray {boolean} if true, scale func return 4-item array instead of color strings
  *
  * @return {function}
- *
  */
-module.exports = function makeScaleFunction(scl, cmin, cmax, opts) {
+module.exports = function makeScaleFunction(scl, opts) {
     opts = opts || {};
 
     var N = scl.length;
@@ -48,6 +51,9 @@ module.exports = function makeScaleFunction(scl, cmin, cmax, opts) {
         rangeOrig = opts.range;
     }
     else {
+        var cmin = opts.cmin,
+            cmax = opts.cmax;
+
         domain = new Array(N);
         rangeOrig = new Array(N);
 
@@ -64,7 +70,7 @@ module.exports = function makeScaleFunction(scl, cmin, cmax, opts) {
     for(i = 0; i < N; i++) {
         var rgba = tinycolor(rangeOrig[i]).toRgb();
 
-        range[i] = [ rgba.r, rgba.g, rgba.b, rgba.a ];
+        range[i] = [rgba.r, rgba.g, rgba.b, rgba.a];
     }
 
     var _sclFunc = d3.scale.linear()
@@ -72,24 +78,32 @@ module.exports = function makeScaleFunction(scl, cmin, cmax, opts) {
         .range(range)
         .clamp(true);
 
-    var sclFunc = function(v) {
-        if(opts.noNumericCheck || isNumeric(v)) {
-            var colorArray = _sclFunc(v);
+    var noNumericCheck = opts.noNumericCheck,
+        returnArray = opts.returnArray,
+        sclFunc;
 
-            if(opts.returnArray) return colorArray;
-
-            var colorObj = {
-                r: colorArray[0],
-                g: colorArray[1],
-                b: colorArray[2],
-                a: colorArray[3]
-            };
-
-            return tinycolor(colorObj).toRgbString();
-        }
-        else if(tinycolor(v).isValid()) return v;
-        else return Color.defaultLine;
-    };
+    if(noNumericCheck && returnArray) {
+        sclFunc = _sclFunc;
+    }
+    else if(noNumericCheck) {
+        sclFunc = function(v) {
+            return colorArray2rbga(_sclFunc(v));
+        };
+    }
+    else if(returnArray) {
+        sclFunc = function(v) {
+            if(isNumeric(v)) return _sclFunc(v);
+            else if(tinycolor(v).isValid()) return v;
+            else return Color.defaultLine;
+        };
+    }
+    else {
+        sclFunc = function(v) {
+            if(isNumeric(v)) return colorArray2rbga(_sclFunc(v));
+            else if(tinycolor(v).isValid()) return v;
+            else return Color.defaultLine;
+        };
+    }
 
     // colorbar draw looks into the d3 scale closure for domain and range
 
@@ -99,3 +113,14 @@ module.exports = function makeScaleFunction(scl, cmin, cmax, opts) {
 
     return sclFunc;
 };
+
+function colorArray2rbga(colorArray) {
+    var colorObj = {
+        r: colorArray[0],
+        g: colorArray[1],
+        b: colorArray[2],
+        a: colorArray[3]
+    };
+
+    return tinycolor(colorObj).toRgbString();
+}
