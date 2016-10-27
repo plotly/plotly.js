@@ -550,7 +550,7 @@
         }
     ],
     "layout": {
-        "title": "Scatter Plot with a Color Dimension",
+        "title": "RGBA colorscales",
         "xaxis": {
             "range": [
                 -0.271356783919598,
