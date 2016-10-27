@@ -166,12 +166,12 @@ function plotOne(gd, plotinfo, cd) {
     canvas.height = canvasH;
     var context = canvas.getContext('2d');
 
-    var sclFunc = makeScaleFunction(
-        trace.colorscale,
-        trace.zmin,
-        trace.zmax,
-        { noNumericCheck: true, returnArray: true }
-    );
+    var sclFunc = makeScaleFunction(trace.colorscale, {
+        cmin: trace.zmin,
+        cmax: trace.zmax,
+        noNumericCheck: true,
+        returnArray: true
+    });
 
     // map brick boundaries to image pixels
     var xpx,

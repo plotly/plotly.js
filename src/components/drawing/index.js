@@ -332,7 +332,10 @@ drawing.tryColorscale = function(cont, contIn, prefix) {
             Lib.nestedProperty(contIn, prefix + 'cmax').set(max);
         }
 
-        return makeScaleFunction(scl, min, max);
+        return makeScaleFunction(scl, {
+            cmin: min,
+            cmax: max
+        });
     }
     else return Lib.identity;
 };

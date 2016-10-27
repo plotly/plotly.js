@@ -33,8 +33,12 @@ module.exports = function colorbar(gd, cd) {
         return;
     }
 
-    var cb = cd[0].t.cb = drawColorbar(gd, cbId),
-        sclFunc = makeScaleFunction(trace.colorscale, zmin, zmax);
+    var cb = cd[0].t.cb = drawColorbar(gd, cbId);
+    var sclFunc = makeScaleFunction(trace.colorscale, {
+        cmin: zmin,
+        cmax: zmax,
+        noNumericCheck: true
+    });
 
     cb.fillcolor(sclFunc)
         .filllevels({start: zmin, end: zmax, size: (zmax - zmin) / 254})

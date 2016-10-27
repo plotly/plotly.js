@@ -380,14 +380,18 @@ describe('Test colorscale:', function() {
 
     describe('makeScaleFunction', function() {
         var scale = [
-                [0, 'rgb(5,10,172)'],
-                [0.35, 'rgb(106,137,247)'],
-                [0.5, 'rgb(190,190,190)'],
-                [0.6, 'rgb(220,170,132)'],
-                [0.7, 'rgb(230,145,90)'],
-                [1, 'rgb(178,10,28)']
-            ],
-            scaleFunction = Colorscale.makeScaleFunction(scale, 2, 3);
+            [0, 'rgb(5,10,172)'],
+            [0.35, 'rgb(106,137,247)'],
+            [0.5, 'rgb(190,190,190)'],
+            [0.6, 'rgb(220,170,132)'],
+            [0.7, 'rgb(230,145,90)'],
+            [1, 'rgb(178,10,28)']
+        ];
+
+        var scaleFunction = Colorscale.makeScaleFunction(scale, {
+            cmin: 2,
+            cmax: 3
+        });
 
         it('should constrain color array values between cmin and cmax', function() {
             var color1 = scaleFunction(1),

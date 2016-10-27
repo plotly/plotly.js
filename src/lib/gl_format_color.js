@@ -42,9 +42,10 @@ function formatColor(containerIn, opacityIn, len) {
     var sclFunc, getColor, getOpacity, colori, opacityi;
 
     if(containerIn.colorscale !== undefined) {
-        sclFunc = makeScaleFunction(
-            containerIn.colorscale, containerIn.cmin, containerIn.cmax
-        );
+        sclFunc = makeScaleFunction(containerIn.colorscale, {
+            cmin: containerIn.cmin,
+            cmax: containerIn.cmax
+        });
     }
     else sclFunc = validateColor;
 

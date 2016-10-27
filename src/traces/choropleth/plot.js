@@ -152,11 +152,10 @@ plotChoropleth.style = function(geo) {
                 marker = trace.marker || {},
                 markerLine = marker.line || {};
 
-            var sclFunc = makeScaleFunction(
-                trace.colorscale,
-                trace.zmin,
-                trace.zmax
-            );
+            var sclFunc = makeScaleFunction(trace.colorscale, {
+                cmin: trace.zmin,
+                cmax: trace.zmax
+            });
 
             s.selectAll('path.choroplethlocation')
                 .each(function(pt) {

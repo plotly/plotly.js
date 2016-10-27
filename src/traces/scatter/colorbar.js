@@ -39,8 +39,12 @@ module.exports = function colorbar(gd, cd) {
     if(!isNumeric(cmin)) cmin = Lib.aggNums(Math.min, null, vals);
     if(!isNumeric(cmax)) cmax = Lib.aggNums(Math.max, null, vals);
 
-    var cb = cd[0].t.cb = drawColorbar(gd, cbId),
-        sclFunc = makeScaleFunction(marker.colorscale, cmin, cmax);
+    var cb = cd[0].t.cb = drawColorbar(gd, cbId);
+    var sclFunc = makeScaleFunction(marker.colorscale, {
+        cmin: cmin,
+        cmax: cmax,
+        noNumericCheck: true
+    });
 
     cb.fillcolor(sclFunc)
         .filllevels({start: cmin, end: cmax, size: (cmax - cmin) / 254})

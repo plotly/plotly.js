@@ -67,5 +67,9 @@ module.exports = function makeColorMap(trace) {
         }
     }
 
-    return makeScaleFunction(scl, null, null, { domain: domain, range: range });
+    return makeScaleFunction(scl, {
+        domain: domain,
+        range: range,
+        noNumericCheck: true
+    });
 };
