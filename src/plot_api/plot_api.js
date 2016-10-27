@@ -2156,7 +2156,11 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
     gd = helpers.getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
-        throw new Error('This element is not a Plotly plot: ' + gd);
+        throw new Error(
+            'This element is not a Plotly plot: ' + gd + '. It\'s likely that you\'ve failed ' +
+            'to create a plot before animating it. For more details, see ' +
+            'https://plot.ly/javascript/animations/'
+        );
     }
 
     var trans = gd._transitionData;
@@ -2496,7 +2500,11 @@ Plotly.addFrames = function(gd, frameList, indices) {
     }
 
     if(!Lib.isPlotDiv(gd)) {
-        throw new Error('This element is not a Plotly plot: ' + gd);
+        throw new Error(
+            'This element is not a Plotly plot: ' + gd + '. It\'s likely that you\'ve failed ' +
+            'to create a plot before adding frames. For more details, see ' +
+            'https://plot.ly/javascript/animations/'
+        );
     }
 
     var i, frame, j, idx;
