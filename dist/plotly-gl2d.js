@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v1.19.0
+* plotly.js (gl2d) v1.19.1
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -23120,15 +23120,14 @@ arguments[4][46][0].apply(exports,arguments)
 },{"dup":46}],78:[function(require,module,exports){
 
 
-exports.lineVertex    = "precision mediump float;\n#define GLSLIFY 1\n\nfloat inverse_1_0(float m) {\n  return 1.0 / m;\n}\n\nmat2 inverse_1_0(mat2 m) {\n  return mat2(m[1][1],-m[0][1],\n             -m[1][0], m[0][0]) / (m[0][0]*m[1][1] - m[0][1]*m[1][0]);\n}\n\nmat3 inverse_1_0(mat3 m) {\n  float a00 = m[0][0], a01 = m[0][1], a02 = m[0][2];\n  float a10 = m[1][0], a11 = m[1][1], a12 = m[1][2];\n  float a20 = m[2][0], a21 = m[2][1], a22 = m[2][2];\n\n  float b01 = a22 * a11 - a12 * a21;\n  float b11 = -a22 * a10 + a12 * a20;\n  float b21 = a21 * a10 - a11 * a20;\n\n  float det = a00 * b01 + a01 * b11 + a02 * b21;\n\n  return mat3(b01, (-a22 * a01 + a02 * a21), (a12 * a01 - a02 * a11),\n              b11, (a22 * a00 - a02 * a20), (-a12 * a00 + a02 * a10),\n              b21, (-a21 * a00 + a01 * a20), (a11 * a00 - a01 * a10)) / det;\n}\n\nmat4 inverse_1_0(mat4 m) {\n  float\n      a00 = m[0][0], a01 = m[0][1], a02 = m[0][2], a03 = m[0][3],\n      a10 = m[1][0], a11 = m[1][1], a12 = m[1][2], a13 = m[1][3],\n      a20 = m[2][0], a21 = m[2][1], a22 = m[2][2], a23 = m[2][3],\n      a30 = m[3][0], a31 = m[3][1], a32 = m[3][2], a33 = m[3][3],\n\n      b00 = a00 * a11 - a01 * a10,\n      b01 = a00 * a12 - a02 * a10,\n      b02 = a00 * a13 - a03 * a10,\n      b03 = a01 * a12 - a02 * a11,\n      b04 = a01 * a13 - a03 * a11,\n      b05 = a02 * a13 - a03 * a12,\n      b06 = a20 * a31 - a21 * a30,\n      b07 = a20 * a32 - a22 * a30,\n      b08 = a20 * a33 - a23 * a30,\n      b09 = a21 * a32 - a22 * a31,\n      b10 = a21 * a33 - a23 * a31,\n      b11 = a22 * a33 - a23 * a32,\n\n      det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;\n\n  return mat4(\n      a11 * b11 - a12 * b10 + a13 * b09,\n      a02 * b10 - a01 * b11 - a03 * b09,\n      a31 * b05 - a32 * b04 + a33 * b03,\n      a22 * b04 - a21 * b05 - a23 * b03,\n      a12 * b08 - a10 * b11 - a13 * b07,\n      a00 * b11 - a02 * b08 + a03 * b07,\n      a32 * b02 - a30 * b05 - a33 * b01,\n      a20 * b05 - a22 * b02 + a23 * b01,\n      a10 * b10 - a11 * b08 + a13 * b06,\n      a01 * b08 - a00 * b10 - a03 * b06,\n      a30 * b04 - a31 * b02 + a33 * b00,\n      a21 * b02 - a20 * b04 - a23 * b00,\n      a11 * b07 - a10 * b09 - a12 * b06,\n      a00 * b09 - a01 * b07 + a02 * b06,\n      a31 * b01 - a30 * b03 - a32 * b00,\n      a20 * b03 - a21 * b01 + a22 * b00) / det;\n}\n\n\n\nattribute vec2 a, d;\n\nuniform mat3 matrix;\nuniform vec2 screenShape;\nuniform float width;\n\nvarying vec2 direction;\n\nvoid main() {\n  vec2 dir = (matrix * vec3(d, 0)).xy;\n  vec3 base = matrix * vec3(a, 1);\n  vec2 n = 0.5 * width *\n    normalize(screenShape.yx * vec2(dir.y, -dir.x)) / screenShape.xy;\n  vec2 tangent = normalize(screenShape.xy * dir);\n  if(dir.x < 0.0 || (dir.x == 0.0 && dir.y < 0.0)) {\n    direction = -tangent;\n  } else {\n    direction = tangent;\n  }\n  gl_Position = vec4(base.xy/base.z + n, 0, 1);\n}\n"
-exports.lineFragment  = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\nuniform vec2 screenShape;\nuniform sampler2D dashPattern;\nuniform float dashLength;\n\nvarying vec2 direction;\n\nvoid main() {\n  float t = fract(dot(direction, gl_FragCoord.xy) / dashLength);\n  vec4 pcolor = color * texture2D(dashPattern, vec2(t, 0.0)).r;\n  gl_FragColor = vec4(pcolor.rgb * pcolor.a, pcolor.a);\n}\n"
-exports.mitreVertex   = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 p;\n\nuniform mat3  matrix;\nuniform vec2 screenShape;\nuniform float radius;\n\nvoid main() {\n  vec3 pp = matrix * vec3(p, 1);\n  gl_Position  = vec4(pp.xy, 0, pp.z);\n  gl_PointSize = radius;\n}\n"
-exports.mitreFragment = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  if(length(gl_PointCoord.xy - 0.5) > 0.25) {\n    discard;\n  }\n  gl_FragColor = vec4(color.rgb, color.a);\n}\n"
-exports.pickVertex    = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 a, d;\nattribute vec4 pick0, pick1;\n\nuniform mat3 matrix;\nuniform vec2 screenShape;\nuniform float width;\n\nvarying vec4 pickA, pickB;\n\nfloat inverse_1_0(float m) {\n  return 1.0 / m;\n}\n\nmat2 inverse_1_0(mat2 m) {\n  return mat2(m[1][1],-m[0][1],\n             -m[1][0], m[0][0]) / (m[0][0]*m[1][1] - m[0][1]*m[1][0]);\n}\n\nmat3 inverse_1_0(mat3 m) {\n  float a00 = m[0][0], a01 = m[0][1], a02 = m[0][2];\n  float a10 = m[1][0], a11 = m[1][1], a12 = m[1][2];\n  float a20 = m[2][0], a21 = m[2][1], a22 = m[2][2];\n\n  float b01 = a22 * a11 - a12 * a21;\n  float b11 = -a22 * a10 + a12 * a20;\n  float b21 = a21 * a10 - a11 * a20;\n\n  float det = a00 * b01 + a01 * b11 + a02 * b21;\n\n  return mat3(b01, (-a22 * a01 + a02 * a21), (a12 * a01 - a02 * a11),\n              b11, (a22 * a00 - a02 * a20), (-a12 * a00 + a02 * a10),\n              b21, (-a21 * a00 + a01 * a20), (a11 * a00 - a01 * a10)) / det;\n}\n\nmat4 inverse_1_0(mat4 m) {\n  float\n      a00 = m[0][0], a01 = m[0][1], a02 = m[0][2], a03 = m[0][3],\n      a10 = m[1][0], a11 = m[1][1], a12 = m[1][2], a13 = m[1][3],\n      a20 = m[2][0], a21 = m[2][1], a22 = m[2][2], a23 = m[2][3],\n      a30 = m[3][0], a31 = m[3][1], a32 = m[3][2], a33 = m[3][3],\n\n      b00 = a00 * a11 - a01 * a10,\n      b01 = a00 * a12 - a02 * a10,\n      b02 = a00 * a13 - a03 * a10,\n      b03 = a01 * a12 - a02 * a11,\n      b04 = a01 * a13 - a03 * a11,\n      b05 = a02 * a13 - a03 * a12,\n      b06 = a20 * a31 - a21 * a30,\n      b07 = a20 * a32 - a22 * a30,\n      b08 = a20 * a33 - a23 * a30,\n      b09 = a21 * a32 - a22 * a31,\n      b10 = a21 * a33 - a23 * a31,\n      b11 = a22 * a33 - a23 * a32,\n\n      det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;\n\n  return mat4(\n      a11 * b11 - a12 * b10 + a13 * b09,\n      a02 * b10 - a01 * b11 - a03 * b09,\n      a31 * b05 - a32 * b04 + a33 * b03,\n      a22 * b04 - a21 * b05 - a23 * b03,\n      a12 * b08 - a10 * b11 - a13 * b07,\n      a00 * b11 - a02 * b08 + a03 * b07,\n      a32 * b02 - a30 * b05 - a33 * b01,\n      a20 * b05 - a22 * b02 + a23 * b01,\n      a10 * b10 - a11 * b08 + a13 * b06,\n      a01 * b08 - a00 * b10 - a03 * b06,\n      a30 * b04 - a31 * b02 + a33 * b00,\n      a21 * b02 - a20 * b04 - a23 * b00,\n      a11 * b07 - a10 * b09 - a12 * b06,\n      a00 * b09 - a01 * b07 + a02 * b06,\n      a31 * b01 - a30 * b03 - a32 * b00,\n      a20 * b03 - a21 * b01 + a22 * b00) / det;\n}\n\n\n\nvoid main() {\n  vec3 base = matrix * vec3(a, 1);\n  vec2 n = width *\n    normalize(screenShape.yx * vec2(d.y, -d.x)) / screenShape.xy;\n  gl_Position = vec4(base.xy/base.z + n, 0, 1);\n  pickA = pick0;\n  pickB = pick1;\n}\n"
-exports.pickFragment  = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 pickOffset;\n\nvarying vec4 pickA, pickB;\n\nvoid main() {\n  vec4 fragId = vec4(pickA.xyz, 0.0);\n  if(pickB.w > pickA.w) {\n    fragId.xyz = pickB.xyz;\n  }\n\n  fragId += pickOffset;\n\n  fragId.y += floor(fragId.x / 256.0);\n  fragId.x -= floor(fragId.x / 256.0) * 256.0;\n\n  fragId.z += floor(fragId.y / 256.0);\n  fragId.y -= floor(fragId.y / 256.0) * 256.0;\n\n  fragId.w += floor(fragId.z / 256.0);\n  fragId.z -= floor(fragId.z / 256.0) * 256.0;\n\n  gl_FragColor = fragId / 255.0;\n}\n"
-exports.fillVertex    = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 a, d;\n\nuniform mat3 matrix;\nuniform vec2 projectAxis;\nuniform float projectValue;\nuniform float depth;\n\nvoid main() {\n  vec3 base = matrix * vec3(a, 1);\n  vec2 p = base.xy / base.z;\n  if(d.y < 0.0 || (d.y == 0.0 && d.x < 0.0)) {\n    if(dot(p, projectAxis) < projectValue) {\n      p = p * (1.0 - abs(projectAxis)) + projectAxis * projectValue;\n    }\n  }\n  gl_Position = vec4(p, depth, 1);\n}\n"
-exports.fillFragment  = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = vec4(color.rgb * color.a, color.a);\n}\n"
-
+exports.lineVertex    = "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 aHi, aLo, dHi, dLo;\n\nuniform vec2 scaleHi, translateHi, scaleLo, translateLo, screenShape;\nuniform float width;\n\nvarying vec2 direction;\n\n\nvec2 project_1_0(vec2 scHi, vec2 trHi, vec2 scLo, vec2 trLo, vec2 posHi, vec2 posLo) {\n  return scHi * posHi + trHi\n       + scLo * posHi + trLo\n       + scHi * posLo\n       + scLo * posLo;\n}\n\n\nvec2 project_2_1(vec2 scHi, vec2 scLo, vec2 posHi, vec2 posLo) {\n  return scHi * posHi\n       + scLo * posHi\n       + scHi * posLo\n       + scLo * posLo;\n}\n\nvoid main() {\n  vec2 p = project_1_0(scaleHi, translateHi, scaleLo, translateLo, aHi, aLo);\n  vec2 dir = project_2_1(scaleHi, scaleLo, dHi, dLo);\n  vec2 n = 0.5 * width * normalize(screenShape.yx * vec2(dir.y, -dir.x)) / screenShape.xy;\n  vec2 tangent = normalize(screenShape.xy * dir);\n  if(dir.x < 0.0 || (dir.x == 0.0 && dir.y < 0.0)) {\n    direction = -tangent;\n  } else {\n    direction = tangent;\n  }\n  gl_Position = vec4(p + n, 0.0, 1.0);\n}"
+exports.lineFragment  = "precision highp float;\n#define GLSLIFY 1\n\nuniform vec4 color;\nuniform vec2 screenShape;\nuniform sampler2D dashPattern;\nuniform float dashLength;\n\nvarying vec2 direction;\n\nvoid main() {\n  float t = fract(dot(direction, gl_FragCoord.xy) / dashLength);\n  vec4 pcolor = color * texture2D(dashPattern, vec2(t, 0.0)).r;\n  gl_FragColor = vec4(pcolor.rgb * pcolor.a, pcolor.a);\n}"
+exports.mitreVertex   = "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 aHi, aLo;\n\nuniform vec2 scaleHi, translateHi, scaleLo, translateLo;\nuniform float radius;\n\n\nvec2 project_1_0(vec2 scHi, vec2 trHi, vec2 scLo, vec2 trLo, vec2 posHi, vec2 posLo) {\n  return scHi * posHi + trHi\n       + scLo * posHi + trLo\n       + scHi * posLo\n       + scLo * posLo;\n}\n\n\nvoid main() {\n  vec2 p = project_1_0(scaleHi, translateHi, scaleLo, translateLo, aHi, aLo);\n  gl_Position = vec4(p, 0.0, 1.0);\n  gl_PointSize = radius;\n}"
+exports.mitreFragment = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  if(length(gl_PointCoord.xy - 0.5) > 0.25) {\n    discard;\n  }\n  gl_FragColor = vec4(color.rgb, color.a);\n}"
+exports.pickVertex    = "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 aHi, aLo, dHi;\nattribute vec4 pick0, pick1;\n\nuniform vec2 scaleHi, translateHi, scaleLo, translateLo, screenShape;\nuniform float width;\n\nvarying vec4 pickA, pickB;\n\n\nvec2 project_1_0(vec2 scHi, vec2 trHi, vec2 scLo, vec2 trLo, vec2 posHi, vec2 posLo) {\n  return scHi * posHi + trHi\n       + scLo * posHi + trLo\n       + scHi * posLo\n       + scLo * posLo;\n}\n\n\nvoid main() {\n  vec2 p = project_1_0(scaleHi, translateHi, scaleLo, translateLo, aHi, aLo);\n  vec2 n = width * normalize(screenShape.yx * vec2(dHi.y, -dHi.x)) / screenShape.xy;\n  gl_Position = vec4(p + n, 0, 1);\n  pickA = pick0;\n  pickB = pick1;\n}"
+exports.pickFragment  = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 pickOffset;\n\nvarying vec4 pickA, pickB;\n\nvoid main() {\n  vec4 fragId = vec4(pickA.xyz, 0.0);\n  if(pickB.w > pickA.w) {\n    fragId.xyz = pickB.xyz;\n  }\n\n  fragId += pickOffset;\n\n  fragId.y += floor(fragId.x / 256.0);\n  fragId.x -= floor(fragId.x / 256.0) * 256.0;\n\n  fragId.z += floor(fragId.y / 256.0);\n  fragId.y -= floor(fragId.y / 256.0) * 256.0;\n\n  fragId.w += floor(fragId.z / 256.0);\n  fragId.z -= floor(fragId.z / 256.0) * 256.0;\n\n  gl_FragColor = fragId / 255.0;\n}"
+exports.fillVertex    = "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 aHi, aLo, dHi;\n\nuniform vec2 scaleHi, translateHi, scaleLo, translateLo, projectAxis;\nuniform float projectValue, depth;\n\n\nvec2 project_1_0(vec2 scHi, vec2 trHi, vec2 scLo, vec2 trLo, vec2 posHi, vec2 posLo) {\n  return scHi * posHi + trHi\n       + scLo * posHi + trLo\n       + scHi * posLo\n       + scLo * posLo;\n}\n\n\nvoid main() {\n  vec2 p = project_1_0(scaleHi, translateHi, scaleLo, translateLo, aHi, aLo);\n  if(dHi.y < 0.0 || (dHi.y == 0.0 && dHi.x < 0.0)) {\n    if(dot(p, projectAxis) < projectValue) {\n      p = p * (1.0 - abs(projectAxis)) + projectAxis * projectValue;\n    }\n  }\n  gl_Position = vec4(p, depth, 1);\n}"
+exports.fillFragment  = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = vec4(color.rgb * color.a, color.a);\n}"
 },{}],79:[function(require,module,exports){
 'use strict'
 
@@ -23145,7 +23144,8 @@ var SHADERS = require('./lib/shaders')
 function GLLine2D(
   plot,
   dashPattern,
-  lineBuffer,
+  lineBufferHi,
+  lineBufferLo,
   pickBuffer,
   lineShader,
   mitreShader,
@@ -23154,7 +23154,8 @@ function GLLine2D(
 
   this.plot         = plot
   this.dashPattern  = dashPattern
-  this.lineBuffer   = lineBuffer
+  this.lineBufferHi = lineBufferHi
+  this.lineBufferLo = lineBufferLo
   this.pickBuffer   = pickBuffer
   this.lineShader   = lineShader
   this.mitreShader  = mitreShader
@@ -23163,217 +23164,248 @@ function GLLine2D(
   this.usingDashes  = false
 
   this.bounds     = [Infinity, Infinity, -Infinity, -Infinity]
-
   this.width      = 1
-  this.color      = [0,0,1,1]
+  this.color      = [0, 0, 1, 1]
 
   //Fill to axes
   this.fill       = [false, false, false, false]
-  this.fillColor  = [[0,0,0,1],
-                     [0,0,0,1],
-                     [0,0,0,1],
-                     [0,0,0,1]]
+  this.fillColor  = [
+    [0, 0, 0, 1],
+    [0, 0, 0, 1],
+    [0, 0, 0, 1],
+    [0, 0, 0, 1]
+  ]
 
   this.data       = null
   this.numPoints  = 0
   this.vertCount  = 0
 
   this.pickOffset = 0
-
-  this.lodBuffer = []
 }
 
 var proto = GLLine2D.prototype
 
-proto.draw = (function() {
-var MATRIX = [1, 0, 0,
-              0, 1, 0,
-              0, 0, 1]
-var SCREEN_SHAPE = [0,0]
-var PX_AXIS = [1,0]
-var NX_AXIS = [-1,0]
-var PY_AXIS = [0,1]
-var NY_AXIS = [0,-1]
-return function() {
-  var plot      = this.plot
-  var color     = this.color
-  var width     = this.width
-  var numPoints = this.numPoints
-  var bounds    = this.bounds
-  var count     = this.vertCount
+proto.setProjectionModel = (function() {
 
-  if(!count) {
-    return
+  var pm = {
+    scaleHi: new Float32Array([0, 0]),
+    scaleLo: new Float32Array([0, 0]),
+    translateHi: new Float32Array([0, 0]),
+    translateLo: new Float32Array([0, 0]),
+    screenShape: [0, 0]
   }
 
-  var gl        = plot.gl
-  var viewBox   = plot.viewBox
-  var dataBox   = plot.dataBox
-  var pixelRatio = plot.pixelRatio
+  return function() {
 
-  var boundX  = bounds[2] - bounds[0]
-  var boundY  = bounds[3] - bounds[1]
-  var dataX   = dataBox[2] - dataBox[0]
-  var dataY   = dataBox[3] - dataBox[1]
-  var screenX = viewBox[2] - viewBox[0]
-  var screenY = viewBox[3] - viewBox[1]
+    var bounds  = this.bounds
+    var viewBox = this.plot.viewBox
+    var dataBox = this.plot.dataBox
 
-  MATRIX[0] = 2.0 * boundX / dataX
-  MATRIX[4] = 2.0 * boundY / dataY
-  MATRIX[6] = 2.0 * (bounds[0] - dataBox[0]) / dataX - 1.0
-  MATRIX[7] = 2.0 * (bounds[1] - dataBox[1]) / dataY - 1.0
-
-  SCREEN_SHAPE[0] = screenX
-  SCREEN_SHAPE[1] = screenY
-
-  var buffer    = this.lineBuffer
-  buffer.bind()
-
-  var fill = this.fill
-
-  if(fill[0] || fill[1] || fill[2] || fill[3]) {
-
-    var fillShader = this.fillShader
-    fillShader.bind()
-
-    var fillUniforms = fillShader.uniforms
-    fillUniforms.matrix = MATRIX
-    fillUniforms.depth = plot.nextDepthValue()
-
-    var fillAttributes = fillShader.attributes
-    fillAttributes.a.pointer(gl.FLOAT, false, 16, 0)
-    fillAttributes.d.pointer(gl.FLOAT, false, 16, 8)
-
-    gl.depthMask(true)
-    gl.enable(gl.DEPTH_TEST)
-
-    var fillColor = this.fillColor
-    if(fill[0]) {
-      fillUniforms.color        = fillColor[0]
-      fillUniforms.projectAxis  = NX_AXIS
-      fillUniforms.projectValue = 1
-      gl.drawArrays(gl.TRIANGLES, 0, count)
-    }
-
-    if(fill[1]) {
-      fillUniforms.color        = fillColor[1]
-      fillUniforms.projectAxis  = NY_AXIS
-      fillUniforms.projectValue = 1
-      gl.drawArrays(gl.TRIANGLES, 0, count)
-    }
-
-    if(fill[2]) {
-      fillUniforms.color        = fillColor[2]
-      fillUniforms.projectAxis  = PX_AXIS
-      fillUniforms.projectValue = 1
-      gl.drawArrays(gl.TRIANGLES, 0, count)
-    }
-
-    if(fill[3]) {
-      fillUniforms.color        = fillColor[3]
-      fillUniforms.projectAxis  = PY_AXIS
-      fillUniforms.projectValue = 1
-      gl.drawArrays(gl.TRIANGLES, 0, count)
-    }
-
-    gl.depthMask(false)
-    gl.disable(gl.DEPTH_TEST)
-  }
-
-  var shader    = this.lineShader
-  shader.bind()
-
-  var uniforms = shader.uniforms
-  uniforms.matrix = MATRIX
-  uniforms.color  = color
-  uniforms.width  = width * pixelRatio
-  uniforms.screenShape = SCREEN_SHAPE
-  uniforms.dashPattern = this.dashPattern.bind()
-  uniforms.dashLength = this.dashLength * pixelRatio
-
-  var attributes = shader.attributes
-  attributes.a.pointer(gl.FLOAT, false, 16, 0)
-  attributes.d.pointer(gl.FLOAT, false, 16, 8)
-
-  gl.drawArrays(gl.TRIANGLES, 0, count)
-
-  //Draw mitres
-  if(width > 2 && !this.usingDashes) {
-    var mshader = this.mitreShader
-    mshader.bind()
-
-    var muniforms = mshader.uniforms
-    muniforms.matrix = MATRIX
-    muniforms.color  = color
-    muniforms.screenShape = SCREEN_SHAPE
-    muniforms.radius = width * pixelRatio
-
-    mshader.attributes.p.pointer(gl.FLOAT, false, 48, 0)
-    gl.drawArrays(gl.POINTS, 0, (count/3)|0)
-  }
-}
-})()
-
-proto.drawPick = (function() {
-  var MATRIX = [1, 0, 0,
-                0, 1, 0,
-                0, 0, 1]
-  var SCREEN_SHAPE = [0,0]
-  var PICK_OFFSET = [0,0,0,0]
-  return function(pickOffset) {
-    var plot      = this.plot
-    var shader    = this.pickShader
-    var buffer    = this.lineBuffer
-    var pickBuffer= this.pickBuffer
-    var width     = this.width
-    var numPoints = this.numPoints
-    var bounds    = this.bounds
-    var count     = this.vertCount
-
-    var gl        = plot.gl
-    var viewBox   = plot.viewBox
-    var dataBox   = plot.dataBox
-    var pixelRatio = plot.pickPixelRatio
-
-    var boundX  = bounds[2]  - bounds[0]
-    var boundY  = bounds[3]  - bounds[1]
+    var boundX  = bounds[2] - bounds[0]
+    var boundY  = bounds[3] - bounds[1]
     var dataX   = dataBox[2] - dataBox[0]
     var dataY   = dataBox[3] - dataBox[1]
     var screenX = viewBox[2] - viewBox[0]
     var screenY = viewBox[3] - viewBox[1]
 
-    this.pickOffset = pickOffset
+    var scaleX = 2 * boundX / dataX
+    var scaleY = 2 * boundY / dataY
+    var translateX = 2 * (bounds[0] - dataBox[0]) / dataX - 1
+    var translateY = 2 * (bounds[1] - dataBox[1]) / dataY - 1
 
+    pm.scaleHi[0]     = scaleX
+    pm.scaleHi[1]     = scaleY
+    pm.scaleLo[0]     = scaleX - pm.scaleHi[0]
+    pm.scaleLo[1]     = scaleY - pm.scaleHi[1]
+    pm.translateHi[0] = translateX
+    pm.translateHi[1] = translateY
+    pm.translateLo[0] = translateX - pm.translateHi[0]
+    pm.translateLo[1] = translateY - pm.translateHi[1]
+
+    pm.screenShape[0] = screenX
+    pm.screenShape[1] = screenY
+
+    return pm
+  }
+})()
+
+proto.setProjectionUniforms = function(uniforms, projectionModel) {
+  uniforms.scaleHi = projectionModel.scaleHi
+  uniforms.scaleLo = projectionModel.scaleLo
+  uniforms.translateHi = projectionModel.translateHi
+  uniforms.translateLo = projectionModel.translateLo
+  uniforms.screenShape = projectionModel.screenShape
+}
+
+proto.draw = (function() {
+
+  var PX_AXIS = [1, 0]
+  var NX_AXIS = [-1, 0]
+  var PY_AXIS = [0, 1]
+  var NY_AXIS = [0, -1]
+
+  return function() {
+    var count = this.vertCount
+
+    if(!count) {
+      return
+    }
+
+    var projectionModel = this.setProjectionModel()
+
+    var plot       = this.plot
+    var width      = this.width
+    var gl         = plot.gl
+    var pixelRatio = plot.pixelRatio
+
+    var color     = this.color
+
+    var fillAttributes = this.fillShader.attributes
+
+    this.lineBufferLo.bind()
+    fillAttributes.aLo.pointer(gl.FLOAT, false, 16, 0)
+
+    this.lineBufferHi.bind()
+
+    var fill = this.fill
+
+    if(fill[0] || fill[1] || fill[2] || fill[3]) {
+
+      var fillShader = this.fillShader
+      fillShader.bind()
+
+      var fillUniforms = fillShader.uniforms
+      this.setProjectionUniforms(fillUniforms, projectionModel)
+      fillUniforms.depth = plot.nextDepthValue()
+
+      fillAttributes.aHi.pointer(gl.FLOAT, false, 16, 0)
+      fillAttributes.dHi.pointer(gl.FLOAT, false, 16, 8)
+
+      gl.depthMask(true)
+      gl.enable(gl.DEPTH_TEST)
+
+      var fillColor = this.fillColor
+      if(fill[0]) {
+        fillUniforms.color        = fillColor[0]
+        fillUniforms.projectAxis  = NX_AXIS
+        fillUniforms.projectValue = 1
+        gl.drawArrays(gl.TRIANGLES, 0, count)
+      }
+
+      if(fill[1]) {
+        fillUniforms.color        = fillColor[1]
+        fillUniforms.projectAxis  = NY_AXIS
+        fillUniforms.projectValue = 1
+        gl.drawArrays(gl.TRIANGLES, 0, count)
+      }
+
+      if(fill[2]) {
+        fillUniforms.color        = fillColor[2]
+        fillUniforms.projectAxis  = PX_AXIS
+        fillUniforms.projectValue = 1
+        gl.drawArrays(gl.TRIANGLES, 0, count)
+      }
+
+      if(fill[3]) {
+        fillUniforms.color        = fillColor[3]
+        fillUniforms.projectAxis  = PY_AXIS
+        fillUniforms.projectValue = 1
+        gl.drawArrays(gl.TRIANGLES, 0, count)
+      }
+
+      gl.depthMask(false)
+      gl.disable(gl.DEPTH_TEST)
+    }
+
+    var shader = this.lineShader
+    shader.bind()
+
+    this.lineBufferLo.bind()
+    shader.attributes.aLo.pointer(gl.FLOAT, false, 16, 0)
+    shader.attributes.dLo.pointer(gl.FLOAT, false, 16, 8)
+
+    this.lineBufferHi.bind()
+
+    var uniforms = shader.uniforms
+    this.setProjectionUniforms(uniforms, projectionModel)
+    uniforms.color  = color
+    uniforms.width  = width * pixelRatio
+    uniforms.dashPattern = this.dashPattern.bind()
+    uniforms.dashLength = this.dashLength * pixelRatio
+
+    var attributes = shader.attributes
+    attributes.aHi.pointer(gl.FLOAT, false, 16, 0)
+    attributes.dHi.pointer(gl.FLOAT, false, 16, 8)
+
+    gl.drawArrays(gl.TRIANGLES, 0, count)
+
+    //Draw mitres
+    if(width > 2 && !this.usingDashes) {
+      var mshader = this.mitreShader
+
+      this.lineBufferLo.bind()
+      mshader.attributes.aLo.pointer(gl.FLOAT, false, 48, 0)
+
+      this.lineBufferHi.bind()
+      mshader.bind()
+
+      var muniforms = mshader.uniforms
+      this.setProjectionUniforms(muniforms, projectionModel)
+      muniforms.color  = color
+      muniforms.radius = width * pixelRatio
+
+      mshader.attributes.aHi.pointer(gl.FLOAT, false, 48, 0)
+      gl.drawArrays(gl.POINTS, 0, (count / 3) | 0)
+    }
+  }
+})()
+
+proto.drawPick = (function() {
+
+  var PICK_OFFSET = [0, 0, 0, 0]
+
+  return function(pickOffset) {
+
+    var count      = this.vertCount
+    var numPoints  = this.numPoints
+
+    this.pickOffset = pickOffset
     if(!count) {
       return pickOffset + numPoints
     }
 
-    MATRIX[0] = 2.0 * boundX / dataX
-    MATRIX[4] = 2.0 * boundY / dataY
-    MATRIX[6] = 2.0 * (bounds[0] - dataBox[0]) / dataX - 1.0
-    MATRIX[7] = 2.0 * (bounds[1] - dataBox[1]) / dataY - 1.0
+    var projectionModel = this.setProjectionModel()
 
-    SCREEN_SHAPE[0] = screenX
-    SCREEN_SHAPE[1] = screenY
+    var plot       = this.plot
+    var width      = this.width
+    var gl         = plot.gl
+    var pixelRatio = plot.pickPixelRatio
 
-    PICK_OFFSET[0] =  pickOffset       & 0xff
-    PICK_OFFSET[1] = (pickOffset>>>8)  & 0xff
-    PICK_OFFSET[2] = (pickOffset>>>16) & 0xff
-    PICK_OFFSET[3] =  pickOffset>>>24
+    var shader     = this.pickShader
+    var pickBuffer = this.pickBuffer
+
+    PICK_OFFSET[0] =  pickOffset         & 0xff
+    PICK_OFFSET[1] = (pickOffset >>> 8)  & 0xff
+    PICK_OFFSET[2] = (pickOffset >>> 16) & 0xff
+    PICK_OFFSET[3] =  pickOffset >>> 24
 
     shader.bind()
 
     var uniforms = shader.uniforms
-    uniforms.matrix      = MATRIX
+    this.setProjectionUniforms(uniforms, projectionModel)
     uniforms.width       = width * pixelRatio
     uniforms.pickOffset  = PICK_OFFSET
-    uniforms.screenShape = SCREEN_SHAPE
 
     var attributes = shader.attributes
 
-    buffer.bind()
-    attributes.a.pointer(gl.FLOAT, false, 16, 0)
-    attributes.d.pointer(gl.FLOAT, false, 16, 8)
+    this.lineBufferHi.bind()
+    attributes.aHi.pointer(gl.FLOAT, false, 16, 0)
+    attributes.dHi.pointer(gl.FLOAT, false, 16, 8)
+
+    this.lineBufferLo.bind()
+    attributes.aLo.pointer(gl.FLOAT, false, 16, 0)
+
+    //attributes.dLo.pointer(gl.FLOAT, false, 16, 8)
 
     pickBuffer.bind()
     attributes.pick0.pointer(gl.UNSIGNED_BYTE, false, 8, 0)
@@ -23396,7 +23428,7 @@ proto.pick = function(x, y, value) {
   return {
     object:    this,
     pointId:   pointId,
-    dataCoord: [ points[2*pointId], points[2*pointId+1] ]
+    dataCoord: [points[2 * pointId], points[2 * pointId + 1]]
   }
 }
 
@@ -23410,28 +23442,28 @@ proto.update = function(options) {
   options = options || {}
 
   var gl = this.plot.gl
+  var i, j, ptr, ax, ay
 
-  var connectGaps = !!options.connectGaps
-
-  this.color = (options.color || [0,0,1,1]).slice()
+  this.color = (options.color || [0, 0, 1, 1]).slice()
   this.width = +(options.width || 1)
-
-  this.fill      = (options.fill || [false,false,false,false]).slice()
-  this.fillColor = deepCopy(options.fillColor || [[0,0,0,1],
-                     [0,0,0,1],
-                     [0,0,0,1],
-                     [0,0,0,1]])
+  this.fill = (options.fill || [false, false, false, false]).slice()
+  this.fillColor = deepCopy(options.fillColor || [
+      [0, 0, 0, 1],
+      [0, 0, 0, 1],
+      [0, 0, 0, 1],
+      [0, 0, 0, 1]
+    ])
 
   var dashes = options.dashes || [1]
   var dashLength = 0
-  for(var i=0; i<dashes.length; ++i) {
+  for(i = 0; i < dashes.length; ++i) {
     dashLength += dashes[i]
   }
   var dashData = pool.mallocUint8(dashLength)
-  var ptr = 0
+  ptr = 0
   var fillColor = 255
-  for(var i=0; i<dashes.length; ++i) {
-    for(var j=0; j<dashes[i]; ++j) {
+  for(i = 0; i < dashes.length; ++i) {
+    for(j = 0; j < dashes[i]; ++j) {
       dashData[ptr++] = fillColor
     }
     fillColor ^= 255
@@ -23439,8 +23471,7 @@ proto.update = function(options) {
   this.dashPattern.dispose()
   this.usingDashes = dashes.length > 1
 
-  this.dashPattern = createTexture(gl,
-    ndarray(dashData, [dashLength, 1, 4], [1, 0, 0]))
+  this.dashPattern = createTexture(gl, ndarray(dashData, [dashLength, 1, 4], [1, 0, 0]))
   this.dashPattern.minFilter = gl.NEAREST
   this.dashPattern.magFilter = gl.NEAREST
   this.dashLength = dashLength
@@ -23453,14 +23484,14 @@ proto.update = function(options) {
   bounds[0] = bounds[1] = Infinity
   bounds[2] = bounds[3] = -Infinity
 
-  var numPoints = this.numPoints = data.length>>>1
+  var numPoints = this.numPoints = data.length >>> 1
   if(numPoints === 0) {
     return
   }
 
-  for(var i=0; i<numPoints; ++i) {
-    var ax = data[2*i]
-    var ay = data[2*i+1]
+  for(i = 0; i < numPoints; ++i) {
+    ax = data[2 * i]
+    ay = data[2 * i + 1]
 
     if (isNaN(ax) || isNaN(ay)) {
       continue
@@ -23472,30 +23503,28 @@ proto.update = function(options) {
     bounds[3] = Math.max(bounds[3], ay)
   }
 
-  if(bounds[0] === bounds[2]) {
-    bounds[2] += 1
-  }
-  if(bounds[3] === bounds[1]) {
-    bounds[3] += 1
-  }
+  if(bounds[0] === bounds[2]) bounds[2] += 1
+  if(bounds[3] === bounds[1]) bounds[3] += 1
 
   //Generate line data
-  var lineData    = pool.mallocFloat32(24*(numPoints-1))
-  var pickData    = pool.mallocUint32(12*(numPoints-1))
-  var lineDataPtr = lineData.length
+  var lineData    = pool.mallocFloat64(24 * (numPoints - 1))
+  var lineDataHi  = pool.mallocFloat32(24 * (numPoints - 1))
+  var lineDataLo  = pool.mallocFloat32(24 * (numPoints - 1))
+  var pickData    = pool.mallocUint32(12 * (numPoints - 1))
+  var lineDataPtr = lineDataHi.length
   var pickDataPtr = pickData.length
-  var ptr = numPoints
+  ptr = numPoints
 
   var count = 0
 
   while(ptr > 1) {
     var id = --ptr
-    var ax = data[2*ptr]
-    var ay = data[2*ptr+1]
+    ax = data[2 * ptr]
+    ay = data[2 * ptr + 1]
 
-    var next = id-1
-    var bx = data[2*next]
-    var by = data[2*next+1]
+    var next = id - 1
+    var bx = data[2 * next]
+    var by = data[2 * next + 1]
 
     if (isNaN(ax) || isNaN(ay) || isNaN(bx) || isNaN(by)) {
       continue
@@ -23512,10 +23541,10 @@ proto.update = function(options) {
     var dx = bx - ax
     var dy = by - ay
 
-    var akey0 = id     | (1<<24)
-    var akey1 = (id-1)
+    var akey0 = id       | (1 << 24)
+    var akey1 = (id - 1)
     var bkey0 = id
-    var bkey1 = (id-1) | (1<<24)
+    var bkey1 = (id - 1) | (1 << 24)
 
     lineData[--lineDataPtr] = -dy
     lineData[--lineDataPtr] = -dx
@@ -23560,17 +23589,26 @@ proto.update = function(options) {
     pickData[--pickDataPtr] = akey1
   }
 
+  for(i = 0; i < lineData.length; i++) {
+    lineDataHi[i] = lineData[i]
+    lineDataLo[i] = lineData[i] - lineDataHi[i]
+  }
+
   this.vertCount = 6 * count
-  this.lineBuffer.update(lineData.subarray(lineDataPtr))
+  this.lineBufferHi.update(lineDataHi.subarray(lineDataPtr))
+  this.lineBufferLo.update(lineDataLo.subarray(lineDataPtr))
   this.pickBuffer.update(pickData.subarray(pickDataPtr))
 
   pool.free(lineData)
+  pool.free(lineDataHi)
+  pool.free(lineDataLo)
   pool.free(pickData)
 }
 
 proto.dispose = function() {
   this.plot.removeObject(this)
-  this.lineBuffer.dispose()
+  this.lineBufferLo.dispose()
+  this.lineBufferHi.dispose()
   this.pickBuffer.dispose()
   this.lineShader.dispose()
   this.mitreShader.dispose()
@@ -23581,17 +23619,19 @@ proto.dispose = function() {
 
 function createLinePlot(plot, options) {
   var gl = plot.gl
-  var lineBuffer  = createBuffer(gl)
-  var pickBuffer  = createBuffer(gl)
-  var dashPattern = createTexture(gl, [1,1])
-  var lineShader  = createShader(gl, SHADERS.lineVertex,  SHADERS.lineFragment)
-  var mitreShader = createShader(gl, SHADERS.mitreVertex, SHADERS.mitreFragment)
-  var fillShader  = createShader(gl, SHADERS.fillVertex,  SHADERS.fillFragment)
-  var pickShader  = createShader(gl, SHADERS.pickVertex,  SHADERS.pickFragment)
-  var linePlot    = new GLLine2D(
+  var lineBufferHi = createBuffer(gl)
+  var lineBufferLo = createBuffer(gl)
+  var pickBuffer   = createBuffer(gl)
+  var dashPattern  = createTexture(gl, [1, 1])
+  var lineShader   = createShader(gl, SHADERS.lineVertex,  SHADERS.lineFragment)
+  var mitreShader  = createShader(gl, SHADERS.mitreVertex, SHADERS.mitreFragment)
+  var fillShader   = createShader(gl, SHADERS.fillVertex,  SHADERS.fillFragment)
+  var pickShader   = createShader(gl, SHADERS.pickVertex,  SHADERS.pickFragment)
+  var linePlot     = new GLLine2D(
     plot,
     dashPattern,
-    lineBuffer,
+    lineBufferHi,
+    lineBufferLo,
     pickBuffer,
     lineShader,
     mitreShader,
@@ -23601,7 +23641,6 @@ function createLinePlot(plot, options) {
   linePlot.update(options)
   return linePlot
 }
-
 },{"./lib/shaders":78,"gl-buffer":65,"gl-shader":121,"gl-texture2d":129,"ndarray":148,"typedarray-pool":187}],80:[function(require,module,exports){
 module.exports = fromQuat;
 
@@ -24085,7 +24124,8 @@ proto.drawTicks = (function() {
     var tickPad     = plot.tickPad
     var textColor   = plot.tickColor
     var textAngle   = plot.tickAngle
-    var tickLength  = plot.tickMarkLength
+    // todo check if this should be used (now unused)
+    // var tickLength  = plot.tickMarkLength
 
     var labelEnable = plot.labelEnable
     var labelPad    = plot.labelPad
@@ -24171,7 +24211,6 @@ proto.drawTitle = (function() {
     var titleCenter = plot.titleCenter
     var titleAngle  = plot.titleAngle
     var titleColor  = plot.titleColor
-    var titleCenter = plot.titleCenter
     var pixelRatio  = plot.pixelRatio
 
     if(!this.titleCount) {
@@ -24245,29 +24284,32 @@ proto.update = function(options) {
   var vertices  = []
   var axesTicks = options.ticks
   var bounds    = options.bounds
+  var i, j, k, data, scale, dimension
 
-  for(var dimension=0; dimension<2; ++dimension) {
+  for(dimension=0; dimension<2; ++dimension) {
     var offsets = [Math.floor(vertices.length/3)], tickX = [-Infinity]
 
     //Copy vertices over to buffer
     var ticks = axesTicks[dimension]
-    for(var i=0; i<ticks.length; ++i) {
+    for(i=0; i<ticks.length; ++i) {
       var tick  = ticks[i]
       var x     = tick.x
       var text  = tick.text
       var font  = tick.font || 'sans-serif'
-      var scale = (tick.fontSize || 12)
-
-      var data = getText(font, text).data
+      scale = (tick.fontSize || 12)
 
       var coordScale = 1.0 / (bounds[dimension+2] - bounds[dimension])
       var coordShift = bounds[dimension]
 
-      for(var j=0; j<data.length; j+=2) {
-        vertices.push(
-           data[j]  *scale,
-          -data[j+1]*scale,
-          (x - coordShift) * coordScale)
+      var rows = text.split('\n')
+      for(var r = 0; r < rows.length; r++) {
+        data = getText(font, rows[r]).data
+        for (j = 0; j < data.length; j += 2) {
+          vertices.push(
+              data[j] * scale,
+              -data[j + 1] * scale - r * scale * 1.2,
+              (x - coordShift) * coordScale)
+        }
       }
 
       offsets.push(Math.floor(vertices.length/3))
@@ -24279,12 +24321,12 @@ proto.update = function(options) {
   }
 
   //Add labels
-  for(var dimension=0; dimension<2; ++dimension) {
+  for(dimension=0; dimension<2; ++dimension) {
     this.labelOffset[dimension] = Math.floor(vertices.length/3)
 
-    var data  = getText(options.labelFont[dimension], options.labels[dimension], { textAlign: 'center' }).data
-    var scale = options.labelSize[dimension]
-    for(var i=0; i<data.length; i+=2) {
+    data  = getText(options.labelFont[dimension], options.labels[dimension], { textAlign: 'center' }).data
+    scale = options.labelSize[dimension]
+    for(i=0; i<data.length; i+=2) {
       vertices.push(data[i]*scale, -data[i+1]*scale, 0)
     }
 
@@ -24294,9 +24336,9 @@ proto.update = function(options) {
 
   //Add title
   this.titleOffset = Math.floor(vertices.length/3)
-  var data = getText(options.titleFont, options.title).data
-  var scale = options.titleSize
-  for(var i=0; i<data.length; i+=2) {
+  data = getText(options.titleFont, options.title).data
+  scale = options.titleSize
+  for(i=0; i<data.length; i+=2) {
     vertices.push(data[i]*scale, -data[i+1]*scale, 0)
   }
   this.titleCount = Math.floor(vertices.length/3) - this.titleOffset
@@ -26164,9 +26206,9 @@ function createPointcloud2D(plot, options) {
 
 
 module.exports = {
-  vertex:       "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec2 offset;\nattribute vec4 color;\n\nuniform mat3 viewTransform;\nuniform vec2 pixelScale;\n\nvarying vec4 fragColor;\n\nvec4 computePosition_1_0(vec2 position, vec2 offset, mat3 view, vec2 scale) {\n  vec3 xposition = view * vec3(position, 1.0);\n  return vec4(\n    xposition.xy + scale * offset * xposition.z,\n    0,\n    xposition.z);\n}\n\n\n\n\nvoid main() {\n  fragColor = color;\n\n  gl_Position = computePosition_1_0(\n    position,\n    offset,\n    viewTransform,\n    pixelScale);\n}\n",
+  vertex:       "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 positionHi, positionLo;\nattribute vec2 offset;\nattribute vec4 color;\n\nuniform vec2 scaleHi, scaleLo, translateHi, translateLo, pixelScale;\n\nvarying vec4 fragColor;\n\n\nvec4 computePosition_1_0(vec2 posHi, vec2 posLo, vec2 scHi, vec2 scLo, vec2 trHi, vec2 trLo, vec2 screenScale, vec2 screenOffset) {\n  return vec4(scHi * posHi + trHi\n            + scLo * posHi + trLo\n            + scHi * posLo\n            + scLo * posLo\n            + screenScale * screenOffset, 0, 1);\n}\n\nvoid main() {\n  fragColor = color;\n\n  gl_Position = computePosition_1_0(\n    positionHi, positionLo,\n    scaleHi, scaleLo,\n    translateHi, translateLo,\n    pixelScale, offset);\n}\n",
   fragment:     "precision lowp float;\n#define GLSLIFY 1\nvarying vec4 fragColor;\nvoid main() {\n  gl_FragColor = vec4(fragColor.rgb * fragColor.a, fragColor.a);\n}\n",
-  pickVertex:   "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec2 offset;\nattribute vec4 id;\n\nuniform mat3 viewTransform;\nuniform vec2 pixelScale;\nuniform vec4 pickOffset;\n\nvarying vec4 fragColor;\n\nvec4 computePosition_1_0(vec2 position, vec2 offset, mat3 view, vec2 scale) {\n  vec3 xposition = view * vec3(position, 1.0);\n  return vec4(\n    xposition.xy + scale * offset * xposition.z,\n    0,\n    xposition.z);\n}\n\n\n\n\nvoid main() {\n  vec4 fragId = id + pickOffset;\n\n  fragId.y += floor(fragId.x / 256.0);\n  fragId.x -= floor(fragId.x / 256.0) * 256.0;\n\n  fragId.z += floor(fragId.y / 256.0);\n  fragId.y -= floor(fragId.y / 256.0) * 256.0;\n\n  fragId.w += floor(fragId.z / 256.0);\n  fragId.z -= floor(fragId.z / 256.0) * 256.0;\n\n  fragColor = fragId / 255.0;\n\n  gl_Position = computePosition_1_0(\n    position,\n    offset,\n    viewTransform,\n    pixelScale);\n}\n",
+  pickVertex:   "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 positionHi, positionLo;\nattribute vec2 offset;\nattribute vec4 id;\n\nuniform vec2 scaleHi, scaleLo, translateHi, translateLo, pixelScale;\nuniform vec4 pickOffset;\n\nvarying vec4 fragColor;\n\n\nvec4 computePosition_1_0(vec2 posHi, vec2 posLo, vec2 scHi, vec2 scLo, vec2 trHi, vec2 trLo, vec2 screenScale, vec2 screenOffset) {\n  return vec4(scHi * posHi + trHi\n            + scLo * posHi + trLo\n            + scHi * posLo\n            + scLo * posLo\n            + screenScale * screenOffset, 0, 1);\n}\n\nvoid main() {\n  vec4 fragId = id + pickOffset;\n\n  fragId.y += floor(fragId.x / 256.0);\n  fragId.x -= floor(fragId.x / 256.0) * 256.0;\n\n  fragId.z += floor(fragId.y / 256.0);\n  fragId.y -= floor(fragId.y / 256.0) * 256.0;\n\n  fragId.w += floor(fragId.z / 256.0);\n  fragId.z -= floor(fragId.z / 256.0) * 256.0;\n\n  fragColor = fragId / 255.0;\n\n  gl_Position = computePosition_1_0(\n    positionHi, positionLo,\n    scaleHi, scaleLo,\n    translateHi, translateLo,\n    pixelScale, offset);\n}\n",
   pickFragment: "precision lowp float;\n#define GLSLIFY 1\nvarying vec4 fragColor;\nvoid main() {\n  gl_FragColor = fragColor;\n}\n"
 }
 
@@ -26215,7 +26257,7 @@ function getBoundary(glyph) {
 
   polys.forEach(function(loops) {
     loops.forEach(function(loop) {
-      for(var i=0; i<loop.length; ++i) {
+      for(var i=0; i < loop.length; ++i) {
         var a = loop[(i + loop.length - 1) % loop.length]
         var b = loop[i]
         var c = loop[(i + 1) % loop.length]
@@ -26223,7 +26265,7 @@ function getBoundary(glyph) {
 
         var dx = b[0] - a[0]
         var dy = b[1] - a[1]
-        var dl = Math.sqrt(dx*dx + dy*dy)
+        var dl = Math.sqrt(dx * dx + dy * dy)
         dx /= dl
         dy /= dl
 
@@ -26243,32 +26285,32 @@ function getBoundary(glyph) {
 
         var ex = d[0] - c[0]
         var ey = d[1] - c[1]
-        var el = Math.sqrt(ex*ex + ey*ey)
+        var el = Math.sqrt(ex * ex + ey * ey)
         ex /= el
         ey /= el
 
-        coords.push(b[0], b[1]+1.4)
+        coords.push(b[0], b[1] + 1.4)
         normals.push(dy, -dx)
-        coords.push(b[0], b[1]+1.4)
+        coords.push(b[0], b[1] + 1.4)
         normals.push(-dy, dx)
-        coords.push(c[0], c[1]+1.4)
+        coords.push(c[0], c[1] + 1.4)
         normals.push(-ey, ex)
 
-        coords.push(c[0], c[1]+1.4)
+        coords.push(c[0], c[1] + 1.4)
         normals.push(-ey, ex)
-        coords.push(b[0], b[1]+1.4)
+        coords.push(b[0], b[1] + 1.4)
         normals.push(ey, -ex)
-        coords.push(c[0], c[1]+1.4)
+        coords.push(c[0], c[1] + 1.4)
         normals.push(ey, -ex)
       }
     })
   })
 
   var bounds = [Infinity, Infinity, -Infinity, -Infinity]
-  for(var i=0; i<coords.length; i+=2) {
-    for(var j=0; j<2; ++j) {
-      bounds[j]   = Math.min(bounds[j],   coords[i+j])
-      bounds[2+j] = Math.max(bounds[2+j], coords[i+j])
+  for(var i = 0; i < coords.length; i += 2) {
+    for(var j = 0; j < 2; ++j) {
+      bounds[j]     = Math.min(bounds[j],     coords[i + j])
+      bounds[2 + j] = Math.max(bounds[2 + j], coords[i + j])
     }
   }
 
@@ -26279,22 +26321,20 @@ function getBoundary(glyph) {
   }
 }
 
-
-var VERTEX_SIZE       = 9
-var VERTEX_SIZE_BYTES = VERTEX_SIZE * 4
-
 function GLScatterFancy(
     plot,
     shader,
     pickShader,
-    positionBuffer,
+    positionHiBuffer,
+    positionLoBuffer,
     offsetBuffer,
     colorBuffer,
     idBuffer) {
   this.plot           = plot
   this.shader         = shader
   this.pickShader     = pickShader
-  this.positionBuffer = positionBuffer
+  this.posHiBuffer    = positionHiBuffer
+  this.posLoBuffer    = positionLoBuffer
   this.offsetBuffer   = offsetBuffer
   this.colorBuffer    = colorBuffer
   this.idBuffer       = idBuffer
@@ -26308,110 +26348,109 @@ function GLScatterFancy(
 var proto = GLScatterFancy.prototype
 
 ;(function() {
-  var MATRIX = [
-    1, 0, 0,
-    0, 1, 0,
-    0, 0, 1
-  ];
+  var SCALE_HI = new Float32Array([0, 0])
+  var SCALE_LO = new Float32Array([0, 0])
+  var TRANSLATE_HI = new Float32Array([0, 0])
+  var TRANSLATE_LO = new Float32Array([0, 0])
 
-  var PIXEL_SCALE = [1, 1]
+  var PIXEL_SCALE = [0, 0]
 
   function calcScales() {
-    var plot          = this.plot
-    var bounds        = this.bounds
+    var plot       = this.plot
+    var bounds     = this.bounds
+    var viewBox    = plot.viewBox
+    var dataBox    = plot.dataBox
+    var pixelRatio = plot.pixelRatio
 
-    var viewBox     = plot.viewBox
-    var dataBox     = plot.dataBox
-    var pixelRatio  = plot.pixelRatio
+    var boundX = bounds[2] - bounds[0]
+    var boundY = bounds[3] - bounds[1]
+    var dataX  = dataBox[2] - dataBox[0]
+    var dataY  = dataBox[3] - dataBox[1]
 
-    var boundX  = bounds[2] - bounds[0]
-    var boundY  = bounds[3] - bounds[1]
-    var dataX   = dataBox[2] - dataBox[0]
-    var dataY   = dataBox[3] - dataBox[1]
+    var scaleX = 2 * boundX / dataX
+    var scaleY = 2 * boundY / dataY
+    var translateX = 2 * (bounds[0] - dataBox[0]) / dataX - 1
+    var translateY = 2 * (bounds[1] - dataBox[1]) / dataY - 1
 
-    MATRIX[0] = 2.0 * boundX / dataX
-    MATRIX[4] = 2.0 * boundY / dataY
-    MATRIX[6] = 2.0 * (bounds[0] - dataBox[0]) / dataX - 1.0
-    MATRIX[7] = 2.0 * (bounds[1] - dataBox[1]) / dataY - 1.0
+    SCALE_HI[0] = scaleX
+    SCALE_LO[0] = scaleX - SCALE_HI[0]
+    SCALE_HI[1] = scaleY
+    SCALE_LO[1] = scaleY - SCALE_HI[1]
 
-    var screenX = (viewBox[2] - viewBox[0])
-    var screenY = (viewBox[3] - viewBox[1])
+    TRANSLATE_HI[0] = translateX
+    TRANSLATE_LO[0] = translateX - TRANSLATE_HI[0]
+    TRANSLATE_HI[1] = translateY
+    TRANSLATE_LO[1] = translateY - TRANSLATE_HI[1]
 
-    PIXEL_SCALE[0] = 2.0 * pixelRatio / screenX
-    PIXEL_SCALE[1] = 2.0 * pixelRatio / screenY
+    var screenX = viewBox[2] - viewBox[0]
+    var screenY = viewBox[3] - viewBox[1]
+
+    PIXEL_SCALE[0] = 2 * pixelRatio / screenX
+    PIXEL_SCALE[1] = 2 * pixelRatio / screenY
   }
 
-  proto.draw = function() {
-    var plot          = this.plot
-    var shader        = this.shader
-    var numVertices   = this.numVertices
-
-    if(!numVertices) {
-      return
-    }
-
-    var gl          = plot.gl
-
-    calcScales.call(this)
-
-    shader.bind()
-
-    shader.uniforms.pixelScale = PIXEL_SCALE
-    shader.uniforms.viewTransform = MATRIX
-
-    this.positionBuffer.bind()
-    shader.attributes.position.pointer()
-
-    this.offsetBuffer.bind()
-    shader.attributes.offset.pointer()
-
-    this.colorBuffer.bind()
-    shader.attributes.color.pointer(gl.UNSIGNED_BYTE, true)
-
-    gl.drawArrays(gl.TRIANGLES, 0, numVertices)
-  }
-
-  var PICK_OFFSET = [0,0,0,0]
+  var PICK_OFFSET = [0, 0, 0, 0]
 
   proto.drawPick = function(offset) {
-    var plot          = this.plot
-    var shader        = this.pickShader
-    var numVertices   = this.numVertices
 
-    var gl          = plot.gl
+    var pick = offset !== undefined
+    var plot = this.plot
 
-    this.pickOffset = offset
+    var numVertices = this.numVertices
 
     if(!numVertices) {
       return offset
     }
 
-    for(var i=0; i<4; ++i) {
-      PICK_OFFSET[i] = ((offset>>(i*8)) & 0xff)
-    }
-
     calcScales.call(this)
+
+    var gl = plot.gl
+    var shader = pick ? this.pickShader : this.shader
 
     shader.bind()
 
-    shader.uniforms.pixelScale    = PIXEL_SCALE
-    shader.uniforms.viewTransform = MATRIX
-    shader.uniforms.pickOffset    = PICK_OFFSET
+    if(pick) {
 
-    this.positionBuffer.bind()
-    shader.attributes.position.pointer()
+      this.pickOffset = offset
+
+      for (var i = 0; i < 4; ++i) {
+        PICK_OFFSET[i] = (offset >> (i * 8)) & 0xff
+      }
+
+      shader.uniforms.pickOffset = PICK_OFFSET
+
+      this.idBuffer.bind()
+      shader.attributes.id.pointer(gl.UNSIGNED_BYTE, false)
+
+    } else {
+
+      this.colorBuffer.bind()
+      shader.attributes.color.pointer(gl.UNSIGNED_BYTE, true)
+
+    }
+
+    this.posHiBuffer.bind()
+    shader.attributes.positionHi.pointer()
+
+    this.posLoBuffer.bind()
+    shader.attributes.positionLo.pointer()
 
     this.offsetBuffer.bind()
     shader.attributes.offset.pointer()
 
-    this.idBuffer.bind()
-    shader.attributes.id.pointer(gl.UNSIGNED_BYTE, false)
+    shader.uniforms.pixelScale  = PIXEL_SCALE
+    shader.uniforms.scaleHi     = SCALE_HI
+    shader.uniforms.scaleLo     = SCALE_LO
+    shader.uniforms.translateHi = TRANSLATE_HI
+    shader.uniforms.translateLo = TRANSLATE_LO
 
     gl.drawArrays(gl.TRIANGLES, 0, numVertices)
 
-    return offset + this.numPoints
+    if(pick) return offset + this.numPoints
   }
 })()
+
+proto.draw = proto.drawPick
 
 proto.pick = function(x, y, value) {
   var pickOffset = this.pickOffset
@@ -26420,11 +26459,11 @@ proto.pick = function(x, y, value) {
     return null
   }
   var pointId = value - pickOffset
-  var points   = this.points
+  var points  = this.points
   return {
-    object:     this,
-    pointId:    pointId,
-    dataCoord: [ points[2*pointId], points[2*pointId+1] ]
+    object:    this,
+    pointId:   pointId,
+    dataCoord: [points[2 * pointId], points[2 * pointId + 1]]
   }
 }
 
@@ -26437,19 +26476,26 @@ proto.update = function(options) {
   var sizes         = options.sizes        || []
   var borderWidths  = options.borderWidths || []
   var borderColors  = options.borderColors || []
+  var i, j
 
   this.points = positions
 
   var bounds = this.bounds = [Infinity, Infinity, -Infinity, -Infinity]
   var numVertices = 0
-  for(var i=0; i<glyphs.length; ++i) {
-    numVertices += (
-      textCache('sans-serif', glyphs[i]).data.length +
-      getBoundary(glyphs[i]).coords.length
-    )>> 1
-    for(var j=0; j<2; ++j) {
-      bounds[j]   = Math.min(bounds[j],   positions[2*i+j])
-      bounds[2+j] = Math.max(bounds[2+j], positions[2*i+j])
+
+  var glyphMeshes = []
+  var glyphBoundaries = []
+  var glyph, border
+
+  for(i = 0; i < glyphs.length; ++i) {
+    glyph = textCache('sans-serif', glyphs[i])
+    border = getBoundary(glyphs[i])
+    glyphMeshes.push(glyph)
+    glyphBoundaries.push(border)
+    numVertices += (glyph.data.length + border.coords.length) >> 1
+    for(j = 0; j < 2; ++j) {
+      bounds[j]     = Math.min(bounds[j],     positions[2 * i + j])
+      bounds[2 + j] = Math.max(bounds[2 + j], positions[2 * i + j])
     }
   }
 
@@ -26460,61 +26506,63 @@ proto.update = function(options) {
     bounds[3] += 1
   }
 
-  var sx = 1/(bounds[2] - bounds[0])
-  var sy = 1/(bounds[3] - bounds[1])
+  var sx = 1 / (bounds[2] - bounds[0])
+  var sy = 1 / (bounds[3] - bounds[1])
   var tx = bounds[0]
   var ty = bounds[1]
 
-  var v_position = pool.mallocFloat32(2 * numVertices)
+  var v_position = pool.mallocFloat64(2 * numVertices)
+  var v_posHi    = pool.mallocFloat32(2 * numVertices)
+  var v_posLo    = pool.mallocFloat32(2 * numVertices)
   var v_offset   = pool.mallocFloat32(2 * numVertices)
   var v_color    = pool.mallocUint8(4 * numVertices)
   var v_ids      = pool.mallocUint32(numVertices)
   var ptr = 0
 
-  for(var i=0; i<glyphs.length; ++i) {
-    var glyph = textCache('sans-serif', glyphs[i])
-    var border = getBoundary(glyphs[i])
-    var x = sx * (positions[2*i]   - tx)
-    var y = sy * (positions[2*i+1] - ty)
+  for(i = 0; i < glyphs.length; ++i) {
+    glyph = glyphMeshes[i]
+    border = glyphBoundaries[i]
+    var x = sx * (positions[2 * i]     - tx)
+    var y = sy * (positions[2 * i + 1] - ty)
     var s = sizes[i]
-    var r = colors[4*i]   * 255.0
-    var g = colors[4*i+1] * 255.0
-    var b = colors[4*i+2] * 255.0
-    var a = colors[4*i+3] * 255.0
+    var r = colors[4 * i]     * 255
+    var g = colors[4 * i + 1] * 255
+    var b = colors[4 * i + 2] * 255
+    var a = colors[4 * i + 3] * 255
 
-    var gx = 0.5*(border.bounds[0] + border.bounds[2])
-    var gy = 0.5*(border.bounds[1] + border.bounds[3])
+    var gx = 0.5 * (border.bounds[0] + border.bounds[2])
+    var gy = 0.5 * (border.bounds[1] + border.bounds[3])
 
-    for(var j=0; j<glyph.data.length; j+=2) {
-      v_position[2*ptr]   = x
-      v_position[2*ptr+1] = y
-      v_offset[2*ptr]     = -s * (glyph.data[j]   - gx)
-      v_offset[2*ptr+1]   = -s * (glyph.data[j+1] - gy)
-      v_color[4*ptr]      = r
-      v_color[4*ptr+1]    = g
-      v_color[4*ptr+2]    = b
-      v_color[4*ptr+3]    = a
-      v_ids[ptr]          = i
+    for(j = 0; j < glyph.data.length; j += 2) {
+      v_position[2 * ptr]     = x
+      v_position[2 * ptr + 1] = y
+      v_offset[2 * ptr]       = -s * (glyph.data[j] - gx)
+      v_offset[2 * ptr + 1]   = -s * (glyph.data[j + 1] - gy)
+      v_color[4 * ptr]        = r
+      v_color[4 * ptr + 1]    = g
+      v_color[4 * ptr + 2]    = b
+      v_color[4 * ptr + 3]    = a
+      v_ids[ptr]              = i
 
       ptr += 1
     }
 
     var w = borderWidths[i]
-    r = borderColors[4*i]   * 255.0
-    g = borderColors[4*i+1] * 255.0
-    b = borderColors[4*i+2] * 255.0
-    a = borderColors[4*i+3] * 255.0
+    r = borderColors[4 * i]     * 255
+    g = borderColors[4 * i + 1] * 255
+    b = borderColors[4 * i + 2] * 255
+    a = borderColors[4 * i + 3] * 255
 
-    for(var j=0; j<border.coords.length; j+=2) {
-      v_position[2*ptr]   = x
-      v_position[2*ptr+1] = y
-      v_offset[2*ptr]     = -(s*(border.coords[j]  -gx)+w*border.normals[j])
-      v_offset[2*ptr+1]   = -(s*(border.coords[j+1]-gy)+w*border.normals[j+1])
-      v_color[4*ptr]      = r
-      v_color[4*ptr+1]    = g
-      v_color[4*ptr+2]    = b
-      v_color[4*ptr+3]    = a
-      v_ids[ptr]          = i
+    for(j = 0; j < border.coords.length; j += 2) {
+      v_position[2 * ptr]     = x
+      v_position[2 * ptr + 1] = y
+      v_offset[2 * ptr]       = - (s * (border.coords[j] - gx)     + w * border.normals[j])
+      v_offset[2 * ptr + 1]   = - (s * (border.coords[j + 1] - gy) + w * border.normals[j + 1])
+      v_color[4 * ptr]        = r
+      v_color[4 * ptr + 1]    = g
+      v_color[4 * ptr + 2]    = b
+      v_color[4 * ptr + 3]    = a
+      v_ids[ptr]              = i
 
       ptr += 1
     }
@@ -26523,12 +26571,19 @@ proto.update = function(options) {
   this.numPoints = glyphs.length
   this.numVertices = numVertices
 
-  this.positionBuffer.update(v_position)
+  v_posHi.set(v_position)
+  for(i = 0; i < v_position.length; i++)
+    v_posLo[i] = v_position[i] - v_posHi[i]
+
+  this.posHiBuffer.update(v_posHi)
+  this.posLoBuffer.update(v_posLo)
   this.offsetBuffer.update(v_offset)
   this.colorBuffer.update(v_color)
   this.idBuffer.update(v_ids)
 
   pool.free(v_position)
+  pool.free(v_posHi)
+  pool.free(v_posLo)
   pool.free(v_offset)
   pool.free(v_color)
   pool.free(v_ids)
@@ -26537,7 +26592,8 @@ proto.update = function(options) {
 proto.dispose = function() {
   this.shader.dispose()
   this.pickShader.dispose()
-  this.positionBuffer.dispose()
+  this.posHiBuffer.dispose()
+  this.posLoBuffer.dispose()
   this.offsetBuffer.dispose()
   this.colorBuffer.dispose()
   this.idBuffer.dispose()
@@ -26547,19 +26603,21 @@ proto.dispose = function() {
 function createFancyScatter2D(plot, options) {
   var gl = plot.gl
 
-  var shader      = createShader(gl, shaders.vertex,     shaders.fragment)
-  var pickShader  = createShader(gl, shaders.pickVertex, shaders.pickFragment)
+  var shader     = createShader(gl, shaders.vertex,     shaders.fragment)
+  var pickShader = createShader(gl, shaders.pickVertex, shaders.pickFragment)
 
-  var positionBuffer  = createBuffer(gl)
-  var offsetBuffer    = createBuffer(gl)
-  var colorBuffer     = createBuffer(gl)
-  var idBuffer        = createBuffer(gl)
+  var positionHiBuffer = createBuffer(gl)
+  var positionLoBuffer = createBuffer(gl)
+  var offsetBuffer     = createBuffer(gl)
+  var colorBuffer      = createBuffer(gl)
+  var idBuffer         = createBuffer(gl)
 
   var scatter = new GLScatterFancy(
     plot,
     shader,
     pickShader,
-    positionBuffer,
+    positionHiBuffer,
+    positionLoBuffer,
     offsetBuffer,
     colorBuffer,
     idBuffer)
@@ -26570,7 +26628,6 @@ function createFancyScatter2D(plot, options) {
 
   return scatter
 }
-
 },{"./lib/shaders":104,"gl-buffer":65,"gl-shader":105,"text-cache":181,"typedarray-pool":187,"vectorize-text":190}],113:[function(require,module,exports){
 
 
@@ -27398,7 +27455,7 @@ var ndarray   = require('ndarray')
 
 var nextPow2  = require('bit-twiddle').nextPow2
 
-var selectRange = require('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(_inline_55_arg0_<255||_inline_55_arg1_<255||_inline_55_arg2_<255||_inline_55_arg3_<255){var _inline_55_l=_inline_55_arg4_-_inline_55_arg6_[0],_inline_55_a=_inline_55_arg5_-_inline_55_arg6_[1],_inline_55_f=_inline_55_l*_inline_55_l+_inline_55_a*_inline_55_a;_inline_55_f<this_closestD2&&(this_closestD2=_inline_55_f,this_closestX=_inline_55_arg6_[0],this_closestY=_inline_55_arg6_[1])}}","args":[{"name":"_inline_55_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_55_a","_inline_55_f","_inline_55_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
+var selectRange = require('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(_inline_52_arg0_<255||_inline_52_arg1_<255||_inline_52_arg2_<255||_inline_52_arg3_<255){var _inline_52_l=_inline_52_arg4_-_inline_52_arg6_[0],_inline_52_a=_inline_52_arg5_-_inline_52_arg6_[1],_inline_52_f=_inline_52_l*_inline_52_l+_inline_52_a*_inline_52_a;_inline_52_f<this_closestD2&&(this_closestD2=_inline_52_f,this_closestX=_inline_52_arg6_[0],this_closestY=_inline_52_arg6_[1])}}","args":[{"name":"_inline_52_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_52_a","_inline_52_f","_inline_52_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
 
 function SelectResult(x, y, id, value, distance) {
   this.coord = [x, y]
@@ -49429,7 +49486,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.19.0';
+exports.version = '1.19.1';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
