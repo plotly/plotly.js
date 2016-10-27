@@ -12,8 +12,8 @@
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
-var hasColorscale = require('../../components/colorscale/has_colorscale');
-var makeColorScaleFn = require('../../components/colorscale/make_scale_function');
+var Colorscale = require('../../components/colorscale');
+
 var subtypes = require('../scatter/subtypes');
 var calcMarkerColorscale = require('../scatter/colorscale_calc');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
@@ -31,8 +31,14 @@ module.exports = function calc(gd, trace) {
 
     calcMarkerColorscale(trace);
 
-    var colorFn = hasColorscale(trace, 'marker') ?
-            makeColorScaleFn(marker.colorscale, marker.cmin, marker.cmax) :
+    var colorFn = Colorscale.hasColorscale(trace, 'marker') ?
+            Colorscale.makeColorScaleFunc(
+                Colorscale.extractScale(
+                    marker.colorscale,
+                    marker.cmin,
+                    marker.cmax
+                )
+            ) :
             Lib.identity;
 
     var sizeFn = subtypes.isBubble(trace) ?

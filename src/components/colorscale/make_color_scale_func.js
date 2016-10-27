@@ -18,64 +18,32 @@ var Color = require('../color');
 /**
  * General colorscale function generator.
  *
- * Can be called in two forms:
- *
- *  (1) makeScaleFunction(scl, { cmin: 0, cmax: 20 })
- *    where cmin and cmax are used to compute the scale domain and range.
- *
- *  (2) makeScaleFunction(scl, { domain: [0, 1, 3], range: [ 'red', 'green', 'blue'] })
- *    where domain and range are the precomputed values.
- *
- * @param {array} scl
- *  plotly.js colorscale array of arrays as found in fullData
+ * @param {object} specs output of Colorscale.extractScale or precomputed domain, range.
+ *  - domain {array}
+ *  - range {array}
  *
  * @param {object} opts
- *  - cmin {number} minimum color value (used to clamp scale)
- *  - cmax {number} maximum color value (used to clamp scale)
- *  - domain {array} precomputed domain
- *  - range {array} precomputed range
  *  - noNumericCheck {boolean} if true, scale func bypasses numeric checks
  *  - returnArray {boolean} if true, scale func return 4-item array instead of color strings
  *
  * @return {function}
  */
-module.exports = function makeScaleFunction(scl, opts) {
+module.exports = function makeColorScaleFunc(specs, opts) {
     opts = opts || {};
 
-    var N = scl.length;
+    var domain = specs.domain,
+        range = specs.range,
+        N = range.length,
+        _range = new Array(N);
 
-    var domain, rangeOrig, i;
-
-    if(opts.domain && opts.range) {
-        domain = opts.domain;
-        rangeOrig = opts.range;
-    }
-    else {
-        var cmin = opts.cmin,
-            cmax = opts.cmax;
-
-        domain = new Array(N);
-        rangeOrig = new Array(N);
-
-        for(i = 0; i < N; i++) {
-            var si = scl[i];
-
-            domain[i] = cmin + si[0] * (cmax - cmin);
-            rangeOrig[i] = si[1];
-        }
-    }
-
-    var range = new Array(N);
-
-    for(i = 0; i < N; i++) {
-        var rgba = tinycolor(rangeOrig[i]).toRgb();
-
-        range[i] = [rgba.r, rgba.g, rgba.b, rgba.a];
+    for(var i = 0; i < N; i++) {
+        var rgba = tinycolor(range[i]).toRgb();
+        _range[i] = [rgba.r, rgba.g, rgba.b, rgba.a];
     }
 
     var _sclFunc = d3.scale.linear()
         .domain(domain)
-        .range(range)
+        .range(_range)
         .clamp(true);
 
     var noNumericCheck = opts.noNumericCheck,
@@ -109,7 +77,7 @@ module.exports = function makeScaleFunction(scl, opts) {
 
     sclFunc.domain = _sclFunc.domain;
 
-    sclFunc.range = function() { return rangeOrig; };
+    sclFunc.range = function() { return range; };
 
     return sclFunc;
 };

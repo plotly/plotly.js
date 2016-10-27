@@ -13,8 +13,8 @@ var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var Colorscale = require('../../components/colorscale');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
-var makeScaleFunction = require('../../components/colorscale/make_scale_function');
 
 var maxRowLength = require('./max_row_length');
 
@@ -166,12 +166,14 @@ function plotOne(gd, plotinfo, cd) {
     canvas.height = canvasH;
     var context = canvas.getContext('2d');
 
-    var sclFunc = makeScaleFunction(trace.colorscale, {
-        cmin: trace.zmin,
-        cmax: trace.zmax,
-        noNumericCheck: true,
-        returnArray: true
-    });
+    var sclFunc = Colorscale.makeColorScaleFunc(
+        Colorscale.extractScale(
+            trace.colorscale,
+            trace.zmin,
+            trace.zmax
+        ),
+        { noNumericCheck: true, returnArray: true }
+    );
 
     // map brick boundaries to image pixels
     var xpx,

@@ -14,13 +14,13 @@ var isNumeric = require('fast-isnumeric');
 
 var Registry = require('../../registry');
 var Color = require('../color');
+var Colorscale = require('../colorscale');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
 
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var subTypes = require('../../traces/scatter/subtypes');
 var makeBubbleSizeFn = require('../../traces/scatter/make_bubble_size_func');
-var makeScaleFunction = require('../colorscale/make_scale_function');
 
 var drawing = module.exports = {};
 
@@ -332,10 +332,9 @@ drawing.tryColorscale = function(cont, contIn, prefix) {
             Lib.nestedProperty(contIn, prefix + 'cmax').set(max);
         }
 
-        return makeScaleFunction(scl, {
-            cmin: min,
-            cmax: max
-        });
+        return Colorscale.makeColorScaleFunc(
+            Colorscale.extractScale(scl, min, max)
+        );
     }
     else return Lib.identity;
 };

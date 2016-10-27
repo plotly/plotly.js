@@ -13,7 +13,7 @@ var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var Plots = require('../../plots/plots');
-var makeScaleFunction = require('../../components/colorscale/make_scale_function');
+var Colorscale = require('../../components/colorscale');
 var drawColorbar = require('../../components/colorbar/draw');
 
 
@@ -35,11 +35,14 @@ module.exports = function colorbar(gd, cd) {
     }
 
     var cb = cd[0].t.cb = drawColorbar(gd, cbId);
-    var sclFunc = makeScaleFunction(trace.colorscale, {
-        cmin: cmin,
-        cmax: cmax,
-        noNumericCheck: true
-    });
+    var sclFunc = Colorscale.makeColorScaleFunc(
+        Colorscale.extractScale(
+            trace.colorscale,
+            cmin,
+            cmax
+        ),
+        { noNumericCheck: true }
+    );
 
     cb.fillcolor(sclFunc)
         .filllevels({start: cmin, end: cmax, size: (cmax - cmin) / 254})

@@ -27,4 +27,6 @@ exports.getScale = require('./get_scale');
 
 exports.flipScale = require('./flip_scale');
 
-exports.makeScaleFunction = require('./make_scale_function');
+exports.extractScale = require('./extract_scale');
+
+exports.makeColorScaleFunc = require('./make_color_scale_func');

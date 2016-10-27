@@ -10,7 +10,7 @@
 'use strict';
 
 var d3 = require('d3');
-var makeScaleFunction = require('../../components/colorscale/make_scale_function');
+var Colorscale = require('../../components/colorscale');
 
 module.exports = function makeColorMap(trace) {
     var contours = trace.contours,
@@ -67,9 +67,10 @@ module.exports = function makeColorMap(trace) {
         }
     }
 
-    return makeScaleFunction(scl, {
+    return Colorscale.makeColorScaleFunc({
         domain: domain,
         range: range,
+    }, {
         noNumericCheck: true
     });
 };
