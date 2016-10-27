@@ -78,6 +78,8 @@ describe('Plotly.toImage', function() {
         subplotMock.layout.width = 700;
 
         Plotly.plot(gd, subplotMock.data, subplotMock.layout).then(function(gd) {
+            expect(gd.layout.height).toBe(600);
+            expect(gd.layout.width).toBe(700);
             return Plotly.toImage(gd);
         }).then(function(url) {
             return new Promise(function(resolve) {

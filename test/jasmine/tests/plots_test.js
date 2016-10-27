@@ -9,7 +9,21 @@ describe('Test Plots', function() {
 
     describe('Plots.supplyDefaults', function() {
 
-        var gd;
+        it('should not throw an error when gd is a plain object', function() {
+            var height = 100,
+                gd = {
+                    layout: {
+                        height: height
+                    }
+                };
+
+            Plots.supplyDefaults(gd);
+            expect(gd.layout.height).toBe(height);
+            expect(gd._fullLayout).toBeDefined();
+            expect(gd._fullLayout.height).toBe(height);
+            expect(gd._fullLayout.width).toBe(Plots.layoutAttributes.width.dflt);
+            expect(gd._fullData).toBeDefined();
+        });
 
         it('should relink private keys', function() {
             var oldFullData = [{
@@ -41,7 +55,7 @@ describe('Test Plots', function() {
                 annotations: [{}, {}, {}]
             };
 
-            gd = {
+            var gd = {
                 _fullData: oldFullData,
                 _fullLayout: oldFullLayout,
                 data: newData,
@@ -90,6 +104,45 @@ describe('Test Plots', function() {
 
             expect(gd._fullData[0]._expandedInput).toBe(gd._fullData[0]);
             expect(gd._fullData[1]._expandedInput).toBe(gd._fullData[1]);
+        });
+
+        function testSanitizeMarginsHasBeenCalledOnlyOnce(gd) {
+            spyOn(Plots, 'sanitizeMargins').and.callThrough();
+            Plots.supplyDefaults(gd);
+            expect(Plots.sanitizeMargins).toHaveBeenCalledTimes(1);
+        }
+
+        it('should call sanitizeMargins only once when both width and height are defined', function() {
+            var gd = {
+                layout: {
+                    width: 100,
+                    height: 100
+                }
+            };
+
+            testSanitizeMarginsHasBeenCalledOnlyOnce(gd);
+        });
+
+        it('should call sanitizeMargins only once when autosize is false', function() {
+            var gd = {
+                layout: {
+                    autosize: false,
+                    height: 100
+                }
+            };
+
+            testSanitizeMarginsHasBeenCalledOnlyOnce(gd);
+        });
+
+        it('should call sanitizeMargins only once when autosize is true', function() {
+            var gd = {
+                layout: {
+                    autosize: true,
+                    height: 100
+                }
+            };
+
+            testSanitizeMarginsHasBeenCalledOnlyOnce(gd);
         });
     });
 
@@ -278,7 +331,7 @@ describe('Test Plots', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }])
                 .then(function() {
                     gd.style.width = '400px';
                     gd.style.height = '400px';

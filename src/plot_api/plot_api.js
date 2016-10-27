@@ -422,10 +422,6 @@ function plotPolar(gd, data, layout) {
     if(layout) gd.layout = layout;
     Polar.manager.fillLayout(gd);
 
-    if(gd._fullLayout.autosize === 'initial' && gd._context.autosizable) {
-        plotAutoSize(gd, {});
-        gd._fullLayout.autosize = layout.autosize = true;
-    }
     // resize canvas
     paperDiv.style({
         width: gd._fullLayout.width + 'px',
@@ -1778,8 +1774,6 @@ function _relayout(gd, aobj) {
     var redoit = {},
         undoit = {};
 
-    var hw = ['height', 'width'];
-
     // for attrs that interact (like scales & autoscales), save the
     // old vals before making the change
     // val=undefined will not set a value, just record what the value was.
@@ -1827,13 +1821,14 @@ function _relayout(gd, aobj) {
         // op and has no flag.
         undoit[ai] = (pleaf === 'reverse') ? vi : p.get();
 
-        // check autosize or autorange vs size and range
-        if(hw.indexOf(ai) !== -1) {
-            doextra('autosize', false);
+        // Setting width or height to null must reset the graph's width / height
+        // back to its initial value as computed during the first pass in Plots.plotAutoSize.
+        //
+        // To do so, we must manually set them back here using the _initialAutoSize cache.
+        if(['width', 'height'].indexOf(ai) !== -1 && vi === null) {
+            gd._fullLayout[ai] = gd._initialAutoSize[ai];
         }
-        else if(ai === 'autosize') {
-            doextra(hw, undefined);
-        }
+        // check autorange vs range
         else if(pleafPlus.match(/^[xyz]axis[0-9]*\.range(\[[0|1]\])?$/)) {
             doextra(ptrunk + '.autorange', false);
         }
@@ -2017,10 +2012,21 @@ function _relayout(gd, aobj) {
         }
     }
 
-    // calculate autosizing - if size hasn't changed,
-    // will remove h&w so we don't need to redraw
-    if(aobj.autosize) aobj = plotAutoSize(gd, aobj);
-    if(aobj.height || aobj.width || aobj.autosize) flags.docalc = true;
+    var oldWidth = gd._fullLayout.width,
+        oldHeight = gd._fullLayout.height;
+
+    // coerce the updated layout
+    Plots.supplyDefaults(gd);
+
+    // calculate autosizing
+    if(gd.layout.autosize) Plots.plotAutoSize(gd, gd.layout, gd._fullLayout);
+
+    // avoid unnecessary redraws
+    var hasSizechanged = aobj.height || aobj.width ||
+        (gd._fullLayout.width !== oldWidth) ||
+        (gd._fullLayout.height !== oldHeight);
+
+    if(hasSizechanged) flags.docalc = true;
 
     if(flags.doplot || flags.docalc) {
         flags.layoutReplot = true;
@@ -2651,86 +2657,6 @@ Plotly.purge = function purge(gd) {
     return gd;
 };
 
-/**
- * Reduce all reserved margin objects to a single required margin reservation.
- *
- * @param {Object} margins
- * @returns {{left: number, right: number, bottom: number, top: number}}
- */
-function calculateReservedMargins(margins) {
-    var resultingMargin = {left: 0, right: 0, bottom: 0, top: 0},
-        marginName;
-
-    if(margins) {
-        for(marginName in margins) {
-            if(margins.hasOwnProperty(marginName)) {
-                resultingMargin.left += margins[marginName].left || 0;
-                resultingMargin.right += margins[marginName].right || 0;
-                resultingMargin.bottom += margins[marginName].bottom || 0;
-                resultingMargin.top += margins[marginName].top || 0;
-            }
-        }
-    }
-    return resultingMargin;
-}
-
-function plotAutoSize(gd, aobj) {
-    var fullLayout = gd._fullLayout,
-        context = gd._context,
-        computedStyle;
-
-    var newHeight, newWidth;
-
-    gd.emit('plotly_autosize');
-
-    // embedded in an iframe - just take the full iframe size
-    // if we get to this point, with no aspect ratio restrictions
-    if(gd._context.fillFrame) {
-        newWidth = window.innerWidth;
-        newHeight = window.innerHeight;
-
-        // somehow we get a few extra px height sometimes...
-        // just hide it
-        document.body.style.overflow = 'hidden';
-    }
-    else if(isNumeric(context.frameMargins) && context.frameMargins > 0) {
-        var reservedMargins = calculateReservedMargins(gd._boundingBoxMargins),
-            reservedWidth = reservedMargins.left + reservedMargins.right,
-            reservedHeight = reservedMargins.bottom + reservedMargins.top,
-            gdBB = fullLayout._container.node().getBoundingClientRect(),
-            factor = 1 - 2 * context.frameMargins;
-
-        newWidth = Math.round(factor * (gdBB.width - reservedWidth));
-        newHeight = Math.round(factor * (gdBB.height - reservedHeight));
-    }
-    else {
-        // plotly.js - let the developers do what they want, either
-        // provide height and width for the container div,
-        // specify size in layout, or take the defaults,
-        // but don't enforce any ratio restrictions
-        computedStyle = window.getComputedStyle(gd);
-        newHeight = parseFloat(computedStyle.height) || fullLayout.height;
-        newWidth = parseFloat(computedStyle.width) || fullLayout.width;
-    }
-
-    if(Math.abs(fullLayout.width - newWidth) > 1 ||
-            Math.abs(fullLayout.height - newHeight) > 1) {
-        fullLayout.height = gd.layout.height = newHeight;
-        fullLayout.width = gd.layout.width = newWidth;
-    }
-    // if there's no size change, update layout but
-    // delete the autosize attr so we don't redraw
-    // but can't call layoutStyles for initial autosize
-    else if(fullLayout.autosize !== 'initial') {
-        delete(aobj.autosize);
-        fullLayout.autosize = gd.layout.autosize = true;
-    }
-
-    Plots.sanitizeMargins(fullLayout);
-
-    return aobj;
-}
-
 // -------------------------------------------------------
 // makePlotFramework: Create the plot container and axes
 // -------------------------------------------------------
@@ -2749,13 +2675,6 @@ function makePlotFramework(gd) {
     fullLayout._paperdiv.enter().append('div')
         .classed('svg-container', true)
         .style('position', 'relative');
-
-    // Initial autosize
-    if(fullLayout.autosize === 'initial') {
-        plotAutoSize(gd, {});
-        fullLayout.autosize = true;
-        gd.layout.autosize = true;
-    }
 
     // Make the graph containers
     // start fresh each time we get here, so we know the order comes out
