@@ -1,6 +1,5 @@
-var ALPHABET = 'abcdefghijklmnopqrstuvwxyz'.split('');
-var FRONT = 'require("+';
-var BACK = '+");';
+var PATTERN = /require\("\+(\w)\((\w)\)\+"\)/;
+var NEW_SUBSTR = 'require("+ $1($2) +")';
 
 /* Uber hacky in-house fix to
  *
@@ -19,20 +18,5 @@ var BACK = '+");';
  *
  */
 module.exports = function patchMinified(minifiedCode) {
-    for(var i = 0; i < ALPHABET.length; i++) {
-        var li = ALPHABET[i];
-
-        for(var j = 0; j < ALPHABET.length; j++) {
-            var lj = ALPHABET[j];
-
-            var MIDDLE = li + '(' + lj + ')';
-
-            var strOld = FRONT + MIDDLE + BACK,
-                strNew = FRONT + ' ' + MIDDLE + ' ' + BACK;
-
-            minifiedCode = minifiedCode.replace(strOld, strNew);
-        }
-    }
-
-    return minifiedCode;
+    return minifiedCode.replace(PATTERN, NEW_SUBSTR);
 };
