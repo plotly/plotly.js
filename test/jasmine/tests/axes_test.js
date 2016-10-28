@@ -693,6 +693,13 @@ describe('Test axes', function() {
             expect(axOut.tick0).toBe(someDate);
             expect(axOut.dtick).toBe('M15');
 
+            // dtick without tick0: get the right default
+            axIn = {dtick: 'M12'};
+            axOut = {};
+            mockSupplyDefaults(axIn, axOut, 'date');
+            expect(axOut.tick0).toBe('2000-01-01');
+            expect(axOut.dtick).toBe('M12');
+
             // now some stuff that shouldn't work, should give defaults
             [
                 ['next thursday', -1],

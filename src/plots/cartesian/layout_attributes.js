@@ -138,7 +138,6 @@ module.exports = {
     },
     tick0: {
         valType: 'any',
-        dflt: 0,
         role: 'style',
         description: [
             'Sets the placement of the first tick on this axis.',

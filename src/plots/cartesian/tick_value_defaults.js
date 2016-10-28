@@ -60,16 +60,17 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
 
         // tick0 can have different valType for different axis types, so
         // validate that now. Also for dates, change milliseconds to date strings
-        var tick0 = coerce('tick0');
+        var tick0Dflt = (axType === 'date') ? '2000-01-01' : 0;
+        var tick0 = coerce('tick0', tick0Dflt);
         if(axType === 'date') {
-            containerOut.tick0 = Lib.cleanDate(tick0, '2000-01-01');
+            containerOut.tick0 = Lib.cleanDate(tick0, tick0Dflt);
         }
         // Aside from date axes, dtick must be numeric; D1 and D2 modes ignore tick0 entirely
         else if(isNumeric(tick0) && dtick !== 'D1' && dtick !== 'D2') {
             containerOut.tick0 = Number(tick0);
         }
         else {
-            containerOut.tick0 = 0;
+            containerOut.tick0 = tick0Dflt;
         }
     }
     else {
