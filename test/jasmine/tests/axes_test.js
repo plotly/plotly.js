@@ -676,6 +676,85 @@ describe('Test axes', function() {
             expect(axOut.dtick).toBe(0.00159);
         });
 
+        it('should handle tick0 and dtick for date axes', function() {
+            var someMs = 123456789,
+                someMsDate = Lib.ms2DateTime(someMs),
+                oneDay = 24 * 3600 * 1000,
+                axIn = {tick0: someMs, dtick: String(3 * oneDay)},
+                axOut = {};
+            mockSupplyDefaults(axIn, axOut, 'date');
+            expect(axOut.tick0).toBe(someMsDate);
+            expect(axOut.dtick).toBe(3 * oneDay);
+
+            var someDate = '2011-12-15 13:45:56';
+            axIn = {tick0: someDate, dtick: 'M15'};
+            axOut = {};
+            mockSupplyDefaults(axIn, axOut, 'date');
+            expect(axOut.tick0).toBe(someDate);
+            expect(axOut.dtick).toBe('M15');
+
+            // now some stuff that shouldn't work, should give defaults
+            [
+                ['next thursday', -1],
+                ['123-45', 'L1'],
+                ['', 'M0.5'],
+                ['', 'M-1'],
+                ['', '2000-01-01']
+            ].forEach(function(v) {
+                axIn = {tick0: v[0], dtick: v[1]};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'date');
+                expect(axOut.tick0).toBe('2000-01-01');
+                expect(axOut.dtick).toBe(oneDay);
+            });
+        });
+
+        it('should handle tick0 and dtick for log axes', function() {
+            var axIn = {tick0: '0.2', dtick: 0.3},
+                axOut = {};
+            mockSupplyDefaults(axIn, axOut, 'log');
+            expect(axOut.tick0).toBe(0.2);
+            expect(axOut.dtick).toBe(0.3);
+
+            ['D1', 'D2'].forEach(function(v) {
+                axIn = {tick0: -1, dtick: v};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'log');
+                // tick0 gets ignored for D<n>
+                expect(axOut.tick0).toBe(0);
+                expect(axOut.dtick).toBe(v);
+            });
+
+            [
+                [-1, 'L3'],
+                ['0.2', 'L0.3'],
+                [-1, 3],
+                ['0.1234', '0.69238473']
+            ].forEach(function(v) {
+                axIn = {tick0: v[0], dtick: v[1]};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'log');
+                expect(axOut.tick0).toBe(Number(v[0]));
+                expect(axOut.dtick).toBe((+v[1]) ? Number(v[1]) : v[1]);
+            });
+
+            // now some stuff that should not work, should give defaults
+            [
+                ['', -1],
+                ['D1', 'D3'],
+                ['', 'D0'],
+                ['2011-01-01', 'L0'],
+                ['', 'L-1']
+            ].forEach(function(v) {
+                axIn = {tick0: v[0], dtick: v[1]};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'log');
+                expect(axOut.tick0).toBe(0);
+                expect(axOut.dtick).toBe(1);
+            });
+
+        });
+
         it('should set tickvals and ticktext iff tickmode=array', function() {
             var axIn = {tickmode: 'auto', tickvals: [1, 2, 3], ticktext: ['4', '5', '6']},
                 axOut = {};

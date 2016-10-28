@@ -137,14 +137,15 @@ module.exports = {
         ].join(' ')
     },
     tick0: {
-        valType: 'number',
+        valType: 'any',
         dflt: 0,
         role: 'style',
         description: [
             'Sets the placement of the first tick on this axis.',
             'Use with `dtick`.',
             'If the axis `type` is *log*, then you must take the log of your starting tick',
-            '(e.g. to set the starting tick to 100, set the `tick0` to 2).',
+            '(e.g. to set the starting tick to 100, set the `tick0` to 2)',
+            'except when `dtick`=*L<f>* (see `dtick` for more info).',
             'If the axis `type` is *date*, it should be a date string, like date data.',
             'If the axis `type` is *category*, it should be a number, using the scale where',
             'each category is assigned a serial number from zero in the order it appears.'
@@ -152,19 +153,27 @@ module.exports = {
     },
     dtick: {
         valType: 'any',
-        dflt: 1,
         role: 'style',
         description: [
-            'Sets the step in-between ticks on this axis',
-            'Use with `tick0`.',
+            'Sets the step in-between ticks on this axis. Use with `tick0`.',
+            'Must be a positive number, or special strings available to *log* and *date* axes.',
             'If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n',
             'is the tick number. For example,',
             'to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1.',
             'To set tick marks at 1, 100, 10000, ... set dtick to 2.',
             'To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433.',
+            '*log* has several special values; *L<f>*, where `f` is a positive number,',
+            'gives ticks linearly spaced in value (but not position).',
+            'For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc.',
+            'To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5).',
+            '`tick0` is ignored for *D1* and *D2*.',
             'If the axis `type` is *date*, then you must convert the time to milliseconds.',
             'For example, to set the interval between ticks to one day,',
-            'set `dtick` to 86400000.0.'
+            'set `dtick` to 86400000.0.',
+            '*date* also has special values *M<n>* gives ticks spaced by a number of months.',
+            '`n` must be a positive integer.',
+            'To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*.',
+            'To set ticks every 4 years, set `dtick` to *M48*'
         ].join(' ')
     },
     tickvals: {
