@@ -850,7 +850,8 @@ function autoTickRound(ax) {
         // not necessarily *all* the information in tick0 though, if it's really odd
         // minimal string length for tick0: 'd' is 10, 'M' is 16, 'S' is 19
         // take off a leading minus (year < 0 so length is consistent)
-        var tick0str = Lib.ms2DateTime(Lib.dateTime2ms(ax.tick0)).replace(/^-/, ''),
+        var tick0ms = Lib.dateTime2ms(ax.tick0),
+            tick0str = Lib.ms2DateTime(tick0ms).replace(/^-/, ''),
             tick0len = tick0str.length;
 
         if(String(dtick).charAt(0) === 'M') {
@@ -862,7 +863,12 @@ function autoTickRound(ax) {
         else if((dtick >= ONEDAY && tick0len <= 10) || (dtick >= ONEDAY * 15)) ax._tickround = 'd';
         else if((dtick >= ONEMIN && tick0len <= 16) || (dtick >= ONEHOUR)) ax._tickround = 'M';
         else if((dtick >= ONESEC && tick0len <= 19) || (dtick >= ONEMIN)) ax._tickround = 'S';
-        else ax._tickround = Math.max(3 - Math.round(Math.log(dtick / 2) / Math.LN10), tick0len - 20);
+        else {
+            // of any two adjacent ticks, at least one will have the maximum fractional digits
+            // of all possible ticks - so take the max. length of tick0 and the next one
+            var tick1len = Lib.ms2DateTime(tick0ms + dtick).replace(/^-/, '').length;
+            ax._tickround = Math.max(tick0len, tick1len) - 20;
+        }
     }
     else if(isNumeric(dtick) || dtick.charAt(0) === 'L') {
         // linear or log (except D1, D2)
@@ -1112,7 +1118,7 @@ function formatDate(ax, out, hover, extraPrecision) {
                 if(tr !== 'M') {
                     tt += secondFormat(d);
                     if(tr !== 'S') {
-                        tt += numFormat(mod(x / 1000, 1), ax, 'none', hover)
+                        tt += numFormat(d3.round(mod(x / 1000, 1), 4), ax, 'none', hover)
                             .substr(1);
                     }
                 }

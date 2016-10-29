@@ -1397,6 +1397,7 @@ describe('Test axes', function() {
         function mockCalc(ax) {
             Axes.setConvert(ax);
             ax.tickfont = {};
+            ax._gd = {_fullLayout: {separators: '.,'}};
             return Axes.calcTicks(ax).map(function(v) { return v.text; });
         }
 
@@ -1472,6 +1473,29 @@ describe('Test axes', function() {
                 '00:05<br>Jan 15, 2000',
                 '00:05<br>Jan 29, 2000',
                 '00:05<br>Feb 12, 2000'
+            ];
+            expect(textOut).toEqual(expectedText);
+        });
+
+        it('should never give dates more than 100 microsecond precision', function() {
+            var textOut = mockCalc({
+                type: 'date',
+                tickmode: 'linear',
+                tick0: '2000-01-01',
+                dtick: 1.1333,
+                range: ['2000-01-01', '2000-01-01 00:00:00.01']
+            });
+
+            var expectedText = [
+                '00:00:00<br>Jan 1, 2000',
+                '00:00:00.0011',
+                '00:00:00.0023',
+                '00:00:00.0034',
+                '00:00:00.0045',
+                '00:00:00.0057',
+                '00:00:00.0068',
+                '00:00:00.0079',
+                '00:00:00.0091'
             ];
             expect(textOut).toEqual(expectedText);
         });
