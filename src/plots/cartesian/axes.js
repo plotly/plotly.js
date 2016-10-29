@@ -142,6 +142,8 @@ axes.counterLetter = function(id) {
 
 // incorporate a new minimum difference and first tick into
 // forced
+// note that _forceTick0 is linearized, so needs to be turned into
+// a range value for setting tick0
 axes.minDtick = function(ax, newDiff, newFirst, allow) {
     // doesn't make sense to do forced min dTick on log or category axes,
     // and the plot itself may decide to cancel (ie non-grouped bars)
@@ -619,7 +621,7 @@ axes.calcTicks = function calcTicks(ax) {
         // check for a forced minimum dtick
         if(ax._minDtick > 0 && ax.dtick < ax._minDtick * 2) {
             ax.dtick = ax._minDtick;
-            ax.tick0 = ax._forceTick0;
+            ax.tick0 = ax.l2r(ax._forceTick0);
         }
     }
 
