@@ -14,7 +14,9 @@ describe('Plots.supplyAnimationDefaults', function() {
 
     it('supplies transition defaults', function() {
         expect(Plots.supplyAnimationDefaults({})).toEqual({
+            fromcurrent: false,
             mode: 'afterall',
+            direction: 'forward',
             transition: {
                 duration: 500,
                 easing: 'cubic-in-out'
@@ -29,6 +31,8 @@ describe('Plots.supplyAnimationDefaults', function() {
     it('uses provided values', function() {
         expect(Plots.supplyAnimationDefaults({
             mode: 'next',
+            fromcurrent: true,
+            direction: 'reverse',
             transition: {
                 duration: 600,
                 easing: 'elastic-in-out'
@@ -39,6 +43,8 @@ describe('Plots.supplyAnimationDefaults', function() {
             }
         })).toEqual({
             mode: 'next',
+            fromcurrent: true,
+            direction: 'reverse',
             transition: {
                 duration: 600,
                 easing: 'elastic-in-out'
@@ -63,7 +69,12 @@ describe('Test animate API', function() {
     function verifyFrameTransitionOrder(gd, expectedFrames) {
         var calls = Plots.transition.calls;
 
-        expect(calls.count()).toEqual(expectedFrames.length);
+        var c1 = calls.count();
+        var c2 = expectedFrames.length;
+        expect(c1).toEqual(c2);
+
+        // Prevent lots of ugly logging when it's already failed:
+        if(c1 !== c2) return;
 
         for(var i = 0; i < calls.count(); i++) {
             expect(calls.argsFor(i)[1]).toEqual(
@@ -94,14 +105,26 @@ describe('Test animate API', function() {
         destroyGraphDiv();
     });
 
-    it('throws an error if gd is not a graph', function() {
+    it('throws an error on addFrames if gd is not a graph', function() {
         var gd2 = document.createElement('div');
         gd2.id = 'invalidgd';
         document.body.appendChild(gd2);
 
         expect(function() {
             Plotly.addFrames(gd2, [{}]);
-        }).toThrow(new Error('This element is not a Plotly plot: [object HTMLDivElement]'));
+        }).toThrow(new Error('This element is not a Plotly plot: [object HTMLDivElement]. It\'s likely that you\'ve failed to create a plot before adding frames. For more details, see https://plot.ly/javascript/animations/'));
+
+        document.body.removeChild(gd);
+    });
+
+    it('throws an error on animate if gd is not a graph', function() {
+        var gd2 = document.createElement('div');
+        gd2.id = 'invalidgd';
+        document.body.appendChild(gd2);
+
+        expect(function() {
+            Plotly.animate(gd2, {data: [{}]});
+        }).toThrow(new Error('This element is not a Plotly plot: [object HTMLDivElement]. It\'s likely that you\'ve failed to create a plot before animating it. For more details, see https://plot.ly/javascript/animations/'));
 
         document.body.removeChild(gd);
     });
@@ -314,6 +337,104 @@ describe('Test animate API', function() {
             });
         });
     }
+
+    describe('Animation direction', function() {
+        var animOpts;
+
+        beforeEach(function() {
+            animOpts = {
+                frame: {duration: 0},
+                transition: {duration: 0}
+            };
+        });
+
+        it('animates frames by name in reverse', function(done) {
+            animOpts.direction = 'reverse';
+
+            Plotly.animate(gd, ['frame0', 'frame2', 'frame1', 'frame3'], animOpts).then(function() {
+                verifyFrameTransitionOrder(gd, ['frame3', 'frame1', 'frame2', 'frame0']);
+                verifyQueueEmpty(gd);
+            }).catch(fail).then(done);
+        });
+
+        it('animates a group in reverse', function(done) {
+            animOpts.direction = 'reverse';
+            Plotly.animate(gd, 'even-frames', animOpts).then(function() {
+                verifyFrameTransitionOrder(gd, ['frame2', 'frame0']);
+                verifyQueueEmpty(gd);
+            }).catch(fail).then(done);
+        });
+    });
+
+    describe('Animation fromcurrent', function() {
+        var animOpts;
+
+        beforeEach(function() {
+            animOpts = {
+                frame: {duration: 0},
+                transition: {duration: 0},
+                fromcurrent: true
+            };
+        });
+
+        it('animates starting at the current frame', function(done) {
+            Plotly.animate(gd, ['frame1'], animOpts).then(function() {
+                verifyFrameTransitionOrder(gd, ['frame1']);
+                verifyQueueEmpty(gd);
+
+                return Plotly.animate(gd, null, animOpts);
+            }).then(function() {
+                verifyFrameTransitionOrder(gd, ['frame1', 'frame2', 'frame3']);
+                verifyQueueEmpty(gd);
+            }).catch(fail).then(done);
+        });
+
+        it('plays from the start when current frame = last frame', function(done) {
+            Plotly.animate(gd, null, animOpts).then(function() {
+                verifyFrameTransitionOrder(gd, ['base', 'frame0', 'frame1', 'frame2', 'frame3']);
+                verifyQueueEmpty(gd);
+
+                return Plotly.animate(gd, null, animOpts);
+            }).then(function() {
+                verifyFrameTransitionOrder(gd, [
+                    'base', 'frame0', 'frame1', 'frame2', 'frame3',
+                    'base', 'frame0', 'frame1', 'frame2', 'frame3'
+                ]);
+
+                verifyQueueEmpty(gd);
+            }).catch(fail).then(done);
+        });
+
+        it('animates in reverse starting at the current frame', function(done) {
+            animOpts.direction = 'reverse';
+
+            Plotly.animate(gd, ['frame1'], animOpts).then(function() {
+                verifyFrameTransitionOrder(gd, ['frame1']);
+                verifyQueueEmpty(gd);
+                return Plotly.animate(gd, null, animOpts);
+            }).then(function() {
+                verifyFrameTransitionOrder(gd, ['frame1', 'frame0', 'base']);
+                verifyQueueEmpty(gd);
+            }).catch(fail).then(done);
+        });
+
+        it('plays in reverse from the end when current frame = first frame', function(done) {
+            animOpts.direction = 'reverse';
+
+            Plotly.animate(gd, ['base'], animOpts).then(function() {
+                verifyFrameTransitionOrder(gd, ['base']);
+                verifyQueueEmpty(gd);
+
+                return Plotly.animate(gd, null, animOpts);
+            }).then(function() {
+                verifyFrameTransitionOrder(gd, [
+                    'base', 'frame3', 'frame2', 'frame1', 'frame0', 'base'
+                ]);
+
+                verifyQueueEmpty(gd);
+            }).catch(fail).then(done);
+        });
+    });
 
     // The tests above use promises to ensure ordering, but the tests below this call Plotly.animate
     // without chaining promises which would result in race conditions. This is not invalid behavior,

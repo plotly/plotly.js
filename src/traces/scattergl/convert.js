@@ -20,7 +20,7 @@ var Axes = require('../../plots/cartesian/axes');
 var autoType = require('../../plots/cartesian/axis_autotype');
 var ErrorBars = require('../../components/errorbars');
 var str2RGBArray = require('../../lib/str2rgbarray');
-var truncate = require('../../lib/float32_truncate');
+var truncate = require('../../lib/typed_array_truncate');
 var formatColor = require('../../lib/gl_format_color');
 var subTypes = require('../scatter/subtypes');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
@@ -51,7 +51,7 @@ function LineWithMarkers(scene, uid) {
 
     this.hasLines = false;
     this.lineOptions = {
-        positions: new Float32Array(0),
+        positions: new Float64Array(0),
         color: [0, 0, 0, 1],
         width: 1,
         fill: [false, false, false, false],
@@ -67,8 +67,8 @@ function LineWithMarkers(scene, uid) {
 
     this.hasErrorX = false;
     this.errorXOptions = {
-        positions: new Float32Array(0),
-        errors: new Float32Array(0),
+        positions: new Float64Array(0),
+        errors: new Float64Array(0),
         lineWidth: 1,
         capSize: 0,
         color: [0, 0, 0, 1]
@@ -78,8 +78,8 @@ function LineWithMarkers(scene, uid) {
 
     this.hasErrorY = false;
     this.errorYOptions = {
-        positions: new Float32Array(0),
-        errors: new Float32Array(0),
+        positions: new Float64Array(0),
+        errors: new Float64Array(0),
         lineWidth: 1,
         capSize: 0,
         color: [0, 0, 0, 1]
@@ -89,7 +89,7 @@ function LineWithMarkers(scene, uid) {
 
     this.hasMarkers = false;
     this.scatterOptions = {
-        positions: new Float32Array(0),
+        positions: new Float64Array(0),
         sizes: [],
         colors: [],
         glyphs: [],
@@ -291,7 +291,7 @@ proto.updateFast = function(options) {
 
     var len = x.length,
         idToIndex = new Array(len),
-        positions = new Float32Array(2 * len),
+        positions = new Float64Array(2 * len),
         bounds = this.bounds,
         pId = 0,
         ptr = 0;
@@ -357,13 +357,13 @@ proto.updateFast = function(options) {
         this.scatter.update(this.scatterOptions);
     }
     else {
-        this.scatterOptions.positions = new Float32Array(0);
+        this.scatterOptions.positions = new Float64Array(0);
         this.scatterOptions.glyphs = [];
         this.scatter.update(this.scatterOptions);
     }
 
     // turn off fancy scatter plot
-    this.scatterOptions.positions = new Float32Array(0);
+    this.scatterOptions.positions = new Float64Array(0);
     this.scatterOptions.glyphs = [];
     this.fancyScatter.update(this.scatterOptions);
 
@@ -389,9 +389,9 @@ proto.updateFancy = function(options) {
 
     var len = x.length,
         idToIndex = new Array(len),
-        positions = new Float32Array(2 * len),
-        errorsX = new Float32Array(4 * len),
-        errorsY = new Float32Array(4 * len),
+        positions = new Float64Array(2 * len),
+        errorsX = new Float64Array(4 * len),
+        errorsY = new Float64Array(4 * len),
         pId = 0,
         ptr = 0,
         ptrX = 0,
@@ -482,13 +482,13 @@ proto.updateFancy = function(options) {
         this.fancyScatter.update(this.scatterOptions);
     }
     else {
-        this.scatterOptions.positions = new Float32Array(0);
+        this.scatterOptions.positions = new Float64Array(0);
         this.scatterOptions.glyphs = [];
         this.fancyScatter.update(this.scatterOptions);
     }
 
     // turn off fast scatter plot
-    this.scatterOptions.positions = new Float32Array(0);
+    this.scatterOptions.positions = new Float64Array(0);
     this.scatterOptions.glyphs = [];
     this.scatter.update(this.scatterOptions);
 
@@ -506,7 +506,7 @@ proto.updateLines = function(options, positions) {
             var p = 0;
             var x = this.xData;
             var y = this.yData;
-            linePositions = new Float32Array(2 * x.length);
+            linePositions = new Float64Array(2 * x.length);
 
             for(i = 0; i < x.length; ++i) {
                 linePositions[p++] = x[i];
@@ -542,7 +542,7 @@ proto.updateLines = function(options, positions) {
         this.lineOptions.fillColor = [fillColor, fillColor, fillColor, fillColor];
     }
     else {
-        this.lineOptions.positions = new Float32Array(0);
+        this.lineOptions.positions = new Float64Array(0);
     }
 
     this.line.update(this.lineOptions);
@@ -565,7 +565,7 @@ proto.updateError = function(axLetter, options, positions, errors) {
         errorObjOptions.color = convertColor(errorOptions.color, 1, 1);
     }
     else {
-        errorObjOptions.positions = new Float32Array(0);
+        errorObjOptions.positions = new Float64Array(0);
     }
 
     errorObj.update(errorObjOptions);
@@ -588,7 +588,7 @@ proto.expandAxesFast = function(bounds, markerSize) {
     }
 };
 
-// not quite on-par with 'scatter' (scatter fill in several other expand options),
+// not quite on-par with 'scatter' (scatter fill in several other expand options)
 // but close enough for now
 proto.expandAxesFancy = function(x, y, ppad) {
     var scene = this.scene,

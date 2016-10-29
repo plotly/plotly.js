@@ -9,6 +9,45 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.19.1] -- 2016-10-27
+
+### Fixed
+- Fix dist bundles [#1094]
+
+
+## [1.19.0] -- 2016-10-27
+
+**Unpublished on npm and CDN** due to broken dist bundles.
+
+### Added
+- Add two-argument `Plotly.plot` call signature [#1014]
+- Add two-way binding functionality to updatemenus and sliders [#1016]
+- Add `width`, `base` and `offset` attribute to bar trace [#1075]
+- Add `fromcurrent` and `direction` animation options [#1087]
+- Add ability to filter by arbitrary array [#1062]
+
+### Changed
+- Rename `filtersrc` filter transform attribute `target` (with
+  backward-compatible map) [#1062]
+- Bump `sane-topojson` requirement to 2.0.0. New topojson dist files fix
+  the Michigan state border [#1077]
+- scattergl now handles higher resolution dates [#1033]
+- Improve error messages in `Plotly.animate` [#1088]
+
+### Fixed
+- `Plotly.newPlot` now respect user-defined layout `height` and `width` [#537]
+- Fix dendrogram cartesian axis layers [#1063]
+- Fix RGBA colorscale handler for contour [#1090]
+- Fix gl2d axis title positioning [#1067]
+- Fix gl2d multi-line axis tick labels display [#1087]
+- Fix performance deficit of scattergl trace type with date coordinates [#1021]
+- Fix ohlc trace offset computation [#1066]
+- Fix ohlc and candlestick default trace names [#1073]
+- Make `Plotly.animate` work with frames container array containers (e.g
+  annotations) [#1081]
+- Make `restyle` and `relayout` consistently remove items in array containers
+  when called with value argument `null` [#1086]
+
 
 ## [1.18.1] -- 2016-10-18
 

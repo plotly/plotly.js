@@ -12,6 +12,7 @@ module.exports = {
     mode: {
         valType: 'enumerated',
         dflt: 'afterall',
+        role: 'info',
         values: ['immediate', 'next', 'afterall'],
         description: [
             'Describes how a new animate call interacts with currently-running',
@@ -20,6 +21,23 @@ module.exports = {
             'to complete, after which the new animation is started. If `afterall`',
             'all existing frames are animated to completion before the new animation',
             'is started.'
+        ].join(' ')
+    },
+    direction: {
+        valType: 'enumerated',
+        role: 'info',
+        values: ['forward', 'reverse'],
+        dflt: 'forward',
+        description: [
+            'The direction in which to play the frames triggered by the animation call'
+        ].join(' ')
+    },
+    fromcurrent: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'info',
+        description: [
+            'Play frames starting at the current frame instead of the beginning.'
         ].join(' ')
     },
     frame: {

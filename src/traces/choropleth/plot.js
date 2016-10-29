@@ -15,9 +15,8 @@ var Axes = require('../../plots/cartesian/axes');
 var Fx = require('../../plots/cartesian/graph_interact');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
+var Colorscale = require('../../components/colorscale');
 
-var getColorscale = require('../../components/colorscale/get_scale');
-var makeScaleFunction = require('../../components/colorscale/make_scale_function');
 var getTopojsonFeatures = require('../../lib/topojson_utils').getTopojsonFeatures;
 var locationToFeature = require('../../lib/geo_location_utils').locationToFeature;
 var arrayToCalcItem = require('../../lib/array_to_calc_item');
@@ -151,11 +150,15 @@ plotChoropleth.style = function(geo) {
             var trace = calcTrace[0].trace,
                 s = d3.select(this),
                 marker = trace.marker || {},
-                markerLine = marker.line || {},
-                zmin = trace.zmin,
-                zmax = trace.zmax,
-                scl = getColorscale(trace.colorscale),
-                sclFunc = makeScaleFunction(scl, zmin, zmax);
+                markerLine = marker.line || {};
+
+            var sclFunc = Colorscale.makeColorScaleFunc(
+                Colorscale.extractScale(
+                    trace.colorscale,
+                    trace.zmin,
+                    trace.zmax
+                )
+            );
 
             s.selectAll('path.choroplethlocation')
                 .each(function(pt) {

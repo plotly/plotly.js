@@ -249,9 +249,8 @@ proto.computeTickMarks = function() {
 
     for(var j = 0; j < 2; ++j) {
         for(var i = 0; i < nextTicks[j].length; ++i) {
-            // TODO add support for '\n' in gl-plot2d,
-            // For now, replace '\n' with ' '
-            nextTicks[j][i].text = convertHTMLToUnicode(nextTicks[j][i].text + '').replace(/\n/g, ' ');
+            // coercing tick value (may not be a string) to a string
+            nextTicks[j][i].text = convertHTMLToUnicode(nextTicks[j][i].text + '');
         }
     }
 

@@ -378,22 +378,24 @@ describe('Test colorscale:', function() {
 
     });
 
-    describe('makeScaleFunction', function() {
+    describe('extractScale + makeColorScaleFunc', function() {
         var scale = [
-                [0, 'rgb(5,10,172)'],
-                [0.35, 'rgb(106,137,247)'],
-                [0.5, 'rgb(190,190,190)'],
-                [0.6, 'rgb(220,170,132)'],
-                [0.7, 'rgb(230,145,90)'],
-                [1, 'rgb(178,10,28)']
-            ],
-            scaleFunction = Colorscale.makeScaleFunction(scale, 2, 3);
+            [0, 'rgb(5,10,172)'],
+            [0.35, 'rgb(106,137,247)'],
+            [0.5, 'rgb(190,190,190)'],
+            [0.6, 'rgb(220,170,132)'],
+            [0.7, 'rgb(230,145,90)'],
+            [1, 'rgb(178,10,28)']
+        ];
+
+        var specs = Colorscale.extractScale(scale, 2, 3);
+        var sclFunc = Colorscale.makeColorScaleFunc(specs);
 
         it('should constrain color array values between cmin and cmax', function() {
-            var color1 = scaleFunction(1),
-                color2 = scaleFunction(2),
-                color3 = scaleFunction(3),
-                color4 = scaleFunction(4);
+            var color1 = sclFunc(1),
+                color2 = sclFunc(2),
+                color3 = sclFunc(3),
+                color4 = sclFunc(4);
 
             expect(color1).toEqual(color2);
             expect(color1).toEqual('rgb(5, 10, 172)');

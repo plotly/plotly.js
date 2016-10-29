@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v1.18.1
+* plotly.js (cartesian) v1.19.1
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -68,7 +68,7 @@ for(var selector in rules) {
     Lib.addStyleRule(fullSelector, rules[selector]);
 }
 
-},{"../src/lib":120}],2:[function(require,module,exports){
+},{"../src/lib":121}],2:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -201,7 +201,7 @@ module.exports = {
 
 module.exports = require('../src/traces/bar');
 
-},{"../src/traces/bar":198}],4:[function(require,module,exports){
+},{"../src/traces/bar":201}],4:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -214,7 +214,7 @@ module.exports = require('../src/traces/bar');
 
 module.exports = require('../src/traces/box');
 
-},{"../src/traces/box":209}],5:[function(require,module,exports){
+},{"../src/traces/box":213}],5:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -227,7 +227,7 @@ module.exports = require('../src/traces/box');
 
 module.exports = require('../src/traces/contour');
 
-},{"../src/traces/contour":220}],6:[function(require,module,exports){
+},{"../src/traces/contour":224}],6:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -240,7 +240,7 @@ module.exports = require('../src/traces/contour');
 
 module.exports = require('../src/core');
 
-},{"../src/core":112}],7:[function(require,module,exports){
+},{"../src/core":113}],7:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -253,7 +253,7 @@ module.exports = require('../src/core');
 
 module.exports = require('../src/traces/heatmap');
 
-},{"../src/traces/heatmap":232}],8:[function(require,module,exports){
+},{"../src/traces/heatmap":236}],8:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -266,7 +266,7 @@ module.exports = require('../src/traces/heatmap');
 
 module.exports = require('../src/traces/histogram');
 
-},{"../src/traces/histogram":243}],9:[function(require,module,exports){
+},{"../src/traces/histogram":247}],9:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -279,7 +279,7 @@ module.exports = require('../src/traces/histogram');
 
 module.exports = require('../src/traces/histogram2d');
 
-},{"../src/traces/histogram2d":248}],10:[function(require,module,exports){
+},{"../src/traces/histogram2d":252}],10:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -292,7 +292,7 @@ module.exports = require('../src/traces/histogram2d');
 
 module.exports = require('../src/traces/histogram2dcontour');
 
-},{"../src/traces/histogram2dcontour":252}],11:[function(require,module,exports){
+},{"../src/traces/histogram2dcontour":256}],11:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -332,7 +332,7 @@ module.exports = Plotly;
 
 module.exports = require('../src/traces/pie');
 
-},{"../src/traces/pie":258}],13:[function(require,module,exports){
+},{"../src/traces/pie":262}],13:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -345,403 +345,10 @@ module.exports = require('../src/traces/pie');
 
 module.exports = require('../src/traces/scatterternary');
 
-},{"../src/traces/scatterternary":292}],14:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-function EventEmitter() {
-  this._events = this._events || {};
-  this._maxListeners = this._maxListeners || undefined;
-}
-module.exports = EventEmitter;
-
-// Backwards-compat with node 0.10.x
-EventEmitter.EventEmitter = EventEmitter;
-
-EventEmitter.prototype._events = undefined;
-EventEmitter.prototype._maxListeners = undefined;
-
-// By default EventEmitters will print a warning if more than 10 listeners are
-// added to it. This is a useful default which helps finding memory leaks.
-EventEmitter.defaultMaxListeners = 10;
-
-// Obviously not all Emitters should be limited to 10. This function allows
-// that to be increased. Set to zero for unlimited.
-EventEmitter.prototype.setMaxListeners = function(n) {
-  if (!isNumber(n) || n < 0 || isNaN(n))
-    throw TypeError('n must be a positive number');
-  this._maxListeners = n;
-  return this;
-};
-
-EventEmitter.prototype.emit = function(type) {
-  var er, handler, len, args, i, listeners;
-
-  if (!this._events)
-    this._events = {};
-
-  // If there is no 'error' event listener then throw.
-  if (type === 'error') {
-    if (!this._events.error ||
-        (isObject(this._events.error) && !this._events.error.length)) {
-      er = arguments[1];
-      if (er instanceof Error) {
-        throw er; // Unhandled 'error' event
-      }
-      throw TypeError('Uncaught, unspecified "error" event.');
-    }
-  }
-
-  handler = this._events[type];
-
-  if (isUndefined(handler))
-    return false;
-
-  if (isFunction(handler)) {
-    switch (arguments.length) {
-      // fast cases
-      case 1:
-        handler.call(this);
-        break;
-      case 2:
-        handler.call(this, arguments[1]);
-        break;
-      case 3:
-        handler.call(this, arguments[1], arguments[2]);
-        break;
-      // slower
-      default:
-        args = Array.prototype.slice.call(arguments, 1);
-        handler.apply(this, args);
-    }
-  } else if (isObject(handler)) {
-    args = Array.prototype.slice.call(arguments, 1);
-    listeners = handler.slice();
-    len = listeners.length;
-    for (i = 0; i < len; i++)
-      listeners[i].apply(this, args);
-  }
-
-  return true;
-};
-
-EventEmitter.prototype.addListener = function(type, listener) {
-  var m;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events)
-    this._events = {};
-
-  // To avoid recursion in the case that type === "newListener"! Before
-  // adding it to the listeners, first emit "newListener".
-  if (this._events.newListener)
-    this.emit('newListener', type,
-              isFunction(listener.listener) ?
-              listener.listener : listener);
-
-  if (!this._events[type])
-    // Optimize the case of one listener. Don't need the extra array object.
-    this._events[type] = listener;
-  else if (isObject(this._events[type]))
-    // If we've already got an array, just append.
-    this._events[type].push(listener);
-  else
-    // Adding the second element, need to change to array.
-    this._events[type] = [this._events[type], listener];
-
-  // Check for listener leak
-  if (isObject(this._events[type]) && !this._events[type].warned) {
-    if (!isUndefined(this._maxListeners)) {
-      m = this._maxListeners;
-    } else {
-      m = EventEmitter.defaultMaxListeners;
-    }
-
-    if (m && m > 0 && this._events[type].length > m) {
-      this._events[type].warned = true;
-      console.error('(node) warning: possible EventEmitter memory ' +
-                    'leak detected. %d listeners added. ' +
-                    'Use emitter.setMaxListeners() to increase limit.',
-                    this._events[type].length);
-      if (typeof console.trace === 'function') {
-        // not supported in IE 10
-        console.trace();
-      }
-    }
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-EventEmitter.prototype.once = function(type, listener) {
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  var fired = false;
-
-  function g() {
-    this.removeListener(type, g);
-
-    if (!fired) {
-      fired = true;
-      listener.apply(this, arguments);
-    }
-  }
-
-  g.listener = listener;
-  this.on(type, g);
-
-  return this;
-};
-
-// emits a 'removeListener' event iff the listener was removed
-EventEmitter.prototype.removeListener = function(type, listener) {
-  var list, position, length, i;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events || !this._events[type])
-    return this;
-
-  list = this._events[type];
-  length = list.length;
-  position = -1;
-
-  if (list === listener ||
-      (isFunction(list.listener) && list.listener === listener)) {
-    delete this._events[type];
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-
-  } else if (isObject(list)) {
-    for (i = length; i-- > 0;) {
-      if (list[i] === listener ||
-          (list[i].listener && list[i].listener === listener)) {
-        position = i;
-        break;
-      }
-    }
-
-    if (position < 0)
-      return this;
-
-    if (list.length === 1) {
-      list.length = 0;
-      delete this._events[type];
-    } else {
-      list.splice(position, 1);
-    }
-
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.removeAllListeners = function(type) {
-  var key, listeners;
-
-  if (!this._events)
-    return this;
-
-  // not listening for removeListener, no need to emit
-  if (!this._events.removeListener) {
-    if (arguments.length === 0)
-      this._events = {};
-    else if (this._events[type])
-      delete this._events[type];
-    return this;
-  }
-
-  // emit removeListener for all listeners on all events
-  if (arguments.length === 0) {
-    for (key in this._events) {
-      if (key === 'removeListener') continue;
-      this.removeAllListeners(key);
-    }
-    this.removeAllListeners('removeListener');
-    this._events = {};
-    return this;
-  }
-
-  listeners = this._events[type];
-
-  if (isFunction(listeners)) {
-    this.removeListener(type, listeners);
-  } else if (listeners) {
-    // LIFO order
-    while (listeners.length)
-      this.removeListener(type, listeners[listeners.length - 1]);
-  }
-  delete this._events[type];
-
-  return this;
-};
-
-EventEmitter.prototype.listeners = function(type) {
-  var ret;
-  if (!this._events || !this._events[type])
-    ret = [];
-  else if (isFunction(this._events[type]))
-    ret = [this._events[type]];
-  else
-    ret = this._events[type].slice();
-  return ret;
-};
-
-EventEmitter.prototype.listenerCount = function(type) {
-  if (this._events) {
-    var evlistener = this._events[type];
-
-    if (isFunction(evlistener))
-      return 1;
-    else if (evlistener)
-      return evlistener.length;
-  }
-  return 0;
-};
-
-EventEmitter.listenerCount = function(emitter, type) {
-  return emitter.listenerCount(type);
-};
-
-function isFunction(arg) {
-  return typeof arg === 'function';
-}
-
-function isNumber(arg) {
-  return typeof arg === 'number';
-}
-
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
-}
-
-function isUndefined(arg) {
-  return arg === void 0;
-}
-
-},{}],15:[function(require,module,exports){
-// shim for using process in browser
-
-var process = module.exports = {};
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = setTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    clearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        setTimeout(drainQueue, 0);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-},{}],16:[function(require,module,exports){
+},{"../src/traces/scatterternary":296}],14:[function(require,module,exports){
 !function() {
   var d3 = {
-    version: "3.5.16"
+    version: "3.5.17"
   };
   var d3_arraySlice = [].slice, d3_array = function(list) {
     return d3_arraySlice.call(list);
@@ -4266,7 +3873,7 @@ process.umask = function() { return 0; };
         λ0 = λ, sinφ0 = sinφ, cosφ0 = cosφ, point0 = point;
       }
     }
-    return (polarAngle < -ε || polarAngle < ε && d3_geo_areaRingSum < 0) ^ winding & 1;
+    return (polarAngle < -ε || polarAngle < ε && d3_geo_areaRingSum < -ε) ^ winding & 1;
   }
   function d3_geo_clipCircle(radius) {
     var cr = Math.cos(radius), smallRadius = cr > 0, notHemisphere = abs(cr) > ε, interpolate = d3_geo_circleInterpolate(radius, 6 * d3_radians);
@@ -10293,965 +9900,1468 @@ process.umask = function() { return 0; };
   });
   if (typeof define === "function" && define.amd) this.d3 = d3, define(d3); else if (typeof module === "object" && module.exports) module.exports = d3; else this.d3 = d3;
 }();
-},{}],17:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 (function (process,global){
 /*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
  * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
  * @license   Licensed under MIT license
- *            See https://raw.githubusercontent.com/jakearchibald/es6-promise/master/LICENSE
- * @version   3.1.2
+ *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
+ * @version   3.3.1
  */
 
-(function() {
-    "use strict";
-    function lib$es6$promise$utils$$objectOrFunction(x) {
-      return typeof x === 'function' || (typeof x === 'object' && x !== null);
-    }
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? define(factory) :
+    (global.ES6Promise = factory());
+}(this, (function () { 'use strict';
 
-    function lib$es6$promise$utils$$isFunction(x) {
-      return typeof x === 'function';
-    }
+function objectOrFunction(x) {
+  return typeof x === 'function' || typeof x === 'object' && x !== null;
+}
 
-    function lib$es6$promise$utils$$isMaybeThenable(x) {
-      return typeof x === 'object' && x !== null;
-    }
+function isFunction(x) {
+  return typeof x === 'function';
+}
 
-    var lib$es6$promise$utils$$_isArray;
-    if (!Array.isArray) {
-      lib$es6$promise$utils$$_isArray = function (x) {
-        return Object.prototype.toString.call(x) === '[object Array]';
-      };
+var _isArray = undefined;
+if (!Array.isArray) {
+  _isArray = function (x) {
+    return Object.prototype.toString.call(x) === '[object Array]';
+  };
+} else {
+  _isArray = Array.isArray;
+}
+
+var isArray = _isArray;
+
+var len = 0;
+var vertxNext = undefined;
+var customSchedulerFn = undefined;
+
+var asap = function asap(callback, arg) {
+  queue[len] = callback;
+  queue[len + 1] = arg;
+  len += 2;
+  if (len === 2) {
+    // If len is 2, that means that we need to schedule an async flush.
+    // If additional callbacks are queued before the queue is flushed, they
+    // will be processed by this flush that we are scheduling.
+    if (customSchedulerFn) {
+      customSchedulerFn(flush);
     } else {
-      lib$es6$promise$utils$$_isArray = Array.isArray;
+      scheduleFlush();
     }
+  }
+};
+
+function setScheduler(scheduleFn) {
+  customSchedulerFn = scheduleFn;
+}
+
+function setAsap(asapFn) {
+  asap = asapFn;
+}
+
+var browserWindow = typeof window !== 'undefined' ? window : undefined;
+var browserGlobal = browserWindow || {};
+var BrowserMutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
+var isNode = typeof self === 'undefined' && typeof process !== 'undefined' && ({}).toString.call(process) === '[object process]';
+
+// test for web worker but not in IE10
+var isWorker = typeof Uint8ClampedArray !== 'undefined' && typeof importScripts !== 'undefined' && typeof MessageChannel !== 'undefined';
+
+// node
+function useNextTick() {
+  // node version 0.10.x displays a deprecation warning when nextTick is used recursively
+  // see https://github.com/cujojs/when/issues/410 for details
+  return function () {
+    return process.nextTick(flush);
+  };
+}
+
+// vertx
+function useVertxTimer() {
+  return function () {
+    vertxNext(flush);
+  };
+}
+
+function useMutationObserver() {
+  var iterations = 0;
+  var observer = new BrowserMutationObserver(flush);
+  var node = document.createTextNode('');
+  observer.observe(node, { characterData: true });
+
+  return function () {
+    node.data = iterations = ++iterations % 2;
+  };
+}
+
+// web worker
+function useMessageChannel() {
+  var channel = new MessageChannel();
+  channel.port1.onmessage = flush;
+  return function () {
+    return channel.port2.postMessage(0);
+  };
+}
+
+function useSetTimeout() {
+  // Store setTimeout reference so es6-promise will be unaffected by
+  // other code modifying setTimeout (like sinon.useFakeTimers())
+  var globalSetTimeout = setTimeout;
+  return function () {
+    return globalSetTimeout(flush, 1);
+  };
+}
+
+var queue = new Array(1000);
+function flush() {
+  for (var i = 0; i < len; i += 2) {
+    var callback = queue[i];
+    var arg = queue[i + 1];
+
+    callback(arg);
+
+    queue[i] = undefined;
+    queue[i + 1] = undefined;
+  }
+
+  len = 0;
+}
+
+function attemptVertx() {
+  try {
+    var r = require;
+    var vertx = r('vertx');
+    vertxNext = vertx.runOnLoop || vertx.runOnContext;
+    return useVertxTimer();
+  } catch (e) {
+    return useSetTimeout();
+  }
+}
+
+var scheduleFlush = undefined;
+// Decide what async method to use to triggering processing of queued callbacks:
+if (isNode) {
+  scheduleFlush = useNextTick();
+} else if (BrowserMutationObserver) {
+  scheduleFlush = useMutationObserver();
+} else if (isWorker) {
+  scheduleFlush = useMessageChannel();
+} else if (browserWindow === undefined && typeof require === 'function') {
+  scheduleFlush = attemptVertx();
+} else {
+  scheduleFlush = useSetTimeout();
+}
 
-    var lib$es6$promise$utils$$isArray = lib$es6$promise$utils$$_isArray;
-    var lib$es6$promise$asap$$len = 0;
-    var lib$es6$promise$asap$$vertxNext;
-    var lib$es6$promise$asap$$customSchedulerFn;
-
-    var lib$es6$promise$asap$$asap = function asap(callback, arg) {
-      lib$es6$promise$asap$$queue[lib$es6$promise$asap$$len] = callback;
-      lib$es6$promise$asap$$queue[lib$es6$promise$asap$$len + 1] = arg;
-      lib$es6$promise$asap$$len += 2;
-      if (lib$es6$promise$asap$$len === 2) {
-        // If len is 2, that means that we need to schedule an async flush.
-        // If additional callbacks are queued before the queue is flushed, they
-        // will be processed by this flush that we are scheduling.
-        if (lib$es6$promise$asap$$customSchedulerFn) {
-          lib$es6$promise$asap$$customSchedulerFn(lib$es6$promise$asap$$flush);
-        } else {
-          lib$es6$promise$asap$$scheduleFlush();
-        }
-      }
-    }
-
-    function lib$es6$promise$asap$$setScheduler(scheduleFn) {
-      lib$es6$promise$asap$$customSchedulerFn = scheduleFn;
-    }
-
-    function lib$es6$promise$asap$$setAsap(asapFn) {
-      lib$es6$promise$asap$$asap = asapFn;
-    }
-
-    var lib$es6$promise$asap$$browserWindow = (typeof window !== 'undefined') ? window : undefined;
-    var lib$es6$promise$asap$$browserGlobal = lib$es6$promise$asap$$browserWindow || {};
-    var lib$es6$promise$asap$$BrowserMutationObserver = lib$es6$promise$asap$$browserGlobal.MutationObserver || lib$es6$promise$asap$$browserGlobal.WebKitMutationObserver;
-    var lib$es6$promise$asap$$isNode = typeof process !== 'undefined' && {}.toString.call(process) === '[object process]';
-
-    // test for web worker but not in IE10
-    var lib$es6$promise$asap$$isWorker = typeof Uint8ClampedArray !== 'undefined' &&
-      typeof importScripts !== 'undefined' &&
-      typeof MessageChannel !== 'undefined';
-
-    // node
-    function lib$es6$promise$asap$$useNextTick() {
-      // node version 0.10.x displays a deprecation warning when nextTick is used recursively
-      // see https://github.com/cujojs/when/issues/410 for details
-      return function() {
-        process.nextTick(lib$es6$promise$asap$$flush);
-      };
-    }
-
-    // vertx
-    function lib$es6$promise$asap$$useVertxTimer() {
-      return function() {
-        lib$es6$promise$asap$$vertxNext(lib$es6$promise$asap$$flush);
-      };
-    }
-
-    function lib$es6$promise$asap$$useMutationObserver() {
-      var iterations = 0;
-      var observer = new lib$es6$promise$asap$$BrowserMutationObserver(lib$es6$promise$asap$$flush);
-      var node = document.createTextNode('');
-      observer.observe(node, { characterData: true });
-
-      return function() {
-        node.data = (iterations = ++iterations % 2);
-      };
-    }
-
-    // web worker
-    function lib$es6$promise$asap$$useMessageChannel() {
-      var channel = new MessageChannel();
-      channel.port1.onmessage = lib$es6$promise$asap$$flush;
-      return function () {
-        channel.port2.postMessage(0);
-      };
-    }
-
-    function lib$es6$promise$asap$$useSetTimeout() {
-      return function() {
-        setTimeout(lib$es6$promise$asap$$flush, 1);
-      };
-    }
-
-    var lib$es6$promise$asap$$queue = new Array(1000);
-    function lib$es6$promise$asap$$flush() {
-      for (var i = 0; i < lib$es6$promise$asap$$len; i+=2) {
-        var callback = lib$es6$promise$asap$$queue[i];
-        var arg = lib$es6$promise$asap$$queue[i+1];
-
-        callback(arg);
-
-        lib$es6$promise$asap$$queue[i] = undefined;
-        lib$es6$promise$asap$$queue[i+1] = undefined;
-      }
-
-      lib$es6$promise$asap$$len = 0;
-    }
-
-    function lib$es6$promise$asap$$attemptVertx() {
-      try {
-        var r = require;
-        var vertx = r('vertx');
-        lib$es6$promise$asap$$vertxNext = vertx.runOnLoop || vertx.runOnContext;
-        return lib$es6$promise$asap$$useVertxTimer();
-      } catch(e) {
-        return lib$es6$promise$asap$$useSetTimeout();
-      }
-    }
-
-    var lib$es6$promise$asap$$scheduleFlush;
-    // Decide what async method to use to triggering processing of queued callbacks:
-    if (lib$es6$promise$asap$$isNode) {
-      lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useNextTick();
-    } else if (lib$es6$promise$asap$$BrowserMutationObserver) {
-      lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useMutationObserver();
-    } else if (lib$es6$promise$asap$$isWorker) {
-      lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useMessageChannel();
-    } else if (lib$es6$promise$asap$$browserWindow === undefined && typeof require === 'function') {
-      lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$attemptVertx();
-    } else {
-      lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useSetTimeout();
-    }
-    function lib$es6$promise$then$$then(onFulfillment, onRejection) {
-      var parent = this;
-      var state = parent._state;
-
-      if (state === lib$es6$promise$$internal$$FULFILLED && !onFulfillment || state === lib$es6$promise$$internal$$REJECTED && !onRejection) {
-        return this;
-      }
-
-      var child = new this.constructor(lib$es6$promise$$internal$$noop);
-      var result = parent._result;
-
-      if (state) {
-        var callback = arguments[state - 1];
-        lib$es6$promise$asap$$asap(function(){
-          lib$es6$promise$$internal$$invokeCallback(state, child, callback, result);
-        });
-      } else {
-        lib$es6$promise$$internal$$subscribe(parent, child, onFulfillment, onRejection);
-      }
-
-      return child;
-    }
-    var lib$es6$promise$then$$default = lib$es6$promise$then$$then;
-    function lib$es6$promise$promise$resolve$$resolve(object) {
-      /*jshint validthis:true */
-      var Constructor = this;
-
-      if (object && typeof object === 'object' && object.constructor === Constructor) {
-        return object;
-      }
-
-      var promise = new Constructor(lib$es6$promise$$internal$$noop);
-      lib$es6$promise$$internal$$resolve(promise, object);
-      return promise;
-    }
-    var lib$es6$promise$promise$resolve$$default = lib$es6$promise$promise$resolve$$resolve;
-
-    function lib$es6$promise$$internal$$noop() {}
-
-    var lib$es6$promise$$internal$$PENDING   = void 0;
-    var lib$es6$promise$$internal$$FULFILLED = 1;
-    var lib$es6$promise$$internal$$REJECTED  = 2;
-
-    var lib$es6$promise$$internal$$GET_THEN_ERROR = new lib$es6$promise$$internal$$ErrorObject();
-
-    function lib$es6$promise$$internal$$selfFulfillment() {
-      return new TypeError("You cannot resolve a promise with itself");
-    }
-
-    function lib$es6$promise$$internal$$cannotReturnOwn() {
-      return new TypeError('A promises callback cannot return that same promise.');
-    }
-
-    function lib$es6$promise$$internal$$getThen(promise) {
-      try {
-        return promise.then;
-      } catch(error) {
-        lib$es6$promise$$internal$$GET_THEN_ERROR.error = error;
-        return lib$es6$promise$$internal$$GET_THEN_ERROR;
-      }
-    }
-
-    function lib$es6$promise$$internal$$tryThen(then, value, fulfillmentHandler, rejectionHandler) {
-      try {
-        then.call(value, fulfillmentHandler, rejectionHandler);
-      } catch(e) {
-        return e;
-      }
-    }
-
-    function lib$es6$promise$$internal$$handleForeignThenable(promise, thenable, then) {
-       lib$es6$promise$asap$$asap(function(promise) {
-        var sealed = false;
-        var error = lib$es6$promise$$internal$$tryThen(then, thenable, function(value) {
-          if (sealed) { return; }
-          sealed = true;
-          if (thenable !== value) {
-            lib$es6$promise$$internal$$resolve(promise, value);
-          } else {
-            lib$es6$promise$$internal$$fulfill(promise, value);
-          }
-        }, function(reason) {
-          if (sealed) { return; }
-          sealed = true;
-
-          lib$es6$promise$$internal$$reject(promise, reason);
-        }, 'Settle: ' + (promise._label || ' unknown promise'));
-
-        if (!sealed && error) {
-          sealed = true;
-          lib$es6$promise$$internal$$reject(promise, error);
-        }
-      }, promise);
-    }
-
-    function lib$es6$promise$$internal$$handleOwnThenable(promise, thenable) {
-      if (thenable._state === lib$es6$promise$$internal$$FULFILLED) {
-        lib$es6$promise$$internal$$fulfill(promise, thenable._result);
-      } else if (thenable._state === lib$es6$promise$$internal$$REJECTED) {
-        lib$es6$promise$$internal$$reject(promise, thenable._result);
-      } else {
-        lib$es6$promise$$internal$$subscribe(thenable, undefined, function(value) {
-          lib$es6$promise$$internal$$resolve(promise, value);
-        }, function(reason) {
-          lib$es6$promise$$internal$$reject(promise, reason);
-        });
-      }
-    }
-
-    function lib$es6$promise$$internal$$handleMaybeThenable(promise, maybeThenable, then) {
-      if (maybeThenable.constructor === promise.constructor &&
-          then === lib$es6$promise$then$$default &&
-          constructor.resolve === lib$es6$promise$promise$resolve$$default) {
-        lib$es6$promise$$internal$$handleOwnThenable(promise, maybeThenable);
-      } else {
-        if (then === lib$es6$promise$$internal$$GET_THEN_ERROR) {
-          lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$GET_THEN_ERROR.error);
-        } else if (then === undefined) {
-          lib$es6$promise$$internal$$fulfill(promise, maybeThenable);
-        } else if (lib$es6$promise$utils$$isFunction(then)) {
-          lib$es6$promise$$internal$$handleForeignThenable(promise, maybeThenable, then);
-        } else {
-          lib$es6$promise$$internal$$fulfill(promise, maybeThenable);
-        }
-      }
-    }
-
-    function lib$es6$promise$$internal$$resolve(promise, value) {
-      if (promise === value) {
-        lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$selfFulfillment());
-      } else if (lib$es6$promise$utils$$objectOrFunction(value)) {
-        lib$es6$promise$$internal$$handleMaybeThenable(promise, value, lib$es6$promise$$internal$$getThen(value));
-      } else {
-        lib$es6$promise$$internal$$fulfill(promise, value);
-      }
-    }
-
-    function lib$es6$promise$$internal$$publishRejection(promise) {
-      if (promise._onerror) {
-        promise._onerror(promise._result);
-      }
-
-      lib$es6$promise$$internal$$publish(promise);
-    }
-
-    function lib$es6$promise$$internal$$fulfill(promise, value) {
-      if (promise._state !== lib$es6$promise$$internal$$PENDING) { return; }
-
-      promise._result = value;
-      promise._state = lib$es6$promise$$internal$$FULFILLED;
-
-      if (promise._subscribers.length !== 0) {
-        lib$es6$promise$asap$$asap(lib$es6$promise$$internal$$publish, promise);
-      }
-    }
-
-    function lib$es6$promise$$internal$$reject(promise, reason) {
-      if (promise._state !== lib$es6$promise$$internal$$PENDING) { return; }
-      promise._state = lib$es6$promise$$internal$$REJECTED;
-      promise._result = reason;
-
-      lib$es6$promise$asap$$asap(lib$es6$promise$$internal$$publishRejection, promise);
-    }
-
-    function lib$es6$promise$$internal$$subscribe(parent, child, onFulfillment, onRejection) {
-      var subscribers = parent._subscribers;
-      var length = subscribers.length;
-
-      parent._onerror = null;
-
-      subscribers[length] = child;
-      subscribers[length + lib$es6$promise$$internal$$FULFILLED] = onFulfillment;
-      subscribers[length + lib$es6$promise$$internal$$REJECTED]  = onRejection;
-
-      if (length === 0 && parent._state) {
-        lib$es6$promise$asap$$asap(lib$es6$promise$$internal$$publish, parent);
-      }
-    }
-
-    function lib$es6$promise$$internal$$publish(promise) {
-      var subscribers = promise._subscribers;
-      var settled = promise._state;
-
-      if (subscribers.length === 0) { return; }
-
-      var child, callback, detail = promise._result;
-
-      for (var i = 0; i < subscribers.length; i += 3) {
-        child = subscribers[i];
-        callback = subscribers[i + settled];
-
-        if (child) {
-          lib$es6$promise$$internal$$invokeCallback(settled, child, callback, detail);
-        } else {
-          callback(detail);
-        }
-      }
-
-      promise._subscribers.length = 0;
-    }
-
-    function lib$es6$promise$$internal$$ErrorObject() {
-      this.error = null;
-    }
-
-    var lib$es6$promise$$internal$$TRY_CATCH_ERROR = new lib$es6$promise$$internal$$ErrorObject();
-
-    function lib$es6$promise$$internal$$tryCatch(callback, detail) {
-      try {
-        return callback(detail);
-      } catch(e) {
-        lib$es6$promise$$internal$$TRY_CATCH_ERROR.error = e;
-        return lib$es6$promise$$internal$$TRY_CATCH_ERROR;
-      }
-    }
-
-    function lib$es6$promise$$internal$$invokeCallback(settled, promise, callback, detail) {
-      var hasCallback = lib$es6$promise$utils$$isFunction(callback),
-          value, error, succeeded, failed;
-
-      if (hasCallback) {
-        value = lib$es6$promise$$internal$$tryCatch(callback, detail);
-
-        if (value === lib$es6$promise$$internal$$TRY_CATCH_ERROR) {
-          failed = true;
-          error = value.error;
-          value = null;
-        } else {
-          succeeded = true;
-        }
-
-        if (promise === value) {
-          lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$cannotReturnOwn());
-          return;
-        }
-
-      } else {
-        value = detail;
-        succeeded = true;
-      }
-
-      if (promise._state !== lib$es6$promise$$internal$$PENDING) {
-        // noop
-      } else if (hasCallback && succeeded) {
-        lib$es6$promise$$internal$$resolve(promise, value);
-      } else if (failed) {
-        lib$es6$promise$$internal$$reject(promise, error);
-      } else if (settled === lib$es6$promise$$internal$$FULFILLED) {
-        lib$es6$promise$$internal$$fulfill(promise, value);
-      } else if (settled === lib$es6$promise$$internal$$REJECTED) {
-        lib$es6$promise$$internal$$reject(promise, value);
-      }
-    }
-
-    function lib$es6$promise$$internal$$initializePromise(promise, resolver) {
-      try {
-        resolver(function resolvePromise(value){
-          lib$es6$promise$$internal$$resolve(promise, value);
-        }, function rejectPromise(reason) {
-          lib$es6$promise$$internal$$reject(promise, reason);
-        });
-      } catch(e) {
-        lib$es6$promise$$internal$$reject(promise, e);
-      }
-    }
-
-    function lib$es6$promise$promise$all$$all(entries) {
-      return new lib$es6$promise$enumerator$$default(this, entries).promise;
-    }
-    var lib$es6$promise$promise$all$$default = lib$es6$promise$promise$all$$all;
-    function lib$es6$promise$promise$race$$race(entries) {
-      /*jshint validthis:true */
-      var Constructor = this;
-
-      var promise = new Constructor(lib$es6$promise$$internal$$noop);
-
-      if (!lib$es6$promise$utils$$isArray(entries)) {
-        lib$es6$promise$$internal$$reject(promise, new TypeError('You must pass an array to race.'));
-        return promise;
-      }
-
-      var length = entries.length;
-
-      function onFulfillment(value) {
-        lib$es6$promise$$internal$$resolve(promise, value);
-      }
-
-      function onRejection(reason) {
-        lib$es6$promise$$internal$$reject(promise, reason);
-      }
-
-      for (var i = 0; promise._state === lib$es6$promise$$internal$$PENDING && i < length; i++) {
-        lib$es6$promise$$internal$$subscribe(Constructor.resolve(entries[i]), undefined, onFulfillment, onRejection);
-      }
-
-      return promise;
-    }
-    var lib$es6$promise$promise$race$$default = lib$es6$promise$promise$race$$race;
-    function lib$es6$promise$promise$reject$$reject(reason) {
-      /*jshint validthis:true */
-      var Constructor = this;
-      var promise = new Constructor(lib$es6$promise$$internal$$noop);
-      lib$es6$promise$$internal$$reject(promise, reason);
-      return promise;
-    }
-    var lib$es6$promise$promise$reject$$default = lib$es6$promise$promise$reject$$reject;
-
-    var lib$es6$promise$promise$$counter = 0;
-
-    function lib$es6$promise$promise$$needsResolver() {
-      throw new TypeError('You must pass a resolver function as the first argument to the promise constructor');
-    }
-
-    function lib$es6$promise$promise$$needsNew() {
-      throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.");
-    }
-
-    var lib$es6$promise$promise$$default = lib$es6$promise$promise$$Promise;
-    /**
-      Promise objects represent the eventual result of an asynchronous operation. The
-      primary way of interacting with a promise is through its `then` method, which
-      registers callbacks to receive either a promise's eventual value or the reason
-      why the promise cannot be fulfilled.
-
-      Terminology
-      -----------
-
-      - `promise` is an object or function with a `then` method whose behavior conforms to this specification.
-      - `thenable` is an object or function that defines a `then` method.
-      - `value` is any legal JavaScript value (including undefined, a thenable, or a promise).
-      - `exception` is a value that is thrown using the throw statement.
-      - `reason` is a value that indicates why a promise was rejected.
-      - `settled` the final resting state of a promise, fulfilled or rejected.
-
-      A promise can be in one of three states: pending, fulfilled, or rejected.
-
-      Promises that are fulfilled have a fulfillment value and are in the fulfilled
-      state.  Promises that are rejected have a rejection reason and are in the
-      rejected state.  A fulfillment value is never a thenable.
-
-      Promises can also be said to *resolve* a value.  If this value is also a
-      promise, then the original promise's settled state will match the value's
-      settled state.  So a promise that *resolves* a promise that rejects will
-      itself reject, and a promise that *resolves* a promise that fulfills will
-      itself fulfill.
-
-
-      Basic Usage:
-      ------------
-
-      ```js
-      var promise = new Promise(function(resolve, reject) {
-        // on success
-        resolve(value);
-
-        // on failure
-        reject(reason);
+function then(onFulfillment, onRejection) {
+  var _arguments = arguments;
+
+  var parent = this;
+
+  var child = new this.constructor(noop);
+
+  if (child[PROMISE_ID] === undefined) {
+    makePromise(child);
+  }
+
+  var _state = parent._state;
+
+  if (_state) {
+    (function () {
+      var callback = _arguments[_state - 1];
+      asap(function () {
+        return invokeCallback(_state, child, callback, parent._result);
       });
-
-      promise.then(function(value) {
-        // on fulfillment
-      }, function(reason) {
-        // on rejection
-      });
-      ```
-
-      Advanced Usage:
-      ---------------
-
-      Promises shine when abstracting away asynchronous interactions such as
-      `XMLHttpRequest`s.
-
-      ```js
-      function getJSON(url) {
-        return new Promise(function(resolve, reject){
-          var xhr = new XMLHttpRequest();
-
-          xhr.open('GET', url);
-          xhr.onreadystatechange = handler;
-          xhr.responseType = 'json';
-          xhr.setRequestHeader('Accept', 'application/json');
-          xhr.send();
-
-          function handler() {
-            if (this.readyState === this.DONE) {
-              if (this.status === 200) {
-                resolve(this.response);
-              } else {
-                reject(new Error('getJSON: `' + url + '` failed with status: [' + this.status + ']'));
-              }
-            }
-          };
-        });
-      }
-
-      getJSON('/posts.json').then(function(json) {
-        // on fulfillment
-      }, function(reason) {
-        // on rejection
-      });
-      ```
-
-      Unlike callbacks, promises are great composable primitives.
-
-      ```js
-      Promise.all([
-        getJSON('/posts'),
-        getJSON('/comments')
-      ]).then(function(values){
-        values[0] // => postsJSON
-        values[1] // => commentsJSON
-
-        return values;
-      });
-      ```
-
-      @class Promise
-      @param {function} resolver
-      Useful for tooling.
-      @constructor
-    */
-    function lib$es6$promise$promise$$Promise(resolver) {
-      this._id = lib$es6$promise$promise$$counter++;
-      this._state = undefined;
-      this._result = undefined;
-      this._subscribers = [];
-
-      if (lib$es6$promise$$internal$$noop !== resolver) {
-        typeof resolver !== 'function' && lib$es6$promise$promise$$needsResolver();
-        this instanceof lib$es6$promise$promise$$Promise ? lib$es6$promise$$internal$$initializePromise(this, resolver) : lib$es6$promise$promise$$needsNew();
-      }
-    }
-
-    lib$es6$promise$promise$$Promise.all = lib$es6$promise$promise$all$$default;
-    lib$es6$promise$promise$$Promise.race = lib$es6$promise$promise$race$$default;
-    lib$es6$promise$promise$$Promise.resolve = lib$es6$promise$promise$resolve$$default;
-    lib$es6$promise$promise$$Promise.reject = lib$es6$promise$promise$reject$$default;
-    lib$es6$promise$promise$$Promise._setScheduler = lib$es6$promise$asap$$setScheduler;
-    lib$es6$promise$promise$$Promise._setAsap = lib$es6$promise$asap$$setAsap;
-    lib$es6$promise$promise$$Promise._asap = lib$es6$promise$asap$$asap;
-
-    lib$es6$promise$promise$$Promise.prototype = {
-      constructor: lib$es6$promise$promise$$Promise,
-
-    /**
-      The primary way of interacting with a promise is through its `then` method,
-      which registers callbacks to receive either a promise's eventual value or the
-      reason why the promise cannot be fulfilled.
-
-      ```js
-      findUser().then(function(user){
-        // user is available
-      }, function(reason){
-        // user is unavailable, and you are given the reason why
-      });
-      ```
-
-      Chaining
-      --------
-
-      The return value of `then` is itself a promise.  This second, 'downstream'
-      promise is resolved with the return value of the first promise's fulfillment
-      or rejection handler, or rejected if the handler throws an exception.
-
-      ```js
-      findUser().then(function (user) {
-        return user.name;
-      }, function (reason) {
-        return 'default name';
-      }).then(function (userName) {
-        // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
-        // will be `'default name'`
-      });
-
-      findUser().then(function (user) {
-        throw new Error('Found user, but still unhappy');
-      }, function (reason) {
-        throw new Error('`findUser` rejected and we're unhappy');
-      }).then(function (value) {
-        // never reached
-      }, function (reason) {
-        // if `findUser` fulfilled, `reason` will be 'Found user, but still unhappy'.
-        // If `findUser` rejected, `reason` will be '`findUser` rejected and we're unhappy'.
-      });
-      ```
-      If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
-
-      ```js
-      findUser().then(function (user) {
-        throw new PedagogicalException('Upstream error');
-      }).then(function (value) {
-        // never reached
-      }).then(function (value) {
-        // never reached
-      }, function (reason) {
-        // The `PedgagocialException` is propagated all the way down to here
-      });
-      ```
-
-      Assimilation
-      ------------
-
-      Sometimes the value you want to propagate to a downstream promise can only be
-      retrieved asynchronously. This can be achieved by returning a promise in the
-      fulfillment or rejection handler. The downstream promise will then be pending
-      until the returned promise is settled. This is called *assimilation*.
-
-      ```js
-      findUser().then(function (user) {
-        return findCommentsByAuthor(user);
-      }).then(function (comments) {
-        // The user's comments are now available
-      });
-      ```
-
-      If the assimliated promise rejects, then the downstream promise will also reject.
-
-      ```js
-      findUser().then(function (user) {
-        return findCommentsByAuthor(user);
-      }).then(function (comments) {
-        // If `findCommentsByAuthor` fulfills, we'll have the value here
-      }, function (reason) {
-        // If `findCommentsByAuthor` rejects, we'll have the reason here
-      });
-      ```
-
-      Simple Example
-      --------------
-
-      Synchronous Example
-
-      ```javascript
-      var result;
-
-      try {
-        result = findResult();
-        // success
-      } catch(reason) {
-        // failure
-      }
-      ```
-
-      Errback Example
-
-      ```js
-      findResult(function(result, err){
-        if (err) {
-          // failure
-        } else {
-          // success
-        }
-      });
-      ```
-
-      Promise Example;
-
-      ```javascript
-      findResult().then(function(result){
-        // success
-      }, function(reason){
-        // failure
-      });
-      ```
-
-      Advanced Example
-      --------------
-
-      Synchronous Example
-
-      ```javascript
-      var author, books;
-
-      try {
-        author = findAuthor();
-        books  = findBooksByAuthor(author);
-        // success
-      } catch(reason) {
-        // failure
-      }
-      ```
-
-      Errback Example
-
-      ```js
-
-      function foundBooks(books) {
-
-      }
-
-      function failure(reason) {
-
-      }
-
-      findAuthor(function(author, err){
-        if (err) {
-          failure(err);
-          // failure
-        } else {
-          try {
-            findBoooksByAuthor(author, function(books, err) {
-              if (err) {
-                failure(err);
-              } else {
-                try {
-                  foundBooks(books);
-                } catch(reason) {
-                  failure(reason);
-                }
-              }
-            });
-          } catch(error) {
-            failure(err);
-          }
-          // success
-        }
-      });
-      ```
-
-      Promise Example;
-
-      ```javascript
-      findAuthor().
-        then(findBooksByAuthor).
-        then(function(books){
-          // found books
-      }).catch(function(reason){
-        // something went wrong
-      });
-      ```
-
-      @method then
-      @param {Function} onFulfilled
-      @param {Function} onRejected
-      Useful for tooling.
-      @return {Promise}
-    */
-      then: lib$es6$promise$then$$default,
-
-    /**
-      `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
-      as the catch block of a try/catch statement.
-
-      ```js
-      function findAuthor(){
-        throw new Error('couldn't find that author');
-      }
-
-      // synchronous
-      try {
-        findAuthor();
-      } catch(reason) {
-        // something went wrong
-      }
-
-      // async with promises
-      findAuthor().catch(function(reason){
-        // something went wrong
-      });
-      ```
-
-      @method catch
-      @param {Function} onRejection
-      Useful for tooling.
-      @return {Promise}
-    */
-      'catch': function(onRejection) {
-        return this.then(null, onRejection);
-      }
-    };
-    var lib$es6$promise$enumerator$$default = lib$es6$promise$enumerator$$Enumerator;
-    function lib$es6$promise$enumerator$$Enumerator(Constructor, input) {
-      this._instanceConstructor = Constructor;
-      this.promise = new Constructor(lib$es6$promise$$internal$$noop);
-
-      if (Array.isArray(input)) {
-        this._input     = input;
-        this.length     = input.length;
-        this._remaining = input.length;
-
-        this._result = new Array(this.length);
-
-        if (this.length === 0) {
-          lib$es6$promise$$internal$$fulfill(this.promise, this._result);
-        } else {
-          this.length = this.length || 0;
-          this._enumerate();
-          if (this._remaining === 0) {
-            lib$es6$promise$$internal$$fulfill(this.promise, this._result);
-          }
-        }
-      } else {
-        lib$es6$promise$$internal$$reject(this.promise, this._validationError());
-      }
-    }
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._validationError = function() {
-      return new Error('Array Methods must be provided an Array');
-    };
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._enumerate = function() {
-      var length  = this.length;
-      var input   = this._input;
-
-      for (var i = 0; this._state === lib$es6$promise$$internal$$PENDING && i < length; i++) {
-        this._eachEntry(input[i], i);
-      }
-    };
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._eachEntry = function(entry, i) {
-      var c = this._instanceConstructor;
-      var resolve = c.resolve;
-
-      if (resolve === lib$es6$promise$promise$resolve$$default) {
-        var then = lib$es6$promise$$internal$$getThen(entry);
-
-        if (then === lib$es6$promise$then$$default &&
-            entry._state !== lib$es6$promise$$internal$$PENDING) {
-          this._settledAt(entry._state, i, entry._result);
-        } else if (typeof then !== 'function') {
-          this._remaining--;
-          this._result[i] = entry;
-        } else if (c === lib$es6$promise$promise$$default) {
-          var promise = new c(lib$es6$promise$$internal$$noop);
-          lib$es6$promise$$internal$$handleMaybeThenable(promise, entry, then);
-          this._willSettleAt(promise, i);
-        } else {
-          this._willSettleAt(new c(function(resolve) { resolve(entry); }), i);
-        }
-      } else {
-        this._willSettleAt(resolve(entry), i);
-      }
-    };
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._settledAt = function(state, i, value) {
-      var promise = this.promise;
-
-      if (promise._state === lib$es6$promise$$internal$$PENDING) {
-        this._remaining--;
-
-        if (state === lib$es6$promise$$internal$$REJECTED) {
-          lib$es6$promise$$internal$$reject(promise, value);
-        } else {
-          this._result[i] = value;
-        }
-      }
-
-      if (this._remaining === 0) {
-        lib$es6$promise$$internal$$fulfill(promise, this._result);
-      }
-    };
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._willSettleAt = function(promise, i) {
-      var enumerator = this;
-
-      lib$es6$promise$$internal$$subscribe(promise, undefined, function(value) {
-        enumerator._settledAt(lib$es6$promise$$internal$$FULFILLED, i, value);
-      }, function(reason) {
-        enumerator._settledAt(lib$es6$promise$$internal$$REJECTED, i, reason);
-      });
-    };
-    function lib$es6$promise$polyfill$$polyfill() {
-      var local;
-
-      if (typeof global !== 'undefined') {
-          local = global;
-      } else if (typeof self !== 'undefined') {
-          local = self;
-      } else {
-          try {
-              local = Function('return this')();
-          } catch (e) {
-              throw new Error('polyfill failed because global object is unavailable in this environment');
-          }
-      }
-
-      var P = local.Promise;
-
-      if (P && Object.prototype.toString.call(P.resolve()) === '[object Promise]' && !P.cast) {
+    })();
+  } else {
+    subscribe(parent, child, onFulfillment, onRejection);
+  }
+
+  return child;
+}
+
+/**
+  `Promise.resolve` returns a promise that will become resolved with the
+  passed `value`. It is shorthand for the following:
+
+  ```javascript
+  let promise = new Promise(function(resolve, reject){
+    resolve(1);
+  });
+
+  promise.then(function(value){
+    // value === 1
+  });
+  ```
+
+  Instead of writing the above, your code now simply becomes the following:
+
+  ```javascript
+  let promise = Promise.resolve(1);
+
+  promise.then(function(value){
+    // value === 1
+  });
+  ```
+
+  @method resolve
+  @static
+  @param {Any} value value that the returned promise will be resolved with
+  Useful for tooling.
+  @return {Promise} a promise that will become fulfilled with the given
+  `value`
+*/
+function resolve(object) {
+  /*jshint validthis:true */
+  var Constructor = this;
+
+  if (object && typeof object === 'object' && object.constructor === Constructor) {
+    return object;
+  }
+
+  var promise = new Constructor(noop);
+  _resolve(promise, object);
+  return promise;
+}
+
+var PROMISE_ID = Math.random().toString(36).substring(16);
+
+function noop() {}
+
+var PENDING = void 0;
+var FULFILLED = 1;
+var REJECTED = 2;
+
+var GET_THEN_ERROR = new ErrorObject();
+
+function selfFulfillment() {
+  return new TypeError("You cannot resolve a promise with itself");
+}
+
+function cannotReturnOwn() {
+  return new TypeError('A promises callback cannot return that same promise.');
+}
+
+function getThen(promise) {
+  try {
+    return promise.then;
+  } catch (error) {
+    GET_THEN_ERROR.error = error;
+    return GET_THEN_ERROR;
+  }
+}
+
+function tryThen(then, value, fulfillmentHandler, rejectionHandler) {
+  try {
+    then.call(value, fulfillmentHandler, rejectionHandler);
+  } catch (e) {
+    return e;
+  }
+}
+
+function handleForeignThenable(promise, thenable, then) {
+  asap(function (promise) {
+    var sealed = false;
+    var error = tryThen(then, thenable, function (value) {
+      if (sealed) {
         return;
       }
+      sealed = true;
+      if (thenable !== value) {
+        _resolve(promise, value);
+      } else {
+        fulfill(promise, value);
+      }
+    }, function (reason) {
+      if (sealed) {
+        return;
+      }
+      sealed = true;
 
-      local.Promise = lib$es6$promise$promise$$default;
+      _reject(promise, reason);
+    }, 'Settle: ' + (promise._label || ' unknown promise'));
+
+    if (!sealed && error) {
+      sealed = true;
+      _reject(promise, error);
     }
-    var lib$es6$promise$polyfill$$default = lib$es6$promise$polyfill$$polyfill;
+  }, promise);
+}
 
-    var lib$es6$promise$umd$$ES6Promise = {
-      'Promise': lib$es6$promise$promise$$default,
-      'polyfill': lib$es6$promise$polyfill$$default
-    };
+function handleOwnThenable(promise, thenable) {
+  if (thenable._state === FULFILLED) {
+    fulfill(promise, thenable._result);
+  } else if (thenable._state === REJECTED) {
+    _reject(promise, thenable._result);
+  } else {
+    subscribe(thenable, undefined, function (value) {
+      return _resolve(promise, value);
+    }, function (reason) {
+      return _reject(promise, reason);
+    });
+  }
+}
 
-    /* global define:true module:true window: true */
-    if (typeof define === 'function' && define['amd']) {
-      define(function() { return lib$es6$promise$umd$$ES6Promise; });
-    } else if (typeof module !== 'undefined' && module['exports']) {
-      module['exports'] = lib$es6$promise$umd$$ES6Promise;
-    } else if (typeof this !== 'undefined') {
-      this['ES6Promise'] = lib$es6$promise$umd$$ES6Promise;
+function handleMaybeThenable(promise, maybeThenable, then$$) {
+  if (maybeThenable.constructor === promise.constructor && then$$ === then && maybeThenable.constructor.resolve === resolve) {
+    handleOwnThenable(promise, maybeThenable);
+  } else {
+    if (then$$ === GET_THEN_ERROR) {
+      _reject(promise, GET_THEN_ERROR.error);
+    } else if (then$$ === undefined) {
+      fulfill(promise, maybeThenable);
+    } else if (isFunction(then$$)) {
+      handleForeignThenable(promise, maybeThenable, then$$);
+    } else {
+      fulfill(promise, maybeThenable);
+    }
+  }
+}
+
+function _resolve(promise, value) {
+  if (promise === value) {
+    _reject(promise, selfFulfillment());
+  } else if (objectOrFunction(value)) {
+    handleMaybeThenable(promise, value, getThen(value));
+  } else {
+    fulfill(promise, value);
+  }
+}
+
+function publishRejection(promise) {
+  if (promise._onerror) {
+    promise._onerror(promise._result);
+  }
+
+  publish(promise);
+}
+
+function fulfill(promise, value) {
+  if (promise._state !== PENDING) {
+    return;
+  }
+
+  promise._result = value;
+  promise._state = FULFILLED;
+
+  if (promise._subscribers.length !== 0) {
+    asap(publish, promise);
+  }
+}
+
+function _reject(promise, reason) {
+  if (promise._state !== PENDING) {
+    return;
+  }
+  promise._state = REJECTED;
+  promise._result = reason;
+
+  asap(publishRejection, promise);
+}
+
+function subscribe(parent, child, onFulfillment, onRejection) {
+  var _subscribers = parent._subscribers;
+  var length = _subscribers.length;
+
+  parent._onerror = null;
+
+  _subscribers[length] = child;
+  _subscribers[length + FULFILLED] = onFulfillment;
+  _subscribers[length + REJECTED] = onRejection;
+
+  if (length === 0 && parent._state) {
+    asap(publish, parent);
+  }
+}
+
+function publish(promise) {
+  var subscribers = promise._subscribers;
+  var settled = promise._state;
+
+  if (subscribers.length === 0) {
+    return;
+  }
+
+  var child = undefined,
+      callback = undefined,
+      detail = promise._result;
+
+  for (var i = 0; i < subscribers.length; i += 3) {
+    child = subscribers[i];
+    callback = subscribers[i + settled];
+
+    if (child) {
+      invokeCallback(settled, child, callback, detail);
+    } else {
+      callback(detail);
+    }
+  }
+
+  promise._subscribers.length = 0;
+}
+
+function ErrorObject() {
+  this.error = null;
+}
+
+var TRY_CATCH_ERROR = new ErrorObject();
+
+function tryCatch(callback, detail) {
+  try {
+    return callback(detail);
+  } catch (e) {
+    TRY_CATCH_ERROR.error = e;
+    return TRY_CATCH_ERROR;
+  }
+}
+
+function invokeCallback(settled, promise, callback, detail) {
+  var hasCallback = isFunction(callback),
+      value = undefined,
+      error = undefined,
+      succeeded = undefined,
+      failed = undefined;
+
+  if (hasCallback) {
+    value = tryCatch(callback, detail);
+
+    if (value === TRY_CATCH_ERROR) {
+      failed = true;
+      error = value.error;
+      value = null;
+    } else {
+      succeeded = true;
     }
 
-    lib$es6$promise$polyfill$$default();
-}).call(this);
+    if (promise === value) {
+      _reject(promise, cannotReturnOwn());
+      return;
+    }
+  } else {
+    value = detail;
+    succeeded = true;
+  }
 
+  if (promise._state !== PENDING) {
+    // noop
+  } else if (hasCallback && succeeded) {
+      _resolve(promise, value);
+    } else if (failed) {
+      _reject(promise, error);
+    } else if (settled === FULFILLED) {
+      fulfill(promise, value);
+    } else if (settled === REJECTED) {
+      _reject(promise, value);
+    }
+}
+
+function initializePromise(promise, resolver) {
+  try {
+    resolver(function resolvePromise(value) {
+      _resolve(promise, value);
+    }, function rejectPromise(reason) {
+      _reject(promise, reason);
+    });
+  } catch (e) {
+    _reject(promise, e);
+  }
+}
+
+var id = 0;
+function nextId() {
+  return id++;
+}
+
+function makePromise(promise) {
+  promise[PROMISE_ID] = id++;
+  promise._state = undefined;
+  promise._result = undefined;
+  promise._subscribers = [];
+}
+
+function Enumerator(Constructor, input) {
+  this._instanceConstructor = Constructor;
+  this.promise = new Constructor(noop);
+
+  if (!this.promise[PROMISE_ID]) {
+    makePromise(this.promise);
+  }
+
+  if (isArray(input)) {
+    this._input = input;
+    this.length = input.length;
+    this._remaining = input.length;
+
+    this._result = new Array(this.length);
+
+    if (this.length === 0) {
+      fulfill(this.promise, this._result);
+    } else {
+      this.length = this.length || 0;
+      this._enumerate();
+      if (this._remaining === 0) {
+        fulfill(this.promise, this._result);
+      }
+    }
+  } else {
+    _reject(this.promise, validationError());
+  }
+}
+
+function validationError() {
+  return new Error('Array Methods must be provided an Array');
+};
+
+Enumerator.prototype._enumerate = function () {
+  var length = this.length;
+  var _input = this._input;
+
+  for (var i = 0; this._state === PENDING && i < length; i++) {
+    this._eachEntry(_input[i], i);
+  }
+};
+
+Enumerator.prototype._eachEntry = function (entry, i) {
+  var c = this._instanceConstructor;
+  var resolve$$ = c.resolve;
+
+  if (resolve$$ === resolve) {
+    var _then = getThen(entry);
+
+    if (_then === then && entry._state !== PENDING) {
+      this._settledAt(entry._state, i, entry._result);
+    } else if (typeof _then !== 'function') {
+      this._remaining--;
+      this._result[i] = entry;
+    } else if (c === Promise) {
+      var promise = new c(noop);
+      handleMaybeThenable(promise, entry, _then);
+      this._willSettleAt(promise, i);
+    } else {
+      this._willSettleAt(new c(function (resolve$$) {
+        return resolve$$(entry);
+      }), i);
+    }
+  } else {
+    this._willSettleAt(resolve$$(entry), i);
+  }
+};
+
+Enumerator.prototype._settledAt = function (state, i, value) {
+  var promise = this.promise;
+
+  if (promise._state === PENDING) {
+    this._remaining--;
+
+    if (state === REJECTED) {
+      _reject(promise, value);
+    } else {
+      this._result[i] = value;
+    }
+  }
+
+  if (this._remaining === 0) {
+    fulfill(promise, this._result);
+  }
+};
+
+Enumerator.prototype._willSettleAt = function (promise, i) {
+  var enumerator = this;
+
+  subscribe(promise, undefined, function (value) {
+    return enumerator._settledAt(FULFILLED, i, value);
+  }, function (reason) {
+    return enumerator._settledAt(REJECTED, i, reason);
+  });
+};
+
+/**
+  `Promise.all` accepts an array of promises, and returns a new promise which
+  is fulfilled with an array of fulfillment values for the passed promises, or
+  rejected with the reason of the first passed promise to be rejected. It casts all
+  elements of the passed iterable to promises as it runs this algorithm.
+
+  Example:
+
+  ```javascript
+  let promise1 = resolve(1);
+  let promise2 = resolve(2);
+  let promise3 = resolve(3);
+  let promises = [ promise1, promise2, promise3 ];
+
+  Promise.all(promises).then(function(array){
+    // The array here would be [ 1, 2, 3 ];
+  });
+  ```
+
+  If any of the `promises` given to `all` are rejected, the first promise
+  that is rejected will be given as an argument to the returned promises's
+  rejection handler. For example:
+
+  Example:
+
+  ```javascript
+  let promise1 = resolve(1);
+  let promise2 = reject(new Error("2"));
+  let promise3 = reject(new Error("3"));
+  let promises = [ promise1, promise2, promise3 ];
+
+  Promise.all(promises).then(function(array){
+    // Code here never runs because there are rejected promises!
+  }, function(error) {
+    // error.message === "2"
+  });
+  ```
+
+  @method all
+  @static
+  @param {Array} entries array of promises
+  @param {String} label optional string for labeling the promise.
+  Useful for tooling.
+  @return {Promise} promise that is fulfilled when all `promises` have been
+  fulfilled, or rejected if any of them become rejected.
+  @static
+*/
+function all(entries) {
+  return new Enumerator(this, entries).promise;
+}
+
+/**
+  `Promise.race` returns a new promise which is settled in the same way as the
+  first passed promise to settle.
+
+  Example:
+
+  ```javascript
+  let promise1 = new Promise(function(resolve, reject){
+    setTimeout(function(){
+      resolve('promise 1');
+    }, 200);
+  });
+
+  let promise2 = new Promise(function(resolve, reject){
+    setTimeout(function(){
+      resolve('promise 2');
+    }, 100);
+  });
+
+  Promise.race([promise1, promise2]).then(function(result){
+    // result === 'promise 2' because it was resolved before promise1
+    // was resolved.
+  });
+  ```
+
+  `Promise.race` is deterministic in that only the state of the first
+  settled promise matters. For example, even if other promises given to the
+  `promises` array argument are resolved, but the first settled promise has
+  become rejected before the other promises became fulfilled, the returned
+  promise will become rejected:
+
+  ```javascript
+  let promise1 = new Promise(function(resolve, reject){
+    setTimeout(function(){
+      resolve('promise 1');
+    }, 200);
+  });
+
+  let promise2 = new Promise(function(resolve, reject){
+    setTimeout(function(){
+      reject(new Error('promise 2'));
+    }, 100);
+  });
+
+  Promise.race([promise1, promise2]).then(function(result){
+    // Code here never runs
+  }, function(reason){
+    // reason.message === 'promise 2' because promise 2 became rejected before
+    // promise 1 became fulfilled
+  });
+  ```
+
+  An example real-world use case is implementing timeouts:
+
+  ```javascript
+  Promise.race([ajax('foo.json'), timeout(5000)])
+  ```
+
+  @method race
+  @static
+  @param {Array} promises array of promises to observe
+  Useful for tooling.
+  @return {Promise} a promise which settles in the same way as the first passed
+  promise to settle.
+*/
+function race(entries) {
+  /*jshint validthis:true */
+  var Constructor = this;
+
+  if (!isArray(entries)) {
+    return new Constructor(function (_, reject) {
+      return reject(new TypeError('You must pass an array to race.'));
+    });
+  } else {
+    return new Constructor(function (resolve, reject) {
+      var length = entries.length;
+      for (var i = 0; i < length; i++) {
+        Constructor.resolve(entries[i]).then(resolve, reject);
+      }
+    });
+  }
+}
+
+/**
+  `Promise.reject` returns a promise rejected with the passed `reason`.
+  It is shorthand for the following:
+
+  ```javascript
+  let promise = new Promise(function(resolve, reject){
+    reject(new Error('WHOOPS'));
+  });
+
+  promise.then(function(value){
+    // Code here doesn't run because the promise is rejected!
+  }, function(reason){
+    // reason.message === 'WHOOPS'
+  });
+  ```
+
+  Instead of writing the above, your code now simply becomes the following:
+
+  ```javascript
+  let promise = Promise.reject(new Error('WHOOPS'));
+
+  promise.then(function(value){
+    // Code here doesn't run because the promise is rejected!
+  }, function(reason){
+    // reason.message === 'WHOOPS'
+  });
+  ```
+
+  @method reject
+  @static
+  @param {Any} reason value that the returned promise will be rejected with.
+  Useful for tooling.
+  @return {Promise} a promise rejected with the given `reason`.
+*/
+function reject(reason) {
+  /*jshint validthis:true */
+  var Constructor = this;
+  var promise = new Constructor(noop);
+  _reject(promise, reason);
+  return promise;
+}
+
+function needsResolver() {
+  throw new TypeError('You must pass a resolver function as the first argument to the promise constructor');
+}
+
+function needsNew() {
+  throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.");
+}
+
+/**
+  Promise objects represent the eventual result of an asynchronous operation. The
+  primary way of interacting with a promise is through its `then` method, which
+  registers callbacks to receive either a promise's eventual value or the reason
+  why the promise cannot be fulfilled.
+
+  Terminology
+  -----------
+
+  - `promise` is an object or function with a `then` method whose behavior conforms to this specification.
+  - `thenable` is an object or function that defines a `then` method.
+  - `value` is any legal JavaScript value (including undefined, a thenable, or a promise).
+  - `exception` is a value that is thrown using the throw statement.
+  - `reason` is a value that indicates why a promise was rejected.
+  - `settled` the final resting state of a promise, fulfilled or rejected.
+
+  A promise can be in one of three states: pending, fulfilled, or rejected.
+
+  Promises that are fulfilled have a fulfillment value and are in the fulfilled
+  state.  Promises that are rejected have a rejection reason and are in the
+  rejected state.  A fulfillment value is never a thenable.
+
+  Promises can also be said to *resolve* a value.  If this value is also a
+  promise, then the original promise's settled state will match the value's
+  settled state.  So a promise that *resolves* a promise that rejects will
+  itself reject, and a promise that *resolves* a promise that fulfills will
+  itself fulfill.
+
+
+  Basic Usage:
+  ------------
+
+  ```js
+  let promise = new Promise(function(resolve, reject) {
+    // on success
+    resolve(value);
+
+    // on failure
+    reject(reason);
+  });
+
+  promise.then(function(value) {
+    // on fulfillment
+  }, function(reason) {
+    // on rejection
+  });
+  ```
+
+  Advanced Usage:
+  ---------------
+
+  Promises shine when abstracting away asynchronous interactions such as
+  `XMLHttpRequest`s.
+
+  ```js
+  function getJSON(url) {
+    return new Promise(function(resolve, reject){
+      let xhr = new XMLHttpRequest();
+
+      xhr.open('GET', url);
+      xhr.onreadystatechange = handler;
+      xhr.responseType = 'json';
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.send();
+
+      function handler() {
+        if (this.readyState === this.DONE) {
+          if (this.status === 200) {
+            resolve(this.response);
+          } else {
+            reject(new Error('getJSON: `' + url + '` failed with status: [' + this.status + ']'));
+          }
+        }
+      };
+    });
+  }
+
+  getJSON('/posts.json').then(function(json) {
+    // on fulfillment
+  }, function(reason) {
+    // on rejection
+  });
+  ```
+
+  Unlike callbacks, promises are great composable primitives.
+
+  ```js
+  Promise.all([
+    getJSON('/posts'),
+    getJSON('/comments')
+  ]).then(function(values){
+    values[0] // => postsJSON
+    values[1] // => commentsJSON
+
+    return values;
+  });
+  ```
+
+  @class Promise
+  @param {function} resolver
+  Useful for tooling.
+  @constructor
+*/
+function Promise(resolver) {
+  this[PROMISE_ID] = nextId();
+  this._result = this._state = undefined;
+  this._subscribers = [];
+
+  if (noop !== resolver) {
+    typeof resolver !== 'function' && needsResolver();
+    this instanceof Promise ? initializePromise(this, resolver) : needsNew();
+  }
+}
+
+Promise.all = all;
+Promise.race = race;
+Promise.resolve = resolve;
+Promise.reject = reject;
+Promise._setScheduler = setScheduler;
+Promise._setAsap = setAsap;
+Promise._asap = asap;
+
+Promise.prototype = {
+  constructor: Promise,
+
+  /**
+    The primary way of interacting with a promise is through its `then` method,
+    which registers callbacks to receive either a promise's eventual value or the
+    reason why the promise cannot be fulfilled.
+  
+    ```js
+    findUser().then(function(user){
+      // user is available
+    }, function(reason){
+      // user is unavailable, and you are given the reason why
+    });
+    ```
+  
+    Chaining
+    --------
+  
+    The return value of `then` is itself a promise.  This second, 'downstream'
+    promise is resolved with the return value of the first promise's fulfillment
+    or rejection handler, or rejected if the handler throws an exception.
+  
+    ```js
+    findUser().then(function (user) {
+      return user.name;
+    }, function (reason) {
+      return 'default name';
+    }).then(function (userName) {
+      // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
+      // will be `'default name'`
+    });
+  
+    findUser().then(function (user) {
+      throw new Error('Found user, but still unhappy');
+    }, function (reason) {
+      throw new Error('`findUser` rejected and we're unhappy');
+    }).then(function (value) {
+      // never reached
+    }, function (reason) {
+      // if `findUser` fulfilled, `reason` will be 'Found user, but still unhappy'.
+      // If `findUser` rejected, `reason` will be '`findUser` rejected and we're unhappy'.
+    });
+    ```
+    If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
+  
+    ```js
+    findUser().then(function (user) {
+      throw new PedagogicalException('Upstream error');
+    }).then(function (value) {
+      // never reached
+    }).then(function (value) {
+      // never reached
+    }, function (reason) {
+      // The `PedgagocialException` is propagated all the way down to here
+    });
+    ```
+  
+    Assimilation
+    ------------
+  
+    Sometimes the value you want to propagate to a downstream promise can only be
+    retrieved asynchronously. This can be achieved by returning a promise in the
+    fulfillment or rejection handler. The downstream promise will then be pending
+    until the returned promise is settled. This is called *assimilation*.
+  
+    ```js
+    findUser().then(function (user) {
+      return findCommentsByAuthor(user);
+    }).then(function (comments) {
+      // The user's comments are now available
+    });
+    ```
+  
+    If the assimliated promise rejects, then the downstream promise will also reject.
+  
+    ```js
+    findUser().then(function (user) {
+      return findCommentsByAuthor(user);
+    }).then(function (comments) {
+      // If `findCommentsByAuthor` fulfills, we'll have the value here
+    }, function (reason) {
+      // If `findCommentsByAuthor` rejects, we'll have the reason here
+    });
+    ```
+  
+    Simple Example
+    --------------
+  
+    Synchronous Example
+  
+    ```javascript
+    let result;
+  
+    try {
+      result = findResult();
+      // success
+    } catch(reason) {
+      // failure
+    }
+    ```
+  
+    Errback Example
+  
+    ```js
+    findResult(function(result, err){
+      if (err) {
+        // failure
+      } else {
+        // success
+      }
+    });
+    ```
+  
+    Promise Example;
+  
+    ```javascript
+    findResult().then(function(result){
+      // success
+    }, function(reason){
+      // failure
+    });
+    ```
+  
+    Advanced Example
+    --------------
+  
+    Synchronous Example
+  
+    ```javascript
+    let author, books;
+  
+    try {
+      author = findAuthor();
+      books  = findBooksByAuthor(author);
+      // success
+    } catch(reason) {
+      // failure
+    }
+    ```
+  
+    Errback Example
+  
+    ```js
+  
+    function foundBooks(books) {
+  
+    }
+  
+    function failure(reason) {
+  
+    }
+  
+    findAuthor(function(author, err){
+      if (err) {
+        failure(err);
+        // failure
+      } else {
+        try {
+          findBoooksByAuthor(author, function(books, err) {
+            if (err) {
+              failure(err);
+            } else {
+              try {
+                foundBooks(books);
+              } catch(reason) {
+                failure(reason);
+              }
+            }
+          });
+        } catch(error) {
+          failure(err);
+        }
+        // success
+      }
+    });
+    ```
+  
+    Promise Example;
+  
+    ```javascript
+    findAuthor().
+      then(findBooksByAuthor).
+      then(function(books){
+        // found books
+    }).catch(function(reason){
+      // something went wrong
+    });
+    ```
+  
+    @method then
+    @param {Function} onFulfilled
+    @param {Function} onRejected
+    Useful for tooling.
+    @return {Promise}
+  */
+  then: then,
+
+  /**
+    `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
+    as the catch block of a try/catch statement.
+  
+    ```js
+    function findAuthor(){
+      throw new Error('couldn't find that author');
+    }
+  
+    // synchronous
+    try {
+      findAuthor();
+    } catch(reason) {
+      // something went wrong
+    }
+  
+    // async with promises
+    findAuthor().catch(function(reason){
+      // something went wrong
+    });
+    ```
+  
+    @method catch
+    @param {Function} onRejection
+    Useful for tooling.
+    @return {Promise}
+  */
+  'catch': function _catch(onRejection) {
+    return this.then(null, onRejection);
+  }
+};
+
+function polyfill() {
+    var local = undefined;
+
+    if (typeof global !== 'undefined') {
+        local = global;
+    } else if (typeof self !== 'undefined') {
+        local = self;
+    } else {
+        try {
+            local = Function('return this')();
+        } catch (e) {
+            throw new Error('polyfill failed because global object is unavailable in this environment');
+        }
+    }
+
+    var P = local.Promise;
+
+    if (P) {
+        var promiseToString = null;
+        try {
+            promiseToString = Object.prototype.toString.call(P.resolve());
+        } catch (e) {
+            // silently ignored
+        }
+
+        if (promiseToString === '[object Promise]' && !P.cast) {
+            return;
+        }
+    }
+
+    local.Promise = Promise;
+}
+
+polyfill();
+// Strange compat..
+Promise.polyfill = polyfill;
+Promise.Promise = Promise;
+
+return Promise;
+
+})));
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":15}],18:[function(require,module,exports){
+},{"_process":19}],16:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+function EventEmitter() {
+  this._events = this._events || {};
+  this._maxListeners = this._maxListeners || undefined;
+}
+module.exports = EventEmitter;
+
+// Backwards-compat with node 0.10.x
+EventEmitter.EventEmitter = EventEmitter;
+
+EventEmitter.prototype._events = undefined;
+EventEmitter.prototype._maxListeners = undefined;
+
+// By default EventEmitters will print a warning if more than 10 listeners are
+// added to it. This is a useful default which helps finding memory leaks.
+EventEmitter.defaultMaxListeners = 10;
+
+// Obviously not all Emitters should be limited to 10. This function allows
+// that to be increased. Set to zero for unlimited.
+EventEmitter.prototype.setMaxListeners = function(n) {
+  if (!isNumber(n) || n < 0 || isNaN(n))
+    throw TypeError('n must be a positive number');
+  this._maxListeners = n;
+  return this;
+};
+
+EventEmitter.prototype.emit = function(type) {
+  var er, handler, len, args, i, listeners;
+
+  if (!this._events)
+    this._events = {};
+
+  // If there is no 'error' event listener then throw.
+  if (type === 'error') {
+    if (!this._events.error ||
+        (isObject(this._events.error) && !this._events.error.length)) {
+      er = arguments[1];
+      if (er instanceof Error) {
+        throw er; // Unhandled 'error' event
+      } else {
+        // At least give some kind of context to the user
+        var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
+        err.context = er;
+        throw err;
+      }
+    }
+  }
+
+  handler = this._events[type];
+
+  if (isUndefined(handler))
+    return false;
+
+  if (isFunction(handler)) {
+    switch (arguments.length) {
+      // fast cases
+      case 1:
+        handler.call(this);
+        break;
+      case 2:
+        handler.call(this, arguments[1]);
+        break;
+      case 3:
+        handler.call(this, arguments[1], arguments[2]);
+        break;
+      // slower
+      default:
+        args = Array.prototype.slice.call(arguments, 1);
+        handler.apply(this, args);
+    }
+  } else if (isObject(handler)) {
+    args = Array.prototype.slice.call(arguments, 1);
+    listeners = handler.slice();
+    len = listeners.length;
+    for (i = 0; i < len; i++)
+      listeners[i].apply(this, args);
+  }
+
+  return true;
+};
+
+EventEmitter.prototype.addListener = function(type, listener) {
+  var m;
+
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  if (!this._events)
+    this._events = {};
+
+  // To avoid recursion in the case that type === "newListener"! Before
+  // adding it to the listeners, first emit "newListener".
+  if (this._events.newListener)
+    this.emit('newListener', type,
+              isFunction(listener.listener) ?
+              listener.listener : listener);
+
+  if (!this._events[type])
+    // Optimize the case of one listener. Don't need the extra array object.
+    this._events[type] = listener;
+  else if (isObject(this._events[type]))
+    // If we've already got an array, just append.
+    this._events[type].push(listener);
+  else
+    // Adding the second element, need to change to array.
+    this._events[type] = [this._events[type], listener];
+
+  // Check for listener leak
+  if (isObject(this._events[type]) && !this._events[type].warned) {
+    if (!isUndefined(this._maxListeners)) {
+      m = this._maxListeners;
+    } else {
+      m = EventEmitter.defaultMaxListeners;
+    }
+
+    if (m && m > 0 && this._events[type].length > m) {
+      this._events[type].warned = true;
+      console.error('(node) warning: possible EventEmitter memory ' +
+                    'leak detected. %d listeners added. ' +
+                    'Use emitter.setMaxListeners() to increase limit.',
+                    this._events[type].length);
+      if (typeof console.trace === 'function') {
+        // not supported in IE 10
+        console.trace();
+      }
+    }
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+EventEmitter.prototype.once = function(type, listener) {
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  var fired = false;
+
+  function g() {
+    this.removeListener(type, g);
+
+    if (!fired) {
+      fired = true;
+      listener.apply(this, arguments);
+    }
+  }
+
+  g.listener = listener;
+  this.on(type, g);
+
+  return this;
+};
+
+// emits a 'removeListener' event iff the listener was removed
+EventEmitter.prototype.removeListener = function(type, listener) {
+  var list, position, length, i;
+
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  if (!this._events || !this._events[type])
+    return this;
+
+  list = this._events[type];
+  length = list.length;
+  position = -1;
+
+  if (list === listener ||
+      (isFunction(list.listener) && list.listener === listener)) {
+    delete this._events[type];
+    if (this._events.removeListener)
+      this.emit('removeListener', type, listener);
+
+  } else if (isObject(list)) {
+    for (i = length; i-- > 0;) {
+      if (list[i] === listener ||
+          (list[i].listener && list[i].listener === listener)) {
+        position = i;
+        break;
+      }
+    }
+
+    if (position < 0)
+      return this;
+
+    if (list.length === 1) {
+      list.length = 0;
+      delete this._events[type];
+    } else {
+      list.splice(position, 1);
+    }
+
+    if (this._events.removeListener)
+      this.emit('removeListener', type, listener);
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.removeAllListeners = function(type) {
+  var key, listeners;
+
+  if (!this._events)
+    return this;
+
+  // not listening for removeListener, no need to emit
+  if (!this._events.removeListener) {
+    if (arguments.length === 0)
+      this._events = {};
+    else if (this._events[type])
+      delete this._events[type];
+    return this;
+  }
+
+  // emit removeListener for all listeners on all events
+  if (arguments.length === 0) {
+    for (key in this._events) {
+      if (key === 'removeListener') continue;
+      this.removeAllListeners(key);
+    }
+    this.removeAllListeners('removeListener');
+    this._events = {};
+    return this;
+  }
+
+  listeners = this._events[type];
+
+  if (isFunction(listeners)) {
+    this.removeListener(type, listeners);
+  } else if (listeners) {
+    // LIFO order
+    while (listeners.length)
+      this.removeListener(type, listeners[listeners.length - 1]);
+  }
+  delete this._events[type];
+
+  return this;
+};
+
+EventEmitter.prototype.listeners = function(type) {
+  var ret;
+  if (!this._events || !this._events[type])
+    ret = [];
+  else if (isFunction(this._events[type]))
+    ret = [this._events[type]];
+  else
+    ret = this._events[type].slice();
+  return ret;
+};
+
+EventEmitter.prototype.listenerCount = function(type) {
+  if (this._events) {
+    var evlistener = this._events[type];
+
+    if (isFunction(evlistener))
+      return 1;
+    else if (evlistener)
+      return evlistener.length;
+  }
+  return 0;
+};
+
+EventEmitter.listenerCount = function(emitter, type) {
+  return emitter.listenerCount(type);
+};
+
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
+
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
+
+},{}],17:[function(require,module,exports){
 /**
  * inspired by is-number <https://github.com/jonschlinkert/is-number>
  * but significantly simplified and sped up by ignoring number and string constructors
@@ -11308,7 +11418,7 @@ module.exports = function(n) {
     return n - n < 1;
 };
 
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 module.exports = fromQuat;
 
 /**
@@ -11356,21 +11466,202 @@ function fromQuat(out, q) {
 
     return out;
 };
+},{}],19:[function(require,module,exports){
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
 },{}],20:[function(require,module,exports){
-// TinyColor v1.3.0
+// TinyColor v1.4.1
 // https://github.com/bgrins/TinyColor
 // Brian Grinstead, MIT License
 
-(function() {
+(function(Math) {
 
 var trimLeft = /^\s+/,
     trimRight = /\s+$/,
     tinyCounter = 0,
-    math = Math,
-    mathRound = math.round,
-    mathMin = math.min,
-    mathMax = math.max,
-    mathRandom = math.random;
+    mathRound = Math.round,
+    mathMin = Math.min,
+    mathMax = Math.max,
+    mathRandom = Math.random;
 
 function tinycolor (color, opts) {
 
@@ -11478,11 +11769,11 @@ tinycolor.prototype = {
     toHexString: function(allow3Char) {
         return '#' + this.toHex(allow3Char);
     },
-    toHex8: function() {
-        return rgbaToHex(this._r, this._g, this._b, this._a);
+    toHex8: function(allow4Char) {
+        return rgbaToHex(this._r, this._g, this._b, this._a, allow4Char);
     },
-    toHex8String: function() {
-        return '#' + this.toHex8();
+    toHex8String: function(allow4Char) {
+        return '#' + this.toHex8(allow4Char);
     },
     toRgb: function() {
         return { r: mathRound(this._r), g: mathRound(this._g), b: mathRound(this._b), a: this._a };
@@ -11512,13 +11803,13 @@ tinycolor.prototype = {
         return hexNames[rgbToHex(this._r, this._g, this._b, true)] || false;
     },
     toFilter: function(secondColor) {
-        var hex8String = '#' + rgbaToHex(this._r, this._g, this._b, this._a);
+        var hex8String = '#' + rgbaToArgbHex(this._r, this._g, this._b, this._a);
         var secondHex8String = hex8String;
         var gradientType = this._gradientType ? "GradientType = 1, " : "";
 
         if (secondColor) {
             var s = tinycolor(secondColor);
-            secondHex8String = s.toHex8String();
+            secondHex8String = '#' + rgbaToArgbHex(s._r, s._g, s._b, s._a);
         }
 
         return "progid:DXImageTransform.Microsoft.gradient("+gradientType+"startColorstr="+hex8String+",endColorstr="+secondHex8String+")";
@@ -11529,7 +11820,7 @@ tinycolor.prototype = {
 
         var formattedString = false;
         var hasAlpha = this._a < 1 && this._a >= 0;
-        var needsAlphaFormat = !formatSet && hasAlpha && (format === "hex" || format === "hex6" || format === "hex3" || format === "name");
+        var needsAlphaFormat = !formatSet && hasAlpha && (format === "hex" || format === "hex6" || format === "hex3" || format === "hex4" || format === "hex8" || format === "name");
 
         if (needsAlphaFormat) {
             // Special case for "transparent", all other non-alpha formats
@@ -11550,6 +11841,9 @@ tinycolor.prototype = {
         }
         if (format === "hex3") {
             formattedString = this.toHexString(true);
+        }
+        if (format === "hex4") {
+            formattedString = this.toHex8String(true);
         }
         if (format === "hex8") {
             formattedString = this.toHex8String();
@@ -11663,6 +11957,9 @@ function inputToRGB(color) {
 
     var rgb = { r: 0, g: 0, b: 0 };
     var a = 1;
+    var s = null;
+    var v = null;
+    var l = null;
     var ok = false;
     var format = false;
 
@@ -11671,22 +11968,22 @@ function inputToRGB(color) {
     }
 
     if (typeof color == "object") {
-        if (color.hasOwnProperty("r") && color.hasOwnProperty("g") && color.hasOwnProperty("b")) {
+        if (isValidCSSUnit(color.r) && isValidCSSUnit(color.g) && isValidCSSUnit(color.b)) {
             rgb = rgbToRgb(color.r, color.g, color.b);
             ok = true;
             format = String(color.r).substr(-1) === "%" ? "prgb" : "rgb";
         }
-        else if (color.hasOwnProperty("h") && color.hasOwnProperty("s") && color.hasOwnProperty("v")) {
-            color.s = convertToPercentage(color.s);
-            color.v = convertToPercentage(color.v);
-            rgb = hsvToRgb(color.h, color.s, color.v);
+        else if (isValidCSSUnit(color.h) && isValidCSSUnit(color.s) && isValidCSSUnit(color.v)) {
+            s = convertToPercentage(color.s);
+            v = convertToPercentage(color.v);
+            rgb = hsvToRgb(color.h, s, v);
             ok = true;
             format = "hsv";
         }
-        else if (color.hasOwnProperty("h") && color.hasOwnProperty("s") && color.hasOwnProperty("l")) {
-            color.s = convertToPercentage(color.s);
-            color.l = convertToPercentage(color.l);
-            rgb = hslToRgb(color.h, color.s, color.l);
+        else if (isValidCSSUnit(color.h) && isValidCSSUnit(color.s) && isValidCSSUnit(color.l)) {
+            s = convertToPercentage(color.s);
+            l = convertToPercentage(color.l);
+            rgb = hslToRgb(color.h, s, l);
             ok = true;
             format = "hsl";
         }
@@ -11833,7 +12130,7 @@ function rgbToHsv(r, g, b) {
     s = bound01(s, 100);
     v = bound01(v, 100);
 
-    var i = math.floor(h),
+    var i = Math.floor(h),
         f = h - i,
         p = v * (1 - s),
         q = v * (1 - f * s),
@@ -11868,9 +12165,29 @@ function rgbToHex(r, g, b, allow3Char) {
 
 // `rgbaToHex`
 // Converts an RGBA color plus alpha transparency to hex
-// Assumes r, g, b and a are contained in the set [0, 255]
-// Returns an 8 character hex
-function rgbaToHex(r, g, b, a) {
+// Assumes r, g, b are contained in the set [0, 255] and
+// a in [0, 1]. Returns a 4 or 8 character rgba hex
+function rgbaToHex(r, g, b, a, allow4Char) {
+
+    var hex = [
+        pad2(mathRound(r).toString(16)),
+        pad2(mathRound(g).toString(16)),
+        pad2(mathRound(b).toString(16)),
+        pad2(convertDecimalToHex(a))
+    ];
+
+    // Return a 4 character hex if possible
+    if (allow4Char && hex[0].charAt(0) == hex[0].charAt(1) && hex[1].charAt(0) == hex[1].charAt(1) && hex[2].charAt(0) == hex[2].charAt(1) && hex[3].charAt(0) == hex[3].charAt(1)) {
+        return hex[0].charAt(0) + hex[1].charAt(0) + hex[2].charAt(0) + hex[3].charAt(0);
+    }
+
+    return hex.join("");
+}
+
+// `rgbaToArgbHex`
+// Converts an RGBA color to an ARGB Hex8 string
+// Rarely used, but required for "toFilter()"
+function rgbaToArgbHex(r, g, b, a) {
 
     var hex = [
         pad2(convertDecimalToHex(a)),
@@ -11952,7 +12269,7 @@ function darken (color, amount) {
 // Values outside of this range will be wrapped into this range.
 function spin(color, amount) {
     var hsl = tinycolor(color).toHsl();
-    var hue = (mathRound(hsl.h) + amount) % 360;
+    var hue = (hsl.h + amount) % 360;
     hsl.h = hue < 0 ? 360 + hue : hue;
     return tinycolor(hsl);
 }
@@ -12039,26 +12356,12 @@ tinycolor.mix = function(color1, color2, amount) {
     var rgb2 = tinycolor(color2).toRgb();
 
     var p = amount / 100;
-    var w = p * 2 - 1;
-    var a = rgb2.a - rgb1.a;
-
-    var w1;
-
-    if (w * a == -1) {
-        w1 = w;
-    } else {
-        w1 = (w + a) / (1 + w * a);
-    }
-
-    w1 = (w1 + 1) / 2;
-
-    var w2 = 1 - w1;
 
     var rgba = {
-        r: rgb2.r * w1 + rgb1.r * w2,
-        g: rgb2.g * w1 + rgb1.g * w2,
-        b: rgb2.b * w1 + rgb1.b * w2,
-        a: rgb2.a * p  + rgb1.a * (1 - p)
+        r: ((rgb2.r - rgb1.r) * p) + rgb1.r,
+        g: ((rgb2.g - rgb1.g) * p) + rgb1.g,
+        b: ((rgb2.b - rgb1.b) * p) + rgb1.b,
+        a: ((rgb2.a - rgb1.a) * p) + rgb1.a
     };
 
     return tinycolor(rgba);
@@ -12344,7 +12647,7 @@ function bound01(n, max) {
     }
 
     // Handle floating point rounding errors
-    if ((math.abs(n - max) < 0.000001)) {
+    if ((Math.abs(n - max) < 0.000001)) {
         return 1;
     }
 
@@ -12414,6 +12717,7 @@ var matchers = (function() {
     var PERMISSIVE_MATCH4 = "[\\s|\\(]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")\\s*\\)?";
 
     return {
+        CSS_UNIT: new RegExp(CSS_UNIT),
         rgb: new RegExp("rgb" + PERMISSIVE_MATCH3),
         rgba: new RegExp("rgba" + PERMISSIVE_MATCH4),
         hsl: new RegExp("hsl" + PERMISSIVE_MATCH3),
@@ -12422,9 +12726,17 @@ var matchers = (function() {
         hsva: new RegExp("hsva" + PERMISSIVE_MATCH4),
         hex3: /^#?([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
         hex6: /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
+        hex4: /^#?([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
         hex8: /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/
     };
 })();
+
+// `isValidCSSUnit`
+// Take in a single string / number and check to see if it looks like a CSS unit
+// (see `matchers` above for definition).
+function isValidCSSUnit(color) {
+    return !!matchers.CSS_UNIT.exec(color);
+}
 
 // `stringInputToObject`
 // Permissive string parsing.  Take in a number of formats, and output an object
@@ -12466,10 +12778,10 @@ function stringInputToObject(color) {
     }
     if ((match = matchers.hex8.exec(color))) {
         return {
-            a: convertHexToDecimal(match[1]),
-            r: parseIntFromHex(match[2]),
-            g: parseIntFromHex(match[3]),
-            b: parseIntFromHex(match[4]),
+            r: parseIntFromHex(match[1]),
+            g: parseIntFromHex(match[2]),
+            b: parseIntFromHex(match[3]),
+            a: convertHexToDecimal(match[4]),
             format: named ? "name" : "hex8"
         };
     }
@@ -12479,6 +12791,15 @@ function stringInputToObject(color) {
             g: parseIntFromHex(match[2]),
             b: parseIntFromHex(match[3]),
             format: named ? "name" : "hex"
+        };
+    }
+    if ((match = matchers.hex4.exec(color))) {
+        return {
+            r: parseIntFromHex(match[1] + '' + match[1]),
+            g: parseIntFromHex(match[2] + '' + match[2]),
+            b: parseIntFromHex(match[3] + '' + match[3]),
+            a: convertHexToDecimal(match[4] + '' + match[4]),
+            format: named ? "name" : "hex8"
         };
     }
     if ((match = matchers.hex3.exec(color))) {
@@ -12522,7 +12843,7 @@ else {
     window.tinycolor = tinycolor;
 }
 
-})();
+})(Math);
 
 },{}],21:[function(require,module,exports){
 /**
@@ -12629,7 +12950,7 @@ module.exports = function handleAnnotationDefaults(annIn, fullLayout) {
     return annOut;
 };
 
-},{"../../lib":120,"../../plots/cartesian/axes":146,"../color":30,"./attributes":23}],22:[function(require,module,exports){
+},{"../../lib":121,"../../plots/cartesian/axes":147,"../color":30,"./attributes":23}],22:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -12884,7 +13205,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":117,"../../plots/cartesian/constants":151,"../../plots/font_attributes":165,"./arrow_paths":22}],24:[function(require,module,exports){
+},{"../../lib/extend":118,"../../plots/cartesian/constants":153,"../../plots/font_attributes":168,"./arrow_paths":22}],24:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -12971,7 +13292,7 @@ function annAutorange(gd) {
     });
 }
 
-},{"../../lib":120,"../../plots/cartesian/axes":146,"./draw":26}],25:[function(require,module,exports){
+},{"../../lib":121,"../../plots/cartesian/axes":147,"./draw":26}],25:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -13753,7 +14074,7 @@ function lineIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
     return {x: x1 + a * t, y: y1 + d * t};
 }
 
-},{"../../lib":120,"../../lib/setcursor":130,"../../lib/svg_text_utils":132,"../../plotly":142,"../../plots/cartesian/axes":146,"../../plots/plots":169,"../color":30,"../dragelement":51,"../drawing":53,"./annotation_defaults":21,"./defaults":25,"./draw_arrow_head":27,"d3":16,"fast-isnumeric":18}],27:[function(require,module,exports){
+},{"../../lib":121,"../../lib/setcursor":131,"../../lib/svg_text_utils":133,"../../plotly":143,"../../plots/cartesian/axes":147,"../../plots/plots":172,"../color":30,"../dragelement":52,"../drawing":54,"./annotation_defaults":21,"./defaults":25,"./draw_arrow_head":27,"d3":14,"fast-isnumeric":17}],27:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -13872,7 +14193,7 @@ module.exports = function drawArrowHead(el3, style, ends, mag) {
     if(doEnd) drawhead(end, endRot);
 };
 
-},{"../color":30,"../drawing":53,"./arrow_paths":22,"d3":16,"fast-isnumeric":18}],28:[function(require,module,exports){
+},{"../color":30,"../drawing":54,"./arrow_paths":22,"d3":14,"fast-isnumeric":17}],28:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -13910,7 +14231,7 @@ exports.add = function(gd) {
     Plotly.relayout(gd, 'annotations[' + nextAnn + ']', 'add');
 };
 
-},{"../../plotly":142,"./arrow_paths":22,"./attributes":23,"./calc_autorange":24,"./defaults":25,"./draw":26,"./draw_arrow_head":27}],29:[function(require,module,exports){
+},{"../../plotly":143,"./arrow_paths":22,"./attributes":23,"./calc_autorange":24,"./defaults":25,"./draw":26,"./draw_arrow_head":27}],29:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -14107,7 +14428,7 @@ function cleanOne(val) {
     return 'rgb(' + rgbStr + ')';
 }
 
-},{"./attributes":29,"fast-isnumeric":18,"tinycolor2":20}],31:[function(require,module,exports){
+},{"./attributes":29,"fast-isnumeric":17,"tinycolor2":20}],31:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -14263,7 +14584,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":117,"../../plots/cartesian/layout_attributes":155,"../../plots/font_attributes":165}],32:[function(require,module,exports){
+},{"../../lib/extend":118,"../../plots/cartesian/layout_attributes":157,"../../plots/font_attributes":168}],32:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -14330,7 +14651,7 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     coerce('titleside');
 };
 
-},{"../../lib":120,"../../plots/cartesian/tick_label_defaults":161,"../../plots/cartesian/tick_mark_defaults":162,"../../plots/cartesian/tick_value_defaults":163,"./attributes":31}],33:[function(require,module,exports){
+},{"../../lib":121,"../../plots/cartesian/tick_label_defaults":163,"../../plots/cartesian/tick_mark_defaults":164,"../../plots/cartesian/tick_value_defaults":165,"./attributes":31}],33:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -14962,7 +15283,7 @@ module.exports = function draw(gd, id) {
     return component;
 };
 
-},{"../../lib":120,"../../lib/extend":117,"../../lib/setcursor":130,"../../plotly":142,"../../plots/cartesian/axes":146,"../../plots/cartesian/axis_defaults":147,"../../plots/cartesian/layout_attributes":155,"../../plots/cartesian/position_defaults":158,"../../plots/plots":169,"../../registry":184,"../color":30,"../dragelement":51,"../drawing":53,"../titles":104,"./attributes":31,"d3":16,"tinycolor2":20}],34:[function(require,module,exports){
+},{"../../lib":121,"../../lib/extend":118,"../../lib/setcursor":131,"../../plotly":143,"../../plots/cartesian/axes":147,"../../plots/cartesian/axis_defaults":149,"../../plots/cartesian/layout_attributes":157,"../../plots/cartesian/position_defaults":160,"../../plots/plots":172,"../../registry":187,"../color":30,"../dragelement":52,"../drawing":54,"../titles":105,"./attributes":31,"d3":14,"tinycolor2":20}],34:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -14981,7 +15302,7 @@ module.exports = function hasColorbar(container) {
     return Lib.isPlainObject(container.colorbar);
 };
 
-},{"../../lib":120}],35:[function(require,module,exports){
+},{"../../lib":121}],35:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -15123,7 +15444,7 @@ module.exports = function calc(trace, vals, containerStr, cLetter) {
     }
 };
 
-},{"../../lib":120,"./flip_scale":41,"./scales":48}],38:[function(require,module,exports){
+},{"../../lib":121,"./flip_scale":42,"./scales":49}],38:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -15167,7 +15488,7 @@ module.exports = function makeColorScaleAttributes(context) {
     };
 };
 
-},{"../../lib/extend":117,"./attributes":36,"./scales.js":48}],39:[function(require,module,exports){
+},{"../../lib/extend":118,"./attributes":36,"./scales.js":49}],39:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -15183,7 +15504,7 @@ var scales = require('./scales');
 
 module.exports = scales.RdBu;
 
-},{"./scales":48}],40:[function(require,module,exports){
+},{"./scales":49}],40:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -15247,7 +15568,44 @@ module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, 
     if(showScale) colorbarDefaults(containerIn, containerOut, layout);
 };
 
-},{"../../lib":120,"../colorbar/defaults":32,"../colorbar/has_colorbar":34,"./flip_scale":41,"./is_valid_scale":45,"fast-isnumeric":18}],41:[function(require,module,exports){
+},{"../../lib":121,"../colorbar/defaults":32,"../colorbar/has_colorbar":34,"./flip_scale":42,"./is_valid_scale":46,"fast-isnumeric":17}],41:[function(require,module,exports){
+/**
+* Copyright 2012-2016, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+/**
+ * Extract colorscale into numeric domain and color range.
+ *
+ * @param {array} scl colorscale array of arrays
+ * @param {number} cmin minimum color value (used to clamp scale)
+ * @param {number} cmax maximum color value (used to clamp scale)
+ */
+module.exports = function extractScale(scl, cmin, cmax) {
+    var N = scl.length,
+        domain = new Array(N),
+        range = new Array(N);
+
+    for(var i = 0; i < N; i++) {
+        var si = scl[i];
+
+        domain[i] = cmin + si[0] * (cmax - cmin);
+        range[i] = si[1];
+    }
+
+    return {
+        domain: domain,
+        range: range
+    };
+};
+
+},{}],42:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -15272,7 +15630,7 @@ module.exports = function flipScale(scl) {
     return sclNew;
 };
 
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -15312,7 +15670,7 @@ module.exports = function getScale(scl, dflt) {
     return scl;
 };
 
-},{"./default_scale":39,"./is_valid_scale_array":46,"./scales":48}],43:[function(require,module,exports){
+},{"./default_scale":39,"./is_valid_scale_array":47,"./scales":49}],44:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -15358,7 +15716,7 @@ module.exports = function hasColorscale(trace, containerStr) {
     );
 };
 
-},{"../../lib":120,"./is_valid_scale":45,"fast-isnumeric":18}],44:[function(require,module,exports){
+},{"../../lib":121,"./is_valid_scale":46,"fast-isnumeric":17}],45:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -15388,9 +15746,11 @@ exports.getScale = require('./get_scale');
 
 exports.flipScale = require('./flip_scale');
 
-exports.makeScaleFunction = require('./make_scale_function');
+exports.extractScale = require('./extract_scale');
 
-},{"./attributes":36,"./calc":37,"./default_scale":39,"./defaults":40,"./flip_scale":41,"./get_scale":42,"./has_colorscale":43,"./is_valid_scale":45,"./make_scale_function":47,"./scales":48}],45:[function(require,module,exports){
+exports.makeColorScaleFunc = require('./make_color_scale_func');
+
+},{"./attributes":36,"./calc":37,"./default_scale":39,"./defaults":40,"./extract_scale":41,"./flip_scale":42,"./get_scale":43,"./has_colorscale":44,"./is_valid_scale":46,"./make_color_scale_func":48,"./scales":49}],46:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -15411,7 +15771,7 @@ module.exports = function isValidScale(scl) {
     else return isValidScaleArray(scl);
 };
 
-},{"./is_valid_scale_array":46,"./scales":48}],46:[function(require,module,exports){
+},{"./is_valid_scale_array":47,"./scales":49}],47:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -15448,7 +15808,7 @@ module.exports = function isValidScaleArray(scl) {
     return true;
 };
 
-},{"tinycolor2":20}],47:[function(require,module,exports){
+},{"tinycolor2":20}],48:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -15464,40 +15824,87 @@ var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 var isNumeric = require('fast-isnumeric');
 
-var Lib = require('../../lib');
 var Color = require('../color');
 
+/**
+ * General colorscale function generator.
+ *
+ * @param {object} specs output of Colorscale.extractScale or precomputed domain, range.
+ *  - domain {array}
+ *  - range {array}
+ *
+ * @param {object} opts
+ *  - noNumericCheck {boolean} if true, scale func bypasses numeric checks
+ *  - returnArray {boolean} if true, scale func return 4-item array instead of color strings
+ *
+ * @return {function}
+ */
+module.exports = function makeColorScaleFunc(specs, opts) {
+    opts = opts || {};
 
-module.exports = function makeScaleFunction(scl, cmin, cmax) {
-    var N = scl.length,
-        domain = new Array(N),
-        range = new Array(N),
-        si;
+    var domain = specs.domain,
+        range = specs.range,
+        N = range.length,
+        _range = new Array(N);
 
     for(var i = 0; i < N; i++) {
-        si = scl[i];
-        domain[i] = cmin + si[0] * (cmax - cmin);
-        range[i] = tinycolor(si[1]).toRgb();
+        var rgba = tinycolor(range[i]).toRgb();
+        _range[i] = [rgba.r, rgba.g, rgba.b, rgba.a];
     }
 
-    var sclFunc = d3.scale.linear()
+    var _sclFunc = d3.scale.linear()
         .domain(domain)
-        .interpolate(d3.interpolateObject)
-        .range(range);
+        .range(_range)
+        .clamp(true);
 
-    return function(v) {
-        if(isNumeric(v)) {
-            var sclVal = Lib.constrain(v, cmin, cmax),
-                colorObj = sclFunc(sclVal);
+    var noNumericCheck = opts.noNumericCheck,
+        returnArray = opts.returnArray,
+        sclFunc;
 
-            return tinycolor(colorObj).toRgbString();
-        }
-        else if(tinycolor(v).isValid()) return v;
-        else return Color.defaultLine;
-    };
+    if(noNumericCheck && returnArray) {
+        sclFunc = _sclFunc;
+    }
+    else if(noNumericCheck) {
+        sclFunc = function(v) {
+            return colorArray2rbga(_sclFunc(v));
+        };
+    }
+    else if(returnArray) {
+        sclFunc = function(v) {
+            if(isNumeric(v)) return _sclFunc(v);
+            else if(tinycolor(v).isValid()) return v;
+            else return Color.defaultLine;
+        };
+    }
+    else {
+        sclFunc = function(v) {
+            if(isNumeric(v)) return colorArray2rbga(_sclFunc(v));
+            else if(tinycolor(v).isValid()) return v;
+            else return Color.defaultLine;
+        };
+    }
+
+    // colorbar draw looks into the d3 scale closure for domain and range
+
+    sclFunc.domain = _sclFunc.domain;
+
+    sclFunc.range = function() { return range; };
+
+    return sclFunc;
 };
 
-},{"../../lib":120,"../color":30,"d3":16,"fast-isnumeric":18,"tinycolor2":20}],48:[function(require,module,exports){
+function colorArray2rbga(colorArray) {
+    var colorObj = {
+        r: colorArray[0],
+        g: colorArray[1],
+        b: colorArray[2],
+        a: colorArray[3]
+    };
+
+    return tinycolor(colorObj).toRgbString();
+}
+
+},{"../color":30,"d3":14,"fast-isnumeric":17,"tinycolor2":20}],49:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -15628,7 +16035,7 @@ module.exports = {
     ]
 };
 
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -15661,7 +16068,7 @@ module.exports = function align(v, dv, v0, v1, anchor) {
     return vc;
 };
 
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -15699,7 +16106,7 @@ module.exports = function getCursor(x, y, xanchor, yanchor) {
     return cursorset[y][x];
 };
 
-},{"../../lib":120}],51:[function(require,module,exports){
+},{"../../lib":121}],52:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -15886,7 +16293,7 @@ function finishDrag(gd) {
     if(gd._replotPending) Plotly.plot(gd);
 }
 
-},{"../../lib":120,"../../plotly":142,"../../plots/cartesian/constants":151,"./align":49,"./cursor":50,"./unhover":52}],52:[function(require,module,exports){
+},{"../../lib":121,"../../plotly":143,"../../plots/cartesian/constants":153,"./align":50,"./cursor":51,"./unhover":53}],53:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -15937,7 +16344,7 @@ unhover.raw = function unhoverRaw(gd, evt) {
     gd._hoverdata = undefined;
 };
 
-},{"../../lib/events":116}],53:[function(require,module,exports){
+},{"../../lib/events":117}],54:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -16271,7 +16678,10 @@ drawing.tryColorscale = function(cont, contIn, prefix) {
             Lib.nestedProperty(contIn, prefix + 'cmin').set(min);
             Lib.nestedProperty(contIn, prefix + 'cmax').set(max);
         }
-        return Colorscale.makeScaleFunction(scl, min, max);
+
+        return Colorscale.makeColorScaleFunc(
+            Colorscale.extractScale(scl, min, max)
+        );
     }
     else return Lib.identity;
 };
@@ -16538,7 +16948,7 @@ drawing.setClipUrl = function(s, localId) {
     s.attr('clip-path', 'url(' + url + ')');
 };
 
-},{"../../constants/xmlns_namespaces":111,"../../lib":120,"../../lib/svg_text_utils":132,"../../registry":184,"../../traces/scatter/make_bubble_size_func":280,"../../traces/scatter/subtypes":285,"../color":30,"../colorscale":44,"./symbol_defs":54,"d3":16,"fast-isnumeric":18}],54:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":112,"../../lib":121,"../../lib/svg_text_utils":133,"../../registry":187,"../../traces/scatter/make_bubble_size_func":284,"../../traces/scatter/subtypes":289,"../color":30,"../colorscale":45,"./symbol_defs":55,"d3":14,"fast-isnumeric":17}],55:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -17014,7 +17424,7 @@ module.exports = {
     }
 };
 
-},{"d3":16}],55:[function(require,module,exports){
+},{"d3":14}],56:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -17113,7 +17523,7 @@ module.exports = {
     }
 };
 
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -17176,7 +17586,7 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
     Axes.expand(axis, vals, {padded: true});
 }
 
-},{"../../plots/cartesian/axes":146,"../../registry":184,"./compute_error":57,"fast-isnumeric":18}],57:[function(require,module,exports){
+},{"../../plots/cartesian/axes":147,"../../registry":187,"./compute_error":58,"fast-isnumeric":17}],58:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -17272,7 +17682,7 @@ function makeComputeErrorValue(type, value) {
     }
 }
 
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -17349,7 +17759,7 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
     }
 };
 
-},{"../../lib":120,"../../registry":184,"./attributes":55,"fast-isnumeric":18}],59:[function(require,module,exports){
+},{"../../lib":121,"../../registry":187,"./attributes":56,"fast-isnumeric":17}],60:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -17408,7 +17818,7 @@ errorBars.hoverInfo = function(calcPoint, trace, hoverPoint) {
     }
 };
 
-},{"./attributes":55,"./calc":56,"./defaults":58,"./plot":60,"./style":61}],60:[function(require,module,exports){
+},{"./attributes":56,"./calc":57,"./defaults":59,"./plot":61,"./style":62}],61:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -17572,7 +17982,7 @@ function errorCoords(d, xa, ya) {
     return out;
 }
 
-},{"../../traces/scatter/subtypes":285,"d3":16,"fast-isnumeric":18}],61:[function(require,module,exports){
+},{"../../traces/scatter/subtypes":289,"d3":14,"fast-isnumeric":17}],62:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -17609,7 +18019,7 @@ module.exports = function style(traces) {
     });
 };
 
-},{"../color":30,"d3":16}],62:[function(require,module,exports){
+},{"../color":30,"d3":14}],63:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -17724,7 +18134,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/cartesian/constants":151}],63:[function(require,module,exports){
+},{"../../plots/cartesian/constants":153}],64:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -17790,7 +18200,7 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
     return imageOut;
 }
 
-},{"../../lib":120,"../../plots/cartesian/axes":146,"./attributes":62}],64:[function(require,module,exports){
+},{"../../lib":121,"../../plots/cartesian/axes":147,"./attributes":63}],65:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -17848,17 +18258,21 @@ module.exports = function draw(gd) {
     function setImage(d) {
         var thisImage = d3.select(this);
 
+        if(this.img && this.img.src === d.source) {
+            return;
+        }
+
         thisImage.attr('xmlns', xmlnsNamespaces.svg);
 
         var imagePromise = new Promise(function(resolve) {
 
             var img = new Image();
+            this.img = img;
 
             // If not set, a `tainted canvas` error is thrown
             img.setAttribute('crossOrigin', 'anonymous');
             img.onerror = errorHandler;
             img.onload = function() {
-
                 var canvas = document.createElement('canvas');
                 canvas.width = this.width;
                 canvas.height = this.height;
@@ -17881,7 +18295,7 @@ module.exports = function draw(gd) {
                 thisImage.remove();
                 resolve();
             }
-        });
+        }.bind(this));
 
         gd._promises.push(imagePromise);
     }
@@ -17939,34 +18353,36 @@ module.exports = function draw(gd) {
         }
     }
 
-
-    // Required for updating images
-    function keyFunction(d, i) {
-        return d.source + i;
-    }
-
-
     var imagesBelow = fullLayout._imageLowerLayer.selectAll('image')
-            .data(imageDataBelow, keyFunction),
+            .data(imageDataBelow),
         imagesSubplot = fullLayout._imageSubplotLayer.selectAll('image')
-            .data(imageDataSubplot, keyFunction),
+            .data(imageDataSubplot),
         imagesAbove = fullLayout._imageUpperLayer.selectAll('image')
-            .data(imageDataAbove, keyFunction);
+            .data(imageDataAbove);
 
-    imagesBelow.enter().append('image').each(setImage);
-    imagesSubplot.enter().append('image').each(setImage);
-    imagesAbove.enter().append('image').each(setImage);
+    imagesBelow.enter().append('image');
+    imagesSubplot.enter().append('image');
+    imagesAbove.enter().append('image');
 
     imagesBelow.exit().remove();
     imagesSubplot.exit().remove();
     imagesAbove.exit().remove();
 
-    imagesBelow.each(applyAttributes);
-    imagesSubplot.each(applyAttributes);
-    imagesAbove.each(applyAttributes);
+    imagesBelow.each(function(d) {
+        setImage.bind(this)(d);
+        applyAttributes.bind(this)(d);
+    });
+    imagesSubplot.each(function(d) {
+        setImage.bind(this)(d);
+        applyAttributes.bind(this)(d);
+    });
+    imagesAbove.each(function(d) {
+        setImage.bind(this)(d);
+        applyAttributes.bind(this)(d);
+    });
 };
 
-},{"../../constants/xmlns_namespaces":111,"../../plots/cartesian/axes":146,"../drawing":53,"d3":16}],65:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":112,"../../plots/cartesian/axes":147,"../drawing":54,"d3":14}],66:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -17991,7 +18407,7 @@ module.exports = {
     supplyLayoutDefaults: supplyLayoutDefaults
 };
 
-},{"./attributes":62,"./defaults":63,"./draw":64}],66:[function(require,module,exports){
+},{"./attributes":63,"./defaults":64,"./draw":65}],67:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -18040,7 +18456,7 @@ exports.isMiddleAnchor = function isMiddleAnchor(opts) {
     );
 };
 
-},{}],67:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -18131,7 +18547,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":117,"../../plots/font_attributes":165,"../color/attributes":29}],68:[function(require,module,exports){
+},{"../../lib/extend":118,"../../plots/font_attributes":168,"../color/attributes":29}],69:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -18149,7 +18565,7 @@ module.exports = {
     scrollBarMargin: 4
 };
 
-},{}],69:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -18242,7 +18658,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
 };
 
-},{"../../lib":120,"../../plots/layout_attributes":167,"../../registry":184,"./attributes":67,"./helpers":72}],70:[function(require,module,exports){
+},{"../../lib":121,"../../plots/layout_attributes":170,"../../registry":187,"./attributes":68,"./helpers":73}],71:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -18958,7 +19374,7 @@ function expandHorizontalMargin(gd) {
     });
 }
 
-},{"../../lib":120,"../../lib/svg_text_utils":132,"../../plotly":142,"../../plots/plots":169,"../../registry":184,"../color":30,"../dragelement":51,"../drawing":53,"./anchor_utils":66,"./constants":68,"./get_legend_data":71,"./helpers":72,"./style":74,"d3":16}],71:[function(require,module,exports){
+},{"../../lib":121,"../../lib/svg_text_utils":133,"../../plotly":143,"../../plots/plots":172,"../../registry":187,"../color":30,"../dragelement":52,"../drawing":54,"./anchor_utils":67,"./constants":69,"./get_legend_data":72,"./helpers":73,"./style":75,"d3":14}],72:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -19063,7 +19479,7 @@ module.exports = function getLegendData(calcdata, opts) {
     return legendData;
 };
 
-},{"../../registry":184,"./helpers":72}],72:[function(require,module,exports){
+},{"../../registry":187,"./helpers":73}],73:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -19094,7 +19510,7 @@ exports.isReversed = function isReversed(legendLayout) {
     return (legendLayout.traceorder || '').indexOf('reversed') !== -1;
 };
 
-},{"../../registry":184}],73:[function(require,module,exports){
+},{"../../registry":187}],74:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -19122,7 +19538,7 @@ legend.draw = require('./draw');
 
 legend.style = require('./style');
 
-},{"./attributes":67,"./defaults":69,"./draw":70,"./style":74}],74:[function(require,module,exports){
+},{"./attributes":68,"./defaults":70,"./draw":71,"./style":75}],75:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -19344,7 +19760,7 @@ function stylePies(d) {
     if(pts.size()) pts.call(stylePie, d[0], trace);
 }
 
-},{"../../lib":120,"../../registry":184,"../../traces/pie/style_one":263,"../../traces/scatter/subtypes":285,"../color":30,"../drawing":53,"d3":16}],75:[function(require,module,exports){
+},{"../../lib":121,"../../registry":187,"../../traces/pie/style_one":267,"../../traces/scatter/subtypes":289,"../color":30,"../drawing":54,"d3":14}],76:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -19854,7 +20270,7 @@ modeBarButtons.resetViews = {
     }
 };
 
-},{"../../../build/ploticon":2,"../../lib":120,"../../plotly":142,"../../plots/cartesian/axes":146,"../../plots/plots":169,"../../snapshot/download":186}],76:[function(require,module,exports){
+},{"../../../build/ploticon":2,"../../lib":121,"../../plotly":143,"../../plots/cartesian/axes":147,"../../plots/plots":172,"../../snapshot/download":189}],77:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -19868,7 +20284,7 @@ modeBarButtons.resetViews = {
 
 exports.manage = require('./manage');
 
-},{"./manage":77}],77:[function(require,module,exports){
+},{"./manage":78}],78:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -20096,7 +20512,7 @@ function fillCustomButton(customButtons) {
     return customButtons;
 }
 
-},{"../../plots/cartesian/axes":146,"../../traces/scatter/subtypes":285,"./buttons":75,"./modebar":78}],78:[function(require,module,exports){
+},{"../../plots/cartesian/axes":147,"../../traces/scatter/subtypes":289,"./buttons":76,"./modebar":79}],79:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -20386,7 +20802,7 @@ function createModeBar(gd, buttons) {
 
 module.exports = createModeBar;
 
-},{"../../../build/ploticon":2,"../../lib":120,"d3":16}],79:[function(require,module,exports){
+},{"../../../build/ploticon":2,"../../lib":121,"d3":14}],80:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -20475,7 +20891,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":117,"../../plots/font_attributes":165,"../color/attributes":29,"./button_attributes":80}],80:[function(require,module,exports){
+},{"../../lib/extend":118,"../../plots/font_attributes":168,"../color/attributes":29,"./button_attributes":81}],81:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -20516,7 +20932,7 @@ module.exports = {
     }
 };
 
-},{}],81:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -20545,7 +20961,7 @@ module.exports = {
     darkAmount: 10
 };
 
-},{}],82:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -20638,7 +21054,7 @@ function getPosDflt(containerOut, layout, counterAxes) {
     return [containerOut.domain[0], posY + constants.yPad];
 }
 
-},{"../../lib":120,"../color":30,"./attributes":79,"./button_attributes":80,"./constants":81}],83:[function(require,module,exports){
+},{"../../lib":121,"../color":30,"./attributes":80,"./button_attributes":81,"./constants":82}],84:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -20913,7 +21329,7 @@ function reposition(gd, buttons, opts, axName) {
     });
 }
 
-},{"../../lib/svg_text_utils":132,"../../plotly":142,"../../plots/cartesian/axis_ids":148,"../../plots/plots":169,"../color":30,"../drawing":53,"../legend/anchor_utils":66,"./constants":81,"./get_update_object":84,"d3":16}],84:[function(require,module,exports){
+},{"../../lib/svg_text_utils":133,"../../plotly":143,"../../plots/cartesian/axis_ids":150,"../../plots/plots":172,"../color":30,"../drawing":54,"../legend/anchor_utils":67,"./constants":82,"./get_update_object":85,"d3":14}],85:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -20971,7 +21387,7 @@ function getXRange(axisLayout, buttonLayout) {
     return [range0, range1];
 }
 
-},{"d3":16}],85:[function(require,module,exports){
+},{"d3":14}],86:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -20993,7 +21409,7 @@ exports.handleDefaults = require('./defaults');
 
 exports.draw = require('./draw');
 
-},{"./attributes":79,"./defaults":82,"./draw":83}],86:[function(require,module,exports){
+},{"./attributes":80,"./defaults":83,"./draw":84}],87:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -21051,7 +21467,7 @@ module.exports = {
     }
 };
 
-},{"../color/attributes":29}],87:[function(require,module,exports){
+},{"../color/attributes":29}],88:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -21104,7 +21520,7 @@ module.exports = {
     handleStroke: '#666',
 };
 
-},{}],88:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -21164,7 +21580,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName, counterAxe
     containerOut._input = containerIn;
 };
 
-},{"../../lib":120,"./attributes":86}],89:[function(require,module,exports){
+},{"../../lib":121,"./attributes":87}],90:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -21686,7 +22102,7 @@ function clearPushMargins(gd) {
     }
 }
 
-},{"../../lib":120,"../../lib/setcursor":130,"../../plotly":142,"../../plots/cartesian":154,"../../plots/cartesian/axes":146,"../../plots/plots":169,"../color":30,"../dragelement":51,"../drawing":53,"./constants":87,"d3":16}],90:[function(require,module,exports){
+},{"../../lib":121,"../../lib/setcursor":131,"../../plotly":143,"../../plots/cartesian":156,"../../plots/cartesian/axes":147,"../../plots/plots":172,"../color":30,"../dragelement":52,"../drawing":54,"./constants":88,"d3":14}],91:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -21705,7 +22121,7 @@ module.exports = {
     draw: require('./draw')
 };
 
-},{"./attributes":86,"./defaults":88,"./draw":89}],91:[function(require,module,exports){
+},{"./attributes":87,"./defaults":89,"./draw":90}],92:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -21796,7 +22212,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":117,"../../traces/scatter/attributes":265,"../annotations/attributes":23}],92:[function(require,module,exports){
+},{"../../lib/extend":118,"../../traces/scatter/attributes":269,"../annotations/attributes":23}],93:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -21872,7 +22288,7 @@ function shapeBounds(ax, v0, v1, path, paramsToUse) {
     if(max >= min) return [min, max];
 }
 
-},{"../../plots/cartesian/axes":146,"./constants":93,"./helpers":96}],93:[function(require,module,exports){
+},{"../../plots/cartesian/axes":147,"./constants":94,"./helpers":97}],94:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -21936,7 +22352,7 @@ module.exports = {
     }
 };
 
-},{}],94:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -21963,7 +22379,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     }
 };
 
-},{"./shape_defaults":98}],95:[function(require,module,exports){
+},{"./shape_defaults":99}],96:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -22526,7 +22942,7 @@ function movePath(pathIn, moveX, moveY) {
     });
 }
 
-},{"../../lib":120,"../../lib/setcursor":130,"../../plotly":142,"../../plots/cartesian/axes":146,"../color":30,"../dragelement":51,"../drawing":53,"./constants":93,"./defaults":94,"./helpers":96,"./shape_defaults":98,"fast-isnumeric":18}],96:[function(require,module,exports){
+},{"../../lib":121,"../../lib/setcursor":131,"../../plotly":143,"../../plots/cartesian/axes":147,"../color":30,"../dragelement":52,"../drawing":54,"./constants":94,"./defaults":95,"./helpers":97,"./shape_defaults":99,"fast-isnumeric":17}],97:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -22607,7 +23023,7 @@ exports.getPixelToData = function(gd, axis, isVertical) {
     return pixelToData;
 };
 
-},{}],97:[function(require,module,exports){
+},{}],98:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -22633,7 +23049,7 @@ var drawModule = require('./draw');
 exports.draw = drawModule.draw;
 exports.drawOne = drawModule.drawOne;
 
-},{"./attributes":91,"./calc_autorange":92,"./defaults":94,"./draw":95}],98:[function(require,module,exports){
+},{"./attributes":92,"./calc_autorange":93,"./defaults":95,"./draw":96}],99:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -22704,7 +23120,7 @@ module.exports = function handleShapeDefaults(shapeIn, fullLayout) {
     return shapeOut;
 };
 
-},{"../../lib":120,"../../plots/cartesian/axes":146,"./attributes":91,"./helpers":96}],99:[function(require,module,exports){
+},{"../../lib":121,"../../plots/cartesian/axes":147,"./attributes":92,"./helpers":97}],100:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -22766,7 +23182,7 @@ module.exports = {
     active: {
         valType: 'number',
         
-        min: -10,
+        min: 0,
         dflt: 0,
         
     },
@@ -22936,7 +23352,7 @@ module.exports = {
     },
 };
 
-},{"../../lib/extend":117,"../../plots/animation_attributes":143,"../../plots/font_attributes":165,"../../plots/pad_attributes":168,"./constants":100}],100:[function(require,module,exports){
+},{"../../lib/extend":118,"../../plots/animation_attributes":144,"../../plots/font_attributes":168,"../../plots/pad_attributes":171,"./constants":101}],101:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -23034,7 +23450,7 @@ module.exports = {
     currentValueInset: 0,
 };
 
-},{}],101:[function(require,module,exports){
+},{}],102:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -23157,7 +23573,7 @@ function stepsDefaults(sliderIn, sliderOut) {
     return valuesOut;
 }
 
-},{"../../lib":120,"./attributes":99,"./constants":100}],102:[function(require,module,exports){
+},{"../../lib":121,"./attributes":100,"./constants":101}],103:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -23171,7 +23587,6 @@ function stepsDefaults(sliderIn, sliderOut) {
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
 var Plots = require('../../plots/plots');
 var Lib = require('../../lib');
 var Color = require('../color');
@@ -23212,6 +23627,9 @@ module.exports = function draw(gd) {
     sliderGroups.exit().each(function(sliderOpts) {
         d3.select(this).remove();
 
+        sliderOpts._commandObserver.remove();
+        delete sliderOpts._commandObserver;
+
         Plots.autoMargin(gd, constants.autoMarginIdRoot + sliderOpts._index);
     });
 
@@ -23225,12 +23643,20 @@ module.exports = function draw(gd) {
         // If it has fewer than two options, it's not really a slider:
         if(sliderOpts.steps.length < 2) return;
 
+        var gSlider = d3.select(this);
+
         computeLabelSteps(sliderOpts);
+
+        Plots.manageCommandObserver(gd, sliderOpts, sliderOpts.steps, function(data) {
+            if(sliderOpts.active === data.index) return;
+            if(sliderOpts._dragging) return;
+
+            setActive(gd, gSlider, sliderOpts, data.index, false, true);
+        });
 
         drawSlider(gd, d3.select(this), sliderOpts);
 
         // makeInputProxy(gd, d3.select(this), sliderOpts);
-
     });
 };
 
@@ -23387,7 +23813,9 @@ function drawSlider(gd, sliderGroup, sliderOpts) {
     // Position the rectangle:
     Lib.setTranslate(sliderGroup, sliderOpts.lx + sliderOpts.pad.l, sliderOpts.ly + sliderOpts.pad.t);
 
-    setActive(gd, sliderGroup, sliderOpts, sliderOpts.active, false, false);
+    sliderGroup.call(setGripPosition, sliderOpts, sliderOpts.active / (sliderOpts.steps.length - 1), false);
+    sliderGroup.call(drawCurrentValue, sliderOpts);
+
 }
 
 function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
@@ -23531,19 +23959,9 @@ function setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition)
             sliderGroup._nextMethod = {step: step, doCallback: doCallback, doTransition: doTransition};
             sliderGroup._nextMethodRaf = window.requestAnimationFrame(function() {
                 var _step = sliderGroup._nextMethod.step;
-                var args = _step.args;
                 if(!_step.method) return;
 
-                sliderOpts._invokingCommand = true;
-                Plotly[_step.method](gd, args[0], args[1], args[2]).then(function() {
-                    sliderOpts._invokingCommand = false;
-                }, function() {
-                    sliderOpts._invokingCommand = false;
-
-                    // This is not a disaster. Some methods like `animate` reject if interrupted
-                    // and *should* nicely log a warning.
-                    Lib.warn('Warning: Plotly.' + _step.method + ' was called and rejected.');
-                });
+                Plots.executeAPICommand(gd, _step.method, _step.args);
 
                 sliderGroup._nextMethod = null;
                 sliderGroup._nextMethodRaf = null;
@@ -23565,6 +23983,7 @@ function attachGripEvents(item, gd, sliderGroup, sliderOpts) {
 
         var normalizedPosition = positionToNormalizedValue(sliderOpts, d3.mouse(node)[0]);
         handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, true);
+        sliderOpts._dragging = true;
 
         $gd.on('mousemove', function() {
             var normalizedPosition = positionToNormalizedValue(sliderOpts, d3.mouse(node)[0]);
@@ -23572,6 +23991,7 @@ function attachGripEvents(item, gd, sliderGroup, sliderOpts) {
         });
 
         $gd.on('mouseup', function() {
+            sliderOpts._dragging = false;
             grip.call(Color.fill, sliderOpts.bgcolor);
             $gd.on('mouseup', null);
             $gd.on('mousemove', null);
@@ -23627,8 +24047,12 @@ function setGripPosition(sliderGroup, sliderOpts, position, doTransition) {
 
     var x = normalizedValueToPosition(sliderOpts, position);
 
+    // If this is true, then *this component* is already invoking its own command
+    // and has triggered its own animation.
+    if(sliderOpts._invokingCommand) return;
+
     var el = grip;
-    if(doTransition && sliderOpts.transition.duration > 0 && !sliderOpts._invokingCommand) {
+    if(doTransition && sliderOpts.transition.duration > 0) {
         el = el.transition()
             .duration(sliderOpts.transition.duration)
             .ease(sliderOpts.transition.easing);
@@ -23708,7 +24132,7 @@ function clearPushMargins(gd) {
     }
 }
 
-},{"../../lib":120,"../../lib/svg_text_utils":132,"../../plotly":142,"../../plots/plots":169,"../color":30,"../drawing":53,"../legend/anchor_utils":66,"./constants":100,"d3":16}],103:[function(require,module,exports){
+},{"../../lib":121,"../../lib/svg_text_utils":133,"../../plots/plots":172,"../color":30,"../drawing":54,"../legend/anchor_utils":67,"./constants":101,"d3":14}],104:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -23730,7 +24154,7 @@ exports.supplyLayoutDefaults = require('./defaults');
 
 exports.draw = require('./draw');
 
-},{"./attributes":99,"./defaults":101,"./draw":102}],104:[function(require,module,exports){
+},{"./attributes":100,"./defaults":102,"./draw":103}],105:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -23960,7 +24384,7 @@ Titles.draw = function(gd, titleClass, options) {
     el.classed('js-placeholder', isplaceholder);
 };
 
-},{"../../lib":120,"../../lib/svg_text_utils":132,"../../plotly":142,"../../plots/plots":169,"../color":30,"../drawing":53,"d3":16,"fast-isnumeric":18}],105:[function(require,module,exports){
+},{"../../lib":121,"../../lib/svg_text_utils":133,"../../plotly":143,"../../plots/plots":172,"../color":30,"../drawing":54,"d3":14,"fast-isnumeric":17}],106:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -24106,7 +24530,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":117,"../../plots/font_attributes":165,"../../plots/pad_attributes":168,"../color/attributes":29}],106:[function(require,module,exports){
+},{"../../lib/extend":118,"../../plots/font_attributes":168,"../../plots/pad_attributes":171,"../color/attributes":29}],107:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -24183,7 +24607,7 @@ module.exports = {
     hoverColor: '#F4FAFF'
 };
 
-},{}],107:[function(require,module,exports){
+},{}],108:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -24287,7 +24711,7 @@ function buttonsDefaults(menuIn, menuOut) {
     return buttonsOut;
 }
 
-},{"../../lib":120,"./attributes":105,"./constants":106}],108:[function(require,module,exports){
+},{"../../lib":121,"./attributes":106,"./constants":107}],109:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -24301,7 +24725,6 @@ function buttonsDefaults(menuIn, menuOut) {
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
 var Plots = require('../../plots/plots');
 var Lib = require('../../lib');
 var Color = require('../color');
@@ -24310,7 +24733,6 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var anchorUtils = require('../legend/anchor_utils');
 
 var constants = require('./constants');
-
 
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout,
@@ -24404,6 +24826,11 @@ module.exports = function draw(gd) {
     // draw headers!
     headerGroups.each(function(menuOpts) {
         var gHeader = d3.select(this);
+
+        var _gButton = menuOpts.type === 'dropdown' ? gButton : null;
+        Plots.manageCommandObserver(gd, menuOpts, menuOpts.buttons, function(data) {
+            setActive(gd, menuOpts, menuOpts.buttons[data.index], gHeader, _gButton, data.index, true);
+        });
 
         if(menuOpts.type === 'dropdown') {
             drawHeader(gd, gHeader, gButton, menuOpts);
@@ -24583,21 +25010,9 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
             .call(setItemPosition, menuOpts, posOpts);
 
         button.on('click', function() {
-            // update 'active' attribute in menuOpts
-            menuOpts._input.active = menuOpts.active = buttonIndex;
+            setActive(gd, menuOpts, buttonOpts, gHeader, gButton, buttonIndex);
 
-            // fold up buttons and redraw header
-            gButton.attr(constants.menuIndexAttrName, '-1');
-
-            if(menuOpts.type === 'dropdown') {
-                drawHeader(gd, gHeader, gButton, menuOpts);
-            }
-
-            drawButtons(gd, gHeader, gButton, menuOpts);
-
-            // call button method
-            var args = buttonOpts.args;
-            Plotly[buttonOpts.method](gd, args[0], args[1], args[2]);
+            Plots.executeAPICommand(gd, buttonOpts.method, buttonOpts.args);
         });
 
         button.on('mouseover', function() {
@@ -24614,6 +25029,22 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
 
     // translate button group
     Lib.setTranslate(gButton, menuOpts.lx, menuOpts.ly);
+}
+
+function setActive(gd, menuOpts, buttonOpts, gHeader, gButton, buttonIndex, isSilentUpdate) {
+    // update 'active' attribute in menuOpts
+    menuOpts._input.active = menuOpts.active = buttonIndex;
+
+    if(menuOpts.type === 'dropdown') {
+        // fold up buttons and redraw header
+        gButton.attr(constants.menuIndexAttrName, '-1');
+
+        drawHeader(gd, gHeader, gButton, menuOpts);
+    }
+
+    if(!isSilentUpdate || menuOpts.type === 'buttons') {
+        drawButtons(gd, gHeader, gButton, menuOpts);
+    }
 }
 
 function drawItem(item, menuOpts, itemOpts) {
@@ -24861,7 +25292,7 @@ function clearPushMargins(gd) {
     }
 }
 
-},{"../../lib":120,"../../lib/svg_text_utils":132,"../../plotly":142,"../../plots/plots":169,"../color":30,"../drawing":53,"../legend/anchor_utils":66,"./constants":106,"d3":16}],109:[function(require,module,exports){
+},{"../../lib":121,"../../lib/svg_text_utils":133,"../../plots/plots":172,"../color":30,"../drawing":54,"../legend/anchor_utils":67,"./constants":107,"d3":14}],110:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -24883,7 +25314,7 @@ exports.supplyLayoutDefaults = require('./defaults');
 
 exports.draw = require('./draw');
 
-},{"./attributes":105,"./defaults":107,"./draw":108}],110:[function(require,module,exports){
+},{"./attributes":106,"./defaults":108,"./draw":109}],111:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -24921,7 +25352,7 @@ module.exports = {
 
 };
 
-},{}],111:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -24945,7 +25376,7 @@ exports.svgAttrs = {
     'xmlns:xlink': exports.xlink
 };
 
-},{}],112:[function(require,module,exports){
+},{}],113:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -24963,7 +25394,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.18.1';
+exports.version = '1.19.1';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -25024,7 +25455,7 @@ exports.Queue = require('./lib/queue');
 // export d3 used in the bundle
 exports.d3 = require('d3');
 
-},{"../build/plotcss":1,"../build/ploticon":2,"./components/annotations":28,"./components/images":65,"./components/legend":73,"./components/rangeselector":85,"./components/rangeslider":90,"./components/shapes":97,"./components/sliders":103,"./components/updatemenus":109,"./fonts/mathjax_config":113,"./lib/queue":128,"./plot_api/plot_schema":136,"./plot_api/register":137,"./plot_api/set_plot_config":138,"./plot_api/to_image":140,"./plot_api/validate":141,"./plotly":142,"./snapshot":189,"./snapshot/download":186,"./traces/scatter":275,"d3":16,"es6-promise":17}],113:[function(require,module,exports){
+},{"../build/plotcss":1,"../build/ploticon":2,"./components/annotations":28,"./components/images":66,"./components/legend":74,"./components/rangeselector":86,"./components/rangeslider":91,"./components/shapes":98,"./components/sliders":104,"./components/updatemenus":110,"./fonts/mathjax_config":114,"./lib/queue":129,"./plot_api/plot_schema":137,"./plot_api/register":138,"./plot_api/set_plot_config":139,"./plot_api/to_image":141,"./plot_api/validate":142,"./plotly":143,"./snapshot":192,"./snapshot/download":189,"./traces/scatter":279,"d3":14,"es6-promise":15}],114:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -25057,7 +25488,7 @@ if(typeof MathJax !== 'undefined') {
     exports.MathJax = false;
 }
 
-},{}],114:[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -25469,6 +25900,17 @@ exports.findArrayAttributes = function(trace) {
 
     exports.crawl(trace._module.attributes, callback);
 
+    if(trace.transforms) {
+        var transforms = trace.transforms;
+
+        for(var i = 0; i < transforms.length; i++) {
+            var transform = transforms[i];
+
+            stack = ['transforms[' + i + ']'];
+            exports.crawl(transform._module.attributes, callback, 1);
+        }
+    }
+
     // Look into the fullInput module attributes for array attributes
     // to make sure that 'custom' array attributes are detected.
     //
@@ -25484,7 +25926,7 @@ exports.findArrayAttributes = function(trace) {
     return arrayAttributes;
 };
 
-},{"../components/colorscale/get_scale":42,"../components/colorscale/scales":48,"./filter_unique":118,"./is_plain_object":122,"./nested_property":125,"fast-isnumeric":18,"tinycolor2":20}],115:[function(require,module,exports){
+},{"../components/colorscale/get_scale":43,"../components/colorscale/scales":49,"./filter_unique":119,"./is_plain_object":123,"./nested_property":126,"fast-isnumeric":17,"tinycolor2":20}],116:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -25818,7 +26260,7 @@ exports.parseDate = function(v) {
     return out;
 };
 
-},{"d3":16,"fast-isnumeric":18}],116:[function(require,module,exports){
+},{"d3":14,"fast-isnumeric":17}],117:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -25984,7 +26426,7 @@ var Events = {
 
 module.exports = Events;
 
-},{"events":14}],117:[function(require,module,exports){
+},{"events":16}],118:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -26098,7 +26540,7 @@ function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
     return target;
 }
 
-},{"./is_plain_object.js":122}],118:[function(require,module,exports){
+},{"./is_plain_object.js":123}],119:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -26149,7 +26591,7 @@ module.exports = function filterUnique(array) {
     return out;
 };
 
-},{}],119:[function(require,module,exports){
+},{}],120:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -26173,7 +26615,7 @@ module.exports = function filterVisible(dataIn) {
     return dataOut;
 };
 
-},{}],120:[function(require,module,exports){
+},{}],121:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -26570,7 +27012,9 @@ lib.getPlotDiv = function(el) {
 
 lib.isPlotDiv = function(el) {
     var el3 = d3.select(el);
-    return el3.size() && el3.classed('js-plotly-plot');
+    return el3.node() instanceof HTMLElement &&
+        el3.size() &&
+        el3.classed('js-plotly-plot');
 };
 
 lib.removeElement = function(el) {
@@ -26899,7 +27343,7 @@ lib.numSeparate = function(value, separators, separatethousands) {
     return x1 + x2;
 };
 
-},{"./coerce":114,"./dates":115,"./extend":117,"./filter_unique":118,"./is_array":121,"./is_plain_object":122,"./loggers":123,"./matrix":124,"./nested_property":125,"./notifier":126,"./search":129,"./stats":131,"d3":16}],121:[function(require,module,exports){
+},{"./coerce":115,"./dates":116,"./extend":118,"./filter_unique":119,"./is_array":122,"./is_plain_object":123,"./loggers":124,"./matrix":125,"./nested_property":126,"./notifier":127,"./search":130,"./stats":132,"d3":14}],122:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -26917,7 +27361,7 @@ module.exports = function isArray(a) {
     return Array.isArray(a) || ArrayBuffer.isView(a);
 };
 
-},{}],122:[function(require,module,exports){
+},{}],123:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -26946,7 +27390,7 @@ module.exports = function isPlainObject(obj) {
     );
 };
 
-},{}],123:[function(require,module,exports){
+},{}],124:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -27013,7 +27457,7 @@ loggers.error = function() {
     }
 };
 
-},{"../plot_api/plot_config":135}],124:[function(require,module,exports){
+},{"../plot_api/plot_config":136}],125:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -27123,7 +27567,7 @@ exports.apply2DTransform2 = function(transform) {
     };
 };
 
-},{}],125:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -27380,7 +27824,7 @@ function badContainer(container, propStr, propParts) {
     };
 }
 
-},{"./is_array":121,"fast-isnumeric":18}],126:[function(require,module,exports){
+},{"./is_array":122,"fast-isnumeric":17}],127:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -27457,7 +27901,7 @@ module.exports = function(text, displayLength) {
         });
 };
 
-},{"d3":16,"fast-isnumeric":18}],127:[function(require,module,exports){
+},{"d3":14,"fast-isnumeric":17}],128:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -27697,7 +28141,7 @@ polygon.filter = function filter(pts, tolerance) {
     };
 };
 
-},{"./matrix":124}],128:[function(require,module,exports){
+},{"./matrix":125}],129:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -27908,7 +28352,7 @@ queue.plotDo = function(gd, func, args) {
 
 module.exports = queue;
 
-},{"../lib":120,"../plot_api/plot_config":135}],129:[function(require,module,exports){
+},{"../lib":121,"../plot_api/plot_config":136}],130:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -28019,7 +28463,7 @@ exports.roundUp = function(val, arrayIn, reverse) {
     return arrayIn[low];
 };
 
-},{"./loggers":123,"fast-isnumeric":18}],130:[function(require,module,exports){
+},{"./loggers":124,"fast-isnumeric":17}],131:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -28042,7 +28486,7 @@ module.exports = function setCursor(el3, csr) {
     if(csr) el3.classed('cursor-' + csr, true);
 };
 
-},{}],131:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -28138,7 +28582,7 @@ exports.interp = function(arr, n) {
     return frac * arr[Math.ceil(n)] + (1 - frac) * arr[Math.floor(n)];
 };
 
-},{"fast-isnumeric":18}],132:[function(require,module,exports){
+},{"fast-isnumeric":17}],133:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -28665,7 +29109,7 @@ exports.makeEditable = function(context, _delegate, options) {
     return d3.rebind(this, dispatch, 'on');
 };
 
-},{"../constants/string_mappings":110,"../constants/xmlns_namespaces":111,"../lib":120,"d3":16}],133:[function(require,module,exports){
+},{"../constants/string_mappings":111,"../constants/xmlns_namespaces":112,"../lib":121,"d3":14}],134:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -29008,6 +29452,24 @@ exports.cleanData = function(data, existingData) {
             }
         }
 
+        // transforms backward compatibility fixes
+        if(Array.isArray(trace.transforms)) {
+            var transforms = trace.transforms;
+
+            for(i = 0; i < transforms.length; i++) {
+                var transform = transforms[i];
+
+                if(!Lib.isPlainObject(transform)) continue;
+
+                if(transform.type === 'filter') {
+                    if(transform.filtersrc) {
+                        transform.target = transform.filtersrc;
+                        delete transform.filtersrc;
+                    }
+                }
+            }
+        }
+
         // prune empty containers made before the new nestedProperty
         if(emptyContainer(trace, 'line')) delete trace.line;
         if('marker' in trace) {
@@ -29081,7 +29543,55 @@ exports.coerceTraceIndices = function(gd, traceIndices) {
     return traceIndices;
 };
 
-},{"../components/color":30,"../lib":120,"../plots/cartesian/axes":146,"../plots/plots":169,"../registry":184,"fast-isnumeric":18,"gl-mat4/fromQuat":19}],134:[function(require,module,exports){
+/**
+ * Manages logic around array container item creation / deletion / update
+ * that nested property along can't handle.
+ *
+ * @param {Object} np
+ *  nested property of update attribute string about trace or layout object
+ * @param {*} newVal
+ *  update value passed to restyle / relayout / update
+ * @param {Object} undoit
+ *  undo hash (N.B. undoit may be mutated here).
+ *
+ */
+exports.manageArrayContainers = function(np, newVal, undoit) {
+    var obj = np.obj,
+        parts = np.parts,
+        pLength = parts.length,
+        pLast = parts[pLength - 1];
+
+    var pLastIsNumber = isNumeric(pLast);
+
+    // delete item
+    if(pLastIsNumber && newVal === null) {
+
+        // Clear item in array container when new value is null
+        var contPath = parts.slice(0, pLength - 1).join('.'),
+            cont = Lib.nestedProperty(obj, contPath).get();
+        cont.splice(pLast, 1);
+
+        // Note that nested property clears null / undefined at end of
+        // array container, but not within them.
+    }
+    // create item
+    else if(pLastIsNumber && np.get() === undefined) {
+
+        // When adding a new item, make sure undo command will remove it
+        if(np.get() === undefined) undoit[np.astr] = null;
+
+        np.set(newVal);
+    }
+    // update item
+    else {
+
+        // If the last part of attribute string isn't a number,
+        // np.set is all we need.
+        np.set(newVal);
+    }
+};
+
+},{"../components/color":30,"../lib":121,"../plots/cartesian/axes":147,"../plots/plots":172,"../registry":187,"fast-isnumeric":17,"gl-mat4/fromQuat":18}],135:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -29131,10 +29641,20 @@ var subroutines = require('./subroutines');
  *
  */
 Plotly.plot = function(gd, data, layout, config) {
+    var frames;
+
     gd = helpers.getGraphDiv(gd);
 
     // Events.init is idempotent and bails early if gd has already been init'd
     Events.init(gd);
+
+    if(Lib.isPlainObject(data)) {
+        var obj = data;
+        data = obj.data;
+        layout = obj.layout;
+        config = obj.config;
+        frames = obj.frames;
+    }
 
     var okToPlot = Events.triggerHandler(gd, 'plotly_beforeplot', [data, layout, config]);
     if(okToPlot === false) return Promise.reject();
@@ -29144,6 +29664,12 @@ Plotly.plot = function(gd, data, layout, config) {
     if(!data && !layout && !Lib.isPlotDiv(gd)) {
         Lib.warn('Calling Plotly.plot as if redrawing ' +
             'but this container doesn\'t yet have a plot.', gd);
+    }
+
+    function addFrames() {
+        if(frames) {
+            return Plotly.addFrames(gd, frames);
+        }
     }
 
     // transfer configuration options to gd until we move over to
@@ -29413,6 +29939,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
     Lib.syncOrAsync([
         Plots.previousPromises,
+        addFrames,
         drawFramework,
         marginPushers,
         marginPushersAgain,
@@ -29489,10 +30016,6 @@ function plotPolar(gd, data, layout) {
     if(layout) gd.layout = layout;
     Polar.manager.fillLayout(gd);
 
-    if(gd._fullLayout.autosize === 'initial' && gd._context.autosizable) {
-        plotAutoSize(gd, {});
-        gd._fullLayout.autosize = layout.autosize = true;
-    }
     // resize canvas
     paperDiv.style({
         width: gd._fullLayout.width + 'px',
@@ -30334,6 +30857,7 @@ function _restyle(gd, aobj, _traces) {
         'x', 'y', 'z',
         'a', 'b', 'c',
         'open', 'high', 'low', 'close',
+        'base', 'width', 'offset',
         'xtype', 'x0', 'dx', 'ytype', 'y0', 'dy', 'xaxis', 'yaxis',
         'line.width',
         'connectgaps', 'transpose', 'zsmooth',
@@ -30481,9 +31005,6 @@ function _restyle(gd, aobj, _traces) {
             continue;
         }
 
-        // take no chances on transforms
-        if(ai.substr(0, 10) === 'transforms') flags.docalc = true;
-
         // set attribute in gd.data
         undoit[ai] = a0();
         for(i = 0; i < traces.length; i++) {
@@ -30622,6 +31143,10 @@ function _restyle(gd, aobj, _traces) {
                         {v: 'h', h: 'v'}[contFull.orientation];
                 }
                 helpers.swapXYData(cont);
+            }
+            else if(Plots.dataArrayContainers.indexOf(param.parts[0]) !== -1) {
+                helpers.manageArrayContainers(param, newVal, undoit);
+                flags.docalc = true;
             }
             // all the other ones, just modify that one attribute
             else param.set(newVal);
@@ -30843,8 +31368,6 @@ function _relayout(gd, aobj) {
     var redoit = {},
         undoit = {};
 
-    var hw = ['height', 'width'];
-
     // for attrs that interact (like scales & autoscales), save the
     // old vals before making the change
     // val=undefined will not set a value, just record what the value was.
@@ -30882,8 +31405,7 @@ function _relayout(gd, aobj) {
             // trunk nodes (everything except the leaf)
             ptrunk = p.parts.slice(0, pend).join('.'),
             parentIn = Lib.nestedProperty(gd.layout, ptrunk).get(),
-            parentFull = Lib.nestedProperty(fullLayout, ptrunk).get(),
-            diff;
+            parentFull = Lib.nestedProperty(fullLayout, ptrunk).get();
 
         if(vi === undefined) continue;
 
@@ -30893,13 +31415,14 @@ function _relayout(gd, aobj) {
         // op and has no flag.
         undoit[ai] = (pleaf === 'reverse') ? vi : p.get();
 
-        // check autosize or autorange vs size and range
-        if(hw.indexOf(ai) !== -1) {
-            doextra('autosize', false);
+        // Setting width or height to null must reset the graph's width / height
+        // back to its initial value as computed during the first pass in Plots.plotAutoSize.
+        //
+        // To do so, we must manually set them back here using the _initialAutoSize cache.
+        if(['width', 'height'].indexOf(ai) !== -1 && vi === null) {
+            gd._fullLayout[ai] = gd._initialAutoSize[ai];
         }
-        else if(ai === 'autosize') {
-            doextra(hw, undefined);
-        }
+        // check autorange vs range
         else if(pleafPlus.match(/^[xyz]axis[0-9]*\.range(\[[0|1]\])?$/)) {
             doextra(ptrunk + '.autorange', false);
         }
@@ -30988,6 +31511,9 @@ function _relayout(gd, aobj) {
                 objList = layout[objType] || [],
                 obji = objList[objNum] || {};
 
+            // new API, remove annotation / shape with `null`
+            if(vi === null) aobj[ai] = 'remove';
+
             // if p.parts is just an annotation number, and val is either
             // 'add' or an entire annotation to add, the undo is 'remove'
             // if val is 'remove' then undo is the whole annotation object
@@ -31017,42 +31543,11 @@ function _relayout(gd, aobj) {
             drawOne(gd, objNum, p.parts.slice(2).join('.'), aobj[ai]);
             delete aobj[ai];
         }
-        else if(p.parts[0] === 'images') {
-            var update = Lib.objectFromPath(ai, vi);
-            Lib.extendDeepAll(gd.layout, update);
-
-            Registry.getComponentMethod('images', 'supplyLayoutDefaults')(gd.layout, gd._fullLayout);
-            Registry.getComponentMethod('images', 'draw')(gd);
-        }
-        else if(p.parts[0] === 'mapbox' && p.parts[1] === 'layers') {
-            Lib.extendDeepAll(gd.layout, Lib.objectFromPath(ai, vi));
-
-            // append empty container to mapbox.layers
-            // so that relinkPrivateKeys does not complain
-
-            var fullLayers = (gd._fullLayout.mapbox || {}).layers || [];
-            diff = (p.parts[2] + 1) - fullLayers.length;
-
-            for(i = 0; i < diff; i++) fullLayers.push({});
-
-            flags.doplot = true;
-        }
-        else if(p.parts[0] === 'updatemenus') {
-            Lib.extendDeepAll(gd.layout, Lib.objectFromPath(ai, vi));
-
-            var menus = gd._fullLayout.updatemenus || [];
-            diff = (p.parts[2] + 1) - menus.length;
-
-            for(i = 0; i < diff; i++) menus.push({});
-            flags.doplot = true;
-        }
-        else if(p.parts[0] === 'sliders') {
-            Lib.extendDeepAll(gd.layout, Lib.objectFromPath(ai, vi));
-
-            var sliders = gd._fullLayout.sliders || [];
-            diff = (p.parts[2] + 1) - sliders.length;
-
-            for(i = 0; i < diff; i++) sliders.push({});
+        else if(
+            Plots.layoutArrayContainers.indexOf(p.parts[0]) !== -1 ||
+            (p.parts[0] === 'mapbox' && p.parts[1] === 'layers')
+        ) {
+            helpers.manageArrayContainers(p, vi, undoit);
             flags.doplot = true;
         }
         // alter gd.layout
@@ -31111,10 +31606,21 @@ function _relayout(gd, aobj) {
         }
     }
 
-    // calculate autosizing - if size hasn't changed,
-    // will remove h&w so we don't need to redraw
-    if(aobj.autosize) aobj = plotAutoSize(gd, aobj);
-    if(aobj.height || aobj.width || aobj.autosize) flags.docalc = true;
+    var oldWidth = gd._fullLayout.width,
+        oldHeight = gd._fullLayout.height;
+
+    // coerce the updated layout
+    Plots.supplyDefaults(gd);
+
+    // calculate autosizing
+    if(gd.layout.autosize) Plots.plotAutoSize(gd, gd.layout, gd._fullLayout);
+
+    // avoid unnecessary redraws
+    var hasSizechanged = aobj.height || aobj.width ||
+        (gd._fullLayout.width !== oldWidth) ||
+        (gd._fullLayout.height !== oldHeight);
+
+    if(hasSizechanged) flags.docalc = true;
 
     if(flags.doplot || flags.docalc) {
         flags.layoutReplot = true;
@@ -31250,7 +31756,11 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
     gd = helpers.getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
-        throw new Error('This element is not a Plotly plot: ' + gd);
+        throw new Error(
+            'This element is not a Plotly plot: ' + gd + '. It\'s likely that you\'ve failed ' +
+            'to create a plot before animating it. For more details, see ' +
+            'https://plot.ly/javascript/animations/'
+        );
     }
 
     var trans = gd._transitionData;
@@ -31392,14 +31902,7 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
             var newFrame = trans._currentFrame = trans._frameQueue.shift();
 
             if(newFrame) {
-                gd.emit('plotly_animatingframe', {
-                    name: newFrame.name,
-                    frame: newFrame.frame,
-                    animation: {
-                        frame: newFrame.frameOpts,
-                        transition: newFrame.transitionOpts,
-                    }
-                });
+                gd._fullLayout._currentFrame = newFrame.name;
 
                 trans._lastFrameAt = Date.now();
                 trans._timeToNext = newFrame.frameOpts.duration;
@@ -31414,6 +31917,15 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
                     newFrame.frameOpts,
                     newFrame.transitionOpts
                 );
+
+                gd.emit('plotly_animatingframe', {
+                    name: newFrame.name,
+                    frame: newFrame.frame,
+                    animation: {
+                        frame: newFrame.frameOpts,
+                        transition: newFrame.transitionOpts,
+                    }
+                });
             } else {
                 // If there are no more frames, then stop the RAF loop:
                 stopAnimationLoop();
@@ -31523,6 +32035,33 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
             discardExistingFrames();
         }
 
+        if(animationOpts.direction === 'reverse') {
+            frameList.reverse();
+        }
+
+        var currentFrame = gd._fullLayout._currentFrame;
+        if(currentFrame && animationOpts.fromcurrent) {
+            var idx = -1;
+            for(i = 0; i < frameList.length; i++) {
+                frame = frameList[i];
+                if(frame.type === 'byname' && frame.name === currentFrame) {
+                    idx = i;
+                    break;
+                }
+            }
+
+            if(idx > 0 && idx < frameList.length - 1) {
+                var filteredFrameList = [];
+                for(i = 0; i < frameList.length; i++) {
+                    frame = frameList[i];
+                    if(frameList[i].type !== 'byname' || i > idx) {
+                        filteredFrameList.push(frame);
+                    }
+                }
+                frameList = filteredFrameList;
+            }
+        }
+
         if(frameList.length > 0) {
             queueFrames(frameList);
         } else {
@@ -31561,7 +32100,11 @@ Plotly.addFrames = function(gd, frameList, indices) {
     }
 
     if(!Lib.isPlotDiv(gd)) {
-        throw new Error('This element is not a Plotly plot: ' + gd);
+        throw new Error(
+            'This element is not a Plotly plot: ' + gd + '. It\'s likely that you\'ve failed ' +
+            'to create a plot before adding frames. For more details, see ' +
+            'https://plot.ly/javascript/animations/'
+        );
     }
 
     var i, frame, j, idx;
@@ -31708,86 +32251,6 @@ Plotly.purge = function purge(gd) {
     return gd;
 };
 
-/**
- * Reduce all reserved margin objects to a single required margin reservation.
- *
- * @param {Object} margins
- * @returns {{left: number, right: number, bottom: number, top: number}}
- */
-function calculateReservedMargins(margins) {
-    var resultingMargin = {left: 0, right: 0, bottom: 0, top: 0},
-        marginName;
-
-    if(margins) {
-        for(marginName in margins) {
-            if(margins.hasOwnProperty(marginName)) {
-                resultingMargin.left += margins[marginName].left || 0;
-                resultingMargin.right += margins[marginName].right || 0;
-                resultingMargin.bottom += margins[marginName].bottom || 0;
-                resultingMargin.top += margins[marginName].top || 0;
-            }
-        }
-    }
-    return resultingMargin;
-}
-
-function plotAutoSize(gd, aobj) {
-    var fullLayout = gd._fullLayout,
-        context = gd._context,
-        computedStyle;
-
-    var newHeight, newWidth;
-
-    gd.emit('plotly_autosize');
-
-    // embedded in an iframe - just take the full iframe size
-    // if we get to this point, with no aspect ratio restrictions
-    if(gd._context.fillFrame) {
-        newWidth = window.innerWidth;
-        newHeight = window.innerHeight;
-
-        // somehow we get a few extra px height sometimes...
-        // just hide it
-        document.body.style.overflow = 'hidden';
-    }
-    else if(isNumeric(context.frameMargins) && context.frameMargins > 0) {
-        var reservedMargins = calculateReservedMargins(gd._boundingBoxMargins),
-            reservedWidth = reservedMargins.left + reservedMargins.right,
-            reservedHeight = reservedMargins.bottom + reservedMargins.top,
-            gdBB = fullLayout._container.node().getBoundingClientRect(),
-            factor = 1 - 2 * context.frameMargins;
-
-        newWidth = Math.round(factor * (gdBB.width - reservedWidth));
-        newHeight = Math.round(factor * (gdBB.height - reservedHeight));
-    }
-    else {
-        // plotly.js - let the developers do what they want, either
-        // provide height and width for the container div,
-        // specify size in layout, or take the defaults,
-        // but don't enforce any ratio restrictions
-        computedStyle = window.getComputedStyle(gd);
-        newHeight = parseFloat(computedStyle.height) || fullLayout.height;
-        newWidth = parseFloat(computedStyle.width) || fullLayout.width;
-    }
-
-    if(Math.abs(fullLayout.width - newWidth) > 1 ||
-            Math.abs(fullLayout.height - newHeight) > 1) {
-        fullLayout.height = gd.layout.height = newHeight;
-        fullLayout.width = gd.layout.width = newWidth;
-    }
-    // if there's no size change, update layout but
-    // delete the autosize attr so we don't redraw
-    // but can't call layoutStyles for initial autosize
-    else if(fullLayout.autosize !== 'initial') {
-        delete(aobj.autosize);
-        fullLayout.autosize = gd.layout.autosize = true;
-    }
-
-    Plots.sanitizeMargins(fullLayout);
-
-    return aobj;
-}
-
 // -------------------------------------------------------
 // makePlotFramework: Create the plot container and axes
 // -------------------------------------------------------
@@ -31806,13 +32269,6 @@ function makePlotFramework(gd) {
     fullLayout._paperdiv.enter().append('div')
         .classed('svg-container', true)
         .style('position', 'relative');
-
-    // Initial autosize
-    if(fullLayout.autosize === 'initial') {
-        plotAutoSize(gd, {});
-        fullLayout.autosize = true;
-        gd.layout.autosize = true;
-    }
 
     // Make the graph containers
     // start fresh each time we get here, so we know the order comes out
@@ -31898,7 +32354,7 @@ function makePlotFramework(gd) {
     gd.emit('plotly_framework');
 }
 
-},{"../components/drawing":53,"../components/errorbars":59,"../constants/xmlns_namespaces":111,"../lib":120,"../lib/events":116,"../lib/queue":128,"../lib/svg_text_utils":132,"../plotly":142,"../plots/cartesian/graph_interact":153,"../plots/plots":169,"../plots/polar":172,"../registry":184,"./helpers":133,"./subroutines":139,"d3":16,"fast-isnumeric":18}],135:[function(require,module,exports){
+},{"../components/drawing":54,"../components/errorbars":60,"../constants/xmlns_namespaces":112,"../lib":121,"../lib/events":117,"../lib/queue":129,"../lib/svg_text_utils":133,"../plotly":143,"../plots/cartesian/graph_interact":155,"../plots/plots":172,"../plots/polar":175,"../registry":187,"./helpers":134,"./subroutines":140,"d3":14,"fast-isnumeric":17}],136:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -31927,11 +32383,12 @@ module.exports = {
     // we can edit titles, move annotations, etc
     editable: false,
 
+    // DO autosize once regardless of layout.autosize
+    // (use default width or height values otherwise)
+    autosizable: false,
+
     // set the length of the undo/redo queue
     queueLength: 0,
-
-    // plot will respect layout.autosize=true and infer its container size
-    autosizable: false,
 
     // if we DO autosize, do we fill the container or the screen?
     fillFrame: false,
@@ -32017,7 +32474,7 @@ function defaultSetBackground(gd, bgColor) {
     }
 }
 
-},{}],136:[function(require,module,exports){
+},{}],137:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -32344,7 +32801,7 @@ function handleLinkedToArray(layoutAttributes) {
     Lib.crawl(layoutAttributes, callback);
 }
 
-},{"../lib":120,"../plotly":142,"../plots/plots":169,"../plots/polar/area_attributes":170,"../plots/polar/axis_attributes":171,"../registry":184}],137:[function(require,module,exports){
+},{"../lib":121,"../plotly":143,"../plots/plots":172,"../plots/polar/area_attributes":173,"../plots/polar/axis_attributes":174,"../registry":187}],138:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -32439,7 +32896,7 @@ function registerComponentModule(newModule) {
     Registry.componentsRegistry[newModule.name] = newModule;
 }
 
-},{"../lib":120,"../registry":184}],138:[function(require,module,exports){
+},{"../lib":121,"../registry":187}],139:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -32465,7 +32922,7 @@ module.exports = function setPlotConfig(configObj) {
     return Lib.extendFlat(Plotly.defaultConfig, configObj);
 };
 
-},{"../lib":120,"../plotly":142}],139:[function(require,module,exports){
+},{"../lib":121,"../plotly":143}],140:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -32787,7 +33244,7 @@ exports.doModeBar = function(gd) {
     return Plots.previousPromises(gd);
 };
 
-},{"../components/color":30,"../components/drawing":53,"../components/modebar":76,"../components/titles":104,"../lib":120,"../plotly":142,"../plots/plots":169,"../registry":184}],140:[function(require,module,exports){
+},{"../components/color":30,"../components/drawing":54,"../components/modebar":77,"../components/titles":105,"../lib":121,"../plotly":143,"../plots/plots":172,"../registry":187}],141:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -32897,7 +33354,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":120,"../plotly":142,"../snapshot/cloneplot":185,"../snapshot/helpers":188,"../snapshot/svgtoimg":190,"../snapshot/tosvg":192,"fast-isnumeric":18}],141:[function(require,module,exports){
+},{"../lib":121,"../plotly":143,"../snapshot/cloneplot":188,"../snapshot/helpers":191,"../snapshot/svgtoimg":193,"../snapshot/tosvg":195,"fast-isnumeric":17}],142:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -33267,7 +33724,7 @@ function convertPathToAttributeString(path) {
     return astr;
 }
 
-},{"../lib":120,"../plots/plots":169,"./plot_schema":136}],142:[function(require,module,exports){
+},{"../lib":121,"../plots/plots":172,"./plot_schema":137}],143:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -33313,7 +33770,7 @@ exports.ModeBar = require('./components/modebar');
 // plot api
 require('./plot_api/plot_api');
 
-},{"./components/annotations":28,"./components/color":30,"./components/colorbar":35,"./components/colorscale":44,"./components/drawing":53,"./components/errorbars":59,"./components/images":65,"./components/legend":73,"./components/modebar":76,"./components/shapes":97,"./components/sliders":103,"./components/updatemenus":109,"./plot_api/plot_api":134,"./plot_api/plot_config":135,"./plots/cartesian/axes":146,"./plots/cartesian/graph_interact":153,"./plots/plots":169}],143:[function(require,module,exports){
+},{"./components/annotations":28,"./components/color":30,"./components/colorbar":35,"./components/colorscale":45,"./components/drawing":54,"./components/errorbars":60,"./components/images":66,"./components/legend":74,"./components/modebar":77,"./components/shapes":98,"./components/sliders":104,"./components/updatemenus":110,"./plot_api/plot_api":135,"./plot_api/plot_config":136,"./plots/cartesian/axes":147,"./plots/cartesian/graph_interact":155,"./plots/plots":172}],144:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -33328,7 +33785,21 @@ module.exports = {
     mode: {
         valType: 'enumerated',
         dflt: 'afterall',
+        
         values: ['immediate', 'next', 'afterall'],
+        
+    },
+    direction: {
+        valType: 'enumerated',
+        
+        values: ['forward', 'reverse'],
+        dflt: 'forward',
+        
+    },
+    fromcurrent: {
+        valType: 'boolean',
+        dflt: false,
+        
         
     },
     frame: {
@@ -33401,7 +33872,7 @@ module.exports = {
     }
 };
 
-},{}],144:[function(require,module,exports){
+},{}],145:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -33484,7 +33955,7 @@ module.exports = {
     }
 };
 
-},{}],145:[function(require,module,exports){
+},{}],146:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -33511,7 +33982,7 @@ module.exports = {
     }
 };
 
-},{}],146:[function(require,module,exports){
+},{}],147:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -34721,7 +35192,7 @@ axes.getSubplots = function(gd, ax) {
     var i, j, sp;
 
     // look for subplots in the data
-    var data = gd.data || [];
+    var data = gd._fullData || gd.data || [];
 
     for(i = 0; i < data.length; i++) {
         var trace = data[i];
@@ -35539,7 +36010,82 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes) {
 // rather than built-in % which gives a negative value for negative v
 function mod(v, d) { return ((v % d) + d) % d; }
 
-},{"../../components/color":30,"../../components/drawing":53,"../../components/titles":104,"../../lib":120,"../../lib/svg_text_utils":132,"../../registry":184,"./axis_ids":148,"./layout_attributes":155,"./layout_defaults":156,"./set_convert":160,"d3":16,"fast-isnumeric":18}],147:[function(require,module,exports){
+},{"../../components/color":30,"../../components/drawing":54,"../../components/titles":105,"../../lib":121,"../../lib/svg_text_utils":133,"../../registry":187,"./axis_ids":150,"./layout_attributes":157,"./layout_defaults":158,"./set_convert":162,"d3":14,"fast-isnumeric":17}],148:[function(require,module,exports){
+/**
+* Copyright 2012-2016, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var isNumeric = require('fast-isnumeric');
+
+var Lib = require('../../lib');
+var cleanDatum = require('./clean_datum');
+
+module.exports = function autoType(array) {
+    if(moreDates(array)) return 'date';
+    if(category(array)) return 'category';
+    if(linearOK(array)) return 'linear';
+    else return '-';
+};
+
+// is there at least one number in array? If not, we should leave
+// ax.type empty so it can be autoset later
+function linearOK(array) {
+    if(!array) return false;
+
+    for(var i = 0; i < array.length; i++) {
+        if(isNumeric(array[i])) return true;
+    }
+
+    return false;
+}
+
+// does the array a have mostly dates rather than numbers?
+// note: some values can be neither (such as blanks, text)
+// 2- or 4-digit integers can be both, so require twice as many
+// dates as non-dates, to exclude cases with mostly 2 & 4 digit
+// numbers and a few dates
+function moreDates(a) {
+    var dcnt = 0,
+        ncnt = 0,
+        // test at most 1000 points, evenly spaced
+        inc = Math.max(1, (a.length - 1) / 1000),
+        ai;
+
+    for(var i = 0; i < a.length; i += inc) {
+        ai = a[Math.round(i)];
+        if(Lib.isDateTime(ai)) dcnt += 1;
+        if(isNumeric(ai)) ncnt += 1;
+    }
+
+    return (dcnt > ncnt * 2);
+}
+
+// are the (x,y)-values in td.data mostly text?
+// require twice as many categories as numbers
+function category(a) {
+    // test at most 1000 points
+    var inc = Math.max(1, (a.length - 1) / 1000),
+        curvenums = 0,
+        curvecats = 0,
+        ai;
+
+    for(var i = 0; i < a.length; i += inc) {
+        ai = cleanDatum(a[Math.round(i)]);
+        if(isNumeric(ai)) curvenums++;
+        else if(typeof ai === 'string' && ai !== '' && ai !== 'None') curvecats++;
+    }
+
+    return curvecats > curvenums * 2;
+}
+
+},{"../../lib":121,"./clean_datum":152,"fast-isnumeric":17}],149:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -35565,8 +36111,8 @@ var handleTickLabelDefaults = require('./tick_label_defaults');
 var handleCategoryOrderDefaults = require('./category_order_defaults');
 var setConvert = require('./set_convert');
 var orderedCategories = require('./ordered_categories');
-var cleanDatum = require('./clean_datum');
 var axisIds = require('./axis_ids');
+var autoType = require('./axis_autotype');
 
 
 /**
@@ -35749,13 +36295,6 @@ function isBoxWithoutPositionCoords(trace, axLetter) {
     );
 }
 
-function autoType(array) {
-    if(moreDates(array)) return 'date';
-    if(category(array)) return 'category';
-    if(linearOK(array)) return 'linear';
-    else return '-';
-}
-
 function getFirstNonEmptyTrace(data, id, axLetter) {
     for(var i = 0; i < data.length; i++) {
         var trace = data[i];
@@ -35771,58 +36310,7 @@ function getFirstNonEmptyTrace(data, id, axLetter) {
     }
 }
 
-// is there at least one number in array? If not, we should leave
-// ax.type empty so it can be autoset later
-function linearOK(array) {
-    if(!array) return false;
-
-    for(var i = 0; i < array.length; i++) {
-        if(isNumeric(array[i])) return true;
-    }
-
-    return false;
-}
-
-// does the array a have mostly dates rather than numbers?
-// note: some values can be neither (such as blanks, text)
-// 2- or 4-digit integers can be both, so require twice as many
-// dates as non-dates, to exclude cases with mostly 2 & 4 digit
-// numbers and a few dates
-function moreDates(a) {
-    var dcnt = 0,
-        ncnt = 0,
-        // test at most 1000 points, evenly spaced
-        inc = Math.max(1, (a.length - 1) / 1000),
-        ai;
-
-    for(var i = 0; i < a.length; i += inc) {
-        ai = a[Math.round(i)];
-        if(Lib.isDateTime(ai)) dcnt += 1;
-        if(isNumeric(ai)) ncnt += 1;
-    }
-
-    return (dcnt > ncnt * 2);
-}
-
-// are the (x,y)-values in td.data mostly text?
-// require twice as many categories as numbers
-function category(a) {
-    // test at most 1000 points
-    var inc = Math.max(1, (a.length - 1) / 1000),
-        curvenums = 0,
-        curvecats = 0,
-        ai;
-
-    for(var i = 0; i < a.length; i += inc) {
-        ai = cleanDatum(a[Math.round(i)]);
-        if(isNumeric(ai)) curvenums++;
-        else if(typeof ai === 'string' && ai !== '' && ai !== 'None') curvecats++;
-    }
-
-    return curvecats > curvenums * 2;
-}
-
-},{"../../components/color/attributes":29,"../../lib":120,"../../registry":184,"./axis_ids":148,"./category_order_defaults":149,"./clean_datum":150,"./layout_attributes":155,"./ordered_categories":157,"./set_convert":160,"./tick_label_defaults":161,"./tick_mark_defaults":162,"./tick_value_defaults":163,"fast-isnumeric":18,"tinycolor2":20}],148:[function(require,module,exports){
+},{"../../components/color/attributes":29,"../../lib":121,"../../registry":187,"./axis_autotype":148,"./axis_ids":150,"./category_order_defaults":151,"./layout_attributes":157,"./ordered_categories":159,"./set_convert":162,"./tick_label_defaults":163,"./tick_mark_defaults":164,"./tick_value_defaults":165,"fast-isnumeric":17,"tinycolor2":20}],150:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -35944,7 +36432,7 @@ exports.getFromTrace = function(gd, fullTrace, type) {
     return ax;
 };
 
-},{"../../lib":120,"../../registry":184,"../plots":169,"./constants":151}],149:[function(require,module,exports){
+},{"../../lib":121,"../../registry":187,"../plots":172,"./constants":153}],151:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -35978,7 +36466,7 @@ module.exports = function handleCategoryOrderDefaults(containerIn, containerOut,
     }
 };
 
-},{}],150:[function(require,module,exports){
+},{}],152:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -36017,7 +36505,7 @@ module.exports = function cleanDatum(c) {
     return c;
 };
 
-},{"../../lib":120,"fast-isnumeric":18}],151:[function(require,module,exports){
+},{"../../lib":121,"fast-isnumeric":17}],153:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -36095,7 +36583,7 @@ module.exports = {
     REDRAWDELAY: 50
 };
 
-},{}],152:[function(require,module,exports){
+},{}],154:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -36852,7 +37340,7 @@ function isSelectOrLasso(dragmode) {
     return modes.indexOf(dragmode) !== -1;
 }
 
-},{"../../components/color":30,"../../components/dragelement":51,"../../components/drawing":53,"../../lib":120,"../../lib/setcursor":130,"../../lib/svg_text_utils":132,"../../plotly":142,"../../registry":184,"./axes":146,"./constants":151,"./select":159,"d3":16,"tinycolor2":20}],153:[function(require,module,exports){
+},{"../../components/color":30,"../../components/dragelement":52,"../../components/drawing":54,"../../lib":121,"../../lib/setcursor":131,"../../lib/svg_text_utils":133,"../../plotly":143,"../../registry":187,"./axes":147,"./constants":153,"./select":161,"d3":14,"tinycolor2":20}],155:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -38207,7 +38695,7 @@ fx.inbox = function(v0, v1) {
     return Infinity;
 };
 
-},{"../../components/color":30,"../../components/dragelement":51,"../../components/drawing":53,"../../lib":120,"../../lib/events":116,"../../lib/svg_text_utils":132,"./axes":146,"./constants":151,"./dragbox":152,"d3":16,"fast-isnumeric":18,"tinycolor2":20}],154:[function(require,module,exports){
+},{"../../components/color":30,"../../components/dragelement":52,"../../components/drawing":54,"../../lib":121,"../../lib/events":117,"../../lib/svg_text_utils":133,"./axes":147,"./constants":153,"./dragbox":154,"d3":14,"fast-isnumeric":17,"tinycolor2":20}],156:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -38424,7 +38912,7 @@ exports.rangePlot = function(gd, plotinfo, cdSubplot) {
 
 function makeSubplotData(gd) {
     var fullLayout = gd._fullLayout,
-        subplots = Axes.getSubplots(gd);
+        subplots = Object.keys(fullLayout._plots);
 
     var subplotData = [],
         overlays = [];
@@ -38579,7 +39067,7 @@ function joinLayer(parent, nodeType, className) {
     return layer;
 }
 
-},{"../../lib":120,"../plots":169,"./attributes":145,"./axes":146,"./constants":151,"./transition_axes":164,"d3":16}],155:[function(require,module,exports){
+},{"../../lib":121,"../plots":172,"./attributes":146,"./axes":147,"./constants":153,"./transition_axes":166,"d3":14}],157:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -38929,7 +39417,7 @@ module.exports = {
     }
 };
 
-},{"../../components/color/attributes":29,"../../lib/extend":117,"../font_attributes":165,"./constants":151}],156:[function(require,module,exports){
+},{"../../components/color/attributes":29,"../../lib/extend":118,"../font_attributes":168,"./constants":153}],158:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -39103,7 +39591,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     });
 };
 
-},{"../../components/color":30,"../../lib":120,"../../registry":184,"../layout_attributes":167,"./axis_defaults":147,"./axis_ids":148,"./constants":151,"./layout_attributes":155,"./position_defaults":158}],157:[function(require,module,exports){
+},{"../../components/color":30,"../../lib":121,"../../registry":187,"../layout_attributes":170,"./axis_defaults":149,"./axis_ids":150,"./constants":153,"./layout_attributes":157,"./position_defaults":160}],159:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -39182,7 +39670,7 @@ module.exports = function orderedCategories(axisLetter, categoryorder, categorya
     }
 };
 
-},{"d3":16}],158:[function(require,module,exports){
+},{"d3":14}],160:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -39247,7 +39735,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     return containerOut;
 };
 
-},{"../../lib":120,"fast-isnumeric":18}],159:[function(require,module,exports){
+},{"../../lib":121,"fast-isnumeric":17}],161:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -39447,7 +39935,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     };
 };
 
-},{"../../components/color":30,"../../lib/polygon":127,"./axes":146,"./constants":151}],160:[function(require,module,exports){
+},{"../../components/color":30,"../../lib/polygon":128,"./axes":147,"./constants":153}],162:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -39697,7 +40185,7 @@ module.exports = function setConvert(ax) {
     ax._forceTick0 = null;
 };
 
-},{"../../lib":120,"./axis_ids":148,"./clean_datum":150,"./constants":151,"d3":16,"fast-isnumeric":18}],161:[function(require,module,exports){
+},{"../../lib":121,"./axis_ids":150,"./clean_datum":152,"./constants":153,"d3":14,"fast-isnumeric":17}],163:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -39781,7 +40269,7 @@ function getShowAttrDflt(containerIn) {
     }
 }
 
-},{"../../lib":120}],162:[function(require,module,exports){
+},{"../../lib":121}],164:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -39814,7 +40302,7 @@ module.exports = function handleTickDefaults(containerIn, containerOut, coerce, 
     }
 };
 
-},{"../../lib":120,"./layout_attributes":155}],163:[function(require,module,exports){
+},{"../../lib":121,"./layout_attributes":157}],165:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -39855,7 +40343,7 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
     }
 };
 
-},{"fast-isnumeric":18}],164:[function(require,module,exports){
+},{"fast-isnumeric":17}],166:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -40167,7 +40655,419 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
     return Promise.resolve();
 };
 
-},{"../../lib":120,"../../plotly":142,"../../registry":184,"./axes":146,"d3":16}],165:[function(require,module,exports){
+},{"../../lib":121,"../../plotly":143,"../../registry":187,"./axes":147,"d3":14}],167:[function(require,module,exports){
+/**
+* Copyright 2012-2016, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var Plotly = require('../plotly');
+var Lib = require('../lib');
+
+/*
+ * Create or update an observer. This function is designed to be
+ * idempotent so that it can be called over and over as the component
+ * updates, and will attach and detach listeners as needed.
+ *
+ * @param {optional object} container
+ *      An object on which the observer is stored. This is the mechanism
+ *      by which it is idempotent. If it already exists, another won't be
+ *      added. Each time it's called, the value lookup table is updated.
+ * @param {array} commandList
+ *      An array of commands, following either `buttons` of `updatemenus`
+ *      or `steps` of `sliders`.
+ * @param {function} onchange
+ *      A listener called when the value is changed. Receives data object
+ *      with information about the new state.
+ */
+exports.manageCommandObserver = function(gd, container, commandList, onchange) {
+    var ret = {};
+    var enabled = true;
+
+    if(container && container._commandObserver) {
+        ret = container._commandObserver;
+    }
+
+    if(!ret.cache) {
+        ret.cache = {};
+    }
+
+    // Either create or just recompute this:
+    ret.lookupTable = {};
+
+    var binding = exports.hasSimpleAPICommandBindings(gd, commandList, ret.lookupTable);
+
+    if(container && container._commandObserver) {
+        if(!binding) {
+            // If container exists and there are no longer any bindings,
+            // remove existing:
+            if(container._commandObserver.remove) {
+                container._commandObserver.remove();
+                container._commandObserver = null;
+                return ret;
+            }
+        } else {
+            // If container exists and there *are* bindings, then the lookup
+            // table should have been updated and check is already attached,
+            // so there's nothing to be done:
+            return ret;
+
+
+        }
+    }
+
+    // Determine whether there's anything to do for this binding:
+
+    if(binding) {
+        // Build the cache:
+        bindingValueHasChanged(gd, binding, ret.cache);
+
+        ret.check = function check() {
+            if(!enabled) return;
+
+            var update = bindingValueHasChanged(gd, binding, ret.cache);
+
+            if(update.changed && onchange) {
+                // Disable checks for the duration of this command in order to avoid
+                // infinite loops:
+                if(ret.lookupTable[update.value] !== undefined) {
+                    ret.disable();
+                    Promise.resolve(onchange({
+                        value: update.value,
+                        type: binding.type,
+                        prop: binding.prop,
+                        traces: binding.traces,
+                        index: ret.lookupTable[update.value]
+                    })).then(ret.enable, ret.enable);
+                }
+            }
+
+            return update.changed;
+        };
+
+        var checkEvents = [
+            'plotly_relayout',
+            'plotly_redraw',
+            'plotly_restyle',
+            'plotly_update',
+            'plotly_animatingframe',
+            'plotly_afterplot'
+        ];
+
+        for(var i = 0; i < checkEvents.length; i++) {
+            gd._internalOn(checkEvents[i], ret.check);
+        }
+
+        ret.remove = function() {
+            for(var i = 0; i < checkEvents.length; i++) {
+                gd._removeInternalListener(checkEvents[i], ret.check);
+            }
+        };
+    } else {
+        // TODO: It'd be really neat to actually give a *reason* for this, but at least a warning
+        // is a start
+        Lib.warn('Unable to automatically bind plot updates to API command');
+
+        ret.lookupTable = {};
+        ret.remove = function() {};
+    }
+
+    ret.disable = function disable() {
+        enabled = false;
+    };
+
+    ret.enable = function enable() {
+        enabled = true;
+    };
+
+    if(container) {
+        container._commandObserver = ret;
+    }
+
+    return ret;
+};
+
+/*
+ * This function checks to see if an array of objects containing
+ * method and args properties is compatible with automatic two-way
+ * binding. The criteria right now are that
+ *
+ *   1. multiple traces may be affected
+ *   2. only one property may be affected
+ *   3. the same property must be affected by all commands
+ */
+exports.hasSimpleAPICommandBindings = function(gd, commandList, bindingsByValue) {
+    var n = commandList.length;
+
+    var refBinding;
+
+    for(var i = 0; i < n; i++) {
+        var binding;
+        var command = commandList[i];
+        var method = command.method;
+        var args = command.args;
+
+        // If any command has no method, refuse to bind:
+        if(!method) {
+            return false;
+        }
+        var bindings = exports.computeAPICommandBindings(gd, method, args);
+
+        // Right now, handle one and *only* one property being set:
+        if(bindings.length !== 1) {
+            return false;
+        }
+
+        if(!refBinding) {
+            refBinding = bindings[0];
+            if(Array.isArray(refBinding.traces)) {
+                refBinding.traces.sort();
+            }
+        } else {
+            binding = bindings[0];
+            if(binding.type !== refBinding.type) {
+                return false;
+            }
+            if(binding.prop !== refBinding.prop) {
+                return false;
+            }
+            if(Array.isArray(refBinding.traces)) {
+                if(Array.isArray(binding.traces)) {
+                    binding.traces.sort();
+                    for(var j = 0; j < refBinding.traces.length; j++) {
+                        if(refBinding.traces[j] !== binding.traces[j]) {
+                            return false;
+                        }
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                if(binding.prop !== refBinding.prop) {
+                    return false;
+                }
+            }
+        }
+
+        binding = bindings[0];
+        var value = binding.value;
+        if(Array.isArray(value)) {
+            value = value[0];
+        }
+        if(bindingsByValue) {
+            bindingsByValue[value] = i;
+        }
+    }
+
+    return refBinding;
+};
+
+function bindingValueHasChanged(gd, binding, cache) {
+    var container, value, obj;
+    var changed = false;
+
+    if(binding.type === 'data') {
+        // If it's data, we need to get a trace. Based on the limited scope
+        // of what we cover, we can just take the first trace from the list,
+        // or otherwise just the first trace:
+        container = gd._fullData[binding.traces !== null ? binding.traces[0] : 0];
+    } else if(binding.type === 'layout') {
+        container = gd._fullLayout;
+    } else {
+        return false;
+    }
+
+    value = Lib.nestedProperty(container, binding.prop).get();
+
+    obj = cache[binding.type] = cache[binding.type] || {};
+
+    if(obj.hasOwnProperty(binding.prop)) {
+        if(obj[binding.prop] !== value) {
+            changed = true;
+        }
+    }
+
+    obj[binding.prop] = value;
+
+    return {
+        changed: changed,
+        value: value
+    };
+}
+
+/*
+ * Execute an API command. There's really not much to this; it just provides
+ * a common hook so that implementations don't need to be synchronized across
+ * multiple components with the ability to invoke API commands.
+ *
+ * @param {string} method
+ *      The name of the plotly command to execute. Must be one of 'animate',
+ *      'restyle', 'relayout', 'update'.
+ * @param {array} args
+ *      A list of arguments passed to the API command
+ */
+exports.executeAPICommand = function(gd, method, args) {
+    var apiMethod = Plotly[method];
+
+    var allArgs = [gd];
+    for(var i = 0; i < args.length; i++) {
+        allArgs.push(args[i]);
+    }
+
+    return apiMethod.apply(null, allArgs).catch(function(err) {
+        Lib.warn('API call to Plotly.' + method + ' rejected.', err);
+        return Promise.reject(err);
+    });
+};
+
+exports.computeAPICommandBindings = function(gd, method, args) {
+    var bindings;
+    switch(method) {
+        case 'restyle':
+            bindings = computeDataBindings(gd, args);
+            break;
+        case 'relayout':
+            bindings = computeLayoutBindings(gd, args);
+            break;
+        case 'update':
+            bindings = computeDataBindings(gd, [args[0], args[2]])
+                .concat(computeLayoutBindings(gd, [args[1]]));
+            break;
+        case 'animate':
+            bindings = computeAnimateBindings(gd, args);
+            break;
+        default:
+            // This is the case where intelligent logic about what affects
+            // this command is not implemented. It causes no ill effects.
+            // For example, addFrames simply won't bind to a control component.
+            bindings = [];
+    }
+    return bindings;
+};
+
+function computeAnimateBindings(gd, args) {
+    // We'll assume that the only relevant modification an animation
+    // makes that's meaningfully tracked is the frame:
+    if(Array.isArray(args[0]) && args[0].length === 1 && typeof args[0][0] === 'string') {
+        return [{type: 'layout', prop: '_currentFrame', value: args[0][0]}];
+    } else {
+        return [];
+    }
+}
+
+function computeLayoutBindings(gd, args) {
+    var bindings = [];
+
+    var astr = args[0];
+    var aobj = {};
+    if(typeof astr === 'string') {
+        aobj[astr] = args[1];
+    } else if(Lib.isPlainObject(astr)) {
+        aobj = astr;
+    } else {
+        return bindings;
+    }
+
+    crawl(aobj, function(path, attrName, attr) {
+        bindings.push({type: 'layout', prop: path, value: attr});
+    }, '', 0);
+
+    return bindings;
+}
+
+function computeDataBindings(gd, args) {
+    var traces, astr, val, aobj;
+    var bindings = [];
+
+    // Logic copied from Plotly.restyle:
+    astr = args[0];
+    val = args[1];
+    traces = args[2];
+    aobj = {};
+    if(typeof astr === 'string') {
+        aobj[astr] = val;
+    } else if(Lib.isPlainObject(astr)) {
+        // the 3-arg form
+        aobj = astr;
+
+        if(traces === undefined) {
+            traces = val;
+        }
+    } else {
+        return bindings;
+    }
+
+    if(traces === undefined) {
+        // Explicitly assign this to null instead of undefined:
+        traces = null;
+    }
+
+    crawl(aobj, function(path, attrName, attr) {
+        var thisTraces;
+        if(Array.isArray(attr)) {
+            var nAttr = Math.min(attr.length, gd.data.length);
+            if(traces) {
+                nAttr = Math.min(nAttr, traces.length);
+            }
+            thisTraces = [];
+            for(var j = 0; j < nAttr; j++) {
+                thisTraces[j] = traces ? traces[j] : j;
+            }
+        } else {
+            thisTraces = traces ? traces.slice(0) : null;
+        }
+
+        // Convert [7] to just 7 when traces is null:
+        if(thisTraces === null) {
+            if(Array.isArray(attr)) {
+                attr = attr[0];
+            }
+        } else if(Array.isArray(thisTraces)) {
+            if(!Array.isArray(attr)) {
+                var tmp = attr;
+                attr = [];
+                for(var i = 0; i < thisTraces.length; i++) {
+                    attr[i] = tmp;
+                }
+            }
+            attr.length = Math.min(thisTraces.length, attr.length);
+        }
+
+        bindings.push({
+            type: 'data',
+            prop: path,
+            traces: thisTraces,
+            value: attr
+        });
+    }, '', 0);
+
+    return bindings;
+}
+
+function crawl(attrs, callback, path, depth) {
+    Object.keys(attrs).forEach(function(attrName) {
+        var attr = attrs[attrName];
+
+        if(attrName[0] === '_') return;
+
+        var thisPath = path + (depth > 0 ? '.' : '') + attrName;
+
+        if(Lib.isPlainObject(attr)) {
+            crawl(attr, callback, thisPath, depth + 1);
+        } else {
+            // Only execute the callback on leaf nodes:
+            callback(thisPath, attrName, attr);
+        }
+    });
+}
+
+},{"../lib":121,"../plotly":143}],168:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -40198,7 +41098,7 @@ module.exports = {
     }
 };
 
-},{}],166:[function(require,module,exports){
+},{}],169:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -40239,7 +41139,7 @@ module.exports = {
     }
 };
 
-},{}],167:[function(require,module,exports){
+},{}],170:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -40279,10 +41179,9 @@ module.exports = {
         
     }),
     autosize: {
-        valType: 'enumerated',
+        valType: 'boolean',
         
-        // TODO: better handling of 'initial'
-        values: [true, false, 'initial'],
+        dflt: false,
         
     },
     width: {
@@ -40403,7 +41302,7 @@ module.exports = {
     }
 };
 
-},{"../components/color/attributes":29,"../lib":120,"./font_attributes":165}],168:[function(require,module,exports){
+},{"../components/color/attributes":29,"../lib":121,"./font_attributes":168}],171:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -40441,7 +41340,7 @@ module.exports = {
     }
 };
 
-},{}],169:[function(require,module,exports){
+},{}],172:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -40481,6 +41380,12 @@ var subplotsRegistry = plots.subplotsRegistry;
 var transformsRegistry = plots.transformsRegistry;
 
 var ErrorBars = require('../components/errorbars');
+
+var commandModule = require('./command');
+plots.executeAPICommand = commandModule.executeAPICommand;
+plots.computeAPICommandBindings = commandModule.computeAPICommandBindings;
+plots.manageCommandObserver = commandModule.manageCommandObserver;
+plots.hasSimpleAPICommandBindings = commandModule.hasSimpleAPICommandBindings;
 
 /**
  * Find subplot ids in data.
@@ -40628,17 +41533,25 @@ plots.resize = function(gd) {
         if(gd._redrawTimer) clearTimeout(gd._redrawTimer);
 
         gd._redrawTimer = setTimeout(function() {
-            if((gd._fullLayout || {}).autosize) {
-                // autosizing doesn't count as a change that needs saving
-                var oldchanged = gd.changed;
+            // return if there is nothing to resize
+            if(gd.layout.width && gd.layout.height) {
+                resolve(gd);
+                return;
+            }
 
-                // nor should it be included in the undo queue
-                gd.autoplay = true;
+            delete gd.layout.width;
+            delete gd.layout.height;
 
-                Plotly.relayout(gd, { autosize: true });
+            // autosizing doesn't count as a change that needs saving
+            var oldchanged = gd.changed;
+
+            // nor should it be included in the undo queue
+            gd.autoplay = true;
+
+            Plotly.relayout(gd, { autosize: true }).then(function() {
                 gd.changed = oldchanged;
                 resolve(gd);
-            }
+            });
         }, 100);
     });
 };
@@ -40743,6 +41656,7 @@ function positionPlayWithData(gd, container) {
         });
     }
 }
+
 plots.sendDataToCloud = function(gd) {
     gd.emit('plotly_beforeexport');
 
@@ -40806,7 +41720,39 @@ plots.supplyDefaults = function(gd) {
 
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
-    plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout);
+
+    if(oldFullLayout._initialAutoSizeIsDone) {
+
+        // coerce the updated layout while preserving width and height
+        var oldWidth = oldFullLayout.width,
+            oldHeight = oldFullLayout.height;
+
+        plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout);
+
+        if(!newLayout.width) newFullLayout.width = oldWidth;
+        if(!newLayout.height) newFullLayout.height = oldHeight;
+    }
+    else {
+
+        // coerce the updated layout and autosize if needed
+        plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout);
+
+        var missingWidthOrHeight = (!newLayout.width || !newLayout.height),
+            autosize = newFullLayout.autosize,
+            autosizable = gd._context && gd._context.autosizable,
+            initialAutoSize = missingWidthOrHeight && (autosize || autosizable);
+
+        if(initialAutoSize) plots.plotAutoSize(gd, newLayout, newFullLayout);
+        else if(missingWidthOrHeight) plots.sanitizeMargins(gd);
+
+        // for backwards-compatibility with Plotly v1.x.x
+        if(!autosize && missingWidthOrHeight) {
+            newLayout.width = newFullLayout.width;
+            newLayout.height = newFullLayout.height;
+        }
+    }
+
+    newFullLayout._initialAutoSizeIsDone = true;
 
     // keep track of how many traces are inputted
     newFullLayout._dataLength = newData.length;
@@ -40852,6 +41798,7 @@ plots.supplyDefaults = function(gd) {
     // relink functions and _ attributes to promote consistency between plots
     relinkPrivateKeys(newFullLayout, oldFullLayout);
 
+    // TODO may return a promise
     plots.doAutoMargin(gd);
 
     // can't quite figure out how to get rid of this... each axis needs
@@ -41013,7 +41960,7 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
         newSubplots = newFullLayout._plots = {};
 
     var mockGd = {
-        data: newFullData,
+        _fullData: newFullData,
         _fullLayout: newFullLayout
     };
 
@@ -41056,7 +42003,7 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
 
     for(var i = 0; i < dataIn.length; i++) {
         var trace = dataIn[i],
-            fullTrace = plots.supplyTraceDefaults(trace, cnt, fullLayout);
+            fullTrace = plots.supplyTraceDefaults(trace, cnt, fullLayout, i);
 
         fullTrace.index = i;
         fullTrace._input = trace;
@@ -41067,7 +42014,7 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
 
             for(var j = 0; j < expandedTraces.length; j++) {
                 var expandedTrace = expandedTraces[j],
-                    fullExpandedTrace = plots.supplyTraceDefaults(expandedTrace, cnt, fullLayout);
+                    fullExpandedTrace = plots.supplyTraceDefaults(expandedTrace, cnt, fullLayout, i);
 
                 // mutate uid here using parent uid and expanded index
                 // to promote consistency between update calls
@@ -41086,6 +42033,11 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
             }
         }
         else {
+
+            // add identify refs for consistency with transformed traces
+            fullTrace._fullInput = fullTrace;
+            fullTrace._expandedInput = fullTrace;
+
             pushModule(fullTrace);
         }
     }
@@ -41101,6 +42053,8 @@ plots.supplyAnimationDefaults = function(opts) {
     }
 
     coerce('mode');
+    coerce('direction');
+    coerce('fromcurrent');
 
     if(Array.isArray(opts.frame)) {
         optsOut.frame = [];
@@ -41166,9 +42120,9 @@ plots.supplyFrameDefaults = function(frameIn) {
     return frameOut;
 };
 
-plots.supplyTraceDefaults = function(traceIn, traceIndex, layout) {
+plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInIndex) {
     var traceOut = {},
-        defaultColor = Color.defaults[traceIndex % Color.defaults.length];
+        defaultColor = Color.defaults[traceOutIndex % Color.defaults.length];
 
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, plots.attributes, attr, dflt);
@@ -41185,7 +42139,7 @@ plots.supplyTraceDefaults = function(traceIn, traceIndex, layout) {
 
     coerce('type');
     coerce('uid');
-    coerce('name', 'trace ' + traceIndex);
+    coerce('name', 'trace ' + traceInIndex);
 
     // coerce subplot attributes of all registered subplot types
     var subplotTypes = Object.keys(subplotsRegistry);
@@ -41251,6 +42205,7 @@ function supplyTransformDefaults(traceIn, traceOut, layout) {
         if(_module && _module.supplyDefaults) {
             transformOut = _module.supplyDefaults(transformIn, traceOut, layout, traceIn);
             transformOut.type = type;
+            transformOut._module = _module;
         }
         else {
             transformOut = Lib.extendFlat({}, transformIn);
@@ -41298,11 +42253,19 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
         color: globalFont.color
     });
 
-    var autosize = coerce('autosize',
-        (layoutIn.width && layoutIn.height) ? false : 'initial');
+    // Make sure that autosize is defaulted to *true*
+    // on layouts with no set width and height for backward compatibly,
+    // in particular https://plot.ly/javascript/responsive-fluid-layout/
+    //
+    // Before https://github.com/plotly/plotly.js/pull/635 ,
+    // layouts with no set width and height were set temporary set to 'initial'
+    // to pass through the autosize routine
+    //
+    // This behavior is subject to change in v2.
+    coerce('autosize', !(layoutIn.width && layoutIn.height));
+
     coerce('width');
     coerce('height');
-
     coerce('margin.l');
     coerce('margin.r');
     coerce('margin.t');
@@ -41310,8 +42273,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     coerce('margin.pad');
     coerce('margin.autoexpand');
 
-    // called in plotAutoSize otherwise
-    if(autosize !== 'initial') plots.sanitizeMargins(layoutOut);
+    if(layoutIn.width && layoutIn.height) plots.sanitizeMargins(layoutOut);
 
     coerce('paper_bgcolor');
 
@@ -41319,6 +42281,99 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     coerce('hidesources');
     coerce('smith');
 };
+
+plots.plotAutoSize = function plotAutoSize(gd, layout, fullLayout) {
+    var context = gd._context || {},
+        frameMargins = context.frameMargins,
+        newWidth,
+        newHeight;
+
+    var isPlotDiv = Lib.isPlotDiv(gd);
+
+    if(isPlotDiv) gd.emit('plotly_autosize');
+
+    // embedded in an iframe - just take the full iframe size
+    // if we get to this point, with no aspect ratio restrictions
+    if(context.fillFrame) {
+        newWidth = window.innerWidth;
+        newHeight = window.innerHeight;
+
+        // somehow we get a few extra px height sometimes...
+        // just hide it
+        document.body.style.overflow = 'hidden';
+    }
+    else if(isNumeric(frameMargins) && frameMargins > 0) {
+        var reservedMargins = calculateReservedMargins(gd._boundingBoxMargins),
+            reservedWidth = reservedMargins.left + reservedMargins.right,
+            reservedHeight = reservedMargins.bottom + reservedMargins.top,
+            factor = 1 - 2 * frameMargins;
+
+        var gdBB = fullLayout._container && fullLayout._container.node ?
+            fullLayout._container.node().getBoundingClientRect() : {
+                width: fullLayout.width,
+                height: fullLayout.height
+            };
+
+        newWidth = Math.round(factor * (gdBB.width - reservedWidth));
+        newHeight = Math.round(factor * (gdBB.height - reservedHeight));
+    }
+    else {
+        // plotly.js - let the developers do what they want, either
+        // provide height and width for the container div,
+        // specify size in layout, or take the defaults,
+        // but don't enforce any ratio restrictions
+        var computedStyle = isPlotDiv ? window.getComputedStyle(gd) : {};
+
+        newWidth = parseFloat(computedStyle.width) || fullLayout.width;
+        newHeight = parseFloat(computedStyle.height) || fullLayout.height;
+    }
+
+    var minWidth = plots.layoutAttributes.width.min,
+        minHeight = plots.layoutAttributes.height.min;
+    if(newWidth < minWidth) newWidth = minWidth;
+    if(newHeight < minHeight) newHeight = minHeight;
+
+    var widthHasChanged = !layout.width &&
+            (Math.abs(fullLayout.width - newWidth) > 1),
+        heightHasChanged = !layout.height &&
+            (Math.abs(fullLayout.height - newHeight) > 1);
+
+    if(heightHasChanged || widthHasChanged) {
+        if(widthHasChanged) fullLayout.width = newWidth;
+        if(heightHasChanged) fullLayout.height = newHeight;
+    }
+
+    // cache initial autosize value, used in relayout when
+    // width or height values are set to null
+    if(!gd._initialAutoSize) {
+        gd._initialAutoSize = { width: newWidth, height: newHeight };
+    }
+
+    plots.sanitizeMargins(fullLayout);
+};
+
+/**
+ * Reduce all reserved margin objects to a single required margin reservation.
+ *
+ * @param {Object} margins
+ * @returns {{left: number, right: number, bottom: number, top: number}}
+ */
+function calculateReservedMargins(margins) {
+    var resultingMargin = {left: 0, right: 0, bottom: 0, top: 0},
+        marginName;
+
+    if(margins) {
+        for(marginName in margins) {
+            if(margins.hasOwnProperty(marginName)) {
+                resultingMargin.left += margins[marginName].left || 0;
+                resultingMargin.right += margins[marginName].right || 0;
+                resultingMargin.bottom += margins[marginName].bottom || 0;
+                resultingMargin.top += margins[marginName].top || 0;
+            }
+        }
+    }
+    return resultingMargin;
+}
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
     var i, _module;
@@ -41413,6 +42468,7 @@ plots.purge = function(gd) {
     delete gd._lastHoverTime;
     delete gd._transitionData;
     delete gd._transitioning;
+    delete gd._initialAutoSize;
 
     // remove all event listeners
     if(gd.removeAllListeners) gd.removeAllListeners();
@@ -41861,11 +42917,16 @@ plots.extendObjectWithContainers = function(dest, src, containerPaths) {
             for(j = 0; j < srcContainer.length; j++) {
                 destContainer[j] = plots.extendObjectWithContainers(destContainer[j], srcContainer[j]);
             }
+
+            destProp.set(destContainer);
         }
     }
 
     return dest;
 };
+
+plots.dataArrayContainers = ['transforms'];
+plots.layoutArrayContainers = ['annotations', 'shapes', 'images', 'sliders', 'updatemenus'];
 
 /*
  * Extend a trace definition. This method:
@@ -41876,7 +42937,7 @@ plots.extendObjectWithContainers = function(dest, src, containerPaths) {
  * The result is the original object reference with the new contents merged in.
  */
 plots.extendTrace = function(destTrace, srcTrace) {
-    return plots.extendObjectWithContainers(destTrace, srcTrace, ['transforms']);
+    return plots.extendObjectWithContainers(destTrace, srcTrace, plots.dataArrayContainers);
 };
 
 /*
@@ -41889,13 +42950,7 @@ plots.extendTrace = function(destTrace, srcTrace) {
  * The result is the original object reference with the new contents merged in.
  */
 plots.extendLayout = function(destLayout, srcLayout) {
-    return plots.extendObjectWithContainers(destLayout, srcLayout, [
-        'annotations',
-        'shapes',
-        'images',
-        'sliders',
-        'updatemenus'
-    ]);
+    return plots.extendObjectWithContainers(destLayout, srcLayout, plots.layoutArrayContainers);
 };
 
 /**
@@ -41953,7 +43008,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
             delete layoutUpdate[attr].range;
         }
 
-        Lib.extendDeepNoArrays(gd.layout, layoutUpdate);
+        plots.extendLayout(gd.layout, layoutUpdate);
 
         // Supply defaults after applying the incoming properties. Note that any attempt
         // to simplify this step and reduce the amount of work resulted in the reconstruction
@@ -41999,8 +43054,23 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
                 gd._transitioningWithDuration = true;
             }
 
+
+            // If another transition is triggered, this callback will be executed simply because it's
+            // in the interruptCallbacks queue. If this transition completes, it will instead flush
+            // that queue and forget about this callback.
             gd._transitionData._interruptCallbacks.push(function() {
                 aborted = true;
+            });
+
+            if(frameOpts.redraw) {
+                gd._transitionData._interruptCallbacks.push(function() {
+                    return Plotly.redraw(gd);
+                });
+            }
+
+            // Emit this and make sure it happens last:
+            gd._transitionData._interruptCallbacks.push(function() {
+                gd.emit('plotly_transitioninterrupted', []);
             });
 
             // Construct callbacks that are executed on transition end. This ensures the d3 transitions
@@ -42074,14 +43144,11 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
     }
 
     function interruptPreviousTransitions() {
-        gd.emit('plotly_transitioninterrupted', []);
-
         // If a transition is interrupted, set this to false. At the moment, the only thing that would
         // interrupt a transition is another transition, so that it will momentarily be set to true
         // again, but this determines whether autorange or dragbox work, so it's for the sake of
         // cleanliness:
         gd._transitioning = false;
-        gd._transtionWithDuration = false;
 
         return executeCallbacks(gd._transitionData._interruptCallbacks);
     }
@@ -42213,7 +43280,7 @@ plots.doCalcdata = function(gd, traces) {
     }
 };
 
-},{"../components/color":30,"../components/errorbars":59,"../lib":120,"../plotly":142,"../registry":184,"./animation_attributes":143,"./attributes":144,"./font_attributes":165,"./frame_attributes":166,"./layout_attributes":167,"d3":16,"fast-isnumeric":18}],170:[function(require,module,exports){
+},{"../components/color":30,"../components/errorbars":60,"../lib":121,"../plotly":143,"../registry":187,"./animation_attributes":144,"./attributes":145,"./command":167,"./font_attributes":168,"./frame_attributes":169,"./layout_attributes":170,"d3":14,"fast-isnumeric":17}],173:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -42238,7 +43305,7 @@ module.exports = {
     }
 };
 
-},{"../../traces/scatter/attributes":265}],171:[function(require,module,exports){
+},{"../../traces/scatter/attributes":269}],174:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -42353,7 +43420,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":117,"../cartesian/layout_attributes":155}],172:[function(require,module,exports){
+},{"../../lib/extend":118,"../cartesian/layout_attributes":157}],175:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -42368,7 +43435,7 @@ var Polar = module.exports = require('./micropolar');
 
 Polar.manager = require('./micropolar_manager');
 
-},{"./micropolar":173,"./micropolar_manager":174}],173:[function(require,module,exports){
+},{"./micropolar":176,"./micropolar_manager":177}],176:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -43787,7 +44854,7 @@ var µ = module.exports = { version: '0.2.2' };
     return exports;
 };
 
-},{"../../lib":120,"d3":16}],174:[function(require,module,exports){
+},{"../../lib":121,"d3":14}],177:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -43873,7 +44940,7 @@ manager.fillLayout = function(_gd) {
     _gd._fullLayout = extendDeepAll(dflts, _gd.layout);
 };
 
-},{"../../components/color":30,"../../lib":120,"./micropolar":173,"./undo_manager":175,"d3":16}],175:[function(require,module,exports){
+},{"../../components/color":30,"../../lib":121,"./micropolar":176,"./undo_manager":178,"d3":14}],178:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -43939,7 +45006,7 @@ module.exports = function UndoManager() {
     };
 };
 
-},{}],176:[function(require,module,exports){
+},{}],179:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -44014,7 +45081,7 @@ module.exports = function handleSubplotDefaults(layoutIn, layoutOut, fullData, o
     }
 };
 
-},{"../lib":120,"./plots":169}],177:[function(require,module,exports){
+},{"../lib":121,"./plots":172}],180:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -44088,7 +45155,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     }
 };
 
-},{"../../plots/plots":169,"./layout/attributes":178,"./layout/defaults":181,"./layout/layout_attributes":182,"./ternary":183}],178:[function(require,module,exports){
+},{"../../plots/plots":172,"./layout/attributes":181,"./layout/defaults":184,"./layout/layout_attributes":185,"./ternary":186}],181:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -44109,7 +45176,7 @@ module.exports = {
     }
 };
 
-},{}],179:[function(require,module,exports){
+},{}],182:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -44169,7 +45236,7 @@ module.exports = {
     }
 };
 
-},{"../../../lib/extend":117,"../../cartesian/layout_attributes":155}],180:[function(require,module,exports){
+},{"../../../lib/extend":118,"../../cartesian/layout_attributes":157}],183:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -44253,7 +45320,7 @@ module.exports = function supplyLayoutDefaults(containerIn, containerOut, option
     }
 };
 
-},{"../../../lib":120,"../../cartesian/tick_label_defaults":161,"../../cartesian/tick_mark_defaults":162,"../../cartesian/tick_value_defaults":163,"./axis_attributes":179,"tinycolor2":20}],181:[function(require,module,exports){
+},{"../../../lib":121,"../../cartesian/tick_label_defaults":163,"../../cartesian/tick_mark_defaults":164,"../../cartesian/tick_value_defaults":165,"./axis_attributes":182,"tinycolor2":20}],184:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -44316,7 +45383,7 @@ function handleTernaryDefaults(ternaryLayoutIn, ternaryLayoutOut, coerce, option
     }
 }
 
-},{"../../../components/color":30,"../../subplot_defaults":176,"./axis_defaults":180,"./layout_attributes":182}],182:[function(require,module,exports){
+},{"../../../components/color":30,"../../subplot_defaults":179,"./axis_defaults":183,"./layout_attributes":185}],185:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -44372,7 +45439,7 @@ module.exports = {
     caxis: ternaryAxesAttrs
 };
 
-},{"../../../components/color/attributes":29,"./axis_attributes":179}],183:[function(require,module,exports){
+},{"../../../components/color/attributes":29,"./axis_attributes":182}],186:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -45062,7 +46129,7 @@ function removeZoombox(gd) {
         .remove();
 }
 
-},{"../../components/color":30,"../../components/dragelement":51,"../../components/drawing":53,"../../components/titles":104,"../../lib":120,"../../lib/extend":117,"../../lib/filter_visible":119,"../../plotly":142,"../cartesian/axes":146,"../cartesian/constants":151,"../cartesian/graph_interact":153,"../cartesian/select":159,"../cartesian/set_convert":160,"d3":16,"tinycolor2":20}],184:[function(require,module,exports){
+},{"../../components/color":30,"../../components/dragelement":52,"../../components/drawing":54,"../../components/titles":105,"../../lib":121,"../../lib/extend":118,"../../lib/filter_visible":120,"../../plotly":143,"../cartesian/axes":147,"../cartesian/constants":153,"../cartesian/graph_interact":155,"../cartesian/select":161,"../cartesian/set_convert":162,"d3":14,"tinycolor2":20}],187:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -45219,7 +46286,7 @@ function getTraceType(traceType) {
     return traceType;
 }
 
-},{"./lib":120,"./plots/attributes":144}],185:[function(require,module,exports){
+},{"./lib":121,"./plots/attributes":145}],188:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -45376,7 +46443,7 @@ module.exports = function clonePlot(graphObj, options) {
     return plotTile;
 };
 
-},{"../lib":120,"../plots/plots":169}],186:[function(require,module,exports){
+},{"../lib":121,"../plots/plots":172}],189:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -45442,7 +46509,7 @@ function downloadImage(gd, opts) {
 
 module.exports = downloadImage;
 
-},{"../lib":120,"../plot_api/to_image":140,"./filesaver":187}],187:[function(require,module,exports){
+},{"../lib":121,"../plot_api/to_image":141,"./filesaver":190}],190:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -45510,7 +46577,7 @@ var fileSaver = function(url, name) {
 
 module.exports = fileSaver;
 
-},{}],188:[function(require,module,exports){
+},{}],191:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -45543,7 +46610,7 @@ exports.getRedrawFunc = function(gd) {
     };
 };
 
-},{}],189:[function(require,module,exports){
+},{}],192:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -45569,7 +46636,7 @@ var Snapshot = {
 
 module.exports = Snapshot;
 
-},{"./cloneplot":185,"./download":186,"./helpers":188,"./svgtoimg":190,"./toimage":191,"./tosvg":192}],190:[function(require,module,exports){
+},{"./cloneplot":188,"./download":189,"./helpers":191,"./svgtoimg":193,"./toimage":194,"./tosvg":195}],193:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -45700,7 +46767,7 @@ function svgToImg(opts) {
 
 module.exports = svgToImg;
 
-},{"../lib":120,"events":14}],191:[function(require,module,exports){
+},{"../lib":121,"events":16}],194:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -45780,7 +46847,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":120,"../plotly":142,"./cloneplot":185,"./helpers":188,"./svgtoimg":190,"./tosvg":192,"events":14}],192:[function(require,module,exports){
+},{"../lib":121,"../plotly":143,"./cloneplot":188,"./helpers":191,"./svgtoimg":193,"./tosvg":195,"events":16}],195:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -45899,7 +46966,7 @@ module.exports = function toSVG(gd, format) {
     return s;
 };
 
-},{"../components/color":30,"../components/drawing":53,"../constants/xmlns_namespaces":111,"../lib/svg_text_utils":132,"d3":16}],193:[function(require,module,exports){
+},{"../components/color":30,"../components/drawing":54,"../constants/xmlns_namespaces":112,"../lib/svg_text_utils":133,"d3":14}],196:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -45931,7 +46998,7 @@ module.exports = function arraysToCalcdata(cd) {
     }
 };
 
-},{"../../lib":120}],194:[function(require,module,exports){
+},{"../../lib":121}],197:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -45978,6 +47045,31 @@ module.exports = {
         
     },
 
+    base: {
+        valType: 'any',
+        dflt: null,
+        arrayOk: true,
+        
+        
+    },
+
+    offset: {
+        valType: 'number',
+        dflt: null,
+        arrayOk: true,
+        
+        
+    },
+
+    width: {
+        valType: 'number',
+        dflt: null,
+        min: 0,
+        arrayOk: true,
+        
+        
+    },
+
     marker: marker,
 
     r: scatterAttrs.r,
@@ -45999,7 +47091,7 @@ module.exports = {
     }
 };
 
-},{"../../components/colorscale/color_attributes":38,"../../lib/extend":117,"../scatter/attributes":265}],195:[function(require,module,exports){
+},{"../../components/colorscale/color_attributes":38,"../../lib/extend":118,"../scatter/attributes":269}],198:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -46027,13 +47119,15 @@ module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
         ya = Axes.getFromId(gd, trace.yaxis || 'y'),
         orientation = trace.orientation || ((trace.x && !trace.y) ? 'h' : 'v'),
-        pos, size, i;
+        sa, pos, size, i;
 
     if(orientation === 'h') {
+        sa = xa;
         size = xa.makeCalcdata(trace, 'x');
         pos = ya.makeCalcdata(trace, 'y');
     }
     else {
+        sa = ya;
         size = ya.makeCalcdata(trace, 'y');
         pos = xa.makeCalcdata(trace, 'x');
     }
@@ -46042,6 +47136,7 @@ module.exports = function calc(gd, trace) {
     var serieslen = Math.min(pos.length, size.length),
         cd = [];
 
+    // set position
     for(i = 0; i < serieslen; i++) {
 
         // add bars with non-numeric sizes to calcdata
@@ -46049,7 +47144,35 @@ module.exports = function calc(gd, trace) {
         // plotted in the correct order
 
         if(isNumeric(pos[i])) {
-            cd.push({p: pos[i], s: size[i], b: 0});
+            cd.push({p: pos[i]});
+        }
+    }
+
+    // set base
+    var base = trace.base,
+        b;
+
+    if(Array.isArray(base)) {
+        for(i = 0; i < Math.min(base.length, cd.length); i++) {
+            b = sa.d2c(base[i]);
+            cd[i].b = (isNumeric(b)) ? b : 0;
+        }
+        for(; i < cd.length; i++) {
+            cd[i].b = 0;
+        }
+    }
+    else {
+        b = sa.d2c(base);
+        b = (isNumeric(b)) ? b : 0;
+        for(i = 0; i < cd.length; i++) {
+            cd[i].b = b;
+        }
+    }
+
+    // set size
+    for(i = 0; i < cd.length; i++) {
+        if(isNumeric(size[i])) {
+            cd[i].s = size[i];
         }
     }
 
@@ -46064,7 +47187,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../../components/colorscale/calc":37,"../../components/colorscale/has_colorscale":43,"../../plots/cartesian/axes":146,"fast-isnumeric":18}],196:[function(require,module,exports){
+},{"../../components/colorscale/calc":37,"../../components/colorscale/has_colorscale":44,"../../plots/cartesian/axes":147,"fast-isnumeric":17}],199:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -46097,6 +47220,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
+    coerce('base');
+    coerce('offset');
+    coerce('width');
     coerce('text');
 
     handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
@@ -46106,7 +47232,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'x', inherit: 'y'});
 };
 
-},{"../../components/color":30,"../../components/errorbars/defaults":58,"../../lib":120,"../bar/style_defaults":204,"../scatter/xy_defaults":287,"./attributes":194}],197:[function(require,module,exports){
+},{"../../components/color":30,"../../components/errorbars/defaults":59,"../../lib":121,"../bar/style_defaults":208,"../scatter/xy_defaults":291,"./attributes":197}],200:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -46130,7 +47256,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         xa = pointData.xa,
         ya = pointData.ya,
         barDelta = (hovermode === 'closest') ?
-            t.barwidth / 2 : t.dbar * (1 - xa._gd._fullLayout.bargap) / 2,
+            t.barwidth / 2 :
+            t.bargroupwidth,
         barPos;
 
     if(hovermode !== 'closest') barPos = function(di) { return di.p; };
@@ -46197,7 +47324,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     return [pointData];
 };
 
-},{"../../components/color":30,"../../components/errorbars":59,"../../plots/cartesian/graph_interact":153}],198:[function(require,module,exports){
+},{"../../components/color":30,"../../components/errorbars":60,"../../plots/cartesian/graph_interact":155}],201:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -46233,7 +47360,7 @@ Bar.meta = {
 
 module.exports = Bar;
 
-},{"../../plots/cartesian":154,"../scatter/colorbar":268,"./arrays_to_calcdata":193,"./attributes":194,"./calc":195,"./defaults":196,"./hover":197,"./layout_attributes":199,"./layout_defaults":200,"./plot":201,"./set_positions":202,"./style":203}],199:[function(require,module,exports){
+},{"../../plots/cartesian":156,"../scatter/colorbar":272,"./arrays_to_calcdata":196,"./attributes":197,"./calc":198,"./defaults":199,"./hover":200,"./layout_attributes":202,"./layout_defaults":203,"./plot":204,"./set_positions":205,"./style":207}],202:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -46277,7 +47404,7 @@ module.exports = {
     }
 };
 
-},{}],200:[function(require,module,exports){
+},{}],203:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -46335,7 +47462,7 @@ module.exports = function(layoutIn, layoutOut, fullData) {
     coerce('bargroupgap');
 };
 
-},{"../../lib":120,"../../plots/cartesian/axes":146,"../../registry":184,"./layout_attributes":199}],201:[function(require,module,exports){
+},{"../../lib":121,"../../plots/cartesian/axes":147,"../../registry":187,"./layout_attributes":202}],204:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -46372,30 +47499,39 @@ module.exports = function plot(gd, plotinfo, cdbar) {
         .attr('class', 'points')
         .each(function(d) {
             var t = d[0].t,
-                trace = d[0].trace;
+                trace = d[0].trace,
+                poffset = t.poffset,
+                poffsetIsArray = Array.isArray(poffset),
+                barwidth = t.barwidth,
+                barwidthIsArray = Array.isArray(barwidth);
 
             arraysToCalcdata(d);
 
             d3.select(this).selectAll('path')
                 .data(Lib.identity)
               .enter().append('path')
-                .each(function(di) {
+                .each(function(di, i) {
                     // now display the bar
                     // clipped xf/yf (2nd arg true): non-positive
                     // log values go off-screen by plotwidth
                     // so you see them continue if you drag the plot
+                    var p0 = di.p + ((poffsetIsArray) ? poffset[i] : poffset),
+                        p1 = p0 + ((barwidthIsArray) ? barwidth[i] : barwidth),
+                        s0 = di.b,
+                        s1 = s0 + di.s;
+
                     var x0, x1, y0, y1;
                     if(trace.orientation === 'h') {
-                        y0 = ya.c2p(t.poffset + di.p, true);
-                        y1 = ya.c2p(t.poffset + di.p + t.barwidth, true);
-                        x0 = xa.c2p(di.b, true);
-                        x1 = xa.c2p(di.s + di.b, true);
+                        y0 = ya.c2p(p0, true);
+                        y1 = ya.c2p(p1, true);
+                        x0 = xa.c2p(s0, true);
+                        x1 = xa.c2p(s1, true);
                     }
                     else {
-                        x0 = xa.c2p(t.poffset + di.p, true);
-                        x1 = xa.c2p(t.poffset + di.p + t.barwidth, true);
-                        y1 = ya.c2p(di.s + di.b, true);
-                        y0 = ya.c2p(di.b, true);
+                        x0 = xa.c2p(p0, true);
+                        x1 = xa.c2p(p1, true);
+                        y0 = ya.c2p(s0, true);
+                        y1 = ya.c2p(s1, true);
                     }
 
                     if(!isNumeric(x0) || !isNumeric(x1) ||
@@ -46447,7 +47583,7 @@ module.exports = function plot(gd, plotinfo, cdbar) {
 
 };
 
-},{"../../components/color":30,"../../components/errorbars":59,"../../lib":120,"./arrays_to_calcdata":193,"d3":16,"fast-isnumeric":18}],202:[function(require,module,exports){
+},{"../../components/color":30,"../../components/errorbars":60,"../../lib":121,"./arrays_to_calcdata":196,"d3":14,"fast-isnumeric":17}],205:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -46463,7 +47599,7 @@ var isNumeric = require('fast-isnumeric');
 
 var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
-var Lib = require('../../lib');
+var Sieve = require('./sieve.js');
 
 /*
  * Bar chart stacking/grouping positioning and autoscaling calculations
@@ -46473,212 +47609,678 @@ var Lib = require('../../lib');
  */
 
 module.exports = function setPositions(gd, plotinfo) {
-    var fullLayout = gd._fullLayout,
-        xa = plotinfo.xaxis,
-        ya = plotinfo.yaxis,
-        i, j;
+    var xa = plotinfo.xaxis,
+        ya = plotinfo.yaxis;
 
-    ['v', 'h'].forEach(function(dir) {
-        var bl = [],
-            pLetter = {v: 'x', h: 'y'}[dir],
-            sLetter = {v: 'y', h: 'x'}[dir],
-            pa = plotinfo[pLetter + 'axis'],
-            sa = plotinfo[sLetter + 'axis'];
-
-        gd._fullData.forEach(function(trace, i) {
-            if(trace.visible === true &&
-                    Registry.traceIs(trace, 'bar') &&
-                    trace.orientation === dir &&
-                    trace.xaxis === xa._id &&
-                    trace.yaxis === ya._id) {
-                bl.push(i);
+    var fullTraces = gd._fullData,
+        calcTraces = gd.calcdata,
+        calcTracesHorizontal = [],
+        calcTracesVertical = [],
+        i;
+    for(i = 0; i < fullTraces.length; i++) {
+        var fullTrace = fullTraces[i];
+        if(
+            fullTrace.visible === true &&
+            Registry.traceIs(fullTrace, 'bar') &&
+            fullTrace.xaxis === xa._id &&
+            fullTrace.yaxis === ya._id
+        ) {
+            if(fullTrace.orientation === 'h') {
+                calcTracesHorizontal.push(calcTraces[i]);
             }
-        });
-
-        if(!bl.length) return;
-
-        // bar position offset and width calculation
-        // bl1 is a list of traces (in calcdata) to look at together
-        // to find the maximum size bars that won't overlap
-        // for stacked or grouped bars, this is all vertical or horizontal
-        // bars for overlaid bars, call this individually on each trace.
-        function barposition(bl1) {
-            // find the min. difference between any points
-            // in any traces in bl1
-            var pvals = [];
-            bl1.forEach(function(i) {
-                gd.calcdata[i].forEach(function(v) { pvals.push(v.p); });
-            });
-            var dv = Lib.distinctVals(pvals),
-                pv2 = dv.vals,
-                barDiff = dv.minDiff;
-
-            // check if all the traces have only independent positions
-            // if so, let them have full width even if mode is group
-            var overlap = false,
-                comparelist = [];
-
-            if(fullLayout.barmode === 'group') {
-                bl1.forEach(function(i) {
-                    if(overlap) return;
-                    gd.calcdata[i].forEach(function(v) {
-                        if(overlap) return;
-                        comparelist.forEach(function(cp) {
-                            if(Math.abs(v.p - cp) < barDiff) overlap = true;
-                        });
-                    });
-                    if(overlap) return;
-                    gd.calcdata[i].forEach(function(v) {
-                        comparelist.push(v.p);
-                    });
-                });
-            }
-
-            // check forced minimum dtick
-            Axes.minDtick(pa, barDiff, pv2[0], overlap);
-
-            // position axis autorange - always tight fitting
-            Axes.expand(pa, pv2, {vpad: barDiff / 2});
-
-            // bar widths and position offsets
-            barDiff *= 1 - fullLayout.bargap;
-            if(overlap) barDiff /= bl.length;
-
-            var barCenter;
-            function setBarCenter(v) { v[pLetter] = v.p + barCenter; }
-
-            for(var i = 0; i < bl1.length; i++) {
-                var t = gd.calcdata[bl1[i]][0].t;
-                t.barwidth = barDiff * (1 - fullLayout.bargroupgap);
-                t.poffset = ((overlap ? (2 * i + 1 - bl1.length) * barDiff : 0) -
-                    t.barwidth) / 2;
-                t.dbar = dv.minDiff;
-
-                // store the bar center in each calcdata item
-                barCenter = t.poffset + t.barwidth / 2;
-                gd.calcdata[bl1[i]].forEach(setBarCenter);
+            else {
+                calcTracesVertical.push(calcTraces[i]);
             }
         }
+    }
 
-        if(fullLayout.barmode === 'overlay') {
-            bl.forEach(function(bli) { barposition([bli]); });
-        }
-        else barposition(bl);
-
-        var stack = (fullLayout.barmode === 'stack'),
-            relative = (fullLayout.barmode === 'relative'),
-            norm = fullLayout.barnorm;
-
-        // bar size range and stacking calculation
-        if(stack || relative || norm) {
-            // for stacked bars, we need to evaluate every step in every
-            // stack, because negative bars mean the extremes could be
-            // anywhere
-            // also stores the base (b) of each bar in calcdata
-            // so we don't have to redo this later
-            var sMax = sa.l2c(sa.c2l(0)),
-                sMin = sMax,
-                sums = {},
-
-                // make sure if p is different only by rounding,
-                // we still stack
-                sumround = gd.calcdata[bl[0]][0].t.barwidth / 100,
-                sv = 0,
-                padded = true,
-                barEnd,
-                ti,
-                scale;
-
-            for(i = 0; i < bl.length; i++) { // trace index
-                ti = gd.calcdata[bl[i]];
-                for(j = 0; j < ti.length; j++) {
-
-                    // skip over bars with no size,
-                    // so that we don't try to stack them
-                    if(!isNumeric(ti[j].s)) continue;
-
-                    sv = Math.round(ti[j].p / sumround);
-
-                    // store the negative sum value for p at the same key,
-                    // with sign flipped using string to ensure -0 !== 0.
-                    if(relative && ti[j].s < 0) sv = '-' + sv;
-
-                    var previousSum = sums[sv] || 0;
-                    if(stack || relative) ti[j].b = previousSum;
-                    barEnd = ti[j].b + ti[j].s;
-                    sums[sv] = previousSum + ti[j].s;
-
-                    // store the bar top in each calcdata item
-                    if(stack || relative) {
-                        ti[j][sLetter] = barEnd;
-                        if(!norm && isNumeric(sa.c2l(barEnd))) {
-                            sMax = Math.max(sMax, barEnd);
-                            sMin = Math.min(sMin, barEnd);
-                        }
-                    }
-                }
-            }
-
-            if(norm) {
-                var top = norm === 'fraction' ? 1 : 100,
-                    relAndNegative = false,
-                    tiny = top / 1e9; // in case of rounding error in sum
-
-                padded = false;
-                sMin = 0;
-                sMax = stack ? top : 0;
-
-                for(i = 0; i < bl.length; i++) { // trace index
-                    ti = gd.calcdata[bl[i]];
-
-                    for(j = 0; j < ti.length; j++) {
-                        relAndNegative = (relative && ti[j].s < 0);
-
-                        sv = Math.round(ti[j].p / sumround);
-
-                        // locate negative sum amount for this p val
-                        if(relAndNegative) sv = '-' + sv;
-
-                        scale = top / sums[sv];
-
-                        // preserve sign if negative
-                        if(relAndNegative) scale *= -1;
-                        ti[j].b *= scale;
-                        ti[j].s *= scale;
-                        barEnd = ti[j].b + ti[j].s;
-                        ti[j][sLetter] = barEnd;
-
-                        if(isNumeric(sa.c2l(barEnd))) {
-                            if(barEnd < sMin - tiny) {
-                                padded = true;
-                                sMin = barEnd;
-                            }
-                            if(barEnd > sMax + tiny) {
-                                padded = true;
-                                sMax = barEnd;
-                            }
-                        }
-                    }
-                }
-            }
-
-            Axes.expand(sa, [sMin, sMax], {tozero: true, padded: padded});
-        }
-        else {
-            // for grouped or overlaid bars, just make sure zero is
-            // included, along with the tops of each bar, and store
-            // these bar tops in calcdata
-            var fs = function(v) { v[sLetter] = v.s; return v.s; };
-
-            for(i = 0; i < bl.length; i++) {
-                Axes.expand(sa, gd.calcdata[bl[i]].map(fs),
-                    {tozero: true, padded: true});
-            }
-        }
-    });
+    setGroupPositions(gd, xa, ya, calcTracesVertical);
+    setGroupPositions(gd, ya, xa, calcTracesHorizontal);
 };
 
-},{"../../lib":120,"../../plots/cartesian/axes":146,"../../registry":184,"fast-isnumeric":18}],203:[function(require,module,exports){
+
+function setGroupPositions(gd, pa, sa, calcTraces) {
+    if(!calcTraces.length) return;
+
+    var barmode = gd._fullLayout.barmode,
+        overlay = (barmode === 'overlay'),
+        group = (barmode === 'group'),
+        excluded,
+        included,
+        i, calcTrace, fullTrace;
+
+    if(overlay) {
+        setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces);
+    }
+    else if(group) {
+        // exclude from the group those traces for which the user set an offset
+        excluded = [];
+        included = [];
+        for(i = 0; i < calcTraces.length; i++) {
+            calcTrace = calcTraces[i];
+            fullTrace = calcTrace[0].trace;
+
+            if(fullTrace.offset === undefined) included.push(calcTrace);
+            else excluded.push(calcTrace);
+        }
+
+        if(included.length) {
+            setGroupPositionsInGroupMode(gd, pa, sa, included);
+        }
+        if(excluded.length) {
+            setGroupPositionsInOverlayMode(gd, pa, sa, excluded);
+        }
+    }
+    else {
+        // exclude from the stack those traces for which the user set a base
+        excluded = [];
+        included = [];
+        for(i = 0; i < calcTraces.length; i++) {
+            calcTrace = calcTraces[i];
+            fullTrace = calcTrace[0].trace;
+
+            if(fullTrace.base === undefined) included.push(calcTrace);
+            else excluded.push(calcTrace);
+        }
+
+        if(included.length) {
+            setGroupPositionsInStackOrRelativeMode(gd, pa, sa, included);
+        }
+        if(excluded.length) {
+            setGroupPositionsInOverlayMode(gd, pa, sa, excluded);
+        }
+    }
+}
+
+
+function setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces) {
+    var barnorm = gd._fullLayout.barnorm,
+        separateNegativeValues = false,
+        dontMergeOverlappingData = !barnorm;
+
+    // update position axis and set bar offsets and widths
+    for(var i = 0; i < calcTraces.length; i++) {
+        var calcTrace = calcTraces[i];
+
+        var sieve = new Sieve(
+            [calcTrace], separateNegativeValues, dontMergeOverlappingData
+        );
+
+        // set bar offsets and widths, and update position axis
+        setOffsetAndWidth(gd, pa, sieve);
+
+        // set bar bases and sizes, and update size axis
+        //
+        // (note that `setGroupPositionsInOverlayMode` handles the case barnorm
+        // is defined, because this function is also invoked for traces that
+        // can't be grouped or stacked)
+        if(barnorm) {
+            sieveBars(gd, sa, sieve);
+            normalizeBars(gd, sa, sieve);
+        }
+        else {
+            setBaseAndTop(gd, sa, sieve);
+        }
+    }
+}
+
+
+function setGroupPositionsInGroupMode(gd, pa, sa, calcTraces) {
+    var fullLayout = gd._fullLayout,
+        barnorm = fullLayout.barnorm,
+        separateNegativeValues = false,
+        dontMergeOverlappingData = !barnorm,
+        sieve = new Sieve(
+                calcTraces, separateNegativeValues, dontMergeOverlappingData
+            );
+
+    // set bar offsets and widths, and update position axis
+    setOffsetAndWidthInGroupMode(gd, pa, sieve);
+
+    // set bar bases and sizes, and update size axis
+    if(barnorm) {
+        sieveBars(gd, sa, sieve);
+        normalizeBars(gd, sa, sieve);
+    }
+    else {
+        setBaseAndTop(gd, sa, sieve);
+    }
+}
+
+
+function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces) {
+    var fullLayout = gd._fullLayout,
+        barmode = fullLayout.barmode,
+        stack = (barmode === 'stack'),
+        relative = (barmode === 'relative'),
+        barnorm = gd._fullLayout.barnorm,
+        separateNegativeValues = relative,
+        dontMergeOverlappingData = !(barnorm || stack || relative),
+        sieve = new Sieve(
+                calcTraces, separateNegativeValues, dontMergeOverlappingData
+            );
+
+    // set bar offsets and widths, and update position axis
+    setOffsetAndWidth(gd, pa, sieve);
+
+    // set bar bases and sizes, and update size axis
+    stackBars(gd, sa, sieve);
+}
+
+
+function setOffsetAndWidth(gd, pa, sieve) {
+    var fullLayout = gd._fullLayout,
+        bargap = fullLayout.bargap,
+        bargroupgap = fullLayout.bargroupgap,
+        minDiff = sieve.minDiff,
+        calcTraces = sieve.traces,
+        i, calcTrace, calcTrace0,
+        t;
+
+    // set bar offsets and widths
+    var barGroupWidth = minDiff * (1 - bargap),
+        barWidthPlusGap = barGroupWidth,
+        barWidth = barWidthPlusGap * (1 - bargroupgap);
+
+    // computer bar group center and bar offset
+    var offsetFromCenter = -barWidth / 2;
+
+    for(i = 0; i < calcTraces.length; i++) {
+        calcTrace = calcTraces[i];
+        calcTrace0 = calcTrace[0];
+
+        // store bar width and offset for this trace
+        t = calcTrace0.t;
+        t.barwidth = barWidth;
+        t.poffset = offsetFromCenter;
+        t.bargroupwidth = barGroupWidth;
+    }
+
+    // stack bars that only differ by rounding
+    sieve.binWidth = calcTraces[0][0].t.barwidth / 100;
+
+    // if defined, apply trace offset and width
+    applyAttributes(sieve);
+
+    // store the bar center in each calcdata item
+    setBarCenter(gd, pa, sieve);
+
+    // update position axes
+    updatePositionAxis(gd, pa, sieve);
+}
+
+
+function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
+    var fullLayout = gd._fullLayout,
+        bargap = fullLayout.bargap,
+        bargroupgap = fullLayout.bargroupgap,
+        positions = sieve.positions,
+        distinctPositions = sieve.distinctPositions,
+        minDiff = sieve.minDiff,
+        calcTraces = sieve.traces,
+        i, calcTrace, calcTrace0,
+        t;
+
+    // if there aren't any overlapping positions,
+    // let them have full width even if mode is group
+    var overlap = (positions.length !== distinctPositions.length);
+
+    var nTraces = calcTraces.length,
+        barGroupWidth = minDiff * (1 - bargap),
+        barWidthPlusGap = (overlap) ? barGroupWidth / nTraces : barGroupWidth,
+        barWidth = barWidthPlusGap * (1 - bargroupgap);
+
+    for(i = 0; i < nTraces; i++) {
+        calcTrace = calcTraces[i];
+        calcTrace0 = calcTrace[0];
+
+        // computer bar group center and bar offset
+        var offsetFromCenter = (overlap) ?
+                ((2 * i + 1 - nTraces) * barWidthPlusGap - barWidth) / 2 :
+                -barWidth / 2;
+
+        // store bar width and offset for this trace
+        t = calcTrace0.t;
+        t.barwidth = barWidth;
+        t.poffset = offsetFromCenter;
+        t.bargroupwidth = barGroupWidth;
+    }
+
+    // stack bars that only differ by rounding
+    sieve.binWidth = calcTraces[0][0].t.barwidth / 100;
+
+    // if defined, apply trace width
+    applyAttributes(sieve);
+
+    // store the bar center in each calcdata item
+    setBarCenter(gd, pa, sieve);
+
+    // update position axes
+    updatePositionAxis(gd, pa, sieve, overlap);
+}
+
+
+function applyAttributes(sieve) {
+    var calcTraces = sieve.traces,
+        i, calcTrace, calcTrace0, fullTrace,
+        j,
+        t;
+
+    for(i = 0; i < calcTraces.length; i++) {
+        calcTrace = calcTraces[i];
+        calcTrace0 = calcTrace[0];
+        fullTrace = calcTrace0.trace;
+        t = calcTrace0.t;
+
+        var offset = fullTrace.offset,
+            initialPoffset = t.poffset,
+            newPoffset;
+
+        if(Array.isArray(offset)) {
+            // if offset is an array, then clone it into t.poffset.
+            newPoffset = offset.slice(0, calcTrace.length);
+
+            // guard against non-numeric items
+            for(j = 0; j < newPoffset.length; j++) {
+                if(!isNumeric(newPoffset[j])) {
+                    newPoffset[j] = initialPoffset;
+                }
+            }
+
+            // if the length of the array is too short,
+            // then extend it with the initial value of t.poffset
+            for(j = newPoffset.length; j < calcTrace.length; j++) {
+                newPoffset.push(initialPoffset);
+            }
+
+            t.poffset = newPoffset;
+        }
+        else if(offset !== undefined) {
+            t.poffset = offset;
+        }
+
+        var width = fullTrace.width,
+            initialBarwidth = t.barwidth;
+
+        if(Array.isArray(width)) {
+            // if width is an array, then clone it into t.barwidth.
+            var newBarwidth = width.slice(0, calcTrace.length);
+
+            // guard against non-numeric items
+            for(j = 0; j < newBarwidth.length; j++) {
+                if(!isNumeric(newBarwidth[j])) newBarwidth[j] = initialBarwidth;
+            }
+
+            // if the length of the array is too short,
+            // then extend it with the initial value of t.barwidth
+            for(j = newBarwidth.length; j < calcTrace.length; j++) {
+                newBarwidth.push(initialBarwidth);
+            }
+
+            t.barwidth = newBarwidth;
+
+            // if user didn't set offset,
+            // then correct t.poffset to ensure bars remain centered
+            if(offset === undefined) {
+                newPoffset = [];
+                for(j = 0; j < calcTrace.length; j++) {
+                    newPoffset.push(
+                        initialPoffset + (initialBarwidth - newBarwidth[j]) / 2
+                    );
+                }
+                t.poffset = newPoffset;
+            }
+        }
+        else if(width !== undefined) {
+            t.barwidth = width;
+
+            // if user didn't set offset,
+            // then correct t.poffset to ensure bars remain centered
+            if(offset === undefined) {
+                t.poffset = initialPoffset + (initialBarwidth - width) / 2;
+            }
+        }
+    }
+}
+
+
+function setBarCenter(gd, pa, sieve) {
+    var calcTraces = sieve.traces,
+        pLetter = getAxisLetter(pa);
+
+    for(var i = 0; i < calcTraces.length; i++) {
+        var calcTrace = calcTraces[i],
+            t = calcTrace[0].t,
+            poffset = t.poffset,
+            poffsetIsArray = Array.isArray(poffset),
+            barwidth = t.barwidth,
+            barwidthIsArray = Array.isArray(barwidth);
+
+        for(var j = 0; j < calcTrace.length; j++) {
+            var calcBar = calcTrace[j];
+
+            calcBar[pLetter] = calcBar.p +
+                ((poffsetIsArray) ? poffset[j] : poffset) +
+                ((barwidthIsArray) ? barwidth[j] : barwidth) / 2;
+        }
+    }
+}
+
+
+function updatePositionAxis(gd, pa, sieve, allowMinDtick) {
+    var calcTraces = sieve.traces,
+        distinctPositions = sieve.distinctPositions,
+        distinctPositions0 = distinctPositions[0],
+        minDiff = sieve.minDiff,
+        vpad = minDiff / 2;
+
+    Axes.minDtick(pa, minDiff, distinctPositions0, allowMinDtick);
+
+    // If the user set the bar width or the offset,
+    // then bars can be shifted away from their positions
+    // and widths can be larger than minDiff.
+    //
+    // Here, we compute pMin and pMax to expand the position axis,
+    // so that all bars are fully within the axis range.
+    var pMin = Math.min.apply(Math, distinctPositions) - vpad,
+        pMax = Math.max.apply(Math, distinctPositions) + vpad;
+
+    for(var i = 0; i < calcTraces.length; i++) {
+        var calcTrace = calcTraces[i],
+            calcTrace0 = calcTrace[0],
+            fullTrace = calcTrace0.trace;
+
+        if(fullTrace.width === undefined && fullTrace.offset === undefined) {
+            continue;
+        }
+
+        var t = calcTrace0.t,
+            poffset = t.poffset,
+            barwidth = t.barwidth,
+            poffsetIsArray = Array.isArray(poffset),
+            barwidthIsArray = Array.isArray(barwidth);
+
+        for(var j = 0; j < calcTrace.length; j++) {
+            var calcBar = calcTrace[j],
+                calcBarOffset = (poffsetIsArray) ? poffset[j] : poffset,
+                calcBarWidth = (barwidthIsArray) ? barwidth[j] : barwidth,
+                p = calcBar.p,
+                l = p + calcBarOffset,
+                r = l + calcBarWidth;
+
+            pMin = Math.min(pMin, l);
+            pMax = Math.max(pMax, r);
+        }
+    }
+
+    Axes.expand(pa, [pMin, pMax], {padded: false});
+}
+
+
+function setBaseAndTop(gd, sa, sieve) {
+    // store these bar bases and tops in calcdata
+    // and make sure the size axis includes zero,
+    // along with the bases and tops of each bar.
+    var traces = sieve.traces,
+        sLetter = getAxisLetter(sa),
+        sMax = sa.l2c(sa.c2l(0)),
+        sMin = sMax;
+
+    for(var i = 0; i < traces.length; i++) {
+        var trace = traces[i];
+
+        for(var j = 0; j < trace.length; j++) {
+            var bar = trace[j],
+                barBase = bar.b,
+                barTop = barBase + bar.s;
+
+            bar[sLetter] = barTop;
+
+            if(isNumeric(sa.c2l(barTop))) {
+                sMax = Math.max(sMax, barTop);
+                sMin = Math.min(sMin, barTop);
+            }
+            if(isNumeric(sa.c2l(barBase))) {
+                sMax = Math.max(sMax, barBase);
+                sMin = Math.min(sMin, barBase);
+            }
+        }
+    }
+
+    Axes.expand(sa, [sMin, sMax], {tozero: true, padded: true});
+}
+
+
+function stackBars(gd, sa, sieve) {
+    var fullLayout = gd._fullLayout,
+        barnorm = fullLayout.barnorm,
+        sLetter = getAxisLetter(sa),
+        traces = sieve.traces,
+        i, trace,
+        j, bar;
+
+    var sMax = sa.l2c(sa.c2l(0)),
+        sMin = sMax;
+
+    for(i = 0; i < traces.length; i++) {
+        trace = traces[i];
+
+        for(j = 0; j < trace.length; j++) {
+            bar = trace[j];
+
+            if(!isNumeric(bar.s)) continue;
+
+            // stack current bar and get previous sum
+            var barBase = sieve.put(bar.p, bar.s),
+                barTop = barBase + bar.s;
+
+            // store the bar base and top in each calcdata item
+            bar.b = barBase;
+            bar[sLetter] = barTop;
+
+            if(!barnorm) {
+                if(isNumeric(sa.c2l(barTop))) {
+                    sMax = Math.max(sMax, barTop);
+                    sMin = Math.min(sMin, barTop);
+                }
+                if(isNumeric(sa.c2l(barBase))) {
+                    sMax = Math.max(sMax, barBase);
+                    sMin = Math.min(sMin, barBase);
+                }
+            }
+        }
+    }
+
+    // if barnorm is set, let normalizeBars update the axis range
+    if(barnorm) {
+        normalizeBars(gd, sa, sieve);
+    }
+    else {
+        Axes.expand(sa, [sMin, sMax], {tozero: true, padded: true});
+    }
+}
+
+
+function sieveBars(gd, sa, sieve) {
+    var traces = sieve.traces;
+
+    for(var i = 0; i < traces.length; i++) {
+        var trace = traces[i];
+
+        for(var j = 0; j < trace.length; j++) {
+            var bar = trace[j];
+
+            if(isNumeric(bar.s)) sieve.put(bar.p, bar.s);
+        }
+    }
+}
+
+
+function normalizeBars(gd, sa, sieve) {
+    // Note:
+    //
+    // normalizeBars requires that either sieveBars or stackBars has been
+    // previously invoked.
+
+    var traces = sieve.traces,
+        sLetter = getAxisLetter(sa),
+        sTop = (gd._fullLayout.barnorm === 'fraction') ? 1 : 100,
+        sTiny = sTop / 1e9, // in case of rounding error in sum
+        sMin = 0,
+        sMax = (gd._fullLayout.barmode === 'stack') ? sTop : 0,
+        padded = false;
+
+    for(var i = 0; i < traces.length; i++) {
+        var trace = traces[i];
+
+        for(var j = 0; j < trace.length; j++) {
+            var bar = trace[j];
+
+            if(!isNumeric(bar.s)) continue;
+
+            var scale = Math.abs(sTop / sieve.get(bar.p, bar.s));
+            bar.b *= scale;
+            bar.s *= scale;
+
+            var barBase = bar.b,
+                barTop = barBase + bar.s;
+            bar[sLetter] = barTop;
+
+            if(isNumeric(sa.c2l(barTop))) {
+                if(barTop < sMin - sTiny) {
+                    padded = true;
+                    sMin = barTop;
+                }
+                if(barTop > sMax + sTiny) {
+                    padded = true;
+                    sMax = barTop;
+                }
+            }
+
+            if(isNumeric(sa.c2l(barBase))) {
+                if(barBase < sMin - sTiny) {
+                    padded = true;
+                    sMin = barBase;
+                }
+                if(barBase > sMax + sTiny) {
+                    padded = true;
+                    sMax = barBase;
+                }
+            }
+        }
+    }
+
+    // update range of size axis
+    Axes.expand(sa, [sMin, sMax], {tozero: true, padded: padded});
+}
+
+
+function getAxisLetter(ax) {
+    return ax._id.charAt(0);
+}
+
+},{"../../plots/cartesian/axes":147,"../../registry":187,"./sieve.js":206,"fast-isnumeric":17}],206:[function(require,module,exports){
+/**
+* Copyright 2012-2016, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+'use strict';
+
+module.exports = Sieve;
+
+var Lib = require('../../lib');
+
+/**
+ * Helper class to sieve data from traces into bins
+ *
+ * @class
+ * @param {Array}   traces
+ *                  Array of calculated traces
+ * @param {boolean} [separateNegativeValues]
+ *                  If true, then split data at the same position into a bar
+ *                  for positive values and another for negative values
+ * @param {boolean} [dontMergeOverlappingData]
+ *                  If true, then don't merge overlapping bars into a single bar
+ */
+function Sieve(traces, separateNegativeValues, dontMergeOverlappingData) {
+    this.traces = traces;
+    this.separateNegativeValues = separateNegativeValues;
+    this.dontMergeOverlappingData = dontMergeOverlappingData;
+
+    var positions = [];
+    for(var i = 0; i < traces.length; i++) {
+        var trace = traces[i];
+        for(var j = 0; j < trace.length; j++) {
+            var bar = trace[j];
+            positions.push(bar.p);
+        }
+    }
+    this.positions = positions;
+
+    var dv = Lib.distinctVals(this.positions);
+    this.distinctPositions = dv.vals;
+    this.minDiff = dv.minDiff;
+
+    this.binWidth = this.minDiff;
+
+    this.bins = {};
+}
+
+/**
+ * Sieve datum
+ *
+ * @method
+ * @param {number} position
+ * @param {number} value
+ * @returns {number} Previous bin value
+ */
+Sieve.prototype.put = function put(position, value) {
+    var label = this.getLabel(position, value),
+        oldValue = this.bins[label] || 0;
+
+    this.bins[label] = oldValue + value;
+
+    return oldValue;
+};
+
+/**
+ * Get current bin value for a given datum
+ *
+ * @method
+ * @param {number} position  Position of datum
+ * @param {number} [value]   Value of datum
+ *                           (required if this.separateNegativeValues is true)
+ * @returns {number} Current bin value
+ */
+Sieve.prototype.get = function put(position, value) {
+    var label = this.getLabel(position, value);
+    return this.bins[label] || 0;
+};
+
+/**
+ * Get bin label for a given datum
+ *
+ * @method
+ * @param {number} position  Position of datum
+ * @param {number} [value]   Value of datum
+ *                           (required if this.separateNegativeValues is true)
+ * @returns {string} Bin label
+ * (prefixed with a 'v' if value is negative and this.separateNegativeValues is
+ * true; otherwise prefixed with '^')
+ */
+Sieve.prototype.getLabel = function getLabel(position, value) {
+    var prefix = (value < 0 && this.separateNegativeValues) ? 'v' : '^',
+        label = (this.dontMergeOverlappingData) ?
+            position :
+            Math.round(position / this.binWidth);
+    return prefix + label;
+};
+
+},{"../../lib":121}],207:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -46757,7 +48359,7 @@ module.exports = function style(gd) {
     s.call(ErrorBars.style);
 };
 
-},{"../../components/color":30,"../../components/drawing":53,"../../components/errorbars":59,"d3":16}],204:[function(require,module,exports){
+},{"../../components/color":30,"../../components/drawing":54,"../../components/errorbars":60,"d3":14}],208:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -46794,7 +48396,7 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, default
     coerce('marker.line.width');
 };
 
-},{"../../components/color":30,"../../components/colorscale/defaults":40,"../../components/colorscale/has_colorscale":43}],205:[function(require,module,exports){
+},{"../../components/color":30,"../../components/colorscale/defaults":40,"../../components/colorscale/has_colorscale":44}],209:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -46925,7 +48527,7 @@ module.exports = {
     fillcolor: scatterAttrs.fillcolor
 };
 
-},{"../../components/color/attributes":29,"../../lib/extend":117,"../scatter/attributes":265}],206:[function(require,module,exports){
+},{"../../components/color/attributes":29,"../../lib/extend":118,"../scatter/attributes":269}],210:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -47074,7 +48676,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../../lib":120,"../../plots/cartesian/axes":146,"fast-isnumeric":18}],207:[function(require,module,exports){
+},{"../../lib":121,"../../plots/cartesian/axes":147,"fast-isnumeric":17}],211:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -47143,7 +48745,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
     }
 };
 
-},{"../../components/color":30,"../../lib":120,"./attributes":205}],208:[function(require,module,exports){
+},{"../../components/color":30,"../../lib":121,"./attributes":209}],212:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -47252,7 +48854,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     return closeData;
 };
 
-},{"../../components/color":30,"../../lib":120,"../../plots/cartesian/axes":146,"../../plots/cartesian/graph_interact":153}],209:[function(require,module,exports){
+},{"../../components/color":30,"../../lib":121,"../../plots/cartesian/axes":147,"../../plots/cartesian/graph_interact":155}],213:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -47285,7 +48887,7 @@ Box.meta = {
 
 module.exports = Box;
 
-},{"../../plots/cartesian":154,"./attributes":205,"./calc":206,"./defaults":207,"./hover":208,"./layout_attributes":210,"./layout_defaults":211,"./plot":212,"./set_positions":213,"./style":214}],210:[function(require,module,exports){
+},{"../../plots/cartesian":156,"./attributes":209,"./calc":210,"./defaults":211,"./hover":212,"./layout_attributes":214,"./layout_defaults":215,"./plot":216,"./set_positions":217,"./style":218}],214:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -47323,7 +48925,7 @@ module.exports = {
     }
 };
 
-},{}],211:[function(require,module,exports){
+},{}],215:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -47357,7 +48959,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     coerce('boxgroupgap');
 };
 
-},{"../../lib":120,"../../registry":184,"./layout_attributes":210}],212:[function(require,module,exports){
+},{"../../lib":121,"../../registry":187,"./layout_attributes":214}],216:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -47597,7 +49199,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
     });
 };
 
-},{"../../components/drawing":53,"../../lib":120,"d3":16}],213:[function(require,module,exports){
+},{"../../components/drawing":54,"../../lib":121,"d3":14}],217:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -47674,8 +49276,9 @@ module.exports = function setPositions(gd, plotinfo) {
         Axes.minDtick(posAxis, boxdv.minDiff, boxdv.vals[0], true);
 
         // set the width of all boxes
-        for(i = 0; i < boxlist.length; ++i) {
-            gd.calcdata[i][0].t.dPos = dPos;
+        for(i = 0; i < boxlist.length; i++) {
+            var boxListIndex = boxlist[i];
+            gd.calcdata[boxListIndex][0].t.dPos = dPos;
         }
 
         // autoscale the x axis - including space for points if they're off the side
@@ -47690,7 +49293,7 @@ module.exports = function setPositions(gd, plotinfo) {
     }
 };
 
-},{"../../lib":120,"../../plots/cartesian/axes":146,"../../registry":184}],214:[function(require,module,exports){
+},{"../../lib":121,"../../plots/cartesian/axes":147,"../../registry":187}],218:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -47729,7 +49332,7 @@ module.exports = function style(gd) {
         });
 };
 
-},{"../../components/color":30,"../../components/drawing":53,"d3":16}],215:[function(require,module,exports){
+},{"../../components/color":30,"../../components/drawing":54,"d3":14}],219:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -47829,7 +49432,7 @@ module.exports = extendFlat({},
     {autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false})}
 );
 
-},{"../../components/colorscale/attributes":36,"../../lib/extend":117,"../heatmap/attributes":225,"../scatter/attributes":265}],216:[function(require,module,exports){
+},{"../../components/colorscale/attributes":36,"../../lib/extend":118,"../heatmap/attributes":229,"../scatter/attributes":269}],220:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -47882,7 +49485,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../../plots/cartesian/axes":146,"../heatmap/calc":226}],217:[function(require,module,exports){
+},{"../../plots/cartesian/axes":147,"../heatmap/calc":230}],221:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -47943,7 +49546,7 @@ module.exports = function colorbar(gd, cd) {
         .options(trace.colorbar)();
 };
 
-},{"../../components/colorbar/draw":33,"../../plots/plots":169,"./make_color_map":221}],218:[function(require,module,exports){
+},{"../../components/colorbar/draw":33,"../../plots/plots":172,"./make_color_map":225}],222:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -47987,7 +49590,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
 };
 
-},{"../../lib":120,"../contour/style_defaults":224,"../heatmap/has_columns":230,"../heatmap/xyz_defaults":236,"./attributes":215}],219:[function(require,module,exports){
+},{"../../lib":121,"../contour/style_defaults":228,"../heatmap/has_columns":234,"../heatmap/xyz_defaults":240,"./attributes":219}],223:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -48006,7 +49609,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     return heatmapHoverPoints(pointData, xval, yval, hovermode, true);
 };
 
-},{"../heatmap/hover":231}],220:[function(require,module,exports){
+},{"../heatmap/hover":235}],224:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -48038,7 +49641,7 @@ Contour.meta = {
 
 module.exports = Contour;
 
-},{"../../plots/cartesian":154,"./attributes":215,"./calc":216,"./colorbar":217,"./defaults":218,"./hover":219,"./plot":222,"./style":223}],221:[function(require,module,exports){
+},{"../../plots/cartesian":156,"./attributes":219,"./calc":220,"./colorbar":221,"./defaults":222,"./hover":223,"./plot":226,"./style":227}],225:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -48051,9 +49654,7 @@ module.exports = Contour;
 'use strict';
 
 var d3 = require('d3');
-
-var getColorscale = require('../../components/colorscale/get_scale');
-
+var Colorscale = require('../../components/colorscale');
 
 module.exports = function makeColorMap(trace) {
     var contours = trace.contours,
@@ -48063,7 +49664,7 @@ module.exports = function makeColorMap(trace) {
         nc = Math.floor((end + cs / 10 - start) / cs) + 1,
         extra = contours.coloring === 'lines' ? 0 : 1;
 
-    var scl = getColorscale(trace.colorscale),
+    var scl = trace.colorscale,
         len = scl.length;
 
     var domain = new Array(len),
@@ -48110,15 +49711,15 @@ module.exports = function makeColorMap(trace) {
         }
     }
 
-    var colorMap = d3.scale.linear()
-        .interpolate(d3.interpolateRgb)
-        .domain(domain)
-        .range(range);
-
-    return colorMap;
+    return Colorscale.makeColorScaleFunc({
+        domain: domain,
+        range: range,
+    }, {
+        noNumericCheck: true
+    });
 };
 
-},{"../../components/colorscale/get_scale":42,"d3":16}],222:[function(require,module,exports){
+},{"../../components/colorscale":45,"d3":14}],226:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -48828,7 +50429,7 @@ function makeClipMask(cd0) {
     return z;
 }
 
-},{"../../components/drawing":53,"../../lib":120,"../heatmap/plot":234,"d3":16}],223:[function(require,module,exports){
+},{"../../components/drawing":54,"../../lib":121,"../heatmap/plot":238,"d3":14}],227:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -48885,7 +50486,7 @@ module.exports = function style(gd) {
     heatmapStyle(gd);
 };
 
-},{"../../components/drawing":53,"../heatmap/style":235,"./make_color_map":221,"d3":16}],224:[function(require,module,exports){
+},{"../../components/drawing":54,"../heatmap/style":239,"./make_color_map":225,"d3":14}],228:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -48921,7 +50522,7 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout)
     }
 };
 
-},{"../../components/colorscale/defaults":40}],225:[function(require,module,exports){
+},{"../../components/colorscale/defaults":40}],229:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -49006,7 +50607,7 @@ module.exports = extendFlat({},
     {autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false})}
 );
 
-},{"../../components/colorscale/attributes":36,"../../lib/extend":117,"../scatter/attributes":265}],226:[function(require,module,exports){
+},{"../../components/colorscale/attributes":36,"../../lib/extend":118,"../scatter/attributes":269}],230:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -49456,7 +51057,7 @@ function iterateInterp2d(z, emptyPoints, overshoot) {
     return maxFractionalChange;
 }
 
-},{"../../components/colorscale/calc":37,"../../lib":120,"../../plots/cartesian/axes":146,"../../registry":184,"../histogram2d/calc":246,"./convert_column_xyz":228,"./has_columns":230,"./max_row_length":233,"fast-isnumeric":18}],227:[function(require,module,exports){
+},{"../../components/colorscale/calc":37,"../../lib":121,"../../plots/cartesian/axes":147,"../../registry":187,"../histogram2d/calc":250,"./convert_column_xyz":232,"./has_columns":234,"./max_row_length":237,"fast-isnumeric":17}],231:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -49468,19 +51069,17 @@ function iterateInterp2d(z, emptyPoints, overshoot) {
 
 'use strict';
 
-var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var Plots = require('../../plots/plots');
-var getColorscale = require('../../components/colorscale/get_scale');
+var Colorscale = require('../../components/colorscale');
 var drawColorbar = require('../../components/colorbar/draw');
 
 
 module.exports = function colorbar(gd, cd) {
     var trace = cd[0].trace,
         cbId = 'cb' + trace.uid,
-        scl = getColorscale(trace.colorscale),
         zmin = trace.zmin,
         zmax = trace.zmax;
 
@@ -49495,14 +51094,21 @@ module.exports = function colorbar(gd, cd) {
     }
 
     var cb = cd[0].t.cb = drawColorbar(gd, cbId);
-    cb.fillcolor(d3.scale.linear()
-            .domain(scl.map(function(v) { return zmin + v[0] * (zmax - zmin); }))
-            .range(scl.map(function(v) { return v[1]; })))
+    var sclFunc = Colorscale.makeColorScaleFunc(
+        Colorscale.extractScale(
+            trace.colorscale,
+            zmin,
+            zmax
+        ),
+        { noNumericCheck: true }
+    );
+
+    cb.fillcolor(sclFunc)
         .filllevels({start: zmin, end: zmax, size: (zmax - zmin) / 254})
         .options(trace.colorbar)();
 };
 
-},{"../../components/colorbar/draw":33,"../../components/colorscale/get_scale":42,"../../lib":120,"../../plots/plots":169,"d3":16,"fast-isnumeric":18}],228:[function(require,module,exports){
+},{"../../components/colorbar/draw":33,"../../components/colorscale":45,"../../lib":121,"../../plots/plots":172,"fast-isnumeric":17}],232:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -49559,7 +51165,7 @@ module.exports = function convertColumnXYZ(trace, xa, ya) {
     if(hasColumnText) trace.text = text;
 };
 
-},{"../../lib":120}],229:[function(require,module,exports){
+},{"../../lib":121}],233:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -49604,7 +51210,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
 };
 
-},{"../../components/colorscale/defaults":40,"../../lib":120,"./attributes":225,"./has_columns":230,"./xyz_defaults":236}],230:[function(require,module,exports){
+},{"../../components/colorscale/defaults":40,"../../lib":121,"./attributes":229,"./has_columns":234,"./xyz_defaults":240}],234:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -49620,7 +51226,7 @@ module.exports = function(trace) {
     return !Array.isArray(trace.z[0]);
 };
 
-},{}],231:[function(require,module,exports){
+},{}],235:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -49738,7 +51344,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
     })];
 };
 
-},{"../../lib":120,"../../plots/cartesian/constants":151,"../../plots/cartesian/graph_interact":153}],232:[function(require,module,exports){
+},{"../../lib":121,"../../plots/cartesian/constants":153,"../../plots/cartesian/graph_interact":155}],236:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -49770,7 +51376,7 @@ Heatmap.meta = {
 
 module.exports = Heatmap;
 
-},{"../../plots/cartesian":154,"./attributes":225,"./calc":226,"./colorbar":227,"./defaults":229,"./hover":231,"./plot":234,"./style":235}],233:[function(require,module,exports){
+},{"../../plots/cartesian":156,"./attributes":229,"./calc":230,"./colorbar":231,"./defaults":233,"./hover":235,"./plot":238,"./style":239}],237:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -49792,7 +51398,7 @@ module.exports = function maxRowLength(z) {
     return len;
 };
 
-},{}],234:[function(require,module,exports){
+},{}],238:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -49804,12 +51410,11 @@ module.exports = function maxRowLength(z) {
 
 'use strict';
 
-var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
-var getColorscale = require('../../components/colorscale/get_scale');
+var Colorscale = require('../../components/colorscale');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 var maxRowLength = require('./max_row_length');
@@ -49840,9 +51445,6 @@ function plotOne(gd, plotinfo, cd) {
     }
 
     var z = cd[0].z,
-        min = trace.zmin,
-        max = trace.zmax,
-        scl = getColorscale(trace.colorscale),
         x = cd[0].x,
         y = cd[0].y,
         isContour = Registry.traceIs(trace, 'contour'),
@@ -49965,15 +51567,14 @@ function plotOne(gd, plotinfo, cd) {
     canvas.height = canvasH;
     var context = canvas.getContext('2d');
 
-    // interpolate for color scale
-    // use an array instead of color strings, so we preserve alpha
-    var s = d3.scale.linear()
-        .domain(scl.map(function(si) { return si[0]; }))
-        .range(scl.map(function(si) {
-            var c = tinycolor(si[1]).toRgb();
-            return [c.r, c.g, c.b, c.a];
-        }))
-        .clamp(true);
+    var sclFunc = Colorscale.makeColorScaleFunc(
+        Colorscale.extractScale(
+            trace.colorscale,
+            trace.zmin,
+            trace.zmax
+        ),
+        { noNumericCheck: true, returnArray: true }
+    );
 
     // map brick boundaries to image pixels
     var xpx,
@@ -50084,7 +51685,7 @@ function plotOne(gd, plotinfo, cd) {
 
     function setColor(v, pixsize) {
         if(v !== undefined) {
-            var c = s((v - min) / (max - min));
+            var c = sclFunc(v);
             c[0] = Math.round(c[0]);
             c[1] = Math.round(c[1]);
             c[2] = Math.round(c[2]);
@@ -50247,7 +51848,7 @@ function plotOne(gd, plotinfo, cd) {
     image3.exit().remove();
 }
 
-},{"../../components/colorscale/get_scale":42,"../../constants/xmlns_namespaces":111,"../../lib":120,"../../registry":184,"./max_row_length":233,"d3":16,"tinycolor2":20}],235:[function(require,module,exports){
+},{"../../components/colorscale":45,"../../constants/xmlns_namespaces":112,"../../lib":121,"../../registry":187,"./max_row_length":237,"tinycolor2":20}],239:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -50268,7 +51869,7 @@ module.exports = function style(gd) {
         });
 };
 
-},{"d3":16}],236:[function(require,module,exports){
+},{"d3":14}],240:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -50357,7 +51958,7 @@ function isValidZ(z) {
     return (allRowsAreArrays && oneRowIsFilled && hasOneNumber);
 }
 
-},{"./has_columns":230,"fast-isnumeric":18}],237:[function(require,module,exports){
+},{"./has_columns":234,"fast-isnumeric":17}],241:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -50465,7 +52066,7 @@ function makeBinsAttr(axLetter) {
     };
 }
 
-},{"../bar/attributes":194}],238:[function(require,module,exports){
+},{"../bar/attributes":197}],242:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -50491,7 +52092,7 @@ module.exports = function doAvg(size, counts) {
     return total;
 };
 
-},{}],239:[function(require,module,exports){
+},{}],243:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -50521,7 +52122,7 @@ module.exports = function handleBinDefaults(traceIn, traceOut, coerce, binDirect
     return traceOut;
 };
 
-},{}],240:[function(require,module,exports){
+},{}],244:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -50595,7 +52196,7 @@ module.exports = {
     }
 };
 
-},{"fast-isnumeric":18}],241:[function(require,module,exports){
+},{"fast-isnumeric":17}],245:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -50725,7 +52326,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../../lib":120,"../../plots/cartesian/axes":146,"./average":238,"./bin_functions":240,"./norm_functions":244,"fast-isnumeric":18}],242:[function(require,module,exports){
+},{"../../lib":121,"../../plots/cartesian/axes":147,"./average":242,"./bin_functions":244,"./norm_functions":248,"fast-isnumeric":17}],246:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -50777,7 +52378,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'x', inherit: 'y'});
 };
 
-},{"../../components/color":30,"../../components/errorbars/defaults":58,"../../lib":120,"../bar/style_defaults":204,"./attributes":237,"./bin_defaults":239}],243:[function(require,module,exports){
+},{"../../components/color":30,"../../components/errorbars/defaults":59,"../../lib":121,"../bar/style_defaults":208,"./attributes":241,"./bin_defaults":243}],247:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -50826,7 +52427,7 @@ Histogram.meta = {
 
 module.exports = Histogram;
 
-},{"../../plots/cartesian":154,"../bar/hover":197,"../bar/layout_attributes":199,"../bar/layout_defaults":200,"../bar/plot":201,"../bar/set_positions":202,"../bar/style":203,"../scatter/colorbar":268,"./attributes":237,"./calc":241,"./defaults":242}],244:[function(require,module,exports){
+},{"../../plots/cartesian":156,"../bar/hover":200,"../bar/layout_attributes":202,"../bar/layout_defaults":203,"../bar/plot":204,"../bar/set_positions":205,"../bar/style":207,"../scatter/colorbar":272,"./attributes":241,"./calc":245,"./defaults":246}],248:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -50861,7 +52462,7 @@ module.exports = {
     }
 };
 
-},{}],245:[function(require,module,exports){
+},{}],249:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -50915,7 +52516,7 @@ module.exports = extendFlat({},
     {autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false})}
 );
 
-},{"../../components/colorscale/attributes":36,"../../lib/extend":117,"../heatmap/attributes":225,"../histogram/attributes":237}],246:[function(require,module,exports){
+},{"../../components/colorscale/attributes":36,"../../lib/extend":118,"../heatmap/attributes":229,"../histogram/attributes":241}],250:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51081,7 +52682,7 @@ module.exports = function calc(gd, trace) {
     };
 };
 
-},{"../../lib":120,"../../plots/cartesian/axes":146,"../histogram/average":238,"../histogram/bin_functions":240,"../histogram/norm_functions":244}],247:[function(require,module,exports){
+},{"../../lib":121,"../../plots/cartesian/axes":147,"../histogram/average":242,"../histogram/bin_functions":244,"../histogram/norm_functions":248}],251:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51119,7 +52720,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, layout) {
     );
 };
 
-},{"../../components/colorscale/defaults":40,"../../lib":120,"./attributes":245,"./sample_defaults":249}],248:[function(require,module,exports){
+},{"../../components/colorscale/defaults":40,"../../lib":121,"./attributes":249,"./sample_defaults":253}],252:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51152,7 +52753,7 @@ Histogram2D.meta = {
 
 module.exports = Histogram2D;
 
-},{"../../plots/cartesian":154,"../heatmap/calc":226,"../heatmap/colorbar":227,"../heatmap/hover":231,"../heatmap/plot":234,"../heatmap/style":235,"./attributes":245,"./defaults":247}],249:[function(require,module,exports){
+},{"../../plots/cartesian":156,"../heatmap/calc":230,"../heatmap/colorbar":231,"../heatmap/hover":235,"../heatmap/plot":238,"../heatmap/style":239,"./attributes":249,"./defaults":251}],253:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51188,7 +52789,7 @@ module.exports = function handleSampleDefaults(traceIn, traceOut, coerce) {
     handleBinDefaults(traceIn, traceOut, coerce, binDirections);
 };
 
-},{"../histogram/bin_defaults":239}],250:[function(require,module,exports){
+},{"../histogram/bin_defaults":243}],254:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51232,7 +52833,7 @@ module.exports = extendFlat({}, {
     colorscaleAttrs
 );
 
-},{"../../components/colorscale/attributes":36,"../../lib/extend":117,"../contour/attributes":215,"../histogram2d/attributes":245}],251:[function(require,module,exports){
+},{"../../components/colorscale/attributes":36,"../../lib/extend":118,"../contour/attributes":219,"../histogram2d/attributes":249}],255:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51268,7 +52869,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
 };
 
-},{"../../lib":120,"../contour/style_defaults":224,"../histogram2d/sample_defaults":249,"./attributes":250}],252:[function(require,module,exports){
+},{"../../lib":121,"../contour/style_defaults":228,"../histogram2d/sample_defaults":253,"./attributes":254}],256:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51301,7 +52902,7 @@ Histogram2dContour.meta = {
 
 module.exports = Histogram2dContour;
 
-},{"../../plots/cartesian":154,"../contour/calc":216,"../contour/colorbar":217,"../contour/hover":219,"../contour/plot":222,"../contour/style":223,"./attributes":250,"./defaults":251}],253:[function(require,module,exports){
+},{"../../plots/cartesian":156,"../contour/calc":220,"../contour/colorbar":221,"../contour/hover":223,"../contour/plot":226,"../contour/style":227,"./attributes":254,"./defaults":255}],257:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51521,7 +53122,7 @@ module.exports = {
     }
 };
 
-},{"../../components/color/attributes":29,"../../lib/extend":117,"../../plots/attributes":144,"../../plots/font_attributes":165}],254:[function(require,module,exports){
+},{"../../components/color/attributes":29,"../../lib/extend":118,"../../plots/attributes":145,"../../plots/font_attributes":168}],258:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51568,7 +53169,7 @@ function getCdModule(calcdata, _module) {
     return cdModule;
 }
 
-},{"../../registry":184}],255:[function(require,module,exports){
+},{"../../registry":187}],259:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51720,7 +53321,7 @@ function nextDefaultColor(index) {
     return pieDefaultColors[index % pieDefaultColors.length];
 }
 
-},{"../../components/color":30,"./helpers":257,"fast-isnumeric":18,"tinycolor2":20}],256:[function(require,module,exports){
+},{"../../components/color":30,"./helpers":261,"fast-isnumeric":17,"tinycolor2":20}],260:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51804,7 +53405,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('pull');
 };
 
-},{"../../lib":120,"./attributes":253}],257:[function(require,module,exports){
+},{"../../lib":121,"./attributes":257}],261:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51833,7 +53434,7 @@ exports.formatPieValue = function formatPieValue(v, separators) {
     return Lib.numSeparate(vRounded, separators);
 };
 
-},{"../../lib":120}],258:[function(require,module,exports){
+},{"../../lib":121}],262:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51865,7 +53466,7 @@ Pie.meta = {
 
 module.exports = Pie;
 
-},{"./attributes":253,"./base_plot":254,"./calc":255,"./defaults":256,"./layout_attributes":259,"./layout_defaults":260,"./plot":261,"./style":262,"./style_one":263}],259:[function(require,module,exports){
+},{"./attributes":257,"./base_plot":258,"./calc":259,"./defaults":260,"./layout_attributes":263,"./layout_defaults":264,"./plot":265,"./style":266,"./style_one":267}],263:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51885,7 +53486,7 @@ module.exports = {
     hiddenlabels: {valType: 'data_array'}
 };
 
-},{}],260:[function(require,module,exports){
+},{}],264:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51907,7 +53508,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     coerce('hiddenlabels');
 };
 
-},{"../../lib":120,"./layout_attributes":259}],261:[function(require,module,exports){
+},{"../../lib":121,"./layout_attributes":263}],265:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -52602,7 +54203,7 @@ function maxExtent(tilt, tiltAxisFraction, depth) {
         2 * Math.sqrt(1 - sinTilt * sinTilt * tiltAxisFraction * tiltAxisFraction));
 }
 
-},{"../../components/color":30,"../../components/drawing":53,"../../lib/svg_text_utils":132,"../../plots/cartesian/graph_interact":153,"./helpers":257,"d3":16}],262:[function(require,module,exports){
+},{"../../components/color":30,"../../components/drawing":54,"../../lib/svg_text_utils":133,"../../plots/cartesian/graph_interact":155,"./helpers":261,"d3":14}],266:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -52631,7 +54232,7 @@ module.exports = function style(gd) {
     });
 };
 
-},{"./style_one":263,"d3":16}],263:[function(require,module,exports){
+},{"./style_one":267,"d3":14}],267:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -52658,7 +54259,7 @@ module.exports = function styleOne(s, pt, trace) {
     .call(Color.stroke, lineColor);
 };
 
-},{"../../components/color":30}],264:[function(require,module,exports){
+},{"../../components/color":30}],268:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -52696,7 +54297,7 @@ module.exports = function arraysToCalcdata(cd) {
     }
 };
 
-},{"../../lib":120}],265:[function(require,module,exports){
+},{"../../lib":121}],269:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -52956,7 +54557,7 @@ module.exports = {
     }
 };
 
-},{"../../components/colorscale/color_attributes":38,"../../components/drawing":53,"../../lib/extend":117,"./constants":270}],266:[function(require,module,exports){
+},{"../../components/colorscale/color_attributes":38,"../../components/drawing":54,"../../lib/extend":118,"./constants":274}],270:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53087,7 +54688,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../../lib":120,"../../plots/cartesian/axes":146,"./colorscale_calc":269,"./subtypes":285,"fast-isnumeric":18}],267:[function(require,module,exports){
+},{"../../lib":121,"../../plots/cartesian/axes":147,"./colorscale_calc":273,"./subtypes":289,"fast-isnumeric":17}],271:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53126,7 +54727,7 @@ module.exports = function cleanData(fullData) {
     }
 };
 
-},{}],268:[function(require,module,exports){
+},{}],272:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53138,12 +54739,11 @@ module.exports = function cleanData(fullData) {
 
 'use strict';
 
-var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var Plots = require('../../plots/plots');
-var getColorscale = require('../../components/colorscale/get_scale');
+var Colorscale = require('../../components/colorscale');
 var drawColorbar = require('../../components/colorbar/draw');
 
 
@@ -53154,16 +54754,15 @@ module.exports = function colorbar(gd, cd) {
 
     gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
 
-    // TODO unify Scatter.colorbar and Heatmap.colorbar
-    // TODO make Plotly[module].colorbar support multiple colorbar per trace
+    // TODO unify scatter and heatmap colorbar
+    // TODO make Colorbar.draw support multiple colorbar per trace
 
     if((marker === undefined) || !marker.showscale) {
         Plots.autoMargin(gd, cbId);
         return;
     }
 
-    var scl = getColorscale(marker.colorscale),
-        vals = marker.color,
+    var vals = marker.color,
         cmin = marker.cmin,
         cmax = marker.cmax;
 
@@ -53171,15 +54770,21 @@ module.exports = function colorbar(gd, cd) {
     if(!isNumeric(cmax)) cmax = Lib.aggNums(Math.max, null, vals);
 
     var cb = cd[0].t.cb = drawColorbar(gd, cbId);
+    var sclFunc = Colorscale.makeColorScaleFunc(
+        Colorscale.extractScale(
+            marker.colorscale,
+            cmin,
+            cmax
+        ),
+        { noNumericCheck: true }
+    );
 
-    cb.fillcolor(d3.scale.linear()
-            .domain(scl.map(function(v) { return cmin + v[0] * (cmax - cmin); }))
-            .range(scl.map(function(v) { return v[1]; })))
+    cb.fillcolor(sclFunc)
         .filllevels({start: cmin, end: cmax, size: (cmax - cmin) / 254})
         .options(marker.colorbar)();
 };
 
-},{"../../components/colorbar/draw":33,"../../components/colorscale/get_scale":42,"../../lib":120,"../../plots/plots":169,"d3":16,"fast-isnumeric":18}],269:[function(require,module,exports){
+},{"../../components/colorbar/draw":33,"../../components/colorscale":45,"../../lib":121,"../../plots/plots":172,"fast-isnumeric":17}],273:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53212,7 +54817,7 @@ module.exports = function calcMarkerColorscale(trace) {
     }
 };
 
-},{"../../components/colorscale/calc":37,"../../components/colorscale/has_colorscale":43,"./subtypes":285}],270:[function(require,module,exports){
+},{"../../components/colorscale/calc":37,"../../components/colorscale/has_colorscale":44,"./subtypes":289}],274:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53228,7 +54833,7 @@ module.exports = {
     PTS_LINESONLY: 20
 };
 
-},{}],271:[function(require,module,exports){
+},{}],275:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53308,7 +54913,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 };
 
-},{"../../components/errorbars/defaults":58,"../../lib":120,"./attributes":265,"./constants":270,"./fillcolor_defaults":272,"./line_defaults":276,"./line_shape_defaults":278,"./marker_defaults":281,"./subtypes":285,"./text_defaults":286,"./xy_defaults":287}],272:[function(require,module,exports){
+},{"../../components/errorbars/defaults":59,"../../lib":121,"./attributes":269,"./constants":274,"./fillcolor_defaults":276,"./line_defaults":280,"./line_shape_defaults":282,"./marker_defaults":285,"./subtypes":289,"./text_defaults":290,"./xy_defaults":291}],276:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53346,7 +54951,7 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
     ));
 };
 
-},{"../../components/color":30}],273:[function(require,module,exports){
+},{"../../components/color":30}],277:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53399,7 +55004,7 @@ module.exports = function getTraceColor(trace, di) {
     }
 };
 
-},{"../../components/color":30,"./subtypes":285}],274:[function(require,module,exports){
+},{"../../components/color":30,"./subtypes":289}],278:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53568,7 +55173,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     }
 };
 
-},{"../../components/color":30,"../../components/errorbars":59,"../../lib":120,"../../plots/cartesian/constants":151,"../../plots/cartesian/graph_interact":153,"./get_trace_color":273}],275:[function(require,module,exports){
+},{"../../components/color":30,"../../components/errorbars":60,"../../lib":121,"../../plots/cartesian/constants":153,"../../plots/cartesian/graph_interact":155,"./get_trace_color":277}],279:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53612,7 +55217,7 @@ Scatter.meta = {
 
 module.exports = Scatter;
 
-},{"../../plots/cartesian":154,"./arrays_to_calcdata":264,"./attributes":265,"./calc":266,"./clean_data":267,"./colorbar":268,"./defaults":271,"./hover":274,"./plot":282,"./select":283,"./style":284,"./subtypes":285}],276:[function(require,module,exports){
+},{"../../plots/cartesian":156,"./arrays_to_calcdata":268,"./attributes":269,"./calc":270,"./clean_data":271,"./colorbar":272,"./defaults":275,"./hover":278,"./plot":286,"./select":287,"./style":288,"./subtypes":289}],280:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53645,7 +55250,7 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
     coerce('line.dash');
 };
 
-},{"../../components/colorscale/defaults":40,"../../components/colorscale/has_colorscale":43}],277:[function(require,module,exports){
+},{"../../components/colorscale/defaults":40,"../../components/colorscale/has_colorscale":44}],281:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53819,7 +55424,7 @@ module.exports = function linePoints(d, opts) {
     return segments;
 };
 
-},{"../../plots/cartesian/axes":146}],278:[function(require,module,exports){
+},{"../../plots/cartesian/axes":147}],282:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53838,7 +55443,7 @@ module.exports = function handleLineShapeDefaults(traceIn, traceOut, coerce) {
     if(shape === 'spline') coerce('line.smoothing');
 };
 
-},{}],279:[function(require,module,exports){
+},{}],283:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53879,7 +55484,7 @@ module.exports = function linkTraces(gd, plotinfo, cdscatter) {
     }
 };
 
-},{}],280:[function(require,module,exports){
+},{}],284:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53921,7 +55526,7 @@ module.exports = function makeBubbleSizeFn(trace) {
     };
 };
 
-},{"fast-isnumeric":18}],281:[function(require,module,exports){
+},{"fast-isnumeric":17}],285:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53981,7 +55586,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
     }
 };
 
-},{"../../components/color":30,"../../components/colorscale/defaults":40,"../../components/colorscale/has_colorscale":43,"./subtypes":285}],282:[function(require,module,exports){
+},{"../../components/color":30,"../../components/colorscale/defaults":40,"../../components/colorscale/has_colorscale":44,"./subtypes":289}],286:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -54517,7 +56122,7 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
     });
 }
 
-},{"../../components/drawing":53,"../../components/errorbars":59,"../../lib":120,"../../lib/polygon":127,"./arrays_to_calcdata":264,"./line_points":277,"./link_traces":279,"./subtypes":285,"d3":16}],283:[function(require,module,exports){
+},{"../../components/drawing":54,"../../components/errorbars":60,"../../lib":121,"../../lib/polygon":128,"./arrays_to_calcdata":268,"./line_points":281,"./link_traces":283,"./subtypes":289,"d3":14}],287:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -54589,7 +56194,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
     return selection;
 };
 
-},{"./subtypes":285}],284:[function(require,module,exports){
+},{"./subtypes":289}],288:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -54631,7 +56236,7 @@ module.exports = function style(gd) {
     s.call(ErrorBars.style);
 };
 
-},{"../../components/drawing":53,"../../components/errorbars":59,"d3":16}],285:[function(require,module,exports){
+},{"../../components/drawing":54,"../../components/errorbars":60,"d3":14}],289:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -54667,7 +56272,7 @@ module.exports = {
     }
 };
 
-},{"../../lib":120}],286:[function(require,module,exports){
+},{"../../lib":121}],290:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -54688,7 +56293,7 @@ module.exports = function(traceIn, traceOut, layout, coerce) {
     Lib.coerceFont(coerce, 'textfont', layout.font);
 };
 
-},{"../../lib":120}],287:[function(require,module,exports){
+},{"../../lib":121}],291:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -54733,7 +56338,7 @@ module.exports = function handleXYDefaults(traceIn, traceOut, coerce) {
     return len;
 };
 
-},{}],288:[function(require,module,exports){
+},{}],292:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -54819,7 +56424,7 @@ module.exports = {
     }
 };
 
-},{"../../components/colorscale/color_attributes":38,"../../lib/extend":117,"../../plots/attributes":144,"../scatter/attributes":265}],289:[function(require,module,exports){
+},{"../../components/colorscale/color_attributes":38,"../../lib/extend":118,"../../plots/attributes":145,"../scatter/attributes":269}],293:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -54918,7 +56523,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../../lib":120,"../../plots/cartesian/axes":146,"../scatter/colorscale_calc":269,"../scatter/subtypes":285,"fast-isnumeric":18}],290:[function(require,module,exports){
+},{"../../lib":121,"../../plots/cartesian/axes":147,"../scatter/colorscale_calc":273,"../scatter/subtypes":289,"fast-isnumeric":17}],294:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -55023,7 +56628,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hoveron', dfltHoverOn.join('+') || 'points');
 };
 
-},{"../../lib":120,"../scatter/constants":270,"../scatter/fillcolor_defaults":272,"../scatter/line_defaults":276,"../scatter/line_shape_defaults":278,"../scatter/marker_defaults":281,"../scatter/subtypes":285,"../scatter/text_defaults":286,"./attributes":288}],291:[function(require,module,exports){
+},{"../../lib":121,"../scatter/constants":274,"../scatter/fillcolor_defaults":276,"../scatter/line_defaults":280,"../scatter/line_shape_defaults":282,"../scatter/marker_defaults":285,"../scatter/subtypes":289,"../scatter/text_defaults":290,"./attributes":292}],295:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -55094,7 +56699,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     return scatterPointData;
 };
 
-},{"../../plots/cartesian/axes":146,"../scatter/hover":274}],292:[function(require,module,exports){
+},{"../../plots/cartesian/axes":147,"../scatter/hover":278}],296:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -55127,7 +56732,7 @@ ScatterTernary.meta = {
 
 module.exports = ScatterTernary;
 
-},{"../../plots/ternary":177,"../scatter/colorbar":268,"./attributes":288,"./calc":289,"./defaults":290,"./hover":291,"./plot":293,"./select":294,"./style":295}],293:[function(require,module,exports){
+},{"../../plots/ternary":180,"../scatter/colorbar":272,"./attributes":292,"./calc":293,"./defaults":294,"./hover":295,"./plot":297,"./select":298,"./style":299}],297:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -55173,7 +56778,7 @@ module.exports = function plot(ternary, data) {
     scatterPlot(ternary.graphDiv, plotinfo, calcdata);
 };
 
-},{"../scatter/plot":282}],294:[function(require,module,exports){
+},{"../scatter/plot":286}],298:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -55208,7 +56813,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
     return selection;
 };
 
-},{"../scatter/select":283}],295:[function(require,module,exports){
+},{"../scatter/select":287}],299:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -55237,5 +56842,5 @@ module.exports = function style(gd) {
     scatterStyle(gd);
 };
 
-},{"../scatter/style":284}]},{},[11])(11)
+},{"../scatter/style":288}]},{},[11])(11)
 });

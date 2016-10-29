@@ -225,12 +225,21 @@ describe('Test shapes:', function() {
                 expect(countShapePathsInUpperLayer()).toEqual(pathCount + 1);
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);
-            }).then(function() {
-                Plotly.relayout(gd, 'shapes[' + index + ']', 'remove');
-            }).then(function() {
+            })
+            .then(function() {
+                return Plotly.relayout(gd, 'shapes[' + index + ']', 'remove');
+            })
+            .then(function() {
                 expect(countShapePathsInUpperLayer()).toEqual(pathCount);
                 expect(countShapes(gd)).toEqual(index);
-            }).then(done);
+
+                return Plotly.relayout(gd, 'shapes[' + 1 + ']', null);
+            })
+            .then(function() {
+                expect(countShapePathsInUpperLayer()).toEqual(pathCount - 1);
+                expect(countShapes(gd)).toEqual(index - 1);
+            })
+            .then(done);
         });
 
         it('should be able to remove all shapes', function(done) {

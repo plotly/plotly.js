@@ -9,12 +9,11 @@
 
 'use strict';
 
-var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
-var getColorscale = require('../../components/colorscale/get_scale');
+var Colorscale = require('../../components/colorscale');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 var maxRowLength = require('./max_row_length');
@@ -45,9 +44,6 @@ function plotOne(gd, plotinfo, cd) {
     }
 
     var z = cd[0].z,
-        min = trace.zmin,
-        max = trace.zmax,
-        scl = getColorscale(trace.colorscale),
         x = cd[0].x,
         y = cd[0].y,
         isContour = Registry.traceIs(trace, 'contour'),
@@ -170,15 +166,14 @@ function plotOne(gd, plotinfo, cd) {
     canvas.height = canvasH;
     var context = canvas.getContext('2d');
 
-    // interpolate for color scale
-    // use an array instead of color strings, so we preserve alpha
-    var s = d3.scale.linear()
-        .domain(scl.map(function(si) { return si[0]; }))
-        .range(scl.map(function(si) {
-            var c = tinycolor(si[1]).toRgb();
-            return [c.r, c.g, c.b, c.a];
-        }))
-        .clamp(true);
+    var sclFunc = Colorscale.makeColorScaleFunc(
+        Colorscale.extractScale(
+            trace.colorscale,
+            trace.zmin,
+            trace.zmax
+        ),
+        { noNumericCheck: true, returnArray: true }
+    );
 
     // map brick boundaries to image pixels
     var xpx,
@@ -289,7 +284,7 @@ function plotOne(gd, plotinfo, cd) {
 
     function setColor(v, pixsize) {
         if(v !== undefined) {
-            var c = s((v - min) / (max - min));
+            var c = sclFunc(v);
             c[0] = Math.round(c[0]);
             c[1] = Math.round(c[1]);
             c[2] = Math.round(c[2]);

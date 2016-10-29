@@ -45,7 +45,6 @@
             "bgcolor": "#eee"
         },
         "height": 450,
-        "width": 700,
-        "autosize": true
+        "width": 700
     }
 }

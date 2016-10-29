@@ -9,25 +9,23 @@
 
 'use strict';
 
-var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var Plots = require('../../plots/plots');
-var getColorscale = require('../../components/colorscale/get_scale');
+var Colorscale = require('../../components/colorscale');
 var drawColorbar = require('../../components/colorbar/draw');
 
 
 module.exports = function colorbar(gd, cd) {
     var trace = cd[0].trace,
         cbId = 'cb' + trace.uid,
-        scl = getColorscale(trace.colorscale),
-        zmin = trace.cmin,
-        zmax = trace.cmax,
+        cmin = trace.cmin,
+        cmax = trace.cmax,
         vals = trace.surfacecolor || trace.z;
 
-    if(!isNumeric(zmin)) zmin = Lib.aggNums(Math.min, null, vals);
-    if(!isNumeric(zmax)) zmax = Lib.aggNums(Math.max, null, vals);
+    if(!isNumeric(cmin)) cmin = Lib.aggNums(Math.min, null, vals);
+    if(!isNumeric(cmax)) cmax = Lib.aggNums(Math.max, null, vals);
 
     gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
 
@@ -37,9 +35,16 @@ module.exports = function colorbar(gd, cd) {
     }
 
     var cb = cd[0].t.cb = drawColorbar(gd, cbId);
-    cb.fillcolor(d3.scale.linear()
-            .domain(scl.map(function(v) { return zmin + v[0] * (zmax - zmin); }))
-            .range(scl.map(function(v) { return v[1]; })))
-        .filllevels({start: zmin, end: zmax, size: (zmax - zmin) / 254})
+    var sclFunc = Colorscale.makeColorScaleFunc(
+        Colorscale.extractScale(
+            trace.colorscale,
+            cmin,
+            cmax
+        ),
+        { noNumericCheck: true }
+    );
+
+    cb.fillcolor(sclFunc)
+        .filllevels({start: cmin, end: cmax, size: (cmax - cmin) / 254})
         .options(trace.colorbar)();
 };

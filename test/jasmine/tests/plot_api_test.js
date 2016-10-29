@@ -1026,6 +1026,37 @@ describe('Test plot api', function() {
         });
     });
 
+    describe('Plotly.newPlot', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should respect layout.width and layout.height', function(done) {
+
+            // See issue https://github.com/plotly/plotly.js/issues/537
+            var data = [{
+                x: [1, 2],
+                y: [1, 2]
+            }];
+
+            Plotly.plot(gd, data).then(function() {
+                var height = 50;
+
+                Plotly.newPlot(gd, data, { height: height }).then(function() {
+                    var fullLayout = gd._fullLayout,
+                        svg = document.getElementsByClassName('main-svg')[0];
+
+                    expect(fullLayout.height).toBe(height);
+                    expect(+svg.getAttribute('height')).toBe(height);
+                }).then(done);
+            });
+        });
+    });
+
     describe('Plotly.update should', function() {
         var gd, data, layout, calcdata;
 

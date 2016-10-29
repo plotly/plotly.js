@@ -79,11 +79,18 @@ describe('annotations relayout', function() {
             expect(countAnnotations()).toEqual(len + 1);
 
             return Plotly.relayout(gd, 'annotations[' + 0 + ']', 'remove');
-        }).then(function() {
+        })
+        .then(function() {
             expect(countAnnotations()).toEqual(len);
 
+            return Plotly.relayout(gd, 'annotations[' + 0 + ']', null);
+        })
+        .then(function() {
+            expect(countAnnotations()).toEqual(len - 1);
+
             return Plotly.relayout(gd, { annotations: [] });
-        }).then(function() {
+        })
+        .then(function() {
             expect(countAnnotations()).toEqual(0);
 
             done();

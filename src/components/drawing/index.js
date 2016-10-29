@@ -331,7 +331,10 @@ drawing.tryColorscale = function(cont, contIn, prefix) {
             Lib.nestedProperty(contIn, prefix + 'cmin').set(min);
             Lib.nestedProperty(contIn, prefix + 'cmax').set(max);
         }
-        return Colorscale.makeScaleFunction(scl, min, max);
+
+        return Colorscale.makeColorScaleFunc(
+            Colorscale.extractScale(scl, min, max)
+        );
     }
     else return Lib.identity;
 };
