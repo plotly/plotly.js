@@ -658,8 +658,17 @@ axes.calcTicks = function calcTicks(ax) {
     // show the exponent only on the last one
     ax._tmax = vals[vals.length - 1];
 
+    // for showing date suffixes: ax._prevSuffix holds what we showed most
+    // recently. Start with it cleared and mark that we're in calcTicks (ie
+    // calculating a whole string of these so we should care what the previous
+    // suffix was!)
+    ax._prevSuffix = '';
+    ax._inCalcTicks = true;
+
     var ticksOut = new Array(vals.length);
     for(var i = 0; i < vals.length; i++) ticksOut[i] = axes.tickText(ax, vals[i]);
+
+    ax._inCalcTicks = false;
 
     return ticksOut;
 };
@@ -815,6 +824,11 @@ axes.autoTicks = function(ax, roughDTick) {
     }
 };
 
+var ONEDAY = 86400000,
+    ONEHOUR = 3600000,
+    ONEMIN = 60000,
+    ONESEC = 1000;
+
 // after dtick is already known, find tickround = precision
 // to display in tick labels
 //   for numeric ticks, integer # digits after . to round to
@@ -831,33 +845,43 @@ function autoTickRound(ax) {
     if(ax.type === 'category') {
         ax._tickround = null;
     }
-    else if(isNumeric(dtick) || dtick.charAt(0) === 'L') {
-        if(ax.type === 'date') {
-            if(dtick >= 86400000) ax._tickround = 'd';
-            else if(dtick >= 3600000) ax._tickround = 'H';
-            else if(dtick >= 60000) ax._tickround = 'M';
-            else if(dtick >= 1000) ax._tickround = 'S';
-            else ax._tickround = 3 - Math.round(Math.log(dtick / 2) / Math.LN10);
+    if(ax.type === 'date') {
+        // If tick0 is unusual, give tickround a bit more information
+        // not necessarily *all* the information in tick0 though, if it's really odd
+        // minimal string length for tick0: 'd' is 10, 'M' is 16, 'S' is 19
+        // take off a leading minus (year < 0 so length is consistent)
+        var tick0str = Lib.ms2DateTime(Lib.dateTime2ms(ax.tick0)).replace(/^-/, ''),
+            tick0len = tick0str.length;
+
+        if(String(dtick).charAt(0) === 'M') {
+            // any tick0 more specific than a year: alway show the full date
+            if(tick0len > 10 || tick0str.substr(5) !== '01-01') ax._tickround = 'd';
+            // show the month unless ticks are full multiples of a year
+            else ax._tickround = (+(dtick.substr(1)) % 12 === 0) ? 'y' : 'm';
         }
-        else {
-            // linear or log
-            var rng = ax.range.map(ax.r2d || Number);
-            if(!isNumeric(dtick)) dtick = Number(dtick.substr(1));
-            // 2 digits past largest digit of dtick
-            ax._tickround = 2 - Math.floor(Math.log(dtick) / Math.LN10 + 0.01);
+        else if((dtick >= ONEDAY && tick0len <= 10) || (dtick >= ONEDAY * 15)) ax._tickround = 'd';
+        else if((dtick >= ONEMIN && tick0len <= 16) || (dtick >= ONEHOUR)) ax._tickround = 'M';
+        else if((dtick >= ONESEC && tick0len <= 19) || (dtick >= ONEMIN)) ax._tickround = 'S';
+        else ax._tickround = Math.max(3 - Math.round(Math.log(dtick / 2) / Math.LN10), tick0len - 20);
+    }
+    else if(isNumeric(dtick) || dtick.charAt(0) === 'L') {
+        // linear or log (except D1, D2)
+        var rng = ax.range.map(ax.r2d || Number);
+        if(!isNumeric(dtick)) dtick = Number(dtick.substr(1));
+        // 2 digits past largest digit of dtick
+        ax._tickround = 2 - Math.floor(Math.log(dtick) / Math.LN10 + 0.01);
 
-            var maxend = Math.max(Math.abs(rng[0]), Math.abs(rng[1]));
+        var maxend = Math.max(Math.abs(rng[0]), Math.abs(rng[1]));
 
-            var rangeexp = Math.floor(Math.log(maxend) / Math.LN10 + 0.01);
-            if(Math.abs(rangeexp) > 3) {
-                if(ax.exponentformat === 'SI' || ax.exponentformat === 'B') {
-                    ax._tickexponent = 3 * Math.round((rangeexp - 1) / 3);
-                }
-                else ax._tickexponent = rangeexp;
+        var rangeexp = Math.floor(Math.log(maxend) / Math.LN10 + 0.01);
+        if(Math.abs(rangeexp) > 3) {
+            if(ax.exponentformat === 'SI' || ax.exponentformat === 'B') {
+                ax._tickexponent = 3 * Math.round((rangeexp - 1) / 3);
             }
+            else ax._tickexponent = rangeexp;
         }
     }
-    else if(dtick.charAt(0) === 'M') ax._tickround = (dtick.length === 2) ? 'm' : 'y';
+    // D1 or D2 (log)
     else ax._tickround = null;
 }
 
@@ -961,7 +985,7 @@ axes.tickFirst = function(ax) {
 var yearFormat = d3.time.format('%Y'),
     monthFormat = d3.time.format('%b %Y'),
     dayFormat = d3.time.format('%b %-d'),
-    hourFormat = d3.time.format('%b %-d %Hh'),
+    yearMonthDayFormat = d3.time.format('%b %-d, %Y'),
     minuteFormat = d3.time.format('%H:%M'),
     secondFormat = d3.time.format(':%S');
 
@@ -1053,10 +1077,12 @@ function tickTextObj(ax, x, text) {
 function formatDate(ax, out, hover, extraPrecision) {
     var x = out.x,
         tr = ax._tickround,
+        trOriginal = tr,
         d = new Date(x),
         // suffix completes the full date info, to be included
-        // with only the first tick
-        suffix = '',
+        // with only the first tick or if any info before what's
+        // shown has changed
+        suffix,
         tt;
     if(hover && ax.hoverformat) {
         tt = modDateFormat(ax.hoverformat, x);
@@ -1069,21 +1095,18 @@ function formatDate(ax, out, hover, extraPrecision) {
     else {
         if(extraPrecision) {
             if(isNumeric(tr)) tr += 2;
-            else tr = {y: 'm', m: 'd', d: 'H', H: 'M', M: 'S', S: 2}[tr];
+            else tr = {y: 'm', m: 'd', d: 'M', M: 'S', S: 2}[tr];
         }
         if(tr === 'y') tt = yearFormat(d);
         else if(tr === 'm') tt = monthFormat(d);
         else {
-            if(x === ax._tmin && !hover) {
-                suffix = '<br>' + yearFormat(d);
-            }
+            if(tr === 'd') {
+                if(!hover) suffix = '<br>' + yearFormat(d);
 
-            if(tr === 'd') tt = dayFormat(d);
-            else if(tr === 'H') tt = hourFormat(d);
+                tt = dayFormat(d);
+            }
             else {
-                if(x === ax._tmin && !hover) {
-                    suffix = '<br>' + dayFormat(d) + ', ' + yearFormat(d);
-                }
+                if(!hover) suffix = '<br>' + yearMonthDayFormat(d);
 
                 tt = minuteFormat(d);
                 if(tr !== 'M') {
@@ -1093,10 +1116,19 @@ function formatDate(ax, out, hover, extraPrecision) {
                             .substr(1);
                     }
                 }
+                else if(trOriginal === 'd') {
+                    // for hover on axes with day ticks, minuteFormat (which
+                    // only includes %H:%M) isn't enough, you want the date too
+                    tt = dayFormat(d) + ' ' + tt;
+                }
             }
         }
     }
-    out.text = tt + suffix;
+    if(suffix && (!ax._inCalcTicks || (suffix !== ax._prevSuffix))) {
+        tt += suffix;
+        ax._prevSuffix = suffix;
+    }
+    out.text = tt;
 }
 
 function formatLog(ax, out, hover, extraPrecision, hideexp) {

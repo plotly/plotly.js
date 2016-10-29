@@ -1392,4 +1392,88 @@ describe('Test axes', function() {
             expect(ax._max).toEqual([{val: 6, pad: 15}]);
         });
     });
+
+    describe('calcTicks', function() {
+        function mockCalc(ax) {
+            Axes.setConvert(ax);
+            ax.tickfont = {};
+            return Axes.calcTicks(ax).map(function(v) { return v.text; });
+        }
+
+        it('provides a new date suffix whenever the suffix changes', function() {
+            var textOut = mockCalc({
+                type: 'date',
+                tickmode: 'linear',
+                tick0: '2000-01-01',
+                dtick: 14 * 24 * 3600 * 1000, // 14 days
+                range: ['1999-12-01', '2000-02-15']
+            });
+
+            var expectedText = [
+                'Dec 4<br>1999',
+                'Dec 18',
+                'Jan 1<br>2000',
+                'Jan 15',
+                'Jan 29',
+                'Feb 12'
+            ];
+            expect(textOut).toEqual(expectedText);
+
+            textOut = mockCalc({
+                type: 'date',
+                tickmode: 'linear',
+                tick0: '2000-01-01',
+                dtick: 12 * 3600 * 1000, // 12 hours
+                range: ['2000-01-03 11:00', '2000-01-06']
+            });
+
+            expectedText = [
+                '12:00<br>Jan 3, 2000',
+                '00:00<br>Jan 4, 2000',
+                '12:00',
+                '00:00<br>Jan 5, 2000',
+                '12:00',
+                '00:00<br>Jan 6, 2000'
+            ];
+            expect(textOut).toEqual(expectedText);
+
+            textOut = mockCalc({
+                type: 'date',
+                tickmode: 'linear',
+                tick0: '2000-01-01',
+                dtick: 1000, // 1 sec
+                range: ['2000-02-03 23:59:57', '2000-02-04 00:00:02']
+            });
+
+            expectedText = [
+                '23:59:57<br>Feb 3, 2000',
+                '23:59:58',
+                '23:59:59',
+                '00:00:00<br>Feb 4, 2000',
+                '00:00:01',
+                '00:00:02'
+            ];
+            expect(textOut).toEqual(expectedText);
+        });
+
+        it('should give dates extra precision if tick0 is weird', function() {
+            var textOut = mockCalc({
+                type: 'date',
+                tickmode: 'linear',
+                tick0: '2000-01-01 00:05',
+                dtick: 14 * 24 * 3600 * 1000, // 14 days
+                range: ['1999-12-01', '2000-02-15']
+            });
+
+            var expectedText = [
+                '00:05<br>Dec 4, 1999',
+                '00:05<br>Dec 18, 1999',
+                '00:05<br>Jan 1, 2000',
+                '00:05<br>Jan 15, 2000',
+                '00:05<br>Jan 29, 2000',
+                '00:05<br>Feb 12, 2000'
+            ];
+            expect(textOut).toEqual(expectedText);
+        });
+    });
 });
