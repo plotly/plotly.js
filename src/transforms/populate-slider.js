@@ -12,7 +12,7 @@ var Lib = require('../lib');
 
 exports.moduleType = 'transform';
 
-exports.name = 'magic';
+exports.name = 'populate-slider';
 
 exports.attributes = {
     sliderindex: {
@@ -46,8 +46,8 @@ exports.supplyDefaults = function(transformIn) {
     var enabled = coerce('enabled');
 
     if(enabled) {
-        coerce('framegroup');
         coerce('sliderindex');
+        coerce('framegroup', 'slider-' + transformOut.sliderindex + '-group');
         coerce('animationopts');
     }
 
