@@ -57,7 +57,7 @@ exports.supplyDefaults = function(transformIn) {
 exports.calcTransform = function(gd, trace, opts) {
     var frame;
     var framegroup = opts.framegroup;
-    var i, filterIndex;
+    var i, j, filterIndex;
 
     if(!gd.layout.sliders) {
         gd.layout.sliders = [];
@@ -66,6 +66,8 @@ exports.calcTransform = function(gd, trace, opts) {
     if(!slider) {
         slider = gd.layout.sliders[opts.sliderindex] = {};
     }
+
+    if(!slider._allGroups) slider._allGroups = {};
 
     var transforms = gd.data[trace.index].transforms;
 
@@ -95,31 +97,28 @@ exports.calcTransform = function(gd, trace, opts) {
     var target = filter.target;
     for(i = 0; i < target.length; i++) {
         groupHash[target[i]] = true;
+        slider._allGroups[target[i]] = true;
     }
-    var groups = Object.keys(groupHash);
+    var allGroups = Object.keys(slider._allGroups);
 
-    var step, src;
+    var step;
     var steps = slider.steps = slider.steps || [];
     var indexLookup = {};
 
     for(i = 0; i < steps.length; i++) {
         step = steps[i];
 
-        // Track the indices of the traces that generated a given slider step.
-        // If all other traces are removed as sources of this slider step, then
-        // the step should be removed
-        src = step._srcTraces;
-        if(src.length === 1 && src[0] === trace.index) {
-            step._flagForDelete = true;
-        }
-
         // Create a lookup table to go from value -> index
         indexLookup[steps[i].value] = i;
     }
 
+    // Duplicate the container array of steps so that we can reorder them
+    // according to the merged steps:
+    var existingSteps = steps.slice(0);
+
     // Iterate through all unique target values for this slider step:
-    for(i = 0; i < groups.length; i++) {
-        var label = groups[i];
+    for(i = 0; i < allGroups.length; i++) {
+        var label = allGroups[i];
 
         // The index of this step comes from what already exists via the lookup table:
         var index = indexLookup[label];
@@ -127,35 +126,14 @@ exports.calcTransform = function(gd, trace, opts) {
         // Or if not found, then append it:
         if(index === undefined) index = steps.length;
 
-        step = steps[index];
-        if(step) {
-            // Update the existing step:
-            if(step._srcTraces.indexOf(trace.index) === -1) {
-                step._srcTraces.push(trace.index);
-            }
-        } else {
-            step = steps[index] = {
-                _srcTraces: [trace.index],
-                label: groups[i],
-                value: groups[i],
-                method: 'animate',
-            };
-        }
+        step = steps[i] = existingSteps[index] || {
+            label: label,
+            value: label,
+            args: [[label]],
+            method: 'animate',
+        };
 
-        if(!step.args) step.args = [[groups[i]]];
         step.args[1] = Lib.extendDeep(step.args[1] || {}, opts.animationopts || {});
-
-        // Unset this entirely since this step is needed:
-        delete step._flagForDelete;
-    }
-
-    // Iterate through the steps and delete any that were:
-    //   1. only used by this trace, and
-    //   2. were not encountered above
-    for(i = steps.length - 1; i >= 0; i--) {
-        if(steps[i]._flagForDelete) {
-            steps = steps.splice(i, 1);
-        }
     }
 
     // Create a lookup table so we can match frames by the group and label
@@ -163,36 +141,71 @@ exports.calcTransform = function(gd, trace, opts) {
     var group;
     var frames = gd._transitionData._frames;
     var frameLookup = {};
+    var existingFrameIndices = [];
     for(i = 0; i < frames.length; i++) {
         if(frames[i].group === framegroup) {
-            frameLookup[frames[i].name] = i;
+            frameLookup[frames[i].name] = frames[i];
+            existingFrameIndices.push(i);
         }
     }
 
+    // Need to know *all* traces affected by this so that we set filters
+    // even if they're not affected by this particular group
+    var allTraceFilterLookup = {};
+    var frameIndices = {};
+    var frameIndex;
+
     // Now create the frames:
-    for(i = 0; i < groups.length; i++) {
-        group = groups[i];
-        frame = frames[frameLookup[group]];
+    for(i = 0; i < allGroups.length; i++) {
+        group = allGroups[i];
+        frame = frameLookup[group];
+
+        frameIndex = existingFrameIndices[i];
+        if(frameIndex === undefined) {
+            frameIndex = frames.length;
+        }
+        frameIndices[group] = frameIndex;
 
         if(!frame) {
             frame = {
-                name: groups[i],
+                name: allGroups[i],
                 group: framegroup
             };
-            frames.push(frame);
         }
+
+        // Overwrite the frame at this position with the frame corresponding
+        // to this frame of allGroups:
+        frames[frameIndex] = frame;
 
         if(!frame.data) {
             frame.data = [];
         }
 
+        if(!frame._filterIndexByTrace) frame._filterIndexByTrace = {};
+        frame._filterIndexByTrace[trace.index] = filterIndex;
+        allTraceFilterLookup = Lib.extendFlat(allTraceFilterLookup, frame._filterIndexByTrace);
+
         if(!frame.data[trace.index]) {
             frame.data[trace.index] = {};
         }
-
-        frame.data[trace.index]['transforms[' + filterIndex + '].value'] = [groups[i]];
     }
 
+    // Construct the property updates:
+    for(i = 0; i < allGroups.length; i++) {
+        group = allGroups[i];
+        frameIndex = frameIndices[group];
+        frame = frames[frameIndex];
+        frame.data = [];
+        frame.traces = Object.keys(allTraceFilterLookup);
+        for(j = 0; j < frame.traces.length; j++) {
+            frame.traces[j] = parseInt(frame.traces[j]);
+            var traceIndex = frame.traces[j];
+            frame.data[j] = {};
+            frame.data[j]['transforms[' + allTraceFilterLookup[traceIndex] + '].value'] = [group];
+        }
+    }
+
+    // Reconstruct the frame hash, just to be sure it's all good:
     var hash = gd._transitionData._frameHash = {};
     for(i = 0; i < frames.length; i++) {
         frame = frames[i];
