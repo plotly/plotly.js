@@ -1,4 +1,4 @@
-var Plotly = require('@lib/index');
+/* var Plotly = require('@lib/index');
 var Filter = require('@lib/filter');
 
 var Plots = require('@src/plots/plots');
@@ -10,5 +10,6 @@ var assertDims = require('../assets/assert_dims');
 var assertStyle = require('../assets/assert_style');
 
 describe('filter transforms defaults:', function() {
-    
+
 });
+*/

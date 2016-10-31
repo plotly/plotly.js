@@ -45,7 +45,7 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
 
     var steps = stepsDefaults(sliderIn, sliderOut);
 
-    var visible = coerce('visible', true);// steps.length > 0);
+    var visible = coerce('visible', steps.length > 0);
     if(!visible) return;
 
     coerce('active');

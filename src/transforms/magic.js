@@ -104,7 +104,7 @@ exports.calcTransform = function(gd, trace, opts) {
 
     for(i = 0; i < steps.length; i++) {
         step = steps[i];
-        
+
         // Track the indices of the traces that generated a given slider step.
         // If all other traces are removed as sources of this slider step, then
         // the step should be removed
@@ -123,10 +123,10 @@ exports.calcTransform = function(gd, trace, opts) {
 
         // The index of this step comes from what already exists via the lookup table:
         var index = indexLookup[label];
-        
+
         // Or if not found, then append it:
         if(index === undefined) index = steps.length;
-        
+
         step = steps[index];
         if(step) {
             // Update the existing step:
