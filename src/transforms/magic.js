@@ -54,22 +54,25 @@ exports.supplyDefaults = function(transformIn) {
     return transformOut;
 };
 
-exports.calcTransform = function(gd, trace, opts) {
-    var frame;
-    var framegroup = opts.framegroup;
-    var i, j, filterIndex;
+exports.transform = function(dataOut, extras) {
+    var i, filterIndex;
 
-    if(!gd.layout.sliders) {
-        gd.layout.sliders = [];
+    var transform = extras.transform;
+    var trace = extras.fullTrace;
+    var layout = extras.layout;
+
+    if(!layout.sliders) {
+        layout.sliders = [];
     }
-    var slider = gd.layout.sliders[opts.sliderindex];
+
+    var slider = layout.sliders[transform.sliderindex];
+
     if(!slider) {
-        slider = gd.layout.sliders[opts.sliderindex] = {};
+        slider = layout.sliders[transform.sliderindex] = {};
     }
 
-    if(!slider._allGroups) slider._allGroups = {};
-
-    var transforms = gd.data[trace.index].transforms;
+    if(!slider._allGroupHash) slider._allGroupHash = {};
+    var transforms = trace.transforms;
 
     // If there are no transforms, there's nothing to be done:
     if(!transforms) return;
@@ -86,6 +89,7 @@ exports.calcTransform = function(gd, trace, opts) {
         return;
     }
 
+    slider._filterIndex = filterIndex;
     var filter = transforms[filterIndex];
 
     // Currently only handle target data as arrays:
@@ -97,9 +101,9 @@ exports.calcTransform = function(gd, trace, opts) {
     var target = filter.target;
     for(i = 0; i < target.length; i++) {
         groupHash[target[i]] = true;
-        slider._allGroups[target[i]] = true;
+        slider._allGroupHash[target[i]] = true;
     }
-    var allGroups = Object.keys(slider._allGroups);
+    var allGroups = Object.keys(slider._allGroupHash);
 
     var step;
     var steps = slider.steps = slider.steps || [];
@@ -133,8 +137,22 @@ exports.calcTransform = function(gd, trace, opts) {
             method: 'animate',
         };
 
-        step.args[1] = Lib.extendDeep(step.args[1] || {}, opts.animationopts || {});
+        step.args[1] = Lib.extendDeep(step.args[1] || {}, transform.animationopts || {});
     }
+
+    return dataOut;
+};
+
+exports.calcTransform = function(gd, trace, opts) {
+    var frame;
+    var framegroup = opts.framegroup;
+    var i, j;
+    var slider = gd.layout.sliders[opts.sliderindex];
+    var allGroups = Object.keys(slider._allGroupHash);
+    var transforms = gd.data[trace.index].transforms;
+
+    // If there are no transforms, there's nothing to be done:
+    if(!transforms) return;
 
     // Create a lookup table so we can match frames by the group and label
     // and update frames accordingly:
@@ -182,7 +200,7 @@ exports.calcTransform = function(gd, trace, opts) {
         }
 
         if(!frame._filterIndexByTrace) frame._filterIndexByTrace = {};
-        frame._filterIndexByTrace[trace.index] = filterIndex;
+        frame._filterIndexByTrace[trace.index] = slider._filterIndex;
         allTraceFilterLookup = Lib.extendFlat(allTraceFilterLookup, frame._filterIndexByTrace);
 
         if(!frame.data[trace.index]) {
