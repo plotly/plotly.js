@@ -10,8 +10,6 @@
 
 var Lib = require('../lib');
 
-var sliderDefault = 
-
 exports.moduleType = 'transform';
 
 exports.name = 'magic';
@@ -57,6 +55,7 @@ exports.supplyDefaults = function(transformIn) {
 };
 
 exports.calcTransform = function(gd, trace, opts) {
+    var frame;
     var framegroup = opts.framegroup;
     var i, filterIndex;
 
@@ -92,15 +91,6 @@ exports.calcTransform = function(gd, trace, opts) {
         return;
     }
 
-    var frames = gd._transitionData._frames;
-    var existingFrameIndices = [];
-    for(i = 0; i < frames.length; i++) {
-        if(frames[i].group === framegroup) {
-            existingFrameIndices.push(i);
-        }
-    }
-
-
     var groupHash = {};
     var target = filter.target;
     for(i = 0; i < target.length; i++) {
@@ -108,32 +98,89 @@ exports.calcTransform = function(gd, trace, opts) {
     }
     var groups = Object.keys(groupHash);
 
-    var steps = [];
+    var step, src;
+    var steps = slider.steps = slider.steps || [];
+    var indexLookup = {};
+
+    for(i = 0; i < steps.length; i++) {
+        step = steps[i];
+        
+        // Track the indices of the traces that generated a given slider step.
+        // If all other traces are removed as sources of this slider step, then
+        // the step should be removed
+        src = step._srcTraces;
+        if(src.length === 1 && src[0] === trace.index) {
+            step._flagForDelete = true;
+        }
+
+        // Create a lookup table to go from value -> index
+        indexLookup[steps[i].value] = i;
+    }
+
+    // Iterate through all unique target values for this slider step:
     for(i = 0; i < groups.length; i++) {
-        steps[i] = {
-            label: groups[i],
-            value: groups[i],
-            method: 'animate',
-            args: [[groups[i]], opts.animationopts]
+        var label = groups[i];
+
+        // The index of this step comes from what already exists via the lookup table:
+        var index = indexLookup[label];
+        
+        // Or if not found, then append it:
+        if(index === undefined) index = steps.length;
+        
+        step = steps[index];
+        if(step) {
+            // Update the existing step:
+            if(step._srcTraces.indexOf(trace.index) === -1) {
+                step._srcTraces.push(trace.index);
+            }
+        } else {
+            step = steps[index] = {
+                _srcTraces: [trace.index],
+                label: groups[i],
+                value: groups[i],
+                method: 'animate',
+            };
+        }
+
+        if(!step.args) step.args = [[groups[i]]];
+        step.args[1] = Lib.extendDeep(step.args[1] || {}, opts.animationopts || {});
+
+        // Unset this entirely since this step is needed:
+        delete step._flagForDelete;
+    }
+
+    // Iterate through the steps and delete any that were:
+    //   1. only used by this trace, and
+    //   2. were not encountered above
+    for(i = steps.length - 1; i >= 0; i--) {
+        if(steps[i]._flagForDelete) {
+            steps = steps.splice(i, 1);
         }
     }
 
-    slider.steps = steps;
+    // Create a lookup table so we can match frames by the group and label
+    // and update frames accordingly:
+    var group;
+    var frames = gd._transitionData._frames;
+    var frameLookup = {};
+    for(i = 0; i < frames.length; i++) {
+        if(frames[i].group === framegroup) {
+            frameLookup[frames[i].name] = i;
+        }
+    }
 
+    // Now create the frames:
     for(i = 0; i < groups.length; i++) {
-        var frame;
-        if(i < existingFrameIndices.length) {
-            frame = frames[existingFrameIndices[i]];
-        } else {
+        group = groups[i];
+        frame = frames[frameLookup[group]];
+
+        if(!frame) {
             frame = {
-                group: framegroup,
+                name: groups[i],
+                group: framegroup
             };
             frames.push(frame);
         }
-
-        // Overwrite the frame. The goal isn't to preserve frames as they were.
-        // The goal is to avoid affecting *other* frames from outside the group
-        frame.name = groups[i];
 
         if(!frame.data) {
             frame.data = [];
@@ -147,8 +194,8 @@ exports.calcTransform = function(gd, trace, opts) {
     }
 
     var hash = gd._transitionData._frameHash = {};
-    for(i = 0; i < gd._transitionData._frames.length; i++) {
-        frame = gd._transitionData._frames[i];
+    for(i = 0; i < frames.length; i++) {
+        frame = frames[i];
         if(frame && frame.name) {
             hash[frame.name] = frame;
         }
