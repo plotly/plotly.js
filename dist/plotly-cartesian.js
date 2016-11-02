@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v1.19.1
+* plotly.js (cartesian) v1.19.2
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -25394,7 +25394,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.19.1';
+exports.version = '1.19.2';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -47257,7 +47257,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         ya = pointData.ya,
         barDelta = (hovermode === 'closest') ?
             t.barwidth / 2 :
-            t.bargroupwidth,
+            t.bargroupwidth / 2,
         barPos;
 
     if(hovermode !== 'closest') barPos = function(di) { return di.p; };
