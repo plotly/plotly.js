@@ -579,3 +579,88 @@ describe('Test animate API', function() {
         });
     });
 });
+
+describe('layout animation', function() {
+    'use strict';
+
+    var gd;
+    var dur = 30;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+        var mockCopy = Lib.extendDeep({}, mock);
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('redraws after a layout animation', function(done) {
+        var redraws = 0;
+        gd.on('plotly_redraw', function() {redraws++;});
+
+        Plotly.animate(gd,
+            {layout: {'xaxis.range': [0, 1]}},
+            {frame: {redraw: true, duration: dur}, transition: {duration: dur}}
+        ).then(function() {
+            // Something is delayed a single tick, it seems, so the redraw
+            // isn't triggered until next tick:
+            expect(redraws).toBe(1);
+        }).catch(fail).then(done);
+    });
+
+    it('forces a relayout after layout animations', function(done) {
+        var relayouts = 0;
+        var restyles = 0;
+        var redraws = 0;
+        gd.on('plotly_relayout', function() {relayouts++;});
+        gd.on('plotly_restyle', function() {restyles++;});
+        gd.on('plotly_redraw', function() {redraws++;});
+
+        Plotly.animate(gd,
+            {layout: {'xaxis.range': [0, 1]}},
+            {frame: {redraw: false, duration: dur}, transition: {duration: dur}}
+        ).then(function() {
+            // Something is delayed a single tick, it seems, so the redraw
+            // isn't triggered until next tick:
+            expect(relayouts).toBe(1);
+            expect(restyles).toBe(0);
+            expect(redraws).toBe(0);
+        }).catch(fail).then(done);
+    });
+
+    it('triggers plotly_animated after a single layout animation', function(done) {
+        var animateds = 0;
+        gd.on('plotly_animated', function() {animateds++;});
+
+        Plotly.animate(gd, [
+            {layout: {'xaxis.range': [0, 1]}},
+        ], {frame: {redraw: false, duration: dur}, transition: {duration: dur}}
+        ).then(function() {
+            // Wait a bit just to be sure:
+            setTimeout(function() {
+                expect(animateds).toBe(1);
+                done();
+            }, dur);
+        });
+    });
+
+    it('triggers plotly_animated after a multi-step layout animation', function(done) {
+        var animateds = 0;
+        gd.on('plotly_animated', function() {animateds++;});
+
+        Plotly.animate(gd, [
+            {layout: {'xaxis.range': [0, 1]}},
+            {layout: {'xaxis.range': [2, 4]}},
+        ], {frame: {redraw: false, duration: dur}, transition: {duration: dur}}
+        ).then(function() {
+            // Wait a bit just to be sure:
+            setTimeout(function() {
+                expect(animateds).toBe(1);
+                done();
+            }, dur);
+        });
+    });
+});
