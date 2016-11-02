@@ -676,6 +676,98 @@ describe('A bar plot', function() {
     });
 });
 
+describe('bar hover', function() {
+    'use strict';
+
+    var gd;
+
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function getPointData(gd) {
+        var cd = gd.calcdata,
+            subplot = gd._fullLayout._plots.xy;
+
+        return {
+            index: false,
+            distance: 20,
+            cd: cd[0],
+            trace: cd[0][0].trace,
+            xa: subplot.xaxis,
+            ya: subplot.yaxis
+        };
+    }
+
+    function _hover(gd, xval, yval, closest) {
+        var pointData = getPointData(gd);
+        var pt = Bar.hoverPoints(pointData, xval, yval, closest)[0];
+
+        return {
+            style: [pt.index, pt.color, pt.xLabelVal, pt.yLabelVal],
+            pos: [pt.x0, pt.x1, pt.y0, pt.y1]
+        };
+    }
+
+    function assertPos(actual, expected) {
+        var TOL = 5;
+
+        actual.forEach(function(p, i) {
+            expect(p).toBeWithin(expected[i], TOL);
+        });
+    }
+
+    describe('with orientation *v*', function() {
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            var mock = Lib.extendDeep({}, require('@mocks/11.json'));
+
+            Plotly.plot(gd, mock.data, mock.layout).then(done);
+        });
+
+        it('should return the correct hover point data (case x)', function() {
+            var out = _hover(gd, 0, 0, 'x');
+
+            expect(out.style).toEqual([0, 'rgb(255, 102, 97)', 0, 13.23]);
+            assertPos(out.pos, [11.87, 106.8, 152.76, 152.76]);
+        });
+
+        it('should return the correct hover point data (case closest)', function() {
+            var out = _hover(gd, -0.2, 12, 'closest');
+
+            expect(out.style).toEqual([0, 'rgb(255, 102, 97)', 0, 13.23]);
+            assertPos(out.pos, [11.87, 59.33, 152.76, 152.76]);
+        });
+    });
+
+    describe('with orientation *h*', function() {
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            var mock = Lib.extendDeep({}, require('@mocks/bar_attrs_group_norm.json'));
+
+            Plotly.plot(gd, mock.data, mock.layout).then(done);
+        });
+
+        it('should return the correct hover point data (case y)', function() {
+            var out = _hover(gd, 185.645, 0.15, 'y');
+
+            expect(out.style).toEqual([0, '#1f77b4', 75, 0]);
+            assertPos(out.pos, [182.88, 182.88, 214.5, 170.5]);
+        });
+
+        it('should return the correct hover point data (case closest)', function() {
+            var out = _hover(gd, 135.88, -0.15, 'closest');
+
+            expect(out.style).toEqual([0, '#1f77b4', 75, 0]);
+            assertPos(out.pos, [182.88, 182.88, 214.5, 192.5]);
+        });
+    });
+
+});
 
 function mockBarPlot(dataWithoutTraceType, layout) {
     var traceTemplate = { type: 'bar' };
