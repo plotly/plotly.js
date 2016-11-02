@@ -22,7 +22,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         ya = pointData.ya,
         barDelta = (hovermode === 'closest') ?
             t.barwidth / 2 :
-            t.bargroupwidth,
+            t.bargroupwidth / 2,
         barPos;
 
     if(hovermode !== 'closest') barPos = function(di) { return di.p; };
