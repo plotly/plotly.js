@@ -19,7 +19,6 @@ var Drawing = require('../../components/drawing');
 var setConvert = require('../cartesian/set_convert');
 var extendFlat = require('../../lib/extend').extendFlat;
 var Axes = require('../cartesian/axes');
-var filterVisible = require('../../lib/filter_visible');
 var dragElement = require('../../components/dragelement');
 var Titles = require('../../components/titles');
 var prepSelect = require('../cartesian/select');
@@ -94,7 +93,7 @@ proto.plot = function(ternaryData, fullLayout) {
         var moduleData = traceHash[moduleNames[i]];
         var _module = moduleData[0]._module;
 
-        _module.plot(_this, filterVisible(moduleData), ternaryLayout);
+        _module.plot(_this, Lib.filterVisible(moduleData), ternaryLayout);
     }
 
     _this.traceHash = traceHash;
