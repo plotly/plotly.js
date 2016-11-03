@@ -42,8 +42,10 @@ describe('annotations relayout', function() {
     'use strict';
 
     var mock = require('@mocks/annotations.json');
-    var len = mock.layout.annotations.length;
     var gd;
+
+    // there is 1 visible: false item
+    var len = mock.layout.annotations.length - 1;
 
     beforeEach(function(done) {
         gd = createGraphDiv();
@@ -77,6 +79,11 @@ describe('annotations relayout', function() {
         })
         .then(function() {
             expect(countAnnotations()).toEqual(len - 1);
+
+            return Plotly.relayout(gd, 'annotations[' + 0 + '].visible', false);
+        })
+        .then(function() {
+            expect(countAnnotations()).toEqual(len - 2);
 
             return Plotly.relayout(gd, { annotations: [] });
         })

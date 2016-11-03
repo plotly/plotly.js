@@ -23,6 +23,10 @@ module.exports = function handleAnnotationDefaults(annIn, fullLayout) {
         return Lib.coerce(annIn, annOut, attributes, attr, dflt);
     }
 
+    var visible = coerce('visible');
+
+    if(!visible) return annOut;
+
     coerce('opacity');
     coerce('align');
     coerce('bgcolor');
