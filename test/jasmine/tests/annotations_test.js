@@ -86,4 +86,27 @@ describe('annotations relayout', function() {
             done();
         });
     });
+
+    it('should be able update annotations', function(done) {
+
+        function assertText(index, expected) {
+            var query = '.annotation[data-index="' + index + '"]',
+                actual = d3.select(query).select('text').text();
+
+            expect(actual).toEqual(expected);
+        }
+
+        assertText(0, 'left top');
+
+        Plotly.relayout(gd, 'annotations[0].text', 'hello').then(function() {
+            assertText(0, 'hello');
+
+            return Plotly.relayout(gd, 'annotations[0].text', null);
+        })
+        .then(function() {
+            assertText(0, 'new text');
+        })
+        .then(done);
+
+    });
 });
