@@ -70,17 +70,17 @@ describe('annotations relayout', function() {
         Plotly.relayout(gd, 'annotations[' + len + ']', ann).then(function() {
             expect(countAnnotations()).toEqual(len + 1);
 
-            return Plotly.relayout(gd, 'annotations[' + 0 + ']', 'remove');
+            return Plotly.relayout(gd, 'annotations[0]', 'remove');
         })
         .then(function() {
             expect(countAnnotations()).toEqual(len);
 
-            return Plotly.relayout(gd, 'annotations[' + 0 + ']', null);
+            return Plotly.relayout(gd, 'annotations[0]', null);
         })
         .then(function() {
             expect(countAnnotations()).toEqual(len - 1);
 
-            return Plotly.relayout(gd, 'annotations[' + 0 + '].visible', false);
+            return Plotly.relayout(gd, 'annotations[0].visible', false);
         })
         .then(function() {
             expect(countAnnotations()).toEqual(len - 2);

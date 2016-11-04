@@ -190,13 +190,13 @@ describe('Test shapes:', function() {
                 expect(countShapePathsInUpperLayer()).toEqual(pathCount);
                 expect(countShapes(gd)).toEqual(index);
 
-                return Plotly.relayout(gd, 'shapes[' + 2 + '].visible', false);
+                return Plotly.relayout(gd, 'shapes[2].visible', false);
             })
             .then(function() {
                 expect(countShapePathsInUpperLayer()).toEqual(pathCount - 1);
                 expect(countShapes(gd)).toEqual(index);
 
-                return Plotly.relayout(gd, 'shapes[' + 1 + ']', null);
+                return Plotly.relayout(gd, 'shapes[1]', null);
             })
             .then(function() {
                 expect(countShapePathsInUpperLayer()).toEqual(pathCount - 2);
