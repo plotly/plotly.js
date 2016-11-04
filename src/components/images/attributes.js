@@ -14,6 +14,15 @@ var cartesianConstants = require('../../plots/cartesian/constants');
 module.exports = {
     _isLinkedToArray: true,
 
+    visible: {
+        valType: 'boolean',
+        role: 'info',
+        dflt: true,
+        description: [
+            'Determines whether or not this annotation is visible.'
+        ].join(' ')
+    },
+
     source: {
         valType: 'string',
         role: 'info',
