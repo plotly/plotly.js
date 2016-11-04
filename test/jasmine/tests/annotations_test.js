@@ -138,9 +138,14 @@ describe('annotations autosize', function() {
             var fullLayout = gd._fullLayout;
             var PREC = 1;
 
+            // xaxis2 need a bit more tolerance to pass on CI
+            // this most likely due to the different text bounding box values
+            // on headfull vs headless browsers.
+            var PREC2 = 0.1;
+
             expect(fullLayout.xaxis.range).toBeCloseToArray(x, PREC, '- xaxis');
             expect(fullLayout.yaxis.range).toBeCloseToArray(y, PREC, '- yaxis');
-            expect(fullLayout.xaxis2.range).toBeCloseToArray(x2, PREC, 'xaxis2');
+            expect(fullLayout.xaxis2.range).toBeCloseToArray(x2, PREC2, 'xaxis2');
             expect(fullLayout.yaxis2.range).toBeCloseToArray(y2, PREC, 'yaxis2');
             expect(fullLayout.xaxis3.range).toBeCloseToArray(x3, PREC, 'xaxis3');
             expect(fullLayout.yaxis3.range).toBeCloseToArray(y3, PREC, 'yaxis3');
