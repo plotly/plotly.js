@@ -17,6 +17,15 @@
       "cmax": 4,
       "showscale": false
     }
+  }, {
+    "x": [1,2,3,4],
+    "y": [2.5,2.5,2.5,2.5],
+    "mode": "markers",
+    "marker": {
+      "color": [0,0,0,0],
+      "size": 10,
+      "showscale": false
+    }
   }],
   "layout": {
     "showlegend": false
