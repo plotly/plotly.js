@@ -6,6 +6,7 @@ var Lib = require('@src/lib');
 var Dates = require('@src/lib/dates');
 
 var d3 = require('d3');
+var customMatchers = require('../assets/custom_matchers');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -115,5 +116,85 @@ describe('annotations relayout', function() {
         })
         .then(done);
 
+    });
+});
+
+describe('annotations autosize', function() {
+    'use strict';
+
+    var mock = Lib.extendDeep({}, require('@mocks/annotations-autorange.json'));
+    var gd;
+
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should adapt to relayout calls', function(done) {
+        gd = createGraphDiv();
+
+        function assertRanges(x, y, x2, y2, x3, y3) {
+            var fullLayout = gd._fullLayout;
+            var PREC = 1;
+
+            expect(fullLayout.xaxis.range).toBeCloseToArray(x, PREC, '- xaxis');
+            expect(fullLayout.yaxis.range).toBeCloseToArray(y, PREC, '- yaxis');
+            expect(fullLayout.xaxis2.range).toBeCloseToArray(x2, PREC, 'xaxis2');
+            expect(fullLayout.yaxis2.range).toBeCloseToArray(y2, PREC, 'yaxis2');
+            expect(fullLayout.xaxis3.range).toBeCloseToArray(x3, PREC, 'xaxis3');
+            expect(fullLayout.yaxis3.range).toBeCloseToArray(y3, PREC, 'yaxis3');
+        }
+
+        Plotly.plot(gd, mock).then(function() {
+            assertRanges(
+                [0.97, 2.03], [0.97, 2.03],
+                [-0.32, 3.38], [0.42, 2.58],
+                [0.9, 2.1], [0.86, 2.14]
+            );
+
+            return Plotly.relayout(gd, {
+                'annotations[0].visible': false,
+                'annotations[4].visible': false,
+                'annotations[8].visible': false
+            });
+        })
+        .then(function() {
+            assertRanges(
+                [1.44, 2.02], [0.97, 2.03],
+                [1.31, 2.41], [0.42, 2.58],
+                [1.44, 2.1], [0.86, 2.14]
+            );
+
+            return Plotly.relayout(gd, {
+                'annotations[2].visible': false,
+                'annotations[5].visible': false,
+                'annotations[9].visible': false
+            });
+        })
+        .then(function() {
+            assertRanges(
+                [1.44, 2.02], [0.99, 1.52],
+                [0.5, 2.5], [0.42, 2.58],
+                [0.5, 2.5], [0.86, 2.14]
+            );
+
+            return Plotly.relayout(gd, {
+                'annotations[0].visible': true,
+                'annotations[2].visible': true,
+                'annotations[4].visible': true,
+                'annotations[5].visible': true,
+                'annotations[8].visible': true,
+                'annotations[9].visible': true
+            });
+        })
+        .then(function() {
+            assertRanges(
+                [0.97, 2.03], [0.97, 2.03],
+                [-0.32, 3.38], [0.42, 2.58],
+                [0.9, 2.1], [0.86, 2.14]
+            );
+        })
+        .then(done);
     });
 });
