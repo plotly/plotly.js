@@ -41,9 +41,8 @@ module.exports = function style(gd) {
         var trace = d[0].trace,
             marker = trace.marker,
             markerLine = marker.line,
-            markerIn = (trace._input || {}).marker || {},
-            markerScale = Drawing.tryColorscale(marker, markerIn, ''),
-            lineScale = Drawing.tryColorscale(marker, markerIn, 'line.');
+            markerScale = Drawing.tryColorscale(marker, ''),
+            lineScale = Drawing.tryColorscale(marker, 'line');
 
         d3.select(this).selectAll('path').each(function(d) {
             // allow all marker and marker line colors to be scaled
