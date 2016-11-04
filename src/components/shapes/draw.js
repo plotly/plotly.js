@@ -49,7 +49,9 @@ function draw(gd) {
     fullLayout._shapeSubplotLayer.selectAll('path').remove();
 
     for(var i = 0; i < fullLayout.shapes.length; i++) {
-        drawOne(gd, i);
+        if(fullLayout.shapes[i].visible) {
+            drawOne(gd, i);
+        }
     }
 
     // may need to resurrect this if we put text (LaTeX) in shapes
@@ -169,8 +171,6 @@ function updateShape(gd, index, opt, value) {
     // TODO: clean this up and remove it.
     if(!optionsIn) return;
 
-    var oldRef = {xref: optionsIn.xref, yref: optionsIn.yref};
-
     // alter the input shape as requested
     var optionsEdit = {};
     if(typeof opt === 'string' && opt) optionsEdit[opt] = value;
@@ -182,7 +182,12 @@ function updateShape(gd, index, opt, value) {
         Lib.nestedProperty(optionsIn, k).set(optionsEdit[k]);
     }
 
-    var posAttrs = ['x0', 'x1', 'y0', 'y1'];
+    // return early in visible: false updates
+    if(optionsIn.visible === false) return;
+
+    var oldRef = {xref: optionsIn.xref, yref: optionsIn.yref},
+        posAttrs = ['x0', 'x1', 'y0', 'y1'];
+
     for(i = 0; i < 4; i++) {
         var posAttr = posAttrs[i];
         // if we don't have an explicit position already,
