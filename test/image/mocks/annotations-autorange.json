@@ -55,7 +55,6 @@
             {"x":1.5,"y":2,"text":"Top","ay":50,"ax":0},
             {"x":1.5,"y":1,"text":"Bottom","ay":-50,"ax":0},
             {"xref":"x2","yref":"y2","text":"From left","y":1.5,"ax":-50,"ay":0,"x":1},
-            {"xref":"x2","yref":"y2","text":"invisible","visible":false},
             {"xref":"x2","yref":"y2","text":"From right","y":1.5,"x":2,"ay":0,"ax":50},
             {"xref":"x2","yref":"y2","text":"From top","y":2,"ax":0,"ay":-50,"x":1.5},
             {"xref":"x2","yref":"y2","text":"From Bottom","y":1,"ax":0,"ay":50,"x":1.5},
