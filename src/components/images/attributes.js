@@ -19,7 +19,7 @@ module.exports = {
         role: 'info',
         dflt: true,
         description: [
-            'Determines whether or not this annotation is visible.'
+            'Determines whether or not this image is visible.'
         ].join(' ')
     },
 
