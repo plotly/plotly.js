@@ -590,6 +590,20 @@ describe('Test lib.js:', function() {
             expect(computed).toLooseDeepEqual(expected);
         });
 
+        it('does not skip over array container set to null values', function() {
+            var input = {title: 'clear annotations', annotations: null};
+            var expected = {title: 'clear annotations', annotations: null};
+            var computed = Lib.expandObjectPaths(input);
+            expect(computed).toLooseDeepEqual(expected);
+        });
+
+        it('expands array containers', function() {
+            var input = {title: 'clear annotation 1', 'annotations[1]': { title: 'new' }};
+            var expected = {title: 'clear annotation 1', annotations: [null, { title: 'new' }]};
+            var computed = Lib.expandObjectPaths(input);
+            expect(computed).toLooseDeepEqual(expected);
+        });
+
         // TODO: This test is unimplemented since it's a currently-unused corner case.
         // Getting the test to pass requires some extension (pun?) to extendDeepNoArrays
         // that's intelligent enough to only selectively merge *some* arrays, in particular
