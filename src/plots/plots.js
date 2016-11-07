@@ -1090,6 +1090,8 @@ plots.purge = function(gd) {
     // remove modebar
     if(fullLayout._modeBar) fullLayout._modeBar.destroy();
 
+    gd._transitionData._interruptCallbacks.length = 0;
+
     if(gd._transitionData && gd._transitionData._animationRaf) {
         window.cancelAnimationFrame(gd._transitionData._animationRaf);
     }
@@ -1784,6 +1786,11 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
     }
 
     function completeTransition(callback) {
+        // This a simple workaround for tests which purge the graph before animations
+        // have completed. That's not a very common case, so this is the simplest
+        // fix.
+        if(!gd._transitionData) return;
+
         flushCallbacks(gd._transitionData._interruptCallbacks);
 
         return Promise.resolve().then(function() {

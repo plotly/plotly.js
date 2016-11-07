@@ -9,16 +9,30 @@
 'use strict';
 
 var Lib = require('../lib');
+var supplySliderDefaults = require('../components/sliders/defaults');
 
 exports.moduleType = 'transform';
 
 exports.name = 'populate-slider';
 
 exports.attributes = {
+    filterindex: {
+        valType: 'integer',
+        role: 'info',
+        dflt: 0,
+        description: [
+            'Array index of the filter transform. If not provided, it will use the',
+            'first available filter transform for this trace'
+        ].join(' ')
+    },
     sliderindex: {
         valType: 'integer',
         role: 'info',
-        dflt: 0
+        dflt: 0,
+        description: [
+            'Array index of the slider component. If not provided, it will create',
+            'a new slider in the plot layout'
+        ].join(' ')
     },
     framegroup: {
         valType: 'string',
@@ -29,6 +43,7 @@ exports.attributes = {
         valType: 'boolean',
         role: 'info',
         dflt: true,
+        description: 'Whether the transform is ignored or not.'
     },
     animationopts: {
         valType: 'any',
@@ -47,6 +62,7 @@ exports.supplyDefaults = function(transformIn) {
 
     if(enabled) {
         coerce('sliderindex');
+        coerce('filterindex');
         coerce('framegroup', 'slider-' + transformOut.sliderindex + '-group');
         coerce('animationopts');
     }
@@ -60,6 +76,7 @@ exports.transform = function(dataOut, extras) {
     var transform = extras.transform;
     var trace = extras.fullTrace;
     var layout = extras.layout;
+    var transforms = trace.transforms;
 
     if(!layout.sliders) {
         layout.sliders = [];
@@ -71,54 +88,120 @@ exports.transform = function(dataOut, extras) {
         slider = layout.sliders[transform.sliderindex] = {};
     }
 
-    if(!slider._allGroupHash) slider._allGroupHash = {};
-    var transforms = trace.transforms;
+    var infos = slider._autoStepInfo;
+    if(!infos) infos = slider._autoStepInfo = {};
 
-    // If there are no transforms, there's nothing to be done:
-    if(!transforms) return;
+    var info = infos[dataOut[0].index];
+    if(!info) info = infos[dataOut[0].index] = {};
 
-    // Find the first filter transform:
-    for(filterIndex = 0; filterIndex < transforms.length; filterIndex++) {
-        if(transforms[filterIndex].type === 'filter') {
-            break;
+    if(!transform.filterindex) {
+        // Find the first filter transform:
+        for(filterIndex = 0; filterIndex < transforms.length; filterIndex++) {
+            if(transforms[filterIndex].type === 'filter') {
+                break;
+            }
         }
+    } else {
+        filterIndex = transform.filterindex;
     }
 
     // Looks like no transform was found:
-    if(filterIndex >= transforms.length) {
-        return;
+    if(filterIndex >= transforms.length || !transforms[filterIndex] || transforms[filterIndex].type !== 'filter') {
+        return dataOut;
     }
 
-    slider._filterIndex = filterIndex;
+    info._transforms = transforms;
+    info._transform = transform;
+    info._filterIndex = filterIndex;
+    info._filter = transforms[filterIndex];
+    info._trace = dataOut[0];
+    info._transformIndex = transforms.indexOf(transform);
+
+    return dataOut;
+};
+
+exports.calcTransform = function(gd, trace, opts) {
+    var i, j;
+
+    var layout = gd.layout;
+    var slider = layout.sliders[opts.sliderindex];
+    var transforms = trace.transforms;
+
+    var info = slider._autoStepInfo[trace.index];
+
+    if(!info) return trace;
+
+    var filterIndex = info._filterIndex;
+
+    // If there was no filter from above, then bail:
+    if(!filterIndex) return trace;
+
     var filter = transforms[filterIndex];
 
-    // Currently only handle target data as arrays:
-    if(!Array.isArray(filter.target)) {
-        return;
+    // Compute the groups pulled in by this trace:
+    info._groups = {};
+    var target = filter.target;
+    var groupHash = {};
+    if(trace.visible) {
+        for(i = 0; i < target.length; i++) {
+            groupHash[target[i]] = true;
+        }
+    }
+    info._groups = Object.keys(groupHash);
+
+    // Check through all traces to make sure the groups
+    // still apply:
+    var tTransform;
+    var traceIndices = Object.keys(slider._autoStepInfo);
+    var allGroups = {};
+    for(i = 0; i < traceIndices.length; i++) {
+        var tInfo = slider._autoStepInfo[i];
+
+        if(!tInfo) continue;
+
+        // This is a little crazy, but we need to update references to the trace,
+        // otherwise they tend to be outdated:
+        var t = tInfo._trace;
+
+        // The referene to the trace seems outdate so that we need to check the visibility
+        // of the *newly default-supplied trace:
+        var curTrace = gd._fullData[t.index];
+        if(!curTrace || !curTrace.visible || !curTrace.transforms) continue;
+
+        // If any of these conditions (and perhaps more) apply, then the
+        // trace's groups should no longer rapply
+        if(t.visible && t.transforms && t.transforms[tInfo._transformIndex]) {
+            var tTransform = t.transforms[tInfo._transformIndex];
+            var tFilter = t.transforms[tInfo._filterIndex];
+        }
+
+        // There's no exit event, so we just have to look through these and remove
+        // a trace's groups if it appears to be no longer present or active:
+        if(!tTransform || !tFilter || !Array.isArray(tFilter.target)) {
+            delete slider._autoStepInfo[i];
+        } else {
+            for(j = 0; j < tFilter.target.length; j++) {
+                allGroups[tFilter.target[j]] = true;
+            }
+        }
     }
 
-    var groupHash = {};
-    var target = filter.target;
-    for(i = 0; i < target.length; i++) {
-        groupHash[target[i]] = true;
-        slider._allGroupHash[target[i]] = true;
-    }
-    var allGroups = Object.keys(slider._allGroupHash);
+    var allGroups = Object.keys(allGroups);
+    console.log('allGroups:', allGroups);
 
     var step;
-    var steps = slider.steps = slider.steps || [];
+    var steps = slider.steps;
+    if(!steps) steps = slider.steps = [];
+
     var indexLookup = {};
-
     for(i = 0; i < steps.length; i++) {
-        step = steps[i];
-
-        // Create a lookup table to go from value -> index
         indexLookup[steps[i].value] = i;
     }
 
     // Duplicate the container array of steps so that we can reorder them
     // according to the merged steps:
     var existingSteps = steps.slice(0);
+    steps.length = 0;
 
     // Iterate through all unique target values for this slider step:
     for(i = 0; i < allGroups.length; i++) {
@@ -137,22 +220,11 @@ exports.transform = function(dataOut, extras) {
             method: 'animate',
         };
 
-        step.args[1] = Lib.extendDeep(step.args[1] || {}, transform.animationopts || {});
+        step.args[1] = Lib.extendDeep(step.args[1] || {}, info._transform.animationopts || {});
     }
 
-    return dataOut;
-};
-
-exports.calcTransform = function(gd, trace, opts) {
     var frame;
     var framegroup = opts.framegroup;
-    var i, j;
-    var slider = gd.layout.sliders[opts.sliderindex];
-    var allGroups = Object.keys(slider._allGroupHash);
-    var transforms = gd.data[trace.index].transforms;
-
-    // If there are no transforms, there's nothing to be done:
-    if(!transforms) return;
 
     // Create a lookup table so we can match frames by the group and label
     // and update frames accordingly:
@@ -199,10 +271,6 @@ exports.calcTransform = function(gd, trace, opts) {
             frame.data = [];
         }
 
-        if(!frame._filterIndexByTrace) frame._filterIndexByTrace = {};
-        frame._filterIndexByTrace[trace.index] = slider._filterIndex;
-        allTraceFilterLookup = Lib.extendFlat(allTraceFilterLookup, frame._filterIndexByTrace);
-
         if(!frame.data[trace.index]) {
             frame.data[trace.index] = {};
         }
@@ -214,14 +282,17 @@ exports.calcTransform = function(gd, trace, opts) {
         frameIndex = frameIndices[group];
         frame = frames[frameIndex];
         frame.data = [];
-        frame.traces = Object.keys(allTraceFilterLookup);
-        for(j = 0; j < frame.traces.length; j++) {
-            frame.traces[j] = parseInt(frame.traces[j]);
-            var traceIndex = frame.traces[j];
+        frame.traces = [];
+        for(j = 0; j < traceIndices.length; j++) {
+            frame.traces[j] = parseInt(traceIndices[j]);
+            var tInfo = slider._autoStepInfo[j];
+            if(!tInfo) continue;
             frame.data[j] = {};
-            frame.data[j]['transforms[' + allTraceFilterLookup[traceIndex] + '].value'] = [group];
+            frame.data[j]['transforms[' + tInfo._filterIndex + '].value'] = [group];
         }
     }
+
+    supplySliderDefaults(gd.layout, gd._fullLayout);
 
     // Reconstruct the frame hash, just to be sure it's all good:
     var hash = gd._transitionData._frameHash = {};
