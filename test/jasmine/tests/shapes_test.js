@@ -7,6 +7,7 @@ var Lib = require('@src/lib');
 var Axes = PlotlyInternal.Axes;
 
 var d3 = require('d3');
+var customMatchers = require('../assets/custom_matchers');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -183,18 +184,23 @@ describe('Test shapes:', function() {
                 expect(countShapePathsInUpperLayer()).toEqual(pathCount + 1);
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);
-            })
-            .then(function() {
+
                 return Plotly.relayout(gd, 'shapes[' + index + ']', 'remove');
             })
             .then(function() {
                 expect(countShapePathsInUpperLayer()).toEqual(pathCount);
                 expect(countShapes(gd)).toEqual(index);
 
-                return Plotly.relayout(gd, 'shapes[' + 1 + ']', null);
+                return Plotly.relayout(gd, 'shapes[2].visible', false);
             })
             .then(function() {
                 expect(countShapePathsInUpperLayer()).toEqual(pathCount - 1);
+                expect(countShapes(gd)).toEqual(index);
+
+                return Plotly.relayout(gd, 'shapes[1]', null);
+            })
+            .then(function() {
+                expect(countShapePathsInUpperLayer()).toEqual(pathCount - 2);
                 expect(countShapes(gd)).toEqual(index - 1);
             })
             .then(done);
@@ -247,6 +253,69 @@ describe('Test shapes:', function() {
                 expect(countShapes(gd)).toEqual(index + 1);
             }).then(done);
         });
+    });
+});
+
+describe('shapes autosize', function() {
+    'use strict';
+
+    var gd;
+
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should adapt to relayout calls', function(done) {
+        gd = createGraphDiv();
+
+        var mock = {
+            data: [{}],
+            layout: {
+                shapes: [{
+                    type: 'line',
+                    x0: 0,
+                    y0: 0,
+                    x1: 1,
+                    y1: 1
+                }, {
+                    type: 'line',
+                    x0: 0,
+                    y0: 0,
+                    x1: 2,
+                    y1: 2
+                }]
+            }
+        };
+
+        function assertRanges(x, y) {
+            var fullLayout = gd._fullLayout;
+            var PREC = 1;
+
+            expect(fullLayout.xaxis.range).toBeCloseToArray(x, PREC, '- xaxis');
+            expect(fullLayout.yaxis.range).toBeCloseToArray(y, PREC, '- yaxis');
+        }
+
+        Plotly.plot(gd, mock).then(function() {
+            assertRanges([0, 2], [0, 2]);
+
+            return Plotly.relayout(gd, { 'shapes[1].visible': false });
+        })
+        .then(function() {
+            assertRanges([0, 1], [0, 1]);
+
+            return Plotly.relayout(gd, { 'shapes[1].visible': true });
+        })
+        .then(function() {
+            assertRanges([0, 2], [0, 2]);
+
+            return Plotly.relayout(gd, { 'shapes[0].x1': 3 });
+        })
+        .then(function() {
+            assertRanges([0, 3], [0, 2]);
+        })
+        .then(done);
     });
 });
 

@@ -14,25 +14,23 @@ var Axes = require('../../plots/cartesian/axes');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 module.exports = function draw(gd) {
-
     var fullLayout = gd._fullLayout,
         imageDataAbove = [],
         imageDataSubplot = [],
         imageDataBelow = [];
 
-    if(!fullLayout.images) return;
-
-
     // Sort into top, subplot, and bottom layers
     for(var i = 0; i < fullLayout.images.length; i++) {
         var img = fullLayout.images[i];
 
-        if(img.layer === 'below' && img.xref !== 'paper' && img.yref !== 'paper') {
-            imageDataSubplot.push(img);
-        } else if(img.layer === 'above') {
-            imageDataAbove.push(img);
-        } else {
-            imageDataBelow.push(img);
+        if(img.visible) {
+            if(img.layer === 'below' && img.xref !== 'paper' && img.yref !== 'paper') {
+                imageDataSubplot.push(img);
+            } else if(img.layer === 'above') {
+                imageDataAbove.push(img);
+            } else {
+                imageDataBelow.push(img);
+            }
         }
     }
 

@@ -17,7 +17,7 @@ var draw = require('./draw').draw;
 
 module.exports = function calcAutorange(gd) {
     var fullLayout = gd._fullLayout,
-        annotationList = fullLayout.annotations;
+        annotationList = Lib.filterVisible(fullLayout.annotations);
 
     if(!annotationList.length || !gd._fullData.length) return;
 
