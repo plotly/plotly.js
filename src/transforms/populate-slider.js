@@ -63,7 +63,7 @@ exports.supplyDefaults = function(transformIn) {
     if(enabled) {
         coerce('sliderindex');
         coerce('filterindex');
-        coerce('framegroup', 'slider-' + transformOut.sliderindex + '-group');
+        coerce('framegroup');
         coerce('animationopts');
     }
 
@@ -160,8 +160,9 @@ function createSteps(idx, slider, groups, transforms) {
 
 function computeFrameGroup(sliderindex, transforms) {
     var i, framegroup;
-    for(i = 0; i < transforms.length; i++) {
-        framegroup = transforms[i].framegroup;
+    var keys = Object.keys(transforms);
+    for(i = 0; i < keys.length; i++) {
+        framegroup = transforms[keys[i]].framegroup;
         if(framegroup) return framegroup;
     }
 
@@ -174,11 +175,9 @@ function createFrames(sliderindex, framegroup, groups, transforms, transitionDat
     var traceIndices = Object.keys(transforms);
     var frameIndices = {};
     var frames = transitionData._frames;
-    var frameLookup = {};
     var existingFrameIndices = [];
     for(i = 0; i < frames.length; i++) {
-        if(frames[i].group === framegroup) {
-            frameLookup[frames[i].name] = frames[i];
+        if(frames[i] === null || frames[i].group === framegroup) {
             existingFrameIndices.push(i);
         }
     }
@@ -186,7 +185,10 @@ function createFrames(sliderindex, framegroup, groups, transforms, transitionDat
     // Now create the frames:
     for(i = 0; i < groups.length; i++) {
         group = groups[i];
-        frame = frameLookup[group];
+        frame = frames[existingFrameIndices[i]] || {
+            name: 'slider-' + sliderindex + '-' + groups[i],
+            group: framegroup
+        };
 
         frameIndex = existingFrameIndices[i];
         if(frameIndex === undefined) {
@@ -194,40 +196,23 @@ function createFrames(sliderindex, framegroup, groups, transforms, transitionDat
         }
         frameIndices[group] = frameIndex;
 
-        if(!frame) {
-            frame = {
-                name: 'slider-' + sliderindex + '-' + groups[i],
-                group: framegroup
-            };
-        }
-
         // Overwrite the frame at this position with the frame corresponding
         // to this frame of groups:
         frames[frameIndex] = frame;
 
-        if(!frame.data) {
-            frame.data = [];
-        }
-
-        for(j = 0; j < traceIndices.length; j++) {
-            if(frame.data[traceIndices[j]]) continue;
-            frame.data[traceIndices[j]] = {};
-        }
-    }
-
-    // Construct the property updates:
-    for(i = 0; i < groups.length; i++) {
-        group = groups[i];
-        frameIndex = frameIndices[group];
-        frame = frames[frameIndex];
-        frame.data = [];
-        frame.traces = [];
+        if(!frame.data) frame.data = [];
+        if(!frame.traces) frame.traces = [];
         for(j = 0; j < traceIndices.length; j++) {
             transform = transforms[traceIndices[j]];
             frame.traces[j] = parseInt(traceIndices[j]);
             frame.data[j] = {};
             frame.data[j]['transforms[' + transform.filterindex + '].value'] = [group];
         }
+    }
+
+    // null out the remaining frames that were created by this transform
+    for(i = groups.length; i < existingFrameIndices.length; i++) {
+        frames[existingFrameIndices[i]] = null;
     }
 
     recomputeFrameHash(transitionData);
@@ -252,11 +237,9 @@ exports.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData, transitio
     var sliderIndices = Object.keys(groups.bySlider);
 
     // Bail out if there are no options:
-    if(!sliderIndices.length) return layoutOut;
+    if(!sliderIndices.length) return layoutIn;
 
-    if(!layoutOut.sliders) {
-        sliders = layoutOut.sliders = [];
-    }
+    sliders = layoutIn.sliders = layoutIn.sliders || [];
 
     for(i = 0; i < sliderIndices.length; i++) {
         sliderindex = sliderIndices[i];
@@ -270,5 +253,7 @@ exports.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData, transitio
         createFrames(sliderindex, framegroup, groups, transforms, transitionData);
     }
 
-    supplySliderDefaults(layoutOut, layoutIn);
+    supplySliderDefaults(layoutIn, layoutOut);
+
+    return layoutIn;
 };

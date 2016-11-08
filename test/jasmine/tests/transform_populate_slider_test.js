@@ -108,6 +108,21 @@ describe('populate-slider transform', function() {
             }).catch(fail).then(done);
         });
 
+        it('cleans up frames', function(done) {
+            var frames = gd._transitionData._frames;
+            expect(frames).toEqual([
+                {name: 'slider-0-g1', group: 'populate-slider-group-0', data: [{'transforms[1].value': ['g1']}], traces: [0]},
+                {name: 'slider-0-g2', group: 'populate-slider-group-0', data: [{'transforms[1].value': ['g2']}], traces: [0]}
+            ]);
+
+            Plotly.restyle(gd, {'transforms[1].target': [['g1', 'g1', 'g1', 'g1']]}).then(function() {
+                expect(frames).toEqual([
+                    {name: 'slider-0-g1', group: 'populate-slider-group-0', data: [{'transforms[1].value': ['g1']}], traces: [0]},
+                    null,
+                ]);
+            }).then(done);
+        });
+
         it('updates the slider steps when data changes', function(done) {
             expect(slider.steps.length).toEqual(2);
 
