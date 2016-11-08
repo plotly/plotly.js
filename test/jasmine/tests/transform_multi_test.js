@@ -13,6 +13,8 @@ var assertStyle = require('../assets/assert_style');
 describe('general transforms:', function() {
     'use strict';
 
+    var fullLayout = { _transformModules: [] };
+
     var traceIn, traceOut;
 
     it('supplyTraceDefaults should supply the transform defaults', function() {
@@ -21,7 +23,7 @@ describe('general transforms:', function() {
             transforms: [{ type: 'filter' }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
+        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
@@ -39,7 +41,7 @@ describe('general transforms:', function() {
             transforms: [{ type: 'invalid' }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
+        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
 
         expect(traceOut.y).toBe(traceIn.y);
     });
@@ -56,6 +58,7 @@ describe('general transforms:', function() {
         };
 
         var layout = {
+            _transformModules: [],
             _globalTransforms: [{
                 type: 'filter'
             }]
@@ -80,6 +83,8 @@ describe('general transforms:', function() {
             target: 'x',
             _module: Filter
         }, '- trace second');
+
+        expect(layout._transformModules).toEqual([Filter]);
     });
 
     it('supplyDataDefaults should apply the transform while', function() {

@@ -11,6 +11,8 @@ var assertStyle = require('../assets/assert_style');
 
 describe('filter transforms defaults:', function() {
 
+    var fullLayout = { _transformModules: [] };
+
     var traceIn, traceOut;
 
     it('supplyTraceDefaults should coerce all attributes', function() {
@@ -22,7 +24,7 @@ describe('filter transforms defaults:', function() {
             }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
+        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
@@ -44,7 +46,7 @@ describe('filter transforms defaults:', function() {
             }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
+        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
@@ -70,7 +72,7 @@ describe('filter transforms defaults:', function() {
             }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
+        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
 
         expect(traceOut.transforms[0].target).toEqual('x');
         expect(traceOut.transforms[1].target).toEqual('x');
