@@ -1041,7 +1041,7 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
 
     // can't be be part of basePlotModules loop
     // in order to handle the orphan axes case
-    Plotly.Axes.supplyLayoutDefaults(layoutIn, layoutOut, fullData, transitionData);
+    Plotly.Axes.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
     // base plot module layout defaults
     var basePlotModules = layoutOut._basePlotModules;
@@ -1053,7 +1053,7 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
 
         // e.g. gl2d does not have a layout-defaults step
         if(_module.supplyLayoutDefaults) {
-            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData, transitionData);
+            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         }
     }
 
@@ -1063,17 +1063,7 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
         _module = modules[i];
 
         if(_module.supplyLayoutDefaults) {
-            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData, transitionData);
-        }
-    }
-
-    // transform module layout defaults
-    var transformModules = layoutOut._transformModules;
-    for(i = 0; i < transformModules.length; i++) {
-        _module = transformModules[i];
-
-        if(_module.supplyLayoutDefaults) {
-            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData, transitionData);
+            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         }
     }
 
@@ -1088,14 +1078,14 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
     }
 
     // should FX be a component?
-    Plotly.Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData, transitionData);
+    Plotly.Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
     var components = Object.keys(Registry.componentsRegistry);
     for(i = 0; i < components.length; i++) {
         _module = Registry.componentsRegistry[components[i]];
 
         if(_module.supplyLayoutDefaults) {
-            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData, transitionData);
+            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         }
     }
 };
