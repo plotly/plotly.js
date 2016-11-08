@@ -117,6 +117,8 @@ Plotly.plot = function(gd, data, layout, config) {
 
     if(!gd.layout || graphWasEmpty) gd.layout = helpers.cleanLayout(layout);
 
+    if(!gd._transitionData) Plots.createTransitionData(gd);
+
     // if the user is trying to drag the axes, allow new data and layout
     // to come in but don't allow a replot.
     if(gd._dragging && !gd._transitioning) {
