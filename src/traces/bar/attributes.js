@@ -12,6 +12,7 @@ var scatterAttrs = require('../scatter/attributes');
 var colorAttributes = require('../../components/colorscale/color_attributes');
 var errorBarAttrs = require('../../components/errorbars/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
+var fontAttrs = require('../../plots/font_attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -40,7 +41,34 @@ module.exports = {
     y: scatterAttrs.y,
     y0: scatterAttrs.y0,
     dy: scatterAttrs.dy,
+
     text: scatterAttrs.text,
+
+    textposition: {
+        valType: 'enumerated',
+        role: 'info',
+        values: ['inside', 'outside', 'auto', 'none'],
+        dflt: 'none',
+        arrayOk: true,
+        description: [
+            'Specifies the location of the `textinfo`.'
+        ].join(' ')
+    },
+
+    textfont: extendFlat({}, fontAttrs, {
+        arrayOk: true,
+        description: 'Sets the font used for `textinfo`.'
+    }),
+
+    insidetextfont: extendFlat({}, fontAttrs, {
+        arrayOk: true,
+        description: 'Sets the font used for `textinfo` lying inside the bar.'
+    }),
+
+    outsidetextfont: extendFlat({}, fontAttrs, {
+        arrayOk: true,
+        description: 'Sets the font used for `textinfo` lying outside the bar.'
+    }),
 
     orientation: {
         valType: 'enumerated',
