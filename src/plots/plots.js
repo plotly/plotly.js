@@ -375,6 +375,9 @@ plots.supplyDefaults = function(gd) {
 
     var i;
 
+    // Create all the storage space for frames, but only if doesn't already exist
+    if(!gd._transitionData) plots.createTransitionData(gd);
+
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
 
@@ -435,7 +438,7 @@ plots.supplyDefaults = function(gd) {
     }
 
     // finally, fill in the pieces of layout that may need to look at data
-    plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
+    plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData, gd._transitionData);
 
     // TODO remove in v2.0.0
     // add has-plot-type refs to fullLayout for backward compatibility
@@ -473,12 +476,6 @@ plots.supplyDefaults = function(gd) {
             var trace = newFullData[i];
             (gd.calcdata[i][0] || {}).trace = trace;
         }
-    }
-
-    // Create all the storage space for frames, but only if doesn't already
-    // exist:
-    if(!gd._transitionData) {
-        plots.createTransitionData(gd);
     }
 };
 
@@ -1032,7 +1029,7 @@ function calculateReservedMargins(margins) {
     return resultingMargin;
 }
 
-plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
+plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, transitionData) {
     var i, _module;
 
     // can't be be part of basePlotModules loop
