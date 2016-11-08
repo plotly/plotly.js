@@ -169,8 +169,10 @@ describe('user-defined transforms:', function() {
             transforms: [transformIn]
         }];
 
-        var layout = {},
-            fullLayout = {};
+        var fullData = [],
+            layout = {},
+            fullLayout = { _has: function() {} },
+            transitionData = {};
 
         function assertSupplyDefaultsArgs(_transformIn, traceOut, _layout) {
             expect(_transformIn).toBe(transformIn);
@@ -189,16 +191,25 @@ describe('user-defined transforms:', function() {
             return dataOut;
         }
 
+        function assertSupplyLayoutDefaultsArgs(_layout, _fullLayout, _fullData, _transitionData) {
+            expect(_layout).toBe(layout);
+            expect(_fullLayout).toBe(fullLayout);
+            expect(_fullData).toBe(fullData);
+            expect(_transitionData).toBe(transitionData);
+        }
+
         var fakeTransformModule = {
             moduleType: 'transform',
             name: 'fake',
             attributes: {},
             supplyDefaults: assertSupplyDefaultsArgs,
-            transform: assertTransformArgs
+            transform: assertTransformArgs,
+            supplyLayoutDefaults: assertSupplyLayoutDefaultsArgs
         };
 
         Plotly.register(fakeTransformModule);
-        Plots.supplyDataDefaults(dataIn, [], layout, fullLayout);
+        Plots.supplyDataDefaults(dataIn, fullData, layout, fullLayout);
+        Plots.supplyLayoutModuleDefaults(layout, fullLayout, fullData, transitionData);
         delete Plots.transformsRegistry.fake;
     });
 
