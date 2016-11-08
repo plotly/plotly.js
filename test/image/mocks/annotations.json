@@ -17,6 +17,7 @@
             {"text":"right bottom","showarrow":false,"xref":"paper","yref":"paper","xanchor":"right","yanchor":"bottom","x":0.5,"y":1},
             {"text":"move with page","xref":"paper","yref":"paper","x":0.75,"y":1},
             {"text":"opacity","opacity":0.5,"x":5,"y":5},
+            {"text":"not-visible", "visible": false},
             {"text":"left<br>justified","showarrow":false,"align":"left","x":1,"y":4},
             {"text":"center<br>justified","showarrow":false,"x":2,"y":4},
             {"text":"right<br>justified","showarrow":false,"align":"right","x":3,"y":4},

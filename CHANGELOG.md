@@ -9,6 +9,12 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.19.2] -- 2016-11-02
+
+### Fixed
+- Fix hover label positioning on bar traces [#1107]
+
+
 ## [1.19.1] -- 2016-10-27
 
 ### Fixed

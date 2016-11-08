@@ -22,6 +22,10 @@ module.exports = function handleShapeDefaults(shapeIn, fullLayout) {
         return Lib.coerce(shapeIn, shapeOut, attributes, attr, dflt);
     }
 
+    var visible = coerce('visible');
+
+    if(!visible) return shapeOut;
+
     coerce('layer');
     coerce('opacity');
     coerce('fillcolor');

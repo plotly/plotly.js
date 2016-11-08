@@ -17,6 +17,15 @@ var scatterLineAttrs = scatterAttrs.line;
 module.exports = {
     _isLinkedToArray: true,
 
+    visible: {
+        valType: 'boolean',
+        role: 'info',
+        dflt: true,
+        description: [
+            'Determines whether or not this shape is visible.'
+        ].join(' ')
+    },
+
     type: {
         valType: 'enumerated',
         values: ['circle', 'rect', 'path', 'line'],

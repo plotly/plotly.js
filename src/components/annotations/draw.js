@@ -47,7 +47,9 @@ function draw(gd) {
     fullLayout._infolayer.selectAll('.annotation').remove();
 
     for(var i = 0; i < fullLayout.annotations.length; i++) {
-        drawOne(gd, i);
+        if(fullLayout.annotations[i].visible) {
+            drawOne(gd, i);
+        }
     }
 
     return Plots.previousPromises(gd);
@@ -140,8 +142,6 @@ function drawOne(gd, index, opt, value) {
     // where we fail here when they add/remove annotations
     if(!optionsIn) return;
 
-    var oldRef = {xref: optionsIn.xref, yref: optionsIn.yref};
-
     // alter the input annotation as requested
     var optionsEdit = {};
     if(typeof opt === 'string' && opt) optionsEdit[opt] = value;
@@ -153,7 +153,11 @@ function drawOne(gd, index, opt, value) {
         Lib.nestedProperty(optionsIn, k).set(optionsEdit[k]);
     }
 
+    // return early in visible: false updates
+    if(optionsIn.visible === false) return;
+
     var gs = fullLayout._size;
+    var oldRef = {xref: optionsIn.xref, yref: optionsIn.yref};
 
     var axLetters = ['x', 'y'];
     for(i = 0; i < 2; i++) {
