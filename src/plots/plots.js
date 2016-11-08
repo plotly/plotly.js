@@ -438,7 +438,7 @@ plots.supplyDefaults = function(gd) {
     }
 
     // finally, fill in the pieces of layout that may need to look at data
-    plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
+    plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData, gd._transitionData);
 
     // TODO remove in v2.0.0
     // add has-plot-type refs to fullLayout for backward compatibility
@@ -476,12 +476,6 @@ plots.supplyDefaults = function(gd) {
             var trace = newFullData[i];
             (gd.calcdata[i][0] || {}).trace = trace;
         }
-    }
-
-    // Create all the storage space for frames, but only if doesn't already
-    // exist:
-    if(!gd._transitionData) {
-        plots.createTransitionData(gd);
     }
 };
 
@@ -1039,12 +1033,12 @@ function calculateReservedMargins(margins) {
     return resultingMargin;
 }
 
-plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
+plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, transitionData) {
     var i, _module;
 
     // can't be be part of basePlotModules loop
     // in order to handle the orphan axes case
-    Plotly.Axes.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+    Plotly.Axes.supplyLayoutDefaults(layoutIn, layoutOut, fullData, transitionData);
 
     // base plot module layout defaults
     var basePlotModules = layoutOut._basePlotModules;
@@ -1056,7 +1050,7 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
 
         // e.g. gl2d does not have a layout-defaults step
         if(_module.supplyLayoutDefaults) {
-            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData, transitionData);
         }
     }
 
@@ -1066,7 +1060,7 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
         _module = modules[i];
 
         if(_module.supplyLayoutDefaults) {
-            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData, transitionData);
         }
     }
 
@@ -1076,19 +1070,19 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
         _module = transformModules[i];
 
         if(_module.supplyLayoutDefaults) {
-            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData, transitionData);
         }
     }
 
     // should FX be a component?
-    Plotly.Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+    Plotly.Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData, transitionData);
 
     var components = Object.keys(Registry.componentsRegistry);
     for(i = 0; i < components.length; i++) {
         _module = Registry.componentsRegistry[components[i]];
 
         if(_module.supplyLayoutDefaults) {
-            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData, transitionData);
         }
     }
 };

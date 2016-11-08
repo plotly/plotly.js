@@ -1,14 +1,8 @@
 var Plotly = require('@lib/index');
-var Filter = require('@lib/filter');
 var constants = require('@src/components/sliders/constants');
-
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var assertDims = require('../assets/assert_dims');
-var assertStyle = require('../assets/assert_style');
 var fail = require('../assets/fail_test');
 
 describe('populate-slider transform', function() {
@@ -23,10 +17,8 @@ describe('populate-slider transform', function() {
         destroyGraphDiv();
     });
 
-    /* describe('invalid usage without a filter transform', function () {
-        var slider, frames;
-
-        beforeEach(function (done) {
+    describe('invalid usage without a filter transform', function() {
+        beforeEach(function(done) {
             Plotly.plot(gd, [{
                 x: [1, 2, 3, 4],
                 y: [5, 6, 7, 8],
@@ -40,11 +32,11 @@ describe('populate-slider transform', function() {
         });
     });
 
-    describe('a single trace grouped into two categories', function () {
+    describe('a single trace grouped into two categories', function() {
         var slider, frames;
         var animationopts;
 
-        beforeEach(function (done) {
+        beforeEach(function(done) {
             animationopts = {frame: {duration: 0}, transition: {duration: 0}};
             Plotly.plot(gd, [{
                 x: [1, 2, 3, 4],
@@ -57,7 +49,7 @@ describe('populate-slider transform', function() {
                     type: 'filter',
                     target: ['g1', 'g1', 'g2', 'g2']
                 }]
-            }]).then(function () {
+            }]).then(function() {
                 slider = gd.layout.sliders[0];
                 frames = gd._transitionData._frames;
             }).then(done);
@@ -77,63 +69,62 @@ describe('populate-slider transform', function() {
             expect(slider.steps[0].method).toEqual('animate');
             expect(slider.steps[1].method).toEqual('animate');
 
-            expect(slider.steps[0].args).toEqual([['g1'], animationopts]);
-            expect(slider.steps[1].args).toEqual([['g2'], animationopts]);
+            expect(slider.steps[0].args).toEqual([['slider-0-g1'], animationopts]);
+            expect(slider.steps[1].args).toEqual([['slider-0-g2'], animationopts]);
         });
 
-        it('creates two frames', function () {
+        it('creates two frames', function() {
             expect(frames.length).toEqual(2);
 
             // First frame:
-            expect(frames[0].name).toEqual('g1');
-            expect(frames[0].group).toEqual('slider-0-group');
+            expect(frames[0].name).toEqual('slider-0-g1');
+            expect(frames[0].group).toEqual('populate-slider-group-0');
             expect(frames[0].data).toEqual([{'transforms[1].value': ['g1']}]);
             expect(frames[0].traces).toEqual([0]);
 
             // Second frame:
-            expect(frames[1].name).toEqual('g2');
-            expect(frames[1].group).toEqual('slider-0-group');
+            expect(frames[1].name).toEqual('slider-0-g2');
+            expect(frames[1].group).toEqual('populate-slider-group-0');
             expect(frames[1].data).toEqual([{'transforms[1].value': ['g2']}]);
             expect(frames[1].traces).toEqual([0]);
 
             // Has updated the frame hash:
-            expect(Object.keys(gd._transitionData._frameHash)).toEqual(['g1', 'g2']);
+            expect(Object.keys(gd._transitionData._frameHash)).toEqual(['slider-0-g1', 'slider-0-g2']);
         });
 
-        it('filters the data', function (done) {
-            clickFirstSlider(1).then(function () {
+        it('filters the data', function(done) {
+            clickFirstSlider(1).then(function() {
                 // Click the second step and confirm udpated:
-                expect(gd._fullLayout._currentFrame).toEqual('g2');
+                expect(gd._fullLayout._currentFrame).toEqual('slider-0-g2');
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 3, y: 7}));
                 expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({x: 4, y: 8}));
 
                 return clickFirstSlider(0);
-            }).then(function () {
+            }).then(function() {
                 // Click the first step and confirm udpated:
-                expect(gd._fullLayout._currentFrame).toEqual('g1');
+                expect(gd._fullLayout._currentFrame).toEqual('slider-0-g1');
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 1, y: 5}));
                 expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({x: 2, y: 6}));
             }).catch(fail).then(done);
         });
 
-        it('updates the slider steps when data changes', function (done) {
+        it('updates the slider steps when data changes', function(done) {
             expect(slider.steps.length).toEqual(2);
 
-            Plotly.restyle(gd, {'transforms[1].target': [['g1', 'g1', 'g1', 'g1']]}).then(function () {
-                expect(slider.steps.length).toEqual(1);
+            Plotly.restyle(gd, {'transforms[1].target': [['g1', 'g1', 'g1', 'g1']]}).then(function() {
+                expect(gd._fullLayout.sliders[0].steps.length).toEqual(1);
 
                 return Plotly.restyle(gd, 'transforms[1].target', [['g1', 'g2', 'g3', 'g4']], [0]);
-            }).then(function () {
-                expect(slider.steps.length).toEqual(4);
+            }).then(function() {
+                expect(gd._fullLayout.sliders[0].steps.length).toEqual(4);
             }).catch(fail).then(done);
         });
     });
 
-    describe('two traces', function () {
-        var slider, frames;
+    describe('two traces', function() {
         var animationopts;
 
-        beforeEach(function (done) {
+        beforeEach(function(done) {
             animationopts = {frame: {duration: 0}, transition: {duration: 0}};
             Plotly.plot(gd, [{
                 x: [1, 2, 3, 4],
@@ -157,63 +148,61 @@ describe('populate-slider transform', function() {
                     type: 'filter',
                     target: ['g2', 'g3', 'g2', 'g3']
                 }]
-            }]).then(function () {
-                slider = gd.layout.sliders[0];
-                frames = gd._transitionData._frames;
-            }).then(done);
+            }]).then(done);
         });
 
-        it('merges groups', function () {
+        it('merges groups', function() {
+            var slider = gd._fullLayout.sliders[0];
             expect(slider.steps.length).toEqual(3);
-            expect(slider.steps[0].args).toEqual([['g1'], animationopts]);
-            expect(slider.steps[1].args).toEqual([['g2'], animationopts]);
-            expect(slider.steps[2].args).toEqual([['g3'], animationopts]);
+            expect(slider.steps[0].args).toEqual([['slider-0-g1'], animationopts]);
+            expect(slider.steps[1].args).toEqual([['slider-0-g2'], animationopts]);
+            expect(slider.steps[2].args).toEqual([['slider-0-g3'], animationopts]);
         });
 
-        it('filters the first trace', function (done) {
-            clickFirstSlider(1).then(function () {
+        it('filters the first trace', function(done) {
+            clickFirstSlider(1).then(function() {
                 // Click the second step and confirm udpated:
-                expect(gd._fullLayout._currentFrame).toEqual('g3');
+                expect(gd._fullLayout._currentFrame).toEqual('slider-0-g3');
                 expect(gd.calcdata[0].length).toEqual(1);
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: false, y: false}));
 
                 return clickFirstSlider(0);
-            }).then(function () {
+            }).then(function() {
                 // Click the first step and confirm udpated:
-                expect(gd._fullLayout._currentFrame).toEqual('g1');
+                expect(gd._fullLayout._currentFrame).toEqual('slider-0-g1');
                 expect(gd.calcdata[0].length).toEqual(2);
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 1, y: 5}));
                 expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({x: 2, y: 6}));
 
                 return clickFirstSlider(0.5);
-            }).then(function () {
+            }).then(function() {
                 // Click the second step and confirm udpated:
-                expect(gd._fullLayout._currentFrame).toEqual('g2');
+                expect(gd._fullLayout._currentFrame).toEqual('slider-0-g2');
                 expect(gd.calcdata[0].length).toEqual(2);
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 3, y: 7}));
                 expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({x: 4, y: 8}));
             }).catch(fail).then(done);
         });
 
-        it('filters the second trace', function (done) {
-            clickFirstSlider(1).then(function () {
+        it('filters the second trace', function(done) {
+            clickFirstSlider(1).then(function() {
                 // Click the second step and confirm udpated:
-                expect(gd._fullLayout._currentFrame).toEqual('g3');
+                expect(gd._fullLayout._currentFrame).toEqual('slider-0-g3');
                 expect(gd.calcdata[1].length).toEqual(2);
                 expect(gd.calcdata[1][0]).toEqual(jasmine.objectContaining({x: 10, y: 14}));
                 expect(gd.calcdata[1][1]).toEqual(jasmine.objectContaining({x: 12, y: 16}));
 
                 return clickFirstSlider(0);
-            }).then(function () {
+            }).then(function() {
                 // Click the first step and confirm udpated:
-                expect(gd._fullLayout._currentFrame).toEqual('g1');
+                expect(gd._fullLayout._currentFrame).toEqual('slider-0-g1');
                 expect(gd.calcdata[1].length).toEqual(1);
                 expect(gd.calcdata[1][0]).toEqual(jasmine.objectContaining({x: false, y: false}));
 
                 return clickFirstSlider(0.5);
-            }).then(function () {
+            }).then(function() {
                 // Click the second step and confirm udpated:
-                expect(gd._fullLayout._currentFrame).toEqual('g2');
+                expect(gd._fullLayout._currentFrame).toEqual('slider-0-g2');
                 expect(gd.calcdata[1].length).toEqual(2);
                 expect(gd.calcdata[1][0]).toEqual(jasmine.objectContaining({x: 9, y: 13}));
                 expect(gd.calcdata[1][1]).toEqual(jasmine.objectContaining({x: 11, y: 15}));
@@ -223,7 +212,6 @@ describe('populate-slider transform', function() {
 
     function clickFirstSlider(fraction, eventName) {
         var firstGroup = gd._fullLayout._infolayer.select('.' + constants.railTouchRectClass);
-        var firstGrip = gd._fullLayout._infolayer.select('.' + constants.gripRectClass);
         var railNode = firstGroup.node();
         var touchRect = railNode.getBoundingClientRect();
 
@@ -240,16 +228,11 @@ describe('populate-slider transform', function() {
             // Set a timeout of 1000ms before it fails:
             setTimeout(reject, 1000);
         });
-    }*/
+    }
 
 
     describe('with a realistic two-trace setup', function() {
-        var slider, frames;
-        var animationopts;
-
         beforeEach(function(done) {
-            animationopts = {frame: {duration: 0}, transition: {duration: 0}};
-
             Plotly.plot(gd, {
                 'data': [{
                     'name': 'Asia',
@@ -442,26 +425,21 @@ describe('populate-slider transform', function() {
         });
 
         it('adds slider options when the target data changes', function(done) {
-            console.log('\n\n');
             Plotly.restyle(gd, {'transforms[1].target': [[
                 '1951', '1952', '1953', '1954', '1955', '1956', '1957', '1957', '1957', '1957',
                 '1957', '1957', '1957', '1957', '1957', '1957', '1957', '1957', '1957'
             ]]}, [1]).then(function() {
-                console.log(gd._fullLayout.sliders[0].steps);
                 expect(gd._fullLayout.sliders[0].steps.length).toBe(9);
             }).catch(fail).then(done);
         });
 
         it('removes slider options when the transform is disabled', function(done) {
-            console.log('done with initial\n\n');
             Plotly.restyle(gd, {'transforms[0].enabled': [false]}, [1]).then(function() {
                 expect(gd._fullLayout.sliders[0].steps.length).toBe(3);
             }).catch(fail).then(done);
         });
 
-        // TODO: We can't currently handle this case. The slider will not disappear
-        // if all traces are hidden. :(
-        /* it('removes slider options when all traces are hidden', function (done) {
+         /* it('removes slider options when all traces are hidden', function (done) {
             Plotly.restyle(gd, {visible: [false, false]}, [0, 1]).then(function () {
                 expect(gd._fullLayout.sliders[0].steps.length).toBe(0);
             }).catch(fail).then(done);

@@ -120,10 +120,6 @@ exports.supplyDefaults = function(transformIn) {
     return transformOut;
 };
 
-exports.supplyLayoutDefaults = function() {
-    console.log('supplyLayoutDefaults !!!')
-};
-
 exports.calcTransform = function(gd, trace, opts) {
     if(!opts.enabled) return;
 

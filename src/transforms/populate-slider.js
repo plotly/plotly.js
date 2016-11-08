@@ -70,166 +70,110 @@ exports.supplyDefaults = function(transformIn) {
     return transformOut;
 };
 
-exports.transform = function(dataOut, extras) {
-    var i, filterIndex;
-
-    var transform = extras.transform;
-    var trace = extras.fullTrace;
-    var layout = extras.layout;
-    var transforms = trace.transforms;
-
-    if(!layout.sliders) {
-        layout.sliders = [];
-    }
-
-    var slider = layout.sliders[transform.sliderindex];
-
-    if(!slider) {
-        slider = layout.sliders[transform.sliderindex] = {};
-    }
-
-    var infos = slider._autoStepInfo;
-    if(!infos) infos = slider._autoStepInfo = {};
-
-    var info = infos[dataOut[0].index];
-    if(!info) info = infos[dataOut[0].index] = {};
-
-    if(!transform.filterindex) {
-        // Find the first filter transform:
-        for(filterIndex = 0; filterIndex < transforms.length; filterIndex++) {
-            if(transforms[filterIndex].type === 'filter') {
-                break;
-            }
-        }
-    } else {
-        filterIndex = transform.filterindex;
-    }
-
-    // Looks like no transform was found:
-    if(filterIndex >= transforms.length || !transforms[filterIndex] || transforms[filterIndex].type !== 'filter') {
-        return dataOut;
-    }
-
-    info._transforms = transforms;
-    info._transform = transform;
-    info._filterIndex = filterIndex;
-    info._filter = transforms[filterIndex];
-    info._trace = dataOut[0];
-    info._transformIndex = transforms.indexOf(transform);
-
+exports.transform = function(dataOut) {
     return dataOut;
 };
 
-exports.calcTransform = function(gd, trace, opts) {
-    var i, j;
+function computeGroups(fullData) {
+    var i, j, nTrans, trace, transforms, addTransform, filterTransform, target, sliderindex, filterindex;
+    var allGroupHash = {};
+    var addTransforms = {};
+    // iterate through *all* traces looking for anything with an populate-slider transform
+    for(i = 0; i < fullData.length; i++) {
+        // Bail out if no transforms:
+        trace = fullData[i];
+        if(!trace || !trace.visible) continue;
+        transforms = fullData[i].transforms;
+        if(!transforms) continue;
+        nTrans = transforms.length;
 
-    var layout = gd.layout;
-    var slider = layout.sliders[opts.sliderindex];
-    var transforms = trace.transforms;
-
-    var info = slider._autoStepInfo[trace.index];
-
-    if(!info) return trace;
-
-    var filterIndex = info._filterIndex;
-
-    // If there was no filter from above, then bail:
-    if(!filterIndex) return trace;
-
-    var filter = transforms[filterIndex];
-
-    // Compute the groups pulled in by this trace:
-    info._groups = {};
-    var target = filter.target;
-    var groupHash = {};
-    if(trace.visible) {
-        for(i = 0; i < target.length; i++) {
-            groupHash[target[i]] = true;
-        }
-    }
-    info._groups = Object.keys(groupHash);
-
-    // Check through all traces to make sure the groups
-    // still apply:
-    var tTransform;
-    var traceIndices = Object.keys(slider._autoStepInfo);
-    var allGroups = {};
-    for(i = 0; i < traceIndices.length; i++) {
-        var tInfo = slider._autoStepInfo[i];
-
-        if(!tInfo) continue;
-
-        // This is a little crazy, but we need to update references to the trace,
-        // otherwise they tend to be outdated:
-        var t = tInfo._trace;
-
-        // The referene to the trace seems outdate so that we need to check the visibility
-        // of the *newly default-supplied trace:
-        var curTrace = gd._fullData[t.index];
-        if(!curTrace || !curTrace.visible || !curTrace.transforms) continue;
-
-        // If any of these conditions (and perhaps more) apply, then the
-        // trace's groups should no longer rapply
-        if(t.visible && t.transforms && t.transforms[tInfo._transformIndex]) {
-            var tTransform = t.transforms[tInfo._transformIndex];
-            var tFilter = t.transforms[tInfo._filterIndex];
+        // Find the add-slider transform for this trace:
+        for(j = 0; j < nTrans; j++) {
+            addTransform = transforms[j];
+            if(addTransform.type === exports.name) break;
         }
 
-        // There's no exit event, so we just have to look through these and remove
-        // a trace's groups if it appears to be no longer present or active:
-        if(!tTransform || !tFilter || !Array.isArray(tFilter.target)) {
-            delete slider._autoStepInfo[i];
-        } else {
-            for(j = 0; j < tFilter.target.length; j++) {
-                allGroups[tFilter.target[j]] = true;
+        // Bail out if either no add transform or not enabled:
+        if(j === nTrans || !addTransform.enabled) continue;
+
+        sliderindex = addTransform.sliderindex;
+        filterindex = addTransform.filterindex;
+
+        // Find the filter transform for this slider:
+        if(!filterindex) {
+            for(filterindex = 0; filterindex < nTrans; filterindex++) {
+                filterTransform = transforms[filterindex];
+                if(filterTransform.type === 'filter') break;
             }
+            if(filterindex === nTrans) continue;
+            addTransform.filterindex = filterindex;
+        }
+
+        // Bail out if this transform is disabled or not handled:
+        if(!filterTransform.enabled) continue;
+        if(!Array.isArray((target = filterTransform.target))) continue;
+        addTransform._filterTransform = filterTransform;
+
+        // Store the add transform for later use:
+        if(!addTransforms[sliderindex]) addTransforms[sliderindex] = {};
+        addTransforms[sliderindex][trace.index] = addTransform;
+
+        if(!allGroupHash[sliderindex]) allGroupHash[sliderindex] = {};
+        for(j = 0; j < target.length; j++) {
+            allGroupHash[sliderindex][target[j]] = true;
         }
     }
 
-    var allGroups = Object.keys(allGroups);
-    console.log('allGroups:', allGroups);
+    return {
+        bySlider: allGroupHash,
+        transformsByTrace: addTransforms
+    };
+}
 
-    var step;
-    var steps = slider.steps;
-    if(!steps) steps = slider.steps = [];
-
-    var indexLookup = {};
-    for(i = 0; i < steps.length; i++) {
-        indexLookup[steps[i].value] = i;
+function createSteps(idx, slider, groups, transforms) {
+    var i, transform;
+    var traceIndices = Object.keys(transforms);
+    var animationopts = {};
+    for(i = 0; i < traceIndices.length; i++) {
+        transform = transforms[traceIndices[i]];
+        animationopts = Lib.extendDeep(animationopts, transform.animationopts);
     }
-
-    // Duplicate the container array of steps so that we can reorder them
-    // according to the merged steps:
-    var existingSteps = steps.slice(0);
-    steps.length = 0;
+    if(Array.isArray(slider.steps)) {
+        slider.steps.length = 0;
+    } else {
+        slider.steps = [];
+    }
 
     // Iterate through all unique target values for this slider step:
-    for(i = 0; i < allGroups.length; i++) {
-        var label = allGroups[i];
+    for(i = 0; i < groups.length; i++) {
+        var label = groups[i];
+        var frameName = 'slider-' + idx + '-' + label;
 
-        // The index of this step comes from what already exists via the lookup table:
-        var index = indexLookup[label];
-
-        // Or if not found, then append it:
-        if(index === undefined) index = steps.length;
-
-        step = steps[i] = existingSteps[index] || {
+        slider.steps[i] = {
             label: label,
             value: label,
-            args: [[label]],
+            args: [[frameName], animationopts],
             method: 'animate',
         };
+    }
+}
 
-        step.args[1] = Lib.extendDeep(step.args[1] || {}, info._transform.animationopts || {});
+function computeFrameGroup(sliderindex, transforms) {
+    var i, framegroup;
+    for(i = 0; i < transforms.length; i++) {
+        framegroup = transforms[i].framegroup;
+        if(framegroup) return framegroup;
     }
 
-    var frame;
-    var framegroup = opts.framegroup;
+    return 'populate-slider-group-' + sliderindex;
+}
 
-    // Create a lookup table so we can match frames by the group and label
-    // and update frames accordingly:
-    var group;
-    var frames = gd._transitionData._frames;
+function createFrames(sliderindex, framegroup, groups, transforms, transitionData) {
+    var i, j, group, frame, frameIndex, transform;
+
+    var traceIndices = Object.keys(transforms);
+    var frameIndices = {};
+    var frames = transitionData._frames;
     var frameLookup = {};
     var existingFrameIndices = [];
     for(i = 0; i < frames.length; i++) {
@@ -239,15 +183,9 @@ exports.calcTransform = function(gd, trace, opts) {
         }
     }
 
-    // Need to know *all* traces affected by this so that we set filters
-    // even if they're not affected by this particular group
-    var allTraceFilterLookup = {};
-    var frameIndices = {};
-    var frameIndex;
-
     // Now create the frames:
-    for(i = 0; i < allGroups.length; i++) {
-        group = allGroups[i];
+    for(i = 0; i < groups.length; i++) {
+        group = groups[i];
         frame = frameLookup[group];
 
         frameIndex = existingFrameIndices[i];
@@ -258,50 +196,79 @@ exports.calcTransform = function(gd, trace, opts) {
 
         if(!frame) {
             frame = {
-                name: allGroups[i],
+                name: 'slider-' + sliderindex + '-' + groups[i],
                 group: framegroup
             };
         }
 
         // Overwrite the frame at this position with the frame corresponding
-        // to this frame of allGroups:
+        // to this frame of groups:
         frames[frameIndex] = frame;
 
         if(!frame.data) {
             frame.data = [];
         }
 
-        if(!frame.data[trace.index]) {
-            frame.data[trace.index] = {};
+        for(j = 0; j < traceIndices.length; j++) {
+            if(frame.data[traceIndices[j]]) continue;
+            frame.data[traceIndices[j]] = {};
         }
     }
 
     // Construct the property updates:
-    for(i = 0; i < allGroups.length; i++) {
-        group = allGroups[i];
+    for(i = 0; i < groups.length; i++) {
+        group = groups[i];
         frameIndex = frameIndices[group];
         frame = frames[frameIndex];
         frame.data = [];
         frame.traces = [];
         for(j = 0; j < traceIndices.length; j++) {
+            transform = transforms[traceIndices[j]];
             frame.traces[j] = parseInt(traceIndices[j]);
-            var tInfo = slider._autoStepInfo[j];
-            if(!tInfo) continue;
             frame.data[j] = {};
-            frame.data[j]['transforms[' + tInfo._filterIndex + '].value'] = [group];
+            frame.data[j]['transforms[' + transform.filterindex + '].value'] = [group];
         }
     }
 
-    supplySliderDefaults(gd.layout, gd._fullLayout);
+    recomputeFrameHash(transitionData);
+}
 
-    // Reconstruct the frame hash, just to be sure it's all good:
-    var hash = gd._transitionData._frameHash = {};
-    for(i = 0; i < frames.length; i++) {
+function recomputeFrameHash(transitionData) {
+    var frame;
+    var frames = transitionData._frames;
+    var hash = transitionData._frameHash = {};
+    for(var i = 0; i < frames.length; i++) {
         frame = frames[i];
         if(frame && frame.name) {
             hash[frame.name] = frame;
         }
     }
+}
 
-    return trace;
+exports.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData, transitionData) {
+    var sliders, i, sliderindex, slider, transforms, framegroup;
+
+    var groups = computeGroups(fullData);
+    var sliderIndices = Object.keys(groups.bySlider);
+
+    // Bail out if there are no options:
+    if(!sliderIndices.length) return layoutOut;
+
+    if(!layoutOut.sliders) {
+        sliders = layoutOut.sliders = [];
+    }
+
+    for(i = 0; i < sliderIndices.length; i++) {
+        sliderindex = sliderIndices[i];
+        slider = sliders[sliderindex] = sliders[sliderindex] || {};
+        transforms = groups.transformsByTrace[sliderindex];
+        groups = Object.keys(groups.bySlider[sliderindex]);
+
+        framegroup = computeFrameGroup(sliderindex, transforms);
+
+        createSteps(sliderindex, slider, groups, transforms);
+        createFrames(sliderindex, framegroup, groups, transforms, transitionData);
+    }
+
+    supplySliderDefaults(layoutOut, layoutIn);
 };
