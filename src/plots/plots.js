@@ -1087,6 +1087,10 @@ plots.purge = function(gd) {
     if(fullLayout._glcontainer !== undefined) fullLayout._glcontainer.remove();
     if(fullLayout._geocontainer !== undefined) fullLayout._geocontainer.remove();
 
+    // Ensure any dangling callbacks are simply dropped if the plot is purged.
+    // This is more or less only actually important for testing.
+    gd._transitionData._interruptCallbacks.length = 0;
+
     // remove modebar
     if(fullLayout._modeBar) fullLayout._modeBar.destroy();
 
@@ -1787,6 +1791,11 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
     }
 
     function completeTransition(callback) {
+        // This a simple workaround for tests which purge the graph before animations
+        // have completed. That's not a very common case, so this is the simplest
+        // fix.
+        if(!gd._transitionData) return;
+
         flushCallbacks(gd._transitionData._interruptCallbacks);
 
         return Promise.resolve().then(function() {
