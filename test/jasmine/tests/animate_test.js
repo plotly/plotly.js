@@ -605,8 +605,6 @@ describe('layout animation', function() {
             {layout: {'xaxis.range': [0, 1]}},
             {frame: {redraw: true, duration: dur}, transition: {duration: dur}}
         ).then(function() {
-            // Something is delayed a single tick, it seems, so the redraw
-            // isn't triggered until next tick:
             expect(redraws).toBe(1);
         }).catch(fail).then(done);
     });
@@ -623,8 +621,6 @@ describe('layout animation', function() {
             {layout: {'xaxis.range': [0, 1]}},
             {frame: {redraw: false, duration: dur}, transition: {duration: dur}}
         ).then(function() {
-            // Something is delayed a single tick, it seems, so the redraw
-            // isn't triggered until next tick:
             expect(relayouts).toBe(1);
             expect(restyles).toBe(0);
             expect(redraws).toBe(0);
