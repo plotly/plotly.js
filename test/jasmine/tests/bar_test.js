@@ -1,17 +1,17 @@
 var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
+
+var Bar = require('@src/traces/bar');
 var Lib = require('@src/lib');
+var Plots = require('@src/plots/plots');
 
 var PlotlyInternal = require('@src/plotly');
 var Axes = PlotlyInternal.Axes;
-
-var Bar = require('@src/traces/bar');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customMatchers = require('../assets/custom_matchers');
 
-describe('bar supplyDefaults', function() {
+describe('Bar.supplyDefaults', function() {
     'use strict';
 
     var traceIn,
@@ -83,6 +83,38 @@ describe('bar supplyDefaults', function() {
         };
         supplyDefaults(traceIn, traceOut, defaultColor);
         expect(traceOut.width).toBeUndefined();
+    });
+
+    it('should coerce textposition to none', function() {
+        traceIn = {
+            y: [1, 2, 3]
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor);
+        expect(traceOut.textposition).toBe('none');
+        expect(traceOut.texfont).toBeUndefined();
+        expect(traceOut.insidetexfont).toBeUndefined();
+        expect(traceOut.outsidetexfont).toBeUndefined();
+    });
+
+    it('should default textfont to layout.font', function() {
+        traceIn = {
+            textposition: 'inside',
+            y: [1, 2, 3]
+        };
+
+        var layout = {
+            font: {family: 'arial', color: '#AAA', size: 13}
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+        expect(traceOut.textposition).toBe('inside');
+        expect(traceOut.textfont).toEqual(layout.font);
+        expect(traceOut.textfont).not.toBe(layout.font);
+        expect(traceOut.insidetextfont).toEqual(layout.font);
+        expect(traceOut.insidetextfont).not.toBe(layout.font);
+        expect(traceOut.insidetextfont).not.toBe(traceOut.textfont);
+        expect(traceOut.outsidetexfont).toBeUndefined();
     });
 });
 
@@ -633,6 +665,201 @@ describe('A bar plot', function() {
 
     afterEach(destroyGraphDiv);
 
+    function getAllTraceNodes(node) {
+        return node.querySelectorAll('g.points');
+    }
+
+    function getAllBarNodes(node) {
+        return node.querySelectorAll('g.point');
+    }
+
+    function assertTextIsInsidePath(textNode, pathNode) {
+        var textBB = textNode.getBoundingClientRect(),
+            pathBB = pathNode.getBoundingClientRect();
+
+        expect(pathBB.left).not.toBeGreaterThan(textBB.left);
+        expect(textBB.right).not.toBeGreaterThan(pathBB.right);
+        expect(pathBB.top).not.toBeGreaterThan(textBB.top);
+        expect(textBB.bottom).not.toBeGreaterThan(pathBB.bottom);
+    }
+
+    function assertTextIsAbovePath(textNode, pathNode) {
+        var textBB = textNode.getBoundingClientRect(),
+            pathBB = pathNode.getBoundingClientRect();
+
+        expect(textBB.bottom).not.toBeGreaterThan(pathBB.top);
+    }
+
+    function assertTextIsBelowPath(textNode, pathNode) {
+        var textBB = textNode.getBoundingClientRect(),
+            pathBB = pathNode.getBoundingClientRect();
+
+        expect(pathBB.bottom).not.toBeGreaterThan(textBB.top);
+    }
+
+    function assertTextIsAfterPath(textNode, pathNode) {
+        var textBB = textNode.getBoundingClientRect(),
+            pathBB = pathNode.getBoundingClientRect();
+
+        expect(pathBB.right).not.toBeGreaterThan(textBB.left);
+    }
+
+    var colorMap = {
+        'rgb(0, 0, 0)': 'black',
+        'rgb(255, 0, 0)': 'red',
+        'rgb(0, 128, 0)': 'green',
+        'rgb(0, 0, 255)': 'blue'
+    };
+    function assertTextFont(textNode, textFont, index) {
+        expect(textNode.style.fontFamily).toBe(textFont.family[index]);
+        expect(textNode.style.fontSize).toBe(textFont.size[index] + 'px');
+
+        var color = textNode.style.fill;
+        if(!colorMap[color]) colorMap[color] = color;
+        expect(colorMap[color]).toBe(textFont.color[index]);
+    }
+
+    function assertTextIsBeforePath(textNode, pathNode) {
+        var textBB = textNode.getBoundingClientRect(),
+            pathBB = pathNode.getBoundingClientRect();
+
+        expect(textBB.right).not.toBeGreaterThan(pathBB.left);
+    }
+
+    it('should show bar texts (inside case)', function(done) {
+        var gd = createGraphDiv(),
+            data = [{
+                y: [10, 20, 30],
+                type: 'bar',
+                text: ['1', 'Very very very very very long bar text'],
+                textposition: 'inside',
+            }],
+            layout = {
+            };
+
+        Plotly.plot(gd, data, layout).then(function() {
+            var traceNodes = getAllTraceNodes(gd),
+                barNodes = getAllBarNodes(traceNodes[0]),
+                foundTextNodes;
+
+            for(var i = 0; i < barNodes.length; i++) {
+                var barNode = barNodes[i],
+                    pathNode = barNode.querySelector('path'),
+                    textNode = barNode.querySelector('text');
+                if(textNode) {
+                    foundTextNodes = true;
+                    assertTextIsInsidePath(textNode, pathNode);
+                }
+            }
+
+            expect(foundTextNodes).toBe(true);
+
+            done();
+        });
+    });
+
+    it('should show bar texts (outside case)', function(done) {
+        var gd = createGraphDiv(),
+            data = [{
+                y: [10, -20, 30],
+                type: 'bar',
+                text: ['1', 'Very very very very very long bar text'],
+                textposition: 'outside',
+            }],
+            layout = {
+                barmode: 'relative'
+            };
+
+        Plotly.plot(gd, data, layout).then(function() {
+            var traceNodes = getAllTraceNodes(gd),
+                barNodes = getAllBarNodes(traceNodes[0]),
+                foundTextNodes;
+
+            for(var i = 0; i < barNodes.length; i++) {
+                var barNode = barNodes[i],
+                    pathNode = barNode.querySelector('path'),
+                    textNode = barNode.querySelector('text');
+                if(textNode) {
+                    foundTextNodes = true;
+                    if(data[0].y[i] > 0) assertTextIsAbovePath(textNode, pathNode);
+                    else assertTextIsBelowPath(textNode, pathNode);
+                }
+            }
+
+            expect(foundTextNodes).toBe(true);
+
+            done();
+        });
+    });
+
+    it('should show bar texts (horizontal case)', function(done) {
+        var gd = createGraphDiv(),
+            data = [{
+                x: [10, -20, 30],
+                type: 'bar',
+                text: ['Very very very very very long bar text', -20],
+                textposition: 'outside',
+            }],
+            layout = {
+            };
+
+        Plotly.plot(gd, data, layout).then(function() {
+            var traceNodes = getAllTraceNodes(gd),
+                barNodes = getAllBarNodes(traceNodes[0]),
+                foundTextNodes;
+
+            for(var i = 0; i < barNodes.length; i++) {
+                var barNode = barNodes[i],
+                    pathNode = barNode.querySelector('path'),
+                    textNode = barNode.querySelector('text');
+                if(textNode) {
+                    foundTextNodes = true;
+                    if(data[0].x[i] > 0) assertTextIsAfterPath(textNode, pathNode);
+                    else assertTextIsBeforePath(textNode, pathNode);
+                }
+            }
+
+            expect(foundTextNodes).toBe(true);
+
+            done();
+        });
+    });
+
+    it('should show bar texts (barnorm case)', function(done) {
+        var gd = createGraphDiv(),
+            data = [{
+                x: [100, -100, 100],
+                type: 'bar',
+                text: [100, -100, 100],
+                textposition: 'outside',
+            }],
+            layout = {
+                barmode: 'relative',
+                barnorm: 'percent'
+            };
+
+        Plotly.plot(gd, data, layout).then(function() {
+            var traceNodes = getAllTraceNodes(gd),
+                barNodes = getAllBarNodes(traceNodes[0]),
+                foundTextNodes;
+
+            for(var i = 0; i < barNodes.length; i++) {
+                var barNode = barNodes[i],
+                    pathNode = barNode.querySelector('path'),
+                    textNode = barNode.querySelector('text');
+                if(textNode) {
+                    foundTextNodes = true;
+                    if(data[0].x[i] > 0) assertTextIsAfterPath(textNode, pathNode);
+                    else assertTextIsBeforePath(textNode, pathNode);
+                }
+            }
+
+            expect(foundTextNodes).toBe(true);
+
+            done();
+        });
+    });
+
     it('should be able to restyle', function(done) {
         var gd = createGraphDiv(),
             mock = Lib.extendDeep({}, require('@mocks/bar_attrs_relative'));
@@ -644,13 +871,13 @@ describe('A bar plot', function() {
                 [1, 2, 3, 4], [1, 2, 3, 4]]);
             assertPointField(cd, 'y', [
                 [1, 2, 3, 4], [4, 4, 4, 4],
-                [-1, -3, -2, -4], [4, -4, -5, -6]]);
+                [-1, -3, -2, -4], [4, -3.25, -5, -6]]);
             assertPointField(cd, 'b', [
                 [0, 0, 0, 0], [1, 2, 3, 4],
                 [0, 0, 0, 0], [4, -3, -2, -4]]);
             assertPointField(cd, 's', [
                 [1, 2, 3, 4], [3, 2, 1, 0],
-                [-1, -3, -2, -4], [0, -1, -3, -2]]);
+                [-1, -3, -2, -4], [0, -0.25, -3, -2]]);
             assertPointField(cd, 'p', [
                 [1, 2, 3, 4], [1, 2, 3, 4],
                 [1, 2, 3, 4], [1, 2, 3, 4]]);
@@ -672,13 +899,13 @@ describe('A bar plot', function() {
                 [1.5, 2.5, 3.5, 4.5], [1.4, 2.4, 3.4, 4.4]]);
             assertPointField(cd, 'y', [
                 [1, 2, 3, 4], [4, 4, 4, 4],
-                [-1, -3, -2, -4], [4, -4, -5, -6]]);
+                [-1, -3, -2, -4], [4, -3.25, -5, -6]]);
             assertPointField(cd, 'b', [
                 [0, 0, 0, 0], [1, 2, 3, 4],
                 [0, 0, 0, 0], [4, -3, -2, -4]]);
             assertPointField(cd, 's', [
                 [1, 2, 3, 4], [3, 2, 1, 0],
-                [-1, -3, -2, -4], [0, -1, -3, -2]]);
+                [-1, -3, -2, -4], [0, -0.25, -3, -2]]);
             assertPointField(cd, 'p', [
                 [1, 2, 3, 4], [1, 2, 3, 4],
                 [1, 2, 3, 4], [1, 2, 3, 4]]);
@@ -691,6 +918,164 @@ describe('A bar plot', function() {
             expect(cd[2][0].t.poffset).toBe(0);
             expect(cd[3][0].t.poffset).toBe(0);
             assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8, 0.8, 0.8]);
+
+            var traceNodes = getAllTraceNodes(gd),
+                trace0Bar3 = getAllBarNodes(traceNodes[0])[3],
+                path03 = trace0Bar3.querySelector('path'),
+                text03 = trace0Bar3.querySelector('text'),
+                trace1Bar2 = getAllBarNodes(traceNodes[1])[2],
+                path12 = trace1Bar2.querySelector('path'),
+                text12 = trace1Bar2.querySelector('text'),
+                trace2Bar0 = getAllBarNodes(traceNodes[2])[0],
+                path20 = trace2Bar0.querySelector('path'),
+                text20 = trace2Bar0.querySelector('text'),
+                trace3Bar0 = getAllBarNodes(traceNodes[3])[0],
+                path30 = trace3Bar0.querySelector('path'),
+                text30 = trace3Bar0.querySelector('text');
+
+            expect(text03.textContent).toBe('4');
+            expect(text12.textContent).toBe('inside text');
+            expect(text20.textContent).toBe('-1');
+            expect(text30.textContent).toBe('outside text');
+
+            assertTextIsAbovePath(text03, path03); // outside
+            assertTextIsInsidePath(text12, path12); // inside
+            assertTextIsInsidePath(text20, path20); // inside
+            assertTextIsBelowPath(text30, path30); // outside
+
+            return Plotly.restyle(gd, 'textposition', 'inside');
+        }).then(function() {
+            var cd = gd.calcdata;
+            assertPointField(cd, 'x', [
+                [1.5, 2.4, 3.3, 4.2], [1.2, 2.3, 3.4, 4.5],
+                [1.5, 2.5, 3.5, 4.5], [1.4, 2.4, 3.4, 4.4]]);
+            assertPointField(cd, 'y', [
+                [1, 2, 3, 4], [4, 4, 4, 4],
+                [-1, -3, -2, -4], [4, -3.25, -5, -6]]);
+            assertPointField(cd, 'b', [
+                [0, 0, 0, 0], [1, 2, 3, 4],
+                [0, 0, 0, 0], [4, -3, -2, -4]]);
+            assertPointField(cd, 's', [
+                [1, 2, 3, 4], [3, 2, 1, 0],
+                [-1, -3, -2, -4], [0, -0.25, -3, -2]]);
+            assertPointField(cd, 'p', [
+                [1, 2, 3, 4], [1, 2, 3, 4],
+                [1, 2, 3, 4], [1, 2, 3, 4]]);
+            assertArrayField(cd[0][0], 't.barwidth', [1, 0.8, 0.6, 0.4]);
+            assertArrayField(cd[1][0], 't.barwidth', [0.4, 0.6, 0.8, 1]);
+            expect(cd[2][0].t.barwidth).toBe(1);
+            expect(cd[3][0].t.barwidth).toBe(0.8);
+            expect(cd[0][0].t.poffset).toBe(0);
+            expect(cd[1][0].t.poffset).toBe(0);
+            expect(cd[2][0].t.poffset).toBe(0);
+            expect(cd[3][0].t.poffset).toBe(0);
+            assertTraceField(cd, 't.bargroupwidth', [0.8, 0.8, 0.8, 0.8]);
+
+            var traceNodes = getAllTraceNodes(gd),
+                trace0Bar3 = getAllBarNodes(traceNodes[0])[3],
+                path03 = trace0Bar3.querySelector('path'),
+                text03 = trace0Bar3.querySelector('text'),
+                trace1Bar2 = getAllBarNodes(traceNodes[1])[2],
+                path12 = trace1Bar2.querySelector('path'),
+                text12 = trace1Bar2.querySelector('text'),
+                trace2Bar0 = getAllBarNodes(traceNodes[2])[0],
+                path20 = trace2Bar0.querySelector('path'),
+                text20 = trace2Bar0.querySelector('text'),
+                trace3Bar0 = getAllBarNodes(traceNodes[3])[0],
+                path30 = trace3Bar0.querySelector('path'),
+                text30 = trace3Bar0.querySelector('text');
+
+            expect(text03.textContent).toBe('4');
+            expect(text12.textContent).toBe('inside text');
+            expect(text20.textContent).toBe('-1');
+            expect(text30.textContent).toBe('outside text');
+
+            assertTextIsInsidePath(text03, path03); // inside
+            assertTextIsInsidePath(text12, path12); // inside
+            assertTextIsInsidePath(text20, path20); // inside
+            assertTextIsInsidePath(text30, path30); // inside
+
+            done();
+        });
+    });
+
+    it('should coerce text-related attributes', function(done) {
+        var gd = createGraphDiv(),
+            data = [{
+                y: [10, 20, 30, 40],
+                type: 'bar',
+                text: ['T1P1', 'T1P2', 13, 14],
+                textposition: ['inside', 'outside', 'auto', 'BADVALUE'],
+                textfont: {
+                    family: ['"comic sans"'],
+                    color: ['red', 'green'],
+                },
+                insidetextfont: {
+                    size: [8, 12, 16],
+                    color: ['black'],
+                },
+                outsidetextfont: {
+                    size: [null, 24, 32]
+                }
+            }],
+            layout = {
+                font: {family: 'arial', color: 'blue', size: 13}
+            };
+
+        var expected = {
+            y: [10, 20, 30, 40],
+            type: 'bar',
+            text: ['T1P1', 'T1P2', '13', '14'],
+            textposition: ['inside', 'outside', 'none'],
+            textfont: {
+                family: ['"comic sans"', 'arial'],
+                color: ['red', 'green'],
+                size: [13, 13]
+            },
+            insidetextfont: {
+                family: ['"comic sans"', 'arial', 'arial'],
+                color: ['black', 'green', 'blue'],
+                size: [8, 12, 16]
+            },
+            outsidetextfont: {
+                family: ['"comic sans"', 'arial', 'arial'],
+                color: ['red', 'green', 'blue'],
+                size: [13, 24, 32]
+            }
+        };
+
+        Plotly.plot(gd, data, layout).then(function() {
+            var traceNodes = getAllTraceNodes(gd),
+                barNodes = getAllBarNodes(traceNodes[0]),
+                pathNodes = [
+                    barNodes[0].querySelector('path'),
+                    barNodes[1].querySelector('path'),
+                    barNodes[2].querySelector('path'),
+                    barNodes[3].querySelector('path')
+                ],
+                textNodes = [
+                    barNodes[0].querySelector('text'),
+                    barNodes[1].querySelector('text'),
+                    barNodes[2].querySelector('text'),
+                    barNodes[3].querySelector('text')
+                ],
+                i;
+
+            // assert bar texts
+            for(i = 0; i < 3; i++) {
+                expect(textNodes[i].textContent).toBe(expected.text[i]);
+            }
+
+            // assert bar positions
+            assertTextIsInsidePath(textNodes[0], pathNodes[0]); // inside
+            assertTextIsAbovePath(textNodes[1], pathNodes[1]); // outside
+            assertTextIsInsidePath(textNodes[2], pathNodes[2]); // auto -> inside
+            expect(textNodes[3]).toBe(null); // BADVALUE -> none
+
+            // assert fonts
+            assertTextFont(textNodes[0], expected.insidetextfont, 0);
+            assertTextFont(textNodes[1], expected.outsidetextfont, 1);
+            assertTextFont(textNodes[2], expected.insidetextfont, 2);
 
             done();
         });
