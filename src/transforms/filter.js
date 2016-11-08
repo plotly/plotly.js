@@ -184,7 +184,13 @@ function getDataToCoordFunc(gd, trace, target) {
             type: autoType(target),
             _categories: []
         };
+
         setConvert(ax);
+
+        // build up ax._categories (usually done during ax.makeCalcdata()
+        for(var i = 0; i < target.length; i++) {
+            ax.d2c(target[i]);
+        }
     }
     else {
         ax = axisIds.getFromTrace(gd, trace, target);

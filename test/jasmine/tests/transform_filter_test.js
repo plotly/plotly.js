@@ -638,7 +638,7 @@ describe('filter transforms calc:', function() {
             expect(out[0].transforms[0].target).toEqual([0, 0, 0]);
         });
 
-        it('with categorical items', function() {
+        it('with categorical items and *{}*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     target: ['a', 'a', 'b', 'b', 'a', 'b', 'a'],
@@ -649,6 +649,36 @@ describe('filter transforms calc:', function() {
 
             _assert(out, [-2, 0, 2], [3, 1, 3], [0.3, 0.1, 0.3]);
             expect(out[0].transforms[0].target).toEqual(['b', 'b', 'b']);
+        });
+
+        it('with categorical items and *<* & *>=*', function() {
+            var out = _transform([{
+                x: [1, 2, 3],
+                y: [10, 20, 30],
+                transforms: [{
+                    type: 'filter',
+                    operation: '<',
+                    target: ['a', 'b', 'c'],
+                    value: 'c'
+                }]
+            }, {
+                x: [1, 2, 3],
+                y: [30, 20, 10],
+                transforms: [{
+                    type: 'filter',
+                    operation: '>=',
+                    target: ['a', 'b', 'c'],
+                    value: 'b'
+                }]
+            }]);
+
+            expect(out[0].x).toEqual([1, 2]);
+            expect(out[0].y).toEqual([10, 20]);
+            expect(out[0].transforms[0].target).toEqual(['a', 'b']);
+
+            expect(out[1].x).toEqual([2, 3]);
+            expect(out[1].y).toEqual([20, 10]);
+            expect(out[1].transforms[0].target).toEqual(['b', 'c']);
         });
 
         it('with dates items', function() {
