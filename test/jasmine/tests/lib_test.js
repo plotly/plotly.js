@@ -649,6 +649,24 @@ describe('Test lib.js:', function() {
             expect(cOut).toBe(outObj.b.c);
         });
 
+        describe('info_arrays', function () {
+            it('does not filter empty arrays with freeLength: true', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        freeLength: true,
+                        items: [
+                            { valType: 'any' },
+                            { valType: 'any' },
+                            { valType: 'any' }
+                        ]
+                    }
+                };
+                out = coerce({x: [[], 10]}, {}, attrs, 'x');
+                expect(out).toEqual([[], 10]);
+            });
+        });
+
         describe('string valType', function() {
             var dflt = 'Jabberwock',
                 stringAttrs = {
