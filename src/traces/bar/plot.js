@@ -47,7 +47,7 @@ module.exports = function plot(gd, plotinfo, cdbar) {
 
             d3.select(this).selectAll('g.point')
                 .data(Lib.identity)
-                .enter().append('g').classed('point', true)
+              .enter().append('g').classed('point', true)
                 .each(function(di, i) {
                     // now display the bar
                     // clipped xf/yf (2nd arg true): non-positive
