@@ -376,6 +376,7 @@ function setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition)
 
     gd.emit('plotly_sliderchange', {
         slider: sliderOpts,
+        step: sliderOpts.steps[sliderOpts.active],
         interaction: doCallback,
         previousActive: previousActive
     });
