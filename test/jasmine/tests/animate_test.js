@@ -593,10 +593,11 @@ describe('Animate API details', function() {
 
     var gd;
     var dur = 30;
+    var mockCopy;
 
     beforeEach(function(done) {
         gd = createGraphDiv();
-        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy = Lib.extendDeep({}, mock);
         Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
     });
 
@@ -685,7 +686,9 @@ describe('Animate API details', function() {
         var cnt = 0;
         gd.on('plotly_animatingframe', function() {cnt++;});
 
-        Plotly.animate(gd, ['frame0', null, undefined], {transition: {duration: 0}, frame: {duration: 0}}).then(function() {
+        Plotly.addFrames(gd, mockCopy.frames).then(function() {
+            return Plotly.animate(gd, ['frame0', null, undefined], {transition: {duration: 0}, frame: {duration: 0}});
+        }).then(function() {
             // Check only one animating was fired:
             expect(cnt).toEqual(1);
 
