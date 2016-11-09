@@ -88,6 +88,14 @@ describe('Test animate API', function() {
 
         mockCopy = Lib.extendDeep({}, mock);
 
+        // ------------------------------------------------------------
+        // NB: TRANSITION IS FAKED
+        //
+        // This means that you should not expect `.animate` to actually
+        // modify the plot in any way in the tests below. For tests
+        // involvingnon-faked transitions, see the bottom of this file.
+        // ------------------------------------------------------------
+
         spyOn(Plots, 'transition').and.callFake(function() {
             // Transition's fake behavior is just to delay by the duration
             // and resolve:
@@ -580,7 +588,7 @@ describe('Test animate API', function() {
     });
 });
 
-describe('null frames', function() {
+describe('Animate API details', function() {
     'use strict';
 
     var gd, mockCopy;
@@ -600,12 +608,38 @@ describe('null frames', function() {
         destroyGraphDiv();
     });
 
-    it('should not break everything', function(done) {
+    it('null frames should not break everything', function(done) {
         gd._transitionData._frames.push(null);
 
         Plotly.animate(gd, null, {
             frame: {duration: 0},
             transition: {duration: 0}
+        }).catch(fail).then(done);
+    });
+
+    it('does not fail if strings are not used', function(done) {
+        Plotly.addFrames(gd, [{name: 8, data: [{x: [8, 7, 6]}]}]).then(function() {
+            // Verify it was added as a string name:
+            expect(gd._transitionData._frameHash['8']).not.toBeUndefined();
+
+            // Transition using a number:
+            return Plotly.animate(gd, [8], {transition: {duration: 0}, frame: {duration: 0}});
+        }).then(function() {
+            // Confirm the result:
+            expect(gd.data[0].x).toEqual([8, 7, 6]);
+        }).catch(fail).then(done);
+    });
+
+    it('ignores null and undefined frames', function(done) {
+        var cnt = 0;
+        gd.on('plotly_animatingframe', function() {cnt++;});
+
+        Plotly.animate(gd, ['frame0', null, undefined], {transition: {duration: 0}, frame: {duration: 0}}).then(function() {
+            // Check only one animating was fired:
+            expect(cnt).toEqual(1);
+
+            // Check unused frames did not affect the current frame:
+            expect(gd._fullLayout._currentFrame).toEqual('frame0');
         }).catch(fail).then(done);
     });
 });
