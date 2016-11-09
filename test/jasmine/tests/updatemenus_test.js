@@ -21,6 +21,38 @@ describe('update menus defaults', function() {
         layoutOut = {};
     });
 
+    it('should skip non-array containers', function() {
+        [null, undefined, {}, 'str', 0, false, true].forEach(function(cont) {
+            var msg = '- ' + JSON.stringify(cont);
+
+            layoutIn = { updatemenus: cont };
+            layoutOut = {};
+            supply(layoutIn, layoutOut);
+
+            expect(layoutIn.updatemenus).toBe(cont, msg);
+            expect(layoutOut.updatemenus).toEqual([], msg);
+        });
+    });
+
+    it('should make non-object item visible: false', function() {
+        var updatemenus = [null, undefined, [], 'str', 0, false, true];
+
+        layoutIn = { updatemenus: updatemenus };
+        layoutOut = {};
+        supply(layoutIn, layoutOut);
+
+        expect(layoutIn.updatemenus).toEqual(updatemenus);
+
+        layoutOut.updatemenus.forEach(function(item, i) {
+            expect(item).toEqual({
+                visible: false,
+                buttons: [],
+                _input: {},
+                _index: i
+            });
+        });
+    });
+
     it('should set \'visible\' to false when no buttons are present', function() {
         layoutIn.updatemenus = [{
             buttons: [{

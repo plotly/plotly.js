@@ -10,31 +10,79 @@ var customMatchers = require('../assets/custom_matchers');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
+
 describe('Test annotations', function() {
     'use strict';
 
     describe('supplyLayoutDefaults', function() {
+
+        function _supply(layoutIn, layoutOut) {
+            layoutOut = layoutOut || {};
+            layoutOut._has = Plots._hasPlotType.bind(layoutOut);
+
+            Annotations.supplyLayoutDefaults(layoutIn, layoutOut);
+
+            return layoutOut.annotations;
+        }
+
+        it('should skip non-array containers', function() {
+            [null, undefined, {}, 'str', 0, false, true].forEach(function(cont) {
+                var msg = '- ' + JSON.stringify(cont);
+                var layoutIn = { annotations: cont };
+                var out = _supply(layoutIn);
+
+                expect(layoutIn.annotations).toBe(cont, msg);
+                expect(out).toEqual([], msg);
+            });
+        });
+
+        it('should make non-object item visible: false', function() {
+            var annotations = [null, undefined, [], 'str', 0, false, true];
+            var layoutIn = { annotations: annotations };
+            var out = _supply(layoutIn);
+
+            expect(layoutIn.annotations).toEqual(annotations);
+
+            out.forEach(function(item, i) {
+                expect(item).toEqual({
+                    visible: false,
+                    _input: {},
+                    _index: i
+                });
+            });
+        });
+
         it('should default to pixel for axref/ayref', function() {
-            var annotationDefaults = {};
-            annotationDefaults._has = Plots._hasPlotType.bind(annotationDefaults);
+            var layoutIn = {
+                annotations: [{ showarrow: true, arrowhead: 2}]
+            };
 
-            Annotations.supplyLayoutDefaults({ annotations: [{ showarrow: true, arrowhead: 2}] }, annotationDefaults);
+            var out = _supply(layoutIn);
 
-            expect(annotationDefaults.annotations[0].axref).toEqual('pixel');
-            expect(annotationDefaults.annotations[0].ayref).toEqual('pixel');
+            expect(out[0].axref).toEqual('pixel');
+            expect(out[0].ayref).toEqual('pixel');
         });
 
         it('should convert ax/ay date coordinates to milliseconds if tail is in axis terms and axis is a date', function() {
-            var annotationOut = { xaxis: { type: 'date', range: ['2000-01-01', '2016-01-01'] }};
-            annotationOut._has = Plots._hasPlotType.bind(annotationOut);
-
-            var annotationIn = {
-                annotations: [{ showarrow: true, axref: 'x', ayref: 'y', x: '2008-07-01', ax: '2004-07-01', y: 0, ay: 50}]
+            var layoutIn = {
+                annotations: [{
+                    showarrow: true,
+                    axref: 'x',
+                    ayref: 'y',
+                    x: '2008-07-01',
+                    ax: '2004-07-01',
+                    y: 0,
+                    ay: 50
+                }]
             };
 
-            Annotations.supplyLayoutDefaults(annotationIn, annotationOut);
+            var layoutOut = {
+                xaxis: { type: 'date', range: ['2000-01-01', '2016-01-01'] }
+            };
 
-            expect(annotationIn.annotations[0].ax).toEqual(Dates.dateTime2ms('2004-07-01'));
+            _supply(layoutIn, layoutOut);
+
+            expect(layoutIn.annotations[0].ax).toEqual(Dates.dateTime2ms('2004-07-01'));
         });
     });
 });

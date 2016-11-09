@@ -1,9 +1,12 @@
+var Shapes = require('@src/components/shapes');
 var helpers = require('@src/components/shapes/helpers');
 var constants = require('@src/components/shapes/constants');
 
 var Plotly = require('@lib/index');
 var PlotlyInternal = require('@src/plotly');
 var Lib = require('@src/lib');
+
+var Plots = PlotlyInternal.Plots;
 var Axes = PlotlyInternal.Axes;
 
 var d3 = require('d3');
@@ -11,6 +14,47 @@ var customMatchers = require('../assets/custom_matchers');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
+
+describe('Test shapes defaults:', function() {
+    'use strict';
+
+    function _supply(layoutIn, layoutOut) {
+        layoutOut = layoutOut || {};
+        layoutOut._has = Plots._hasPlotType.bind(layoutOut);
+
+        Shapes.supplyLayoutDefaults(layoutIn, layoutOut);
+
+        return layoutOut.shapes;
+    }
+
+    it('should skip non-array containers', function() {
+        [null, undefined, {}, 'str', 0, false, true].forEach(function(cont) {
+            var msg = '- ' + JSON.stringify(cont);
+            var layoutIn = { shapes: cont };
+            var out = _supply(layoutIn);
+
+            expect(layoutIn.shapes).toBe(cont, msg);
+            expect(out).toEqual([], msg);
+        });
+    });
+
+    it('should make non-object item visible: false', function() {
+        var shapes = [null, undefined, [], 'str', 0, false, true];
+        var layoutIn = { shapes: shapes };
+        var out = _supply(layoutIn);
+
+        expect(layoutIn.shapes).toEqual(shapes);
+
+        out.forEach(function(item, i) {
+            expect(item).toEqual({
+                visible: false,
+                _input: {},
+                _index: i
+            });
+        });
+    });
+
+});
 
 describe('Test shapes:', function() {
     'use strict';
