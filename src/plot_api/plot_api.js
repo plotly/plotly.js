@@ -2005,7 +2005,7 @@ function _relayout(gd, aobj) {
              */
             else if(['hovermode', 'dragmode'].indexOf(ai) !== -1) flags.domodebar = true;
             else if(['hovermode', 'dragmode', 'height',
-                    'width', 'autosize'].indexOf(ai) === -1) {
+                'width', 'autosize'].indexOf(ai) === -1) {
                 flags.doplot = true;
             }
 
@@ -2258,7 +2258,6 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
                     frameOpts: frameOpts,
                     transitionOpts: transitionOpts,
                 };
-
                 if(i === frameList.length - 1) {
                     // The last frame in this .animate call stores the promise resolve
                     // and reject callbacks. This is how we ensure that the animation
@@ -2410,14 +2409,15 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
         } else if(isFrameArray) {
             for(i = 0; i < frameOrGroupNameOrFrameList.length; i++) {
                 var frameOrName = frameOrGroupNameOrFrameList[i];
-                if(typeof frameOrName === 'string') {
+                if(['number', 'string'].indexOf(typeof frameOrName) !== -1) {
+                    frameOrName = String(frameOrName);
                     // In this case, there's an array and this frame is a string name:
                     frameList.push({
                         type: 'byname',
                         name: frameOrName,
                         data: setTransitionConfig({name: frameOrName})
                     });
-                } else {
+                } else if(Lib.isPlainObject(frameOrName)) {
                     frameList.push({
                         type: 'object',
                         data: setTransitionConfig(Lib.extendFlat({}, frameOrName))

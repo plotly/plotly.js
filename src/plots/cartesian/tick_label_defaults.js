@@ -67,8 +67,8 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
  */
 function getShowAttrDflt(containerIn) {
     var showAttrsAll = ['showexponent',
-                        'showtickprefix',
-                        'showticksuffix'],
+            'showtickprefix',
+            'showticksuffix'],
         showAttrs = showAttrsAll.filter(function(a) {
             return containerIn[a] !== undefined;
         }),

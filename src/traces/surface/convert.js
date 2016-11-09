@@ -151,8 +151,8 @@ function refine(coords) {
             var padImg = padField(coords[i]);
             var scaledImg = ndarray(new Float32Array(nsize), nshape);
             homography(scaledImg, padImg, [scaleF, 0, 0,
-                                              0, scaleF, 0,
-                                              0, 0, 1]);
+                0, scaleF, 0,
+                0, 0, 1]);
             coords[i] = scaledImg;
         }
 
