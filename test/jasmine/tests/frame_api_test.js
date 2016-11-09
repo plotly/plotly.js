@@ -60,6 +60,12 @@ describe('Test frame api', function() {
             }).catch(fail).then(done);
         });
 
+        it('casts names to strings', function(done) {
+            Plotly.addFrames(gd, [{name: 5}]).then(function() {
+                expect(Object.keys(h)).toEqual(['5']);
+            }).catch(fail).then(done);
+        });
+
         it('creates multiple unnamed frames at the same time', function(done) {
             Plotly.addFrames(gd, [{}, {}]).then(function() {
                 expect(f).toEqual([{name: 'frame 0'}, {name: 'frame 1'}]);
