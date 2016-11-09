@@ -79,6 +79,8 @@ lib.error = loggersModule.error;
 lib.notifier = require('./notifier');
 
 lib.filterUnique = require('./filter_unique');
+lib.filterVisible = require('./filter_visible');
+
 
 lib.cleanNumber = require('./clean_number');
 

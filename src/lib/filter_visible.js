@@ -9,14 +9,21 @@
 
 'use strict';
 
-module.exports = function filterVisible(dataIn) {
-    var dataOut = [];
+/** Filter out object items with visible !== true
+ *  insider array container.
+ *
+ *  @param {array of objects} container
+ *  @return {array of objects} of length <= container
+ *
+ */
+module.exports = function filterVisible(container) {
+    var out = [];
 
-    for(var i = 0; i < dataIn.length; i++) {
-        var trace = dataIn[i];
+    for(var i = 0; i < container.length; i++) {
+        var item = container[i];
 
-        if(trace.visible === true) dataOut.push(trace);
+        if(item.visible === true) out.push(item);
     }
 
-    return dataOut;
+    return out;
 };

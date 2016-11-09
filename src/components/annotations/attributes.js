@@ -17,6 +17,15 @@ var extendFlat = require('../../lib/extend').extendFlat;
 module.exports = {
     _isLinkedToArray: true,
 
+    visible: {
+        valType: 'boolean',
+        role: 'info',
+        dflt: true,
+        description: [
+            'Determines whether or not this annotation is visible.'
+        ].join(' ')
+    },
+
     text: {
         valType: 'string',
         role: 'info',

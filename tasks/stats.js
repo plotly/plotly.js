@@ -1,5 +1,6 @@
 var path = require('path');
 var fs = require('fs');
+var spawn = require('child_process').spawn;
 
 var falafel = require('falafel');
 var gzipSize = require('gzip-size');
@@ -10,6 +11,7 @@ var constants = require('./util/constants');
 var pkg = require('../package.json');
 
 var pathDistREADME = path.join(constants.pathToDist, 'README.md');
+var pathDistNpmLs = path.join(constants.pathToDist, 'npm-ls.json');
 var cdnRoot = 'https://cdn.plot.ly/plotly-';
 var coreModules = ['scatter'];
 
@@ -18,15 +20,25 @@ var JS = '.js';
 var MINJS = '.min.js';
 
 // main
-var content = getContent();
-common.writeFile(pathDistREADME, content.join('\n'));
+writeNpmLs();
+common.writeFile(pathDistREADME, getReadMeContent());
 
-function getContent() {
+function writeNpmLs() {
+    if(common.doesFileExist(pathDistNpmLs)) fs.unlinkSync(pathDistNpmLs);
+
+    var ws = fs.createWriteStream(pathDistNpmLs, { flags: 'a' });
+    var proc = spawn('npm', ['ls', '--json', '--only', 'prod']);
+
+    proc.stdout.pipe(ws);
+}
+
+function getReadMeContent() {
     return []
         .concat(getInfoContent())
         .concat(getMainBundleInfo())
         .concat(getPartialBundleInfo())
-        .concat(getFooter());
+        .concat(getFooter())
+        .join('\n');
 }
 
 // general info about distributed files

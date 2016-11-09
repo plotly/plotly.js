@@ -57,6 +57,19 @@
         "layer": "below"
       },
       {
+          "visible": false,
+          "source": "https://images.plot.ly/language-icons/api-home/python-logo.png",
+          "xref": "x",
+          "yref": "y",
+          "x": 1,
+          "y": 3,
+          "sizex": 2,
+          "sizey": 2,
+          "sizing": "stretch",
+          "opacity": 0.4,
+          "layer": "below"
+      },
+      {
         "source": "https://images.plot.ly/language-icons/api-home/matlab-logo.png",
         "xref": "x",
         "yref": "paper",

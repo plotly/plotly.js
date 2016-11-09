@@ -12,36 +12,34 @@ var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 var attributes = require('./attributes');
 
+var name = 'images';
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
+    var contIn = Array.isArray(layoutIn[name]) ? layoutIn[name] : [],
+        contOut = layoutOut[name] = [];
 
-    if(!layoutIn.images || !Array.isArray(layoutIn.images)) return;
+    for(var i = 0; i < contIn.length; i++) {
+        var itemIn = contIn[i] || {},
+            itemOut = {};
 
+        imageDefaults(itemIn, itemOut, layoutOut);
 
-    var containerIn = layoutIn.images,
-        containerOut = layoutOut.images = [];
-
-
-    for(var i = 0; i < containerIn.length; i++) {
-        var image = containerIn[i];
-
-        if(!image.source) continue;
-
-        var defaulted = imageDefaults(containerIn[i] || {}, containerOut[i] || {}, layoutOut);
-        containerOut.push(defaulted);
+        contOut.push(itemOut);
     }
 };
 
 
 function imageDefaults(imageIn, imageOut, fullLayout) {
 
-    imageOut = imageOut || {};
-
     function coerce(attr, dflt) {
         return Lib.coerce(imageIn, imageOut, attributes, attr, dflt);
     }
 
-    coerce('source');
+    var source = coerce('source');
+    var visible = coerce('visible', !!source);
+
+    if(!visible) return imageOut;
+
     coerce('layer');
     coerce('x');
     coerce('y');
@@ -52,12 +50,12 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
     coerce('sizing');
     coerce('opacity');
 
-    for(var i = 0; i < 2; i++) {
-        var gdMock = { _fullLayout: fullLayout },
-            axLetter = ['x', 'y'][i];
+    var gdMock = { _fullLayout: fullLayout },
+        axLetters = ['x', 'y'];
 
+    for(var i = 0; i < 2; i++) {
         // 'paper' is the fallback axref
-        Axes.coerceRef(imageIn, imageOut, gdMock, axLetter, 'paper');
+        Axes.coerceRef(imageIn, imageOut, gdMock, axLetters[i], 'paper');
     }
 
     return imageOut;
