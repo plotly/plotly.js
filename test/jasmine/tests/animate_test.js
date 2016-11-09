@@ -588,14 +588,16 @@ describe('Test animate API', function() {
     });
 });
 
-describe('Test animate API', function() {
+describe('Animate API details', function() {
     'use strict';
 
     var gd, mockCopy;
 
     beforeEach(function(done) {
         gd = createGraphDiv();
+
         mockCopy = Lib.extendDeep({}, mock);
+
         Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
             return Plotly.addFrames(gd, mockCopy.frames);
         }).then(done);
@@ -604,6 +606,15 @@ describe('Test animate API', function() {
     afterEach(function() {
         Plotly.purge(gd);
         destroyGraphDiv();
+    });
+
+    it('null frames should not break everything', function(done) {
+        gd._transitionData._frames.push(null);
+
+        Plotly.animate(gd, null, {
+            frame: {duration: 0},
+            transition: {duration: 0}
+        }).catch(fail).then(done);
     });
 
     it('does not fail if strings are not used', function(done) {
