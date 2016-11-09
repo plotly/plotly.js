@@ -12,7 +12,6 @@ var d3 = require('d3');
 var customMatchers = require('../assets/custom_matchers');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 
 
 describe('shape supplyDefaults', function() {
