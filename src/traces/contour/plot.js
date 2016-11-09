@@ -320,7 +320,7 @@ function makePath(pi, loc, edgeflag) {
             // even # of pts - average central two
             else {
                 newpt = [(getpt(ptavg)[0] + getpt(ptavg + 1)[0]) / 2,
-                         (getpt(ptavg)[1] + getpt(ptavg + 1)[1]) / 2];
+                    (getpt(ptavg)[1] + getpt(ptavg + 1)[1]) / 2];
             }
 
             pts.splice(cnt2 + 1, cnt - cnt2 + 1, newpt);
@@ -458,12 +458,12 @@ function getInterpPx(pi, loc, step) {
     if(step[1]) {
         var dx = (pi.level - zxy) / (pi.z[locy][locx + 1] - zxy);
         return [xa.c2p((1 - dx) * pi.x[locx] + dx * pi.x[locx + 1], true),
-                ya.c2p(pi.y[locy], true)];
+            ya.c2p(pi.y[locy], true)];
     }
     else {
         var dy = (pi.level - zxy) / (pi.z[locy + 1][locx] - zxy);
         return [xa.c2p(pi.x[locx], true),
-                ya.c2p((1 - dy) * pi.y[locy] + dy * pi.y[locy + 1], true)];
+            ya.c2p((1 - dy) * pi.y[locy] + dy * pi.y[locy + 1], true)];
     }
 }
 
