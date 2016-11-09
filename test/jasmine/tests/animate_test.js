@@ -693,4 +693,13 @@ describe('Animate API details', function() {
             expect(gd._fullLayout._currentFrame).toEqual('frame0');
         }).catch(fail).then(done);
     });
+
+    it('null frames should not break everything', function(done) {
+        gd._transitionData._frames.push(null);
+
+        Plotly.animate(gd, null, {
+            frame: {duration: 0},
+            transition: {duration: 0}
+        }).catch(fail).then(done);
+    });
 });

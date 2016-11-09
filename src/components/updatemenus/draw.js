@@ -299,6 +299,8 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
             setActive(gd, menuOpts, buttonOpts, gHeader, gButton, buttonIndex);
 
             Plots.executeAPICommand(gd, buttonOpts.method, buttonOpts.args);
+
+            gd.emit('plotly_buttonclicked', {menu: menuOpts, button: buttonOpts, active: menuOpts.active});
         });
 
         button.on('mouseover', function() {

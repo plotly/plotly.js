@@ -380,6 +380,31 @@ describe('update menus interactions', function() {
         });
     });
 
+    it('should emit an event on button click', function(done) {
+        var clickCnt = 0;
+        var data = [];
+        gd.on('plotly_buttonclicked', function(datum) {
+            data.push(datum);
+            clickCnt++;
+        });
+
+        click(selectHeader(0)).then(function() {
+            expect(clickCnt).toEqual(0);
+
+            return click(selectButton(2));
+        }).then(function() {
+            expect(clickCnt).toEqual(1);
+            expect(data.length).toEqual(1);
+            expect(data[0].active).toEqual(2);
+
+            return click(selectButton(1));
+        }).then(function() {
+            expect(clickCnt).toEqual(2);
+            expect(data.length).toEqual(2);
+            expect(data[1].active).toEqual(1);
+        }).catch(fail).then(done);
+    });
+
     it('should apply update on button click', function(done) {
         var header0 = selectHeader(0),
             header1 = selectHeader(1);
