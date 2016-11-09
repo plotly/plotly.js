@@ -321,20 +321,28 @@ describe('sliders interactions', function() {
 
     it('should issue events on interaction', function(done) {
         var cntStart = 0;
-        var cntMove = 0;
+        var cntInteraction = 0;
+        var cntNonInteraction = 0;
         var cntEnd = 0;
-        var cntChange = 0;
 
-        gd.on('plotly_sliderdragstart', function() { cntStart++; });
-        gd.on('plotly_sliderdragmove', function() { cntMove++; });
-        gd.on('plotly_sliderdragend', function() { cntEnd++; });
-        gd.on('plotly_sliderchange', function() { cntChange++; });
+        gd.on('plotly_sliderstart', function() {
+            cntStart++;
+        }).on('plotly_sliderchange', function(datum) {
+            if(datum.interaction) {
+                cntInteraction++;
+            } else {
+                cntNonInteraction++;
+            }
+        }).on('plotly_sliderend', function() {
+            cntEnd++;
+        });
 
-        function assertEventCounts(starts, moves, ends, changes) {
-            expect(cntStart).toEqual(starts);
-            expect(cntMove).toEqual(moves);
-            expect(cntEnd).toEqual(ends);
-            expect(cntChange).toEqual(changes);
+        function assertEventCounts(starts, interactions, noninteractions, ends) {
+            expect(
+                [cntStart, cntInteraction, cntNonInteraction, cntEnd]
+            ).toEqual(
+                [starts, interactions, noninteractions, ends]
+            );
         }
 
         assertEventCounts(0, 0, 0, 0);
@@ -350,29 +358,29 @@ describe('sliders interactions', function() {
         }));
 
         setTimeout(function() {
-            // One slider received a mousedown, two linked sliders have received a change:
-            assertEventCounts(1, 0, 0, 2);
+            // One slider received a mousedown, one received an interaction, and one received a change:
+            assertEventCounts(1, 1, 1, 0);
+
+            // Drag to the left side:
+            gd.dispatchEvent(new MouseEvent('mousemove', {
+                clientY: touchRect.top + 5,
+                clientX: touchRect.left + 5,
+            }));
 
             setTimeout(function() {
-                // Drag to the left side:
-                gd.dispatchEvent(new MouseEvent('mousemove', {
-                    clientY: touchRect.top + 5,
-                    clientX: touchRect.left + 5,
-                }));
+                // On move, now to changes for the each slider, and no ends:
+                assertEventCounts(1, 2, 2, 0);
+
+                gd.dispatchEvent(new MouseEvent('mouseup'));
 
                 setTimeout(function() {
-                    // On move, now two linked sliders have received two changes each:
-                    assertEventCounts(1, 1, 0, 4);
-
-                    gd.dispatchEvent(new MouseEvent('mouseup'));
-
-                    // Now all have been receivd:
-                    assertEventCounts(1, 1, 1, 4);
+                    // Now an end:
+                    assertEventCounts(1, 2, 2, 1);
 
                     done();
-                }, 10);
-            }, 10);
-        }, 10);
+                }, 50);
+            }, 50);
+        }, 50);
     });
 
     function assertNodeCount(query, cnt) {

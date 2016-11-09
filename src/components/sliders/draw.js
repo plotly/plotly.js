@@ -361,11 +361,7 @@ function handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, doTransiti
     var quantizedPosition = Math.round(normalizedPosition * (sliderOpts.steps.length - 1));
 
     if(quantizedPosition !== sliderOpts.active) {
-        var ret = {previousActive: sliderOpts.active};
-
         setActive(gd, sliderGroup, sliderOpts, quantizedPosition, true, doTransition);
-
-        return ret;
     }
 }
 
@@ -380,6 +376,7 @@ function setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition)
 
     gd.emit('plotly_sliderchange', {
         slider: sliderOpts,
+        interaction: doCallback,
         previousActive: previousActive
     });
 
@@ -409,13 +406,13 @@ function attachGripEvents(item, gd, sliderGroup, sliderOpts) {
     var $gd = d3.select(gd);
 
     item.on('mousedown', function() {
+        gd.emit('plotly_sliderstart', {slider: sliderOpts});
+
         var grip = sliderGroup.select('.' + constants.gripRectClass);
 
         d3.event.stopPropagation();
         d3.event.preventDefault();
         grip.call(Color.fill, sliderOpts.activebgcolor);
-
-        gd.emit('plotly_sliderdragstart', {slider: sliderOpts});
 
         var normalizedPosition = positionToNormalizedValue(sliderOpts, d3.mouse(node)[0]);
         handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, true);
@@ -423,14 +420,7 @@ function attachGripEvents(item, gd, sliderGroup, sliderOpts) {
 
         $gd.on('mousemove', function() {
             var normalizedPosition = positionToNormalizedValue(sliderOpts, d3.mouse(node)[0]);
-            var changes = handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, false);
-
-            if(changes) {
-                gd.emit('plotly_sliderdragmove', {
-                    slider: sliderOpts,
-                    previousActive: changes.previousActive
-                });
-            }
+            handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, false);
         });
 
         $gd.on('mouseup', function() {
@@ -439,7 +429,10 @@ function attachGripEvents(item, gd, sliderGroup, sliderOpts) {
             $gd.on('mouseup', null);
             $gd.on('mousemove', null);
 
-            gd.emit('plotly_sliderdragend', {slider: sliderOpts});
+            gd.emit('plotly_sliderend', {
+                slider: sliderOpts,
+                step: sliderOpts.steps[sliderOpts.active]
+            });
         });
     });
 }
