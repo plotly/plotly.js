@@ -1087,15 +1087,19 @@ plots.purge = function(gd) {
     if(fullLayout._glcontainer !== undefined) fullLayout._glcontainer.remove();
     if(fullLayout._geocontainer !== undefined) fullLayout._geocontainer.remove();
 
-    // Ensure any dangling callbacks are simply dropped if the plot is purged.
-    // This is more or less only actually important for testing.
-    gd._transitionData._interruptCallbacks.length = 0;
-
     // remove modebar
     if(fullLayout._modeBar) fullLayout._modeBar.destroy();
 
-    if(gd._transitionData && gd._transitionData._animationRaf) {
-        window.cancelAnimationFrame(gd._transitionData._animationRaf);
+    if(gd._transitionData) {
+        // Ensure any dangling callbacks are simply dropped if the plot is purged.
+        // This is more or less only actually important for testing.
+        if(gd._transitionData._interruptCallbacks) {
+            gd._transitionData._interruptCallbacks.length = 0;
+        }
+
+        if(gd._transitionData._animationRaf) {
+            window.cancelAnimationFrame(gd._transitionData._animationRaf);
+        }
     }
 
     // data and layout
