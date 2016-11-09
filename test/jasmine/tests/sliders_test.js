@@ -319,6 +319,70 @@ describe('sliders interactions', function() {
         }, 100);
     });
 
+    it('should issue events on interaction', function(done) {
+        var cntStart = 0;
+        var cntInteraction = 0;
+        var cntNonInteraction = 0;
+        var cntEnd = 0;
+
+        gd.on('plotly_sliderstart', function() {
+            cntStart++;
+        }).on('plotly_sliderchange', function(datum) {
+            if(datum.interaction) {
+                cntInteraction++;
+            } else {
+                cntNonInteraction++;
+            }
+        }).on('plotly_sliderend', function() {
+            cntEnd++;
+        });
+
+        function assertEventCounts(starts, interactions, noninteractions, ends) {
+            expect(
+                [cntStart, cntInteraction, cntNonInteraction, cntEnd]
+            ).toEqual(
+                [starts, interactions, noninteractions, ends]
+            );
+        }
+
+        assertEventCounts(0, 0, 0, 0);
+
+        var firstGroup = gd._fullLayout._infolayer.select('.' + constants.railTouchRectClass);
+        var railNode = firstGroup.node();
+        var touchRect = railNode.getBoundingClientRect();
+
+        // Dispatch a click on the right side of the bar:
+        railNode.dispatchEvent(new MouseEvent('mousedown', {
+            clientY: touchRect.top + 5,
+            clientX: touchRect.left + touchRect.width - 5,
+        }));
+
+        setTimeout(function() {
+            // One slider received a mousedown, one received an interaction, and one received a change:
+            assertEventCounts(1, 1, 1, 0);
+
+            // Drag to the left side:
+            gd.dispatchEvent(new MouseEvent('mousemove', {
+                clientY: touchRect.top + 5,
+                clientX: touchRect.left + 5,
+            }));
+
+            setTimeout(function() {
+                // On move, now to changes for the each slider, and no ends:
+                assertEventCounts(1, 2, 2, 0);
+
+                gd.dispatchEvent(new MouseEvent('mouseup'));
+
+                setTimeout(function() {
+                    // Now an end:
+                    assertEventCounts(1, 2, 2, 1);
+
+                    done();
+                }, 50);
+            }, 50);
+        }, 50);
+    });
+
     function assertNodeCount(query, cnt) {
         expect(d3.selectAll(query).size()).toEqual(cnt);
     }
