@@ -579,21 +579,21 @@ function drawOne(gd, index, opt, value) {
                         ann.call(Lib.setTranslate, xcenter, ycenter);
 
                         update[annbase + '.x'] = xa ?
-                            (options.x + dx / xa._m) :
+                            xa.l2r(xa.p2l(xa.l2p(xa.r2l(options.x)) + dx)) :
                             ((arrowX + dx - gs.l) / gs.w);
                         update[annbase + '.y'] = ya ?
-                            (options.y + dy / ya._m) :
+                            ya.l2r(ya.p2l(ya.l2p(ya.r2l(options.y)) + dy)) :
                             (1 - ((arrowY + dy - gs.t) / gs.h));
 
                         if(options.axref === options.xref) {
                             update[annbase + '.ax'] = xa ?
-                              (options.ax + dx / xa._m) :
+                              xa.l2r(xa.p2l(xa.l2p(xa.r2l(options.ax)) + dx)) :
                               ((arrowX + dx - gs.l) / gs.w);
                         }
 
                         if(options.ayref === options.yref) {
                             update[annbase + '.ay'] = ya ?
-                              (options.ay + dy / ya._m) :
+                              ya.l2r(ya.p2l(ya.l2p(ya.r2l(options.ay)) + dy)) :
                               (1 - ((arrowY + dy - gs.t) / gs.h));
                         }
 
@@ -640,13 +640,13 @@ function drawOne(gd, index, opt, value) {
                     var csr = 'pointer';
                     if(options.showarrow) {
                         if(options.axref === options.xref) {
-                            update[annbase + '.ax'] = xa.p2l(xa.l2p(options.ax) + dx);
+                            update[annbase + '.ax'] = xa.l2r(xa.p2l(xa.l2p(xa.r2l(options.ax)) + dx));
                         } else {
                             update[annbase + '.ax'] = options.ax + dx;
                         }
 
                         if(options.ayref === options.yref) {
-                            update[annbase + '.ay'] = ya.p2l(ya.l2p(options.ay) + dy);
+                            update[annbase + '.ay'] = ya.l2r(ya.p2l(ya.l2p(ya.r2l(options.ay)) + dy));
                         } else {
                             update[annbase + '.ay'] = options.ay + dy;
                         }
