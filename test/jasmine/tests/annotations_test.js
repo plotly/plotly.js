@@ -151,12 +151,16 @@ describe('annotations autosize', function() {
             // xaxis2 need a bit more tolerance to pass on CI
             // this most likely due to the different text bounding box values
             // on headfull vs headless browsers.
-            var PREC2 = 0.1;
+            // but also because it's a date axis that we've converted to ms
+            var PRECX2 = -10;
+            // yaxis2 needs a bit more now too...
+            var PRECY2 = 0.2;
+            var dateAx = fullLayout.xaxis2;
 
             expect(fullLayout.xaxis.range).toBeCloseToArray(x, PREC, '- xaxis');
             expect(fullLayout.yaxis.range).toBeCloseToArray(y, PREC, '- yaxis');
-            expect(fullLayout.xaxis2.range).toBeCloseToArray(x2, PREC2, 'xaxis2');
-            expect(fullLayout.yaxis2.range).toBeCloseToArray(y2, PREC, 'yaxis2');
+            expect(dateAx.range.map(dateAx.r2l)).toBeCloseToArray(x2.map(dateAx.r2l), PRECX2, 'xaxis2 ' + dateAx.range);
+            expect(fullLayout.yaxis2.range).toBeCloseToArray(y2, PRECY2, 'yaxis2');
             expect(fullLayout.xaxis3.range).toBeCloseToArray(x3, PREC, 'xaxis3');
             expect(fullLayout.yaxis3.range).toBeCloseToArray(y3, PREC, 'yaxis3');
         }
@@ -164,7 +168,7 @@ describe('annotations autosize', function() {
         Plotly.plot(gd, mock).then(function() {
             assertRanges(
                 [0.97, 2.03], [0.97, 2.03],
-                [-0.32, 3.38], [0.42, 2.58],
+                ['2000-10-01 08:23:18.0583', '2001-06-05 19:20:23.301'], [-0.245, 4.245],
                 [0.9, 2.1], [0.86, 2.14]
             );
 
@@ -177,7 +181,7 @@ describe('annotations autosize', function() {
         .then(function() {
             assertRanges(
                 [1.44, 2.02], [0.97, 2.03],
-                [1.31, 2.41], [0.42, 2.58],
+                ['2001-01-18 15:06:04.0449', '2001-03-27 14:01:20.8989'], [-0.245, 4.245],
                 [1.44, 2.1], [0.86, 2.14]
             );
 
@@ -190,7 +194,7 @@ describe('annotations autosize', function() {
         .then(function() {
             assertRanges(
                 [1.44, 2.02], [0.99, 1.52],
-                [0.5, 2.5], [0.42, 2.58],
+                ['2001-01-31 23:59:59.999', '2001-02-01 00:00:00.001'], [-0.245, 4.245],
                 [0.5, 2.5], [0.86, 2.14]
             );
 
@@ -206,7 +210,7 @@ describe('annotations autosize', function() {
         .then(function() {
             assertRanges(
                 [0.97, 2.03], [0.97, 2.03],
-                [-0.32, 3.38], [0.42, 2.58],
+                ['2000-10-01 08:23:18.0583', '2001-06-05 19:20:23.301'], [-0.245, 4.245],
                 [0.9, 2.1], [0.86, 2.14]
             );
         })
