@@ -427,4 +427,71 @@ describe('Test Plots', function() {
             expect(gd._transitioning).toBeUndefined();
         });
     });
+
+    describe('extendObjectWithContainers', function() {
+
+        function assert(dest, src, expected) {
+            Plots.extendObjectWithContainers(dest, src, ['container']);
+            expect(dest).toEqual(expected);
+        }
+
+        it('extend each container items', function() {
+            var dest = {
+                container: [
+                    { text: '1', x: 1, y: 1 },
+                    { text: '2', x: 2, y: 2 }
+                ]
+            };
+
+            var src = {
+                container: [
+                    { text: '1-new' },
+                    { text: '2-new' }
+                ]
+            };
+
+            var expected = {
+                container: [
+                    { text: '1-new', x: 1, y: 1 },
+                    { text: '2-new', x: 2, y: 2 }
+                ]
+            };
+
+            assert(dest, src, expected);
+        });
+
+        it('clears container items when applying null src items', function() {
+            var dest = {
+                container: [
+                    { text: '1', x: 1, y: 1 },
+                    { text: '2', x: 2, y: 2 }
+                ]
+            };
+
+            var src = {
+                container: [null, null]
+            };
+
+            var expected = {
+                container: [null, null]
+            };
+
+            assert(dest, src, expected);
+        });
+
+        it('clears container applying null src', function() {
+            var dest = {
+                container: [
+                    { text: '1', x: 1, y: 1 },
+                    { text: '2', x: 2, y: 2 }
+                ]
+            };
+
+            var src = { container: null };
+
+            var expected = { container: null };
+
+            assert(dest, src, expected);
+        });
+    });
 });
