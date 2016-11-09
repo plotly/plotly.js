@@ -27,7 +27,7 @@ describe('Layout images', function() {
 
             Images.supplyLayoutDefaults(layoutIn, layoutOut);
 
-            expect(layoutOut.images.length).toEqual(0);
+            expect(layoutOut.images).toEqual([{ visible: false }]);
         });
 
         it('should reject when not an array', function() {
@@ -40,7 +40,7 @@ describe('Layout images', function() {
 
             Images.supplyLayoutDefaults(layoutIn, layoutOut);
 
-            expect(layoutOut.images).not.toBeDefined();
+            expect(layoutOut.images).toEqual([]);
         });
 
         it('should coerce the correct defaults', function() {
@@ -48,6 +48,7 @@ describe('Layout images', function() {
 
             var expected = {
                 source: jsLogo,
+                visible: true,
                 layer: 'above',
                 x: 0,
                 y: 0,
@@ -319,30 +320,48 @@ describe('Layout images', function() {
                 assertImages(0);
 
                 return Plotly.relayout(gd, 'images[0]', makeImage(jsLogo, 0.1, 0.1));
-            }).then(function() {
+            })
+            .then(function() {
                 assertImages(1);
 
                 return Plotly.relayout(gd, 'images[1]', makeImage(pythonLogo, 0.9, 0.9));
-            }).then(function() {
+            })
+            .then(function() {
                 assertImages(2);
 
                 return Plotly.relayout(gd, 'images[2]', makeImage(pythonLogo, 0.2, 0.5));
-            }).then(function() {
+            })
+            .then(function() {
+                assertImages(3);
+                expect(gd.layout.images.length).toEqual(3);
+
+                return Plotly.relayout(gd, 'images[1].visible', false);
+            })
+            .then(function() {
+                assertImages(2);
+                expect(gd.layout.images.length).toEqual(3);
+
+                return Plotly.relayout(gd, 'images[1].visible', true);
+            })
+            .then(function() {
                 assertImages(3);
                 expect(gd.layout.images.length).toEqual(3);
 
                 return Plotly.relayout(gd, 'images[2]', null);
-            }).then(function() {
+            })
+            .then(function() {
                 assertImages(2);
                 expect(gd.layout.images.length).toEqual(2);
 
                 return Plotly.relayout(gd, 'images[1]', null);
-            }).then(function() {
+            })
+            .then(function() {
                 assertImages(1);
                 expect(gd.layout.images.length).toEqual(1);
 
                 return Plotly.relayout(gd, 'images[0]', null);
-            }).then(function() {
+            })
+            .then(function() {
                 assertImages(0);
                 expect(gd.layout.images).toEqual([]);
 

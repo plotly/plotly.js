@@ -91,6 +91,7 @@
                 "y1": 1,
                 "yref": "paper"
             },
+            { "visible": false },
             {
                 "fillcolor": "#f6e8c3",
                 "layer": "below",
