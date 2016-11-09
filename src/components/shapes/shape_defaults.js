@@ -15,14 +15,15 @@ var Axes = require('../../plots/cartesian/axes');
 var attributes = require('./attributes');
 var helpers = require('./helpers');
 
-module.exports = function handleShapeDefaults(shapeIn, fullLayout) {
-    var shapeOut = {};
+
+module.exports = function handleShapeDefaults(shapeIn, shapeOut, fullLayout, opts) {
+    opts = opts || {};
 
     function coerce(attr, dflt) {
         return Lib.coerce(shapeIn, shapeOut, attributes, attr, dflt);
     }
 
-    var visible = coerce('visible');
+    var visible = coerce('visible', !opts.itemIsNotPlainObject);
 
     if(!visible) return shapeOut;
 

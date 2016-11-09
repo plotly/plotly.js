@@ -234,7 +234,8 @@ function updateShape(gd, index, opt, value) {
         optionsIn[posAttr] = position;
     }
 
-    var options = handleShapeDefaults(optionsIn, gd._fullLayout);
+    var options = {};
+    handleShapeDefaults(optionsIn, options, gd._fullLayout);
     gd._fullLayout.shapes[index] = options;
 
     var clipAxes;
