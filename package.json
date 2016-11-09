@@ -97,7 +97,7 @@
     "browserify-transform-tools": "^1.5.1",
     "deep-equal": "^1.0.1",
     "ecstatic": "^2.1.0",
-    "eslint": "^3.5.0",
+    "eslint": "^3.9.1",
     "falafel": "^2.0.0",
     "fs-extra": "^0.30.0",
     "fuse.js": "^2.2.0",
