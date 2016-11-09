@@ -1563,8 +1563,14 @@ plots.extendObjectWithContainers = function(dest, src, containerPaths) {
         for(i = 0; i < containerPaths.length; i++) {
             containerProp = Lib.nestedProperty(expandedObj, containerPaths[i]);
             containerVal = containerProp.get();
-            containerProp.set(null);
-            Lib.nestedProperty(containerObj, containerPaths[i]).set(containerVal);
+
+            if(containerVal === undefined) {
+                Lib.nestedProperty(containerObj, containerPaths[i]).set(null);
+            }
+            else {
+                containerProp.set(null);
+                Lib.nestedProperty(containerObj, containerPaths[i]).set(containerVal);
+            }
         }
     }
 
