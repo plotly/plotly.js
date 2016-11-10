@@ -92,7 +92,10 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
  *
  * Also cleans the values, since the attribute definition itself has to say
  * valType: 'any' to handle date axes. This allows us to accept:
- * - for category axes: category names, and convert them here into serial numbers
+ * - for category axes: category names, and convert them here into serial numbers.
+ *   Note that this will NOT work for axis range endpoints, because we don't know
+ *   the category list yet (it's set by ax.makeCalcdata during calc)
+ *   but it works for component (note, shape, images) positions.
  * - for date axes: JS Dates or milliseconds, and convert to date strings
  * - for other types: coerce them to numbers
  */
