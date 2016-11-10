@@ -1959,9 +1959,9 @@ function _relayout(gd, aobj) {
         }
         // alter gd.layout
         else {
+            var pp1 = String(p.parts[1] || '');
             // check whether we can short-circuit a full redraw
             // 3d or geo at this point just needs to redraw.
-            var pp1 = String(p.parts[1] || '');
             if(p.parts[0].indexOf('scene') === 0) flags.doplot = true;
             else if(p.parts[0].indexOf('geo') === 0) flags.doplot = true;
             else if(p.parts[0].indexOf('ternary') === 0) flags.doplot = true;
