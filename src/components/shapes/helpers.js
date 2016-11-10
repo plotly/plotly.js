@@ -45,7 +45,7 @@ exports.getDataToPixel = function(gd, axis, isVertical) {
         var d2r = exports.shapePositionToRange(axis);
 
         dataToPixel = function(v) {
-            return axis._offset + axis.l2p(axis.r2l(d2r(v, true)));
+            return axis._offset + axis.r2p(d2r(v, true));
         };
 
         if(axis.type === 'date') dataToPixel = exports.decodeDate(dataToPixel);
@@ -66,7 +66,7 @@ exports.getPixelToData = function(gd, axis, isVertical) {
 
     if(axis) {
         var r2d = exports.rangeToShapePosition(axis);
-        pixelToData = function(p) { return r2d(axis.l2r(axis.p2l(p - axis._offset))); };
+        pixelToData = function(p) { return r2d(axis.p2r(p - axis._offset)); };
     }
     else if(isVertical) {
         pixelToData = function(p) { return 1 - (p - gs.t) / gs.h; };

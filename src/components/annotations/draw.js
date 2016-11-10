@@ -370,7 +370,7 @@ function drawOne(gd, index, opt, value) {
 
                     if(annotationIsOffscreen) return;
                 }
-                annPosPx[axLetter] = ax._offset + ax.l2p(ax.r2l(options[axLetter]));
+                annPosPx[axLetter] = ax._offset + ax.r2p(options[axLetter]);
                 alignPosition = 0.5;
             }
             else {
@@ -383,7 +383,7 @@ function drawOne(gd, index, opt, value) {
 
             var alignShift = 0;
             if(options['a' + axLetter + 'ref'] === axRef) {
-                annPosPx['aa' + axLetter] = ax._offset + ax.l2p(ax.r2l(options['a' + axLetter]));
+                annPosPx['aa' + axLetter] = ax._offset + ax.r2p(options['a' + axLetter]);
             } else {
                 if(options.showarrow) {
                     alignShift = options['a' + axLetter];
@@ -583,22 +583,22 @@ function drawOne(gd, index, opt, value) {
                         ann.call(Lib.setTranslate, xcenter, ycenter);
 
                         update[annbase + '.x'] = xa ?
-                            xa.l2r(xa.p2l(xa.l2p(xa.r2l(options.x)) + dx)) :
+                            xa.p2r(xa.r2p(options.x) + dx) :
                             ((arrowX + dx - gs.l) / gs.w);
                         update[annbase + '.y'] = ya ?
-                            ya.l2r(ya.p2l(ya.l2p(ya.r2l(options.y)) + dy)) :
+                            ya.p2r(ya.r2p(options.y) + dy) :
                             (1 - ((arrowY + dy - gs.t) / gs.h));
 
                         if(options.axref === options.xref) {
                             update[annbase + '.ax'] = xa ?
-                              xa.l2r(xa.p2l(xa.l2p(xa.r2l(options.ax)) + dx)) :
-                              ((arrowX + dx - gs.l) / gs.w);
+                                xa.p2r(xa.r2p(options.ax) + dx) :
+                                ((arrowX + dx - gs.l) / gs.w);
                         }
 
                         if(options.ayref === options.yref) {
                             update[annbase + '.ay'] = ya ?
-                              ya.l2r(ya.p2l(ya.l2p(ya.r2l(options.ay)) + dy)) :
-                              (1 - ((arrowY + dy - gs.t) / gs.h));
+                                ya.p2r(ya.r2p(options.ay) + dy) :
+                                (1 - ((arrowY + dy - gs.t) / gs.h));
                         }
 
                         anng.attr({
@@ -644,13 +644,13 @@ function drawOne(gd, index, opt, value) {
                     var csr = 'pointer';
                     if(options.showarrow) {
                         if(options.axref === options.xref) {
-                            update[annbase + '.ax'] = xa.l2r(xa.p2l(xa.l2p(xa.r2l(options.ax)) + dx));
+                            update[annbase + '.ax'] = xa.p2r(xa.r2p(options.ax) + dx);
                         } else {
                             update[annbase + '.ax'] = options.ax + dx;
                         }
 
                         if(options.ayref === options.yref) {
-                            update[annbase + '.ay'] = ya.l2r(ya.p2l(ya.l2p(ya.r2l(options.ay)) + dy));
+                            update[annbase + '.ay'] = ya.p2r(ya.r2p(options.ay) + dy);
                         } else {
                             update[annbase + '.ay'] = options.ay + dy;
                         }

@@ -232,6 +232,11 @@ module.exports = function setConvert(ax) {
     ax.c2p = function(v, clip) { return ax.l2p(ax.c2l(v, clip)); };
     ax.p2c = function(px) { return ax.l2c(ax.p2l(px)); };
 
+    // clip doesn't do anything here yet, but in v2.0 when log axes get
+    // refactored it will... so including it now so we don't forget.
+    ax.r2p = function(v, clip) { return ax.l2p(ax.r2l(v, clip)); };
+    ax.p2r = function(px) { return ax.l2r(ax.p2l(px)); };
+
     if(['linear', 'log', '-'].indexOf(ax.type) !== -1) {
         ax.c2d = num;
         ax.d2c = Lib.cleanNumber;

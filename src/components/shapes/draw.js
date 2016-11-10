@@ -473,7 +473,7 @@ function getPathString(gd, options) {
 
     if(xa) {
         x2r = helpers.shapePositionToRange(xa);
-        x2p = function(v) { return xa._offset + xa.l2p(xa.r2l(x2r(v, true))); };
+        x2p = function(v) { return xa._offset + xa.r2p(x2r(v, true)); };
     }
     else {
         x2p = function(v) { return gs.l + gs.w * v; };
@@ -481,7 +481,7 @@ function getPathString(gd, options) {
 
     if(ya) {
         y2r = helpers.shapePositionToRange(ya);
-        y2p = function(v) { return ya._offset + ya.l2p(ya.r2l(y2r(v, true))); };
+        y2p = function(v) { return ya._offset + ya.r2p(y2r(v, true)); };
     }
     else {
         y2p = function(v) { return gs.t + gs.h * (1 - v); };
