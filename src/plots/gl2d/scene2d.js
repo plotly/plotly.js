@@ -310,14 +310,9 @@ var relayoutCallback = function(scene) {
 };
 
 proto.cameraChanged = function() {
-    var camera = this.camera,
-        xrange = this.xaxis.range,
-        yrange = this.yaxis.range;
+    var camera = this.camera;
 
-    this.glplot.setDataBox([
-        xrange[0], yrange[0],
-        xrange[1], yrange[1]
-    ]);
+    this.glplot.setDataBox(this.calcDataBox());
 
     var nextTicks = this.computeTickMarks();
     var curTicks = this.glplotOptions.ticks;
@@ -415,15 +410,34 @@ proto.plot = function(fullData, calcData, fullLayout) {
 
     options.ticks = this.computeTickMarks();
 
-    var xrange = this.xaxis.range;
-    var yrange = this.yaxis.range;
-    options.dataBox = [xrange[0], yrange[0], xrange[1], yrange[1]];
+    options.dataBox = this.calcDataBox();
 
     options.merge(fullLayout);
     glplot.update(options);
 
     // force redraw so that promise is returned when rendering is completed
     this.glplot.draw();
+};
+
+proto.calcDataBox = function() {
+    var xaxis = this.xaxis,
+        yaxis = this.yaxis,
+        xrange = xaxis.range,
+        yrange = yaxis.range,
+        xr2l = xaxis.r2l,
+        yr2l = yaxis.r2l;
+
+    return [xr2l(xrange[0]), yr2l(yrange[0]), xr2l(xrange[1]), yr2l(yrange[1])];
+};
+
+proto.setRanges = function(dataBox) {
+    var xaxis = this.xaxis,
+        yaxis = this.yaxis,
+        xl2r = xaxis.l2r,
+        yl2r = yaxis.l2r;
+
+    xaxis.range = [xl2r(dataBox[0]), xl2r(dataBox[2])];
+    yaxis.range = [yl2r(dataBox[1]), yl2r(dataBox[3])];
 };
 
 proto.updateTraces = function(fullData, calcData) {

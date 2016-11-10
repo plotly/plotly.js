@@ -38,8 +38,7 @@ function createCamera(scene) {
     }
 
     result.mouseListener = mouseChange(element, function(buttons, x, y) {
-        var xrange = scene.xaxis.range,
-            yrange = scene.yaxis.range,
+        var dataBox = scene.calcDataBox(),
             viewBox = plot.viewBox;
 
         var lastX = result.lastPos[0],
@@ -51,14 +50,15 @@ function createCamera(scene) {
         // mouseChange gives y about top; convert to about bottom
         y = (viewBox[3] - viewBox[1]) - y;
 
-        function updateRange(range, start, end) {
+        function updateRange(i0, start, end) {
             var range0 = Math.min(start, end),
                 range1 = Math.max(start, end);
 
             if(range0 !== range1) {
-                range[0] = range0;
-                range[1] = range1;
-                result.dataBox = range;
+                dataBox[i0] = range0;
+                dataBox[i0 + 2] = range1;
+                result.dataBox = dataBox;
+                scene.setRanges(dataBox);
             }
             else {
                 scene.selectBox.selectBox = [0, 0, 1, 1];
@@ -70,11 +70,11 @@ function createCamera(scene) {
             case 'zoom':
                 if(buttons) {
                     var dataX = x /
-                            (viewBox[2] - viewBox[0]) * (xrange[1] - xrange[0]) +
-                        xrange[0];
+                            (viewBox[2] - viewBox[0]) * (dataBox[2] - dataBox[0]) +
+                        dataBox[0];
                     var dataY = y /
-                            (viewBox[3] - viewBox[1]) * (yrange[1] - yrange[0]) +
-                        yrange[0];
+                            (viewBox[3] - viewBox[1]) * (dataBox[3] - dataBox[1]) +
+                        dataBox[1];
 
                     if(!result.boxEnabled) {
                         result.boxStart[0] = dataX;
@@ -87,8 +87,8 @@ function createCamera(scene) {
                     result.boxEnabled = true;
                 }
                 else if(result.boxEnabled) {
-                    updateRange(xrange, result.boxStart[0], result.boxEnd[0]);
-                    updateRange(yrange, result.boxStart[1], result.boxEnd[1]);
+                    updateRange(0, result.boxStart[0], result.boxEnd[0]);
+                    updateRange(1, result.boxStart[1], result.boxEnd[1]);
                     unSetAutoRange();
                     result.boxEnabled = false;
                 }
@@ -98,15 +98,17 @@ function createCamera(scene) {
                 result.boxEnabled = false;
 
                 if(buttons) {
-                    var dx = (lastX - x) * (xrange[1] - xrange[0]) /
+                    var dx = (lastX - x) * (dataBox[2] - dataBox[0]) /
                         (plot.viewBox[2] - plot.viewBox[0]);
-                    var dy = (lastY - y) * (yrange[1] - yrange[0]) /
+                    var dy = (lastY - y) * (dataBox[3] - dataBox[1]) /
                         (plot.viewBox[3] - plot.viewBox[1]);
 
-                    xrange[0] += dx;
-                    xrange[1] += dx;
-                    yrange[0] += dy;
-                    yrange[1] += dy;
+                    dataBox[0] += dx;
+                    dataBox[2] += dx;
+                    dataBox[1] += dy;
+                    dataBox[3] += dy;
+
+                    scene.setRanges(dataBox);
 
                     result.lastInputTime = Date.now();
                     unSetAutoRange();
@@ -120,8 +122,7 @@ function createCamera(scene) {
     });
 
     result.wheelListener = mouseWheel(element, function(dx, dy) {
-        var xrange = scene.xaxis.range,
-            yrange = scene.yaxis.range,
+        var dataBox = scene.calcDataBox(),
             viewBox = plot.viewBox;
 
         var lastX = result.lastPos[0],
@@ -135,16 +136,18 @@ function createCamera(scene) {
                 var scale = Math.exp(0.1 * dy / (viewBox[3] - viewBox[1]));
 
                 var cx = lastX /
-                        (viewBox[2] - viewBox[0]) * (xrange[1] - xrange[0]) +
-                    xrange[0];
+                        (viewBox[2] - viewBox[0]) * (dataBox[2] - dataBox[0]) +
+                    dataBox[0];
                 var cy = lastY /
-                        (viewBox[3] - viewBox[1]) * (yrange[1] - yrange[0]) +
-                    yrange[0];
+                        (viewBox[3] - viewBox[1]) * (dataBox[3] - dataBox[1]) +
+                    dataBox[1];
 
-                xrange[0] = (xrange[0] - cx) * scale + cx;
-                xrange[1] = (xrange[1] - cx) * scale + cx;
-                yrange[0] = (yrange[0] - cy) * scale + cy;
-                yrange[1] = (yrange[1] - cy) * scale + cy;
+                dataBox[0] = (dataBox[0] - cx) * scale + cx;
+                dataBox[2] = (dataBox[2] - cx) * scale + cx;
+                dataBox[1] = (dataBox[1] - cy) * scale + cy;
+                dataBox[3] = (dataBox[3] - cy) * scale + cy;
+
+                scene.setRanges(dataBox);
 
                 result.lastInputTime = Date.now();
                 unSetAutoRange();

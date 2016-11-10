@@ -12,39 +12,6 @@ var customMatchers = require('../assets/custom_matchers');
 describe('Test lib.js:', function() {
     'use strict';
 
-    describe('parseDate() should', function() {
-        it('return false on bad (number) input:', function() {
-            expect(Lib.parseDate(0)).toBe(false);
-        });
-        it('return false on bad (string) input:', function() {
-            expect(Lib.parseDate('toto')).toBe(false);
-        });
-        it('work with yyyy-mm-dd string input:', function() {
-            var input = '2014-12-01',
-                res = Lib.parseDate(input),
-                res0 = new Date(2014, 11, 1);
-            expect(res.getTime()).toEqual(res0.getTime());
-        });
-        it('work with mm/dd/yyyy string input:', function() {
-            var input = '12/01/2014',
-                res = Lib.parseDate(input),
-                res0 = new Date(2014, 11, 1);
-            expect(res.getTime()).toEqual(res0.getTime());
-        });
-        it('work with yyyy-mm-dd HH:MM:SS.sss string input:', function() {
-            var input = '2014-12-01 09:50:05.124',
-                res = Lib.parseDate(input),
-                res0 = new Date(2014, 11, 1, 9, 50, 5, 124);
-            expect(res.getTime()).toEqual(res0.getTime());
-        });
-        it('work with mm/dd/yyyy HH:MM:SS string input:', function() {
-            var input = '2014-12-01 09:50:05',
-                res = Lib.parseDate(input),
-                res0 = new Date(2014, 11, 1, 9, 50, 5);
-            expect(res.getTime()).toEqual(res0.getTime());
-        });
-    });
-
     describe('interp() should', function() {
         it('return 1.75 as Q1 of [1, 2, 3, 4, 5]:', function() {
             var input = [1, 2, 3, 4, 5],
@@ -1518,6 +1485,42 @@ describe('Test lib.js:', function() {
             expect(function() {
                 Lib.numSeparate(1234, '');
             }).toThrowError('Separator string required for formatting!');
+        });
+    });
+
+    describe('cleanNumber', function() {
+        it('should return finite numbers untouched', function() {
+            [
+                0, 1, 2, 1234.567,
+                -1, -100, -999.999,
+                Number.MAX_VALUE, Number.MIN_VALUE, Number.EPSILON,
+                -Number.MAX_VALUE, -Number.MIN_VALUE, -Number.EPSILON
+            ].forEach(function(v) {
+                expect(Lib.cleanNumber(v)).toBe(v);
+            });
+        });
+
+        it('should accept number strings with arbitrary cruft on the outside', function() {
+            [
+                ['0', 0],
+                ['1', 1],
+                ['1.23', 1.23],
+                ['-100.001', -100.001],
+                ['  $4.325  #%\t', 4.325],
+                [' " #1" ', 1],
+                [' \'\n \r -9.2e7   \t\' ', -9.2e7]
+            ].forEach(function(v) {
+                expect(Lib.cleanNumber(v[0])).toBe(v[1], v[0]);
+            });
+        });
+
+        it('should not accept other objects or cruft in the middle', function() {
+            [
+                NaN, Infinity, -Infinity, null, undefined, new Date(), '',
+                ' ', '\t', '2 2', '2%2', '2$2', {1: 2}, [1], ['1'], {}, []
+            ].forEach(function(v) {
+                expect(Lib.cleanNumber(v)).toBeUndefined(v);
+            });
         });
     });
 

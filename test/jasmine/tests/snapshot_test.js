@@ -86,7 +86,8 @@ describe('Plotly.Snapshot', function() {
             var themeTile = Plotly.Snapshot.clone(dummyGraphObj, themeOptions);
             expect(themeTile.layout.height).toEqual(THEMETILE_DEFAULT_LAYOUT.height);
             expect(themeTile.layout.width).toEqual(THEMETILE_DEFAULT_LAYOUT.width);
-            expect(themeTile.td.defaultLayout).toEqual(THEMETILE_DEFAULT_LAYOUT);
+            expect(themeTile.gd.defaultLayout).toEqual(THEMETILE_DEFAULT_LAYOUT);
+            expect(themeTile.gd).toBe(themeTile.td); // image server compatibility
             expect(themeTile.config).toEqual(config);
         });
 

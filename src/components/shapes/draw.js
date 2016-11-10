@@ -202,18 +202,17 @@ function updateShape(gd, index, opt, value) {
 
         var axLetter = posAttr.charAt(0),
             axOld = Axes.getFromId(gd,
-                Axes.coerceRef(oldRef, {}, gd, axLetter)),
+                Axes.coerceRef(oldRef, {}, gd, axLetter, '', 'paper')),
             axNew = Axes.getFromId(gd,
-                Axes.coerceRef(optionsIn, {}, gd, axLetter)),
+                Axes.coerceRef(optionsIn, {}, gd, axLetter, '', 'paper')),
             position = optionsIn[posAttr],
-            linearizedPosition;
+            rangePosition;
 
         if(optionsEdit[axLetter + 'ref'] !== undefined) {
             // first convert to fraction of the axis
             if(axOld) {
-                linearizedPosition = helpers.dataToLinear(axOld)(position);
-                position = (linearizedPosition - axOld.range[0]) /
-                    (axOld.range[1] - axOld.range[0]);
+                rangePosition = helpers.shapePositionToRange(axOld)(position);
+                position = axOld.r2fraction(rangePosition);
             } else {
                 position = (position - axNew.domain[0]) /
                     (axNew.domain[1] - axNew.domain[0]);
@@ -221,9 +220,8 @@ function updateShape(gd, index, opt, value) {
 
             if(axNew) {
                 // then convert to new data coordinates at the same fraction
-                linearizedPosition = axNew.range[0] + position *
-                    (axNew.range[1] - axNew.range[0]);
-                position = helpers.linearToData(axNew)(linearizedPosition);
+                rangePosition = axNew.fraction2r(position);
+                position = helpers.rangeToShapePosition(axNew)(rangePosition);
             } else {
                 // or scale to the whole plot
                 position = axOld.domain[0] +
@@ -468,22 +466,22 @@ function getPathString(gd, options) {
         xa = Axes.getFromId(gd, options.xref),
         ya = Axes.getFromId(gd, options.yref),
         gs = gd._fullLayout._size,
-        x2l,
+        x2r,
         x2p,
-        y2l,
+        y2r,
         y2p;
 
     if(xa) {
-        x2l = helpers.dataToLinear(xa);
-        x2p = function(v) { return xa._offset + xa.l2p(x2l(v, true)); };
+        x2r = helpers.shapePositionToRange(xa);
+        x2p = function(v) { return xa._offset + xa.r2p(x2r(v, true)); };
     }
     else {
         x2p = function(v) { return gs.l + gs.w * v; };
     }
 
     if(ya) {
-        y2l = helpers.dataToLinear(ya);
-        y2p = function(v) { return ya._offset + ya.l2p(y2l(v, true)); };
+        y2r = helpers.shapePositionToRange(ya);
+        y2p = function(v) { return ya._offset + ya.r2p(y2r(v, true)); };
     }
     else {
         y2p = function(v) { return gs.t + gs.h * (1 - v); };

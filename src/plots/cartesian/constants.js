@@ -21,14 +21,6 @@ module.exports = {
         y: /^yaxis([2-9]|[1-9][0-9]+)?$/
     },
 
-    /**
-     * standardize all missing data in calcdata to use undefined
-     * never null or NaN.
-     * that way we can use !==undefined, or !== BADNUM,
-     * to test for real data
-     */
-    BADNUM: undefined,
-
     // axis match regular expression
     xAxisMatch: /^xaxis[0-9]*$/,
     yAxisMatch: /^yaxis[0-9]*$/,
@@ -72,5 +64,10 @@ module.exports = {
     BENDPX: 1.5,
 
     // delay before a redraw (relayout) after smooth panning and zooming
-    REDRAWDELAY: 50
+    REDRAWDELAY: 50,
+
+    // last resort axis ranges for x, y, and date axes if we have no data
+    DFLTRANGEX: [-1, 6],
+    DFLTRANGEY: [-1, 4],
+    DFLTRANGEDATE: ['2000-01-01', '2001-01-01'],
 };

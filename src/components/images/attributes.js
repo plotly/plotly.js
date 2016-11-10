@@ -90,7 +90,7 @@ module.exports = {
     },
 
     x: {
-        valType: 'number',
+        valType: 'any',
         role: 'info',
         dflt: 0,
         description: [
@@ -102,7 +102,7 @@ module.exports = {
     },
 
     y: {
-        valType: 'number',
+        valType: 'any',
         role: 'info',
         dflt: 0,
         description: [

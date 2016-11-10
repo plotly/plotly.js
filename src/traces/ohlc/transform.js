@@ -134,18 +134,28 @@ exports.calcTransform = function calcTransform(gd, trace, opts) {
         y = [],
         textOut = [];
 
-    var getXItem = trace._fullInput.x ?
-        function(i) { return xa.d2c(trace.x[i]); } :
-        function(i) { return i; };
+    var appendX;
+    if(trace._fullInput.x) {
+        appendX = function(i) {
+            var xi = trace.x[i],
+                xcalc = xa.d2c(xi);
 
-    var getTextItem = Array.isArray(textIn) ?
-        function(i) { return textIn[i] || ''; } :
-        function() { return textIn; };
-
-    var appendX = function(i) {
-        var v = getXItem(i);
-        x.push(v - tickWidth, v, v, v, v, v + tickWidth, null);
-    };
+            x.push(
+                xa.c2d(xcalc - tickWidth),
+                xi, xi, xi, xi,
+                xa.c2d(xcalc + tickWidth),
+                null);
+        };
+    }
+    else {
+        appendX = function(i) {
+            x.push(
+                i - tickWidth,
+                i, i, i, i,
+                i + tickWidth,
+                null);
+        };
+    }
 
     var appendY = function(o, h, l, c) {
         y.push(o, o, h, l, c, c, null);
@@ -160,6 +170,10 @@ exports.calcTransform = function calcTransform(gd, trace, opts) {
         hasAll = hoverinfo === 'all',
         hasY = hasAll || hoverParts.indexOf('y') !== -1,
         hasText = hasAll || hoverParts.indexOf('text') !== -1;
+
+    var getTextItem = Array.isArray(textIn) ?
+        function(i) { return textIn[i] || ''; } :
+        function() { return textIn; };
 
     var appendText = function(i, o, h, l, c) {
         var t = [];
