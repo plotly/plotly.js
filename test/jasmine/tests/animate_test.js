@@ -591,16 +591,14 @@ describe('Test animate API', function() {
 describe('Animate API details', function() {
     'use strict';
 
-    var gd, mockCopy;
+    var gd;
+    var dur = 30;
+    var mockCopy;
 
     beforeEach(function(done) {
         gd = createGraphDiv();
-
         mockCopy = Lib.extendDeep({}, mock);
-
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-            return Plotly.addFrames(gd, mockCopy.frames);
-        }).then(done);
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
     });
 
     afterEach(function() {
@@ -608,13 +606,67 @@ describe('Animate API details', function() {
         destroyGraphDiv();
     });
 
-    it('null frames should not break everything', function(done) {
-        gd._transitionData._frames.push(null);
+    it('redraws after a layout animation', function(done) {
+        var redraws = 0;
+        gd.on('plotly_redraw', function() {redraws++;});
 
-        Plotly.animate(gd, null, {
-            frame: {duration: 0},
-            transition: {duration: 0}
+        Plotly.animate(gd,
+            {layout: {'xaxis.range': [0, 1]}},
+            {frame: {redraw: true, duration: dur}, transition: {duration: dur}}
+        ).then(function() {
+            expect(redraws).toBe(1);
         }).catch(fail).then(done);
+    });
+
+    it('forces a relayout after layout animations', function(done) {
+        var relayouts = 0;
+        var restyles = 0;
+        var redraws = 0;
+        gd.on('plotly_relayout', function() {relayouts++;});
+        gd.on('plotly_restyle', function() {restyles++;});
+        gd.on('plotly_redraw', function() {redraws++;});
+
+        Plotly.animate(gd,
+            {layout: {'xaxis.range': [0, 1]}},
+            {frame: {redraw: false, duration: dur}, transition: {duration: dur}}
+        ).then(function() {
+            expect(relayouts).toBe(1);
+            expect(restyles).toBe(0);
+            expect(redraws).toBe(0);
+        }).catch(fail).then(done);
+    });
+
+    it('triggers plotly_animated after a single layout animation', function(done) {
+        var animateds = 0;
+        gd.on('plotly_animated', function() {animateds++;});
+
+        Plotly.animate(gd, [
+            {layout: {'xaxis.range': [0, 1]}},
+        ], {frame: {redraw: false, duration: dur}, transition: {duration: dur}}
+        ).then(function() {
+            // Wait a bit just to be sure:
+            setTimeout(function() {
+                expect(animateds).toBe(1);
+                done();
+            }, dur);
+        });
+    });
+
+    it('triggers plotly_animated after a multi-step layout animation', function(done) {
+        var animateds = 0;
+        gd.on('plotly_animated', function() {animateds++;});
+
+        Plotly.animate(gd, [
+            {layout: {'xaxis.range': [0, 1]}},
+            {layout: {'xaxis.range': [2, 4]}},
+        ], {frame: {redraw: false, duration: dur}, transition: {duration: dur}}
+        ).then(function() {
+            // Wait a bit just to be sure:
+            setTimeout(function() {
+                expect(animateds).toBe(1);
+                done();
+            }, dur);
+        });
     });
 
     it('does not fail if strings are not used', function(done) {
@@ -634,12 +686,23 @@ describe('Animate API details', function() {
         var cnt = 0;
         gd.on('plotly_animatingframe', function() {cnt++;});
 
-        Plotly.animate(gd, ['frame0', null, undefined], {transition: {duration: 0}, frame: {duration: 0}}).then(function() {
+        Plotly.addFrames(gd, mockCopy.frames).then(function() {
+            return Plotly.animate(gd, ['frame0', null, undefined], {transition: {duration: 0}, frame: {duration: 0}});
+        }).then(function() {
             // Check only one animating was fired:
             expect(cnt).toEqual(1);
 
             // Check unused frames did not affect the current frame:
             expect(gd._fullLayout._currentFrame).toEqual('frame0');
+        }).catch(fail).then(done);
+    });
+
+    it('null frames should not break everything', function(done) {
+        gd._transitionData._frames.push(null);
+
+        Plotly.animate(gd, null, {
+            frame: {duration: 0},
+            transition: {duration: 0}
         }).catch(fail).then(done);
     });
 });
