@@ -102,7 +102,7 @@ exports.cleanLayout = function(layout) {
         }
     }
 
-    var annotationsLen = (layout.annotations || []).length;
+    var annotationsLen = Array.isArray(layout.annotations) ? layout.annotations.length : 0;
     for(i = 0; i < annotationsLen; i++) {
         var ann = layout.annotations[i];
 
@@ -124,7 +124,7 @@ exports.cleanLayout = function(layout) {
         cleanAxRef(ann, 'yref');
     }
 
-    var shapesLen = (layout.shapes || []).length;
+    var shapesLen = Array.isArray(layout.shapes) ? layout.shapes.length : 0;
     for(i = 0; i < shapesLen; i++) {
         var shape = layout.shapes[i];
 
