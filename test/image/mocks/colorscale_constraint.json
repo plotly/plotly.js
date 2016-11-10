@@ -6,7 +6,12 @@
       "color": [1,2,3,4],
       "cmin": 2,
       "cmax": 3,
-      "showscale": true
+      "colorbar": {
+        "title": "trace 0",
+        "len": 0.3,
+        "y": 0,
+        "yanchor": "bottom"
+      }
     }
   }, {
     "x": [1,2,3,4,5],
@@ -15,7 +20,26 @@
       "color": [1,2,3,4],
       "cmin": 1,
       "cmax": 4,
-      "showscale": false
+      "colorbar": {
+        "title": "trace 1",
+        "len": 0.3,
+        "y": 0.3,
+        "yanchor": "bottom"
+      }
+    }
+  }, {
+    "x": [1,2,3,4],
+    "y": [2.5,2.5,2.5,2.5],
+    "mode": "markers",
+    "marker": {
+      "color": [0,0,0,0],
+      "size": 10,
+      "colorbar": {
+        "title": "trace 2",
+        "len": 0.3,
+        "y": 0.6,
+        "yanchor": "bottom"
+      }
     }
   }],
   "layout": {
