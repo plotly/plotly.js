@@ -26,15 +26,19 @@ var Lib = require('../lib');
  *   - name {string}
  *      name of the key linking the container in question
  *   - handleItemDefaults {function}
- *      defaults method to be called on each item in the array container in question,
+ *      defaults method to be called on each item in the array container in question
  *
+ *      Its arguments are:
+ *          - itemIn {object} item in user layout
+ *          - itemOut {object} item in full layout
+ *          - parentObj {object} (as in closure)
+ *          - opts {object} (as in closure)
+ *          - itemOpts {object}
+ *              - itemIsNotPlainObject {boolean}
  * N.B.
  *
  *  - opts is passed to handleItemDefaults so it can also store
  *    links to supplementary data (e.g. fullData for layout components)
- *
- *  - opts.itemIsNotPlainObject is mutated on every pass in case so logic
- *    in handleItemDefaults relies on that fact.
  *
  */
 module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut, opts) {
@@ -45,17 +49,15 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
 
     for(var i = 0; i < contIn.length; i++) {
         var itemIn = contIn[i],
-            itemOut = {};
+            itemOut = {},
+            itemOpts = {};
 
         if(!Lib.isPlainObject(itemIn)) {
-            opts.itemIsNotPlainObject = true;
+            itemOpts.itemIsNotPlainObject = true;
             itemIn = {};
         }
-        else {
-            opts.itemIsNotPlainObject = false;
-        }
 
-        opts.handleItemDefaults(itemIn, itemOut, parentObjOut, opts);
+        opts.handleItemDefaults(itemIn, itemOut, parentObjOut, opts, itemOpts);
 
         itemOut._input = itemIn;
         itemOut._index = i;

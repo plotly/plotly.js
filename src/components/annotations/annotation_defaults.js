@@ -16,14 +16,15 @@ var Axes = require('../../plots/cartesian/axes');
 var attributes = require('./attributes');
 
 
-module.exports = function handleAnnotationDefaults(annIn, annOut, fullLayout, opts) {
+module.exports = function handleAnnotationDefaults(annIn, annOut, fullLayout, opts, itemOpts) {
     opts = opts || {};
+    itemOpts = itemOpts || {};
 
     function coerce(attr, dflt) {
         return Lib.coerce(annIn, annOut, attributes, attr, dflt);
     }
 
-    var visible = coerce('visible', !opts.itemIsNotPlainObject);
+    var visible = coerce('visible', !itemOpts.itemIsNotPlainObject);
 
     if(!visible) return annOut;
 

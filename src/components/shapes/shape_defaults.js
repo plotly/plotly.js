@@ -16,14 +16,15 @@ var attributes = require('./attributes');
 var helpers = require('./helpers');
 
 
-module.exports = function handleShapeDefaults(shapeIn, shapeOut, fullLayout, opts) {
+module.exports = function handleShapeDefaults(shapeIn, shapeOut, fullLayout, opts, itemOpts) {
     opts = opts || {};
+    itemOpts = itemOpts || {};
 
     function coerce(attr, dflt) {
         return Lib.coerce(shapeIn, shapeOut, attributes, attr, dflt);
     }
 
-    var visible = coerce('visible', !opts.itemIsNotPlainObject);
+    var visible = coerce('visible', !itemOpts.itemIsNotPlainObject);
 
     if(!visible) return shapeOut;
 
