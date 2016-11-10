@@ -11,8 +11,15 @@
 
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
-var BADNUM = require('../constants/numerical').BADNUM;
+
 var logError = require('./loggers').error;
+
+var constants = require('../constants/numerical');
+var BADNUM = constants.BADNUM;
+var ONEDAY = constants.ONEDAY;
+var ONEHOUR = constants.ONEHOUR;
+var ONEMIN = constants.ONEMIN;
+var ONESEC = constants.ONESEC;
 
 // is an object a javascript date?
 exports.isJSDate = function(v) {
@@ -140,14 +147,14 @@ exports.dateTime2ms = function(s) {
                     // minute - must be 2 digits
                     m = Number(p[1]);
                     if(p[1].length !== 2 || !(m >= 0 && m <= 59)) return BADNUM;
-                    d += 60000 * m;
+                    d += ONEMIN * m;
                     if(p.length === 2) return d;
 
                     // second (and milliseconds) - must have 2-digit seconds
                     if(p[2].split('.')[0].length !== 2) return BADNUM;
                     s = Number(p[2]);
                     if(!(s >= 0 && s < 60)) return BADNUM;
-                    return d + s * 1000;
+                    return d + s * ONESEC;
                 }
             }
         }
@@ -176,6 +183,9 @@ function lpad(val, digits) {
  * Optional range r is the data range that applies, also in ms.
  * If rng is big, the later parts of time will be omitted
  */
+var NINETYDAYS = 90 * ONEDAY;
+var THREEHOURS = 3 * ONEHOUR;
+var FIVEMIN = 5 * ONEMIN;
 exports.ms2DateTime = function(ms, r) {
     if(typeof ms !== 'number' || !(ms >= MIN_MS && ms <= MAX_MS)) return BADNUM;
 
@@ -184,12 +194,12 @@ exports.ms2DateTime = function(ms, r) {
     var d = new Date(Math.floor(ms)),
         dateStr = d3.time.format('%Y-%m-%d')(d),
         // <90 days: add hours and minutes - never *only* add hours
-        h = (r < 7776000000) ? d.getHours() : 0,
-        m = (r < 7776000000) ? d.getMinutes() : 0,
+        h = (r < NINETYDAYS) ? d.getHours() : 0,
+        m = (r < NINETYDAYS) ? d.getMinutes() : 0,
         // <3 hours: add seconds
-        s = (r < 10800000) ? d.getSeconds() : 0,
+        s = (r < THREEHOURS) ? d.getSeconds() : 0,
         // <5 minutes: add ms (plus one extra digit, this is msec*10)
-        msec10 = (r < 300000) ? Math.round((d.getMilliseconds() + (((ms % 1) + 1) % 1)) * 10) : 0;
+        msec10 = (r < FIVEMIN) ? Math.round((d.getMilliseconds() + (((ms % 1) + 1) % 1)) * 10) : 0;
 
     // include each part that has nonzero data in or after it
     if(h || m || s || msec10) {

@@ -11,6 +11,7 @@
 
 var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
+var ONEDAY = require('../../constants/numerical').ONEDAY;
 
 
 module.exports = function handleTickValueDefaults(containerIn, containerOut, coerce, axType) {
@@ -32,7 +33,7 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
         // dtick is usually a positive number, but there are some
         // special strings available for log or date axes
         // default is 1 day for dates, otherwise 1
-        var dtickDflt = (axType === 'date') ? 86400000 : 1;
+        var dtickDflt = (axType === 'date') ? ONEDAY : 1;
         var dtick = coerce('dtick', dtickDflt);
         if(isNumeric(dtick)) {
             containerOut.dtick = (dtick > 0) ? Number(dtick) : dtickDflt;
