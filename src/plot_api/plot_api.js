@@ -1961,6 +1961,7 @@ function _relayout(gd, aobj) {
         else {
             // check whether we can short-circuit a full redraw
             // 3d or geo at this point just needs to redraw.
+            var pp1 = String(p.parts[1] || '');
             if(p.parts[0].indexOf('scene') === 0) flags.doplot = true;
             else if(p.parts[0].indexOf('geo') === 0) flags.doplot = true;
             else if(p.parts[0].indexOf('ternary') === 0) flags.doplot = true;
@@ -1973,17 +1974,17 @@ function _relayout(gd, aobj) {
             else if(ai.indexOf('title') !== -1) flags.doticks = true;
             else if(p.parts[0].indexOf('bgcolor') !== -1) flags.dolayoutstyle = true;
             else if(p.parts.length > 1 &&
-                    Lib.containsAny(p.parts[1], ['tick', 'exponent', 'grid', 'zeroline'])) {
+                    Lib.containsAny(pp1, ['tick', 'exponent', 'grid', 'zeroline'])) {
                 flags.doticks = true;
             }
             else if(ai.indexOf('.linewidth') !== -1 &&
                     ai.indexOf('axis') !== -1) {
                 flags.doticks = flags.dolayoutstyle = true;
             }
-            else if(p.parts.length > 1 && p.parts[1].indexOf('line') !== -1) {
+            else if(p.parts.length > 1 && pp1.indexOf('line') !== -1) {
                 flags.dolayoutstyle = true;
             }
-            else if(p.parts.length > 1 && p.parts[1] === 'mirror') {
+            else if(p.parts.length > 1 && pp1 === 'mirror') {
                 flags.doticks = flags.dolayoutstyle = true;
             }
             else if(ai === 'margin.pad') {
