@@ -11,6 +11,8 @@
 
 var d3 = require('d3');
 
+var Lib = require('../../lib');
+
 
 module.exports = function getUpdateObject(axisLayout, buttonLayout) {
     var axName = axisLayout._name;
@@ -31,7 +33,7 @@ module.exports = function getUpdateObject(axisLayout, buttonLayout) {
 
 function getXRange(axisLayout, buttonLayout) {
     var currentRange = axisLayout.range;
-    var base = new Date(currentRange[1]);
+    var base = new Date(Lib.dateTime2ms(currentRange[1]));
 
     var step = buttonLayout.step,
         count = buttonLayout.count;
@@ -40,13 +42,13 @@ function getXRange(axisLayout, buttonLayout) {
 
     switch(buttonLayout.stepmode) {
         case 'backward':
-            range0 = d3.time[step].offset(base, -count).getTime();
+            range0 = Lib.ms2DateTime(+d3.time[step].offset(base, -count));
             break;
 
         case 'todate':
-            var base2 = d3.time[step].offset(base, -(count - 1));
+            var base2 = d3.time[step].offset(base, -count);
 
-            range0 = d3.time[step].floor(base2).getTime();
+            range0 = Lib.ms2DateTime(+d3.time[step].ceil(base2));
             break;
     }
 

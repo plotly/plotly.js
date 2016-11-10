@@ -148,6 +148,21 @@ describe('Test plot api', function() {
                 })
                 .then(done);
         });
+
+        it('can set items in array objects', function(done) {
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }])
+                .then(function() {
+                    return Plotly.relayout(gd, {rando: [1, 2, 3]});
+                })
+                .then(function() {
+                    expect(gd.layout.rando).toEqual([1, 2, 3]);
+                    return Plotly.relayout(gd, {'rando[1]': 45});
+                })
+                .then(function() {
+                    expect(gd.layout.rando).toEqual([1, 45, 3]);
+                })
+                .then(done);
+        });
     });
 
     describe('Plotly.restyle', function() {

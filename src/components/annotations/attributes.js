@@ -141,27 +141,27 @@ module.exports = {
         description: 'Sets the width (in px) of annotation arrow.'
     },
     ax: {
-        valType: 'number',
-        dflt: -10,
+        valType: 'any',
         role: 'info',
         description: [
             'Sets the x component of the arrow tail about the arrow head.',
             'If `axref` is `pixel`, a positive (negative) ',
             'component corresponds to an arrow pointing',
             'from right to left (left to right).',
-            'If `axref` is an axis, this is a value on that axis.'
+            'If `axref` is an axis, this is an absolute value on that axis,',
+            'like `x`, NOT a relative value.'
         ].join(' ')
     },
     ay: {
-        valType: 'number',
-        dflt: -30,
+        valType: 'any',
         role: 'info',
         description: [
             'Sets the y component of the arrow tail about the arrow head.',
             'If `ayref` is `pixel`, a positive (negative) ',
             'component corresponds to an arrow pointing',
             'from bottom to top (top to bottom).',
-            'If `ayref` is an axis, this is a value on that axis.'
+            'If `ayref` is an axis, this is an absolute value on that axis,',
+            'like `y`, NOT a relative value.'
         ].join(' ')
     },
     axref: {
@@ -216,11 +216,18 @@ module.exports = {
         ].join(' ')
     },
     x: {
-        valType: 'number',
+        valType: 'any',
         role: 'info',
         description: [
             'Sets the annotation\'s x position.',
-            'Note that dates and categories are converted to numbers.'
+            'If the axis `type` is *log*, then you must take the',
+            'log of your desired range.',
+            'If the axis `type` is *date*, it should be date strings,',
+            'like date data, though Date objects and unix milliseconds',
+            'will be accepted and converted to strings.',
+            'If the axis `type` is *category*, it should be numbers,',
+            'using the scale where each category is assigned a serial',
+            'number from zero in the order it appears.'
         ].join(' ')
     },
     xanchor: {
@@ -259,11 +266,18 @@ module.exports = {
         ].join(' ')
     },
     y: {
-        valType: 'number',
+        valType: 'any',
         role: 'info',
         description: [
             'Sets the annotation\'s y position.',
-            'Note that dates and categories are converted to numbers.'
+            'If the axis `type` is *log*, then you must take the',
+            'log of your desired range.',
+            'If the axis `type` is *date*, it should be date strings,',
+            'like date data, though Date objects and unix milliseconds',
+            'will be accepted and converted to strings.',
+            'If the axis `type` is *category*, it should be numbers,',
+            'using the scale where each category is assigned a serial',
+            'number from zero in the order it appears.'
         ].join(' ')
     },
     yanchor: {

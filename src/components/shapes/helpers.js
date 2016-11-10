@@ -14,16 +14,16 @@
 // so these have to be specified in terms of the category serial numbers,
 // but can take fractional values. Other axis types we specify position based on
 // the actual data values.
-// TODO: this should really be part of axes, but for now it's only used here.
-// eventually annotations and axis ranges will use this too.
-// what should we do, invent a new letter for "data except if it's category"?
+// TODO: in V2.0 (when log axis ranges are in data units) range and shape position
+// will be identical, so rangeToShapePosition and shapePositionToRange can be
+// removed entirely.
 
-exports.dataToLinear = function(ax) {
-    return ax.type === 'category' ? ax.c2l : ax.d2l;
+exports.rangeToShapePosition = function(ax) {
+    return (ax.type === 'log') ? ax.r2d : function(v) { return v; };
 };
 
-exports.linearToData = function(ax) {
-    return ax.type === 'category' ? ax.l2c : ax.l2d;
+exports.shapePositionToRange = function(ax) {
+    return (ax.type === 'log') ? ax.d2r : function(v) { return v; };
 };
 
 exports.decodeDate = function(convertToPx) {
@@ -42,10 +42,10 @@ exports.getDataToPixel = function(gd, axis, isVertical) {
         dataToPixel;
 
     if(axis) {
-        var d2l = exports.dataToLinear(axis);
+        var d2r = exports.shapePositionToRange(axis);
 
         dataToPixel = function(v) {
-            return axis._offset + axis.l2p(d2l(v, true));
+            return axis._offset + axis.r2p(d2r(v, true));
         };
 
         if(axis.type === 'date') dataToPixel = exports.decodeDate(dataToPixel);
@@ -65,8 +65,8 @@ exports.getPixelToData = function(gd, axis, isVertical) {
         pixelToData;
 
     if(axis) {
-        var l2d = exports.linearToData(axis);
-        pixelToData = function(p) { return l2d(axis.p2l(p - axis._offset)); };
+        var r2d = exports.rangeToShapePosition(axis);
+        pixelToData = function(p) { return r2d(axis.p2r(p - axis._offset)); };
     }
     else if(isVertical) {
         pixelToData = function(p) { return 1 - (p - gs.t) / gs.h; };

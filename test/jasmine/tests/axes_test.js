@@ -676,6 +676,92 @@ describe('Test axes', function() {
             expect(axOut.dtick).toBe(0.00159);
         });
 
+        it('should handle tick0 and dtick for date axes', function() {
+            var someMs = 123456789,
+                someMsDate = Lib.ms2DateTime(someMs),
+                oneDay = 24 * 3600 * 1000,
+                axIn = {tick0: someMs, dtick: String(3 * oneDay)},
+                axOut = {};
+            mockSupplyDefaults(axIn, axOut, 'date');
+            expect(axOut.tick0).toBe(someMsDate);
+            expect(axOut.dtick).toBe(3 * oneDay);
+
+            var someDate = '2011-12-15 13:45:56';
+            axIn = {tick0: someDate, dtick: 'M15'};
+            axOut = {};
+            mockSupplyDefaults(axIn, axOut, 'date');
+            expect(axOut.tick0).toBe(someDate);
+            expect(axOut.dtick).toBe('M15');
+
+            // dtick without tick0: get the right default
+            axIn = {dtick: 'M12'};
+            axOut = {};
+            mockSupplyDefaults(axIn, axOut, 'date');
+            expect(axOut.tick0).toBe('2000-01-01');
+            expect(axOut.dtick).toBe('M12');
+
+            // now some stuff that shouldn't work, should give defaults
+            [
+                ['next thursday', -1],
+                ['123-45', 'L1'],
+                ['', 'M0.5'],
+                ['', 'M-1'],
+                ['', '2000-01-01']
+            ].forEach(function(v) {
+                axIn = {tick0: v[0], dtick: v[1]};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'date');
+                expect(axOut.tick0).toBe('2000-01-01');
+                expect(axOut.dtick).toBe(oneDay);
+            });
+        });
+
+        it('should handle tick0 and dtick for log axes', function() {
+            var axIn = {tick0: '0.2', dtick: 0.3},
+                axOut = {};
+            mockSupplyDefaults(axIn, axOut, 'log');
+            expect(axOut.tick0).toBe(0.2);
+            expect(axOut.dtick).toBe(0.3);
+
+            ['D1', 'D2'].forEach(function(v) {
+                axIn = {tick0: -1, dtick: v};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'log');
+                // tick0 gets ignored for D<n>
+                expect(axOut.tick0).toBe(0);
+                expect(axOut.dtick).toBe(v);
+            });
+
+            [
+                [-1, 'L3'],
+                ['0.2', 'L0.3'],
+                [-1, 3],
+                ['0.1234', '0.69238473']
+            ].forEach(function(v) {
+                axIn = {tick0: v[0], dtick: v[1]};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'log');
+                expect(axOut.tick0).toBe(Number(v[0]));
+                expect(axOut.dtick).toBe((+v[1]) ? Number(v[1]) : v[1]);
+            });
+
+            // now some stuff that should not work, should give defaults
+            [
+                ['', -1],
+                ['D1', 'D3'],
+                ['', 'D0'],
+                ['2011-01-01', 'L0'],
+                ['', 'L-1']
+            ].forEach(function(v) {
+                axIn = {tick0: v[0], dtick: v[1]};
+                axOut = {};
+                mockSupplyDefaults(axIn, axOut, 'log');
+                expect(axOut.tick0).toBe(0);
+                expect(axOut.dtick).toBe(1);
+            });
+
+        });
+
         it('should set tickvals and ticktext iff tickmode=array', function() {
             var axIn = {tickmode: 'auto', tickvals: [1, 2, 3], ticktext: ['4', '5', '6']},
                 axOut = {};
@@ -1304,6 +1390,114 @@ describe('Test axes', function() {
 
             expect(ax._min).toEqual([{val: 0, pad: 0}]);
             expect(ax._max).toEqual([{val: 6, pad: 15}]);
+        });
+    });
+
+    describe('calcTicks', function() {
+        function mockCalc(ax) {
+            Axes.setConvert(ax);
+            ax.tickfont = {};
+            ax._gd = {_fullLayout: {separators: '.,'}};
+            return Axes.calcTicks(ax).map(function(v) { return v.text; });
+        }
+
+        it('provides a new date suffix whenever the suffix changes', function() {
+            var textOut = mockCalc({
+                type: 'date',
+                tickmode: 'linear',
+                tick0: '2000-01-01',
+                dtick: 14 * 24 * 3600 * 1000, // 14 days
+                range: ['1999-12-01', '2000-02-15']
+            });
+
+            var expectedText = [
+                'Dec 4<br>1999',
+                'Dec 18',
+                'Jan 1<br>2000',
+                'Jan 15',
+                'Jan 29',
+                'Feb 12'
+            ];
+            expect(textOut).toEqual(expectedText);
+
+            textOut = mockCalc({
+                type: 'date',
+                tickmode: 'linear',
+                tick0: '2000-01-01',
+                dtick: 12 * 3600 * 1000, // 12 hours
+                range: ['2000-01-03 11:00', '2000-01-06']
+            });
+
+            expectedText = [
+                '12:00<br>Jan 3, 2000',
+                '00:00<br>Jan 4, 2000',
+                '12:00',
+                '00:00<br>Jan 5, 2000',
+                '12:00',
+                '00:00<br>Jan 6, 2000'
+            ];
+            expect(textOut).toEqual(expectedText);
+
+            textOut = mockCalc({
+                type: 'date',
+                tickmode: 'linear',
+                tick0: '2000-01-01',
+                dtick: 1000, // 1 sec
+                range: ['2000-02-03 23:59:57', '2000-02-04 00:00:02']
+            });
+
+            expectedText = [
+                '23:59:57<br>Feb 3, 2000',
+                '23:59:58',
+                '23:59:59',
+                '00:00:00<br>Feb 4, 2000',
+                '00:00:01',
+                '00:00:02'
+            ];
+            expect(textOut).toEqual(expectedText);
+        });
+
+        it('should give dates extra precision if tick0 is weird', function() {
+            var textOut = mockCalc({
+                type: 'date',
+                tickmode: 'linear',
+                tick0: '2000-01-01 00:05',
+                dtick: 14 * 24 * 3600 * 1000, // 14 days
+                range: ['1999-12-01', '2000-02-15']
+            });
+
+            var expectedText = [
+                '00:05<br>Dec 4, 1999',
+                '00:05<br>Dec 18, 1999',
+                '00:05<br>Jan 1, 2000',
+                '00:05<br>Jan 15, 2000',
+                '00:05<br>Jan 29, 2000',
+                '00:05<br>Feb 12, 2000'
+            ];
+            expect(textOut).toEqual(expectedText);
+        });
+
+        it('should never give dates more than 100 microsecond precision', function() {
+            var textOut = mockCalc({
+                type: 'date',
+                tickmode: 'linear',
+                tick0: '2000-01-01',
+                dtick: 1.1333,
+                range: ['2000-01-01', '2000-01-01 00:00:00.01']
+            });
+
+            var expectedText = [
+                '00:00:00<br>Jan 1, 2000',
+                '00:00:00.0011',
+                '00:00:00.0023',
+                '00:00:00.0034',
+                '00:00:00.0045',
+                '00:00:00.0057',
+                '00:00:00.0068',
+                '00:00:00.0079',
+                '00:00:00.0091'
+            ];
+            expect(textOut).toEqual(expectedText);
         });
     });
 });

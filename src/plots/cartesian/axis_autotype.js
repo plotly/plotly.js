@@ -12,7 +12,7 @@
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
-var cleanDatum = require('./clean_datum');
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function autoType(array) {
     if(moreDates(array)) return 'date';
@@ -54,7 +54,7 @@ function moreDates(a) {
     return (dcnt > ncnt * 2);
 }
 
-// are the (x,y)-values in td.data mostly text?
+// are the (x,y)-values in gd.data mostly text?
 // require twice as many categories as numbers
 function category(a) {
     // test at most 1000 points
@@ -64,8 +64,8 @@ function category(a) {
         ai;
 
     for(var i = 0; i < a.length; i += inc) {
-        ai = cleanDatum(a[Math.round(i)]);
-        if(isNumeric(ai)) curvenums++;
+        ai = a[Math.round(i)];
+        if(Lib.cleanNumber(ai) !== BADNUM) curvenums++;
         else if(typeof ai === 'string' && ai !== '' && ai !== 'None') curvecats++;
     }
 

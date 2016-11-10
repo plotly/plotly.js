@@ -21,7 +21,8 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName, counterAxe
     }
 
     var containerIn = layoutIn[axName].rangeslider,
-        containerOut = layoutOut[axName].rangeslider = {};
+        axOut = layoutOut[axName],
+        containerOut = axOut.rangeslider = {};
 
     function coerce(attr, dflt) {
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
@@ -35,14 +36,16 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName, counterAxe
     coerce('range');
 
     // Expand slider range to the axis range
-    if(containerOut.range && !layoutOut[axName].autorange) {
+    if(containerOut.range && !axOut.autorange) {
         var outRange = containerOut.range,
-            axRange = layoutOut[axName].range;
+            axRange = axOut.range,
+            l2r = axOut.l2r,
+            r2l = axOut.r2l;
 
-        outRange[0] = Math.min(outRange[0], axRange[0]);
-        outRange[1] = Math.max(outRange[1], axRange[1]);
+        outRange[0] = l2r(Math.min(r2l(outRange[0]), r2l(axRange[0])));
+        outRange[1] = l2r(Math.max(r2l(outRange[1]), r2l(axRange[1])));
     } else {
-        layoutOut[axName]._needsExpand = true;
+        axOut._needsExpand = true;
     }
 
     if(containerOut.visible) {

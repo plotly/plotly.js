@@ -4,17 +4,22 @@
       "x": [1,2,3],
       "y": [1,2,3]
     }, {
-      "x": [1,2,3],
-      "y": [1,2,3],
+      "x": ["2001-01-01","2002-01-01","2003-01-01"],
+      "y": [10,100,1000],
+      "xaxis": "x2",
       "yaxis": "y2"
     }
   ],
   "layout": {
+    "xaxis2": {
+        "anchor": "y2"
+    },
     "yaxis": {
-        "domain": [0, 0.5]
+        "domain": [0, 0.45]
     },
     "yaxis2": {
-        "domain": [0.5, 1]
+        "domain": [0.55, 1],
+        "type": "log"
     },
     "images": [
       {
@@ -41,11 +46,11 @@
       },
       {
         "source": "https://images.plot.ly/language-icons/api-home/r-logo.png",
-        "xref": "x",
+        "xref": "x2",
         "yref": "y2",
-        "x": 1,
+        "x": "2001-01-01",
         "y": 3,
-        "sizex": 2,
+        "sizex": 63072000000,
         "sizey": 2,
         "sizing": "stretch",
         "opacity": 0.4,

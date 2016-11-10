@@ -34,16 +34,20 @@ module.exports = {
         valType: 'info_array',
         role: 'info',
         items: [
-            {valType: 'number'},
-            {valType: 'number'}
+            {valType: 'any'},
+            {valType: 'any'}
         ],
         description: [
             'Sets the range of the range slider.',
             'If not set, defaults to the full xaxis range.',
             'If the axis `type` is *log*, then you must take the',
             'log of your desired range.',
-            'If the axis `type` is *date*, then you must convert',
-            'the date to unix time in milliseconds.'
+            'If the axis `type` is *date*, it should be date strings,',
+            'like date data, though Date objects and unix milliseconds',
+            'will be accepted and converted to strings.',
+            'If the axis `type` is *category*, it should be numbers,',
+            'using the scale where each category is assigned a serial',
+            'number from zero in the order it appears.'
         ].join(' ')
     },
     thickness: {

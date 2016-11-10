@@ -9,7 +9,7 @@
 
 'use strict';
 
-var Axes = require('../../plots/cartesian/axes');
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 
 module.exports = function linePoints(d, opts) {
@@ -20,7 +20,6 @@ module.exports = function linePoints(d, opts) {
         baseTolerance = opts.baseTolerance,
         linear = opts.linear,
         segments = [],
-        badnum = Axes.BADNUM,
         minTolerance = 0.2, // fraction of tolerance "so close we don't even consider it a new point"
         pts = new Array(d.length),
         pti = 0,
@@ -57,7 +56,7 @@ module.exports = function linePoints(d, opts) {
     function getPt(index) {
         var x = xa.c2p(d[index].x),
             y = ya.c2p(d[index].y);
-        if(x === badnum || y === badnum) return false;
+        if(x === BADNUM || y === BADNUM) return false;
         return [x, y];
     }
 

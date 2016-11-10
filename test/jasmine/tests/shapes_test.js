@@ -18,6 +18,10 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 describe('Test shapes defaults:', function() {
     'use strict';
 
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
     function _supply(layoutIn, layoutOut) {
         layoutOut = layoutOut || {};
         layoutOut._has = Plots._hasPlotType.bind(layoutOut);
@@ -54,6 +58,47 @@ describe('Test shapes defaults:', function() {
         });
     });
 
+    it('should provide the right defaults on all axis types', function() {
+        var fullLayout = {
+            xaxis: {type: 'linear', range: [0, 20]},
+            yaxis: {type: 'log', range: [1, 5]},
+            xaxis2: {type: 'date', range: ['2006-06-05', '2006-06-09']},
+            yaxis2: {type: 'category', range: [-0.5, 7.5]}
+        };
+
+        Axes.setConvert(fullLayout.xaxis);
+        Axes.setConvert(fullLayout.yaxis);
+        Axes.setConvert(fullLayout.xaxis2);
+        Axes.setConvert(fullLayout.yaxis2);
+
+        var shape1In = {type: 'rect'},
+            shape2In = {type: 'circle', xref: 'x2', yref: 'y2'};
+
+        var layoutIn = {
+            shapes: [shape1In, shape2In]
+        };
+
+        _supply(layoutIn, fullLayout);
+
+        var shape1Out = fullLayout.shapes[0],
+            shape2Out = fullLayout.shapes[1];
+
+        // default positions are 1/4 and 3/4 of the full range of that axis
+        expect(shape1Out.x0).toBe(5);
+        expect(shape1Out.x1).toBe(15);
+
+        // shapes use data values for log axes (like everyone will in V2.0)
+        expect(shape1Out.y0).toBeWithin(100, 0.001);
+        expect(shape1Out.y1).toBeWithin(10000, 0.001);
+
+        // date strings also interpolate
+        expect(shape2Out.x0).toBe('2006-06-06');
+        expect(shape2Out.x1).toBe('2006-06-08');
+
+        // categories must use serial numbers to get continuous values
+        expect(shape2Out.y0).toBeWithin(1.5, 0.001);
+        expect(shape2Out.y1).toBeWithin(5.5, 0.001);
+    });
 });
 
 describe('Test shapes:', function() {

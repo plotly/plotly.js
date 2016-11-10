@@ -90,17 +90,15 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     var validRange = (
         (containerIn.range || []).length === 2 &&
-        isNumeric(containerIn.range[0]) &&
-        isNumeric(containerIn.range[1])
+        isNumeric(containerOut.r2l(containerIn.range[0])) &&
+        isNumeric(containerOut.r2l(containerIn.range[1]))
     );
     var autoRange = coerce('autorange', !validRange);
 
     if(autoRange) coerce('rangemode');
-    var range = coerce('range', [-1, letter === 'x' ? 6 : 4]);
-    if(range[0] === range[1]) {
-        containerOut.range = [range[0] - 1, range[0] + 1];
-    }
-    Lib.noneOrAll(containerIn.range, containerOut.range, [0, 1]);
+
+    coerce('range');
+    containerOut.cleanRange();
 
     coerce('fixedrange');
 
