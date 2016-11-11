@@ -21,6 +21,8 @@ var ErrorBars = require('../../components/errorbars');
 
 var arraysToCalcdata = require('./arrays_to_calcdata');
 
+// padding in pixels around text
+var TEXTPAD = 3;
 
 module.exports = function plot(gd, plotinfo, cdbar) {
     var xa = plotinfo.xaxis,
@@ -147,6 +149,8 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
         text = traceText;
     }
 
+    if(!text) return;
+
     // get text position
     var traceTextPosition = trace.textposition,
         textPosition;
@@ -160,21 +164,63 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
 
     if(textPosition === 'none') return;
 
-    var barWidth = Math.abs(x1 - x0),
-        barHeight = Math.abs(y1 - y0),
-        barIsTooSmall = (barWidth < 8 || barHeight < 8),
+    // get text font
+    var traceTextFont = trace.textfont,
+        textFont = (Array.isArray(traceTextFont)) ?
+            traceTextFont[i] : traceTextFont;
+    textFont = textFont || gd._fullLayout.font;
 
-        barmode = gd._fullLayout.barmode,
+    // get outside text font
+    var traceOutsideTextFont = trace.outsidetextfont,
+        outsideTextFont = (Array.isArray(traceOutsideTextFont)) ?
+            traceOutsideTextFont[i] : traceOutsideTextFont;
+    outsideTextFont = outsideTextFont || textFont;
+
+    // get inside text font
+    var traceInsideTextFont = trace.insidetextfont,
+        insideTextFont = (Array.isArray(traceInsideTextFont)) ?
+            traceInsideTextFont[i] : traceInsideTextFont;
+    insideTextFont = insideTextFont || textFont;
+
+    // append text node
+    function appendTextNode(bar, text, textFont) {
+        var textSelection = bar.append('text')
+            // prohibit tex interpretation until we can handle
+            // tex and regular text together
+            .attr('data-notex', 1)
+            .text(text)
+            .attr({
+                'class': 'bartext',
+                transform: '',
+                'data-bb': '',
+                'text-anchor': 'middle',
+                x: 0,
+                y: 0
+            })
+            .call(Drawing.font, textFont);
+
+        textSelection.call(svgTextUtils.convertToTspans);
+        textSelection.selectAll('tspan.line').attr({x: 0, y: 0});
+
+        return textSelection;
+    }
+
+    var barmode = gd._fullLayout.barmode,
         inStackMode = (barmode === 'stack'),
         inRelativeMode = (barmode === 'relative'),
         inStackOrRelativeMode = inStackMode || inRelativeMode,
 
         calcBar = calcTrace[i],
-        isOutmostBar = !inStackOrRelativeMode || calcBar._outmost;
+        isOutmostBar = !inStackOrRelativeMode || calcBar._outmost,
 
-    if(textPosition === 'auto') {
-        textPosition = (barIsTooSmall && isOutmostBar) ? 'outside' : 'inside';
-    }
+        barWidth = Math.abs(x1 - x0) - 2 * TEXTPAD,  // padding excluded
+        barHeight = Math.abs(y1 - y0) - 2 * TEXTPAD,  // padding excluded
+        barIsTooSmall = (barWidth <= 0 || barHeight <= 0),
+
+        textSelection,
+        textBB,
+        textWidth,
+        textHeight;
 
     if(textPosition === 'outside') {
         if(!isOutmostBar) textPosition = 'inside';
@@ -184,72 +230,46 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
         if(barIsTooSmall) return;
     }
 
+    if(textPosition === 'auto') {
+        if(isOutmostBar) {
+            // draw text using insideTextFont and check if it fits inside bar
+            textSelection = appendTextNode(bar, text, insideTextFont);
 
-    // get text font
-    var textFont;
+            textBB = Drawing.bBox(textSelection.node()),
+            textWidth = textBB.width,
+            textHeight = textBB.height;
 
-    if(textPosition === 'outside') {
-        var traceOutsideTextFont = trace.outsidetextfont;
-        if(Array.isArray(traceOutsideTextFont)) {
-            if(i >= traceOutsideTextFont.length) return;
-            textFont = traceOutsideTextFont[i];
+            var textHasSize = (textWidth > 0 && textHeight > 0),
+                fitsInside =
+                    (textWidth <= barWidth && textHeight <= barHeight),
+                fitsInsideIfRotated =
+                    (textWidth <= barHeight && textHeight <= barWidth);
+            if(textHasSize && (fitsInside || fitsInsideIfRotated)) {
+                textPosition = 'inside';
+            }
+            else {
+                textPosition = 'outside';
+                textSelection.remove();
+                textSelection = null;
+            }
         }
-        else {
-            textFont = traceOutsideTextFont;
-        }
-    }
-    else {
-        var traceInsideTextFont = trace.insidetextfont;
-        if(Array.isArray(traceInsideTextFont)) {
-            if(i >= traceInsideTextFont.length) return;
-            textFont = traceInsideTextFont[i];
-        }
-        else {
-            textFont = traceInsideTextFont;
-        }
-    }
-
-    if(!textFont) {
-        var traceTextFont = trace.textfont;
-        if(Array.isArray(traceTextFont)) {
-            if(i >= traceTextFont.length) return;
-            textFont = traceTextFont[i];
-        }
-        else {
-            textFont = traceTextFont;
-        }
+        else if(!barIsTooSmall) textPosition = 'inside';
+        else return;
     }
 
-    if(!textFont) {
-        textFont = gd._fullLayout.font;
-    }
+    if(!textSelection) {
+        textSelection = appendTextNode(bar, text,
+                (textPosition === 'outside') ?
+                outsideTextFont : insideTextFont);
 
-    // append bar text
-    var textSelection = bar.append('text')
-        // prohibit tex interpretation until we can handle
-        // tex and regular text together
-        .attr('data-notex', 1)
-        .text(text)
-        .attr({
-            'class': 'bartext',
-            transform: '',
-            'data-bb': '',
-            'text-anchor': 'middle',
-            x: 0,
-            y: 0
-        })
-        .call(Drawing.font, textFont);
-
-    textSelection.call(svgTextUtils.convertToTspans);
-    textSelection.selectAll('tspan.line').attr({x: 0, y: 0});
-
-    // position bar text
-    var textBB = Drawing.bBox(textSelection.node()),
+        textBB = Drawing.bBox(textSelection.node()),
         textWidth = textBB.width,
         textHeight = textBB.height;
-    if(!textWidth || !textHeight) {
-        textSelection.remove();
-        return;
+
+        if(textWidth <= 0 || textHeight <= 0) {
+            textSelection.remove();
+            return;
+        }
     }
 
     // compute translate transform
@@ -277,8 +297,8 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB) {
         textY = (textBB.top + textBB.bottom) / 2;
 
     // apply 3px target padding
-    var targetWidth = barWidth - 6,
-        targetHeight = barHeight - 6;
+    var targetWidth = barWidth - 2 * TEXTPAD,
+        targetHeight = barHeight - 2 * TEXTPAD;
 
     return getTransform(
         textX, textY, textWidth, textHeight,
@@ -286,7 +306,6 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB) {
 }
 
 function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
-
     // compute text and target positions
     var textWidth = textBB.width,
         textHeight = textBB.height,
@@ -298,14 +317,14 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
     if(orientation === 'h') {
         if(x1 < x0) {
             // bar end is on the left hand side
-            targetWidth = textWidth + 6; // 3px padding included
-            targetHeight = Math.abs(y1 - y0) - 6;
+            targetWidth = textWidth + 2 * TEXTPAD; // padding included
+            targetHeight = Math.abs(y1 - y0) - 2 * TEXTPAD;
             targetX = x1 - targetWidth / 2;
             targetY = (y0 + y1) / 2;
         }
         else {
-            targetWidth = textWidth + 6; // padding included
-            targetHeight = Math.abs(y1 - y0) - 6;
+            targetWidth = textWidth + 2 * TEXTPAD; // padding included
+            targetHeight = Math.abs(y1 - y0) - 2 * TEXTPAD;
             targetX = x1 + targetWidth / 2;
             targetY = (y0 + y1) / 2;
         }
