@@ -276,9 +276,9 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB) {
         textX = (textBB.left + textBB.right) / 2,
         textY = (textBB.top + textBB.bottom) / 2;
 
-    // apply target padding
-    var targetWidth = 0.95 * barWidth,
-        targetHeight = 0.95 * barHeight;
+    // apply 3px target padding
+    var targetWidth = barWidth - 6,
+        targetHeight = barHeight - 6;
 
     return getTransform(
         textX, textY, textWidth, textHeight,
@@ -298,14 +298,14 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
     if(orientation === 'h') {
         if(x1 < x0) {
             // bar end is on the left hand side
-            targetWidth = 2 + textWidth; // padding included
-            targetHeight = Math.abs(y1 - y0);
+            targetWidth = textWidth + 6; // 3px padding included
+            targetHeight = Math.abs(y1 - y0) - 6;
             targetX = x1 - targetWidth / 2;
             targetY = (y0 + y1) / 2;
         }
         else {
-            targetWidth = 2 + textWidth; // padding included
-            targetHeight = Math.abs(y1 - y0);
+            targetWidth = textWidth + 6; // padding included
+            targetHeight = Math.abs(y1 - y0) - 6;
             targetX = x1 + targetWidth / 2;
             targetY = (y0 + y1) / 2;
         }
