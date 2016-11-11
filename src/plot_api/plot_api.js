@@ -957,7 +957,7 @@ Plotly.addTraces = function addTraces(gd, traces, newIndices) {
         traces = [traces];
     }
 
-    // make sure traces does not repeat existing ones
+    // make sure traces do not repeat existing ones
     traces = traces.map(function(trace) {
         return Lib.extendFlat({}, trace);
     });
