@@ -242,7 +242,8 @@ function drawOne(gd, index, opt, value) {
         optionsIn[axLetter] = position;
     }
 
-    var options = handleAnnotationDefaults(optionsIn, fullLayout);
+    var options = {};
+    handleAnnotationDefaults(optionsIn, options, fullLayout);
     fullLayout.annotations[index] = options;
 
     var xa = Axes.getFromId(gd, options.xref),

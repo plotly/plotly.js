@@ -1,12 +1,13 @@
+var Shapes = require('@src/components/shapes');
 var helpers = require('@src/components/shapes/helpers');
 var constants = require('@src/components/shapes/constants');
-var handleShapeDefaults = require('@src/components/shapes/shape_defaults');
 
 var Plotly = require('@lib/index');
 var PlotlyInternal = require('@src/plotly');
 var Lib = require('@src/lib');
+
+var Plots = PlotlyInternal.Plots;
 var Axes = PlotlyInternal.Axes;
-var Plots = require('@src/plots/plots');
 
 var d3 = require('d3');
 var customMatchers = require('../assets/custom_matchers');
@@ -14,9 +15,47 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 
-describe('shape supplyDefaults', function() {
+describe('Test shapes defaults:', function() {
+    'use strict';
+
     beforeAll(function() {
         jasmine.addMatchers(customMatchers);
+    });
+
+    function _supply(layoutIn, layoutOut) {
+        layoutOut = layoutOut || {};
+        layoutOut._has = Plots._hasPlotType.bind(layoutOut);
+
+        Shapes.supplyLayoutDefaults(layoutIn, layoutOut);
+
+        return layoutOut.shapes;
+    }
+
+    it('should skip non-array containers', function() {
+        [null, undefined, {}, 'str', 0, false, true].forEach(function(cont) {
+            var msg = '- ' + JSON.stringify(cont);
+            var layoutIn = { shapes: cont };
+            var out = _supply(layoutIn);
+
+            expect(layoutIn.shapes).toBe(cont, msg);
+            expect(out).toEqual([], msg);
+        });
+    });
+
+    it('should make non-object item visible: false', function() {
+        var shapes = [null, undefined, [], 'str', 0, false, true];
+        var layoutIn = { shapes: shapes };
+        var out = _supply(layoutIn);
+
+        expect(layoutIn.shapes).toEqual(shapes);
+
+        out.forEach(function(item, i) {
+            expect(item).toEqual({
+                visible: false,
+                _input: {},
+                _index: i
+            });
+        });
     });
 
     it('should provide the right defaults on all axis types', function() {
@@ -26,32 +65,41 @@ describe('shape supplyDefaults', function() {
             xaxis2: {type: 'date', range: ['2006-06-05', '2006-06-09']},
             yaxis2: {type: 'category', range: [-0.5, 7.5]}
         };
-        fullLayout._has = Plots._hasPlotType.bind(fullLayout);
+
         Axes.setConvert(fullLayout.xaxis);
         Axes.setConvert(fullLayout.yaxis);
         Axes.setConvert(fullLayout.xaxis2);
         Axes.setConvert(fullLayout.yaxis2);
 
         var shape1In = {type: 'rect'},
-            shape1Out = handleShapeDefaults(shape1In, fullLayout),
-            shape2In = {type: 'circle', xref: 'x2', yref: 'y2'},
-            shape2Out = handleShapeDefaults(shape2In, fullLayout);
+            shape2In = {type: 'circle', xref: 'x2', yref: 'y2'};
+
+        var layoutIn = {
+            shapes: [shape1In, shape2In]
+        };
+
+        _supply(layoutIn, fullLayout);
+
+        var shape1Out = fullLayout.shapes[0],
+            shape2Out = fullLayout.shapes[1];
 
         // default positions are 1/4 and 3/4 of the full range of that axis
         expect(shape1Out.x0).toBe(5);
         expect(shape1Out.x1).toBe(15);
+
         // shapes use data values for log axes (like everyone will in V2.0)
         expect(shape1Out.y0).toBeWithin(100, 0.001);
         expect(shape1Out.y1).toBeWithin(10000, 0.001);
+
         // date strings also interpolate
         expect(shape2Out.x0).toBe('2006-06-06');
         expect(shape2Out.x1).toBe('2006-06-08');
+
         // categories must use serial numbers to get continuous values
         expect(shape2Out.y0).toBeWithin(1.5, 0.001);
         expect(shape2Out.y1).toBeWithin(5.5, 0.001);
     });
 });
-
 
 describe('Test shapes:', function() {
     'use strict';

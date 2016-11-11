@@ -896,7 +896,7 @@ describe('Test plot api', function() {
         });
     });
 
-    describe('cleanData', function() {
+    describe('cleanData & cleanLayout', function() {
         var gd;
 
         beforeEach(function() {
@@ -1038,6 +1038,36 @@ describe('Test plot api', function() {
 
             expect(trace1.transforms.length).toEqual(1);
             expect(trace1.transforms[0].target).toEqual('y');
+        });
+
+        it('should cleanup annotations / shapes refs', function() {
+            var data = [{}];
+
+            var layout = {
+                annotations: [
+                    { ref: 'paper' },
+                    null,
+                    { xref: 'x02', yref: 'y1' }
+                ],
+                shapes: [
+                    { xref: 'y', yref: 'x' },
+                    null,
+                    { xref: 'x03', yref: 'y1' }
+                ]
+            };
+
+            Plotly.plot(gd, data, layout);
+
+            expect(gd.layout.annotations[0]).toEqual({ xref: 'paper', yref: 'paper' });
+            expect(gd.layout.annotations[1]).toEqual(null);
+            expect(gd.layout.annotations[2]).toEqual({ xref: 'x2', yref: 'y' });
+
+            expect(gd.layout.shapes[0].xref).toBeUndefined();
+            expect(gd.layout.shapes[0].yref).toBeUndefined();
+            expect(gd.layout.shapes[1]).toEqual(null);
+            expect(gd.layout.shapes[2].xref).toEqual('x3');
+            expect(gd.layout.shapes[2].yref).toEqual('y');
+
         });
     });
 

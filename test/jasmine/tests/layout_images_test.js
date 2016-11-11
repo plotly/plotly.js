@@ -27,7 +27,11 @@ describe('Layout images', function() {
 
             Images.supplyLayoutDefaults(layoutIn, layoutOut);
 
-            expect(layoutOut.images).toEqual([{ visible: false }]);
+            expect(layoutOut.images).toEqual([{
+                visible: false,
+                _index: 0,
+                _input: layoutIn.images[0]
+            }]);
         });
 
         it('should reject when not an array', function() {
@@ -44,7 +48,9 @@ describe('Layout images', function() {
         });
 
         it('should coerce the correct defaults', function() {
-            layoutIn.images[0] = { source: jsLogo };
+            var image = { source: jsLogo };
+
+            layoutIn.images[0] = image;
 
             var expected = {
                 source: jsLogo,
@@ -59,7 +65,9 @@ describe('Layout images', function() {
                 sizing: 'contain',
                 opacity: 1,
                 xref: 'paper',
-                yref: 'paper'
+                yref: 'paper',
+                _input: image,
+                _index: 0
             };
 
             Images.supplyLayoutDefaults(layoutIn, layoutOut);
