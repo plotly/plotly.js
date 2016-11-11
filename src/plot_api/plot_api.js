@@ -956,6 +956,12 @@ Plotly.addTraces = function addTraces(gd, traces, newIndices) {
     if(!Array.isArray(traces)) {
         traces = [traces];
     }
+
+    // make sure traces does not repeat existing ones
+    traces = traces.map(function(trace) {
+        return Lib.extendFlat({}, trace);
+    });
+
     helpers.cleanData(traces, gd.data);
 
     // add the traces to gd.data (no redrawing yet!)
