@@ -272,136 +272,197 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
         }
     }
 
-    // compute translate transform
+    // set text transform
     var transform;
     if(textPosition === 'outside') {
         transform = getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB,
             trace.orientation);
     }
     else {
-        transform = getTransformToMoveInsideBar(x0, x1, y0, y1, textBB);
+        transform = getTransformToMoveInsideBar(x0, x1, y0, y1, textBB,
+            trace.orientation);
     }
 
     textSelection.attr('transform', transform);
 }
 
-function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB) {
-    // compute text and target positions
-    var barWidth = Math.abs(x1 - x0),
-        barHeight = Math.abs(y1 - y0),
-        textWidth = textBB.width,
-        textHeight = textBB.height,
-        barX = (x0 + x1) / 2,
-        barY = (y0 + y1) / 2,
-        textX = (textBB.left + textBB.right) / 2,
-        textY = (textBB.top + textBB.bottom) / 2;
-
-    // apply 3px target padding
-    var targetWidth = barWidth - 2 * TEXTPAD,
-        targetHeight = barHeight - 2 * TEXTPAD;
-
-    return getTransform(
-        textX, textY, textWidth, textHeight,
-        barX, barY, targetWidth, targetHeight);
-}
-
-function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
+function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation) {
     // compute text and target positions
     var textWidth = textBB.width,
         textHeight = textBB.height,
         textX = (textBB.left + textBB.right) / 2,
-        textY = (textBB.top + textBB.bottom) / 2;
+        textY = (textBB.top + textBB.bottom) / 2,
+        barWidth = Math.abs(x1 - x0) - 2 * TEXTPAD,
+        barHeight = Math.abs(y1 - y0) - 2 * TEXTPAD,
+        targetWidth,
+        targetHeight,
+        targetX,
+        targetY;
 
-    var targetWidth, targetHeight,
-        targetX, targetY;
+    // compute rotation and scale
+    var needsRotating,
+        scale;
+
+    if(textWidth <= barWidth && textHeight <= barHeight) {
+        // no scale or rotation is required
+        needsRotating = false;
+        scale = 1;
+    }
+    else if(textWidth <= barHeight && textHeight <= barWidth) {
+        // only rotation is required
+        needsRotating = true;
+        scale = 1;
+    }
+    else if((textWidth < textHeight) === (barWidth < barHeight)) {
+        // only scale is required
+        needsRotating = false;
+        scale = Math.min(barWidth / textWidth, barHeight / textHeight);
+    }
+    else {
+        // both scale and rotation are required
+        needsRotating = true;
+        scale = Math.min(barHeight / textWidth, barWidth / textHeight);
+    }
+
+    // compute text and target positions
+    if(needsRotating) {
+        targetWidth = scale * textHeight;
+        targetHeight = scale * textWidth;
+    }
+    else {
+        targetWidth = scale * textWidth;
+        targetHeight = scale * textHeight;
+    }
+
     if(orientation === 'h') {
         if(x1 < x0) {
             // bar end is on the left hand side
-            targetWidth = textWidth + 2 * TEXTPAD; // padding included
-            targetHeight = Math.abs(y1 - y0) - 2 * TEXTPAD;
-            targetX = x1 - targetWidth / 2;
+            targetX = x1 + TEXTPAD + targetWidth / 2;
             targetY = (y0 + y1) / 2;
         }
         else {
-            targetWidth = textWidth + 2 * TEXTPAD; // padding included
-            targetHeight = Math.abs(y1 - y0) - 2 * TEXTPAD;
-            targetX = x1 + targetWidth / 2;
+            targetX = x1 - TEXTPAD - targetWidth / 2;
             targetY = (y0 + y1) / 2;
         }
     }
     else {
         if(y1 > y0) {
             // bar end is on the bottom
-            targetWidth = Math.abs(x1 - x0);
-            targetHeight = 2 + textHeight; // padding included
             targetX = (x0 + x1) / 2;
-            targetY = y1 + targetHeight / 2;
+            targetY = y1 - TEXTPAD - targetHeight / 2;
         }
         else {
-            targetWidth = Math.abs(x1 - x0);
-            targetHeight = 2 + textHeight; // padding included
             targetX = (x0 + x1) / 2;
-            targetY = y1 - targetHeight / 2;
+            targetY = y1 + TEXTPAD + targetHeight / 2;
         }
     }
 
-    return getTransform(
-        textX, textY, textWidth, textHeight,
-        targetX, targetY, targetWidth, targetHeight);
+    return getTransform(textX, textY, targetX, targetY, scale, needsRotating);
 }
 
-/**
- * Compute SVG transform to move a text box into a target box
- *
- * @param {number} textX         X pixel coord of the text box center
- * @param {number} textY         Y pixel coord of the text box center
- * @param {number} textWidth     text box width
- * @param {number} textHeight    text box height
- * @param {number} targetX       X pixel coord of the target box center
- * @param {number} targetY       Y pixel coord of the target box center
- * @param {number} targetWidth   target box width
- * @param {number} targetHeight  target box height
- *
- * @returns {string} SVG transform
- */
-function getTransform(
-    textX, textY, textWidth, textHeight,
-    targetX, targetY, targetWidth, targetHeight) {
+function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
+    // In order to handle both orientations with the same algorithm,
+    // *textWidth* is defined as the text length in the direction of *barWidth*.
+    var barWidth,
+        textWidth,
+        textHeight;
+    if(orientation === 'h') {
+        barWidth = Math.abs(y1 - y0) - 2 * TEXTPAD;
+        textWidth = textBB.height;
+        textHeight = textBB.width;
+    }
+    else {
+        barWidth = Math.abs(x1 - x0) - 2 * TEXTPAD;
+        textWidth = textBB.width;
+        textHeight = textBB.height;
+    }
 
-    // compute translate transform
-    var translateX = targetX - textX,
-        translateY = targetY - textY,
-        translate = 'translate(' + translateX + ' ' + translateY + ')';
+    // compute rotation and scale
+    var needsRotating,
+        scale;
+    if(textWidth <= barWidth) {
+        // no scale or rotation
+        needsRotating = false;
+        scale = 1;
+    }
+    else if(textHeight <= textWidth) {
+        // only scale
+        // (don't rotate to prevent having text perpendicular to the bar)
+        needsRotating = false;
+        scale = barWidth / textWidth;
+    }
+    else if(textHeight <= barWidth) {
+        // only rotation
+        needsRotating = true;
+        scale = 1;
+    }
+    else {
+        // both scale and rotation
+        // (rotation prevents having text perpendicular to the bar)
+        needsRotating = true;
+        scale = barWidth / textHeight;
+    }
 
-    // if bar text doesn't fit, compute rotate and scale transforms
-    var doesntFit = (textWidth > targetWidth || textHeight > targetHeight),
-        rotate, scale, scaleX, scaleY;
+    // compute text and target positions
+    var textX = (textBB.left + textBB.right) / 2,
+        textY = (textBB.top + textBB.bottom) / 2,
+        targetWidth,
+        targetHeight,
+        targetX,
+        targetY;
+    if(needsRotating) {
+        targetWidth = scale * textBB.height;
+        targetHeight = scale * textBB.width;
+    }
+    else {
+        targetWidth = scale * textBB.width;
+        targetHeight = scale * textBB.height;
+    }
 
-    if(doesntFit) {
-        var textIsHorizontal = (textWidth > textHeight),
-            targetIsHorizontal = (targetWidth > targetHeight);
-        if(textIsHorizontal !== targetIsHorizontal) {
-            rotate = 'rotate(-90 ' + textX + ' ' + textY + ')';
-            scaleX = targetWidth / textHeight;
-            scaleY = targetHeight / textWidth;
+    if(orientation === 'h') {
+        if(x1 < x0) {
+            // bar end is on the left hand side
+            targetX = x1 - TEXTPAD - targetWidth / 2;
+            targetY = (y0 + y1) / 2;
         }
         else {
-            scaleX = targetWidth / textWidth;
-            scaleY = targetHeight / textHeight;
+            targetX = x1 + TEXTPAD + targetWidth / 2;
+            targetY = (y0 + y1) / 2;
         }
-
-        if(scaleX > 1) scaleX = 1;
-        if(scaleY > 1) scaleY = 1;
-
-        if(scaleX !== 1 || scaleY !== 1) {
-            scale = 'scale(' + scaleX + ' ' + scaleY + ')';
+    }
+    else {
+        if(y1 > y0) {
+            // bar end is on the bottom
+            targetX = (x0 + x1) / 2;
+            targetY = y1 + TEXTPAD + targetHeight / 2;
+        }
+        else {
+            targetX = (x0 + x1) / 2;
+            targetY = y1 - TEXTPAD - targetHeight / 2;
         }
     }
 
-    // compute transform
-    var transform = translate;
-    if(scale) transform += ' ' + scale;
-    if(rotate) transform += ' ' + rotate;
+    return getTransform(textX, textY, targetX, targetY, scale, needsRotating);
+}
 
-    return transform;
+function getTransform(textX, textY, targetX, targetY, scale, needsRotating) {
+    var transformScale,
+        transformRotate,
+        transformTranslate;
+
+    if(scale < 1) transformScale = 'scale(' + scale + ') ';
+    else {
+        scale = 1;
+        transformScale = '';
+    }
+
+    transformRotate = (needsRotating) ?
+        'rotate(-90 ' + textX + ' ' + textY + ') ' : '';
+
+    // Note that scaling also affects the center of the text box
+    var translateX = (targetX - scale * textX),
+        translateY = (targetY - scale * textY);
+    transformTranslate = 'translate(' + translateX + ' ' + translateY + ')';
+
+    return transformTranslate + transformScale + transformRotate;
 }
