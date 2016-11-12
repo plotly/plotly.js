@@ -215,7 +215,6 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
 
         barWidth = Math.abs(x1 - x0) - 2 * TEXTPAD,  // padding excluded
         barHeight = Math.abs(y1 - y0) - 2 * TEXTPAD,  // padding excluded
-        barIsTooSmall = (barWidth <= 0 || barHeight <= 0),
 
         textSelection,
         textBB,
@@ -224,10 +223,6 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
 
     if(textPosition === 'outside') {
         if(!isOutmostBar) textPosition = 'inside';
-    }
-
-    if(textPosition === 'inside') {
-        if(barIsTooSmall) return;
     }
 
     if(textPosition === 'auto') {
@@ -253,8 +248,7 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
                 textSelection = null;
             }
         }
-        else if(!barIsTooSmall) textPosition = 'inside';
-        else return;
+        else textPosition = 'inside';
     }
 
     if(!textSelection) {
@@ -292,12 +286,21 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation) {
         textHeight = textBB.height,
         textX = (textBB.left + textBB.right) / 2,
         textY = (textBB.top + textBB.bottom) / 2,
-        barWidth = Math.abs(x1 - x0) - 2 * TEXTPAD,
-        barHeight = Math.abs(y1 - y0) - 2 * TEXTPAD,
+        barWidth = Math.abs(x1 - x0),
+        barHeight = Math.abs(y1 - y0),
         targetWidth,
         targetHeight,
         targetX,
         targetY;
+
+    // apply text padding
+    var textpad;
+    if(barWidth > 2 * TEXTPAD && barHeight > 2 * TEXTPAD) {
+        textpad = TEXTPAD;
+        barWidth -= 2 * textpad;
+        barHeight -= 2 * textpad;
+    }
+    else textpad = 0;
 
     // compute rotation and scale
     var needsRotating,
@@ -337,11 +340,11 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation) {
     if(orientation === 'h') {
         if(x1 < x0) {
             // bar end is on the left hand side
-            targetX = x1 + TEXTPAD + targetWidth / 2;
+            targetX = x1 + textpad + targetWidth / 2;
             targetY = (y0 + y1) / 2;
         }
         else {
-            targetX = x1 - TEXTPAD - targetWidth / 2;
+            targetX = x1 - textpad - targetWidth / 2;
             targetY = (y0 + y1) / 2;
         }
     }
@@ -349,11 +352,11 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation) {
         if(y1 > y0) {
             // bar end is on the bottom
             targetX = (x0 + x1) / 2;
-            targetY = y1 - TEXTPAD - targetHeight / 2;
+            targetY = y1 - textpad - targetHeight / 2;
         }
         else {
             targetX = (x0 + x1) / 2;
-            targetY = y1 + TEXTPAD + targetHeight / 2;
+            targetY = y1 + textpad + targetHeight / 2;
         }
     }
 
@@ -367,14 +370,21 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
         textWidth,
         textHeight;
     if(orientation === 'h') {
-        barWidth = Math.abs(y1 - y0) - 2 * TEXTPAD;
+        barWidth = Math.abs(y1 - y0);
         textWidth = textBB.height;
         textHeight = textBB.width;
     }
     else {
-        barWidth = Math.abs(x1 - x0) - 2 * TEXTPAD;
+        barWidth = Math.abs(x1 - x0);
         textWidth = textBB.width;
         textHeight = textBB.height;
+    }
+
+    // apply text padding
+    var textpad;
+    if(barWidth > 2 * TEXTPAD) {
+        textpad = TEXTPAD;
+        barWidth -= 2 * textpad;
     }
 
     // compute rotation and scale
@@ -422,11 +432,11 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
     if(orientation === 'h') {
         if(x1 < x0) {
             // bar end is on the left hand side
-            targetX = x1 - TEXTPAD - targetWidth / 2;
+            targetX = x1 - textpad - targetWidth / 2;
             targetY = (y0 + y1) / 2;
         }
         else {
-            targetX = x1 + TEXTPAD + targetWidth / 2;
+            targetX = x1 + textpad + targetWidth / 2;
             targetY = (y0 + y1) / 2;
         }
     }
@@ -434,11 +444,11 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
         if(y1 > y0) {
             // bar end is on the bottom
             targetX = (x0 + x1) / 2;
-            targetY = y1 + TEXTPAD + targetHeight / 2;
+            targetY = y1 + textpad + targetHeight / 2;
         }
         else {
             targetX = (x0 + x1) / 2;
-            targetY = y1 - TEXTPAD - targetHeight / 2;
+            targetY = y1 - textpad - targetHeight / 2;
         }
     }
 
