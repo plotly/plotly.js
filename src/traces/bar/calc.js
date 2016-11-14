@@ -31,11 +31,13 @@ module.exports = function calc(gd, trace) {
         sa = xa;
         size = xa.makeCalcdata(trace, 'x');
         pos = ya.makeCalcdata(trace, 'y');
+        Axes.setConvert(sa);
     }
     else {
         sa = ya;
         size = ya.makeCalcdata(trace, 'y');
         pos = xa.makeCalcdata(trace, 'x');
+        Axes.setConvert(sa);
     }
 
     // create the "calculated data" to plot
