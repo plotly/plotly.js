@@ -453,6 +453,27 @@ describe('Bar.setPositions', function() {
         assertPointField(cd, 'y', [[0.75, 0.50, 0.25], [0.25, 0.50, 0.75]]);
     });
 
+    it('should honor barnorm (group+base case)', function() {
+        var gd = mockBarPlot([{
+            base: [3, 2, 1],
+            y: [0, 0, 0]
+        }, {
+            y: [1, 2, 3]
+        }], {
+            bargap: 0,
+            barmode: 'group',
+            barnorm: 'fraction'
+        });
+
+        expect(gd._fullLayout.barnorm).toBe('fraction');
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'b', [[0.75, 0.50, 0.25], [0, 0, 0]]);
+        assertPointField(cd, 's', [[0, 0, 0], [0.25, 0.50, 0.75]]);
+        assertPointField(cd, 'x', [[-0.25, 0.75, 1.75], [0.25, 1.25, 2.25]]);
+        assertPointField(cd, 'y', [[0.75, 0.50, 0.25], [0.25, 0.50, 0.75]]);
+    });
+
     it('should honor barnorm (stack case)', function() {
         var gd = mockBarPlot([{
             y: [3, 2, 1]
