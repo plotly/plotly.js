@@ -453,6 +453,27 @@ describe('Bar.setPositions', function() {
         assertPointField(cd, 'y', [[0.75, 0.50, 0.25], [0.25, 0.50, 0.75]]);
     });
 
+    it('should honor barnorm (group+base case)', function() {
+        var gd = mockBarPlot([{
+            base: [3, 2, 1],
+            y: [0, 0, 0]
+        }, {
+            y: [1, 2, 3]
+        }], {
+            bargap: 0,
+            barmode: 'group',
+            barnorm: 'fraction'
+        });
+
+        expect(gd._fullLayout.barnorm).toBe('fraction');
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'b', [[0.75, 0.50, 0.25], [0, 0, 0]]);
+        assertPointField(cd, 's', [[0, 0, 0], [0.25, 0.50, 0.75]]);
+        assertPointField(cd, 'x', [[-0.25, 0.75, 1.75], [0.25, 1.25, 2.25]]);
+        assertPointField(cd, 'y', [[0.75, 0.50, 0.25], [0.25, 0.50, 0.75]]);
+    });
+
     it('should honor barnorm (stack case)', function() {
         var gd = mockBarPlot([{
             y: [3, 2, 1]
@@ -753,17 +774,34 @@ describe('bar hover', function() {
         });
 
         it('should return the correct hover point data (case y)', function() {
-            var out = _hover(gd, 185.645, 0.15, 'y');
+            var out = _hover(gd, 0.75, 0.15, 'y'),
+                subplot = gd._fullLayout._plots.xy,
+                xa = subplot.xaxis,
+                ya = subplot.yaxis,
+                barDelta = 1 * 0.8 / 2,
+                x0 = xa.c2p(0.5, true),
+                x1 = x0,
+                y0 = ya.c2p(0 - barDelta, true),
+                y1 = ya.c2p(0 + barDelta, true);
 
-            expect(out.style).toEqual([0, '#1f77b4', 75, 0]);
-            assertPos(out.pos, [182.88, 182.88, 214.5, 170.5]);
+            expect(out.style).toEqual([0, '#1f77b4', 0.5, 0]);
+            assertPos(out.pos, [x0, x1, y0, y1]);
         });
 
         it('should return the correct hover point data (case closest)', function() {
-            var out = _hover(gd, 135.88, -0.15, 'closest');
+            var out = _hover(gd, 0.75, -0.15, 'closest'),
+                subplot = gd._fullLayout._plots.xy,
+                xa = subplot.xaxis,
+                ya = subplot.yaxis,
+                barDelta = 1 * 0.8 / 2 / 2,
+                barPos = 0 - 1 * 0.8 / 2 + barDelta,
+                x0 = xa.c2p(0.5, true),
+                x1 = x0,
+                y0 = ya.c2p(barPos - barDelta, true),
+                y1 = ya.c2p(barPos + barDelta, true);
 
-            expect(out.style).toEqual([0, '#1f77b4', 75, 0]);
-            assertPos(out.pos, [182.88, 182.88, 214.5, 192.5]);
+            expect(out.style).toEqual([0, '#1f77b4', 0.5, 0]);
+            assertPos(out.pos, [x0, x1, y0, y1]);
         });
     });
 

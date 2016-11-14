@@ -485,8 +485,8 @@ function stackBars(gd, sa, sieve) {
             if(!isNumeric(bar.s)) continue;
 
             // stack current bar and get previous sum
-            var barBase = sieve.put(bar.p, bar.s),
-                barTop = barBase + bar.s;
+            var barBase = sieve.put(bar.p, bar.b + bar.s),
+                barTop = barBase + bar.b + bar.s;
 
             // store the bar base and top in each calcdata item
             bar.b = barBase;
@@ -524,7 +524,7 @@ function sieveBars(gd, sa, sieve) {
         for(var j = 0; j < trace.length; j++) {
             var bar = trace[j];
 
-            if(isNumeric(bar.s)) sieve.put(bar.p, bar.s);
+            if(isNumeric(bar.s)) sieve.put(bar.p, bar.b + bar.s);
         }
     }
 }

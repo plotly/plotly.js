@@ -1,12 +1,12 @@
 {
     "data":[
         {
-            "base":4,
-            "x":[3,2,1,0],
+            "base":[100,40,25,10],
+            "x":[-50,10,25,40],
             "type":"bar"
         }, {
-            "base":[7,6,5,4],
-            "x":[1,2,3,4],
+            "base":[0,60,75,90],
+            "x":[50,-10,-25,-40],
             "type":"bar"
         }
     ],
@@ -14,6 +14,6 @@
         "height":400,
         "width":400,
         "barmode":"group",
-        "barnorm":"percent"
+        "barnorm":"fraction"
     }
 }
