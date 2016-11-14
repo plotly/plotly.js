@@ -303,32 +303,34 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation) {
     else textpad = 0;
 
     // compute rotation and scale
-    var needsRotating,
+    var rotate,
         scale;
 
     if(textWidth <= barWidth && textHeight <= barHeight) {
         // no scale or rotation is required
-        needsRotating = false;
+        rotate = false;
         scale = 1;
     }
     else if(textWidth <= barHeight && textHeight <= barWidth) {
         // only rotation is required
-        needsRotating = true;
+        rotate = true;
         scale = 1;
     }
     else if((textWidth < textHeight) === (barWidth < barHeight)) {
         // only scale is required
-        needsRotating = false;
+        rotate = false;
         scale = Math.min(barWidth / textWidth, barHeight / textHeight);
     }
     else {
         // both scale and rotation are required
-        needsRotating = true;
+        rotate = true;
         scale = Math.min(barHeight / textWidth, barWidth / textHeight);
     }
 
+    if(rotate) rotate = -90;  // rotate counter-clockwise
+
     // compute text and target positions
-    if(needsRotating) {
+    if(rotate) {
         targetWidth = scale * textHeight;
         targetHeight = scale * textWidth;
     }
@@ -360,7 +362,7 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation) {
         }
     }
 
-    return getTransform(textX, textY, targetX, targetY, scale, needsRotating);
+    return getTransform(textX, textY, targetX, targetY, scale, rotate);
 }
 
 function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
@@ -388,28 +390,28 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
     }
 
     // compute rotation and scale
-    var needsRotating,
+    var rotate,
         scale;
     if(textWidth <= barWidth) {
         // no scale or rotation
-        needsRotating = false;
+        rotate = false;
         scale = 1;
     }
     else if(textHeight <= textWidth) {
         // only scale
         // (don't rotate to prevent having text perpendicular to the bar)
-        needsRotating = false;
+        rotate = false;
         scale = barWidth / textWidth;
     }
     else if(textHeight <= barWidth) {
         // only rotation
-        needsRotating = true;
+        rotate = true;
         scale = 1;
     }
     else {
         // both scale and rotation
         // (rotation prevents having text perpendicular to the bar)
-        needsRotating = true;
+        rotate = true;
         scale = barWidth / textHeight;
     }
 
@@ -420,7 +422,7 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
         targetHeight,
         targetX,
         targetY;
-    if(needsRotating) {
+    if(rotate) {
         targetWidth = scale * textBB.height;
         targetHeight = scale * textBB.width;
     }
@@ -434,10 +436,12 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
             // bar end is on the left hand side
             targetX = x1 - textpad - targetWidth / 2;
             targetY = (y0 + y1) / 2;
+            if(rotate) rotate = -90;  // rotate counter-clockwise
         }
         else {
             targetX = x1 + textpad + targetWidth / 2;
             targetY = (y0 + y1) / 2;
+            if(rotate) rotate = 90;  // rotate clockwise
         }
     }
     else {
@@ -445,17 +449,19 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
             // bar end is on the bottom
             targetX = (x0 + x1) / 2;
             targetY = y1 + textpad + targetHeight / 2;
+            if(rotate) rotate = -90;  // rotate counter-clockwise
         }
         else {
             targetX = (x0 + x1) / 2;
             targetY = y1 - textpad - targetHeight / 2;
+            if(rotate) rotate = 90;  // rotate clockwise
         }
     }
 
-    return getTransform(textX, textY, targetX, targetY, scale, needsRotating);
+    return getTransform(textX, textY, targetX, targetY, scale, rotate);
 }
 
-function getTransform(textX, textY, targetX, targetY, scale, needsRotating) {
+function getTransform(textX, textY, targetX, targetY, scale, rotate) {
     var transformScale,
         transformRotate,
         transformTranslate;
@@ -466,8 +472,8 @@ function getTransform(textX, textY, targetX, targetY, scale, needsRotating) {
         transformScale = '';
     }
 
-    transformRotate = (needsRotating) ?
-        'rotate(-90 ' + textX + ' ' + textY + ') ' : '';
+    transformRotate = (rotate) ?
+        'rotate(' + rotate + ' ' + textX + ' ' + textY + ') ' : '';
 
     // Note that scaling also affects the center of the text box
     var translateX = (targetX - scale * textX),
