@@ -778,12 +778,14 @@ describe('bar hover', function() {
                 subplot = gd._fullLayout._plots.xy,
                 xa = subplot.xaxis,
                 ya = subplot.yaxis,
-                barDelta = 1 * 0.8 / 2;
+                barDelta = 1 * 0.8 / 2,
+                x0 = xa.c2p(0.5, true),
+                x1 = x0,
+                y0 = ya.c2p(0 - barDelta, true),
+                y1 = ya.c2p(0 + barDelta, true);
 
             expect(out.style).toEqual([0, '#1f77b4', 0.5, 0]);
-            assertPos(out.pos,
-                    [xa.c2p(0.5, true), xa.c2p(0.5, true),
-                    ya.c2p(0 - barDelta, true), ya.c2p(0 + barDelta, true)]);
+            assertPos(out.pos, [x0, x1, y0, y1]);
         });
 
         it('should return the correct hover point data (case closest)', function() {
@@ -792,12 +794,14 @@ describe('bar hover', function() {
                 xa = subplot.xaxis,
                 ya = subplot.yaxis,
                 barDelta = 1 * 0.8 / 2 / 2,
-                barPos = 0 - 1 * 0.8 / 2 + barDelta;
+                barPos = 0 - 1 * 0.8 / 2 + barDelta,
+                x0 = xa.c2p(0.5, true),
+                x1 = x0,
+                y0 = ya.c2p(barPos - barDelta, true),
+                y1 = ya.c2p(barPos + barDelta, true);
 
             expect(out.style).toEqual([0, '#1f77b4', 0.5, 0]);
-            assertPos(out.pos,
-                    [xa.c2p(0.5, true), xa.c2p(0.5, true),
-                    ya.c2p(barPos - barDelta, true), ya.c2p(barPos + barDelta, true)]);
+            assertPos(out.pos, [x0, x1, y0, y1]);
         });
     });
 
