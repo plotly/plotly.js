@@ -706,3 +706,34 @@ describe('Animate API details', function() {
         }).catch(fail).then(done);
     });
 });
+
+describe('non-animatable fallback', function() {
+    'use strict';
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('falls back to a simple update for bar graphs', function(done) {
+        Plotly.plot(gd, [{
+            x: [1, 2, 3],
+            y: [4, 5, 6],
+            type: 'bar'
+        }]).then(function() {
+            expect(gd.data[0].y).toEqual([4, 5, 6]);
+
+            return Plotly.animate(gd, [{
+                data: [{y: [6, 4, 5]}]
+            }], {frame: {duration: 0}});
+        }).then(function() {
+            expect(gd.data[0].y).toEqual([6, 4, 5]);
+        }).catch(fail).then(done);
+
+    });
+});
