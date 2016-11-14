@@ -774,17 +774,30 @@ describe('bar hover', function() {
         });
 
         it('should return the correct hover point data (case y)', function() {
-            var out = _hover(gd, 185.645, 0.15, 'y');
+            var out = _hover(gd, 0.75, 0.15, 'y'),
+                subplot = gd._fullLayout._plots.xy,
+                xa = subplot.xaxis,
+                ya = subplot.yaxis,
+                barDelta = 1 * 0.8 / 2;
 
-            expect(out.style).toEqual([0, '#1f77b4', 75, 0]);
-            assertPos(out.pos, [182.88, 182.88, 214.5, 170.5]);
+            expect(out.style).toEqual([0, '#1f77b4', 0.5, 0]);
+            assertPos(out.pos,
+                    [xa.c2p(0.5, true), xa.c2p(0.5, true),
+                    ya.c2p(0 - barDelta, true), ya.c2p(0 + barDelta, true)]);
         });
 
         it('should return the correct hover point data (case closest)', function() {
-            var out = _hover(gd, 135.88, -0.15, 'closest');
+            var out = _hover(gd, 0.75, -0.15, 'closest'),
+                subplot = gd._fullLayout._plots.xy,
+                xa = subplot.xaxis,
+                ya = subplot.yaxis,
+                barDelta = 1 * 0.8 / 2 / 2,
+                barPos = 0 - 1 * 0.8 / 2 + barDelta;
 
-            expect(out.style).toEqual([0, '#1f77b4', 75, 0]);
-            assertPos(out.pos, [182.88, 182.88, 214.5, 192.5]);
+            expect(out.style).toEqual([0, '#1f77b4', 0.5, 0]);
+            assertPos(out.pos,
+                    [xa.c2p(0.5, true), xa.c2p(0.5, true),
+                    ya.c2p(barPos - barDelta, true), ya.c2p(barPos + barDelta, true)]);
         });
     });
 
