@@ -653,7 +653,7 @@ describe('filter transforms calc:', function() {
             expect(out[0].transforms[0].target).toEqual(['b', 'b', 'b']);
         });
 
-        it('with categorical items and *<* & *>=*', function() {
+        it('with categorical items and *<* and *>=*', function() {
             var out = _transform([{
                 x: [1, 2, 3],
                 y: [10, 20, 30],
@@ -681,6 +681,62 @@ describe('filter transforms calc:', function() {
             expect(out[1].x).toEqual([2, 3]);
             expect(out[1].y).toEqual([20, 10]);
             expect(out[1].transforms[0].target).toEqual(['b', 'c']);
+        });
+
+        it('with categorical items and *[]*, *][*, *()* and *)(*', function() {
+            var out = _transform([{
+                x: [1, 2, 3],
+                y: [10, 20, 30],
+                transforms: [{
+                    type: 'filter',
+                    operation: '[]',
+                    target: ['a', 'b', 'c'],
+                    value: ['a', 'b']
+                }]
+            }, {
+                x: [1, 2, 3],
+                y: [10, 20, 30],
+                transforms: [{
+                    type: 'filter',
+                    operation: '()',
+                    target: ['a', 'b', 'c'],
+                    value: ['a', 'b']
+                }]
+            }, {
+                x: [1, 2, 3],
+                y: [30, 20, 10],
+                transforms: [{
+                    type: 'filter',
+                    operation: '][',
+                    target: ['a', 'b', 'c'],
+                    value: ['a', 'b']
+                }]
+            }, {
+                x: [1, 2, 3],
+                y: [30, 20, 10],
+                transforms: [{
+                    type: 'filter',
+                    operation: ')(',
+                    target: ['a', 'b', 'c'],
+                    value: ['a', 'b']
+                }]
+            }]);
+
+            expect(out[0].x).toEqual([1, 2]);
+            expect(out[0].y).toEqual([10, 20]);
+            expect(out[0].transforms[0].target).toEqual(['a', 'b']);
+
+            expect(out[1].x).toEqual([]);
+            expect(out[1].y).toEqual([]);
+            expect(out[1].transforms[0].target).toEqual([]);
+
+            expect(out[2].x).toEqual([1, 2, 3]);
+            expect(out[2].y).toEqual([30, 20, 10]);
+            expect(out[2].transforms[0].target).toEqual(['a', 'b', 'c']);
+
+            expect(out[3].x).toEqual([3]);
+            expect(out[3].y).toEqual([10]);
+            expect(out[3].transforms[0].target).toEqual(['c']);
         });
 
         it('with dates items', function() {
