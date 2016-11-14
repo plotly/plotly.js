@@ -10,6 +10,8 @@
 
 var Color = require('../../components/color');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
+var colorbarAttrs = require('../../components/colorbar/attributes');
+
 var extendFlat = require('../../lib/extend').extendFlat;
 
 function makeContourProjAttr(axLetter) {
@@ -128,6 +130,7 @@ module.exports = {
         {dflt: false}),
     reversescale: colorscaleAttrs.reversescale,
     showscale: colorscaleAttrs.showscale,
+    colorbar: colorbarAttrs,
 
     contours: {
         x: makeContourAttr('x'),
@@ -226,10 +229,6 @@ module.exports = {
         max: 1,
         dflt: 1,
         description: 'Sets the opacity of the surface.'
-    },
-
-    _nestedModules: {  // nested module coupling
-        'colorbar': 'Colorbar'
     },
 
     _deprecated: {

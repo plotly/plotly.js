@@ -11,6 +11,7 @@
 var histogram2dAttrs = require('../histogram2d/attributes');
 var contourAttrs = require('../contour/attributes');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
+var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -32,11 +33,8 @@ module.exports = extendFlat({}, {
     autocontour: contourAttrs.autocontour,
     ncontours: contourAttrs.ncontours,
     contours: contourAttrs.contours,
-    line: contourAttrs.line,
-
-    _nestedModules: {
-        'colorbar': 'Colorbar'
-    }
+    line: contourAttrs.line
 },
-    colorscaleAttrs
+    colorscaleAttrs,
+    { colorbar: colorbarAttrs }
 );

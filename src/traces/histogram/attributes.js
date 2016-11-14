@@ -121,11 +121,8 @@ module.exports = {
 
     marker: barAttrs.marker,
 
-    _nestedModules: {
-        'error_y': 'ErrorBars',
-        'error_x': 'ErrorBars',
-        'marker.colorbar': 'Colorbar'
-    },
+    error_y: barAttrs.error_y,
+    error_x: barAttrs.error_x,
 
     _deprecated: {
         bardir: barAttrs._deprecated.bardir

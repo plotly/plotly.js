@@ -12,6 +12,8 @@ var scatterGeoAttrs = require('../scattergeo/attributes');
 var scatterAttrs = require('../scatter/attributes');
 var mapboxAttrs = require('../../plots/mapbox/layout_attributes');
 var plotAttrs = require('../../plots/attributes');
+var colorbarAttrs = require('../../components/colorbar/attributes');
+
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var lineAttrs = scatterGeoAttrs.line;
@@ -86,7 +88,8 @@ module.exports = {
         cmin: markerAttrs.cmin,
         autocolorscale: markerAttrs.autocolorscale,
         reversescale: markerAttrs.reversescale,
-        showscale: markerAttrs.showscale
+        showscale: markerAttrs.showscale,
+        colorbar: colorbarAttrs
 
         // line
     },
@@ -100,8 +103,4 @@ module.exports = {
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['lon', 'lat', 'text', 'name']
     }),
-
-    _nestedModules: {
-        'marker.colorbar': 'Colorbar'
-    }
 };
