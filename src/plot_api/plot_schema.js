@@ -14,6 +14,8 @@ var Lib = require('../lib');
 
 var baseAttributes = require('../plots/attributes');
 var baseLayoutAttributes = require('../plots/layout_attributes');
+var frameAttributes = require('../plots/frame_attributes');
+var animationAttributes = require('../plots/animation_attributes');
 
 // polar attributes are not part of the Registry yet
 var polarAreaAttrs = require('../plots/polar/area_attributes');
@@ -39,6 +41,9 @@ exports.UNDERSCORE_ATTRS = UNDERSCORE_ATTRS;
  *  - traces
  *  - layout
  *  - transforms
+ *  - frames
+ *  - animations
+ *  - config (coming soon ...)
  */
 exports.get = function() {
     var traces = {};
@@ -64,6 +69,10 @@ exports.get = function() {
 
         transforms: transforms,
 
+        frames: formatAttributes(frameAttributes),
+        animation: formatAttributes(animationAttributes)
+    };
+};
 
 /**
  * Crawl the attribute tree, recursively calling a callback function
