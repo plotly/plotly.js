@@ -737,3 +737,35 @@ describe('non-animatable fallback', function() {
 
     });
 });
+
+describe('animating scatter traces', function() {
+    'use strict';
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('animates trace opacity', function(done) {
+        var trace;
+        Plotly.plot(gd, [{
+            x: [1, 2, 3],
+            y: [4, 5, 6],
+            opacity: 1
+        }]).then(function() {
+            trace = Plotly.d3.selectAll('g.scatter.trace');
+            expect(trace.style('opacity')).toEqual('1');
+
+            return Plotly.animate(gd, [{
+                data: [{opacity: 0.1}]
+            }], {transition: {duration: 0}, frame: {duration: 0, redraw: false}});
+        }).then(function() {
+            expect(trace.style('opacity')).toEqual('0.1');
+        }).catch(fail).then(done);
+    });
+});
