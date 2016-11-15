@@ -13,11 +13,12 @@ var Lib = require('./lib');
 var basePlotAttributes = require('./plots/attributes');
 
 exports.modules = {};
-exports.allTypes = [];
 exports.allCategories = {};
+exports.allTypes = [];
 exports.subplotsRegistry = {};
 exports.transformsRegistry = {};
 exports.componentsRegistry = {};
+exports.layoutArrayContainers = [];
 
 /**
  * register a module as the handler for a trace type
@@ -81,6 +82,16 @@ exports.registerSubplot = function(_module) {
 
     // not sure what's best for the 'cartesian' type at this point
     exports.subplotsRegistry[plotType] = _module;
+};
+
+exports.registerComponent = function(_module) {
+    var name = _module.name;
+
+    exports.componentsRegistry[name] = _module;
+
+    if(_module.layoutAttributes && _module.layoutAttributes._isLinkedToArray) {
+        Lib.pushUnique(exports.layoutArrayContainers, name);
+    }
 };
 
 /**

@@ -1614,7 +1614,7 @@ plots.extendObjectWithContainers = function(dest, src, containerPaths) {
 };
 
 plots.dataArrayContainers = ['transforms'];
-plots.layoutArrayContainers = ['annotations', 'shapes', 'images', 'sliders', 'updatemenus'];
+plots.layoutArrayContainers = Registry.layoutArrayContainers;
 
 /*
  * Extend a trace definition. This method:
