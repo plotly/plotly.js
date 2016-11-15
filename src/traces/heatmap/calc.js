@@ -108,9 +108,9 @@ module.exports = function calc(gd, trace) {
 
     // create arrays of brick boundaries, to be used by autorange and heatmap.plot
     var xlen = maxRowLength(z),
-        xIn = trace.xtype === 'scaled' ? '' : trace.x,
+        xIn = trace.xtype === 'scaled' ? '' : x,
         xArray = makeBoundArray(trace, xIn, x0, dx, xlen, xa),
-        yIn = trace.ytype === 'scaled' ? '' : trace.y,
+        yIn = trace.ytype === 'scaled' ? '' : y,
         yArray = makeBoundArray(trace, yIn, y0, dy, z.length, ya);
 
     // handled in gl2d convert step
@@ -180,7 +180,6 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
     var isArrayOfTwoItemsOrMore = Array.isArray(arrayIn) && arrayIn.length > 1;
 
     if(isArrayOfTwoItemsOrMore && !isHist && (ax.type !== 'category')) {
-        arrayIn = arrayIn.map(ax.d2c);
         var len = arrayIn.length;
 
         // given vals are brick centers
@@ -223,7 +222,7 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
     else {
         dv = dvIn || 1;
 
-        if(isHist || ax.type === 'category') v0 = v0In || 0;
+        if(isHist || ax.type === 'category') v0 = ax.r2c(v0In) || 0;
         else if(Array.isArray(arrayIn) && arrayIn.length === 1) v0 = arrayIn[0];
         else if(v0In === undefined) v0 = 0;
         else v0 = ax.d2c(v0In);

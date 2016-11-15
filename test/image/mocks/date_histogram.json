@@ -13,8 +13,8 @@
             "autobinx": false,
             "nbinsx": 3,
             "xbins": {
-                "start": 1325394000000,
-                "end": 1333252800000,
+                "start": "2012-01-01",
+                "end": "2012-04-01",
                 "size": "M1"
             },
             "autobiny": true,

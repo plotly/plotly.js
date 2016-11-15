@@ -518,7 +518,8 @@ axes.autoBin = function(data, ax, nbins, is2d) {
     if(ax.type === 'log') {
         dummyax = {
             type: 'linear',
-            range: [datamin, datamax]
+            range: [datamin, datamax],
+            r2l: Number
         };
     }
     else {
@@ -526,7 +527,8 @@ axes.autoBin = function(data, ax, nbins, is2d) {
             type: ax.type,
             // conversion below would be ax.c2r but that's only different from l2r
             // for log, and this is the only place (so far?) we would want c2r.
-            range: [datamin, datamax].map(ax.l2r)
+            range: [datamin, datamax].map(ax.l2r),
+            r2l: ax.r2l
         };
     }
 
@@ -593,8 +595,8 @@ axes.autoBin = function(data, ax, nbins, is2d) {
     }
 
     return {
-        start: binstart,
-        end: binend,
+        start: ax.c2r(binstart),
+        end: ax.c2r(binend),
         size: dummyax.dtick
     };
 };
