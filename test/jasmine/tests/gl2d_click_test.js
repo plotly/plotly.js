@@ -90,6 +90,28 @@ describe('Test hover and click interactions', function() {
             'autosize': true
         }
     };
+    var mock4 = {
+        data: [
+            {
+                x: [1, 2, 3, 4],
+                y: [12, 3, 14, 4],
+                type: 'scattergl',
+                mode: 'markers'
+            },
+            {
+                x: [4, 5, 6, 7],
+                y: [1, 31, 24, 14],
+                type: 'scattergl',
+                mode: 'markers'
+            },
+            {
+                x: [8, 9, 10, 11],
+                y: [18, 13, 10, 3],
+                type: 'scattergl',
+                mode: 'markers'
+            }],
+        layout: {}
+    };
 
     var mockCopy, gd;
 
@@ -338,6 +360,85 @@ describe('Test hover and click interactions', function() {
                 }));
 
 
+        });
+
+        it('scattergl', function(done) {
+
+            var modifiedMockCopy = Lib.extendDeep({}, mock4);
+
+            Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
+
+                .then(new Promise(function() {
+
+                    gd.on('plotly_hover', function(data) {
+                        futureData = data;
+                    });
+
+                    hover(435, 216);
+
+                    window.setTimeout(function() {
+
+                        expect(futureData.points.length).toEqual(1);
+
+                        var pt = futureData.points[0];
+
+                        expect(Object.keys(pt)).toEqual([
+                            'x', 'y', 'curveNumber', 'pointNumber', 'data', 'fullData', 'xaxis', 'yaxis'
+                        ]);
+
+                        expect(pt.x).toEqual(8);
+                        expect(pt.y).toEqual(18);
+                        expect(pt.curveNumber).toEqual(2);
+                        expect(pt.pointNumber).toEqual(0);
+                        expect(pt.fullData.length).toEqual(3);
+                        expect(typeof pt.data.uid).toEqual('string');
+                        expect(pt.xaxis.domain.length).toEqual(2);
+                        expect(pt.yaxis.domain.length).toEqual(2);
+
+                        done();
+                    }, 350);
+                }));
+        });
+
+        it('scattergl-fancy', function(done) {
+
+            var modifiedMockCopy = Lib.extendDeep({}, mock4);
+            modifiedMockCopy.data[0].mode = 'markers+lines';
+            modifiedMockCopy.data[1].mode = 'markers+lines';
+            modifiedMockCopy.data[2].mode = 'markers+lines';
+
+            Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
+
+                .then(new Promise(function() {
+
+                    gd.on('plotly_hover', function(data) {
+                        futureData = data;
+                    });
+
+                    hover(435, 216);
+
+                    window.setTimeout(function() {
+
+                        expect(futureData.points.length).toEqual(1);
+
+                        var pt = futureData.points[0];
+
+                        expect(Object.keys(pt)).toEqual([
+                            'x', 'y', 'curveNumber', 'pointNumber', 'data', 'fullData', 'xaxis', 'yaxis'
+                        ]);
+
+                        expect(pt.x).toEqual(8);
+                        expect(pt.y).toEqual(18);
+                        expect(pt.curveNumber).toEqual(2);
+                        expect(pt.pointNumber).toEqual(0);
+                        expect(pt.fullData.length).toEqual(3);
+                        expect(typeof pt.data.uid).toEqual('string');
+                        expect(pt.xaxis.domain.length).toEqual(2);
+                        expect(pt.yaxis.domain.length).toEqual(2);
+
+                        done();
+                    }, 350);
+                }));
         });
 
         it('contourgl', function(done) {
