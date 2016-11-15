@@ -9,13 +9,9 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
-
 exports.moduleType = 'component';
 
 exports.name = 'annotations';
-
-exports.ARROWPATHS = require('./arrow_paths');
 
 exports.layoutAttributes = require('./attributes');
 
@@ -23,14 +19,9 @@ exports.supplyLayoutDefaults = require('./defaults');
 
 exports.calcAutorange = require('./calc_autorange');
 
-exports.arrowhead = require('./draw_arrow_head');
-
 var drawModule = require('./draw');
 exports.draw = drawModule.draw;
 exports.drawOne = drawModule.drawOne;
 
-exports.add = function(gd) {
-    var nextAnn = gd._fullLayout.annotations.length;
 
-    Plotly.relayout(gd, 'annotations[' + nextAnn + ']', 'add');
 };
