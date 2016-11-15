@@ -14,7 +14,8 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var buttonAttrs = require('./button_attributes');
 
 buttonAttrs = extendFlat(buttonAttrs, {
-    _isLinkedToArray: true,
+    _isLinkedToArray: 'button',
+
     description: [
         'Sets the specifications for each buttons.',
         'By default, a range selector comes with no buttons.'
