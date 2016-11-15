@@ -9,6 +9,7 @@
 'use strict';
 
 var Lib = require('../lib');
+var PlotSchema = require('../plot_api/plot_schema');
 var axisIds = require('../plots/cartesian/axis_ids');
 var autoType = require('../plots/cartesian/axis_autotype');
 var setConvert = require('../plots/cartesian/set_convert');
@@ -131,7 +132,7 @@ exports.calcTransform = function(gd, trace, opts) {
 
     var dataToCoord = getDataToCoordFunc(gd, trace, target),
         filterFunc = getFilterFunc(opts, dataToCoord),
-        arrayAttrs = Lib.findArrayAttributes(trace),
+        arrayAttrs = PlotSchema.findArrayAttributes(trace),
         originalArrays = {};
 
     // copy all original array attribute values,

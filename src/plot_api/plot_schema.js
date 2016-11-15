@@ -65,26 +65,114 @@ exports.get = function() {
         transforms: transforms,
 
 
+/**
+ * Crawl the attribute tree, recursively calling a callback function
+ *
+ * @param {object} attrs
+ *  The node of the attribute tree (e.g. the root) from which recursion originates
+ * @param {Function} callback
+ *  A callback function with the signature:
+ *          @callback callback
+ *          @param {object} attr an attribute
+ *          @param {String} attrName name string
+ *          @param {object[]} attrs all the attributes
+ *          @param {Number} level the recursion level, 0 at the root
+ * @param {Number} [specifiedLevel]
+ *  The level in the tree, in order to let the callback function detect descend or backtrack,
+ *  typically unsupplied (implied 0), just used by the self-recursive call.
+ *  The necessity arises because the tree traversal is not controlled by callback return values.
+ *  The decision to not use callback return values for controlling tree pruning arose from
+ *  the goal of keeping the crawler backwards compatible. Observe that one of the pruning conditions
+ *  precedes the callback call.
+ *
+ * @return {object} transformOut
+ *  copy of transformIn that contains attribute defaults
+ */
+exports.crawl = function(attrs, callback, specifiedLevel) {
+    var level = specifiedLevel || 0;
 
+    Object.keys(attrs).forEach(function(attrName) {
+        var attr = attrs[attrName];
 
-PlotSchema.crawl = Lib.crawl;
+        if(UNDERSCORE_ATTRS.indexOf(attrName) !== -1) return;
 
-PlotSchema.isValObject = Lib.isValObject;
+        callback(attr, attrName, attrs, level);
 
+        if(exports.isValObject(attr)) return;
 
+        if(Lib.isPlainObject(attr)) exports.crawl(attr, callback, level + 1);
+    });
+};
 
+/** Is object a value object (or a container object)?
+ *
+ * @param {object} obj
+ * @return {boolean}
+ *  returns true for a valid value object and
+ *  false for tree nodes in the attribute hierarchy
+ */
+exports.isValObject = function(obj) {
+    return obj && obj.valType !== undefined;
+};
 
+/**
+ * Find all data array attributes in a given trace object - including
+ * `arrayOk` attributes.
+ *
+ * @param {object} trace
+ *  full trace object that contains a reference to `_module.attributes`
+ *
+ * @return {array} arrayAttributes
+ *  list of array attributes for the given trace
+ */
+exports.findArrayAttributes = function(trace) {
+    var arrayAttributes = [],
+        stack = [];
 
+    function callback(attr, attrName, attrs, level) {
+        stack = stack.slice(0, level).concat([attrName]);
 
+        var splittableAttr = attr.valType === 'data_array' || attr.arrayOk === true;
+        if(!splittableAttr) return;
+
+        var astr = toAttrString(stack);
+        var val = Lib.nestedProperty(trace, astr).get();
+        if(!Array.isArray(val)) return;
+
+        arrayAttributes.push(astr);
     }
 
-
-
-
+    function toAttrString(stack) {
+        return stack.join('.');
     }
-}
 
+    exports.crawl(trace._module.attributes, callback);
 
+    if(trace.transforms) {
+        var transforms = trace.transforms;
+
+        for(var i = 0; i < transforms.length; i++) {
+            var transform = transforms[i];
+
+            stack = ['transforms[' + i + ']'];
+            exports.crawl(transform._module.attributes, callback, 1);
+        }
+    }
+
+    // Look into the fullInput module attributes for array attributes
+    // to make sure that 'custom' array attributes are detected.
+    //
+    // At the moment, we need this block to make sure that
+    // ohlc and candlestick 'open', 'high', 'low', 'close' can be
+    // used with filter ang groupby transforms.
+    if(trace._fullInput) {
+        exports.crawl(trace._fullInput._module.attributes, callback);
+
+        arrayAttributes = Lib.filterUnique(arrayAttributes);
+    }
+
+    return arrayAttributes;
+};
 
 function getTraceAttributes(type) {
     var _module, basePlotModule;
@@ -209,7 +297,7 @@ function mergeValTypeAndRole(attrs) {
     }
 
     function callback(attr, attrName, attrs) {
-        if(PlotSchema.isValObject(attr)) {
+        if(exports.isValObject(attr)) {
             if(attr.valType === 'data_array') {
                 // all 'data_array' attrs have role 'data'
                 attr.role = 'data';
@@ -227,7 +315,7 @@ function mergeValTypeAndRole(attrs) {
         }
     }
 
-    Lib.crawl(attrs, callback);
+    exports.crawl(attrs, callback);
 }
 
 function formatArrayContainers(attrs) {
@@ -244,6 +332,7 @@ function formatArrayContainers(attrs) {
         attrs[attrName] = { items: {} };
         attrs[attrName].items[itemName] = attr;
         attrs[attrName].role = 'object';
+    }
 
     exports.crawl(attrs, callback);
 }

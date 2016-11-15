@@ -11,18 +11,12 @@
 
 var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
-var nestedProperty = require('./nested_property');
-var isPlainObject = require('./is_plain_object');
-var filterUnique = require('./filter_unique');
 
 var getColorscale = require('../components/colorscale/get_scale');
 var colorscaleNames = Object.keys(require('../components/colorscale/scales'));
+var nestedProperty = require('./nested_property');
 
-var idRegex = /^([2-9]|[1-9][0-9]+)$/;
-
-function isValObject(obj) {
-    return obj && obj.valType !== undefined;
-}
+var ID_REGEX = /^([2-9]|[1-9][0-9]+)$/;
 
 exports.valObjects = {
     data_array: {
@@ -174,7 +168,7 @@ exports.valObjects = {
         coerceFunction: function(v, propOut, dflt) {
             var dlen = dflt.length;
             if(typeof v === 'string' && v.substr(0, dlen) === dflt &&
-                    idRegex.test(v.substr(dlen))) {
+                    ID_REGEX.test(v.substr(dlen))) {
                 propOut.set(v);
                 return;
             }
@@ -186,7 +180,7 @@ exports.valObjects = {
 
             if(v === dflt) return true;
             if(typeof v !== 'string') return false;
-            if(v.substr(0, dlen) === dflt && idRegex.test(v.substr(dlen))) {
+            if(v.substr(0, dlen) === dflt && ID_REGEX.test(v.substr(dlen))) {
                 return true;
             }
 
@@ -360,126 +354,4 @@ exports.validate = function(value, opts) {
 
     valObject.coerceFunction(value, propMock, failed, opts);
     return out !== failed;
-};
-
-/*
- * returns true for a valid value object and false for tree nodes in the attribute hierarchy
- */
-exports.isValObject = isValObject;
-
-exports.IS_SUBPLOT_OBJ = '_isSubplotObj';
-exports.IS_LINKED_TO_ARRAY = '_isLinkedToArray';
-exports.DEPRECATED = '_deprecated';
-
-// list of underscore attributes to keep in schema as is
-exports.UNDERSCORE_ATTRS = [exports.IS_SUBPLOT_OBJ, exports.IS_LINKED_TO_ARRAY, exports.DEPRECATED];
-
-/**
- * Crawl the attribute tree, recursively calling a callback function
- *
- * @param {object} attrs
- *  The node of the attribute tree (e.g. the root) from which recursion originates
- * @param {Function} callback
- *  A callback function with the signature:
- *          @callback callback
- *          @param {object} attr an attribute
- *          @param {String} attrName name string
- *          @param {object[]} attrs all the attributes
- *          @param {Number} level the recursion level, 0 at the root
- * @param {Number} [specifiedLevel]
- *  The level in the tree, in order to let the callback function detect descend or backtrack,
- *  typically unsupplied (implied 0), just used by the self-recursive call.
- *  The necessity arises because the tree traversal is not controlled by callback return values.
- *  The decision to not use callback return values for controlling tree pruning arose from
- *  the goal of keeping the crawler backwards compatible. Observe that one of the pruning conditions
- *  precedes the callback call.
- *
- * @return {object} transformOut
- *  copy of transformIn that contains attribute defaults
- */
-exports.crawl = function(attrs, callback, specifiedLevel) {
-    var level = specifiedLevel || 0;
-    Object.keys(attrs).forEach(function(attrName) {
-        var attr = attrs[attrName];
-
-        if(exports.UNDERSCORE_ATTRS.indexOf(attrName) !== -1) return;
-
-        callback(attr, attrName, attrs, level);
-
-        if(isValObject(attr)) return;
-        if(isPlainObject(attr)) exports.crawl(attr, callback, level + 1);
-    });
-};
-
-/**
- * Find all data array attributes in a given trace object - including
- * `arrayOk` attributes.
- *
- * @param {object} trace
- *  full trace object that contains a reference to `_module.attributes`
- *
- * @return {array} arrayAttributes
- *  list of array attributes for the given trace
- */
-exports.findArrayAttributes = function(trace) {
-    var arrayAttributes = [],
-        stack = [];
-
-    /**
-     * A closure that gathers attribute paths into its enclosed arraySplitAttributes
-     * Attribute paths are collected iff their leaf node is a splittable attribute
-     *
-     * @callback callback
-     * @param {object} attr an attribute
-     * @param {String} attrName name string
-     * @param {object[]} attrs all the attributes
-     * @param {Number} level the recursion level, 0 at the root
-     *
-     * @closureVariable {String[][]} arrayAttributes the set of gathered attributes
-     *   Example of filled closure variable (expected to be initialized to []):
-     *        [["marker","size"],["marker","line","width"],["marker","line","color"]]
-     */
-    function callback(attr, attrName, attrs, level) {
-        stack = stack.slice(0, level).concat([attrName]);
-
-        var splittableAttr = attr.valType === 'data_array' || attr.arrayOk === true;
-        if(!splittableAttr) return;
-
-        var astr = toAttrString(stack);
-        var val = nestedProperty(trace, astr).get();
-        if(!Array.isArray(val)) return;
-
-        arrayAttributes.push(astr);
-    }
-
-    function toAttrString(stack) {
-        return stack.join('.');
-    }
-
-    exports.crawl(trace._module.attributes, callback);
-
-    if(trace.transforms) {
-        var transforms = trace.transforms;
-
-        for(var i = 0; i < transforms.length; i++) {
-            var transform = transforms[i];
-
-            stack = ['transforms[' + i + ']'];
-            exports.crawl(transform._module.attributes, callback, 1);
-        }
-    }
-
-    // Look into the fullInput module attributes for array attributes
-    // to make sure that 'custom' array attributes are detected.
-    //
-    // At the moment, we need this block to make sure that
-    // ohlc and candlestick 'open', 'high', 'low', 'close' can be
-    // used with filter ang groupby transforms.
-    if(trace._fullInput) {
-        exports.crawl(trace._fullInput._module.attributes, callback);
-
-        arrayAttributes = filterUnique(arrayAttributes);
-    }
-
-    return arrayAttributes;
 };
