@@ -9,6 +9,44 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+
+## [1.20.0] -- 2016-11-15
+
+### Added
+- Allow date string inputs for axis ranges, `tick0`, `dtick`, annotation / image
+  positions, histogram bins [#1078, #1150]
+- Add special `dtick` values for log axes [#1078]
+- Add `visible` attribute to annotations, shapes and images items [#1110]
+- Expose events on slider start/change/end [#1126]
+- Expose event on updatemenu button click [#1128]
+- Allow custom transform module to have supply layout default handler [#1122]
+
+### Changed
+- Increase `scattergl` precision [#1114]
+- Use `topojson-client` to convert topojson to geojson [#1147]
+
+### Fixed
+- Fix hover labels for multi-trace `scattergl` graphs (bug introduced in
+  `1.18.0`) [#1148]
+- Fix date format on hover on full hour [#1078]
+- Fix bar labels for non-zero `base` values [#1142]
+- Scatter colorscale now yield correct colors when cmin and cmax ashow re equal
+  [#1112]
+- Fix `filter` transform for categorical `target` arrays with range operations
+  [#1120]
+- Make sure frames with `null` values clear array containers [#1118]
+- Fix animations involving trace `opacity` [#1146]
+- Fix fallback for non-animatable trace modules (bug introduced in `1.18.1`)
+  [#1141]
+- Fix race condition in animation resolution when coupled with `relayout`
+  [#1108]
+- Enforce casting requested frame names to strings [#1124]
+- `Plotly.animte` no longer breaks when passing `null` frames [#1121]
+- `Plotly.PlotSchema.get` now correctly list rangeslider and rangeselector under
+  `xaxis` only [#1144]
+- `Plotly.relayout` correctly updates arbitrary layout attributes [#1133]
+
+
 ## [1.19.2] -- 2016-11-02
 
 ### Fixed
