@@ -169,6 +169,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
     if(trace.visible !== true) return;
 
+    transition(tr).style('opacity', trace.opacity);
+
     // BUILD LINES AND FILLS
     var ownFillEl3, tonext;
     var ownFillDir = trace.fill.charAt(trace.fill.length - 1);
