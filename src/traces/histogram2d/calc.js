@@ -15,6 +15,7 @@ var Axes = require('../../plots/cartesian/axes');
 var binFunctions = require('../histogram/bin_functions');
 var normFunctions = require('../histogram/norm_functions');
 var doAvg = require('../histogram/average');
+var cleanBins = require('../histogram/clean_bins');
 
 
 module.exports = function calc(gd, trace) {
@@ -29,6 +30,9 @@ module.exports = function calc(gd, trace) {
         z,
         i;
 
+    cleanBins(trace, xa, 'x');
+    cleanBins(trace, ya, 'y');
+
     var serieslen = Math.min(x.length, y.length);
     if(x.length > serieslen) x.splice(serieslen, x.length - serieslen);
     if(y.length > serieslen) y.splice(serieslen, y.length - serieslen);
@@ -38,8 +42,10 @@ module.exports = function calc(gd, trace) {
     if(trace.autobinx || !('xbins' in trace)) {
         trace.xbins = Axes.autoBin(x, xa, trace.nbinsx, '2d');
         if(trace.type === 'histogram2dcontour') {
-            trace.xbins.start -= trace.xbins.size;
-            trace.xbins.end += trace.xbins.size;
+            // the "true" last argument reverses the tick direction (which we can't
+            // just do with a minus sign because of month bins)
+            trace.xbins.start = xa.c2r(Axes.tickIncrement(xa.r2c(trace.xbins.start), trace.xbins.size, true));
+            trace.xbins.end = xa.c2r(Axes.tickIncrement(xa.r2c(trace.xbins.end), trace.xbins.size));
         }
 
         // copy bin info back to the source data.
@@ -48,8 +54,8 @@ module.exports = function calc(gd, trace) {
     if(trace.autobiny || !('ybins' in trace)) {
         trace.ybins = Axes.autoBin(y, ya, trace.nbinsy, '2d');
         if(trace.type === 'histogram2dcontour') {
-            trace.ybins.start -= trace.ybins.size;
-            trace.ybins.end += trace.ybins.size;
+            trace.ybins.start = ya.c2r(Axes.tickIncrement(ya.r2c(trace.ybins.start), trace.ybins.size, true));
+            trace.ybins.end = ya.c2r(Axes.tickIncrement(ya.r2c(trace.ybins.end), trace.ybins.size));
         }
         trace._input.ybins = trace.ybins;
     }
@@ -91,11 +97,11 @@ module.exports = function calc(gd, trace) {
 
     // decrease end a little in case of rounding errors
     var binspec = trace.xbins,
-        binend = binspec.end +
-            (binspec.start - Axes.tickIncrement(binspec.start, binspec.size)) / 1e6;
+        binStart = xa.r2c(binspec.start),
+        binEnd = xa.r2c(binspec.end) +
+            (binStart - Axes.tickIncrement(binStart, binspec.size)) / 1e6;
 
-    for(i = binspec.start; i < binend;
-            i = Axes.tickIncrement(i, binspec.size)) {
+    for(i = binStart; i < binEnd; i = Axes.tickIncrement(i, binspec.size)) {
         onecol.push(sizeinit);
         if(Array.isArray(xbins)) xbins.push(i);
         if(doavg) zerocol.push(0);
@@ -104,15 +110,16 @@ module.exports = function calc(gd, trace) {
 
     var nx = onecol.length;
     x0 = trace.xbins.start;
-    dx = (i - x0) / nx;
-    x0 += dx / 2;
+    var x0c = xa.r2c(x0);
+    dx = (i - x0c) / nx;
+    x0 = xa.c2r(x0c + dx / 2);
 
     binspec = trace.ybins;
-    binend = binspec.end +
-        (binspec.start - Axes.tickIncrement(binspec.start, binspec.size)) / 1e6;
+    binStart = ya.r2c(binspec.start);
+    binEnd = ya.r2c(binspec.end) +
+        (binStart - Axes.tickIncrement(binStart, binspec.size)) / 1e6;
 
-    for(i = binspec.start; i < binend;
-            i = Axes.tickIncrement(i, binspec.size)) {
+    for(i = binStart; i < binEnd; i = Axes.tickIncrement(i, binspec.size)) {
         z.push(onecol.concat());
         if(Array.isArray(ybins)) ybins.push(i);
         if(doavg) counts.push(zerocol.concat());
@@ -121,8 +128,9 @@ module.exports = function calc(gd, trace) {
 
     var ny = z.length;
     y0 = trace.ybins.start;
-    dy = (i - y0) / ny;
-    y0 += dy / 2;
+    var y0c = ya.r2c(y0);
+    dy = (i - y0c) / ny;
+    y0 = ya.c2r(y0c + dy / 2);
 
     if(densitynorm) {
         xinc = onecol.map(function(v, i) {

@@ -84,7 +84,10 @@ describe('Test histogram', function() {
 
         });
 
-        it('should set autobinx to false if xbins is supplied and true if not', function() {
+        // coercing bin attributes got moved to calc because it needs
+        // axis type - so here we just test that it's NOT happening
+
+        it('should not coerce autobinx regardless of xbins', function() {
             traceIn = {
                 x: [1, 2, 2],
                 xbins: {
@@ -94,16 +97,16 @@ describe('Test histogram', function() {
                 }
             };
             supplyDefaults(traceIn, traceOut);
-            expect(traceOut.autobinx).toBe(false);
+            expect(traceOut.autobinx).toBeUndefined();
 
             traceIn = {
                 x: [1, 2, 2]
             };
             supplyDefaults(traceIn, traceOut);
-            expect(traceOut.autobinx).toBe(true);
+            expect(traceOut.autobinx).toBeUndefined();
         });
 
-        it('should set autobiny to false if ybins is supplied and true if not', function() {
+        it('should not coerce autobiny regardless of ybins', function() {
             traceIn = {
                 y: [1, 2, 2],
                 ybins: {
@@ -113,13 +116,13 @@ describe('Test histogram', function() {
                 }
             };
             supplyDefaults(traceIn, traceOut);
-            expect(traceOut.autobiny).toBe(false);
+            expect(traceOut.autobiny).toBeUndefined();
 
             traceIn = {
                 y: [1, 2, 2]
             };
             supplyDefaults(traceIn, traceOut);
-            expect(traceOut.autobiny).toBe(true);
+            expect(traceOut.autobiny).toBeUndefined();
         });
 
     });

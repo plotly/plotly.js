@@ -17,6 +17,7 @@ var Axes = require('../../plots/cartesian/axes');
 var binFunctions = require('./bin_functions');
 var normFunctions = require('./norm_functions');
 var doAvg = require('./average');
+var cleanBins = require('./clean_bins');
 
 
 module.exports = function calc(gd, trace) {
@@ -32,6 +33,8 @@ module.exports = function calc(gd, trace) {
             trace.orientation === 'h' ? (trace.yaxis || 'y') : (trace.xaxis || 'x')),
         maindata = trace.orientation === 'h' ? 'y' : 'x',
         counterdata = {x: 'y', y: 'x'}[maindata];
+
+    cleanBins(trace, pa, maindata);
 
     // prepare the raw data
     var pos0 = pa.makeCalcdata(trace, maindata);
@@ -71,10 +74,11 @@ module.exports = function calc(gd, trace) {
 
     // create the bins (and any extra arrays needed)
     // assume more than 5000 bins is an error, so we don't crash the browser
-    i = binspec.start;
+    i = pa.r2c(binspec.start);
+
     // decrease end a little in case of rounding errors
-    binend = binspec.end +
-        (binspec.start - Axes.tickIncrement(binspec.start, binspec.size)) / 1e6;
+    binend = pa.r2c(binspec.end) + (i - Axes.tickIncrement(i, binspec.size)) / 1e6;
+
     while(i < binend && pos.length < 5000) {
         i2 = Axes.tickIncrement(i, binspec.size);
         pos.push((i + i2) / 2);

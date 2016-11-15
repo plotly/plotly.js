@@ -237,6 +237,9 @@ module.exports = function setConvert(ax) {
     ax.r2p = function(v, clip) { return ax.l2p(ax.r2l(v, clip)); };
     ax.p2r = function(px) { return ax.l2r(ax.p2l(px)); };
 
+    ax.r2c = function(v) { return ax.l2c(ax.r2l(v)); };
+    ax.c2r = function(v) { return ax.l2r(ax.c2l(v)); };
+
     if(['linear', 'log', '-'].indexOf(ax.type) !== -1) {
         ax.c2d = num;
         ax.d2c = Lib.cleanNumber;
