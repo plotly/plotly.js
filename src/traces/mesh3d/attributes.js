@@ -9,7 +9,9 @@
 'use strict';
 
 var colorscaleAttrs = require('../../components/colorscale/attributes');
+var colorbarAttrs = require('../../components/colorbar/attributes');
 var surfaceAtts = require('../surface/attributes');
+
 var extendFlat = require('../../lib/extend').extendFlat;
 
 
@@ -166,6 +168,7 @@ module.exports = {
     colorscale: colorscaleAttrs.colorscale,
     reversescale: colorscaleAttrs.reversescale,
     showscale: colorscaleAttrs.showscale,
+    colorbar: colorbarAttrs,
 
     lightposition: {
         'x': extendFlat({}, surfaceAtts.lightposition.x, {dflt: 1e5}),
@@ -189,9 +192,5 @@ module.exports = {
             dflt: 1e-6, // even the brain model doesn't appear to need finer than this
             description: 'Epsilon for face normals calculation avoids math issues arising from degenerate geometry.'
         }
-    }, surfaceAtts.lighting),
-
-    _nestedModules: {  // nested module coupling
-        'colorbar': 'Colorbar'
-    }
+    }, surfaceAtts.lighting)
 };

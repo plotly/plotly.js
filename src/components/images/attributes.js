@@ -12,7 +12,7 @@ var cartesianConstants = require('../../plots/cartesian/constants');
 
 
 module.exports = {
-    _isLinkedToArray: true,
+    _isLinkedToArray: 'image',
 
     visible: {
         valType: 'boolean',

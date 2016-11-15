@@ -71,6 +71,7 @@ module.exports = {
         sizemode: scatterMarkerAttrs.sizemode,
         opacity: scatterMarkerAttrs.opacity,
         showscale: scatterMarkerAttrs.showscale,
+        colorbar: scatterMarkerAttrs.colorbar,
         line: extendDeep({}, colorAttributes('marker.line'), {
             width: scatterMarkerLineAttrs.width
         })
@@ -80,9 +81,7 @@ module.exports = {
         values: ['none', 'tozeroy', 'tozerox']
     }),
     fillcolor: scatterAttrs.fillcolor,
-    _nestedModules: {
-        'error_x': 'ErrorBars',
-        'error_y': 'ErrorBars',
-        'marker.colorbar': 'Colorbar'
-    }
+
+    error_y: scatterAttrs.error_y,
+    error_x: scatterAttrs.error_x
 };

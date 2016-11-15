@@ -10,6 +10,7 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var colorAttributes = require('../../components/colorscale/color_attributes');
+var errorBarAttrs = require('../../components/errorbars/attributes');
 
 var MARKER_SYMBOLS = require('../../constants/gl_markers');
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -137,6 +138,8 @@ module.exports = {
             ].join(' ')
         }),
         showscale: scatterMarkerAttrs.showscale,
+        colorbar: scatterMarkerAttrs.colorbar,
+
         line: extendFlat({},
             {width: extendFlat({}, scatterMarkerLineAttrs.width, {arrayOk: false})},
             colorAttributes('marker.line')
@@ -144,12 +147,11 @@ module.exports = {
     },
         colorAttributes('marker')
     ),
+
     textposition: extendFlat({}, scatterAttrs.textposition, {dflt: 'top center'}),
     textfont: scatterAttrs.textfont,
-    _nestedModules: {
-        'error_x': 'ErrorBars',
-        'error_y': 'ErrorBars',
-        'error_z': 'ErrorBars',
-        'marker.colorbar': 'Colorbar'
-    }
+
+    error_x: errorBarAttrs,
+    error_y: errorBarAttrs,
+    error_z: errorBarAttrs,
 };

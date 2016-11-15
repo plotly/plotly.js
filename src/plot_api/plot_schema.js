@@ -9,185 +9,287 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
 var Registry = require('../registry');
-var Plots = require('../plots/plots');
 var Lib = require('../lib');
 
-// FIXME polar attribute are not part of Plotly yet
+var baseAttributes = require('../plots/attributes');
+var baseLayoutAttributes = require('../plots/layout_attributes');
+var frameAttributes = require('../plots/frame_attributes');
+var animationAttributes = require('../plots/animation_attributes');
+
+// polar attributes are not part of the Registry yet
 var polarAreaAttrs = require('../plots/polar/area_attributes');
 var polarAxisAttrs = require('../plots/polar/axis_attributes');
 
 var extendFlat = Lib.extendFlat;
 var extendDeep = Lib.extendDeep;
-var extendDeepAll = Lib.extendDeepAll;
 
-var NESTED_MODULE = '_nestedModules',
-    COMPOSED_MODULE = '_composedModules';
+var IS_SUBPLOT_OBJ = '_isSubplotObj';
+var IS_LINKED_TO_ARRAY = '_isLinkedToArray';
+var DEPRECATED = '_deprecated';
+var UNDERSCORE_ATTRS = [IS_SUBPLOT_OBJ, IS_LINKED_TO_ARRAY, DEPRECATED];
 
-var plotSchema = {
-    traces: {},
-    layout: {},
-    transforms: {},
-    defs: {}
+exports.IS_SUBPLOT_OBJ = IS_SUBPLOT_OBJ;
+exports.IS_LINKED_TO_ARRAY = IS_LINKED_TO_ARRAY;
+exports.DEPRECATED = DEPRECATED;
+exports.UNDERSCORE_ATTRS = UNDERSCORE_ATTRS;
+
+/** Outputs the full plotly.js plot schema
+ *
+ * @return {object}
+ *  - defs
+ *  - traces
+ *  - layout
+ *  - transforms
+ *  - frames
+ *  - animations
+ *  - config (coming soon ...)
+ */
+exports.get = function() {
+    var traces = {};
+
+    Registry.allTypes.concat('area').forEach(function(type) {
+        traces[type] = getTraceAttributes(type);
+    });
+
+    var transforms = {};
+
+    Object.keys(Registry.transformsRegistry).forEach(function(type) {
+        transforms[type] = getTransformAttributes(type);
+    });
+
+    return {
+        defs: {
+            valObjects: Lib.valObjects,
+            metaKeys: UNDERSCORE_ATTRS.concat['description', 'role']
+        },
+
+        traces: traces,
+        layout: getLayoutAttributes(),
+
+        transforms: transforms,
+
+        frames: formatAttributes(frameAttributes),
+        animation: formatAttributes(animationAttributes)
+    };
 };
 
+/**
+ * Crawl the attribute tree, recursively calling a callback function
+ *
+ * @param {object} attrs
+ *  The node of the attribute tree (e.g. the root) from which recursion originates
+ * @param {Function} callback
+ *  A callback function with the signature:
+ *          @callback callback
+ *          @param {object} attr an attribute
+ *          @param {String} attrName name string
+ *          @param {object[]} attrs all the attributes
+ *          @param {Number} level the recursion level, 0 at the root
+ * @param {Number} [specifiedLevel]
+ *  The level in the tree, in order to let the callback function detect descend or backtrack,
+ *  typically unsupplied (implied 0), just used by the self-recursive call.
+ *  The necessity arises because the tree traversal is not controlled by callback return values.
+ *  The decision to not use callback return values for controlling tree pruning arose from
+ *  the goal of keeping the crawler backwards compatible. Observe that one of the pruning conditions
+ *  precedes the callback call.
+ *
+ * @return {object} transformOut
+ *  copy of transformIn that contains attribute defaults
+ */
+exports.crawl = function(attrs, callback, specifiedLevel) {
+    var level = specifiedLevel || 0;
 
-var PlotSchema = module.exports = {};
+    Object.keys(attrs).forEach(function(attrName) {
+        var attr = attrs[attrName];
 
+        if(UNDERSCORE_ATTRS.indexOf(attrName) !== -1) return;
 
-PlotSchema.get = function() {
-    Registry.allTypes
-        .concat('area')  // FIXME polar 'area' attributes
-        .forEach(getTraceAttributes);
+        callback(attr, attrName, attrs, level);
 
-    getLayoutAttributes();
+        if(exports.isValObject(attr)) return;
 
-    Object.keys(Registry.transformsRegistry).forEach(getTransformAttributes);
-
-    getDefs();
-
-    return plotSchema;
+        if(Lib.isPlainObject(attr)) exports.crawl(attr, callback, level + 1);
+    });
 };
 
-PlotSchema.crawl = Lib.crawl;
+/** Is object a value object (or a container object)?
+ *
+ * @param {object} obj
+ * @return {boolean}
+ *  returns true for a valid value object and
+ *  false for tree nodes in the attribute hierarchy
+ */
+exports.isValObject = function(obj) {
+    return obj && obj.valType !== undefined;
+};
 
-PlotSchema.isValObject = Lib.isValObject;
+/**
+ * Find all data array attributes in a given trace object - including
+ * `arrayOk` attributes.
+ *
+ * @param {object} trace
+ *  full trace object that contains a reference to `_module.attributes`
+ *
+ * @return {array} arrayAttributes
+ *  list of array attributes for the given trace
+ */
+exports.findArrayAttributes = function(trace) {
+    var arrayAttributes = [],
+        stack = [];
+
+    function callback(attr, attrName, attrs, level) {
+        stack = stack.slice(0, level).concat([attrName]);
+
+        var splittableAttr = attr.valType === 'data_array' || attr.arrayOk === true;
+        if(!splittableAttr) return;
+
+        var astr = toAttrString(stack);
+        var val = Lib.nestedProperty(trace, astr).get();
+        if(!Array.isArray(val)) return;
+
+        arrayAttributes.push(astr);
+    }
+
+    function toAttrString(stack) {
+        return stack.join('.');
+    }
+
+    exports.crawl(trace._module.attributes, callback);
+
+    if(trace.transforms) {
+        var transforms = trace.transforms;
+
+        for(var i = 0; i < transforms.length; i++) {
+            var transform = transforms[i];
+
+            stack = ['transforms[' + i + ']'];
+            exports.crawl(transform._module.attributes, callback, 1);
+        }
+    }
+
+    // Look into the fullInput module attributes for array attributes
+    // to make sure that 'custom' array attributes are detected.
+    //
+    // At the moment, we need this block to make sure that
+    // ohlc and candlestick 'open', 'high', 'low', 'close' can be
+    // used with filter ang groupby transforms.
+    if(trace._fullInput) {
+        exports.crawl(trace._fullInput._module.attributes, callback);
+
+        arrayAttributes = Lib.filterUnique(arrayAttributes);
+    }
+
+    return arrayAttributes;
+};
 
 function getTraceAttributes(type) {
-    var globalAttributes = Plots.attributes,
-        _module = getModule({type: type}),
-        meta = getMeta(type),
-        subplotRegistry = getSubplotRegistry(type);
+    var _module, basePlotModule;
 
-    var attributes = {},
-        layoutAttributes = {};
+    if(type === 'area') {
+        _module = { attributes: polarAreaAttrs };
+        basePlotModule = {};
+    }
+    else {
+        _module = Registry.modules[type]._module,
+        basePlotModule = _module.basePlotModule;
+    }
+
+    var attributes = {};
 
     // make 'type' the first attribute in the object
     attributes.type = null;
 
-    // global attributes (same for all trace types)
-    extendDeep(attributes, globalAttributes);
+    // base attributes (same for all trace types)
+    extendDeep(attributes, baseAttributes);
 
-    // module attributes (+ nested + composed)
-    attributes = coupleAttrs(
-        _module.attributes, attributes, 'attributes', type
-    );
+    // module attributes
+    extendDeep(attributes, _module.attributes);
 
     // subplot attributes
-    if(subplotRegistry.attributes !== undefined) {
-        extendDeep(attributes, subplotRegistry.attributes);
+    if(basePlotModule.attributes) {
+        extendDeep(attributes, basePlotModule.attributes);
     }
 
-    // 'type' gets overwritten by globalAttributes; reset it here
+    // 'type' gets overwritten by baseAttributes; reset it here
     attributes.type = type;
 
-    attributes = removeUnderscoreAttrs(attributes);
-    mergeValTypeAndRole(attributes);
-    plotSchema.traces[type] = extendFlat({},
-        meta,
-        { attributes: attributes }
-    );
+    var out = {
+        meta: _module.meta || {},
+        attributes: formatAttributes(attributes),
+    };
 
     // trace-specific layout attributes
-    if(_module.layoutAttributes !== undefined) {
-        layoutAttributes = coupleAttrs(
-            _module.layoutAttributes, layoutAttributes, 'layoutAttributes', type
-        );
+    if(_module.layoutAttributes) {
+        var layoutAttributes = {};
 
-        mergeValTypeAndRole(layoutAttributes);
-        plotSchema.traces[type].layoutAttributes = layoutAttributes;
+        extendDeep(layoutAttributes, _module.layoutAttributes);
+        out.layoutAttributes = formatAttributes(layoutAttributes);
     }
+
+    return out;
 }
 
 function getLayoutAttributes() {
-    var globalLayoutAttributes = Plots.layoutAttributes,
-        layoutAttributes = {};
+    var layoutAttributes = {};
 
-    // layout module attributes (+ nested + composed)
-    layoutAttributes = coupleAttrs(
-        globalLayoutAttributes, layoutAttributes, 'layoutAttributes', '*'
-    );
+    // global layout attributes
+    extendDeep(layoutAttributes, baseLayoutAttributes);
 
-    // FIXME polar layout attributes
+    // add base plot module layout attributes
+    Object.keys(Registry.subplotsRegistry).forEach(function(k) {
+        var _module = Registry.subplotsRegistry[k];
+
+        if(!_module.layoutAttributes) return;
+
+        if(_module.name === 'cartesian') {
+            handleBasePlotModule(layoutAttributes, _module, 'xaxis');
+            handleBasePlotModule(layoutAttributes, _module, 'yaxis');
+        }
+        else {
+            var astr = _module.attr === 'subplot' ? _module.name : _module.attr;
+
+            handleBasePlotModule(layoutAttributes, _module, astr);
+        }
+    });
+
+    // polar layout attributes
     layoutAttributes = assignPolarLayoutAttrs(layoutAttributes);
 
-    // add crawler.IS_SUBPLOT_OBJ attribute
-    layoutAttributes = handleSubplotObjs(layoutAttributes);
+    // add registered components layout attribute
+    Object.keys(Registry.componentsRegistry).forEach(function(k) {
+        var _module = Registry.componentsRegistry[k];
 
-    layoutAttributes = removeUnderscoreAttrs(layoutAttributes);
-    mergeValTypeAndRole(layoutAttributes);
+        if(!_module.layoutAttributes) return;
 
-    // generate crawler.IS_LINKED_TO_ARRAY structure
-    handleLinkedToArray(layoutAttributes);
+        if(Array.isArray(_module.layoutNodes)) {
+            _module.layoutNodes.forEach(function(v) {
+                handleRegisteredComponent(layoutAttributes, _module, v + _module.name);
+            });
+        }
+        else {
+            handleRegisteredComponent(layoutAttributes, _module, _module.name);
+        }
+    });
 
-    plotSchema.layout = { layoutAttributes: layoutAttributes };
-}
-
-function getTransformAttributes(name) {
-    var _module = Registry.transformsRegistry[name],
-        _schema = {};
-
-    _schema = coupleAttrs(_schema, _module.attributes || {}, 'attributes', '*');
-    _schema = removeUnderscoreAttrs(_schema);
-    mergeValTypeAndRole(_schema);
-    handleLinkedToArray(_schema);
-
-    plotSchema.transforms[name] = { attributes: _schema };
-}
-
-function getDefs() {
-    plotSchema.defs = {
-        valObjects: Lib.valObjects,
-        metaKeys: Lib.UNDERSCORE_ATTRS.concat(['description', 'role'])
+    return {
+        layoutAttributes: formatAttributes(layoutAttributes)
     };
 }
 
-function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
-    var nestedModule, nestedAttrs, nestedReference,
-        composedModule, composedAttrs;
+function getTransformAttributes(type) {
+    var _module = Registry.transformsRegistry[type];
 
-    Object.keys(attrsIn).forEach(function(k) {
+    return {
+        attributes: formatAttributes(_module.attributes)
+    };
+}
 
-        if(k === NESTED_MODULE) {
-            Object.keys(attrsIn[k]).forEach(function(kk) {
-                nestedModule = getModule({_module: attrsIn[k][kk]});
-                if(nestedModule === undefined) return;
+function formatAttributes(attrs) {
+    mergeValTypeAndRole(attrs);
+    formatArrayContainers(attrs);
 
-                nestedAttrs = nestedModule[whichAttrs];
-                nestedReference = coupleAttrs(
-                    nestedAttrs, {}, whichAttrs, type
-                );
-
-                Lib.nestedProperty(attrsOut, kk)
-                    .set(extendDeep({}, nestedReference));
-            });
-            return;
-        }
-
-        if(k === COMPOSED_MODULE) {
-            Object.keys(attrsIn[k]).forEach(function(kk) {
-                if(kk !== type) return;
-
-                composedModule = getModule({_module: attrsIn[k][kk]});
-                if(composedModule === undefined) return;
-
-                composedAttrs = composedModule[whichAttrs];
-                composedAttrs = coupleAttrs(
-                    composedAttrs, {}, whichAttrs, type
-                );
-
-                extendDeepAll(attrsOut, composedAttrs);
-            });
-            return;
-        }
-
-        attrsOut[k] = Lib.isPlainObject(attrsIn[k]) ?
-            extendDeepAll({}, attrsIn[k]) :
-            attrsIn[k];
-    });
-
-    return attrsOut;
+    return attrs;
 }
 
 function mergeValTypeAndRole(attrs) {
@@ -204,7 +306,7 @@ function mergeValTypeAndRole(attrs) {
     }
 
     function callback(attr, attrName, attrs) {
-        if(PlotSchema.isValObject(attr)) {
+        if(exports.isValObject(attr)) {
             if(attr.valType === 'data_array') {
                 // all 'data_array' attrs have role 'data'
                 attr.role = 'data';
@@ -222,40 +324,26 @@ function mergeValTypeAndRole(attrs) {
         }
     }
 
-    Lib.crawl(attrs, callback);
+    exports.crawl(attrs, callback);
 }
 
-// helper methods
+function formatArrayContainers(attrs) {
 
-function getModule(arg) {
-    if('type' in arg) {
-        return (arg.type === 'area') ?  // FIXME
-            { attributes: polarAreaAttrs } :
-            Registry.getModule({type: arg.type});
+    function callback(attr, attrName, attrs) {
+        if(!attr) return;
+
+        var itemName = attr[IS_LINKED_TO_ARRAY];
+
+        if(!itemName) return;
+
+        delete attr[IS_LINKED_TO_ARRAY];
+
+        attrs[attrName] = { items: {} };
+        attrs[attrName].items[itemName] = attr;
+        attrs[attrName].role = 'object';
     }
 
-    var subplotsRegistry = Registry.subplotsRegistry,
-        componentsRegistry = Registry.componentsRegistry,
-        _module = arg._module;
-
-    if(subplotsRegistry[_module]) return subplotsRegistry[_module];
-    else if(componentsRegistry[_module]) return componentsRegistry[_module];
-
-    // look it internal Plotly if all previous attempts fail
-    return Plotly[_module];
-}
-
-function removeUnderscoreAttrs(attributes) {
-    Object.keys(attributes).forEach(function(k) {
-        if(k.charAt(0) === '_' &&
-            Lib.UNDERSCORE_ATTRS.indexOf(k) === -1) delete attributes[k];
-    });
-    return attributes;
-}
-
-function getMeta(type) {
-    if(type === 'area') return {};  // FIXME
-    return Registry.modules[type].meta || {};
+    exports.crawl(attrs, callback);
 }
 
 function assignPolarLayoutAttrs(layoutAttributes) {
@@ -266,63 +354,20 @@ function assignPolarLayoutAttrs(layoutAttributes) {
 
     extendFlat(layoutAttributes, polarAxisAttrs.layout);
 
-    return layoutAttributes;  // FIXME
-}
-
-function getSubplotRegistry(traceType) {
-    if(traceType === 'area') return {};  // FIXME
-
-    var subplotsRegistry = Registry.subplotsRegistry,
-        subplotType = Object.keys(subplotsRegistry).filter(function(subplotType) {
-            return Registry.traceIs({type: traceType}, subplotType);
-        })[0];
-
-    if(subplotType === undefined) return {};
-
-    return subplotsRegistry[subplotType];
-}
-
-function handleSubplotObjs(layoutAttributes) {
-    var subplotsRegistry = Registry.subplotsRegistry;
-
-    Object.keys(layoutAttributes).forEach(function(k) {
-        Object.keys(subplotsRegistry).forEach(function(subplotType) {
-            var subplotRegistry = subplotsRegistry[subplotType],
-                isSubplotObj;
-
-            if(!subplotRegistry.attrRegex) return;
-
-            if(subplotType === 'cartesian' || subplotType === 'gl2d') {
-                isSubplotObj = (
-                    subplotRegistry.attrRegex.x.test(k) ||
-                    subplotRegistry.attrRegex.y.test(k)
-                );
-            }
-            else {
-                isSubplotObj = subplotRegistry.attrRegex.test(k);
-            }
-
-            if(isSubplotObj) layoutAttributes[k][Lib.IS_SUBPLOT_OBJ] = true;
-        });
-    });
-
     return layoutAttributes;
 }
 
-function handleLinkedToArray(layoutAttributes) {
+function handleBasePlotModule(layoutAttributes, _module, astr) {
+    var np = Lib.nestedProperty(layoutAttributes, astr),
+        attrs = extendDeep({}, _module.layoutAttributes);
 
-    function callback(attr, attrName, attrs) {
-        if(attr[Lib.IS_LINKED_TO_ARRAY] !== true) return;
+    attrs[IS_SUBPLOT_OBJ] = true;
+    np.set(attrs);
+}
 
-        // TODO more robust logic
-        var itemName = attrName.substr(0, attrName.length - 1);
+function handleRegisteredComponent(layoutAttributes, _module, astr) {
+    var np = Lib.nestedProperty(layoutAttributes, astr),
+        attrs = extendDeep(np.get() || {}, _module.layoutAttributes);
 
-        delete attr[Lib.IS_LINKED_TO_ARRAY];
-
-        attrs[attrName] = { items: {} };
-        attrs[attrName].items[itemName] = attr;
-        attrs[attrName].role = 'object';
-    }
-
-    Lib.crawl(layoutAttributes, callback);
+    np.set(attrs);
 }

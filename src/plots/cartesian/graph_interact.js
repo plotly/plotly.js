@@ -23,6 +23,7 @@ var dragElement = require('../../components/dragelement');
 var Axes = require('./axes');
 var constants = require('./constants');
 var dragBox = require('./dragbox');
+var layoutAttributes = require('../layout_attributes');
 
 
 var fx = module.exports = {};
@@ -32,29 +33,12 @@ var fx = module.exports = {};
 fx.unhover = dragElement.unhover;
 
 fx.layoutAttributes = {
-    dragmode: {
-        valType: 'enumerated',
-        role: 'info',
-        values: ['zoom', 'pan', 'select', 'lasso', 'orbit', 'turntable'],
-        dflt: 'zoom',
-        description: [
-            'Determines the mode of drag interactions.',
-            '*select* and *lasso* apply only to scatter traces with',
-            'markers or text. *orbit* and *turntable* apply only to',
-            '3D scenes.'
-        ].join(' ')
-    },
-    hovermode: {
-        valType: 'enumerated',
-        role: 'info',
-        values: ['x', 'y', 'closest', false],
-        description: 'Determines the mode of hover interactions.'
-    }
 };
 
 fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
+
     function coerce(attr, dflt) {
-        return Lib.coerce(layoutIn, layoutOut, fx.layoutAttributes, attr, dflt);
+        return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
     }
 
     coerce('dragmode');

@@ -1,4 +1,5 @@
 var Plotly = require('@lib/index');
+
 var Lib = require('@src/lib');
 
 describe('plot schema', function() {
@@ -88,7 +89,7 @@ describe('plot schema', function() {
     it('all subplot objects should contain _isSubplotObj', function() {
         var IS_SUBPLOT_OBJ = '_isSubplotObj',
             astrs = ['xaxis', 'yaxis', 'scene', 'geo', 'ternary', 'mapbox'],
-            list = [];
+            cnt = 0;
 
         // check if the subplot objects have '_isSubplotObj'
         astrs.forEach(function(astr) {
@@ -103,16 +104,22 @@ describe('plot schema', function() {
         // check that no other object has '_isSubplotObj'
         assertPlotSchema(
             function(attr, attrName) {
-                if(attr[IS_SUBPLOT_OBJ] === true) list.push(attrName);
+                if(attr[IS_SUBPLOT_OBJ] === true) {
+                    expect(astrs.indexOf(attrName)).not.toEqual(-1);
+                    cnt++;
+                }
             }
         );
-        expect(list).toEqual(astrs);
+
+        expect(cnt).toEqual(astrs.length);
     });
 
     it('should convert _isLinkedToArray attributes to items object', function() {
         var astrs = [
             'annotations', 'shapes', 'images',
-            'xaxis.rangeselector.buttons', 'yaxis.rangeselector.buttons',
+            'xaxis.rangeselector.buttons',
+            'updatemenus',
+            'sliders',
             'mapbox.layers'
         ];
 

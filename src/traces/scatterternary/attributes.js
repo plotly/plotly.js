@@ -11,6 +11,7 @@
 var scatterAttrs = require('../scatter/attributes');
 var plotAttrs = require('../../plots/attributes');
 var colorAttributes = require('../../components/colorscale/color_attributes');
+var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -104,21 +105,19 @@ module.exports = {
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
         sizemode: scatterMarkerAttrs.sizemode,
-        showscale: scatterMarkerAttrs.showscale,
         line: extendFlat({},
             {width: scatterMarkerLineAttrs.width},
             colorAttributes('marker'.line)
         )
-    },
-        colorAttributes('marker')
-    ),
+    }, colorAttributes('marker'), {
+        showscale: scatterMarkerAttrs.showscale,
+        colorbar: colorbarAttrs
+    }),
+
     textfont: scatterAttrs.textfont,
     textposition: scatterAttrs.textposition,
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['a', 'b', 'c', 'text', 'name']
     }),
     hoveron: scatterAttrs.hoveron,
-    _nestedModules: {
-        'marker.colorbar': 'Colorbar'
-    }
 };

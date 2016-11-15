@@ -10,7 +10,9 @@
 
 var ScatterGeoAttrs = require('../scattergeo/attributes');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
+var colorbarAttrs = require('../../components/colorbar/attributes');
 var plotAttrs = require('../../plots/attributes');
+
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var ScatterGeoMarkerLineAttrs = ScatterGeoAttrs.marker.line;
@@ -41,9 +43,7 @@ module.exports = extendFlat({}, {
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['location', 'z', 'text', 'name']
     }),
-    _nestedModules: {
-        'colorbar': 'Colorbar'
-    }
 },
-    colorscaleAttrs
+    colorscaleAttrs,
+    { colorbar: colorbarAttrs }
 );

@@ -11,7 +11,10 @@
 module.exports = {
     moduleType: 'component',
     name: 'rangeslider',
+
+    layoutNodes: ['xaxis.'],
     layoutAttributes: require('./attributes'),
     handleDefaults: require('./defaults'),
+
     draw: require('./draw')
 };

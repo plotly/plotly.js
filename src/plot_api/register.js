@@ -89,5 +89,9 @@ function registerTransformModule(newModule) {
 }
 
 function registerComponentModule(newModule) {
-    Registry.componentsRegistry[newModule.name] = newModule;
+    if(typeof newModule.name !== 'string') {
+        throw new Error('Component module *name* must be a string.');
+    }
+
+    Registry.registerComponent(newModule);
 }

@@ -105,7 +105,7 @@ module.exports = {
     },
 
     layers: {
-        _isLinkedToArray: true,
+        _isLinkedToArray: 'layer',
 
         sourcetype: {
             valType: 'enumerated',

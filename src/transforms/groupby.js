@@ -9,6 +9,7 @@
 'use strict';
 
 var Lib = require('../lib');
+var PlotSchema = require('../plot_api/plot_schema');
 
 exports.moduleType = 'transform';
 
@@ -125,7 +126,7 @@ function transformOne(trace, state) {
         newData = new Array(groupNames.length),
         len = groups.length;
 
-    var arrayAttrs = Lib.findArrayAttributes(trace);
+    var arrayAttrs = PlotSchema.findArrayAttributes(trace);
 
     var style = opts.style || {};
 

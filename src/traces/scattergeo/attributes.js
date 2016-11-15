@@ -77,6 +77,7 @@ module.exports = {
         sizemin: scatterMarkerAttrs.sizemin,
         sizemode: scatterMarkerAttrs.sizemode,
         showscale: scatterMarkerAttrs.showscale,
+        colorbar: scatterMarkerAttrs.colorbar,
         line: extendFlat({},
             {width: scatterMarkerLineAttrs.width},
             colorAttributes('marker.line')
@@ -101,9 +102,5 @@ module.exports = {
 
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['lon', 'lat', 'location', 'text', 'name']
-    }),
-
-    _nestedModules: {
-        'marker.colorbar': 'Colorbar'
-    }
+    })
 };

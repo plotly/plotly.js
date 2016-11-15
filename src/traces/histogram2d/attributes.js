@@ -11,6 +11,7 @@
 var histogramAttrs = require('../histogram/attributes');
 var heatmapAttrs = require('../heatmap/attributes');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
+var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -41,12 +42,9 @@ module.exports = extendFlat({},
 
         xgap: heatmapAttrs.xgap,
         ygap: heatmapAttrs.ygap,
-        zsmooth: heatmapAttrs.zsmooth,
-
-        _nestedModules: {
-            'colorbar': 'Colorbar'
-        }
+        zsmooth: heatmapAttrs.zsmooth
     },
     colorscaleAttrs,
-    {autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false})}
+    { autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}) },
+    { colorbar: colorbarAttrs }
 );

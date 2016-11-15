@@ -15,7 +15,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 
 
 module.exports = {
-    _isLinkedToArray: true,
+    _isLinkedToArray: 'annotation',
 
     visible: {
         valType: 'boolean',

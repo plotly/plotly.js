@@ -16,7 +16,7 @@ var animationAttrs = require('../../plots/animation_attributes');
 var constants = require('./constants');
 
 var stepsAttrs = {
-    _isLinkedToArray: true,
+    _isLinkedToArray: 'step',
 
     method: {
         valType: 'enumerated',
@@ -57,6 +57,8 @@ var stepsAttrs = {
 };
 
 module.exports = {
+    _isLinkedToArray: 'slider',
+
     visible: {
         valType: 'boolean',
         role: 'info',

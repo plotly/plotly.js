@@ -12,9 +12,8 @@
 
 module.exports = {
 
-    // layout attribute names
+    // layout attribute name
     name: 'updatemenus',
-    itemName: 'updatemenu',
 
     // class names
     containerClassName: 'updatemenu-container',

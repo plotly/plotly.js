@@ -12,9 +12,8 @@
 
 module.exports = {
 
-    // layout attribute names
+    // layout attribute name
     name: 'sliders',
-    itemName: 'slider',
 
     // class names
     containerClassName: 'slider-container',

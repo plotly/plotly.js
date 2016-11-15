@@ -10,6 +10,9 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var colorAttributes = require('../../components/colorscale/color_attributes');
+var errorBarAttrs = require('../../components/errorbars/attributes');
+var colorbarAttrs = require('../../components/colorbar/attributes');
+
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterMarkerAttrs = scatterAttrs.marker;
@@ -23,9 +26,11 @@ var markerLine = extendFlat({}, {
 }, colorAttributes('marker.line'));
 
 var marker = extendFlat({}, {
-    showscale: scatterMarkerAttrs.showscale,
     line: markerLine
-}, colorAttributes('marker'));
+}, colorAttributes('marker'), {
+    showscale: scatterMarkerAttrs.showscale,
+    colorbar: colorbarAttrs
+});
 
 
 module.exports = {
@@ -91,11 +96,8 @@ module.exports = {
     r: scatterAttrs.r,
     t: scatterAttrs.t,
 
-    _nestedModules: {  // nested module coupling
-        'error_y': 'ErrorBars',
-        'error_x': 'ErrorBars',
-        'marker.colorbar': 'Colorbar'
-    },
+    error_y: errorBarAttrs,
+    error_x: errorBarAttrs,
 
     _deprecated: {
         bardir: {
