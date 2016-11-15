@@ -17,7 +17,7 @@ dependencies:
     - npm run cibuild
     - npm run pretest
     - eval $(node tasks/docker.js setup)
-    - npm ls
+    - npm prune && npm ls
 
 test:
   override:
