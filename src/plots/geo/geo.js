@@ -26,7 +26,7 @@ var constants = require('./constants');
 
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var topojsonUtils = require('../../lib/topojson_utils');
-var topojsonFeature = require('topojson').feature;
+var topojsonFeature = require('topojson-client').feature;
 
 // add a few projection types to d3.geo
 addProjectionsToD3(d3);
