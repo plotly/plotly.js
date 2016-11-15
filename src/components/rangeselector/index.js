@@ -8,13 +8,13 @@
 
 'use strict';
 
+module.exports = {
+    moduleType: 'component',
+    name: 'rangeselector',
 
-exports.moduleType = 'component';
+    layoutNodes: ['xaxis.'],
+    layoutAttributes: require('./attributes'),
+    handleDefaults: require('./defaults'),
 
-exports.name = 'rangeselector';
-
-exports.layoutAttributes = require('./attributes');
-
-exports.handleDefaults = require('./defaults');
-
-exports.draw = require('./draw');
+    draw: require('./draw')
+};
