@@ -15,6 +15,12 @@ var colorbarAttrs = require('../../components/colorbar/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
+var extendDeep = require('../../lib/extend').extendDeep;
+
+var textFontAttrs = extendDeep({}, fontAttrs);
+textFontAttrs.family.arrayOk = true;
+textFontAttrs.size.arrayOk = true;
+textFontAttrs.color.arrayOk = true;
 
 var scatterMarkerAttrs = scatterAttrs.marker;
 var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
@@ -55,18 +61,15 @@ module.exports = {
         ].join(' ')
     },
 
-    textfont: extendFlat({}, fontAttrs, {
-        arrayOk: true,
+    textfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `textinfo`.'
     }),
 
-    insidetextfont: extendFlat({}, fontAttrs, {
-        arrayOk: true,
+    insidetextfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `textinfo` lying inside the bar.'
     }),
 
-    outsidetextfont: extendFlat({}, fontAttrs, {
-        arrayOk: true,
+    outsidetextfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `textinfo` lying outside the bar.'
     }),
 

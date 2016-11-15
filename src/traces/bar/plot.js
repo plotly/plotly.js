@@ -11,6 +11,7 @@
 
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
+var tinycolor = require('tinycolor2');
 
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
@@ -20,6 +21,13 @@ var Drawing = require('../../components/drawing');
 var ErrorBars = require('../../components/errorbars');
 
 var arraysToCalcdata = require('./arrays_to_calcdata');
+
+var attributes = require('./attributes'),
+    attributeText = attributes.text,
+    attributeTextPosition = attributes.textposition,
+    attributeTextFont = attributes.textfont,
+    attributeInsideTextFont = attributes.insidetextfont,
+    attributeOutsideTextFont = attributes.outsidetextfont;
 
 // padding in pixels around text
 var TEXTPAD = 3;
@@ -134,55 +142,6 @@ module.exports = function plot(gd, plotinfo, cdbar) {
 };
 
 function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
-    var trace = calcTrace[0].trace;
-
-    // get bar text
-    var traceText = trace.text;
-    if(!traceText) return;
-
-    var text;
-    if(Array.isArray(traceText)) {
-        if(i >= traceText.length) return;
-        text = traceText[i];
-    }
-    else {
-        text = traceText;
-    }
-
-    if(!text) return;
-
-    // get text position
-    var traceTextPosition = trace.textposition,
-        textPosition;
-    if(Array.isArray(traceTextPosition)) {
-        if(i >= traceTextPosition.length) return;
-        textPosition = traceTextPosition[i];
-    }
-    else {
-        textPosition = traceTextPosition;
-    }
-
-    if(textPosition === 'none') return;
-
-    // get text font
-    var traceTextFont = trace.textfont,
-        textFont = (Array.isArray(traceTextFont)) ?
-            traceTextFont[i] : traceTextFont;
-    textFont = textFont || gd._fullLayout.font;
-
-    // get outside text font
-    var traceOutsideTextFont = trace.outsidetextfont,
-        outsideTextFont = (Array.isArray(traceOutsideTextFont)) ?
-            traceOutsideTextFont[i] : traceOutsideTextFont;
-    outsideTextFont = outsideTextFont || textFont;
-
-    // get inside text font
-    var traceInsideTextFont = trace.insidetextfont,
-        insideTextFont = (Array.isArray(traceInsideTextFont)) ?
-            traceInsideTextFont[i] : traceInsideTextFont;
-    insideTextFont = insideTextFont || textFont;
-
-    // append text node
     function appendTextNode(bar, text, textFont) {
         var textSelection = bar.append('text')
             // prohibit tex interpretation until we can handle
@@ -205,6 +164,20 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
         return textSelection;
     }
 
+    // get trace attributes
+    var trace = calcTrace[0].trace;
+
+    var text = getText(trace, i);
+    if(!text) return;
+
+    var textPosition = getTextPosition(trace, i);
+    if(textPosition === 'none') return;
+
+    var textFont = getTextFont(trace, i, gd._fullLayout.font),
+        insideTextFont = getInsideTextFont(trace, i, textFont),
+        outsideTextFont = getOutsideTextFont(trace, i, textFont);
+
+    // compute text position
     var barmode = gd._fullLayout.barmode,
         inStackMode = (barmode === 'stack'),
         inRelativeMode = (barmode === 'relative'),
@@ -266,7 +239,7 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
         }
     }
 
-    // set text transform
+    // compute text transform
     var transform;
     if(textPosition === 'outside') {
         transform = getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB,
@@ -481,4 +454,101 @@ function getTransform(textX, textY, targetX, targetY, scale, rotate) {
     transformTranslate = 'translate(' + translateX + ' ' + translateY + ')';
 
     return transformTranslate + transformScale + transformRotate;
+}
+
+function getText(trace, index) {
+    var value = getValue(trace.text, index);
+    return coerceString(attributeText, value);
+}
+
+function getTextPosition(trace, index) {
+    var value = getValue(trace.textposition, index);
+    return coerceEnumerated(attributeTextPosition, value);
+}
+
+function getTextFont(trace, index, defaultValue) {
+    return getFontValue(
+        attributeTextFont, trace.textfont, index, defaultValue);
+}
+
+function getInsideTextFont(trace, index, defaultValue) {
+    return getFontValue(
+        attributeInsideTextFont, trace.insidetextfont, index, defaultValue);
+}
+
+function getOutsideTextFont(trace, index, defaultValue) {
+    return getFontValue(
+        attributeOutsideTextFont, trace.outsidetextfont, index, defaultValue);
+}
+
+function getFontValue(attributeDefinition, attributeValue, index, defaultValue) {
+    attributeValue = attributeValue || {};
+
+    var familyValue = getValue(attributeValue.family, index),
+        sizeValue = getValue(attributeValue.size, index),
+        colorValue = getValue(attributeValue.color, index);
+
+    return {
+        family: coerceString(
+            attributeDefinition.family, familyValue, defaultValue.family),
+        size: coerceNumber(
+            attributeDefinition.size, sizeValue, defaultValue.size),
+        color: coerceColor(
+            attributeDefinition.color, colorValue, defaultValue.color)
+    };
+}
+
+function getValue(arrayOrScalar, index) {
+    var value;
+    if(!Array.isArray(arrayOrScalar)) value = arrayOrScalar;
+    else if(index < arrayOrScalar.length) value = arrayOrScalar[index];
+    return value;
+}
+
+function coerceString(attributeDefinition, value, defaultValue) {
+    if(typeof value === 'string') {
+        if(value || !attributeDefinition.noBlank) return value;
+    }
+    else if(typeof value === 'number') {
+        if(!attributeDefinition.strict) return String(value);
+    }
+
+    return (defaultValue !== undefined) ?
+        defaultValue :
+        attributeDefinition.dflt;
+}
+
+function coerceEnumerated(attributeDefinition, value, defaultValue) {
+    if(attributeDefinition.coerceNumber) value = +value;
+
+    if(attributeDefinition.values.indexOf(value) !== -1) return value;
+
+    return (defaultValue !== undefined) ?
+        defaultValue :
+        attributeDefinition.dflt;
+}
+
+function coerceNumber(attributeDefinition, value, defaultValue) {
+    if(isNumeric(value)) {
+        value = +value;
+
+        var min = attributeDefinition.min,
+            max = attributeDefinition.max,
+            isOutOfBounds = (min !== undefined && value < min) ||
+                (max !== undefined && value > max);
+
+        if(!isOutOfBounds) return value;
+    }
+
+    return (defaultValue !== undefined) ?
+        defaultValue :
+        attributeDefinition.dflt;
+}
+
+function coerceColor(attributeDefinition, value, defaultValue) {
+    if(tinycolor(value).isValid()) return value;
+
+    return (defaultValue !== undefined) ?
+        defaultValue :
+        attributeDefinition.dflt;
 }
