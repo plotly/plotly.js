@@ -57,20 +57,26 @@ module.exports = {
         dflt: 'none',
         arrayOk: true,
         description: [
-            'Specifies the location of the `textinfo`.'
+            'Specifies the location of the `text`.',
+            '*inside* positions `text` inside, next to the bar end',
+            '(rotated and scaled if needed).',
+            '*outside* positions `text` outside, next to the bar end',
+            '(scaled if needed).',
+            '*auto* positions `text` inside or outside',
+            'so that `text` size is maximized.'
         ].join(' ')
     },
 
     textfont: extendFlat({}, textFontAttrs, {
-        description: 'Sets the font used for `textinfo`.'
+        description: 'Sets the font used for `text`.'
     }),
 
     insidetextfont: extendFlat({}, textFontAttrs, {
-        description: 'Sets the font used for `textinfo` lying inside the bar.'
+        description: 'Sets the font used for `text` lying inside the bar.'
     }),
 
     outsidetextfont: extendFlat({}, textFontAttrs, {
-        description: 'Sets the font used for `textinfo` lying outside the bar.'
+        description: 'Sets the font used for `text` lying outside the bar.'
     }),
 
     orientation: {
