@@ -339,56 +339,22 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation) {
 }
 
 function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
-    // In order to handle both orientations with the same algorithm,
-    // *textWidth* is defined as the text length in the direction of *barWidth*.
-    var barWidth,
-        textWidth,
-        textHeight;
-    if(orientation === 'h') {
-        barWidth = Math.abs(y1 - y0);
-        textWidth = textBB.height;
-        textHeight = textBB.width;
-    }
-    else {
-        barWidth = Math.abs(x1 - x0);
-        textWidth = textBB.width;
-        textHeight = textBB.height;
-    }
+    var barWidth = (orientation === 'h') ?
+            Math.abs(y1 - y0) :
+            Math.abs(x1 - x0),
+        textpad;
 
-    // apply text padding
-    var textpad;
+    // apply text padding if possible
     if(barWidth > 2 * TEXTPAD) {
         textpad = TEXTPAD;
         barWidth -= 2 * textpad;
     }
 
     // compute rotation and scale
-    var rotate,
-        scale;
-    if(textWidth <= barWidth) {
-        // no scale or rotation
-        rotate = false;
-        scale = 1;
-    }
-    else if(textHeight <= textWidth) {
-        // only scale
-        // (don't rotate to prevent having text perpendicular to the bar)
-        rotate = false;
-        scale = barWidth / textWidth;
-    }
-    else if(textHeight <= barWidth) {
-        // only rotation
-        rotate = true;
-        scale = 1;
-    }
-    else {
-        // both scale and rotation
-        // (rotation prevents having text perpendicular to the bar)
-        rotate = true;
-        scale = barWidth / textHeight;
-    }
-
-    if(rotate) rotate = 90;  // rotate clockwise
+    var rotate = false,
+        scale = (orientation === 'h') ?
+            Math.min(1, barWidth / textBB.height) :
+            Math.min(1, barWidth / textBB.width);
 
     // compute text and target positions
     var textX = (textBB.left + textBB.right) / 2,
