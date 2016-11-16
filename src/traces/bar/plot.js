@@ -300,7 +300,7 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation) {
         scale = Math.min(barHeight / textWidth, barWidth / textHeight);
     }
 
-    if(rotate) rotate = -90;  // rotate counter-clockwise
+    if(rotate) rotate = 90;  // rotate clockwise
 
     // compute text and target positions
     if(rotate) {
@@ -388,6 +388,8 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
         scale = barWidth / textHeight;
     }
 
+    if(rotate) rotate = 90;  // rotate clockwise
+
     // compute text and target positions
     var textX = (textBB.left + textBB.right) / 2,
         textY = (textBB.top + textBB.bottom) / 2,
@@ -409,12 +411,10 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
             // bar end is on the left hand side
             targetX = x1 - textpad - targetWidth / 2;
             targetY = (y0 + y1) / 2;
-            if(rotate) rotate = -90;  // rotate counter-clockwise
         }
         else {
             targetX = x1 + textpad + targetWidth / 2;
             targetY = (y0 + y1) / 2;
-            if(rotate) rotate = 90;  // rotate clockwise
         }
     }
     else {
@@ -422,12 +422,10 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
             // bar end is on the bottom
             targetX = (x0 + x1) / 2;
             targetY = y1 + textpad + targetHeight / 2;
-            if(rotate) rotate = -90;  // rotate counter-clockwise
         }
         else {
             targetX = (x0 + x1) / 2;
             targetY = y1 - textpad - targetHeight / 2;
-            if(rotate) rotate = 90;  // rotate clockwise
         }
     }
 
