@@ -36,10 +36,6 @@
                 "12pm",
                 "6pm"
             ],
-            "name": "trace 0",
-            "zauto": true,
-            "zmin": 0.1189977,
-            "zmax": 0.959744,
             "scl": [
                 [
                     0,
@@ -87,147 +83,33 @@
     ],
     "layout": {
         "title": "User Traffic",
-        "titlefont": {
-            "color": "",
-            "family": "",
-            "size": 0
-        },
         "font": {
-            "family": "Arial, sans-serif",
-            "size": 12,
-            "color": "#000"
+          "family": "Arial, sans-serif",
+          "size": 12,
+          "color": "#000"
         },
-        "showlegend": false,
         "autosize": false,
         "width": 600,
         "height": 350,
         "xaxis": {
-            "title": "",
-            "titlefont": {
-                "color": "",
-                "family": "",
-                "size": 16
-            },
-            "range": [
-                -0.5,
-                4.5
-            ],
-            "domain": [
-                0,
-                1
-            ],
-            "type": "category",
-            "rangemode": "normal",
-            "showgrid": true,
-            "zeroline": true,
-            "showline": true,
-            "autotick": true,
-            "nticks": 0,
-            "ticks": "",
-            "showticklabels": true,
-            "tick0": 0,
-            "dtick": 1,
-            "ticklen": 5,
-            "tickwidth": 1,
-            "tickcolor": "#000",
-            "tickangle": 0,
-            "tickfont": {
-                "size": 14,
-                "color": ""
-            },
-            "exponentformat": "e",
-            "showexponent": "all",
-            "gridcolor": "#ddd",
-            "gridwidth": 1,
-            "zerolinecolor": "#000",
-            "zerolinewidth": 1,
-            "linecolor": "rgb(255, 255, 255)",
-            "linewidth": 0.1,
-            "anchor": "y",
-            "position": 0,
-            "mirror": true,
-            "overlaying": false,
-            "autorange": true
+          "ticks": ""
         },
         "yaxis": {
-            "title": "",
-            "titlefont": {
-                "color": "",
-                "family": "",
-                "size": 16
-            },
-            "range": [
-                -0.5,
-                2.5
-            ],
-            "domain": [
-                0,
-                1
-            ],
-            "type": "category",
-            "rangemode": "normal",
-            "showgrid": true,
-            "zeroline": true,
-            "showline": true,
-            "autotick": true,
-            "nticks": 0,
-            "ticks": "",
-            "showticklabels": true,
-            "tick0": 0,
-            "dtick": 1,
-            "ticklen": 5,
-            "tickwidth": 1,
-            "tickcolor": "#000",
-            "tickangle": 0,
-            "tickfont": {
-                "family": "Arial, sans-serif", 
-                "size": 14,
-                "color": ""
-            },
-            "exponentformat": "e",
-            "showexponent": "all",
-            "gridcolor": "#ddd",
-            "gridwidth": 1,
-            "zerolinecolor": "#000",
-            "zerolinewidth": 1,
-            "linecolor": "rgb(255, 255, 255)",
-            "linewidth": 0.1,
-            "anchor": "x",
-            "position": 0,
-            "mirror": true,
-            "overlaying": false,
-            "autorange": true
+          "ticks": ""
         },
-        "legend": {
-            "x": 0.98,
-            "y": 0.98,
-            "traceorder": "normal",
-            "font": {
-                "family": "",
-                "size": 0,
-                "color": ""
-            },
-            "bgcolor": "#fff",
-            "bordercolor": "#000",
-            "borderwidth": 1
-        },
-        "margin": {
-            "l": 110,
-            "r": 200,
-            "b": 80,
-            "t": 80,
-            "pad": 2,
-            "autoexpand": true
-        },
-        "paper_bgcolor": "#fff",
-        "plot_bgcolor": "#fff",
-        "hovermode": "x",
-        "dragmode": "zoom",
-        "barmode": "stack",
-        "bargap": 0.2,
-        "bargroupgap": 0,
-        "boxmode": "overlay",
-        "separators": ".,",
-        "hidesources": false
+        "annotations": [
+          {
+            "showarrow": false,
+            "x": "Wed",
+            "y": "12pm",
+            "text": "meeting"
+          },
+          {
+            "showarrow": false,
+            "x": 0,
+            "y": 0,
+            "text": "meeting"
+          }
+        ]
     }
 }
