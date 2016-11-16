@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v1.20.0
+* plotly.js (geo) v1.20.1
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -26074,7 +26074,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.20.0';
+exports.version = '1.20.1';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -34973,7 +34973,7 @@ axes.coercePosition = function(containerOut, gd, coerce, axRef, attr, dflt) {
             // if position is given as a category name, convert it to a number
             if(typeof pos === 'string' && (ax._categories || []).length) {
                 newPos = ax._categories.indexOf(pos);
-                containerOut[attr] = (newPos !== -1) ? dflt : newPos;
+                containerOut[attr] = (newPos === -1) ? dflt : newPos;
                 return;
             }
         }

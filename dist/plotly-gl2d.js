@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v1.20.0
+* plotly.js (gl2d) v1.20.1
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -27972,6 +27972,14 @@ function lazyInitLinearTypes(gl) {
   ]
 }
 
+function acceptTextureDOM (obj) {
+  return (
+    ('undefined' != typeof HTMLCanvasElement && obj instanceof HTMLCanvasElement) ||
+    ('undefined' != typeof HTMLImageElement && obj instanceof HTMLImageElement) ||
+    ('undefined' != typeof HTMLVideoElement && obj instanceof HTMLVideoElement) ||
+    ('undefined' != typeof ImageData && obj instanceof ImageData))
+}
+
 var convertFloatToUint8 = function(out, inp) {
   ops.muls(out, inp, 255.0)
 }
@@ -28235,10 +28243,7 @@ proto.setPixels = function(data, x_off, y_off, mip_level) {
     y_off = y_off || 0
   }
   mip_level = mip_level || 0
-  if(data instanceof HTMLCanvasElement ||
-     data instanceof ImageData ||
-     data instanceof HTMLImageElement ||
-     data instanceof HTMLVideoElement) {
+  if(acceptTextureDOM(data)) {
     var needsMip = this._mipLevels.indexOf(mip_level) < 0
     if(needsMip) {
       gl.texImage2D(gl.TEXTURE_2D, 0, this.format, this.format, this.type, data)
@@ -28484,10 +28489,7 @@ function createTexture2D(gl) {
   }
   if(typeof arguments[1] === 'object') {
     var obj = arguments[1]
-    if(obj instanceof HTMLCanvasElement ||
-       obj instanceof HTMLImageElement ||
-       obj instanceof HTMLVideoElement ||
-       obj instanceof ImageData) {
+    if (acceptTextureDOM(obj)) {
       return createTextureDOM(gl, obj, arguments[2]||gl.RGBA, arguments[3]||gl.UNSIGNED_BYTE)
     } else if(obj.shape && obj.data && obj.stride) {
       return createTextureArray(gl, obj)
@@ -32436,7 +32438,7 @@ module.exports = repeat;
 
 function repeat(str, num) {
   if (typeof str !== 'string') {
-    throw new TypeError('repeat-string expects a string.');
+    throw new TypeError('expected a string');
   }
 
   // cover common, quick use cases
@@ -32447,21 +32449,23 @@ function repeat(str, num) {
   if (cache !== str || typeof cache === 'undefined') {
     cache = str;
     res = '';
+  } else if (res.length >= max) {
+    return res.substr(0, max);
   }
 
-  while (max > res.length && num > 0) {
+  while (max > res.length && num > 1) {
     if (num & 1) {
       res += str;
     }
 
     num >>= 1;
-    if (!num) break;
     str += str;
   }
 
-  return res.substr(0, max);
+  res += str;
+  res = res.substr(0, max);
+  return res;
 }
-
 
 },{}],164:[function(require,module,exports){
 "use strict"
@@ -49487,7 +49491,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.20.0';
+exports.version = '1.20.1';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -58396,7 +58400,7 @@ axes.coercePosition = function(containerOut, gd, coerce, axRef, attr, dflt) {
             // if position is given as a category name, convert it to a number
             if(typeof pos === 'string' && (ax._categories || []).length) {
                 newPos = ax._categories.indexOf(pos);
-                containerOut[attr] = (newPos !== -1) ? dflt : newPos;
+                containerOut[attr] = (newPos === -1) ? dflt : newPos;
                 return;
             }
         }
