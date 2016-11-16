@@ -165,7 +165,8 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     }
 
     // get trace attributes
-    var trace = calcTrace[0].trace;
+    var trace = calcTrace[0].trace,
+        orientation = trace.orientation;
 
     var text = getText(trace, i);
     if(!text) return;
@@ -211,8 +212,12 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
                 fitsInside =
                     (textWidth <= barWidth && textHeight <= barHeight),
                 fitsInsideIfRotated =
-                    (textWidth <= barHeight && textHeight <= barWidth);
-            if(textHasSize && (fitsInside || fitsInsideIfRotated)) {
+                    (textWidth <= barHeight && textHeight <= barWidth),
+                fitsInsideIfShrunk = (orientation === 'h') ?
+                    (barWidth >= textWidth * (barHeight / textHeight)) :
+                    (barHeight >= textHeight * (barWidth / textWidth));
+            if(textHasSize &&
+                    (fitsInside || fitsInsideIfRotated || fitsInsideIfShrunk)) {
                 textPosition = 'inside';
             }
             else {
@@ -243,11 +248,11 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     var transform;
     if(textPosition === 'outside') {
         transform = getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB,
-            trace.orientation);
+            orientation);
     }
     else {
         transform = getTransformToMoveInsideBar(x0, x1, y0, y1, textBB,
-            trace.orientation);
+            orientation);
     }
 
     textSelection.attr('transform', transform);
@@ -268,7 +273,7 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation) {
 
     // apply text padding
     var textpad;
-    if(barWidth > 2 * TEXTPAD && barHeight > 2 * TEXTPAD) {
+    if(barWidth > (2 * TEXTPAD) && barHeight > (2 * TEXTPAD)) {
         textpad = TEXTPAD;
         barWidth -= 2 * textpad;
         barHeight -= 2 * textpad;
