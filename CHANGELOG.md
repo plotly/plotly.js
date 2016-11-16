@@ -10,6 +10,12 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.20.1] -- 2016-11-16
+
+### Fixed
+- Fix annotation positioning on categorical axes [#1155]
+
+
 ## [1.20.0] -- 2016-11-15
 
 ### Added
