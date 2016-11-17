@@ -624,9 +624,15 @@ describe('ModeBar', function() {
             var PRECISION = 2;
 
             var ax = gd._fullLayout[axName];
-            var actual = ax.range.map(ax.r2l);
+            var actual = ax.range;
 
-            expect(actual).toBeCloseToArray(expected.map(ax.r2l), PRECISION, axName);
+            if(ax.type === 'date') {
+                var truncate = function(v) { return v.substr(0, 10); };
+                expect(actual.map(truncate)).toEqual(expected.map(truncate), axName);
+            }
+            else {
+                expect(actual).toBeCloseToArray(expected, PRECISION, axName);
+            }
         }
 
         function assertActive(buttons, activeButton) {
