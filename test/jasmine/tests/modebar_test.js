@@ -1,5 +1,4 @@
 var d3 = require('d3');
-var isNumeric = require('fast-isnumeric');
 
 var createModeBar = require('@src/components/modebar/modebar');
 var manageModeBar = require('@src/components/modebar/manage');
@@ -624,12 +623,10 @@ describe('ModeBar', function() {
         function assertRange(axName, expected) {
             var PRECISION = 2;
 
-            var actual = gd._fullLayout[axName].range;
+            var ax = gd._fullLayout[axName];
+            var actual = ax.range.map(ax.r2l);
 
-            if(isNumeric(expected[0])) {
-                expect(actual).toBeCloseToArray(expected, PRECISION, axName);
-            }
-            else expect(actual).toEqual(expected, axName);
+            expect(actual).toBeCloseToArray(expected.map(ax.r2l), PRECISION, axName);
         }
 
         function assertActive(buttons, activeButton) {
