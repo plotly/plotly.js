@@ -10,6 +10,13 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.20.2] -- 2016-11-17
+
+### Fixed
+- Fix hover labels in stacked bar charts [#1163]
+- Fix mode bar zoom buttons on date axes [#1162]
+
+
 ## [1.20.1] -- 2016-11-16
 
 ### Fixed
