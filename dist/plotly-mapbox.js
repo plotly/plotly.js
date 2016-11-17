@@ -1,5 +1,5 @@
 /**
-* plotly.js (mapbox) v1.20.1
+* plotly.js (mapbox) v1.20.2
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -53554,9 +53554,18 @@ function handleCartesian(gd, ev) {
                     }
                 }
                 else {
-                    var rangeNow = ax.range;
-                    aobj[axName + '.range[0]'] = r0 * rangeNow[0] + r1 * rangeNow[1];
-                    aobj[axName + '.range[1]'] = r0 * rangeNow[1] + r1 * rangeNow[0];
+                    var rangeNow = [
+                        ax.r2l(ax.range[0]),
+                        ax.r2l(ax.range[1]),
+                    ];
+
+                    var rangeNew = [
+                        r0 * rangeNow[0] + r1 * rangeNow[1],
+                        r0 * rangeNow[1] + r1 * rangeNow[0]
+                    ];
+
+                    aobj[axName + '.range[0]'] = ax.l2r(rangeNew[0]);
+                    aobj[axName + '.range[1]'] = ax.l2r(rangeNew[1]);
                 }
             }
         }
@@ -59051,7 +59060,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.20.1';
+exports.version = '1.20.2';
 
 // inject promise polyfill
 require('es6-promise').polyfill();

@@ -1,5 +1,5 @@
 /**
-* plotly.js (basic) v1.20.1
+* plotly.js (basic) v1.20.2
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -19798,9 +19798,18 @@ function handleCartesian(gd, ev) {
                     }
                 }
                 else {
-                    var rangeNow = ax.range;
-                    aobj[axName + '.range[0]'] = r0 * rangeNow[0] + r1 * rangeNow[1];
-                    aobj[axName + '.range[1]'] = r0 * rangeNow[1] + r1 * rangeNow[0];
+                    var rangeNow = [
+                        ax.r2l(ax.range[0]),
+                        ax.r2l(ax.range[1]),
+                    ];
+
+                    var rangeNew = [
+                        r0 * rangeNow[0] + r1 * rangeNow[1],
+                        r0 * rangeNow[1] + r1 * rangeNow[0]
+                    ];
+
+                    aobj[axName + '.range[0]'] = ax.l2r(rangeNew[0]);
+                    aobj[axName + '.range[1]'] = ax.l2r(rangeNew[1]);
                 }
             }
         }
@@ -25295,7 +25304,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.20.1';
+exports.version = '1.20.2';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -46312,9 +46321,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     if(Color.opacity(mc)) pointData.color = mc;
     else if(Color.opacity(mlc) && mlw) pointData.color = mlc;
 
+    var size = (trace.base) ? di.b + di.s : di.s;
     if(trace.orientation === 'h') {
         pointData.x0 = pointData.x1 = xa.c2p(di.x, true);
-        pointData.xLabelVal = di.b + di.s;
+        pointData.xLabelVal = size;
 
         pointData.y0 = ya.c2p(barPos(di) - barDelta, true);
         pointData.y1 = ya.c2p(barPos(di) + barDelta, true);
@@ -46322,7 +46332,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     }
     else {
         pointData.y0 = pointData.y1 = ya.c2p(di.y, true);
-        pointData.yLabelVal = di.b + di.s;
+        pointData.yLabelVal = size;
 
         pointData.x0 = xa.c2p(barPos(di) - barDelta, true);
         pointData.x1 = xa.c2p(barPos(di) + barDelta, true);
