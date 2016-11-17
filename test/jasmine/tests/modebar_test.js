@@ -2,6 +2,7 @@ var d3 = require('d3');
 
 var createModeBar = require('@src/components/modebar/modebar');
 var manageModeBar = require('@src/components/modebar/manage');
+var customMatchers = require('../assets/custom_matchers');
 
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
@@ -613,12 +614,25 @@ describe('ModeBar', function() {
     describe('modebar on clicks', function() {
         var gd, modeBar;
 
+        beforeAll(function() {
+            jasmine.addMatchers(customMatchers);
+        });
+
         afterEach(destroyGraphDiv);
 
-        function assertRange(actual, expected) {
+        function assertRange(axName, expected) {
             var PRECISION = 2;
-            expect(actual[0]).toBeCloseTo(expected[0], PRECISION);
-            expect(actual[1]).toBeCloseTo(expected[1], PRECISION);
+
+            var ax = gd._fullLayout[axName];
+            var actual = ax.range;
+
+            if(ax.type === 'date') {
+                var truncate = function(v) { return v.substr(0, 10); };
+                expect(actual.map(truncate)).toEqual(expected.map(truncate), axName);
+            }
+            else {
+                expect(actual).toBeCloseToArray(expected, PRECISION, axName);
+            }
         }
 
         function assertActive(buttons, activeButton) {
@@ -634,9 +648,11 @@ describe('ModeBar', function() {
             beforeEach(function(done) {
                 var mockData = [{
                     type: 'scatter',
-                    y: [2, 1, 2]
+                    x: ['2016-01-01', '2016-02-01', '2016-03-01'],
+                    y: [10, 100, 1000],
                 }, {
                     type: 'bar',
+                    x: ['a', 'b', 'c'],
                     y: [2, 1, 2],
                     xaxis: 'x2',
                     yaxis: 'y2'
@@ -646,11 +662,12 @@ describe('ModeBar', function() {
                     xaxis: {
                         anchor: 'y',
                         domain: [0, 0.5],
-                        range: [0, 5]
+                        range: ['2016-01-01', '2016-04-01']
                     },
                     yaxis: {
                         anchor: 'x',
-                        range: [0, 3]
+                        type: 'log',
+                        range: [1, 3]
                     },
                     xaxis2: {
                         anchor: 'y2',
@@ -679,35 +696,35 @@ describe('ModeBar', function() {
                         buttonAutoScale = selectButton(modeBar, 'autoScale2d'),
                         buttonResetScale = selectButton(modeBar, 'resetScale2d');
 
-                    assertRange(gd._fullLayout.xaxis.range, [0, 5]);
-                    assertRange(gd._fullLayout.yaxis.range, [0, 3]);
-                    assertRange(gd._fullLayout.xaxis2.range, [-1, 4]);
-                    assertRange(gd._fullLayout.yaxis2.range, [0, 4]);
+                    assertRange('xaxis', ['2016-01-01', '2016-04-01']);
+                    assertRange('yaxis', [1, 3]);
+                    assertRange('xaxis2', [-1, 4]);
+                    assertRange('yaxis2', [0, 4]);
 
                     buttonZoomIn.click();
-                    assertRange(gd._fullLayout.xaxis.range, [1.25, 3.75]);
-                    assertRange(gd._fullLayout.yaxis.range, [0.75, 2.25]);
-                    assertRange(gd._fullLayout.xaxis2.range, [0.25, 2.75]);
-                    assertRange(gd._fullLayout.yaxis2.range, [1, 3]);
+                    assertRange('xaxis', ['2016-01-23 17:45', '2016-03-09 05:15']);
+                    assertRange('yaxis', [1.5, 2.5]);
+                    assertRange('xaxis2', [0.25, 2.75]);
+                    assertRange('yaxis2', [1, 3]);
 
                     buttonZoomOut.click();
-                    assertRange(gd._fullLayout.xaxis.range, [0, 5]);
-                    assertRange(gd._fullLayout.yaxis.range, [0, 3]);
-                    assertRange(gd._fullLayout.xaxis2.range, [-1, 4]);
-                    assertRange(gd._fullLayout.yaxis2.range, [0, 4]);
+                    assertRange('xaxis', ['2016-01-01', '2016-04-01']);
+                    assertRange('yaxis', [1, 3]);
+                    assertRange('xaxis2', [-1, 4]);
+                    assertRange('yaxis2', [0, 4]);
 
                     buttonZoomIn.click();
                     buttonAutoScale.click();
-                    assertRange(gd._fullLayout.xaxis.range, [-0.1584327, 2.1584327]);
-                    assertRange(gd._fullLayout.yaxis.range, [0.92675159, 2.073248]);
-                    assertRange(gd._fullLayout.xaxis2.range, [-0.5, 2.5]);
-                    assertRange(gd._fullLayout.yaxis2.range, [0, 2.105263]);
+                    assertRange('xaxis', ['2015-12-27 06:36:39.6661', '2016-03-05 17:23:20.3339']);
+                    assertRange('yaxis', [0.8591, 3.1408]);
+                    assertRange('xaxis2', [-0.5, 2.5]);
+                    assertRange('yaxis2', [0, 2.105263]);
 
                     buttonResetScale.click();
-                    assertRange(gd._fullLayout.xaxis.range, [0, 5]);
-                    assertRange(gd._fullLayout.yaxis.range, [0, 3]);
-                    assertRange(gd._fullLayout.xaxis2.range, [-1, 4]);
-                    assertRange(gd._fullLayout.yaxis2.range, [0, 4]);
+                    assertRange('xaxis', ['2016-01-01', '2016-04-01']);
+                    assertRange('yaxis', [1, 3]);
+                    assertRange('xaxis2', [-1, 4]);
+                    assertRange('yaxis2', [0, 4]);
                 });
             });
 
