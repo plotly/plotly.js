@@ -205,8 +205,8 @@ function handleCartesian(gd, ev) {
                 }
                 else {
                     var rangeNow = ax.range;
-                    aobj[axName + '.range[0]'] = r0 * rangeNow[0] + r1 * rangeNow[1];
-                    aobj[axName + '.range[1]'] = r0 * rangeNow[1] + r1 * rangeNow[0];
+                    aobj[axName + '.range[0]'] = Math.floor(r0 * rangeNow[0] + r1 * rangeNow[1]);
+                    aobj[axName + '.range[1]'] = Math.floor(r0 * rangeNow[1] + r1 * rangeNow[0]);
                 }
             }
         }
