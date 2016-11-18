@@ -282,20 +282,23 @@ function plotOne(gd, plotinfo, cd) {
         return padding;
     }
 
-    function setColor(v, pixsize) {
-        if(v !== undefined) {
-            var c = sclFunc(v);
-            c[0] = Math.round(c[0]);
-            c[1] = Math.round(c[1]);
-            c[2] = Math.round(c[2]);
+    var nanTc = tinycolor(trace.nancolor).toRgb(),
+        nanColor = [nanTc.r, nanTc.g, nanTc.b, nanTc.a];
 
-            pixcount += pixsize;
-            rcount += c[0] * pixsize;
-            gcount += c[1] * pixsize;
-            bcount += c[2] * pixsize;
-            return c;
-        }
-        return [0, 0, 0, 0];
+    function setColor(v, pixsize) {
+        pixcount += pixsize;
+
+        var c = v !== undefined ? sclFunc(v) : nanColor;
+
+        c[0] = Math.round(c[0]);
+        c[1] = Math.round(c[1]);
+        c[2] = Math.round(c[2]);
+
+        rcount += c[0] * pixsize;
+        gcount += c[1] * pixsize;
+        bcount += c[2] * pixsize;
+
+        return c;
     }
 
     function putColor(pixels, pxIndex, c) {

@@ -1314,7 +1314,7 @@ function _restyle(gd, aobj, _traces) {
     // objects need to be made) but not a recalc
     var replotAttrs = [
         'zmin', 'zmax', 'zauto',
-        'xgap', 'ygap',
+        'xgap', 'ygap', 'nancolor',
         'marker.cmin', 'marker.cmax', 'marker.cauto',
         'line.cmin', 'line.cmax',
         'marker.line.cmin', 'marker.line.cmax',

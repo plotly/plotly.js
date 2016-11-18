@@ -90,6 +90,13 @@ module.exports = extendFlat({}, {
         role: 'style',
         description: 'Sets the vertical gap (in pixels) between bricks.'
     },
+    nancolor: {
+        valType: 'color',
+        dflt: 'rgba(0,0,0,0)',
+        role: 'style',
+        description: 'Sets the color associated with NaN values in `z`.'
+
+    }
 },
     colorscaleAttrs,
     { autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}) },
