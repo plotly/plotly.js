@@ -95,11 +95,11 @@ function getMainBundleInfo() {
         '',
         'It be can imported as minified javascript',
         '- using dist file `dist/plotly.min.js`',
-        '- using CDN URL ' + cdnRoot + 'plotly-latest.min.js OR ' + cdnRoot + 'plotly-' + pkg.version + MINJS,
+        '- using CDN URL ' + cdnRoot + 'latest' + MINJS + ' OR ' + cdnRoot + pkg.version + MINJS,
         '',
         'or as raw javascript:',
         '- using dist file `dist/plotly.js`',
-        '- using CDN URL ' + cdnRoot + 'plotly-latest.js OR ' + cdnRoot + 'plotly-' + pkg.version + JS,
+        '- using CDN URL ' + cdnRoot + 'latest' + JS + ' OR ' + cdnRoot + pkg.version + JS,
         '- using CommonJS with `require(\'plotly.js\')`',
         '',
         'If you would like to have access to the attribute meta information ' +
