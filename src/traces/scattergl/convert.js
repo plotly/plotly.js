@@ -272,7 +272,7 @@ proto.update = function(options) {
 // also, there are quite a few differences
 function allFastTypesLikely(a) {
     var len = a.length,
-        inc = Math.max(0, (len - 1) / Math.min(Math.max(len, 1), 1000)),
+        inc = Math.max(1, (len - 1) / Math.min(Math.max(len, 1), 1000)),
         ai;
 
     for(var i = 0; i < len; i += inc) {
