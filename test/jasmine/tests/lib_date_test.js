@@ -145,10 +145,13 @@ describe('dates', function() {
         it('should interpret JS dates by local time, not by its getTime()', function() {
             // not really part of the test, just to make sure the test is meaningful
             // the test should NOT be run in a UTC environment
-            expect([
-                Number(new Date(1970, 0, 1)),
-                Number(new Date(1970, 6, 1))
-            ]).not.toEqual([0, JULY1MS]);
+            var local0 = Number(new Date(1970, 0, 1)),
+                localjuly1 = Number(new Date(1970, 6, 1));
+            expect([local0, localjuly1]).not.toEqual([0, JULY1MS],
+                'test must not run in UTC');
+            // verify that there *is* daylight saving time in the test environment
+            expect(localjuly1 - local0).not.toEqual(JULY1MS - 0,
+                'test must run in a timezone with DST');
 
             // now repeat the previous test and show that we throw away
             // timezone info from js dates
