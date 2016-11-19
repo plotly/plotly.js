@@ -489,7 +489,7 @@ describe('Test shapes', function() {
             title: 'linked to date and category axes',
             xaxis: {
                 type: 'date',
-                range: ['2000-01-01', (new Date(2000, 1, 2)).getTime()]
+                range: ['2000-01-01', '2000-02-02']
             },
             yaxis: { type: 'category', range: ['a', 'b'] }
         }
