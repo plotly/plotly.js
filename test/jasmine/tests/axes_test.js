@@ -678,7 +678,7 @@ describe('Test axes', function() {
 
         it('should handle tick0 and dtick for date axes', function() {
             var someMs = 123456789,
-                someMsDate = Lib.ms2DateTime(someMs),
+                someMsDate = Lib.ms2DateTimeLocal(someMs),
                 oneDay = 24 * 3600 * 1000,
                 axIn = {tick0: someMs, dtick: String(3 * oneDay)},
                 axOut = {};

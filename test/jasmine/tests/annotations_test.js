@@ -3,7 +3,6 @@ var Annotations = require('@src/components/annotations');
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
-var Dates = require('@src/lib/dates');
 var Axes = require('@src/plots/cartesian/axes');
 
 var d3 = require('d3');
@@ -71,7 +70,10 @@ describe('Test annotations', function() {
                     axref: 'x',
                     ayref: 'y',
                     x: '2008-07-01',
-                    ax: Dates.dateTime2ms('2004-07-01'),
+                    // note this is not portable: this generates ms in the local
+                    // timezone, so will work correctly where it was created but
+                    // not if the milliseconds number is moved to another TZ
+                    ax: +(new Date(2004, 6, 1)),
                     y: 0,
                     ay: 50
                 }]

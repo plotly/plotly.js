@@ -18,6 +18,7 @@ describe('dates', function() {
 
     describe('dateTime2ms', function() {
         it('should accept valid date strings', function() {
+            var tzOffset;
 
             [
                 ['2016', new Date(2016, 0, 1)],
@@ -34,10 +35,11 @@ describe('dates', function() {
                 // first century, also allow month, day, and hour to be 1-digit, and not all
                 // three digits of milliseconds
                 ['0013-1-1 1:00:00.6', d1c],
-                // we support more than 4 digits too, though Date objects don't. More than that
+                // we support tenths of msec too, though Date objects don't. Smaller than that
                 // and we hit the precision limit of js numbers unless we're close to the epoch.
                 // It won't break though.
                 ['0013-1-1 1:00:00.6001', +d1c + 0.1],
+                ['0013-1-1 1:00:00.60011111111', +d1c + 0.11111111],
 
                 // 2-digit years get mapped to now-70 -> now+29
                 [thisYear_2 + '-05', new Date(thisYear, 4, 1)],
@@ -50,11 +52,16 @@ describe('dates', function() {
                 ['2014-03-04 08:15:34+1200', new Date(2014, 2, 4, 8, 15, 34)],
                 ['2014-03-04 08:15:34.567-05:45', new Date(2014, 2, 4, 8, 15, 34, 567)],
             ].forEach(function(v) {
-                expect(Lib.dateTime2ms(v[0])).toBe(+v[1], v[0]);
+                // just for sub-millisecond precision tests, use timezoneoffset
+                // from the previous date object
+                if(v[1].getTimezoneOffset) tzOffset = v[1].getTimezoneOffset();
+
+                var expected = +v[1] - (tzOffset * 60000);
+                expect(Lib.dateTime2ms(v[0])).toBe(expected, v[0]);
 
                 // ISO-8601: all the same stuff with t or T as the separator
-                expect(Lib.dateTime2ms(v[0].trim().replace(' ', 't'))).toBe(+v[1], v[0].trim().replace(' ', 't'));
-                expect(Lib.dateTime2ms('\r\n\t ' + v[0].trim().replace(' ', 'T') + '\r\n\t ')).toBe(+v[1], v[0].trim().replace(' ', 'T'));
+                expect(Lib.dateTime2ms(v[0].trim().replace(' ', 't'))).toBe(expected, v[0].trim().replace(' ', 't'));
+                expect(Lib.dateTime2ms('\r\n\t ' + v[0].trim().replace(' ', 'T') + '\r\n\t ')).toBe(expected, v[0].trim().replace(' ', 'T'));
             });
         });
 
@@ -69,7 +76,7 @@ describe('dates', function() {
             [
                 1000, 9999, -1000, -9999
             ].forEach(function(v) {
-                expect(Lib.dateTime2ms(v)).toBe(+(new Date(v, 0, 1)), v);
+                expect(Lib.dateTime2ms(v)).toBe(Date.UTC(v, 0, 1), v);
             });
 
             [
@@ -78,7 +85,7 @@ describe('dates', function() {
                 [nowMinus70_2, nowMinus70],
                 [99, 1999]
             ].forEach(function(v) {
-                expect(Lib.dateTime2ms(v[0])).toBe(+(new Date(v[1], 0, 1)), v[0]);
+                expect(Lib.dateTime2ms(v[0])).toBe(Date.UTC(v[1], 0, 1), v[0]);
             });
         });
 
@@ -93,7 +100,7 @@ describe('dates', function() {
                 d1c,
                 new Date(2015, 8, 7, 23, 34, 45, 567)
             ].forEach(function(v) {
-                expect(Lib.dateTime2ms(v)).toBe(+v);
+                expect(Lib.dateTime2ms(v)).toBe(+v - v.getTimezoneOffset() * 60000);
             });
         });
 
@@ -123,6 +130,33 @@ describe('dates', function() {
             ].forEach(function(v) {
                 expect(Lib.dateTime2ms(v)).toBeUndefined(v);
             });
+        });
+
+        var JULY1MS = 181 * 24 * 3600 * 1000;
+
+        it('should use UTC with no timezone offset or daylight saving time', function() {
+            expect(Lib.dateTime2ms('1970-01-01')).toBe(0);
+
+            // 181 days (and no DST hours) between jan 1 and july 1 in a non-leap-year
+            // 31 + 28 + 31 + 30 + 31 + 30
+            expect(Lib.dateTime2ms('1970-07-01')).toBe(JULY1MS);
+        });
+
+        it('should interpret JS dates by local time, not by its getTime()', function() {
+            // not really part of the test, just to make sure the test is meaningful
+            // the test should NOT be run in a UTC environment
+            var local0 = Number(new Date(1970, 0, 1)),
+                localjuly1 = Number(new Date(1970, 6, 1));
+            expect([local0, localjuly1]).not.toEqual([0, JULY1MS],
+                'test must not run in UTC');
+            // verify that there *is* daylight saving time in the test environment
+            expect(localjuly1 - local0).not.toEqual(JULY1MS - 0,
+                'test must run in a timezone with DST');
+
+            // now repeat the previous test and show that we throw away
+            // timezone info from js dates
+            expect(Lib.dateTime2ms(new Date(1970, 0, 1))).toBe(0);
+            expect(Lib.dateTime2ms(new Date(1970, 6, 1))).toBe(JULY1MS);
         });
     });
 
@@ -159,8 +193,8 @@ describe('dates', function() {
 
         it('should not accept Date objects beyond our limits or other objects', function() {
             [
-                +(new Date(10000, 0, 1)),
-                +(new Date(-10000, 11, 31, 23, 59, 59, 999)),
+                Date.UTC(10000, 0, 1),
+                Date.UTC(-10000, 11, 31, 23, 59, 59, 999),
                 '',
                 '2016-01-01',
                 '0',
@@ -191,19 +225,20 @@ describe('dates', function() {
     });
 
     describe('cleanDate', function() {
-        it('should convert any number or js Date within range to a date string', function() {
+        it('should convert numbers or js Dates to strings based on local TZ', function() {
             [
                 new Date(0),
                 new Date(2000),
                 new Date(2000, 0, 1),
                 new Date(),
-                new Date(-9999, 0, 1),
-                new Date(9999, 11, 31, 23, 59, 59, 999)
+                new Date(-9999, 0, 3), // we lose one day of range +/- tzoffset this way
+                new Date(9999, 11, 29, 23, 59, 59, 999)
             ].forEach(function(v) {
-                expect(typeof Lib.ms2DateTime(+v)).toBe('string');
-                expect(Lib.cleanDate(v)).toBe(Lib.ms2DateTime(+v));
-                expect(Lib.cleanDate(+v)).toBe(Lib.ms2DateTime(+v));
-                expect(Lib.cleanDate(v, '2000-01-01')).toBe(Lib.ms2DateTime(+v));
+                var expected = Lib.ms2DateTime(Lib.dateTime2ms(v));
+                expect(typeof expected).toBe('string');
+                expect(Lib.cleanDate(v)).toBe(expected);
+                expect(Lib.cleanDate(+v)).toBe(expected);
+                expect(Lib.cleanDate(v, '2000-01-01')).toBe(expected);
             });
         });
 

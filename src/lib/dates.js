@@ -87,7 +87,9 @@ var MIN_MS, MAX_MS;
 exports.dateTime2ms = function(s) {
     // first check if s is a date object
     if(exports.isJSDate(s)) {
-        s = Number(s);
+        // Convert to the UTC milliseconds that give the same
+        // hours as this date has in the local timezone
+        s = Number(s) - s.getTimezoneOffset() * ONEMIN;
         if(s >= MIN_MS && s <= MAX_MS) return s;
         return BADNUM;
     }
@@ -109,14 +111,10 @@ exports.dateTime2ms = function(s) {
 
     // javascript takes new Date(0..99,m,d) to mean 1900-1999, so
     // to support years 0-99 we need to use setFullYear explicitly
-    var date = new Date(2000, m - 1, d, H, M);
-    date.setFullYear(y);
+    var date = new Date(Date.UTC(2000, m - 1, d, H, M));
+    date.setUTCFullYear(y);
 
-    if(date.getDate() !== d) return BADNUM;
-
-    // does that hour exist in this day? (Daylight time!)
-    // (TODO: remove this check when we move to UTC)
-    if(date.getHours() !== H) return BADNUM;
+    if(date.getUTCDate() !== d) return BADNUM;
 
     return date.getTime() + S * ONESEC;
 };
@@ -150,16 +148,41 @@ exports.ms2DateTime = function(ms, r) {
 
     if(!r) r = 0;
 
-    var d = new Date(Math.floor(ms)),
-        dateStr = d3.time.format('%Y-%m-%d')(d),
+    var msecTenths = Math.round(((ms % 1) + 1) * 10) % 10,
+        d = new Date(Math.round(ms - msecTenths / 10)),
+        dateStr = d3.time.format.utc('%Y-%m-%d')(d),
         // <90 days: add hours and minutes - never *only* add hours
-        h = (r < NINETYDAYS) ? d.getHours() : 0,
-        m = (r < NINETYDAYS) ? d.getMinutes() : 0,
+        h = (r < NINETYDAYS) ? d.getUTCHours() : 0,
+        m = (r < NINETYDAYS) ? d.getUTCMinutes() : 0,
         // <3 hours: add seconds
-        s = (r < THREEHOURS) ? d.getSeconds() : 0,
+        s = (r < THREEHOURS) ? d.getUTCSeconds() : 0,
         // <5 minutes: add ms (plus one extra digit, this is msec*10)
-        msec10 = (r < FIVEMIN) ? Math.round((d.getMilliseconds() + (((ms % 1) + 1) % 1)) * 10) : 0;
+        msec10 = (r < FIVEMIN) ? d.getUTCMilliseconds() * 10 + msecTenths : 0;
 
+    return includeTime(dateStr, h, m, s, msec10);
+};
+
+// For converting old-style milliseconds to date strings,
+// we use the local timezone rather than UTC like we use
+// everywhere else, both for backward compatibility and
+// because that's how people mostly use javasript date objects.
+// Clip one extra day off our date range though so we can't get
+// thrown beyond the range by the timezone shift.
+exports.ms2DateTimeLocal = function(ms) {
+    if(!(ms >= MIN_MS + ONEDAY && ms <= MAX_MS - ONEDAY)) return BADNUM;
+
+    var msecTenths = Math.round(((ms % 1) + 1) * 10) % 10,
+        d = new Date(Math.round(ms - msecTenths / 10)),
+        dateStr = d3.time.format('%Y-%m-%d')(d),
+        h = d.getHours(),
+        m = d.getMinutes(),
+        s = d.getSeconds(),
+        msec10 = d.getUTCMilliseconds() * 10 + msecTenths;
+
+    return includeTime(dateStr, h, m, s, msec10);
+};
+
+function includeTime(dateStr, h, m, s, msec10) {
     // include each part that has nonzero data in or after it
     if(h || m || s || msec10) {
         dateStr += ' ' + lpad(h, 2) + ':' + lpad(m, 2);
@@ -176,7 +199,7 @@ exports.ms2DateTime = function(ms, r) {
         }
     }
     return dateStr;
-};
+}
 
 // normalize date format to date string, in case it starts as
 // a Date object or milliseconds
@@ -186,7 +209,7 @@ exports.cleanDate = function(v, dflt) {
         // NOTE: if someone puts in a year as a number rather than a string,
         // this will mistakenly convert it thinking it's milliseconds from 1970
         // that is: '2012' -> Jan. 1, 2012, but 2012 -> 2012 epoch milliseconds
-        v = exports.ms2DateTime(+v);
+        v = exports.ms2DateTimeLocal(+v);
         if(!v && dflt !== undefined) return dflt;
     }
     else if(!exports.isDateTime(v)) {
