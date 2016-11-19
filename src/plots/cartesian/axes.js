@@ -917,7 +917,7 @@ axes.tickIncrement = function(x, dtick, axrev) {
         var y = new Date(x);
         // is this browser consistent? setMonth edits a date but
         // returns that date's milliseconds
-        return y.setMonth(y.getMonth() + dtSigned);
+        return y.setMonth(y.getUTCMonth() + dtSigned);
     }
 
     // Log scales: Linear, Digits
@@ -968,9 +968,9 @@ axes.tickFirst = function(ax) {
     if(tType === 'M') {
         t0 = new Date(tick0);
         r0 = new Date(r0);
-        mdif = (r0.getFullYear() - t0.getFullYear()) * 12 +
-            r0.getMonth() - t0.getMonth();
-        t1 = t0.setMonth(t0.getMonth() +
+        mdif = (r0.getUTCFullYear() - t0.getUTCFullYear()) * 12 +
+            r0.getUTCMonth() - t0.getUTCMonth();
+        t1 = t0.setMonth(t0.getUTCMonth() +
             (Math.round(mdif / dtNum) + (axrev ? 1 : -1)) * dtNum);
 
         while(axrev ? t1 > r0 : t1 < r0) {
@@ -994,12 +994,13 @@ axes.tickFirst = function(ax) {
     else throw 'unrecognized dtick ' + String(dtick);
 };
 
-var yearFormat = d3.time.format('%Y'),
-    monthFormat = d3.time.format('%b %Y'),
-    dayFormat = d3.time.format('%b %-d'),
-    yearMonthDayFormat = d3.time.format('%b %-d, %Y'),
-    minuteFormat = d3.time.format('%H:%M'),
-    secondFormat = d3.time.format(':%S');
+var utcFormat = d3.time.format.utc,
+    yearFormat = utcFormat('%Y'),
+    monthFormat = utcFormat('%b %Y'),
+    dayFormat = utcFormat('%b %-d'),
+    yearMonthDayFormat = utcFormat('%b %-d, %Y'),
+    minuteFormat = utcFormat('%H:%M'),
+    secondFormat = utcFormat(':%S');
 
 // add one item to d3's vocabulary:
 // %{n}f where n is the max number of digits
@@ -1012,10 +1013,10 @@ function modDateFormat(fmt, x) {
         var digits = Math.min(+fm[1] || 6, 6),
             fracSecs = String((x / 1000 % 1) + 2.0000005)
                 .substr(2, digits).replace(/0+$/, '') || '0';
-        return d3.time.format(fmt.replace(fracMatch, fracSecs))(d);
+        return utcFormat(fmt.replace(fracMatch, fracSecs))(d);
     }
     else {
-        return d3.time.format(fmt)(d);
+        return utcFormat(fmt)(d);
     }
 }
 
