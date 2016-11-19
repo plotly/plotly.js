@@ -3,7 +3,6 @@ var Annotations = require('@src/components/annotations');
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
-var Dates = require('@src/lib/dates');
 var Axes = require('@src/plots/cartesian/axes');
 
 var d3 = require('d3');
