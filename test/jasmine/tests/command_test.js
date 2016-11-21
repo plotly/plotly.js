@@ -155,12 +155,17 @@ describe('Plots.hasSimpleAPICommandBindings', function() {
             args: [{'marker.color': 20}, [2, 1]]
         }]);
 
-        expect(isSimple).toEqual({
+        // See https://github.com/plotly/plotly.js/issues/1169 for an example of where
+        // this logic was a little too sophisticated. It's better to bail out and omit
+        // functionality than to get it wrong.
+        expect(isSimple).toEqual(false);
+
+        /* expect(isSimple).toEqual({
             type: 'data',
             prop: 'marker.color',
             traces: [ 1, 2 ],
             value: [ 10, 10 ]
-        });
+        });*/
     });
 });
 
@@ -505,6 +510,14 @@ describe('component bindings', function() {
 
         Plotly.restyle(gd, 'marker.color', 'blue').then(function() {
             expect(gd.layout.sliders[0].active).toBe(4);
+        }).catch(fail).then(done);
+    });
+
+    it('does not update the component if the value is not present', function(done) {
+        expect(gd.layout.sliders[0].active).toBe(0);
+
+        Plotly.restyle(gd, 'marker.color', 'black').then(function() {
+            expect(gd.layout.sliders[0].active).toBe(0);
         }).catch(fail).then(done);
     });
 
