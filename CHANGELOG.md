@@ -9,6 +9,10 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.20.4] -- 2016-11-21
+
+### Fixed
+- Fix metaKeys field `PlotSchema.get()` output
 
 ## [1.20.3] -- 2016-11-21
 
