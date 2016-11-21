@@ -474,7 +474,21 @@ describe('Test plot api', function() {
             expect(gd.data[2].uid).toBeDefined();
             expect(PlotlyInternal.redraw).not.toHaveBeenCalled();
             expect(PlotlyInternal.moveTraces).toHaveBeenCalledWith(gd, [-1], [0]);
+        });
 
+        it('should work when adding an existing trace', function() {
+            Plotly.addTraces(gd, gd.data[0]);
+
+            expect(gd.data.length).toEqual(3);
+            expect(gd.data[0]).not.toBe(gd.data[2]);
+        });
+
+        it('should work when duplicating the existing data', function() {
+            Plotly.addTraces(gd, gd.data);
+
+            expect(gd.data.length).toEqual(4)
+            expect(gd.data[0]).not.toBe(gd.data[2]);
+            expect(gd.data[1]).not.toBe(gd.data[3]);
         });
     });
 
