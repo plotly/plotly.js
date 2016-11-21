@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.20.3
+* plotly.js (gl3d) v1.20.4
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -59262,7 +59262,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.20.3';
+exports.version = '1.20.4';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -66474,7 +66474,7 @@ exports.get = function() {
     return {
         defs: {
             valObjects: Lib.valObjects,
-            metaKeys: UNDERSCORE_ATTRS.concat['description', 'role']
+            metaKeys: UNDERSCORE_ATTRS.concat(['description', 'role'])
         },
 
         traces: traces,
