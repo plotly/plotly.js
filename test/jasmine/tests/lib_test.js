@@ -1528,7 +1528,9 @@ describe('Test lib.js:', function() {
                 ['2 2', 22],
                 ['2%2', 22],
                 ['2$2', 22],
-                ['1,690,000', 1690000]
+                ['1,690,000', 1690000],
+                ['$5,162,000.00', 5162000],
+                [' $1,410,000.00 ', 1410000],
             ].forEach(function(v) {
                 expect(Lib.cleanNumber(v[0])).toBe(v[1], v[0]);
             });
@@ -1537,7 +1539,7 @@ describe('Test lib.js:', function() {
         it('should not accept other objects', function() {
             [
                 NaN, Infinity, -Infinity, null, undefined, new Date(), '',
-                ' ', '\t', , {1: 2}, [1], ['1'], {}, []
+                ' ', '\t', {1: 2}, [1], ['1'], {}, []
             ].forEach(function(v) {
                 expect(Lib.cleanNumber(v)).toBeUndefined(v);
             });
