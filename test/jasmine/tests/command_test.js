@@ -513,7 +513,7 @@ describe('component bindings', function() {
         }).catch(fail).then(done);
     });
 
-    it('udpates bound components when the value changes', function(done) {
+    it('does not update the component if the value is not present', function(done) {
         expect(gd.layout.sliders[0].active).toBe(0);
 
         Plotly.restyle(gd, 'marker.color', 'ecru').then(function() {
