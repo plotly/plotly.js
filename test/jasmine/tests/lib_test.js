@@ -1514,7 +1514,7 @@ describe('Test lib.js:', function() {
             });
         });
 
-        it('should accept number strings with arbitrary cruft on the outside', function() {
+        it('should accept number strings with arbitrary cruft', function() {
             [
                 ['0', 0],
                 ['1', 1],
@@ -1522,16 +1522,24 @@ describe('Test lib.js:', function() {
                 ['-100.001', -100.001],
                 ['  $4.325  #%\t', 4.325],
                 [' " #1" ', 1],
-                [' \'\n \r -9.2e7   \t\' ', -9.2e7]
+                [' \'\n \r -9.2e7   \t\' ', -9.2e7],
+
+                // post https://github.com/plotly/plotly.js/issues/1183
+                ['2 2', 22],
+                ['2%2', 22],
+                ['2$2', 22],
+                ['1,690,000', 1690000],
+                ['$5,162,000.00', 5162000],
+                [' $1,410,000.00 ', 1410000],
             ].forEach(function(v) {
                 expect(Lib.cleanNumber(v[0])).toBe(v[1], v[0]);
             });
         });
 
-        it('should not accept other objects or cruft in the middle', function() {
+        it('should not accept other objects', function() {
             [
                 NaN, Infinity, -Infinity, null, undefined, new Date(), '',
-                ' ', '\t', '2 2', '2%2', '2$2', {1: 2}, [1], ['1'], {}, []
+                ' ', '\t', {1: 2}, [1], ['1'], {}, []
             ].forEach(function(v) {
                 expect(Lib.cleanNumber(v)).toBeUndefined(v);
             });
