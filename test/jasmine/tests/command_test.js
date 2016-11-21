@@ -516,7 +516,7 @@ describe('component bindings', function() {
     it('does not update the component if the value is not present', function(done) {
         expect(gd.layout.sliders[0].active).toBe(0);
 
-        Plotly.restyle(gd, 'marker.color', 'ecru').then(function() {
+        Plotly.restyle(gd, 'marker.color', 'black').then(function() {
             expect(gd.layout.sliders[0].active).toBe(0);
         }).catch(fail).then(done);
     });
