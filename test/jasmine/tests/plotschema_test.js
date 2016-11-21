@@ -187,4 +187,11 @@ describe('plot schema', function() {
             expect(attrNames).toContain(k);
         });
     });
+
+    it('should list correct defs', function() {
+        expect(plotSchema.defs.valObjects).toBeDefined();
+
+        expect(plotSchema.defs.metaKeys)
+            .toEqual(['_isSubplotObj', '_isLinkedToArray', '_deprecated', 'description', 'role']);
+    });
 });

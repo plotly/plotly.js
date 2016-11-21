@@ -61,7 +61,7 @@ exports.get = function() {
     return {
         defs: {
             valObjects: Lib.valObjects,
-            metaKeys: UNDERSCORE_ATTRS.concat['description', 'role']
+            metaKeys: UNDERSCORE_ATTRS.concat(['description', 'role'])
         },
 
         traces: traces,
