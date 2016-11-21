@@ -10,6 +10,14 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.20.3] -- 2016-11-21
+
+### Fixed
+- Remove infinite loop when plotting 1-pt `scattergl` traces [#1168]
+- Fix updatemenu bug where the wrong button was set to active [#1176]
+- Fix `addTraces` when called with existing traces as input [#1175]
+
+
 ## [1.20.2] -- 2016-11-17
 
 ### Fixed
