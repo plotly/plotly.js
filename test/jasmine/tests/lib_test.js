@@ -1536,7 +1536,7 @@ describe('Test lib.js:', function() {
         it('should not accept other objects or cruft in the middle', function() {
             [
                 NaN, Infinity, -Infinity, null, undefined, new Date(), '',
-                ' ', '\t', '2%2', '2$2', {1: 2}, [1], ['1'], {}, []
+                ' ', '\t', '2\t2', '2%2', '2$2', {1: 2}, [1], ['1'], {}, []
             ].forEach(function(v) {
                 expect(Lib.cleanNumber(v)).toBeUndefined(v);
             });
