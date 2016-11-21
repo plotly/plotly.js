@@ -145,11 +145,12 @@ exports.manageCommandObserver = function(gd, container, commandList, onchange) {
  *   3. the same property must be affected by all commands
  */
 exports.hasSimpleAPICommandBindings = function(gd, commandList, bindingsByValue) {
+    var i;
     var n = commandList.length;
 
     var refBinding;
 
-    for(var i = 0; i < n; i++) {
+    for(i = 0; i < n; i++) {
         var binding;
         var command = commandList[i];
         var method = command.method;
@@ -206,6 +207,8 @@ exports.hasSimpleAPICommandBindings = function(gd, commandList, bindingsByValue)
             bindingsByValue[value] = i;
         }
     }
+
+    if(i === n) return false;
 
     return refBinding;
 };
