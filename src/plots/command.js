@@ -201,14 +201,16 @@ exports.hasSimpleAPICommandBindings = function(gd, commandList, bindingsByValue)
         binding = bindings[0];
         var value = binding.value;
         if(Array.isArray(value)) {
-            value = value[0];
+            if(value.length === 1) {
+                value = value[0];
+            } else {
+                return false;
+            }
         }
         if(bindingsByValue) {
             bindingsByValue[value] = i;
         }
     }
-
-    if(i === n) return false;
 
     return refBinding;
 };
