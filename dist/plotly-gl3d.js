@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.20.2
+* plotly.js (gl3d) v1.20.3
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -59262,7 +59262,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.20.2';
+exports.version = '1.20.3';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -64136,8 +64136,7 @@ function checkMoveTracesArgs(gd, currentIndices, newIndices) {
  * @param newIndices
  */
 function checkAddTracesArgs(gd, traces, newIndices) {
-    var i,
-        value;
+    var i, value;
 
     // check that gd has attribute 'data' and 'data' is array
     if(!Array.isArray(gd.data)) {
@@ -64459,10 +64458,16 @@ Plotly.addTraces = function addTraces(gd, traces, newIndices) {
     if(!Array.isArray(traces)) {
         traces = [traces];
     }
+
+    // make sure traces do not repeat existing ones
+    traces = traces.map(function(trace) {
+        return Lib.extendFlat({}, trace);
+    });
+
     helpers.cleanData(traces, gd.data);
 
     // add the traces to gd.data (no redrawing yet!)
-    for(i = 0; i < traces.length; i += 1) {
+    for(i = 0; i < traces.length; i++) {
         gd.data.push(traces[i]);
     }
 
@@ -75074,11 +75079,12 @@ exports.manageCommandObserver = function(gd, container, commandList, onchange) {
  *   3. the same property must be affected by all commands
  */
 exports.hasSimpleAPICommandBindings = function(gd, commandList, bindingsByValue) {
+    var i;
     var n = commandList.length;
 
     var refBinding;
 
-    for(var i = 0; i < n; i++) {
+    for(i = 0; i < n; i++) {
         var binding;
         var command = commandList[i];
         var method = command.method;
@@ -75129,7 +75135,11 @@ exports.hasSimpleAPICommandBindings = function(gd, commandList, bindingsByValue)
         binding = bindings[0];
         var value = binding.value;
         if(Array.isArray(value)) {
-            value = value[0];
+            if(value.length === 1) {
+                value = value[0];
+            } else {
+                return false;
+            }
         }
         if(bindingsByValue) {
             bindingsByValue[value] = i;
