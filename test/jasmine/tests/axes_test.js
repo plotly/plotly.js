@@ -1499,5 +1499,84 @@ describe('Test axes', function() {
             ];
             expect(textOut).toEqual(expectedText);
         });
+
+        it('should handle edge cases with dates and tickvals', function() {
+            var textOut = mockCalc({
+                type: 'date',
+                tickmode: 'array',
+                tickvals: [
+                    '2012-01-01',
+                    new Date(2012, 2, 1).getTime(),
+                    '2012-08-01 00:00:00',
+                    '2012-10-01 12:00:00',
+                    new Date(2013, 0, 1, 0, 0, 1).getTime(),
+                    '2010-01-01', '2014-01-01' // off the axis
+                ],
+                // only the first two have text
+                ticktext: ['New year', 'February'],
+
+                // required to get calcTicks to run
+                range: ['2011-12-10', '2013-01-23'],
+                nticks: 10
+            });
+
+            var expectedText = [
+                'New year',
+                'February',
+                'Aug 1, 2012',
+                '12:00<br>Oct 1, 2012',
+                '00:00:01<br>Jan 1, 2013'
+            ];
+            expect(textOut).toEqual(expectedText);
+        });
+
+        it('should handle tickvals edge cases with linear and log axes', function() {
+            ['linear', 'log'].forEach(function(axType) {
+                var textOut = mockCalc({
+                    type: axType,
+                    tickmode: 'array',
+                    tickvals: [1, 1.5, 2.6999999, 3, 3.999, 10, 0.1],
+                    ticktext: ['One', '...and a half'],
+                    // I'll be so happy when I can finally get rid of this switch!
+                    range: axType === 'log' ? [-0.2, 0.8] : [0.5, 5],
+                    nticks: 10
+                });
+
+                var expectedText = [
+                    'One',
+                    '...and a half', // the first two get explicit labels
+                    '2.7', // 2.6999999 gets rounded to 2.7
+                    '3',
+                    '3.999' // 3.999 does not get rounded
+                    // 10 and 0.1 are off scale
+                ];
+                expect(textOut).toEqual(expectedText, axType);
+            });
+        });
+
+        it('should handle tickvals edge cases with category axes', function() {
+            var textOut = mockCalc({
+                type: 'category',
+                _categories: ['a', 'b', 'c', 'd'],
+                tickmode: 'array',
+                tickvals: ['a', 1, 1.5, 'c', 2.7, 3, 'e', 4, 5, -2],
+                ticktext: ['A!', 'B?', 'B->C'],
+                range: [-0.5, 4.5],
+                nticks: 10
+            });
+
+            var expectedText = [
+                'A!', // category position, explicit text
+                'B?', // integer position, explicit text
+                'B->C', // non-integer position, explicit text
+                'c', // category position, no text: use category
+                'd', // non-integer position, no text: use closest category
+                'd', // integer position, no text: use category
+                '' // 4: number with no close category: leave blank
+                   //    but still include it so we get a tick mark & grid
+                // 'e', 5, -2: bad category and numbers out of range: omitted
+            ];
+            expect(textOut).toEqual(expectedText);
+        });
     });
 });

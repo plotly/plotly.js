@@ -611,8 +611,6 @@ axes.autoBin = function(data, ax, nbins, is2d) {
 // in any case, set tickround to # of digits to round tick labels to,
 // or codes to this effect for log and date scales
 axes.calcTicks = function calcTicks(ax) {
-    if(ax.tickmode === 'array') return arrayTicks(ax);
-
     var rng = ax.range.map(ax.r2l);
 
     // calculate max number of (auto) ticks to display based on plot size
@@ -629,6 +627,11 @@ axes.calcTicks = function calcTicks(ax) {
                 nt = Lib.constrain(ax._length / minPx, 4, 9) + 1;
             }
         }
+
+        // add a couple of extra digits for filling in ticks when we
+        // have explicit tickvals without tick text
+        if(ax.tickmode === 'array') nt *= 100;
+
         axes.autoTicks(ax, Math.abs(rng[1] - rng[0]) / nt);
         // check for a forced minimum dtick
         if(ax._minDtick > 0 && ax.dtick < ax._minDtick * 2) {
@@ -644,6 +647,10 @@ axes.calcTicks = function calcTicks(ax) {
 
     // now figure out rounding of tick values
     autoTickRound(ax);
+
+    // now that we've figured out the auto values for formatting
+    // in case we're missing some ticktext, we can break out for array ticks
+    if(ax.tickmode === 'array') return arrayTicks(ax);
 
     // find the first tick
     ax._tmin = axes.tickFirst(ax);
@@ -704,8 +711,11 @@ function arrayTicks(ax) {
     // except with more precision to the numbers
     if(!Array.isArray(text)) text = [];
 
+    // make sure showing ticks doesn't accidentally add new categories
+    var tickVal2l = ax.type === 'category' ? ax.d2l_noadd : ax.d2l;
+
     for(i = 0; i < vals.length; i++) {
-        vali = ax.d2l(vals[i]);
+        vali = tickVal2l(vals[i]);
         if(vali > tickMin && vali < tickMax) {
             if(text[i] === undefined) ticksOut[j] = axes.tickText(ax, vali);
             else ticksOut[j] = tickTextObj(ax, vali, String(text[i]));
@@ -856,7 +866,7 @@ function autoTickRound(ax) {
         // not necessarily *all* the information in tick0 though, if it's really odd
         // minimal string length for tick0: 'd' is 10, 'M' is 16, 'S' is 19
         // take off a leading minus (year < 0 so length is consistent)
-        var tick0ms = Lib.dateTime2ms(ax.tick0),
+        var tick0ms = Lib.dateTime2ms(ax.tick0) || 0,
             tick0str = Lib.ms2DateTime(tick0ms).replace(/^-/, ''),
             tick0len = tick0str.length;
 
@@ -1030,13 +1040,14 @@ axes.tickText = function(ax, x, hover) {
         hideexp,
         arrayMode = ax.tickmode === 'array',
         extraPrecision = hover || arrayMode,
-        i;
+        i,
+        tickVal2l = ax.type === 'category' ? ax.d2l_noadd : ax.d2l;
 
     if(arrayMode && Array.isArray(ax.ticktext)) {
         var rng = ax.range.map(ax.r2l),
             minDiff = Math.abs(rng[1] - rng[0]) / 10000;
         for(i = 0; i < ax.ticktext.length; i++) {
-            if(Math.abs(x - ax.d2l(ax.tickvals[i])) < minDiff) break;
+            if(Math.abs(x - tickVal2l(ax.tickvals[i])) < minDiff) break;
         }
         if(i < ax.ticktext.length) {
             out.text = String(ax.ticktext[i]);
@@ -1113,12 +1124,12 @@ function formatDate(ax, out, hover, extraPrecision) {
         else if(tr === 'm') tt = monthFormat(d);
         else {
             if(tr === 'd') {
-                if(!hover) suffix = '<br>' + yearFormat(d);
+                suffix = yearFormat(d);
 
                 tt = dayFormat(d);
             }
             else {
-                if(!hover) suffix = '<br>' + yearMonthDayFormat(d);
+                suffix = yearMonthDayFormat(d);
 
                 tt = minuteFormat(d);
                 if(tr !== 'M') {
@@ -1136,9 +1147,26 @@ function formatDate(ax, out, hover, extraPrecision) {
             }
         }
     }
-    if(suffix && (!ax._inCalcTicks || (suffix !== ax._prevSuffix))) {
-        tt += suffix;
-        ax._prevSuffix = suffix;
+    if(ax.tickmode === 'array') {
+        // we get extra precision in array mode, but it may be useless, strip it off
+        if(tt === '00:00:00') {
+            tt = suffix;
+            suffix = '';
+        }
+        else {
+            tt = tt.replace(/:00$/, '');
+        }
+    }
+
+    if(suffix) {
+        if(hover) {
+            // hover puts it all on one line, so suffix works best up front
+            tt = suffix + (tt ? ' ' + tt : '');
+        }
+        else if(!ax._inCalcTicks || (suffix !== ax._prevSuffix)) {
+            tt += '<br>' + suffix;
+            ax._prevSuffix = suffix;
+        }
     }
     out.text = tt;
 }
