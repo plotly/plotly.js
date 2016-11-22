@@ -71,6 +71,16 @@ module.exports = {
         ].join(' ')
     },
 
+    mode: {
+        valType: 'enumerated',
+        values: ['density', 'cumulative'],
+        dflt: 'density',
+        role: 'info',
+        description: [
+            ''
+        ].join('')
+    },
+
     autobinx: {
         valType: 'boolean',
         dflt: null,

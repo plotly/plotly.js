@@ -26,6 +26,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var x = coerce('x'),
         y = coerce('y');
 
+    coerce('mode');
     coerce('text');
 
     var orientation = coerce('orientation', (y && !x) ? 'h' : 'v'),

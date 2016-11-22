@@ -38,6 +38,7 @@ module.exports = function calc(gd, trace) {
 
     // prepare the raw data
     var pos0 = pa.makeCalcdata(trace, maindata);
+
     // calculate the bins
     if((trace['autobin' + maindata] !== false) || !(maindata + 'bins' in trace)) {
         trace[maindata + 'bins'] = Axes.autoBin(pos0, pa, trace['nbins' + maindata]);
@@ -112,6 +113,8 @@ module.exports = function calc(gd, trace) {
     // average and/or normalize the data, if needed
     if(doavg) total = doAvg(size, counts);
     if(normfunc) normfunc(size, total, inc);
+    if(trace.mode === 'cumulative') cdf(size);
+
 
     var serieslen = Math.min(pos.length, size.length),
         cd = [],
@@ -140,3 +143,9 @@ module.exports = function calc(gd, trace) {
 
     return cd;
 };
+
+function cdf(size) {
+    for(var i = 1; i < size.length; i++) {
+        size[i] += size[i - 1];
+    }
+}
