@@ -963,7 +963,7 @@ plots.plotAutoSize = function plotAutoSize(gd, layout, fullLayout) {
         // just hide it
         document.body.style.overflow = 'hidden';
     }
-    else if(isNumeric(frameMargins) && frameMargins > 0) {
+    else if(frameMargins) {
         var reservedMargins = calculateReservedMargins(gd._boundingBoxMargins),
             reservedWidth = reservedMargins.left + reservedMargins.right,
             reservedHeight = reservedMargins.bottom + reservedMargins.top,
