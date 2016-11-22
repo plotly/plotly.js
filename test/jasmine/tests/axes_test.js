@@ -1555,7 +1555,7 @@ describe('Test axes', function() {
         });
 
         it('should handle tickvals edge cases with category axes', function() {
-            var textOut = mockCalc({
+            var ax = {
                 type: 'category',
                 _categories: ['a', 'b', 'c', 'd'],
                 tickmode: 'array',
@@ -1563,7 +1563,8 @@ describe('Test axes', function() {
                 ticktext: ['A!', 'B?', 'B->C'],
                 range: [-0.5, 4.5],
                 nticks: 10
-            });
+            };
+            var textOut = mockCalc(ax);
 
             var expectedText = [
                 'A!', // category position, explicit text
@@ -1577,6 +1578,8 @@ describe('Test axes', function() {
                 // 'e', 5, -2: bad category and numbers out of range: omitted
             ];
             expect(textOut).toEqual(expectedText);
+            // make sure we didn't add any more axes accidentally
+            expect(ax._categories).toEqual(['a', 'b', 'c', 'd']);
         });
     });
 });
