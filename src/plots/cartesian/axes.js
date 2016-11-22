@@ -714,6 +714,12 @@ function arrayTicks(ax) {
     // make sure showing ticks doesn't accidentally add new categories
     var tickVal2l = ax.type === 'category' ? ax.d2l_noadd : ax.d2l;
 
+    // array ticks on log axes always show the full number
+    // (if no explicit ticktext overrides it)
+    if(ax.type === 'log' && String(ax.dtick).charAt(0) !== 'L') {
+        ax.dtick = 'L' + Math.pow(10, Math.floor(Math.min(ax.range[0], ax.range[1])) - 1);
+    }
+
     for(i = 0; i < vals.length; i++) {
         vali = tickVal2l(vals[i]);
         if(vali > tickMin && vali < tickMax) {

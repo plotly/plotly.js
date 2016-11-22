@@ -1535,10 +1535,10 @@ describe('Test axes', function() {
                 var textOut = mockCalc({
                     type: axType,
                     tickmode: 'array',
-                    tickvals: [1, 1.5, 2.6999999, 3, 3.999, 10, 0.1],
+                    tickvals: [1, 1.5, 2.6999999, 30, 39.999, 100, 0.1],
                     ticktext: ['One', '...and a half'],
                     // I'll be so happy when I can finally get rid of this switch!
-                    range: axType === 'log' ? [-0.2, 0.8] : [0.5, 5],
+                    range: axType === 'log' ? [-0.2, 1.8] : [0.5, 50],
                     nticks: 10
                 });
 
@@ -1546,8 +1546,8 @@ describe('Test axes', function() {
                     'One',
                     '...and a half', // the first two get explicit labels
                     '2.7', // 2.6999999 gets rounded to 2.7
-                    '3',
-                    '3.999' // 3.999 does not get rounded
+                    '30',
+                    '39.999' // 39.999 does not get rounded
                     // 10 and 0.1 are off scale
                 ];
                 expect(textOut).toEqual(expectedText, axType);
