@@ -9,8 +9,7 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
-var Lib = require('../lib');
+var defaultConfig = require('./plot_config');
 
 /**
  * Extends the plot config
@@ -20,5 +19,13 @@ var Lib = require('../lib');
  *
  */
 module.exports = function setPlotConfig(configObj) {
-    return Lib.extendFlat(Plotly.defaultConfig, configObj);
+    var keys = Object.keys(configObj);
+
+    for(var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+
+        defaultConfig[key].dflt = configObj[key];
+    }
+
+    return defaultConfig;
 };
