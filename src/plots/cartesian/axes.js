@@ -1153,7 +1153,9 @@ function formatDate(ax, out, hover, extraPrecision) {
             tt = suffix;
             suffix = '';
         }
-        else {
+        else if(tt.length === 8) {
+            // strip off seconds if they're zero (zero fractional seconds
+            // are already omitted)
             tt = tt.replace(/:00$/, '');
         }
     }
