@@ -75,8 +75,10 @@ describe('Test histogram2d', function() {
             return out;
         }
 
-        // remove tzOffset when we move to UTC
-        var oneDay = 24 * 3600000;
+        // remove tzJan/tzJuly when we move to UTC
+        var oneDay = 24 * 3600000,
+            tzJan = (new Date(1970, 0, 1)).getTimezoneOffset(),
+            tzJuly = (new Date(1970, 6, 1)).getTimezoneOffset();
 
         it('should handle both uniform and nonuniform date bins', function() {
             var out = _calc({
@@ -95,7 +97,7 @@ describe('Test histogram2d', function() {
             // lets also make it display the bins with nonuniform size,
             // and ensure we don't generate an extra bin on the end (see
             // first row of z below)
-            expect(out.y0).toBe('1969-07-02 15:24');
+            expect(out.y0).toBe(tzJan === tzJuly ? '1969-07-02 14:24' : '1969-07-02 15:24');
             expect(out.dy).toBe(365.2 * oneDay);
 
             expect(out.z).toEqual([
