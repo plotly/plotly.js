@@ -679,11 +679,11 @@ axes.calcTicks = function calcTicks(ax) {
     // show the exponent only on the last one
     ax._tmax = vals[vals.length - 1];
 
-    // for showing date suffixes: ax._prevSuffix holds what we showed most
-    // recently. Start with it cleared and mark that we're in calcTicks (ie
-    // calculating a whole string of these so we should care what the previous
-    // suffix was!)
-    ax._prevSuffix = '';
+    // for showing the rest of a date when the main tick label is only the
+    // latter part: ax._prevDateHead holds what we showed most recently.
+    // Start with it cleared and mark that we're in calcTicks (ie calculating a
+    // whole string of these so we should care what the previous date head was!)
+    ax._prevDateHead = '';
     ax._inCalcTicks = true;
 
     var ticksOut = new Array(vals.length);
@@ -1107,10 +1107,10 @@ function formatDate(ax, out, hover, extraPrecision) {
     var x = out.x,
         tr = ax._tickround,
         d = new Date(x),
-        // suffix completes the full date info, to be included
+        // headPart completes the full date info, to be included
         // with only the first tick or if any info before what's
         // shown has changed
-        suffix,
+        headPart,
         tt;
     if(hover && ax.hoverformat) {
         tt = modDateFormat(ax.hoverformat, x);
@@ -1129,12 +1129,12 @@ function formatDate(ax, out, hover, extraPrecision) {
         else if(tr === 'm') tt = monthFormat(d);
         else {
             if(tr === 'd') {
-                suffix = yearFormat(d);
+                headPart = yearFormat(d);
 
                 tt = dayFormat(d);
             }
             else {
-                suffix = yearMonthDayFormat(d);
+                headPart = yearMonthDayFormat(d);
 
                 tt = minuteFormat(d);
                 if(tr !== 'M') {
@@ -1151,8 +1151,8 @@ function formatDate(ax, out, hover, extraPrecision) {
         // we get extra precision in array mode or hover,
         // but it may be useless, strip it off
         if(tt === '00:00:00' || tt === '00:00') {
-            tt = suffix;
-            suffix = '';
+            tt = headPart;
+            headPart = '';
         }
         else if(tt.length === 8) {
             // strip off seconds if they're zero (zero fractional seconds
@@ -1161,16 +1161,16 @@ function formatDate(ax, out, hover, extraPrecision) {
         }
     }
 
-    if(suffix) {
+    if(headPart) {
         if(hover) {
-            // hover puts it all on one line, so suffix works best up front
-            // except for year suffix: turn this into "Jan 1, 2000" etc.
-            if(tr === 'd') tt += ', ' + suffix;
-            else tt = suffix + (tt ? ', ' + tt : '');
+            // hover puts it all on one line, so headPart works best up front
+            // except for year headPart: turn this into "Jan 1, 2000" etc.
+            if(tr === 'd') tt += ', ' + headPart;
+            else tt = headPart + (tt ? ', ' + tt : '');
         }
-        else if(!ax._inCalcTicks || (suffix !== ax._prevSuffix)) {
-            tt += '<br>' + suffix;
-            ax._prevSuffix = suffix;
+        else if(!ax._inCalcTicks || (headPart !== ax._prevDateHead)) {
+            tt += '<br>' + headPart;
+            ax._prevDateHead = headPart;
         }
     }
     out.text = tt;
