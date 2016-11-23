@@ -13,9 +13,8 @@ var isNumeric = require('fast-isnumeric');
 
 var BADNUM = require('../constants/numerical').BADNUM;
 
-// precompile these regex's for speed
-var FRONTJUNK = /^['"%,$#\s']+/;
-var ENDJUNK = /['"%,$#\s']+$/;
+// precompile for speed
+var JUNK = /^['"%,$#\s']+|[, ]|['"%,$#\s']+$/g;
 
 /**
  * cleanNumber: remove common leading and trailing cruft
@@ -23,7 +22,7 @@ var ENDJUNK = /['"%,$#\s']+$/;
  */
 module.exports = function cleanNumber(v) {
     if(typeof v === 'string') {
-        v = v.replace(FRONTJUNK, '').replace(ENDJUNK, '');
+        v = v.replace(JUNK, '');
     }
 
     if(isNumeric(v)) return Number(v);

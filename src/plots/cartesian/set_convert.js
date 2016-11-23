@@ -313,6 +313,14 @@ module.exports = function setConvert(ax) {
             return c === -1 ? BADNUM : c;
         };
 
+        ax.d2l_noadd = function(v) {
+            // d2c variant that that won't add categories but will also
+            // allow numbers to be mapped to the linearized axis positions
+            var index = ax._categories.indexOf(v);
+            if(index !== -1) return index;
+            if(typeof v === 'number') return v;
+        };
+
         ax.d2l = ax.d2c;
         ax.r2l = num;
         ax.l2r = num;

@@ -160,40 +160,6 @@ module.exports = {
             ].join(' ')
         }
     },
-    // 3D attributes commented out until I finish them in a later PR
-    // tilt: {
-    //     // degrees to tilt the pie back from straight on
-    //     valType: 'number',
-    //     min: 0,
-    //     max: 90,
-    //     dflt: 0
-    // },
-    // tiltaxis: {
-    //     // degrees away from straight up to tilt the pie
-    //     // only has an effect if tilt is nonzero
-    //     valType: 'number',
-    //     min: -360,
-    //     max: 360,
-    //     dflt: 0
-    // },
-    // depth: {
-    //     // "3D" size, as a fraction of radius
-    //     // only has an effect if tilt is nonzero
-    //     valType: 'number',
-    //     min: 0,
-    //     max: 10,
-    //     dflt: 0.5
-    // },
-    // shading: {
-    //     // how much darker to make the sides than the top,
-    //     // with a 3D effect. We could of course get all
-    //     // fancy with lighting effects, but maybe this is
-    //     // sufficient.
-    //     valType: 'number',
-    //     min: 0,
-    //     max: 1,
-    //     dflt: 0.2
-    // },
     hole: {
         valType: 'number',
         role: 'style',

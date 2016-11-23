@@ -1,4 +1,8 @@
+var Plots = require('@src/plots/plots');
+var Lib = require('@src/lib');
+
 var supplyDefaults = require('@src/traces/histogram/defaults');
+var calc = require('@src/traces/histogram/calc');
 
 
 describe('Test histogram', function() {
@@ -127,4 +131,73 @@ describe('Test histogram', function() {
 
     });
 
+
+    describe('calc', function() {
+        function _calc(opts) {
+            var base = { type: 'histogram' },
+                trace = Lib.extendFlat({}, base, opts),
+                gd = { data: [trace] };
+
+            Plots.supplyDefaults(gd);
+            var fullTrace = gd._fullData[0];
+
+            var out = calc(gd, fullTrace);
+            delete out[0].trace;
+            return out;
+        }
+
+        // remove tzOffset when we move to UTC
+        var tzOffset = (new Date(1970, 0, 1)).getTimezoneOffset() * 60000,
+            oneDay = 24 * 3600000;
+
+        it('should handle auto dates with nonuniform (month) bins', function() {
+            var out = _calc({
+                x: ['1970-01-01', '1970-01-01', '1971-01-01', '1973-01-01'],
+                nbinsx: 4
+            });
+
+            // TODO: https://github.com/plotly/plotly.js/issues/1151
+            // these bins should shift when we implement that
+
+            // note that x1-x0 = 365 days, but the others are 365.5 days
+
+            // ALSO: this gives half-day gaps between all but the first two
+            // bars. Now that we have explicit per-bar positioning, perhaps
+            // we should fill the space, rather than insisting on equal-width
+            // bars?
+            var x0 = tzOffset + 15768000000,
+                x1 = x0 + oneDay * 365,
+                x2 = x1 + oneDay * 365.5,
+                x3 = x2 + oneDay * 365.5;
+
+            expect(out).toEqual([
+                // full calcdata has x and y too (and t in the first one),
+                // but those come later from setPositions.
+                {b: 0, p: x0, s: 2},
+                {b: 0, p: x1, s: 1},
+                {b: 0, p: x2, s: 0},
+                {b: 0, p: x3, s: 1}
+            ]);
+        });
+
+        it('should handle auto dates with uniform (day) bins', function() {
+            var out = _calc({
+                x: ['1970-01-01', '1970-01-01', '1970-01-02', '1970-01-04'],
+                nbinsx: 4
+            });
+
+            var x0 = tzOffset,
+                x1 = x0 + oneDay,
+                x2 = x1 + oneDay,
+                x3 = x2 + oneDay;
+
+            expect(out).toEqual([
+                {b: 0, p: x0, s: 2},
+                {b: 0, p: x1, s: 1},
+                {b: 0, p: x2, s: 0},
+                {b: 0, p: x3, s: 1}
+            ]);
+        });
+
+    });
 });
