@@ -872,7 +872,7 @@ function autoTickRound(ax) {
         // not necessarily *all* the information in tick0 though, if it's really odd
         // minimal string length for tick0: 'd' is 10, 'M' is 16, 'S' is 19
         // take off a leading minus (year < 0 so length is consistent)
-        var tick0ms = Lib.dateTime2ms(ax.tick0) || 0,
+        var tick0ms = Lib.dateTime2ms(ax.tick0),
             tick0str = Lib.ms2DateTime(tick0ms).replace(/^-/, ''),
             tick0len = tick0str.length;
 
@@ -1106,7 +1106,6 @@ function tickTextObj(ax, x, text) {
 function formatDate(ax, out, hover, extraPrecision) {
     var x = out.x,
         tr = ax._tickround,
-        trOriginal = tr,
         d = new Date(x),
         // suffix completes the full date info, to be included
         // with only the first tick or if any info before what's
@@ -1145,17 +1144,13 @@ function formatDate(ax, out, hover, extraPrecision) {
                             .substr(1);
                     }
                 }
-                else if(trOriginal === 'd') {
-                    // for hover on axes with day ticks, minuteFormat (which
-                    // only includes %H:%M) isn't enough, you want the date too
-                    tt = dayFormat(d) + ' ' + tt;
-                }
             }
         }
     }
-    if(ax.tickmode === 'array') {
-        // we get extra precision in array mode, but it may be useless, strip it off
-        if(tt === '00:00:00') {
+    if(hover || ax.tickmode === 'array') {
+        // we get extra precision in array mode or hover,
+        // but it may be useless, strip it off
+        if(tt === '00:00:00' || tt === '00:00') {
             tt = suffix;
             suffix = '';
         }
@@ -1169,7 +1164,9 @@ function formatDate(ax, out, hover, extraPrecision) {
     if(suffix) {
         if(hover) {
             // hover puts it all on one line, so suffix works best up front
-            tt = suffix + (tt ? ' ' + tt : '');
+            // except for year suffix: turn this into "Jan 1, 2000" etc.
+            if(tr === 'd') tt += ', ' + suffix;
+            else tt = suffix + (tt ? ', ' + tt : '');
         }
         else if(!ax._inCalcTicks || (suffix !== ax._prevSuffix)) {
             tt += '<br>' + suffix;
