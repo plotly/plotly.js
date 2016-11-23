@@ -611,8 +611,6 @@ axes.autoBin = function(data, ax, nbins, is2d) {
 // in any case, set tickround to # of digits to round tick labels to,
 // or codes to this effect for log and date scales
 axes.calcTicks = function calcTicks(ax) {
-    if(ax.tickmode === 'array') return arrayTicks(ax);
-
     var rng = ax.range.map(ax.r2l);
 
     // calculate max number of (auto) ticks to display based on plot size
@@ -629,6 +627,11 @@ axes.calcTicks = function calcTicks(ax) {
                 nt = Lib.constrain(ax._length / minPx, 4, 9) + 1;
             }
         }
+
+        // add a couple of extra digits for filling in ticks when we
+        // have explicit tickvals without tick text
+        if(ax.tickmode === 'array') nt *= 100;
+
         axes.autoTicks(ax, Math.abs(rng[1] - rng[0]) / nt);
         // check for a forced minimum dtick
         if(ax._minDtick > 0 && ax.dtick < ax._minDtick * 2) {
@@ -644,6 +647,10 @@ axes.calcTicks = function calcTicks(ax) {
 
     // now figure out rounding of tick values
     autoTickRound(ax);
+
+    // now that we've figured out the auto values for formatting
+    // in case we're missing some ticktext, we can break out for array ticks
+    if(ax.tickmode === 'array') return arrayTicks(ax);
 
     // find the first tick
     ax._tmin = axes.tickFirst(ax);
@@ -672,11 +679,11 @@ axes.calcTicks = function calcTicks(ax) {
     // show the exponent only on the last one
     ax._tmax = vals[vals.length - 1];
 
-    // for showing date suffixes: ax._prevSuffix holds what we showed most
-    // recently. Start with it cleared and mark that we're in calcTicks (ie
-    // calculating a whole string of these so we should care what the previous
-    // suffix was!)
-    ax._prevSuffix = '';
+    // for showing the rest of a date when the main tick label is only the
+    // latter part: ax._prevDateHead holds what we showed most recently.
+    // Start with it cleared and mark that we're in calcTicks (ie calculating a
+    // whole string of these so we should care what the previous date head was!)
+    ax._prevDateHead = '';
     ax._inCalcTicks = true;
 
     var ticksOut = new Array(vals.length);
@@ -704,8 +711,17 @@ function arrayTicks(ax) {
     // except with more precision to the numbers
     if(!Array.isArray(text)) text = [];
 
+    // make sure showing ticks doesn't accidentally add new categories
+    var tickVal2l = ax.type === 'category' ? ax.d2l_noadd : ax.d2l;
+
+    // array ticks on log axes always show the full number
+    // (if no explicit ticktext overrides it)
+    if(ax.type === 'log' && String(ax.dtick).charAt(0) !== 'L') {
+        ax.dtick = 'L' + Math.pow(10, Math.floor(Math.min(ax.range[0], ax.range[1])) - 1);
+    }
+
     for(i = 0; i < vals.length; i++) {
-        vali = ax.d2l(vals[i]);
+        vali = tickVal2l(vals[i]);
         if(vali > tickMin && vali < tickMax) {
             if(text[i] === undefined) ticksOut[j] = axes.tickText(ax, vali);
             else ticksOut[j] = tickTextObj(ax, vali, String(text[i]));
@@ -1030,13 +1046,14 @@ axes.tickText = function(ax, x, hover) {
         hideexp,
         arrayMode = ax.tickmode === 'array',
         extraPrecision = hover || arrayMode,
-        i;
+        i,
+        tickVal2l = ax.type === 'category' ? ax.d2l_noadd : ax.d2l;
 
     if(arrayMode && Array.isArray(ax.ticktext)) {
         var rng = ax.range.map(ax.r2l),
             minDiff = Math.abs(rng[1] - rng[0]) / 10000;
         for(i = 0; i < ax.ticktext.length; i++) {
-            if(Math.abs(x - ax.d2l(ax.tickvals[i])) < minDiff) break;
+            if(Math.abs(x - tickVal2l(ax.tickvals[i])) < minDiff) break;
         }
         if(i < ax.ticktext.length) {
             out.text = String(ax.ticktext[i]);
@@ -1089,12 +1106,11 @@ function tickTextObj(ax, x, text) {
 function formatDate(ax, out, hover, extraPrecision) {
     var x = out.x,
         tr = ax._tickround,
-        trOriginal = tr,
         d = new Date(x),
-        // suffix completes the full date info, to be included
+        // headPart completes the full date info, to be included
         // with only the first tick or if any info before what's
         // shown has changed
-        suffix,
+        headPart,
         tt;
     if(hover && ax.hoverformat) {
         tt = modDateFormat(ax.hoverformat, x);
@@ -1113,12 +1129,12 @@ function formatDate(ax, out, hover, extraPrecision) {
         else if(tr === 'm') tt = monthFormat(d);
         else {
             if(tr === 'd') {
-                if(!hover) suffix = '<br>' + yearFormat(d);
+                headPart = yearFormat(d);
 
                 tt = dayFormat(d);
             }
             else {
-                if(!hover) suffix = '<br>' + yearMonthDayFormat(d);
+                headPart = yearMonthDayFormat(d);
 
                 tt = minuteFormat(d);
                 if(tr !== 'M') {
@@ -1128,17 +1144,34 @@ function formatDate(ax, out, hover, extraPrecision) {
                             .substr(1);
                     }
                 }
-                else if(trOriginal === 'd') {
-                    // for hover on axes with day ticks, minuteFormat (which
-                    // only includes %H:%M) isn't enough, you want the date too
-                    tt = dayFormat(d) + ' ' + tt;
-                }
             }
         }
     }
-    if(suffix && (!ax._inCalcTicks || (suffix !== ax._prevSuffix))) {
-        tt += suffix;
-        ax._prevSuffix = suffix;
+    if(hover || ax.tickmode === 'array') {
+        // we get extra precision in array mode or hover,
+        // but it may be useless, strip it off
+        if(tt === '00:00:00' || tt === '00:00') {
+            tt = headPart;
+            headPart = '';
+        }
+        else if(tt.length === 8) {
+            // strip off seconds if they're zero (zero fractional seconds
+            // are already omitted)
+            tt = tt.replace(/:00$/, '');
+        }
+    }
+
+    if(headPart) {
+        if(hover) {
+            // hover puts it all on one line, so headPart works best up front
+            // except for year headPart: turn this into "Jan 1, 2000" etc.
+            if(tr === 'd') tt += ', ' + headPart;
+            else tt = headPart + (tt ? ', ' + tt : '');
+        }
+        else if(!ax._inCalcTicks || (headPart !== ax._prevDateHead)) {
+            tt += '<br>' + headPart;
+            ax._prevDateHead = headPart;
+        }
     }
     out.text = tt;
 }
