@@ -64,8 +64,10 @@ module.exports = function calc(gd, trace) {
     z = [];
     var onecol = [],
         zerocol = [],
-        xbins = (typeof(trace.xbins.size) === 'string') ? [] : trace.xbins,
-        ybins = (typeof(trace.xbins.size) === 'string') ? [] : trace.ybins,
+        nonuniformBinsX = (typeof(trace.xbins.size) === 'string'),
+        nonuniformBinsY = (typeof(trace.ybins.size) === 'string'),
+        xbins = nonuniformBinsX ? [] : trace.xbins,
+        ybins = nonuniformBinsY ? [] : trace.ybins,
         total = 0,
         n,
         m,
@@ -103,10 +105,10 @@ module.exports = function calc(gd, trace) {
 
     for(i = binStart; i < binEnd; i = Axes.tickIncrement(i, binspec.size)) {
         onecol.push(sizeinit);
-        if(Array.isArray(xbins)) xbins.push(i);
+        if(nonuniformBinsX) xbins.push(i);
         if(doavg) zerocol.push(0);
     }
-    if(Array.isArray(xbins)) xbins.push(i);
+    if(nonuniformBinsX) xbins.push(i);
 
     var nx = onecol.length;
     x0 = trace.xbins.start;
@@ -121,10 +123,10 @@ module.exports = function calc(gd, trace) {
 
     for(i = binStart; i < binEnd; i = Axes.tickIncrement(i, binspec.size)) {
         z.push(onecol.concat());
-        if(Array.isArray(ybins)) ybins.push(i);
+        if(nonuniformBinsY) ybins.push(i);
         if(doavg) counts.push(zerocol.concat());
     }
-    if(Array.isArray(ybins)) ybins.push(i);
+    if(nonuniformBinsY) ybins.push(i);
 
     var ny = z.length;
     y0 = trace.ybins.start;
@@ -134,13 +136,30 @@ module.exports = function calc(gd, trace) {
 
     if(densitynorm) {
         xinc = onecol.map(function(v, i) {
-            if(Array.isArray(xbins)) return 1 / (xbins[i + 1] - xbins[i]);
+            if(nonuniformBinsX) return 1 / (xbins[i + 1] - xbins[i]);
             return 1 / dx;
         });
         yinc = z.map(function(v, i) {
-            if(Array.isArray(ybins)) return 1 / (ybins[i + 1] - ybins[i]);
+            if(nonuniformBinsY) return 1 / (ybins[i + 1] - ybins[i]);
             return 1 / dy;
         });
+    }
+
+    // for date axes we need bin bounds to be calcdata. For nonuniform bins
+    // we already have this, but uniform with start/end/size they're still strings.
+    if(!nonuniformBinsX && xa.type === 'date') {
+        xbins = {
+            start: xa.r2c(xbins.start),
+            end: xa.r2c(xbins.end),
+            size: xbins.size
+        };
+    }
+    if(!nonuniformBinsY && ya.type === 'date') {
+        ybins = {
+            start: ya.r2c(ybins.start),
+            end: ya.r2c(ybins.end),
+            size: ybins.size
+        };
     }
 
 

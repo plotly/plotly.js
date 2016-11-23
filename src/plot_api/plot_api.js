@@ -633,8 +633,7 @@ function checkMoveTracesArgs(gd, currentIndices, newIndices) {
  * @param newIndices
  */
 function checkAddTracesArgs(gd, traces, newIndices) {
-    var i,
-        value;
+    var i, value;
 
     // check that gd has attribute 'data' and 'data' is array
     if(!Array.isArray(gd.data)) {
@@ -956,10 +955,16 @@ Plotly.addTraces = function addTraces(gd, traces, newIndices) {
     if(!Array.isArray(traces)) {
         traces = [traces];
     }
+
+    // make sure traces do not repeat existing ones
+    traces = traces.map(function(trace) {
+        return Lib.extendFlat({}, trace);
+    });
+
     helpers.cleanData(traces, gd.data);
 
     // add the traces to gd.data (no redrawing yet!)
-    for(i = 0; i < traces.length; i += 1) {
+    for(i = 0; i < traces.length; i++) {
         gd.data.push(traces[i]);
     }
 

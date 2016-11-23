@@ -414,7 +414,6 @@ describe('Test plot api', function() {
 
             // make sure we didn't muck with gd.data if things failed!
             expect(gd).toEqual(expected);
-
         });
 
         it('should throw an error when traces and newIndices arrays are unequal', function() {
@@ -454,7 +453,6 @@ describe('Test plot api', function() {
             expect(gd.data[3].uid).toBeDefined();
             expect(PlotlyInternal.redraw).not.toHaveBeenCalled();
             expect(PlotlyInternal.moveTraces).toHaveBeenCalledWith(gd, [-2, -1], [1, 3]);
-
         });
 
         it('should work when newIndices has negative indices', function() {
@@ -465,7 +463,6 @@ describe('Test plot api', function() {
             expect(gd.data[3].uid).toBeDefined();
             expect(PlotlyInternal.redraw).not.toHaveBeenCalled();
             expect(PlotlyInternal.moveTraces).toHaveBeenCalledWith(gd, [-2, -1], [-3, -1]);
-
         });
 
         it('should work when newIndices is an integer', function() {
@@ -474,7 +471,21 @@ describe('Test plot api', function() {
             expect(gd.data[2].uid).toBeDefined();
             expect(PlotlyInternal.redraw).not.toHaveBeenCalled();
             expect(PlotlyInternal.moveTraces).toHaveBeenCalledWith(gd, [-1], [0]);
+        });
 
+        it('should work when adding an existing trace', function() {
+            Plotly.addTraces(gd, gd.data[0]);
+
+            expect(gd.data.length).toEqual(3);
+            expect(gd.data[0]).not.toBe(gd.data[2]);
+        });
+
+        it('should work when duplicating the existing data', function() {
+            Plotly.addTraces(gd, gd.data);
+
+            expect(gd.data.length).toEqual(4);
+            expect(gd.data[0]).not.toBe(gd.data[2]);
+            expect(gd.data[1]).not.toBe(gd.data[3]);
         });
     });
 

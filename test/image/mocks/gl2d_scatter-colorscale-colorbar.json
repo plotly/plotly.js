@@ -134,6 +134,15 @@
             ],
             "type": "scattergl",
             "mode": "markers"
+        },
+        {
+            "x": [20],
+            "y": [5.5],
+            "marker": {
+                "size": 20
+            },
+            "type": "scattergl",
+            "mode": "markers"
         }
     ],
     "layout": {
@@ -152,7 +161,7 @@
                 4,
                 6
             ],
-            "autorange": true
+            "autorange": false
         },
         "height": 598,
         "width": 1080,

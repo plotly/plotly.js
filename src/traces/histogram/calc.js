@@ -47,8 +47,8 @@ module.exports = function calc(gd, trace) {
     }
 
     var binspec = trace[maindata + 'bins'],
-        allbins = typeof binspec.size === 'string',
-        bins = allbins ? [] : binspec,
+        nonuniformBins = typeof binspec.size === 'string',
+        bins = nonuniformBins ? [] : binspec,
         // make the empty bin array
         i2,
         binend,
@@ -85,11 +85,21 @@ module.exports = function calc(gd, trace) {
         size.push(sizeinit);
         // nonuniform bins (like months) we need to search,
         // rather than straight calculate the bin we're in
-        if(allbins) bins.push(i);
+        if(nonuniformBins) bins.push(i);
         // nonuniform bins also need nonuniform normalization factors
         if(densitynorm) inc.push(1 / (i2 - i));
         if(doavg) counts.push(0);
         i = i2;
+    }
+
+    // for date axes we need bin bounds to be calcdata. For nonuniform bins
+    // we already have this, but uniform with start/end/size they're still strings.
+    if(!nonuniformBins && pa.type === 'date') {
+        bins = {
+            start: pa.r2c(bins.start),
+            end: pa.r2c(bins.end),
+            size: bins.size
+        };
     }
 
     var nMax = size.length;

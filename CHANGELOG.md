@@ -9,6 +9,79 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+
+## [1.20.5] -- 2016-11-23
+
+### Fixed
+- Fix 1.20.0 regression in handling numerical strings including commas and spaces
+  [#1185]
+- Fix 1.20.0 regression involving date histograms [#1186]
+- Fix numerous  tickvals` and `ticktext` edge cases [#1191]
+
+
+## [1.20.4] -- 2016-11-21
+
+### Fixed
+- Fix metaKeys field `PlotSchema.get()` output
+
+## [1.20.3] -- 2016-11-21
+
+### Fixed
+- Remove infinite loop when plotting 1-pt `scattergl` traces [#1168]
+- Fix updatemenu bug where the wrong button was set to active [#1176]
+- Fix `addTraces` when called with existing traces as input [#1175]
+
+
+## [1.20.2] -- 2016-11-17
+
+### Fixed
+- Fix hover labels in stacked bar charts [#1163]
+- Fix mode bar zoom buttons on date axes [#1162]
+
+
+## [1.20.1] -- 2016-11-16
+
+### Fixed
+- Fix annotation positioning on categorical axes [#1155]
+
+
+## [1.20.0] -- 2016-11-15
+
+### Added
+- Allow date string inputs for axis ranges, `tick0`, `dtick`, annotation / image
+  positions, histogram bins [#1078, #1150]
+- Add special `dtick` values for log axes [#1078]
+- Add `visible` attribute to annotations, shapes and images items [#1110]
+- Expose events on slider start/change/end [#1126]
+- Expose event on updatemenu button click [#1128]
+- Allow custom transform module to have supply layout default handler [#1122]
+
+### Changed
+- Increase `scattergl` precision [#1114]
+- Use `topojson-client` to convert topojson to geojson [#1147]
+
+### Fixed
+- Fix hover labels for multi-trace `scattergl` graphs (bug introduced in
+  `1.18.0`) [#1148]
+- Fix date format on hover on full hour [#1078]
+- Fix bar labels for non-zero `base` values [#1142]
+- Scatter colorscale now yield correct colors when cmin and cmax ashow re equal
+  [#1112]
+- Fix `filter` transform for categorical `target` arrays with range operations
+  [#1120]
+- Make sure frames with `null` values clear array containers [#1118]
+- Fix animations involving trace `opacity` [#1146]
+- Fix fallback for non-animatable trace modules (bug introduced in `1.18.1`)
+  [#1141]
+- Fix race condition in animation resolution when coupled with `relayout`
+  [#1108]
+- Enforce casting requested frame names to strings [#1124]
+- `Plotly.animte` no longer breaks when passing `null` frames [#1121]
+- `Plotly.PlotSchema.get` now correctly list rangeslider and rangeselector under
+  `xaxis` only [#1144]
+- `Plotly.relayout` correctly updates arbitrary layout attributes [#1133]
+
+
 ## [1.19.2] -- 2016-11-02
 
 ### Fixed

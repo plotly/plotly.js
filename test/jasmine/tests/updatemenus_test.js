@@ -462,6 +462,52 @@ describe('update menus interactions', function() {
         });
     });
 
+    it('should update correctly on failed binding comparisons', function(done) {
+
+        // See https://github.com/plotly/plotly.js/issues/1169
+        // for more info.
+
+        var data = [{
+            y: [1, 2, 3],
+            visible: true
+        }, {
+            y: [2, 3, 1],
+            visible: false
+        }, {
+            y: [3, 1, 2],
+            visible: false
+        }];
+
+        var layout = {
+            updatemenus: [{
+                buttons: [{
+                    label: 'a',
+                    method: 'restyle',
+                    args: ['visible', [true, false, false]]
+                }, {
+                    label: 'b',
+                    method: 'restyle',
+                    args: ['visible', [false, true, false]]
+                }, {
+                    label: 'c',
+                    method: 'restyle',
+                    args: ['visible', [false, false, true]]
+                }]
+            }]
+        };
+
+        Plotly.newPlot(gd, data, layout).then(function() {
+            return click(selectHeader(0));
+        })
+        .then(function() {
+            return click(selectButton(1));
+        })
+        .then(function() {
+            assertActive(gd, [1]);
+        })
+        .then(done);
+    });
+
     it('should change color on mouse over', function(done) {
         var INDEX_0 = 2,
             INDEX_1 = gd.layout.updatemenus[1].active;
