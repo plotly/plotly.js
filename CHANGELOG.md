@@ -9,6 +9,16 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+
+## [1.20.5] -- 2016-11-23
+
+### Fixed
+- Fix 1.20.0 regression in handling numerical strings including commas and spaces
+  [#1185]
+- Fix 1.20.0 regression involving date histograms [#1186]
+- Fix numerous  tickvals` and `ticktext` edge cases [#1191]
+
+
 ## [1.20.4] -- 2016-11-21
 
 ### Fixed
