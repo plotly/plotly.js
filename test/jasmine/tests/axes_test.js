@@ -1402,7 +1402,7 @@ describe('Test axes', function() {
         }
 
         function mockHoverText(ax, x) {
-            var xCalc = (ax.d2l_noadd || ax.d2c)(x);
+            var xCalc = (ax.d2l_noadd || ax.d2l)(x);
             var tickTextObj = Axes.tickText(ax, xCalc, true);
             return tickTextObj.text;
         }
@@ -1433,7 +1433,7 @@ describe('Test axes', function() {
                 'Feb 12'
             ];
             expect(textOut).toEqual(expectedText);
-            expect(mockHoverText(ax, ax.d2c('1999-12-18 15:34:33.3')))
+            expect(mockHoverText(ax, '1999-12-18 15:34:33.3'))
                 .toBe('Dec 18, 1999, 15:34');
 
             ax = {
@@ -1454,7 +1454,7 @@ describe('Test axes', function() {
                 '00:00<br>Jan 6, 2000'
             ];
             expect(textOut).toEqual(expectedText);
-            expect(mockHoverText(ax, ax.d2c('2000-01-04 15:34:33.3')))
+            expect(mockHoverText(ax, '2000-01-04 15:34:33.3'))
                 .toBe('Jan 4, 2000, 15:34:33');
 
             ax = {
@@ -1475,9 +1475,9 @@ describe('Test axes', function() {
                 '00:00:02'
             ];
             expect(textOut).toEqual(expectedText);
-            expect(mockHoverText(ax, ax.d2c('2000-02-04 00:00:00.123456')))
+            expect(mockHoverText(ax, '2000-02-04 00:00:00.123456'))
                 .toBe('Feb 4, 2000, 00:00:00.1235');
-            expect(mockHoverText(ax, ax.d2c('2000-02-04 00:00:00')))
+            expect(mockHoverText(ax, '2000-02-04 00:00:00'))
                 .toBe('Feb 4, 2000');
         });
 
@@ -1500,9 +1500,9 @@ describe('Test axes', function() {
                 '00:05<br>Feb 12, 2000'
             ];
             expect(textOut).toEqual(expectedText);
-            expect(mockHoverText(ax, ax.d2c('2000-02-04 00:00:00.123456')))
+            expect(mockHoverText(ax, '2000-02-04 00:00:00.123456'))
                 .toBe('Feb 4, 2000');
-            expect(mockHoverText(ax, ax.d2c('2000-02-04 00:00:05.123456')))
+            expect(mockHoverText(ax, '2000-02-04 00:00:05.123456'))
                 .toBe('Feb 4, 2000, 00:00:05');
         });
 
@@ -1559,9 +1559,9 @@ describe('Test axes', function() {
                 '00:00:01<br>Jan 1, 2013'
             ];
             expect(textOut).toEqual(expectedText);
-            expect(mockHoverText(ax, ax.d2c('2012-01-01')))
+            expect(mockHoverText(ax, '2012-01-01'))
                 .toBe('New year');
-            expect(mockHoverText(ax, ax.d2c('2012-01-01 12:34:56.1234')))
+            expect(mockHoverText(ax, '2012-01-01 12:34:56.1234'))
                 .toBe('Jan 1, 2012, 12:34:56');
         });
 
@@ -1587,8 +1587,8 @@ describe('Test axes', function() {
                     // 10 and 0.1 are off scale
                 ];
                 expect(textOut).toEqual(expectedText, axType);
-                expect(mockHoverText(ax, ax.c2l(1))).toBe('One');
-                expect(mockHoverText(ax, ax.c2l(19.999))).toBe('19.999');
+                expect(mockHoverText(ax, 1)).toBe('One');
+                expect(mockHoverText(ax, 19.999)).toBe('19.999');
             });
         });
 

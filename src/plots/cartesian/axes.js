@@ -931,9 +931,9 @@ axes.tickIncrement = function(x, dtick, axrev) {
     // Dates: months (or years)
     if(tType === 'M') {
         var y = new Date(x);
-        // is this browser consistent? setMonth edits a date but
+        // is this browser consistent? setUTCMonth edits a date but
         // returns that date's milliseconds
-        return y.setMonth(y.getUTCMonth() + dtSigned);
+        return y.setUTCMonth(y.getUTCMonth() + dtSigned);
     }
 
     // Log scales: Linear, Digits
@@ -986,7 +986,7 @@ axes.tickFirst = function(ax) {
         r0 = new Date(r0);
         mdif = (r0.getUTCFullYear() - t0.getUTCFullYear()) * 12 +
             r0.getUTCMonth() - t0.getUTCMonth();
-        t1 = t0.setMonth(t0.getUTCMonth() +
+        t1 = t0.setUTCMonth(t0.getUTCMonth() +
             (Math.round(mdif / dtNum) + (axrev ? 1 : -1)) * dtNum);
 
         while(axrev ? t1 > r0 : t1 < r0) {
