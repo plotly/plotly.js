@@ -29,6 +29,8 @@ describe('dates', function() {
                 ['0122-04-08 08:22', new Date(122, 3, 8, 8, 22)],
                 ['-0098-11-19 23:59:59', new Date(-98, 10, 19, 23, 59, 59)],
                 ['-9730-12-01 12:34:56.789', new Date(-9730, 11, 1, 12, 34, 56, 789)],
+                // random whitespace before and after gets stripped
+                ['\r\n\t -9730-12-01 12:34:56.789\r\n\t ', new Date(-9730, 11, 1, 12, 34, 56, 789)],
                 // first century, also allow month, day, and hour to be 1-digit, and not all
                 // three digits of milliseconds
                 ['0013-1-1 1:00:00.6', d1c],
@@ -40,9 +42,19 @@ describe('dates', function() {
                 // 2-digit years get mapped to now-70 -> now+29
                 [thisYear_2 + '-05', new Date(thisYear, 4, 1)],
                 [nowMinus70_2 + '-10-18', new Date(nowMinus70, 9, 18)],
-                [nowPlus29_2 + '-02-12 14:29:32', new Date(nowPlus29, 1, 12, 14, 29, 32)]
+                [nowPlus29_2 + '-02-12 14:29:32', new Date(nowPlus29, 1, 12, 14, 29, 32)],
+
+                // including timezone info (that we discard)
+                ['2014-03-04 08:15Z', new Date(2014, 2, 4, 8, 15)],
+                ['2014-03-04 08:15:00.00z', new Date(2014, 2, 4, 8, 15)],
+                ['2014-03-04 08:15:34+1200', new Date(2014, 2, 4, 8, 15, 34)],
+                ['2014-03-04 08:15:34.567-05:45', new Date(2014, 2, 4, 8, 15, 34, 567)],
             ].forEach(function(v) {
                 expect(Lib.dateTime2ms(v[0])).toBe(+v[1], v[0]);
+
+                // ISO-8601: all the same stuff with t or T as the separator
+                expect(Lib.dateTime2ms(v[0].trim().replace(' ', 't'))).toBe(+v[1], v[0].trim().replace(' ', 't'));
+                expect(Lib.dateTime2ms('\r\n\t ' + v[0].trim().replace(' ', 'T') + '\r\n\t ')).toBe(+v[1], v[0].trim().replace(' ', 'T'));
             });
         });
 
@@ -105,7 +117,9 @@ describe('dates', function() {
                 '2015-01-00', '2015-01-32', '2015-02-29', '2015-04-31', '2015-01-001', // bad day (incl non-leap year)
                 '2015-01-01 24:00', '2015-01-01 -1:00', '2015-01-01 001:00', // bad hour
                 '2015-01-01 12:60', '2015-01-01 12:-1', '2015-01-01 12:001', '2015-01-01 12:1', // bad minute
-                '2015-01-01 12:00:60', '2015-01-01 12:00:-1', '2015-01-01 12:00:001', '2015-01-01 12:00:1' // bad second
+                '2015-01-01 12:00:60', '2015-01-01 12:00:-1', '2015-01-01 12:00:001', '2015-01-01 12:00:1', // bad second
+                '2015-01-01T', '2015-01-01TT12:34', // bad ISO separators
+                '2015-01-01Z', '2015-01-01T12Z', '2015-01-01T12:34Z05:00', '2015-01-01 12:34+500', '2015-01-01 12:34-5:00' // bad TZ info
             ].forEach(function(v) {
                 expect(Lib.dateTime2ms(v)).toBeUndefined(v);
             });
