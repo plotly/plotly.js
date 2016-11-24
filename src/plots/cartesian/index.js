@@ -68,9 +68,12 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
                     // traces 0 and 2. Trace 1 also needs to be updated, otherwise its fill
                     // is outdated. So this retroactively adds the previous trace if the
                     // traces are interdependent.
-                    if(pcd &&
-                            ['tonextx', 'tonexty', 'tonext'].indexOf(trace.fill) !== -1 &&
-                            cdSubplot.indexOf(pcd) === -1) {
+                    if(
+                        pcd &&
+                        pcd[0].trace.xaxis + pcd[0].trace.yaxis === subplot &&
+                        ['tonextx', 'tonexty', 'tonext'].indexOf(trace.fill) !== -1 &&
+                        cdSubplot.indexOf(pcd) === -1
+                    ) {
                         cdSubplot.push(pcd);
                     }
 
