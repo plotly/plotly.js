@@ -24,7 +24,7 @@ HeatmapGl.basePlotModule = require('../../plots/gl2d');
 HeatmapGl.categories = ['gl2d', '2dMap'];
 HeatmapGl.meta = {
     description: [
-        'WebGL heatmap (beta)'
+        'WebGL version of the heatmap trace type.'
     ].join(' ')
 };
 
