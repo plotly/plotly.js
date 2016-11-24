@@ -19,6 +19,7 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var anchorUtils = require('../legend/anchor_utils');
 
 var constants = require('./constants');
+var ScrollBox = require('./scrollbox');
 
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout,
@@ -288,6 +289,16 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
         index: 0,
     };
 
+    var fullLayout = gd._fullLayout,
+        scrollBoxId = 'updatemenus' + fullLayout._uid + menuOpts._index,
+        scrollBoxPosition = {
+            l: menuOpts.lx + menuOpts.borderwidth + x0 + menuOpts.pad.l,
+            t: menuOpts.ly + menuOpts.borderwidth + y0 + menuOpts.pad.t,
+            w: Math.max(menuOpts.openWidth, menuOpts.headerWidth),
+            h: menuOpts.openHeight
+        },
+        scrollBox = new ScrollBox(gd, gButton, scrollBoxPosition, scrollBoxId);
+
     buttons.each(function(buttonOpts, buttonIndex) {
         var button = d3.select(this);
 
@@ -296,9 +307,14 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
             .call(setItemPosition, menuOpts, posOpts);
 
         button.on('click', function() {
+            // skip `dragend` events
+            if (d3.event.defaultPrevented) return;
+
             setActive(gd, menuOpts, buttonOpts, gHeader, gButton, buttonIndex);
 
             Plots.executeAPICommand(gd, buttonOpts.method, buttonOpts.args);
+
+            scrollBox.disable();
 
             gd.emit('plotly_buttonclicked', {menu: menuOpts, button: buttonOpts, active: menuOpts.active});
         });
@@ -314,6 +330,8 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
     });
 
     buttons.call(styleButtons, menuOpts);
+
+    scrollBox.enable();
 }
 
 function setActive(gd, menuOpts, buttonOpts, gHeader, gButton, buttonIndex, isSilentUpdate) {
