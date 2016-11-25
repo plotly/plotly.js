@@ -146,9 +146,7 @@ describe('Test histogram', function() {
             return out;
         }
 
-        // remove tzOffset when we move to UTC
-        var tzOffset = (new Date(1970, 0, 1)).getTimezoneOffset() * 60000,
-            oneDay = 24 * 3600000;
+        var oneDay = 24 * 3600000;
 
         it('should handle auto dates with nonuniform (month) bins', function() {
             var out = _calc({
@@ -165,7 +163,7 @@ describe('Test histogram', function() {
             // bars. Now that we have explicit per-bar positioning, perhaps
             // we should fill the space, rather than insisting on equal-width
             // bars?
-            var x0 = tzOffset + 15768000000,
+            var x0 = 15768000000,
                 x1 = x0 + oneDay * 365,
                 x2 = x1 + oneDay * 365.5,
                 x3 = x2 + oneDay * 365.5;
@@ -186,7 +184,7 @@ describe('Test histogram', function() {
                 nbinsx: 4
             });
 
-            var x0 = tzOffset,
+            var x0 = 0,
                 x1 = x0 + oneDay,
                 x2 = x1 + oneDay,
                 x3 = x2 + oneDay;

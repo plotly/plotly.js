@@ -265,10 +265,10 @@ module.exports = function setConvert(ax) {
             // NOTE: Changed this behavior: previously we took any numeric value
             // to be a ms, even if it was a string that could be a bare year.
             // Now we convert it as a date if at all possible, and only try
-            // as ms if that fails.
+            // as (local) ms if that fails.
             var ms = Lib.dateTime2ms(v);
             if(ms === BADNUM) {
-                if(isNumeric(v)) ms = Number(v);
+                if(isNumeric(v)) ms = Lib.dateTime2ms(new Date(v));
                 else return BADNUM;
             }
             return Lib.constrain(ms, Lib.MIN_MS, Lib.MAX_MS);
