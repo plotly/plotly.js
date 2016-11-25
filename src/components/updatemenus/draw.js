@@ -281,8 +281,8 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
     }
 
     var posOpts = {
-        x: x0 + menuOpts.pad.l,
-        y: y0 + menuOpts.pad.t,
+        x: menuOpts.lx + x0 + menuOpts.pad.l,
+        y: menuOpts.ly + y0 + menuOpts.pad.t,
         yPad: constants.gapButton,
         xPad: constants.gapButton,
         index: 0,
@@ -314,9 +314,6 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
     });
 
     buttons.call(styleButtons, menuOpts);
-
-    // translate button group
-    Lib.setTranslate(gButton, menuOpts.lx, menuOpts.ly);
 }
 
 function setActive(gd, menuOpts, buttonOpts, gHeader, gButton, buttonIndex, isSilentUpdate) {
