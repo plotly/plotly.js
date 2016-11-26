@@ -487,7 +487,11 @@ axes.expand = function(ax, data, options) {
 
 axes.autoBin = function(data, ax, nbins, is2d) {
     var datamin = Lib.aggNums(Math.min, null, data),
-        datamax = Lib.aggNums(Math.max, null, data);
+        datamax = Lib.aggNums(Math.max, null, data),
+        blankcount = 0,
+        datacount,
+        i;
+
     if(ax.type === 'category') {
         return {
             start: datamin - 0.5,
@@ -548,16 +552,16 @@ axes.autoBin = function(data, ax, nbins, is2d) {
     if(typeof dummyax.dtick === 'number') {
         var edgecount = 0,
             midcount = 0,
-            intcount = 0,
-            blankcount = 0;
-        for(var i = 0; i < data.length; i++) {
+            intcount = 0;
+
+        for(i = 0; i < data.length; i++) {
             if(data[i] % 1 === 0) intcount++;
             else if(!isNumeric(data[i])) blankcount++;
 
             if(nearEdge(data[i])) edgecount++;
             if(nearEdge(data[i] + dummyax.dtick / 2)) midcount++;
         }
-        var datacount = data.length - blankcount;
+        datacount = data.length - blankcount;
 
         if(intcount === datacount && ax.type !== 'date') {
             // all integers: if bin size is <1, it's because
@@ -586,6 +590,12 @@ axes.autoBin = function(data, ax, nbins, is2d) {
         binend = binstart + bincount * dummyax.dtick;
     }
     else {
+        // month ticks - should be the only nonlinear kind we have
+        // at this point.
+        if(dummyax.dtick.charAt(0) === 'M') {
+            binstart = autoShiftMonthBins(binstart, data, dummyax.dtick, datamin);
+        }
+
         // calculate the endpoint for nonlinear ticks - you have to
         // just increment until you're done
         binend = binstart;
@@ -601,6 +611,79 @@ axes.autoBin = function(data, ax, nbins, is2d) {
     };
 };
 
+
+function autoShiftMonthBins(binStart, data, dtick, dataMin) {
+    var exactYears = 0,
+        exactMonths = 0,
+        exactDays = 0,
+        blankCount = 0,
+        dataCount,
+        di,
+        d,
+        year,
+        month;
+
+    for(var i = 0; i < data.length; i++) {
+        di = data[i];
+        if(!isNumeric(di)) {
+            blankCount ++;
+            continue;
+        }
+        d = new Date(di),
+        year = d.getUTCFullYear();
+        if(di === Date.UTC(year, 0, 1)) {
+            exactYears ++;
+        }
+        else {
+            month = d.getUTCMonth();
+            if(di === Date.UTC(year, month, 1)) {
+                exactMonths ++;
+            }
+            else if(di === Date.UTC(year, month, d.getUTCDate())) {
+                exactDays ++;
+            }
+        }
+    }
+
+    dataCount = data.length - blankCount;
+
+    // include bigger exact dates in the smaller ones
+    exactMonths += exactYears;
+    exactDays += exactMonths;
+
+    // unmber of data points that needs to be an exact value
+    // to shift that increment to (near) the bin center
+    var threshold = 0.8 * dataCount;
+
+    if(exactDays > threshold) {
+        var numMonths = Number(dtick.substr(1));
+
+        if((exactYears > threshold) && (numMonths % 12 === 0)) {
+            // The exact middle of a non-leap-year is 1.5 days into July
+            // so if we start the bins here, all but leap years will
+            // get hover-labeled as exact years.
+            binStart = axes.tickIncrement(binStart, 'M6', 'reverse') + ONEDAY * 1.5;
+        }
+        else if(exactMonths > threshold) {
+            // Months are not as clean, but if we shift half the *longest*
+            // month (31/2 days) then 31-day months will get labeled exactly
+            // and shorter months will get labeled with the correct month
+            // but shifted 12-36 hours into it.
+            binStart = axes.tickIncrement(binStart, 'M1', 'reverse') + ONEDAY * 15.5;
+        }
+        else {
+            // Shifting half a day is exact, but since these are month bins it
+            // will always give a somewhat odd-looking label, until we do something
+            // smarter like showing the bin boundaries (or the bounds of the actual
+            // data in each bin)
+            binStart -= ONEDAY / 2;
+        }
+        var nextBinStart = axes.tickIncrement(binStart, dtick);
+
+        if(nextBinStart <= dataMin) return nextBinStart;
+    }
+    return binStart;
+}
 
 // ----------------------------------------------------
 // Ticks and grids
@@ -919,6 +1002,7 @@ function autoTickRound(ax) {
 // for pure powers of 10
 // numeric ticks always have constant differences, other datetime ticks
 // can all be calculated as constant number of milliseconds
+var THREEDAYS = 3 * ONEDAY;
 axes.tickIncrement = function(x, dtick, axrev) {
     var axSign = axrev ? -1 : 1;
 
@@ -930,10 +1014,23 @@ axes.tickIncrement = function(x, dtick, axrev) {
 
     // Dates: months (or years)
     if(tType === 'M') {
-        var y = new Date(x);
-        // is this browser consistent? setUTCMonth edits a date but
-        // returns that date's milliseconds
-        return y.setUTCMonth(y.getUTCMonth() + dtSigned);
+        /*
+         * set(UTC)Month does not (and CANNOT) always preserve day, since
+         * months have different lengths. The worst example of this is:
+         *   d = new Date(1970,0,31); d.setMonth(1) -> Feb 31 turns into Mar 3
+         *
+         * But we want to be able to iterate over the last day of each month,
+         * regardless of what its number is.
+         * So shift 3 days forward, THEN set the new month, then unshift:
+         *   1/31 -> 2/28 (or 29) -> 3/31 -> 4/30 -> ...
+         *
+         * Note that odd behavior still exists if you start from the 26th-28th:
+         *   1/28 -> 2/28 -> 3/31
+         * but at least you can't shift any dates into the wrong month,
+         * and ticks on these days incrementing by month would be very unusual
+         */
+        var y = new Date(x + THREEDAYS);
+        return y.setUTCMonth(y.getUTCMonth() + dtSigned) - THREEDAYS;
     }
 
     // Log scales: Linear, Digits

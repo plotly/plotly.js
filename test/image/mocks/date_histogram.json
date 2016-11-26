@@ -9,66 +9,23 @@
                 "2012-03-01 00:00:00",
                 "2012-02-01 00:00:00"
             ],
-            "name": "trace 0",
-            "autobinx": false,
+            "autobinx": true,
             "nbinsx": 3,
-            "xbins": {
-                "start": "2011-12-16",
-                "end": "2012-03-16",
-                "size": "M1"
-            },
-            "autobiny": true,
-            "xaxis": "x",
-            "yaxis": "y",
             "showlegend": false,
             "type": "histogram"
         }
     ],
     "layout": {
-        "title": "Click to enter Plot title",
-        "font": {
-            "family": "\"Open sans\", verdana, arial, sans-serif",
-            "size": 12,
-            "color": "#444"
-        },
-        "showlegend": true,
         "width": 600,
         "height": 400,
         "xaxis": {
-            "title": "month",
-            "showgrid": false,
-            "zeroline": false,
-            "showline": false,
-            "ticks": "",
-            "showticklabels": true,
-            "tickcolor": "rgb(127,127,127)",
-            "gridcolor": "rgb(255,255,255)"
+            "title": "month"
         },
         "yaxis": {
             "title": "count",
-            "showgrid": true,
-            "zeroline": true,
-            "showline": false,
-            "ticks": "",
-            "tickcolor": "rgb(127,127,127)",
             "gridcolor": "rgb(255,255,255)"
         },
-        "legend": {
-            "x": 100,
-            "y": 0.5,
-            "traceorder": "reversed",
-            "font": {
-                "family": "",
-                "size": 0,
-                "color": ""
-            },
-            "bgcolor": "#fff",
-            "bordercolor": "transparent",
-            "borderwidth": 0
-        },
         "plot_bgcolor": "rgb(229,229,229)",
-        "barmode": "stack",
-        "bargap": 0.2,
-        "bargroupgap": 0
+        "bargap": 0.2
     }
 }
