@@ -179,7 +179,7 @@ describe('Test histogram', function() {
             expect(out).toEqual([
                 {b: 0, p: Date.UTC(1970, 0, 1), s: 2},
                 {b: 0, p: Date.UTC(1970, 1, 1), s: 1},
-                {b: 0, p: Date.UTC(1970, 2, 2.5), s: 0},
+                {b: 0, p: Date.UTC(1970, 2, 2, 12), s: 0},
                 {b: 0, p: Date.UTC(1970, 3, 1), s: 1}
             ]);
 
