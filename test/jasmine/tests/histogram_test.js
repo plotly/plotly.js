@@ -156,7 +156,7 @@ describe('Test histogram', function() {
                 nbinsx: 4
             });
 
-            // Note: this gives half-day gaps between all but the first two
+            // TODO: this gives half-day gaps between all but the first two
             // bars. Now that we have explicit per-bar positioning, perhaps
             // we should fill the space, rather than insisting on equal-width
             // bars?

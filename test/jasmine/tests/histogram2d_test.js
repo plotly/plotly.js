@@ -91,8 +91,7 @@ describe('Test histogram2d', function() {
 
             // TODO: even though the binning is done on non-uniform bins,
             // the display makes them linear (using only y0 and dy)
-            // when we sort out https://github.com/plotly/plotly.js/issues/1151
-            // lets also make it display the bins with nonuniform size
+            // Can we also make it display the bins with nonuniform size?
             expect(out.y0).toBe('1970-01-01 03:00');
             expect(out.dy).toBe(365.25 * oneDay);
 

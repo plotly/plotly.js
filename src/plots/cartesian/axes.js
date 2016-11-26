@@ -507,7 +507,6 @@ axes.autoBin = function(data, ax, nbins, is2d) {
         var distinctData = Lib.distinctVals(data),
             msexp = Math.pow(10, Math.floor(
                 Math.log(distinctData.minDiff) / Math.LN10)),
-            // TODO: there are some date cases where this will fail...
             minSize = msexp * Lib.roundUp(
                 distinctData.minDiff / msexp, [0.9, 1.9, 4.9, 9.9], true);
         size0 = Math.max(minSize, 2 * Lib.stdev(data) /
