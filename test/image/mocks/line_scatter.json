@@ -30,7 +30,8 @@
         9
       ],
       "mode": "lines",
-      "type": "scatter"
+      "type": "scatter",
+      "opacity": 0.5
     },
     {
       "x": [
