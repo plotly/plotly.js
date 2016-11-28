@@ -149,32 +149,56 @@ describe('Test histogram', function() {
         var oneDay = 24 * 3600000;
 
         it('should handle auto dates with nonuniform (month) bins', function() {
+            // All data on exact years: shift so bin center is an
+            // exact year, except on leap years
             var out = _calc({
                 x: ['1970-01-01', '1970-01-01', '1971-01-01', '1973-01-01'],
                 nbinsx: 4
             });
 
-            // TODO: https://github.com/plotly/plotly.js/issues/1151
-            // these bins should shift when we implement that
-
-            // note that x1-x0 = 365 days, but the others are 365.5 days
-
-            // ALSO: this gives half-day gaps between all but the first two
+            // TODO: this gives half-day gaps between all but the first two
             // bars. Now that we have explicit per-bar positioning, perhaps
             // we should fill the space, rather than insisting on equal-width
             // bars?
-            var x0 = 15768000000,
-                x1 = x0 + oneDay * 365,
-                x2 = x1 + oneDay * 365.5,
-                x3 = x2 + oneDay * 365.5;
-
             expect(out).toEqual([
                 // full calcdata has x and y too (and t in the first one),
                 // but those come later from setPositions.
-                {b: 0, p: x0, s: 2},
-                {b: 0, p: x1, s: 1},
-                {b: 0, p: x2, s: 0},
-                {b: 0, p: x3, s: 1}
+                {b: 0, p: Date.UTC(1970, 0, 1), s: 2},
+                {b: 0, p: Date.UTC(1971, 0, 1), s: 1},
+                {b: 0, p: Date.UTC(1972, 0, 1, 12), s: 0},
+                {b: 0, p: Date.UTC(1973, 0, 1), s: 1}
+            ]);
+
+            // All data on exact months: shift so bin center is on (31-day months)
+            // or in (shorter months) that month
+            out = _calc({
+                x: ['1970-01-01', '1970-01-01', '1970-02-01', '1970-04-01'],
+                nbinsx: 4
+            });
+
+            expect(out).toEqual([
+                {b: 0, p: Date.UTC(1970, 0, 1), s: 2},
+                {b: 0, p: Date.UTC(1970, 1, 1), s: 1},
+                {b: 0, p: Date.UTC(1970, 2, 2, 12), s: 0},
+                {b: 0, p: Date.UTC(1970, 3, 1), s: 1}
+            ]);
+
+            // data on exact days: shift so each bin goes from noon to noon
+            // even though this gives kind of odd bin centers since the bins
+            // are months... but the important thing is it's unambiguous which
+            // bin any given day is in.
+            out = _calc({
+                x: ['1970-01-02', '1970-01-31', '1970-02-13', '1970-04-19'],
+                nbinsx: 4
+            });
+
+            expect(out).toEqual([
+                // dec 31 12:00 -> jan 31 12:00, middle is jan 16
+                {b: 0, p: Date.UTC(1970, 0, 16), s: 2},
+                // jan 31 12:00 -> feb 28 12:00, middle is feb 14 12:00
+                {b: 0, p: Date.UTC(1970, 1, 14, 12), s: 1},
+                {b: 0, p: Date.UTC(1970, 2, 16), s: 0},
+                {b: 0, p: Date.UTC(1970, 3, 15, 12), s: 1}
             ]);
         });
 
