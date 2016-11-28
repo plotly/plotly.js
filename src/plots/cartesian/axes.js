@@ -548,6 +548,10 @@ axes.autoBin = function(data, ax, nbins, is2d) {
     }
     else {
         // month ticks - should be the only nonlinear kind we have at this point.
+        // dtick (as supplied by axes.autoTick) only has nonlinear values on
+        // date and log axes, but even if you display a histogram on a log axis
+        // we bin it on a linear axis (which one could argue against, but that's
+        // a separate issue)
         if(dummyAx.dtick.charAt(0) === 'M') {
             binStart = autoShiftMonthBins(binStart, data, dummyAx.dtick, dataMin);
         }
