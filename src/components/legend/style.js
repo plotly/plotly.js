@@ -22,7 +22,8 @@ var stylePie = require('../../traces/pie/style_one');
 
 module.exports = function style(s) {
     s.each(function(d) {
-        var traceGroup = d3.select(this);
+        var traceGroup = d3.select(this),
+            opacity = d[0].trace.opacity;
 
         var fill = traceGroup
             .selectAll('g.legendfill')
@@ -35,13 +36,14 @@ module.exports = function style(s) {
                 .data([d]);
         line.enter().append('g')
             .classed('legendlines', true);
+        line.style('opacity', opacity);
 
         var symbol = traceGroup
             .selectAll('g.legendsymbols')
                 .data([d]);
         symbol.enter().append('g')
             .classed('legendsymbols', true);
-        symbol.style('opacity', d[0].trace.opacity);
+        symbol.style('opacity', opacity);
 
         symbol.selectAll('g.legendpoints')
             .data([d])
