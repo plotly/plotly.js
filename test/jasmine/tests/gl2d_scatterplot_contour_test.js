@@ -4,9 +4,8 @@ var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var d3 = require('d3');
 
-// heatmapgl & contourgl is not part of the dist plotly.js bundle initially
+// contourgl is not part of the dist plotly.js bundle initially
 Plotly.register([
-    require('@lib/heatmapgl'),
     require('@lib/contourgl')
 ]);
 

@@ -12,6 +12,11 @@ var hasWebGLSupport = require('../assets/has_webgl_support');
 var click = require('../assets/timed_click');
 var hover = require('../assets/hover');
 
+// contourgl is not part of the dist plotly.js bundle initially
+Plotly.register([
+    require('@lib/contourgl')
+]);
+
 describe('Test hover and click interactions', function() {
 
     if(!hasWebGLSupport('gl2d_click_test')) return;
