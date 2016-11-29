@@ -126,6 +126,8 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
 
     // keep track of pan / zoom in user layout and emit relayout event
     map.on('moveend', function(eventData) {
+        if(!self.map) return;
+
         var view = self.getView();
 
         opts._input.center = opts.center = view.center;
@@ -358,7 +360,10 @@ proto.updateLayers = function() {
 };
 
 proto.destroy = function() {
-    if(this.map) this.map.remove();
+    if(this.map) {
+        this.map.remove();
+        this.map = null;
+    }
     this.container.removeChild(this.div);
 };
 
