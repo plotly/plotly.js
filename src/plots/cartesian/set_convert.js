@@ -80,8 +80,8 @@ module.exports = function setConvert(ax) {
 
     ax.c2l = (ax.type === 'log') ? toLog : num;
     ax.l2c = (ax.type === 'log') ? fromLog : num;
-    ax.l2d = function(v) { return ax.c2d(ax.l2c(v)); };
-    ax.p2d = function(v) { return ax.l2d(ax.p2l(v)); };
+    ax.l2d = function(v) { return ax.c2d(ax.l2c(v), 0, ax.calendar); };
+    ax.p2d = function(v) { return ax.l2d(ax.p2l(v), 0, ax.calendar); };
 
     /*
      * fn to make sure range is a couplet of valid & distinct values
@@ -95,6 +95,7 @@ module.exports = function setConvert(ax) {
         if(!rangeAttr) rangeAttr = 'range';
         var range = ax[rangeAttr],
             axLetter = (ax._id || 'x').charAt(0),
+            calendar = ax.calendar,
             i, dflt;
 
         if(ax.type === 'date') dflt = constants.DFLTRANGEDATE;
@@ -112,26 +113,23 @@ module.exports = function setConvert(ax) {
         if(ax.type === 'date') {
             // check if milliseconds or js date objects are provided for range
             // and convert to date strings
-            range[0] = Lib.cleanDate(range[0]);
-            range[1] = Lib.cleanDate(range[1]);
+            range[0] = Lib.cleanDate(range[0], BADNUM, calendar);
+            range[1] = Lib.cleanDate(range[1], BADNUM, calendar);
         }
 
         for(i = 0; i < 2; i++) {
             if(ax.type === 'date') {
-                if(!Lib.isDateTime(range[i])) {
+                if(!Lib.isDateTime(range[i], ax.calendar)) {
                     ax[rangeAttr] = dflt;
                     break;
                 }
 
-                if(range[i] < Lib.MIN_MS) range[i] = Lib.MIN_MS;
-                if(range[i] > Lib.MAX_MS) range[i] = Lib.MAX_MS;
-
-                if(ax.r2l(range[0]) === ax.r2l(range[1])) {
+                if(ax.r2l(range[0], calendar) === ax.r2l(range[1], calendar)) {
                     // split by +/- 1 second
-                    var linCenter = Lib.constrain(ax.r2l(range[0]),
+                    var linCenter = Lib.constrain(ax.r2l(range[0], calendar),
                         Lib.MIN_MS + 1000, Lib.MAX_MS - 1000);
-                    range[0] = ax.l2r(linCenter - 1000);
-                    range[1] = ax.l2r(linCenter + 1000);
+                    range[0] = ax.l2r(linCenter - 1000, 0, calendar);
+                    range[1] = ax.l2r(linCenter + 1000, 0, calendar);
                     break;
                 }
             }
@@ -159,18 +157,22 @@ module.exports = function setConvert(ax) {
         }
     };
 
+    // TODO (alexcjohnson): for now use the axis calendar for these (in case of dates)
+    // but that means annotations
     // find the range value at the specified (linear) fraction of the axis
     ax.fraction2r = function(v) {
-        var rl0 = ax.r2l(ax.range[0]),
-            rl1 = ax.r2l(ax.range[1]);
-        return ax.l2r(rl0 + v * (rl1 - rl0));
+        var calendar = ax.calendar,
+            rl0 = ax.r2l(ax.range[0], calendar),
+            rl1 = ax.r2l(ax.range[1], calendar);
+        return ax.l2r(rl0 + v * (rl1 - rl0), BADNUM, calendar);
     };
 
     // find the fraction of the range at the specified range value
     ax.r2fraction = function(v) {
-        var rl0 = ax.r2l(ax.range[0]),
-            rl1 = ax.r2l(ax.range[1]);
-        return (ax.r2l(v) - rl0) / (rl1 - rl0);
+        var calendar = ax.calendar,
+            rl0 = ax.r2l(ax.range[0], calendar),
+            rl1 = ax.r2l(ax.range[1], calendar);
+        return (ax.r2l(v, calendar) - rl0) / (rl1 - rl0);
     };
 
     // set scaling to pixels
@@ -192,11 +194,12 @@ module.exports = function setConvert(ax) {
         // issue if we transform the drawn layer *and* use the new axis range to
         // draw the data. This allows us to construct setConvert using the pre-
         // interaction values of the range:
-        var rangeAttr = (usePrivateRange && ax._r) ? '_r' : 'range';
+        var rangeAttr = (usePrivateRange && ax._r) ? '_r' : 'range',
+            calendar = ax.calendar;
         ax.cleanRange(rangeAttr);
 
-        var rl0 = ax.r2l(ax[rangeAttr][0]),
-            rl1 = ax.r2l(ax[rangeAttr][1]);
+        var rl0 = ax.r2l(ax[rangeAttr][0], calendar),
+            rl1 = ax.r2l(ax[rangeAttr][1], calendar);
 
         if(axLetter === 'y') {
             ax._offset = gs.t + (1 - ax.domain[1]) * gs.h;
@@ -261,12 +264,12 @@ module.exports = function setConvert(ax) {
     else if(ax.type === 'date') {
         ax.c2d = Lib.ms2DateTime;
 
-        ax.d2c = function(v) {
+        ax.d2c = function(v, cal) {
             // NOTE: Changed this behavior: previously we took any numeric value
             // to be a ms, even if it was a string that could be a bare year.
             // Now we convert it as a date if at all possible, and only try
             // as (local) ms if that fails.
-            var ms = Lib.dateTime2ms(v);
+            var ms = Lib.dateTime2ms(v, cal);
             if(ms === BADNUM) {
                 if(isNumeric(v)) ms = Lib.dateTime2ms(new Date(v));
                 else return BADNUM;
@@ -279,14 +282,14 @@ module.exports = function setConvert(ax) {
         ax.l2r = ax.c2d;
         ax.d2r = Lib.identity;
         ax.r2d = Lib.identity;
-        ax.cleanr = function(v) {
+        ax.cleanr = function(v, cal) {
             /*
              * If v is already a date string this is a noop,  but running it
              * through d2c and back validates the value:
              * normalizes Date objects, milliseconds, and out-of-bounds dates
              * so we always end up with either a clean date string or BADNUM
              */
-            return ax.c2d(ax.d2c(v));
+            return ax.c2d(ax.d2c(v, cal), 0, cal);
         };
     }
     else if(ax.type === 'category') {
@@ -340,15 +343,19 @@ module.exports = function setConvert(ax) {
     ax.makeCalcdata = function(trace, axLetter) {
         var arrayIn, arrayOut, i;
 
+        var cal = ax.type === 'date' && trace[axLetter + 'calendar'];
+
         if(axLetter in trace) {
             arrayIn = trace[axLetter];
             arrayOut = new Array(arrayIn.length);
 
-            for(i = 0; i < arrayIn.length; i++) arrayOut[i] = ax.d2c(arrayIn[i]);
+            for(i = 0; i < arrayIn.length; i++) {
+                arrayOut[i] = ax.d2c(arrayIn[i], cal);
+            }
         }
         else {
             var v0 = ((axLetter + '0') in trace) ?
-                    ax.d2c(trace[axLetter + '0']) : 0,
+                    ax.d2c(trace[axLetter + '0'], cal) : 0,
                 dv = (trace['d' + axLetter]) ?
                     Number(trace['d' + axLetter]) : 1;
 

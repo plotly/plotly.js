@@ -70,6 +70,7 @@ function makeTrace(traceIn, state, direction) {
 
             // to make autotype catch date axes soon!!
             x: traceIn.x || [0],
+            xcalendar: traceIn.xcalendar,
 
             // concat low and high to get correct autorange
             y: [].concat(traceIn.low).concat(traceIn.high),

@@ -125,9 +125,13 @@ module.exports = function calc(gd, trace) {
     colorscaleCalc(trace, z, '', 'z');
 
     if(isContour && trace.contours && trace.contours.coloring === 'heatmap') {
-        var hmType = trace.type === 'contour' ? 'heatmap' : 'histogram2d';
-        cd0.xfill = makeBoundArray(hmType, xIn, x0, dx, xlen, xa);
-        cd0.yfill = makeBoundArray(hmType, yIn, y0, dy, z.length, ya);
+        var dummyTrace = {
+            type: trace.type === 'contour' ? 'heatmap' : 'histogram2d',
+            xcalendar: trace.xcalendar,
+            ycalendar: trace.ycalendar
+        };
+        cd0.xfill = makeBoundArray(dummyTrace, xIn, x0, dx, xlen, xa);
+        cd0.yfill = makeBoundArray(dummyTrace, yIn, y0, dy, z.length, ya);
     }
 
     return [cd0];
@@ -222,10 +226,12 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
     else {
         dv = dvIn || 1;
 
-        if(isHist || ax.type === 'category') v0 = ax.r2c(v0In) || 0;
+        var calendar = trace[ax._id.charAt(0) + 'calendar'];
+
+        if(isHist || ax.type === 'category') v0 = ax.r2c(v0In, calendar) || 0;
         else if(Array.isArray(arrayIn) && arrayIn.length === 1) v0 = arrayIn[0];
         else if(v0In === undefined) v0 = 0;
-        else v0 = ax.d2c(v0In);
+        else v0 = ax.d2c(v0In, calendar);
 
         for(i = (isContour || isGL2D) ? 0 : -0.5; i < numbricks; i++) {
             arrayOut.push(v0 + dv * i);

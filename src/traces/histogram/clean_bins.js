@@ -10,7 +10,9 @@
 'use strict';
 var isNumeric = require('fast-isnumeric');
 var cleanDate = require('../../lib').cleanDate;
-var ONEDAY = require('../../constants/numerical').ONEDAY;
+var constants = require('../../constants/numerical');
+var ONEDAY = constants.ONEDAY;
+var BADNUM = constants.BADNUM;
 
 /*
  * cleanBins: validate attributes autobin[xy] and [xy]bins.(start, end, size)
@@ -29,7 +31,7 @@ module.exports = function cleanBins(trace, ax, binDirection) {
     if(!bins) bins = trace[binAttr] = {};
 
     var cleanBound = (axType === 'date') ?
-        function(v) { return (v || v === 0) ? cleanDate(v) : null; } :
+        function(v) { return (v || v === 0) ? cleanDate(v, BADNUM, bins.calendar) : null; } :
         function(v) { return isNumeric(v) ? Number(v) : null; };
 
     bins.start = cleanBound(bins.start);

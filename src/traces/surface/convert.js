@@ -213,31 +213,36 @@ proto.update = function(data) {
      * and that the sub-array entries correspond to a x-coords,
      * which is the transpose of 'gl-surface-plot'.
      */
+
+    var xcalendar = data.xcalendar,
+        ycalendar = data.ycalendar,
+        zcalendar = data.zcalendar;
+
     fill(coords[2], function(row, col) {
-        return zaxis.d2l(z[col][row]) * scaleFactor[2];
+        return zaxis.d2l(z[col][row], zcalendar) * scaleFactor[2];
     });
 
     // coords x
     if(Array.isArray(x[0])) {
         fill(xc, function(row, col) {
-            return xaxis.d2l(x[col][row]) * scaleFactor[0];
+            return xaxis.d2l(x[col][row], xcalendar) * scaleFactor[0];
         });
     } else {
         // ticks x
         fill(xc, function(row) {
-            return xaxis.d2l(x[row]) * scaleFactor[0];
+            return xaxis.d2l(x[row], xcalendar) * scaleFactor[0];
         });
     }
 
     // coords y
     if(Array.isArray(y[0])) {
         fill(yc, function(row, col) {
-            return yaxis.d2l(y[col][row]) * scaleFactor[1];
+            return yaxis.d2l(y[col][row], ycalendar) * scaleFactor[1];
         });
     } else {
         // ticks y
         fill(yc, function(row, col) {
-            return yaxis.d2l(y[col]) * scaleFactor[1];
+            return yaxis.d2l(y[col], ycalendar) * scaleFactor[1];
         });
     }
 

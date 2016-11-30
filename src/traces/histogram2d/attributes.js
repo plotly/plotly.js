@@ -19,6 +19,8 @@ module.exports = extendFlat({},
     {
         x: histogramAttrs.x,
         y: histogramAttrs.y,
+        xcalendar: histogramAttrs.xcalendar,
+        ycalendar: histogramAttrs.ycalendar,
 
         z: {
             valType: 'data_array',

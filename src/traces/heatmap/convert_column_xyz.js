@@ -26,8 +26,8 @@ module.exports = function convertColumnXYZ(trace, xa, ya) {
     if(colLen < yCol.length) yCol = yCol.slice(0, colLen);
 
     for(i = 0; i < colLen; i++) {
-        xCol[i] = xa.d2c(xCol[i]);
-        yCol[i] = ya.d2c(yCol[i]);
+        xCol[i] = xa.d2c(xCol[i], trace.xcalendar);
+        yCol[i] = ya.d2c(yCol[i], trace.ycalendar);
     }
 
     var xColdv = Lib.distinctVals(xCol),

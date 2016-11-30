@@ -37,6 +37,9 @@ module.exports = function handleXYZDefaults(traceIn, traceOut, coerce) {
         coerce('transpose');
     }
 
+    coerce('xcalendar');
+    coerce('ycalendar');
+
     return traceOut.z.length;
 };
 

@@ -9,7 +9,7 @@
 
 'use strict';
 
-module.exports = function handleOHLC(traceIn, traceOut, coerce) {
+module.exports = function handleOHLC(traceIn, traceOut, coerce, layout) {
     var len;
 
     var x = coerce('x'),
@@ -17,6 +17,8 @@ module.exports = function handleOHLC(traceIn, traceOut, coerce) {
         high = coerce('high'),
         low = coerce('low'),
         close = coerce('close');
+
+    coerce('xcalendar', layout.calendar);
 
     len = Math.min(open.length, high.length, low.length, close.length);
 

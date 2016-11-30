@@ -298,8 +298,10 @@ proto.updateFast = function(options) {
 
     var xx, yy;
 
+    var xcalendar = options.xcalendar;
+
     var fastType = allFastTypesLikely(x);
-    var isDateTime = !fastType && autoType(x) === 'date';
+    var isDateTime = !fastType && autoType(x, xcalendar) === 'date';
 
     // TODO add 'very fast' mode that bypasses this loop
     // TODO bypass this on modebar +/- zoom
@@ -312,7 +314,7 @@ proto.updateFast = function(options) {
             if(isNumeric(yy)) {
 
                 if(!fastType) {
-                    xx = Lib.dateTime2ms(xx);
+                    xx = Lib.dateTime2ms(xx, xcalendar);
                 }
 
                 idToIndex[pId++] = i;

@@ -18,6 +18,8 @@ var extendFlat = require('../../lib/extend').extendFlat;
 module.exports = extendFlat({}, {
     x: histogram2dAttrs.x,
     y: histogram2dAttrs.y,
+    xcalendar: histogram2dAttrs.xcalendar,
+    ycalendar: histogram2dAttrs.ycalendar,
     z: histogram2dAttrs.z,
     marker: histogram2dAttrs.marker,
 

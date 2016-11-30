@@ -100,6 +100,16 @@ exports.attributes = {
             '*value* is expected to be an array with as many items as',
             'the desired set elements.'
         ].join(' ')
+    },
+    calendar: {
+        valType: 'calendar',
+        role: 'info',
+        description: [
+            'Sets the calendar system to use for `value`, if it is a date.',
+            'Note that this is not necessarily the same calendar as is used',
+            'for the target data; that is set by its own calendar attribute,',
+            'ie `trace.x` uses `trace.xcalendar` etc.'
+        ].join(' ')
     }
 };
 
@@ -116,6 +126,7 @@ exports.supplyDefaults = function(transformIn) {
         coerce('operation');
         coerce('value');
         coerce('target');
+        coerce('calendar');
     }
 
     return transformOut;
@@ -130,8 +141,9 @@ exports.calcTransform = function(gd, trace, opts) {
 
     if(!len) return;
 
-    var dataToCoord = getDataToCoordFunc(gd, trace, target),
-        filterFunc = getFilterFunc(opts, dataToCoord),
+    var targetCalendar = Lib.nestedProperty(trace, target + 'calendar').get(),
+        dataToCoord = getDataToCoordFunc(gd, trace, target),
+        filterFunc = getFilterFunc(opts, dataToCoord, targetCalendar),
         arrayAttrs = PlotSchema.findArrayAttributes(trace),
         originalArrays = {};
 
@@ -188,9 +200,11 @@ function getDataToCoordFunc(gd, trace, target) {
 
         setConvert(ax);
 
-        // build up ax._categories (usually done during ax.makeCalcdata()
-        for(var i = 0; i < target.length; i++) {
-            ax.d2c(target[i]);
+        if(ax.type === 'category') {
+            // build up ax._categories (usually done during ax.makeCalcdata()
+            for(var i = 0; i < target.length; i++) {
+                ax.d2c(target[i]);
+            }
         }
     }
     else {
@@ -210,7 +224,7 @@ function getDataToCoordFunc(gd, trace, target) {
     return function(v) { return +v; };
 }
 
-function getFilterFunc(opts, d2c) {
+function getFilterFunc(opts, d2c, targetCalendar) {
     var operation = opts.operation,
         value = opts.value,
         hasArrayValue = Array.isArray(value);
@@ -219,93 +233,96 @@ function getFilterFunc(opts, d2c) {
         return array.indexOf(operation) !== -1;
     }
 
+    var d2cValue = opts.calendar ? function(v) { return d2c(v, opts.calendar); } : d2c,
+        d2cTarget = targetCalendar ? function(v) { return d2c(v, targetCalendar); } : d2c;
+
     var coercedValue;
 
     if(isOperationIn(INEQUALITY_OPS)) {
-        coercedValue = hasArrayValue ? d2c(value[0]) : d2c(value);
+        coercedValue = hasArrayValue ? d2cValue(value[0]) : d2cValue(value);
     }
     else if(isOperationIn(INTERVAL_OPS)) {
         coercedValue = hasArrayValue ?
-            [d2c(value[0]), d2c(value[1])] :
-            [d2c(value), d2c(value)];
+            [d2cValue(value[0]), d2cValue(value[1])] :
+            [d2cValue(value), d2cValue(value)];
     }
     else if(isOperationIn(SET_OPS)) {
-        coercedValue = hasArrayValue ? value.map(d2c) : [d2c(value)];
+        coercedValue = hasArrayValue ? value.map(d2cValue) : [d2cValue(value)];
     }
 
     switch(operation) {
 
         case '=':
-            return function(v) { return d2c(v) === coercedValue; };
+            return function(v) { return d2cTarget(v) === coercedValue; };
 
         case '<':
-            return function(v) { return d2c(v) < coercedValue; };
+            return function(v) { return d2cTarget(v) < coercedValue; };
 
         case '<=':
-            return function(v) { return d2c(v) <= coercedValue; };
+            return function(v) { return d2cTarget(v) <= coercedValue; };
 
         case '>':
-            return function(v) { return d2c(v) > coercedValue; };
+            return function(v) { return d2cTarget(v) > coercedValue; };
 
         case '>=':
-            return function(v) { return d2c(v) >= coercedValue; };
+            return function(v) { return d2cTarget(v) >= coercedValue; };
 
         case '[]':
             return function(v) {
-                var cv = d2c(v);
+                var cv = d2cTarget(v);
                 return cv >= coercedValue[0] && cv <= coercedValue[1];
             };
 
         case '()':
             return function(v) {
-                var cv = d2c(v);
+                var cv = d2cTarget(v);
                 return cv > coercedValue[0] && cv < coercedValue[1];
             };
 
         case '[)':
             return function(v) {
-                var cv = d2c(v);
+                var cv = d2cTarget(v);
                 return cv >= coercedValue[0] && cv < coercedValue[1];
             };
 
         case '(]':
             return function(v) {
-                var cv = d2c(v);
+                var cv = d2cTarget(v);
                 return cv > coercedValue[0] && cv <= coercedValue[1];
             };
 
         case '][':
             return function(v) {
-                var cv = d2c(v);
+                var cv = d2cTarget(v);
                 return cv <= coercedValue[0] || cv >= coercedValue[1];
             };
 
         case ')(':
             return function(v) {
-                var cv = d2c(v);
+                var cv = d2cTarget(v);
                 return cv < coercedValue[0] || cv > coercedValue[1];
             };
 
         case '](':
             return function(v) {
-                var cv = d2c(v);
+                var cv = d2cTarget(v);
                 return cv <= coercedValue[0] || cv > coercedValue[1];
             };
 
         case ')[':
             return function(v) {
-                var cv = d2c(v);
+                var cv = d2cTarget(v);
                 return cv < coercedValue[0] || cv >= coercedValue[1];
             };
 
         case '{}':
             return function(v) {
-                return coercedValue.indexOf(d2c(v)) !== -1;
+                return coercedValue.indexOf(d2cTarget(v)) !== -1;
             };
 
         case '}{':
             return function(v) {
-                return coercedValue.indexOf(d2c(v)) === -1;
+                return coercedValue.indexOf(d2cTarget(v)) === -1;
             };
     }
 }

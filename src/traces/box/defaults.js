@@ -13,7 +13,7 @@ var Color = require('../../components/color');
 
 var attributes = require('./attributes');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
+module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -32,6 +32,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
         traceOut.visible = false;
         return;
     }
+
+    var dfltCalendar = layout.calendar;
+    coerce('xcalendar', dfltCalendar);
+    coerce('ycalendar', dfltCalendar);
 
     coerce('orientation', defaultOrientation);
 

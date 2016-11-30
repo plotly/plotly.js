@@ -24,6 +24,8 @@ module.exports = {
             'Sets the sample data to be binned on the y axis.'
         ].join(' ')
     },
+    xcalendar: barAttrs.xcalendar,
+    ycalendar: barAttrs.ycalendar,
 
     text: barAttrs.text,
     orientation: barAttrs.orientation,

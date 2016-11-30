@@ -10,10 +10,14 @@
 'use strict';
 
 
-module.exports = function handleXYDefaults(traceIn, traceOut, coerce) {
+module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
     var len,
         x = coerce('x'),
         y = coerce('y');
+
+    var dfltCalendar = layout.calendar;
+    coerce('xcalendar', dfltCalendar);
+    coerce('ycalendar', dfltCalendar);
 
     if(x) {
         if(y) {

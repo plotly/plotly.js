@@ -39,7 +39,7 @@ describe('plot schema', function() {
         assertPlotSchema(
             function(attr) {
                 if(isValObject(attr)) {
-                    expect(ROLES.indexOf(attr.role) !== -1).toBe(true);
+                    expect(ROLES.indexOf(attr.role) !== -1).toBe(true, attr);
                 }
             }
         );

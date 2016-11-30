@@ -27,6 +27,9 @@ module.exports = {
     y: scatterAttrs.y,
     y0: scatterAttrs.y0,
     dy: scatterAttrs.dy,
+    xcalendar: scatterAttrs.xcalendar,
+    ycalendar: scatterAttrs.ycalendar,
+
     text: extendFlat({}, scatterAttrs.text, {
         description: [
             'Sets text elements associated with each (x,y) pair to appear on hover.',

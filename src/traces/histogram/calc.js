@@ -64,7 +64,8 @@ module.exports = function calc(gd, trace) {
         binfunc = binFunctions.count,
         normfunc = normFunctions[norm],
         doavg = false,
-        rawCounterData;
+        rawCounterData,
+        calendar = trace[maindata + 'calendar'];
 
     if(Array.isArray(trace[counterdata]) && func !== 'count') {
         rawCounterData = trace[counterdata];
@@ -74,7 +75,7 @@ module.exports = function calc(gd, trace) {
 
     // create the bins (and any extra arrays needed)
     // assume more than 5000 bins is an error, so we don't crash the browser
-    i = pa.r2c(binspec.start);
+    i = pa.r2c(binspec.start, calendar);
 
     // decrease end a little in case of rounding errors
     binend = pa.r2c(binspec.end) + (i - Axes.tickIncrement(i, binspec.size)) / 1e6;
@@ -96,8 +97,8 @@ module.exports = function calc(gd, trace) {
     // we already have this, but uniform with start/end/size they're still strings.
     if(!nonuniformBins && pa.type === 'date') {
         bins = {
-            start: pa.r2c(bins.start),
-            end: pa.r2c(bins.end),
+            start: pa.r2c(bins.start, calendar),
+            end: pa.r2c(bins.end, calendar),
             size: bins.size
         };
     }

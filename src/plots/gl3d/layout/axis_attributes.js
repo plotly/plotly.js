@@ -73,6 +73,7 @@ module.exports = {
     title: axesAttrs.title,
     titlefont: axesAttrs.titlefont,
     type: axesAttrs.type,
+    calendar: axesAttrs.calendar,
     autorange: axesAttrs.autorange,
     rangemode: axesAttrs.rangemode,
     range: axesAttrs.range,

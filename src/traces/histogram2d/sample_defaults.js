@@ -16,6 +16,9 @@ module.exports = function handleSampleDefaults(traceIn, traceOut, coerce) {
     var x = coerce('x'),
         y = coerce('y');
 
+    coerce('xcalendar');
+    coerce('ycalendar');
+
     // we could try to accept x0 and dx, etc...
     // but that's a pretty weird use case.
     // for now require both x and y explicitly specified.

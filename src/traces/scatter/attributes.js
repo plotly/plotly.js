@@ -41,8 +41,14 @@ module.exports = {
             'See `x0` for more info.'
         ].join(' ')
     },
+    xcalendar: {
+        valType: 'calendar',
+        role: 'info',
+        description: 'Sets the calendar system to use with `x` date data'
+    },
     y: {
         valType: 'data_array',
+        role: 'info',
         description: 'Sets the y coordinates.'
     },
     y0: {
@@ -64,6 +70,11 @@ module.exports = {
             'Sets the y coordinate step.',
             'See `y0` for more info.'
         ].join(' ')
+    },
+    ycalendar: {
+        valType: 'calendar',
+        role: 'info',
+        description: 'Sets the calendar system to use with `y` date data'
     },
     ids: {
         valType: 'data_array',

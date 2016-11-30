@@ -9,6 +9,7 @@
 
 'use strict';
 
+var calendarList = Object.keys(require('world-calendars').calendars);
 var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 
@@ -266,6 +267,20 @@ exports.valObjects = {
             }
 
             return true;
+        }
+    },
+    calendar: {
+        description: [
+            'A string, one of the calendar systems available',
+            'in the `world-calendars` package, to be used in evaluating',
+            'or displaying date data. Defaults to built-in (Gregorian) dates.',
+            'available calendars:', '*' + calendarList.join('*, *') + '*'
+        ].join(' '),
+        requiredOpts: [],
+        otherOpts: ['dflt'],
+        coerceFunction: function(v, propOut, dflt) {
+            if(v && calendarList.indexOf(v) !== -1) propOut.set(v);
+            else propOut.set(dflt);
         }
     }
 };

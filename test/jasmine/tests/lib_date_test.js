@@ -222,6 +222,68 @@ describe('dates', function() {
                 expect(Lib.ms2DateTime(Lib.dateTime2ms(v[0]), v[1])).toBe(v[2], v);
             });
         });
+
+        it('should work right with inputs beyond our precision', function() {
+            for(var i = -1; i <= 1; i += 0.001) {
+                var tenths = Math.round(i * 10),
+                    base = i < -0.05 ? '1969-12-31 23:59:59.99' : '1970-01-01 00:00:00.00',
+                    expected = (base + String(tenths + 200).substr(1))
+                        .replace(/0+$/, '')
+                        .replace(/ 00:00:00[\.]$/, '');
+                expect(Lib.ms2DateTime(i)).toBe(expected, i);
+            }
+        });
+    });
+
+    describe('world calendar inputs', function() {
+        it('should give the right values near epoch zero', function() {
+            [
+                [undefined, '1970-01-01'],
+                ['gregorian', '1970-01-01'],
+                ['coptic', '1686-04-23'],
+                ['discworld', '1798-12-27'],
+                ['ethiopian', '1962-04-23'],
+                ['hebrew', '5730-10-23'],
+                ['islamic', '1389-10-22'],
+                ['julian', '1969-12-19'],
+                ['mayan', '5156-07-05'],
+                ['nanakshahi', '0501-10-19'],
+                ['nepali', '2026-09-17'],
+                ['persian', '1348-10-11'],
+                ['jalali', '1348-10-11'],
+                ['taiwan', '0059-01-01'],
+                ['thai', '2513-01-01'],
+                ['ummalqura', '1389-10-23']
+            ].forEach(function(v) {
+                var calendar = v[0],
+                    dateStr = v[1];
+                expect(Lib.ms2DateTime(0, 0, calendar)).toBe(dateStr, calendar);
+                expect(Lib.dateTime2ms(dateStr, calendar)).toBe(0, calendar);
+
+                var expected_p1ms = dateStr + ' 00:00:00.0001',
+                    expected_1s = dateStr + ' 00:00:01',
+                    expected_1m = dateStr + ' 00:01',
+                    expected_1h = dateStr + ' 01:00',
+                    expected_lastinstant = dateStr + ' 23:59:59.9999';
+
+                var oneSec = 1000,
+                    oneMin = 60 * oneSec,
+                    oneHour = 60 * oneMin,
+                    lastInstant = 24 * oneHour - 0.1;
+
+                expect(Lib.ms2DateTime(0.1, 0, calendar)).toBe(expected_p1ms, calendar);
+                expect(Lib.ms2DateTime(oneSec, 0, calendar)).toBe(expected_1s, calendar);
+                expect(Lib.ms2DateTime(oneMin, 0, calendar)).toBe(expected_1m, calendar);
+                expect(Lib.ms2DateTime(oneHour, 0, calendar)).toBe(expected_1h, calendar);
+                expect(Lib.ms2DateTime(lastInstant, 0, calendar)).toBe(expected_lastinstant, calendar);
+
+                expect(Lib.dateTime2ms(expected_p1ms, calendar)).toBe(0.1, calendar);
+                expect(Lib.dateTime2ms(expected_1s, calendar)).toBe(oneSec, calendar);
+                expect(Lib.dateTime2ms(expected_1m, calendar)).toBe(oneMin, calendar);
+                expect(Lib.dateTime2ms(expected_1h, calendar)).toBe(oneHour, calendar);
+                expect(Lib.dateTime2ms(expected_lastinstant, calendar)).toBe(lastInstant, calendar);
+            });
+        });
     });
 
     describe('cleanDate', function() {
