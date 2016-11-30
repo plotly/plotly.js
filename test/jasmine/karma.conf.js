@@ -82,11 +82,15 @@ func.defaultConfig = {
     browsers: ['Chrome_WindowSized'],
 
     // custom browser options
+    // window-size values came from observing default size
     customLaunchers: {
         Chrome_WindowSized: {
             base: 'Chrome',
-            // window-size values came from observing default size
             flags: ['--window-size=1035,617', '--ignore-gpu-blacklist']
+        },
+        Firefox_WindowSized: {
+            base: 'Firefox',
+            flags: ['--width=1035', '--height=617']
         }
     },
 
