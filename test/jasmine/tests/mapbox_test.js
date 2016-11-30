@@ -215,10 +215,12 @@ describe('mapbox credentials', function() {
             lat: [10, 20, 30]
         }], {}, {
             mapboxAccessToken: dummyToken
-        }).catch(function(err) {
+        })
+        .catch(function(err) {
             cnt++;
             expect(err).toEqual(new Error(constants.mapOnErrorMsg));
-        }).then(function() {
+        })
+        .then(function() {
             expect(cnt).toEqual(1);
             done();
         });
@@ -263,10 +265,12 @@ describe('mapbox credentials', function() {
             }
         }, {
             mapboxAccessToken: ''
-        }).catch(function(err) {
+        })
+        .catch(function(err) {
             cnt++;
             expect(err).toEqual(new Error(msg));
-        }).then(function() {
+        })
+        .then(function() {
             expect(cnt).toEqual(1);
             done();
         });
@@ -310,22 +314,26 @@ describe('mapbox plots', function() {
             expect(gd._fullLayout.mapbox).toBeUndefined();
 
             return Plotly.restyle(gd, 'visible', true);
-        }).then(function() {
+        })
+        .then(function() {
             expect(countVisibleTraces(gd, modes)).toEqual(2);
 
             return Plotly.restyle(gd, 'visible', 'legendonly', [1]);
-        }).then(function() {
+        })
+        .then(function() {
             expect(countVisibleTraces(gd, modes)).toEqual(1);
 
             return Plotly.restyle(gd, 'visible', true);
-        }).then(function() {
+        })
+        .then(function() {
             expect(countVisibleTraces(gd, modes)).toEqual(2);
 
             var mockCopy = Lib.extendDeep({}, mock);
             mockCopy.data[0].visible = false;
 
             return Plotly.newPlot(gd, mockCopy.data, mockCopy.layout);
-        }).then(function() {
+        })
+        .then(function() {
             expect(countVisibleTraces(gd, modes)).toEqual(1);
 
             done();
@@ -348,7 +356,8 @@ describe('mapbox plots', function() {
             };
 
             return Plotly.addTraces(gd, [trace]);
-        }).then(function() {
+        })
+        .then(function() {
             expect(countVisibleTraces(gd, modes)).toEqual(2);
 
             var trace = {
@@ -359,11 +368,13 @@ describe('mapbox plots', function() {
             };
 
             return Plotly.addTraces(gd, [trace]);
-        }).then(function() {
+        })
+        .then(function() {
             expect(countVisibleTraces(gd, modes)).toEqual(3);
 
             return Plotly.deleteTraces(gd, [0, 1, 2]);
-        }).then(function() {
+        })
+        .then(function() {
             expect(gd._fullLayout.mapbox).toBeUndefined();
 
             done();
@@ -462,28 +473,32 @@ describe('mapbox plots', function() {
             assertLayout('Mapbox Dark', [0, 0], 1.234, [80, 100, 908, 270]);
 
             return Plotly.relayout(gd, 'mapbox.zoom', '6');
-        }).then(function() {
+        })
+        .then(function() {
             expect(restyleCnt).toEqual(0);
             expect(relayoutCnt).toEqual(2);
 
             assertLayout('Mapbox Dark', [0, 0], 6, [80, 100, 908, 270]);
 
             return Plotly.relayout(gd, 'mapbox.style', 'light');
-        }).then(function() {
+        })
+        .then(function() {
             expect(restyleCnt).toEqual(0);
             expect(relayoutCnt).toEqual(3);
 
             assertLayout('Mapbox Light', [0, 0], 6, [80, 100, 908, 270]);
 
             return Plotly.relayout(gd, 'mapbox.domain.x', [0, 0.5]);
-        }).then(function() {
+        })
+        .then(function() {
             expect(restyleCnt).toEqual(0);
             expect(relayoutCnt).toEqual(4);
 
             assertLayout('Mapbox Light', [0, 0], 6, [80, 100, 454, 270]);
 
             return Plotly.relayout(gd, 'mapbox.domain.y[0]', 0.5);
-        }).then(function() {
+        })
+        .then(function() {
             expect(restyleCnt).toEqual(0);
             expect(relayoutCnt).toEqual(5);
 
@@ -669,7 +684,8 @@ describe('mapbox plots', function() {
             };
 
             return Plotly.extendTraces(gd, update, [0, 1]);
-        }).then(function() {
+        })
+        .then(function() {
             assertDataPts([5, 5]);
 
             done();

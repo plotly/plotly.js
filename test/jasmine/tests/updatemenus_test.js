@@ -225,8 +225,8 @@ describe('update menus buttons', function() {
         mockCopy.layout.updatemenus[1].x = 1;
 
         allMenus = mockCopy.layout.updatemenus;
-        buttonMenus = allMenus.filter(function(opts) {return opts.type === 'buttons';});
-        dropdownMenus = allMenus.filter(function(opts) {return opts.type !== 'buttons';});
+        buttonMenus = allMenus.filter(function(opts) { return opts.type === 'buttons'; });
+        dropdownMenus = allMenus.filter(function(opts) { return opts.type !== 'buttons'; });
 
         Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
     });
@@ -244,12 +244,11 @@ describe('update menus buttons', function() {
 
         // Count the *total* number of buttons we expect for this mock:
         var buttonCount = 0;
-        buttonMenus.forEach(function(menu) {buttonCount += menu.buttons.length;});
+        buttonMenus.forEach(function(menu) { buttonCount += menu.buttons.length; });
 
         assertNodeCount('.' + constants.buttonClassName, buttonCount);
 
         done();
-
     });
 
     function assertNodeCount(query, cnt) {
