@@ -4,6 +4,7 @@ var constants = require('@src/components/updatemenus/constants');
 var d3 = require('d3');
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
+var Events = require('@src/lib/events');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var TRANSITION_DELAY = 100;
@@ -219,6 +220,10 @@ describe('update menus buttons', function() {
 
     beforeEach(function(done) {
         gd = createGraphDiv();
+
+        // bump event max listeners to remove console warnings
+        Events.init(gd);
+        gd._internalEv.setMaxListeners(20);
 
         // move update menu #2 to click on them separately
         var mockCopy = Lib.extendDeep({}, mock);
