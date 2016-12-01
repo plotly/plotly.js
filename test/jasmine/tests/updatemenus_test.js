@@ -698,7 +698,7 @@ describe('update menus interactions', function() {
 
         // must compare with a tolerance as the exact result
         // is browser/font dependent (via getBBox)
-        expect(Math.abs(actualWidth - width)).toBeLessThan(11);
+        expect(Math.abs(actualWidth - width)).toBeLessThan(12);
 
         // height is determined by 'fontsize',
         // so no such tolerance is needed
