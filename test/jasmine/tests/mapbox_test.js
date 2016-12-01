@@ -14,6 +14,7 @@ var customMatchers = require('../assets/custom_matchers');
 var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
 var TRANSITION_DELAY = 500;
 var MOUSE_DELAY = 100;
+var LONG_TIMEOUT_INTERVAL = 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 var noop = function() {};
 
@@ -204,7 +205,7 @@ describe('mapbox credentials', function() {
                 lat: [10, 20, 30]
             }]);
         }).toThrow(new Error(constants.noAccessTokenErrorMsg));
-    });
+    }, LONG_TIMEOUT_INTERVAL);
 
     it('should throw error if token is invalid', function(done) {
         var cnt = 0;
@@ -215,14 +216,16 @@ describe('mapbox credentials', function() {
             lat: [10, 20, 30]
         }], {}, {
             mapboxAccessToken: dummyToken
-        }).catch(function(err) {
+        })
+        .catch(function(err) {
             cnt++;
             expect(err).toEqual(new Error(constants.mapOnErrorMsg));
-        }).then(function() {
+        })
+        .then(function() {
             expect(cnt).toEqual(1);
             done();
         });
-    });
+    }, LONG_TIMEOUT_INTERVAL);
 
     it('should use access token in mapbox layout options if present', function(done) {
         var cnt = 0;
@@ -244,7 +247,7 @@ describe('mapbox credentials', function() {
             expect(gd._fullLayout.mapbox.accesstoken).toEqual(MAPBOX_ACCESS_TOKEN);
             done();
         });
-    });
+    }, LONG_TIMEOUT_INTERVAL);
 
     it('should bypass access token in mapbox layout options when config points to an Atlas server', function(done) {
         var cnt = 0;
@@ -263,14 +266,16 @@ describe('mapbox credentials', function() {
             }
         }, {
             mapboxAccessToken: ''
-        }).catch(function(err) {
+        })
+        .catch(function(err) {
             cnt++;
             expect(err).toEqual(new Error(msg));
-        }).then(function() {
+        })
+        .then(function() {
             expect(cnt).toEqual(1);
             done();
         });
-    });
+    }, LONG_TIMEOUT_INTERVAL);
 });
 
 describe('mapbox plots', function() {
@@ -310,27 +315,31 @@ describe('mapbox plots', function() {
             expect(gd._fullLayout.mapbox).toBeUndefined();
 
             return Plotly.restyle(gd, 'visible', true);
-        }).then(function() {
+        })
+        .then(function() {
             expect(countVisibleTraces(gd, modes)).toEqual(2);
 
             return Plotly.restyle(gd, 'visible', 'legendonly', [1]);
-        }).then(function() {
+        })
+        .then(function() {
             expect(countVisibleTraces(gd, modes)).toEqual(1);
 
             return Plotly.restyle(gd, 'visible', true);
-        }).then(function() {
+        })
+        .then(function() {
             expect(countVisibleTraces(gd, modes)).toEqual(2);
 
             var mockCopy = Lib.extendDeep({}, mock);
             mockCopy.data[0].visible = false;
 
             return Plotly.newPlot(gd, mockCopy.data, mockCopy.layout);
-        }).then(function() {
+        })
+        .then(function() {
             expect(countVisibleTraces(gd, modes)).toEqual(1);
 
             done();
         });
-    });
+    }, LONG_TIMEOUT_INTERVAL);
 
     it('should be able to delete and add traces', function(done) {
         var modes = ['line', 'circle'];
@@ -348,7 +357,8 @@ describe('mapbox plots', function() {
             };
 
             return Plotly.addTraces(gd, [trace]);
-        }).then(function() {
+        })
+        .then(function() {
             expect(countVisibleTraces(gd, modes)).toEqual(2);
 
             var trace = {
@@ -359,16 +369,18 @@ describe('mapbox plots', function() {
             };
 
             return Plotly.addTraces(gd, [trace]);
-        }).then(function() {
+        })
+        .then(function() {
             expect(countVisibleTraces(gd, modes)).toEqual(3);
 
             return Plotly.deleteTraces(gd, [0, 1, 2]);
-        }).then(function() {
+        })
+        .then(function() {
             expect(gd._fullLayout.mapbox).toBeUndefined();
 
             done();
         });
-    });
+    }, LONG_TIMEOUT_INTERVAL);
 
     it('should be able to restyle', function(done) {
         var restyleCnt = 0,
@@ -425,7 +437,7 @@ describe('mapbox plots', function() {
             ]);
         })
         .then(done);
-    });
+    }, LONG_TIMEOUT_INTERVAL);
 
     it('should be able to relayout', function(done) {
         var restyleCnt = 0,
@@ -462,28 +474,32 @@ describe('mapbox plots', function() {
             assertLayout('Mapbox Dark', [0, 0], 1.234, [80, 100, 908, 270]);
 
             return Plotly.relayout(gd, 'mapbox.zoom', '6');
-        }).then(function() {
+        })
+        .then(function() {
             expect(restyleCnt).toEqual(0);
             expect(relayoutCnt).toEqual(2);
 
             assertLayout('Mapbox Dark', [0, 0], 6, [80, 100, 908, 270]);
 
             return Plotly.relayout(gd, 'mapbox.style', 'light');
-        }).then(function() {
+        })
+        .then(function() {
             expect(restyleCnt).toEqual(0);
             expect(relayoutCnt).toEqual(3);
 
             assertLayout('Mapbox Light', [0, 0], 6, [80, 100, 908, 270]);
 
             return Plotly.relayout(gd, 'mapbox.domain.x', [0, 0.5]);
-        }).then(function() {
+        })
+        .then(function() {
             expect(restyleCnt).toEqual(0);
             expect(relayoutCnt).toEqual(4);
 
             assertLayout('Mapbox Light', [0, 0], 6, [80, 100, 454, 270]);
 
             return Plotly.relayout(gd, 'mapbox.domain.y[0]', 0.5);
-        }).then(function() {
+        })
+        .then(function() {
             expect(restyleCnt).toEqual(0);
             expect(relayoutCnt).toEqual(5);
 
@@ -491,7 +507,7 @@ describe('mapbox plots', function() {
 
             done();
         });
-    });
+    }, LONG_TIMEOUT_INTERVAL);
 
     it('should be able to add, update and remove layers', function(done) {
         var mockWithLayers = require('@mocks/mapbox_layers');
@@ -623,7 +639,7 @@ describe('mapbox plots', function() {
 
             done();
         });
-    });
+    }, LONG_TIMEOUT_INTERVAL);
 
     it('should be able to update the access token', function(done) {
         Plotly.relayout(gd, 'mapbox.accesstoken', 'wont-work').catch(function(err) {
@@ -637,7 +653,7 @@ describe('mapbox plots', function() {
             expect(gd._promises.length).toEqual(0);
             done();
         });
-    });
+    }, LONG_TIMEOUT_INTERVAL);
 
     it('should be able to update traces', function(done) {
         function assertDataPts(lengths) {
@@ -669,12 +685,13 @@ describe('mapbox plots', function() {
             };
 
             return Plotly.extendTraces(gd, update, [0, 1]);
-        }).then(function() {
+        })
+        .then(function() {
             assertDataPts([5, 5]);
 
             done();
         });
-    });
+    }, LONG_TIMEOUT_INTERVAL);
 
     it('should display to hover labels on mouse over', function(done) {
         function assertMouseMove(pos, len) {
@@ -688,7 +705,7 @@ describe('mapbox plots', function() {
         assertMouseMove(blankPos, 0).then(function() {
             return assertMouseMove(pointPos, 1);
         }).then(done);
-    });
+    }, LONG_TIMEOUT_INTERVAL);
 
     it('should respond to hover interactions by', function(done) {
         var hoverCnt = 0,
@@ -736,7 +753,7 @@ describe('mapbox plots', function() {
 
             done();
         });
-    });
+    }, LONG_TIMEOUT_INTERVAL);
 
     it('should respond drag / scroll interactions', function(done) {
         var relayoutCnt = 0,
@@ -795,7 +812,7 @@ describe('mapbox plots', function() {
 
         // TODO test scroll
 
-    });
+    }, LONG_TIMEOUT_INTERVAL);
 
     it('should respond to click interactions by', function(done) {
         var ptData;
@@ -828,7 +845,7 @@ describe('mapbox plots', function() {
             });
         })
         .then(done);
-    });
+    }, LONG_TIMEOUT_INTERVAL);
 
     function getMapInfo(gd) {
         var subplot = gd._fullLayout.mapbox._subplot,

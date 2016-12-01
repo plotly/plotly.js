@@ -4,6 +4,7 @@ var constants = require('@src/components/updatemenus/constants');
 var d3 = require('d3');
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
+var Events = require('@src/lib/events');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var TRANSITION_DELAY = 100;
@@ -220,13 +221,17 @@ describe('update menus buttons', function() {
     beforeEach(function(done) {
         gd = createGraphDiv();
 
+        // bump event max listeners to remove console warnings
+        Events.init(gd);
+        gd._internalEv.setMaxListeners(20);
+
         // move update menu #2 to click on them separately
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.updatemenus[1].x = 1;
 
         allMenus = mockCopy.layout.updatemenus;
-        buttonMenus = allMenus.filter(function(opts) {return opts.type === 'buttons';});
-        dropdownMenus = allMenus.filter(function(opts) {return opts.type !== 'buttons';});
+        buttonMenus = allMenus.filter(function(opts) { return opts.type === 'buttons'; });
+        dropdownMenus = allMenus.filter(function(opts) { return opts.type !== 'buttons'; });
 
         Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
     });
@@ -244,12 +249,11 @@ describe('update menus buttons', function() {
 
         // Count the *total* number of buttons we expect for this mock:
         var buttonCount = 0;
-        buttonMenus.forEach(function(menu) {buttonCount += menu.buttons.length;});
+        buttonMenus.forEach(function(menu) { buttonCount += menu.buttons.length; });
 
         assertNodeCount('.' + constants.buttonClassName, buttonCount);
 
         done();
-
     });
 
     function assertNodeCount(query, cnt) {
@@ -694,7 +698,7 @@ describe('update menus interactions', function() {
 
         // must compare with a tolerance as the exact result
         // is browser/font dependent (via getBBox)
-        expect(Math.abs(actualWidth - width)).toBeLessThan(11);
+        expect(Math.abs(actualWidth - width)).toBeLessThan(12);
 
         // height is determined by 'fontsize',
         // so no such tolerance is needed

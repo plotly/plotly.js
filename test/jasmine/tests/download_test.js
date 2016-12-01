@@ -3,10 +3,11 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var textchartMock = require('@mocks/text_chart_arrays.json');
 
+var LONG_TIMEOUT_INTERVAL = 2 * jasmine.DEFAULT_TIMEOUT_INTERVAL;
+
 describe('Plotly.downloadImage', function() {
     'use strict';
     var gd;
-    var originalTimeout;
 
     // override click handler on createElement
     //  so these tests will not actually
@@ -27,16 +28,10 @@ describe('Plotly.downloadImage', function() {
 
     beforeEach(function() {
         gd = createGraphDiv();
-
-        // downloadImage can take a little longer
-        //  so give it a little more time to finish
-        originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
     });
 
     afterEach(function() {
         destroyGraphDiv();
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
     });
 
     it('should be attached to Plotly', function() {
@@ -45,11 +40,11 @@ describe('Plotly.downloadImage', function() {
 
     it('should create link, remove link, accept options', function(done) {
         downloadTest(gd, 'jpeg', done);
-    });
+    }, LONG_TIMEOUT_INTERVAL);
 
     it('should create link, remove link, accept options', function(done) {
         downloadTest(gd, 'png', done);
-    });
+    }, LONG_TIMEOUT_INTERVAL);
 
     it('should create link, remove link, accept options', function(done) {
         checkWebp(function(supported) {
@@ -59,12 +54,11 @@ describe('Plotly.downloadImage', function() {
                 done();
             }
         });
-
-    });
+    }, LONG_TIMEOUT_INTERVAL);
 
     it('should create link, remove link, accept options', function(done) {
         downloadTest(gd, 'svg', done);
-    });
+    }, LONG_TIMEOUT_INTERVAL);
 });
 
 
