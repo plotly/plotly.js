@@ -3,7 +3,12 @@ var constants = require('./constants');
 var containerCommands = {
     cdHome: 'cd ' + constants.testContainerHome,
     cpIndex: 'cp -f test/image/index.html ../server_app/index.html',
-    restart: 'supervisorctl restart nw1',
+    injectEnv: [
+        'sed -i',
+        's/process.env.PLOTLY_MAPBOX_DEFAULT_ACCESS_TOKEN/\\\'' + constants.mapboxAccessToken + '\\\'/',
+        '../server_app/main.js'
+    ].join(' '),
+    restart: 'supervisorctl restart nw1'
 };
 
 containerCommands.ping = [
@@ -14,6 +19,7 @@ containerCommands.ping = [
 
 containerCommands.setup = [
     containerCommands.cpIndex,
+    containerCommands.injectEnv,
     containerCommands.restart,
     'sleep 1',
     containerCommands.ping,
