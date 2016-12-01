@@ -9,7 +9,7 @@
 'use strict';
 
 
-var heatmapAttrs = require('../scatter/attributes');
+var heatmapAttrs = require('../heatmap/attributes');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 
