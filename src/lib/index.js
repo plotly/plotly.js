@@ -135,6 +135,22 @@ lib.identity = function(d) { return d; };
 // minor convenience helper
 lib.noop = function() {};
 
+/*
+ * simpleMap: alternative to Array.map that only
+ * passes on the element and up to 2 extra args you
+ * provide (but not the array index or the whole array)
+ *
+ * array: the array to map it to
+ * func: the function to apply
+ * x1, x2: optional extra args
+ */
+lib.simpleMap = function(array, func, x1, x2) {
+    var len = array.length,
+        out = new Array(len);
+    for(var i = 0; i < len; i++) out[i] = func(array[i], x1, x2);
+    return out;
+};
+
 // random string generator
 lib.randstr = function randstr(existing, bits, base) {
     /*
