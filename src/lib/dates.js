@@ -49,6 +49,85 @@ function isWorldCalendar(calendar) {
 // of the unix epoch. From calendars.instance().newDate(1970, 1, 1).toJD()
 var EPOCHJD = 2440587.5;
 
+// each calendar needs its own default canonical tick. I would love to use
+// 2000-01-01 (or even 0000-01-01) for them all but they don't necessarily
+// all support either of those dates. Instead I'll use the most significant
+// number they *do* support, biased toward the present day.
+var CANONICAL_TICK = {
+    gregorian: '2000-01-01',
+    coptic: '2000-01-01',
+    discworld: '2000-01-01',
+    ethiopian: '2000-01-01',
+    hebrew: '5000-01-01',
+    islamic: '1000-01-01',
+    julian: '2000-01-01',
+    mayan: '5000-01-01',
+    nanakshahi: '1000-01-01',
+    nepali: '2000-01-01',
+    persian: '1000-01-01',
+    jalali: '1000-01-01',
+    taiwan: '1000-01-01',
+    thai: '2000-01-01',
+    ummalqura: '1400-01-01'
+};
+// Start on a Sunday - for week ticks
+// Discworld and Mayan calendars don't have 7-day weeks anyway so don't change them.
+// If anyone really cares we can customize the auto tick spacings for these calendars.
+var CANONICAL_SUNDAY = {
+    gregorian: '2000-01-02',
+    coptic: '2000-01-03',
+    discworld: '2000-01-01',
+    ethiopian: '2000-01-05',
+    hebrew: '5000-01-01',
+    islamic: '1000-01-02',
+    julian: '2000-01-03',
+    mayan: '5000-01-01',
+    nanakshahi: '1000-01-05',
+    nepali: '2000-01-05',
+    persian: '1000-01-01',
+    jalali: '1000-01-01',
+    taiwan: '1000-01-04',
+    thai: '2000-01-04',
+    ummalqura: '1400-01-06'
+};
+
+var DFLTRANGE = {
+    gregorian: ['2000-01-01', '2001-01-01'],
+    coptic: ['1700-01-01', '1701-01-01'],
+    discworld: ['1800-01-01', '1801-01-01'],
+    ethiopian: ['2000-01-01', '2001-01-01'],
+    hebrew: ['5700-01-01', '5701-01-01'],
+    islamic: ['1400-01-01', '1401-01-01'],
+    julian: ['2000-01-01', '2001-01-01'],
+    mayan: ['5200-01-01', '5201-01-01'],
+    nanakshahi: ['0500-01-01', '0501-01-01'],
+    nepali: ['2000-01-01', '2001-01-01'],
+    persian: ['1400-01-01', '1401-01-01'],
+    jalali: ['1400-01-01', '1401-01-01'],
+    taiwan: ['0100-01-01', '0101-01-01'],
+    thai: ['2500-01-01', '2501-01-01'],
+    ummalqura: ['1400-01-01', '1401-01-01']
+};
+
+/*
+ * dateTick0: get the canonical tick for this calendar
+ *
+ * bool sunday is for week ticks, shift it to a Sunday.
+ */
+exports.dateTick0 = function(calendar, sunday) {
+    calendar = (isWorldCalendar(calendar) && calendar) || 'gregorian';
+    if(sunday) return CANONICAL_SUNDAY[calendar];
+    return CANONICAL_TICK[calendar];
+};
+
+/*
+ * dfltRange: for each calendar, give a valid default range
+ */
+exports.dfltRange = function(calendar) {
+    calendar = (isWorldCalendar(calendar) && calendar) || 'gregorian';
+    return DFLTRANGE[calendar];
+};
+
 // is an object a javascript date?
 exports.isJSDate = function(v) {
     return typeof v === 'object' && v !== null && typeof v.getTime === 'function';
@@ -87,6 +166,10 @@ var MIN_MS, MAX_MS;
  * Note that we follow ISO 8601:2004: there *is* a year 0, which
  * is 1BC/BCE, and -1===2BC etc.
  *
+ * World calendars: not all of these *have* agreed extensions to this full range,
+ * if you have another calendar system but want a date range outside its validity,
+ * you can use a gregorian date string prefixed with 'G' or 'g'.
+ *
  * Where to cut off 2-digit years between 1900s and 2000s?
  * from http://support.microsoft.com/kb/244664:
  *   1930-2029 (the most retro of all...)
@@ -120,7 +203,19 @@ exports.dateTime2ms = function(s, calendar) {
     // otherwise only accept strings and numbers
     if(typeof s !== 'string' && typeof s !== 'number') return BADNUM;
 
-    var match = String(s).match(DATETIME_REGEXP);
+    s = String(s);
+
+    var isWorld = isWorldCalendar(calendar);
+
+    // to handle out-of-range dates in international calendars, accept
+    // 'G' as a prefix to force the built-in gregorian calendar.
+    var s0 = s.charAt(0);
+    if(isWorld && (s0 === 'G' || s0 === 'g')) {
+        s = s.substr(1);
+        calendar = '';
+    }
+
+    var match = s.match(DATETIME_REGEXP);
     if(!match) return BADNUM;
     var y = match[1],
         m = Number(match[3] || 1),
@@ -129,11 +224,14 @@ exports.dateTime2ms = function(s, calendar) {
         M = Number(match[9] || 0),
         S = Number(match[11] || 0);
 
-    if(isWorldCalendar(calendar)) {
+    if(isWorld) {
         // disallow 2-digit years for world calendars
         if(y.length === 2) return BADNUM;
 
-        var cDate = getCal(calendar).newDate(Number(y), m, d);
+        var cDate;
+        try { cDate = getCal(calendar).newDate(Number(y), m, d); }
+        catch(e) { return BADNUM; } // Invalid ... date
+
         if(!cDate) return BADNUM;
 
         return ((cDate.toJD() - EPOCHJD) * ONEDAY) +
@@ -192,12 +290,18 @@ exports.ms2DateTime = function(ms, r, calendar) {
 
     var msecTenths = Math.floor(mod(ms + 0.05, 1) * 10),
         msRounded = Math.round(ms - msecTenths / 10),
-        dateStr, h, m, s, msec10;
+        dateStr, h, m, s, msec10, d;
 
     if(isWorldCalendar(calendar)) {
         var dateJD = Math.floor(msRounded / ONEDAY) + EPOCHJD,
             timeMs = Math.floor(mod(ms, ONEDAY));
-        dateStr = getCal(calendar).fromJD(dateJD).formatDate('yyyy-mm-dd');
+        try {
+            dateStr = getCal(calendar).fromJD(dateJD).formatDate('yyyy-mm-dd');
+        }
+        catch(e) {
+            // invalid date in this calendar - fall back to Gyyyy-mm-dd
+            dateStr = utcFormat('G%Y-%m-%d')(new Date(msRounded));
+        }
 
         // yyyy does NOT guarantee 4-digit years. YYYY mostly does, but does
         // other things for a few calendars, so we can't trust it. Just pad
@@ -217,7 +321,7 @@ exports.ms2DateTime = function(ms, r, calendar) {
         msec10 = (r < FIVEMIN) ? (timeMs % ONESEC) * 10 + msecTenths : 0;
     }
     else {
-        var d = new Date(msRounded);
+        d = new Date(msRounded);
 
         dateStr = utcFormat('%Y-%m-%d')(d);
 
@@ -377,7 +481,12 @@ function modDateFormat(fmt, x, calendar) {
         fmt = fmt.replace(fracMatch, fracSecs);
     }
     if(isWorldCalendar(calendar)) {
-        fmt = worldCalFmt(fmt, x, calendar);
+        try {
+            fmt = worldCalFmt(fmt, x, calendar);
+        }
+        catch(e) {
+            return 'Invalid';
+        }
     }
     return utcFormat(fmt)(d);
 }
@@ -435,19 +544,22 @@ exports.formatDate = function(x, fmt, tr, calendar) {
     if(fmt) return modDateFormat(fmt, x, calendar);
 
     if(calendar) {
-        var dateJD = Math.floor(x + 0.05 / ONEDAY) + EPOCHJD,
-            cDate = getCal(calendar).fromJD(dateJD);
+        try {
+            var dateJD = Math.floor((x + 0.05) / ONEDAY) + EPOCHJD,
+                cDate = getCal(calendar).fromJD(dateJD);
 
-        if(tr === 'y') dateStr = yearFormatWorld(cDate);
-        else if(tr === 'm') dateStr = monthFormatWorld(cDate);
-        else if(tr === 'd') {
-            headStr = yearFormatWorld(cDate);
-            dateStr = dayFormatWorld(cDate);
+            if(tr === 'y') dateStr = yearFormatWorld(cDate);
+            else if(tr === 'm') dateStr = monthFormatWorld(cDate);
+            else if(tr === 'd') {
+                headStr = yearFormatWorld(cDate);
+                dateStr = dayFormatWorld(cDate);
+            }
+            else {
+                headStr = yearMonthDayFormatWorld(cDate);
+                dateStr = formatTime(x, tr);
+            }
         }
-        else {
-            headStr = yearMonthDayFormatWorld(cDate);
-            dateStr = formatTime(x, tr);
-        }
+        catch(e) { return 'Invalid'; }
     }
     else {
         var d = new Date(x);
@@ -465,4 +577,123 @@ exports.formatDate = function(x, fmt, tr, calendar) {
     }
 
     return dateStr + (headStr ? '\n' + headStr : '');
+};
+
+/*
+ * incrementMonth: make a new milliseconds value from the given one,
+ * having changed the month
+ *
+ * special case for world calendars: multiples of 12 are treated as years,
+ * even for calendar systems that don't have (always or ever) 12 months/year
+ * TODO: perhaps we need a different code for year increments to support this?
+ *
+ * ms (number): the initial millisecond value
+ * dMonth (int): the (signed) number of months to shift
+ * calendar (string): the calendar system to use
+ *
+ * changing month does not (and CANNOT) always preserve day, since
+ * months have different lengths. The worst example of this is:
+ *   d = new Date(1970,0,31); d.setMonth(1) -> Feb 31 turns into Mar 3
+ *
+ * But we want to be able to iterate over the last day of each month,
+ * regardless of what its number is.
+ * So shift 3 days forward, THEN set the new month, then unshift:
+ *   1/31 -> 2/28 (or 29) -> 3/31 -> 4/30 -> ...
+ *
+ * Note that odd behavior still exists if you start from the 26th-28th:
+ *   1/28 -> 2/28 -> 3/31
+ * but at least you can't shift any dates into the wrong month,
+ * and ticks on these days incrementing by month would be very unusual
+ */
+var THREEDAYS = 3 * ONEDAY;
+exports.incrementMonth = function(ms, dMonth, calendar) {
+    calendar = isWorldCalendar(calendar) && calendar;
+
+    // pull time out and operate on pure dates, then add time back at the end
+    // this gives maximum precision - not that we *normally* care if we're
+    // incrementing by month, but better to be safe!
+    var timeMs = mod(ms, ONEDAY);
+    ms = Math.round(ms - timeMs);
+
+    if(calendar) {
+        try {
+            var dateJD = Math.round(ms / ONEDAY) + EPOCHJD,
+                calInstance = getCal(calendar),
+                cDate = calInstance.fromJD(dateJD);
+
+            if(dMonth % 12) calInstance.add(cDate, dMonth, 'm');
+            else calInstance.add(cDate, dMonth / 12, 'y');
+
+            return (cDate.toJD() - EPOCHJD) * ONEDAY + timeMs;
+        }
+        catch(e) {
+            logError('invalid ms ' + ms + ' in calendar ' + calendar);
+            // then keep going in gregorian even though the result will be 'Invalid'
+        }
+    }
+
+    var y = new Date(ms + THREEDAYS);
+    return y.setUTCMonth(y.getUTCMonth() + dMonth) + timeMs - THREEDAYS;
+};
+
+/*
+ * findExactDates: what fraction of data is exact days, months, or years?
+ *
+ * data: array of millisecond values
+ * calendar (string) the calendar to test against
+ */
+exports.findExactDates = function(data, calendar) {
+    var exactYears = 0,
+        exactMonths = 0,
+        exactDays = 0,
+        blankCount = 0,
+        d,
+        di;
+
+    var calInstance = isWorldCalendar(calendar) && getCal(calendar);
+
+    for(var i = 0; i < data.length; i++) {
+        di = data[i];
+
+        // not date data at all
+        if(!isNumeric(di)) {
+            blankCount ++;
+            continue;
+        }
+
+        // not an exact date
+        if(di % ONEDAY) continue;
+
+        if(calInstance) {
+            try {
+                d = calInstance.fromJD(di / ONEDAY + EPOCHJD);
+                if(d.day() === 1) {
+                    if(d.month() === 1) exactYears++;
+                    else exactMonths++;
+                }
+                else exactDays++;
+            }
+            catch(e) {
+                // invalid date in this calendar - ignore it here.
+            }
+        }
+        else {
+            d = new Date(di);
+            if(d.getUTCDate() === 1) {
+                if(d.getUTCMonth() === 0) exactYears++;
+                else exactMonths++;
+            }
+            else exactDays++;
+        }
+    }
+    exactMonths += exactYears;
+    exactDays += exactMonths;
+
+    var dataCount = data.length - blankCount;
+
+    return {
+        exactYears: exactYears / dataCount,
+        exactMonths: exactMonths / dataCount,
+        exactDays: exactDays / dataCount
+    };
 };

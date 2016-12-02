@@ -399,12 +399,8 @@ proto.updateFancy = function(options) {
         ptrX = 0,
         ptrY = 0;
 
-    var getX = (xaxis.type === 'log') ?
-            function(x) { return xaxis.d2l(x); } :
-            function(x) { return x; };
-    var getY = (yaxis.type === 'log') ?
-            function(y) { return yaxis.d2l(y); } :
-            function(y) { return y; };
+    var getX = (xaxis.type === 'log') ? xaxis.d2l : function(x) { return x; };
+    var getY = (yaxis.type === 'log') ? yaxis.d2l : function(y) { return y; };
 
     var i, j, xx, yy, ex0, ex1, ey0, ey1;
 

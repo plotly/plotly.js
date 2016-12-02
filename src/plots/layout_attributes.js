@@ -173,6 +173,7 @@ module.exports = {
     calendar: {
         valType: 'calendar',
         role: 'info',
+        dflt: 'gregorian',
         description: [
             'Sets the default calendar system to use for interpreting and',
             'displaying dates throughout the plot.'

@@ -228,10 +228,10 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
 
         var calendar = trace[ax._id.charAt(0) + 'calendar'];
 
-        if(isHist || ax.type === 'category') v0 = ax.r2c(v0In, calendar) || 0;
+        if(isHist || ax.type === 'category') v0 = ax.r2c(v0In, 0, calendar) || 0;
         else if(Array.isArray(arrayIn) && arrayIn.length === 1) v0 = arrayIn[0];
         else if(v0In === undefined) v0 = 0;
-        else v0 = ax.d2c(v0In, calendar);
+        else v0 = ax.d2c(v0In, 0, calendar);
 
         for(i = (isContour || isGL2D) ? 0 : -0.5; i < numbricks; i++) {
             arrayOut.push(v0 + dv * i);

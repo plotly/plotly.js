@@ -37,13 +37,12 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName, counterAxe
 
     // Expand slider range to the axis range
     if(containerOut.range && !axOut.autorange) {
+        // TODO: what if the ranges are reversed?
         var outRange = containerOut.range,
-            axRange = axOut.range,
-            l2r = axOut.l2r,
-            r2l = axOut.r2l;
+            axRange = axOut.range;
 
-        outRange[0] = l2r(Math.min(r2l(outRange[0]), r2l(axRange[0])));
-        outRange[1] = l2r(Math.max(r2l(outRange[1]), r2l(axRange[1])));
+        outRange[0] = axOut.l2r(Math.min(axOut.r2l(outRange[0]), axOut.r2l(axRange[0])));
+        outRange[1] = axOut.l2r(Math.max(axOut.r2l(outRange[1]), axOut.r2l(axRange[1])));
     } else {
         axOut._needsExpand = true;
     }

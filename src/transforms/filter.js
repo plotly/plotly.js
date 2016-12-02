@@ -233,8 +233,8 @@ function getFilterFunc(opts, d2c, targetCalendar) {
         return array.indexOf(operation) !== -1;
     }
 
-    var d2cValue = opts.calendar ? function(v) { return d2c(v, opts.calendar); } : d2c,
-        d2cTarget = targetCalendar ? function(v) { return d2c(v, targetCalendar); } : d2c;
+    var d2cValue = function(v) { return d2c(v, 0, opts.calendar); },
+        d2cTarget = function(v) { return d2c(v, 0, targetCalendar); };
 
     var coercedValue;
 
