@@ -67,7 +67,9 @@ module.exports = {
     },
     xcalendar: scatterAttrs.xcalendar,
     ycalendar: scatterAttrs.ycalendar,
-    zcalendar: scatterAttrs.zcalendar,
+    zcalendar: extendFlat({}, scatterAttrs.xcalendar, {
+        description: 'Sets the calendar system to use with `z` date data'
+    }),
 
     text: extendFlat({}, scatterAttrs.text, {
         description: [
