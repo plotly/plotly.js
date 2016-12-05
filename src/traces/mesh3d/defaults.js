@@ -20,9 +20,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     // read in face/vertex properties
-    function readComponents(array) {
+    function readComponents(array, doCalendar) {
         var ret = array.map(function(attr) {
             var result = coerce(attr);
+
+            if(doCalendar) coerce(attr + 'calendar', layout.calendar);
 
             if(result && Array.isArray(result)) return result;
             return null;
@@ -33,7 +35,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }) && ret;
     }
 
-    var coords = readComponents(['x', 'y', 'z']);
+    var coords = readComponents(['x', 'y', 'z'], true);
     var indices = readComponents(['i', 'j', 'k']);
 
     if(!coords) {

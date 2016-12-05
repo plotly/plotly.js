@@ -26,7 +26,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len = handleXYZDefaults(traceIn, traceOut, coerce);
+    var len = handleXYZDefaults(traceIn, traceOut, coerce, layout);
     if(!len) {
         traceOut.visible = false;
         return;
@@ -66,11 +66,15 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'z'});
 };
 
-function handleXYZDefaults(traceIn, traceOut, coerce) {
+function handleXYZDefaults(traceIn, traceOut, coerce, layout) {
     var len = 0,
         x = coerce('x'),
         y = coerce('y'),
         z = coerce('z');
+
+    coerce('xcalendar', layout.calendar);
+    coerce('ycalendar', layout.calendar);
+    coerce('zcalendar', layout.calendar);
 
     if(x && y && z) {
         len = Math.min(x.length, y.length, z.length);

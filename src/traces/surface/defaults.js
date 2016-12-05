@@ -34,6 +34,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('x');
     coerce('y');
 
+    coerce('xcalendar', layout.calendar);
+    coerce('ycalendar', layout.calendar);
+    coerce('zcalendar', layout.calendar);
+
     if(!Array.isArray(traceOut.x)) {
         // build a linearly scaled x
         traceOut.x = [];
