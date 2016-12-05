@@ -63,7 +63,7 @@ module.exports = function makeCrossings(pathinfo) {
             }
         }
     }
-}
+};
 
 // modified marching squares algorithm,
 // so we disambiguate the saddle points from the start

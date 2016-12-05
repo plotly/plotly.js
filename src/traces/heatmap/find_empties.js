@@ -100,5 +100,4 @@ module.exports = function findEmpties(z) {
 
     // sort the full list in descending order of neighbor count
     return empties.sort(function(a, b) { return b[2] - a[2]; });
-}
-
+};

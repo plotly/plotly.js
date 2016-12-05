@@ -134,5 +134,3 @@ module.exports = function calc(gd, trace) {
 
     return [cd0];
 };
-
-

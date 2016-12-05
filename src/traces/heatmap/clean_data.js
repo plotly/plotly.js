@@ -40,5 +40,4 @@ module.exports = function cleanData(zOld, transpose) {
     }
 
     return zNew;
-}
-
+};

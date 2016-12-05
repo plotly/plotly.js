@@ -8,6 +8,8 @@
 
 'use strict';
 
+var Lib = require('../../lib');
+
 var INTERPTHRESHOLD = 1e-2,
     NEIGHBORSHIFTS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 
@@ -54,7 +56,7 @@ module.exports = function interp2d(z, emptyPoints, savedInterpZ) {
     }
 
     return z;
-}
+};
 
 function iterateInterp2d(z, emptyPoints, overshoot) {
     var maxFractionalChange = 0,

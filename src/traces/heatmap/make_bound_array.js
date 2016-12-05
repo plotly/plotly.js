@@ -75,5 +75,4 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
     }
 
     return arrayOut;
-}
-
+};

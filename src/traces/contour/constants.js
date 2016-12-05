@@ -36,4 +36,3 @@ module.exports.CHOOSESADDLE = {
 // after one index has been used for a saddle, which do we
 // substitute to be used up later?
 module.exports.SADDLEREMAINDER = {1: 4, 2: 8, 4: 1, 7: 13, 8: 2, 11: 14, 13: 7, 14: 11};
-

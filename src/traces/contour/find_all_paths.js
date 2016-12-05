@@ -8,6 +8,7 @@
 
 'use strict';
 
+var Lib = require('../../lib');
 var constants = require('./constants');
 
 module.exports = function findAllPaths(pathinfo) {
@@ -33,7 +34,7 @@ module.exports = function findAllPaths(pathinfo) {
         }
         if(cnt === 10000) Lib.log('Infinite loop in contour?');
     }
-}
+};
 
 function equalPts(pt1, pt2) {
     return Math.abs(pt1[0] - pt2[0]) < 0.01 &&
@@ -265,4 +266,3 @@ function getInterpPx(pi, loc, step) {
             ya.c2p((1 - dy) * pi.y[locy] + dy * pi.y[locy + 1], true)];
     }
 }
-
