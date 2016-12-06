@@ -9,6 +9,7 @@
 
 'use strict';
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 var colorbarDefaults = require('../../components/colorbar/defaults');
 var attributes = require('./attributes');
@@ -20,11 +21,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     // read in face/vertex properties
-    function readComponents(array, doCalendar) {
+    function readComponents(array) {
         var ret = array.map(function(attr) {
             var result = coerce(attr);
-
-            if(doCalendar) coerce(attr + 'calendar', layout.calendar);
 
             if(result && Array.isArray(result)) return result;
             return null;
@@ -35,8 +34,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }) && ret;
     }
 
-    var coords = readComponents(['x', 'y', 'z'], true);
+    var coords = readComponents(['x', 'y', 'z']);
     var indices = readComponents(['i', 'j', 'k']);
+
+    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
+    handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
 
     if(!coords) {
         traceOut.visible = false;

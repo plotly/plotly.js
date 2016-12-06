@@ -9,6 +9,7 @@
 'use strict';
 
 var Lib = require('../lib');
+var Registry = require('../registry');
 var PlotSchema = require('../plot_api/plot_schema');
 var axisIds = require('../plots/cartesian/axis_ids');
 var autoType = require('../plots/cartesian/axis_autotype');
@@ -100,16 +101,6 @@ exports.attributes = {
             '*value* is expected to be an array with as many items as',
             'the desired set elements.'
         ].join(' ')
-    },
-    calendar: {
-        valType: 'calendar',
-        role: 'info',
-        description: [
-            'Sets the calendar system to use for `value`, if it is a date.',
-            'Note that this is not necessarily the same calendar as is used',
-            'for the target data; that is set by its own calendar attribute,',
-            'ie `trace.x` uses `trace.xcalendar` etc.'
-        ].join(' ')
     }
 };
 
@@ -126,7 +117,9 @@ exports.supplyDefaults = function(transformIn) {
         coerce('operation');
         coerce('value');
         coerce('target');
-        coerce('calendar');
+
+        var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleDefaults');
+        handleCalendarDefaults(transformIn, transformOut, 'calendar', null);
     }
 
     return transformOut;

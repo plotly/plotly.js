@@ -52,16 +52,6 @@ module.exports = {
             'the axis in question.'
         ].join(' ')
     },
-    calendar: {
-        valType: 'calendar',
-        role: 'info',
-        description: [
-            'Sets the calendar system to use for `range` and `tick0`',
-            'if this is a date axis. This does not set the calendar for',
-            'interpreting data on this axis, that\'s specified in the trace',
-            'or via the global `layout.calendar`'
-        ].join(' ')
-    },
     autorange: {
         valType: 'enumerated',
         values: [true, false, 'reversed'],

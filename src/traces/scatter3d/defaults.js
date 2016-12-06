@@ -9,6 +9,7 @@
 
 'use strict';
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 
 var subTypes = require('../scatter/subtypes');
@@ -72,9 +73,8 @@ function handleXYZDefaults(traceIn, traceOut, coerce, layout) {
         y = coerce('y'),
         z = coerce('z');
 
-    coerce('xcalendar', layout.calendar);
-    coerce('ycalendar', layout.calendar);
-    coerce('zcalendar', layout.calendar);
+    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
+    handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
 
     if(x && y && z) {
         len = Math.min(x.length, y.length, z.length);

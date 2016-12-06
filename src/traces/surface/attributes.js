@@ -11,7 +11,6 @@
 var Color = require('../../components/color');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
-var scatterAttrs = require('../scatter/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -110,11 +109,6 @@ module.exports = {
         valType: 'data_array',
         description: 'Sets the y coordinates.'
     },
-    xcalendar: scatterAttrs.xcalendar,
-    ycalendar: scatterAttrs.ycalendar,
-    zcalendar: extendFlat({}, scatterAttrs.xcalendar, {
-        description: 'Sets the calendar system to use with `z` date data'
-    }),
 
     text: {
         valType: 'data_array',

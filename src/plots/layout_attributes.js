@@ -170,15 +170,6 @@ module.exports = {
         role: 'info',
         description: 'Determines whether or not a legend is drawn.'
     },
-    calendar: {
-        valType: 'calendar',
-        role: 'info',
-        dflt: 'gregorian',
-        description: [
-            'Sets the default calendar system to use for interpreting and',
-            'displaying dates throughout the plot.'
-        ].join(' ')
-    },
     dragmode: {
         valType: 'enumerated',
         role: 'info',

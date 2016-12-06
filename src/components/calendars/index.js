@@ -16,6 +16,25 @@ var constants = require('../../constants/numerical');
 var EPOCHJD = constants.EPOCHJD;
 var ONEDAY = constants.ONEDAY;
 
+var attributes = {
+    valType: 'enumerated',
+    values: Object.keys(calendars.calendars),
+    role: 'info',
+    dflt: 'gregorian'
+};
+
+var handleDefaults = function(contIn, contOut, attr, dflt) {
+    var attrs = {};
+    attrs[attr] = attributes;
+
+    return Lib.coerce(contIn, contOut, attrs, attr, dflt);
+};
+
+var handleTraceDefaults = function(traceIn, traceOut, coords, layout) {
+    for(var i = 0; i < coords.length; i++) {
+        handleDefaults(traceIn, traceOut, coords[i] + 'calendar', layout.calendar);
+    }
+};
 // each calendar needs its own default canonical tick. I would love to use
 // 2000-01-01 (or even 0000-01-01) for them all but they don't necessarily
 // all support either of those dates. Instead I'll use the most significant
@@ -148,6 +167,10 @@ function getCal(calendar) {
 module.exports = {
     moduleType: 'component',
     name: 'calendars',
+
+
+    handleDefaults: handleDefaults,
+    handleTraceDefaults: handleTraceDefaults,
 
     CANONICAL_SUNDAY: CANONICAL_SUNDAY,
     CANONICAL_TICK: CANONICAL_TICK,

@@ -11,6 +11,7 @@
 
 var isNumeric = require('fast-isnumeric');
 
+var Registry = require('../../registry');
 var hasColumns = require('./has_columns');
 
 
@@ -37,9 +38,8 @@ module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout) {
         coerce('transpose');
     }
 
-    var dfltCalendar = layout.calendar;
-    coerce('xcalendar', dfltCalendar);
-    coerce('ycalendar', dfltCalendar);
+    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
+    handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
 
     return traceOut.z.length;
 };

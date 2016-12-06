@@ -27,7 +27,6 @@ var directionAttrs = {
 
 module.exports = {
     x: OHLCattrs.x,
-    xcalendar: OHLCattrs.xcalendar,
     open: OHLCattrs.open,
     high: OHLCattrs.high,
     low: OHLCattrs.low,

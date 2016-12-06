@@ -9,6 +9,7 @@
 
 'use strict';
 
+var Registry = require('../../registry');
 var handleBinDefaults = require('../histogram/bin_defaults');
 
 
@@ -16,9 +17,8 @@ module.exports = function handleSampleDefaults(traceIn, traceOut, coerce, layout
     var x = coerce('x'),
         y = coerce('y');
 
-    var dfltCalendar = layout.calendar;
-    coerce('xcalendar', dfltCalendar);
-    coerce('ycalendar', dfltCalendar);
+    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
+    handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
 
     // we could try to accept x0 and dx, etc...
     // but that's a pretty weird use case.

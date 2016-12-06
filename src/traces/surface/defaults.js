@@ -9,6 +9,7 @@
 
 'use strict';
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 
 var colorscaleDefaults = require('../../components/colorscale/defaults');
@@ -34,9 +35,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('x');
     coerce('y');
 
-    coerce('xcalendar', layout.calendar);
-    coerce('ycalendar', layout.calendar);
-    coerce('zcalendar', layout.calendar);
+    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
+    handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
 
     if(!Array.isArray(traceOut.x)) {
         // build a linearly scaled x
