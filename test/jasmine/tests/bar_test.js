@@ -106,7 +106,7 @@ describe('Bar.supplyDefaults', function() {
             font: {family: 'arial', color: '#AAA', size: 13}
         };
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout, {});
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
         expect(traceOut.textposition).toBe('inside');
         expect(traceOut.textfont).toEqual(layout.font);
@@ -115,6 +115,32 @@ describe('Bar.supplyDefaults', function() {
         expect(traceOut.insidetextfont).not.toBe(layout.font);
         expect(traceOut.insidetextfont).not.toBe(traceOut.textfont);
         expect(traceOut.outsidetexfont).toBeUndefined();
+    });
+
+    it('should inherit layout.calendar', function() {
+        traceIn = {
+            x: [1, 2, 3],
+            y: [1, 2, 3]
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+
+        // we always fill calendar attributes, because it's hard to tell if
+        // we're on a date axis at this point.
+        expect(traceOut.xcalendar).toBe('islamic');
+        expect(traceOut.ycalendar).toBe('islamic');
+    });
+
+    it('should take its own calendars', function() {
+        traceIn = {
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            xcalendar: 'coptic',
+            ycalendar: 'ethiopian'
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+
+        expect(traceOut.xcalendar).toBe('coptic');
+        expect(traceOut.ycalendar).toBe('ethiopian');
     });
 });
 

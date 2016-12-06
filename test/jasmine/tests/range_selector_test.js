@@ -9,6 +9,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var getRectCenter = require('../assets/get_rect_center');
 var mouseEvent = require('../assets/mouse_event');
+var setConvert = require('@src/plots/cartesian/set_convert');
 
 
 describe('range selector defaults:', function() {
@@ -185,14 +186,20 @@ describe('range selector getUpdateObject:', function() {
         expect(update['xaxis.range[1]']).toEqual(range1);
     }
 
+    function setupAxis(opts) {
+        var axisOut = Lib.extendFlat({type: 'date'}, opts);
+        setConvert(axisOut);
+        return axisOut;
+    }
+
     // buttonLayout: {step, stepmode, count}
     // range0out: expected resulting range[0] (input is always '1948-01-01')
     // range1: input range[1], expected to also be the output
     function assertUpdateCase(buttonLayout, range0out, range1) {
-        var axisLayout = {
+        var axisLayout = setupAxis({
             _name: 'xaxis',
             range: ['1948-01-01', range1]
-        };
+        });
 
         var update = getUpdateObject(axisLayout, buttonLayout);
 
@@ -280,10 +287,10 @@ describe('range selector getUpdateObject:', function() {
     });
 
     it('should return update object (reset case)', function() {
-        var axisLayout = {
+        var axisLayout = setupAxis({
             _name: 'xaxis',
             range: ['1948-01-01', '2015-11-30']
-        };
+        });
 
         var buttonLayout = {
             step: 'all'
@@ -375,10 +382,10 @@ describe('range selector getUpdateObject:', function() {
     });
 
     it('should return update object with correct axis names', function() {
-        var axisLayout = {
+        var axisLayout = setupAxis({
             _name: 'xaxis5',
             range: ['1948-01-01', '2015-11-30']
-        };
+        });
 
         var buttonLayout = {
             step: 'month',

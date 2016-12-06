@@ -74,7 +74,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         }
     }
 
-    if(axType === 'date') coerce('calendar');
+    if(axType === 'date') coerce('calendar', options.calendar);
 
     setConvert(containerOut);
 

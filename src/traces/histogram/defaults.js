@@ -26,9 +26,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var x = coerce('x'),
         y = coerce('y');
 
-    coerce('xcalendar');
-    coerce('ycalendar');
-
     coerce('text');
 
     var orientation = coerce('orientation', (y && !x) ? 'h' : 'v'),
@@ -38,6 +35,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         traceOut.visible = false;
         return;
     }
+
+    var dfltCalendar = layout.calendar;
+    coerce('xcalendar', dfltCalendar);
+    coerce('ycalendar', dfltCalendar);
 
     var hasAggregationData = traceOut[orientation === 'h' ? 'x' : 'y'];
     if(hasAggregationData) coerce('histfunc');

@@ -41,7 +41,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         font: layoutOut.font,
         fullData: fullData,
         getDfltFromLayout: getDfltFromLayout,
-        paper_bgcolor: layoutOut.paper_bgcolor
+        paper_bgcolor: layoutOut.paper_bgcolor,
+        calendar: layoutOut.calendar
     });
 };
 
@@ -97,7 +98,8 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
         font: opts.font,
         scene: opts.id,
         data: opts.fullData,
-        bgColor: bgColorCombined
+        bgColor: bgColorCombined,
+        calendar: opts.calendar
     });
 
     coerce('dragmode', opts.getDfltFromLayout('dragmode'));

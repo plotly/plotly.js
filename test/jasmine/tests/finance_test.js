@@ -331,6 +331,42 @@ describe('finance charts defaults:', function() {
         expect(out1.layout.xaxis.rangeslider).toBeDefined();
         expect(out1._fullLayout.xaxis.rangeslider.visible).toBe(false);
     });
+
+    it('pushes layout.calendar to all output traces', function() {
+        var trace0 = Lib.extendDeep({}, mock0, {
+            type: 'ohlc'
+        });
+
+        var trace1 = Lib.extendDeep({}, mock1, {
+            type: 'candlestick'
+        });
+
+        var out = _supply([trace0, trace1], {calendar: 'nanakshahi'});
+
+
+        out._fullData.forEach(function(fullTrace) {
+            expect(fullTrace.xcalendar).toBe('nanakshahi');
+        });
+    });
+
+    it('accepts a calendar per input trace', function() {
+        var trace0 = Lib.extendDeep({}, mock0, {
+            type: 'ohlc',
+            xcalendar: 'hebrew'
+        });
+
+        var trace1 = Lib.extendDeep({}, mock1, {
+            type: 'candlestick',
+            xcalendar: 'julian'
+        });
+
+        var out = _supply([trace0, trace1], {calendar: 'nanakshahi'});
+
+
+        out._fullData.forEach(function(fullTrace, i) {
+            expect(fullTrace.xcalendar).toBe(i < 2 ? 'hebrew' : 'julian');
+        });
+    });
 });
 
 describe('finance charts calc transforms:', function() {

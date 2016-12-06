@@ -12,12 +12,13 @@
 var handleBinDefaults = require('../histogram/bin_defaults');
 
 
-module.exports = function handleSampleDefaults(traceIn, traceOut, coerce) {
+module.exports = function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
     var x = coerce('x'),
         y = coerce('y');
 
-    coerce('xcalendar');
-    coerce('ycalendar');
+    var dfltCalendar = layout.calendar;
+    coerce('xcalendar', dfltCalendar);
+    coerce('ycalendar', dfltCalendar);
 
     // we could try to accept x0 and dx, etc...
     // but that's a pretty weird use case.

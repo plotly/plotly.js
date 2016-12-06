@@ -126,7 +126,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
                 showGrid: !noGrids[axName],
                 name: axName,
                 data: fullData,
-                bgColor: bgColor
+                bgColor: bgColor,
+                calendar: layoutOut.calendar
             },
             positioningOptions = {
                 letter: axLetter,
@@ -140,7 +141,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             return Lib.coerce(axLayoutIn, axLayoutOut, layoutAttributes, attr, dflt);
         }
 
-        handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions);
+        handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
         handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, positioningOptions);
 
         layoutOut[axName] = axLayoutOut;

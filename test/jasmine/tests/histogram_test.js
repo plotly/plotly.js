@@ -129,6 +129,31 @@ describe('Test histogram', function() {
             expect(traceOut.autobiny).toBeUndefined();
         });
 
+        it('should inherit layout.calendar', function() {
+            traceIn = {
+                x: [1, 2, 3]
+            };
+            supplyDefaults(traceIn, traceOut, '', {calendar: 'islamic'});
+
+            // we always fill calendar attributes, because it's hard to tell if
+            // we're on a date axis at this point.
+            // size axis calendar is weird, but *might* be able to happen if
+            // we're using histfunc=min or max (does this work?)
+            expect(traceOut.xcalendar).toBe('islamic');
+            expect(traceOut.ycalendar).toBe('islamic');
+        });
+
+        it('should take its own calendars', function() {
+            traceIn = {
+                x: [1, 2, 3],
+                xcalendar: 'coptic',
+                ycalendar: 'nepali'
+            };
+            supplyDefaults(traceIn, traceOut, '', {calendar: 'islamic'});
+
+            expect(traceOut.xcalendar).toBe('coptic');
+            expect(traceOut.ycalendar).toBe('nepali');
+        });
     });
 
 

@@ -18,7 +18,7 @@ describe('Test histogram2d', function() {
 
         it('should set zsmooth to false when zsmooth is empty', function() {
             traceIn = {};
-            supplyDefaults(traceIn, traceOut, {});
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.zsmooth).toBe(false);
         });
 
@@ -26,13 +26,13 @@ describe('Test histogram2d', function() {
             traceIn = {
                 zsmooth: 'fast'
             };
-            supplyDefaults(traceIn, traceOut, {});
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.zsmooth).toBe('fast');
         });
 
         it('should set xgap and ygap to 0 when xgap and ygap are empty', function() {
             traceIn = {};
-            supplyDefaults(traceIn, traceOut, {});
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.xgap).toBe(0);
             expect(traceOut.ygap).toBe(0);
         });
@@ -42,7 +42,7 @@ describe('Test histogram2d', function() {
                 xgap: 10,
                 ygap: 5
             };
-            supplyDefaults(traceIn, traceOut, {});
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.xgap).toBe(10);
             expect(traceOut.ygap).toBe(5);
         });
@@ -53,11 +53,39 @@ describe('Test histogram2d', function() {
                 ygap: 5,
                 zsmooth: 'best'
             };
-            supplyDefaults(traceIn, traceOut, {});
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.xgap).toBe(undefined);
             expect(traceOut.ygap).toBe(undefined);
         });
 
+
+        it('should inherit layout.calendar', function() {
+            traceIn = {
+                x: [1, 2, 3],
+                y: [1, 2, 3]
+            };
+            supplyDefaults(traceIn, traceOut, '', {calendar: 'islamic'});
+
+            // we always fill calendar attributes, because it's hard to tell if
+            // we're on a date axis at this point.
+            expect(traceOut.xcalendar).toBe('islamic');
+            expect(traceOut.ycalendar).toBe('islamic');
+        });
+
+        it('should take its own calendars', function() {
+            traceIn = {
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                xcalendar: 'coptic',
+                ycalendar: 'ethiopian'
+            };
+            supplyDefaults(traceIn, traceOut, '', {calendar: 'islamic'});
+
+            // we always fill calendar attributes, because it's hard to tell if
+            // we're on a date axis at this point.
+            expect(traceOut.xcalendar).toBe('coptic');
+            expect(traceOut.ycalendar).toBe('ethiopian');
+        });
     });
 
 

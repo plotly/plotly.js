@@ -14,7 +14,7 @@ var isNumeric = require('fast-isnumeric');
 var hasColumns = require('./has_columns');
 
 
-module.exports = function handleXYZDefaults(traceIn, traceOut, coerce) {
+module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout) {
     var z = coerce('z');
     var x, y;
 
@@ -37,8 +37,9 @@ module.exports = function handleXYZDefaults(traceIn, traceOut, coerce) {
         coerce('transpose');
     }
 
-    coerce('xcalendar');
-    coerce('ycalendar');
+    var dfltCalendar = layout.calendar;
+    coerce('xcalendar', dfltCalendar);
+    coerce('ycalendar', dfltCalendar);
 
     return traceOut.z.length;
 };

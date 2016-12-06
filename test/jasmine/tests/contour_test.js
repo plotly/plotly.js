@@ -51,6 +51,36 @@ describe('contour defaults', function() {
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
         expect(traceOut.autocontour).toBe(true);
     });
+
+    it('should inherit layout.calendar', function() {
+        traceIn = {
+            x: [1, 2],
+            y: [1, 2],
+            z: [[1, 2], [3, 4]]
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+
+        // we always fill calendar attributes, because it's hard to tell if
+        // we're on a date axis at this point.
+        expect(traceOut.xcalendar).toBe('islamic');
+        expect(traceOut.ycalendar).toBe('islamic');
+    });
+
+    it('should take its own calendars', function() {
+        traceIn = {
+            x: [1, 2],
+            y: [1, 2],
+            z: [[1, 2], [3, 4]],
+            xcalendar: 'coptic',
+            ycalendar: 'ethiopian'
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+
+        // we always fill calendar attributes, because it's hard to tell if
+        // we're on a date axis at this point.
+        expect(traceOut.xcalendar).toBe('coptic');
+        expect(traceOut.ycalendar).toBe('ethiopian');
+    });
 });
 
 describe('contour makeColorMap', function() {

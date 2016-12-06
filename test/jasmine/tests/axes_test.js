@@ -385,6 +385,34 @@ describe('Test axes', function() {
             expect(layoutOut.yaxis2.gridcolor)
                 .toEqual(tinycolor.mix('#444', bgColor, frac).toRgbString());
         });
+
+        it('should inherit calendar from the layout', function() {
+            layoutOut.calendar = 'nepali';
+            layoutIn = {
+                calendar: 'nepali',
+                xaxis: {type: 'date'},
+                yaxis: {type: 'date'}
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.calendar).toBe('nepali');
+            expect(layoutOut.yaxis.calendar).toBe('nepali');
+        });
+
+        it('should allow its own calendar', function() {
+            layoutOut.calendar = 'nepali';
+            layoutIn = {
+                calendar: 'nepali',
+                xaxis: {type: 'date', calendar: 'coptic'},
+                yaxis: {type: 'date', calendar: 'thai'}
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.calendar).toBe('coptic');
+            expect(layoutOut.yaxis.calendar).toBe('thai');
+        });
     });
 
     describe('categoryorder', function() {
