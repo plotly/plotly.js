@@ -257,19 +257,19 @@ function getLayoutAttributes() {
     // polar layout attributes
     layoutAttributes = assignPolarLayoutAttrs(layoutAttributes);
 
-    // add registered components layout attribute
+    // add registered components layout attributes
     Object.keys(Registry.componentsRegistry).forEach(function(k) {
         var _module = Registry.componentsRegistry[k];
 
         if(!_module.layoutAttributes) return;
 
-        if(Array.isArray(_module.layoutNodes)) {
-            _module.layoutNodes.forEach(function(v) {
-                handleRegisteredComponent(layoutAttributes, _module, v + _module.name);
+        if(_module.schema && _module.schema.layout) {
+            Object.keys(_module.schema.layout).forEach(function(v) {
+                insertAttrs(layoutAttributes, _module.schema.layout[v], v);
             });
         }
         else {
-            handleRegisteredComponent(layoutAttributes, _module, _module.name);
+            insertAttrs(layoutAttributes, _module.layoutAttributes, _module.name);
         }
     });
 
@@ -366,9 +366,8 @@ function handleBasePlotModule(layoutAttributes, _module, astr) {
     np.set(attrs);
 }
 
-function handleRegisteredComponent(layoutAttributes, _module, astr) {
-    var np = Lib.nestedProperty(layoutAttributes, astr),
-        attrs = extendDeep(np.get() || {}, _module.layoutAttributes);
+function insertAttrs(baseAttrs, newAttrs, astr) {
+    var np = Lib.nestedProperty(baseAttrs, astr);
 
-    np.set(attrs);
+    np.set(extendDeep(np.get() || {}, newAttrs));
 }

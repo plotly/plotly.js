@@ -12,7 +12,12 @@ module.exports = {
     moduleType: 'component',
     name: 'rangeslider',
 
-    layoutNodes: ['xaxis.'],
+    schema: {
+        layout: {
+            'xaxis.rangeslider': require('./attributes')
+        }
+    },
+
     layoutAttributes: require('./attributes'),
     handleDefaults: require('./defaults'),
 
