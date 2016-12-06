@@ -48,7 +48,6 @@ module.exports = {
     },
     y: {
         valType: 'data_array',
-        role: 'info',
         description: 'Sets the y coordinates.'
     },
     y0: {
