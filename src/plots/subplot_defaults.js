@@ -49,6 +49,8 @@ module.exports = function handleSubplotDefaults(layoutIn, layoutOut, fullData, o
     var ids = Plots.findSubplotIds(fullData, subplotType),
         idsLength = ids.length;
 
+    console.log('ids:', ids);
+
     var subplotLayoutIn, subplotLayoutOut;
 
     function coerce(attr, dflt) {

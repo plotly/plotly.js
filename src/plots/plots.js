@@ -664,6 +664,7 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
         var trace = dataIn[i],
             fullTrace = plots.supplyTraceDefaults(trace, cnt, fullLayout, i);
 
+        console.log('fullLayout:', JSON.stringify(fullLayout));
         fullTrace.index = i;
         fullTrace._input = trace;
         fullTrace._expandedIndex = cnt;

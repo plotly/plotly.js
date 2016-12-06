@@ -15,9 +15,16 @@ var isNumeric = require('fast-isnumeric');
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
+var maxRowLength =
 
 
 module.exports = function calc(gd, trace) {
-    // prepare the raw data
-    console.log('calc!:');
+    var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
+        ya = Axes.getFromId(gd, trace.yaxis || 'y');
+
+
+    var cd0 = {};
+
+
+    return [cd0];
 };
