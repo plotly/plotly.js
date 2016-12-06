@@ -35,6 +35,7 @@ var handleTraceDefaults = function(traceIn, traceOut, coords, layout) {
         handleDefaults(traceIn, traceOut, coords[i] + 'calendar', layout.calendar);
     }
 };
+
 // each calendar needs its own default canonical tick. I would love to use
 // 2000-01-01 (or even 0000-01-01) for them all but they don't necessarily
 // all support either of those dates. Instead I'll use the most significant
@@ -164,10 +165,77 @@ function getCal(calendar) {
     return calendarObj;
 }
 
+function makeAttrs(description) {
+    return Lib.extendFlat({}, attributes, { description: description });
+}
+
+function makeTraceAttrsDescription(coord) {
+    return 'Sets the calendar system to use with `' + coord + '` date data.';
+}
+
+var xAttrs = {
+    xcalendar: makeAttrs(makeTraceAttrsDescription('x'))
+};
+
+var xyAttrs = Lib.extendFlat({}, xAttrs, {
+    ycalendar: makeAttrs(makeTraceAttrsDescription('y'))
+});
+
+var xyzAttrs = Lib.extendFlat({}, xyAttrs, {
+    zcalendar: makeAttrs(makeTraceAttrsDescription('z'))
+});
+
+var axisAttrs = makeAttrs([
+    'Sets the calendar system to use for `range` and `tick0`',
+    'if this is a date axis. This does not set the calendar for',
+    'interpreting data on this axis, that\'s specified in the trace',
+    'or via the global `layout.calendar`'
+].join(' '));
+
 module.exports = {
     moduleType: 'component',
     name: 'calendars',
 
+    schema: {
+        traces: {
+            scatter: xyAttrs,
+            bar: xyAttrs,
+            heatmap: xyAttrs,
+            contour: xyAttrs,
+            histogram: xyAttrs,
+            histogram2d: xyAttrs,
+            histogram2dcontour: xyAttrs,
+            scatter3d: xyzAttrs,
+            surface: xyzAttrs,
+            mesh3d: xyzAttrs,
+            scattergl: xyAttrs,
+            ohlc: xAttrs,
+            candlestick: xAttrs
+        },
+        layout: {
+            calendar: makeAttrs([
+                'Sets the default calendar system to use for interpreting and',
+                'displaying dates throughout the plot.'
+            ].join(' ')),
+            'xaxis.calendar': axisAttrs,
+            'yaxis.calendar': axisAttrs,
+            'scene.xaxis.calendar': axisAttrs,
+            'scene.yaxis.calendar': axisAttrs,
+            'scene.zaxis.calendar': axisAttrs
+        },
+        transforms: {
+            filter: {
+                calendar: makeAttrs([
+                    'Sets the calendar system to use for `value`, if it is a date.',
+                    'Note that this is not necessarily the same calendar as is used',
+                    'for the target data; that is set by its own calendar attribute,',
+                    'ie `trace.x` uses `trace.xcalendar` etc.'
+                ].join(' '))
+            }
+        }
+    },
+
+    layoutAttributes: attributes,
 
     handleDefaults: handleDefaults,
     handleTraceDefaults: handleTraceDefaults,
