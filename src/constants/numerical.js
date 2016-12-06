@@ -36,5 +36,11 @@ module.exports = {
     ONEDAY: 86400000,
     ONEHOUR: 3600000,
     ONEMIN: 60000,
-    ONESEC: 1000
+    ONESEC: 1000,
+
+    /*
+     * For fast conversion btwn world calendars and epoch ms, the Julian Day Number
+     * of the unix epoch. From calendars.instance().newDate(1970, 1, 1).toJD()
+     */
+    EPOCHJD: 2440587.5
 };
