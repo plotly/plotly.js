@@ -960,14 +960,14 @@
       ],
       "increasing": {
         "line": {
-		  "color": "#4dac26"
-		},
+          "color": "#4dac26"
+        },
         "name": "ABC"
       },
       "decreasing": {
         "line": {
           "color": "#d01c8b"
-		},
+        },
         "showlegend": false
       }
     },
@@ -1932,13 +1932,13 @@
       "increasing": {
         "line": {
           "color": "#b8e186"
-		},
+        },
         "name": "XYZ"
       },
       "decreasing": {
         "line": {
           "color": "#f1b6da"
-		},
+        },
         "showlegend": false
       },
       "yaxis": "y2"
@@ -1947,9 +1947,11 @@
   "layout": {
     "xaxis": {
       "range": [
-        "2016-01-10 14:24:21.917",
-        "2016-08-15 01:54:22.978"
-      ]
+        "2559-01-10 14:24:21.917",
+        "2559-08-15 01:54:22.978"
+      ],
+      "calendar": "thai",
+      "title": "Thai dates"
     },
     "yaxis": {
       "tickprefix": "$",
