@@ -74,36 +74,36 @@ describe('Test frame api', function() {
         });
 
         it('creates multiple unnamed frames in series', function(done) {
-            Plotly.addFrames(gd, [{}]).then(function () {
-                return Plotly.addFrames(gd, [{}])
+            Plotly.addFrames(gd, [{}]).then(function() {
+                return Plotly.addFrames(gd, [{}]);
             }).then(function() {
                 expect(f).toEqual([{name: 'frame 0'}, {name: 'frame 1'}]);
             }).catch(fail).then(done);
         });
 
-        it('casts number names to strings on insertion', function (done) {
-            Plotly.addFrames(gd, [{name: 2}]).then(function () {
+        it('casts number names to strings on insertion', function(done) {
+            Plotly.addFrames(gd, [{name: 2}]).then(function() {
                 expect(f).toEqual([{name: '2'}]);
             }).catch(fail).then(done);
         });
 
-        it('updates frames referenced by number', function (done) {
-            Plotly.addFrames(gd, [{name: 2}]).then(function () {
+        it('updates frames referenced by number', function(done) {
+            Plotly.addFrames(gd, [{name: 2}]).then(function() {
                 return Plotly.addFrames(gd, [{name: 2, layout: {foo: 'bar'}}]);
-            }).then(function () {
+            }).then(function() {
                 expect(f).toEqual([{name: '2', layout: {foo: 'bar'}}]);
             }).catch(fail).then(done);
         });
 
-        it('issues a warning if a number-named frame would overwrite a frame', function (done) {
+        it('issues a warning if a number-named frame would overwrite a frame', function(done) {
             var warnings = [];
-            spyOn(Lib, 'warn').and.callFake(function (msg){
+            spyOn(Lib, 'warn').and.callFake(function(msg) {
                 warnings.push(msg);
             });
 
-            Plotly.addFrames(gd, [{name: 2}]).then(function () {
+            Plotly.addFrames(gd, [{name: 2}]).then(function() {
                 return Plotly.addFrames(gd, [{name: 2, layout: {foo: 'bar'}}]);
-            }).then(function () {
+            }).then(function() {
                 expect(warnings.length).toEqual(1);
                 expect(warnings[0]).toMatch(/overwriting/);
             }).catch(fail).then(done);

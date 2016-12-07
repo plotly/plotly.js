@@ -2528,7 +2528,7 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
 Plotly.addFrames = function(gd, frameList, indices) {
     gd = helpers.getGraphDiv(gd);
 
-    var hasBeenWarnedAboutNumericNames = false;
+    var numericNameWarningCount = 0;
 
     if(frameList === null || frameList === undefined) {
         return Promise.resolve();
@@ -2563,8 +2563,20 @@ Plotly.addFrames = function(gd, frameList, indices) {
         var name = (_hash[frameList[i].name] || {}).name;
         var newName = frameList[i].name;
 
-        if (name && newName && typeof newName === 'number' && _hash[name]) {
-            Lib.warn('addFrames: overwriting frame "' + _hash[name].name + '" with a frame whose name of type "number" also equates to "' + name + '". This is valid but may potentially lead to unexpected behavior since all plotly.js frame names are stored internally as strings.');
+        if(name && newName && typeof newName === 'number' && _hash[name]) {
+            numericNameWarningCount++;
+
+            Lib.warn('addFrames: overwriting frame "' + _hash[name].name +
+                '" with a frame whose name of type "number" also equates to "' +
+                name + '". This is valid but may potentially lead to unexpected ' +
+                'behavior since all plotly.js frame names are stored internally ' +
+                'as strings.');
+
+            if(numericNameWarningCount > 5) {
+                Lib.warn('addFrames: This API call has yielded too many warnings. ' +
+                    'For the rest of this call, further warnings about numeric frame ' +
+                    'names will be suppressed.');
+            }
         }
 
         insertions.push({
@@ -2587,7 +2599,7 @@ Plotly.addFrames = function(gd, frameList, indices) {
     for(i = insertions.length - 1; i >= 0; i--) {
         frame = insertions[i].frame;
 
-        if (typeof frame.name === 'number') {
+        if(typeof frame.name === 'number') {
             Lib.warn('Warning: addFrames accepts frames with numeric names, but the numbers are' +
                 'implicitly cast to strings');
 
