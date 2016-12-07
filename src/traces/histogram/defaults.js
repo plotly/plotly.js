@@ -27,9 +27,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var x = coerce('x'),
         y = coerce('y');
 
-    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
-    handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
-
     coerce('text');
 
     var orientation = coerce('orientation', (y && !x) ? 'h' : 'v'),
@@ -39,6 +36,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         traceOut.visible = false;
         return;
     }
+
+    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
+    handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
 
     var hasAggregationData = traceOut[orientation === 'h' ? 'x' : 'y'];
     if(hasAggregationData) coerce('histfunc');

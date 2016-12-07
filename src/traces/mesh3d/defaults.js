@@ -37,9 +37,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var coords = readComponents(['x', 'y', 'z']);
     var indices = readComponents(['i', 'j', 'k']);
 
-    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
-    handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
-
     if(!coords) {
         traceOut.visible = false;
         return;
@@ -51,6 +48,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             for(var i = 0; i < index.length; ++i) index[i] |= 0;
         });
     }
+
+    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
+    handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
 
     // Coerce remaining properties
     [

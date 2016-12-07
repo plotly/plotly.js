@@ -17,9 +17,6 @@ module.exports = function handleSampleDefaults(traceIn, traceOut, coerce, layout
     var x = coerce('x'),
         y = coerce('y');
 
-    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
-    handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
-
     // we could try to accept x0 and dx, etc...
     // but that's a pretty weird use case.
     // for now require both x and y explicitly specified.
@@ -27,6 +24,9 @@ module.exports = function handleSampleDefaults(traceIn, traceOut, coerce, layout
         traceOut.visible = false;
         return;
     }
+
+    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
+    handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
 
     // if marker.color is an array, we can use it in aggregation instead of z
     var hasAggregationData = coerce('z') || coerce('marker.color');
