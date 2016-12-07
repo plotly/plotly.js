@@ -8,7 +8,7 @@
 
 'use strict';
 
-var calendars = require('world-calendars');
+var calendars = require('./calendars');
 
 var Lib = require('../../lib');
 var constants = require('../../constants/numerical');
