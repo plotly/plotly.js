@@ -53,7 +53,6 @@ module.exports = {
             'If absent, linear coordinate will be generated.'
         ].join(' ')
     },
-    xcalendar: scatterAttrs.xcalendar,
 
     open: {
         valType: 'data_array',

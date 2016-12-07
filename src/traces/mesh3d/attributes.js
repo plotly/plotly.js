@@ -37,9 +37,6 @@ module.exports = {
             'jointly represent the X, Y and Z coordinates of the nth vertex.'
         ].join(' ')
     },
-    xcalendar: surfaceAtts.xcalendar,
-    ycalendar: surfaceAtts.ycalendar,
-    zcalendar: surfaceAtts.zcalendar,
 
     i: {
         valType: 'data_array',

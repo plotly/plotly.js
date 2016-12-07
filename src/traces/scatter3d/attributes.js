@@ -65,11 +65,6 @@ module.exports = {
         valType: 'data_array',
         description: 'Sets the z coordinates.'
     },
-    xcalendar: scatterAttrs.xcalendar,
-    ycalendar: scatterAttrs.ycalendar,
-    zcalendar: extendFlat({}, scatterAttrs.xcalendar, {
-        description: 'Sets the calendar system to use with `z` date data'
-    }),
 
     text: extendFlat({}, scatterAttrs.text, {
         description: [

@@ -9,6 +9,9 @@
 
 'use strict';
 
+var Registry = require('../../registry');
+
+
 module.exports = function handleOHLC(traceIn, traceOut, coerce, layout) {
     var len;
 
@@ -18,7 +21,8 @@ module.exports = function handleOHLC(traceIn, traceOut, coerce, layout) {
         low = coerce('low'),
         close = coerce('close');
 
-    coerce('xcalendar', layout.calendar);
+    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
+    handleCalendarDefaults(traceIn, traceOut, ['x'], layout);
 
     len = Math.min(open.length, high.length, low.length, close.length);
 

@@ -25,8 +25,6 @@ module.exports = extendFlat({}, {
     y: scatterAttrs.y,
     y0: scatterAttrs.y0,
     dy: scatterAttrs.dy,
-    xcalendar: scatterAttrs.xcalendar,
-    ycalendar: scatterAttrs.ycalendar,
 
     text: {
         valType: 'data_array',
