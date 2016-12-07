@@ -549,7 +549,7 @@ describe('Test animate API', function() {
                 transition: {duration: 1},
                 frame: {duration: 1}
             }).then(function() {
-                expect(frames).toEqual(['frame0', 'frame1', undefined, undefined]);
+                expect(frames).toEqual(['frame0', 'frame1', null, null]);
             }).catch(fail).then(done);
 
         });
