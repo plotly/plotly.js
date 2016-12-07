@@ -1549,7 +1549,7 @@ plots.computeFrame = function(gd, frameName) {
 /*
  * Recompute the lookup table that maps frame name -> frame object. addFrames/
  * deleteFrames already manages this data one at a time, so the only time this
- * is necessary is if you poke around manually in `gd._transitionData_frames`
+ * is necessary is if you poke around manually in `gd._transitionData._frames`
  * and create and haven't updated the lookup table.
  */
 plots.recomputeFrameHash = function(gd) {
