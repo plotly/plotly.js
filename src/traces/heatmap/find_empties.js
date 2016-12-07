@@ -10,13 +10,14 @@
 
 var maxRowLength = require('./max_row_length');
 
+/* Return a list of empty points in 2D array z
+ * each empty point z[i][j] gives an array [i, j, neighborCount]
+ * neighborCount is the count of 4 nearest neighbors that DO exist
+ * this is to give us an order of points to evaluate for interpolation.
+ * if no neighbors exist, we iteratively look for neighbors that HAVE
+ * neighbors, and add a fractional neighborCount
+ */
 module.exports = function findEmpties(z) {
-    // return a list of empty points in 2D array z
-    // each empty point z[i][j] gives an array [i, j, neighborCount]
-    // neighborCount is the count of 4 nearest neighbors that DO exist
-    // this is to give us an order of points to evaluate for interpolation.
-    // if no neighbors exist, we iteratively look for neighbors that HAVE
-    // neighbors, and add a fractional neighborCount
     var empties = [],
         neighborHash = {},
         noNeighborList = [],

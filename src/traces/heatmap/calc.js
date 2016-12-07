@@ -18,7 +18,7 @@ var colorscaleCalc = require('../../components/colorscale/calc');
 var hasColumns = require('./has_columns');
 var convertColumnXYZ = require('./convert_column_xyz');
 var maxRowLength = require('./max_row_length');
-var cleanData = require('./clean_data');
+var clean2dArray = require('./clean_2d_array');
 var interp2d = require('./interp2d');
 var findEmpties = require('./find_empties');
 var makeBoundArray = require('./make_bound_array');
@@ -66,7 +66,7 @@ module.exports = function calc(gd, trace) {
         y0 = trace.y0 || 0;
         dy = trace.dy || 1;
 
-        z = cleanData(trace.z, trace.transpose);
+        z = clean2dArray(trace.z, trace.transpose);
 
         if(isContour || trace.connectgaps) {
             trace._emptypoints = findEmpties(z);
