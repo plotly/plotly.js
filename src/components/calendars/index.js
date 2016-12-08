@@ -41,6 +41,7 @@ var handleTraceDefaults = function(traceIn, traceOut, coords, layout) {
 // all support either of those dates. Instead I'll use the most significant
 // number they *do* support, biased toward the present day.
 var CANONICAL_TICK = {
+    chinese: '2000-01-01',
     coptic: '2000-01-01',
     discworld: '2000-01-01',
     ethiopian: '2000-01-01',
@@ -58,11 +59,13 @@ var CANONICAL_TICK = {
 };
 
 // Start on a Sunday - for week ticks
-// Discworld and Mayan calendars don't have 7-day weeks anyway so don't change them.
+// Discworld and Mayan calendars don't have 7-day weeks but we're going to give them
+// 7-day week ticks so start on our Sundays.
 // If anyone really cares we can customize the auto tick spacings for these calendars.
 var CANONICAL_SUNDAY = {
+    chinese: '2000-01-02',
     coptic: '2000-01-03',
-    discworld: '2000-01-01',
+    discworld: '2000-01-03',
     ethiopian: '2000-01-05',
     hebrew: '5000-01-01',
     islamic: '1000-01-02',
@@ -78,6 +81,7 @@ var CANONICAL_SUNDAY = {
 };
 
 var DFLTRANGE = {
+    chinese: ['2000-01-01', '2001-01-01'],
     coptic: ['1700-01-01', '1701-01-01'],
     discworld: ['1800-01-01', '1801-01-01'],
     ethiopian: ['2000-01-01', '2001-01-01'],

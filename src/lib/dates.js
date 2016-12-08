@@ -28,6 +28,8 @@ var Registry = require('../registry');
 var utcFormat = d3.time.format.utc;
 
 var DATETIME_REGEXP = /^\s*(-?\d\d\d\d|\d\d)(-(\d?\d)(-(\d?\d)([ Tt]([01]?\d|2[0-3])(:([0-5]\d)(:([0-5]\d(\.\d+)?))?(Z|z|[+\-]\d\d:?\d\d)?)?)?)?)?\s*$/m;
+// special regex for chinese calendars to support yyyy-mmi-dd etc for intercalary months
+var DATETIME_REGEXP_CN = /^\s*(-?\d\d\d\d|\d\d)(-(\d?\di?)(-(\d?\d)([ Tt]([01]?\d|2[0-3])(:([0-5]\d)(:([0-5]\d(\.\d+)?))?(Z|z|[+\-]\d\d:?\d\d)?)?)?)?)?\s*$/m;
 
 // for 2-digit years, the first year we map them onto
 var YFIRST = new Date().getFullYear() - 70;
@@ -155,10 +157,12 @@ exports.dateTime2ms = function(s, calendar) {
         calendar = '';
     }
 
-    var match = s.match(DATETIME_REGEXP);
+    var isChinese = calendar && calendar.substr(0, 7) === 'chinese';
+
+    var match = s.match(isChinese ? DATETIME_REGEXP_CN : DATETIME_REGEXP);
     if(!match) return BADNUM;
     var y = match[1],
-        m = Number(match[3] || 1),
+        m = match[3] || '1',
         d = Number(match[5] || 1),
         H = Number(match[7] || 0),
         M = Number(match[9] || 0),
@@ -167,11 +171,19 @@ exports.dateTime2ms = function(s, calendar) {
     if(isWorld) {
         // disallow 2-digit years for world calendars
         if(y.length === 2) return BADNUM;
+        y = Number(y);
 
         var cDate;
         try {
-            cDate = Registry.getComponentMethod('calendars', 'getCal')(calendar)
-                .newDate(Number(y), m, d);
+            var calInstance = Registry.getComponentMethod('calendars', 'getCal')(calendar);
+            if(isChinese) {
+                var isIntercalary = m.charAt(m.length - 1) === 'i';
+                m = Number(isIntercalary ? m.substr(0, m.length - 1) : m);
+                cDate = calInstance.newDate(y, calInstance.toMonthIndex(y, m, isIntercalary), d);
+            }
+            else {
+                cDate = calInstance.newDate(y, Number(m), d);
+            }
         }
         catch(e) { return BADNUM; } // Invalid ... date
 

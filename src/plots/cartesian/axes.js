@@ -924,9 +924,9 @@ function autoTickRound(ax) {
         // If tick0 is unusual, give tickround a bit more information
         // not necessarily *all* the information in tick0 though, if it's really odd
         // minimal string length for tick0: 'd' is 10, 'M' is 16, 'S' is 19
-        // take off a leading minus (year < 0 so length is consistent)
+        // take off a leading minus (year < 0) and i (intercalary month) so length is consistent
         var tick0ms = ax.r2l(ax.tick0),
-            tick0str = ax.l2r(tick0ms).replace(/^-/, ''),
+            tick0str = ax.l2r(tick0ms).replace(/(^-|i)/g, ''),
             tick0len = tick0str.length;
 
         if(String(dtick).charAt(0) === 'M') {

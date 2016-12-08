@@ -15,6 +15,7 @@ module.exports = require('world-calendars/dist/main');
 
 require('world-calendars/dist/plus');
 
+require('world-calendars/dist/calendars/chinese');
 require('world-calendars/dist/calendars/coptic');
 require('world-calendars/dist/calendars/discworld');
 require('world-calendars/dist/calendars/ethiopian');
