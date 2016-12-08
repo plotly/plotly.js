@@ -157,7 +157,7 @@ exports.dateTime2ms = function(s, calendar) {
         calendar = '';
     }
 
-    var isChinese = calendar && calendar.substr(0, 7) === 'chinese';
+    var isChinese = isWorld && calendar.substr(0, 7) === 'chinese';
 
     var match = s.match(isChinese ? DATETIME_REGEXP_CN : DATETIME_REGEXP);
     if(!match) return BADNUM;

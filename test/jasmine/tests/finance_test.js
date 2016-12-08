@@ -688,10 +688,10 @@ describe('finance charts calc transforms:', function() {
 
         var out = _calc([trace0, trace1]);
 
-        var x0 = out[0].x.map(Lib.dateTime2ms);
+        var x0 = Lib.simpleMap(out[0].x, Lib.dateTime2ms);
         expect(x0[x0.length - 2] - x0[0]).toEqual(1);
 
-        var x2 = out[2].x.map(Lib.dateTime2ms);
+        var x2 = Lib.simpleMap(out[2].x, Lib.dateTime2ms);
         expect(x2[x2.length - 2] - x2[0]).toEqual(1);
 
         expect(out[1].x).toEqual([]);
