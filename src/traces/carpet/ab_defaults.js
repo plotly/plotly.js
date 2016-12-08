@@ -13,20 +13,17 @@
 
 // var isNumeric = require('fast-isnumeric');
 
-var hasColumns = require('./has_columns');
-
-
 module.exports = function handleABDefaults(traceIn, traceOut, coerce) {
     var a = coerce('a');
 
-    if (!a) {
+    if(!a) {
         coerce('da');
         coerce('a0');
     }
 
     var b = coerce('b');
 
-    if (!b) {
+    if(!b) {
         coerce('db');
         coerce('b0');
     }

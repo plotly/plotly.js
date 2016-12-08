@@ -19,7 +19,7 @@ var hasColumns = require('./has_columns');
 module.exports = function handleXYDefaults(traceIn, traceOut, coerce) {
     var x = coerce('x');
 
-    if (x && !hasColumns(x)) {
+    if(x && !hasColumns(x)) {
         // x absent is valid, but x present is only valid
         // if x has columns
         return 0;
@@ -30,7 +30,7 @@ module.exports = function handleXYDefaults(traceIn, traceOut, coerce) {
     var y = coerce('y');
 
     // y must be both present *and* must have columns
-    if (!y || !hasColumns(y)) {
+    if(!y || !hasColumns(y)) {
         return 0;
     }
 

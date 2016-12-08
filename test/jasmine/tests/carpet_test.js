@@ -1,13 +1,13 @@
-var Plotly = require('@lib/index');
+// var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
+// var Lib = require('@src/lib');
 
 var Carpet = require('@src/traces/carpet');
 
-var d3 = require('d3');
-var createGraphDiv = require('../assets/create_graph_div');
-var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
+// var d3 = require('d3');
+// var createGraphDiv = require('../assets/create_graph_div');
+// var destroyGraphDiv = require('../assets/destroy_graph_div');
+// var customMatchers = require('../assets/custom_matchers');
 
 
 describe('carpet supplyDefaults', function() {
@@ -51,7 +51,7 @@ describe('carpet supplyDefaults', function() {
         expect(traceOut._cheater).toBe(false);
     });
 
-    it('defaults to cheaterslope = 1', function () {
+    it('defaults to cheaterslope = 1', function() {
         traceIn = {y: [[1, 2], [3, 4]]};
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
         expect(traceOut.cheaterslope).toEqual(1);

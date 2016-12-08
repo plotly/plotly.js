@@ -8,6 +8,9 @@
 
 'use strict';
 
+var extendFlat = require('../../lib/extend').extendFlat;
+var axisAttrs = require('./axis_attributes');
+
 module.exports = {
     carpetid: {
         valType: 'string',
@@ -88,4 +91,6 @@ module.exports = {
             'Only used if `x` is been ommitted.'
         ].join(' ')
     },
+    aaxis: extendFlat({}, axisAttrs),
+    baxis: extendFlat({}, axisAttrs),
 };

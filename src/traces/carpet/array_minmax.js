@@ -8,28 +8,28 @@
 
 'use strict';
 
-module.exports = function (a) {
+module.exports = function(a) {
     return minMax(a, 0);
-}
+};
 
-function minMax (a, depth) {
+function minMax(a, depth) {
     // Limit to ten dimensional datasets. This seems *exceedingly* unlikely to
     // ever cause problems or even be a concern. It's include strictly so that
     // circular arrays could never cause this to loop.
-    if (!Array.isArray(a) || depth >= 10) {
+    if(!Array.isArray(a) || depth >= 10) {
         return null;
     }
 
     var min = Infinity;
     var max = -Infinity;
     var n = a.length;
-    for (var i = 0; i < n; i++) {
+    for(var i = 0; i < n; i++) {
         var datum = a[i];
 
-        if (Array.isArray(datum)) {
+        if(Array.isArray(datum)) {
             var result = minMax(datum, depth + 1);
 
-            if (result) {
+            if(result) {
                 min = Math.min(result[0], min);
                 max = Math.max(result[1], max);
             }
@@ -40,4 +40,4 @@ function minMax (a, depth) {
     }
 
     return [min, max];
-};
+}

@@ -8,16 +8,16 @@
 
 'use strict';
 
-module.exports = function (na, nb, cheaterslope) {
+module.exports = function(na, nb, cheaterslope) {
     var i, j;
     var data = [];
 
-    for (i = 0; i < na; i++) {
+    for(i = 0; i < na; i++) {
         data[i] = [];
-        for (j = 0; j < nb; j++) {
+        for(j = 0; j < nb; j++) {
             data[i][j] = i - j * cheaterslope;
         }
     }
 
     return data;
-}
+};
