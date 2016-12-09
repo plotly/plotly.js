@@ -23,6 +23,12 @@ module.exports = function calc(gd, trace) {
         x = trace.x ? xa.makeCalcdata(trace, 'x') : [],
         ya = Axes.getFromId(gd, trace.yaxis || 'y'),
         y = trace.y ? ya.makeCalcdata(trace, 'y') : [],
+        xcalendar = trace.xcalendar,
+        ycalendar = trace.ycalendar,
+        xr2c = function(v) { return xa.r2c(v, 0, xcalendar); },
+        yr2c = function(v) { return ya.r2c(v, 0, ycalendar); },
+        xc2r = function(v) { return xa.c2r(v, 0, xcalendar); },
+        yc2r = function(v) { return ya.c2r(v, 0, ycalendar); },
         x0,
         dx,
         y0,
@@ -40,22 +46,26 @@ module.exports = function calc(gd, trace) {
 
     // calculate the bins
     if(trace.autobinx || !('xbins' in trace)) {
-        trace.xbins = Axes.autoBin(x, xa, trace.nbinsx, '2d');
+        trace.xbins = Axes.autoBin(x, xa, trace.nbinsx, '2d', xcalendar);
         if(trace.type === 'histogram2dcontour') {
             // the "true" last argument reverses the tick direction (which we can't
             // just do with a minus sign because of month bins)
-            trace.xbins.start = xa.c2r(Axes.tickIncrement(xa.r2c(trace.xbins.start), trace.xbins.size, true));
-            trace.xbins.end = xa.c2r(Axes.tickIncrement(xa.r2c(trace.xbins.end), trace.xbins.size));
+            trace.xbins.start = xc2r(Axes.tickIncrement(
+                xr2c(trace.xbins.start), trace.xbins.size, true, xcalendar));
+            trace.xbins.end = xc2r(Axes.tickIncrement(
+                xr2c(trace.xbins.end), trace.xbins.size, false, xcalendar));
         }
 
         // copy bin info back to the source data.
         trace._input.xbins = trace.xbins;
     }
     if(trace.autobiny || !('ybins' in trace)) {
-        trace.ybins = Axes.autoBin(y, ya, trace.nbinsy, '2d');
+        trace.ybins = Axes.autoBin(y, ya, trace.nbinsy, '2d', ycalendar);
         if(trace.type === 'histogram2dcontour') {
-            trace.ybins.start = ya.c2r(Axes.tickIncrement(ya.r2c(trace.ybins.start), trace.ybins.size, true));
-            trace.ybins.end = ya.c2r(Axes.tickIncrement(ya.r2c(trace.ybins.end), trace.ybins.size));
+            trace.ybins.start = yc2r(Axes.tickIncrement(
+                yr2c(trace.ybins.start), trace.ybins.size, true, ycalendar));
+            trace.ybins.end = yc2r(Axes.tickIncrement(
+                yr2c(trace.ybins.end), trace.ybins.size, false, ycalendar));
         }
         trace._input.ybins = trace.ybins;
     }
@@ -99,11 +109,11 @@ module.exports = function calc(gd, trace) {
 
     // decrease end a little in case of rounding errors
     var binspec = trace.xbins,
-        binStart = xa.r2c(binspec.start),
-        binEnd = xa.r2c(binspec.end) +
-            (binStart - Axes.tickIncrement(binStart, binspec.size)) / 1e6;
+        binStart = xr2c(binspec.start),
+        binEnd = xr2c(binspec.end) +
+            (binStart - Axes.tickIncrement(binStart, binspec.size, false, xcalendar)) / 1e6;
 
-    for(i = binStart; i < binEnd; i = Axes.tickIncrement(i, binspec.size)) {
+    for(i = binStart; i < binEnd; i = Axes.tickIncrement(i, binspec.size, false, xcalendar)) {
         onecol.push(sizeinit);
         if(nonuniformBinsX) xbins.push(i);
         if(doavg) zerocol.push(0);
@@ -112,16 +122,16 @@ module.exports = function calc(gd, trace) {
 
     var nx = onecol.length;
     x0 = trace.xbins.start;
-    var x0c = xa.r2c(x0);
+    var x0c = xr2c(x0);
     dx = (i - x0c) / nx;
-    x0 = xa.c2r(x0c + dx / 2);
+    x0 = xc2r(x0c + dx / 2);
 
     binspec = trace.ybins;
-    binStart = ya.r2c(binspec.start);
-    binEnd = ya.r2c(binspec.end) +
-        (binStart - Axes.tickIncrement(binStart, binspec.size)) / 1e6;
+    binStart = yr2c(binspec.start);
+    binEnd = yr2c(binspec.end) +
+        (binStart - Axes.tickIncrement(binStart, binspec.size, false, ycalendar)) / 1e6;
 
-    for(i = binStart; i < binEnd; i = Axes.tickIncrement(i, binspec.size)) {
+    for(i = binStart; i < binEnd; i = Axes.tickIncrement(i, binspec.size, false, ycalendar)) {
         z.push(onecol.concat());
         if(nonuniformBinsY) ybins.push(i);
         if(doavg) counts.push(zerocol.concat());
@@ -130,9 +140,9 @@ module.exports = function calc(gd, trace) {
 
     var ny = z.length;
     y0 = trace.ybins.start;
-    var y0c = ya.r2c(y0);
+    var y0c = yr2c(y0);
     dy = (i - y0c) / ny;
-    y0 = ya.c2r(y0c + dy / 2);
+    y0 = yc2r(y0c + dy / 2);
 
     if(densitynorm) {
         xinc = onecol.map(function(v, i) {
@@ -149,15 +159,15 @@ module.exports = function calc(gd, trace) {
     // we already have this, but uniform with start/end/size they're still strings.
     if(!nonuniformBinsX && xa.type === 'date') {
         xbins = {
-            start: xa.r2c(xbins.start),
-            end: xa.r2c(xbins.end),
+            start: xr2c(xbins.start),
+            end: xr2c(xbins.end),
             size: xbins.size
         };
     }
     if(!nonuniformBinsY && ya.type === 'date') {
         ybins = {
-            start: ya.r2c(ybins.start),
-            end: ya.r2c(ybins.end),
+            start: yr2c(ybins.start),
+            end: yr2c(ybins.end),
             size: ybins.size
         };
     }

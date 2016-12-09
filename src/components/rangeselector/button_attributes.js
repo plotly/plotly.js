@@ -33,7 +33,9 @@ module.exports = {
             '*step* milliseconds back.',
             'For example, with `step` set to *year* and `count` set to *1*',
             'the range update shifts the start of the range back to',
-            'January 01 of the current year.'
+            'January 01 of the current year.',
+            'Month and year *todate* are currently available only',
+            'for the built-in (Gregorian) calendar.'
         ].join(' ')
     },
     count: {

@@ -69,14 +69,14 @@ function annAutorange(gd) {
         }
 
         if(xa && xa.autorange) {
-            Axes.expand(xa, [xa.l2c(xa.r2l(ann.x))], {
+            Axes.expand(xa, [xa.r2c(ann.x)], {
                 ppadplus: rightSize,
                 ppadminus: leftSize
             });
         }
 
         if(ya && ya.autorange) {
-            Axes.expand(ya, [ya.l2c(ya.r2l(ann.y))], {
+            Axes.expand(ya, [ya.r2c(ann.y)], {
                 ppadplus: bottomSize,
                 ppadminus: topSize
             });

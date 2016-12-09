@@ -109,6 +109,7 @@ module.exports = {
         valType: 'data_array',
         description: 'Sets the y coordinates.'
     },
+
     text: {
         valType: 'data_array',
         description: 'Sets the text elements associated with each z value.'

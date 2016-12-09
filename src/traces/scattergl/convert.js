@@ -298,8 +298,10 @@ proto.updateFast = function(options) {
 
     var xx, yy;
 
+    var xcalendar = options.xcalendar;
+
     var fastType = allFastTypesLikely(x);
-    var isDateTime = !fastType && autoType(x) === 'date';
+    var isDateTime = !fastType && autoType(x, xcalendar) === 'date';
 
     // TODO add 'very fast' mode that bypasses this loop
     // TODO bypass this on modebar +/- zoom
@@ -312,7 +314,7 @@ proto.updateFast = function(options) {
             if(isNumeric(yy)) {
 
                 if(!fastType) {
-                    xx = Lib.dateTime2ms(xx);
+                    xx = Lib.dateTime2ms(xx, xcalendar);
                 }
 
                 idToIndex[pId++] = i;
@@ -397,12 +399,8 @@ proto.updateFancy = function(options) {
         ptrX = 0,
         ptrY = 0;
 
-    var getX = (xaxis.type === 'log') ?
-            function(x) { return xaxis.d2l(x); } :
-            function(x) { return x; };
-    var getY = (yaxis.type === 'log') ?
-            function(y) { return yaxis.d2l(y); } :
-            function(y) { return y; };
+    var getX = (xaxis.type === 'log') ? xaxis.d2l : function(x) { return x; };
+    var getY = (yaxis.type === 'log') ? yaxis.d2l : function(y) { return y; };
 
     var i, j, xx, yy, ex0, ex1, ey0, ey1;
 

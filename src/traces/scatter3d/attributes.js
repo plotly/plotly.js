@@ -65,6 +65,7 @@ module.exports = {
         valType: 'data_array',
         description: 'Sets the z coordinates.'
     },
+
     text: extendFlat({}, scatterAttrs.text, {
         description: [
             'Sets text elements associated with each (x,y,z) triplet.',

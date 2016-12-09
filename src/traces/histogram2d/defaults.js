@@ -16,12 +16,12 @@ var colorscaleDefaults = require('../../components/colorscale/defaults');
 var attributes = require('./attributes');
 
 
-module.exports = function supplyDefaults(traceIn, traceOut, layout) {
+module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    handleSampleDefaults(traceIn, traceOut, coerce);
+    handleSampleDefaults(traceIn, traceOut, coerce, layout);
 
     var zsmooth = coerce('zsmooth');
     if(zsmooth === false) {

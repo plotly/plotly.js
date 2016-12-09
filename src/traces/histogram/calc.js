@@ -32,7 +32,8 @@ module.exports = function calc(gd, trace) {
         pa = Axes.getFromId(gd,
             trace.orientation === 'h' ? (trace.yaxis || 'y') : (trace.xaxis || 'x')),
         maindata = trace.orientation === 'h' ? 'y' : 'x',
-        counterdata = {x: 'y', y: 'x'}[maindata];
+        counterdata = {x: 'y', y: 'x'}[maindata],
+        calendar = trace[maindata + 'calendar'];
 
     cleanBins(trace, pa, maindata);
 
@@ -40,7 +41,7 @@ module.exports = function calc(gd, trace) {
     var pos0 = pa.makeCalcdata(trace, maindata);
     // calculate the bins
     if((trace['autobin' + maindata] !== false) || !(maindata + 'bins' in trace)) {
-        trace[maindata + 'bins'] = Axes.autoBin(pos0, pa, trace['nbins' + maindata]);
+        trace[maindata + 'bins'] = Axes.autoBin(pos0, pa, trace['nbins' + maindata], false, calendar);
 
         // copy bin info back to the source data.
         trace._input[maindata + 'bins'] = trace[maindata + 'bins'];
@@ -64,6 +65,7 @@ module.exports = function calc(gd, trace) {
         binfunc = binFunctions.count,
         normfunc = normFunctions[norm],
         doavg = false,
+        pr2c = function(v) { return pa.r2c(v, 0, calendar); },
         rawCounterData;
 
     if(Array.isArray(trace[counterdata]) && func !== 'count') {
@@ -74,13 +76,13 @@ module.exports = function calc(gd, trace) {
 
     // create the bins (and any extra arrays needed)
     // assume more than 5000 bins is an error, so we don't crash the browser
-    i = pa.r2c(binspec.start);
+    i = pr2c(binspec.start);
 
     // decrease end a little in case of rounding errors
-    binend = pa.r2c(binspec.end) + (i - Axes.tickIncrement(i, binspec.size)) / 1e6;
+    binend = pr2c(binspec.end) + (i - Axes.tickIncrement(i, binspec.size, false, calendar)) / 1e6;
 
     while(i < binend && pos.length < 5000) {
-        i2 = Axes.tickIncrement(i, binspec.size);
+        i2 = Axes.tickIncrement(i, binspec.size, false, calendar);
         pos.push((i + i2) / 2);
         size.push(sizeinit);
         // nonuniform bins (like months) we need to search,
@@ -96,8 +98,8 @@ module.exports = function calc(gd, trace) {
     // we already have this, but uniform with start/end/size they're still strings.
     if(!nonuniformBins && pa.type === 'date') {
         bins = {
-            start: pa.r2c(bins.start),
-            end: pa.r2c(bins.end),
+            start: pr2c(bins.start),
+            end: pr2c(bins.end),
             size: bins.size
         };
     }

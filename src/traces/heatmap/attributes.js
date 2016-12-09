@@ -25,6 +25,7 @@ module.exports = extendFlat({}, {
     y: scatterAttrs.y,
     y0: scatterAttrs.y0,
     dy: scatterAttrs.dy,
+
     text: {
         valType: 'data_array',
         description: 'Sets the text elements associated with each z value.'

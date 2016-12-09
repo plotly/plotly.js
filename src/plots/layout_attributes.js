@@ -170,7 +170,6 @@ module.exports = {
         role: 'info',
         description: 'Determines whether or not a legend is drawn.'
     },
-
     dragmode: {
         valType: 'enumerated',
         role: 'info',

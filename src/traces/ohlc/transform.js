@@ -73,6 +73,7 @@ function makeTrace(traceIn, state, direction) {
 
             // to make autotype catch date axes soon!!
             x: traceIn.x || [0],
+            xcalendar: traceIn.xcalendar,
 
             // concat low and high to get correct autorange
             y: [].concat(traceIn.low).concat(traceIn.high),
@@ -138,12 +139,13 @@ exports.calcTransform = function calcTransform(gd, trace, opts) {
     if(trace._fullInput.x) {
         appendX = function(i) {
             var xi = trace.x[i],
-                xcalc = xa.d2c(xi);
+                xcalendar = trace.xcalendar,
+                xcalc = xa.d2c(xi, 0, xcalendar);
 
             x.push(
-                xa.c2d(xcalc - tickWidth),
+                xa.c2d(xcalc - tickWidth, 0, xcalendar),
                 xi, xi, xi, xi,
-                xa.c2d(xcalc + tickWidth),
+                xa.c2d(xcalc + tickWidth, 0, xcalendar),
                 null);
         };
     }
@@ -236,7 +238,8 @@ function convertTickWidth(gd, xa, trace) {
                 // - handle trace of length 1 separately.
 
                 if(_trace.x && _trace.x.length > 1) {
-                    var _minDiff = Lib.distinctVals(_trace.x.map(xa.d2c)).minDiff;
+                    var xcalc = Lib.simpleMap(_trace.x, xa.d2c, 0, trace.xcalendar),
+                        _minDiff = Lib.distinctVals(xcalc).minDiff;
                     minDiff = Math.min(minDiff, _minDiff);
                 }
             }

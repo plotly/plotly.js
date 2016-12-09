@@ -47,6 +47,8 @@ module.exports = {
             'See overview for more info.'
         ].join(' ')
     },
+    xcalendar: scatterAttrs.xcalendar,
+    ycalendar: scatterAttrs.ycalendar,
     whiskerwidth: {
         valType: 'number',
         min: 0,

@@ -27,14 +27,14 @@ describe('Bar.supplyDefaults', function() {
 
     it('should set visible to false when x and y are empty', function() {
         traceIn = {};
-        supplyDefaults(traceIn, traceOut, defaultColor);
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             x: [],
             y: []
         };
-        supplyDefaults(traceIn, traceOut, defaultColor);
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
     });
 
@@ -42,27 +42,27 @@ describe('Bar.supplyDefaults', function() {
         traceIn = {
             x: []
         };
-        supplyDefaults(traceIn, traceOut, defaultColor);
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             x: [],
             y: [1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor);
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             y: []
         };
-        supplyDefaults(traceIn, traceOut, defaultColor);
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
 
         traceIn = {
             x: [1, 2, 3],
             y: []
         };
-        supplyDefaults(traceIn, traceOut, defaultColor);
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
         expect(traceOut.visible).toBe(false);
     });
 
@@ -70,7 +70,7 @@ describe('Bar.supplyDefaults', function() {
         traceIn = {
             y: [1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor);
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
         expect(traceOut.base).toBeUndefined();
         expect(traceOut.offset).toBeUndefined();
         expect(traceOut.width).toBeUndefined();
@@ -81,7 +81,7 @@ describe('Bar.supplyDefaults', function() {
             width: -1,
             y: [1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor);
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
         expect(traceOut.width).toBeUndefined();
     });
 
@@ -89,7 +89,7 @@ describe('Bar.supplyDefaults', function() {
         traceIn = {
             y: [1, 2, 3]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor);
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
         expect(traceOut.textposition).toBe('none');
         expect(traceOut.texfont).toBeUndefined();
         expect(traceOut.insidetexfont).toBeUndefined();
@@ -115,6 +115,32 @@ describe('Bar.supplyDefaults', function() {
         expect(traceOut.insidetextfont).not.toBe(layout.font);
         expect(traceOut.insidetextfont).not.toBe(traceOut.textfont);
         expect(traceOut.outsidetexfont).toBeUndefined();
+    });
+
+    it('should inherit layout.calendar', function() {
+        traceIn = {
+            x: [1, 2, 3],
+            y: [1, 2, 3]
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+
+        // we always fill calendar attributes, because it's hard to tell if
+        // we're on a date axis at this point.
+        expect(traceOut.xcalendar).toBe('islamic');
+        expect(traceOut.ycalendar).toBe('islamic');
+    });
+
+    it('should take its own calendars', function() {
+        traceIn = {
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            xcalendar: 'coptic',
+            ycalendar: 'ethiopian'
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+
+        expect(traceOut.xcalendar).toBe('coptic');
+        expect(traceOut.ycalendar).toBe('ethiopian');
     });
 });
 

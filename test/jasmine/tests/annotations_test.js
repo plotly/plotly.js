@@ -237,7 +237,8 @@ describe('annotations autosize', function() {
 
             expect(fullLayout.xaxis.range).toBeCloseToArray(x, PREC, '- xaxis');
             expect(fullLayout.yaxis.range).toBeCloseToArray(y, PREC, '- yaxis');
-            expect(dateAx.range.map(dateAx.r2l)).toBeCloseToArray(x2.map(dateAx.r2l), PRECX2, 'xaxis2 ' + dateAx.range);
+            expect(Lib.simpleMap(dateAx.range, dateAx.r2l))
+                .toBeCloseToArray(Lib.simpleMap(x2, dateAx.r2l), PRECX2, 'xaxis2 ' + dateAx.range);
             expect(fullLayout.yaxis2.range).toBeCloseToArray(y2, PRECY2, 'yaxis2');
             expect(fullLayout.xaxis3.range).toBeCloseToArray(x3, PREC, 'xaxis3');
             expect(fullLayout.yaxis3.range).toBeCloseToArray(y3, PREC, 'yaxis3');

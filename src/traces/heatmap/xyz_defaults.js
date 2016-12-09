@@ -11,10 +11,11 @@
 
 var isNumeric = require('fast-isnumeric');
 
+var Registry = require('../../registry');
 var hasColumns = require('./has_columns');
 
 
-module.exports = function handleXYZDefaults(traceIn, traceOut, coerce) {
+module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout) {
     var z = coerce('z');
     var x, y;
 
@@ -36,6 +37,9 @@ module.exports = function handleXYZDefaults(traceIn, traceOut, coerce) {
 
         coerce('transpose');
     }
+
+    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
+    handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
 
     return traceOut.z.length;
 };

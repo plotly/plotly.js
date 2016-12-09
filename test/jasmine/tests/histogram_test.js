@@ -20,13 +20,13 @@ describe('Test histogram', function() {
             traceIn = {
                 x: []
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
                 y: []
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
         });
 
@@ -36,7 +36,7 @@ describe('Test histogram', function() {
                 x: [],
                 y: [1, 2, 2]
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
@@ -44,7 +44,7 @@ describe('Test histogram', function() {
                 x: [1, 2, 2],
                 y: []
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
@@ -52,7 +52,7 @@ describe('Test histogram', function() {
                 x: [],
                 y: []
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
@@ -60,7 +60,7 @@ describe('Test histogram', function() {
                 x: [],
                 y: [1, 2, 2]
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
         });
 
@@ -68,14 +68,14 @@ describe('Test histogram', function() {
             traceIn = {
                 x: [1, 2, 2]
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.orientation).toBe('v');
 
             traceIn = {
                 x: [1, 2, 2],
                 y: [1, 2, 2]
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.orientation).toBe('v');
         });
 
@@ -83,7 +83,7 @@ describe('Test histogram', function() {
             traceIn = {
                 y: [1, 2, 2]
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.orientation).toBe('h');
 
         });
@@ -100,13 +100,13 @@ describe('Test histogram', function() {
                     size: 1
                 }
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.autobinx).toBeUndefined();
 
             traceIn = {
                 x: [1, 2, 2]
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.autobinx).toBeUndefined();
         });
 
@@ -119,16 +119,41 @@ describe('Test histogram', function() {
                     size: 1
                 }
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.autobiny).toBeUndefined();
 
             traceIn = {
                 y: [1, 2, 2]
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.autobiny).toBeUndefined();
         });
 
+        it('should inherit layout.calendar', function() {
+            traceIn = {
+                x: [1, 2, 3]
+            };
+            supplyDefaults(traceIn, traceOut, '', {calendar: 'islamic'});
+
+            // we always fill calendar attributes, because it's hard to tell if
+            // we're on a date axis at this point.
+            // size axis calendar is weird, but *might* be able to happen if
+            // we're using histfunc=min or max (does this work?)
+            expect(traceOut.xcalendar).toBe('islamic');
+            expect(traceOut.ycalendar).toBe('islamic');
+        });
+
+        it('should take its own calendars', function() {
+            traceIn = {
+                x: [1, 2, 3],
+                xcalendar: 'coptic',
+                ycalendar: 'nepali'
+            };
+            supplyDefaults(traceIn, traceOut, '', {calendar: 'islamic'});
+
+            expect(traceOut.xcalendar).toBe('coptic');
+            expect(traceOut.ycalendar).toBe('nepali');
+        });
     });
 
 

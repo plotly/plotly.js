@@ -92,6 +92,32 @@ describe('Test scatter', function() {
             supplyDefaults(traceIn, traceOut, defaultColor, layout);
             expect(traceOut.hoveron).toBe('points');
         });
+
+        it('should inherit layout.calendar', function() {
+            traceIn = {
+                x: [1, 2, 3],
+                y: [1, 2, 3]
+            };
+            supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+
+            // we always fill calendar attributes, because it's hard to tell if
+            // we're on a date axis at this point.
+            expect(traceOut.xcalendar).toBe('islamic');
+            expect(traceOut.ycalendar).toBe('islamic');
+        });
+
+        it('should take its own calendars', function() {
+            traceIn = {
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                xcalendar: 'coptic',
+                ycalendar: 'ethiopian'
+            };
+            supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+
+            expect(traceOut.xcalendar).toBe('coptic');
+            expect(traceOut.ycalendar).toBe('ethiopian');
+        });
     });
 
     describe('isBubble', function() {

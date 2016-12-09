@@ -9,6 +9,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var getRectCenter = require('../assets/get_rect_center');
 var mouseEvent = require('../assets/mouse_event');
+var setConvert = require('@src/plots/cartesian/set_convert');
 
 
 describe('range selector defaults:', function() {
@@ -16,7 +17,7 @@ describe('range selector defaults:', function() {
 
     var handleDefaults = RangeSelector.handleDefaults;
 
-    function supply(containerIn, containerOut) {
+    function supply(containerIn, containerOut, calendar) {
         containerOut.domain = [0, 1];
 
         var layout = {
@@ -25,7 +26,7 @@ describe('range selector defaults:', function() {
 
         var counterAxes = ['yaxis'];
 
-        handleDefaults(containerIn, containerOut, layout, counterAxes);
+        handleDefaults(containerIn, containerOut, layout, counterAxes, calendar);
     }
 
     it('should set \'visible\' to false when no buttons are present', function() {
@@ -93,7 +94,7 @@ describe('range selector defaults:', function() {
         };
         var containerOut = {};
 
-        supply(containerIn, containerOut, {}, []);
+        supply(containerIn, containerOut);
 
         expect(containerOut.rangeselector.visible).toBe(true);
         expect(containerOut.rangeselector.buttons).toEqual([
@@ -113,7 +114,7 @@ describe('range selector defaults:', function() {
         };
         var containerOut = {};
 
-        supply(containerIn, containerOut, {}, []);
+        supply(containerIn, containerOut);
 
         expect(containerOut.rangeselector.buttons).toEqual([{
             step: 'all',
@@ -175,6 +176,53 @@ describe('range selector defaults:', function() {
         expect(containerOut.rangeselector.x).toEqual(0.5);
         expect(containerOut.rangeselector.y).toBeCloseTo(0.87);
     });
+
+    it('should not allow month/year todate with calendars other than Gregorian', function() {
+        var containerIn = {
+            rangeselector: {
+                buttons: [{
+                    step: 'year',
+                    count: 1,
+                    stepmode: 'todate'
+                }, {
+                    step: 'month',
+                    count: 6,
+                    stepmode: 'todate'
+                }, {
+                    step: 'day',
+                    count: 1,
+                    stepmode: 'todate'
+                }, {
+                    step: 'hour',
+                    count: 1,
+                    stepmode: 'todate'
+                }]
+            }
+        };
+        var containerOut;
+        function getStepmode(button) { return button.stepmode; }
+
+        containerOut = {};
+        supply(containerIn, containerOut);
+
+        expect(containerOut.rangeselector.buttons.map(getStepmode)).toEqual([
+            'todate', 'todate', 'todate', 'todate'
+        ]);
+
+        containerOut = {};
+        supply(containerIn, containerOut, 'gregorian');
+
+        expect(containerOut.rangeselector.buttons.map(getStepmode)).toEqual([
+            'todate', 'todate', 'todate', 'todate'
+        ]);
+
+        containerOut = {};
+        supply(containerIn, containerOut, 'chinese');
+
+        expect(containerOut.rangeselector.buttons.map(getStepmode)).toEqual([
+            'backward', 'backward', 'todate', 'todate'
+        ]);
+    });
 });
 
 describe('range selector getUpdateObject:', function() {
@@ -185,14 +233,20 @@ describe('range selector getUpdateObject:', function() {
         expect(update['xaxis.range[1]']).toEqual(range1);
     }
 
+    function setupAxis(opts) {
+        var axisOut = Lib.extendFlat({type: 'date'}, opts);
+        setConvert(axisOut);
+        return axisOut;
+    }
+
     // buttonLayout: {step, stepmode, count}
     // range0out: expected resulting range[0] (input is always '1948-01-01')
     // range1: input range[1], expected to also be the output
     function assertUpdateCase(buttonLayout, range0out, range1) {
-        var axisLayout = {
+        var axisLayout = setupAxis({
             _name: 'xaxis',
             range: ['1948-01-01', range1]
-        };
+        });
 
         var update = getUpdateObject(axisLayout, buttonLayout);
 
@@ -280,10 +334,10 @@ describe('range selector getUpdateObject:', function() {
     });
 
     it('should return update object (reset case)', function() {
-        var axisLayout = {
+        var axisLayout = setupAxis({
             _name: 'xaxis',
             range: ['1948-01-01', '2015-11-30']
-        };
+        });
 
         var buttonLayout = {
             step: 'all'
@@ -375,10 +429,10 @@ describe('range selector getUpdateObject:', function() {
     });
 
     it('should return update object with correct axis names', function() {
-        var axisLayout = {
+        var axisLayout = setupAxis({
             _name: 'xaxis5',
             range: ['1948-01-01', '2015-11-30']
-        };
+        });
 
         var buttonLayout = {
             step: 'month',

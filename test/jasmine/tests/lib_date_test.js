@@ -1,5 +1,10 @@
 var isNumeric = require('fast-isnumeric');
+
 var Lib = require('@src/lib');
+var calComponent = require('@src/components/calendars');
+
+// use only the parts of world-calendars that we've imported for our tests
+var calendars = require('@src/components/calendars/calendars');
 
 describe('dates', function() {
     'use strict';
@@ -222,6 +227,118 @@ describe('dates', function() {
                 expect(Lib.ms2DateTime(Lib.dateTime2ms(v[0]), v[1])).toBe(v[2], v);
             });
         });
+
+        it('should work right with inputs beyond our precision', function() {
+            for(var i = -1; i <= 1; i += 0.001) {
+                var tenths = Math.round(i * 10),
+                    base = i < -0.05 ? '1969-12-31 23:59:59.99' : '1970-01-01 00:00:00.00',
+                    expected = (base + String(tenths + 200).substr(1))
+                        .replace(/0+$/, '')
+                        .replace(/ 00:00:00[\.]$/, '');
+                expect(Lib.ms2DateTime(i)).toBe(expected, i);
+            }
+        });
+    });
+
+    describe('world calendar inputs', function() {
+        it('should give the right values near epoch zero', function() {
+            [
+                [undefined, '1970-01-01'],
+                ['gregorian', '1970-01-01'],
+                ['chinese', '1969-11-24'],
+                ['coptic', '1686-04-23'],
+                ['discworld', '1798-12-27'],
+                ['ethiopian', '1962-04-23'],
+                ['hebrew', '5730-10-23'],
+                ['islamic', '1389-10-22'],
+                ['julian', '1969-12-19'],
+                ['mayan', '5156-07-05'],
+                ['nanakshahi', '0501-10-19'],
+                ['nepali', '2026-09-17'],
+                ['persian', '1348-10-11'],
+                ['jalali', '1348-10-11'],
+                ['taiwan', '0059-01-01'],
+                ['thai', '2513-01-01'],
+                ['ummalqura', '1389-10-23']
+            ].forEach(function(v) {
+                var calendar = v[0],
+                    dateStr = v[1];
+                expect(Lib.ms2DateTime(0, 0, calendar)).toBe(dateStr, calendar);
+                expect(Lib.dateTime2ms(dateStr, calendar)).toBe(0, calendar);
+
+                var expected_p1ms = dateStr + ' 00:00:00.0001',
+                    expected_1s = dateStr + ' 00:00:01',
+                    expected_1m = dateStr + ' 00:01',
+                    expected_1h = dateStr + ' 01:00',
+                    expected_lastinstant = dateStr + ' 23:59:59.9999';
+
+                var oneSec = 1000,
+                    oneMin = 60 * oneSec,
+                    oneHour = 60 * oneMin,
+                    lastInstant = 24 * oneHour - 0.1;
+
+                expect(Lib.ms2DateTime(0.1, 0, calendar)).toBe(expected_p1ms, calendar);
+                expect(Lib.ms2DateTime(oneSec, 0, calendar)).toBe(expected_1s, calendar);
+                expect(Lib.ms2DateTime(oneMin, 0, calendar)).toBe(expected_1m, calendar);
+                expect(Lib.ms2DateTime(oneHour, 0, calendar)).toBe(expected_1h, calendar);
+                expect(Lib.ms2DateTime(lastInstant, 0, calendar)).toBe(expected_lastinstant, calendar);
+
+                expect(Lib.dateTime2ms(expected_p1ms, calendar)).toBe(0.1, calendar);
+                expect(Lib.dateTime2ms(expected_1s, calendar)).toBe(oneSec, calendar);
+                expect(Lib.dateTime2ms(expected_1m, calendar)).toBe(oneMin, calendar);
+                expect(Lib.dateTime2ms(expected_1h, calendar)).toBe(oneHour, calendar);
+                expect(Lib.dateTime2ms(expected_lastinstant, calendar)).toBe(lastInstant, calendar);
+            });
+        });
+
+        it('should contain canonical ticks sundays, ranges for all calendars', function() {
+            var calList = Object.keys(calendars.calendars).filter(function(v) {
+                return v !== 'gregorian';
+            });
+
+            var canonicalTick = calComponent.CANONICAL_TICK,
+                canonicalSunday = calComponent.CANONICAL_SUNDAY,
+                dfltRange = calComponent.DFLTRANGE;
+            expect(Object.keys(canonicalTick).length).toBe(calList.length);
+            expect(Object.keys(canonicalSunday).length).toBe(calList.length);
+            expect(Object.keys(dfltRange).length).toBe(calList.length);
+
+            calList.forEach(function(calendar) {
+                expect(Lib.dateTime2ms(canonicalTick[calendar], calendar)).toBeDefined(calendar);
+                var sunday = Lib.dateTime2ms(canonicalSunday[calendar], calendar);
+                // convert back implicitly with gregorian calendar
+                expect(Lib.formatDate(sunday, '%A')).toBe('Sunday', calendar);
+
+                expect(Lib.dateTime2ms(dfltRange[calendar][0], calendar)).toBeDefined(calendar);
+                expect(Lib.dateTime2ms(dfltRange[calendar][1], calendar)).toBeDefined(calendar);
+            });
+        });
+
+        it('should handle Chinese intercalary months correctly', function() {
+            var intercalaryDates = [
+                '1995-08i-01',
+                '1995-08i-29',
+                '1984-10i-15',
+                '2023-02i-29'
+            ];
+            intercalaryDates.forEach(function(v) {
+                var ms = Lib.dateTime2ms(v, 'chinese');
+                expect(Lib.ms2DateTime(ms, 0, 'chinese')).toBe(v);
+
+                // should also work without leading zeros
+                var vShort = v.replace(/-0/g, '-');
+                expect(Lib.dateTime2ms(vShort, 'chinese')).toBe(ms, vShort);
+            });
+
+            var badIntercalaryDates = [
+                '1995-07i-01',
+                '1995-08i-30',
+                '1995-09i-01'
+            ];
+            badIntercalaryDates.forEach(function(v) {
+                expect(Lib.dateTime2ms(v, 'chinese')).toBeUndefined(v);
+            });
+        });
     });
 
     describe('cleanDate', function() {
@@ -275,6 +392,51 @@ describe('dates', function() {
                 '00-01-01'
             ].forEach(function(v) {
                 expect(Lib.cleanDate(v)).toBe(v);
+            });
+        });
+    });
+
+    describe('incrementMonth', function() {
+        it('should include Chinese intercalary months', function() {
+            var start = '1995-06-01';
+            var expected = [
+                '1995-07-01',
+                '1995-08-01',
+                '1995-08i-01',
+                '1995-09-01',
+                '1995-10-01',
+                '1995-11-01',
+                '1995-12-01',
+                '1996-01-01'
+            ];
+            var tick = Lib.dateTime2ms(start, 'chinese');
+            expected.forEach(function(v) {
+                tick = Lib.incrementMonth(tick, 1, 'chinese');
+                expect(tick).toBe(Lib.dateTime2ms(v, 'chinese'), v);
+            });
+        });
+
+        it('should increment years even over leap years', function() {
+            var start = '1995-06-01';
+            var expected = [
+                '1996-06-01',
+                '1997-06-01',
+                '1998-06-01',
+                '1999-06-01',
+                '2000-06-01',
+                '2001-06-01',
+                '2002-06-01',
+                '2003-06-01',
+                '2004-06-01',
+                '2005-06-01',
+                '2006-06-01',
+                '2007-06-01',
+                '2008-06-01'
+            ];
+            var tick = Lib.dateTime2ms(start, 'chinese');
+            expected.forEach(function(v) {
+                tick = Lib.incrementMonth(tick, 12, 'chinese');
+                expect(tick).toBe(Lib.dateTime2ms(v, 'chinese'), v);
             });
         });
     });

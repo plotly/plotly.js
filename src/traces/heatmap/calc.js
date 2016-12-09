@@ -127,9 +127,13 @@ module.exports = function calc(gd, trace) {
     colorscaleCalc(trace, z, '', 'z');
 
     if(isContour && trace.contours && trace.contours.coloring === 'heatmap') {
-        var hmType = trace.type === 'contour' ? 'heatmap' : 'histogram2d';
-        cd0.xfill = makeBoundArray(hmType, xIn, x0, dx, xlen, xa);
-        cd0.yfill = makeBoundArray(hmType, yIn, y0, dy, z.length, ya);
+        var dummyTrace = {
+            type: trace.type === 'contour' ? 'heatmap' : 'histogram2d',
+            xcalendar: trace.xcalendar,
+            ycalendar: trace.ycalendar
+        };
+        cd0.xfill = makeBoundArray(dummyTrace, xIn, x0, dx, xlen, xa);
+        cd0.yfill = makeBoundArray(dummyTrace, yIn, y0, dy, z.length, ya);
     }
 
     return [cd0];

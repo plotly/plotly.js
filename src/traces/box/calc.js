@@ -62,7 +62,7 @@ module.exports = function calc(gd, trace) {
                 pos0 = trace.name;
             }
             else pos0 = gd.numboxes;
-            pos0 = posAxis.d2c(pos0);
+            pos0 = posAxis.d2c(pos0, 0, trace[posLetter + 'calendar']);
             pos = val.map(function() { return pos0; });
         }
         return pos;
