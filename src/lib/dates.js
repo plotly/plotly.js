@@ -178,7 +178,7 @@ exports.dateTime2ms = function(s, calendar) {
             var calInstance = Registry.getComponentMethod('calendars', 'getCal')(calendar);
             if(isChinese) {
                 var isIntercalary = m.charAt(m.length - 1) === 'i';
-                m = Number(isIntercalary ? m.substr(0, m.length - 1) : m);
+                m = parseInt(m, 10);
                 cDate = calInstance.newDate(y, calInstance.toMonthIndex(y, m, isIntercalary), d);
             }
             else {
