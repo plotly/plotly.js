@@ -167,7 +167,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         rangeSliderDefaults(layoutIn, layoutOut, axName, counterAxes);
 
         if(axLetter === 'x' && axLayoutOut.type === 'date') {
-            rangeSelectorDefaults(axLayoutIn, axLayoutOut, layoutOut, counterAxes);
+            rangeSelectorDefaults(axLayoutIn, axLayoutOut, layoutOut, counterAxes,
+                axLayoutOut.calendar);
         }
     });
 };
