@@ -15,7 +15,7 @@ Carpet.attributes = require('./attributes');
 Carpet.supplyDefaults = require('./defaults');
 Carpet.plot = require('./plot');
 Carpet.calc = require('./calc');
-Carpet.animatable = false;
+Carpet.animatable = true;
 
 Carpet.moduleType = 'trace';
 Carpet.name = 'carpet';

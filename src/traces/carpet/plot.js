@@ -29,13 +29,28 @@ function plotOne(gd, plotinfo, cd) {
     var trace = cd[0].trace,
         // uid = trace.uid,
         xa = plotinfo.xaxis,
-        ya = plotinfo.yaxis;
+        ya = plotinfo.yaxis,
+        aax = trace.aaxis,
+        bax = trace.baxis;
         // id = 'carpet' + uid;
 
     var x = cd[0].x;
     var y = cd[0].y;
     var a = cd[0].a;
     var b = cd[0].b;
+
+    trace.c2p = function (c) {
+        return [xa.c2p(c[0]), ya.c2p(c[1])];
+    };
+
+    trace.ab2p = function (a, b) {
+        return trace.c2p(trace.ab2c(a, b));
+    };
+
+    trace.ba2p = function (b, a) {
+        return trace.c2p(trace.ab2c(a, b));
+    };
+
     var xp = xa.c2p;
     var yp = ya.c2p;
 
@@ -44,34 +59,53 @@ function plotOne(gd, plotinfo, cd) {
 
     var minorLayer = makeg(gridLayer, 'g', 'minorlayer');
     var majorLayer = makeg(gridLayer, 'g', 'majorlayer');
+    var boundaryLayer = makeg(gridLayer, 'g', 'boundarylayer');
     var labelLayer = makeg(gridLayer, 'g', 'labellayer');
+
+    return;
 
     var linesets = [
         {
             baseClass: 'const-a-line',
-            data: a,
+            data: aax._tickinfo.values,
+            crossdata: b,
+            smoothing: trace.baxis.smoothing,
             ax: trace.aaxis,
-            xc: function(i, j) { return xp(x[i][j]); },
-            yc: function(i, j) { return yp(y[i][j]); },
-            n: b.length
+            ab2p: trace.ab2p,
         },
         {
             baseClass: 'const-b-line',
-            data: b,
+            data: bax._tickinfo.values,
+            crossdata: a,
+            smoothing: trace.aaxis.smoothing,
             ax: trace.baxis,
-            xc: function(i, j) { return xp(x[j][i]); },
-            yc: function(i, j) { return yp(y[j][i]); },
-            n: a.length
+            ab2p: trace.ba2p,
+        },
+        {
+            baseClass: 'const-a-boundary-line',
+            data: [a[0], a[a.length - 1]],
+            crossdata: b,
+            smoothing: trace.baxis.smoothing,
+            ax: trace.aaxis,
+            ab2p: trace.ab2p,
+        },
+        {
+            baseClass: 'const-b-boundary-line',
+            data: [b[0], b[b.length - 1]],
+            crossdata: a,
+            smoothing: trace.aaxis.smoothing,
+            ax: trace.baxis,
+            ab2p: trace.ba2p,
         }
     ];
 
     for(var i = 0; i < linesets.length; i++) {
         var lineset = linesets[i];
-        drawGridLines(minorLayer, lineset, false);
-        drawGridLines(majorLayer, lineset, true);
+        //drawGridLines(minorLayer, lineset, false);
+        //drawGridLines(majorLayer, lineset, true);
 
-        drawAxisLabels(labelLayer, lineset, 'lo');
-        drawAxisLabels(labelLayer, lineset, 'hi');
+        //drawAxisLabels(labelLayer, lineset, 'lo');
+        //drawAxisLabels(labelLayer, lineset, 'hi');
     }
 }
 
@@ -160,7 +194,7 @@ function drawAxisLabels(layer, ls, side) {
 
 function drawGridLines(layer, ls, isMajor) {
     var ax = ls.ax;
-    var data = isMajor ? ax._gridIndices : ax._minorGridIndices;
+    var data = ls.data;
 
     var lineClass = 'const-' + ls.baseClass + '-lines' + (isMajor ? '' : '-minor');
     var gridjoin = layer.selectAll('.' + lineClass).data(data);
@@ -173,15 +207,16 @@ function drawGridLines(layer, ls, isMajor) {
     var color = isMajor ? ax.gridcolor : ax.minorgridcolor;
 
     gridjoin.each(function(d, i) {
-        var gridIdx = data[i];
+        var value = data[i];
 
         var el = d3.select(this);
         el.attr('d', function() {
             var pts = [];
-            for(var k = 0; k < ls.n; k++) {
-                pts.push(ls.xc(gridIdx, k) + ',' + ls.yc(gridIdx, k));
+            for(var j = 0; j < ls.crossdata.length; j++) {
+                pts.push(ls.ab2p(value, ls.crossdata[j]));
             }
-            return 'M' + pts.join('L');
+            return Drawing.smoothopen(pts, ls.smoothing);
+            //return 'M' + pts.join('L');
         });
         el.style('stroke-width', width)
           .style('stroke', color)

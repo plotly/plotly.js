@@ -20,7 +20,12 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
+    traceIn.cheatersope = parseFloat(traceIn.cheaterslope);
+
     coerce('carpetid');
+    coerce('cheaterslope');
+
+    traceOut.cheaterslope = parseFloat(traceIn.cheaterslope);
 
     var len = handleXYDefaults(traceIn, traceOut, coerce);
 
@@ -30,8 +35,6 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
     }
 
     handleABDefaults(traceIn, traceOut, coerce);
-
-    coerce('cheaterslope');
 
     handleAxisDefaults(traceIn, traceOut, 'a');
     handleAxisDefaults(traceIn, traceOut, 'b');
@@ -45,20 +48,35 @@ function handleAxisDefaults(traceIn, traceOut, axis) {
         return Lib.coerce(traceIn, traceOut, attributes, axis + 'axis.' + attr, dflt);
     }
 
+    coerce('smoothing');
+    coerce('cheatertype');
+
     coerce('showlabels');
     coerce('labelprefix', axis + ' = ');
     coerce('labelsuffix');
     coerce('showlabelprefix');
     coerce('showlabelsuffix');
+
+    coerce('tickmode');
+    coerce('tick0');
+    coerce('dtick');
+    coerce('arraytick0');
+    coerce('arraydtick');
+    //coerce('gridoffset');
+    //coerce('gridstep');
+
+    coerce('startline');
+    coerce('startlinewidth');
+    coerce('startlinecolor');
+    coerce('endline');
+    coerce('endlinewidth');
+    coerce('endlinecolor');
+
     coerce('gridwidth');
     coerce('gridcolor');
-    coerce('gridoffset');
-    coerce('gridstep');
 
     coerce('minorgridwidth');
     coerce('minorgridcolor');
-    coerce('minorgridoffset');
-    coerce('minorgridstep');
 
     coerce('showstartlabel');
     coerce('showendlabel');
@@ -71,6 +89,7 @@ function handleAxisDefaults(traceIn, traceOut, axis) {
     // that should go in calc.js, but it's so minimal for any conceivable case that
     // I'll write it here for now:
 
+    /*
     ax._gridIndices = [];
     for(i = ax.gridoffset; i < traceIn[axis].length; i += ax.gridstep) {
         ax._gridIndices.push(i);
@@ -112,4 +131,5 @@ function handleAxisDefaults(traceIn, traceOut, axis) {
             ax._minorGridIndices.push(i);
         }
     }
+    */
 }

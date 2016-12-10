@@ -13,6 +13,23 @@ var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../../components/color/attributes');
 
 module.exports = {
+    smoothing: {
+        valType: 'number',
+        dflt: 1.0,
+        role: 'info'
+    },
+    cheatertype: {
+        valType: 'enumerated',
+        values: ['index', 'value'],
+        dflt: 'index',
+        role: 'info'
+    },
+    tickmode: {
+        valType: 'enumerated',
+        values: ['linear', 'array'],
+        dflt: 'array',
+        role: 'info',
+    },
     showlabels: {
         valType: 'enumerated',
         values: ['start', 'end', 'both', 'none'],
@@ -70,14 +87,28 @@ module.exports = {
     labelfont: extendFlat({}, fontAttrs, {
         description: 'Sets the label font.'
     }),
-    gridoffset: {
+    tick0: {
+        valType: 'any',
+        min: 0,
+        dflt: 0,
+        role: 'info',
+        description: 'The starting index of grid lines along the axis'
+    },
+    dtick: {
+        valType: 'any',
+        min: 1,
+        dflt: 1,
+        role: 'info',
+        description: 'The stride between grid lines along the axis'
+    },
+    arraytick0: {
         valType: 'integer',
         min: 0,
         dflt: 0,
         role: 'info',
         description: 'The starting index of grid lines along the axis'
     },
-    gridstep: {
+    arraydtick: {
         valType: 'integer',
         min: 1,
         dflt: 1,
@@ -97,19 +128,41 @@ module.exports = {
         role: 'style',
         description: 'Sets the color of the grid lines.'
     },
-    minorgridoffset: {
-        valType: 'integer',
+    startlinewidth: {
+        valType: 'number',
         min: 0,
-        dflt: 0,
-        role: 'info',
-        description: 'The starting index of grid lines along the axis'
-    },
-    minorgridstep: {
-        valType: 'integer',
-        min: 1,
         dflt: 1,
+        role: 'style',
+        description: 'Sets the width (in px) of the grid lines.'
+    },
+    startline: {
+        valType: 'boolean',
         role: 'info',
-        description: 'The stride between grid lines along the axis'
+        dflt: true
+    },
+    endline: {
+        valType: 'boolean',
+        role: 'info',
+        dflt: true
+    },
+    startlinecolor: {
+        valType: 'color',
+        dflt: colorAttrs.lightLine,
+        role: 'style',
+        description: 'Sets the color of the grid lines.'
+    },
+    endlinewidth: {
+        valType: 'number',
+        min: 0,
+        dflt: 1,
+        role: 'style',
+        description: 'Sets the width (in px) of the grid lines.'
+    },
+    endlinecolor: {
+        valType: 'color',
+        dflt: colorAttrs.lightLine,
+        role: 'style',
+        description: 'Sets the color of the grid lines.'
     },
     minorgridwidth: {
         valType: 'number',
