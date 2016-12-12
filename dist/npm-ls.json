@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "1.20.5",
+  "version": "1.21.0",
   "dependencies": {
     "3d-view": {
       "version": "2.0.0",
@@ -928,9 +928,9 @@
       }
     },
     "gl-heatmap2d": {
-      "version": "1.0.2",
-      "from": "gl-heatmap2d@>=1.0.2 <2.0.0",
-      "resolved": "https://registry.npmjs.org/gl-heatmap2d/-/gl-heatmap2d-1.0.2.tgz",
+      "version": "1.0.3",
+      "from": "gl-heatmap2d@>=1.0.3 <2.0.0",
+      "resolved": "https://registry.npmjs.org/gl-heatmap2d/-/gl-heatmap2d-1.0.3.tgz",
       "dependencies": {
         "binary-search-bounds": {
           "version": "2.0.3",
@@ -2851,6 +2851,18 @@
           "version": "1.0.2",
           "from": "get-canvas-context@>=1.0.1 <2.0.0",
           "resolved": "https://registry.npmjs.org/get-canvas-context/-/get-canvas-context-1.0.2.tgz"
+        }
+      }
+    },
+    "world-calendars": {
+      "version": "1.0.1",
+      "from": "world-calendars@>=1.0.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/world-calendars/-/world-calendars-1.0.1.tgz",
+      "dependencies": {
+        "object-assign": {
+          "version": "4.1.0",
+          "from": "object-assign@>=4.0.1 <5.0.0",
+          "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-4.1.0.tgz"
         }
       }
     }
