@@ -10,6 +10,28 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.21.0] -- 2016-12-12
+
+### Added
+- Bar labels via `text` and `textposition` [#1159]
+- Add support for 16 non-gregorian calendars for date inputs and display [#1220,
+  #1230, #1237]
+- Add support for ISO-8601 timestamps [#1194]
+- Extend histogram bin auto-shifting algorithm to date axes [#1201]
+- Trace type `heatmapgl` is now included in the main plotly.js bundle [#1197]
+
+### Changed
+- Linearize date coordinates using UTC rather than local milliseconds [#1194]
+
+### Fixed
+- Fix wrongly computed date positions around daylight savings time [#1194]
+- Fix erroneous traces in multi-subplot layout containing fill-to scatter
+  traces (and plotly.py violin plots) [#1198]
+- Fix clip path URL on pages with query hashes [#1203]
+- Ensure that numeric frame name are handle correctly [#1236]
+- Fallback for manual manipulation of slider/frames [#1233]
+
+
 ## [1.20.5] -- 2016-11-23
 
 ### Fixed
