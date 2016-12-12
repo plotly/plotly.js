@@ -46,7 +46,7 @@
     "baseline": "node tasks/baseline.js",
     "preversion": "npm-link-check && npm dedupe && npm ls",
     "version": "npm run build && git add -A dist src build",
-    "postversion": "git push && git push --tags"
+    "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\""
   },
   "dependencies": {
     "3d-view": "^2.0.0",
