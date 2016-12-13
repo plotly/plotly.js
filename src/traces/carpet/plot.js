@@ -12,6 +12,8 @@
 var d3 = require('d3');
 
 var Drawing = require('../../components/drawing');
+var map1dArray = require('./map_1d_array');
+var makepath = require('./makepath');
 
 module.exports = function plot(gd, plotinfo, cdcarpet) {
     for(var i = 0; i < cdcarpet.length; i++) {
@@ -39,21 +41,6 @@ function plotOne(gd, plotinfo, cd) {
     var a = cd[0].a;
     var b = cd[0].b;
 
-    trace.c2p = function (c) {
-        return [xa.c2p(c[0]), ya.c2p(c[1])];
-    };
-
-    trace.ab2p = function (a, b) {
-        return trace.c2p(trace.ab2c(a, b));
-    };
-
-    trace.ba2p = function (b, a) {
-        return trace.c2p(trace.ab2c(a, b));
-    };
-
-    var xp = xa.c2p;
-    var yp = ya.c2p;
-
     // XXX: Layer choice??
     var gridLayer = plotinfo.plot.selectAll('.maplayer');
 
@@ -62,54 +49,71 @@ function plotOne(gd, plotinfo, cd) {
     var boundaryLayer = makeg(gridLayer, 'g', 'boundarylayer');
     var labelLayer = makeg(gridLayer, 'g', 'labellayer');
 
-    return;
-
-    var linesets = [
-        {
-            baseClass: 'const-a-line',
-            data: aax._tickinfo.values,
-            crossdata: b,
-            smoothing: trace.baxis.smoothing,
-            ax: trace.aaxis,
-            ab2p: trace.ab2p,
-        },
-        {
-            baseClass: 'const-b-line',
-            data: bax._tickinfo.values,
-            crossdata: a,
-            smoothing: trace.aaxis.smoothing,
-            ax: trace.baxis,
-            ab2p: trace.ba2p,
-        },
-        {
-            baseClass: 'const-a-boundary-line',
-            data: [a[0], a[a.length - 1]],
-            crossdata: b,
-            smoothing: trace.baxis.smoothing,
-            ax: trace.aaxis,
-            ab2p: trace.ab2p,
-        },
-        {
-            baseClass: 'const-b-boundary-line',
-            data: [b[0], b[b.length - 1]],
-            crossdata: a,
-            smoothing: trace.aaxis.smoothing,
-            ax: trace.baxis,
-            ab2p: trace.ba2p,
-        }
-    ];
-
-    for(var i = 0; i < linesets.length; i++) {
-        var lineset = linesets[i];
-        //drawGridLines(minorLayer, lineset, false);
-        //drawGridLines(majorLayer, lineset, true);
-
-        //drawAxisLabels(labelLayer, lineset, 'lo');
-        //drawAxisLabels(labelLayer, lineset, 'hi');
-    }
+    drawGridLines(xa, ya, majorLayer, aax, 'a', trace._agrid, true);
+    drawGridLines(xa, ya, majorLayer, bax, 'b', trace._bgrid, true);
 }
 
-function drawAxisLabels(layer, ls, side) {
+function drawGridLines(xaxis, yaxis, layer, axis, axisLetter, gridlines, isMajor) {
+    var lineClass = 'const-' + axisLetter + '-lines' + (isMajor ? '' : '-minor');
+    var gridjoin = layer.selectAll('.' + lineClass).data(gridlines);
+
+    gridjoin.enter().append('path')
+        .classed(lineClass, true)
+        .style('vector-effect', 'non-scaling-stroke');
+
+    var width = isMajor ? axis.gridwidth : axis.minorgridwidth;
+    var color = isMajor ? axis.gridcolor : axis.minorgridcolor;
+
+    gridjoin.each(function(d, i) {
+        var gridline = d;
+        var axis = gridline.axis;
+        var x = gridline.x;
+        var y = gridline.y;
+
+        var xp = map1dArray([], x, xaxis.c2p);
+        var yp = map1dArray([], y, yaxis.c2p);
+
+        var d = makepath(xp, yp, gridline.smoothing);
+
+        var el = d3.select(this);
+        el.attr('d', d)
+            .style('stroke-width', width)
+            .style('stroke', color)
+            .style('fill', 'none');
+    })
+    .exit().remove();
+}
+
+function drawAxisLabels(xaxis, yaxis, layer, gridLines, side) {
+    gridjoin.enter().append('path')
+        .classed(lineClass, true)
+        .style('vector-effect', 'non-scaling-stroke');
+
+    var width = isMajor ? axis.gridwidth : axis.minorgridwidth;
+    var color = isMajor ? axis.gridcolor : axis.minorgridcolor;
+
+    gridjoin.each(function(d, i) {
+        var gridline = d;
+        var axis = gridline.axis;
+        var x = gridline.x;
+        var y = gridline.y;
+
+        var xp = map1dArray([], x, xaxis.c2p);
+        var yp = map1dArray([], y, yaxis.c2p);
+
+        var d = makepath(xp, yp, gridline.smoothing);
+
+        var el = d3.select(this);
+        el.attr('d', d)
+            .style('stroke-width', width)
+            .style('stroke', color)
+            .style('fill', 'none');
+    })
+    .exit().remove();
+
+
+
+    return;
     // We'll differentiate the screen-space coordinates to get the orientation of labels:
     var ax = ls.ax;
 
@@ -190,37 +194,4 @@ function drawAxisLabels(layer, ls, side) {
     });
 
     labelJoin.exit().remove();
-}
-
-function drawGridLines(layer, ls, isMajor) {
-    var ax = ls.ax;
-    var data = ls.data;
-
-    var lineClass = 'const-' + ls.baseClass + '-lines' + (isMajor ? '' : '-minor');
-    var gridjoin = layer.selectAll('.' + lineClass).data(data);
-
-    gridjoin.enter().append('path')
-        .classed(lineClass, true)
-        .style('vector-effect', 'non-scaling-stroke');
-
-    var width = isMajor ? ax.gridwidth : ax.minorgridwidth;
-    var color = isMajor ? ax.gridcolor : ax.minorgridcolor;
-
-    gridjoin.each(function(d, i) {
-        var value = data[i];
-
-        var el = d3.select(this);
-        el.attr('d', function() {
-            var pts = [];
-            for(var j = 0; j < ls.crossdata.length; j++) {
-                pts.push(ls.ab2p(value, ls.crossdata[j]));
-            }
-            return Drawing.smoothopen(pts, ls.smoothing);
-            //return 'M' + pts.join('L');
-        });
-        el.style('stroke-width', width)
-          .style('stroke', color)
-          .style('fill', 'none');
-    })
-    .exit().remove();
 }

@@ -26,18 +26,8 @@ module.exports = function mapArray (out, data, func) {
     }
 
     for (i = 0; i < data.length; i++) {
-        if (!Array.isArray(out[i])) {
-            // If not an array, make it an array:
-            out[i] = [];
-        } else if (out[i].length > data.length) {
-            // If too long, truncate. (If too short, it will grow
-            // automatically so we don't care about[i] that case)
-            out[i] = out[i].slice(0, data.length);
-        }
-
-        for (j = 0; j < data[1].length; j++) {
-            out[i][j] = func(data[i][j]);
-        }
+        out[i] = func(data[i]);
     }
+
     return out;
 }
