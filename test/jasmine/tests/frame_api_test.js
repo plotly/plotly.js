@@ -43,6 +43,13 @@ describe('Test frame api', function() {
             }).catch(fail).then(done);
         });
 
+        it('compresses nulls when adding frames', function (done) {
+            Plotly.addFrames(gd, [null, {name: 'test'}, null]).then(function () {
+                expect(Object.keys(h)).toEqual(['test']);
+                expect(f).toEqual([{name: 'test'}]);
+            }).catch(fail).then(done);
+        });
+
         it('treats a null list as a noop', function(done) {
             Plotly.addFrames(gd, null).then(function() {
                 expect(Object.keys(h)).toEqual([]);
