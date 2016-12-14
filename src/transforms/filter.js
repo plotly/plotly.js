@@ -119,7 +119,8 @@ exports.supplyDefaults = function(transformIn) {
         coerce('target');
 
         var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleDefaults');
-        handleCalendarDefaults(transformIn, transformOut, 'calendar', null);
+        handleCalendarDefaults(transformIn, transformOut, 'valuecalendar', null);
+        handleCalendarDefaults(transformIn, transformOut, 'targetcalendar', null);
     }
 
     return transformOut;
@@ -134,7 +135,9 @@ exports.calcTransform = function(gd, trace, opts) {
 
     if(!len) return;
 
-    var targetCalendar = Lib.nestedProperty(trace, target + 'calendar').get(),
+    var targetCalendar = (typeof target === 'string') ?
+            Lib.nestedProperty(trace, target + 'calendar').get() :
+            opts.targetcalendar,
         dataToCoord = getDataToCoordFunc(gd, trace, target),
         filterFunc = getFilterFunc(opts, dataToCoord, targetCalendar),
         arrayAttrs = PlotSchema.findArrayAttributes(trace),
@@ -226,7 +229,7 @@ function getFilterFunc(opts, d2c, targetCalendar) {
         return array.indexOf(operation) !== -1;
     }
 
-    var d2cValue = function(v) { return d2c(v, 0, opts.calendar); },
+    var d2cValue = function(v) { return d2c(v, 0, opts.valuecalendar); },
         d2cTarget = function(v) { return d2c(v, 0, targetCalendar); };
 
     var coercedValue;
