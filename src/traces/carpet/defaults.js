@@ -38,6 +38,15 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
 
     handleAxisDefaults(traceIn, traceOut, 'a');
     handleAxisDefaults(traceIn, traceOut, 'b');
+
+    if (traceOut.a.length < 3) {
+        traceOut.aaxis.smoothing = 0;
+    }
+
+    if (traceOut.b.length < 3) {
+        traceOut.baxis.smoothing = 0;
+    }
+
 };
 
 function handleAxisDefaults(traceIn, traceOut, axis) {
@@ -65,15 +74,15 @@ function handleAxisDefaults(traceIn, traceOut, axis) {
     //coerce('gridoffset');
     //coerce('gridstep');
 
-    coerce('startline');
-    coerce('startlinewidth');
-    coerce('startlinecolor');
-    coerce('endline');
-    coerce('endlinewidth');
-    coerce('endlinecolor');
-
     coerce('gridwidth');
     coerce('gridcolor');
+
+    coerce('startline');
+    coerce('startlinewidth', traceOut.gridwidth);
+    coerce('startlinecolor', traceOut.gridcolor);
+    coerce('endline');
+    coerce('endlinewidth', traceOut.gridwidth);
+    coerce('endlinecolor', traceOut.gridwidth);
 
     coerce('minorgridwidth');
     coerce('minorgridcolor');
