@@ -58,6 +58,7 @@ function handleAxisDefaults(traceIn, traceOut, axis) {
     }
 
     coerce('smoothing');
+    traceOut.smoothing = traceOut.smoothing ? 1 : 0;
     coerce('cheatertype');
 
     coerce('showlabels');
@@ -84,6 +85,7 @@ function handleAxisDefaults(traceIn, traceOut, axis) {
     coerce('endlinewidth', traceOut.gridwidth);
     coerce('endlinecolor', traceOut.gridwidth);
 
+    coerce('minorgridcount');
     coerce('minorgridwidth');
     coerce('minorgridcolor');
 

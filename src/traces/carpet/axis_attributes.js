@@ -14,8 +14,8 @@ var colorAttrs = require('../../components/color/attributes');
 
 module.exports = {
     smoothing: {
-        valType: 'number',
-        dflt: 1.0,
+        valType: 'boolean',
+        dflt: true,
         role: 'info'
     },
     cheatertype: {
@@ -124,7 +124,7 @@ module.exports = {
     },
     gridcolor: {
         valType: 'color',
-        dflt: colorAttrs.defaultLine,
+        dflt: '#aaa',
         role: 'style',
         description: 'Sets the color of the grid lines.'
     },
@@ -147,7 +147,7 @@ module.exports = {
     },
     startlinecolor: {
         valType: 'color',
-        dflt: colorAttrs.lightLine,
+        dflt: colorAttrs.defaultLine,
         role: 'style',
         description: 'Sets the color of the grid lines.'
     },
@@ -160,9 +160,16 @@ module.exports = {
     },
     endlinecolor: {
         valType: 'color',
-        dflt: colorAttrs.lightLine,
+        dflt: colorAttrs.defaultLine,
         role: 'style',
         description: 'Sets the color of the grid lines.'
+    },
+    minorgridcount: {
+        valType: 'integer',
+        min: 0,
+        dflt: 0,
+        role: 'info',
+        description: 'Sets the number of minor grid ticks per major grid tick'
     },
     minorgridwidth: {
         valType: 'number',

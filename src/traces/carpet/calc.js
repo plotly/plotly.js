@@ -66,8 +66,8 @@ module.exports = function calc(gd, trace) {
     // Create conversions from one coordinate system to another:
     setConvert(trace, xa, ya);
 
-    trace._agrid = calcGridlines(trace, 'a', 'b', xa, ya);
-    trace._bgrid = calcGridlines(trace, 'b', 'a', xa, ya);
+    calcGridlines(trace, 'a', 'b', xa, ya);
+    calcGridlines(trace, 'b', 'a', xa, ya);
 
     return [{
         x: x,

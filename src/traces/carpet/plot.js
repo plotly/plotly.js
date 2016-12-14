@@ -47,22 +47,28 @@ function plotOne(gd, plotinfo, cd) {
     var minorLayer = makeg(gridLayer, 'g', 'minorlayer');
     var majorLayer = makeg(gridLayer, 'g', 'majorlayer');
     var boundaryLayer = makeg(gridLayer, 'g', 'boundarylayer');
+    var boundaryLayer = makeg(gridLayer, 'g', 'boundarylayer');
     var labelLayer = makeg(gridLayer, 'g', 'labellayer');
 
-    drawGridLines(xa, ya, majorLayer, aax, 'a', trace._agrid, true);
-    drawGridLines(xa, ya, majorLayer, bax, 'b', trace._bgrid, true);
+    drawGridLines(xa, ya, majorLayer, aax, 'a', aax._gridlines, true);
+    drawGridLines(xa, ya, majorLayer, bax, 'b', bax._gridlines, true);
+
+    drawGridLines(xa, ya, minorLayer, aax, 'a', aax._minorgridlines, true);
+    drawGridLines(xa, ya, minorLayer, bax, 'b', bax._minorgridlines, true);
+
+    // NB: These are not ommitted if the lines are not active. The joins must be executed
+    // in order for them to get cleaned up without a full redraw
+    drawGridLines(xa, ya, boundaryLayer, aax, 'a-boundary', aax._boundarylines);
+    drawGridLines(xa, ya, boundaryLayer, bax, 'b-boundary', bax._boundarylines);
 }
 
-function drawGridLines(xaxis, yaxis, layer, axis, axisLetter, gridlines, isMajor) {
-    var lineClass = 'const-' + axisLetter + '-lines' + (isMajor ? '' : '-minor');
+function drawGridLines(xaxis, yaxis, layer, axis, axisLetter, gridlines) {
+    var lineClass = 'const-' + axisLetter + '-lines';
     var gridjoin = layer.selectAll('.' + lineClass).data(gridlines);
 
     gridjoin.enter().append('path')
         .classed(lineClass, true)
         .style('vector-effect', 'non-scaling-stroke');
-
-    var width = isMajor ? axis.gridwidth : axis.minorgridwidth;
-    var color = isMajor ? axis.gridcolor : axis.minorgridcolor;
 
     gridjoin.each(function(d, i) {
         var gridline = d;
@@ -77,8 +83,8 @@ function drawGridLines(xaxis, yaxis, layer, axis, axisLetter, gridlines, isMajor
 
         var el = d3.select(this);
         el.attr('d', d)
-            .style('stroke-width', width)
-            .style('stroke', color)
+            .style('stroke-width', gridline.width)
+            .style('stroke', gridline.color)
             .style('fill', 'none');
     })
     .exit().remove();
