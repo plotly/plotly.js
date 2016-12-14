@@ -514,7 +514,9 @@ describe('Test Plots', function() {
                         title: 'frame A'
                     },
                     name: 'A'
-                }, {
+                },
+                    null,
+                {
                     data: [{
                         y: [1, 2, 3],
                     }],
@@ -531,7 +533,8 @@ describe('Test Plots', function() {
 
                 expect(obj.data).toEqual(mock.data);
                 expect(obj.layout).toEqual(mock.layout);
-                expect(obj.frames).toEqual(mock.frames);
+                expect(obj.frames[0]).toEqual(mock.frames[0]);
+                expect(obj.frames[1]).toEqual(mock.frames[2]);
             })
             .then(function() {
                 destroyGraphDiv();
