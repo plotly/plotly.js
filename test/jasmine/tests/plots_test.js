@@ -533,7 +533,10 @@ describe('Test Plots', function() {
                 expect(obj.layout).toEqual(mock.layout);
                 expect(obj.frames).toEqual(mock.frames);
             })
-            .then(done);
+            .then(function() {
+                destroyGraphDiv();
+                done();
+            });
         });
     });
 });
