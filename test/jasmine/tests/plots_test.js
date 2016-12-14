@@ -494,4 +494,46 @@ describe('Test Plots', function() {
             assert(dest, src, expected);
         });
     });
+
+    describe('Plots.graphJson', function() {
+
+        it('should serialize data, layout and frames', function(done) {
+            var mock = {
+                data: [{
+                    x: [1, 2, 3],
+                    y: [2, 1, 2]
+                }],
+                layout: {
+                    title: 'base'
+                },
+                frames: [{
+                    data: [{
+                        y: [1, 2, 1],
+                    }],
+                    layout: {
+                        title: 'frame A'
+                    },
+                    name: 'A'
+                }, {
+                    data: [{
+                        y: [1, 2, 3],
+                    }],
+                    layout: {
+                        title: 'frame B'
+                    },
+                    name: 'B'
+                }]
+            };
+
+            Plotly.plot(createGraphDiv(), mock).then(function(gd) {
+                var str = Plots.graphJson(gd, false, 'keepdata');
+                var obj = JSON.parse(str);
+
+                expect(obj.data).toEqual(mock.data);
+                expect(obj.layout).toEqual(mock.layout);
+                expect(obj.frames).toEqual(mock.frames);
+            })
+            .then(done);
+        });
+    });
 });
