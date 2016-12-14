@@ -353,6 +353,13 @@ exports.cleanData = function(data, existingData) {
                         transform.target = transform.filtersrc;
                         delete transform.filtersrc;
                     }
+
+                    if(transform.calendar) {
+                        if(!transform.valuecalendar) {
+                            transform.valuecalendar = transform.calendar;
+                        }
+                        delete transform.calendar;
+                    }
                 }
             }
         }
