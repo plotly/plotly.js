@@ -2566,7 +2566,7 @@ Plotly.addFrames = function(gd, frameList, indices) {
 
     var insertions = [];
     for(i = frameList.length - 1; i >= 0; i--) {
-        if (!frameList[i]) continue;
+        if(!frameList[i]) continue;
 
         var name = (_hash[frameList[i].name] || {}).name;
         var newName = frameList[i].name;
