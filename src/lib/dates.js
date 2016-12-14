@@ -423,7 +423,9 @@ function formatTime(x, tr) {
          */
         var sec = Math.min(mod(x / ONESEC, 60), MAXSECONDS[tr]);
 
-        timeStr += ':' + (100 + sec).toFixed(tr).substr(1);
+        timeStr += ':' + (
+            (100 + sec).toFixed(tr).substr(1).replace(/[\.]?0*$/, '')
+        );
     }
     return timeStr;
 }
