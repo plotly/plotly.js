@@ -590,6 +590,8 @@ describe('dates', function() {
         it('should remove extra fractional second zeros', function() {
             expect(Lib.formatDate(0.1, '', 4)).toBe('00:00:00.0001\nJan 1, 1970');
             expect(Lib.formatDate(0.1, '', 3)).toBe('00:00:00\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 0)).toBe('00:00:00\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 'S')).toBe('00:00:00\nJan 1, 1970');
             expect(Lib.formatDate(0.1, '', 3, 'coptic'))
                 .toBe('00:00:00\nKoi 23, 1686');
 
