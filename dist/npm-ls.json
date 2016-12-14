@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "1.21.0",
+  "version": "1.21.1",
   "dependencies": {
     "3d-view": {
       "version": "2.0.0",
@@ -2855,9 +2855,9 @@
       }
     },
     "world-calendars": {
-      "version": "1.0.1",
-      "from": "world-calendars@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/world-calendars/-/world-calendars-1.0.1.tgz",
+      "version": "1.0.3",
+      "from": "world-calendars@>=1.0.3 <2.0.0",
+      "resolved": "https://registry.npmjs.org/world-calendars/-/world-calendars-1.0.3.tgz",
       "dependencies": {
         "object-assign": {
           "version": "4.1.0",
