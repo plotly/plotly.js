@@ -235,8 +235,9 @@ module.exports = {
                 ].join(' ')),
                 targetcalendar: makeAttrs([
                     'Sets the calendar system to use for `target`, if it is an',
-                    'array of dates. If `target` is a string (eg *x*) this is ignored',
-                    'and we use the corresponding trace attribute (eg `xcalendar`).'
+                    'array of dates. If `target` is a string (eg *x*) we use the',
+                    'corresponding trace attribute (eg `xcalendar`) if it exists,',
+                    'even if `targetcalendar` is provided.'
                 ].join(' '))
             }
         }

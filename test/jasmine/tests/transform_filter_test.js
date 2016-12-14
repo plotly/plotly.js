@@ -166,6 +166,28 @@ describe('filter transforms calc:', function() {
         expect(out[0].z).toEqual(['0548-08-07', '0548-09-19']);
     });
 
+    it('should use targetcalendar anyway if there is no matching calendar attribute', function() {
+        // this is the same data as in "filters should handle 3D *z* data"
+        // but with different calendars
+        var out = _transform([Lib.extendDeep({}, base, {
+            type: 'scatter',
+            // the same array as above but in taiwanese dates
+            text: ['0104-07-20', '0105-08-01', '0105-09-01', '0105-10-21', '0105-12-02'],
+            transforms: [{
+                type: 'filter',
+                operation: '>',
+                value: '5776-06-28',
+                valuecalendar: 'hebrew',
+                target: 'text',
+                targetcalendar: 'taiwan'
+            }]
+        })]);
+
+        expect(out[0].x).toEqual([0, 1]);
+        expect(out[0].y).toEqual([1, 2]);
+        expect(out[0].text).toEqual(['0105-10-21', '0105-12-02']);
+    });
+
     it('should use targetcalendar if target is an array', function() {
         // this is the same data as in "filters should handle 3D *z* data"
         // but with different calendars

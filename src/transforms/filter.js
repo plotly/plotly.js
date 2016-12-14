@@ -135,10 +135,21 @@ exports.calcTransform = function(gd, trace, opts) {
 
     if(!len) return;
 
-    var targetCalendar = (typeof target === 'string') ?
-            Lib.nestedProperty(trace, target + 'calendar').get() :
-            opts.targetcalendar,
-        dataToCoord = getDataToCoordFunc(gd, trace, target),
+    var targetCalendar = opts.targetcalendar;
+
+    // even if you provide targetcalendar, if target is a string and there
+    // is a calendar attribute matching target it will get used instead.
+    if(typeof target === 'string') {
+        var attrTargetCalendar = Lib.nestedProperty(trace, target + 'calendar').get();
+        if(attrTargetCalendar) targetCalendar = attrTargetCalendar;
+    }
+
+    // if target points to an axis, use the type we already have for that
+    // axis to find the data type. Otherwise use the values to autotype.
+    var d2cTarget = (target === 'x' || target === 'y' || target === 'z') ?
+        target : filterArray;
+
+    var dataToCoord = getDataToCoordFunc(gd, trace, d2cTarget),
         filterFunc = getFilterFunc(opts, dataToCoord, targetCalendar),
         arrayAttrs = PlotSchema.findArrayAttributes(trace),
         originalArrays = {};
