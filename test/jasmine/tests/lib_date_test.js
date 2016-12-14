@@ -468,4 +468,138 @@ describe('dates', function() {
             });
         });
     });
+
+    describe('formatDate', function() {
+        function assertFormatRounds(ms, calendar, results) {
+            ['y', 'm', 'd', 'M', 'S', 1, 2, 3, 4].forEach(function(tr, i) {
+                expect(Lib.formatDate(ms, '', tr, calendar))
+                    .toBe(results[i], calendar);
+            });
+        }
+
+        it('should pick a format based on tickround if no format is provided', function() {
+            var ms = Lib.dateTime2ms('2012-08-13 06:19:34.5678');
+            assertFormatRounds(ms, 'gregorian', [
+                '2012',
+                'Aug 2012',
+                'Aug 13\n2012',
+                '06:19\nAug 13, 2012',
+                '06:19:35\nAug 13, 2012',
+                '06:19:34.6\nAug 13, 2012',
+                '06:19:34.57\nAug 13, 2012',
+                '06:19:34.568\nAug 13, 2012',
+                '06:19:34.5678\nAug 13, 2012'
+            ]);
+
+            // and for world calendars - in coptic this is 1728-12-07 (month=Meso)
+            assertFormatRounds(ms, 'coptic', [
+                '1728',
+                'Meso 1728',
+                'Meso 7\n1728',
+                '06:19\nMeso 7, 1728',
+                '06:19:35\nMeso 7, 1728',
+                '06:19:34.6\nMeso 7, 1728',
+                '06:19:34.57\nMeso 7, 1728',
+                '06:19:34.568\nMeso 7, 1728',
+                '06:19:34.5678\nMeso 7, 1728'
+            ]);
+        });
+
+        it('should accept custom formats using d3 specs even for world cals', function() {
+            var ms = Lib.dateTime2ms('2012-08-13 06:19:34.5678');
+            [
+                // some common formats (plotly workspace options)
+                ['%Y-%m-%d', '2012-08-13', '1728-12-07'],
+                ['%H:%M:%S', '06:19:34', '06:19:34'],
+                ['%Y-%m-%e %H:%M:%S', '2012-08-13 06:19:34', '1728-12-7 06:19:34'],
+                ['%A, %b %e', 'Monday, Aug 13', 'Pesnau, Meso 7'],
+
+                // test padding behavior
+                // world doesn't support space-padded (yet?)
+                ['%Y-%_m-%_d', '2012- 8-13', '1728-12-7'],
+                ['%Y-%-m-%-d', '2012-8-13', '1728-12-7'],
+
+                // and some strange ones to cover all fields
+                ['%a%j!%-j', 'Mon226!226', 'Pes337!337'],
+                [
+                    '%W or un or space padded-> %-W,%_W',
+                    '33 or un or space padded-> 33,33',
+                    '48 or un or space padded-> 48,48'
+                ],
+                [
+                    '%B \'%y WOY:%U DOW:%w',
+                    'August \'12 WOY:32 DOW:1',
+                    'Mesori \'28 WOY:## DOW:##' // world-cals doesn't support U or w
+                ],
+                [
+                    '%c && %x && .%2f .%f', // %<n>f is our addition
+                    'Mon Aug 13 06:19:34 2012 && 08/13/2012 && .57 .5678',
+                    'Pes Meso 7 06:19:34 1728 && 12/07/1728 && .57 .5678'
+                ]
+
+            ].forEach(function(v) {
+                var fmt = v[0],
+                    expectedGregorian = v[1],
+                    expectedCoptic = v[2];
+
+                // tickround is irrelevant here...
+                expect(Lib.formatDate(ms, fmt, 'y'))
+                    .toBe(expectedGregorian, fmt);
+                expect(Lib.formatDate(ms, fmt, 4, 'gregorian'))
+                    .toBe(expectedGregorian, fmt);
+                expect(Lib.formatDate(ms, fmt, 'y', 'coptic'))
+                    .toBe(expectedCoptic, fmt);
+            });
+        });
+
+        it('should not round up to 60 seconds', function() {
+            // see note in dates.js -> formatTime about this rounding
+            assertFormatRounds(-0.1, 'gregorian', [
+                '1969',
+                'Dec 1969',
+                'Dec 31\n1969',
+                '23:59\nDec 31, 1969',
+                '23:59:59\nDec 31, 1969',
+                '23:59:59.9\nDec 31, 1969',
+                '23:59:59.99\nDec 31, 1969',
+                '23:59:59.999\nDec 31, 1969',
+                '23:59:59.9999\nDec 31, 1969'
+            ]);
+
+            // in coptic this is Koi 22, 1686
+            assertFormatRounds(-0.1, 'coptic', [
+                '1686',
+                'Koi 1686',
+                'Koi 22\n1686',
+                '23:59\nKoi 22, 1686',
+                '23:59:59\nKoi 22, 1686',
+                '23:59:59.9\nKoi 22, 1686',
+                '23:59:59.99\nKoi 22, 1686',
+                '23:59:59.999\nKoi 22, 1686',
+                '23:59:59.9999\nKoi 22, 1686'
+            ]);
+
+            // and using the custom format machinery
+            expect(Lib.formatDate(-0.1, '%Y-%m-%d %H:%M:%S.%f'))
+                .toBe('1969-12-31 23:59:59.9999');
+            expect(Lib.formatDate(-0.1, '%Y-%m-%d %H:%M:%S.%f', null, 'coptic'))
+                .toBe('1686-04-22 23:59:59.9999');
+
+        });
+
+        it('should remove extra fractional second zeros', function() {
+            expect(Lib.formatDate(0.1, '', 4)).toBe('00:00:00.0001\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 3)).toBe('00:00:00\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 0)).toBe('00:00:00\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 'S')).toBe('00:00:00\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 3, 'coptic'))
+                .toBe('00:00:00\nKoi 23, 1686');
+
+            // because the decimal point is explicitly part of the format
+            // string here, we can't remove it OR the very first zero after it.
+            expect(Lib.formatDate(0.1, '%S.%f')).toBe('00.0001');
+            expect(Lib.formatDate(0.1, '%S.%3f')).toBe('00.0');
+        });
+
+    });
 });

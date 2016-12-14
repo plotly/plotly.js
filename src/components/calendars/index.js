@@ -106,6 +106,7 @@ var DFLTRANGE = {
 var UNKNOWN = '##';
 var d3ToWorldCalendars = {
     'd': {'0': 'dd', '-': 'd'}, // 2-digit or unpadded day of month
+    'e': {'0': 'd', '-': 'd'}, // alternate, always unpadded day of month
     'a': {'0': 'D', '-': 'D'}, // short weekday name
     'A': {'0': 'DD', '-': 'DD'}, // full weekday name
     'j': {'0': 'oo', '-': 'o'}, // 3-digit or unpadded day of the year
@@ -119,12 +120,12 @@ var d3ToWorldCalendars = {
     'w': UNKNOWN, // day of the week [0(sunday),6]
     // combined format, we replace the date part with the world-calendar version
     // and the %X stays there for d3 to handle with time parts
-    '%c': {'0': 'D M m %X yyyy', '-': 'D M m %X yyyy'},
-    '%x': {'0': 'mm/dd/yyyy', '-': 'mm/dd/yyyy'}
+    'c': {'0': 'D M d %X yyyy', '-': 'D M d %X yyyy'},
+    'x': {'0': 'mm/dd/yyyy', '-': 'mm/dd/yyyy'}
 };
 
 function worldCalFmt(fmt, x, calendar) {
-    var dateJD = Math.floor(x + 0.05 / ONEDAY) + EPOCHJD,
+    var dateJD = Math.floor((x + 0.05) / ONEDAY) + EPOCHJD,
         cDate = getCal(calendar).fromJD(dateJD),
         i = 0,
         modifier, directive, directiveLen, directiveObj, replacementPart;
@@ -132,7 +133,7 @@ function worldCalFmt(fmt, x, calendar) {
         modifier = fmt.charAt(i + 1);
         if(modifier === '0' || modifier === '-' || modifier === '_') {
             directiveLen = 3;
-            directive = fmt.charAt(i + 1);
+            directive = fmt.charAt(i + 2);
             if(modifier === '_') modifier = '-';
         }
         else {
