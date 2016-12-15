@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v1.21.1
+* plotly.js (cartesian) v1.21.2
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -25456,7 +25456,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.21.1';
+exports.version = '1.21.2';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -29776,6 +29776,13 @@ exports.cleanData = function(data, existingData) {
                         transform.target = transform.filtersrc;
                         delete transform.filtersrc;
                     }
+
+                    if(transform.calendar) {
+                        if(!transform.valuecalendar) {
+                            transform.valuecalendar = transform.calendar;
+                        }
+                        delete transform.calendar;
+                    }
                 }
             }
         }
@@ -32470,6 +32477,8 @@ Plotly.addFrames = function(gd, frameList, indices) {
 
     var insertions = [];
     for(i = frameList.length - 1; i >= 0; i--) {
+        if(!Lib.isPlainObject(frameList[i])) continue;
+
         var name = (_hash[frameList[i].name] || {}).name;
         var newName = frameList[i].name;
 
@@ -43527,7 +43536,8 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
     }
 
     var data = (useDefaults) ? gd._fullData : gd.data,
-        layout = (useDefaults) ? gd._fullLayout : gd.layout;
+        layout = (useDefaults) ? gd._fullLayout : gd.layout,
+        frames = (gd._transitionData || {})._frames;
 
     function stripObj(d) {
         if(typeof d === 'function') {
@@ -43599,6 +43609,8 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
     if(!dataonly) { obj.layout = stripObj(layout); }
 
     if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
+
+    if(frames) obj.frames = stripObj(frames);
 
     return (output === 'object') ? obj : JSON.stringify(obj);
 };
