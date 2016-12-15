@@ -27,28 +27,17 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
+    coerce('carpetid');
+
+    // XXX: Don't hard code this
+    traceOut.xaxis = 'x';
+    traceOut.yaxis = 'y';
+
     var a = coerce('a'),
         b = coerce('b'),
-        c = coerce('c'),
         len;
 
-    // allow any one array to be missing, len is the minimum length of those
-    // present. Note that after coerce data_array's are either Arrays (which
-    // are truthy even if empty) or undefined. As in scatter, an empty array
-    // is different from undefined, because it can signify that this data is
-    // not known yet but expected in the future
-    if(a) {
-        len = a.length;
-        if(b) {
-            len = Math.min(len, b.length);
-            if(c) len = Math.min(len, c.length);
-        }
-        else if(c) len = Math.min(len, c.length);
-        else len = 0;
-    }
-    else if(b && c) {
-        len = Math.min(b.length, c.length);
-    }
+    len = Math.min(a.length, b.length);
 
     if(!len) {
         traceOut.visible = false;
@@ -58,7 +47,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // cut all data arrays down to same length
     if(a && len < a.length) traceOut.a = a.slice(0, len);
     if(b && len < b.length) traceOut.b = b.slice(0, len);
-    if(c && len < c.length) traceOut.c = c.slice(0, len);
 
     coerce('sum');
 
@@ -94,7 +82,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         if(!subTypes.hasLines(traceOut)) handleLineShapeDefaults(traceIn, traceOut, coerce);
     }
 
-    coerce('hoverinfo', (layout._dataLength === 1) ? 'a+b+c+text' : undefined);
+    coerce('hoverinfo', (layout._dataLength === 1) ? 'a+b+text' : undefined);
 
     if(traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
         dfltHoverOn.push('fills');

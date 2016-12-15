@@ -17,73 +17,44 @@ var Lib = require('../../lib');
 var subTypes = require('../scatter/subtypes');
 var calcColorscale = require('../scatter/colorscale_calc');
 
-var dataArrays = ['a', 'b', 'c'];
-var arraysToFill = {a: ['b', 'c'], b: ['a', 'c'], c: ['a', 'b']};
-
+var dataArrays = ['a', 'b'];
 
 module.exports = function calc(gd, trace) {
-    var i, j, dataArray, newArray, fillArray1, fillArray2, trace;
+    var i, j, dataArray, newArray, fillArray1, fillArray2, carpet;
 
-    for (i = 0; i < gd.traces.length; i++) {
-        if (gd.traces[i].carpetid === trace.carpetid) {
-            trace = gd.traces[i];
+    for (i = 0; i < gd._fullData.length; i++) {
+        if (gd._fullData[i].carpetid === trace.carpetid && gd._fullData[i].type === 'carpet') {
+            carpet = gd._fullData[i];
             break;
         }
     }
 
-    if (!trace) return;
+    if (!carpet) return;
 
-    console.log('trace:', trace);
+    // Transfer this over from carpet before plotting since this is a necessary
+    // condition in order for cartesian to actually plot this trace:
+    trace.xaxis = carpet.xaxis;
+    trace.yaxis = carpet.yaxis;
 
-    return;
-
-    var ternary = gd._fullLayout[trace.subplot],
-        displaySum = ternary.sum,
+    var displaySum = carpet.sum,
         normSum = trace.sum || displaySum;
-
-    // fill in one missing component
-    for(i = 0; i < dataArrays.length; i++) {
-        dataArray = dataArrays[i];
-        if(trace[dataArray]) continue;
-
-        fillArray1 = trace[arraysToFill[dataArray][0]];
-        fillArray2 = trace[arraysToFill[dataArray][1]];
-        newArray = new Array(fillArray1.length);
-        for(j = 0; j < fillArray1.length; j++) {
-            newArray[j] = normSum - fillArray1[j] - fillArray2[j];
-        }
-        trace[dataArray] = newArray;
-    }
 
     // make the calcdata array
     var serieslen = trace.a.length;
     var cd = new Array(serieslen);
-    var a, b, c, norm, x, y;
+    var a, b, norm, x, y;
     for(i = 0; i < serieslen; i++) {
         a = trace.a[i];
         b = trace.b[i];
-        c = trace.c[i];
-        if(isNumeric(a) && isNumeric(b) && isNumeric(c)) {
-            a = +a;
-            b = +b;
-            c = +c;
-            norm = displaySum / (a + b + c);
-            if(norm !== 1) {
-                a *= norm;
-                b *= norm;
-                c *= norm;
-            }
-            // map a, b, c onto x and y where the full scale of y
-            // is [0, sum], and x is [-sum, sum]
-            // TODO: this makes `a` always the top, `b` the bottom left,
-            // and `c` the bottom right. Do we want options to rearrange
-            // these?
-            y = a;
-            x = c - b;
-            cd[i] = {x: x, y: y, a: a, b: b, c: c};
+        if(isNumeric(a) && isNumeric(b)) {
+            var xy = carpet.ab2xy(+a, +b);
+            cd[i] = {x: xy[0], y: xy[1], a: a, b: b};
         }
         else cd[i] = {x: false, y: false};
     }
+
+    cd[0].carpet = carpet;
+    cd[0].trace = trace;
 
     // fill in some extras
     var marker, s;

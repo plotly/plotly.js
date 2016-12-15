@@ -10,23 +10,21 @@
 'use strict';
 
 var scatterPlot = require('../scatter/plot');
+var Axes = require('../../plots/cartesian/axes');
 
+module.exports = function plot(gd, plotinfoproxy, data) {
 
-module.exports = function plot(ternary, data) {
-    var plotContainer = ternary.plotContainer;
-
-    // remove all nodes inside the scatter layer
-    plotContainer.select('.scatterlayer').selectAll('*').remove();
+    var carpet = data[0][0].carpet;
 
     // mimic cartesian plotinfo
     var plotinfo = {
-        xaxis: ternary.xaxis,
-        yaxis: ternary.yaxis,
-        plot: plotContainer
+        xaxis: Axes.getFromId(gd, carpet.xaxis || 'x'),
+        yaxis: Axes.getFromId(gd, carpet.yaxis || 'y'),
+        plot: plotinfoproxy.plot
     };
 
-    var calcdata = new Array(data.length),
-        fullCalcdata = ternary.graphDiv.calcdata;
+    /*var calcdata = new Array(data.length),
+        fullCalcdata = gd.calcdata;
 
     for(var i = 0; i < fullCalcdata.length; i++) {
         var j = data.indexOf(fullCalcdata[i][0].trace);
@@ -35,10 +33,10 @@ module.exports = function plot(ternary, data) {
 
         calcdata[j] = fullCalcdata[i];
 
-        // while we're here and have references to both the Ternary object
+        // while we're here and have references to both the Carpet object
         // and fullData, connect the two (for use by hover)
-        data[j]._ternary = ternary;
-    }
+        data[j]._carpet = plotinfo;
+    }*/
 
-    scatterPlot(ternary.graphDiv, plotinfo, calcdata);
+    scatterPlot(plotinfo.graphDiv, plotinfo, data);
 };

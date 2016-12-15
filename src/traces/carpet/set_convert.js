@@ -105,6 +105,24 @@ module.exports = function setConvert(trace) {
         return trace._evalxy([], i0, j0, ti, tj);
     };
 
+    trace.ab2xy = function (aval, bval) {
+        if (aval < a[0] || aval > a[na - 1] | bval < b[0] || bval > b[nb - 1]) {
+            return [false, false];
+        }
+        var i = trace.a2i(aval);
+        var i0 = Math.max(0, Math.min(na - 2, Math.floor(i)));
+        var ti = i - i0;
+
+        var j = trace.b2j(bval);
+        var j0 = Math.max(0, Math.min(nb - 2, Math.floor(j)));
+        var tj = j - j0;
+
+        if (tj < 0 || tj > 1 || ti < 0 || ti > 1) {
+            return [false, false];
+        }
+        return trace._evalxy([], i0, j0, ti, tj);
+    }
+
     trace.c2p = function (xy, xa, ya) {
         return [xa.c2p(xy[0]), ya.c2p(xy[1])];
     };

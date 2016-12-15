@@ -20,6 +20,15 @@ var scatterMarkerAttrs = scatterAttrs.marker,
     scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
 module.exports = {
+    carpetid: {
+        valType: 'string',
+        role: 'info',
+        description: [
+            'An identifier for this carpet, so that `scattercarpet` and',
+            '`scattercontour` traces can specify a carpet plot on which',
+            'they lie'
+        ].join(' ')
+    },
     a: {
         valType: 'data_array',
         description: [
@@ -31,16 +40,6 @@ module.exports = {
         ].join(' ')
     },
     b: {
-        valType: 'data_array',
-        description: [
-            'Sets the quantity of component `a` in each data point.',
-            'If `a`, `b`, and `c` are all provided, they need not be',
-            'normalized, only the relative values matter. If only two',
-            'arrays are provided they must be normalized to match',
-            '`ternary<i>.sum`.'
-        ].join(' ')
-    },
-    c: {
         valType: 'data_array',
         description: [
             'Sets the quantity of component `a` in each data point.',
