@@ -23,7 +23,7 @@ var createJDerivativeEvaluator = require('./create_j_derivative_evaluator');
  *   c: cartesian x-y coordinates
  *   p: screen-space pixel coordinates
  */
-module.exports = function setConvert(trace, xa, ya) {
+module.exports = function setConvert(trace) {
     var a = trace.a;
     var b = trace.b;
     var na = trace.a.length;
@@ -105,11 +105,11 @@ module.exports = function setConvert(trace, xa, ya) {
         return trace._evalxy([], i0, j0, ti, tj);
     };
 
-    trace.c2p = function (xy) {
+    trace.c2p = function (xy, xa, ya) {
         return [xa.c2p(xy[0]), ya.c2p(xy[1])];
     };
 
-    trace.p2x = function (p) {
+    trace.p2x = function (p, xa, ya) {
         return [xa.p2c(p[0]), ya.p2c(p[1])];
     };
 
@@ -156,11 +156,11 @@ module.exports = function setConvert(trace, xa, ya) {
         return [dxydj[0] / dbdj, dxydj[1] / dbdj];
     };
 
-    trace.dpdx = function () {
+    trace.dpdx = function (xa) {
         return xa._m;
     };
 
-    trace.dpdy = function () {
+    trace.dpdy = function (ya) {
         return ya._m;
     };
 }

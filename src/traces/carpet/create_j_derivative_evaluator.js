@@ -61,10 +61,18 @@ module.exports = function (arrays, asmoothing, bsmoothing) {
             var ov = 1 - v;
             for (k = 0; k < arrays.length; k++) {
                 ak = arrays[k];
-                f0 = 3 * ((u2 - 1) * ak[i0][j0    ] + ou2 * ak[i0][j0    ] + u * (2 - 3 * u) * ak[i0][j0    ] + u2 * ak[i0][j0    ]);
-                f1 = 3 * ((u2 - 1) * ak[i0][j0 + 1] + ou2 * ak[i0][j0 + 1] + u * (2 - 3 * u) * ak[i0][j0 + 1] + u2 * ak[i0][j0 + 1]);
 
-                out[k] = ov * f0 + v * f1;
+                f0 = ak[i0    ][j0 + 1] - ak[i0    ][j0];
+                f1 = ak[i0 + 1][j0 + 1] - ak[i0 + 1][j0];
+                f2 = ak[i0 + 2][j0 + 1] - ak[i0 + 2][j0];
+                f3 = ak[i0 + 3][j0 + 1] - ak[i0 + 3][j0];
+
+                out[k] = ou3 * f0 + 3 * (ou2 * u * f1 + ou * u2 * f2) + u3 * f3;
+
+                // mathematically equivalent:
+                //f0 = ou3 * ak[i0][j0    ] + 3 * (ou2 * u * ak[i0 + 1][j0    ] + ou * u2 * ak[i0 + 2][j0    ]) + u3 * ak[i0 + 3][j0    ];
+                //f1 = ou3 * ak[i0][j0 + 1] + 3 * (ou2 * u * ak[i0 + 1][j0 + 1] + ou * u2 * ak[i0 + 2][j0 + 1]) + u3 * ak[i0 + 3][j0 + 1];
+                //out[k] = f1 - f0;
             }
             return out;
         };
@@ -95,8 +103,8 @@ module.exports = function (arrays, asmoothing, bsmoothing) {
             var ov = 1 - v;
             for (k = 0; k < arrays.length; k++) {
                 ak = arrays[k];
-                f0 = ak[i0 + 1][j0] - ak[i0][j0];
-                f1 = ak[i0 + 1][j0 + 1] - ak[i0][j0 + 1];
+                f0 = ak[i0][j0 + 1] - ak[i0][j0];
+                f1 = ak[i0 + 1][j0 + 1] - ak[i0 + 1][j0];
 
                 out[k] = ov * f0 + v * f1;
             }

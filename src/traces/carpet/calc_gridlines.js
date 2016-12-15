@@ -21,7 +21,7 @@ var map1dArray = require('./map_1d_array');
 var makepath = require('./makepath');
 var extendFlat = require('../../lib/extend').extendFlat;
 
-module.exports = function calcGridlines (trace, axisLetter, crossAxisLetter, xaxis, yaxis) {
+module.exports = function calcGridlines (trace, axisLetter, crossAxisLetter) {
     var i, j, gridline, j0, i0;
 
     var data = trace[axisLetter];
@@ -53,11 +53,24 @@ module.exports = function calcGridlines (trace, axisLetter, crossAxisLetter, xax
         var j, j0, tj, pxy, i0, ti, xy, dxydi0, dxydi1, i, dxydj0, dxydj1;
         var xpoints = [];
         var ypoints = [];
+        var ret = {};
         // Search for the fractional grid index giving this line:
         if (axisLetter === 'b') {
             j = trace.b2j(value);
             j0 = Math.floor(Math.max(0, Math.min(nb - 2, j)));
             tj = j - j0;
+            ret.length = nb;
+            ret.crossLength = na;
+
+            ret.xy = function (i) {
+                var i0 = Math.max(0, Math.min(crossData.length - 2, Math.floor(i)));
+                var ti = i - i0;
+                return trace._evalxy([], i0, j0, ti, tj);
+            }
+
+            ret.dxy = function (i0, ti) {
+                return trace.dxydi([], i0, j0, ti, tj);
+            };
 
             for (var i = 0; i < na; i++) {
                 i0 = Math.min(na - 2, i);
@@ -85,6 +98,18 @@ module.exports = function calcGridlines (trace, axisLetter, crossAxisLetter, xax
             i = trace.a2i(value);
             i0 = Math.floor(Math.max(0, Math.min(na - 2, i)));
             ti = i - i0;
+            ret.length = na;
+            ret.crossLength = nb;
+
+            ret.xy = function (j) {
+                var j0 = Math.max(0, Math.min(crossData.length - 2, Math.floor(j)));
+                var tj = j - j0;
+                return trace._evalxy([], i0, j0, ti, tj);
+            }
+
+            ret.dxy = function (j0, tj) {
+                return trace.dxydj([], i0, j0, ti, tj);
+            };
 
             for (var j = 0; j < nb; j++) {
                 j0 = Math.min(nb - 2, j);
@@ -110,61 +135,84 @@ module.exports = function calcGridlines (trace, axisLetter, crossAxisLetter, xax
             }
         }
 
-        return {
-            axisLetter: axisLetter,
-            axis: trace[axisLetter + 'axis'],
-            value: value,
-            constvar: crossAxisLetter,
-            index: n,
-            x: xpoints,
-            y: ypoints,
-            //dxy_0: dxy_0,
-            //dxy_1: dxy_1,
-            smoothing: crossAxis.smoothing,
-        };
+        ret.axisLetter = axisLetter;
+        ret.axis = axis;
+        ret.crossAxis = crossAxis;
+        ret.value = value;
+        ret.constvar = crossAxisLetter;
+        ret.index = n;
+        ret.x = xpoints;
+        ret.y = ypoints;
+        ret.smoothing = crossAxis.smoothing;
+
+        return ret;
     }
 
-    function constructArrayGridline (j) {
-        var dxy_0, dxy_1;
+    function constructArrayGridline (idx) {
         var xpoints = [];
         var ypoints = [];
+        var ret = {};
+        ret.length = data.length;
+        ret.crossLength = crossData.length;
 
         if (axisLetter === 'b') {
+            var j0 = Math.max(0, Math.min(nb - 2, idx));
+            var tj = Math.min(1, Math.max(0, idx - j0));
+
+            ret.xy = function (i) {
+                var i0 = Math.max(0, Math.min(na - 2, Math.floor(i)));
+                var ti = Math.min(1, Math.max(0, i - i0));
+                return trace._evalxy([], i0, j0, ti, tj);
+            };
+
+            ret.dxy = function (i) {
+                var i0 = Math.max(0, Math.min(na - 2, Math.floor(i)));
+                var ti = Math.min(1, Math.max(0, i - i0));
+                return trace.dxydi([], i0, j0, ti, tj);
+            };
+
             // In the tickmode: array case, this operation is a simple
             // transfer of data:
             for (i = 0; i < nea; i++) {
-                xpoints[i] = xcp[i][j * stride];
-                ypoints[i] = ycp[i][j * stride];
+                xpoints[i] = xcp[i][idx * stride];
+                ypoints[i] = ycp[i][idx * stride];
+            }
+        } else {
+            var i0 = Math.max(0, Math.min(na - 2, idx));
+            var ti = Math.min(1, Math.max(0, idx - i0));
+
+            ret.xy = function (j) {
+                var j0 = Math.max(0, Math.min(nb - 2, Math.floor(j)));
+                var tj = Math.min(1, Math.max(0, j - j0));
+                return trace._evalxy([], i0, j0, ti, tj);
             }
 
-            j0 = Math.min(j, nb - 2);
-            dxy_0 = trace.dxydi(null, 0, j0, 0, j - j0);
-            dxy_1 = trace.dxydi(null, na - 2, j0, 1, j - j0);
-        } else {
+
+            ret.dxy = function (j) {
+                var j0 = Math.max(0, Math.min(nb - 2, Math.floor(j)));
+                var tj = Math.min(1, Math.max(0, j - j0));
+                return trace.dxydj([], i0, j0, ti, tj);
+            };
+
             // In the tickmode: array case, this operation is a simple
             // transfer of data:
             for (i = 0; i < neb; i++) {
-                xpoints[i] = xcp[j * stride][i];
-                ypoints[i] = ycp[j * stride][i];
+                xpoints[i] = xcp[idx * stride][i];
+                ypoints[i] = ycp[idx * stride][i];
             }
-
-            i0 = Math.min(i, na - 2);
-            dxy_0 = trace.dxydj(null, i0, 0, i - i0, 0);
-            dxy_1 = trace.dxydj(null, i0, nb - 2, i - i0, 1);
         }
 
-        return {
-            axisLetter: axisLetter,
-            axis: trace[axisLetter + 'axis'],
-            value: data[j],
-            constvar: crossAxisLetter,
-            index: j,
-            x: xpoints,
-            y: ypoints,
-            dxy_0: dxy_0,
-            dxy_1: dxy_1,
-            smoothing: crossAxis.smoothing,
-        };
+        ret.axisLetter = axisLetter;
+        ret.axis = axis;
+        ret.crossAxis = crossAxis;
+        ret.value = data[idx];
+        ret.constvar = crossAxisLetter;
+        ret.index = idx;
+        ret.x = xpoints;
+        ret.y = ypoints;
+        ret.smoothing = crossAxis.smoothing;
+
+        return ret;
     };
 
 

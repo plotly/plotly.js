@@ -17,6 +17,7 @@ var map2dArray = require('./map_2d_array');
 var createSplineEvaluator = require('./create_spline_evaluator');
 var setConvert = require('./set_convert');
 var calcGridlines = require('./calc_gridlines');
+var calcLabels = require('./calc_labels');
 
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
@@ -66,8 +67,11 @@ module.exports = function calc(gd, trace) {
     // Create conversions from one coordinate system to another:
     setConvert(trace, xa, ya);
 
-    calcGridlines(trace, 'a', 'b', xa, ya);
-    calcGridlines(trace, 'b', 'a', xa, ya);
+    calcGridlines(trace, 'a', 'b');
+    calcGridlines(trace, 'b', 'a');
+
+    calcLabels(trace, aax);
+    calcLabels(trace, bax);
 
     return [{
         x: x,
