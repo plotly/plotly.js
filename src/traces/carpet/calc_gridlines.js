@@ -165,9 +165,7 @@ module.exports = function calcGridlines (trace, axisLetter, crossAxisLetter) {
                 return trace._evalxy([], i0, j0, ti, tj);
             };
 
-            ret.dxy = function (i) {
-                var i0 = Math.max(0, Math.min(na - 2, Math.floor(i)));
-                var ti = Math.min(1, Math.max(0, i - i0));
+            ret.dxy = function (i0, ti) {
                 return trace.dxydi([], i0, j0, ti, tj);
             };
 
@@ -188,9 +186,7 @@ module.exports = function calcGridlines (trace, axisLetter, crossAxisLetter) {
             }
 
 
-            ret.dxy = function (j) {
-                var j0 = Math.max(0, Math.min(nb - 2, Math.floor(j)));
-                var tj = Math.min(1, Math.max(0, j - j0));
+            ret.dxy = function (j0, tj) {
                 return trace.dxydj([], i0, j0, ti, tj);
             };
 

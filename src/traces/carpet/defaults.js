@@ -94,7 +94,15 @@ function handleAxisDefaults(traceIn, traceOut, axis) {
 
     coerce('labelpadding');
 
-    Lib.coerceFont(coerce, 'labelfont', {size: 12});
+    Lib.coerceFont(coerce, 'startlabelfont', {
+        size: 12,
+        color: ax.startlinecolor
+    });
+
+    Lib.coerceFont(coerce, 'endlabelfont', {
+        size: 12,
+        color: ax.endlinecolor
+    });
 
     // Compute which labels to show. In a sense this is sort of a data computation
     // that should go in calc.js, but it's so minimal for any conceivable case that

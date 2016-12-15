@@ -154,7 +154,7 @@ function drawAxisLabels(xaxis, yaxis, trace, layer, labels, labelClass) {
             .attr('text-anchor', endAnchor ? 'end' : 'start')
             .text(prefix + label.text + suffix)
             .attr('transform', 'rotate(' + angle + ' ' + xy[0] + ',' + xy[1] + ')')
-            .call(Drawing.font, ax.labelfont.family, ax.labelfont.size, ax.labelfont.color);
+            .call(Drawing.font, label.font.family, label.font.size, label.font.color);
     });
 
     labelJoin.exit().remove();

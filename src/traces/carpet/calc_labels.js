@@ -34,22 +34,28 @@ module.exports = function calcLabels (trace, axis) {
     for (i = 0; i < gridlines.length; i++) {
         var gridline = gridlines[i];
 
-        labels.push({
-            text: gridline.value.toFixed(3),
-            endAnchor: true,
-            xy: gridline.xy(0),
-            dxy: gridline.dxy(0, 0),
-            axis: gridline.axis,
-            length: gridline.crossAxis.length
-        });
+        if (['start', 'both'].indexOf(axis.showlabels) !== -1) {
+            labels.push({
+                text: gridline.value.toFixed(3),
+                endAnchor: true,
+                xy: gridline.xy(0),
+                dxy: gridline.dxy(0, 0),
+                axis: gridline.axis,
+                length: gridline.crossAxis.length,
+                font: gridline.crossAxis.startlabelfont
+            });
+        }
 
-        labels.push({
-            text: gridline.value.toFixed(3),
-            endAnchor: false,
-            xy: gridline.xy(gridline.crossLength - 1),
-            dxy: gridline.dxy(gridline.crossLength - 2, 1),
-            axis: gridline.axis,
-            length: gridline.crossAxis.length
-        });
+        if (['end', 'both'].indexOf(axis.showlabels) !== -1) {
+            labels.push({
+                text: gridline.value.toFixed(3),
+                endAnchor: false,
+                xy: gridline.xy(gridline.crossLength - 1),
+                dxy: gridline.dxy(gridline.crossLength - 2, 1),
+                axis: gridline.axis,
+                length: gridline.crossAxis.length,
+                font: gridline.crossAxis.endlabelfont
+            });
+        }
     }
 };

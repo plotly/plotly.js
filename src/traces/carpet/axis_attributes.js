@@ -84,7 +84,10 @@ module.exports = {
         role: 'style',
         description: 'Same as `showtickprefix` but for tick suffixes.'
     },
-    labelfont: extendFlat({}, fontAttrs, {
+    startlabelfont: extendFlat({}, fontAttrs, {
+        description: 'Sets the label font.'
+    }),
+    endlabelfont: extendFlat({}, fontAttrs, {
         description: 'Sets the label font.'
     }),
     tick0: {
