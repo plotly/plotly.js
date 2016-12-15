@@ -38,7 +38,7 @@ module.exports = {
         description: [
             'Determines whether axis labels are drawn on the low side,',
             'the high side, both, or neither side of the axis.'
-        ]
+        ].join(' ')
     },
     labelpadding: {
         valType: 'integer',
