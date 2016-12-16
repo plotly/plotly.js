@@ -20,7 +20,7 @@ var calcColorscales = require('../scatter/colorscale_calc');
 module.exports = function calc(gd, trace) {
     var cd = [{x: false, y: false, trace: trace, t: {}}];
 
-    arraysToCalcdata(cd);
+    arraysToCalcdata(cd, trace);
     calcColorscales(trace);
 
     return cd;

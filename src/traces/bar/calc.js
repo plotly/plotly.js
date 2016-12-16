@@ -15,6 +15,8 @@ var Axes = require('../../plots/cartesian/axes');
 var hasColorscale = require('../../components/colorscale/has_colorscale');
 var colorscaleCalc = require('../../components/colorscale/calc');
 
+var arraysToCalcdata = require('./arrays_to_calcdata');
+
 
 module.exports = function calc(gd, trace) {
     // depending on bar direction, set position and size axes
@@ -96,6 +98,8 @@ module.exports = function calc(gd, trace) {
     if(hasColorscale(trace, 'marker.line')) {
         colorscaleCalc(trace, trace.marker.line.color, 'marker.line', 'c');
     }
+
+    arraysToCalcdata(cd, trace);
 
     return cd;
 };
