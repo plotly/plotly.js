@@ -42,7 +42,9 @@ module.exports = function calcLabels (trace, axis) {
                 dxy: gridline.dxy(0, 0),
                 axis: gridline.axis,
                 length: gridline.crossAxis.length,
-                font: gridline.crossAxis.startlabelfont
+                font: gridline.crossAxis.startlabelfont,
+                isFirst: i === 0,
+                isLast: i === gridlines.length - 1
             });
         }
 
@@ -54,7 +56,9 @@ module.exports = function calcLabels (trace, axis) {
                 dxy: gridline.dxy(gridline.crossLength - 2, 1),
                 axis: gridline.axis,
                 length: gridline.crossAxis.length,
-                font: gridline.crossAxis.endlabelfont
+                font: gridline.crossAxis.endlabelfont,
+                isFirst: i === 0,
+                isLast: i === gridlines.length - 1
             });
         }
     }

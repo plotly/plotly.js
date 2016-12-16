@@ -31,6 +31,8 @@ module.exports = function calc(gd, trace) {
 
     if (!carpet) return;
 
+    trace._carpet = carpet;
+
     // Transfer this over from carpet before plotting since this is a necessary
     // condition in order for cartesian to actually plot this trace:
     trace.xaxis = carpet.xaxis;

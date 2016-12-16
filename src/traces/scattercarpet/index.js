@@ -16,7 +16,7 @@ ScatterCarpet.supplyDefaults = require('./defaults');
 ScatterCarpet.calc = require('./calc');
 ScatterCarpet.plot = require('./plot');
 //ScatterCarpet.style = require('./style');
-//ScatterCarpet.hoverPoints = require('./hover');
+ScatterCarpet.hoverPoints = require('./hover');
 //ScatterCarpet.selectPoints = require('./select');
 
 ScatterCarpet.moduleType = 'trace';

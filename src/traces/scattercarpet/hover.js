@@ -43,25 +43,33 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
     newPointData.a = cdi.a;
     newPointData.b = cdi.b;
-    newPointData.c = cdi.c;
 
     newPointData.xLabelVal = undefined;
     newPointData.yLabelVal = undefined;
     // TODO: nice formatting, and label by axis title, for a, b, and c?
 
     var trace = newPointData.trace,
-        ternary = trace._ternary,
+        carpet = trace._carpet,
         hoverinfo = trace.hoverinfo.split('+'),
         text = [];
 
     function textPart(ax, val) {
-        text.push(ax._hovertitle + ': ' + Axes.tickText(ax, val, 'hover').text);
+        text.push(((ax.labelprefix && ax.labelprefix.length > 0) ? ax.labelprefix : (ax._hovertitle + ': ')) + val.toFixed(3) + ax.labelsuffix);
     }
 
-    if(hoverinfo.indexOf('all') !== -1) hoverinfo = ['a', 'b', 'c'];
-    if(hoverinfo.indexOf('a') !== -1) textPart(ternary.aaxis, cdi.a);
-    if(hoverinfo.indexOf('b') !== -1) textPart(ternary.baxis, cdi.b);
-    if(hoverinfo.indexOf('c') !== -1) textPart(ternary.caxis, cdi.c);
+    if(hoverinfo.indexOf('all') !== -1) hoverinfo = ['a', 'b'];
+    if(hoverinfo.indexOf('a') !== -1) textPart(carpet.aaxis, cdi.a);
+    if(hoverinfo.indexOf('b') !== -1) textPart(carpet.baxis, cdi.b);
+
+    var ij = carpet.ab2ij([cdi.a, cdi.b]);
+    var i0 = Math.floor(ij[0]);
+    var ti = ij[0] - i0;
+
+    var j0 = Math.floor(ij[1]);
+    var tj = ij[1] - j0;
+
+    var xy = carpet._evalxy([], i0, j0, ti, tj);
+    text.push('y: ' + xy[1].toFixed(3));
 
     newPointData.extraText = text.join('<br>');
 

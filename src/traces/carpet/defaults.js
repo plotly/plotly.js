@@ -57,6 +57,8 @@ function handleAxisDefaults(traceIn, traceOut, axis) {
         return Lib.coerce(traceIn, traceOut, attributes, axis + 'axis.' + attr, dflt);
     }
 
+    ax._hovertitle = axis;
+
     coerce('smoothing');
     traceOut.smoothing = traceOut.smoothing ? 1 : 0;
     coerce('cheatertype');

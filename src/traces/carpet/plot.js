@@ -108,26 +108,26 @@ function drawAxisLabels(xaxis, yaxis, trace, layer, labels, labelClass) {
         var prefix;
         switch(ax.showlabelprefix) {
             case 'first':
-                prefix = i === 0 ? ax.labelprefix : '';
+                prefix = label.isFirst ? ax.labelprefix : '';
                 break;
             case 'all':
                 prefix = ax.labelprefix;
                 break;
             case 'last':
-                prefix = i === ax._majorIndices.length - 1 ? ax.labelprefix : '';
+                prefix = label.isLast ? ax.labelprefix : '';
                 break;
         }
 
         var suffix;
         switch(ax.showlabelsuffix) {
             case 'first':
-                suffix = i === 0 ? ax.labelsuffix : '';
+                suffix = label.isFirst ? ax.labelsuffix : '';
                 break;
             case 'all':
                 suffix = ax.labelsuffix;
                 break;
             case 'last':
-                suffix = i === ax._majorIndices.length - 1 ? ax.labelsuffix : '';
+                suffix = label.isLast ? ax.labelsuffix : '';
                 break;
         }
 
