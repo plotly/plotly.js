@@ -76,7 +76,6 @@ module.exports = {
     autorange: axesAttrs.autorange,
     rangemode: axesAttrs.rangemode,
     range: axesAttrs.range,
-    fixedrange: axesAttrs.fixedrange,
     // ticks
     tickmode: axesAttrs.tickmode,
     nticks: axesAttrs.nticks,
