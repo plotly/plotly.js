@@ -1984,6 +1984,12 @@ plots.doCalcdata = function(gd, traces) {
         }
     }
 
+    // clear stuff ...
+    for(i = 0; i < axList.length; i++) {
+        axList[i]._min = [];
+        axList[i]._max = [];
+    }
+
     // 'regular' loop
     for(i = 0; i < fullData.length; i++) {
         var cd = [];

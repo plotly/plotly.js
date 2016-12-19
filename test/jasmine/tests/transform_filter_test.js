@@ -8,6 +8,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var assertDims = require('../assets/assert_dims');
 var assertStyle = require('../assets/assert_style');
+var customMatchers = require('../assets/custom_matchers');
 
 describe('filter transforms defaults:', function() {
 
@@ -844,6 +845,10 @@ describe('filter transforms calc:', function() {
 describe('filter transforms interactions', function() {
     'use strict';
 
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
     var mockData0 = [{
         x: [-2, -1, -2, 0, 1, 2, 3],
         y: [1, 2, 3, 1, 2, 3, 1],
@@ -898,6 +903,9 @@ describe('filter transforms interactions', function() {
             assertUid(gd);
             assertStyle(dims, ['rgb(255, 0, 0)'], [1]);
 
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.87, 3.13]);
+            expect(gd._fullLayout.yaxis.range).toBeCloseToArray([0.85, 3.15]);
+
             return Plotly.restyle(gd, 'marker.color', 'blue');
         }).then(function() {
             expect(gd._fullData[0].marker.color).toEqual('blue');
@@ -914,6 +922,9 @@ describe('filter transforms interactions', function() {
         }).then(function() {
             assertUid(gd);
             assertStyle([1], ['rgb(255, 0, 0)'], [1]);
+
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([2, 4]);
+            expect(gd._fullLayout.yaxis.range).toBeCloseToArray([0, 2]);
 
             done();
         });
