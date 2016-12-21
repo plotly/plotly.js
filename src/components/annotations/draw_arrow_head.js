@@ -22,11 +22,10 @@ var ARROWPATHS = require('./arrow_paths');
 // ends is 'start', 'end' (default), 'start+end'
 // mag is magnification vs. default (default 1)
 
-module.exports = function drawArrowHead(el3, style, ends, mag) {
+module.exports = function drawArrowHead(el3, style, ends, mag, standoff) {
     if(!isNumeric(mag)) mag = 1;
     var el = el3.node(),
         headStyle = ARROWPATHS[style||0];
-    if(!headStyle) return;
 
     if(typeof ends !== 'string' || !ends) ends = 'end';
 
@@ -35,7 +34,7 @@ module.exports = function drawArrowHead(el3, style, ends, mag) {
         opacity = el3.style('stroke-opacity') || 1,
         doStart = ends.indexOf('start') >= 0,
         doEnd = ends.indexOf('end') >= 0,
-        backOff = headStyle.backoff * scale,
+        backOff = headStyle.backoff * scale + standoff,
         start,
         end,
         startRot,
@@ -44,9 +43,17 @@ module.exports = function drawArrowHead(el3, style, ends, mag) {
     if(el.nodeName === 'line') {
         start = {x: +el3.attr('x1'), y: +el3.attr('y1')};
         end = {x: +el3.attr('x2'), y: +el3.attr('y2')};
-        startRot = Math.atan2(start.y - end.y, start.x - end.x);
+
+        var dx = start.x - end.x,
+            dy = start.y - end.y;
+
+        startRot = Math.atan2(dy, dx);
         endRot = startRot + Math.PI;
         if(backOff) {
+            if(backOff * backOff > dx * dx + dy * dy) {
+                hideLine();
+                return;
+            }
             var backOffX = backOff * Math.cos(startRot),
                 backOffY = backOff * Math.sin(startRot);
 
@@ -69,6 +76,11 @@ module.exports = function drawArrowHead(el3, style, ends, mag) {
             // do better than this hack... maybe just manually
             // combine the two
             dashArray = '';
+
+        if(pathlen < backOff) {
+            hideLine();
+            return;
+        }
 
         if(doStart) {
             var start0 = el.getPointAtLength(0),
@@ -94,7 +106,10 @@ module.exports = function drawArrowHead(el3, style, ends, mag) {
         if(dashArray) el3.style('stroke-dasharray', dashArray);
     }
 
-    var drawhead = function(p, rot) {
+    function hideLine() { el3.style('stroke-dasharray', '0px,100px'); }
+
+    function drawhead(p, rot) {
+        if(!headStyle.path) return;
         if(style > 5) rot = 0; // don't rotate square or circle
         d3.select(el.parentElement).append('path')
             .attr({
@@ -110,7 +125,7 @@ module.exports = function drawArrowHead(el3, style, ends, mag) {
                 opacity: opacity,
                 'stroke-width': 0
             });
-    };
+    }
 
     if(doStart) drawhead(start, startRot);
     if(doEnd) drawhead(end, endRot);

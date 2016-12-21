@@ -21,7 +21,10 @@
 
 module.exports = [
     // no arrow
-    '',
+    {
+        path: '',
+        backoff: 0
+    },
     // wide with flat back
     {
         path: 'M-2.4,-3V3L0.6,0Z',

@@ -44,7 +44,15 @@
                 "arrowcolor":"rgb(166, 28, 0)","borderpad":3,"textangle":50,"x":5,"y":1
             },
             {"text":"","showarrow":true,"borderwidth":1.2,"arrowhead":2,"axref":"x","ayref":"y","x":5,"y":3,"ax":4,"ay":5},
-            {"text":"","showarrow":true,"borderwidth":1.2,"arrowhead":2,"axref":"x","ayref":"y","x":6,"y":2,"ax":3,"ay":3}
+            {"text":"","showarrow":true,"borderwidth":1.2,"arrowhead":2,"axref":"x","ayref":"y","x":6,"y":2,"ax":3,"ay":3},
+            {
+                "text": "arrow BL<br>+standoff", "x": 2, "y": 2, "ax": 20, "ay": 20,
+                "xanchor": "left", "yanchor": "bottom", "standoff": 5
+            },
+            {
+                "text": "angle, arrow TM<br>box+standoff", "x": 2, "y": 2, "ax": -20, "ay": -20,
+                "xanchor": "right", "yanchor": "top", "standoff": 5, "textangle": 45, "bordercolor": "#444"
+            }
         ]
     }
 }

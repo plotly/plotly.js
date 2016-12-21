@@ -75,7 +75,7 @@ module.exports = function handleAnnotationDefaults(annIn, annOut, fullLayout, op
         }
 
         // xanchor, yanchor
-        else coerce(axLetter + 'anchor');
+        coerce(axLetter + 'anchor');
     }
 
     // if you have one coordinate you should have both
@@ -86,6 +86,7 @@ module.exports = function handleAnnotationDefaults(annIn, annOut, fullLayout, op
         coerce('arrowhead');
         coerce('arrowsize');
         coerce('arrowwidth', ((borderOpacity && borderWidth) || 1) * 2);
+        coerce('standoff');
 
         // if you have one part of arrow length you should have both
         Lib.noneOrAll(annIn, annOut, ['ax', 'ay']);

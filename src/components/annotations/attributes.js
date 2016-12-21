@@ -140,6 +140,17 @@ module.exports = {
         role: 'style',
         description: 'Sets the width (in px) of annotation arrow.'
     },
+    standoff: {
+        valType: 'number',
+        min: 0,
+        dflt: 0,
+        role: 'style',
+        description: [
+            'Sets a distance, in pixels, to move the arrowhead away from the',
+            'position it is pointing at, for example to point at the edge of',
+            'a marker independent of zoom.'
+        ].join(' ')
+    },
     ax: {
         valType: 'any',
         role: 'info',
@@ -236,7 +247,7 @@ module.exports = {
         dflt: 'auto',
         role: 'info',
         description: [
-            'Sets the annotation\'s horizontal position anchor',
+            'Sets the text box\'s horizontal position anchor',
             'This anchor binds the `x` position to the *left*, *center*',
             'or *right* of the annotation.',
             'For example, if `x` is set to 1, `xref` to *paper* and',
@@ -244,9 +255,9 @@ module.exports = {
             'annotation lines up with the right-most edge of the',
             'plotting area.',
             'If *auto*, the anchor is equivalent to *center* for',
-            'data-referenced annotations',
-            'whereas for paper-referenced, the anchor picked corresponds',
-            'to the closest side.'
+            'data-referenced annotations or if there is an arrow,',
+            'whereas for paper-referenced with no arrow, the anchor picked',
+            'corresponds to the closest side.'
         ].join(' ')
     },
     yref: {
@@ -286,7 +297,7 @@ module.exports = {
         dflt: 'auto',
         role: 'info',
         description: [
-            'Sets the annotation\'s vertical position anchor',
+            'Sets the text box\'s vertical position anchor',
             'This anchor binds the `y` position to the *top*, *middle*',
             'or *bottom* of the annotation.',
             'For example, if `y` is set to 1, `yref` to *paper* and',
@@ -294,9 +305,9 @@ module.exports = {
             'annotation lines up with the top-most edge of the',
             'plotting area.',
             'If *auto*, the anchor is equivalent to *middle* for',
-            'data-referenced annotations',
-            'whereas for paper-referenced, the anchor picked corresponds',
-            'to the closest side.'
+            'data-referenced annotations or if there is an arrow,',
+            'whereas for paper-referenced with no arrow, the anchor picked',
+            'corresponds to the closest side.'
         ].join(' ')
     },
 
