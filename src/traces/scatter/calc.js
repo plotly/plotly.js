@@ -12,10 +12,10 @@
 var isNumeric = require('fast-isnumeric');
 
 var Axes = require('../../plots/cartesian/axes');
-var Lib = require('../../lib');
 
 var subTypes = require('./subtypes');
 var calcColorscale = require('./colorscale_calc');
+var arraysToCalcdata = require('./arrays_to_calcdata');
 
 
 module.exports = function calc(gd, trace) {
@@ -121,8 +121,7 @@ module.exports = function calc(gd, trace) {
         }
     }
 
-    // this has migrated up from arraysToCalcdata as we have a reference to 's' here
-    if(typeof s !== 'undefined') Lib.mergeArray(s, cd, 'ms');
+    arraysToCalcdata(cd, trace);
 
     gd.firstscatter = false;
     return cd;
