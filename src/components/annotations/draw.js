@@ -370,13 +370,13 @@ function drawOne(gd, index, opt, value) {
              */
             if(ax) {
                 /*
-                 * hide the annotation if it's pointing
-                 * outside the visible plot (as long as the axis
-                 * isn't autoranged - then we need to draw it
-                 * anyway to get its bounding box)
+                 * hide the annotation if it's pointing outside the visible plot
+                 * as long as the axis isn't autoranged - then we need to draw it
+                 * anyway to get its bounding box. When we're dragging, an axis can
+                 * still look autoranged even though it won't be when the drag finishes.
                  */
                 var posFraction = ax.r2fraction(options[axLetter]);
-                if(!ax.autorange && (posFraction < 0 || posFraction > 1)) {
+                if((gd._dragging || !ax.autorange) && (posFraction < 0 || posFraction > 1)) {
                     if(tailRef === axRef) {
                         posFraction = ax.r2fraction(options['a' + axLetter]);
                         if(posFraction < 0 || posFraction > 1) {
@@ -483,6 +483,15 @@ function drawOne(gd, index, opt, value) {
         annTextGroupInner.call(Lib.setTranslate,
             Math.round(annPosPx.x.text - outerwidth / 2),
             Math.round(annPosPx.y.text - outerheight / 2));
+
+        /*
+         * rotate text and background
+         * we already calculated the text center position *as rotated*
+         * because we needed that for autoranging anyway, so now whether
+         * we have an arrow or not, we rotate about the text center.
+         */
+        annTextGroup.attr({transform: 'rotate(' + textangle + ',' +
+                            annPosPx.x.text + ',' + annPosPx.y.text + ')'});
 
         var annbase = 'annotations[' + index + ']';
 
@@ -742,10 +751,6 @@ function drawOne(gd, index, opt, value) {
             });
     }
     else annText.call(textLayout);
-
-    // rotate and position text and background
-    annTextGroup.attr({transform: 'rotate(' + textangle + ',' +
-                        annPosPx.x.text + ',' + annPosPx.y.text + ')'});
 }
 
 // look for intersection of two line segments
