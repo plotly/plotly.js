@@ -45,7 +45,7 @@ function annAutorange(gd) {
     // relative to their anchor points
     // use the arrow and the text bg rectangle,
     // as the whole anno may include hidden text in its bbox
-    fullLayout.annotations.forEach(function(ann) {
+    Lib.filterVisible(fullLayout.annotations).forEach(function(ann) {
         var xa = Axes.getFromId(gd, ann.xref),
             ya = Axes.getFromId(gd, ann.yref),
             headSize = 3 * ann.arrowsize * ann.arrowwidth || 0;
