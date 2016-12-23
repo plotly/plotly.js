@@ -310,6 +310,42 @@ module.exports = {
             'corresponds to the closest side.'
         ].join(' ')
     },
+    clicktoshow: {
+        valType: 'enumerated',
+        values: [false, 'onoff', 'onout'],
+        dflt: false,
+        role: 'style',
+        description: [
+            'Makes this annotation respond to clicks on the plot.',
+            'If you click a data point that exactly matches the `x` and `y`',
+            'values of this annotation, and it is hidden (visible: false),',
+            'it will appear. In *onoff* mode, you must click the same point',
+            'again to make it disappear, so if you click multiple points,',
+            'you can show multiple annotations. In *onout* mode, a click',
+            'anywhere else in the plot (on another data point or not) will',
+            'hide this annotation.',
+            'If you need to show/hide this annotation in response to different',
+            '`x` or `y` values, you can set `xclick` and/or `yclick`. This is',
+            'useful for example to label the side of a bar. To label markers',
+            'though, `standoff` is preferred over `xclick` and `yclick`.'
+        ].join(' ')
+    },
+    xclick: {
+        valType: 'any',
+        role: 'info',
+        description: [
+            'Toggle this annotation when clicking a data point whose `x` value',
+            'is `xclick` rather than the annotation\'s `x` value.'
+        ].join(' ')
+    },
+    yclick: {
+        valType: 'any',
+        role: 'info',
+        description: [
+            'Toggle this annotation when clicking a data point whose `y` value',
+            'is `yclick` rather than the annotation\'s `y` value.'
+        ].join(' ')
+    },
 
     _deprecated: {
         ref: {
