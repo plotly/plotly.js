@@ -2093,7 +2093,7 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, traces) {
     // fill in redraw sequence
     var seq = [];
 
-    if(restyleFlags.fullReplot && relayoutFlags.layoutReplot) {
+    if(restyleFlags.fullReplot || relayoutFlags.layoutReplot) {
         var data = gd.data,
             layout = gd.layout;
 
