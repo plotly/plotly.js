@@ -9,7 +9,7 @@
 
 'use strict';
 
-var setCursor = require('./setCursor');
+var setCursor = require('./setcursor');
 
 var STASHATTR = 'data-savedcursor';
 
