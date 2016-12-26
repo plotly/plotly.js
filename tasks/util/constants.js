@@ -8,22 +8,22 @@ var pathToImageTest = path.join(pathToRoot, 'test/image');
 var pathToDist = path.join(pathToRoot, 'dist/');
 var pathToBuild = path.join(pathToRoot, 'build/');
 
-var pathToTopojsonSrc = path.join(
-    path.dirname(require.resolve('sane-topojson')), 'dist/'
-);
+// var pathToTopojsonSrc = path.join(
+//     path.dirname(require.resolve('sane-topojson')), 'dist/'
+// );
+//
+// var partialBundleNames = [
+//     'basic', 'cartesian', 'geo', 'gl3d', 'gl2d', 'mapbox', 'finance'
+// ];
 
-var partialBundleNames = [
-    'basic', 'cartesian', 'geo', 'gl3d', 'gl2d', 'mapbox', 'finance'
-];
-
-var partialBundlePaths = partialBundleNames.map(function(name) {
-    return {
-        name: name,
-        index: path.join(pathToLib, 'index-' + name + '.js'),
-        dist: path.join(pathToDist, 'plotly-' + name + '.js'),
-        distMin: path.join(pathToDist, 'plotly-' + name + '.min.js')
-    };
-});
+// var partialBundlePaths = partialBundleNames.map(function(name) {
+//     return {
+//         name: name,
+//         index: path.join(pathToLib, 'index-' + name + '.js'),
+//         dist: path.join(pathToDist, 'plotly-' + name + '.js'),
+//         distMin: path.join(pathToDist, 'plotly-' + name + '.min.js')
+//     };
+// });
 
 var year = (new Date()).getFullYear();
 
@@ -41,11 +41,11 @@ module.exports = {
     pathToPlotlyDistMin: path.join(pathToDist, 'plotly.min.js'),
     pathToPlotlyDistWithMeta: path.join(pathToDist, 'plotly-with-meta.js'),
 
-    partialBundleNames: partialBundleNames,
-    partialBundlePaths: partialBundlePaths,
+    // partialBundleNames: partialBundleNames,
+    // partialBundlePaths: partialBundlePaths,
 
-    pathToTopojsonSrc: pathToTopojsonSrc,
-    pathToTopojsonDist: path.join(pathToDist, 'topojson/'),
+    // pathToTopojsonSrc: pathToTopojsonSrc,
+    // pathToTopojsonDist: path.join(pathToDist, 'topojson/'),
     pathToPlotlyGeoAssetsSrc: path.join(pathToSrc, 'assets/geo_assets.js'),
     pathToPlotlyGeoAssetsDist: path.join(pathToDist, 'plotly-geo-assets.js'),
 

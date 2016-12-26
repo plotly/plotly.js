@@ -22,23 +22,23 @@ function addHeadersInDistFiles() {
     var pathsDist = [
         constants.pathToPlotlyDistMin,
         constants.pathToPlotlyDist,
-        constants.pathToPlotlyDistWithMeta,
-        constants.pathToPlotlyGeoAssetsDist
+        // constants.pathToPlotlyDistWithMeta,
+        // constants.pathToPlotlyGeoAssetsDist
     ];
     pathsDist.forEach(function(path) {
         _prepend(path, constants.licenseDist);
     });
 
     // add header and bundle name to partial bundle
-    constants.partialBundlePaths.forEach(function(pathObj) {
-        var headerDist = constants.licenseDist
-            .replace('plotly.js', 'plotly.js (' + pathObj.name + ')');
-        _prepend(pathObj.dist, headerDist);
-
-        var headerDistMin = constants.licenseDist
-            .replace('plotly.js', 'plotly.js (' + pathObj.name + ' - minified)');
-        _prepend(pathObj.distMin, headerDistMin);
-    });
+    // constants.partialBundlePaths.forEach(function(pathObj) {
+    //     var headerDist = constants.licenseDist
+    //         .replace('plotly.js', 'plotly.js (' + pathObj.name + ')');
+    //     _prepend(pathObj.dist, headerDist);
+    //
+    //     var headerDistMin = constants.licenseDist
+    //         .replace('plotly.js', 'plotly.js (' + pathObj.name + ' - minified)');
+    //     _prepend(pathObj.distMin, headerDistMin);
+    // });
 }
 
 // add or update header to src/ lib/ files

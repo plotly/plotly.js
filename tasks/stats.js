@@ -85,7 +85,7 @@ function getMainBundleInfo() {
     var mainSizes = findSizes({
         dist: constants.pathToPlotlyDist,
         distMin: constants.pathToPlotlyDistMin,
-        withMeta: constants.pathToPlotlyDistWithMeta
+        // withMeta: constants.pathToPlotlyDistWithMeta
     });
 
     return [
@@ -116,14 +116,15 @@ function getMainBundleInfo() {
         '',
         'Starting in `v1.15.0`, plotly.js also ships with several _partial_ bundles:',
         '',
-        constants.partialBundlePaths.map(makeBundleHeaderInfo).join('\n'),
+        // constants.partialBundlePaths.map(makeBundleHeaderInfo).join('\n'),
         ''
     ];
 }
 
 // info about partial bundles
 function getPartialBundleInfo() {
-    return constants.partialBundlePaths.map(makeBundleInfo);
+    // return constants.partialBundlePaths.map(makeBundleInfo);
+    return null
 }
 
 // footer info
