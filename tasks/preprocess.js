@@ -12,7 +12,7 @@ makeBuildCSS();
 makeBuildFontSVG();
 copyTopojsonFiles();
 updateVersion(constants.pathToPlotlyCore);
-// updateVersion(constants.pathToPlotlyGeoAssetsSrc);
+updateVersion(constants.pathToPlotlyGeoAssetsSrc);
 
 // convert scss to css to js
 function makeBuildCSS() {
@@ -38,14 +38,10 @@ function makeBuildFontSVG() {
 
 // copy topojson files from sane-topojson to dist/
 function copyTopojsonFiles() {
-    // fs.copy(
-    //     constants.pathToTopojsonSrc,
-    //     constants.pathToTopojsonDist,
-    //     { clobber: true },
-    //     common.throwOnError
-    // );
-
-    // create an empty dist file
-    fs.mkdirs(constants.pathToDist)
-
+    fs.copy(
+        constants.pathToTopojsonSrc,
+        constants.pathToTopojsonDist,
+        { clobber: true },
+        common.throwOnError
+    );
 }
