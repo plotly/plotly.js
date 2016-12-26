@@ -13,7 +13,9 @@ var Lib = require('../../lib');
 
 
 // arrayOk attributes, merge them into calcdata array
-module.exports = function arraysToCalcdata(cd, trace) {
+module.exports = function arraysToCalcdata(cd) {
+    var trace = cd[0].trace,
+        marker = trace.marker;
 
     Lib.mergeArray(trace.text, cd, 'tx');
     Lib.mergeArray(trace.textposition, cd, 'tp');
@@ -23,17 +25,12 @@ module.exports = function arraysToCalcdata(cd, trace) {
         Lib.mergeArray(trace.textfont.family, cd, 'tf');
     }
 
-    var marker = trace.marker;
-    if(marker) {
-        Lib.mergeArray(marker.size, cd, 'ms');
+    if(marker && marker.line) {
+        var markerLine = marker.line;
         Lib.mergeArray(marker.opacity, cd, 'mo');
         Lib.mergeArray(marker.symbol, cd, 'mx');
         Lib.mergeArray(marker.color, cd, 'mc');
-
-        var markerLine = marker.line;
-        if(marker.line) {
-            Lib.mergeArray(markerLine.color, cd, 'mlc');
-            Lib.mergeArray(markerLine.width, cd, 'mlw');
-        }
+        Lib.mergeArray(markerLine.color, cd, 'mlc');
+        Lib.mergeArray(markerLine.width, cd, 'mlw');
     }
 };
