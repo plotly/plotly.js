@@ -1984,10 +1984,11 @@ plots.doCalcdata = function(gd, traces) {
         }
     }
 
-    // clear stuff ...
+    // clear stuff that should recomputed in 'regular' loop
     for(i = 0; i < axList.length; i++) {
         axList[i]._min = [];
         axList[i]._max = [];
+        axList[i]._categories = [];
     }
 
     // 'regular' loop

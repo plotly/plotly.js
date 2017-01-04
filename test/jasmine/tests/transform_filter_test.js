@@ -999,4 +999,48 @@ describe('filter transforms interactions', function() {
             done();
         });
     });
+
+    it('should update axie categories', function(done) {
+        var data = [{
+            type: 'bar',
+            x: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+            y: [1, 10, 100, 25, 50, -25, 100],
+            transforms: [{
+                type: 'filter',
+                operation: '<',
+                value: 10,
+                target: [1, 10, 100, 25, 50, -25, 100]
+            }]
+        }];
+
+        var gd = createGraphDiv();
+
+        Plotly.plot(gd, data).then(function() {
+            expect(gd._fullLayout.xaxis._categories).toEqual(['a', 'f']);
+            expect(gd._fullLayout.yaxis._categories).toEqual([]);
+
+            return Plotly.addTraces(gd, [{
+                type: 'bar',
+                x: ['h', 'i'],
+                y: [2, 1],
+                transforms: [{
+                    type: 'filter',
+                    operation: '=',
+                    value: 'i'
+                }]
+            }]);
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis._categories).toEqual(['a', 'f', 'i']);
+            expect(gd._fullLayout.yaxis._categories).toEqual([]);
+
+            return Plotly.deleteTraces(gd, [0]);
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis._categories).toEqual(['i']);
+            expect(gd._fullLayout.yaxis._categories).toEqual([]);
+
+        })
+        .then(done);
+    });
 });
