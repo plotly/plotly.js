@@ -317,7 +317,7 @@ exports.coerce2 = function(containerIn, containerOut, attributes, attribute, dfl
     var propIn = nestedProperty(containerIn, attribute),
         propOut = exports.coerce(containerIn, containerOut, attributes, attribute, dflt);
 
-    return propIn.get() ? propOut : false;
+    return propIn.get() !== undefined ? propOut : false;
 };
 
 /*
