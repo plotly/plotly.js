@@ -852,6 +852,7 @@ describe('filter transforms interactions', function() {
     var mockData0 = [{
         x: [-2, -1, -2, 0, 1, 2, 3],
         y: [1, 2, 3, 1, 2, 3, 1],
+        text: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
         transforms: [{
             type: 'filter',
             operation: '>'
@@ -861,6 +862,7 @@ describe('filter transforms interactions', function() {
     var mockData1 = [Lib.extendDeep({}, mockData0[0]), {
         x: [20, 11, 12, 0, 1, 2, 3],
         y: [1, 2, 3, 2, 5, 2, 0],
+        text: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
         transforms: [{
             type: 'filter',
             operation: '<',
@@ -1000,7 +1002,33 @@ describe('filter transforms interactions', function() {
         });
     });
 
-    it('should update axie categories', function(done) {
+    it('zooming in/out should not change filtered data', function(done) {
+        var data = Lib.extendDeep([], mockData1);
+
+        var gd = createGraphDiv();
+
+        function getTx(p) { return p.tx; }
+
+        Plotly.plot(gd, data).then(function() {
+            expect(gd.calcdata[0].map(getTx)).toEqual(['e', 'f', 'g']);
+            expect(gd.calcdata[1].map(getTx)).toEqual(['D', 'E', 'F', 'G']);
+
+            return Plotly.relayout(gd, 'xaxis.range', [-1, 1]);
+        })
+        .then(function() {
+            expect(gd.calcdata[0].map(getTx)).toEqual(['e', 'f', 'g']);
+            expect(gd.calcdata[1].map(getTx)).toEqual(['D', 'E', 'F', 'G']);
+
+            return Plotly.relayout(gd, 'xaxis.autorange', true);
+        })
+        .then(function() {
+            expect(gd.calcdata[0].map(getTx)).toEqual(['e', 'f', 'g']);
+            expect(gd.calcdata[1].map(getTx)).toEqual(['D', 'E', 'F', 'G']);
+        })
+        .then(done);
+    });
+
+    it('should update axis categories', function(done) {
         var data = [{
             type: 'bar',
             x: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
@@ -1039,8 +1067,8 @@ describe('filter transforms interactions', function() {
         .then(function() {
             expect(gd._fullLayout.xaxis._categories).toEqual(['i']);
             expect(gd._fullLayout.yaxis._categories).toEqual([]);
-
         })
         .then(done);
     });
+
 });
