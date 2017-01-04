@@ -674,7 +674,7 @@ describe('Test lib.js:', function() {
 
             it('should set a value and return the value it sets when user input is valid', function() {
                 var colVal = 'red',
-                    sizeVal = 14,
+                    sizeVal = 0, // 0 is valid but falsey
                     attrs = {testMarker: {testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
                         testSize: {valType: 'number', dflt: 20}}},
                     obj = {testMarker: {testColor: colVal, testSize: sizeVal}},
@@ -706,7 +706,7 @@ describe('Test lib.js:', function() {
 
             it('should return false if there is no user input', function() {
                 var colVal = null,
-                    sizeVal = null,
+                    sizeVal, // undefined
                     attrs = {testMarker: {testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
                         testSize: {valType: 'number', dflt: 20}}},
                     obj = {testMarker: {testColor: colVal, testSize: sizeVal}},
