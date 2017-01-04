@@ -1961,6 +1961,8 @@ plots.doCalcdata = function(gd, traces) {
         }
     }
 
+    var hasCalcTransform = false;
+
     // transform loop
     for(i = 0; i < fullData.length; i++) {
         trace = fullData[i];
@@ -1978,6 +1980,7 @@ plots.doCalcdata = function(gd, traces) {
 
                 _module = transformsRegistry[transform.type];
                 if(_module && _module.calcTransform) {
+                    hasCalcTransform = true;
                     _module.calcTransform(gd, trace, transform);
                 }
             }
@@ -1985,10 +1988,12 @@ plots.doCalcdata = function(gd, traces) {
     }
 
     // clear stuff that should recomputed in 'regular' loop
-    for(i = 0; i < axList.length; i++) {
-        axList[i]._min = [];
-        axList[i]._max = [];
-        axList[i]._categories = [];
+    if(hasCalcTransform) {
+        for(i = 0; i < axList.length; i++) {
+            axList[i]._min = [];
+            axList[i]._max = [];
+            axList[i]._categories = [];
+        }
     }
 
     // 'regular' loop
