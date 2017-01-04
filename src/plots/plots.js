@@ -1921,8 +1921,9 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 plots.doCalcdata = function(gd, traces) {
     var axList = Plotly.Axes.list(gd),
         fullData = gd._fullData,
-        fullLayout = gd._fullLayout,
-        i, j;
+        fullLayout = gd._fullLayout;
+
+    var trace, _module, i, j;
 
     // XXX: Is this correct? Needs a closer look so that *some* traces can be recomputed without
     // *all* needing doCalcdata:
@@ -1951,46 +1952,57 @@ plots.doCalcdata = function(gd, traces) {
         axList[i]._categories = axList[i]._initialCategories.slice();
     }
 
+    // If traces were specified and this trace was not included,
+    // then transfer it over from the old calcdata:
     for(i = 0; i < fullData.length; i++) {
-        // If traces were specified and this trace was not included, then transfer it over from
-        // the old calcdata:
         if(Array.isArray(traces) && traces.indexOf(i) === -1) {
             calcdata[i] = oldCalcdata[i];
             continue;
         }
+    }
 
-        var trace = fullData[i],
-            cd = [];
+    var hasCalcTransform = false;
 
-        // If traces were specified and this trace was not included, then transfer it over from
-        // the old calcdata:
-        if(Array.isArray(traces) && traces.indexOf(i) === -1) {
-            calcdata[i] = oldCalcdata[i];
-            continue;
-        }
+    // transform loop
+    for(i = 0; i < fullData.length; i++) {
+        trace = fullData[i];
 
-        var _module;
-        if(trace.visible === true) {
+        if(trace.visible === true && trace.transforms) {
+            _module = trace._module;
 
-            // call calcTransform method if any
-            if(trace.transforms) {
+            // we need one round of trace module calc before
+            // the calc transform to 'fill in' the categories list
+            // used for example in the data-to-coordinate method
+            if(_module && _module.calc) _module.calc(gd, trace);
 
-                // we need one round of trace module calc before
-                // the calc transform to 'fill in' the categories list
-                // used for example in the data-to-coordinate method
-                _module = trace._module;
-                if(_module && _module.calc) _module.calc(gd, trace);
+            for(j = 0; j < trace.transforms.length; j++) {
+                var transform = trace.transforms[j];
 
-                for(j = 0; j < trace.transforms.length; j++) {
-                    var transform = trace.transforms[j];
-
-                    _module = transformsRegistry[transform.type];
-                    if(_module && _module.calcTransform) {
-                        _module.calcTransform(gd, trace, transform);
-                    }
+                _module = transformsRegistry[transform.type];
+                if(_module && _module.calcTransform) {
+                    hasCalcTransform = true;
+                    _module.calcTransform(gd, trace, transform);
                 }
             }
+        }
+    }
 
+    // clear stuff that should recomputed in 'regular' loop
+    if(hasCalcTransform) {
+        for(i = 0; i < axList.length; i++) {
+            axList[i]._min = [];
+            axList[i]._max = [];
+            axList[i]._categories = [];
+        }
+    }
+
+    // 'regular' loop
+    for(i = 0; i < fullData.length; i++) {
+        var cd = [];
+
+        trace = fullData[i];
+
+        if(trace.visible === true) {
             _module = trace._module;
             if(_module && _module.calc) cd = _module.calc(gd, trace);
         }
