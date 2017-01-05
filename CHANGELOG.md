@@ -10,7 +10,20 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.21.3] -- 2016-01-05
+
+### Fixed
+- Fix zoom behavior on transformed traces [#1257]
+- Compute axis auto-range after transform operation [#1260]
+- Fix contour trace blowing up on zoom [#591]
+- Fix `scattermapbox` and `scattergeo` handling of blank strings `text` [#1283]
+- Lock `mouse-change@1.3.0` fixing 3D hover labels on fresh `npm install`
+  [#1281]
+
+
 ## [1.21.2] -- 2016-12-14
+
+### Fixed
 - Fix handling of calendar in `filter` transforms where distinct calendars can
   now be set for both the `target` and `value` [#1253]
 - Make `Plotly.addFrames` skip over non-plain-objects inputs [#1254]
