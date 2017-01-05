@@ -86,7 +86,8 @@ function getExtraText(trace, di) {
     else if(hasLat) text.push('lat: ' + format(lonlat[1]));
 
     if(isAll || hoverinfo.indexOf('text') !== -1) {
-        text.push(di.tx || trace.text);
+        var tx = di.tx || trace.text;
+        if(!Array.isArray(tx)) text.push(tx);
     }
 
     return text.join('<br>');

@@ -102,7 +102,10 @@ function getExtraText(trace, pt, axis) {
     else if(hasLon) text.push('lon: ' + format(pt.lonlat[0]));
     else if(hasLat) text.push('lat: ' + format(pt.lonlat[1]));
 
-    if(hasText) text.push(pt.tx || trace.text);
+    if(hasText) {
+        var tx = pt.tx || trace.text;
+        if(!Array.isArray(tx)) text.push(tx);
+    }
 
     return text.join('<br>');
 }

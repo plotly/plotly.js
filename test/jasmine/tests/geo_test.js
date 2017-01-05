@@ -420,24 +420,53 @@ describe('Test geo interactions', function() {
         });
 
         describe('scattergeo hover labels', function() {
-            beforeEach(function() {
-                mouseEventScatterGeo('mousemove');
-            });
-
             it('should show one hover text group', function() {
+                mouseEventScatterGeo('mousemove');
                 expect(d3.selectAll('g.hovertext').size()).toEqual(1);
             });
 
             it('should show longitude and latitude values', function() {
-                var node = d3.selectAll('g.hovertext').selectAll('tspan')[0][0];
+                mouseEventScatterGeo('mousemove');
 
+                var node = d3.selectAll('g.hovertext').selectAll('tspan')[0][0];
                 expect(node.innerHTML).toEqual('(0°, 0°)');
             });
 
             it('should show the trace name', function() {
-                var node = d3.selectAll('g.hovertext').selectAll('text')[0][0];
+                mouseEventScatterGeo('mousemove');
 
+                var node = d3.selectAll('g.hovertext').selectAll('text')[0][0];
                 expect(node.innerHTML).toEqual('trace 0');
+            });
+
+            it('should show *text* (case 1)', function(done) {
+                Plotly.restyle(gd, 'text', [['A', 'B']]).then(function() {
+                    mouseEventScatterGeo('mousemove');
+
+                    var node = d3.selectAll('g.hovertext').selectAll('tspan')[0][1];
+                    expect(node.innerHTML).toEqual('A');
+                })
+                .then(done);
+            });
+
+            it('should show *text* (case 2)', function(done) {
+                Plotly.restyle(gd, 'text', [[null, 'B']]).then(function() {
+                    mouseEventScatterGeo('mousemove');
+
+                    var node = d3.selectAll('g.hovertext').selectAll('tspan')[0][1];
+                    expect(node).toBeUndefined();
+                })
+                .then(done);
+            });
+
+            it('should show *text* (case 3)', function(done) {
+                Plotly.restyle(gd, 'text', [['', 'B']]).then(function() {
+                    mouseEventScatterGeo('mousemove');
+
+                    var node = d3.selectAll('g.hovertext').selectAll('tspan')[0][1];
+                    expect(node).toBeUndefined();
+                })
+                .then(done);
             });
         });
 
