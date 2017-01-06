@@ -157,7 +157,7 @@ function drawOne(gd, index, opt, value) {
     if(optionsIn.visible === false) return;
 
     var gs = fullLayout._size;
-    var oldRef = {xref: optionsIn.xref, yref: optionsIn.yref};
+    var oldRef = {xref: oldPrivate.xref, yref: oldPrivate.yref};
 
     var axLetters = ['x', 'y'];
     for(i = 0; i < 2; i++) {
