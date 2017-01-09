@@ -11,6 +11,7 @@
 /* eslint-disable no-console */
 
 var config = require('../plot_api/plot_config');
+var loggingDflt = config.dflt;
 
 var loggers = module.exports = {};
 
@@ -21,7 +22,7 @@ var loggers = module.exports = {};
  */
 
 loggers.log = function() {
-    if(config.logging > 1) {
+    if(loggingDflt > 1) {
         var messages = ['LOG:'];
 
         for(var i = 0; i < arguments.length; i++) {
@@ -37,7 +38,7 @@ loggers.log = function() {
 };
 
 loggers.warn = function() {
-    if(config.logging > 0) {
+    if(loggingDflt > 0) {
         var messages = ['WARN:'];
 
         for(var i = 0; i < arguments.length; i++) {
@@ -53,7 +54,7 @@ loggers.warn = function() {
 };
 
 loggers.error = function() {
-    if(config.logging > 0) {
+    if(loggingDflt > 0) {
         var messages = ['ERROR:'];
 
         for(var i = 0; i < arguments.length; i++) {

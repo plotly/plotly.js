@@ -28,6 +28,7 @@ var ErrorBars = require('../components/errorbars');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var svgTextUtils = require('../lib/svg_text_utils');
 
+var defaultConfig = require('./plot_config');
 var helpers = require('./helpers');
 var subroutines = require('./subroutines');
 
@@ -80,6 +81,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
     // transfer configuration options to gd until we move over to
     // a more OO like model
+
     setPlotContext(gd, config);
 
     if(!layout) layout = {};
@@ -363,30 +365,47 @@ Plotly.plot = function(gd, data, layout, config) {
     });
 };
 
-
 function opaqueSetBackground(gd, bgColor) {
     gd._fullLayout._paperdiv.style('background', 'white');
-    Plotly.defaultConfig.setBackground(gd, bgColor);
+    defaultConfig.setBackground.dflt(gd, bgColor);
 }
 
 function setPlotContext(gd, config) {
-    if(!gd._context) gd._context = Lib.extendFlat({}, Plotly.defaultConfig);
+    var keys, i;
+
+    if(!gd._context) {
+        gd._context = {};
+        keys = Object.keys(defaultConfig);
+
+        // init context
+        for(i = 0; i < keys.length; i++) {
+            var k = keys[i];
+            gd._context[k] = defaultConfig[k].dflt;
+        }
+    }
+
     var context = gd._context;
 
-    if(config) {
-        Object.keys(config).forEach(function(key) {
-            if(key in context) {
-                if(key === 'setBackground' && config[key] === 'opaque') {
-                    context[key] = opaqueSetBackground;
-                }
-                else context[key] = config[key];
-            }
-        });
+    config = Lib.isPlainObject(config) ? config : {};
+    keys = Object.keys(config);
 
-        // map plot3dPixelRatio to plotGlPixelRatio for backward compatibility
-        if(config.plot3dPixelRatio && !context.plotGlPixelRatio) {
-            context.plotGlPixelRatio = context.plot3dPixelRatio;
-        }
+    function coerce(key, dflt) {
+        return Lib.coerce(config, context, defaultConfig, key, dflt);
+    }
+
+    // extend context with config
+    for(i = 0; i < keys.length; i++) {
+        coerce(keys[i]);
+    }
+
+    // 'opaque' is special value for setBackground
+    if(config.setBackground === 'opaque') {
+        context.setBackground = opaqueSetBackground;
+    }
+
+    // map plot3dPixelRatio to plotGlPixelRatio for backward compatibility
+    if(config.plot3dPixelRatio && !context.plotGlPixelRatio) {
+        context.plotGlPixelRatio = context.plot3dPixelRatio;
     }
 
     // staticPlot forces a bunch of others:

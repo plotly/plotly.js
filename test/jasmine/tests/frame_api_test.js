@@ -13,11 +13,11 @@ describe('Test frame api', function() {
     beforeEach(function(done) {
         mock = [{x: [1, 2, 3], y: [2, 1, 3]}, {x: [1, 2, 3], y: [6, 4, 5]}];
         gd = createGraphDiv();
+        Plotly.setPlotConfig({ queueLength: 10 });
+
         Plotly.plot(gd, mock).then(function() {
             f = gd._transitionData._frames;
             h = gd._transitionData._frameHash;
-        }).then(function() {
-            Plotly.setPlotConfig({ queueLength: 10 });
         }).then(done);
     });
 

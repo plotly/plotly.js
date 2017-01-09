@@ -10,7 +10,6 @@
 'use strict';
 
 var Lib = require('../lib');
-var config = require('../plot_api/plot_config');
 
 
 /**
@@ -91,7 +90,7 @@ queue.add = function(gd, undoFunc, undoArgs, redoFunc, redoArgs) {
         queueObj.redo.args.push(redoArgs);
     }
 
-    if(gd.undoQueue.queue.length > config.queueLength) {
+    if(gd.undoQueue.queue.length > gd._context.queueLength) {
         gd.undoQueue.queue.shift();
         gd.undoQueue.index--;
     }

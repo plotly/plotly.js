@@ -176,6 +176,7 @@ describe('Test plot api', function() {
         });
 
         function mockDefaultsAndCalc(gd) {
+            gd._context = {};
             Plots.supplyDefaults(gd);
             gd.calcdata = gd._fullData.map(function(trace) {
                 return [{x: 1, y: 1, trace: trace}];
@@ -295,7 +296,9 @@ describe('Test plot api', function() {
                     {'name': 'b'},
                     {'name': 'c'},
                     {'name': 'd'}
-                ]
+                ],
+
+                _context: {}
             };
             spyOn(PlotlyInternal, 'redraw');
         });
@@ -393,7 +396,10 @@ describe('Test plot api', function() {
         var gd;
 
         beforeEach(function() {
-            gd = { data: [{'name': 'a'}, {'name': 'b'}] };
+            gd = {
+                data: [{'name': 'a'}, {'name': 'b'}],
+                _context: {}
+            };
             spyOn(PlotlyInternal, 'redraw');
             spyOn(PlotlyInternal, 'moveTraces');
         });
@@ -498,7 +504,9 @@ describe('Test plot api', function() {
                     {'name': 'b'},
                     {'name': 'c'},
                     {'name': 'd'}
-                ]
+                ],
+
+                _context: {}
             };
             spyOn(PlotlyInternal, 'redraw');
         });
