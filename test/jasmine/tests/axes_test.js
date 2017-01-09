@@ -1738,4 +1738,95 @@ describe('Test axes', function() {
             ]);
         });
     });
+
+    describe('autoBin', function() {
+
+        function _autoBin(x, ax, nbins) {
+            ax._categories = [];
+            Axes.setConvert(ax);
+
+            var d = ax.makeCalcdata({ x: x }, 'x');
+
+            return Axes.autoBin(d, ax, nbins, false, 'gregorian');
+        }
+
+        it('should auto bin categories', function() {
+            var out = _autoBin(
+                ['apples', 'oranges', 'bananas'],
+                { type: 'category' }
+            );
+
+            expect(out).toEqual({
+                start: -0.5,
+                end: 2.5,
+                size: 1
+            });
+        });
+
+        it('should not error out for categories on linear axis', function() {
+            var out = _autoBin(
+                ['apples', 'oranges', 'bananas'],
+                { type: 'linear' }
+            );
+
+            expect(out).toEqual({
+                start: undefined,
+                end: undefined,
+                size: 2
+            });
+        });
+
+        it('should not error out for categories on log axis', function() {
+            var out = _autoBin(
+                ['apples', 'oranges', 'bananas'],
+                { type: 'log' }
+            );
+
+            expect(out).toEqual({
+                start: undefined,
+                end: undefined,
+                size: 2
+            });
+        });
+
+        it('should not error out for categories on date axis', function() {
+            var out = _autoBin(
+                ['apples', 'oranges', 'bananas'],
+                { type: 'date' }
+            );
+
+            expect(out).toEqual({
+                start: undefined,
+                end: undefined,
+                size: 2
+            });
+        });
+
+        it('should auto bin linear data', function() {
+            var out = _autoBin(
+                [1, 1, 2, 2, 3, 3, 4, 4],
+                { type: 'linear' }
+            );
+
+            expect(out).toEqual({
+                start: -0.5,
+                end: 4.5,
+                size: 1
+            });
+        });
+
+        it('should auto bin linear data with nbins constraint', function() {
+            var out = _autoBin(
+                [1, 1, 2, 2, 3, 3, 4, 4],
+                { type: 'linear' },
+                2
+            );
+
+            expect(out).toEqual({
+                start: -0.5,
+                end: 5.5,
+                size: 2
+            });
+        });
+    });
 });
