@@ -194,7 +194,7 @@ function styleBoxes(d) {
         .attr('d', 'M6,6H-6V-6H6Z')
         .attr('transform', 'translate(20,0)');
     pts.exit().remove();
-    pts.each(function(d) {
+    pts.each(function() {
         var w = trace.line.width,
             p = d3.select(this);
 
