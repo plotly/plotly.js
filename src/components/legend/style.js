@@ -172,13 +172,14 @@ function styleBars(d) {
     barpath.exit().remove();
     barpath.each(function(d) {
         var w = (d.mlw + 1 || markerLine.width + 1) - 1,
-            p = d3.select(this);
+            p = d3.select(this),
+            d0 = d[0];
 
         p.style('stroke-width', w + 'px')
-            .call(Color.fill, d.mc || marker.color);
+            .call(Color.fill, d0.mc || marker.color);
 
         if(w) {
-            p.call(Color.stroke, d.mlc || markerLine.color);
+            p.call(Color.stroke, d0.mlc || markerLine.color);
         }
     });
 }
