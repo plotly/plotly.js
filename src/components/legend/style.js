@@ -195,14 +195,14 @@ function styleBoxes(d) {
         .attr('transform', 'translate(20,0)');
     pts.exit().remove();
     pts.each(function(d) {
-        var w = (d.lw + 1 || trace.line.width + 1) - 1,
+        var w = trace.line.width,
             p = d3.select(this);
 
         p.style('stroke-width', w + 'px')
-            .call(Color.fill, d.fc || trace.fillcolor);
+            .call(Color.fill, trace.fillcolor);
 
         if(w) {
-            p.call(Color.stroke, d.lc || trace.line.color);
+            p.call(Color.stroke, trace.line.color);
         }
     });
 }
