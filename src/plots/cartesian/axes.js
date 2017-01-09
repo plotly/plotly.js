@@ -518,7 +518,7 @@ axes.autoBin = function(data, ax, nbins, is2d, calendar) {
         // fallback if ax.d2c output BADNUMs
         // e.g. when user try to plot categorical bins
         // on a layout.xaxis.type: 'linear'
-        if(!isNumeric(size0)) size0 = 0;
+        if(!isNumeric(size0)) size0 = 1;
     }
 
     // piggyback off autotick code to make "nice" bin sizes
