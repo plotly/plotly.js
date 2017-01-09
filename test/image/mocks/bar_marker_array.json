@@ -23,5 +23,8 @@
       },
       "type": "bar"
     }
-  ]
+  ],
+  "layout": {
+    "showlegend": true
+  }
 }
