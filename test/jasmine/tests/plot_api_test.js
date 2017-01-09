@@ -1051,6 +1051,36 @@ describe('Test plot api', function() {
             expect(trace1.transforms[0].target).toEqual('y');
         });
 
+        it('should rename *calendar* to *valuecalendar* in filter transforms', function() {
+            var data = [{
+                transforms: [{
+                    type: 'filter',
+                    target: 'y',
+                    calendar: 'hebrew'
+                }, {
+                    type: 'filter',
+                    operation: '<'
+                }]
+            }, {
+                transforms: [{
+                    type: 'filter',
+                    valuecalendar: 'jalali'
+                }]
+            }];
+
+            Plotly.plot(gd, data);
+
+            var trace0 = gd.data[0],
+                trace1 = gd.data[1];
+
+            expect(trace0.transforms.length).toEqual(2);
+            expect(trace0.transforms[0].calendar).toBeUndefined();
+            expect(trace0.transforms[0].valuecalendar).toEqual('hebrew');
+
+            expect(trace1.transforms.length).toEqual(1);
+            expect(trace1.transforms[0].valuecalendar).toEqual('jalali');
+        });
+
         it('should cleanup annotations / shapes refs', function() {
             var data = [{}];
 

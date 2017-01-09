@@ -331,6 +331,42 @@ describe('finance charts defaults:', function() {
         expect(out1.layout.xaxis.rangeslider).toBeDefined();
         expect(out1._fullLayout.xaxis.rangeslider.visible).toBe(false);
     });
+
+    it('pushes layout.calendar to all output traces', function() {
+        var trace0 = Lib.extendDeep({}, mock0, {
+            type: 'ohlc'
+        });
+
+        var trace1 = Lib.extendDeep({}, mock1, {
+            type: 'candlestick'
+        });
+
+        var out = _supply([trace0, trace1], {calendar: 'nanakshahi'});
+
+
+        out._fullData.forEach(function(fullTrace) {
+            expect(fullTrace.xcalendar).toBe('nanakshahi');
+        });
+    });
+
+    it('accepts a calendar per input trace', function() {
+        var trace0 = Lib.extendDeep({}, mock0, {
+            type: 'ohlc',
+            xcalendar: 'hebrew'
+        });
+
+        var trace1 = Lib.extendDeep({}, mock1, {
+            type: 'candlestick',
+            xcalendar: 'julian'
+        });
+
+        var out = _supply([trace0, trace1], {calendar: 'nanakshahi'});
+
+
+        out._fullData.forEach(function(fullTrace, i) {
+            expect(fullTrace.xcalendar).toBe(i < 2 ? 'hebrew' : 'julian');
+        });
+    });
 });
 
 describe('finance charts calc transforms:', function() {
@@ -652,10 +688,10 @@ describe('finance charts calc transforms:', function() {
 
         var out = _calc([trace0, trace1]);
 
-        var x0 = out[0].x.map(Lib.dateTime2ms);
+        var x0 = Lib.simpleMap(out[0].x, Lib.dateTime2ms);
         expect(x0[x0.length - 2] - x0[0]).toEqual(1);
 
-        var x2 = out[2].x.map(Lib.dateTime2ms);
+        var x2 = Lib.simpleMap(out[2].x, Lib.dateTime2ms);
         expect(x2[x2.length - 2] - x2[0]).toEqual(1);
 
         expect(out[1].x).toEqual([]);

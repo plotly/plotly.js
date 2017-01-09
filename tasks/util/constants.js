@@ -73,7 +73,6 @@ module.exports = {
     // more info: https://www.mapbox.com/help/define-access-token/
     mapboxAccessToken: 'pk.eyJ1IjoiZXRwaW5hcmQiLCJhIjoiY2luMHIzdHE0MGFxNXVubTRxczZ2YmUxaCJ9.hwWZful0U2CQxit4ItNsiQ',
     pathToCredentials: path.join(pathToBuild, 'credentials.json'),
-    pathToSetPlotConfig: path.join(pathToBuild, 'set_plot_config.js'),
 
     testContainerImage: 'plotly/testbed:latest',
     testContainerName: process.env.PLOTLYJS_TEST_CONTAINER_NAME || 'imagetest',

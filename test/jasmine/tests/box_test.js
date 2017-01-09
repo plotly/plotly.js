@@ -25,7 +25,7 @@ describe('Test boxes', function() {
                 x: [],
                 y: []
             };
-            supplyDefaults(traceIn, traceOut, defaultColor);
+            supplyDefaults(traceIn, traceOut, defaultColor, {});
             expect(traceOut.visible).toBe(false);
         });
 
@@ -33,27 +33,27 @@ describe('Test boxes', function() {
             traceIn = {
                 x: []
             };
-            supplyDefaults(traceIn, traceOut, defaultColor);
+            supplyDefaults(traceIn, traceOut, defaultColor, {});
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
                 x: [],
                 y: [1, 2, 3]
             };
-            supplyDefaults(traceIn, traceOut, defaultColor);
+            supplyDefaults(traceIn, traceOut, defaultColor, {});
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
                 y: []
             };
-            supplyDefaults(traceIn, traceOut, defaultColor);
+            supplyDefaults(traceIn, traceOut, defaultColor, {});
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
                 x: [1, 2, 3],
                 y: []
             };
-            supplyDefaults(traceIn, traceOut, defaultColor);
+            supplyDefaults(traceIn, traceOut, defaultColor, {});
             expect(traceOut.visible).toBe(false);
         });
 
@@ -61,14 +61,14 @@ describe('Test boxes', function() {
             traceIn = {
                 y: [1, 2, 3]
             };
-            supplyDefaults(traceIn, traceOut, defaultColor);
+            supplyDefaults(traceIn, traceOut, defaultColor, {});
             expect(traceOut.orientation).toBe('v');
 
             traceIn = {
                 x: [1, 1, 1],
                 y: [1, 2, 3]
             };
-            supplyDefaults(traceIn, traceOut, defaultColor);
+            supplyDefaults(traceIn, traceOut, defaultColor, {});
             expect(traceOut.orientation).toBe('v');
         });
 
@@ -76,9 +76,35 @@ describe('Test boxes', function() {
             traceIn = {
                 x: [1, 2, 3]
             };
-            supplyDefaults(traceIn, traceOut, defaultColor);
+            supplyDefaults(traceIn, traceOut, defaultColor, {});
             expect(traceOut.orientation).toBe('h');
 
+        });
+
+        it('should inherit layout.calendar', function() {
+            traceIn = {
+                y: [1, 2, 3]
+            };
+            supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+
+            // we always fill calendar attributes, because it's hard to tell if
+            // we're on a date axis at this point.
+            expect(traceOut.xcalendar).toBe('islamic');
+            expect(traceOut.ycalendar).toBe('islamic');
+        });
+
+        it('should take its own calendars', function() {
+            traceIn = {
+                y: [1, 2, 3],
+                xcalendar: 'coptic',
+                ycalendar: 'ethiopian'
+            };
+            supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+
+            // we always fill calendar attributes, because it's hard to tell if
+            // we're on a date axis at this point.
+            expect(traceOut.xcalendar).toBe('coptic');
+            expect(traceOut.ycalendar).toBe('ethiopian');
         });
 
     });

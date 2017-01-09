@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -126,6 +126,8 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
 
     // keep track of pan / zoom in user layout and emit relayout event
     map.on('moveend', function(eventData) {
+        if(!self.map) return;
+
         var view = self.getView();
 
         opts._input.center = opts.center = view.center;
@@ -358,7 +360,10 @@ proto.updateLayers = function() {
 };
 
 proto.destroy = function() {
-    if(this.map) this.map.remove();
+    if(this.map) {
+        this.map.remove();
+        this.map = null;
+    }
     this.container.removeChild(this.div);
 };
 

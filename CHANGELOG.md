@@ -10,6 +10,55 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.21.3] -- 2016-01-05
+
+### Fixed
+- Fix zoom behavior on transformed traces [#1257]
+- Compute axis auto-range after transform operation [#1260]
+- Fix contour trace blowing up on zoom [#591]
+- Fix `scattermapbox` and `scattergeo` handling of blank strings `text` [#1283]
+- Lock `mouse-change@1.3.0` fixing 3D hover labels on fresh `npm install`
+  [#1281]
+
+
+## [1.21.2] -- 2016-12-14
+
+### Fixed
+- Fix handling of calendar in `filter` transforms where distinct calendars can
+  now be set for both the `target` and `value` [#1253]
+- Make `Plotly.addFrames` skip over non-plain-objects inputs [#1254]
+- Make `Plots.graphJson` aware of `frames` [#1255]
+
+
+## [1.21.1] -- 2016-12-14
+
+### Fixed
+- Fix `ms2datetime` routine for Chinese calendar [#1252]
+- Fix `tickformat` for world calendars [#1252]
+
+
+## [1.21.0] -- 2016-12-12
+
+### Added
+- Bar labels via `text` and `textposition` [#1159]
+- Add support for 16 non-gregorian calendars for date inputs and display [#1220,
+  #1230, #1237]
+- Add support for ISO-8601 timestamps [#1194]
+- Extend histogram bin auto-shifting algorithm to date axes [#1201]
+- Trace type `heatmapgl` is now included in the main plotly.js bundle [#1197]
+
+### Changed
+- Linearize date coordinates using UTC rather than local milliseconds [#1194]
+
+### Fixed
+- Fix wrongly computed date positions around daylight savings time [#1194]
+- Fix erroneous traces in multi-subplot layout containing fill-to scatter
+  traces (and plotly.py violin plots) [#1198]
+- Fix clip path URL on pages with query hashes [#1203]
+- Ensure that numeric frame name are handle correctly [#1236]
+- Fallback for manual manipulation of slider/frames [#1233]
+
+
 ## [1.20.5] -- 2016-11-23
 
 ### Fixed

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -65,6 +65,7 @@ module.exports = {
         valType: 'data_array',
         description: 'Sets the z coordinates.'
     },
+
     text: extendFlat({}, scatterAttrs.text, {
         description: [
             'Sets text elements associated with each (x,y,z) triplet.',

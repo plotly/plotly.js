@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -61,7 +61,7 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
 
         // tick0 can have different valType for different axis types, so
         // validate that now. Also for dates, change milliseconds to date strings
-        var tick0Dflt = (axType === 'date') ? '2000-01-01' : 0;
+        var tick0Dflt = (axType === 'date') ? Lib.dateTick0(containerOut.calendar) : 0;
         var tick0 = coerce('tick0', tick0Dflt);
         if(axType === 'date') {
             containerOut.tick0 = Lib.cleanDate(tick0, tick0Dflt);

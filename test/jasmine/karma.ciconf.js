@@ -33,7 +33,7 @@ function func(config) {
 
     func.defaultConfig.autoWatch = false;
 
-    func.defaultConfig.browsers = ['Firefox'];
+    func.defaultConfig.browsers = ['Firefox_WindowSized'];
 
     config.set(func.defaultConfig);
 }

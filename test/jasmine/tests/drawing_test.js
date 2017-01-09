@@ -49,4 +49,21 @@ describe('Drawing.setClipUrl', function() {
 
         base.remove();
     });
+
+    it('should append window URL w/o hash to clip-path if <base> is present', function() {
+        var base = d3.select('body')
+            .append('base')
+            .attr('href', 'https://plot.ly/#hash');
+
+        window.location.hash = 'hash';
+
+        Drawing.setClipUrl(this.g, 'id4');
+
+        var expected = 'url(' + window.location.href.split('#')[0] + '#id4)';
+
+        expect(this.g.attr('clip-path')).toEqual(expected);
+
+        base.remove();
+        window.location.hash = '';
+    });
 });

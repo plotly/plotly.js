@@ -191,6 +191,7 @@ describe('sliders initialization', function() {
 
         Plotly.plot(gd, [{x: [1, 2, 3]}], {
             sliders: [{
+                transition: {duration: 0},
                 steps: [
                     {method: 'restyle', args: [], label: 'first'},
                     {method: 'restyle', args: [], label: 'second'},
@@ -206,6 +207,59 @@ describe('sliders initialization', function() {
 
     it('does not set active on initial plot', function() {
         expect(gd.layout.sliders[0].active).toBeUndefined();
+    });
+});
+
+describe('ugly internal manipulation of steps', function() {
+    'use strict';
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+
+        Plotly.plot(gd, [{x: [1, 2, 3]}], {
+            sliders: [{
+                transition: {duration: 0},
+                steps: [
+                    {method: 'restyle', args: [], label: 'first'},
+                    {method: 'restyle', args: [], label: 'second'},
+                ]
+            }]
+        }).then(done);
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('adds and removes slider steps gracefully', function(done) {
+        expect(gd._fullLayout.sliders[0].active).toEqual(0);
+
+        // Set the active index higher than it can go:
+        Plotly.relayout(gd, {'sliders[0].active': 2}).then(function() {
+            // Confirm nothing changed
+            expect(gd._fullLayout.sliders[0].active).toEqual(0);
+
+            // Add an option manually without calling API functions:
+            gd.layout.sliders[0].steps.push({method: 'restyle', args: [], label: 'first'});
+
+            // Now that it's been added, restyle and try again:
+            return Plotly.relayout(gd, {'sliders[0].active': 2});
+        }).then(function() {
+            // Confirm it's been changed:
+            expect(gd._fullLayout.sliders[0].active).toEqual(2);
+
+            // Remove the option:
+            gd.layout.sliders[0].steps.pop();
+
+            // And redraw the plot:
+            return Plotly.redraw(gd);
+        }).then(function() {
+            // The selected option no longer exists, so confirm it's
+            // been fixed during the process of updating/drawing it:
+            expect(gd._fullLayout.sliders[0].active).toEqual(0);
+        }).catch(fail).then(done);
     });
 });
 

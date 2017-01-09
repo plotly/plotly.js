@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -177,14 +177,17 @@ function convertPlotlyOptions(scene, data) {
         yc, y = data.y || [],
         zc, z = data.z || [],
         len = x.length,
+        xcalendar = data.xcalendar,
+        ycalendar = data.ycalendar,
+        zcalendar = data.zcalendar,
         text;
 
     // Convert points
     for(i = 0; i < len; i++) {
         // sanitize numbers and apply transforms based on axes.type
-        xc = xaxis.d2l(x[i]) * scaleFactor[0];
-        yc = yaxis.d2l(y[i]) * scaleFactor[1];
-        zc = zaxis.d2l(z[i]) * scaleFactor[2];
+        xc = xaxis.d2l(x[i], 0, xcalendar) * scaleFactor[0];
+        yc = yaxis.d2l(y[i], 0, ycalendar) * scaleFactor[1];
+        zc = zaxis.d2l(z[i], 0, zcalendar) * scaleFactor[2];
 
         points[i] = [xc, yc, zc];
     }

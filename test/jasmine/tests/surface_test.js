@@ -150,5 +150,32 @@ describe('Test surface', function() {
             expect(traceOut.cmin).toBeUndefined();
             expect(traceOut.cmax).toBeUndefined();
         });
+
+        it('should inherit layout.calendar', function() {
+            traceIn = {
+                z: [[1, 2, 3], [2, 1, 2]]
+            };
+            supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+
+            // we always fill calendar attributes, because it's hard to tell if
+            // we're on a date axis at this point.
+            expect(traceOut.xcalendar).toBe('islamic');
+            expect(traceOut.ycalendar).toBe('islamic');
+            expect(traceOut.zcalendar).toBe('islamic');
+        });
+
+        it('should take its own calendars', function() {
+            var traceIn = {
+                z: [[1, 2, 3], [2, 1, 2]],
+                xcalendar: 'coptic',
+                ycalendar: 'ethiopian',
+                zcalendar: 'mayan'
+            };
+
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.xcalendar).toBe('coptic');
+            expect(traceOut.ycalendar).toBe('ethiopian');
+            expect(traceOut.zcalendar).toBe('mayan');
+        });
     });
 });

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -44,13 +44,15 @@ module.exports = extendFlat({}, {
     },
     ncontours: {
         valType: 'integer',
-        dflt: 0,
+        dflt: 15,
+        min: 1,
         role: 'style',
         description: [
             'Sets the maximum number of contour levels. The actual number',
             'of contours will be chosen automatically to be less than or',
             'equal to the value of `ncontours`.',
-            'Has an effect only if `autocontour` is *true*.'
+            'Has an effect only if `autocontour` is *true* or if',
+            '`contours.size` is missing.'
         ].join(' ')
     },
 
@@ -59,19 +61,29 @@ module.exports = extendFlat({}, {
             valType: 'number',
             dflt: null,
             role: 'style',
-            description: 'Sets the starting contour level value.'
+            description: [
+                'Sets the starting contour level value.',
+                'Must be less than `contours.end`'
+            ].join(' ')
         },
         end: {
             valType: 'number',
             dflt: null,
             role: 'style',
-            description: 'Sets the end contour level value.'
+            description: [
+                'Sets the end contour level value.',
+                'Must be more than `contours.start`'
+            ].join(' ')
         },
         size: {
             valType: 'number',
             dflt: null,
+            min: 0,
             role: 'style',
-            description: 'Sets the step between each contour level.'
+            description: [
+                'Sets the step between each contour level.',
+                'Must be positive.'
+            ].join(' ')
         },
         coloring: {
             valType: 'enumerated',

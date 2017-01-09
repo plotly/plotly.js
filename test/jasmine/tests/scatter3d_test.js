@@ -8,9 +8,9 @@ describe('Scatter3D defaults', function() {
 
     var defaultColor = '#d3d3d3';
 
-    function _supply(traceIn) {
+    function _supply(traceIn, layoutEdits) {
         var traceOut = { visible: true },
-            layout = { _dataLength: 1 };
+            layout = Lib.extendFlat({ _dataLength: 1 }, layoutEdits);
 
         Scatter3D.supplyDefaults(traceIn, traceOut, defaultColor, layout);
         return traceOut;
@@ -64,5 +64,28 @@ describe('Scatter3D defaults', function() {
         expect(out.line.color).toBe(defaultColor);
         expect(out.marker.color).toBe(color);
         expect(out.marker.line.color).toBe(Color.defaultLine);
+    });
+
+    it('should inherit layout.calendar', function() {
+        var out = _supply(base, {calendar: 'islamic'});
+
+        // we always fill calendar attributes, because it's hard to tell if
+        // we're on a date axis at this point.
+        expect(out.xcalendar).toBe('islamic');
+        expect(out.ycalendar).toBe('islamic');
+        expect(out.zcalendar).toBe('islamic');
+    });
+
+    it('should take its own calendars', function() {
+        var traceIn = Lib.extendFlat({}, base, {
+            xcalendar: 'coptic',
+            ycalendar: 'ethiopian',
+            zcalendar: 'mayan'
+        });
+        var out = _supply(traceIn, {calendar: 'islamic'});
+
+        expect(out.xcalendar).toBe('coptic');
+        expect(out.ycalendar).toBe('ethiopian');
+        expect(out.zcalendar).toBe('mayan');
     });
 });
