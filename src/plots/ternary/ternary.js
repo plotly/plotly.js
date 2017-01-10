@@ -50,14 +50,6 @@ proto.plot = function(ternaryData, fullLayout) {
         graphSize = fullLayout._size,
         i;
 
-    if(Lib.getPlotDiv(_this.plotContainer.node()) !== _this.graphDiv) {
-        // someone deleted the framework - remake it
-        // TODO: this is getting deleted in (cartesian) makePlotFramework
-        // turn that into idiomatic d3 (enter/exit, the piece I didn't know
-        // before was ordering selections) so we don't need this.
-        _this.init(_this.graphDiv._fullLayout);
-        _this.makeFramework();
-    }
 
     _this.adjustLayout(ternaryLayout, graphSize);
 
