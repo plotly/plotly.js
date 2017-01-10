@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,12 +12,13 @@ var Axes = require('../../plots/cartesian/axes');
 var cheaterBasis = require('./cheater_basis');
 var arrayMinmax = require('./array_minmax');
 var search = require('../../lib/search').findBin;
-var computeControlPoints = require('./compute_control_points');
 var map2dArray = require('./map_2d_array');
-var createSplineEvaluator = require('./create_spline_evaluator');
 var setConvert = require('./set_convert');
 var calcGridlines = require('./calc_gridlines');
 var calcLabels = require('./calc_labels');
+var clean2dArray = require('../heatmap/clean_2d_array');
+var isNumeric = require('fast-isnumeric');
+var smoothFill2dArray = require('./smooth-fill-2d-array');
 
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
@@ -63,6 +64,15 @@ module.exports = function calc(gd, trace) {
     // Convert cartesian-space x/y coordinates to screen space pixel coordinates:
     trace.xp = map2dArray(trace.xp, x, xa.c2p);
     trace.yp = map2dArray(trace.yp, y, ya.c2p);
+    x = clean2dArray(x, true);
+    y = clean2dArray(y, true);
+
+    // Fill in any undefined values with elliptic smoothing. This doesn't take
+    // into account the spacing of the values. That is, the derivatives should
+    // be modified to use a and b values. It's not that hard, but this is already
+    // moderate overkill for just filling in missing values.
+    smoothFill2dArray(x);
+    smoothFill2dArray(y);
 
     // Create conversions from one coordinate system to another:
     setConvert(trace, xa, ya);

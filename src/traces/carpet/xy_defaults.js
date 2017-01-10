@@ -14,23 +14,27 @@
 // var isNumeric = require('fast-isnumeric');
 
 var hasColumns = require('./has_columns');
-
+var convertColumnData = require('../heatmap/convert_column_xyz');
 
 module.exports = function handleXYDefaults(traceIn, traceOut, coerce) {
+    var hasxcols = true;
+    var hasycols = true;
+    var cols = [];
     var x = coerce('x');
 
-    if(x && !hasColumns(x)) {
-        // x absent is valid, but x present is only valid
-        // if x has columns
-        return 0;
-    }
+    var hasxcols = !!(x && !hasColumns(x));
+    if (hasxcols) cols.push('x');
 
     traceOut._cheater = !x;
 
     var y = coerce('y');
 
-    // y must be both present *and* must have columns
-    if(!y || !hasColumns(y)) {
+    var hasycols = !!(y && !hasColumns(y));
+    if (hasycols) cols.push('y');
+
+    if (cols.length) {
+        convertColumnData(traceOut, traceOut.aaxis, traceOut.baxis, 'a', 'b', cols);
+    } else {
         return 0;
     }
 
