@@ -41,7 +41,7 @@ exports.plot = function plotTernary(gd) {
             ternary = fullLayout[ternaryId]._subplot;
 
         // If ternary is not instantiated, create one!
-        if(ternary === undefined) {
+        if(!ternary) {
             ternary = new Ternary({
                 id: ternaryId,
                 graphDiv: gd,

@@ -49,7 +49,7 @@ exports.plot = function plotGeo(gd) {
             geo = fullLayout[geoId]._subplot;
 
         // If geo is not instantiated, create one!
-        if(geo === undefined) {
+        if(!geo) {
             geo = new Geo({
                 id: geoId,
                 graphDiv: gd,
