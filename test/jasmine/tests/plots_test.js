@@ -582,4 +582,114 @@ describe('Test Plots', function() {
         });
     });
 
+    describe('Plots.generalUpdatePerTraceModule', function() {
+
+        function _update(subplotCalcData, traceHashOld) {
+            var subplot = { traceHash: traceHashOld || {} };
+            var calcDataPerModule = [];
+
+            var plot = function(_, moduleCalcData) {
+                calcDataPerModule.push(moduleCalcData);
+            };
+
+            subplotCalcData.forEach(function(calcTrace) {
+                calcTrace[0].trace._module = { plot: plot };
+            });
+
+            Plots.generalUpdatePerTraceModule(subplot, subplotCalcData, {});
+
+            return {
+                traceHash: subplot.traceHash,
+                calcDataPerModule: calcDataPerModule
+            };
+        }
+
+        it('should update subplot trace hash and call module plot method with correct calcdata traces', function() {
+            var out = _update([
+                [ { trace: { type: 'A', visible: false } } ],
+                [ { trace: { type: 'A', visible: true } } ],
+                [ { trace: { type: 'B', visible: false } } ],
+                [ { trace: { type: 'C', visible: true } } ]
+            ]);
+
+            expect(Object.keys(out.traceHash)).toEqual(['A', 'C']);
+            expect(out.traceHash.A.length).toEqual(1);
+            expect(out.traceHash.C.length).toEqual(1);
+
+            expect(out.calcDataPerModule.length).toEqual(2);
+            expect(out.calcDataPerModule[0].length).toEqual(1);
+            expect(out.calcDataPerModule[1].length).toEqual(1);
+
+            var out2 = _update([
+                [ { trace: { type: 'A', visible: false } } ],
+                [ { trace: { type: 'A', visible: false } } ],
+                [ { trace: { type: 'B', visible: true } } ],
+                [ { trace: { type: 'C', visible: false } } ]
+            ], out.traceHash);
+
+            expect(Object.keys(out2.traceHash)).toEqual(['B', 'A', 'C']);
+            expect(out2.traceHash.B.length).toEqual(1);
+            expect(out2.traceHash.A.length).toEqual(1);
+            expect(out2.traceHash.A[0][0].trace.visible).toBe(false);
+            expect(out2.traceHash.C.length).toEqual(1);
+            expect(out2.traceHash.C[0][0].trace.visible).toBe(false);
+
+            expect(out2.calcDataPerModule.length).toEqual(1);
+            expect(out2.calcDataPerModule[0].length).toEqual(1);
+
+            var out3 = _update([
+                [ { trace: { type: 'A', visible: false } } ],
+                [ { trace: { type: 'A', visible: false } } ],
+                [ { trace: { type: 'B', visible: false } } ],
+                [ { trace: { type: 'C', visible: false } } ]
+            ], out2.traceHash);
+
+            expect(Object.keys(out3.traceHash)).toEqual(['B', 'A', 'C']);
+            expect(out3.traceHash.B.length).toEqual(1);
+            expect(out3.traceHash.B[0][0].trace.visible).toBe(false);
+            expect(out3.traceHash.A.length).toEqual(1);
+            expect(out3.traceHash.A[0][0].trace.visible).toBe(false);
+            expect(out3.traceHash.C.length).toEqual(1);
+            expect(out3.traceHash.C[0][0].trace.visible).toBe(false);
+
+            expect(out3.calcDataPerModule.length).toEqual(0);
+
+            var out4 = _update([
+                [ { trace: { type: 'A', visible: true } } ],
+                [ { trace: { type: 'A', visible: true } } ],
+                [ { trace: { type: 'B', visible: true } } ],
+                [ { trace: { type: 'C', visible: true } } ]
+            ], out3.traceHash);
+
+            expect(Object.keys(out4.traceHash)).toEqual(['A', 'B', 'C']);
+            expect(out4.traceHash.A.length).toEqual(2);
+            expect(out4.traceHash.B.length).toEqual(1);
+            expect(out4.traceHash.C.length).toEqual(1);
+
+            expect(out4.calcDataPerModule.length).toEqual(3);
+            expect(out4.calcDataPerModule[0].length).toEqual(2);
+            expect(out4.calcDataPerModule[1].length).toEqual(1);
+            expect(out4.calcDataPerModule[2].length).toEqual(1);
+        });
+
+        it('should handle cases when module plot is not set (geo case)', function(done) {
+            Plotly.plot(createGraphDiv(), [{
+                type: 'scattergeo',
+                visible: false,
+                lon: [10, 20],
+                lat: [20, 10]
+            }, {
+                type: 'scattergeo',
+                lon: [10, 20],
+                lat: [20, 10]
+            }])
+            .then(function() {
+                expect(d3.selectAll('g.trace.scattergeo').size()).toEqual(1);
+
+                destroyGraphDiv();
+                done();
+            });
+        });
+
+    });
 });
