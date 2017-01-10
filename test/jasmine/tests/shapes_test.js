@@ -13,6 +13,7 @@ var d3 = require('d3');
 var customMatchers = require('../assets/custom_matchers');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var failTest = require('../assets/fail_test');
 
 
 describe('Test shapes defaults:', function() {
@@ -186,7 +187,9 @@ describe('Test shapes:', function() {
                 expect(countShapeLowerLayerNodes()).toEqual(1);
                 expect(countShapePathsInLowerLayer())
                     .toEqual(countShapesInLowerLayer());
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -205,7 +208,9 @@ describe('Test shapes:', function() {
                 expect(countShapeUpperLayerNodes()).toEqual(1);
                 expect(countShapePathsInUpperLayer())
                     .toEqual(countShapesInUpperLayer());
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -226,7 +231,9 @@ describe('Test shapes:', function() {
                     .toEqual(countSubplots(gd));
                 expect(countShapePathsInSubplots())
                     .toEqual(countShapesInSubplots());
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -261,7 +268,17 @@ describe('Test shapes:', function() {
                 expect(countShapePathsInUpperLayer()).toEqual(pathCount + 1);
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);
-            }).then(done);
+
+                // add a shape not at the end of the array
+                return Plotly.relayout(gd, 'shapes[0]', getRandomShape());
+            })
+            .then(function() {
+                expect(countShapePathsInUpperLayer()).toEqual(pathCount + 2);
+                expect(getLastShape(gd)).toEqual(shape);
+                expect(countShapes(gd)).toEqual(index + 2);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should be able to remove a shape', function(done) {
@@ -292,15 +309,32 @@ describe('Test shapes:', function() {
                 expect(countShapePathsInUpperLayer()).toEqual(pathCount - 2);
                 expect(countShapes(gd)).toEqual(index - 1);
             })
+            .catch(failTest)
             .then(done);
         });
 
         it('should be able to remove all shapes', function(done) {
-            Plotly.relayout(gd, { shapes: [] }).then(function() {
+            Plotly.relayout(gd, { shapes: null }).then(function() {
                 expect(countShapePathsInUpperLayer()).toEqual(0);
                 expect(countShapePathsInLowerLayer()).toEqual(0);
                 expect(countShapePathsInSubplots()).toEqual(0);
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('can replace the shapes array', function(done) {
+            Plotly.relayout(gd, { shapes: [
+                getRandomShape(),
+                getRandomShape()
+            ]}).then(function() {
+                expect(countShapePathsInUpperLayer()).toEqual(2);
+                expect(countShapePathsInLowerLayer()).toEqual(0);
+                expect(countShapePathsInSubplots()).toEqual(0);
+                expect(gd.layout.shapes.length).toBe(2);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should be able to update a shape layer', function(done) {
@@ -340,7 +374,9 @@ describe('Test shapes:', function() {
                     .toEqual(shapesInUpperLayer + 1);
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 });
@@ -404,6 +440,7 @@ describe('shapes autosize', function() {
         .then(function() {
             assertRanges([0, 3], [0, 2]);
         })
+        .catch(failTest)
         .then(done);
     });
 });
@@ -450,7 +487,9 @@ describe('Test shapes: a plot with shapes and an overlaid axis', function() {
     afterEach(destroyGraphDiv);
 
     it('should not throw an exception', function(done) {
-        Plotly.plot(gd, data, layout).then(done);
+        Plotly.plot(gd, data, layout)
+        .catch(failTest)
+        .then(done);
     });
 });
 

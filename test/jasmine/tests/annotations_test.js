@@ -9,6 +9,7 @@ var d3 = require('d3');
 var customMatchers = require('../assets/custom_matchers');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var failTest = require('../assets/fail_test');
 
 
 describe('Test annotations', function() {
@@ -144,6 +145,8 @@ describe('annotations relayout', function() {
             mockLayout = Lib.extendDeep({}, mock.layout);
 
         Plotly.plot(gd, mockData, mockLayout).then(done);
+
+        spyOn(Lib, 'warn');
     });
 
     afterEach(destroyGraphDiv);
@@ -152,12 +155,20 @@ describe('annotations relayout', function() {
         return d3.selectAll('g.annotation').size();
     }
 
+    function assertText(index, expected) {
+        var query = '.annotation[data-index="' + index + '"]',
+            actual = d3.select(query).select('text').text();
+
+        expect(actual).toEqual(expected);
+    }
+
     it('should be able to add /remove annotations', function(done) {
         expect(countAnnotations()).toEqual(len);
 
         var ann = { text: '' };
 
-        Plotly.relayout(gd, 'annotations[' + len + ']', ann).then(function() {
+        Plotly.relayout(gd, 'annotations[' + len + ']', ann)
+        .then(function() {
             expect(countAnnotations()).toEqual(len + 1);
 
             return Plotly.relayout(gd, 'annotations[0]', 'remove');
@@ -175,24 +186,28 @@ describe('annotations relayout', function() {
         .then(function() {
             expect(countAnnotations()).toEqual(len - 2);
 
-            return Plotly.relayout(gd, { annotations: [] });
+            return Plotly.relayout(gd, {annotations: []});
         })
         .then(function() {
             expect(countAnnotations()).toEqual(0);
 
-            done();
-        });
+            return Plotly.relayout(gd, {annotations: [ann, {text: 'boo', x: 1, y: 1}]});
+        })
+        .then(function() {
+            expect(countAnnotations()).toEqual(2);
+
+            return Plotly.relayout(gd, {annotations: null});
+        })
+        .then(function() {
+            expect(countAnnotations()).toEqual(0);
+            expect(Lib.warn).not.toHaveBeenCalled();
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should be able update annotations', function(done) {
         var updateObj = { 'annotations[0].text': 'hello' };
-
-        function assertText(index, expected) {
-            var query = '.annotation[data-index="' + index + '"]',
-                actual = d3.select(query).select('text').text();
-
-            expect(actual).toEqual(expected);
-        }
 
         function assertUpdateObj() {
             // w/o mutating relayout update object
@@ -227,8 +242,235 @@ describe('annotations relayout', function() {
             assertText(0, 'hello');
             assertUpdateObj();
         })
+        .catch(failTest)
+        .then(done);
+
+    });
+
+    it('can update several annotations and add and delete in one call', function(done) {
+        expect(countAnnotations()).toEqual(len);
+        var annos = gd.layout.annotations,
+            anno0 = Lib.extendFlat(annos[0]),
+            anno1 = Lib.extendFlat(annos[1]),
+            anno3 = Lib.extendFlat(annos[3]);
+
+        Plotly.relayout(gd, {
+            'annotations[0].text': 'tortilla',
+            'annotations[0].x': 3.45,
+            'annotations[1]': {text: 'chips', x: 1.1, y: 2.2}, // add new annotation btwn 0 and 1
+            'annotations[2].text': 'guacamole', // alter 2 (which was 1 before we started)
+            'annotations[3]': null, // remove 3 (which was 2 before we started)
+            'annotations[4].text': 'lime' // alter 4 (which was 3 before and will be 3 afterward)
+        })
+        .then(function() {
+            expect(countAnnotations()).toEqual(len);
+
+            assertText(0, 'tortilla');
+            anno0.text = 'tortilla';
+            expect(annos[0]).toEqual(anno0);
+
+            assertText(1, 'chips');
+            expect(annos[1]).toEqual({text: 'chips', x: 1.1, y: 2.2});
+
+            assertText(2, 'guacamole');
+            anno1.text = 'guacamole';
+            expect(annos[2]).toEqual(anno1);
+
+            assertText(3, 'lime');
+            anno3.text = 'lime';
+            expect(annos[3]).toEqual(anno3);
+            expect(Lib.warn).not.toHaveBeenCalled();
+        })
+        .catch(failTest)
         .then(done);
     });
+
+    [
+        {annotations: [{text: 'a'}], 'annotations[0]': {text: 'b'}},
+        {annotations: null, 'annotations[0]': {text: 'b'}},
+        {annotations: [{text: 'a'}], 'annotations[0]': null},
+        {annotations: [{text: 'a'}], 'annotations[0].text': 'b'},
+        {'annotations[0]': {text: 'a'}, 'annotations[0].text': 'b'},
+        {'annotations[0]': null, 'annotations[0].text': 'b'},
+        {annotations: {text: 'a'}},
+        {'annotations[0]': 'not an object'},
+        {'annotations[100]': {text: 'bad index'}}
+    ].forEach(function(update) {
+        it('warns on ambiguous combinations and invalid values: ' + JSON.stringify(update), function() {
+            Plotly.relayout(gd, update);
+            expect(Lib.warn).toHaveBeenCalled();
+            // we could test the results here, but they're ambiguous and/or undefined so why bother?
+            // the important thing is the developer is warned that something went wrong.
+        });
+    });
+
+    it('handles xref/yref changes with or without x/y changes', function(done) {
+        Plotly.relayout(gd, {
+
+            // #0: change all 4, with opposite ordering of keys
+            'annotations[0].x': 2.2,
+            'annotations[0].xref': 'x',
+            'annotations[0].yref': 'y',
+            'annotations[0].y': 3.3,
+
+            // #1: change xref and yref without x and y: no longer changes x & y
+            'annotations[1].xref': 'x',
+            'annotations[1].yref': 'y',
+
+            // #2: change x and y
+            'annotations[2].x': 0.1,
+            'annotations[2].y': 0.3
+        })
+        .then(function() {
+            var annos = gd.layout.annotations;
+
+            // explicitly change all 4
+            expect(annos[0].x).toBe(2.2);
+            expect(annos[0].y).toBe(3.3);
+            expect(annos[0].xref).toBe('x');
+            expect(annos[0].yref).toBe('y');
+
+            // just change xref/yref -> we do NOT make any implicit changes
+            // to x/y within plotly.js
+            expect(annos[1].x).toBe(0.25);
+            expect(annos[1].y).toBe(1);
+            expect(annos[1].xref).toBe('x');
+            expect(annos[1].yref).toBe('y');
+
+            // just change x/y -> nothing else changes
+            expect(annos[2].x).toBe(0.1);
+            expect(annos[2].y).toBe(0.3);
+            expect(annos[2].xref).toBe('paper');
+            expect(annos[2].yref).toBe('paper');
+            expect(Lib.warn).not.toHaveBeenCalled();
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('annotations log/linear axis changes', function() {
+    'use strict';
+
+    var mock = {
+        data: [
+            {x: [1, 2, 3], y: [1, 2, 3]},
+            {x: [1, 2, 3], y: [3, 2, 1], yaxis: 'y2'}
+        ],
+        layout: {
+            annotations: [
+                {x: 1, y: 1, text: 'boo', xref: 'x', yref: 'y'},
+                {x: 1, y: 1, text: '', ax: 2, ay: 2, axref: 'x', ayref: 'y'}
+            ],
+            yaxis: {range: [1, 3]},
+            yaxis2: {range: [0, 1], overlaying: 'y', type: 'log'}
+        }
+    };
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+
+        var mockData = Lib.extendDeep([], mock.data),
+            mockLayout = Lib.extendDeep({}, mock.layout);
+
+        Plotly.plot(gd, mockData, mockLayout).then(done);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('doesnt try to update position automatically with ref changes', function(done) {
+        // we don't try to figure out the position on a new axis / canvas
+        // automatically when you change xref / yref, we leave it to the caller.
+        // previously this logic was part of plotly.js... But it's really only
+        // the plot.ly workspace that wants this and can assign an unambiguous
+        // meaning to it, so we'll move the logic there, where there are far
+        // fewer edge cases to consider because xref never gets edited along
+        // with anything else in one `relayout` call.
+
+        // linear to log
+        Plotly.relayout(gd, {'annotations[0].yref': 'y2'})
+        .then(function() {
+            expect(gd.layout.annotations[0].y).toBe(1);
+
+            // log to paper
+            return Plotly.relayout(gd, {'annotations[0].yref': 'paper'});
+        })
+        .then(function() {
+            expect(gd.layout.annotations[0].y).toBe(1);
+
+            // paper to log
+            return Plotly.relayout(gd, {'annotations[0].yref': 'y2'});
+        })
+        .then(function() {
+            expect(gd.layout.annotations[0].y).toBe(1);
+
+            // log to linear
+            return Plotly.relayout(gd, {'annotations[0].yref': 'y'});
+        })
+        .then(function() {
+            expect(gd.layout.annotations[0].y).toBe(1);
+
+            // y and yref together
+            return Plotly.relayout(gd, {'annotations[0].y': 0.2, 'annotations[0].yref': 'y2'});
+        })
+        .then(function() {
+            expect(gd.layout.annotations[0].y).toBe(0.2);
+
+            // yref first, then y
+            return Plotly.relayout(gd, {'annotations[0].yref': 'y', 'annotations[0].y': 2});
+        })
+        .then(function() {
+            expect(gd.layout.annotations[0].y).toBe(2);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('keeps the same data value if the axis type is changed without position', function(done) {
+        // because annotations (and images) use linearized positions on log axes,
+        // we have `relayout` update the positions so the data value the annotation
+        // points to is unchanged by the axis type change.
+
+        Plotly.relayout(gd, {'yaxis.type': 'log'})
+        .then(function() {
+            expect(gd.layout.annotations[0].y).toBe(0);
+            expect(gd.layout.annotations[1].y).toBe(0);
+            expect(gd.layout.annotations[1].ay).toBeCloseTo(Math.LN2 / Math.LN10, 6);
+
+            return Plotly.relayout(gd, {'yaxis.type': 'linear'});
+        })
+        .then(function() {
+            expect(gd.layout.annotations[0].y).toBe(1);
+            expect(gd.layout.annotations[1].y).toBe(1);
+            expect(gd.layout.annotations[1].ay).toBeCloseTo(2, 6);
+
+            return Plotly.relayout(gd, {
+                'yaxis.type': 'log',
+                'annotations[0].y': 0.2,
+                'annotations[1].ay': 0.3
+            });
+        })
+        .then(function() {
+            expect(gd.layout.annotations[0].y).toBe(0.2);
+            expect(gd.layout.annotations[1].y).toBe(0);
+            expect(gd.layout.annotations[1].ay).toBe(0.3);
+
+            return Plotly.relayout(gd, {
+                'annotations[0].y': 2,
+                'annotations[1].ay': 2.5,
+                'yaxis.type': 'linear'
+            });
+        })
+        .then(function() {
+            expect(gd.layout.annotations[0].y).toBe(2);
+            expect(gd.layout.annotations[1].y).toBe(1);
+            expect(gd.layout.annotations[1].ay).toBe(2.5);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
 });
 
 describe('annotations autosize', function() {
@@ -317,6 +559,7 @@ describe('annotations autosize', function() {
                 [0.9, 2.1], [0.86, 2.14]
             );
         })
+        .catch(failTest)
         .then(done);
     });
 });
@@ -445,6 +688,7 @@ describe('annotation clicktoshow', function() {
         // finally click each one off
         .then(clickAndCheck({newPts: [[1, 2]], newCTS: true, on: [2], step: 15}))
         .then(clickAndCheck({newPts: [[2, 3]], newCTS: true, on: [], step: 16}))
+        .catch(failTest)
         .then(done);
     });
 });

@@ -10,6 +10,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var Plots = PlotlyInternal.Plots;
 var customMatchers = require('../assets/custom_matchers');
+var failTest = require('../assets/fail_test');
 
 describe('Test lib.js:', function() {
     'use strict';
@@ -292,7 +293,7 @@ describe('Test lib.js:', function() {
 
             prop.set(null);
             expect(prop.get()).toBe(undefined);
-            expect(obj).toEqual({arr: [undefined, undefined, {b: 3}]});
+            expect(obj).toEqual({arr: [{}, {}, {b: 3}]});
 
             prop.set([2, 3, 4]);
             expect(prop.get()).toEqual([2, 3, 4]);
@@ -329,7 +330,7 @@ describe('Test lib.js:', function() {
             expect(obj).toEqual({a: false, b: '', c: 0, d: NaN});
         });
 
-        it('should remove containers but not data arrays', function() {
+        it('should not remove data arrays or empty objects inside container arrays', function() {
             var obj = {
                     annotations: [{a: [1, 2, 3]}],
                     c: [1, 2, 3],
@@ -344,23 +345,23 @@ describe('Test lib.js:', function() {
                 propR = np(obj, 'range'),
                 propS = np(obj, 'shapes[0]');
 
-            propA.set([]);
+            propA.set([[]]);
             propC.set([]);
             propD0.set(undefined);
             propD1.set(undefined);
             propR.set([]);
             propS.set(null);
 
-            expect(obj).toEqual({c: []});
+            // 'a' and 'c' are both potentially data arrays so we need to keep them
+            expect(obj).toEqual({annotations: [{a: []}], c: []});
         });
 
 
-        it('should have no empty object sub-containers but contain empty data arrays', function() {
+        it('should allow empty object sub-containers only in arrays', function() {
             var obj = {},
                 prop = np(obj, 'a[1].b.c'),
-                expectedArr = [];
-
-            expectedArr[1] = {b: {c: 'pizza'}};
+                // we never set a value into a[0] so it doesn't even get {}
+                expectedArr = [undefined, {b: {c: 'pizza'}}];
 
             expect(prop.get()).toBe(undefined);
             expect(obj).toEqual({});
@@ -371,7 +372,7 @@ describe('Test lib.js:', function() {
 
             prop.set(null);
             expect(prop.get()).toBe(undefined);
-            expect(obj).toEqual({a: []});
+            expect(obj).toEqual({a: [undefined, {}]});
         });
 
         it('should get empty, and fail on set, with a bad input object', function() {
@@ -1282,6 +1283,18 @@ describe('Test lib.js:', function() {
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
 
         });
+
+        it('should recognize matching RegExps', function() {
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
+
+            var r1 = /a/,
+                r2 = /a/;
+            Lib.pushUnique(this.array, r1);
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }, r1]);
+
+            Lib.pushUnique(this.array, r2);
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }, r1]);
+        });
     });
 
     describe('filterUnique', function() {
@@ -1652,8 +1665,9 @@ describe('Queue', function() {
             return Plotly.relayout(gd, 'updatemenus[0]', null);
         })
         .then(function() {
+            // buttons have been stripped out because it's an empty container array...
             expect(gd.undoQueue.queue[1].undo.args[0][1])
-                .toEqual({ 'updatemenus[0]': { buttons: []} });
+                .toEqual({ 'updatemenus[0]': {} });
             expect(gd.undoQueue.queue[1].redo.args[0][1])
                 .toEqual({ 'updatemenus[0]': null });
 
@@ -1664,8 +1678,8 @@ describe('Queue', function() {
                 .toEqual({ 'transforms[0]': [ { type: 'filter' } ]});
             expect(gd.undoQueue.queue[1].redo.args[0][1])
                 .toEqual({ 'transforms[0]': null });
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 });
