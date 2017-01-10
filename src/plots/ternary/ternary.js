@@ -18,6 +18,7 @@ var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var setConvert = require('../cartesian/set_convert');
 var extendFlat = require('../../lib/extend').extendFlat;
+var Plots = require('../plots');
 var Axes = require('../cartesian/axes');
 var dragElement = require('../../components/dragelement');
 var Titles = require('../../components/titles');
@@ -44,51 +45,14 @@ proto.init = function(fullLayout) {
     this.traceHash = {};
 };
 
-proto.plot = function(ternaryData, fullLayout) {
+proto.plot = function(ternaryCalcData, fullLayout) {
     var _this = this,
         ternaryLayout = fullLayout[_this.id],
-        graphSize = fullLayout._size,
-        i;
-
+        graphSize = fullLayout._size;
 
     _this.adjustLayout(ternaryLayout, graphSize);
 
-    var traceHashOld = _this.traceHash;
-    var traceHash = {};
-
-    for(i = 0; i < ternaryData.length; i++) {
-        var trace = ternaryData[i];
-
-        traceHash[trace.type] = traceHash[trace.type] || [];
-        traceHash[trace.type].push(trace);
-    }
-
-    var moduleNamesOld = Object.keys(traceHashOld);
-    var moduleNames = Object.keys(traceHash);
-
-    // when a trace gets deleted, make sure that its module's
-    // plot method is called so that it is properly
-    // removed from the DOM.
-    for(i = 0; i < moduleNamesOld.length; i++) {
-        var moduleName = moduleNamesOld[i];
-
-        if(moduleNames.indexOf(moduleName) === -1) {
-            var fakeModule = traceHashOld[moduleName][0];
-            fakeModule.visible = false;
-            traceHash[moduleName] = [fakeModule];
-        }
-    }
-
-    moduleNames = Object.keys(traceHash);
-
-    for(i = 0; i < moduleNames.length; i++) {
-        var moduleData = traceHash[moduleNames[i]];
-        var _module = moduleData[0]._module;
-
-        _module.plot(_this, Lib.filterVisible(moduleData), ternaryLayout);
-    }
-
-    _this.traceHash = traceHash;
+    Plots.generalUpdatePerTraceModule(_this, ternaryCalcData, ternaryLayout);
 
     _this.layers.plotbg.select('path').call(Color.fill, ternaryLayout.bgcolor);
 };

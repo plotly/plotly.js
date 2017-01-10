@@ -1,5 +1,7 @@
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
+
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -691,5 +693,23 @@ describe('Test Plots', function() {
             });
         });
 
+        it('should handle cases when module plot is not set (ternary case)', function(done) {
+            Plotly.plot(createGraphDiv(), [{
+                type: 'scatterternary',
+                visible: false,
+                a: [0.1, 0.2],
+                b: [0.2, 0.1]
+            }, {
+                type: 'scatterternary',
+                a: [0.1, 0.2],
+                b: [0.2, 0.1]
+            }])
+            .then(function() {
+                expect(d3.selectAll('g.trace.scatter').size()).toEqual(1);
+
+                destroyGraphDiv();
+                done();
+            });
+        });
     });
 });
