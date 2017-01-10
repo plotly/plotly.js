@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -19,8 +19,6 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var ErrorBars = require('../../components/errorbars');
-
-var arraysToCalcdata = require('./arrays_to_calcdata');
 
 var attributes = require('./attributes'),
     attributeText = attributes.text,
@@ -52,8 +50,6 @@ module.exports = function plot(gd, plotinfo, cdbar) {
                 poffsetIsArray = Array.isArray(poffset),
                 barwidth = t.barwidth,
                 barwidthIsArray = Array.isArray(barwidth);
-
-            arraysToCalcdata(d);
 
             d3.select(this).selectAll('g.point')
                 .data(Lib.identity)

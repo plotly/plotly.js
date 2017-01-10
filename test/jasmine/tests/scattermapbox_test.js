@@ -494,6 +494,36 @@ describe('scattermapbox hover', function() {
         expect(out.color).toEqual('#1f77b4');
     });
 
+    it('should skip over blank and non-string text items', function(done) {
+        var xval = 11,
+            yval = 11,
+            out;
+
+        Plotly.restyle(gd, 'text', [['', 'B', 'C']]).then(function() {
+            out = hoverPoints(getPointData(gd), xval, yval)[0];
+            expect(out.extraText).toEqual('(10°, 10°)');
+
+            return Plotly.restyle(gd, 'text', [[null, 'B', 'C']]);
+        })
+        .then(function() {
+            out = hoverPoints(getPointData(gd), xval, yval)[0];
+            expect(out.extraText).toEqual('(10°, 10°)');
+
+            return Plotly.restyle(gd, 'text', [[false, 'B', 'C']]);
+        })
+        .then(function() {
+            out = hoverPoints(getPointData(gd), xval, yval)[0];
+            expect(out.extraText).toEqual('(10°, 10°)');
+
+            return Plotly.restyle(gd, 'text', [['A', 'B', 'C']]);
+        })
+        .then(function() {
+            out = hoverPoints(getPointData(gd), xval, yval)[0];
+            expect(out.extraText).toEqual('(10°, 10°)<br>A');
+        })
+        .then(done);
+    });
+
     it('should generate hover label info (positive winding case)', function() {
         var xval = 11 + 720,
             yval = 11;

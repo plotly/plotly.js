@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -230,11 +230,14 @@ module.exports = {
         },
         transforms: {
             filter: {
-                calendar: makeAttrs([
-                    'Sets the calendar system to use for `value`, if it is a date.',
-                    'Note that this is not necessarily the same calendar as is used',
-                    'for the target data; that is set by its own calendar attribute,',
-                    'ie `trace.x` uses `trace.xcalendar` etc.'
+                valuecalendar: makeAttrs([
+                    'Sets the calendar system to use for `value`, if it is a date.'
+                ].join(' ')),
+                targetcalendar: makeAttrs([
+                    'Sets the calendar system to use for `target`, if it is an',
+                    'array of dates. If `target` is a string (eg *x*) we use the',
+                    'corresponding trace attribute (eg `xcalendar`) if it exists,',
+                    'even if `targetcalendar` is provided.'
                 ].join(' '))
             }
         }

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -80,8 +80,9 @@ function plotOne(gd, plotinfo, cd) {
 }
 
 function emptyPathinfo(contours, plotinfo, cd0) {
-    var cs = contours.size || 1,
+    var cs = contours.size,
         pathinfo = [];
+
     for(var ci = contours.start; ci < contours.end + cs / 10; ci += cs) {
         pathinfo.push({
             level: ci,
@@ -103,6 +104,11 @@ function emptyPathinfo(contours, plotinfo, cd0) {
             z: cd0.z,
             smoothing: cd0.trace.line.smoothing
         });
+
+        if(pathinfo.length > 1000) {
+            Lib.warn('Too many contours, clipping at 1000', contours);
+            break;
+        }
     }
     return pathinfo;
 }

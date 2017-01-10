@@ -350,7 +350,7 @@
                 {
                     "type": "filter",
                     "operation": "[]",
-                    "calendar": "jalali",
+                    "valuecalendar": "jalali",
                     "value": [
                         "0818-08",
                         "0819-06"

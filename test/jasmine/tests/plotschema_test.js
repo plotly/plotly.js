@@ -196,7 +196,8 @@ describe('plot schema', function() {
         expect(plotSchema.layout.layoutAttributes.xaxis.calendar.valType).toEqual('enumerated');
         expect(plotSchema.layout.layoutAttributes.scene.xaxis.calendar.valType).toEqual('enumerated');
 
-        expect(plotSchema.transforms.filter.attributes.calendar.valType).toEqual('enumerated');
+        expect(plotSchema.transforms.filter.attributes.valuecalendar.valType).toEqual('enumerated');
+        expect(plotSchema.transforms.filter.attributes.targetcalendar.valType).toEqual('enumerated');
     });
 
     it('should list correct defs', function() {
