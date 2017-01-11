@@ -133,14 +133,15 @@ axes.coercePosition = function(containerOut, gd, coerce, axRef, attr, dflt) {
 // empty out types for all axes containing these traces
 // so we auto-set them again
 axes.clearTypes = function(gd, traces) {
-    if(!Array.isArray(traces) || !traces.length) {
-        traces = (gd._fullData).map(function(d, i) { return i; });
+    var fullData = gd._fullData;
+    var mockGd = { _fullLayout: gd.layout };
+
+    for(var i = 0; i < traces.length; i++) {
+        var trace = fullData[traces[i]];
+
+        (axes.getFromId(mockGd, trace.xaxis) || {}).type = '-';
+        (axes.getFromId(mockGd, trace.xaxis) || {}).type = '-';
     }
-    traces.forEach(function(tracenum) {
-        var trace = gd.data[tracenum];
-        delete (axes.getFromId(gd, trace.xaxis) || {}).type;
-        delete (axes.getFromId(gd, trace.yaxis) || {}).type;
-    });
 };
 
 // get counteraxis letter for this axis (name or id)
