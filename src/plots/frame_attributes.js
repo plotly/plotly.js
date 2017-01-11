@@ -25,7 +25,7 @@ module.exports = {
         description: 'A label by which to identify the frame'
     },
     traces: {
-        valType: 'info_array',
+        valType: 'any',
         role: 'info',
         description: [
             'A list of trace indices that identify the respective traces in the',
