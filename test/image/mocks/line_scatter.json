@@ -14,7 +14,10 @@
         17
       ],
       "mode": "markers",
-      "type": "scatter"
+      "type": "scatter",
+      "marker": {
+        "opacity": 0.5
+      }
     },
     {
       "x": [
@@ -47,7 +50,11 @@
         12
       ],
       "mode": "lines+markers",
-      "type": "scatter"
+      "type": "scatter",
+      "opacity": 0.707,
+      "marker": {
+        "opacity": 0.707
+      }
     }
   ]
 }
