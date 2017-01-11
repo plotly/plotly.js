@@ -9,6 +9,8 @@
 'use strict';
 
 module.exports = {
+    _isLinkedToArray: 'frames_entry',
+
     group: {
         valType: 'string',
         role: 'info',
@@ -23,7 +25,8 @@ module.exports = {
         description: 'A label by which to identify the frame'
     },
     traces: {
-        valType: 'data_array',
+        valType: 'any',
+        role: 'info',
         description: [
             'A list of trace indices that identify the respective traces in the',
             'data attribute'
@@ -39,7 +42,8 @@ module.exports = {
         ].join(' ')
     },
     data: {
-        valType: 'data_array',
+        valType: 'any',
+        role: 'object',
         description: [
             'A list of traces this frame modifies. The format is identical to the',
             'normal trace definition.'
@@ -47,6 +51,7 @@ module.exports = {
     },
     layout: {
         valType: 'any',
+        role: 'object',
         description: [
             'Layout properties which this frame modifies. The format is identical',
             'to the normal layout definition.'
