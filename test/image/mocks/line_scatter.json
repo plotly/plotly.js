@@ -55,6 +55,13 @@
       "marker": {
         "opacity": 0.707
       }
+    },
+    {
+      "x": [1, 2, 3],
+      "y": [1, 2, 3],
+      "opacity": 0.2,
+      "line": { "width": 10, "color": "red"},
+      "marker": { "size": 20, "color": "blue"}
     }
   ]
 }
