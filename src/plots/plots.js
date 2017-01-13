@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -941,6 +941,9 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     coerce('separators');
     coerce('hidesources');
     coerce('smith');
+
+    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleDefaults');
+    handleCalendarDefaults(layoutIn, layoutOut, 'calendar');
 };
 
 plots.plotAutoSize = function plotAutoSize(gd, layout, fullLayout) {
@@ -1335,7 +1338,8 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
     }
 
     var data = (useDefaults) ? gd._fullData : gd.data,
-        layout = (useDefaults) ? gd._fullLayout : gd.layout;
+        layout = (useDefaults) ? gd._fullLayout : gd.layout,
+        frames = (gd._transitionData || {})._frames;
 
     function stripObj(d) {
         if(typeof d === 'function') {
@@ -1390,7 +1394,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
 
         // convert native dates to date strings...
         // mostly for external users exporting to plotly
-        if(Lib.isJSDate(d)) return Lib.ms2DateTime(+d);
+        if(Lib.isJSDate(d)) return Lib.ms2DateTimeLocal(+d);
 
         return d;
     }
@@ -1407,6 +1411,8 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
     if(!dataonly) { obj.layout = stripObj(layout); }
 
     if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
+
+    if(frames) obj.frames = stripObj(frames);
 
     return (output === 'object') ? obj : JSON.stringify(obj);
 };
@@ -1478,7 +1484,17 @@ plots.computeFrame = function(gd, frameName) {
     var frameLookup = gd._transitionData._frameHash;
     var i, traceIndices, traceIndex, destIndex;
 
-    var framePtr = frameLookup[frameName];
+    // Null or undefined will fail on .toString(). We'll allow numbers since we
+    // make it clear frames must be given string names, but we'll allow numbers
+    // here since they're otherwise fine for looking up frames as long as they're
+    // properly cast to strings. We really just want to ensure here that this
+    // 1) doesn't fail, and
+    // 2) doens't give an incorrect answer (which String(frameName) would)
+    if(!frameName) {
+        throw new Error('computeFrame must be given a string frame name');
+    }
+
+    var framePtr = frameLookup[frameName.toString()];
 
     // Return false if the name is invalid:
     if(!framePtr) {
@@ -1489,7 +1505,7 @@ plots.computeFrame = function(gd, frameName) {
     var frameNameStack = [framePtr.name];
 
     // Follow frame pointers:
-    while((framePtr = frameLookup[framePtr.baseframe])) {
+    while(framePtr.baseframe && (framePtr = frameLookup[framePtr.baseframe.toString()])) {
         // Avoid infinite loops:
         if(frameNameStack.indexOf(framePtr.name) !== -1) break;
 
@@ -1544,6 +1560,23 @@ plots.computeFrame = function(gd, frameName) {
     }
 
     return result;
+};
+
+/*
+ * Recompute the lookup table that maps frame name -> frame object. addFrames/
+ * deleteFrames already manages this data one at a time, so the only time this
+ * is necessary is if you poke around manually in `gd._transitionData._frames`
+ * and create and haven't updated the lookup table.
+ */
+plots.recomputeFrameHash = function(gd) {
+    var hash = gd._transitionData._frameHash = {};
+    var frames = gd._transitionData._frames;
+    for(var i = 0; i < frames.length; i++) {
+        var frame = frames[i];
+        if(frame && frame.name) {
+            hash[frame.name] = frame;
+        }
+    }
 };
 
 /**
@@ -1888,8 +1921,9 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 plots.doCalcdata = function(gd, traces) {
     var axList = Plotly.Axes.list(gd),
         fullData = gd._fullData,
-        fullLayout = gd._fullLayout,
-        i, j;
+        fullLayout = gd._fullLayout;
+
+    var trace, _module, i, j;
 
     // XXX: Is this correct? Needs a closer look so that *some* traces can be recomputed without
     // *all* needing doCalcdata:
@@ -1918,46 +1952,57 @@ plots.doCalcdata = function(gd, traces) {
         axList[i]._categories = axList[i]._initialCategories.slice();
     }
 
+    // If traces were specified and this trace was not included,
+    // then transfer it over from the old calcdata:
     for(i = 0; i < fullData.length; i++) {
-        // If traces were specified and this trace was not included, then transfer it over from
-        // the old calcdata:
         if(Array.isArray(traces) && traces.indexOf(i) === -1) {
             calcdata[i] = oldCalcdata[i];
             continue;
         }
+    }
 
-        var trace = fullData[i],
-            cd = [];
+    var hasCalcTransform = false;
 
-        // If traces were specified and this trace was not included, then transfer it over from
-        // the old calcdata:
-        if(Array.isArray(traces) && traces.indexOf(i) === -1) {
-            calcdata[i] = oldCalcdata[i];
-            continue;
-        }
+    // transform loop
+    for(i = 0; i < fullData.length; i++) {
+        trace = fullData[i];
 
-        var _module;
-        if(trace.visible === true) {
+        if(trace.visible === true && trace.transforms) {
+            _module = trace._module;
 
-            // call calcTransform method if any
-            if(trace.transforms) {
+            // we need one round of trace module calc before
+            // the calc transform to 'fill in' the categories list
+            // used for example in the data-to-coordinate method
+            if(_module && _module.calc) _module.calc(gd, trace);
 
-                // we need one round of trace module calc before
-                // the calc transform to 'fill in' the categories list
-                // used for example in the data-to-coordinate method
-                _module = trace._module;
-                if(_module && _module.calc) _module.calc(gd, trace);
+            for(j = 0; j < trace.transforms.length; j++) {
+                var transform = trace.transforms[j];
 
-                for(j = 0; j < trace.transforms.length; j++) {
-                    var transform = trace.transforms[j];
-
-                    _module = transformsRegistry[transform.type];
-                    if(_module && _module.calcTransform) {
-                        _module.calcTransform(gd, trace, transform);
-                    }
+                _module = transformsRegistry[transform.type];
+                if(_module && _module.calcTransform) {
+                    hasCalcTransform = true;
+                    _module.calcTransform(gd, trace, transform);
                 }
             }
+        }
+    }
 
+    // clear stuff that should recomputed in 'regular' loop
+    if(hasCalcTransform) {
+        for(i = 0; i < axList.length; i++) {
+            axList[i]._min = [];
+            axList[i]._max = [];
+            axList[i]._categories = [];
+        }
+    }
+
+    // 'regular' loop
+    for(i = 0; i < fullData.length; i++) {
+        var cd = [];
+
+        trace = fullData[i];
+
+        if(trace.visible === true) {
             _module = trace._module;
             if(_module && _module.calc) cd = _module.calc(gd, trace);
         }

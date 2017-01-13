@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,6 +9,7 @@
 
 'use strict';
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 
 var subTypes = require('../scatter/subtypes');
@@ -26,7 +27,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len = handleXYZDefaults(traceIn, traceOut, coerce);
+    var len = handleXYZDefaults(traceIn, traceOut, coerce, layout);
     if(!len) {
         traceOut.visible = false;
         return;
@@ -66,11 +67,14 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'z'});
 };
 
-function handleXYZDefaults(traceIn, traceOut, coerce) {
+function handleXYZDefaults(traceIn, traceOut, coerce, layout) {
     var len = 0,
         x = coerce('x'),
         y = coerce('y'),
         z = coerce('z');
+
+    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
+    handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
 
     if(x && y && z) {
         len = Math.min(x.length, y.length, z.length);

@@ -3,7 +3,6 @@ var Annotations = require('@src/components/annotations');
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
-var Dates = require('@src/lib/dates');
 var Axes = require('@src/plots/cartesian/axes');
 
 var d3 = require('d3');
@@ -71,7 +70,10 @@ describe('Test annotations', function() {
                     axref: 'x',
                     ayref: 'y',
                     x: '2008-07-01',
-                    ax: Dates.dateTime2ms('2004-07-01'),
+                    // note this is not portable: this generates ms in the local
+                    // timezone, so will work correctly where it was created but
+                    // not if the milliseconds number is moved to another TZ
+                    ax: +(new Date(2004, 6, 1)),
                     y: 0,
                     ay: 50
                 }]
@@ -235,7 +237,8 @@ describe('annotations autosize', function() {
 
             expect(fullLayout.xaxis.range).toBeCloseToArray(x, PREC, '- xaxis');
             expect(fullLayout.yaxis.range).toBeCloseToArray(y, PREC, '- yaxis');
-            expect(dateAx.range.map(dateAx.r2l)).toBeCloseToArray(x2.map(dateAx.r2l), PRECX2, 'xaxis2 ' + dateAx.range);
+            expect(Lib.simpleMap(dateAx.range, dateAx.r2l))
+                .toBeCloseToArray(Lib.simpleMap(x2, dateAx.r2l), PRECX2, 'xaxis2 ' + dateAx.range);
             expect(fullLayout.yaxis2.range).toBeCloseToArray(y2, PRECY2, 'yaxis2');
             expect(fullLayout.xaxis3.range).toBeCloseToArray(x3, PREC, 'xaxis3');
             expect(fullLayout.yaxis3.range).toBeCloseToArray(y3, PREC, 'yaxis3');

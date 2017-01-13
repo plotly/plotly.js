@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -25,6 +25,7 @@ module.exports = extendFlat({}, {
     y: scatterAttrs.y,
     y0: scatterAttrs.y0,
     dy: scatterAttrs.dy,
+
     text: {
         valType: 'data_array',
         description: 'Sets the text elements associated with each z value.'

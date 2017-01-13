@@ -53,6 +53,7 @@ var mockList = getMockList(pattern);
 var isInQueue = (process.argv[3] === '--queue');
 var isCI = process.env.CIRCLECI;
 
+
 if(mockList.length === 0) {
     throw new Error('No mocks found with pattern ' + pattern);
 }
@@ -252,7 +253,8 @@ function comparePixels(mockName, cb) {
     function onEqualityCheck(err, isEqual) {
         if(err) {
             common.touch(imagePaths.diff);
-            return console.error(err, mockName);
+            console.error(err);
+            return;
         }
         if(isEqual) {
             fs.unlinkSync(imagePaths.diff);
@@ -261,7 +263,16 @@ function comparePixels(mockName, cb) {
         cb(isEqual, mockName);
     }
 
+    // 525 means a plotly.js error
+    function onResponse(response) {
+        if(+response.statusCode === 525) {
+            console.error('plotly.js error while generating', mockName);
+            cb(false, mockName);
+        }
+    }
+
     request(requestOpts)
+        .on('response', onResponse)
         .pipe(saveImageStream)
         .on('close', checkImage);
 }

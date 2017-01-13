@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -70,6 +70,7 @@ function makeTrace(traceIn, state, direction) {
 
             // to make autotype catch date axes soon!!
             x: traceIn.x || [0],
+            xcalendar: traceIn.xcalendar,
 
             // concat low and high to get correct autorange
             y: [].concat(traceIn.low).concat(traceIn.high),

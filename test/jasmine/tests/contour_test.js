@@ -34,8 +34,9 @@ describe('contour defaults', function() {
                 [0.625, 1.25, 3.125, 6.25]],
             contours: {
                 start: 4,
-                end: 14,
-                size: 0.5
+                end: 14
+                // missing size does NOT set autocontour true
+                // even though in calc we set an autosize.
             }
         };
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
@@ -46,10 +47,41 @@ describe('contour defaults', function() {
             z: [[10, 10.625, 12.5, 15.625],
                 [5.625, 6.25, 8.125, 11.25],
                 [2.5, 3.125, 5.0, 8.125],
-                [0.625, 1.25, 3.125, 6.25]]
+                [0.625, 1.25, 3.125, 6.25]],
+            contours: {start: 4} // you need at least start and end
         };
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
         expect(traceOut.autocontour).toBe(true);
+    });
+
+    it('should inherit layout.calendar', function() {
+        traceIn = {
+            x: [1, 2],
+            y: [1, 2],
+            z: [[1, 2], [3, 4]]
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+
+        // we always fill calendar attributes, because it's hard to tell if
+        // we're on a date axis at this point.
+        expect(traceOut.xcalendar).toBe('islamic');
+        expect(traceOut.ycalendar).toBe('islamic');
+    });
+
+    it('should take its own calendars', function() {
+        traceIn = {
+            x: [1, 2],
+            y: [1, 2],
+            z: [[1, 2], [3, 4]],
+            xcalendar: 'coptic',
+            ycalendar: 'ethiopian'
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+
+        // we always fill calendar attributes, because it's hard to tell if
+        // we're on a date axis at this point.
+        expect(traceOut.xcalendar).toBe('coptic');
+        expect(traceOut.ycalendar).toBe('ethiopian');
     });
 });
 
@@ -153,7 +185,9 @@ describe('contour calc', function() {
         Plots.supplyDefaults(gd);
         var fullTrace = gd._fullData[0];
 
-        return Contour.calc(gd, fullTrace)[0];
+        var out = Contour.calc(gd, fullTrace)[0];
+        out.trace = fullTrace;
+        return out;
     }
 
     it('should fill in bricks if x/y not given', function() {
@@ -238,5 +272,70 @@ describe('contour calc', function() {
         expect(out.x).toBeCloseToArray([0, 1, 2]);
         expect(out.y).toBeCloseToArray([0, 1]);
         expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
+    });
+
+    it('should make nice autocontour values', function() {
+        var incompleteContours = [
+            undefined,
+            {start: 12},
+            {end: 45},
+            {start: 2, size: 2}  // size gets ignored
+        ];
+
+        var contoursFinal = [
+            // fully auto. These are *not* exactly the output contours objects,
+            // I put the input ncontours in here too.
+            {inputNcontours: undefined, start: 0.5, end: 4.5, size: 0.5},
+            // explicit ncontours
+            {inputNcontours: 6, start: 1, end: 4, size: 1},
+            // edge case where low ncontours makes start and end cross
+            {inputNcontours: 2, start: 2.5, end: 2.5, size: 5}
+        ];
+
+        incompleteContours.forEach(function(contoursIn) {
+            contoursFinal.forEach(function(spec) {
+                var out = _calc({
+                    z: [[0, 2], [3, 5]],
+                    contours: contoursIn,
+                    ncontours: spec.inputNcontours
+                }).trace;
+
+                ['start', 'end', 'size'].forEach(function(attr) {
+                    expect(out.contours[attr]).toBe(spec[attr], [contoursIn, attr]);
+                    // all these get copied back to the input trace
+                    expect(out._input.contours[attr]).toBe(spec[attr], [contoursIn, attr]);
+                });
+            });
+        });
+    });
+
+    it('should supply size and reorder start/end if autocontour is off', function() {
+        var specs = [
+            {start: 1, end: 100, ncontours: undefined, size: 10},
+            {start: 1, end: 100, ncontours: 5, size: 20},
+            {start: 10, end: 10, ncontours: 10, size: 1}
+        ];
+
+        specs.forEach(function(spec) {
+            [
+                [spec.start, spec.end, 'normal'],
+                [spec.end, spec.start, 'reversed']
+            ].forEach(function(v) {
+                var startIn = v[0],
+                    endIn = v[1],
+                    order = v[2];
+
+                var out = _calc({
+                    z: [[1, 2], [3, 4]],
+                    contours: {start: startIn, end: endIn},
+                    ncontours: spec.ncontours
+                }).trace;
+
+                ['start', 'end', 'size'].forEach(function(attr) {
+                    expect(out.contours[attr]).toBe(spec[attr], [spec, order, attr]);
+                    expect(out._input.contours[attr]).toBe(spec[attr], [spec, order, attr]);
+                });
+            });
+        });
     });
 });

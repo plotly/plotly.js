@@ -726,9 +726,9 @@ describe('hover on fill', function() {
         mock.data.forEach(function(trace) { trace.hoveron = 'fills'; });
 
         Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(function() {
-            return assertLabelsCorrect([242, 142], [249.175, 133.8], 'trace 2');
+            return assertLabelsCorrect([242, 142], [252, 133.8], 'trace 2');
         }).then(function() {
-            return assertLabelsCorrect([242, 292], [231.125, 210], 'trace 1');
+            return assertLabelsCorrect([242, 292], [233, 210], 'trace 1');
         }).then(function() {
             return assertLabelsCorrect([147, 252], [158.925, 248.1], 'trace 0');
         }).then(done);
@@ -749,7 +749,7 @@ describe('hover on fill', function() {
         }).then(function() {
             return assertLabelsCorrect([237, 218], [266.75, 265], 'trace 1');
         }).then(function() {
-            return assertLabelsCorrect([237, 251], [247.7, 254], 'trace 0');
+            return assertLabelsCorrect([237, 240], [247.7, 254], 'trace 0');
         }).then(function() {
             // zoom in to test clipping of large out-of-viewport shapes
             return Plotly.relayout(gd, {

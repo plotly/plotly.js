@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -21,7 +21,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    handleSampleDefaults(traceIn, traceOut, coerce);
+    handleSampleDefaults(traceIn, traceOut, coerce, layout);
 
     var contourStart = Lib.coerce2(traceIn, traceOut, attributes, 'contours.start'),
         contourEnd = Lib.coerce2(traceIn, traceOut, attributes, 'contours.end'),

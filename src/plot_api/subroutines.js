@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -236,7 +236,7 @@ exports.doTraceStyle = function(gd) {
             _module = ((cdi[0] || {}).trace || {})._module || {},
             arraysToCalcdata = _module.arraysToCalcdata;
 
-        if(arraysToCalcdata) arraysToCalcdata(cdi);
+        if(arraysToCalcdata) arraysToCalcdata(cdi, cdi[0].trace);
     }
 
     Plots.style(gd);

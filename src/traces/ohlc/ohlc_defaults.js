@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,7 +9,10 @@
 
 'use strict';
 
-module.exports = function handleOHLC(traceIn, traceOut, coerce) {
+var Registry = require('../../registry');
+
+
+module.exports = function handleOHLC(traceIn, traceOut, coerce, layout) {
     var len;
 
     var x = coerce('x'),
@@ -17,6 +20,9 @@ module.exports = function handleOHLC(traceIn, traceOut, coerce) {
         high = coerce('high'),
         low = coerce('low'),
         close = coerce('close');
+
+    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
+    handleCalendarDefaults(traceIn, traceOut, ['x'], layout);
 
     len = Math.min(open.length, high.length, low.length, close.length);
 

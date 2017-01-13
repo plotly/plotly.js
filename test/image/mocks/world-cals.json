@@ -1,0 +1,443 @@
+{
+    "data": [
+        {
+            "type": "bar",
+            "x": [
+                "1686-01-01",
+                "1687-01-01",
+                "1688-01-01"
+            ],
+            "y": [
+                -1,
+                -2,
+                -3
+            ],
+            "xcalendar": "coptic",
+            "name": "coptic bars",
+            "uid": "74ab24"
+        },
+        {
+            "type": "box",
+            "x": [
+                "1798-01-01",
+                "1798-04-04",
+                "1798-05-05",
+                "1798-05-05",
+                "1798-07-05",
+                "1798-07-22",
+                "1799-01-01"
+            ],
+            "orientation": "h",
+            "xcalendar": "discworld",
+            "y0": -3,
+            "name": "discworld box",
+            "uid": "8c8a7d"
+        },
+        {
+            "type": "contour",
+            "x": [
+                "1961-07-01",
+                "1961-09-01",
+                "1961-11-01"
+            ],
+            "y": [
+                3,
+                4,
+                5
+            ],
+            "z": [
+                [
+                    1,
+                    2,
+                    1
+                ],
+                [
+                    3,
+                    4,
+                    3
+                ],
+                [
+                    1,
+                    2,
+                    3
+                ]
+            ],
+            "xcalendar": "ethiopian",
+            "name": "ethiopian contour",
+            "showscale": false,
+            "uid": "506ec8",
+            "zmin": 1,
+            "zmax": 4,
+            "contours": {
+                "coloring": "fill",
+                "showlines": true,
+                "start": 1.5,
+                "size": 0.5,
+                "end": 3.505
+            }
+        },
+        {
+            "type": "heatmap",
+            "x": [
+                "5730-08-01",
+                "5730-10-01",
+                "5730-12-01"
+            ],
+            "y": [
+                3,
+                4,
+                5
+            ],
+            "z": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "xcalendar": "hebrew",
+            "name": "hebrew heatmap",
+            "showscale": false,
+            "uid": "2f8d3f",
+            "zmin": 1,
+            "zmax": 4
+        },
+        {
+            "type": "histogram2d",
+            "x": [
+                "1389-01-01",
+                "1389-01-01",
+                "1389-01-01",
+                "1389-03-01",
+                "1389-03-01",
+                "1389-06-01"
+            ],
+            "y": [
+                1.5,
+                1.5,
+                1.5,
+                2.5,
+                2.5,
+                1.5
+            ],
+            "xcalendar": "islamic",
+            "name": "islamic histogram2d",
+            "nbinsx": 3,
+            "nbinsy": 2,
+            "showscale": false,
+            "uid": "beb4e5",
+            "xbins": {
+                "start": "1388-12-14 12:00",
+                "end": "1389-06-14 12:00",
+                "size": "M2"
+            },
+            "ybins": {
+                "start": 1,
+                "end": 3,
+                "size": 1
+            },
+            "zmin": 0,
+            "zmax": 3
+        },
+        {
+            "type": "histogram2dcontour",
+            "x": [
+                "1970-01-01",
+                "1970-01-01",
+                "1970-01-01",
+                "1970-03-01",
+                "1970-03-01",
+                "1970-06-01"
+            ],
+            "y": [
+                1.5,
+                1.5,
+                1.5,
+                2.5,
+                2.5,
+                1.5
+            ],
+            "xcalendar": "julian",
+            "name": "julian histogram2dcontour",
+            "nbinsx": 3,
+            "nbinsy": 2,
+            "showscale": false,
+            "uid": "d01089",
+            "xbins": {
+                "start": "1969-10-16 12:00",
+                "end": "1970-08-16 12:00",
+                "size": "M2"
+            },
+            "ybins": {
+                "start": 0,
+                "end": 4,
+                "size": 1
+            },
+            "zmin": 0,
+            "zmax": 3,
+            "colorscale": [
+                [
+                    0,
+                    "rgb(220,220,220)"
+                ],
+                [
+                    0.2,
+                    "rgb(245,195,157)"
+                ],
+                [
+                    0.4,
+                    "rgb(245,160,105)"
+                ],
+                [
+                    1,
+                    "rgb(178,10,28)"
+                ]
+            ],
+            "contours": {
+                "coloring": "fill",
+                "showlines": true,
+                "start": 0.5,
+                "size": 0.5,
+                "end": 2.505
+            }
+        },
+        {
+            "type": "scatter",
+            "x": [
+                "5157-01-01",
+                "5157-02-01",
+                "5157-03-01",
+                "5157-04-01"
+            ],
+            "y": [
+                4,
+                2,
+                3,
+                1
+            ],
+            "xcalendar": "mayan",
+            "name": "mayan",
+            "uid": "af70cc"
+        },
+        {
+            "type": "scatter",
+            "x": [
+                "0502-09-01",
+                "0502-10-01",
+                "0502-11-01",
+                "0502-12-01"
+            ],
+            "y": [
+                4,
+                2,
+                3,
+                1
+            ],
+            "xcalendar": "nanakshahi",
+            "name": "nanakshahi",
+            "uid": "de4e9d"
+        },
+        {
+            "type": "scatter",
+            "x": [
+                "2027-10-01",
+                "2027-11-01",
+                "2027-12-01",
+                "2028-01-01"
+            ],
+            "y": [
+                4,
+                2,
+                3,
+                1
+            ],
+            "xcalendar": "nepali",
+            "name": "nepali",
+            "uid": "5d4950"
+        },
+        {
+            "type": "scatter",
+            "x": [
+                "1350-01-01",
+                "1350-02-01",
+                "1350-03-01",
+                "1350-04-01"
+            ],
+            "y": [
+                4,
+                2,
+                3,
+                1
+            ],
+            "xcalendar": "persian",
+            "name": "persian",
+            "uid": "d13636"
+        },
+        {
+            "type": "scatter",
+            "x": [
+                "1350-03-01",
+                "1350-04-01",
+                "1350-05-01",
+                "1350-06-01"
+            ],
+            "y": [
+                4,
+                2,
+                3,
+                1
+            ],
+            "xcalendar": "jalali",
+            "name": "jalali",
+            "uid": "612738"
+        },
+        {
+            "type": "scatter",
+            "x": [
+                "0060-08-01",
+                "0060-09-01",
+                "0060-10-01",
+                "0060-11-01"
+            ],
+            "y": [
+                4,
+                2,
+                3,
+                1
+            ],
+            "xcalendar": "taiwan",
+            "name": "taiwan",
+            "uid": "24ac23"
+        },
+        {
+            "type": "scatter",
+            "x": [
+                "2514-10-01",
+                "2514-11-01",
+                "2514-12-01",
+                "2515-01-01"
+            ],
+            "y": [
+                4,
+                2,
+                3,
+                1
+            ],
+            "xcalendar": "thai",
+            "name": "thai",
+            "uid": "830f65"
+        },
+        {
+            "type": "histogram",
+            "y": [
+                "5200-01-01",
+                "5200-01-01",
+                "5200-01-02",
+                "5200-01-03",
+                "5200-01-03",
+                "5200-01-03",
+                "5201-04-01",
+                "5199-01-01"
+            ],
+            "xaxis": "x2",
+            "yaxis": "y2",
+            "ycalendar": "hebrew",
+            "name": "hebrew histogram<br>jalali filtered",
+            "transforms": [
+                {
+                    "type": "filter",
+                    "operation": "[]",
+                    "valuecalendar": "jalali",
+                    "value": [
+                        "0818-08",
+                        "0819-06"
+                    ],
+                    "target": "y"
+                }
+            ],
+            "uid": "cf8dad",
+            "ybins": {
+                "start": "5200-12-29 12:00",
+                "end": "5200-01-03 12:00",
+                "size": 86400000
+            }
+        }
+    ],
+    "layout": {
+        "xaxis": {
+            "calendar": "ummalqura",
+            "title": "ummalqura axis",
+            "domain": [
+                0,
+                0.8
+            ],
+            "type": "date",
+            "range": [
+                "1388-08-05 16:38:43.314",
+                "1392-01-29 11:07:58.7911"
+            ],
+            "autorange": true
+        },
+        "xaxis2": {
+            "domain": [
+                0.9,
+                1
+            ],
+            "range": [
+                0,
+                3.1578947368421053
+            ],
+            "autorange": true
+        },
+        "yaxis2": {
+            "anchor": "x2",
+            "calendar": "nepali",
+            "title": "nepali axis",
+            "type": "date",
+            "range": [
+                "1496-11-30 12:00",
+                "1496-12-03 12:00"
+            ],
+            "autorange": true
+        },
+        "width": 1200,
+        "height": 400,
+        "annotations": [
+            {
+                "x": "1389-06-05",
+                "y": 4,
+                "text": "ethiopian<br>contour",
+                "showarrow": false
+            },
+            {
+                "x": "1390-01-10",
+                "y": 4,
+                "text": "hebrew<br>heatmap",
+                "showarrow": false
+            },
+            {
+                "x": "1389-08-01",
+                "y": 2,
+                "text": "islamic<br>hist2d",
+                "showarrow": false
+            },
+            {
+                "x": "1390-03-15",
+                "y": 2,
+                "text": "julian<br>hist2dcontour",
+                "showarrow": false
+            }
+        ],
+        "yaxis": {
+            "type": "linear",
+            "range": [
+                -3.5,
+                5
+            ],
+            "autorange": true
+        }
+    }
+}

@@ -385,6 +385,34 @@ describe('Test axes', function() {
             expect(layoutOut.yaxis2.gridcolor)
                 .toEqual(tinycolor.mix('#444', bgColor, frac).toRgbString());
         });
+
+        it('should inherit calendar from the layout', function() {
+            layoutOut.calendar = 'nepali';
+            layoutIn = {
+                calendar: 'nepali',
+                xaxis: {type: 'date'},
+                yaxis: {type: 'date'}
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.calendar).toBe('nepali');
+            expect(layoutOut.yaxis.calendar).toBe('nepali');
+        });
+
+        it('should allow its own calendar', function() {
+            layoutOut.calendar = 'nepali';
+            layoutIn = {
+                calendar: 'nepali',
+                xaxis: {type: 'date', calendar: 'coptic'},
+                yaxis: {type: 'date', calendar: 'thai'}
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.calendar).toBe('coptic');
+            expect(layoutOut.yaxis.calendar).toBe('thai');
+        });
     });
 
     describe('categoryorder', function() {
@@ -678,7 +706,7 @@ describe('Test axes', function() {
 
         it('should handle tick0 and dtick for date axes', function() {
             var someMs = 123456789,
-                someMsDate = Lib.ms2DateTime(someMs),
+                someMsDate = Lib.ms2DateTimeLocal(someMs),
                 oneDay = 24 * 3600 * 1000,
                 axIn = {tick0: someMs, dtick: String(3 * oneDay)},
                 axOut = {};
@@ -1393,7 +1421,7 @@ describe('Test axes', function() {
         });
     });
 
-    describe('calcTicks', function() {
+    describe('calcTicks and tickText', function() {
         function mockCalc(ax) {
             Axes.setConvert(ax);
             ax.tickfont = {};
@@ -1401,14 +1429,28 @@ describe('Test axes', function() {
             return Axes.calcTicks(ax).map(function(v) { return v.text; });
         }
 
+        function mockHoverText(ax, x) {
+            var xCalc = (ax.d2l_noadd || ax.d2l)(x);
+            var tickTextObj = Axes.tickText(ax, xCalc, true);
+            return tickTextObj.text;
+        }
+
+        function checkHovers(ax, specArray) {
+            specArray.forEach(function(v) {
+                expect(mockHoverText(ax, v[0]))
+                    .toBe(v[1], ax.dtick + ' - ' + v[0]);
+            });
+        }
+
         it('provides a new date suffix whenever the suffix changes', function() {
-            var textOut = mockCalc({
+            var ax = {
                 type: 'date',
                 tickmode: 'linear',
                 tick0: '2000-01-01',
                 dtick: 14 * 24 * 3600 * 1000, // 14 days
                 range: ['1999-12-01', '2000-02-15']
-            });
+            };
+            var textOut = mockCalc(ax);
 
             var expectedText = [
                 'Dec 4<br>1999',
@@ -1419,14 +1461,17 @@ describe('Test axes', function() {
                 'Feb 12'
             ];
             expect(textOut).toEqual(expectedText);
+            expect(mockHoverText(ax, '1999-12-18 15:34:33.3'))
+                .toBe('Dec 18, 1999, 15:34');
 
-            textOut = mockCalc({
+            ax = {
                 type: 'date',
                 tickmode: 'linear',
                 tick0: '2000-01-01',
                 dtick: 12 * 3600 * 1000, // 12 hours
                 range: ['2000-01-03 11:00', '2000-01-06']
-            });
+            };
+            textOut = mockCalc(ax);
 
             expectedText = [
                 '12:00<br>Jan 3, 2000',
@@ -1437,14 +1482,17 @@ describe('Test axes', function() {
                 '00:00<br>Jan 6, 2000'
             ];
             expect(textOut).toEqual(expectedText);
+            expect(mockHoverText(ax, '2000-01-04 15:34:33.3'))
+                .toBe('Jan 4, 2000, 15:34:33');
 
-            textOut = mockCalc({
+            ax = {
                 type: 'date',
                 tickmode: 'linear',
                 tick0: '2000-01-01',
                 dtick: 1000, // 1 sec
                 range: ['2000-02-03 23:59:57', '2000-02-04 00:00:02']
-            });
+            };
+            textOut = mockCalc(ax);
 
             expectedText = [
                 '23:59:57<br>Feb 3, 2000',
@@ -1455,16 +1503,21 @@ describe('Test axes', function() {
                 '00:00:02'
             ];
             expect(textOut).toEqual(expectedText);
+            expect(mockHoverText(ax, '2000-02-04 00:00:00.123456'))
+                .toBe('Feb 4, 2000, 00:00:00.1235');
+            expect(mockHoverText(ax, '2000-02-04 00:00:00'))
+                .toBe('Feb 4, 2000');
         });
 
         it('should give dates extra precision if tick0 is weird', function() {
-            var textOut = mockCalc({
+            var ax = {
                 type: 'date',
                 tickmode: 'linear',
                 tick0: '2000-01-01 00:05',
                 dtick: 14 * 24 * 3600 * 1000, // 14 days
                 range: ['1999-12-01', '2000-02-15']
-            });
+            };
+            var textOut = mockCalc(ax);
 
             var expectedText = [
                 '00:05<br>Dec 4, 1999',
@@ -1475,16 +1528,21 @@ describe('Test axes', function() {
                 '00:05<br>Feb 12, 2000'
             ];
             expect(textOut).toEqual(expectedText);
+            expect(mockHoverText(ax, '2000-02-04 00:00:00.123456'))
+                .toBe('Feb 4, 2000');
+            expect(mockHoverText(ax, '2000-02-04 00:00:05.123456'))
+                .toBe('Feb 4, 2000, 00:00:05');
         });
 
         it('should never give dates more than 100 microsecond precision', function() {
-            var textOut = mockCalc({
+            var ax = {
                 type: 'date',
                 tickmode: 'linear',
                 tick0: '2000-01-01',
                 dtick: 1.1333,
                 range: ['2000-01-01', '2000-01-01 00:00:00.01']
-            });
+            };
+            var textOut = mockCalc(ax);
 
             var expectedText = [
                 '00:00:00<br>Jan 1, 2000',
@@ -1498,6 +1556,277 @@ describe('Test axes', function() {
                 '00:00:00.0091'
             ];
             expect(textOut).toEqual(expectedText);
+        });
+
+        it('should handle edge cases with dates and tickvals', function() {
+            var ax = {
+                type: 'date',
+                tickmode: 'array',
+                tickvals: [
+                    '2012-01-01',
+                    new Date(2012, 2, 1).getTime(),
+                    '2012-08-01 00:00:00',
+                    '2012-10-01 12:00:00',
+                    new Date(2013, 0, 1, 0, 0, 1).getTime(),
+                    '2010-01-01', '2014-01-01' // off the axis
+                ],
+                // only the first two have text
+                ticktext: ['New year', 'February'],
+
+                // required to get calcTicks to run
+                range: ['2011-12-10', '2013-01-23'],
+                nticks: 10
+            };
+            var textOut = mockCalc(ax);
+
+            var expectedText = [
+                'New year',
+                'February',
+                'Aug 1, 2012',
+                '12:00<br>Oct 1, 2012',
+                '00:00:01<br>Jan 1, 2013'
+            ];
+            expect(textOut).toEqual(expectedText);
+            expect(mockHoverText(ax, '2012-01-01'))
+                .toBe('New year');
+            expect(mockHoverText(ax, '2012-01-01 12:34:56.1234'))
+                .toBe('Jan 1, 2012, 12:34:56');
+        });
+
+        it('should handle tickvals edge cases with linear and log axes', function() {
+            ['linear', 'log'].forEach(function(axType) {
+                var ax = {
+                    type: axType,
+                    tickmode: 'array',
+                    tickvals: [1, 1.5, 2.6999999, 30, 39.999, 100, 0.1],
+                    ticktext: ['One', '...and a half'],
+                    // I'll be so happy when I can finally get rid of this switch!
+                    range: axType === 'log' ? [-0.2, 1.8] : [0.5, 50],
+                    nticks: 10
+                };
+                var textOut = mockCalc(ax);
+
+                var expectedText = [
+                    'One',
+                    '...and a half', // the first two get explicit labels
+                    '2.7', // 2.6999999 gets rounded to 2.7
+                    '30',
+                    '39.999' // 39.999 does not get rounded
+                    // 10 and 0.1 are off scale
+                ];
+                expect(textOut).toEqual(expectedText, axType);
+                expect(mockHoverText(ax, 1)).toBe('One');
+                expect(mockHoverText(ax, 19.999)).toBe('19.999');
+            });
+        });
+
+        it('should handle tickvals edge cases with category axes', function() {
+            var ax = {
+                type: 'category',
+                _categories: ['a', 'b', 'c', 'd'],
+                tickmode: 'array',
+                tickvals: ['a', 1, 1.5, 'c', 2.7, 3, 'e', 4, 5, -2],
+                ticktext: ['A!', 'B?', 'B->C'],
+                range: [-0.5, 4.5],
+                nticks: 10
+            };
+            var textOut = mockCalc(ax);
+
+            var expectedText = [
+                'A!', // category position, explicit text
+                'B?', // integer position, explicit text
+                'B->C', // non-integer position, explicit text
+                'c', // category position, no text: use category
+                'd', // non-integer position, no text: use closest category
+                'd', // integer position, no text: use category
+                '' // 4: number with no close category: leave blank
+                   //    but still include it so we get a tick mark & grid
+                // 'e', 5, -2: bad category and numbers out of range: omitted
+            ];
+            expect(textOut).toEqual(expectedText);
+            expect(mockHoverText(ax, 0)).toBe('A!');
+            expect(mockHoverText(ax, 2)).toBe('c');
+            expect(mockHoverText(ax, 4)).toBe('');
+
+            // make sure we didn't add any more categories accidentally
+            expect(ax._categories).toEqual(['a', 'b', 'c', 'd']);
+        });
+
+        it('should always start at year for date axis hover', function() {
+            var ax = {
+                type: 'date',
+                tickmode: 'linear',
+                tick0: '2000-01-01',
+                dtick: 'M1200',
+                range: ['1000-01-01', '3000-01-01'],
+                nticks: 10
+            };
+            mockCalc(ax);
+
+            checkHovers(ax, [
+                ['2000-01-01', 'Jan 2000'],
+                ['2000-01-01 11:00', 'Jan 2000'],
+                ['2000-01-01 11:14', 'Jan 2000'],
+                ['2000-01-01 11:00:15', 'Jan 2000'],
+                ['2000-01-01 11:00:00.1', 'Jan 2000'],
+                ['2000-01-01 11:00:00.0001', 'Jan 2000']
+            ]);
+
+            ax.dtick = 'M1';
+            ax.range = ['1999-06-01', '2000-06-01'];
+            mockCalc(ax);
+
+            checkHovers(ax, [
+                ['2000-01-01', 'Jan 1, 2000'],
+                ['2000-01-01 11:00', 'Jan 1, 2000'],
+                ['2000-01-01 11:14', 'Jan 1, 2000'],
+                ['2000-01-01 11:00:15', 'Jan 1, 2000'],
+                ['2000-01-01 11:00:00.1', 'Jan 1, 2000'],
+                ['2000-01-01 11:00:00.0001', 'Jan 1, 2000']
+            ]);
+
+            ax.dtick = 24 * 3600000; // one day
+            ax.range = ['1999-12-15', '2000-01-15'];
+            mockCalc(ax);
+
+            checkHovers(ax, [
+                ['2000-01-01', 'Jan 1, 2000'],
+                ['2000-01-01 11:00', 'Jan 1, 2000, 11:00'],
+                ['2000-01-01 11:14', 'Jan 1, 2000, 11:14'],
+                ['2000-01-01 11:00:15', 'Jan 1, 2000, 11:00'],
+                ['2000-01-01 11:00:00.1', 'Jan 1, 2000, 11:00'],
+                ['2000-01-01 11:00:00.0001', 'Jan 1, 2000, 11:00']
+            ]);
+
+            ax.dtick = 3600000; // one hour
+            ax.range = ['1999-12-31', '2000-01-02'];
+            mockCalc(ax);
+
+            checkHovers(ax, [
+                ['2000-01-01', 'Jan 1, 2000'],
+                ['2000-01-01 11:00', 'Jan 1, 2000, 11:00'],
+                ['2000-01-01 11:14', 'Jan 1, 2000, 11:14'],
+                ['2000-01-01 11:00:15', 'Jan 1, 2000, 11:00:15'],
+                ['2000-01-01 11:00:00.1', 'Jan 1, 2000, 11:00'],
+                ['2000-01-01 11:00:00.0001', 'Jan 1, 2000, 11:00']
+            ]);
+
+            ax.dtick = 60000; // one minute
+            ax.range = ['1999-12-31 23:00', '2000-01-01 01:00'];
+            mockCalc(ax);
+
+            checkHovers(ax, [
+                ['2000-01-01', 'Jan 1, 2000'],
+                ['2000-01-01 11:00', 'Jan 1, 2000, 11:00'],
+                ['2000-01-01 11:14', 'Jan 1, 2000, 11:14'],
+                ['2000-01-01 11:00:15', 'Jan 1, 2000, 11:00:15'],
+                ['2000-01-01 11:00:00.1', 'Jan 1, 2000, 11:00'],
+                ['2000-01-01 11:00:00.0001', 'Jan 1, 2000, 11:00']
+            ]);
+
+            ax.dtick = 1000; // one second
+            ax.range = ['1999-12-31 23:59', '2000-01-01 00:01'];
+            mockCalc(ax);
+
+            checkHovers(ax, [
+                ['2000-01-01', 'Jan 1, 2000'],
+                ['2000-01-01 11:00', 'Jan 1, 2000, 11:00'],
+                ['2000-01-01 11:14', 'Jan 1, 2000, 11:14'],
+                ['2000-01-01 11:00:15', 'Jan 1, 2000, 11:00:15'],
+                ['2000-01-01 11:00:00.1', 'Jan 1, 2000, 11:00:00.1'],
+                ['2000-01-01 11:00:00.0001', 'Jan 1, 2000, 11:00:00.0001']
+            ]);
+        });
+    });
+
+    describe('autoBin', function() {
+
+        function _autoBin(x, ax, nbins) {
+            ax._categories = [];
+            Axes.setConvert(ax);
+
+            var d = ax.makeCalcdata({ x: x }, 'x');
+
+            return Axes.autoBin(d, ax, nbins, false, 'gregorian');
+        }
+
+        it('should auto bin categories', function() {
+            var out = _autoBin(
+                ['apples', 'oranges', 'bananas'],
+                { type: 'category' }
+            );
+
+            expect(out).toEqual({
+                start: -0.5,
+                end: 2.5,
+                size: 1
+            });
+        });
+
+        it('should not error out for categories on linear axis', function() {
+            var out = _autoBin(
+                ['apples', 'oranges', 'bananas'],
+                { type: 'linear' }
+            );
+
+            expect(out).toEqual({
+                start: undefined,
+                end: undefined,
+                size: 2
+            });
+        });
+
+        it('should not error out for categories on log axis', function() {
+            var out = _autoBin(
+                ['apples', 'oranges', 'bananas'],
+                { type: 'log' }
+            );
+
+            expect(out).toEqual({
+                start: undefined,
+                end: undefined,
+                size: 2
+            });
+        });
+
+        it('should not error out for categories on date axis', function() {
+            var out = _autoBin(
+                ['apples', 'oranges', 'bananas'],
+                { type: 'date' }
+            );
+
+            expect(out).toEqual({
+                start: undefined,
+                end: undefined,
+                size: 2
+            });
+        });
+
+        it('should auto bin linear data', function() {
+            var out = _autoBin(
+                [1, 1, 2, 2, 3, 3, 4, 4],
+                { type: 'linear' }
+            );
+
+            expect(out).toEqual({
+                start: -0.5,
+                end: 4.5,
+                size: 1
+            });
+        });
+
+        it('should auto bin linear data with nbins constraint', function() {
+            var out = _autoBin(
+                [1, 1, 2, 2, 3, 3, 4, 4],
+                { type: 'linear' },
+                2
+            );
+
+            expect(out).toEqual({
+                start: -0.5,
+                end: 5.5,
+                size: 2
+            });
         });
     });
 });

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -46,7 +46,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
                 letter: axName[0],
                 data: options.data,
                 showGrid: true,
-                bgColor: options.bgColor
+                bgColor: options.bgColor,
+                calendar: options.calendar
             });
 
         coerce('gridcolor', colorMix(containerOut.color, options.bgColor, gridLightness).toRgbString());

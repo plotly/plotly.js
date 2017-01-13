@@ -75,5 +75,35 @@ describe('Test Gl3dAxes', function() {
                 checkKeys(expected[axis], layoutOut[axis]);
             });
         });
+
+        it('should inherit layout.calendar', function() {
+            layoutIn = {
+                xaxis: {type: 'date'},
+                yaxis: {type: 'date'},
+                zaxis: {type: 'date'}
+            };
+            options.calendar = 'taiwan';
+
+            supplyLayoutDefaults(layoutIn, layoutOut, options);
+
+            expect(layoutOut.xaxis.calendar).toBe('taiwan');
+            expect(layoutOut.yaxis.calendar).toBe('taiwan');
+            expect(layoutOut.zaxis.calendar).toBe('taiwan');
+        });
+
+        it('should accept its own calendar', function() {
+            layoutIn = {
+                xaxis: {type: 'date', calendar: 'hebrew'},
+                yaxis: {type: 'date', calendar: 'ummalqura'},
+                zaxis: {type: 'date', calendar: 'discworld'}
+            };
+            options.calendar = 'taiwan';
+
+            supplyLayoutDefaults(layoutIn, layoutOut, options);
+
+            expect(layoutOut.xaxis.calendar).toBe('hebrew');
+            expect(layoutOut.yaxis.calendar).toBe('ummalqura');
+            expect(layoutOut.zaxis.calendar).toBe('discworld');
+        });
     });
 });

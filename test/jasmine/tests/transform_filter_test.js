@@ -8,6 +8,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var assertDims = require('../assets/assert_dims');
 var assertStyle = require('../assets/assert_style');
+var customMatchers = require('../assets/custom_matchers');
 
 describe('filter transforms defaults:', function() {
 
@@ -140,6 +141,75 @@ describe('filter transforms calc:', function() {
         expect(out[0].x).toEqual([0, 1]);
         expect(out[0].y).toEqual([1, 2]);
         expect(out[0].z).toEqual(['2016-10-21', '2016-12-02']);
+    });
+
+    it('should use the calendar from the target attribute if target is a string', function() {
+        // this is the same data as in "filters should handle 3D *z* data"
+        // but with different calendars
+        var out = _transform([Lib.extendDeep({}, base, {
+            type: 'scatter3d',
+            // the same array as above but in nanakshahi dates
+            z: ['0547-05-05', '0548-05-17', '0548-06-17', '0548-08-07', '0548-09-19'],
+            zcalendar: 'nanakshahi',
+            transforms: [{
+                type: 'filter',
+                operation: '>',
+                value: '5776-06-28',
+                valuecalendar: 'hebrew',
+                target: 'z',
+                // targetcalendar is ignored!
+                targetcalendar: 'taiwan'
+            }]
+        })]);
+
+        expect(out[0].x).toEqual([0, 1]);
+        expect(out[0].y).toEqual([1, 2]);
+        expect(out[0].z).toEqual(['0548-08-07', '0548-09-19']);
+    });
+
+    it('should use targetcalendar anyway if there is no matching calendar attribute', function() {
+        // this is the same data as in "filters should handle 3D *z* data"
+        // but with different calendars
+        var out = _transform([Lib.extendDeep({}, base, {
+            type: 'scatter',
+            // the same array as above but in taiwanese dates
+            text: ['0104-07-20', '0105-08-01', '0105-09-01', '0105-10-21', '0105-12-02'],
+            transforms: [{
+                type: 'filter',
+                operation: '>',
+                value: '5776-06-28',
+                valuecalendar: 'hebrew',
+                target: 'text',
+                targetcalendar: 'taiwan'
+            }]
+        })]);
+
+        expect(out[0].x).toEqual([0, 1]);
+        expect(out[0].y).toEqual([1, 2]);
+        expect(out[0].text).toEqual(['0105-10-21', '0105-12-02']);
+    });
+
+    it('should use targetcalendar if target is an array', function() {
+        // this is the same data as in "filters should handle 3D *z* data"
+        // but with different calendars
+        var out = _transform([Lib.extendDeep({}, base, {
+            type: 'scatter3d',
+            // the same array as above but in nanakshahi dates
+            z: ['0547-05-05', '0548-05-17', '0548-06-17', '0548-08-07', '0548-09-19'],
+            zcalendar: 'nanakshahi',
+            transforms: [{
+                type: 'filter',
+                operation: '>',
+                value: '5776-06-28',
+                valuecalendar: 'hebrew',
+                target: ['0104-07-20', '0105-08-01', '0105-09-01', '0105-10-21', '0105-12-02'],
+                targetcalendar: 'taiwan'
+            }]
+        })]);
+
+        expect(out[0].x).toEqual([0, 1]);
+        expect(out[0].y).toEqual([1, 2]);
+        expect(out[0].z).toEqual(['0548-08-07', '0548-09-19']);
     });
 
     it('filters should handle geographical *lon* data', function() {
@@ -775,9 +845,14 @@ describe('filter transforms calc:', function() {
 describe('filter transforms interactions', function() {
     'use strict';
 
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
     var mockData0 = [{
         x: [-2, -1, -2, 0, 1, 2, 3],
         y: [1, 2, 3, 1, 2, 3, 1],
+        text: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
         transforms: [{
             type: 'filter',
             operation: '>'
@@ -787,6 +862,7 @@ describe('filter transforms interactions', function() {
     var mockData1 = [Lib.extendDeep({}, mockData0[0]), {
         x: [20, 11, 12, 0, 1, 2, 3],
         y: [1, 2, 3, 2, 5, 2, 0],
+        text: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
         transforms: [{
             type: 'filter',
             operation: '<',
@@ -829,6 +905,9 @@ describe('filter transforms interactions', function() {
             assertUid(gd);
             assertStyle(dims, ['rgb(255, 0, 0)'], [1]);
 
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.87, 3.13]);
+            expect(gd._fullLayout.yaxis.range).toBeCloseToArray([0.85, 3.15]);
+
             return Plotly.restyle(gd, 'marker.color', 'blue');
         }).then(function() {
             expect(gd._fullData[0].marker.color).toEqual('blue');
@@ -845,6 +924,9 @@ describe('filter transforms interactions', function() {
         }).then(function() {
             assertUid(gd);
             assertStyle([1], ['rgb(255, 0, 0)'], [1]);
+
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([2, 4]);
+            expect(gd._fullLayout.yaxis.range).toBeCloseToArray([0, 2]);
 
             done();
         });
@@ -919,4 +1001,74 @@ describe('filter transforms interactions', function() {
             done();
         });
     });
+
+    it('zooming in/out should not change filtered data', function(done) {
+        var data = Lib.extendDeep([], mockData1);
+
+        var gd = createGraphDiv();
+
+        function getTx(p) { return p.tx; }
+
+        Plotly.plot(gd, data).then(function() {
+            expect(gd.calcdata[0].map(getTx)).toEqual(['e', 'f', 'g']);
+            expect(gd.calcdata[1].map(getTx)).toEqual(['D', 'E', 'F', 'G']);
+
+            return Plotly.relayout(gd, 'xaxis.range', [-1, 1]);
+        })
+        .then(function() {
+            expect(gd.calcdata[0].map(getTx)).toEqual(['e', 'f', 'g']);
+            expect(gd.calcdata[1].map(getTx)).toEqual(['D', 'E', 'F', 'G']);
+
+            return Plotly.relayout(gd, 'xaxis.autorange', true);
+        })
+        .then(function() {
+            expect(gd.calcdata[0].map(getTx)).toEqual(['e', 'f', 'g']);
+            expect(gd.calcdata[1].map(getTx)).toEqual(['D', 'E', 'F', 'G']);
+        })
+        .then(done);
+    });
+
+    it('should update axis categories', function(done) {
+        var data = [{
+            type: 'bar',
+            x: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+            y: [1, 10, 100, 25, 50, -25, 100],
+            transforms: [{
+                type: 'filter',
+                operation: '<',
+                value: 10,
+                target: [1, 10, 100, 25, 50, -25, 100]
+            }]
+        }];
+
+        var gd = createGraphDiv();
+
+        Plotly.plot(gd, data).then(function() {
+            expect(gd._fullLayout.xaxis._categories).toEqual(['a', 'f']);
+            expect(gd._fullLayout.yaxis._categories).toEqual([]);
+
+            return Plotly.addTraces(gd, [{
+                type: 'bar',
+                x: ['h', 'i'],
+                y: [2, 1],
+                transforms: [{
+                    type: 'filter',
+                    operation: '=',
+                    value: 'i'
+                }]
+            }]);
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis._categories).toEqual(['a', 'f', 'i']);
+            expect(gd._fullLayout.yaxis._categories).toEqual([]);
+
+            return Plotly.deleteTraces(gd, [0]);
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis._categories).toEqual(['i']);
+            expect(gd._fullLayout.yaxis._categories).toEqual([]);
+        })
+        .then(done);
+    });
+
 });

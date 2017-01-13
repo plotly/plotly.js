@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -298,7 +298,7 @@ exports.cleanData = function(data, existingData) {
             trace.scene = Plots.subplotsRegistry.gl3d.cleanId(trace.scene);
         }
 
-        if(!Registry.traceIs(trace, 'pie')) {
+        if(!Registry.traceIs(trace, 'pie') && !Registry.traceIs(trace, 'bar')) {
             if(Array.isArray(trace.textposition)) {
                 trace.textposition = trace.textposition.map(cleanTextPosition);
             }
@@ -352,6 +352,13 @@ exports.cleanData = function(data, existingData) {
                     if(transform.filtersrc) {
                         transform.target = transform.filtersrc;
                         delete transform.filtersrc;
+                    }
+
+                    if(transform.calendar) {
+                        if(!transform.valuecalendar) {
+                            transform.valuecalendar = transform.calendar;
+                        }
+                        delete transform.calendar;
                     }
                 }
             }

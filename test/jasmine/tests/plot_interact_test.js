@@ -657,7 +657,7 @@ describe('plot svg clip paths', function() {
             .attr('href', 'https://plot.ly');
 
         // grab window URL
-        var href = window.location.href;
+        var href = window.location.href.split('#')[0];
 
         plot().then(function() {
 

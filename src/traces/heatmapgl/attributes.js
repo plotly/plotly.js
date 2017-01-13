@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,6 +9,32 @@
 'use strict';
 
 
-var heatmapAttrs = require('../scatter/attributes');
+var heatmapAttrs = require('../heatmap/attributes');
+var colorscaleAttrs = require('../../components/colorscale/attributes');
+var colorbarAttrs = require('../../components/colorbar/attributes');
 
-module.exports = heatmapAttrs;
+var extendFlat = require('../../lib/extend').extendFlat;
+
+var commonList = [
+    'z',
+    'x', 'x0', 'dx',
+    'y', 'y0', 'dy',
+    'text', 'transpose',
+    'xtype', 'ytype'
+];
+
+var attrs = {};
+
+for(var i = 0; i < commonList.length; i++) {
+    var k = commonList[i];
+    attrs[k] = heatmapAttrs[k];
+}
+
+extendFlat(
+    attrs,
+    colorscaleAttrs,
+    { autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}) },
+    { colorbar: colorbarAttrs }
+);
+
+module.exports = attrs;

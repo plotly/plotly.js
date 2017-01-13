@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -86,7 +86,8 @@ function getExtraText(trace, di) {
     else if(hasLat) text.push('lat: ' + format(lonlat[1]));
 
     if(isAll || hoverinfo.indexOf('text') !== -1) {
-        text.push(di.tx || trace.text);
+        var tx = di.tx || trace.text;
+        if(!Array.isArray(tx)) text.push(tx);
     }
 
     return text.join('<br>');

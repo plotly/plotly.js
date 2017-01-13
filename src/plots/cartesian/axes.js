@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -27,6 +27,7 @@ var ONEDAY = constants.ONEDAY;
 var ONEHOUR = constants.ONEHOUR;
 var ONEMIN = constants.ONEMIN;
 var ONESEC = constants.ONESEC;
+var BADNUM = constants.BADNUM;
 
 
 var axes = module.exports = {};
@@ -121,7 +122,7 @@ axes.coercePosition = function(containerOut, gd, coerce, axRef, attr, dflt) {
             }
         }
         else if(ax.type === 'date') {
-            containerOut[attr] = Lib.cleanDate(pos);
+            containerOut[attr] = Lib.cleanDate(pos, BADNUM, ax.calendar);
             return;
         }
     }
@@ -220,7 +221,7 @@ axes.getAutoRange = function(ax) {
         axReverse = false;
 
     if(ax.range) {
-        var rng = ax.range.map(ax.r2l);
+        var rng = Lib.simpleMap(ax.range, ax.r2l);
         axReverse = rng[1] < rng[0];
     }
 
@@ -313,7 +314,7 @@ axes.getAutoRange = function(ax) {
     // maintain reversal
     if(axReverse) newRange.reverse();
 
-    return newRange.map(ax.l2r || Number);
+    return Lib.simpleMap(newRange, ax.l2r || Number);
 };
 
 axes.doAutoRange = function(ax) {
@@ -485,19 +486,22 @@ axes.expand = function(ax, data, options) {
 
 };
 
-axes.autoBin = function(data, ax, nbins, is2d) {
-    var datamin = Lib.aggNums(Math.min, null, data),
-        datamax = Lib.aggNums(Math.max, null, data);
+axes.autoBin = function(data, ax, nbins, is2d, calendar) {
+    var dataMin = Lib.aggNums(Math.min, null, data),
+        dataMax = Lib.aggNums(Math.max, null, data);
+
+    if(!calendar) calendar = ax.calendar;
+
     if(ax.type === 'category') {
         return {
-            start: datamin - 0.5,
-            end: datamax + 0.5,
+            start: dataMin - 0.5,
+            end: dataMax + 0.5,
             size: 1
         };
     }
 
     var size0;
-    if(nbins) size0 = ((datamax - datamin) / nbins);
+    if(nbins) size0 = ((dataMax - dataMin) / nbins);
     else {
         // totally auto: scale off std deviation so the highest bin is
         // somewhat taller than the total number of bins, but don't let
@@ -506,101 +510,155 @@ axes.autoBin = function(data, ax, nbins, is2d) {
         var distinctData = Lib.distinctVals(data),
             msexp = Math.pow(10, Math.floor(
                 Math.log(distinctData.minDiff) / Math.LN10)),
-            // TODO: there are some date cases where this will fail...
             minSize = msexp * Lib.roundUp(
                 distinctData.minDiff / msexp, [0.9, 1.9, 4.9, 9.9], true);
         size0 = Math.max(minSize, 2 * Lib.stdev(data) /
             Math.pow(data.length, is2d ? 0.25 : 0.4));
+
+        // fallback if ax.d2c output BADNUMs
+        // e.g. when user try to plot categorical bins
+        // on a layout.xaxis.type: 'linear'
+        if(!isNumeric(size0)) size0 = 1;
     }
 
     // piggyback off autotick code to make "nice" bin sizes
-    var dummyax;
+    var dummyAx;
     if(ax.type === 'log') {
-        dummyax = {
+        dummyAx = {
             type: 'linear',
-            range: [datamin, datamax],
-            r2l: Number
+            range: [dataMin, dataMax]
         };
     }
     else {
-        dummyax = {
+        dummyAx = {
             type: ax.type,
-            // conversion below would be ax.c2r but that's only different from l2r
-            // for log, and this is the only place (so far?) we would want c2r.
-            range: [datamin, datamax].map(ax.l2r),
-            r2l: ax.r2l
+            range: Lib.simpleMap([dataMin, dataMax], ax.c2r, 0, calendar),
+            calendar: calendar
         };
     }
+    axes.setConvert(dummyAx);
 
-    axes.autoTicks(dummyax, size0);
-    var binstart = axes.tickIncrement(
-            axes.tickFirst(dummyax), dummyax.dtick, 'reverse'),
-        binend;
-
-    function nearEdge(v) {
-        // is a value within 1% of a bin edge?
-        return (1 + (v - binstart) * 100 / dummyax.dtick) % 100 < 2;
-    }
+    axes.autoTicks(dummyAx, size0);
+    var binStart = axes.tickIncrement(
+            axes.tickFirst(dummyAx), dummyAx.dtick, 'reverse', calendar),
+        binEnd;
 
     // check for too many data points right at the edges of bins
     // (>50% within 1% of bin edges) or all data points integral
     // and offset the bins accordingly
-    if(typeof dummyax.dtick === 'number') {
-        var edgecount = 0,
-            midcount = 0,
-            intcount = 0,
-            blankcount = 0;
-        for(var i = 0; i < data.length; i++) {
-            if(data[i] % 1 === 0) intcount++;
-            else if(!isNumeric(data[i])) blankcount++;
+    if(typeof dummyAx.dtick === 'number') {
+        binStart = autoShiftNumericBins(binStart, data, dummyAx, dataMin, dataMax);
 
-            if(nearEdge(data[i])) edgecount++;
-            if(nearEdge(data[i] + dummyax.dtick / 2)) midcount++;
-        }
-        var datacount = data.length - blankcount;
-
-        if(intcount === datacount && ax.type !== 'date') {
-            // all integers: if bin size is <1, it's because
-            // that was specifically requested (large nbins)
-            // so respect that... but center the bins containing
-            // integers on those integers
-            if(dummyax.dtick < 1) {
-                binstart = datamin - 0.5 * dummyax.dtick;
-            }
-            // otherwise start half an integer down regardless of
-            // the bin size, just enough to clear up endpoint
-            // ambiguity about which integers are in which bins.
-            else binstart -= 0.5;
-        }
-        else if(midcount < datacount * 0.1) {
-            if(edgecount > datacount * 0.3 ||
-                    nearEdge(datamin) || nearEdge(datamax)) {
-                // lots of points at the edge, not many in the middle
-                // shift half a bin
-                var binshift = dummyax.dtick / 2;
-                binstart += (binstart + binshift < datamin) ? binshift : -binshift;
-            }
-        }
-
-        var bincount = 1 + Math.floor((datamax - binstart) / dummyax.dtick);
-        binend = binstart + bincount * dummyax.dtick;
+        var bincount = 1 + Math.floor((dataMax - binStart) / dummyAx.dtick);
+        binEnd = binStart + bincount * dummyAx.dtick;
     }
     else {
+        // month ticks - should be the only nonlinear kind we have at this point.
+        // dtick (as supplied by axes.autoTick) only has nonlinear values on
+        // date and log axes, but even if you display a histogram on a log axis
+        // we bin it on a linear axis (which one could argue against, but that's
+        // a separate issue)
+        if(dummyAx.dtick.charAt(0) === 'M') {
+            binStart = autoShiftMonthBins(binStart, data, dummyAx.dtick, dataMin, calendar);
+        }
+
         // calculate the endpoint for nonlinear ticks - you have to
         // just increment until you're done
-        binend = binstart;
-        while(binend <= datamax) {
-            binend = axes.tickIncrement(binend, dummyax.dtick);
+        binEnd = binStart;
+        while(binEnd <= dataMax) {
+            binEnd = axes.tickIncrement(binEnd, dummyAx.dtick, false, calendar);
         }
     }
 
     return {
-        start: ax.c2r(binstart),
-        end: ax.c2r(binend),
-        size: dummyax.dtick
+        start: ax.c2r(binStart, 0, calendar),
+        end: ax.c2r(binEnd, 0, calendar),
+        size: dummyAx.dtick
     };
 };
 
+
+function autoShiftNumericBins(binStart, data, ax, dataMin, dataMax) {
+    var edgecount = 0,
+        midcount = 0,
+        intcount = 0,
+        blankCount = 0;
+
+    function nearEdge(v) {
+        // is a value within 1% of a bin edge?
+        return (1 + (v - binStart) * 100 / ax.dtick) % 100 < 2;
+    }
+
+    for(var i = 0; i < data.length; i++) {
+        if(data[i] % 1 === 0) intcount++;
+        else if(!isNumeric(data[i])) blankCount++;
+
+        if(nearEdge(data[i])) edgecount++;
+        if(nearEdge(data[i] + ax.dtick / 2)) midcount++;
+    }
+    var dataCount = data.length - blankCount;
+
+    if(intcount === dataCount && ax.type !== 'date') {
+        // all integers: if bin size is <1, it's because
+        // that was specifically requested (large nbins)
+        // so respect that... but center the bins containing
+        // integers on those integers
+        if(ax.dtick < 1) {
+            binStart = dataMin - 0.5 * ax.dtick;
+        }
+        // otherwise start half an integer down regardless of
+        // the bin size, just enough to clear up endpoint
+        // ambiguity about which integers are in which bins.
+        else binStart -= 0.5;
+    }
+    else if(midcount < dataCount * 0.1) {
+        if(edgecount > dataCount * 0.3 ||
+                nearEdge(dataMin) || nearEdge(dataMax)) {
+            // lots of points at the edge, not many in the middle
+            // shift half a bin
+            var binshift = ax.dtick / 2;
+            binStart += (binStart + binshift < dataMin) ? binshift : -binshift;
+        }
+    }
+    return binStart;
+}
+
+
+function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
+    var stats = Lib.findExactDates(data, calendar);
+    // number of data points that needs to be an exact value
+    // to shift that increment to (near) the bin center
+    var threshold = 0.8;
+
+    if(stats.exactDays > threshold) {
+        var numMonths = Number(dtick.substr(1));
+
+        if((stats.exactYears > threshold) && (numMonths % 12 === 0)) {
+            // The exact middle of a non-leap-year is 1.5 days into July
+            // so if we start the bins here, all but leap years will
+            // get hover-labeled as exact years.
+            binStart = axes.tickIncrement(binStart, 'M6', 'reverse') + ONEDAY * 1.5;
+        }
+        else if(stats.exactMonths > threshold) {
+            // Months are not as clean, but if we shift half the *longest*
+            // month (31/2 days) then 31-day months will get labeled exactly
+            // and shorter months will get labeled with the correct month
+            // but shifted 12-36 hours into it.
+            binStart = axes.tickIncrement(binStart, 'M1', 'reverse') + ONEDAY * 15.5;
+        }
+        else {
+            // Shifting half a day is exact, but since these are month bins it
+            // will always give a somewhat odd-looking label, until we do something
+            // smarter like showing the bin boundaries (or the bounds of the actual
+            // data in each bin)
+            binStart -= ONEDAY / 2;
+        }
+        var nextBinStart = axes.tickIncrement(binStart, dtick);
+
+        if(nextBinStart <= dataMin) return nextBinStart;
+    }
+    return binStart;
+}
 
 // ----------------------------------------------------
 // Ticks and grids
@@ -611,9 +669,7 @@ axes.autoBin = function(data, ax, nbins, is2d) {
 // in any case, set tickround to # of digits to round tick labels to,
 // or codes to this effect for log and date scales
 axes.calcTicks = function calcTicks(ax) {
-    if(ax.tickmode === 'array') return arrayTicks(ax);
-
-    var rng = ax.range.map(ax.r2l);
+    var rng = Lib.simpleMap(ax.range, ax.r2l);
 
     // calculate max number of (auto) ticks to display based on plot size
     if(ax.tickmode === 'auto' || !ax.dtick) {
@@ -629,6 +685,11 @@ axes.calcTicks = function calcTicks(ax) {
                 nt = Lib.constrain(ax._length / minPx, 4, 9) + 1;
             }
         }
+
+        // add a couple of extra digits for filling in ticks when we
+        // have explicit tickvals without tick text
+        if(ax.tickmode === 'array') nt *= 100;
+
         axes.autoTicks(ax, Math.abs(rng[1] - rng[0]) / nt);
         // check for a forced minimum dtick
         if(ax._minDtick > 0 && ax.dtick < ax._minDtick * 2) {
@@ -644,6 +705,10 @@ axes.calcTicks = function calcTicks(ax) {
 
     // now figure out rounding of tick values
     autoTickRound(ax);
+
+    // now that we've figured out the auto values for formatting
+    // in case we're missing some ticktext, we can break out for array ticks
+    if(ax.tickmode === 'array') return arrayTicks(ax);
 
     // find the first tick
     ax._tmin = axes.tickFirst(ax);
@@ -661,7 +726,7 @@ axes.calcTicks = function calcTicks(ax) {
     }
     for(var x = ax._tmin;
             (axrev) ? (x >= endtick) : (x <= endtick);
-            x = axes.tickIncrement(x, ax.dtick, axrev)) {
+            x = axes.tickIncrement(x, ax.dtick, axrev, ax.calendar)) {
         vals.push(x);
 
         // prevent infinite loops
@@ -672,11 +737,11 @@ axes.calcTicks = function calcTicks(ax) {
     // show the exponent only on the last one
     ax._tmax = vals[vals.length - 1];
 
-    // for showing date suffixes: ax._prevSuffix holds what we showed most
-    // recently. Start with it cleared and mark that we're in calcTicks (ie
-    // calculating a whole string of these so we should care what the previous
-    // suffix was!)
-    ax._prevSuffix = '';
+    // for showing the rest of a date when the main tick label is only the
+    // latter part: ax._prevDateHead holds what we showed most recently.
+    // Start with it cleared and mark that we're in calcTicks (ie calculating a
+    // whole string of these so we should care what the previous date head was!)
+    ax._prevDateHead = '';
     ax._inCalcTicks = true;
 
     var ticksOut = new Array(vals.length);
@@ -691,7 +756,7 @@ function arrayTicks(ax) {
     var vals = ax.tickvals,
         text = ax.ticktext,
         ticksOut = new Array(vals.length),
-        rng = ax.range.map(ax.r2l),
+        rng = Lib.simpleMap(ax.range, ax.r2l),
         r0expanded = rng[0] * 1.0001 - rng[1] * 0.0001,
         r1expanded = rng[1] * 1.0001 - rng[0] * 0.0001,
         tickMin = Math.min(r0expanded, r1expanded),
@@ -704,8 +769,17 @@ function arrayTicks(ax) {
     // except with more precision to the numbers
     if(!Array.isArray(text)) text = [];
 
+    // make sure showing ticks doesn't accidentally add new categories
+    var tickVal2l = ax.type === 'category' ? ax.d2l_noadd : ax.d2l;
+
+    // array ticks on log axes always show the full number
+    // (if no explicit ticktext overrides it)
+    if(ax.type === 'log' && String(ax.dtick).charAt(0) !== 'L') {
+        ax.dtick = 'L' + Math.pow(10, Math.floor(Math.min(ax.range[0], ax.range[1])) - 1);
+    }
+
     for(i = 0; i < vals.length; i++) {
-        vali = ax.d2l(vals[i]);
+        vali = tickVal2l(vals[i]);
         if(vali > tickMin && vali < tickMax) {
             if(text[i] === undefined) ticksOut[j] = axes.tickText(ax, vali);
             else ticksOut[j] = tickTextObj(ax, vali, String(text[i]));
@@ -752,7 +826,7 @@ axes.autoTicks = function(ax, roughDTick) {
     var base;
 
     if(ax.type === 'date') {
-        ax.tick0 = '2000-01-01';
+        ax.tick0 = Lib.dateTick0(ax.calendar);
         // the criteria below are all based on the rough spacing we calculate
         // being > half of the final unit - so precalculate twice the rough val
         var roughX2 = 2 * roughDTick;
@@ -771,7 +845,7 @@ axes.autoTicks = function(ax, roughDTick) {
             // get week ticks on sunday
             // this will also move the base tick off 2000-01-01 if dtick is
             // 2 or 3 days... but that's a weird enough case that we'll ignore it.
-            ax.tick0 = '2000-01-02';
+            ax.tick0 = Lib.dateTick0(ax.calendar, true);
         }
         else if(roughX2 > ONEHOUR) {
             ax.dtick = roundDTick(roughDTick, ONEHOUR, roundBase24);
@@ -790,7 +864,7 @@ axes.autoTicks = function(ax, roughDTick) {
     }
     else if(ax.type === 'log') {
         ax.tick0 = 0;
-        var rng = ax.range.map(ax.r2l);
+        var rng = Lib.simpleMap(ax.range, ax.r2l);
 
         if(roughDTick > 0.7) {
             // only show powers of 10
@@ -855,9 +929,9 @@ function autoTickRound(ax) {
         // If tick0 is unusual, give tickround a bit more information
         // not necessarily *all* the information in tick0 though, if it's really odd
         // minimal string length for tick0: 'd' is 10, 'M' is 16, 'S' is 19
-        // take off a leading minus (year < 0 so length is consistent)
-        var tick0ms = Lib.dateTime2ms(ax.tick0),
-            tick0str = Lib.ms2DateTime(tick0ms).replace(/^-/, ''),
+        // take off a leading minus (year < 0) and i (intercalary month) so length is consistent
+        var tick0ms = ax.r2l(ax.tick0),
+            tick0str = ax.l2r(tick0ms).replace(/(^-|i)/g, ''),
             tick0len = tick0str.length;
 
         if(String(dtick).charAt(0) === 'M') {
@@ -870,9 +944,10 @@ function autoTickRound(ax) {
         else if((dtick >= ONEMIN && tick0len <= 16) || (dtick >= ONEHOUR)) ax._tickround = 'M';
         else if((dtick >= ONESEC && tick0len <= 19) || (dtick >= ONEMIN)) ax._tickround = 'S';
         else {
+            // tickround is a number of digits of fractional seconds
             // of any two adjacent ticks, at least one will have the maximum fractional digits
             // of all possible ticks - so take the max. length of tick0 and the next one
-            var tick1len = Lib.ms2DateTime(tick0ms + dtick).replace(/^-/, '').length;
+            var tick1len = ax.l2r(tick0ms + dtick).replace(/^-/, '').length;
             ax._tickround = Math.max(tick0len, tick1len) - 20;
         }
     }
@@ -903,22 +978,18 @@ function autoTickRound(ax) {
 // for pure powers of 10
 // numeric ticks always have constant differences, other datetime ticks
 // can all be calculated as constant number of milliseconds
-axes.tickIncrement = function(x, dtick, axrev) {
+axes.tickIncrement = function(x, dtick, axrev, calendar) {
     var axSign = axrev ? -1 : 1;
 
-    // includes all dates smaller than month, and pure 10^n in log
+    // includes linear, all dates smaller than month, and pure 10^n in log
     if(isNumeric(dtick)) return x + axSign * dtick;
 
+    // everything else is a string, one character plus a number
     var tType = dtick.charAt(0),
         dtSigned = axSign * Number(dtick.substr(1));
 
-    // Dates: months (or years)
-    if(tType === 'M') {
-        var y = new Date(x);
-        // is this browser consistent? setMonth edits a date but
-        // returns that date's milliseconds
-        return y.setMonth(y.getMonth() + dtSigned);
-    }
+    // Dates: months (or years - see Lib.incrementMonth)
+    if(tType === 'M') return Lib.incrementMonth(x, dtSigned, calendar);
 
     // Log scales: Linear, Digits
     else if(tType === 'L') return Math.log(Math.pow(10, x) + dtSigned) / Math.LN10;
@@ -928,7 +999,7 @@ axes.tickIncrement = function(x, dtick, axrev) {
     else if(tType === 'D') {
         var tickset = (dtick === 'D2') ? roundLog2 : roundLog1,
             x2 = x + axSign * 0.01,
-            frac = Lib.roundUp(mod(x2, 1), tickset, axrev);
+            frac = Lib.roundUp(Lib.mod(x2, 1), tickset, axrev);
 
         return Math.floor(x2) +
             Math.log(d3.round(Math.pow(10, frac), 1)) / Math.LN10;
@@ -939,7 +1010,7 @@ axes.tickIncrement = function(x, dtick, axrev) {
 // calculate the first tick on an axis
 axes.tickFirst = function(ax) {
     var r2l = ax.r2l || Number,
-        rng = ax.range.map(r2l),
+        rng = Lib.simpleMap(ax.range, r2l),
         axrev = rng[1] < rng[0],
         sRound = axrev ? Math.floor : Math.ceil,
         // add a tiny extra bit to make sure we get ticks
@@ -959,24 +1030,32 @@ axes.tickFirst = function(ax) {
     }
 
     var tType = dtick.charAt(0),
-        dtNum = Number(dtick.substr(1)),
-        t0,
-        mdif,
-        t1;
+        dtNum = Number(dtick.substr(1));
 
     // Dates: months (or years)
     if(tType === 'M') {
-        t0 = new Date(tick0);
-        r0 = new Date(r0);
-        mdif = (r0.getFullYear() - t0.getFullYear()) * 12 +
-            r0.getMonth() - t0.getMonth();
-        t1 = t0.setMonth(t0.getMonth() +
-            (Math.round(mdif / dtNum) + (axrev ? 1 : -1)) * dtNum);
+        var cnt = 0,
+            t0 = tick0,
+            t1,
+            mult,
+            newDTick;
 
-        while(axrev ? t1 > r0 : t1 < r0) {
-            t1 = axes.tickIncrement(t1, dtick, axrev);
+        // This algorithm should work for *any* nonlinear (but close to linear!)
+        // tick spacing. Limit to 10 iterations, for gregorian months it's normally <=3.
+        while(cnt < 10) {
+            t1 = axes.tickIncrement(t0, dtick, axrev, ax.calendar);
+            if((t1 - r0) * (t0 - r0) <= 0) {
+                // t1 and t0 are on opposite sides of r0! we've succeeded!
+                if(axrev) return Math.min(t0, t1);
+                return Math.max(t0, t1);
+            }
+            mult = (r0 - ((t0 + t1) / 2)) / (t1 - t0);
+            newDTick = tType + ((Math.abs(Math.round(mult)) || 1) * dtNum);
+            t0 = axes.tickIncrement(t0, newDTick, mult < 0 ? !axrev : axrev, ax.calendar);
+            cnt++;
         }
-        return t1;
+        Lib.error('tickFirst did not converge', ax);
+        return t0;
     }
 
     // Log scales: Linear, Digits
@@ -986,38 +1065,13 @@ axes.tickFirst = function(ax) {
     }
     else if(tType === 'D') {
         var tickset = (dtick === 'D2') ? roundLog2 : roundLog1,
-            frac = Lib.roundUp(mod(r0, 1), tickset, axrev);
+            frac = Lib.roundUp(Lib.mod(r0, 1), tickset, axrev);
 
         return Math.floor(r0) +
             Math.log(d3.round(Math.pow(10, frac), 1)) / Math.LN10;
     }
     else throw 'unrecognized dtick ' + String(dtick);
 };
-
-var yearFormat = d3.time.format('%Y'),
-    monthFormat = d3.time.format('%b %Y'),
-    dayFormat = d3.time.format('%b %-d'),
-    yearMonthDayFormat = d3.time.format('%b %-d, %Y'),
-    minuteFormat = d3.time.format('%H:%M'),
-    secondFormat = d3.time.format(':%S');
-
-// add one item to d3's vocabulary:
-// %{n}f where n is the max number of digits
-// of fractional seconds
-var fracMatch = /%(\d?)f/g;
-function modDateFormat(fmt, x) {
-    var fm = fmt.match(fracMatch),
-        d = new Date(x);
-    if(fm) {
-        var digits = Math.min(+fm[1] || 6, 6),
-            fracSecs = String((x / 1000 % 1) + 2.0000005)
-                .substr(2, digits).replace(/0+$/, '') || '0';
-        return d3.time.format(fmt.replace(fracMatch, fracSecs))(d);
-    }
-    else {
-        return d3.time.format(fmt)(d);
-    }
-}
 
 // draw the text for one tick.
 // px,py are the location on gd.paper
@@ -1030,13 +1084,14 @@ axes.tickText = function(ax, x, hover) {
         hideexp,
         arrayMode = ax.tickmode === 'array',
         extraPrecision = hover || arrayMode,
-        i;
+        i,
+        tickVal2l = ax.type === 'category' ? ax.d2l_noadd : ax.d2l;
 
     if(arrayMode && Array.isArray(ax.ticktext)) {
-        var rng = ax.range.map(ax.r2l),
+        var rng = Lib.simpleMap(ax.range, ax.r2l),
             minDiff = Math.abs(rng[1] - rng[0]) / 10000;
         for(i = 0; i < ax.ticktext.length; i++) {
-            if(Math.abs(x - ax.d2l(ax.tickvals[i])) < minDiff) break;
+            if(Math.abs(x - tickVal2l(ax.tickvals[i])) < minDiff) break;
         }
         if(i < ax.ticktext.length) {
             out.text = String(ax.ticktext[i]);
@@ -1087,60 +1142,59 @@ function tickTextObj(ax, x, text) {
 }
 
 function formatDate(ax, out, hover, extraPrecision) {
-    var x = out.x,
-        tr = ax._tickround,
-        trOriginal = tr,
-        d = new Date(x),
-        // suffix completes the full date info, to be included
-        // with only the first tick or if any info before what's
-        // shown has changed
-        suffix,
-        tt;
-    if(hover && ax.hoverformat) {
-        tt = modDateFormat(ax.hoverformat, x);
+    var tr = ax._tickround,
+        fmt = (hover && ax.hoverformat) || ax.tickformat;
+
+    if(extraPrecision) {
+        // second or sub-second precision: extra always shows max digits.
+        // for other fields, extra precision just adds one field.
+        if(isNumeric(tr)) tr = 4;
+        else tr = {y: 'm', m: 'd', d: 'M', M: 'S', S: 4}[tr];
     }
-    else if(ax.tickformat) {
-        tt = modDateFormat(ax.tickformat, x);
-        // TODO: potentially hunt for ways to automatically add more
-        // precision to the hover text?
+
+    var dateStr = Lib.formatDate(out.x, fmt, tr, ax.calendar),
+        headStr;
+
+    var splitIndex = dateStr.indexOf('\n');
+    if(splitIndex !== -1) {
+        headStr = dateStr.substr(splitIndex + 1);
+        dateStr = dateStr.substr(0, splitIndex);
     }
-    else {
-        if(extraPrecision) {
-            if(isNumeric(tr)) tr += 2;
-            else tr = {y: 'm', m: 'd', d: 'M', M: 'S', S: 2}[tr];
+
+    if(extraPrecision) {
+        // if extraPrecision led to trailing zeros, strip them off
+        // actually, this can lead to removing even more zeros than
+        // in the original rounding, but that's fine because in these
+        // contexts uniformity is not so important (if there's even
+        // anything to be uniform with!)
+
+        // can we remove the whole time part?
+        if(dateStr === '00:00:00' || dateStr === '00:00') {
+            dateStr = headStr;
+            headStr = '';
         }
-        if(tr === 'y') tt = yearFormat(d);
-        else if(tr === 'm') tt = monthFormat(d);
-        else {
-            if(tr === 'd') {
-                if(!hover) suffix = '<br>' + yearFormat(d);
-
-                tt = dayFormat(d);
-            }
-            else {
-                if(!hover) suffix = '<br>' + yearMonthDayFormat(d);
-
-                tt = minuteFormat(d);
-                if(tr !== 'M') {
-                    tt += secondFormat(d);
-                    if(tr !== 'S') {
-                        tt += numFormat(d3.round(mod(x / 1000, 1), 4), ax, 'none', hover)
-                            .substr(1);
-                    }
-                }
-                else if(trOriginal === 'd') {
-                    // for hover on axes with day ticks, minuteFormat (which
-                    // only includes %H:%M) isn't enough, you want the date too
-                    tt = dayFormat(d) + ' ' + tt;
-                }
-            }
+        else if(dateStr.length === 8) {
+            // strip off seconds if they're zero (zero fractional seconds
+            // are already omitted)
+            // but we never remove minutes and leave just hours
+            dateStr = dateStr.replace(/:00$/, '');
         }
     }
-    if(suffix && (!ax._inCalcTicks || (suffix !== ax._prevSuffix))) {
-        tt += suffix;
-        ax._prevSuffix = suffix;
+
+    if(headStr) {
+        if(hover) {
+            // hover puts it all on one line, so headPart works best up front
+            // except for year headPart: turn this into "Jan 1, 2000" etc.
+            if(tr === 'd') dateStr += ', ' + headStr;
+            else dateStr = headStr + (dateStr ? ', ' + dateStr : '');
+        }
+        else if(!ax._inCalcTicks || (headStr !== ax._prevDateHead)) {
+            dateStr += '<br>' + headStr;
+            ax._prevDateHead = headStr;
+        }
     }
-    out.text = tt;
+
+    out.text = dateStr;
 }
 
 function formatLog(ax, out, hover, extraPrecision, hideexp) {
@@ -1151,7 +1205,7 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
     if(ax.tickformat || (typeof dtick === 'string' && dtick.charAt(0) === 'L')) {
         out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
     }
-    else if(isNumeric(dtick) || ((dtick.charAt(0) === 'D') && (mod(x + 0.01, 1) < 0.1))) {
+    else if(isNumeric(dtick) || ((dtick.charAt(0) === 'D') && (Lib.mod(x + 0.01, 1) < 0.1))) {
         if(['e', 'E', 'power'].indexOf(ax.exponentformat) !== -1) {
             var p = Math.round(x);
             if(p === 0) out.text = 1;
@@ -1169,7 +1223,7 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
         }
     }
     else if(dtick.charAt(0) === 'D') {
-        out.text = String(Math.round(Math.pow(10, mod(x, 1))));
+        out.text = String(Math.round(Math.pow(10, Lib.mod(x, 1))));
         out.fontSize *= 0.75;
     }
     else throw 'unrecognized dtick ' + String(dtick);
@@ -1522,7 +1576,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                     var axDone = axes.doTicks(gd, ax._id);
                     if(axid === 'redraw') {
                         ax._r = ax.range.slice();
-                        ax._rl = ax._r.map(ax.r2l);
+                        ax._rl = Lib.simpleMap(ax._r, ax.r2l);
                     }
                     return axDone;
                 };
@@ -1929,7 +1983,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                     break;
                 }
             }
-            var rng = ax.range.map(ax.r2l),
+            var rng = Lib.simpleMap(ax.range, ax.r2l),
                 showZl = (rng[0] * rng[1] <= 0) && ax.zeroline &&
                 (ax.type === 'linear' || ax.type === '-') && gridvals.length &&
                 (hasBarsOrFill || clipEnds({x: 0}) || !ax.showline);
@@ -2149,7 +2203,3 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes) {
         np(layout, yFullAxes[i]._name + '.' + key).set(xVal);
     }
 }
-
-// mod - version of modulus that always restricts to [0,divisor)
-// rather than built-in % which gives a negative value for negative v
-function mod(v, d) { return ((v % d) + d) % d; }

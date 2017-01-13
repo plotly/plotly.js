@@ -39,7 +39,7 @@ describe('plot schema', function() {
         assertPlotSchema(
             function(attr) {
                 if(isValObject(attr)) {
-                    expect(ROLES.indexOf(attr.role) !== -1).toBe(true);
+                    expect(ROLES.indexOf(attr.role) !== -1).toBe(true, attr);
                 }
             }
         );
@@ -188,10 +188,29 @@ describe('plot schema', function() {
         });
     });
 
+    it('should work with registered components', function() {
+        expect(plotSchema.traces.scatter.attributes.xcalendar.valType).toEqual('enumerated');
+        expect(plotSchema.traces.scatter3d.attributes.zcalendar.valType).toEqual('enumerated');
+
+        expect(plotSchema.layout.layoutAttributes.calendar.valType).toEqual('enumerated');
+        expect(plotSchema.layout.layoutAttributes.xaxis.calendar.valType).toEqual('enumerated');
+        expect(plotSchema.layout.layoutAttributes.scene.xaxis.calendar.valType).toEqual('enumerated');
+
+        expect(plotSchema.transforms.filter.attributes.valuecalendar.valType).toEqual('enumerated');
+        expect(plotSchema.transforms.filter.attributes.targetcalendar.valType).toEqual('enumerated');
+    });
+
     it('should list correct defs', function() {
         expect(plotSchema.defs.valObjects).toBeDefined();
 
         expect(plotSchema.defs.metaKeys)
             .toEqual(['_isSubplotObj', '_isLinkedToArray', '_deprecated', 'description', 'role']);
+    });
+
+    it('should list the correct frame attributes', function() {
+        expect(plotSchema.frames).toBeDefined();
+        expect(plotSchema.frames.role).toEqual('object');
+        expect(plotSchema.frames.items.frames_entry).toBeDefined();
+        expect(plotSchema.frames.items.frames_entry.role).toEqual('object');
     });
 });
