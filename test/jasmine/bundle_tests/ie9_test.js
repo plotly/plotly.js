@@ -21,9 +21,11 @@ describe('Bundle with IE9 supported trace types:', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('[wip] check that ie9_mock.js did its job', function() {
-        expect(window.ArrayBuffer).toBeUndefined();
-        expect(window.Uint8Array).toBeUndefined();
+    it(' check that ie9_mock.js did its job', function() {
+        expect(function() { return ArrayBuffer; })
+            .toThrow(new ReferenceError('ArrayBuffer is not defined'));
+        expect(function() { return Uint8Array; })
+            .toThrow(new ReferenceError('Uint8Array is not defined'));
     });
 
     it('heatmaps with smoothing should work', function(done) {

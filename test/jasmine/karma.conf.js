@@ -129,9 +129,12 @@ else if(isRequireJSTest) {
     ];
 }
 else if(isIE9Test) {
+    // load ie9_mock.js before plotly.js+test bundle
+    // to catch reference errors that could occur
+    // when plotly.js is first loaded.
+
     func.defaultConfig.files = [
         './assets/ie9_mock.js',
-//         '../../dist/extras/typedarray.min.js',
         testFileGlob
     ];
 
