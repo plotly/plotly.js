@@ -238,6 +238,11 @@ proto.updateSize = function(canvas) {
 };
 
 proto.computeTickMarks = function() {
+    this.xaxis.setScale();
+    this.yaxis.setScale();
+
+    // override _length from backward compatibility
+    // even though setScale 'should' give the correct result
     this.xaxis._length =
         this.glplot.viewBox[2] - this.glplot.viewBox[0];
     this.yaxis._length =
@@ -424,6 +429,7 @@ proto.plot = function(fullData, calcData, fullLayout) {
         ax._length = options.viewBox[i + 2] - options.viewBox[i];
 
         Axes.doAutoRange(ax);
+        ax.setScale();
     }
 
     options.ticks = this.computeTickMarks();
