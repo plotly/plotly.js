@@ -9,6 +9,7 @@
 
 'use strict';
 
+var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
 var Fx = require('../../plots/cartesian/graph_interact');
 
@@ -323,7 +324,22 @@ proto.cameraChanged = function() {
         this.glplotOptions.ticks = nextTicks;
         this.glplotOptions.dataBox = camera.dataBox;
         this.glplot.update(this.glplotOptions);
+        this.handleAnnotations();
+
         relayoutCallback(this);
+    }
+};
+
+proto.handleAnnotations = function() {
+    var gd = this.graphDiv,
+        annotations = this.fullLayout.annotations;
+
+    for(var i = 0; i < annotations.length; i++) {
+        var ann = annotations[i];
+
+        if(ann.xref === this.xaxis._id && ann.yref === this.yaxis._id) {
+            Registry.getComponentMethod('annotations', 'drawOne')(gd, i);
+        }
     }
 };
 

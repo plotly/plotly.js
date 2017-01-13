@@ -113,6 +113,7 @@ function createCamera(scene) {
                     result.lastInputTime = Date.now();
                     unSetAutoRange();
                     scene.cameraChanged();
+                    scene.handleAnnotations();
                 }
                 break;
         }
@@ -152,6 +153,7 @@ function createCamera(scene) {
                 result.lastInputTime = Date.now();
                 unSetAutoRange();
                 scene.cameraChanged();
+                scene.handleAnnotations();
                 break;
         }
 
