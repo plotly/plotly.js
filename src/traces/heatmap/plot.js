@@ -337,7 +337,14 @@ function plotOne(gd, plotinfo, cd) {
 
     if(zsmooth) { // best or fast, works fastest with imageData
         var pxIndex = 0,
+            pixels;
+
+        try {
             pixels = new Uint8Array(imageWidth * imageHeight * 4);
+        }
+        catch(e) {
+            pixels = new Array(imageWidth * imageHeight * 4);
+        }
 
         if(zsmooth === 'best') {
             var xPixArray = new Array(x.length),
@@ -379,7 +386,17 @@ function plotOne(gd, plotinfo, cd) {
         }
 
         var imageData = context.createImageData(imageWidth, imageHeight);
-        imageData.data.set(pixels);
+        try {
+            imageData.data.set(pixels);
+        }
+        catch(e) {
+            var pxArray = imageData.data,
+                dlen = pxArray.length;
+            for(j = 0; j < dlen; j ++) {
+                pxArray[j] = pixels[j];
+            }
+        }
+
         context.putImageData(imageData, 0, 0);
     } else { // zsmooth = false -> filling potentially large bricks works fastest with fillRect
         for(j = 0; j < m; j++) {

@@ -20,6 +20,7 @@ var arg = process.argv[4];
 var testFileGlob = arg ? arg : 'tests/*_test.js';
 var isSingleSuiteRun = (arg && arg.indexOf('bundle_tests/') === -1);
 var isRequireJSTest = (arg && arg.indexOf('bundle_tests/requirejs') !== -1);
+var isIE9Test = (arg && arg.indexOf('bundle_tests/ie9') !== -1);
 
 var pathToMain = '../../lib/index.js';
 var pathToJQuery = 'assets/jquery-1.8.3.min.js';
@@ -126,6 +127,18 @@ else if(isRequireJSTest) {
         constants.pathToRequireJSFixture,
         testFileGlob
     ];
+}
+else if(isIE9Test) {
+    // load ie9_mock.js before plotly.js+test bundle
+    // to catch reference errors that could occur
+    // when plotly.js is first loaded.
+
+    func.defaultConfig.files = [
+        './assets/ie9_mock.js',
+        testFileGlob
+    ];
+
+    func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
 }
 else {
     func.defaultConfig.files = [
