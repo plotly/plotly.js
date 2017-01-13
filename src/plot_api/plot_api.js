@@ -196,8 +196,8 @@ Plotly.plot = function(gd, data, layout, config) {
 
         Registry.getComponentMethod('legend', 'draw')(gd);
         Registry.getComponentMethod('rangeselector', 'draw')(gd);
-        Registry.getComponentMethod('updatemenus', 'draw')(gd);
         Registry.getComponentMethod('sliders', 'draw')(gd);
+        Registry.getComponentMethod('updatemenus', 'draw')(gd);
 
         for(i = 0; i < calcdata.length; i++) {
             cd = calcdata[i];
@@ -333,8 +333,8 @@ Plotly.plot = function(gd, data, layout, config) {
         Registry.getComponentMethod('legend', 'draw')(gd);
         Registry.getComponentMethod('rangeslider', 'draw')(gd);
         Registry.getComponentMethod('rangeselector', 'draw')(gd);
-        Registry.getComponentMethod('updatemenus', 'draw')(gd);
         Registry.getComponentMethod('sliders', 'draw')(gd);
+        Registry.getComponentMethod('updatemenus', 'draw')(gd);
     }
 
     function cleanUp() {
