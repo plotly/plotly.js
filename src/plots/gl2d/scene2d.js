@@ -316,7 +316,7 @@ function relayoutCallback(scene) {
     update[scene.yaxis._name] = yrange.slice();
 
     scene.graphDiv.emit('plotly_relayout', update);
-};
+}
 
 proto.cameraChanged = function() {
     var camera = this.camera;
