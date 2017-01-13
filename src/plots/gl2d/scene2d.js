@@ -288,8 +288,8 @@ proto.updateFx = function(options) {
     fullLayout.hovermode = options.hovermode;
 };
 
-var relayoutCallback = function(scene) {
 
+function relayoutCallback(scene) {
     var xrange = scene.xaxis.range,
         yrange = scene.yaxis.range;
 
@@ -300,8 +300,10 @@ var relayoutCallback = function(scene) {
     scene.graphDiv.layout.yaxis.range = yrange.slice(0);
 
     // Make a meaningful value to be passed on to the possible 'plotly_relayout' subscriber(s)
-    var update = { // scene.camera has no many useful projection or scale information
-        lastInputTime: scene.camera.lastInputTime // helps determine which one is the latest input (if async)
+    // scene.camera has no many useful projection or scale information
+    // helps determine which one is the latest input (if async)
+    var update = {
+        lastInputTime: scene.camera.lastInputTime
     };
     update[scene.xaxis._name] = xrange.slice();
     update[scene.yaxis._name] = yrange.slice();
