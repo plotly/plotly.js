@@ -292,8 +292,9 @@ proto.updateFx = function(options) {
 
     fullLayout.dragmode = options.dragmode;
     fullLayout.hovermode = options.hovermode;
-};
 
+    this.graphDiv._fullLayout = fullLayout;
+};
 
 function relayoutCallback(scene) {
     var xrange = scene.xaxis.range,
