@@ -71,14 +71,44 @@ module.exports = {
         ].join(' ')
     },
 
-    mode: {
-        valType: 'enumerated',
-        values: ['density', 'cumulative'],
-        dflt: 'density',
+    cumulative: {
+        valType: 'boolean',
+        dflt: false,
         role: 'info',
         description: [
-            ''
-        ].join('')
+            'If true, display the cumulative distribution by summing the',
+            'binned values. Use the `direction` and `centralbin` attributes',
+            'to tune the accumulation method.'
+        ].join(' ')
+    },
+
+    direction: {
+        valType: 'enumerated',
+        values: ['increasing', 'decreasing'],
+        dflt: 'increasing',
+        role: 'info',
+        description: [
+            'Only applies if `cumulative=true.',
+            'If *increasing* (default) we sum all prior bins, so the result',
+            'increases from left to right. If *decreasing* we sum later bins',
+            'so the fresult decreases from left to right.'
+        ].join(' ')
+    },
+
+    currentbin: {
+        valType: 'enumerated',
+        values: ['include', 'exclude', 'half'],
+        dflt: 'include',
+        role: 'info',
+        description: [
+            'Only applies if `cumulative=true.',
+            'Sets whether the current bin is included, excluded, or has half',
+            'of its value included in the current cumulative value.',
+            '*include* is the default for compatibility with various other',
+            'tools, however it introduces a half-bin bias to the results.',
+            '*exclude* makes the opposite half-bin bias, and *half* removes',
+            'it.'
+        ].join(' ')
     },
 
     autobinx: {

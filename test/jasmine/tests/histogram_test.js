@@ -246,5 +246,76 @@ describe('Test histogram', function() {
             ]);
         });
 
+        describe('cumulative distribution functions', function() {
+            var base = {x: [1, 2, 3, 4, 2, 3, 4, 3, 4, 4]};
+
+            it('makes the right base histogram', function() {
+                var baseOut = _calc(base);
+                expect(baseOut).toEqual([
+                    {b: 0, p: 1, s: 1},
+                    {b: 0, p: 2, s: 2},
+                    {b: 0, p: 3, s: 3},
+                    {b: 0, p: 4, s: 4},
+                ]);
+            });
+
+            var CDFs = [
+                {p: [1, 2, 3, 4], s: [1, 3, 6, 10]},
+                {
+                    direction: 'decreasing',
+                    p: [1, 2, 3, 4], s: [10, 9, 7, 4]
+                },
+                {
+                    currentbin: 'exclude',
+                    p: [2, 3, 4, 5], s: [1, 3, 6, 10]
+                },
+                {
+                    direction: 'decreasing', currentbin: 'exclude',
+                    p: [0, 1, 2, 3], s: [10, 9, 7, 4]
+                },
+                {
+                    currentbin: 'half',
+                    p: [1, 2, 3, 4, 5], s: [0.5, 2, 4.5, 8, 10]
+                },
+                {
+                    direction: 'decreasing', currentbin: 'half',
+                    p: [0, 1, 2, 3, 4], s: [10, 9.5, 8, 5.5, 2]
+                },
+                {
+                    direction: 'decreasing', currentbin: 'half', histnorm: 'percent',
+                    p: [0, 1, 2, 3, 4], s: [100, 95, 80, 55, 20]
+                },
+                {
+                    currentbin: 'exclude', histnorm: 'probability',
+                    p: [2, 3, 4, 5], s: [0.1, 0.3, 0.6, 1]
+                }
+            ];
+
+            CDFs.forEach(function(CDF) {
+                var direction = CDF.direction,
+                    currentbin = CDF.currentbin,
+                    histnorm = CDF.histnorm,
+                    p = CDF.p,
+                    s = CDF.s;
+
+                it('handles direction=' + direction + ', currentbin=' + currentbin + ', histnorm=' + histnorm, function() {
+                    var traceIn = Lib.extendFlat({}, base, {
+                        cumulative: true,
+                        direction: direction,
+                        currentbin: currentbin,
+                        histnorm: histnorm
+                    });
+                    var out = _calc(traceIn);
+
+                    expect(out.length).toBe(p.length);
+                    out.forEach(function(outi, i) {
+                        expect(outi.p).toBe(p[i]);
+                        expect(outi.s).toBeCloseTo(s[i], 6);
+                        expect(outi.b).toBe(0);
+                    });
+                });
+            });
+        });
+
     });
 });

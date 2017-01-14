@@ -27,7 +27,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var x = coerce('x'),
         y = coerce('y');
 
-    coerce('mode');
+    var cumulative = coerce('cumulative');
+    if(cumulative) {
+        coerce('direction');
+        coerce('currentbin');
+    }
+
     coerce('text');
 
     var orientation = coerce('orientation', (y && !x) ? 'h' : 'v'),
