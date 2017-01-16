@@ -56,7 +56,7 @@ exports.plot = function plotMapbox(gd) {
 
     for(var i = 0; i < mapboxIds.length; i++) {
         var id = mapboxIds[i],
-            subplotCalcData = getSubplotCalcData(calcData, id),
+            subplotCalcData = Plots.getSubplotCalcData(calcData, 'mapbox', id),
             opts = fullLayout[id],
             mapbox = opts._subplot;
 
@@ -117,19 +117,6 @@ exports.toSVG = function(gd) {
         mapbox.destroy();
     }
 };
-
-function getSubplotCalcData(calcData, id) {
-    var subplotCalcData = [];
-
-    for(var i = 0; i < calcData.length; i++) {
-        var calcTrace = calcData[i],
-            trace = calcTrace[0].trace;
-
-        if(trace.subplot === id) subplotCalcData.push(calcTrace);
-    }
-
-    return subplotCalcData;
-}
 
 function findAccessToken(gd, mapboxIds) {
     var fullLayout = gd._fullLayout,

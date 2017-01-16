@@ -15,8 +15,9 @@ var d3 = require('d3');
 
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
-var Axes = require('../../plots/cartesian/axes');
-var Fx = require('../../plots/cartesian/graph_interact');
+var Plots = require('../plots');
+var Axes = require('../cartesian/axes');
+var Fx = require('../cartesian/graph_interact');
 
 var addProjectionsToD3 = require('./projections');
 var createGeoScale = require('./set_scale');
@@ -170,65 +171,12 @@ proto.plot = function(geoCalcData, fullLayout, promises) {
 };
 
 proto.onceTopojsonIsLoaded = function(geoCalcData, geoLayout) {
-    var i;
-
     this.drawLayout(geoLayout);
 
-    var traceHashOld = this.traceHash;
-    var traceHash = {};
-
-    for(i = 0; i < geoCalcData.length; i++) {
-        var calcData = geoCalcData[i],
-            trace = calcData[0].trace;
-
-        traceHash[trace.type] = traceHash[trace.type] || [];
-        traceHash[trace.type].push(calcData);
-    }
-
-    var moduleNamesOld = Object.keys(traceHashOld);
-    var moduleNames = Object.keys(traceHash);
-
-    // when a trace gets deleted, make sure that its module's
-    // plot method is called so that it is properly
-    // removed from the DOM.
-    for(i = 0; i < moduleNamesOld.length; i++) {
-        var moduleName = moduleNamesOld[i];
-
-        if(moduleNames.indexOf(moduleName) === -1) {
-            var fakeCalcTrace = traceHashOld[moduleName][0],
-                fakeTrace = fakeCalcTrace[0].trace;
-
-            fakeTrace.visible = false;
-            traceHash[moduleName] = [fakeCalcTrace];
-        }
-    }
-
-    moduleNames = Object.keys(traceHash);
-
-    for(i = 0; i < moduleNames.length; i++) {
-        var moduleCalcData = traceHash[moduleNames[i]],
-            _module = moduleCalcData[0][0].trace._module;
-
-        _module.plot(this, filterVisible(moduleCalcData), geoLayout);
-    }
-
-    this.traceHash = traceHash;
+    Plots.generalUpdatePerTraceModule(this, geoCalcData, geoLayout);
 
     this.render();
 };
-
-function filterVisible(calcDataIn) {
-    var calcDataOut = [];
-
-    for(var i = 0; i < calcDataIn.length; i++) {
-        var calcTrace = calcDataIn[i],
-            trace = calcTrace[0].trace;
-
-        if(trace.visible === true) calcDataOut.push(calcTrace);
-    }
-
-    return calcDataOut;
-}
 
 proto.updateFx = function(hovermode) {
     this.showHover = (hovermode !== false);
