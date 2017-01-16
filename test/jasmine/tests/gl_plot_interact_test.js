@@ -710,3 +710,68 @@ describe('Test gl plot side effects', function() {
         }).then(done);
     });
 });
+
+describe('gl2d interaction', function() {
+    var gd;
+
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('data-referenced annotations should update on drag', function(done) {
+
+        function drag(start, end) {
+            var opts = { buttons: 1 };
+
+            mouseEvent('mousemove', start[0], start[1], opts);
+            mouseEvent('mousedown', start[0], start[1], opts);
+            mouseEvent('mousemove', end[0], end[1], opts);
+            mouseEvent('mouseup', end[0], end[1], opts);
+        }
+
+        function assertAnnotation(xy) {
+            var ann = d3.select('g.annotation-text-g');
+            var x = +ann.attr('x');
+            var y = +ann.attr('y');
+
+            expect([x, y]).toBeCloseToArray(xy);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scattergl',
+            x: [1, 2, 3],
+            y: [2, 1, 2]
+        }], {
+            annotations: [{
+                x: 2,
+                y: 1,
+                text: 'text'
+            }],
+            dragmode: 'pan'
+        })
+        .then(function() {
+            assertAnnotation([340, 334]);
+
+            drag([250, 200], [150, 300]);
+            assertAnnotation([410, 264]);
+
+            return Plotly.relayout(gd, {
+                'xaxis.range': [1.5, 2.5],
+                'yaxis.range': [1, 1.5]
+            });
+        })
+        .then(function() {
+            assertAnnotation([340, 340]);
+        })
+        .then(done);
+    });
+});
