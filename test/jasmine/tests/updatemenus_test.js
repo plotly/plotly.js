@@ -629,7 +629,7 @@ describe('update menus interactions', function() {
         }).catch(fail).then(done);
     });
 
-    it('appliesy padding on relayout', function(done) {
+    it('applies y padding on relayout', function(done) {
         var x1, x2;
         var firstMenu = d3.select('.' + constants.headerGroupClassName);
         var padShift = 40;
@@ -733,4 +733,70 @@ describe('update menus interactions', function() {
             button = d3.select(buttons[0][buttonIndex]);
         return button;
     }
+});
+
+
+describe('update menus interaction with other components:', function() {
+    'use strict';
+
+    afterEach(destroyGraphDiv);
+
+    it('buttons show be drawn above sliders', function(done) {
+
+        Plotly.plot(createGraphDiv(), [{
+            x: [1, 2, 3],
+            y: [1, 2, 1]
+        }], {
+            sliders: [{
+                xanchor: 'right',
+                x: -0.05,
+                y: 0.9,
+                len: 0.3,
+                steps: [{
+                    label: 'red',
+                    method: 'restyle',
+                    args: [{'line.color': 'red'}]
+                }, {
+                    label: 'orange',
+                    method: 'restyle',
+                    args: [{'line.color': 'orange'}]
+                }, {
+                    label: 'yellow',
+                    method: 'restyle',
+                    args: [{'line.color': 'yellow'}]
+                }]
+            }],
+            updatemenus: [{
+                buttons: [{
+                    label: 'markers and lines',
+                    method: 'restyle',
+                    args: [{ 'mode': 'markers+lines' }]
+                }, {
+                    label: 'markers',
+                    method: 'restyle',
+                    args: [{ 'mode': 'markers' }]
+                }, {
+                    label: 'lines',
+                    method: 'restyle',
+                    args: [{ 'mode': 'lines' }]
+                }]
+            }]
+        })
+        .then(function() {
+            var infoLayer = d3.select('g.infolayer');
+            var containerClassNames = ['slider-container', 'updatemenu-container'];
+            var list = [];
+
+            infoLayer.selectAll('*').each(function() {
+                var className = d3.select(this).attr('class');
+
+                if(containerClassNames.indexOf(className) !== -1) {
+                    list.push(className);
+                }
+            });
+
+            expect(list).toEqual(containerClassNames);
+        })
+        .then(done);
+    });
 });
