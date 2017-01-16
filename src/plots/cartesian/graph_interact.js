@@ -114,7 +114,9 @@ fx.init = function(gd) {
             var maindrag = dragBox(gd, plotinfo, 0, 0,
                 xa._length, ya._length, 'ns', 'ew');
 
+            gd._lastMoveEvt;
             maindrag.onmousemove = function(evt) {
+                gd._lastMoveEvt = evt;
                 fx.hover(gd, evt, subplot);
                 fullLayout._lasthover = maindrag;
                 fullLayout._hoversubplot = subplot;
@@ -130,10 +132,13 @@ fx.init = function(gd) {
             maindrag.onmouseout = function(evt) {
                 if(gd._dragging) return;
 
+                gd._lastMoveEvt = null;
+
                 dragElement.unhover(gd, evt);
             };
 
             maindrag.onclick = function(evt) {
+                if(gd._lastMoveEvt) fx.hover(gd, gd._lastMoveEvt, subplot);
                 fx.click(gd, evt);
             };
 
