@@ -10,22 +10,26 @@
 'use strict';
 
 var Lib = require('../../lib');
-
 var handleXYDefaults = require('./xy_defaults');
 var handleABDefaults = require('./ab_defaults');
 var attributes = require('./attributes');
 
-module.exports = function supplyDefaults(traceIn, traceOut) {
+module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, fullLayout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
+    console.log('fullLayout:', fullLayout);
+
     coerce('carpetid');
     coerce('cheaterslope');
 
+    Lib.coerceFont(coerce, 'font');
+    console.log('traceOut.font:', fullLayout.font);
+
     traceOut.cheaterslope = parseFloat(traceIn.cheaterslope);
 
-    handleABDefaults(traceIn, traceOut, coerce);
+    handleABDefaults(traceIn, traceOut, fullLayout, coerce);
 
     if (traceOut.a.length < 3) {
         traceOut.aaxis.smoothing = 0;
@@ -38,9 +42,7 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
     var len = handleXYDefaults(traceIn, traceOut, coerce);
 
     if(!len) {
-        //traceOut.visible = false;
-        //return;
+        traceOut.visible = false;
+        return;
     }
-
-    console.log('traceOut.visible');
 };

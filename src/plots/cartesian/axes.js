@@ -1124,6 +1124,8 @@ axes.tickText = function(ax, x, hover) {
     if(ax.tickprefix && !isHidden(ax.showtickprefix)) out.text = ax.tickprefix + out.text;
     if(ax.ticksuffix && !isHidden(ax.showticksuffix)) out.text += ax.ticksuffix;
 
+    console.log('out:', out);
+
     return out;
 };
 

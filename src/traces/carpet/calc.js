@@ -39,10 +39,31 @@ module.exports = function calc(gd, trace) {
         xdata = trace.x;
     }
 
+    // Precompute the cartesian-space coordinates of the grid lines:
+    var x = xdata;
+    var y = trace.y;
+
+    trace.x = x = clean2dArray(x);
+    trace.y = y = clean2dArray(y);
+
+    // Fill in any undefined values with elliptic smoothing. This doesn't take
+    // into account the spacing of the values. That is, the derivatives should
+    // be modified to use a and b values. It's not that hard, but this is already
+    // moderate overkill for just filling in missing values.
+    smoothFill2dArray(x, a ,b);
+    smoothFill2dArray(y, a, b);
+
+    // Create conversions from one coordinate system to another:
+    setConvert(trace, xa, ya);
+
+    // Convert cartesian-space x/y coordinates to screen space pixel coordinates:
+    trace.xp = map2dArray(trace.xp, x, xa.c2p);
+    trace.yp = map2dArray(trace.yp, y, ya.c2p);
+
     // This is a rather expensive scan. Nothing guarantees monotonicity,
     // so we need to scan through all data to get proper ranges:
-    var xrange = arrayMinmax(xdata);
-    var yrange = arrayMinmax(ydata);
+    var xrange = arrayMinmax(x);
+    var yrange = arrayMinmax(y);
 
     var dx = 0.5 * (xrange[1] - xrange[0]);
     var xc = 0.5 * (xrange[1] + xrange[0]);
@@ -56,26 +77,6 @@ module.exports = function calc(gd, trace) {
 
     Axes.expand(xa, xrange, {padded: true});
     Axes.expand(ya, yrange, {padded: true});
-
-    // Precompute the cartesian-space coordinates of the grid lines:
-    var x = xdata;
-    var y = trace.y;
-
-    // Convert cartesian-space x/y coordinates to screen space pixel coordinates:
-    trace.xp = map2dArray(trace.xp, x, xa.c2p);
-    trace.yp = map2dArray(trace.yp, y, ya.c2p);
-    x = clean2dArray(x, true);
-    y = clean2dArray(y, true);
-
-    // Fill in any undefined values with elliptic smoothing. This doesn't take
-    // into account the spacing of the values. That is, the derivatives should
-    // be modified to use a and b values. It's not that hard, but this is already
-    // moderate overkill for just filling in missing values.
-    smoothFill2dArray(x);
-    smoothFill2dArray(y);
-
-    // Create conversions from one coordinate system to another:
-    setConvert(trace, xa, ya);
 
     calcGridlines(trace, 'a', 'b');
     calcGridlines(trace, 'b', 'a');

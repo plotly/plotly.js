@@ -11,9 +11,7 @@
 
 var Lib = require('../../lib');
 
-
 module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name, arrayVarNames) {
-    console.log('arrayVarNames:', arrayVarNames);
     var col1 = trace[var1Name].slice(),
         col2 = trace[var2Name].slice(),
         textCol = trace.text,

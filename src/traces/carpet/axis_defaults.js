@@ -11,7 +11,6 @@
 var axisAttributes = require('./attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var setConvert = require('../../plots/cartesian/set_convert');
-var Lib = require('../../lib');
 var handleCartesianAxisDefaults = require('../../plots/cartesian/axis_defaults');
 
 var isNumeric = require('fast-isnumeric');
@@ -227,6 +226,12 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         color: dfltFontColor
     });
 
+    Lib.coerceFont(coerce, 'tickfont', {
+        family: font.family,
+        size: Math.round(font.size * 1.2),
+        color: dfltFontColor
+    });
+
     var validRange = (
         (containerIn.range || []).length === 2 &&
         isNumeric(containerOut.r2l(containerIn.range[0])) &&
@@ -279,6 +284,9 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     containerOut._initialCategories = axType === 'category' ?
         orderedCategories(letter, containerOut.categoryorder, containerOut.categoryarray, options.data) :
         [];
+
+    // Something above overrides this deep in the axis code, but no, we actually want to coerce this.
+    coerce('tickmode');
 
     return containerOut;
 };

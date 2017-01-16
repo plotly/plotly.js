@@ -8,7 +8,7 @@
 
 'use strict';
 
-module.exports = function smoothFill2dArray (data) {
+module.exports = function smoothFill2dArray (data, a, b) {
     var i, j, k, n;
     var ip = [];
     var jp = [];
@@ -53,8 +53,10 @@ module.exports = function smoothFill2dArray (data) {
         }
     }
 
-    // The tolerance doesn't need to be too low. It's just for display positioning
-    var tol = 1e-6;
+    if (!ip.length) return data;
+
+    // The tolerance doesn't need to be excessive. It's just for display positioning
+    var tol = 1e-5;
     var resid = 0;
     var itermax = 100;
     var iter = 0;
@@ -65,38 +67,77 @@ module.exports = function smoothFill2dArray (data) {
             i = ip[k];
             j = jp[k];
 
-            // Note the second-derivative = 0 condition at the edges. This may seem
-            // like overkill, except this is for layout so that pure Neumann conditions
-            // (deriv = 0) will just dump all the points on top of one another.
-            var boundaryCnt = 0;
+            // Note the second-derivative = 0 condition at the edges.
+            var contribCnt = 0;
             var newVal = 0;
 
+            var d0, d1, x0, x1, i0, j0;
             if (i === 0) {
-                newVal += 2.0 * data[1][j] - data[2][j];
-                boundaryCnt++;
+                i0 = Math.min(ni - 1, 2);
+                x0 = a[i0]
+                x1 = a[1];
+                d0 = data[i0][j];
+                d1 = data[1][j];
+                newVal += d1 + (d1 - d0) * (a[0] - x1) / (x1 - x0);
+                contribCnt++;
             } else if (i === ni - 1) {
-                newVal += 2.0 * data[ni - 2][j] - data[ni - 3][j];
-                boundaryCnt++;
+                i0 = Math.max(0, ni - 3);
+                x0 = a[i0];
+                x1 = a[ni - 2];
+                d0 = data[i0][j];
+                d1 = data[ni - 2][j];
+                newVal += d1 + (d1 - d0) * (a[ni - 1] - x1) / (x1 - x0);
+                contribCnt++;
+            }
+
+            if ((i === 0 || i === ni - 1) && (j > 0 && j < nj - 1)) {
+                var dxp = b[j + 1] - b[j];
+                var dxm = b[j] - b[j - 1];
+                newVal += (dxm * data[i][j + 1] + dxp * data[i][j - 1]) / (dxm + dxp);
+                contribCnt++;
             }
 
             if (j === 0) {
-                newVal += 2.0 * data[i][1] - data[i][2];
-                boundaryCnt++;
-            } else if (j === ni - 1) {
-                newVal += 2.0 * data[i][nj - 2] - data[i][nj - 3];
-                boundaryCnt++;
+                j0 = Math.min(nj - 1, 2);
+                x0 = b[j0];
+                x1 = b[1];
+                d0 = data[i][j0];
+                d1 = data[i][1];
+                newVal += d1 + (d1 - d0) * (b[0] - x1) / (x1 - x0);
+                contribCnt++;
+            } else if (j === nj - 1) {
+                j0 = Math.max(0, nj - 3);
+                x0 = b[j0];
+                x1 = b[nj - 2];
+                d0 = data[i][j0];
+                d1 = data[i][nj - 2];
+                newVal += d1 + (d1 - d0) * (b[ni - 1] - x1) / (x1 - x0);
+                contribCnt++;
             }
 
-            if (!boundaryCnt) {
+            if ((j === 0 || j === nj - 1) && (i > 0 && i < ni - 1)) {
+                var dxp = a[i + 1] - a[i];
+                var dxm = a[i] - a[i - 1];
+                newVal += (dxm * data[i + 1][j] + dxp * data[i - 1][j]) / (dxm + dxp);
+                contribCnt++;
+            }
+
+            if (!contribCnt) {
                 // interior point, so simply average:
-                newVal = 0.25 * (
-                    data[i - 1][j] +
-                    data[i + 1][j] +
-                    data[i][j - 1] +
-                    data[i][j + 1]
-                );
+                // Get the grid spacing on either side:
+                var dap = a[i + 1] - a[i];
+                var dam = a[i] - a[i - 1];
+                var dbp = b[j + 1] - b[j];
+                var dbm = b[j] - b[j - 1];
+                // Some useful constants:
+                var c = dap * dam * (dap + dam);
+                var d = dbp * dbm * (dbp + dbm);
+
+                newVal = (c * (dbm * data[i][j + 1] + dbp * data[i][j - 1]) + d * (dam * data[i + 1][j] + dap * data[i - 1][j])) /
+                    (d * (dam + dap) + c * (dbm + dbp));
+
             } else {
-                newVal /= boundaryCnt;
+                newVal /= contribCnt;
             }
 
             var diff = newVal - data[i][j];
@@ -107,13 +148,13 @@ module.exports = function smoothFill2dArray (data) {
             // quick tests.
             //
             // NB: Don't overrelax the boundaries
-            data[i][j] += diff * (1 + (boundaryCnt ? 0 : 0.8));
+            data[i][j] += diff * (1 + (contribCnt ? 0 : 0.8));
         }
 
         resid = Math.sqrt(resid);
     } while (iter++ < itermax && resid > tol);
 
-    //console.log('residual is', resid, 'after', iter, 'iterations');
+    console.log('Smoother converged to', resid, 'after', iter, 'iterations');
 
     return data;
 }

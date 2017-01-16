@@ -26,7 +26,7 @@ function normalize (x) {
 }
 
 module.exports = function calcLabels (trace, axis) {
-    var i;
+    var i, tobj;
 
     var labels = axis._labels = [];
     var gridlines = axis._gridlines;
@@ -35,8 +35,9 @@ module.exports = function calcLabels (trace, axis) {
         var gridline = gridlines[i];
 
         if (['start', 'both'].indexOf(axis.showlabels) !== -1) {
-            labels.push({
-                text: gridline.value.toFixed(3),
+            tobj = Axes.tickText(axis, gridline.value);
+
+            extendFlat(tobj, {
                 endAnchor: true,
                 xy: gridline.xy(0),
                 dxy: gridline.dxy(0, 0),
@@ -46,11 +47,14 @@ module.exports = function calcLabels (trace, axis) {
                 isFirst: i === 0,
                 isLast: i === gridlines.length - 1
             });
+
+            labels.push(tobj);
         }
 
         if (['end', 'both'].indexOf(axis.showlabels) !== -1) {
-            labels.push({
-                text: gridline.value.toFixed(3),
+            tobj = Axes.tickText(axis, gridline.value);
+
+            extendFlat(tobj, {
                 endAnchor: false,
                 xy: gridline.xy(gridline.crossLength - 1),
                 dxy: gridline.dxy(gridline.crossLength - 2, 1),
@@ -60,6 +64,8 @@ module.exports = function calcLabels (trace, axis) {
                 isFirst: i === 0,
                 isLast: i === gridlines.length - 1
             });
+
+            labels.push(tobj);
         }
     }
 };

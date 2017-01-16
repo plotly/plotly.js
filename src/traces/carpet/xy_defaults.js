@@ -22,23 +22,23 @@ module.exports = function handleXYDefaults(traceIn, traceOut, coerce) {
     var cols = [];
     var x = coerce('x');
 
-    var hasxcols = !!(x && !hasColumns(x));
-    if (hasxcols) cols.push('x');
+    var needsXTransform = x && !hasColumns(x);
+    if (needsXTransform) cols.push('x');
 
     traceOut._cheater = !x;
 
     var y = coerce('y');
 
-    var hasycols = !!(y && !hasColumns(y));
-    if (hasycols) cols.push('y');
+    var needsYTransform = y && !hasColumns(y);
+    if (needsYTransform) cols.push('y');
+
+    if (!x && !y) return;
 
     if (cols.length) {
-        convertColumnData(traceOut, traceOut.aaxis, traceOut.baxis, 'a', 'b', cols);
-    } else {
-        return 0;
+        convertColumnData(traceOut, traceOut.baxis, traceOut.aaxis, 'b', 'a', cols);
     }
 
-    return y.length;
+    return true;
 };
 
 /*

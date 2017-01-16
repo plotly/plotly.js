@@ -9,7 +9,9 @@
 'use strict';
 
 var extendFlat = require('../../lib/extend').extendFlat;
+var fontAttrs = require('../../plots/font_attributes');
 var axisAttrs = require('./axis_attributes');
+var colorAttrs = require('../../components/color/attributes');
 
 module.exports = {
     carpetid: {
@@ -93,4 +95,15 @@ module.exports = {
     },
     aaxis: extendFlat({}, axisAttrs),
     baxis: extendFlat({}, axisAttrs),
+    font: {
+        family: extendFlat({}, fontAttrs.family, {
+            dflt: '"Open Sans", verdana, arial, sans-serif'
+        }),
+        size: extendFlat({}, fontAttrs.size, {
+            dflt: 12
+        }),
+        color: extendFlat({}, fontAttrs.color, {
+            dflt: colorAttrs.defaultLine
+        }),
+    },
 };

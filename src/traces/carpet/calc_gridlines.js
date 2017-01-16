@@ -211,7 +211,6 @@ module.exports = function calcGridlines (trace, axisLetter, crossAxisLetter) {
         return ret;
     };
 
-
     if (axis.tickmode === 'array') {
         var j0, j1;
         //var j0 = axis.startline ? 1 : 0;

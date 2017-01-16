@@ -15,7 +15,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var handleAxisDefaults = require('./axis_defaults');
 var attributes = require('./attributes');
 
-module.exports = function handleABDefaults(traceIn, traceOut, coerce) {
+module.exports = function handleABDefaults(traceIn, traceOut, fullLayout, coerce) {
     var a = coerce('a');
 
     if(!a) {
@@ -30,32 +30,39 @@ module.exports = function handleABDefaults(traceIn, traceOut, coerce) {
         coerce('b0');
     }
 
-    mimickAxisDefaults(traceIn, traceOut);
+    mimickAxisDefaults(traceIn, traceOut, fullLayout);
 
     return;
 };
 
-function mimickAxisDefaults (traceIn, traceOut) {
+function mimickAxisDefaults (traceIn, traceOut, fullLayout) {
     var axesList = ['aaxis', 'baxis'];
 
     axesList.forEach(function(axName) {
         var axLetter = axName.charAt(0),
             axIn = traceIn[axName] || {},
-            axOut = {},
+            axOut = {
+                _gd: {
+                    _fullLayout: {
+                        separators: fullLayout.separators
+                    }
+                }
+            },
             defaultOptions = {
+                tickfont: 'x',
                 id: axLetter + 'axis',
                 letter: axLetter,
                 font: traceOut.font,
                 name: axName,
                 data: traceIn[axLetter],
-                calendar: traceOut.calendar
+                calendar: traceOut.calendar,
             };
 
         function coerce(attr, dflt) {
             return Lib.coerce(axIn, axOut, attributes, attr, dflt);
         }
 
-        handleAxisDefaults(axIn, axOut, coerce, defaultOptions, traceOut);
+        handleAxisDefaults(axIn, axOut, coerce, defaultOptions);
 
         axOut._categories = axOut._categories || [];
 
