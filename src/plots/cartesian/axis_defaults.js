@@ -57,6 +57,8 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         containerOut._id = axisIds.name2id(options.name);
     }
 
+    coerce('visible', !options.cheateronly);
+
     // now figure out type and do some more initialization
     var axType = coerce('type');
     if(axType === '-') {

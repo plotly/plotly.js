@@ -15,7 +15,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var handleAxisDefaults = require('./axis_defaults');
 var attributes = require('./attributes');
 
-module.exports = function handleABDefaults(traceIn, traceOut, fullLayout, coerce) {
+module.exports = function handleABDefaults(traceIn, traceOut, fullLayout, coerce, dfltColor) {
     var a = coerce('a');
 
     if(!a) {
@@ -30,33 +30,37 @@ module.exports = function handleABDefaults(traceIn, traceOut, fullLayout, coerce
         coerce('b0');
     }
 
-    mimickAxisDefaults(traceIn, traceOut, fullLayout);
+    mimickAxisDefaults(traceIn, traceOut, fullLayout, dfltColor);
 
     return;
 };
 
-function mimickAxisDefaults (traceIn, traceOut, fullLayout) {
+function mimickAxisDefaults(traceIn, traceOut, fullLayout, dfltColor) {
     var axesList = ['aaxis', 'baxis'];
 
     axesList.forEach(function(axName) {
-        var axLetter = axName.charAt(0),
-            axIn = traceIn[axName] || {},
-            axOut = {
-                _gd: {
-                    _fullLayout: {
-                        separators: fullLayout.separators
-                    }
+        var axLetter = axName.charAt(0);
+        var axIn = traceIn[axName] || {};
+
+        var axOut = {
+            _gd: {
+                _fullLayout: {
+                    separators: fullLayout.separators
                 }
-            },
-            defaultOptions = {
-                tickfont: 'x',
-                id: axLetter + 'axis',
-                letter: axLetter,
-                font: traceOut.font,
-                name: axName,
-                data: traceIn[axLetter],
-                calendar: traceOut.calendar,
-            };
+            }
+        };
+
+        var defaultOptions = {
+            tickfont: 'x',
+            id: axLetter + 'axis',
+            letter: axLetter,
+            font: traceOut.font,
+            name: axName,
+            data: traceIn[axLetter],
+            calendar: traceOut.calendar,
+            dfltColor: dfltColor,
+            bgColor: fullLayout.paper_bgcolor,
+        };
 
         function coerce(attr, dflt) {
             return Lib.coerce(axIn, axOut, attributes, attr, dflt);

@@ -16,6 +16,14 @@ var constants = require('./constants');
 
 
 module.exports = {
+    visible: {
+        valType: 'boolean',
+        description: [
+            'A single toggle to hide the axis while preserving interaction like dragging.',
+            'Default is true when a cheater plot is present on the axis, otherwise',
+            'false'
+        ].join(' ')
+    },
     color: {
         valType: 'color',
         dflt: colorAttrs.defaultLine,

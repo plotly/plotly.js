@@ -23,7 +23,7 @@ module.exports = function plot(gd, plotinfoproxy, data) {
         plot: plotinfoproxy.plot
     };
 
-    /*var calcdata = new Array(data.length),
+    /* var calcdata = new Array(data.length),
         fullCalcdata = gd.calcdata;
 
     for(var i = 0; i < fullCalcdata.length; i++) {

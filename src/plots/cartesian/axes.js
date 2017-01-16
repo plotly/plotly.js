@@ -1124,8 +1124,6 @@ axes.tickText = function(ax, x, hover) {
     if(ax.tickprefix && !isHidden(ax.showtickprefix)) out.text = ax.tickprefix + out.text;
     if(ax.ticksuffix && !isHidden(ax.showticksuffix)) out.text += ax.ticksuffix;
 
-    console.log('out:', out);
-
     return out;
 };
 
@@ -1661,6 +1659,8 @@ axes.doTicks = function(gd, axid, skipTitle) {
     if((ax.ticks !== 'inside') === (axletter === 'x')) {
         ticksign = ticksign.map(function(v) { return -v; });
     }
+
+    if(!ax.visible) return;
 
     // remove zero lines, grid lines, and inside ticks if they're within
     // 1 pixel of the end

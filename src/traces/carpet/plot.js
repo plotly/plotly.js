@@ -105,34 +105,6 @@ function drawAxisLabels(xaxis, yaxis, trace, layer, labels, labelClass) {
 
         var el = d3.select(this);
 
-        var prefix;
-        switch(ax.showlabelprefix) {
-            case 'first':
-                prefix = label.isFirst ? ax.labelprefix : '';
-                break;
-            case 'all':
-                prefix = ax.labelprefix;
-                break;
-            case 'last':
-                prefix = label.isLast ? ax.labelprefix : '';
-                break;
-        }
-
-        var suffix;
-        switch(ax.showlabelsuffix) {
-            case 'first':
-                suffix = label.isFirst ? ax.labelsuffix : '';
-                break;
-            case 'all':
-                suffix = ax.labelsuffix;
-                break;
-            case 'last':
-                suffix = label.isLast ? ax.labelsuffix : '';
-                break;
-        }
-
-
-
         var dx = label.dxy[0] * trace.dpdx(xaxis);
         var dy = label.dxy[1] * trace.dpdy(yaxis);
         var angle = Math.atan2(dy, dx) * 180 / Math.PI;
@@ -152,7 +124,7 @@ function drawAxisLabels(xaxis, yaxis, trace, layer, labels, labelClass) {
         el.attr('x', xy[0] + ax.labelpadding * (endAnchor ? -1 : 1)) // These are pre-transform offsets
             .attr('y', xy[1] + 5) // Shift down to hackily vertically center
             .attr('text-anchor', endAnchor ? 'end' : 'start')
-            .text(prefix + label.text + suffix)
+            .text(label.text)
             .attr('transform', 'rotate(' + angle + ' ' + xy[0] + ',' + xy[1] + ')')
             .call(Drawing.font, label.font.family, label.font.size, label.font.color);
     });

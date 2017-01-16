@@ -8,16 +8,16 @@
 
 'use strict';
 
-module.exports = function makePath (xp, yp, isBicubic) {
+module.exports = function makePath(xp, yp, isBicubic) {
     // Prevent d3 errors that would result otherwise:
-    if (xp.length === 0) return '';
+    if(xp.length === 0) return '';
 
     var i, path = [];
     var stride = isBicubic ? 3 : 1;
-    for (i = 0; i < xp.length; i += stride) {
+    for(i = 0; i < xp.length; i += stride) {
         path.push(xp[i] + ',' + yp[i]);
 
-        if (isBicubic && i < xp.length - stride) {
+        if(isBicubic && i < xp.length - stride) {
             path.push('C');
             path.push([
                 xp[i + 1] + ',' + yp[i + 1],
@@ -26,4 +26,4 @@ module.exports = function makePath (xp, yp, isBicubic) {
         }
     }
     return 'M' + path.join(isBicubic ? '' : 'L');
-}
+};

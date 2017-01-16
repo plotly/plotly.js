@@ -22,9 +22,9 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
 
     var i, j, arrayVar, newArrays, newArray, arrayVarName;
 
-    for (i = 0; i < arrayVarNames.length; i++) {
+    for(i = 0; i < arrayVarNames.length; i++) {
         arrayVar = trace[arrayVarNames[i]];
-        if (arrayVar) colLen = Math.min(colLen, arrayVar.length);
+        if(arrayVar) colLen = Math.min(colLen, arrayVar.length);
     }
 
     if(colLen < col1.length) col1 = col1.slice(0, colLen);
@@ -41,7 +41,7 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
         col2vals = col2dv.vals,
         newArrays = [];
 
-    for (i = 0; i < arrayVarNames.length; i++) {
+    for(i = 0; i < arrayVarNames.length; i++) {
         newArrays[i] = Lib.init2dArray(col2vals.length, col1vals.length);
     }
 

@@ -20,7 +20,7 @@ Carpet.animatable = true;
 Carpet.moduleType = 'trace';
 Carpet.name = 'carpet';
 Carpet.basePlotModule = require('../../plots/cartesian');
-Carpet.categories = ['cartesian', 'symbols', 'markerColorscale'];
+Carpet.categories = ['cartesian', 'symbols', 'markerColorscale', 'carpet'];
 Carpet.meta = {
     description: [
         'The scatter trace type encompasses line charts, scatter charts, text charts, and bubble charts.',

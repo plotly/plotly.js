@@ -27,6 +27,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         yaListCartesian = [],
         xaListGl2d = [],
         yaListGl2d = [],
+        xaListNotCheater = [],
         outerTicks = {},
         noGrids = {},
         i;
@@ -49,6 +50,13 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         var xaName = axisIds.id2name(trace.xaxis),
             yaName = axisIds.id2name(trace.yaxis);
 
+        // Note that we track the *opposite* of whether it's a cheater plot
+        // because that makes it straightforward to check that any trace on
+        // this axis that's *not* a cheater will make it visible
+        if((!Registry.traceIs(trace, 'carpet') || !trace._cheater) && xaListNotCheater.indexOf(xaName) === -1) {
+            xaListNotCheater.push(xaName);
+        }
+
         // add axes implied by traces
         if(xaName && listX.indexOf(xaName) === -1) listX.push(xaName);
         if(yaName && listY.indexOf(yaName) === -1) listY.push(yaName);
@@ -64,6 +72,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             noGrids[positionAxis] = true;
         }
     }
+
+    console.log('xaListNotCheater:', xaListNotCheater);
 
     // N.B. Ignore orphan axes (i.e. axes that have no data attached to them)
     // if gl3d or geo is present on graph. This is retain backward compatible.
@@ -127,7 +137,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
                 name: axName,
                 data: fullData,
                 bgColor: bgColor,
-                calendar: layoutOut.calendar
+                calendar: layoutOut.calendar,
+                cheateronly: axLetter === 'x' && xaListNotCheater.indexOf(axName) === -1
             },
             positioningOptions = {
                 letter: axLetter,

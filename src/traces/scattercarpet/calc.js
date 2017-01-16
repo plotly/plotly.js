@@ -22,14 +22,14 @@ var dataArrays = ['a', 'b'];
 module.exports = function calc(gd, trace) {
     var i, j, dataArray, newArray, fillArray1, fillArray2, carpet;
 
-    for (i = 0; i < gd._fullData.length; i++) {
-        if (gd._fullData[i].carpetid === trace.carpetid && gd._fullData[i].type === 'carpet') {
+    for(i = 0; i < gd._fullData.length; i++) {
+        if(gd._fullData[i].carpetid === trace.carpetid && gd._fullData[i].type === 'carpet') {
             carpet = gd._fullData[i];
             break;
         }
     }
 
-    if (!carpet) return;
+    if(!carpet) return;
 
     trace._carpet = carpet;
 

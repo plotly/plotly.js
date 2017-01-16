@@ -23,18 +23,18 @@ module.exports = function handleXYDefaults(traceIn, traceOut, coerce) {
     var x = coerce('x');
 
     var needsXTransform = x && !hasColumns(x);
-    if (needsXTransform) cols.push('x');
+    if(needsXTransform) cols.push('x');
 
     traceOut._cheater = !x;
 
     var y = coerce('y');
 
     var needsYTransform = y && !hasColumns(y);
-    if (needsYTransform) cols.push('y');
+    if(needsYTransform) cols.push('y');
 
-    if (!x && !y) return;
+    if(!x && !y) return;
 
-    if (cols.length) {
+    if(cols.length) {
         convertColumnData(traceOut, traceOut.baxis, traceOut.aaxis, 'b', 'a', cols);
     }
 

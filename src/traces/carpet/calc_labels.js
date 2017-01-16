@@ -21,29 +21,31 @@ var map1dArray = require('./map_1d_array');
 var makepath = require('./makepath');
 var extendFlat = require('../../lib/extend').extendFlat;
 
-function normalize (x) {
-    var x
+function normalize(x) {
+    var x;
 }
 
-module.exports = function calcLabels (trace, axis) {
-    var i, tobj;
+module.exports = function calcLabels(trace, axis) {
+    var i, tobj, prefix, suffix;
 
     var labels = axis._labels = [];
     var gridlines = axis._gridlines;
 
-    for (i = 0; i < gridlines.length; i++) {
+    for(i = 0; i < gridlines.length; i++) {
         var gridline = gridlines[i];
 
-        if (['start', 'both'].indexOf(axis.showlabels) !== -1) {
+        if(['start', 'both'].indexOf(axis.showticklabels) !== -1) {
             tobj = Axes.tickText(axis, gridline.value);
 
             extendFlat(tobj, {
+                prefix: prefix,
+                suffix: suffix,
                 endAnchor: true,
                 xy: gridline.xy(0),
                 dxy: gridline.dxy(0, 0),
                 axis: gridline.axis,
                 length: gridline.crossAxis.length,
-                font: gridline.crossAxis.startlabelfont,
+                font: gridline.crossAxis.labelfont,
                 isFirst: i === 0,
                 isLast: i === gridlines.length - 1
             });
@@ -51,7 +53,7 @@ module.exports = function calcLabels (trace, axis) {
             labels.push(tobj);
         }
 
-        if (['end', 'both'].indexOf(axis.showlabels) !== -1) {
+        if(['end', 'both'].indexOf(axis.showticklabels) !== -1) {
             tobj = Axes.tickText(axis, gridline.value);
 
             extendFlat(tobj, {
@@ -60,7 +62,7 @@ module.exports = function calcLabels (trace, axis) {
                 dxy: gridline.dxy(gridline.crossLength - 2, 1),
                 axis: gridline.axis,
                 length: gridline.crossAxis.length,
-                font: gridline.crossAxis.endlabelfont,
+                font: gridline.crossAxis.labelfont,
                 isFirst: i === 0,
                 isLast: i === gridlines.length - 1
             });

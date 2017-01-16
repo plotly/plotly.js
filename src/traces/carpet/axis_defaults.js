@@ -8,7 +8,7 @@
 
 'use strict';
 
-var axisAttributes = require('./attributes');
+var carpetAttrs = require('./attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var setConvert = require('../../plots/cartesian/set_convert');
 var handleCartesianAxisDefaults = require('../../plots/cartesian/axis_defaults');
@@ -18,7 +18,6 @@ var colorMix = require('tinycolor2').mix;
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
-var lightFraction = require('../../components/color/attributes').lightFraction;
 
 var layoutAttributes = require('../../plots/cartesian/layout_attributes');
 var handleTickValueDefaults = require('../../plots/cartesian/tick_value_defaults');
@@ -29,74 +28,6 @@ var setConvert = require('../../plots/cartesian/set_convert');
 var orderedCategories = require('../../plots/cartesian/ordered_categories');
 var axisIds = require('../../plots/cartesian/axis_ids');
 var autoType = require('../../plots/cartesian/axis_autotype');
-
-
-/*module.exports = function handleAxisDefaults(traceIn, traceOut, axis) {
-    var i;
-
-    function coerce(attr, dflt) {
-        return Lib.coerce(traceIn, traceOut, attributes, axis + 'axis.' + attr, dflt);
-    }
-
-    coerce('type');
-    coerce('smoothing');
-    traceOut.smoothing = traceOut.smoothing ? 1 : 0;
-    coerce('cheatertype');
-
-    coerce('showlabels');
-    coerce('labelprefix', axis + ' = ');
-    coerce('labelsuffix');
-    coerce('showlabelprefix');
-    coerce('showlabelsuffix');
-
-    coerce('tickmode');
-    coerce('tick0');
-    coerce('dtick');
-    coerce('arraytick0');
-    coerce('arraydtick');
-    //coerce('gridoffset');
-    //coerce('gridstep');
-
-    coerce('gridwidth');
-    coerce('gridcolor');
-
-    coerce('startline');
-    coerce('startlinewidth', traceOut.gridwidth);
-    coerce('startlinecolor', traceOut.gridcolor);
-    coerce('endline');
-    coerce('endlinewidth', traceOut.gridwidth);
-    coerce('endlinecolor', traceOut.gridwidth);
-
-    coerce('minorgridcount');
-    coerce('minorgridwidth');
-    coerce('minorgridcolor');
-
-    coerce('showstartlabel');
-    coerce('showendlabel');
-
-    coerce('labelpadding');
-
-    // We'll never draw this. We just need a couple category management functions.
-    var ax = traceOut[axis + 'axis'] = extendFlat(traceOut[axis + 'axis'] || {}, {
-        range: [],
-        domain: [],
-        _id: axis,
-    });
-    setConvert(traceOut[axis + 'axis']);
-
-    Lib.coerceFont(coerce, 'startlabelfont', {
-        size: 12,
-        color: ax.startlinecolor
-    });
-
-    Lib.coerceFont(coerce, 'endlabelfont', {
-        size: 12,
-        color: ax.endlinecolor
-    });
-
-    ax._hovertitle = axis;
-}*/
-
 
 /**
  * options: object containing:
@@ -114,7 +45,7 @@ var autoType = require('../../plots/cartesian/axis_autotype');
 module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, options) {
     var letter = options.letter,
         font = options.font || {},
-        attributes = axisAttributes[letter + 'axis'],
+        attributes = carpetAttrs[letter + 'axis'],
         defaultTitle = 'Click to enter ' +
             (options.title || (letter.toUpperCase() + ' axis')) +
             ' title';
@@ -155,56 +86,26 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     containerOut.smoothing = containerOut.smoothing ? 1 : 0;
     coerce('cheatertype');
 
-    coerce('showlabels');
+    coerce('showticklabels');
     coerce('labelprefix', letter + ' = ');
     coerce('labelsuffix');
-    coerce('showlabelprefix');
-    coerce('showlabelsuffix');
+    coerce('showtickprefix');
+    coerce('showticksuffix');
 
     coerce('tickmode');
     coerce('tick0');
     coerce('dtick');
     coerce('arraytick0');
     coerce('arraydtick');
-    //coerce('gridoffset');
-    //coerce('gridstep');
-
-    coerce('gridwidth');
-    coerce('gridcolor');
-
-    coerce('startline');
-    coerce('startlinewidth', containerOut.gridwidth);
-    coerce('startlinecolor', containerOut.gridcolor);
-    coerce('endline');
-    coerce('endlinewidth', containerOut.gridwidth);
-    coerce('endlinecolor', containerOut.gridwidth);
-
-    coerce('minorgridcount');
-    coerce('minorgridwidth');
-    coerce('minorgridcolor');
+    // coerce('gridoffset');
+    // coerce('gridstep');
 
     coerce('showstartlabel');
     coerce('showendlabel');
 
     coerce('labelpadding');
 
-    // We'll never draw this. We just need a couple category management functions.
-    Lib.coerceFont(coerce, 'startlabelfont', {
-        size: 12,
-        color: containerOut.startlinecolor
-    });
-
-    Lib.coerceFont(coerce, 'endlabelfont', {
-        size: 12,
-        color: containerOut.endlinecolor
-    });
-
     containerOut._hovertitle = letter;
-
-
-
-
-
 
 
     if(axType === 'date') {
@@ -214,7 +115,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     setConvert(containerOut);
 
-    var dfltColor = coerce('color');
+    var dfltColor = coerce('color', options.dfltColor);
     // if axis.color was provided, use it for fonts too; otherwise,
     // inherit from global font color in case that was provided.
     var dfltFontColor = (dfltColor === containerIn.color) ? dfltColor : font.color;
@@ -251,34 +152,37 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     handleTickMarkDefaults(containerIn, containerOut, coerce, options);
     handleCategoryOrderDefaults(containerIn, containerOut, coerce);
 
-    var lineColor = coerce2('linecolor', dfltColor),
-        lineWidth = coerce2('linewidth'),
-        showLine = coerce('showline', !!lineColor || !!lineWidth);
+    var gridColor = coerce2('gridcolor', colorMix(dfltColor, options.bgColor, 70).toRgbString());
+    var gridWidth = coerce2('gridwidth');
+    var showGrid = coerce('showgrid');
 
-    if(!showLine) {
-        delete containerOut.linecolor;
-        delete containerOut.linewidth;
-    }
-
-    if(showLine || containerOut.ticks) coerce('mirror');
-
-    var gridColor = coerce2('gridcolor', colorMix(dfltColor, options.bgColor, lightFraction).toRgbString()),
-        gridWidth = coerce2('gridwidth'),
-        showGridLines = coerce('showgrid', options.showGrid || !!gridColor || !!gridWidth);
-
-    if(!showGridLines) {
+    if(!showGrid) {
         delete containerOut.gridcolor;
-        delete containerOut.gridwidth;
+        delete containerOut.gridWidth;
+    } else {
+        var startLineColor = coerce2('startlinecolor', dfltColor);
+        var startLineWidth = coerce2('startlinewidth');
+        var showStartLine = coerce('startline', containerOut.showgrid || !!startLineColor || !!startLineWidth);
+
+        if(!showStartLine) {
+            delete containerOut.startlinecolor;
+            delete containerOut.startlinewidth;
+        }
+
+        var endLineColor = coerce2('endlinecolor', dfltColor);
+        var endLineWidth = coerce2('endlinewidth');
+        var showStartLine = coerce('endline', containerOut.showgrid || !!endLineColor || !!endLineWidth);
+
+        if(!showStartLine) {
+            delete containerOut.endlinecolor;
+            delete containerOut.endlinewidth;
+        }
+
+        coerce('minorgridcount');
+        coerce('minorgridwidth');
+        coerce('minorgridcolor', colorMix(gridColor, options.bgColor, 95).toRgbString());
     }
 
-    var zeroLineColor = coerce2('zerolinecolor', dfltColor),
-        zeroLineWidth = coerce2('zerolinewidth'),
-        showZeroLine = coerce('zeroline', options.showGrid || !!zeroLineColor || !!zeroLineWidth);
-
-    if(!showZeroLine) {
-        delete containerOut.zerolinecolor;
-        delete containerOut.zerolinewidth;
-    }
 
     // fill in categories
     containerOut._initialCategories = axType === 'category' ?
@@ -287,6 +191,12 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     // Something above overrides this deep in the axis code, but no, we actually want to coerce this.
     coerce('tickmode');
+
+    // We'll never draw this. We just need a couple category management functions.
+    Lib.coerceFont(coerce, 'labelfont', {
+        size: 12,
+        color: containerOut.startlinecolor
+    });
 
     return containerOut;
 };

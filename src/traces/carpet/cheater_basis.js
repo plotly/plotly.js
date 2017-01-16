@@ -27,11 +27,11 @@ module.exports = function(a, b, cheaterslope) {
     // not evenly spaced, the switch to value-based indexing is continuous.
     // This means evenly spaced data should look the same whether value
     // or index cheatertype.
-    if (adata) {
+    if(adata) {
         var ascal = (adata.length - 1) / (adata[adata.length - 1] - adata[0]) / (na - 1);
     }
 
-    if (bdata) {
+    if(bdata) {
         var bscal = (bdata.length - 1) / (bdata[bdata.length - 1] - bdata[0]) / (nb - 1);
     }
 

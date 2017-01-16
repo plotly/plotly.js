@@ -15,7 +15,6 @@ var colorAttrs = require('../../components/color/attributes');
 module.exports = {
     color: {
         valType: 'color',
-        dflt: colorAttrs.defaultLine,
         role: 'style',
         description: [
             'Sets default for all colors associated with this axis',
@@ -366,10 +365,10 @@ module.exports = {
             'Used with `categoryorder`.'
         ].join(' ')
     },
-    showlabels: {
+    showticklabels: {
         valType: 'enumerated',
         values: ['start', 'end', 'both', 'none'],
-        dflt: 'end',
+        dflt: 'start',
         role: 'style',
         description: [
             'Determines whether axis labels are drawn on the low side,',
@@ -401,29 +400,7 @@ module.exports = {
         valType: 'boolean',
         dflt: true,
     },
-    showlabelprefix: {
-        valType: 'enumerated',
-        values: ['all', 'first', 'last', 'none'],
-        dflt: 'all',
-        role: 'style',
-        description: [
-            'If *all*, all tick labels are displayed with a prefix.',
-            'If *first*, only the first tick is displayed with a prefix.',
-            'If *last*, only the last tick is displayed with a suffix.',
-            'If *none*, tick prefixes are hidden.'
-        ].join(' ')
-    },
-    showlabelsuffix: {
-        valType: 'enumerated',
-        values: ['all', 'first', 'last', 'none'],
-        dflt: 'all',
-        role: 'style',
-        description: 'Same as `showtickprefix` but for tick suffixes.'
-    },
-    startlabelfont: extendFlat({}, fontAttrs, {
-        description: 'Sets the label font.'
-    }),
-    endlabelfont: extendFlat({}, fontAttrs, {
+    labelfont: extendFlat({}, fontAttrs, {
         description: 'Sets the label font.'
     }),
     // lines and grids
@@ -448,47 +425,86 @@ module.exports = {
         role: 'style',
         description: 'Sets the width (in px) of the axis line.'
     },
-    showgrid: {
-        valType: 'boolean',
-        role: 'style',
-        description: [
-            'Determines whether or not grid lines are drawn.',
-            'If *true*, the grid lines are drawn at every tick mark.'
-        ].join(' ')
-    },
     gridcolor: {
         valType: 'color',
-        dflt: colorAttrs.lightLine,
         role: 'style',
-        description: 'Sets the color of the grid lines.'
+        description: 'Sets the axis line color.'
     },
     gridwidth: {
         valType: 'number',
         min: 0,
         dflt: 1,
         role: 'style',
+        description: 'Sets the width (in px) of the axis line.'
+    },
+    showgrid: {
+        valType: 'boolean',
+        role: 'style',
+        dflt: true,
+        description: [
+            'Determines whether or not grid lines are drawn.',
+            'If *true*, the grid lines are drawn at every tick mark.'
+        ].join(' ')
+    },
+    minorgridcount: {
+        valType: 'integer',
+        min: 0,
+        dflt: 0,
+        role: 'info',
+        description: 'Sets the number of minor grid ticks per major grid tick'
+    },
+    minorgridwidth: {
+        valType: 'number',
+        min: 0,
+        dflt: 1,
+        role: 'style',
         description: 'Sets the width (in px) of the grid lines.'
     },
-    zeroline: {
+    minorgridcolor: {
+        valType: 'color',
+        dflt: colorAttrs.lightLine,
+        role: 'style',
+        description: 'Sets the color of the grid lines.'
+    },
+    startline: {
         valType: 'boolean',
         role: 'style',
         description: [
-            'Determines whether or not a line is drawn at along the 0 value',
+            'Determines whether or not a line is drawn at along the starting value',
             'of this axis.',
-            'If *true*, the zero line is drawn on top of the grid lines.'
+            'If *true*, the start line is drawn on top of the grid lines.'
         ].join(' ')
     },
-    zerolinecolor: {
+    startlinecolor: {
         valType: 'color',
-        dflt: colorAttrs.defaultLine,
         role: 'style',
-        description: 'Sets the line color of the zero line.'
+        description: 'Sets the line color of the start line.'
     },
-    zerolinewidth: {
+    startlinewidth: {
         valType: 'number',
         dflt: 1,
         role: 'style',
-        description: 'Sets the width (in px) of the zero line.'
+        description: 'Sets the width (in px) of the start line.'
+    },
+    endline: {
+        valType: 'boolean',
+        role: 'style',
+        description: [
+            'Determines whether or not a line is drawn at along the final value',
+            'of this axis.',
+            'If *true*, the end line is drawn on top of the grid lines.'
+        ].join(' ')
+    },
+    endlinewidth: {
+        valType: 'number',
+        dflt: 1,
+        role: 'style',
+        description: 'Sets the width (in px) of the end line.'
+    },
+    endlinecolor: {
+        valType: 'color',
+        role: 'style',
+        description: 'Sets the line color of the end line.'
     },
     tick0: {
         valType: 'any',
@@ -518,75 +534,6 @@ module.exports = {
         role: 'info',
         description: 'The stride between grid lines along the axis'
     },
-    gridwidth: {
-        valType: 'number',
-        min: 0,
-        dflt: 1,
-        role: 'style',
-        description: 'Sets the width (in px) of the grid lines.'
-    },
-    gridcolor: {
-        valType: 'color',
-        dflt: '#aaa',
-        role: 'style',
-        description: 'Sets the color of the grid lines.'
-    },
-    startlinewidth: {
-        valType: 'number',
-        min: 0,
-        dflt: 1,
-        role: 'style',
-        description: 'Sets the width (in px) of the grid lines.'
-    },
-    startline: {
-        valType: 'boolean',
-        role: 'info',
-        dflt: true
-    },
-    endline: {
-        valType: 'boolean',
-        role: 'info',
-        dflt: true
-    },
-    startlinecolor: {
-        valType: 'color',
-        dflt: colorAttrs.defaultLine,
-        role: 'style',
-        description: 'Sets the color of the grid lines.'
-    },
-    endlinewidth: {
-        valType: 'number',
-        min: 0,
-        dflt: 1,
-        role: 'style',
-        description: 'Sets the width (in px) of the grid lines.'
-    },
-    endlinecolor: {
-        valType: 'color',
-        dflt: colorAttrs.defaultLine,
-        role: 'style',
-        description: 'Sets the color of the grid lines.'
-    },
-    minorgridcount: {
-        valType: 'integer',
-        min: 0,
-        dflt: 0,
-        role: 'info',
-        description: 'Sets the number of minor grid ticks per major grid tick'
-    },
-    minorgridwidth: {
-        valType: 'number',
-        min: 0,
-        dflt: 1,
-        role: 'style',
-        description: 'Sets the width (in px) of the grid lines.'
-    },
-    minorgridcolor: {
-        valType: 'color',
-        dflt: colorAttrs.lightLine,
-        role: 'style',
-        description: 'Sets the color of the grid lines.'
-    },
     hoverformat: {
         valType: 'string',
         dflt: '',
@@ -603,3 +550,4 @@ module.exports = {
         ].join(' ')
     },
 };
+

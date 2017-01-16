@@ -38,10 +38,10 @@
  * NB: It's presumed that at this point all data has been sanitized and is valid numerical data arrays
  * of the correct dimension.
  */
-module.exports = function (arrays, asmoothing, bsmoothing) {
-    if (asmoothing && bsmoothing) {
-        return function (out, i0, j0, u, v) {
-            if (!out) out = [];
+module.exports = function(arrays, asmoothing, bsmoothing) {
+    if(asmoothing && bsmoothing) {
+        return function(out, i0, j0, u, v) {
+            if(!out) out = [];
             var f0, f1, f2, f3, ak, k;
 
             // Since it's a grid of control points, the actual indices are * 3:
@@ -59,10 +59,10 @@ module.exports = function (arrays, asmoothing, bsmoothing) {
             var ov2 = ov * ov;
             var ov3 = ov2 * ov;
 
-            for (k = 0; k < arrays.length; k++) {
+            for(k = 0; k < arrays.length; k++) {
                 ak = arrays[k];
                 // Compute the derivatives in the u-direction:
-                f0 = 3 * ((u2 - 1) * ak[i0][j0    ] + ou2 * ak[i0 + 1][j0    ] + u * (2 - 3 * u) * ak[i0 + 2][j0    ] + u2 * ak[i0 + 3][j0    ]);
+                f0 = 3 * ((u2 - 1) * ak[i0][j0 ] + ou2 * ak[i0 + 1][j0 ] + u * (2 - 3 * u) * ak[i0 + 2][j0 ] + u2 * ak[i0 + 3][j0 ]);
                 f1 = 3 * ((u2 - 1) * ak[i0][j0 + 1] + ou2 * ak[i0 + 1][j0 + 1] + u * (2 - 3 * u) * ak[i0 + 2][j0 + 1] + u2 * ak[i0 + 3][j0 + 1]);
                 f2 = 3 * ((u2 - 1) * ak[i0][j0 + 2] + ou2 * ak[i0 + 1][j0 + 2] + u * (2 - 3 * u) * ak[i0 + 2][j0 + 2] + u2 * ak[i0 + 3][j0 + 2]);
                 f3 = 3 * ((u2 - 1) * ak[i0][j0 + 3] + ou2 * ak[i0 + 1][j0 + 3] + u * (2 - 3 * u) * ak[i0 + 2][j0 + 3] + u2 * ak[i0 + 3][j0 + 3]);
@@ -73,11 +73,11 @@ module.exports = function (arrays, asmoothing, bsmoothing) {
 
             return out;
         };
-    } else if (asmoothing) {
+    } else if(asmoothing) {
         // Handle smooth in the a-direction but linear in the b-direction by performing four
         // linear interpolations followed by one cubic interpolation of the result
-        return function (out, i0, j0, u, v) {
-            if (!out) out = [];
+        return function(out, i0, j0, u, v) {
+            if(!out) out = [];
             var f0, f1, f2, f3, k, ak;
             i0 *= 3;
             var u2 = u * u;
@@ -86,19 +86,19 @@ module.exports = function (arrays, asmoothing, bsmoothing) {
             var ou2 = ou * ou;
             var ou3 = ou2 * ou;
             var ov = 1 - v;
-            for (k = 0; k < arrays.length; k++) {
+            for(k = 0; k < arrays.length; k++) {
                 ak = arrays[k];
-                f0 = 3 * ((u2 - 1) * ak[i0][j0    ] + ou2 * ak[i0 + 1][j0    ] + u * (2 - 3 * u) * ak[i0 + 2][j0    ] + u2 * ak[i0 + 3][j0    ]);
+                f0 = 3 * ((u2 - 1) * ak[i0][j0 ] + ou2 * ak[i0 + 1][j0 ] + u * (2 - 3 * u) * ak[i0 + 2][j0 ] + u2 * ak[i0 + 3][j0 ]);
                 f1 = 3 * ((u2 - 1) * ak[i0][j0 + 1] + ou2 * ak[i0 + 1][j0 + 1] + u * (2 - 3 * u) * ak[i0 + 2][j0 + 1] + u2 * ak[i0 + 3][j0 + 1]);
 
                 out[k] = ov * f0 + v * f1;
             }
             return out;
         };
-    } else if (bsmoothing) {
+    } else if(bsmoothing) {
         // Same as the above case, except reversed:
-        return function (out, i0, j0, u, v) {
-            if (!out) out = [];
+        return function(out, i0, j0, u, v) {
+            if(!out) out = [];
             var f0, f1, f2, f3, k, ak;
             j0 *= 3;
             var v2 = v * v;
@@ -106,7 +106,7 @@ module.exports = function (arrays, asmoothing, bsmoothing) {
             var ov = 1 - v;
             var ov2 = ov * ov;
             var ov3 = ov2 * ov;
-            for (k = 0; k < arrays.length; k++) {
+            for(k = 0; k < arrays.length; k++) {
                 ak = arrays[k];
                 f0 = ak[i0 + 1][j0] - ak[i0][j0];
                 f1 = ak[i0 + 1][j0 + 1] - ak[i0][j0 + 1];
@@ -119,11 +119,11 @@ module.exports = function (arrays, asmoothing, bsmoothing) {
         };
     } else {
         // Finally, both directions are linear:
-        return function (out, i0, j0, u, v) {
-            if (!out) out = [];
+        return function(out, i0, j0, u, v) {
+            if(!out) out = [];
             var f0, f1, k, ak;
             var ov = 1 - v;
-            for (k = 0; k < arrays.length; k++) {
+            for(k = 0; k < arrays.length; k++) {
                 ak = arrays[k];
                 f0 = ak[i0 + 1][j0] - ak[i0][j0];
                 f1 = ak[i0 + 1][j0 + 1] - ak[i0][j0 + 1];
@@ -133,4 +133,4 @@ module.exports = function (arrays, asmoothing, bsmoothing) {
             return out;
         };
     }
-}
+};

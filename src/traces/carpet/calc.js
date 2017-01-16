@@ -32,7 +32,7 @@ module.exports = function calc(gd, trace) {
     var ydata = trace.y;
 
     if(trace._cheater) {
-        var avals = aax.cheatertype === 'index' ? a.length : a
+        var avals = aax.cheatertype === 'index' ? a.length : a;
         var bvals = bax.cheatertype === 'index' ? b.length : b;
         trace.x = xdata = cheaterBasis(avals, bvals, trace.cheaterslope);
     } else {
@@ -50,7 +50,7 @@ module.exports = function calc(gd, trace) {
     // into account the spacing of the values. That is, the derivatives should
     // be modified to use a and b values. It's not that hard, but this is already
     // moderate overkill for just filling in missing values.
-    smoothFill2dArray(x, a ,b);
+    smoothFill2dArray(x, a, b);
     smoothFill2dArray(y, a, b);
 
     // Create conversions from one coordinate system to another:
@@ -96,6 +96,6 @@ module.exports = function calc(gd, trace) {
  * Given a data range from starting at x1, this function computes the first
  * point distributed along x0 + n * dx that lies within the range.
  */
-function getLinspaceStartingPoint (xlow, x0, dx) {
+function getLinspaceStartingPoint(xlow, x0, dx) {
     return x0 + dx * Math.ceil((xlow - x0) / dx);
 }

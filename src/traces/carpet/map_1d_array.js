@@ -13,21 +13,21 @@
  * The output array is optional, but if provided, it will be reused without
  * reallocation to the extent possible.
  */
-module.exports = function mapArray (out, data, func) {
+module.exports = function mapArray(out, data, func) {
     var i, j;
 
-    if (!Array.isArray(out)) {
+    if(!Array.isArray(out)) {
         // If not an array, make it an array:
         out = [];
-    } else if (out.length > data.length) {
+    } else if(out.length > data.length) {
         // If too long, truncate. (If too short, it will grow
         // automatically so we don't care about that case)
-        out = out.slice(0, data.length)
+        out = out.slice(0, data.length);
     }
 
-    for (i = 0; i < data.length; i++) {
+    for(i = 0; i < data.length; i++) {
         out[i] = func(data[i]);
     }
 
     return out;
-}
+};

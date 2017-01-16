@@ -13,22 +13,22 @@
 // http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
 var CatmullRomExp = 0.5;
 function makeControlPoints(p0, p1, p2, smoothness) {
-  var d1x = p0[0] - p1[0],
-      d1y = p0[1] - p1[1],
-      d2x = p2[0] - p1[0],
-      d2y = p2[1] - p1[1],
-      d1a = Math.pow(d1x * d1x + d1y * d1y, CatmullRomExp / 2),
-      d2a = Math.pow(d2x * d2x + d2y * d2y, CatmullRomExp / 2),
-      numx = (d2a * d2a * d1x - d1a * d1a * d2x) * smoothness,
-      numy = (d2a * d2a * d1y - d1a * d1a * d2y) * smoothness,
-      denom1 = 3 * d2a * (d1a + d2a),
-      denom2 = 3 * d1a * (d1a + d2a);
+    var d1x = p0[0] - p1[0],
+        d1y = p0[1] - p1[1],
+        d2x = p2[0] - p1[0],
+        d2y = p2[1] - p1[1],
+        d1a = Math.pow(d1x * d1x + d1y * d1y, CatmullRomExp / 2),
+        d2a = Math.pow(d2x * d2x + d2y * d2y, CatmullRomExp / 2),
+        numx = (d2a * d2a * d1x - d1a * d1a * d2x) * smoothness,
+        numy = (d2a * d2a * d1y - d1a * d1a * d2y) * smoothness,
+        denom1 = 3 * d2a * (d1a + d2a),
+        denom2 = 3 * d1a * (d1a + d2a);
     var dxL = p1[0] + (denom1 && numx / denom1);
     var dyL = p1[1] + (denom1 && numy / denom1);
     var dxU = p1[0] - (denom2 && numx / denom2);
     var dyU = p1[1] - (denom2 && numy / denom2);
 
-  return [[dxL, dyL], [dxU, dyU]];
+    return [[dxL, dyL], [dxU, dyU]];
 }
 
 /*
@@ -41,17 +41,17 @@ function makeControlPoints(p0, p1, p2, smoothness) {
  * In other words, it really doesn't make too much of a difference whether we
  * work with tangents or control points.
  */
-module.exports.computeControlPoints = function (pts, smoothness) {
+module.exports.computeControlPoints = function(pts, smoothness) {
     var tangents = [];
     for(i = 1; i < pts.length - 1; i++) {
         tangents.push(makeControlPoints(pts[i - 1], pts[i], pts[i + 1], smoothness));
     }
     return tangents;
-}
+};
 
-module.exports.evaluateSpline = function evaluateSpline (t, pts, controlpts, smoothness) {
+module.exports.evaluateSpline = function evaluateSpline(t, pts, controlpts, smoothness) {
     var n = pts.length;
-    if (n < 3) {
+    if(n < 3) {
         var x = (1 - t) * pts[0][0] + t * pts[1][0];
         var y = (1 - t) * pts[0][1] + t * pts[1][1];
         return [x, y];
@@ -66,7 +66,7 @@ module.exports.evaluateSpline = function evaluateSpline (t, pts, controlpts, smo
         p0 = pts[i];
         p3 = pts[i + 1];
 
-        if (i === 0 || i === n - 2) {
+        if(i === 0 || i === n - 2) {
             // Evaluate the quadratic first and last segments;
             p1 = i === 0 ? controlpts[i][0] : controlpts[i - 1][1];
             a = ot * ot;
@@ -93,5 +93,4 @@ module.exports.evaluateSpline = function evaluateSpline (t, pts, controlpts, smo
             ];
         }
     }
-}
-
+};

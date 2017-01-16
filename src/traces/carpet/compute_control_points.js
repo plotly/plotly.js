@@ -73,7 +73,6 @@ var ensureArray = require('./ensure_array');
  */
 
 
-
 /*
  * Catmull-rom is biased at the boundaries toward the interior and we actually
  * can't use catmull-rom to compute the control point closest to (but inside)
@@ -116,7 +115,7 @@ var ensureArray = require('./ensure_array');
  * Of course it works whichever way it's oriented; you just need to interpret the
  * input/output accordingly.
  */
-function inferCubicControlPoint (p0, p2, p3) {
+function inferCubicControlPoint(p0, p2, p3) {
     // Extend p1 away from p0 by 50%. This is the equivalent quadratic point that
     // would give the same slope as catmull rom at p0.
     var p2e0 = -0.5 * p3[0] + 1.5 * p2[0];
@@ -128,7 +127,7 @@ function inferCubicControlPoint (p0, p2, p3) {
     ];
 }
 
-module.exports = function computeControlPoints (xe, ye, x, y, asmoothing, bsmoothing) {
+module.exports = function computeControlPoints(xe, ye, x, y, asmoothing, bsmoothing) {
     var i, j, ie, je, xei, yei, xi, yi, qx, qy, cp, p1;
     // At this point, we know these dimensions are correct and representative of
     // the whole 2D arrays:
@@ -142,7 +141,7 @@ module.exports = function computeControlPoints (xe, ye, x, y, asmoothing, bsmoot
     xe = ensureArray(xe, nea);
     ye = ensureArray(ye, nea);
 
-    for (ie = 0; ie < nea; ie++) {
+    for(ie = 0; ie < nea; ie++) {
         xe[ie] = ensureArray(xe[ie], neb);
         ye[ie] = ensureArray(ye[ie], neb);
     }
@@ -161,20 +160,20 @@ module.exports = function computeControlPoints (xe, ye, x, y, asmoothing, bsmoot
     //
     //
     // ie = (i) (e)xpanded:
-    for (i = 0, ie = 0; i < na; i++, ie += asmoothing ? 3 : 1) {
+    for(i = 0, ie = 0; i < na; i++, ie += asmoothing ? 3 : 1) {
         xei = xe[ie];
         yei = ye[ie];
         xi = x[i];
         yi = y[i];
 
         // je = (j) (e)xpanded:
-        for (j = 0, je = 0; j < nb; j++, je += bsmoothing ? 3 : 1) {
+        for(j = 0, je = 0; j < nb; j++, je += bsmoothing ? 3 : 1) {
             xei[je] = xi[j];
             yei[je] = yi[j];
         }
     }
 
-    if (asmoothing) {
+    if(asmoothing) {
         // If there's a-smoothing, this loop fills in the X'd points with catmull-rom
         // control points computed along the a-axis:
         //     .       .       .       .
@@ -193,12 +192,12 @@ module.exports = function computeControlPoints (xe, ye, x, y, asmoothing, bsmoot
         //           ------>
         //             a
         //
-        for (j = 0, je = 0; j < nb; j++, je += bsmoothing ? 3 : 1) {
+        for(j = 0, je = 0; j < nb; j++, je += bsmoothing ? 3 : 1) {
             // Fill in the points marked X for this a-row:
-            for (i = 1, ie = 3; i < na - 1; i++, ie += 3) {
+            for(i = 1, ie = 3; i < na - 1; i++, ie += 3) {
                 cp = makeControlPoints(
                     [x[i - 1][j], y[i - 1][j]],
-                    [x[i    ][j], y[i    ][j]],
+                    [x[i ][j], y[i ][j]],
                     [x[i + 1][j], y[i + 1][j]],
                     asmoothing
                 );
@@ -234,7 +233,7 @@ module.exports = function computeControlPoints (xe, ye, x, y, asmoothing, bsmoot
         }
     }
 
-    if (bsmoothing) {
+    if(bsmoothing) {
         // If there's a-smoothing, this loop fills in the X'd points with catmull-rom
         // control points computed along the b-axis:
         //     .       .       .       .
@@ -253,11 +252,11 @@ module.exports = function computeControlPoints (xe, ye, x, y, asmoothing, bsmoot
         //           ------>
         //             a
         //
-        for (ie = 0; ie < nea; ie++) {
-            for (je = 3; je < neb - 3; je += 3) {
+        for(ie = 0; ie < nea; ie++) {
+            for(je = 3; je < neb - 3; je += 3) {
                 cp = makeControlPoints(
                     [xe[ie][je - 3], ye[ie][je - 3]],
-                    [xe[ie][je    ], ye[ie][je    ]],
+                    [xe[ie][je ], ye[ie][je ]],
                     [xe[ie][je + 3], ye[ie][je + 3]],
                     bsmoothing
                 );
@@ -286,7 +285,7 @@ module.exports = function computeControlPoints (xe, ye, x, y, asmoothing, bsmoot
         }
     }
 
-    if (asmoothing && bsmoothing) {
+    if(asmoothing && bsmoothing) {
         // Do one more pass, this time recomputing exactly what we just computed.
         // It's overdetermined since we're peforming catmull-rom in two directions,
         // so we'll just average the overdetermined. These points don't lie along the
@@ -311,12 +310,12 @@ module.exports = function computeControlPoints (xe, ye, x, y, asmoothing, bsmoot
         //           ------>
         //             a
         //
-        for (je = 1; je < neb; je += (je + 1) % 3 === 0 ? 2 : 1) {
+        for(je = 1; je < neb; je += (je + 1) % 3 === 0 ? 2 : 1) {
             // Fill in the points marked X for this a-row:
-            for (ie = 3; ie < nea - 3; ie += 3) {
+            for(ie = 3; ie < nea - 3; ie += 3) {
                 cp = makeControlPoints(
                     [xe[ie - 3][je], ye[ie - 3][je]],
-                    [xe[ie    ][je], ye[ie    ][je]],
+                    [xe[ie ][je], ye[ie ][je]],
                     [xe[ie + 3][je], ye[ie + 3][je]],
                     asmoothing
                 );
@@ -348,5 +347,4 @@ module.exports = function computeControlPoints (xe, ye, x, y, asmoothing, bsmoot
     }
 
     return [xe, ye];
-}
-
+};

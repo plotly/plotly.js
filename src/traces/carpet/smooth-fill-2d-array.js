@@ -8,7 +8,7 @@
 
 'use strict';
 
-module.exports = function smoothFill2dArray (data, a, b) {
+module.exports = function smoothFill2dArray(data, a, b) {
     var i, j, k, n;
     var ip = [];
     var jp = [];
@@ -16,23 +16,23 @@ module.exports = function smoothFill2dArray (data, a, b) {
     var ni = data.length;
     var nj = data[0].length;
 
-    function avgSurrounding (i, j) {
+    function avgSurrounding(i, j) {
         var sum = 0.0;
         var val;
         var cnt = 0;
-        if (i > 0 && (val = data[i - 1][j]) !== undefined) {
+        if(i > 0 && (val = data[i - 1][j]) !== undefined) {
             cnt++;
             sum += val;
         }
-        if (i < ni - 1 && (val = data[i + 1][j]) !== undefined) {
+        if(i < ni - 1 && (val = data[i + 1][j]) !== undefined) {
             cnt++;
             sum += val;
         }
-        if (j > 0 && (val = data[i][j - 1]) !== undefined) {
+        if(j > 0 && (val = data[i][j - 1]) !== undefined) {
             cnt++;
             sum += val;
         }
-        if (j < nj - 1 && (val = data[i][j + 1]) !== undefined) {
+        if(j < nj - 1 && (val = data[i][j + 1]) !== undefined) {
             cnt++;
             sum += val;
         }
@@ -42,9 +42,9 @@ module.exports = function smoothFill2dArray (data, a, b) {
     // Track the maximum magnitude so that we can track error relative
     // to the maximum:
     var dmax = 0.0;
-    for (i = 0; i < ni; i++) {
-        for (j = 0; j < nj; j++) {
-            if (data[i][j] === undefined) {
+    for(i = 0; i < ni; i++) {
+        for(j = 0; j < nj; j++) {
+            if(data[i][j] === undefined) {
                 ip.push(i);
                 jp.push(j);
                 data[i][j] = avgSurrounding(i, j);
@@ -53,7 +53,7 @@ module.exports = function smoothFill2dArray (data, a, b) {
         }
     }
 
-    if (!ip.length) return data;
+    if(!ip.length) return data;
 
     // The tolerance doesn't need to be excessive. It's just for display positioning
     var tol = 1e-5;
@@ -72,15 +72,15 @@ module.exports = function smoothFill2dArray (data, a, b) {
             var newVal = 0;
 
             var d0, d1, x0, x1, i0, j0;
-            if (i === 0) {
+            if(i === 0) {
                 i0 = Math.min(ni - 1, 2);
-                x0 = a[i0]
+                x0 = a[i0];
                 x1 = a[1];
                 d0 = data[i0][j];
                 d1 = data[1][j];
                 newVal += d1 + (d1 - d0) * (a[0] - x1) / (x1 - x0);
                 contribCnt++;
-            } else if (i === ni - 1) {
+            } else if(i === ni - 1) {
                 i0 = Math.max(0, ni - 3);
                 x0 = a[i0];
                 x1 = a[ni - 2];
@@ -90,14 +90,14 @@ module.exports = function smoothFill2dArray (data, a, b) {
                 contribCnt++;
             }
 
-            if ((i === 0 || i === ni - 1) && (j > 0 && j < nj - 1)) {
+            if((i === 0 || i === ni - 1) && (j > 0 && j < nj - 1)) {
                 var dxp = b[j + 1] - b[j];
                 var dxm = b[j] - b[j - 1];
                 newVal += (dxm * data[i][j + 1] + dxp * data[i][j - 1]) / (dxm + dxp);
                 contribCnt++;
             }
 
-            if (j === 0) {
+            if(j === 0) {
                 j0 = Math.min(nj - 1, 2);
                 x0 = b[j0];
                 x1 = b[1];
@@ -105,7 +105,7 @@ module.exports = function smoothFill2dArray (data, a, b) {
                 d1 = data[i][1];
                 newVal += d1 + (d1 - d0) * (b[0] - x1) / (x1 - x0);
                 contribCnt++;
-            } else if (j === nj - 1) {
+            } else if(j === nj - 1) {
                 j0 = Math.max(0, nj - 3);
                 x0 = b[j0];
                 x1 = b[nj - 2];
@@ -115,14 +115,14 @@ module.exports = function smoothFill2dArray (data, a, b) {
                 contribCnt++;
             }
 
-            if ((j === 0 || j === nj - 1) && (i > 0 && i < ni - 1)) {
+            if((j === 0 || j === nj - 1) && (i > 0 && i < ni - 1)) {
                 var dxp = a[i + 1] - a[i];
                 var dxm = a[i] - a[i - 1];
                 newVal += (dxm * data[i + 1][j] + dxp * data[i - 1][j]) / (dxm + dxp);
                 contribCnt++;
             }
 
-            if (!contribCnt) {
+            if(!contribCnt) {
                 // interior point, so simply average:
                 // Get the grid spacing on either side:
                 var dap = a[i + 1] - a[i];
@@ -152,9 +152,9 @@ module.exports = function smoothFill2dArray (data, a, b) {
         }
 
         resid = Math.sqrt(resid);
-    } while (iter++ < itermax && resid > tol);
+    } while(iter++ < itermax && resid > tol);
 
     console.log('Smoother converged to', resid, 'after', iter, 'iterations');
 
     return data;
-}
+};
