@@ -24,8 +24,6 @@ var makeBubbleSizeFn = require('../../traces/scatter/make_bubble_size_func');
 
 var drawing = module.exports = {};
 
-drawing.splineEvaluator = require('./spline_evaluator');
-
 // -----------------------------------------------------
 // styling functions for plot elements
 // -----------------------------------------------------
