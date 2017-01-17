@@ -423,6 +423,8 @@ function drawMasks(rangeSlider, gd, axisOpts, opts) {
 }
 
 function drawSlideBox(rangeSlider, gd, axisOpts, opts) {
+    if(gd._context.staticPlot) return;
+
     var slideBox = rangeSlider.selectAll('rect.' + constants.slideBoxClassName)
         .data([0]);
 
@@ -482,6 +484,8 @@ function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
     handleMax.attr(handleDynamicAttrs);
 
     // <g grabarea />
+
+    if(gd._context.staticPlot) return;
 
     var grabAreaFixAttrs = {
         width: constants.grabAreaWidth,
