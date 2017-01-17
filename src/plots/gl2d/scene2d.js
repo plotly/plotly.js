@@ -34,9 +34,8 @@ function Scene2D(options, fullLayout) {
     this.id = options.id;
     this.staticPlot = !!options.staticPlot;
 
-    this.fullLayout = fullLayout;
     this.fullData = null;
-    this.updateAxes(fullLayout);
+    this.updateRefs(fullLayout);
 
     this.makeFramework();
 
@@ -278,22 +277,15 @@ function compareTicks(a, b) {
     return false;
 }
 
-proto.updateAxes = function(options) {
+proto.updateRefs = function(newFullLayout) {
+    this.fullLayout = newFullLayout;
+
     var spmatch = Axes.subplotMatch,
         xaxisName = 'xaxis' + this.id.match(spmatch)[1],
         yaxisName = 'yaxis' + this.id.match(spmatch)[2];
 
-    this.xaxis = options[xaxisName];
-    this.yaxis = options[yaxisName];
-};
-
-proto.updateFx = function(options) {
-    var fullLayout = this.fullLayout;
-
-    fullLayout.dragmode = options.dragmode;
-    fullLayout.hovermode = options.hovermode;
-
-    this.graphDiv._fullLayout = fullLayout;
+    this.xaxis = this.fullLayout[xaxisName];
+    this.yaxis = this.fullLayout[yaxisName];
 };
 
 function relayoutCallback(scene) {
@@ -374,8 +366,7 @@ proto.destroy = function() {
 proto.plot = function(fullData, calcData, fullLayout) {
     var glplot = this.glplot;
 
-    this.fullLayout = fullLayout;
-    this.updateAxes(fullLayout);
+    this.updateRefs(fullLayout);
     this.updateTraces(fullData, calcData);
 
     var width = fullLayout.width,
