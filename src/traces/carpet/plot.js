@@ -29,11 +29,11 @@ function makeg(el, type, klass) {
 
 function plotOne(gd, plotinfo, cd) {
     var trace = cd[0].trace,
-        // uid = trace.uid,
         xa = plotinfo.xaxis,
         ya = plotinfo.yaxis,
         aax = trace.aaxis,
         bax = trace.baxis;
+        // uid = trace.uid,
         // id = 'carpet' + uid;
 
     // var x = cd[0].x;
@@ -51,7 +51,6 @@ function plotOne(gd, plotinfo, cd) {
 
     drawGridLines(xa, ya, majorLayer, aax, 'a', aax._gridlines, true);
     drawGridLines(xa, ya, majorLayer, bax, 'b', bax._gridlines, true);
-
     drawGridLines(xa, ya, minorLayer, aax, 'a', aax._minorgridlines, true);
     drawGridLines(xa, ya, minorLayer, bax, 'b', bax._minorgridlines, true);
 
@@ -66,13 +65,13 @@ function plotOne(gd, plotinfo, cd) {
 
 function drawGridLines(xaxis, yaxis, layer, axis, axisLetter, gridlines) {
     var lineClass = 'const-' + axisLetter + '-lines';
-    var gridjoin = layer.selectAll('.' + lineClass).data(gridlines);
+    var gridJoin = layer.selectAll('.' + lineClass).data(gridlines);
 
-    gridjoin.enter().append('path')
+    gridJoin.enter().append('path')
         .classed(lineClass, true)
         .style('vector-effect', 'non-scaling-stroke');
 
-    gridjoin.each(function(d) {
+    gridJoin.each(function(d) {
         var gridline = d;
         var x = gridline.x;
         var y = gridline.y;
@@ -83,12 +82,14 @@ function drawGridLines(xaxis, yaxis, layer, axis, axisLetter, gridlines) {
         var path = makepath(xp, yp, gridline.smoothing);
 
         var el = d3.select(this);
+
         el.attr('d', path)
             .style('stroke-width', gridline.width)
             .style('stroke', gridline.color)
             .style('fill', 'none');
-    })
-    .exit().remove();
+    });
+
+    gridJoin.exit().remove();
 }
 
 function drawAxisLabels(xaxis, yaxis, trace, layer, labels, labelClass) {
@@ -97,14 +98,16 @@ function drawAxisLabels(xaxis, yaxis, trace, layer, labels, labelClass) {
     labelJoin.enter().append('text')
         .classed(labelClass, true);
 
-    labelJoin.each(function(d) {
-        var label = d;
-        var ax = d.axis;
-
-        var el = d3.select(this);
-
+    labelJoin.each(function(label) {
+        // The rest of the calculation is in calc_labels. Only the parts that depend upon
+        // the screen space representation of the x and y axes are here:
+        //
+        // Compute the direction of the labels in pixel coordinates:
         var dx = label.dxy[0] * trace.dpdx(xaxis);
         var dy = label.dxy[1] * trace.dpdy(yaxis);
+
+        // Compute the angle and adjust so that the labels are always upright
+        // and the anchor is on the correct side:
         var angle = Math.atan2(dy, dx) * 180 / Math.PI;
         var endAnchor = label.endAnchor;
         if(angle < -90) {
@@ -115,12 +118,11 @@ function drawAxisLabels(xaxis, yaxis, trace, layer, labels, labelClass) {
             endAnchor = !endAnchor;
         }
 
-        // Convert coordinates to pixel coordinates:
+        // Compute the position in pixel coordinates
         var xy = trace.c2p(label.xy, xaxis, yaxis);
 
-        // XXX: Use existing text functions
-        el.attr('x', xy[0] + ax.labelpadding * (endAnchor ? -1 : 1)) // These are pre-transform offsets
-            .attr('y', xy[1] + 5) // Shift down to hackily vertically center
+        d3.select(this).attr('x', xy[0] + label.axis.labelpadding * (endAnchor ? -1 : 1))
+            .attr('y', xy[1] + label.font.size * 0.3)
             .attr('text-anchor', endAnchor ? 'end' : 'start')
             .text(label.text)
             .attr('transform', 'rotate(' + angle + ' ' + xy[0] + ',' + xy[1] + ')')
