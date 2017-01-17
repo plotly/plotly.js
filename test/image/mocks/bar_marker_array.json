@@ -26,6 +26,12 @@
             3,
             2,
             3
+          ],
+          "color": [
+            "red",
+            "green",
+            "blue",
+            "yellow"
           ]
         }
       },
