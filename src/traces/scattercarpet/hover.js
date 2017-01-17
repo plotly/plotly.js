@@ -10,8 +10,6 @@
 'use strict';
 
 var scatterHover = require('../scatter/hover');
-var Axes = require('../../plots/cartesian/axes');
-
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var scatterPointData = scatterHover(pointData, xval, yval, hovermode);

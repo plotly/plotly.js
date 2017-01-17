@@ -37,6 +37,4 @@ module.exports = function makeControlPoints(p0, p1, p2, smoothness) {
         p1[0] - (denom2 && numx / denom2),
         p1[1] - (denom2 && numy / denom2)
     ]];
-
-    return [[dxL, dyL], [dxU, dyU]];
 };

@@ -236,10 +236,14 @@ module.exports = {
         description: 'Sets the tick color.'
     },
     showticklabels: {
-        valType: 'boolean',
-        dflt: true,
+        valType: 'enumerated',
+        values: ['start', 'end', 'both', 'none'],
+        dflt: 'start',
         role: 'style',
-        description: 'Determines whether or not the tick labels are drawn.'
+        description: [
+            'Determines whether axis labels are drawn on the low side,',
+            'the high side, both, or neither side of the axis.'
+        ].join(' ')
     },
     tickfont: extendFlat({}, fontAttrs, {
         description: 'Sets the tick font.'
@@ -363,16 +367,6 @@ module.exports = {
             'Sets the order in which categories on this axis appear.',
             'Only has an effect if `categoryorder` is set to *array*.',
             'Used with `categoryorder`.'
-        ].join(' ')
-    },
-    showticklabels: {
-        valType: 'enumerated',
-        values: ['start', 'end', 'both', 'none'],
-        dflt: 'start',
-        role: 'style',
-        description: [
-            'Determines whether axis labels are drawn on the low side,',
-            'the high side, both, or neither side of the axis.'
         ].join(' ')
     },
     labelpadding: {
@@ -506,20 +500,6 @@ module.exports = {
         role: 'style',
         description: 'Sets the line color of the end line.'
     },
-    tick0: {
-        valType: 'any',
-        min: 0,
-        dflt: 0,
-        role: 'info',
-        description: 'The starting index of grid lines along the axis'
-    },
-    dtick: {
-        valType: 'any',
-        min: 1,
-        dflt: 1,
-        role: 'info',
-        description: 'The stride between grid lines along the axis'
-    },
     arraytick0: {
         valType: 'integer',
         min: 0,
@@ -550,4 +530,3 @@ module.exports = {
         ].join(' ')
     },
 };
-

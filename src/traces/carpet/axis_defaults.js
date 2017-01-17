@@ -9,24 +9,17 @@
 'use strict';
 
 var carpetAttrs = require('./attributes');
-var extendFlat = require('../../lib/extend').extendFlat;
-var setConvert = require('../../plots/cartesian/set_convert');
-var handleCartesianAxisDefaults = require('../../plots/cartesian/axis_defaults');
 
 var isNumeric = require('fast-isnumeric');
 var colorMix = require('tinycolor2').mix;
-
 var Registry = require('../../registry');
 var Lib = require('../../lib');
-
-var layoutAttributes = require('../../plots/cartesian/layout_attributes');
 var handleTickValueDefaults = require('../../plots/cartesian/tick_value_defaults');
 var handleTickMarkDefaults = require('../../plots/cartesian/tick_mark_defaults');
 var handleTickLabelDefaults = require('../../plots/cartesian/tick_label_defaults');
 var handleCategoryOrderDefaults = require('../../plots/cartesian/category_order_defaults');
 var setConvert = require('../../plots/cartesian/set_convert');
 var orderedCategories = require('../../plots/cartesian/ordered_categories');
-var axisIds = require('../../plots/cartesian/axis_ids');
 var autoType = require('../../plots/cartesian/axis_autotype');
 
 /**
@@ -42,7 +35,7 @@ var autoType = require('../../plots/cartesian/axis_autotype');
  *  data: the plot data to use in choosing auto type
  *  bgColor: the plot background color, to calculate default gridline colors
  */
-module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, options) {
+module.exports = function handleAxisDefaults(containerIn, containerOut, options) {
     var letter = options.letter,
         font = options.font || {},
         attributes = carpetAttrs[letter + 'axis'],
@@ -93,6 +86,8 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     coerce('showticksuffix');
 
     coerce('tickmode');
+    coerce('tickvals');
+    coerce('ticktext');
     coerce('tick0');
     coerce('dtick');
     coerce('arraytick0');
@@ -161,7 +156,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         delete containerOut.gridWidth;
     } else {
         var startLineColor = coerce2('startlinecolor', dfltColor);
-        var startLineWidth = coerce2('startlinewidth');
+        var startLineWidth = coerce2('startlinewidth', gridWidth);
         var showStartLine = coerce('startline', containerOut.showgrid || !!startLineColor || !!startLineWidth);
 
         if(!showStartLine) {
@@ -170,16 +165,16 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         }
 
         var endLineColor = coerce2('endlinecolor', dfltColor);
-        var endLineWidth = coerce2('endlinewidth');
-        var showStartLine = coerce('endline', containerOut.showgrid || !!endLineColor || !!endLineWidth);
+        var endLineWidth = coerce2('endlinewidth', gridWidth);
+        var showEndLine = coerce('endline', containerOut.showgrid || !!endLineColor || !!endLineWidth);
 
-        if(!showStartLine) {
+        if(!showEndLine) {
             delete containerOut.endlinecolor;
             delete containerOut.endlinewidth;
         }
 
         coerce('minorgridcount');
-        coerce('minorgridwidth');
+        coerce('minorgridwidth', gridWidth);
         coerce('minorgridcolor', colorMix(gridColor, options.bgColor, 95).toRgbString());
     }
 

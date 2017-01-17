@@ -36,17 +36,16 @@ function plotOne(gd, plotinfo, cd) {
         bax = trace.baxis;
         // id = 'carpet' + uid;
 
-    var x = cd[0].x;
-    var y = cd[0].y;
-    var a = cd[0].a;
-    var b = cd[0].b;
+    // var x = cd[0].x;
+    // var y = cd[0].y;
+    // var a = cd[0].a;
+    // var b = cd[0].b;
 
     // XXX: Layer choice??
     var gridLayer = plotinfo.plot.selectAll('.maplayer');
 
     var minorLayer = makeg(gridLayer, 'g', 'minorlayer');
     var majorLayer = makeg(gridLayer, 'g', 'majorlayer');
-    var boundaryLayer = makeg(gridLayer, 'g', 'boundarylayer');
     var boundaryLayer = makeg(gridLayer, 'g', 'boundarylayer');
     var labelLayer = makeg(gridLayer, 'g', 'labellayer');
 
@@ -73,19 +72,18 @@ function drawGridLines(xaxis, yaxis, layer, axis, axisLetter, gridlines) {
         .classed(lineClass, true)
         .style('vector-effect', 'non-scaling-stroke');
 
-    gridjoin.each(function(d, i) {
+    gridjoin.each(function(d) {
         var gridline = d;
-        var axis = gridline.axis;
         var x = gridline.x;
         var y = gridline.y;
 
         var xp = map1dArray([], x, xaxis.c2p);
         var yp = map1dArray([], y, yaxis.c2p);
 
-        var d = makepath(xp, yp, gridline.smoothing);
+        var path = makepath(xp, yp, gridline.smoothing);
 
         var el = d3.select(this);
-        el.attr('d', d)
+        el.attr('d', path)
             .style('stroke-width', gridline.width)
             .style('stroke', gridline.color)
             .style('fill', 'none');
@@ -99,7 +97,7 @@ function drawAxisLabels(xaxis, yaxis, trace, layer, labels, labelClass) {
     labelJoin.enter().append('text')
         .classed(labelClass, true);
 
-    labelJoin.each(function(d, i) {
+    labelJoin.each(function(d) {
         var label = d;
         var ax = d.axis;
 

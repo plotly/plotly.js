@@ -11,9 +11,7 @@
 // var Lib = require('../../lib');
 
 // var isNumeric = require('fast-isnumeric');
-var extendFlat = require('../../lib/extend').extendFlat;
 var handleAxisDefaults = require('./axis_defaults');
-var attributes = require('./attributes');
 
 module.exports = function handleABDefaults(traceIn, traceOut, fullLayout, coerce, dfltColor) {
     var a = coerce('a');
@@ -62,11 +60,7 @@ function mimickAxisDefaults(traceIn, traceOut, fullLayout, dfltColor) {
             bgColor: fullLayout.paper_bgcolor,
         };
 
-        function coerce(attr, dflt) {
-            return Lib.coerce(axIn, axOut, attributes, attr, dflt);
-        }
-
-        handleAxisDefaults(axIn, axOut, coerce, defaultOptions);
+        handleAxisDefaults(axIn, axOut, defaultOptions);
 
         axOut._categories = axOut._categories || [];
 

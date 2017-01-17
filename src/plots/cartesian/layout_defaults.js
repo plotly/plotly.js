@@ -73,8 +73,6 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         }
     }
 
-    console.log('xaListNotCheater:', xaListNotCheater);
-
     // N.B. Ignore orphan axes (i.e. axes that have no data attached to them)
     // if gl3d or geo is present on graph. This is retain backward compatible.
     //

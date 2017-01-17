@@ -17,8 +17,6 @@ var hasColumns = require('./has_columns');
 var convertColumnData = require('../heatmap/convert_column_xyz');
 
 module.exports = function handleXYDefaults(traceIn, traceOut, coerce) {
-    var hasxcols = true;
-    var hasycols = true;
     var cols = [];
     var x = coerce('x');
 

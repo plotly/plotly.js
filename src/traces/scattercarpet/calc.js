@@ -17,10 +17,8 @@ var Lib = require('../../lib');
 var subTypes = require('../scatter/subtypes');
 var calcColorscale = require('../scatter/colorscale_calc');
 
-var dataArrays = ['a', 'b'];
-
 module.exports = function calc(gd, trace) {
-    var i, j, dataArray, newArray, fillArray1, fillArray2, carpet;
+    var i, carpet;
 
     for(i = 0; i < gd._fullData.length; i++) {
         if(gd._fullData[i].carpetid === trace.carpetid && gd._fullData[i].type === 'carpet') {
@@ -38,13 +36,10 @@ module.exports = function calc(gd, trace) {
     trace.xaxis = carpet.xaxis;
     trace.yaxis = carpet.yaxis;
 
-    var displaySum = carpet.sum,
-        normSum = trace.sum || displaySum;
-
     // make the calcdata array
     var serieslen = trace.a.length;
     var cd = new Array(serieslen);
-    var a, b, norm, x, y;
+    var a, b;
     for(i = 0; i < serieslen; i++) {
         a = trace.a[i];
         b = trace.b[i];

@@ -78,13 +78,11 @@ module.exports = function(arrays, asmoothing, bsmoothing) {
         // linear interpolations followed by one cubic interpolation of the result
         return function(out, i0, j0, u, v) {
             if(!out) out = [];
-            var f0, f1, f2, f3, k, ak;
+            var f0, f1, k, ak;
             i0 *= 3;
             var u2 = u * u;
-            var u3 = u2 * u;
             var ou = 1 - u;
             var ou2 = ou * ou;
-            var ou3 = ou2 * ou;
             var ov = 1 - v;
             for(k = 0; k < arrays.length; k++) {
                 ak = arrays[k];
@@ -96,8 +94,12 @@ module.exports = function(arrays, asmoothing, bsmoothing) {
             return out;
         };
     } else if(bsmoothing) {
-        // Same as the above case, except reversed:
+        // Same as the above case, except reversed. I've disabled the no-unused vars rule
+        // so that this function is fully interpolation-agnostic. Otherwise it would need
+        // to be called differently in different cases. Which wouldn't be the worst, but
+        /* eslint-disable no-unused-vars */
         return function(out, i0, j0, u, v) {
+        /* eslint-enable no-unused-vars */
             if(!out) out = [];
             var f0, f1, f2, f3, k, ak;
             j0 *= 3;
@@ -119,7 +121,9 @@ module.exports = function(arrays, asmoothing, bsmoothing) {
         };
     } else {
         // Finally, both directions are linear:
+        /* eslint-disable no-unused-vars */
         return function(out, i0, j0, u, v) {
+        /* eslint-enable no-unused-vars */
             if(!out) out = [];
             var f0, f1, k, ak;
             var ov = 1 - v;

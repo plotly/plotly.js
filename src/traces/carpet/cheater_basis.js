@@ -15,7 +15,7 @@ var isArray = require('../../lib').isArray;
  * If
  */
 module.exports = function(a, b, cheaterslope) {
-    var i, j;
+    var i, j, ascal, bscal, aval, bval;
     var data = [];
 
     var na = isArray(a) ? a.length : a;
@@ -28,18 +28,18 @@ module.exports = function(a, b, cheaterslope) {
     // This means evenly spaced data should look the same whether value
     // or index cheatertype.
     if(adata) {
-        var ascal = (adata.length - 1) / (adata[adata.length - 1] - adata[0]) / (na - 1);
+        ascal = (adata.length - 1) / (adata[adata.length - 1] - adata[0]) / (na - 1);
     }
 
     if(bdata) {
-        var bscal = (bdata.length - 1) / (bdata[bdata.length - 1] - bdata[0]) / (nb - 1);
+        bscal = (bdata.length - 1) / (bdata[bdata.length - 1] - bdata[0]) / (nb - 1);
     }
 
     for(i = 0; i < na; i++) {
         data[i] = [];
-        var aval = adata ? (adata[i] - adata[0]) * ascal : i / (na - 1);
+        aval = adata ? (adata[i] - adata[0]) * ascal : i / (na - 1);
         for(j = 0; j < nb; j++) {
-            var bval = bdata ? (bdata[j] - bdata[0]) * bscal : j / (nb - 1);
+            bval = bdata ? (bdata[j] - bdata[0]) * bscal : j / (nb - 1);
             data[i][j] = aval - bval * cheaterslope;
         }
     }

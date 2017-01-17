@@ -8,8 +8,10 @@
 
 'use strict';
 
+var Lib = require('../../lib');
+
 module.exports = function smoothFill2dArray(data, a, b) {
-    var i, j, k, n;
+    var i, j, k;
     var ip = [];
     var jp = [];
 
@@ -56,6 +58,7 @@ module.exports = function smoothFill2dArray(data, a, b) {
     if(!ip.length) return data;
 
     // The tolerance doesn't need to be excessive. It's just for display positioning
+    var dxp, dxm, dap, dam, dbp, dbm, c, d, diff, reldiff;
     var tol = 1e-5;
     var resid = 0;
     var itermax = 100;
@@ -91,8 +94,8 @@ module.exports = function smoothFill2dArray(data, a, b) {
             }
 
             if((i === 0 || i === ni - 1) && (j > 0 && j < nj - 1)) {
-                var dxp = b[j + 1] - b[j];
-                var dxm = b[j] - b[j - 1];
+                dxp = b[j + 1] - b[j];
+                dxm = b[j] - b[j - 1];
                 newVal += (dxm * data[i][j + 1] + dxp * data[i][j - 1]) / (dxm + dxp);
                 contribCnt++;
             }
@@ -116,8 +119,8 @@ module.exports = function smoothFill2dArray(data, a, b) {
             }
 
             if((j === 0 || j === nj - 1) && (i > 0 && i < ni - 1)) {
-                var dxp = a[i + 1] - a[i];
-                var dxm = a[i] - a[i - 1];
+                dxp = a[i + 1] - a[i];
+                dxm = a[i] - a[i - 1];
                 newVal += (dxm * data[i + 1][j] + dxp * data[i - 1][j]) / (dxm + dxp);
                 contribCnt++;
             }
@@ -125,13 +128,13 @@ module.exports = function smoothFill2dArray(data, a, b) {
             if(!contribCnt) {
                 // interior point, so simply average:
                 // Get the grid spacing on either side:
-                var dap = a[i + 1] - a[i];
-                var dam = a[i] - a[i - 1];
-                var dbp = b[j + 1] - b[j];
-                var dbm = b[j] - b[j - 1];
+                dap = a[i + 1] - a[i];
+                dam = a[i] - a[i - 1];
+                dbp = b[j + 1] - b[j];
+                dbm = b[j] - b[j - 1];
                 // Some useful constants:
-                var c = dap * dam * (dap + dam);
-                var d = dbp * dbm * (dbp + dbm);
+                c = dap * dam * (dap + dam);
+                d = dbp * dbm * (dbp + dbm);
 
                 newVal = (c * (dbm * data[i][j + 1] + dbp * data[i][j - 1]) + d * (dam * data[i + 1][j] + dap * data[i - 1][j])) /
                     (d * (dam + dap) + c * (dbm + dbp));
@@ -140,8 +143,8 @@ module.exports = function smoothFill2dArray(data, a, b) {
                 newVal /= contribCnt;
             }
 
-            var diff = newVal - data[i][j];
-            var reldiff = diff / dmax;
+            diff = newVal - data[i][j];
+            reldiff = diff / dmax;
             resid += reldiff * reldiff;
 
             // Gauss-Seidel-ish iteration, omega chosen based on heuristics and some
@@ -154,7 +157,7 @@ module.exports = function smoothFill2dArray(data, a, b) {
         resid = Math.sqrt(resid);
     } while(iter++ < itermax && resid > tol);
 
-    console.log('Smoother converged to', resid, 'after', iter, 'iterations');
+    Lib.log('Smoother converged to', resid, 'after', iter, 'iterations');
 
     return data;
 };

@@ -27,10 +27,8 @@ module.exports = function(arrays, asmoothing, bsmoothing) {
             var ou3 = ou2 * ou;
 
             var v2 = v * v;
-            var v3 = v2 * v;
             var ov = 1 - v;
             var ov2 = ov * ov;
-            var ov3 = ov2 * ov;
 
             for(k = 0; k < arrays.length; k++) {
                 ak = arrays[k];
@@ -58,7 +56,6 @@ module.exports = function(arrays, asmoothing, bsmoothing) {
             var ou = 1 - u;
             var ou2 = ou * ou;
             var ou3 = ou2 * ou;
-            var ov = 1 - v;
             for(k = 0; k < arrays.length; k++) {
                 ak = arrays[k];
 
@@ -78,9 +75,11 @@ module.exports = function(arrays, asmoothing, bsmoothing) {
         };
     } else if(bsmoothing) {
         // Same as the above case, except reversed:
+        /* eslint-disable no-unused-vars */
         return function(out, i0, j0, u, v) {
+        /* eslint-enable no-unused-vars */
             if(!out) out = [];
-            var f0, f1, f2, f3, k, ak;
+            var f0, f1, k, ak;
             j0 *= 3;
             var v2 = v * v;
             var ov = 1 - v;
@@ -97,7 +96,9 @@ module.exports = function(arrays, asmoothing, bsmoothing) {
         };
     } else {
         // Finally, both directions are linear:
+        /* eslint-disable no-unused-vars */
         return function(out, i0, j0, v, u) {
+        /* eslint-enable no-unused-vars */
             if(!out) out = [];
             var f0, f1, k, ak;
             var ov = 1 - v;

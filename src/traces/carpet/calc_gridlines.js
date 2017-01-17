@@ -9,20 +9,12 @@
 'use strict';
 
 var Axes = require('../../plots/cartesian/axes');
-var cheaterBasis = require('./cheater_basis');
-var arrayMinmax = require('./array_minmax');
-var search = require('../../lib/search').findBin;
-var computeControlPoints = require('./compute_control_points');
-var map2dArray = require('./map_2d_array');
-var createSplineEvaluator = require('./create_spline_evaluator');
-var setConvert = require('./set_convert');
-var map2dArray = require('./map_2d_array');
-var map1dArray = require('./map_1d_array');
-var makepath = require('./makepath');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
-    var i, j, gridline, j0, i0;
+    var i, j, j0;
+    var eps, bounds, n1, n2, n, value, v;
+    var j1, v0, v1, d;
 
     var data = trace[axisLetter];
     var axis = trace[axisLetter + 'axis'];
@@ -34,12 +26,21 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
     var crossData = trace[crossAxisLetter];
     var crossAxis = trace[crossAxisLetter + 'axis'];
 
+    if(axis.tickmode === 'array') {
+        axis.tickvals = [];
+        for(i = 0; i < data.length; i++) {
+            axis.tickvals.push(data[i]);
+        }
+    }
+
     var xcp = trace._xctrl;
     var ycp = trace._yctrl;
     var nea = xcp.length;
     var neb = xcp[0].length;
     var na = trace.a.length;
     var nb = trace.b.length;
+
+    Axes.calcTicks(axis);
 
     // The default is an empty array that will cause the join to remove the gridline if
     // it's just disappeared:
@@ -50,7 +51,7 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
     var stride = axis.smoothing ? 3 : 1;
 
     function constructValueGridline(value) {
-        var j, j0, tj, pxy, i0, ti, xy, dxydi0, dxydi1, i, dxydj0, dxydj1;
+        var i, j, j0, tj, pxy, i0, ti, xy, dxydi0, dxydi1, dxydj0, dxydj1;
         var xpoints = [];
         var ypoints = [];
         var ret = {};
@@ -72,7 +73,7 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
                 return trace.dxydi([], i0, j0, ti, tj);
             };
 
-            for(var i = 0; i < na; i++) {
+            for(i = 0; i < na; i++) {
                 i0 = Math.min(na - 2, i);
                 ti = i - i0;
                 xy = trace._evalxy([], i0, j0, ti, tj);
@@ -111,7 +112,7 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
                 return trace.dxydj([], i0, j0, ti, tj);
             };
 
-            for(var j = 0; j < nb; j++) {
+            for(j = 0; j < nb; j++) {
                 j0 = Math.min(nb - 2, j);
                 tj = j - j0;
                 xy = trace._evalxy([], i0, j0, ti, tj);
@@ -149,6 +150,7 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
     }
 
     function constructArrayGridline(idx) {
+        var i0, j0, ti, tj;
         var xpoints = [];
         var ypoints = [];
         var ret = {};
@@ -156,8 +158,8 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
         ret.crossLength = crossData.length;
 
         if(axisLetter === 'b') {
-            var j0 = Math.max(0, Math.min(nb - 2, idx));
-            var tj = Math.min(1, Math.max(0, idx - j0));
+            j0 = Math.max(0, Math.min(nb - 2, idx));
+            tj = Math.min(1, Math.max(0, idx - j0));
 
             ret.xy = function(i) {
                 var i0 = Math.max(0, Math.min(na - 2, Math.floor(i)));
@@ -176,8 +178,8 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
                 ypoints[i] = ycp[i][idx * stride];
             }
         } else {
-            var i0 = Math.max(0, Math.min(na - 2, idx));
-            var ti = Math.min(1, Math.max(0, idx - i0));
+            i0 = Math.max(0, Math.min(na - 2, idx));
+            ti = Math.min(1, Math.max(0, idx - i0));
 
             ret.xy = function(j) {
                 var j0 = Math.max(0, Math.min(nb - 2, Math.floor(j)));
@@ -212,20 +214,19 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
     }
 
     if(axis.tickmode === 'array') {
-        var j0, j1;
         // var j0 = axis.startline ? 1 : 0;
         // var j1 = data.length - (axis.endline ? 1 : 0);
 
-        var eps = 5e-15;
-        var bounds = [
+        eps = 5e-15;
+        bounds = [
             Math.floor(((data.length - 1) - axis.arraytick0) / axis.arraydtick * (1 + eps)),
             Math.ceil((- axis.arraytick0) / axis.arraydtick / (1 + eps))
         ].sort(function(a, b) {return a - b;});
 
         // Unpack sorted values so we can be sure to avoid infinite loops if something
         // is backwards:
-        var n1 = bounds[0] - 1;
-        var n2 = bounds[1] + 1;
+        n1 = bounds[0] - 1;
+        n2 = bounds[1] + 1;
 
         // If the axes fall along array lines, then this is a much simpler process since
         // we already have all the control points we need
@@ -247,18 +248,18 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
             if(j0 < 0 || j0 > data.length - 1) continue;
             if(j1 < 0 || j1 > data.length - 1) continue;
 
-            var v0 = data[j0];
-            var v1 = data[j1];
+            v0 = data[j0];
+            v1 = data[j1];
 
             for(i = 0; i < axis.minorgridcount; i++) {
-                var d = j1 - j0;
+                d = j1 - j0;
 
                 // TODO: fix the bounds computation so we don't have to do a large range and then throw
                 // out unneeded numbers
                 if(d <= 0) continue;
 
                 // XXX: This calculation isn't quite right. Off by one somewhere?
-                var v = v0 + (v1 - v0) * (i + 1) / (axis.minorgridcount + 1) * (axis.arraydtick / d);
+                v = v0 + (v1 - v0) * (i + 1) / (axis.minorgridcount + 1) * (axis.arraydtick / d);
 
                 // TODO: fix the bounds computation so we don't have to do a large range and then throw
                 // out unneeded numbers
@@ -292,19 +293,19 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
         // (roughly speaking):
         // Give this a nice generous epsilon. We use at as * (1 + eps) in order to make
         // inequalities a little tolerant in a more or less correct manner:
-        var eps = 5e-15;
-        var bounds = [
+        eps = 5e-15;
+        bounds = [
             Math.floor((data[data.length - 1] - axis.tick0) / axis.dtick * (1 + eps)),
             Math.ceil((data[0] - axis.tick0) / axis.dtick / (1 + eps))
         ].sort(function(a, b) {return a - b;});
 
         // Unpack sorted values so we can be sure to avoid infinite loops if something
         // is backwards:
-        var n1 = bounds[0];
-        var n2 = bounds[1];
+        n1 = bounds[0];
+        n2 = bounds[1];
 
-        for(var n = n1; n <= n2; n++) {
-            var value = axis.tick0 + axis.dtick * n;
+        for(n = n1; n <= n2; n++) {
+            value = axis.tick0 + axis.dtick * n;
 
             gridlines.push(extendFlat(constructValueGridline(value), {
                 color: axis.gridcolor,
@@ -316,7 +317,7 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
             value = axis.tick0 + axis.dtick * n;
 
             for(i = 0; i < axis.minorgridcount; i++) {
-                var v = value + axis.dtick * (i + 1) / (axis.minorgridcount + 1);
+                v = value + axis.dtick * (i + 1) / (axis.minorgridcount + 1);
                 if(v < data[0] || v > data[data.length - 1]) continue;
                 minorgridlines.push(extendFlat(constructValueGridline(v), {
                     color: axis.minorgridcolor,

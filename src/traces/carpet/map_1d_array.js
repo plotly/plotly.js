@@ -14,7 +14,7 @@
  * reallocation to the extent possible.
  */
 module.exports = function mapArray(out, data, func) {
-    var i, j;
+    var i;
 
     if(!Array.isArray(out)) {
         // If not an array, make it an array:

@@ -20,7 +20,7 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
         col1Calendar = trace[var1Name + 'calendar'],
         col2Calendar = trace[var2Name + 'calendar'];
 
-    var i, j, arrayVar, newArrays, newArray, arrayVarName;
+    var i, j, arrayVar, newArray, arrayVarName;
 
     for(i = 0; i < arrayVarNames.length; i++) {
         arrayVar = trace[arrayVarNames[i]];

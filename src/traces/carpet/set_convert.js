@@ -131,7 +131,7 @@ module.exports = function setConvert(trace) {
         return [xa.p2c(p[0]), ya.p2c(p[1])];
     };
 
-    trace.dadi = function(i, u) {
+    trace.dadi = function(i /* , u*/) {
         // Right now only a piecewise linear a or b basis is permitted since smoother interpolation
         // would cause monotonicity problems. As a retult, u is entirely disregarded in this
         // computation, though we'll specify it as a parameter for the sake of completeness and
@@ -147,7 +147,7 @@ module.exports = function setConvert(trace) {
         return a[i0 + 1] - a[i0];
     };
 
-    trace.dbdj = function(j, v) {
+    trace.dbdj = function(j /* , v*/) {
         // See above caveats for dadi which also apply here
         var j0 = Math.max(0, Math.min(b.length - 2, j));
 
@@ -164,7 +164,7 @@ module.exports = function setConvert(trace) {
         var dxydi = trace.dxydi(null, i0, j0, u, v);
         var dadi = trace.dadi(i0, u);
 
-        return [dxydi[0] / dadi, dxydi[1] / dbdj];
+        return [dxydi[0] / dadi, dxydi[1] / dadi];
     };
 
     trace.dxydb = function(i0, j0, u, v) {

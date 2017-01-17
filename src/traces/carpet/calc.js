@@ -11,14 +11,12 @@
 var Axes = require('../../plots/cartesian/axes');
 var cheaterBasis = require('./cheater_basis');
 var arrayMinmax = require('./array_minmax');
-var search = require('../../lib/search').findBin;
 var map2dArray = require('./map_2d_array');
 var setConvert = require('./set_convert');
 var calcGridlines = require('./calc_gridlines');
 var calcLabels = require('./calc_labels');
 var clean2dArray = require('../heatmap/clean_2d_array');
-var isNumeric = require('fast-isnumeric');
-var smoothFill2dArray = require('./smooth-fill-2d-array');
+var smoothFill2dArray = require('./smooth_fill_2d_array');
 
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
@@ -28,20 +26,16 @@ module.exports = function calc(gd, trace) {
         a = trace.a,
         b = trace.b;
 
-    var xdata;
-    var ydata = trace.y;
+    var x;
+    var y = trace.y;
 
     if(trace._cheater) {
         var avals = aax.cheatertype === 'index' ? a.length : a;
         var bvals = bax.cheatertype === 'index' ? b.length : b;
-        trace.x = xdata = cheaterBasis(avals, bvals, trace.cheaterslope);
+        trace.x = x = cheaterBasis(avals, bvals, trace.cheaterslope);
     } else {
-        xdata = trace.x;
+        x = trace.x;
     }
-
-    // Precompute the cartesian-space coordinates of the grid lines:
-    var x = xdata;
-    var y = trace.y;
 
     trace.x = x = clean2dArray(x);
     trace.y = y = clean2dArray(y);
@@ -96,6 +90,6 @@ module.exports = function calc(gd, trace) {
  * Given a data range from starting at x1, this function computes the first
  * point distributed along x0 + n * dx that lies within the range.
  */
-function getLinspaceStartingPoint(xlow, x0, dx) {
+/* function getLinspaceStartingPoint(xlow, x0, dx) {
     return x0 + dx * Math.ceil((xlow - x0) / dx);
-}
+}*/
