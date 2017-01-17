@@ -112,7 +112,7 @@ module.exports = {
     cheatertype: {
         valType: 'enumerated',
         values: ['index', 'value'],
-        dflt: 'index',
+        dflt: 'value',
         role: 'info'
     },
     tickmode: {
