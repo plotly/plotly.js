@@ -15,6 +15,7 @@ var map2dArray = require('./map_2d_array');
 var setConvert = require('./set_convert');
 var calcGridlines = require('./calc_gridlines');
 var calcLabels = require('./calc_labels');
+var calcClipPath = require('./calc_clippath');
 var clean2dArray = require('../heatmap/clean_2d_array');
 var smoothFill2dArray = require('./smooth_fill_2d_array');
 
@@ -65,6 +66,9 @@ module.exports = function calc(gd, trace) {
     var dy = 0.5 * (yrange[1] - yrange[0]);
     var yc = 0.5 * (yrange[1] + yrange[0]);
 
+    // Expand the axes to fit the plot, except just grow it by a factor of 1.3
+    // because the labels should be taken into account except that's difficult
+    // hence 1.3.
     var grow = 1.3;
     xrange = [xc - dx * grow, xc + dx * grow];
     yrange = [yc - dy * grow, yc + dy * grow];
@@ -72,11 +76,19 @@ module.exports = function calc(gd, trace) {
     Axes.expand(xa, xrange, {padded: true});
     Axes.expand(ya, yrange, {padded: true});
 
+    // Enumerate the gridlines, both major and minor, and store them on the trace
+    // object:
     calcGridlines(trace, 'a', 'b');
     calcGridlines(trace, 'b', 'a');
 
+    // Calculate the text labels for each major gridline and store them on the
+    // trace object:
     calcLabels(trace, aax);
     calcLabels(trace, bax);
+
+    // Tabulate points for the four segments that bound the axes so that we can
+    // map to pixel coordinates in the plot function and create a clip rect:
+    trace._clipsegments = calcClipPath(trace._xctrl, trace._yctrl, aax, bax);
 
     return [{
         x: x,
@@ -85,11 +97,3 @@ module.exports = function calc(gd, trace) {
         b: b
     }];
 };
-
-/*
- * Given a data range from starting at x1, this function computes the first
- * point distributed along x0 + n * dx that lies within the range.
- */
-/* function getLinspaceStartingPoint(xlow, x0, dx) {
-    return x0 + dx * Math.ceil((xlow - x0) / dx);
-}*/

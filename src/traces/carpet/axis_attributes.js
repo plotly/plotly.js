@@ -24,8 +24,10 @@ module.exports = {
         ].join(' ')
     },
     smoothing: {
-        valType: 'boolean',
-        dflt: true,
+        valType: 'number',
+        dflt: 1,
+        min: 0,
+        max: 1,
         role: 'info'
     },
     title: {

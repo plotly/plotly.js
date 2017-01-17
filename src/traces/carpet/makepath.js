@@ -25,5 +25,5 @@ module.exports = function makePath(xp, yp, isBicubic) {
             ].join(' '));
         }
     }
-    return 'M' + path.join(isBicubic ? '' : 'L');
+    return path.join(isBicubic ? '' : 'L');
 };

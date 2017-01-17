@@ -32,7 +32,8 @@ function plotOne(gd, plotinfo, cd) {
         xa = plotinfo.xaxis,
         ya = plotinfo.yaxis,
         aax = trace.aaxis,
-        bax = trace.baxis;
+        bax = trace.baxis,
+        fullLayout = gd._fullLayout;
         // uid = trace.uid,
         // id = 'carpet' + uid;
 
@@ -43,6 +44,7 @@ function plotOne(gd, plotinfo, cd) {
 
     // XXX: Layer choice??
     var gridLayer = plotinfo.plot.selectAll('.maplayer');
+    var clipLayer = makeg(fullLayout._defs, 'g', 'clips');
 
     var minorLayer = makeg(gridLayer, 'g', 'minorlayer');
     var majorLayer = makeg(gridLayer, 'g', 'majorlayer');
@@ -61,6 +63,36 @@ function plotOne(gd, plotinfo, cd) {
 
     drawAxisLabels(xa, ya, trace, labelLayer, aax._labels, 'a-label');
     drawAxisLabels(xa, ya, trace, labelLayer, bax._labels, 'b-label');
+
+    // Swap for debugging in order to draw directly:
+    // drawClipPath(trace, gridLayer, xa, ya);
+    drawClipPath(trace, clipLayer, xa, ya);
+}
+
+function drawClipPath(trace, layer, xaxis, yaxis) {
+    var seg, xp, yp, i;
+    // var clip = makeg(layer, 'g', 'carpetclip');
+    var clip = makeg(layer, 'clipPath', 'carpetclip');
+    var path = makeg(clip, 'path', 'carpetboundary');
+    var segments = trace._clipsegments;
+    var segs = [];
+
+    for(i = 0; i < segments.length; i++) {
+        seg = segments[i];
+        xp = map1dArray([], seg.x, xaxis.c2p);
+        yp = map1dArray([], seg.y, yaxis.c2p);
+        segs.push(makepath(xp, yp, seg.bicubic));
+    }
+
+    // This could be optimized ever so slightly to avoid no-op L segments
+    // at the corners, but it's so negligible that I don't think it's worth
+    // the extra complexity
+    path.attr('id', 'clip' + trace.uid + 'carpet')
+        .attr('d', 'M' + segs.join('L') + 'Z');
+        // .style('vector-effect', 'non-scaling-stroke')
+        // .style('stroke-width', 2)
+        // .style('stroke', 'black')
+        // .style('fill', 'rgba(0, 0, 0, 0.1)');
 }
 
 function drawGridLines(xaxis, yaxis, layer, axis, axisLetter, gridlines) {
@@ -79,7 +111,7 @@ function drawGridLines(xaxis, yaxis, layer, axis, axisLetter, gridlines) {
         var xp = map1dArray([], x, xaxis.c2p);
         var yp = map1dArray([], y, yaxis.c2p);
 
-        var path = makepath(xp, yp, gridline.smoothing);
+        var path = 'M' + makepath(xp, yp, gridline.smoothing);
 
         var el = d3.select(this);
 
