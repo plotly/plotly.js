@@ -1,0 +1,31 @@
+{
+  "data": [
+    {
+      "z": [[4, 3], [2, 1]],
+      "type": "contour",
+      "contours": {
+        "start": 1.1,
+        "end": 4.09,
+        "size": 1
+      },
+      "colorbar": {"x": 0.4}
+    },
+    {
+      "z": [[4, 3], [2, 1]],
+      "type": "contour",
+      "contours": {
+        "start": 1,
+        "end": 4,
+        "size": 0.9999999
+      },
+      "colorbar": {"x": 1},
+      "xaxis": "x2"
+    }
+  ],
+  "layout": {
+    "xaxis": {"domain": [0, 0.4]},
+    "xaxis2": {"domain": [0.6, 1]},
+    "width": 800,
+    "height": 400
+  }
+}
