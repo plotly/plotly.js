@@ -101,13 +101,39 @@ module.exports = function setConvert(trace) {
         return trace._evalxy([], ij[0], ij[1]);
     };
 
-    trace.ab2xy = function(aval, bval) {
-        if(aval < a[0] || aval > a[na - 1] | bval < b[0] || bval > b[nb - 1]) {
+    trace.ab2xy = function(aval, bval, extrapolate) {
+        if(!extrapolate && (aval < a[0] || aval > a[na - 1] | bval < b[0] || bval > b[nb - 1])) {
             return [false, false];
         }
         var i = trace.a2i(aval);
         var j = trace.b2j(bval);
-        return trace._evalxy([], i, j);
+
+        var pt = trace._evalxy([], i, j);
+
+        if (extrapolate) {
+            var i0, ti, j0, tj, iex, bex;
+            if (aval < a[0]) {
+                i0 = 0;
+                ti = 0;
+                iex = (aval - a[0]) / (a[1] - a[0]);
+            } else if (aval > a[na - 1]) {
+                i0 = na - 2;
+                //ti =
+                iex = (aval - a[na - 1]) / (a[na - 1] - a[na - 2]);
+            }
+
+            if (bval < b[0]) {
+                j0 = 0;
+                bex = (bval - b[0]) / (b[1] - b[0]);
+            } else if (bval > b[na - 1]) {
+                j0 = na - 2;
+                bex = (bval - b[na - 1]) / (b[na - 1] - b[na - 2]);
+            }
+
+
+        }
+
+        return pt;
     };
 
     trace.c2p = function(xy, xa, ya) {
