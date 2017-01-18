@@ -45,7 +45,7 @@ module.exports = function setConvert(trace) {
     // some logic since it would be unnecessarily expensive to compute both interpolations
     // nearly identically but separately and to include a bunch of linear vs. bicubic logic in
     // every single call.
-    trace._evalxy = createSplineEvaluator([trace._xctrl, trace._yctrl], aax.smoothing, bax.smoothing);
+    trace._evalxy = createSplineEvaluator([trace._xctrl, trace._yctrl], na, nb, aax.smoothing, bax.smoothing);
 
     trace.dxydi = createIDerivativeEvaluator([trace._xctrl, trace._yctrl], aax.smoothing, bax.smoothing);
     trace.dxydj = createJDerivativeEvaluator([trace._xctrl, trace._yctrl], aax.smoothing, bax.smoothing);
@@ -98,11 +98,7 @@ module.exports = function setConvert(trace) {
      * or bicubic spline evaluation, but the hard part is already done at this point.
      */
     trace.i2c = function(ij) {
-        var i0 = Math.max(0, Math.min(na - 2, Math.floor(ij[0])));
-        var ti = ij[0] - i0;
-        var j0 = Math.max(0, Math.min(nb - 2, Math.floor(ij[1])));
-        var tj = ij[1] - j0;
-        return trace._evalxy([], i0, j0, ti, tj);
+        return trace._evalxy([], ij[0], ij[1]);
     };
 
     trace.ab2xy = function(aval, bval) {
@@ -110,17 +106,8 @@ module.exports = function setConvert(trace) {
             return [false, false];
         }
         var i = trace.a2i(aval);
-        var i0 = Math.max(0, Math.min(na - 2, Math.floor(i)));
-        var ti = i - i0;
-
         var j = trace.b2j(bval);
-        var j0 = Math.max(0, Math.min(nb - 2, Math.floor(j)));
-        var tj = j - j0;
-
-        if(tj < 0 || tj > 1 || ti < 0 || ti > 1) {
-            return [false, false];
-        }
-        return trace._evalxy([], i0, j0, ti, tj);
+        return trace._evalxy([], i, j);
     };
 
     trace.c2p = function(xy, xa, ya) {

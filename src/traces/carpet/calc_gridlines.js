@@ -57,16 +57,20 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
         var ret = {};
         // Search for the fractional grid index giving this line:
         if(axisLetter === 'b') {
+            // For the position we use just the i-j coordinates:
             j = trace.b2j(value);
+
+            // The derivatives for catmull-rom splines are discontinuous across cell
+            // boundaries though, so we need to provide both the cell and the position
+            // within the cell separately:
             j0 = Math.floor(Math.max(0, Math.min(nb - 2, j)));
             tj = j - j0;
+
             ret.length = nb;
             ret.crossLength = na;
 
             ret.xy = function(i) {
-                var i0 = Math.max(0, Math.min(crossData.length - 2, Math.floor(i)));
-                var ti = i - i0;
-                return trace._evalxy([], i0, j0, ti, tj);
+                return trace._evalxy([], i, j);
             };
 
             ret.dxy = function(i0, ti) {
@@ -76,7 +80,7 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
             for(i = 0; i < na; i++) {
                 i0 = Math.min(na - 2, i);
                 ti = i - i0;
-                xy = trace._evalxy([], i0, j0, ti, tj);
+                xy = trace._evalxy([], i, j);
 
                 if(crossAxis.smoothing && i > 0) {
                     // First control point:
@@ -103,9 +107,7 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
             ret.crossLength = nb;
 
             ret.xy = function(j) {
-                var j0 = Math.max(0, Math.min(crossData.length - 2, Math.floor(j)));
-                var tj = j - j0;
-                return trace._evalxy([], i0, j0, ti, tj);
+                return trace._evalxy([], i, j);
             };
 
             ret.dxy = function(j0, tj) {
@@ -115,7 +117,7 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
             for(j = 0; j < nb; j++) {
                 j0 = Math.min(nb - 2, j);
                 tj = j - j0;
-                xy = trace._evalxy([], i0, j0, ti, tj);
+                xy = trace._evalxy([], i, j);
 
                 if(crossAxis.smoothing && j > 0) {
                     // First control point:
@@ -162,9 +164,7 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
             tj = Math.min(1, Math.max(0, idx - j0));
 
             ret.xy = function(i) {
-                var i0 = Math.max(0, Math.min(na - 2, Math.floor(i)));
-                var ti = Math.min(1, Math.max(0, i - i0));
-                return trace._evalxy([], i0, j0, ti, tj);
+                return trace._evalxy([], i, idx);
             };
 
             ret.dxy = function(i0, ti) {
@@ -182,11 +182,8 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
             ti = Math.min(1, Math.max(0, idx - i0));
 
             ret.xy = function(j) {
-                var j0 = Math.max(0, Math.min(nb - 2, Math.floor(j)));
-                var tj = Math.min(1, Math.max(0, j - j0));
-                return trace._evalxy([], i0, j0, ti, tj);
+                return trace._evalxy([], idx, j);
             };
-
 
             ret.dxy = function(j0, tj) {
                 return trace.dxydj([], i0, j0, ti, tj);
