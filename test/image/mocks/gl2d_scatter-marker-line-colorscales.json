@@ -176,6 +176,34 @@
                 }
             },
             "uid": "0a4533"
+        },
+        {
+            "type": "scattergl",
+            "x": [],
+            "y": []
+        },
+        {
+            "type": "scattergl",
+            "y": []
+        },
+        {
+            "type": "scattergl",
+            "x": []
+        },
+        {
+            "type": "scattergl"
+        },
+        {
+            "type": "scattergl",
+            "x": [1,2,3],
+            "y": [2,1,2],
+            "visible": false
+        },
+        {
+            "type": "scattergl",
+            "x": [1,2,3],
+            "y": [2,1,2],
+            "visible": "legendonly"
         }
     ],
     "layout": {
