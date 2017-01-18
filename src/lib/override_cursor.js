@@ -12,6 +12,7 @@
 var setCursor = require('./setcursor');
 
 var STASHATTR = 'data-savedcursor';
+var NO_CURSOR = '!!';
 
 /*
  * works with our CSS cursor classes (see css/_cursor.scss)
@@ -22,10 +23,7 @@ var STASHATTR = 'data-savedcursor';
 module.exports = function overrideCursor(el3, csr) {
     var savedCursor = el3.attr(STASHATTR);
     if(csr) {
-        if(savedCursor) {
-            setCursor(el3, csr);
-        }
-        else {
+        if(!savedCursor) {
             var classes = (el3.attr('class') || '').split(' ');
             for(var i = 0; i < classes.length; i++) {
                 var cls = classes[i];
@@ -34,10 +32,16 @@ module.exports = function overrideCursor(el3, csr) {
                         .classed(cls, false);
                 }
             }
+            if(!el3.attr(STASHATTR)) {
+                el3.attr(STASHATTR, NO_CURSOR);
+            }
         }
+        setCursor(el3, csr);
     }
     else if(savedCursor) {
         el3.attr(STASHATTR, null);
-        setCursor(el3, savedCursor);
+
+        if(savedCursor === NO_CURSOR) setCursor(el3);
+        else setCursor(el3, savedCursor);
     }
 };
