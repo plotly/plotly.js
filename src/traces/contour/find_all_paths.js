@@ -84,13 +84,13 @@ function makePath(pi, loc, edgeflag) {
         if(equalPts(pts[pts.length - 1], pts[pts.length - 2])) pts.pop();
         locStr = loc.join(',');
 
+        var atEdge = (marchStep[0] && (loc[0] < 0 || loc[0] > n - 2)) ||
+                (marchStep[1] && (loc[1] < 0 || loc[1] > m - 2)),
+            closedLoop = (locStr === startLocStr) && (marchStep.join(',') === startStepStr);
+
         // have we completed a loop, or reached an edge?
-        if((locStr === startLocStr && marchStep.join(',') === startStepStr) ||
-            (edgeflag && (
-                (marchStep[0] && (loc[0] < 0 || loc[0] > n - 2)) ||
-                (marchStep[1] && (loc[1] < 0 || loc[1] > m - 2))))) {
-            break;
-        }
+        if((closedLoop) || (edgeflag && atEdge)) break;
+
         mi = pi.crossings[locStr];
     }
 

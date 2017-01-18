@@ -331,6 +331,39 @@ describe('Test gl plot interactions', function() {
 
             }, MODEBAR_DELAY);
         });
+
+        it('should be able to toggle visibility', function(done) {
+            var OBJECT_PER_TRACE = 5;
+
+            var objects = function() {
+                return gd._fullLayout._plots.xy._scene2d.glplot.objects;
+            };
+
+            expect(objects().length).toEqual(OBJECT_PER_TRACE);
+
+            Plotly.restyle(gd, 'visible', 'legendonly').then(function() {
+                expect(objects().length).toEqual(OBJECT_PER_TRACE);
+                expect(objects()[0].data.length).toEqual(0);
+
+                return Plotly.restyle(gd, 'visible', true);
+            })
+            .then(function() {
+                expect(objects().length).toEqual(OBJECT_PER_TRACE);
+                expect(objects()[0].data.length).not.toEqual(0);
+
+                return Plotly.restyle(gd, 'visible', false);
+            })
+            .then(function() {
+                expect(gd._fullLayout._plots.xy._scene2d).toBeUndefined();
+
+                return Plotly.restyle(gd, 'visible', true);
+            })
+            .then(function() {
+                expect(objects().length).toEqual(OBJECT_PER_TRACE);
+                expect(objects()[0].data.length).not.toEqual(0);
+            })
+            .then(done);
+        });
     });
 
     describe('gl3d event handlers', function() {

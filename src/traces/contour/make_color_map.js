@@ -11,13 +11,14 @@
 
 var d3 = require('d3');
 var Colorscale = require('../../components/colorscale');
+var endPlus = require('./end_plus');
 
 module.exports = function makeColorMap(trace) {
     var contours = trace.contours,
         start = contours.start,
-        end = contours.end,
+        end = endPlus(contours),
         cs = contours.size || 1,
-        nc = Math.floor((end + cs / 10 - start) / cs) + 1,
+        nc = Math.floor((end - start) / cs) + 1,
         extra = contours.coloring === 'lines' ? 0 : 1;
 
     var scl = trace.colorscale,
