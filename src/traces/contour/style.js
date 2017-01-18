@@ -34,11 +34,11 @@ module.exports = function style(gd) {
 
         var colorMap = makeColorMap(trace);
 
-        c.selectAll('g.contourlevel').each(function(d, i) {
+        c.selectAll('g.contourlevel').each(function(d) {
             d3.select(this).selectAll('path')
                 .call(Drawing.lineGroupStyle,
                     line.width,
-                    contours.coloring === 'lines' ? colorMap(start + i * cs) : line.color,
+                    contours.coloring === 'lines' ? colorMap(d.level) : line.color,
                     line.dash);
         });
 
