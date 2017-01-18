@@ -95,8 +95,6 @@ function emptyPathinfo(contours, plotinfo, cd0) {
             // all unclosed paths (may have less items than starts,
             // if a path is closed by rounding)
             edgepaths: [],
-            // we found some edges (even if they later got removed due to rounding)
-            foundedge: false,
             // all closed paths
             paths: [],
             // store axes so we can convert to px
@@ -167,7 +165,8 @@ function makeFills(plotgroup, pathinfo, perimeter, contours) {
 }
 
 function joinAllPaths(pi, perimeter) {
-    var fullpath = (pi.foundedge || pi.z[0][0] < pi.level) ?
+    var edgeVal2 = Math.min(pi.z[0][0], pi.z[0][1]),
+        fullpath = (pi.edgepaths.length || edgeVal2 <= pi.level) ?
             '' : ('M' + perimeter.join('L') + 'Z'),
         i = 0,
         startsleft = pi.edgepaths.map(function(v, i) { return i; }),

@@ -88,8 +88,6 @@ function makePath(pi, loc, edgeflag) {
                 (marchStep[1] && (loc[1] < 0 || loc[1] > m - 2)),
             closedLoop = (locStr === startLocStr) && (marchStep.join(',') === startStepStr);
 
-        if(atEdge) pi.foundedge = true;
-
         // have we completed a loop, or reached an edge?
         if((closedLoop) || (edgeflag && atEdge)) break;
 
