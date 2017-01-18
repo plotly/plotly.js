@@ -33,7 +33,8 @@ module.exports = function calc(gd, trace) {
             trace.orientation === 'h' ? (trace.yaxis || 'y') : (trace.xaxis || 'x')),
         maindata = trace.orientation === 'h' ? 'y' : 'x',
         counterdata = {x: 'y', y: 'x'}[maindata],
-        calendar = trace[maindata + 'calendar'];
+        calendar = trace[maindata + 'calendar'],
+        cumulativeSpec = trace.cumulative;
 
     cleanBins(trace, pa, maindata);
 
@@ -47,8 +48,8 @@ module.exports = function calc(gd, trace) {
         binspec = Axes.autoBin(pos0, pa, trace['nbins' + maindata], false, calendar);
 
         // adjust for CDF edge cases
-        if(trace.cumulative && (trace.currentbin !== 'include')) {
-            if(trace.direction === 'decreasing') {
+        if(cumulativeSpec.enabled && (cumulativeSpec.currentbin !== 'include')) {
+            if(cumulativeSpec.direction === 'decreasing') {
                 binspec.start = pa.c2r(pa.r2c(binspec.start) - binspec.size);
             }
             else {
@@ -74,8 +75,16 @@ module.exports = function calc(gd, trace) {
         total = 0,
         norm = trace.histnorm,
         func = trace.histfunc,
-        densitynorm = norm.indexOf('density') !== -1,
-        extremefunc = func === 'max' || func === 'min',
+        densitynorm = norm.indexOf('density') !== -1;
+
+    if(cumulativeSpec.enabled && densitynorm) {
+        // we treat "cumulative" like it means "integral" if you use a density norm,
+        // which in the end means it's the same as without "density"
+        norm = norm.replace(/ ?density$/, '');
+        densitynorm = false;
+    }
+
+    var extremefunc = func === 'max' || func === 'min',
         sizeinit = extremefunc ? null : 0,
         binfunc = binFunctions.count,
         normfunc = normFunctions[norm],
@@ -131,7 +140,7 @@ module.exports = function calc(gd, trace) {
     if(normfunc) normfunc(size, total, inc);
 
     // after all normalization etc, now we can accumulate if desired
-    if(trace.cumulative) cdf(size, trace.direction, trace.currentbin);
+    if(cumulativeSpec.enabled) cdf(size, cumulativeSpec.direction, cumulativeSpec.currentbin);
 
 
     var serieslen = Math.min(pos.length, size.length),

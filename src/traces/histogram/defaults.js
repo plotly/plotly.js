@@ -27,10 +27,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var x = coerce('x'),
         y = coerce('y');
 
-    var cumulative = coerce('cumulative');
+    var cumulative = coerce('cumulative.enabled');
     if(cumulative) {
-        coerce('direction');
-        coerce('currentbin');
+        coerce('cumulative.direction');
+        coerce('cumulative.currentbin');
     }
 
     coerce('text');
