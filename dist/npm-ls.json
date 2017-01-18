@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "1.21.2",
+  "version": "1.21.3",
   "dependencies": {
     "3d-view": {
       "version": "2.0.0",
@@ -2566,7 +2566,7 @@
     },
     "mouse-change": {
       "version": "1.3.0",
-      "from": "mouse-change@>=1.1.1 <2.0.0",
+      "from": "mouse-change@1.3.0",
       "resolved": "https://registry.npmjs.org/mouse-change/-/mouse-change-1.3.0.tgz",
       "dependencies": {
         "mouse-event": {

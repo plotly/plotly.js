@@ -206,4 +206,11 @@ describe('plot schema', function() {
         expect(plotSchema.defs.metaKeys)
             .toEqual(['_isSubplotObj', '_isLinkedToArray', '_deprecated', 'description', 'role']);
     });
+
+    it('should list the correct frame attributes', function() {
+        expect(plotSchema.frames).toBeDefined();
+        expect(plotSchema.frames.role).toEqual('object');
+        expect(plotSchema.frames.items.frames_entry).toBeDefined();
+        expect(plotSchema.frames.items.frames_entry.role).toEqual('object');
+    });
 });

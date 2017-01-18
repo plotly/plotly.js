@@ -8,6 +8,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var assertDims = require('../assets/assert_dims');
 var assertStyle = require('../assets/assert_style');
+var customMatchers = require('../assets/custom_matchers');
 
 describe('filter transforms defaults:', function() {
 
@@ -844,6 +845,10 @@ describe('filter transforms calc:', function() {
 describe('filter transforms interactions', function() {
     'use strict';
 
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
     var mockData0 = [{
         x: [-2, -1, -2, 0, 1, 2, 3],
         y: [1, 2, 3, 1, 2, 3, 1],
@@ -900,6 +905,9 @@ describe('filter transforms interactions', function() {
             assertUid(gd);
             assertStyle(dims, ['rgb(255, 0, 0)'], [1]);
 
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.87, 3.13]);
+            expect(gd._fullLayout.yaxis.range).toBeCloseToArray([0.85, 3.15]);
+
             return Plotly.restyle(gd, 'marker.color', 'blue');
         }).then(function() {
             expect(gd._fullData[0].marker.color).toEqual('blue');
@@ -916,6 +924,9 @@ describe('filter transforms interactions', function() {
         }).then(function() {
             assertUid(gd);
             assertStyle([1], ['rgb(255, 0, 0)'], [1]);
+
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([2, 4]);
+            expect(gd._fullLayout.yaxis.range).toBeCloseToArray([0, 2]);
 
             done();
         });
@@ -1016,4 +1027,48 @@ describe('filter transforms interactions', function() {
         })
         .then(done);
     });
+
+    it('should update axis categories', function(done) {
+        var data = [{
+            type: 'bar',
+            x: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+            y: [1, 10, 100, 25, 50, -25, 100],
+            transforms: [{
+                type: 'filter',
+                operation: '<',
+                value: 10,
+                target: [1, 10, 100, 25, 50, -25, 100]
+            }]
+        }];
+
+        var gd = createGraphDiv();
+
+        Plotly.plot(gd, data).then(function() {
+            expect(gd._fullLayout.xaxis._categories).toEqual(['a', 'f']);
+            expect(gd._fullLayout.yaxis._categories).toEqual([]);
+
+            return Plotly.addTraces(gd, [{
+                type: 'bar',
+                x: ['h', 'i'],
+                y: [2, 1],
+                transforms: [{
+                    type: 'filter',
+                    operation: '=',
+                    value: 'i'
+                }]
+            }]);
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis._categories).toEqual(['a', 'f', 'i']);
+            expect(gd._fullLayout.yaxis._categories).toEqual([]);
+
+            return Plotly.deleteTraces(gd, [0]);
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis._categories).toEqual(['i']);
+            expect(gd._fullLayout.yaxis._categories).toEqual([]);
+        })
+        .then(done);
+    });
+
 });

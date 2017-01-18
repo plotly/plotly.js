@@ -37,11 +37,11 @@ The main plotly.js bundle includes all the official (non-beta) trace modules.
 
 It be can imported as minified javascript
 - using dist file `dist/plotly.min.js`
-- using CDN URL https://cdn.plot.ly/plotly-latest.min.js OR https://cdn.plot.ly/plotly-1.21.2.min.js
+- using CDN URL https://cdn.plot.ly/plotly-latest.min.js OR https://cdn.plot.ly/plotly-1.21.3.min.js
 
 or as raw javascript:
 - using dist file `dist/plotly.js`
-- using CDN URL https://cdn.plot.ly/plotly-latest.js OR https://cdn.plot.ly/plotly-1.21.2.js
+- using CDN URL https://cdn.plot.ly/plotly-latest.js OR https://cdn.plot.ly/plotly-1.21.3.js
 - using CommonJS with `require('plotly.js')`
 
 If you would like to have access to the attribute meta information (including attribute descriptions as on the [schema reference page](https://plot.ly/javascript/reference/)), use dist file `dist/plotly-with-meta.js`
@@ -50,7 +50,7 @@ The main plotly.js bundle weights in at:
 
 | plotly.js | plotly.min.js | plotly.min.js + gzip | plotly-with-meta.js |
 |-----------|---------------|----------------------|---------------------|
-| 4.5 MB | 1.8 MB | 556.5 kB | 4.6 MB |
+| 4.5 MB | 1.8 MB | 556.8 kB | 4.6 MB |
 
 ## Partial bundles
 
@@ -74,13 +74,13 @@ The `basic` partial bundle contains the `scatter`, `bar` and `pie` trace modules
 | dist bundle (minified) | `dist/plotly-basic.min.js` |
 | CDN URL (latest) | https://cdn.plot.ly/plotly-basic-latest.js |
 | CDN URL (latest minified) | https://cdn.plot.ly/plotly-basic-latest.min.js |
-| CDN URL (tagged) | https://cdn.plot.ly/plotly-basic-1.21.2.js |
-| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-basic-1.21.2.min.js |
+| CDN URL (tagged) | https://cdn.plot.ly/plotly-basic-1.21.3.js |
+| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-basic-1.21.3.min.js |
 | CommonJS | `require('plotly.js/lib/index-basic')` |
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 1.6 MB | 617.1 kB | 200.6 kB |
+| 1.6 MB | 617.2 kB | 200.6 kB |
 
 ### plotly.js cartesian
 
@@ -92,13 +92,13 @@ The `cartesian` partial bundle contains the `scatter`, `bar`, `box`, `heatmap`, 
 | dist bundle (minified) | `dist/plotly-cartesian.min.js` |
 | CDN URL (latest) | https://cdn.plot.ly/plotly-cartesian-latest.js |
 | CDN URL (latest minified) | https://cdn.plot.ly/plotly-cartesian-latest.min.js |
-| CDN URL (tagged) | https://cdn.plot.ly/plotly-cartesian-1.21.2.js |
-| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-cartesian-1.21.2.min.js |
+| CDN URL (tagged) | https://cdn.plot.ly/plotly-cartesian-1.21.3.js |
+| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-cartesian-1.21.3.min.js |
 | CommonJS | `require('plotly.js/lib/index-cartesian')` |
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 1.8 MB | 689.9 kB | 222.4 kB |
+| 1.8 MB | 690.3 kB | 222.6 kB |
 
 ### plotly.js geo
 
@@ -110,13 +110,13 @@ The `geo` partial bundle contains the `scatter`, `scattergeo` and `choropleth` t
 | dist bundle (minified) | `dist/plotly-geo.min.js` |
 | CDN URL (latest) | https://cdn.plot.ly/plotly-geo-latest.js |
 | CDN URL (latest minified) | https://cdn.plot.ly/plotly-geo-latest.min.js |
-| CDN URL (tagged) | https://cdn.plot.ly/plotly-geo-1.21.2.js |
-| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-geo-1.21.2.min.js |
+| CDN URL (tagged) | https://cdn.plot.ly/plotly-geo-1.21.3.js |
+| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-geo-1.21.3.min.js |
 | CommonJS | `require('plotly.js/lib/index-geo')` |
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 1.6 MB | 641.7 kB | 209.7 kB |
+| 1.6 MB | 641.8 kB | 209.8 kB |
 
 ### plotly.js gl3d
 
@@ -128,8 +128,8 @@ The `gl3d` partial bundle contains the `scatter`, `scatter3d`, `surface` and `me
 | dist bundle (minified) | `dist/plotly-gl3d.min.js` |
 | CDN URL (latest) | https://cdn.plot.ly/plotly-gl3d-latest.js |
 | CDN URL (latest minified) | https://cdn.plot.ly/plotly-gl3d-latest.min.js |
-| CDN URL (tagged) | https://cdn.plot.ly/plotly-gl3d-1.21.2.js |
-| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-gl3d-1.21.2.min.js |
+| CDN URL (tagged) | https://cdn.plot.ly/plotly-gl3d-1.21.3.js |
+| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-gl3d-1.21.3.min.js |
 | CommonJS | `require('plotly.js/lib/index-gl3d')` |
 
 | Raw size | Minified size | Minified + gzip size |
@@ -146,13 +146,13 @@ The `gl2d` partial bundle contains the `scatter`, `scattergl`, `pointcloud`, `he
 | dist bundle (minified) | `dist/plotly-gl2d.min.js` |
 | CDN URL (latest) | https://cdn.plot.ly/plotly-gl2d-latest.js |
 | CDN URL (latest minified) | https://cdn.plot.ly/plotly-gl2d-latest.min.js |
-| CDN URL (tagged) | https://cdn.plot.ly/plotly-gl2d-1.21.2.js |
-| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-gl2d-1.21.2.min.js |
+| CDN URL (tagged) | https://cdn.plot.ly/plotly-gl2d-1.21.3.js |
+| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-gl2d-1.21.3.min.js |
 | CommonJS | `require('plotly.js/lib/index-gl2d')` |
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.2 MB | 937.6 kB | 293.9 kB |
+| 2.2 MB | 938 kB | 294 kB |
 
 ### plotly.js mapbox
 
@@ -164,8 +164,8 @@ The `mapbox` partial bundle contains the `scatter` and `scattermapbox` trace mod
 | dist bundle (minified) | `dist/plotly-mapbox.min.js` |
 | CDN URL (latest) | https://cdn.plot.ly/plotly-mapbox-latest.js |
 | CDN URL (latest minified) | https://cdn.plot.ly/plotly-mapbox-latest.min.js |
-| CDN URL (tagged) | https://cdn.plot.ly/plotly-mapbox-1.21.2.js |
-| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-mapbox-1.21.2.min.js |
+| CDN URL (tagged) | https://cdn.plot.ly/plotly-mapbox-1.21.3.js |
+| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-mapbox-1.21.3.min.js |
 | CommonJS | `require('plotly.js/lib/index-mapbox')` |
 
 | Raw size | Minified size | Minified + gzip size |
@@ -182,13 +182,13 @@ The `finance` partial bundle contains the `scatter`, `bar`, `histogram`, `pie`, 
 | dist bundle (minified) | `dist/plotly-finance.min.js` |
 | CDN URL (latest) | https://cdn.plot.ly/plotly-finance-latest.js |
 | CDN URL (latest minified) | https://cdn.plot.ly/plotly-finance-latest.min.js |
-| CDN URL (tagged) | https://cdn.plot.ly/plotly-finance-1.21.2.js |
-| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-finance-1.21.2.min.js |
+| CDN URL (tagged) | https://cdn.plot.ly/plotly-finance-1.21.3.js |
+| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-finance-1.21.3.min.js |
 | CommonJS | `require('plotly.js/lib/index-finance')` |
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 1.7 MB | 643 kB | 207.8 kB |
+| 1.7 MB | 643.1 kB | 207.8 kB |
 
 ----------------
 

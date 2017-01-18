@@ -1,5 +1,7 @@
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
+
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -544,6 +546,167 @@ describe('Test Plots', function() {
                 });
             })
             .then(function() {
+                destroyGraphDiv();
+                done();
+            });
+        });
+    });
+
+    describe('Plots.getSubplotCalcData', function() {
+        var trace0 = { geo: 'geo2' };
+        var trace1 = { subplot: 'ternary10' };
+        var trace2 = { subplot: 'ternary10' };
+
+        var cd = [
+            [{ trace: trace0 }],
+            [{ trace: trace1 }],
+            [{ trace: trace2}]
+        ];
+
+        it('should extract calcdata traces associated with subplot (1)', function() {
+            var out = Plots.getSubplotCalcData(cd, 'geo', 'geo2');
+            expect(out).toEqual([[{ trace: trace0 }]]);
+        });
+
+        it('should extract calcdata traces associated with subplot (2)', function() {
+            var out = Plots.getSubplotCalcData(cd, 'ternary', 'ternary10');
+            expect(out).toEqual([[{ trace: trace1 }], [{ trace: trace2 }]]);
+        });
+
+        it('should return [] when no calcdata traces where found', function() {
+            var out = Plots.getSubplotCalcData(cd, 'geo', 'geo');
+            expect(out).toEqual([]);
+        });
+
+        it('should return [] when subplot type is invalid', function() {
+            var out = Plots.getSubplotCalcData(cd, 'non-sense', 'geo2');
+            expect(out).toEqual([]);
+        });
+    });
+
+    describe('Plots.generalUpdatePerTraceModule', function() {
+
+        function _update(subplotCalcData, traceHashOld) {
+            var subplot = { traceHash: traceHashOld || {} };
+            var calcDataPerModule = [];
+
+            var plot = function(_, moduleCalcData) {
+                calcDataPerModule.push(moduleCalcData);
+            };
+
+            subplotCalcData.forEach(function(calcTrace) {
+                calcTrace[0].trace._module = { plot: plot };
+            });
+
+            Plots.generalUpdatePerTraceModule(subplot, subplotCalcData, {});
+
+            return {
+                traceHash: subplot.traceHash,
+                calcDataPerModule: calcDataPerModule
+            };
+        }
+
+        it('should update subplot trace hash and call module plot method with correct calcdata traces', function() {
+            var out = _update([
+                [ { trace: { type: 'A', visible: false } } ],
+                [ { trace: { type: 'A', visible: true } } ],
+                [ { trace: { type: 'B', visible: false } } ],
+                [ { trace: { type: 'C', visible: true } } ]
+            ]);
+
+            expect(Object.keys(out.traceHash)).toEqual(['A', 'C']);
+            expect(out.traceHash.A.length).toEqual(1);
+            expect(out.traceHash.C.length).toEqual(1);
+
+            expect(out.calcDataPerModule.length).toEqual(2);
+            expect(out.calcDataPerModule[0].length).toEqual(1);
+            expect(out.calcDataPerModule[1].length).toEqual(1);
+
+            var out2 = _update([
+                [ { trace: { type: 'A', visible: false } } ],
+                [ { trace: { type: 'A', visible: false } } ],
+                [ { trace: { type: 'B', visible: true } } ],
+                [ { trace: { type: 'C', visible: false } } ]
+            ], out.traceHash);
+
+            expect(Object.keys(out2.traceHash)).toEqual(['B', 'A', 'C']);
+            expect(out2.traceHash.B.length).toEqual(1);
+            expect(out2.traceHash.A.length).toEqual(1);
+            expect(out2.traceHash.A[0][0].trace.visible).toBe(false);
+            expect(out2.traceHash.C.length).toEqual(1);
+            expect(out2.traceHash.C[0][0].trace.visible).toBe(false);
+
+            expect(out2.calcDataPerModule.length).toEqual(1);
+            expect(out2.calcDataPerModule[0].length).toEqual(1);
+
+            var out3 = _update([
+                [ { trace: { type: 'A', visible: false } } ],
+                [ { trace: { type: 'A', visible: false } } ],
+                [ { trace: { type: 'B', visible: false } } ],
+                [ { trace: { type: 'C', visible: false } } ]
+            ], out2.traceHash);
+
+            expect(Object.keys(out3.traceHash)).toEqual(['B', 'A', 'C']);
+            expect(out3.traceHash.B.length).toEqual(1);
+            expect(out3.traceHash.B[0][0].trace.visible).toBe(false);
+            expect(out3.traceHash.A.length).toEqual(1);
+            expect(out3.traceHash.A[0][0].trace.visible).toBe(false);
+            expect(out3.traceHash.C.length).toEqual(1);
+            expect(out3.traceHash.C[0][0].trace.visible).toBe(false);
+
+            expect(out3.calcDataPerModule.length).toEqual(0);
+
+            var out4 = _update([
+                [ { trace: { type: 'A', visible: true } } ],
+                [ { trace: { type: 'A', visible: true } } ],
+                [ { trace: { type: 'B', visible: true } } ],
+                [ { trace: { type: 'C', visible: true } } ]
+            ], out3.traceHash);
+
+            expect(Object.keys(out4.traceHash)).toEqual(['A', 'B', 'C']);
+            expect(out4.traceHash.A.length).toEqual(2);
+            expect(out4.traceHash.B.length).toEqual(1);
+            expect(out4.traceHash.C.length).toEqual(1);
+
+            expect(out4.calcDataPerModule.length).toEqual(3);
+            expect(out4.calcDataPerModule[0].length).toEqual(2);
+            expect(out4.calcDataPerModule[1].length).toEqual(1);
+            expect(out4.calcDataPerModule[2].length).toEqual(1);
+        });
+
+        it('should handle cases when module plot is not set (geo case)', function(done) {
+            Plotly.plot(createGraphDiv(), [{
+                type: 'scattergeo',
+                visible: false,
+                lon: [10, 20],
+                lat: [20, 10]
+            }, {
+                type: 'scattergeo',
+                lon: [10, 20],
+                lat: [20, 10]
+            }])
+            .then(function() {
+                expect(d3.selectAll('g.trace.scattergeo').size()).toEqual(1);
+
+                destroyGraphDiv();
+                done();
+            });
+        });
+
+        it('should handle cases when module plot is not set (ternary case)', function(done) {
+            Plotly.plot(createGraphDiv(), [{
+                type: 'scatterternary',
+                visible: false,
+                a: [0.1, 0.2],
+                b: [0.2, 0.1]
+            }, {
+                type: 'scatterternary',
+                a: [0.1, 0.2],
+                b: [0.2, 0.1]
+            }])
+            .then(function() {
+                expect(d3.selectAll('g.trace.scatter').size()).toEqual(1);
+
                 destroyGraphDiv();
                 done();
             });
