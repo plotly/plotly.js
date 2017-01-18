@@ -42,13 +42,18 @@ module.exports = function style(gd) {
                     line.dash);
         });
 
-        c.selectAll('g.contourbg path')
-            .style('fill', colorMap(start - cs / 2));
+        var firstFill;
 
         c.selectAll('g.contourfill path')
-            .style('fill', function(d, i) {
-                return colorMap(start + (i + 0.5) * cs);
+            .style('fill', function(d) {
+                if(firstFill === undefined) firstFill = d.level;
+                return colorMap(d.level + 0.5 * cs);
             });
+
+        if(firstFill === undefined) firstFill = start;
+
+        c.selectAll('g.contourbg path')
+            .style('fill', colorMap(firstFill - 0.5 * cs));
     });
 
     heatmapStyle(gd);
