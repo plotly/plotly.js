@@ -10,6 +10,7 @@
 'use strict';
 
 var drawModule = require('./draw');
+var clickModule = require('./click');
 
 module.exports = {
     moduleType: 'component',
@@ -20,5 +21,8 @@ module.exports = {
 
     calcAutorange: require('./calc_autorange'),
     draw: drawModule.draw,
-    drawOne: drawModule.drawOne
+    drawOne: drawModule.drawOne,
+
+    hasClickToShow: clickModule.hasClickToShow,
+    onClick: clickModule.onClick
 };
