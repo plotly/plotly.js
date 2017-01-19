@@ -34,9 +34,6 @@ var fx = module.exports = {};
 // copy on Fx for backward compatible
 fx.unhover = dragElement.unhover;
 
-fx.layoutAttributes = {
-};
-
 fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
 
     function coerce(attr, dflt) {
