@@ -13,6 +13,7 @@ var scatterPlot = require('../scatter/plot');
 var Axes = require('../../plots/cartesian/axes');
 
 module.exports = function plot(gd, plotinfoproxy, data) {
+    var i, trace, node;
 
     var carpet = data[0][0].carpet;
 
@@ -23,20 +24,19 @@ module.exports = function plot(gd, plotinfoproxy, data) {
         plot: plotinfoproxy.plot
     };
 
-    /* var calcdata = new Array(data.length),
-        fullCalcdata = gd.calcdata;
-
-    for(var i = 0; i < fullCalcdata.length; i++) {
-        var j = data.indexOf(fullCalcdata[i][0].trace);
-
-        if(j === -1) continue;
-
-        calcdata[j] = fullCalcdata[i];
-
-        // while we're here and have references to both the Carpet object
-        // and fullData, connect the two (for use by hover)
-        data[j]._carpet = plotinfo;
-    }*/
-
     scatterPlot(plotinfo.graphDiv, plotinfo, data);
+
+    for(i = 0; i < data.length; i++) {
+        trace = data[i][0].trace;
+
+        // Note: .select is adequate but seems to mutate the node data,
+        // which is at least a bit suprising and causes problems elsewhere
+        node = plotinfo.plot.selectAll('g.trace' + trace.uid + ' .js-line');
+
+        // Note: it would be more efficient if this didn't need to be applied
+        // separately to all scattercarpet traces, but that would require
+        // lots of reorganization of scatter traces that is otherwise not
+        // necessary. That makes this a potential optimization.
+        node.attr('clip-path', 'url(#clip' + carpet.uid + 'carpet)');
+    }
 };

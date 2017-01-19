@@ -8,6 +8,7 @@
 
 'use strict';
 
+var constants = require('./constants');
 var search = require('../../lib/search').findBin;
 var computeControlPoints = require('./compute_control_points');
 var createSplineEvaluator = require('./create_spline_evaluator');
@@ -110,27 +111,50 @@ module.exports = function setConvert(trace) {
 
         var pt = trace._evalxy([], i, j);
 
-        if (extrapolate) {
-            var i0, ti, j0, tj, iex, bex;
-            if (aval < a[0]) {
+        if(extrapolate) {
+            // The amount by which to extrapolate:
+            var iex = 0;
+            var jex = 0;
+            var der = [];
+
+            var i0, ti, j0, tj;
+            if(aval < a[0]) {
                 i0 = 0;
                 ti = 0;
                 iex = (aval - a[0]) / (a[1] - a[0]);
-            } else if (aval > a[na - 1]) {
+            } else if(aval > a[na - 1]) {
                 i0 = na - 2;
-                //ti =
+                ti = 1;
                 iex = (aval - a[na - 1]) / (a[na - 1] - a[na - 2]);
+            } else {
+                i0 = Math.max(0, Math.min(na - 2, Math.floor(i)));
+                ti = i - i0;
             }
 
-            if (bval < b[0]) {
+            if(bval < b[0]) {
                 j0 = 0;
-                bex = (bval - b[0]) / (b[1] - b[0]);
-            } else if (bval > b[na - 1]) {
-                j0 = na - 2;
-                bex = (bval - b[na - 1]) / (b[na - 1] - b[na - 2]);
+                tj = 0;
+                jex = (bval - b[0]) / (b[1] - b[0]);
+            } else if(bval > b[nb - 1]) {
+                j0 = nb - 2;
+                tj = 1;
+                jex = (bval - b[nb - 1]) / (b[nb - 1] - b[nb - 2]);
+            } else {
+                j0 = Math.max(0, Math.min(nb - 2, Math.floor(j)));
+                tj = j - j0;
             }
 
+            if(iex) {
+                trace.dxydi(der, i0, j0, ti, tj);
+                pt[0] += der[0] * iex;
+                pt[1] += der[1] * iex;
+            }
 
+            if(jex) {
+                trace.dxydj(der, i0, j0, ti, tj);
+                pt[0] += der[0] * jex;
+                pt[1] += der[1] * jex;
+            }
         }
 
         return pt;
@@ -193,5 +217,32 @@ module.exports = function setConvert(trace) {
 
     trace.dpdy = function(ya) {
         return ya._m;
+    };
+
+
+    // Grab the limits once rather than recomputing the bounds for every point
+    // independently:
+    var amin = a[0];
+    var amax = a[na - 1];
+    var bmin = b[0];
+    var bmax = b[nb - 1];
+
+    // Compute the tolerance so that points are visible slightly outside the
+    // defined carpet axis:
+    var atol = (amax - amin) * constants.RELATIVE_CULL_TOLERANCE;
+    var btol = (bmax - bmin) * constants.RELATIVE_CULL_TOLERANCE;
+
+    // Expand the limits to include the relative tolerance:
+    amin -= atol;
+    amax += atol;
+    bmin -= btol;
+    bmax += btol;
+
+    trace.isVisible = function(a, b) {
+        return a > amin && a < amax && b > bmin && b < bmax;
+    };
+
+    trace.isOccluded = function(a, b) {
+        return a < amin || a > amax || b < bmin || b > bmax;
     };
 };

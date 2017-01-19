@@ -40,15 +40,20 @@ module.exports = function calc(gd, trace) {
     var serieslen = trace.a.length;
     var cd = new Array(serieslen);
     var a, b;
+    var needsCull = false;
     for(i = 0; i < serieslen; i++) {
         a = trace.a[i];
         b = trace.b[i];
         if(isNumeric(a) && isNumeric(b)) {
-            var xy = carpet.ab2xy(+a, +b);
-            cd[i] = {x: xy[0], y: xy[1], a: a, b: b};
+            var xy = carpet.ab2xy(+a, +b, true);
+            var visible = carpet.isVisible(+a, +b);
+            if(!visible) needsCull = true;
+            cd[i] = {x: xy[0], y: xy[1], a: a, b: b, vis: visible};
         }
         else cd[i] = {x: false, y: false};
     }
+
+    trace._needsCull = needsCull;
 
     cd[0].carpet = carpet;
     cd[0].trace = trace;

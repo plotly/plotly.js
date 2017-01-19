@@ -403,11 +403,11 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             textFilter = hideFilter;
 
         if(showMarkers) {
-            markerFilter = trace.marker.maxdisplayed ? visFilter : Lib.identity;
+            markerFilter = (trace.marker.maxdisplayed || trace._needsCull) ? visFilter : Lib.identity;
         }
 
         if(showText) {
-            textFilter = trace.marker.maxdisplayed ? visFilter : Lib.identity;
+            textFilter = (trace.marker.maxdisplayed || trace._needsCull) ? visFilter : Lib.identity;
         }
 
         // marker points

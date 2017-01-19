@@ -87,10 +87,11 @@ function drawClipPath(trace, layer, xaxis, yaxis) {
     // This could be optimized ever so slightly to avoid no-op L segments
     // at the corners, but it's so negligible that I don't think it's worth
     // the extra complexity
-    path.attr('id', 'clip' + trace.uid + 'carpet')
-        .attr('d', 'M' + segs.join('L') + 'Z');
+    trace.clipPathId = 'clip' + trace.uid + 'carpet';
+    clip.attr('id', trace.clipPathId);
+    path.attr('d', 'M' + segs.join('L') + 'Z');
+        // .style('stroke-width', 20)
         // .style('vector-effect', 'non-scaling-stroke')
-        // .style('stroke-width', 2)
         // .style('stroke', 'black')
         // .style('fill', 'rgba(0, 0, 0, 0.1)');
 }
