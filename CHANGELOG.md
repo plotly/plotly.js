@@ -10,6 +10,39 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.22.0] -- 2016-01-19
+
+### Added
+- Add `cumulative` histogram attributes to generate Cumulative Distribution
+  Functions [#1189]
+- Add `standoff` attribute for annotations to move the arrowhead away from the
+  point it's marking [#1265]
+- Add `clicktoshow`, `xclick` and `yclick` attributes for annotations to
+  show/hide annotations on click [#1265]
+- Support data-referenced annotation in gl2d subplots [#1301, #1319]
+- Honor `fixedrange: false` in y-axes anchored to xaxis with range slider
+  [#1261]
+- Add fallbacks for IE9 so that all cartesian traces can render without any
+  polyfill [#1297, #1299]
+
+### Changed
+- Adapt plot schema output for plotly.py 2.0 [#1292]
+- Bump `mouse-change` dep to `^1.4.0` [#1305]
+- Improve performance in `visible` toggling for `scattergl` [#1300]
+
+### Fixed
+- Fix XSS vulnerability in trace name on hover [#1307]
+- Fix ternary and geo subplot with `visible: false` first trace [#1291]
+- Fix opacity for `mode: 'lines'` items in legend [#1204]
+- Fix legend items style for bar trace with marker arrays [#1289]
+- Fix range slider svg / pdf and eps image exports [#1306]
+- Fix scattergl `visible: false` traces with empty data arrays [#1300]
+- Fix a few contour trace edge cases [#1309]
+- Updatemenus buttons now render above sliders [#1302]
+- Add fallback for categorical histogram on linear axes [#1284]
+- Allow style fields in sub and sup text [#1288]
+
+
 ## [1.21.3] -- 2016-01-05
 
 ### Fixed
