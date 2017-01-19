@@ -236,6 +236,13 @@ describe('Test gl plot interactions', function() {
 
         it('should respond to drag interactions', function(done) {
 
+            function mouseTo(p0, p1) {
+                mouseEvent('mousemove', p0[0], p0[1]);
+                mouseEvent('mousedown', p0[0], p0[1], { buttons: 1 });
+                mouseEvent('mousemove', p1[0], p1[1], { buttons: 1 });
+                mouseEvent('mouseup', p1[0], p1[1]);
+            }
+
             jasmine.addMatchers(customMatchers);
 
             var precision = 5;
@@ -263,14 +270,10 @@ describe('Test gl plot interactions', function() {
             expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
 
             setTimeout(function() {
-
-                mouseEvent('mousemove', 200, 200);
-
                 relayoutCallback.calls.reset();
 
                 // Drag scene along the X axis
-
-                mouseEvent('mousemove', 220, 200, {buttons: 1});
+                mouseTo([200, 200], [220, 200]);
 
                 expect(gd.layout.xaxis.autorange).toBe(false);
                 expect(gd.layout.yaxis.autorange).toBe(false);
@@ -279,36 +282,31 @@ describe('Test gl plot interactions', function() {
                 expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
 
                 // Drag scene back along the X axis
-
-                mouseEvent('mousemove', 200, 200, {buttons: 1});
+                mouseTo([220, 200], [200, 200]);
 
                 expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
 
                 // Drag scene along the Y axis
-
-                mouseEvent('mousemove', 200, 150, {buttons: 1});
+                mouseTo([200, 200], [200, 150]);
 
                 expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(newY, precision);
 
                 // Drag scene back along the Y axis
-
-                mouseEvent('mousemove', 200, 200, {buttons: 1});
+                mouseTo([200, 150], [200, 200]);
 
                 expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
 
                 // Drag scene along both the X and Y axis
-
-                mouseEvent('mousemove', 220, 150, {buttons: 1});
+                mouseTo([200, 200], [220, 150]);
 
                 expect(gd.layout.xaxis.range).toBeCloseToArray(newX, precision);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(newY, precision);
 
                 // Drag scene back along the X and Y axis
-
-                mouseEvent('mousemove', 200, 200, {buttons: 1});
+                mouseTo([220, 150], [200, 200]);
 
                 expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);

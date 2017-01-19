@@ -34,9 +34,8 @@ function Scene2D(options, fullLayout) {
     this.id = options.id;
     this.staticPlot = !!options.staticPlot;
 
-    this.fullLayout = fullLayout;
     this.fullData = null;
-    this.updateAxes(fullLayout);
+    this.updateRefs(fullLayout);
 
     this.makeFramework();
 
@@ -278,45 +277,41 @@ function compareTicks(a, b) {
     return false;
 }
 
-proto.updateAxes = function(options) {
+proto.updateRefs = function(newFullLayout) {
+    this.fullLayout = newFullLayout;
+
     var spmatch = Axes.subplotMatch,
         xaxisName = 'xaxis' + this.id.match(spmatch)[1],
         yaxisName = 'yaxis' + this.id.match(spmatch)[2];
 
-    this.xaxis = options[xaxisName];
-    this.yaxis = options[yaxisName];
+    this.xaxis = this.fullLayout[xaxisName];
+    this.yaxis = this.fullLayout[yaxisName];
 };
 
-proto.updateFx = function(options) {
-    var fullLayout = this.fullLayout;
+proto.relayoutCallback = function() {
+    var graphDiv = this.graphDiv,
+        xaxis = this.xaxis,
+        yaxis = this.yaxis,
+        layout = graphDiv.layout;
 
-    fullLayout.dragmode = options.dragmode;
-    fullLayout.hovermode = options.hovermode;
+    // update user layout
+    layout.xaxis.autorange = xaxis.autorange;
+    layout.xaxis.range = xaxis.range.slice(0);
+    layout.yaxis.autorange = yaxis.autorange;
+    layout.yaxis.range = yaxis.range.slice(0);
 
-    this.graphDiv._fullLayout = fullLayout;
-};
-
-function relayoutCallback(scene) {
-    var xrange = scene.xaxis.range,
-        yrange = scene.yaxis.range;
-
-    // Update the layout on the DIV
-    scene.graphDiv.layout.xaxis.autorange = scene.xaxis.autorange;
-    scene.graphDiv.layout.xaxis.range = xrange.slice(0);
-    scene.graphDiv.layout.yaxis.autorange = scene.yaxis.autorange;
-    scene.graphDiv.layout.yaxis.range = yrange.slice(0);
-
-    // Make a meaningful value to be passed on to the possible 'plotly_relayout' subscriber(s)
+    // make a meaningful value to be passed on to the possible 'plotly_relayout' subscriber(s)
     // scene.camera has no many useful projection or scale information
     // helps determine which one is the latest input (if async)
     var update = {
-        lastInputTime: scene.camera.lastInputTime
+        lastInputTime: this.camera.lastInputTime
     };
-    update[scene.xaxis._name] = xrange.slice();
-    update[scene.yaxis._name] = yrange.slice();
 
-    scene.graphDiv.emit('plotly_relayout', update);
-}
+    update[xaxis._name] = xaxis.range.slice(0);
+    update[yaxis._name] = yaxis.range.slice(0);
+
+    graphDiv.emit('plotly_relayout', update);
+};
 
 proto.cameraChanged = function() {
     var camera = this.camera;
@@ -331,8 +326,6 @@ proto.cameraChanged = function() {
         this.glplotOptions.dataBox = camera.dataBox;
         this.glplot.update(this.glplotOptions);
         this.handleAnnotations();
-
-        relayoutCallback(this);
     }
 };
 
@@ -374,8 +367,7 @@ proto.destroy = function() {
 proto.plot = function(fullData, calcData, fullLayout) {
     var glplot = this.glplot;
 
-    this.fullLayout = fullLayout;
-    this.updateAxes(fullLayout);
+    this.updateRefs(fullLayout);
     this.updateTraces(fullData, calcData);
 
     var width = fullLayout.width,
