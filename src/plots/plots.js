@@ -1996,11 +1996,27 @@ plots.doCalcdata = function(gd, traces) {
         }
     }
 
-    // 'regular' loop
+    // Look up priorities
+    var priority;
+    var prioritizedFullDataLookup = [];
+    var hasPriorities = false;
     for(i = 0; i < fullData.length; i++) {
+        trace = fullData[i];
+        _module = trace._module;
+        priority = (_module && _module.calcPriority) ? _module.calcPriority : 0;
+        hasPriorities = hasPriorities || priority;
+        prioritizedFullDataLookup.push({index: i, priority: priority});
+    }
+
+    // Sort by priority descending so that higher priority is computed first:
+    if(hasPriorities) prioritizedFullDataLookup.sort(function(a, b) { return b.priority - a.priority; });
+
+    // 'regular' loop
+    for(i = 0; i < prioritizedFullDataLookup.length; i++) {
+        var index = prioritizedFullDataLookup[i].index;
         var cd = [];
 
-        trace = fullData[i];
+        trace = fullData[index];
 
         if(trace.visible === true) {
             _module = trace._module;
@@ -2024,6 +2040,6 @@ plots.doCalcdata = function(gd, traces) {
         if(!cd[0].t) cd[0].t = {};
         cd[0].trace = trace;
 
-        calcdata[i] = cd;
+        calcdata[index] = cd;
     }
 };
