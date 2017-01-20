@@ -1923,7 +1923,34 @@ plots.doCalcdata = function(gd, traces) {
         fullData = gd._fullData,
         fullLayout = gd._fullLayout;
 
-    var trace, _module, i, j;
+    var trace, _module, i, j, index;
+
+    // Look up priorities. The carpet trace is currently
+    var priority;
+    var prioritizedFullDataLookup = [];
+    var hasPriorities = false;
+    for(i = 0; i < fullData.length; i++) {
+        trace = fullData[i];
+        _module = trace._module;
+
+        // Get the priority from the module definition, otherwise default to zero:
+        priority = (_module && _module.calcPriority) ? _module.calcPriority : 0;
+
+        // Note if a non-zero priority was found so that we only need to sort if
+        // there's anything to sort:
+        hasPriorities = hasPriorities || priority;
+
+        prioritizedFullDataLookup.push({index: i, priority: priority});
+    }
+
+    // Sort by priority descending so that higher priority is computed first. If they share the same priority
+    // (which has already been default to zero), then they will be compared by trace index so that the original
+    // order is preserved within priority groups:
+    if(hasPriorities) {
+        prioritizedFullDataLookup.sort(function(a, b) {
+            return (b.priority - a.priority) || (a.index - b.index);
+        });
+    }
 
     // XXX: Is this correct? Needs a closer look so that *some* traces can be recomputed without
     // *all* needing doCalcdata:
@@ -1965,7 +1992,9 @@ plots.doCalcdata = function(gd, traces) {
 
     // transform loop
     for(i = 0; i < fullData.length; i++) {
-        trace = fullData[i];
+        index = prioritizedFullDataLookup[i].index;
+
+        trace = fullData[index];
 
         if(trace.visible === true && trace.transforms) {
             _module = trace._module;
@@ -1996,24 +2025,9 @@ plots.doCalcdata = function(gd, traces) {
         }
     }
 
-    // Look up priorities
-    var priority;
-    var prioritizedFullDataLookup = [];
-    var hasPriorities = false;
-    for(i = 0; i < fullData.length; i++) {
-        trace = fullData[i];
-        _module = trace._module;
-        priority = (_module && _module.calcPriority) ? _module.calcPriority : 0;
-        hasPriorities = hasPriorities || priority;
-        prioritizedFullDataLookup.push({index: i, priority: priority});
-    }
-
-    // Sort by priority descending so that higher priority is computed first:
-    if(hasPriorities) prioritizedFullDataLookup.sort(function(a, b) { return b.priority - a.priority; });
-
     // 'regular' loop
     for(i = 0; i < prioritizedFullDataLookup.length; i++) {
-        var index = prioritizedFullDataLookup[i].index;
+        index = prioritizedFullDataLookup[i].index;
         var cd = [];
 
         trace = fullData[index];
