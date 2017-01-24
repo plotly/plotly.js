@@ -8,8 +8,10 @@
 
 'use strict';
 
+var heatmapAttrs = require('../heatmap/attributes');
 var scatterAttrs = require('../scatter/attributes');
 var plotAttrs = require('../../plots/attributes');
+var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorAttributes = require('../../components/colorscale/color_attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 
@@ -19,14 +21,125 @@ var scatterMarkerAttrs = scatterAttrs.marker,
     scatterLineAttrs = scatterAttrs.line,
     scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
-module.exports = {
+module.exports = extendFlat({}, {
     carpetid: {
         valType: 'string',
         role: 'info',
         description: [
-            'An identifier for this carpet, so that `scattercarpet` and',
-            '`scattercontour` traces can specify a carpet plot on which',
-            'they lie'
+            'The `carpetid` of the carpet axes on which this contour trace lies'
         ].join(' ')
     },
-};
+    z: heatmapAttrs.z,
+    a: heatmapAttrs.x,
+    a0: heatmapAttrs.x0,
+    da: heatmapAttrs.dx,
+    b: heatmapAttrs.y,
+    b0: heatmapAttrs.y0,
+    db: heatmapAttrs.dy,
+    text: heatmapAttrs.text,
+    transpose: heatmapAttrs.transpose,
+    atype: heatmapAttrs.xtype,
+    btype: heatmapAttrs.ytype,
+
+    connectgaps: heatmapAttrs.connectgaps,
+
+    autocontour: {
+        valType: 'boolean',
+        dflt: true,
+        role: 'style',
+        description: [
+            'Determines whether or not the contour level attributes are',
+            'picked by an algorithm.',
+            'If *true*, the number of contour levels can be set in `ncontours`.',
+            'If *false*, set the contour level attributes in `contours`.'
+        ].join(' ')
+    },
+    ncontours: {
+        valType: 'integer',
+        dflt: 15,
+        min: 1,
+        role: 'style',
+        description: [
+            'Sets the maximum number of contour levels. The actual number',
+            'of contours will be chosen automatically to be less than or',
+            'equal to the value of `ncontours`.',
+            'Has an effect only if `autocontour` is *true* or if',
+            '`contours.size` is missing.'
+        ].join(' ')
+    },
+
+    contours: {
+        start: {
+            valType: 'number',
+            dflt: null,
+            role: 'style',
+            description: [
+                'Sets the starting contour level value.',
+                'Must be less than `contours.end`'
+            ].join(' ')
+        },
+        end: {
+            valType: 'number',
+            dflt: null,
+            role: 'style',
+            description: [
+                'Sets the end contour level value.',
+                'Must be more than `contours.start`'
+            ].join(' ')
+        },
+        size: {
+            valType: 'number',
+            dflt: null,
+            min: 0,
+            role: 'style',
+            description: [
+                'Sets the step between each contour level.',
+                'Must be positive.'
+            ].join(' ')
+        },
+        coloring: {
+            valType: 'enumerated',
+            values: ['fill', 'heatmap', 'lines', 'none'],
+            dflt: 'fill',
+            role: 'style',
+            description: [
+                'Determines the coloring method showing the contour values.',
+                'If *fill*, coloring is done evenly between each contour level',
+                'If *heatmap*, a heatmap gradient coloring is applied',
+                'between each contour level.',
+                'If *lines*, coloring is done on the contour lines.',
+                'If *none*, no coloring is applied on this trace.'
+            ].join(' ')
+        },
+        showlines: {
+            valType: 'boolean',
+            dflt: true,
+            role: 'style',
+            description: [
+                'Determines whether or not the contour lines are drawn.',
+                'Has only an effect if `contours.coloring` is set to *fill*.'
+            ].join(' ')
+        }
+    },
+
+    line: {
+        color: extendFlat({}, scatterLineAttrs.color, {
+            description: [
+                'Sets the color of the contour level.',
+                'Has no if `contours.coloring` is set to *lines*.'
+            ].join(' ')
+        }),
+        width: scatterLineAttrs.width,
+        dash: scatterLineAttrs.dash,
+        smoothing: extendFlat({}, scatterLineAttrs.smoothing, {
+            description: [
+                'Sets the amount of smoothing for the contour lines,',
+                'where *0* corresponds to no smoothing.'
+            ].join(' ')
+        })
+    }
+},
+    colorscaleAttrs,
+    { autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}) },
+    { colorbar: colorbarAttrs }
+);

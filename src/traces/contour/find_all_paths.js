@@ -18,6 +18,8 @@ module.exports = function findAllPaths(pathinfo) {
         pi,
         j;
 
+    console.log('pathinfo:', pathinfo);
+
     for(i = 0; i < pathinfo.length; i++) {
         pi = pathinfo[i];
 
@@ -48,16 +50,16 @@ function ptDist(pt1, pt2) {
 }
 
 function makePath(pi, loc, edgeflag) {
-    var startLocStr = loc.join(','),
-        locStr = startLocStr,
-        mi = pi.crossings[locStr],
-        marchStep = startStep(mi, edgeflag, loc),
-        // start by going backward a half step and finding the crossing point
-        pts = [getInterpPx(pi, loc, [-marchStep[0], -marchStep[1]])],
-        startStepStr = marchStep.join(','),
-        m = pi.z.length,
-        n = pi.z[0].length,
-        cnt;
+    var startLocStr = loc.join(',');
+    var locStr = startLocStr;
+    var mi = pi.crossings[locStr];
+    var marchStep = startStep(mi, edgeflag, loc);
+    // start by going backward a half step and finding the crossing point
+    var pts = [getInterpPx(pi, loc, [-marchStep[0], -marchStep[1]])];
+    var startStepStr = marchStep.join(',');
+    var m = pi.z.length;
+    var n = pi.z[0].length;
+    var cnt;
 
     // now follow the path
     for(cnt = 0; cnt < 10000; cnt++) { // just to avoid infinite loops
@@ -257,6 +259,7 @@ function getInterpPx(pi, loc, step) {
 
     if(step[1]) {
         var dx = (pi.level - zxy) / (pi.z[locy][locx + 1] - zxy);
+
         return [xa.c2p((1 - dx) * pi.x[locx] + dx * pi.x[locx + 1], true),
             ya.c2p(pi.y[locy], true)];
     }

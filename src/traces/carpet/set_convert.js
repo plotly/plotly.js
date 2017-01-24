@@ -34,6 +34,10 @@ module.exports = function setConvert(trace) {
     var x = trace.x;
     var y = trace.y;
 
+    // XXX: ONLY PASSTHRU. ONLY. No, ONLY.
+    aax.c2p = function (v) { return v; };
+    bax.c2p = function (v) { return v; };
+
     // This is potentially a very expensive step! It does the bulk of the work of constructing
     // an expanded basis of control points. Note in particular that it overwrites the existing
     // basis without creating a new array since that would potentially thrash the garbage
@@ -159,6 +163,7 @@ module.exports = function setConvert(trace) {
 
         return pt;
     };
+
 
     trace.c2p = function(xy, xa, ya) {
         return [xa.c2p(xy[0]), ya.c2p(xy[1])];
