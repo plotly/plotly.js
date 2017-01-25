@@ -1,6 +1,7 @@
 var Lib = require('@src/lib');
 var setCursor = require('@src/lib/setcursor');
 var overrideCursor = require('@src/lib/override_cursor');
+var config = require('@src/plot_api/plot_config');
 
 var d3 = require('d3');
 var Plotly = require('@lib');
@@ -1597,6 +1598,172 @@ describe('Test lib.js:', function() {
     describe('isPlotDiv', function() {
         it('should work on plain objects', function() {
             expect(Lib.isPlotDiv({})).toBe(false);
+        });
+    });
+
+    describe('isD3Selection', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(function() {
+            destroyGraphDiv();
+            Plotly.setPlotConfig({ queueLength: 0 });
+        });
+
+        it('recognizes real and duck typed selections', function() {
+            var yesSelections = [
+                d3.select(gd),
+                // this is what got us into trouble actually - d3 selections can
+                // contain non-nodes - say for example d3 selections! then they
+                // don't work correctly. But it makes a convenient test!
+                d3.select(1),
+                // just showing what we actually do in this function: duck type
+                // using the `classed` method.
+                {classed: function(v) { return !!v; }}
+            ];
+
+            yesSelections.forEach(function(v) {
+                expect(Lib.isD3Selection(v)).toBe(true, v);
+            });
+        });
+
+        it('rejects non-selections', function() {
+            var notSelections = [
+                1,
+                'path',
+                [1, 2],
+                [[1, 2]],
+                {classed: 1},
+                gd
+            ];
+
+            notSelections.forEach(function(v) {
+                expect(Lib.isD3Selection(v)).toBe(false, v);
+            });
+        });
+    });
+
+    describe('loggers', function() {
+        var stashConsole,
+            stashLogLevel;
+
+        function consoleFn(name, hasApply, messages) {
+            var out = function() {
+                var args = [];
+                for(var i = 0; i < arguments.length; i++) args.push(arguments[i]);
+                messages.push([name, args]);
+            };
+
+            if(!hasApply) out.apply = undefined;
+
+            return out;
+        }
+
+        function mockConsole(hasApply, hasTrace) {
+            var out = {
+                MESSAGES: []
+            };
+            out.log = consoleFn('log', hasApply, out.MESSAGES);
+            out.error = consoleFn('error', hasApply, out.MESSAGES);
+
+            if(hasTrace) out.trace = consoleFn('trace', hasApply, out.MESSAGES);
+
+            return out;
+        }
+
+        beforeEach(function() {
+            stashConsole = window.console;
+            stashLogLevel = config.logging;
+        });
+
+        afterEach(function() {
+            window.console = stashConsole;
+            config.logging = stashLogLevel;
+        });
+
+        it('emits one console message if apply is available', function() {
+            var c = window.console = mockConsole(true, true);
+            config.logging = 2;
+
+            Lib.log('tick', 'tock', 'tick', 'tock', 1);
+            Lib.warn('I\'m', 'a', 'little', 'cuckoo', 'clock', [1, 2]);
+            Lib.error('cuckoo!', 'cuckoo!!!', {a: 1, b: 2});
+
+            expect(c.MESSAGES).toEqual([
+                ['trace', ['LOG:', 'tick', 'tock', 'tick', 'tock', 1]],
+                ['trace', ['WARN:', 'I\'m', 'a', 'little', 'cuckoo', 'clock', [1, 2]]],
+                ['error', ['ERROR:', 'cuckoo!', 'cuckoo!!!', {a: 1, b: 2}]]
+            ]);
+        });
+
+        it('falls back on console.log if no trace', function() {
+            var c = window.console = mockConsole(true, false);
+            config.logging = 2;
+
+            Lib.log('Hi');
+            Lib.warn(42);
+
+            expect(c.MESSAGES).toEqual([
+                ['log', ['LOG:', 'Hi']],
+                ['log', ['WARN:', 42]]
+            ]);
+        });
+
+        it('falls back on separate calls if no apply', function() {
+            var c = window.console = mockConsole(false, false);
+            config.logging = 2;
+
+            Lib.log('tick', 'tock', 'tick', 'tock', 1);
+            Lib.warn('I\'m', 'a', 'little', 'cuckoo', 'clock', [1, 2]);
+            Lib.error('cuckoo!', 'cuckoo!!!', {a: 1, b: 2});
+
+            expect(c.MESSAGES).toEqual([
+                ['log', ['LOG:']],
+                ['log', ['tick']],
+                ['log', ['tock']],
+                ['log', ['tick']],
+                ['log', ['tock']],
+                ['log', [1]],
+                ['log', ['WARN:']],
+                ['log', ['I\'m']],
+                ['log', ['a']],
+                ['log', ['little']],
+                ['log', ['cuckoo']],
+                ['log', ['clock']],
+                ['log', [[1, 2]]],
+                ['error', ['ERROR:']],
+                ['error', ['cuckoo!']],
+                ['error', ['cuckoo!!!']],
+                ['error', [{a: 1, b: 2}]]
+            ]);
+        });
+
+        it('omits .log at log level 1', function() {
+            var c = window.console = mockConsole(true, true);
+            config.logging = 1;
+
+            Lib.log(1);
+            Lib.warn(2);
+            Lib.error(3);
+
+            expect(c.MESSAGES).toEqual([
+                ['trace', ['WARN:', 2]],
+                ['error', ['ERROR:', 3]]
+            ]);
+        });
+
+        it('logs nothing at log level 0', function() {
+            var c = window.console = mockConsole(true, true);
+            config.logging = 0;
+
+            Lib.log(1);
+            Lib.warn(2);
+            Lib.error(3);
+
+            expect(c.MESSAGES).toEqual([]);
         });
     });
 });
