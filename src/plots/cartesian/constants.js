@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -66,8 +66,7 @@ module.exports = {
     // delay before a redraw (relayout) after smooth panning and zooming
     REDRAWDELAY: 50,
 
-    // last resort axis ranges for x, y, and date axes if we have no data
+    // last resort axis ranges for x and y axes if we have no data
     DFLTRANGEX: [-1, 6],
-    DFLTRANGEY: [-1, 4],
-    DFLTRANGEDATE: ['2000-01-01', '2001-01-01'],
+    DFLTRANGEY: [-1, 4]
 };

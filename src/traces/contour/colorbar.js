@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -13,6 +13,7 @@ var Plots = require('../../plots/plots');
 var drawColorbar = require('../../components/colorbar/draw');
 
 var makeColorMap = require('./make_color_map');
+var endPlus = require('./end_plus');
 
 
 module.exports = function colorbar(gd, cd) {
@@ -52,7 +53,7 @@ module.exports = function colorbar(gd, cd) {
         })
         .levels({
             start: contours.start,
-            end: contours.end,
+            end: endPlus(contours),
             size: cs
         })
         .options(trace.colorbar)();

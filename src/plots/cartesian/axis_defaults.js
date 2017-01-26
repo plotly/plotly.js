@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -74,6 +74,11 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         }
     }
 
+    if(axType === 'date') {
+        var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleDefaults');
+        handleCalendarDefaults(containerIn, containerOut, 'calendar', options.calendar);
+    }
+
     setConvert(containerOut);
 
     var dfltColor = coerce('color');
@@ -99,8 +104,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     coerce('range');
     containerOut.cleanRange();
-
-    coerce('fixedrange');
 
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
     handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
@@ -166,6 +169,9 @@ function setAutoType(ax, data) {
         return;
     }
 
+    var calAttr = axLetter + 'calendar',
+        calendar = d0[calAttr];
+
     // check all boxes on this x axis to see
     // if they're dates, numbers, or categories
     if(isBoxWithoutPositionCoords(d0, axLetter)) {
@@ -181,12 +187,14 @@ function setAutoType(ax, data) {
             if(trace[posLetter] !== undefined) boxPositions.push(trace[posLetter][0]);
             else if(trace.name !== undefined) boxPositions.push(trace.name);
             else boxPositions.push('text');
+
+            if(trace[calAttr] !== calendar) calendar = undefined;
         }
 
-        ax.type = autoType(boxPositions);
+        ax.type = autoType(boxPositions, calendar);
     }
     else {
-        ax.type = autoType(d0[axLetter] || [d0[axLetter + '0']]);
+        ax.type = autoType(d0[axLetter] || [d0[axLetter + '0']], calendar);
     }
 }
 

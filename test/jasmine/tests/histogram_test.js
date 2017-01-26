@@ -20,13 +20,13 @@ describe('Test histogram', function() {
             traceIn = {
                 x: []
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
                 y: []
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
         });
 
@@ -36,7 +36,7 @@ describe('Test histogram', function() {
                 x: [],
                 y: [1, 2, 2]
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
@@ -44,7 +44,7 @@ describe('Test histogram', function() {
                 x: [1, 2, 2],
                 y: []
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
@@ -52,7 +52,7 @@ describe('Test histogram', function() {
                 x: [],
                 y: []
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
@@ -60,7 +60,7 @@ describe('Test histogram', function() {
                 x: [],
                 y: [1, 2, 2]
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
         });
 
@@ -68,14 +68,14 @@ describe('Test histogram', function() {
             traceIn = {
                 x: [1, 2, 2]
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.orientation).toBe('v');
 
             traceIn = {
                 x: [1, 2, 2],
                 y: [1, 2, 2]
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.orientation).toBe('v');
         });
 
@@ -83,7 +83,7 @@ describe('Test histogram', function() {
             traceIn = {
                 y: [1, 2, 2]
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.orientation).toBe('h');
 
         });
@@ -100,13 +100,13 @@ describe('Test histogram', function() {
                     size: 1
                 }
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.autobinx).toBeUndefined();
 
             traceIn = {
                 x: [1, 2, 2]
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.autobinx).toBeUndefined();
         });
 
@@ -119,16 +119,41 @@ describe('Test histogram', function() {
                     size: 1
                 }
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.autobiny).toBeUndefined();
 
             traceIn = {
                 y: [1, 2, 2]
             };
-            supplyDefaults(traceIn, traceOut);
+            supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.autobiny).toBeUndefined();
         });
 
+        it('should inherit layout.calendar', function() {
+            traceIn = {
+                x: [1, 2, 3]
+            };
+            supplyDefaults(traceIn, traceOut, '', {calendar: 'islamic'});
+
+            // we always fill calendar attributes, because it's hard to tell if
+            // we're on a date axis at this point.
+            // size axis calendar is weird, but *might* be able to happen if
+            // we're using histfunc=min or max (does this work?)
+            expect(traceOut.xcalendar).toBe('islamic');
+            expect(traceOut.ycalendar).toBe('islamic');
+        });
+
+        it('should take its own calendars', function() {
+            traceIn = {
+                x: [1, 2, 3],
+                xcalendar: 'coptic',
+                ycalendar: 'nepali'
+            };
+            supplyDefaults(traceIn, traceOut, '', {calendar: 'islamic'});
+
+            expect(traceOut.xcalendar).toBe('coptic');
+            expect(traceOut.ycalendar).toBe('nepali');
+        });
     });
 
 
@@ -219,6 +244,111 @@ describe('Test histogram', function() {
                 {b: 0, p: x2, s: 0},
                 {b: 0, p: x3, s: 1}
             ]);
+        });
+
+        describe('cumulative distribution functions', function() {
+            var base = {
+                x: [0, 5, 10, 15, 5, 10, 15, 10, 15, 15],
+                y: [2, 2, 2, 14, 6, 6, 6, 10, 10, 2]
+            };
+
+            it('makes the right base histogram', function() {
+                var baseOut = _calc(base);
+                expect(baseOut).toEqual([
+                    {b: 0, p: 2, s: 1},
+                    {b: 0, p: 7, s: 2},
+                    {b: 0, p: 12, s: 3},
+                    {b: 0, p: 17, s: 4},
+                ]);
+            });
+
+            var CDFs = [
+                {p: [2, 7, 12, 17], s: [1, 3, 6, 10]},
+                {
+                    direction: 'decreasing',
+                    p: [2, 7, 12, 17], s: [10, 9, 7, 4]
+                },
+                {
+                    currentbin: 'exclude',
+                    p: [7, 12, 17, 22], s: [1, 3, 6, 10]
+                },
+                {
+                    direction: 'decreasing', currentbin: 'exclude',
+                    p: [-3, 2, 7, 12], s: [10, 9, 7, 4]
+                },
+                {
+                    currentbin: 'half',
+                    p: [2, 7, 12, 17, 22], s: [0.5, 2, 4.5, 8, 10]
+                },
+                {
+                    direction: 'decreasing', currentbin: 'half',
+                    p: [-3, 2, 7, 12, 17], s: [10, 9.5, 8, 5.5, 2]
+                },
+                {
+                    direction: 'decreasing', currentbin: 'half', histnorm: 'percent',
+                    p: [-3, 2, 7, 12, 17], s: [100, 95, 80, 55, 20]
+                },
+                {
+                    currentbin: 'exclude', histnorm: 'probability',
+                    p: [7, 12, 17, 22], s: [0.1, 0.3, 0.6, 1]
+                },
+                {
+                    // behaves the same as without *density*
+                    direction: 'decreasing', currentbin: 'half', histnorm: 'density',
+                    p: [-3, 2, 7, 12, 17], s: [10, 9.5, 8, 5.5, 2]
+                },
+                {
+                    // behaves the same as without *density*, only *probability*
+                    direction: 'decreasing', currentbin: 'half', histnorm: 'probability density',
+                    p: [-3, 2, 7, 12, 17], s: [1, 0.95, 0.8, 0.55, 0.2]
+                },
+                {
+                    currentbin: 'half', histfunc: 'sum',
+                    p: [2, 7, 12, 17, 22], s: [1, 6, 19, 44, 60]
+                },
+                {
+                    currentbin: 'half', histfunc: 'sum', histnorm: 'probability',
+                    p: [2, 7, 12, 17, 22], s: [0.5 / 30, 0.1, 9.5 / 30, 22 / 30, 1]
+                },
+                {
+                    direction: 'decreasing', currentbin: 'half', histfunc: 'max', histnorm: 'percent',
+                    p: [-3, 2, 7, 12, 17], s: [100, 3100 / 32, 2700 / 32, 1900 / 32, 700 / 32]
+                },
+                {
+                    direction: 'decreasing', currentbin: 'half', histfunc: 'min', histnorm: 'density',
+                    p: [-3, 2, 7, 12, 17], s: [8, 7, 5, 3, 1]
+                },
+                {
+                    currentbin: 'exclude', histfunc: 'avg', histnorm: 'probability density',
+                    p: [7, 12, 17, 22], s: [0.1, 0.3, 0.6, 1]
+                }
+            ];
+
+            CDFs.forEach(function(CDF) {
+                var p = CDF.p,
+                    s = CDF.s;
+
+                it('handles direction=' + CDF.direction + ', currentbin=' + CDF.currentbin +
+                        ', histnorm=' + CDF.histnorm + ', histfunc=' + CDF.histfunc, function() {
+                    var traceIn = Lib.extendFlat({}, base, {
+                        cumulative: {
+                            enabled: true,
+                            direction: CDF.direction,
+                            currentbin: CDF.currentbin
+                        },
+                        histnorm: CDF.histnorm,
+                        histfunc: CDF.histfunc
+                    });
+                    var out = _calc(traceIn);
+
+                    expect(out.length).toBe(p.length);
+                    out.forEach(function(outi, i) {
+                        expect(outi.p).toBe(p[i]);
+                        expect(outi.s).toBeCloseTo(s[i], 6);
+                        expect(outi.b).toBe(0);
+                    });
+                });
+            });
         });
 
     });

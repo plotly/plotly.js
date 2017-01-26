@@ -4,6 +4,7 @@ var constants = require('@src/components/updatemenus/constants');
 var d3 = require('d3');
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
+var Events = require('@src/lib/events');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var TRANSITION_DELAY = 100;
@@ -220,13 +221,17 @@ describe('update menus buttons', function() {
     beforeEach(function(done) {
         gd = createGraphDiv();
 
+        // bump event max listeners to remove console warnings
+        Events.init(gd);
+        gd._internalEv.setMaxListeners(20);
+
         // move update menu #2 to click on them separately
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.updatemenus[1].x = 1;
 
         allMenus = mockCopy.layout.updatemenus;
-        buttonMenus = allMenus.filter(function(opts) {return opts.type === 'buttons';});
-        dropdownMenus = allMenus.filter(function(opts) {return opts.type !== 'buttons';});
+        buttonMenus = allMenus.filter(function(opts) { return opts.type === 'buttons'; });
+        dropdownMenus = allMenus.filter(function(opts) { return opts.type !== 'buttons'; });
 
         Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
     });
@@ -244,12 +249,11 @@ describe('update menus buttons', function() {
 
         // Count the *total* number of buttons we expect for this mock:
         var buttonCount = 0;
-        buttonMenus.forEach(function(menu) {buttonCount += menu.buttons.length;});
+        buttonMenus.forEach(function(menu) { buttonCount += menu.buttons.length; });
 
         assertNodeCount('.' + constants.buttonClassName, buttonCount);
 
         done();
-
     });
 
     function assertNodeCount(query, cnt) {
@@ -625,7 +629,7 @@ describe('update menus interactions', function() {
         }).catch(fail).then(done);
     });
 
-    it('appliesy padding on relayout', function(done) {
+    it('applies y padding on relayout', function(done) {
         var x1, x2;
         var firstMenu = d3.select('.' + constants.headerGroupClassName);
         var padShift = 40;
@@ -694,7 +698,7 @@ describe('update menus interactions', function() {
 
         // must compare with a tolerance as the exact result
         // is browser/font dependent (via getBBox)
-        expect(Math.abs(actualWidth - width)).toBeLessThan(11);
+        expect(Math.abs(actualWidth - width)).toBeLessThan(16);
 
         // height is determined by 'fontsize',
         // so no such tolerance is needed
@@ -729,4 +733,70 @@ describe('update menus interactions', function() {
             button = d3.select(buttons[0][buttonIndex]);
         return button;
     }
+});
+
+
+describe('update menus interaction with other components:', function() {
+    'use strict';
+
+    afterEach(destroyGraphDiv);
+
+    it('buttons show be drawn above sliders', function(done) {
+
+        Plotly.plot(createGraphDiv(), [{
+            x: [1, 2, 3],
+            y: [1, 2, 1]
+        }], {
+            sliders: [{
+                xanchor: 'right',
+                x: -0.05,
+                y: 0.9,
+                len: 0.3,
+                steps: [{
+                    label: 'red',
+                    method: 'restyle',
+                    args: [{'line.color': 'red'}]
+                }, {
+                    label: 'orange',
+                    method: 'restyle',
+                    args: [{'line.color': 'orange'}]
+                }, {
+                    label: 'yellow',
+                    method: 'restyle',
+                    args: [{'line.color': 'yellow'}]
+                }]
+            }],
+            updatemenus: [{
+                buttons: [{
+                    label: 'markers and lines',
+                    method: 'restyle',
+                    args: [{ 'mode': 'markers+lines' }]
+                }, {
+                    label: 'markers',
+                    method: 'restyle',
+                    args: [{ 'mode': 'markers' }]
+                }, {
+                    label: 'lines',
+                    method: 'restyle',
+                    args: [{ 'mode': 'lines' }]
+                }]
+            }]
+        })
+        .then(function() {
+            var infoLayer = d3.select('g.infolayer');
+            var containerClassNames = ['slider-container', 'updatemenu-container'];
+            var list = [];
+
+            infoLayer.selectAll('*').each(function() {
+                var className = d3.select(this).attr('class');
+
+                if(containerClassNames.indexOf(className) !== -1) {
+                    list.push(className);
+                }
+            });
+
+            expect(list).toEqual(containerClassNames);
+        })
+        .then(done);
+    });
 });

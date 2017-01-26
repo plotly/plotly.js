@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,6 +9,7 @@
 
 'use strict';
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Color = require('../../components/color');
 
@@ -26,6 +27,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var x = coerce('x'),
         y = coerce('y');
 
+    var cumulative = coerce('cumulative.enabled');
+    if(cumulative) {
+        coerce('cumulative.direction');
+        coerce('cumulative.currentbin');
+    }
+
     coerce('text');
 
     var orientation = coerce('orientation', (y && !x) ? 'h' : 'v'),
@@ -35,6 +42,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         traceOut.visible = false;
         return;
     }
+
+    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
+    handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
 
     var hasAggregationData = traceOut[orientation === 'h' ? 'x' : 'y'];
     if(hasAggregationData) coerce('histfunc');

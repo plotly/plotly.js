@@ -1,5 +1,10 @@
 var isNumeric = require('fast-isnumeric');
+
 var Lib = require('@src/lib');
+var calComponent = require('@src/components/calendars');
+
+// use only the parts of world-calendars that we've imported for our tests
+var calendars = require('@src/components/calendars/calendars');
 
 describe('dates', function() {
     'use strict';
@@ -222,6 +227,118 @@ describe('dates', function() {
                 expect(Lib.ms2DateTime(Lib.dateTime2ms(v[0]), v[1])).toBe(v[2], v);
             });
         });
+
+        it('should work right with inputs beyond our precision', function() {
+            for(var i = -1; i <= 1; i += 0.001) {
+                var tenths = Math.round(i * 10),
+                    base = i < -0.05 ? '1969-12-31 23:59:59.99' : '1970-01-01 00:00:00.00',
+                    expected = (base + String(tenths + 200).substr(1))
+                        .replace(/0+$/, '')
+                        .replace(/ 00:00:00[\.]$/, '');
+                expect(Lib.ms2DateTime(i)).toBe(expected, i);
+            }
+        });
+    });
+
+    describe('world calendar inputs', function() {
+        it('should give the right values near epoch zero', function() {
+            [
+                [undefined, '1970-01-01'],
+                ['gregorian', '1970-01-01'],
+                ['chinese', '1969-11-24'],
+                ['coptic', '1686-04-23'],
+                ['discworld', '1798-12-27'],
+                ['ethiopian', '1962-04-23'],
+                ['hebrew', '5730-10-23'],
+                ['islamic', '1389-10-22'],
+                ['julian', '1969-12-19'],
+                ['mayan', '5156-07-05'],
+                ['nanakshahi', '0501-10-19'],
+                ['nepali', '2026-09-17'],
+                ['persian', '1348-10-11'],
+                ['jalali', '1348-10-11'],
+                ['taiwan', '0059-01-01'],
+                ['thai', '2513-01-01'],
+                ['ummalqura', '1389-10-23']
+            ].forEach(function(v) {
+                var calendar = v[0],
+                    dateStr = v[1];
+                expect(Lib.ms2DateTime(0, 0, calendar)).toBe(dateStr, calendar);
+                expect(Lib.dateTime2ms(dateStr, calendar)).toBe(0, calendar);
+
+                var expected_p1ms = dateStr + ' 00:00:00.0001',
+                    expected_1s = dateStr + ' 00:00:01',
+                    expected_1m = dateStr + ' 00:01',
+                    expected_1h = dateStr + ' 01:00',
+                    expected_lastinstant = dateStr + ' 23:59:59.9999';
+
+                var oneSec = 1000,
+                    oneMin = 60 * oneSec,
+                    oneHour = 60 * oneMin,
+                    lastInstant = 24 * oneHour - 0.1;
+
+                expect(Lib.ms2DateTime(0.1, 0, calendar)).toBe(expected_p1ms, calendar);
+                expect(Lib.ms2DateTime(oneSec, 0, calendar)).toBe(expected_1s, calendar);
+                expect(Lib.ms2DateTime(oneMin, 0, calendar)).toBe(expected_1m, calendar);
+                expect(Lib.ms2DateTime(oneHour, 0, calendar)).toBe(expected_1h, calendar);
+                expect(Lib.ms2DateTime(lastInstant, 0, calendar)).toBe(expected_lastinstant, calendar);
+
+                expect(Lib.dateTime2ms(expected_p1ms, calendar)).toBe(0.1, calendar);
+                expect(Lib.dateTime2ms(expected_1s, calendar)).toBe(oneSec, calendar);
+                expect(Lib.dateTime2ms(expected_1m, calendar)).toBe(oneMin, calendar);
+                expect(Lib.dateTime2ms(expected_1h, calendar)).toBe(oneHour, calendar);
+                expect(Lib.dateTime2ms(expected_lastinstant, calendar)).toBe(lastInstant, calendar);
+            });
+        });
+
+        it('should contain canonical ticks sundays, ranges for all calendars', function() {
+            var calList = Object.keys(calendars.calendars).filter(function(v) {
+                return v !== 'gregorian';
+            });
+
+            var canonicalTick = calComponent.CANONICAL_TICK,
+                canonicalSunday = calComponent.CANONICAL_SUNDAY,
+                dfltRange = calComponent.DFLTRANGE;
+            expect(Object.keys(canonicalTick).length).toBe(calList.length);
+            expect(Object.keys(canonicalSunday).length).toBe(calList.length);
+            expect(Object.keys(dfltRange).length).toBe(calList.length);
+
+            calList.forEach(function(calendar) {
+                expect(Lib.dateTime2ms(canonicalTick[calendar], calendar)).toBeDefined(calendar);
+                var sunday = Lib.dateTime2ms(canonicalSunday[calendar], calendar);
+                // convert back implicitly with gregorian calendar
+                expect(Lib.formatDate(sunday, '%A')).toBe('Sunday', calendar);
+
+                expect(Lib.dateTime2ms(dfltRange[calendar][0], calendar)).toBeDefined(calendar);
+                expect(Lib.dateTime2ms(dfltRange[calendar][1], calendar)).toBeDefined(calendar);
+            });
+        });
+
+        it('should handle Chinese intercalary months correctly', function() {
+            var intercalaryDates = [
+                '1995-08i-01',
+                '1995-08i-29',
+                '1984-10i-15',
+                '2023-02i-29'
+            ];
+            intercalaryDates.forEach(function(v) {
+                var ms = Lib.dateTime2ms(v, 'chinese');
+                expect(Lib.ms2DateTime(ms, 0, 'chinese')).toBe(v);
+
+                // should also work without leading zeros
+                var vShort = v.replace(/-0/g, '-');
+                expect(Lib.dateTime2ms(vShort, 'chinese')).toBe(ms, vShort);
+            });
+
+            var badIntercalaryDates = [
+                '1995-07i-01',
+                '1995-08i-30',
+                '1995-09i-01'
+            ];
+            badIntercalaryDates.forEach(function(v) {
+                expect(Lib.dateTime2ms(v, 'chinese')).toBeUndefined(v);
+            });
+        });
     });
 
     describe('cleanDate', function() {
@@ -279,6 +396,51 @@ describe('dates', function() {
         });
     });
 
+    describe('incrementMonth', function() {
+        it('should include Chinese intercalary months', function() {
+            var start = '1995-06-01';
+            var expected = [
+                '1995-07-01',
+                '1995-08-01',
+                '1995-08i-01',
+                '1995-09-01',
+                '1995-10-01',
+                '1995-11-01',
+                '1995-12-01',
+                '1996-01-01'
+            ];
+            var tick = Lib.dateTime2ms(start, 'chinese');
+            expected.forEach(function(v) {
+                tick = Lib.incrementMonth(tick, 1, 'chinese');
+                expect(tick).toBe(Lib.dateTime2ms(v, 'chinese'), v);
+            });
+        });
+
+        it('should increment years even over leap years', function() {
+            var start = '1995-06-01';
+            var expected = [
+                '1996-06-01',
+                '1997-06-01',
+                '1998-06-01',
+                '1999-06-01',
+                '2000-06-01',
+                '2001-06-01',
+                '2002-06-01',
+                '2003-06-01',
+                '2004-06-01',
+                '2005-06-01',
+                '2006-06-01',
+                '2007-06-01',
+                '2008-06-01'
+            ];
+            var tick = Lib.dateTime2ms(start, 'chinese');
+            expected.forEach(function(v) {
+                tick = Lib.incrementMonth(tick, 12, 'chinese');
+                expect(tick).toBe(Lib.dateTime2ms(v, 'chinese'), v);
+            });
+        });
+    });
+
     describe('isJSDate', function() {
         it('should return true for any Date object but not the equivalent numbers', function() {
             [
@@ -305,5 +467,139 @@ describe('dates', function() {
                 expect(Lib.isJSDate(v)).toBe(false);
             });
         });
+    });
+
+    describe('formatDate', function() {
+        function assertFormatRounds(ms, calendar, results) {
+            ['y', 'm', 'd', 'M', 'S', 1, 2, 3, 4].forEach(function(tr, i) {
+                expect(Lib.formatDate(ms, '', tr, calendar))
+                    .toBe(results[i], calendar);
+            });
+        }
+
+        it('should pick a format based on tickround if no format is provided', function() {
+            var ms = Lib.dateTime2ms('2012-08-13 06:19:34.5678');
+            assertFormatRounds(ms, 'gregorian', [
+                '2012',
+                'Aug 2012',
+                'Aug 13\n2012',
+                '06:19\nAug 13, 2012',
+                '06:19:35\nAug 13, 2012',
+                '06:19:34.6\nAug 13, 2012',
+                '06:19:34.57\nAug 13, 2012',
+                '06:19:34.568\nAug 13, 2012',
+                '06:19:34.5678\nAug 13, 2012'
+            ]);
+
+            // and for world calendars - in coptic this is 1728-12-07 (month=Meso)
+            assertFormatRounds(ms, 'coptic', [
+                '1728',
+                'Meso 1728',
+                'Meso 7\n1728',
+                '06:19\nMeso 7, 1728',
+                '06:19:35\nMeso 7, 1728',
+                '06:19:34.6\nMeso 7, 1728',
+                '06:19:34.57\nMeso 7, 1728',
+                '06:19:34.568\nMeso 7, 1728',
+                '06:19:34.5678\nMeso 7, 1728'
+            ]);
+        });
+
+        it('should accept custom formats using d3 specs even for world cals', function() {
+            var ms = Lib.dateTime2ms('2012-08-13 06:19:34.5678');
+            [
+                // some common formats (plotly workspace options)
+                ['%Y-%m-%d', '2012-08-13', '1728-12-07'],
+                ['%H:%M:%S', '06:19:34', '06:19:34'],
+                ['%Y-%m-%e %H:%M:%S', '2012-08-13 06:19:34', '1728-12-7 06:19:34'],
+                ['%A, %b %e', 'Monday, Aug 13', 'Pesnau, Meso 7'],
+
+                // test padding behavior
+                // world doesn't support space-padded (yet?)
+                ['%Y-%_m-%_d', '2012- 8-13', '1728-12-7'],
+                ['%Y-%-m-%-d', '2012-8-13', '1728-12-7'],
+
+                // and some strange ones to cover all fields
+                ['%a%j!%-j', 'Mon226!226', 'Pes337!337'],
+                [
+                    '%W or un or space padded-> %-W,%_W',
+                    '33 or un or space padded-> 33,33',
+                    '48 or un or space padded-> 48,48'
+                ],
+                [
+                    '%B \'%y WOY:%U DOW:%w',
+                    'August \'12 WOY:32 DOW:1',
+                    'Mesori \'28 WOY:## DOW:##' // world-cals doesn't support U or w
+                ],
+                [
+                    '%c && %x && .%2f .%f', // %<n>f is our addition
+                    'Mon Aug 13 06:19:34 2012 && 08/13/2012 && .57 .5678',
+                    'Pes Meso 7 06:19:34 1728 && 12/07/1728 && .57 .5678'
+                ]
+
+            ].forEach(function(v) {
+                var fmt = v[0],
+                    expectedGregorian = v[1],
+                    expectedCoptic = v[2];
+
+                // tickround is irrelevant here...
+                expect(Lib.formatDate(ms, fmt, 'y'))
+                    .toBe(expectedGregorian, fmt);
+                expect(Lib.formatDate(ms, fmt, 4, 'gregorian'))
+                    .toBe(expectedGregorian, fmt);
+                expect(Lib.formatDate(ms, fmt, 'y', 'coptic'))
+                    .toBe(expectedCoptic, fmt);
+            });
+        });
+
+        it('should not round up to 60 seconds', function() {
+            // see note in dates.js -> formatTime about this rounding
+            assertFormatRounds(-0.1, 'gregorian', [
+                '1969',
+                'Dec 1969',
+                'Dec 31\n1969',
+                '23:59\nDec 31, 1969',
+                '23:59:59\nDec 31, 1969',
+                '23:59:59.9\nDec 31, 1969',
+                '23:59:59.99\nDec 31, 1969',
+                '23:59:59.999\nDec 31, 1969',
+                '23:59:59.9999\nDec 31, 1969'
+            ]);
+
+            // in coptic this is Koi 22, 1686
+            assertFormatRounds(-0.1, 'coptic', [
+                '1686',
+                'Koi 1686',
+                'Koi 22\n1686',
+                '23:59\nKoi 22, 1686',
+                '23:59:59\nKoi 22, 1686',
+                '23:59:59.9\nKoi 22, 1686',
+                '23:59:59.99\nKoi 22, 1686',
+                '23:59:59.999\nKoi 22, 1686',
+                '23:59:59.9999\nKoi 22, 1686'
+            ]);
+
+            // and using the custom format machinery
+            expect(Lib.formatDate(-0.1, '%Y-%m-%d %H:%M:%S.%f'))
+                .toBe('1969-12-31 23:59:59.9999');
+            expect(Lib.formatDate(-0.1, '%Y-%m-%d %H:%M:%S.%f', null, 'coptic'))
+                .toBe('1686-04-22 23:59:59.9999');
+
+        });
+
+        it('should remove extra fractional second zeros', function() {
+            expect(Lib.formatDate(0.1, '', 4)).toBe('00:00:00.0001\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 3)).toBe('00:00:00\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 0)).toBe('00:00:00\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 'S')).toBe('00:00:00\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 3, 'coptic'))
+                .toBe('00:00:00\nKoi 23, 1686');
+
+            // because the decimal point is explicitly part of the format
+            // string here, we can't remove it OR the very first zero after it.
+            expect(Lib.formatDate(0.1, '%S.%f')).toBe('00.0001');
+            expect(Lib.formatDate(0.1, '%S.%3f')).toBe('00.0');
+        });
+
     });
 });

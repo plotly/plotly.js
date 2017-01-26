@@ -1,4 +1,5 @@
 var Plotly = require('@lib/index');
+var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -42,6 +43,13 @@ describe('Test frame api', function() {
             }).catch(fail).then(done);
         });
 
+        it('compresses garbage when adding frames', function(done) {
+            Plotly.addFrames(gd, [null, 'garbage', 14, true, false, {name: 'test'}, null]).then(function() {
+                expect(Object.keys(h)).toEqual(['test']);
+                expect(f).toEqual([{name: 'test'}]);
+            }).catch(fail).then(done);
+        });
+
         it('treats a null list as a noop', function(done) {
             Plotly.addFrames(gd, null).then(function() {
                 expect(Object.keys(h)).toEqual([]);
@@ -73,10 +81,38 @@ describe('Test frame api', function() {
         });
 
         it('creates multiple unnamed frames in series', function(done) {
-            Plotly.addFrames(gd, [{}]).then(
-                Plotly.addFrames(gd, [{}])
-            ).then(function() {
+            Plotly.addFrames(gd, [{}]).then(function() {
+                return Plotly.addFrames(gd, [{}]);
+            }).then(function() {
                 expect(f).toEqual([{name: 'frame 0'}, {name: 'frame 1'}]);
+            }).catch(fail).then(done);
+        });
+
+        it('casts number names to strings on insertion', function(done) {
+            Plotly.addFrames(gd, [{name: 2}]).then(function() {
+                expect(f).toEqual([{name: '2'}]);
+            }).catch(fail).then(done);
+        });
+
+        it('updates frames referenced by number', function(done) {
+            Plotly.addFrames(gd, [{name: 2}]).then(function() {
+                return Plotly.addFrames(gd, [{name: 2, layout: {foo: 'bar'}}]);
+            }).then(function() {
+                expect(f).toEqual([{name: '2', layout: {foo: 'bar'}}]);
+            }).catch(fail).then(done);
+        });
+
+        it('issues a warning if a number-named frame would overwrite a frame', function(done) {
+            var warnings = [];
+            spyOn(Lib, 'warn').and.callFake(function(msg) {
+                warnings.push(msg);
+            });
+
+            Plotly.addFrames(gd, [{name: 2}]).then(function() {
+                return Plotly.addFrames(gd, [{name: 2, layout: {foo: 'bar'}}]);
+            }).then(function() {
+                expect(warnings.length).toEqual(1);
+                expect(warnings[0]).toMatch(/overwriting/);
             }).catch(fail).then(done);
         });
 

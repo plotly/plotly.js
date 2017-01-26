@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -104,6 +104,8 @@ function LineWithMarkers(scene, uid) {
     this.scatter._trace = this;
     this.fancyScatter = createFancyScatter(scene.glplot, this.scatterOptions);
     this.fancyScatter._trace = this;
+
+    this.isVisible = false;
 }
 
 var proto = LineWithMarkers.prototype;
@@ -232,12 +234,14 @@ function _convertColor(colors, opacities, count) {
  */
 proto.update = function(options) {
     if(options.visible !== true) {
+        this.isVisible = false;
         this.hasLines = false;
         this.hasErrorX = false;
         this.hasErrorY = false;
         this.hasMarkers = false;
     }
     else {
+        this.isVisible = true;
         this.hasLines = subTypes.hasLines(options);
         this.hasErrorX = options.error_x.visible === true;
         this.hasErrorY = options.error_y.visible === true;
@@ -250,7 +254,10 @@ proto.update = function(options) {
     this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
     this.connectgaps = !!options.connectgaps;
 
-    if(this.isFancy(options)) {
+    if(!this.isVisible) {
+        this.clear();
+    }
+    else if(this.isFancy(options)) {
         this.updateFancy(options);
     }
     else {
@@ -285,6 +292,22 @@ function allFastTypesLikely(a) {
     return true;
 }
 
+proto.clear = function() {
+    this.lineOptions.positions = new Float64Array(0);
+    this.line.update(this.lineOptions);
+
+    this.errorXOptions.positions = new Float64Array(0);
+    this.errorX.update(this.errorXOptions);
+
+    this.errorYOptions.positions = new Float64Array(0);
+    this.errorY.update(this.errorYOptions);
+
+    this.scatterOptions.positions = new Float64Array(0);
+    this.scatterOptions.glyphs = [];
+    this.scatter.update(this.scatterOptions);
+    this.fancyScatter.update(this.scatterOptions);
+};
+
 proto.updateFast = function(options) {
     var x = this.xData = this.pickXData = options.x;
     var y = this.yData = this.pickYData = options.y;
@@ -298,8 +321,10 @@ proto.updateFast = function(options) {
 
     var xx, yy;
 
+    var xcalendar = options.xcalendar;
+
     var fastType = allFastTypesLikely(x);
-    var isDateTime = !fastType && autoType(x) === 'date';
+    var isDateTime = !fastType && autoType(x, xcalendar) === 'date';
 
     // TODO add 'very fast' mode that bypasses this loop
     // TODO bypass this on modebar +/- zoom
@@ -312,7 +337,7 @@ proto.updateFast = function(options) {
             if(isNumeric(yy)) {
 
                 if(!fastType) {
-                    xx = Lib.dateTime2ms(xx);
+                    xx = Lib.dateTime2ms(xx, xcalendar);
                 }
 
                 idToIndex[pId++] = i;
@@ -397,12 +422,8 @@ proto.updateFancy = function(options) {
         ptrX = 0,
         ptrY = 0;
 
-    var getX = (xaxis.type === 'log') ?
-            function(x) { return xaxis.d2l(x); } :
-            function(x) { return x; };
-    var getY = (yaxis.type === 'log') ?
-            function(y) { return yaxis.d2l(y); } :
-            function(y) { return y; };
+    var getX = (xaxis.type === 'log') ? xaxis.d2l : function(x) { return x; };
+    var getY = (yaxis.type === 'log') ? yaxis.d2l : function(y) { return y; };
 
     var i, j, xx, yy, ex0, ex1, ey0, ey1;
 

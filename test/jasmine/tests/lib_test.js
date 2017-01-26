@@ -1,5 +1,6 @@
 var Lib = require('@src/lib');
 var setCursor = require('@src/lib/setcursor');
+var overrideCursor = require('@src/lib/override_cursor');
 
 var d3 = require('d3');
 var Plotly = require('@lib');
@@ -674,7 +675,7 @@ describe('Test lib.js:', function() {
 
             it('should set a value and return the value it sets when user input is valid', function() {
                 var colVal = 'red',
-                    sizeVal = 14,
+                    sizeVal = 0, // 0 is valid but falsey
                     attrs = {testMarker: {testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
                         testSize: {valType: 'number', dflt: 20}}},
                     obj = {testMarker: {testColor: colVal, testSize: sizeVal}},
@@ -706,7 +707,7 @@ describe('Test lib.js:', function() {
 
             it('should return false if there is no user input', function() {
                 var colVal = null,
-                    sizeVal = null,
+                    sizeVal, // undefined
                     attrs = {testMarker: {testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
                         testSize: {valType: 'number', dflt: 20}}},
                     obj = {testMarker: {testColor: colVal, testSize: sizeVal}},
@@ -1188,6 +1189,56 @@ describe('Test lib.js:', function() {
             setCursor(this.el3);
 
             expect(this.el3.attr('class')).toEqual('');
+        });
+    });
+
+    describe('overrideCursor', function() {
+
+        beforeEach(function() {
+            this.el3 = d3.select(createGraphDiv());
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should apply the new cursor(s) and revert to the original when removed', function() {
+            this.el3
+                .classed('cursor-before', true)
+                .classed('not-a-cursor', true)
+                .classed('another', true);
+
+            overrideCursor(this.el3, 'after');
+            expect(this.el3.attr('class')).toBe('not-a-cursor another cursor-after');
+
+            overrideCursor(this.el3, 'later');
+            expect(this.el3.attr('class')).toBe('not-a-cursor another cursor-later');
+
+            overrideCursor(this.el3);
+            expect(this.el3.attr('class')).toBe('not-a-cursor another cursor-before');
+        });
+
+        it('should apply the new cursor(s) and revert to the none when removed', function() {
+            this.el3
+                .classed('not-a-cursor', true)
+                .classed('another', true);
+
+            overrideCursor(this.el3, 'after');
+            expect(this.el3.attr('class')).toBe('not-a-cursor another cursor-after');
+
+            overrideCursor(this.el3, 'later');
+            expect(this.el3.attr('class')).toBe('not-a-cursor another cursor-later');
+
+            overrideCursor(this.el3);
+            expect(this.el3.attr('class')).toBe('not-a-cursor another');
+        });
+
+        it('should do nothing if no existing or new override is present', function() {
+            this.el3
+                .classed('cursor-before', true)
+                .classed('not-a-cursor', true);
+
+            overrideCursor(this.el3);
+
+            expect(this.el3.attr('class')).toBe('cursor-before not-a-cursor');
         });
     });
 

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -32,16 +32,16 @@ exports.supplyLayoutDefaults = require('./layout/defaults');
 
 exports.plot = function plotTernary(gd) {
     var fullLayout = gd._fullLayout,
-        fullData = gd._fullData,
+        calcData = gd.calcdata,
         ternaryIds = Plots.getSubplotIds(fullLayout, 'ternary');
 
     for(var i = 0; i < ternaryIds.length; i++) {
         var ternaryId = ternaryIds[i],
-            fullTernaryData = Plots.getSubplotData(fullData, 'ternary', ternaryId),
+            ternaryCalcData = Plots.getSubplotCalcData(calcData, 'ternary', ternaryId),
             ternary = fullLayout[ternaryId]._subplot;
 
         // If ternary is not instantiated, create one!
-        if(ternary === undefined) {
+        if(!ternary) {
             ternary = new Ternary({
                 id: ternaryId,
                 graphDiv: gd,
@@ -53,7 +53,7 @@ exports.plot = function plotTernary(gd) {
             fullLayout[ternaryId]._subplot = ternary;
         }
 
-        ternary.plot(fullTernaryData, fullLayout, gd._promises);
+        ternary.plot(ternaryCalcData, fullLayout, gd._promises);
     }
 };
 

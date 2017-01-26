@@ -444,6 +444,12 @@ describe('Plots.computeAPICommandBindings', function() {
             expect(result).toEqual([{type: 'layout', prop: '_currentFrame', value: 'framename'}]);
         });
 
+        it('treats numeric frame names as strings', function() {
+            var result = Plots.computeAPICommandBindings(gd, 'animate', [[8]]);
+
+            expect(result).toEqual([{type: 'layout', prop: '_currentFrame', value: '8'}]);
+        });
+
         it('binds to nothing for a multi-frame animate command', function() {
             var result = Plots.computeAPICommandBindings(gd, 'animate', [['frame1', 'frame2']]);
 

@@ -47,7 +47,8 @@ describe('Test annotations', function() {
                 expect(item).toEqual({
                     visible: false,
                     _input: {},
-                    _index: i
+                    _index: i,
+                    clicktoshow: false
                 });
             });
         });
@@ -237,7 +238,8 @@ describe('annotations autosize', function() {
 
             expect(fullLayout.xaxis.range).toBeCloseToArray(x, PREC, '- xaxis');
             expect(fullLayout.yaxis.range).toBeCloseToArray(y, PREC, '- yaxis');
-            expect(dateAx.range.map(dateAx.r2l)).toBeCloseToArray(x2.map(dateAx.r2l), PRECX2, 'xaxis2 ' + dateAx.range);
+            expect(Lib.simpleMap(dateAx.range, dateAx.r2l))
+                .toBeCloseToArray(Lib.simpleMap(x2, dateAx.r2l), PRECX2, 'xaxis2 ' + dateAx.range);
             expect(fullLayout.yaxis2.range).toBeCloseToArray(y2, PRECY2, 'yaxis2');
             expect(fullLayout.xaxis3.range).toBeCloseToArray(x3, PREC, 'xaxis3');
             expect(fullLayout.yaxis3.range).toBeCloseToArray(y3, PREC, 'yaxis3');
@@ -292,6 +294,134 @@ describe('annotations autosize', function() {
                 [0.9, 2.1], [0.86, 2.14]
             );
         })
+        .then(done);
+    });
+});
+
+describe('annotation clicktoshow', function() {
+    var gd;
+
+    afterEach(destroyGraphDiv);
+
+    function layout() {
+        return {
+            xaxis: {domain: [0, 0.5]},
+            xaxis2: {domain: [0.5, 1], anchor: 'y2'},
+            yaxis2: {anchor: 'x2'},
+            annotations: [
+                {x: 1, y: 2, xref: 'x', yref: 'y', text: 'index0'}, // (1,2) selects
+                {x: 1, y: 3, xref: 'x', yref: 'y', text: 'index1'},
+                {x: 2, y: 3, xref: 'x', yref: 'y', text: 'index2'}, // ** (2,3) selects
+                {x: 4, y: 2, xref: 'x', yref: 'y', text: 'index3'},
+                {x: 1, y: 2, xref: 'x2', yref: 'y', text: 'index4'},
+                {x: 1, y: 2, xref: 'x', yref: 'y2', text: 'index5'},
+                {x: 1, xclick: 5, y: 2, xref: 'x', yref: 'y', text: 'index6'},
+                {x: 1, y: 2, yclick: 6, xref: 'x', yref: 'y', text: 'index7'},
+                {x: 1, y: 2.0000001, xref: 'x', yref: 'y', text: 'index8'},
+                {x: 1, y: 2, xref: 'x', yref: 'y', text: 'index9'}, // (1,2) selects
+                {x: 7, xclick: 1, y: 2, xref: 'x', yref: 'y', text: 'index10'}, // (1,2) selects
+                {x: 1, y: 8, yclick: 2, xref: 'x', yref: 'y', text: 'index11'}, // (1,2) selects
+                {x: 1, y: 2, xref: 'paper', yref: 'y', text: 'index12'},
+                {x: 1, y: 2, xref: 'x', yref: 'paper', text: 'index13'},
+                {x: 1, y: 2, xref: 'paper', yref: 'paper', text: 'index14'}
+            ]
+        };
+    }
+
+    var data = [
+        {x: [0, 1, 2], y: [1, 2, 3]},
+        {x: [0, 1, 2], y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2'}
+    ];
+
+    function hoverData(xyPairs) {
+        // hovering on nothing can have undefined hover data - must be supported
+        if(!xyPairs.length) return;
+
+        return xyPairs.map(function(xy) {
+            return {
+                x: xy[0],
+                y: xy[1],
+                xaxis: gd._fullLayout.xaxis,
+                yaxis: gd._fullLayout.yaxis
+            };
+        });
+    }
+
+    function checkVisible(opts) {
+        gd._fullLayout.annotations.forEach(function(ann, i) {
+            expect(ann.visible).toBe(opts.on.indexOf(i) !== -1, 'i: ' + i + ', step: ' + opts.step);
+        });
+    }
+
+    function allAnnotations(attr, value) {
+        var update = {};
+        for(var i = 0; i < gd.layout.annotations.length; i++) {
+            update['annotations[' + i + '].' + attr] = value;
+        }
+        return update;
+    }
+
+    function clickAndCheck(opts) {
+        return function() {
+            expect(Annotations.hasClickToShow(gd, hoverData(opts.newPts)))
+                .toBe(opts.newCTS, 'step: ' + opts.step);
+
+            var clickResult = Annotations.onClick(gd, hoverData(opts.newPts));
+            if(clickResult && clickResult.then) {
+                return clickResult.then(function() { checkVisible(opts); });
+            }
+            else {
+                checkVisible(opts);
+            }
+        };
+    }
+
+    function updateAndCheck(opts) {
+        return function() {
+            return Plotly.update(gd, {}, opts.update).then(function() {
+                checkVisible(opts);
+            });
+        };
+    }
+
+    var allIndices = layout().annotations.map(function(v, i) { return i; });
+
+    it('should select only clicktoshow annotations matching x, y, and axes of any point', function(done) {
+        gd = createGraphDiv();
+
+        // first try to select without adding clicktoshow, both visible and invisible
+        Plotly.plot(gd, data, layout())
+        // clicktoshow is off initially, so it doesn't *expect* clicking will
+        // do anything, and it doesn't *actually* do anything.
+        .then(clickAndCheck({newPts: [[1, 2]], newCTS: false, on: allIndices, step: 1}))
+        .then(updateAndCheck({update: allAnnotations('visible', false), on: [], step: 2}))
+        // still nothing happens with hidden annotations
+        .then(clickAndCheck({newPts: [[1, 2]], newCTS: false, on: [], step: 3}))
+
+        // turn on clicktoshow (onout mode) and we see some action!
+        .then(updateAndCheck({update: allAnnotations('clicktoshow', 'onout'), on: [], step: 4}))
+        .then(clickAndCheck({newPts: [[1, 2]], newCTS: true, on: [0, 9, 10, 11], step: 5}))
+        .then(clickAndCheck({newPts: [[2, 3]], newCTS: true, on: [2], step: 6}))
+        // clicking the same point again will close all, but in onout mode hasClickToShow
+        // is false because closing notes is kind of passive
+        .then(clickAndCheck({newPts: [[2, 3]], newCTS: false, on: [], step: 7}))
+        // now click two points (as if in compare hovermode)
+        .then(clickAndCheck({newPts: [[1, 2], [2, 3]], newCTS: true, on: [0, 2, 9, 10, 11], step: 8}))
+        // close all by clicking somewhere else
+        .then(clickAndCheck({newPts: [[0, 1]], newCTS: false, on: [], step: 9}))
+
+        // now switch to onoff mode
+        .then(updateAndCheck({update: allAnnotations('clicktoshow', 'onoff'), on: [], step: 10}))
+        // again, clicking a point turns those annotations on
+        .then(clickAndCheck({newPts: [[1, 2]], newCTS: true, on: [0, 9, 10, 11], step: 11}))
+        // clicking a different point (or no point at all) leaves open annotations the same
+        .then(clickAndCheck({newPts: [[0, 1]], newCTS: false, on: [0, 9, 10, 11], step: 12}))
+        .then(clickAndCheck({newPts: [], newCTS: false, on: [0, 9, 10, 11], step: 13}))
+        // clicking another point turns it on too, without turning off the original
+        .then(clickAndCheck({newPts: [[0, 1], [2, 3]], newCTS: true, on: [0, 2, 9, 10, 11], step: 14}))
+        // finally click each one off
+        .then(clickAndCheck({newPts: [[1, 2]], newCTS: true, on: [2], step: 15}))
+        .then(clickAndCheck({newPts: [[2, 3]], newCTS: true, on: [], step: 16}))
         .then(done);
     });
 });
