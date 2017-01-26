@@ -52,22 +52,24 @@ ScrollBox.barColor = '#808BA4';
 ScrollBox.prototype.enable = function enable() {
     var fullLayout = this.gd._fullLayout,
         fullWidth = fullLayout.width,
-        fullHeight = fullLayout.height,
-        graphSize = fullLayout._size;
+        fullHeight = fullLayout.height;
 
     // compute position of scroll box
     var l = this.position.l,
         w = this.position.w,
         t = this.position.t,
         h = this.position.h,
-        boxW = (w <= fullWidth) ? w : fullWidth - graphSize.r - l,
-        boxH = (h <= fullHeight) ? h : fullHeight - graphSize.b - t,
+        boxW = w,
+        boxH = h,
         boxL, boxR,
         boxT, boxB;
 
-    var minSize = 2 * (ScrollBox.barLength + 2 * ScrollBox.barPad);
-    if(boxW <= minSize || fullWidth < boxW) boxW = fullWidth / 4;
-    if(boxH <= minSize || fullHeight < boxH) boxH = fullHeight / 4;
+    if(boxW > fullWidth) boxW = fullWidth / 4;
+    if(boxH > fullHeight) boxH = fullHeight / 4;
+
+    var minSize = 4 + (ScrollBox.barLength + 2 * ScrollBox.barPad);
+    boxW = Math.max(boxW, minSize);
+    boxH = Math.max(boxH, minSize);
 
     if(0 <= l && l <= fullWidth) {
         boxL = l;

@@ -308,7 +308,7 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
 
         button.on('click', function() {
             // skip `dragend` events
-            if (d3.event.defaultPrevented) return;
+            if(d3.event.defaultPrevented) return;
 
             setActive(gd, menuOpts, buttonOpts, gHeader, gButton, buttonIndex);
 
