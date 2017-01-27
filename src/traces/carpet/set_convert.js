@@ -35,8 +35,8 @@ module.exports = function setConvert(trace) {
     var y = trace.y;
 
     // XXX: ONLY PASSTHRU. ONLY. No, ONLY.
-    aax.c2p = function (v) { return v; };
-    bax.c2p = function (v) { return v; };
+    aax.c2p = function(v) { return v; };
+    bax.c2p = function(v) { return v; };
 
     // This is potentially a very expensive step! It does the bulk of the work of constructing
     // an expanded basis of control points. Note in particular that it overwrites the existing

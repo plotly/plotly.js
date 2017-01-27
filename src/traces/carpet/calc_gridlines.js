@@ -35,8 +35,8 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
 
     var xcp = trace._xctrl;
     var ycp = trace._yctrl;
-    var nea = xcp.length;
-    var neb = xcp[0].length;
+    var nea = xcp[0].length;
+    var neb = xcp.length;
     var na = trace.a.length;
     var nb = trace.b.length;
 
@@ -152,7 +152,7 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
     }
 
     function constructArrayGridline(idx) {
-        var i0, j0, ti, tj;
+        var j, i0, j0, ti, tj;
         var xpoints = [];
         var ypoints = [];
         var ret = {};
@@ -173,9 +173,9 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
 
             // In the tickmode: array case, this operation is a simple
             // transfer of data:
-            for(i = 0; i < nea; i++) {
-                xpoints[i] = xcp[i][idx * stride];
-                ypoints[i] = ycp[i][idx * stride];
+            for(j = 0; j < nea; j++) {
+                xpoints[j] = xcp[idx * stride][j];
+                ypoints[j] = ycp[idx * stride][j];
             }
         } else {
             i0 = Math.max(0, Math.min(na - 2, idx));
@@ -191,9 +191,9 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
 
             // In the tickmode: array case, this operation is a simple
             // transfer of data:
-            for(i = 0; i < neb; i++) {
-                xpoints[i] = xcp[idx * stride][i];
-                ypoints[i] = ycp[idx * stride][i];
+            for(j = 0; j < neb; j++) {
+                xpoints[j] = xcp[j][idx * stride];
+                ypoints[j] = ycp[j][idx * stride];
             }
         }
 

@@ -54,10 +54,10 @@ module.exports = function(arrays, na, nb, asmoothing, bsmoothing) {
 
             for(k = 0; k < arrays.length; k++) {
                 ak = arrays[k];
-                f0 = ou3 * ak[i0][j0] + 3 * (ou2 * u * ak[i0 + 1][j0] + ou * u2 * ak[i0 + 2][j0]) + u3 * ak[i0 + 3][j0];
-                f1 = ou3 * ak[i0][j0 + 1] + 3 * (ou2 * u * ak[i0 + 1][j0 + 1] + ou * u2 * ak[i0 + 2][j0 + 1]) + u3 * ak[i0 + 3][j0 + 1];
-                f2 = ou3 * ak[i0][j0 + 2] + 3 * (ou2 * u * ak[i0 + 1][j0 + 2] + ou * u2 * ak[i0 + 2][j0 + 2]) + u3 * ak[i0 + 3][j0 + 2];
-                f3 = ou3 * ak[i0][j0 + 3] + 3 * (ou2 * u * ak[i0 + 1][j0 + 3] + ou * u2 * ak[i0 + 2][j0 + 3]) + u3 * ak[i0 + 3][j0 + 3];
+                f0 = ou3 * ak[j0][i0] + 3 * (ou2 * u * ak[j0][i0 + 1] + ou * u2 * ak[j0][i0 + 2]) + u3 * ak[j0][i0 + 3];
+                f1 = ou3 * ak[j0 + 1][i0] + 3 * (ou2 * u * ak[j0 + 1][i0 + 1] + ou * u2 * ak[j0 + 1][i0 + 2]) + u3 * ak[j0 + 1][i0 + 3];
+                f2 = ou3 * ak[j0 + 2][i0] + 3 * (ou2 * u * ak[j0 + 2][i0 + 1] + ou * u2 * ak[j0 + 2][i0 + 2]) + u3 * ak[j0 + 2][i0 + 3];
+                f3 = ou3 * ak[j0 + 3][i0] + 3 * (ou2 * u * ak[j0 + 3][i0 + 1] + ou * u2 * ak[j0 + 3][i0 + 2]) + u3 * ak[j0 + 3][i0 + 3];
                 out[k] = ov3 * f0 + 3 * (ov2 * v * f1 + ov * v2 * f2) + v3 * f3;
             }
 
@@ -84,10 +84,10 @@ module.exports = function(arrays, na, nb, asmoothing, bsmoothing) {
             var ov = 1 - v;
             for(k = 0; k < arrays.length; k++) {
                 ak = arrays[k];
-                f0 = ov * ak[i0][j0] + v * ak[i0][j0 + 1];
-                f1 = ov * ak[i0 + 1][j0] + v * ak[i0 + 1][j0 + 1];
-                f2 = ov * ak[i0 + 2][j0] + v * ak[i0 + 2][j0 + 1];
-                f3 = ov * ak[i0 + 3][j0] + v * ak[i0 + 3][j0 + 1];
+                f0 = ov * ak[j0][i0] + v * ak[j0 + 1][i0];
+                f1 = ov * ak[j0][i0 + 1] + v * ak[j0 + 1][i0 + 1];
+                f2 = ov * ak[j0][i0 + 2] + v * ak[j0 + 1][i0 + 1];
+                f3 = ov * ak[j0][i0 + 3] + v * ak[j0 + 1][i0 + 1];
 
                 out[k] = ou3 * f0 + 3 * (ou2 * u * f1 + ou * u2 * f2) + u3 * f3;
             }
@@ -113,10 +113,10 @@ module.exports = function(arrays, na, nb, asmoothing, bsmoothing) {
             var ou = 1 - u;
             for(k = 0; k < arrays.length; k++) {
                 ak = arrays[k];
-                f0 = ou * ak[i0][j0] + u * ak[i0 + 1][j0];
-                f1 = ou * ak[i0][j0 + 1] + u * ak[i0 + 1][j0 + 1];
-                f2 = ou * ak[i0][j0 + 2] + u * ak[i0 + 1][j0 + 2];
-                f3 = ou * ak[i0][j0 + 3] + u * ak[i0 + 1][j0 + 3];
+                f0 = ou * ak[j0][i0] + u * ak[j0][i0 + 1];
+                f1 = ou * ak[j0 + 1][i0] + u * ak[j0 + 1][i0 + 1];
+                f2 = ou * ak[j0 + 2][i0] + u * ak[j0 + 2][i0 + 1];
+                f3 = ou * ak[j0 + 3][i0] + u * ak[j0 + 3][i0 + 1];
 
                 out[k] = ov3 * f0 + 3 * (ov2 * v * f1 + ov * v2 * f2) + v3 * f3;
             }
@@ -137,8 +137,8 @@ module.exports = function(arrays, na, nb, asmoothing, bsmoothing) {
             var ou = 1 - u;
             for(k = 0; k < arrays.length; k++) {
                 ak = arrays[k];
-                f0 = ou * ak[i0][j0] + u * ak[i0 + 1][j0];
-                f1 = ou * ak[i0][j0 + 1] + u * ak[i0 + 1][j0 + 1];
+                f0 = ou * ak[j0][i0] + u * ak[j0][i0 + 1];
+                f1 = ou * ak[j0 + 1][i0] + u * ak[j0 + 1][i0 + 1];
 
                 out[k] = ov * f0 + v * f1;
             }

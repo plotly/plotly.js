@@ -18,8 +18,6 @@ module.exports = function findAllPaths(pathinfo) {
         pi,
         j;
 
-    console.log('pathinfo:', pathinfo);
-
     for(i = 0; i < pathinfo.length; i++) {
         pi = pathinfo[i];
 

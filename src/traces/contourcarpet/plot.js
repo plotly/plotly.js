@@ -48,11 +48,11 @@ function plotOne(gd, plotinfo, cd) {
     makeCrossings(pathinfo);
     findAllPaths(pathinfo);
 
-    for (i = 0; i < pathinfo.length; i++) {
+    for(i = 0; i < pathinfo.length; i++) {
         var pi = pathinfo[i];
-        for (j = 0; j < pi.edgepaths.length; j++) {
+        for(j = 0; j < pi.edgepaths.length; j++) {
             var foo = pi.edgepaths[j];
-            for (k = 0; k < foo.length; k++) {
+            for(k = 0; k < foo.length; k++) {
                 var ep = foo[k];
                 var pt = carpet.ab2xy(ep[0], ep[1], true);
                 ep[0] = xa.c2p(pt[0]);
@@ -63,7 +63,7 @@ function plotOne(gd, plotinfo, cd) {
 
     console.log('pathinfo:', pathinfo);
 
-    /*var leftedge = xa.c2p(a[0], true),
+    /* var leftedge = xa.c2p(a[0], true),
         rightedge = xa.c2p(a[a.length - 1], true),
         bottomedge = ya.c2p(b[0], true),
         topedge = ya.c2p(b[b.length - 1], true),
@@ -76,10 +76,10 @@ function plotOne(gd, plotinfo, cd) {
 
     // draw everything
     var plotGroup = makeContourGroup(plotinfo, cd, id);
-    //makeBackground(plotGroup, perimeter, contours);
-    //makeFills(plotGroup, pathinfo, perimeter, contours);
+    // makeBackground(plotGroup, perimeter, contours);
+    // makeFills(plotGroup, pathinfo, perimeter, contours);
     makeLines(plotGroup, pathinfo, contours);
-    //clipGaps(plotGroup, plotinfo, cd[0], perimeter);
+    // clipGaps(plotGroup, plotinfo, cd[0], perimeter);
 }
 
 function emptyPathinfo(contours, plotinfo, cd0) {
@@ -166,7 +166,7 @@ function makeLines(plotgroup, pathinfo, contours) {
         .style('stroke-miterlimit', 1);
 }
 
-/*function makeBackground(plotgroup, perimeter, contours) {
+/* function makeBackground(plotgroup, perimeter, contours) {
     var bggroup = plotgroup.selectAll('g.contourbg').data([0]);
     bggroup.enter().append('g').classed('contourbg', true);
 
@@ -202,7 +202,7 @@ function makeFills(plotgroup, pathinfo, perimeter, contours) {
     });
 }*/
 
-/*function joinAllPaths(pi, perimeter) {
+/* function joinAllPaths(pi, perimeter) {
     var fullpath = (pi.edgepaths.length || pi.z[0][0] < pi.level) ?
             '' : ('M' + perimeter.join('L') + 'Z'),
         i = 0,
@@ -292,7 +292,7 @@ function makeFills(plotgroup, pathinfo, perimeter, contours) {
     return fullpath;
 }*/
 
-/*function clipGaps(plotGroup, plotinfo, cd0, perimeter) {
+/* function clipGaps(plotGroup, plotinfo, cd0, perimeter) {
     var clipId = 'clip' + cd0.trace.uid;
 
     var defs = plotinfo.plot.selectAll('defs')
@@ -340,7 +340,7 @@ function makeFills(plotgroup, pathinfo, perimeter, contours) {
         .call(Drawing.setClipUrl, clipId);
 }*/
 
-/*function makeClipMask(cd0) {
+/* function makeClipMask(cd0) {
     var empties = cd0.trace._emptypoints,
         z = [],
         m = cd0.z.length,

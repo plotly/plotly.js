@@ -113,7 +113,7 @@ function autoContours(start, end, ncontours) {
     return dummyAx;
 }
 
-function heatmappishCalc (gd, trace) {
+function heatmappishCalc(gd, trace) {
     // prepare the raw data
     // run makeCalcdata on x and y even for heatmaps, in case of category mappings
     var carpet = trace._carpet;

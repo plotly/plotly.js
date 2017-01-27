@@ -35,12 +35,12 @@ module.exports = function(a, b, cheaterslope) {
         bscal = (bdata.length - 1) / (bdata[bdata.length - 1] - bdata[0]) / (nb - 1);
     }
 
-    for(i = 0; i < na; i++) {
-        data[i] = [];
-        aval = adata ? (adata[i] - adata[0]) * ascal : i / (na - 1);
-        for(j = 0; j < nb; j++) {
-            bval = bdata ? (bdata[j] - bdata[0]) * bscal : j / (nb - 1);
-            data[i][j] = aval - bval * cheaterslope;
+    for(j = 0; j < nb; j++) {
+        data[j] = [];
+        bval = bdata ? (bdata[j] - bdata[0]) * bscal : j / (nb - 1);
+        for(i = 0; i < na; i++) {
+            aval = adata ? (adata[i] - adata[0]) * ascal : i / (na - 1);
+            data[j][i] = aval - bval * cheaterslope;
         }
     }
 
