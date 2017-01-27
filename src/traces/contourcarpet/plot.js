@@ -8,8 +8,7 @@
 
 'use strict';
 
-var scatterPlot = require('../scatter/plot');
-var Axes = require('../../plots/cartesian/axes');
+var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
 
 var makeCrossings = require('../contour/make_crossings');
@@ -22,13 +21,13 @@ module.exports = function plot(gd, plotinfo, cdcontours) {
 };
 
 function plotOne(gd, plotinfo, cd) {
-    var i, j, k;
+    var i, j, k, path, pt, pts;
     var trace = cd[0].trace;
     var carpet = trace._carpet;
-    var a = cd[0].a;
-    var b = cd[0].b;
-    var aa = carpet.aaxis;
-    var ba = carpet.baxis;
+    // var a = cd[0].a;
+    // var b = cd[0].b;
+    // var aa = carpet.aaxis;
+    // var ba = carpet.baxis;
     var contours = trace.contours;
     var uid = trace.uid;
     var xa = plotinfo.xaxis;
@@ -51,17 +50,24 @@ function plotOne(gd, plotinfo, cd) {
     for(i = 0; i < pathinfo.length; i++) {
         var pi = pathinfo[i];
         for(j = 0; j < pi.edgepaths.length; j++) {
-            var foo = pi.edgepaths[j];
-            for(k = 0; k < foo.length; k++) {
-                var ep = foo[k];
-                var pt = carpet.ab2xy(ep[0], ep[1], true);
-                ep[0] = xa.c2p(pt[0]);
-                ep[1] = ya.c2p(pt[1]);
+            path = pi.edgepaths[j];
+            for(k = 0; k < path.length; k++) {
+                pts = path[k];
+                pt = carpet.ab2xy(pts[0], pts[1], true);
+                pts[0] = xa.c2p(pt[0]);
+                pts[1] = ya.c2p(pt[1]);
+            }
+        }
+        for(j = 0; j < pi.paths.length; j++) {
+            path = pi.paths[j];
+            for(k = 0; k < path.length; k++) {
+                pts = path[k];
+                pt = carpet.ab2xy(pts[0], pts[1], true);
+                pts[0] = xa.c2p(pt[0]);
+                pts[1] = ya.c2p(pt[1]);
             }
         }
     }
-
-    console.log('pathinfo:', pathinfo);
 
     /* var leftedge = xa.c2p(a[0], true),
         rightedge = xa.c2p(a[a.length - 1], true),
@@ -149,10 +155,7 @@ function makeLines(plotgroup, pathinfo, contours) {
         .attr('d', function(d) {
             return Drawing.smoothopen(d, smoothing);
         })
-        .style('stroke-miterlimit', 1)
-        .style('stroke-width', 1)
-        .style('stroke', 'black')
-        .style('fill', 'none');
+        .style('vector-effect', 'non-scaling-stroke');
 
     var closedcontourlines = linegroup.selectAll('path.closedline')
         .data(function(d) { return d.paths; });
@@ -163,6 +166,7 @@ function makeLines(plotgroup, pathinfo, contours) {
         .attr('d', function(d) {
             return Drawing.smoothclosed(d, smoothing);
         })
+        .style('vector-effect', 'non-scaling-stroke')
         .style('stroke-miterlimit', 1);
 }
 

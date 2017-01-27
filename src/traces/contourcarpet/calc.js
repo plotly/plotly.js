@@ -9,6 +9,7 @@
 
 'use strict';
 
+var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 var extendFlat = require('../../lib').extendFlat;
 var Registry = require('../../registry');
@@ -120,7 +121,6 @@ function heatmappishCalc(gd, trace) {
     var aax = carpet.aaxis,
         bax = carpet.baxis,
         isContour = Registry.traceIs(trace, 'contour'),
-        isGL2D = Registry.traceIs(trace, 'gl2d'),
         zsmooth = isContour ? 'best' : trace.zsmooth,
         a,
         a0,
@@ -146,10 +146,8 @@ function heatmappishCalc(gd, trace) {
 
     z = clean2dArray(trace.z, trace.transpose);
 
-    if(isContour || trace.connectgaps) {
-        trace._emptypoints = findEmpties(z);
-        trace._interpz = interp2d(z, trace._emptypoints, trace._interpz);
-    }
+    trace._emptypoints = findEmpties(z);
+    trace._interpz = interp2d(z, trace._emptypoints, trace._interpz);
 
     function noZsmooth(msg) {
         zsmooth = trace._input.zsmooth = trace.zsmooth = false;
@@ -196,16 +194,6 @@ function heatmappishCalc(gd, trace) {
 
     // auto-z and autocolorscale if applicable
     colorscaleCalc(trace, z, '', 'z');
-
-    if(isContour && trace.contours && trace.contours.coloring === 'heatmap') {
-        var dummyTrace = {
-            type: trace.type === 'contour' ? 'heatmap' : 'histogram2d',
-            xcalendar: trace.xcalendar,
-            ycalendar: trace.ycalendar
-        };
-        cd0.xfill = makeBoundArray(dummyTrace, xIn, a0, da, xlen, aax);
-        cd0.yfill = makeBoundArray(dummyTrace, yIn, b0, db, z.length, bax);
-    }
 
     return [cd0];
 }

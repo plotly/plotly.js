@@ -15,14 +15,14 @@ ContourCarpet.supplyDefaults = require('./defaults');
 // ContourCarpet.colorbar = require('../scatter/colorbar');
 ContourCarpet.calc = require('./calc');
 ContourCarpet.plot = require('./plot');
-// ContourCarpet.style = require('./style');
+ContourCarpet.style = require('./style');
 // ContourCarpet.hoverPoints = require('./hover');
 // ContourCarpet.selectPoints = require('./select');
 
 ContourCarpet.moduleType = 'trace';
 ContourCarpet.name = 'contourcarpet';
 ContourCarpet.basePlotModule = require('../../plots/cartesian');
-ContourCarpet.categories = ['cartesian', 'carpet', 'symbols', 'markerColorscale', 'showLegend'];
+ContourCarpet.categories = ['cartesian', 'carpet', 'contour', 'symbols', 'markerColorscale', 'showLegend'];
 ContourCarpet.meta = {
     hrName: 'contour_carpet',
     description: [].join(' ')

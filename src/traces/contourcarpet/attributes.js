@@ -10,16 +10,12 @@
 
 var heatmapAttrs = require('../heatmap/attributes');
 var scatterAttrs = require('../scatter/attributes');
-var plotAttrs = require('../../plots/attributes');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
-var colorAttributes = require('../../components/colorscale/color_attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
-var scatterMarkerAttrs = scatterAttrs.marker,
-    scatterLineAttrs = scatterAttrs.line,
-    scatterMarkerLineAttrs = scatterMarkerAttrs.line;
+var scatterLineAttrs = scatterAttrs.line;
 
 module.exports = extendFlat({}, {
     carpetid: {

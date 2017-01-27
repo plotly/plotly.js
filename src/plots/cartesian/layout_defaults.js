@@ -53,7 +53,15 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         // Note that we track the *opposite* of whether it's a cheater plot
         // because that makes it straightforward to check that any trace on
         // this axis that's *not* a cheater will make it visible
-        if((!Registry.traceIs(trace, 'carpet') || !trace._cheater) && xaListNotCheater.indexOf(xaName) === -1) {
+        //
+        // There are three conditions that cause an axis to get marked as non
+        // cheater (which is to say, visible by default):
+        //   1. It's not in the carpet category at all
+        //   2. Or if it is, then it's not a non-cheater carpet axis
+        //   3. And the axis isn't already marked non-cheater
+        if((!Registry.traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) &&
+            xaListNotCheater.indexOf(xaName) === -1
+        ) {
             xaListNotCheater.push(xaName);
         }
 
