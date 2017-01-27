@@ -296,14 +296,14 @@ describe('contour calc', function() {
             contoursFinal.forEach(function(spec) {
                 var out = _calc({
                     z: [[0, 2], [3, 5]],
-                    contours: contoursIn,
+                    contours: Lib.extendFlat({}, contoursIn),
                     ncontours: spec.inputNcontours
                 }).trace;
 
                 ['start', 'end', 'size'].forEach(function(attr) {
-                    expect(out.contours[attr]).toBe(spec[attr], [contoursIn, attr]);
+                    expect(out.contours[attr]).toBe(spec[attr], [contoursIn, spec.inputNcontours, attr]);
                     // all these get copied back to the input trace
-                    expect(out._input.contours[attr]).toBe(spec[attr], [contoursIn, attr]);
+                    expect(out._input.contours[attr]).toBe(spec[attr], [contoursIn, spec.inputNcontours, attr]);
                 });
 
                 expect(out._input.autocontour).toBe(true);
