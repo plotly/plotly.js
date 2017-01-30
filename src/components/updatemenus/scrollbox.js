@@ -375,12 +375,12 @@ ScrollBox.prototype.setTranslate = function setTranslate(xf, yf) {
     if(this._hbar) {
         this._hbar.call(Lib.setTranslate,
             translateX + xf * this._hbarTranslateMax,
-            0);
+            translateY);
     }
 
     if(this._vbar) {
         this._vbar.call(Lib.setTranslate,
-            0,
+            translateX,
             translateY + yf * this._vbarTranslateMax);
     }
 };
