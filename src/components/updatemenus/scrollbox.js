@@ -249,7 +249,7 @@ ScrollBox.prototype.enable = function enable() {
     }
 
     // set initial position
-    this._setTranslate(0, 0);
+    this.setTranslate();
 };
 
 /**
@@ -304,7 +304,7 @@ ScrollBox.prototype._onBoxDrag = function onBarDrag() {
     }
     else yf = 0;
 
-    this._setTranslate(xf, yf);
+    this.setTranslate(xf, yf);
 };
 
 /**
@@ -338,17 +338,20 @@ ScrollBox.prototype._onBarDrag = function onBarDrag() {
     }
     else yf = 0;
 
-    this._setTranslate(xf, yf);
+    this.setTranslate(xf, yf);
 };
 
 /**
  * Set clip path and scroll bar translate transform
  *
  * @method
- * @param {number}  xf  Horizontal position as a container fraction
- * @param {number}  yf  Vertical position as a container fraction
+ * @param {number}  [xf=0]  Horizontal position as a container fraction
+ * @param {number}  [yf=0]  Vertical position as a container fraction
  */
-ScrollBox.prototype._setTranslate = function _setTranslate(xf, yf) {
+ScrollBox.prototype.setTranslate = function setTranslate(xf, yf) {
+    xf = Lib.constrain(xf || 0, 0, 1);
+    yf = Lib.constrain(yf || 0, 0, 1);
+
     // store xf and yf (needed by ScrollBox.prototype._on*Drag)
     this._xf = xf;
     this._yf = yf;
