@@ -332,6 +332,33 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
     buttons.call(styleButtons, menuOpts);
 
     scrollBox.enable();
+
+    var active = menuOpts.active,
+        i;
+    if(isVertical) {
+        if(scrollBox._vbar) {
+            var translateY = 0;
+            for(i = 0; i < active; i++) {
+                translateY += menuOpts.heights[i] + constants.gapButton;
+            }
+            translateY -= constants.gapButton;
+
+            var yf = translateY / (scrollBox.position.h - scrollBox._box.h);
+            scrollBox.setTranslate(0, yf);
+        }
+    }
+    else {
+        if(scrollBox._hbar) {
+            var translateX = 0;
+            for(i = 0; i < active; i++) {
+                translateX += menuOpts.widths[i] + constants.gapButton;
+            }
+            translateX -= constants.gapButton;
+
+            var xf = translateX / (scrollBox.position.w - scrollBox._box.w);
+            scrollBox.setTranslate(xf, 0);
+        }
+    }
 }
 
 function setActive(gd, menuOpts, buttonOpts, gHeader, gButton, buttonIndex, isSilentUpdate) {
