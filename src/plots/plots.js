@@ -2026,4 +2026,6 @@ plots.doCalcdata = function(gd, traces) {
 
         calcdata[i] = cd;
     }
+
+    if(gd._fullLayout._rehover) gd._fullLayout._rehover();
 };

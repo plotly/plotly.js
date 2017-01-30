@@ -114,10 +114,13 @@ fx.init = function(gd) {
             var maindrag = dragBox(gd, plotinfo, 0, 0,
                 xa._length, ya._length, 'ns', 'ew');
 
-            gd._lastMoveEvt;
             maindrag.onmousemove = function(evt) {
-                gd._lastMoveEvt = evt;
-                fx.hover(gd, evt, subplot);
+                // This is on `gd._fullLayout`, *not* fullLayout because the reference
+                // changes by the time this is called again.
+                gd._fullLayout._rehover = function() {
+                    fx.hover(gd, evt, subplot);
+                };
+                gd._fullLayout._rehover();
                 fullLayout._lasthover = maindrag;
                 fullLayout._hoversubplot = subplot;
             };
@@ -132,13 +135,10 @@ fx.init = function(gd) {
             maindrag.onmouseout = function(evt) {
                 if(gd._dragging) return;
 
-                gd._lastMoveEvt = null;
-
                 dragElement.unhover(gd, evt);
             };
 
             maindrag.onclick = function(evt) {
-                if(gd._lastMoveEvt) fx.hover(gd, gd._lastMoveEvt, subplot);
                 fx.click(gd, evt);
             };
 
