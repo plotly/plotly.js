@@ -116,6 +116,42 @@ describe('Plotly.Snapshot', function() {
             expect(thumbTile.layout.annotations).toEqual(THUMBNAIL_DEFAULT_LAYOUT.annotations);
         });
 
+        it('should create a 3D thumbnail with limited attributes', function() {
+
+            var figure = {
+                data: [{
+                    type: 'scatter',
+                    mode: 'markers',
+                    y: [2, 4, 6, 5, 7, 4],
+                    x: [1, 3, 4, 6, 3, 1],
+                    name: 'C'
+                }],
+                layout: {
+                    autosize: true,
+                    scene: {
+                        aspectratio: {y: 1, x: 1, z: 1}
+                    }
+                }};
+
+
+            var thumbnailOptions = {
+                tileClass: 'thumbnail'
+            };
+
+            var AXIS_OVERRIDE = {
+                title: '',
+                showaxeslabels: false,
+                showticklabels: false,
+                linetickenable: false
+            };
+
+            var thumbTile = Plotly.Snapshot.clone(figure, thumbnailOptions);
+            expect(thumbTile.layout.scene.xaxis).toEqual(AXIS_OVERRIDE);
+            expect(thumbTile.layout.scene.yaxis).toEqual(AXIS_OVERRIDE);
+            expect(thumbTile.layout.scene.zaxis).toEqual(AXIS_OVERRIDE);
+        });
+
+
         it('should create a custom sized Tile based on options', function() {
             var customOptions = {
                 tileClass: 'notarealclass',

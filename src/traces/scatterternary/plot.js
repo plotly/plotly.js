@@ -12,7 +12,7 @@
 var scatterPlot = require('../scatter/plot');
 
 
-module.exports = function plot(ternary, data) {
+module.exports = function plot(ternary, moduleCalcData) {
     var plotContainer = ternary.plotContainer;
 
     // remove all nodes inside the scatter layer
@@ -25,20 +25,10 @@ module.exports = function plot(ternary, data) {
         plot: plotContainer
     };
 
-    var calcdata = new Array(data.length),
-        fullCalcdata = ternary.graphDiv.calcdata;
-
-    for(var i = 0; i < fullCalcdata.length; i++) {
-        var j = data.indexOf(fullCalcdata[i][0].trace);
-
-        if(j === -1) continue;
-
-        calcdata[j] = fullCalcdata[i];
-
-        // while we're here and have references to both the Ternary object
-        // and fullData, connect the two (for use by hover)
-        data[j]._ternary = ternary;
+    // add ref to ternary subplot object in fullData traces
+    for(var i = 0; i < moduleCalcData.length; i++) {
+        moduleCalcData[i][0].trace._ternary = ternary;
     }
 
-    scatterPlot(ternary.graphDiv, plotinfo, calcdata);
+    scatterPlot(ternary.graphDiv, plotinfo, moduleCalcData);
 };

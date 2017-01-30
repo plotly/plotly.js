@@ -68,7 +68,8 @@ function runTests(transitionDuration) {
         it('transitions an annotation', function(done) {
             function annotationPosition() {
                 var g = gd._fullLayout._infolayer.select('.annotation').select('.annotation-text-g');
-                return [parseInt(g.attr('x')), parseInt(g.attr('y'))];
+                var bBox = g.node().getBoundingClientRect();
+                return [bBox.left, bBox.top];
             }
             var p1, p2;
 

@@ -104,6 +104,8 @@ function LineWithMarkers(scene, uid) {
     this.scatter._trace = this;
     this.fancyScatter = createFancyScatter(scene.glplot, this.scatterOptions);
     this.fancyScatter._trace = this;
+
+    this.isVisible = false;
 }
 
 var proto = LineWithMarkers.prototype;
@@ -232,12 +234,14 @@ function _convertColor(colors, opacities, count) {
  */
 proto.update = function(options) {
     if(options.visible !== true) {
+        this.isVisible = false;
         this.hasLines = false;
         this.hasErrorX = false;
         this.hasErrorY = false;
         this.hasMarkers = false;
     }
     else {
+        this.isVisible = true;
         this.hasLines = subTypes.hasLines(options);
         this.hasErrorX = options.error_x.visible === true;
         this.hasErrorY = options.error_y.visible === true;
@@ -250,7 +254,10 @@ proto.update = function(options) {
     this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
     this.connectgaps = !!options.connectgaps;
 
-    if(this.isFancy(options)) {
+    if(!this.isVisible) {
+        this.clear();
+    }
+    else if(this.isFancy(options)) {
         this.updateFancy(options);
     }
     else {
@@ -284,6 +291,22 @@ function allFastTypesLikely(a) {
 
     return true;
 }
+
+proto.clear = function() {
+    this.lineOptions.positions = new Float64Array(0);
+    this.line.update(this.lineOptions);
+
+    this.errorXOptions.positions = new Float64Array(0);
+    this.errorX.update(this.errorXOptions);
+
+    this.errorYOptions.positions = new Float64Array(0);
+    this.errorY.update(this.errorYOptions);
+
+    this.scatterOptions.positions = new Float64Array(0);
+    this.scatterOptions.glyphs = [];
+    this.scatter.update(this.scatterOptions);
+    this.fancyScatter.update(this.scatterOptions);
+};
 
 proto.updateFast = function(options) {
     var x = this.xData = this.pickXData = options.x;

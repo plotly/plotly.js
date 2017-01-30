@@ -19,9 +19,26 @@
           "#447adb",
           "#db5a44",
           "#447adb"
-        ]
+        ],
+        "line": {
+          "width": [
+            2,
+            3,
+            2,
+            3
+          ],
+          "color": [
+            "red",
+            "green",
+            "blue",
+            "yellow"
+          ]
+        }
       },
       "type": "bar"
     }
-  ]
+  ],
+  "layout": {
+    "showlegend": true
+  }
 }
