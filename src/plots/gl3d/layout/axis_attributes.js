@@ -14,6 +14,14 @@ var extendFlat = require('../../../lib/extend').extendFlat;
 
 
 module.exports = {
+    visible: {
+        valType: 'boolean',
+        description: [
+            'A single toggle to hide the axis while preserving interaction like dragging.',
+            'Default is true when a cheater plot is present on the axis, otherwise',
+            'false'
+        ].join(' ')
+    },
     showspikes: {
         valType: 'boolean',
         role: 'info',
