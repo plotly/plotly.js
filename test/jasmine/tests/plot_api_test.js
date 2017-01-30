@@ -282,7 +282,36 @@ describe('Test plot api', function() {
             expect(gd._fullData[0].marker.color).toBe(colorDflt[0]);
             expect(gd._fullData[1].marker.color).toBe(colorDflt[1]);
         });
+    });
 
+    describe('Plotly.restyle unmocked', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(function() {
+            destroyGraphDiv();
+        });
+
+        it('should redo auto z/contour when editing z array', function() {
+            Plotly.plot(gd, [{type: 'contour', z: [[1, 2], [3, 4]]}]).then(function() {
+                expect(gd.data[0].zauto).toBe(true, gd.data[0]);
+                expect(gd.data[0].zmin).toBe(1);
+                expect(gd.data[0].zmax).toBe(4);
+
+                expect(gd.data[0].autocontour).toBe(true);
+                expect(gd.data[0].contours).toEqual({start: 1.5, end: 3.5, size: 0.5});
+
+                return Plotly.restyle(gd, {'z[0][0]': 10});
+            }).then(function() {
+                expect(gd.data[0].zmin).toBe(2);
+                expect(gd.data[0].zmax).toBe(10);
+
+                expect(gd.data[0].contours).toEqual({start: 3, end: 9, size: 1});
+            });
+        });
     });
 
     describe('Plotly.deleteTraces', function() {
