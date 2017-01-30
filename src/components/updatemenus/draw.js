@@ -259,6 +259,8 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
         exit.remove();
     }
 
+    // if folding a dropdown menu, don't draw the buttons
+    if(!buttons.size()) return;
 
     var x0 = 0;
     var y0 = 0;
@@ -607,6 +609,11 @@ function setItemPosition(item, menuOpts, posOpts, overrideOpts) {
 
 function removeAllButtons(gButton) {
     gButton.selectAll('g.' + constants.dropdownButtonClassName).remove();
+
+    // remove scrollbox
+    gButton.selectAll('rect.scrollbar-horizontal').remove();
+    gButton.selectAll('rect.scrollbar-vertical').remove();
+    gButton.call(Drawing.setClipUrl, null);
 }
 
 function clearPushMargins(gd) {
