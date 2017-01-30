@@ -14,8 +14,7 @@ var d3 = require('d3');
 var Drawing = require('../../components/drawing');
 var heatmapStyle = require('../heatmap/style');
 
-// var makeColorMap = require('./make_color_map');
-
+var makeColorMap = require('../contour/make_color_map');
 
 module.exports = function style(gd) {
     var contours = d3.select(gd).selectAll('g.contour');
@@ -27,12 +26,12 @@ module.exports = function style(gd) {
     contours.each(function(d) {
         var c = d3.select(this),
             trace = d.trace,
-            // contours = trace.contours,
-            line = trace.line;
-            // cs = contours.size || 1,
-            // start = contours.start;
+            contours = trace.contours,
+            line = trace.line,
+            cs = contours.size || 1,
+            start = contours.start;
 
-        // var colorMap = makeColorMap(trace);
+        var colorMap = makeColorMap(trace);
 
         c.selectAll('g.contourlevel').each(function() {
             d3.select(this).selectAll('path')
@@ -43,13 +42,13 @@ module.exports = function style(gd) {
                     line.dash);
         });
 
-        /* c.selectAll('g.contourbg path')
+        c.selectAll('g.contourbg path')
             .style('fill', colorMap(start - cs / 2));
 
         c.selectAll('g.contourfill path')
             .style('fill', function(d, i) {
                 return colorMap(start + (i + 0.5) * cs);
-            });*/
+            });
     });
 
     heatmapStyle(gd);

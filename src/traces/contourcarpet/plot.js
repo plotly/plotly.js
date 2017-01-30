@@ -8,6 +8,7 @@
 
 'use strict';
 
+var d3 = require('d3');
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
 
@@ -21,11 +22,11 @@ module.exports = function plot(gd, plotinfo, cdcontours) {
 };
 
 function plotOne(gd, plotinfo, cd) {
-    var i, j, k, path, pt, pts;
+    var i, j, k, path, pt;
     var trace = cd[0].trace;
     var carpet = trace._carpet;
-    // var a = cd[0].a;
-    // var b = cd[0].b;
+    var a = cd[0].a;
+    var b = cd[0].b;
     // var aa = carpet.aaxis;
     // var ba = carpet.baxis;
     var contours = trace.contours;
@@ -47,45 +48,56 @@ function plotOne(gd, plotinfo, cd) {
     makeCrossings(pathinfo);
     findAllPaths(pathinfo);
 
+    function ab2p(ab) {
+        var pt = carpet.ab2xy(ab[0], ab[1], true);
+        return [xa.c2p(pt[0]), ya.c2p(pt[1])];
+    }
+
     for(i = 0; i < pathinfo.length; i++) {
         var pi = pathinfo[i];
+        var pedgepaths = pi.pedgepaths = [];
+        var ppaths = pi.ppaths = [];
         for(j = 0; j < pi.edgepaths.length; j++) {
             path = pi.edgepaths[j];
+            var pedgepath = [];
             for(k = 0; k < path.length; k++) {
-                pts = path[k];
-                pt = carpet.ab2xy(pts[0], pts[1], true);
-                pts[0] = xa.c2p(pt[0]);
-                pts[1] = ya.c2p(pt[1]);
+                pedgepath[k] = ab2p(path[k]);
             }
+            pedgepaths.push(pedgepath);
         }
         for(j = 0; j < pi.paths.length; j++) {
             path = pi.paths[j];
+            var ppath = [];
             for(k = 0; k < path.length; k++) {
-                pts = path[k];
-                pt = carpet.ab2xy(pts[0], pts[1], true);
-                pts[0] = xa.c2p(pt[0]);
-                pts[1] = ya.c2p(pt[1]);
+                ppath[k] = ab2p(path[k]);
             }
+            ppaths.push(ppath);
         }
     }
 
-    /* var leftedge = xa.c2p(a[0], true),
-        rightedge = xa.c2p(a[a.length - 1], true),
-        bottomedge = ya.c2p(b[0], true),
-        topedge = ya.c2p(b[b.length - 1], true),
-        perimeter = [
-            [leftedge, topedge],
-            [rightedge, topedge],
-            [rightedge, bottomedge],
-            [leftedge, bottomedge]
-        ];*/
+    // Mark the perimeter in a-b coordinates:
+    var leftedge = a[0];
+    var rightedge = a[a.length - 1];
+    var bottomedge = b[0];
+    var topedge = b[b.length - 1];
+    var perimeter = [
+        [leftedge, topedge],
+        [rightedge, topedge],
+        [rightedge, bottomedge],
+        [leftedge, bottomedge]
+    ];
 
     // draw everything
     var plotGroup = makeContourGroup(plotinfo, cd, id);
-    // makeBackground(plotGroup, perimeter, contours);
-    // makeFills(plotGroup, pathinfo, perimeter, contours);
+    makeBackground(plotGroup, contours, carpet);
+    makeFills(plotGroup, pathinfo, perimeter, contours, ab2p);
     makeLines(plotGroup, pathinfo, contours);
+    // clipBoundary(plotGroup, carpet);
     // clipGaps(plotGroup, plotinfo, cd[0], perimeter);
+}
+
+function clipBoundary(plotGroup, carpet) {
+    plotGroup.attr('clip-path', 'url(#' + carpet.clipPathId + ')');
 }
 
 function emptyPathinfo(contours, plotinfo, cd0) {
@@ -147,7 +159,7 @@ function makeLines(plotgroup, pathinfo, contours) {
     linegroup.exit().remove();
 
     var opencontourlines = linegroup.selectAll('path.openline')
-        .data(function(d) { return d.edgepaths; });
+        .data(function(d) { return d.pedgepaths; });
     opencontourlines.enter().append('path')
         .classed('openline', true);
     opencontourlines.exit().remove();
@@ -158,7 +170,7 @@ function makeLines(plotgroup, pathinfo, contours) {
         .style('vector-effect', 'non-scaling-stroke');
 
     var closedcontourlines = linegroup.selectAll('path.closedline')
-        .data(function(d) { return d.paths; });
+        .data(function(d) { return d.ppaths; });
     closedcontourlines.enter().append('path')
         .classed('closedline', true);
     closedcontourlines.exit().remove();
@@ -170,7 +182,7 @@ function makeLines(plotgroup, pathinfo, contours) {
         .style('stroke-miterlimit', 1);
 }
 
-/* function makeBackground(plotgroup, perimeter, contours) {
+function makeBackground(plotgroup, contours, carpet) {
     var bggroup = plotgroup.selectAll('g.contourbg').data([0]);
     bggroup.enter().append('g').classed('contourbg', true);
 
@@ -179,11 +191,11 @@ function makeLines(plotgroup, pathinfo, contours) {
     bgfill.enter().append('path');
     bgfill.exit().remove();
     bgfill
-        .attr('d', 'M' + perimeter.join('L') + 'Z')
+        .attr('d', carpet.clipPathData)
         .style('stroke', 'none');
 }
 
-function makeFills(plotgroup, pathinfo, perimeter, contours) {
+function makeFills(plotgroup, pathinfo, perimeter, contours, ab2p) {
     var fillgroup = plotgroup.selectAll('g.contourfill')
         .data([0]);
     fillgroup.enter().append('g')
@@ -199,16 +211,17 @@ function makeFills(plotgroup, pathinfo, perimeter, contours) {
         // if the whole perimeter is above this level, start with a path
         // enclosing the whole thing. With all that, the parity should mean
         // that we always fill everything above the contour, nothing below
-        var fullpath = joinAllPaths(pi, perimeter);
+        var fullpath = joinAllPaths(pi, perimeter, ab2p);
 
         if(!fullpath) d3.select(this).remove();
         else d3.select(this).attr('d', fullpath).style('stroke', 'none');
     });
-}*/
+}
 
-/* function joinAllPaths(pi, perimeter) {
+function joinAllPaths(pi, perimeter, ab2p) {
+    console.log('pi:', pi);
     var fullpath = (pi.edgepaths.length || pi.z[0][0] < pi.level) ?
-            '' : ('M' + perimeter.join('L') + 'Z'),
+            '' : ('M' + perimeter.map(ab2p).join('L') + 'Z'),
         i = 0,
         startsleft = pi.edgepaths.map(function(v, i) { return i; }),
         newloop = true,
@@ -225,7 +238,7 @@ function makeFills(plotgroup, pathinfo, perimeter, contours) {
     function isright(pt) { return Math.abs(pt[0] - perimeter[2][0]) < 0.01; }
 
     while(startsleft.length) {
-        addpath = Drawing.smoothopen(pi.edgepaths[i], pi.smoothing);
+        addpath = Drawing.smoothopen(pi.edgepaths[i].map(ab2p), pi.smoothing);
         fullpath += newloop ? addpath : addpath.replace(/^M/, 'L');
         startsleft.splice(startsleft.indexOf(i), 1);
         endpt = pi.edgepaths[i][pi.edgepaths[i].length - 1];
@@ -269,7 +282,8 @@ function makeFills(plotgroup, pathinfo, perimeter, contours) {
             endpt = newendpt;
 
             if(nexti >= 0) break;
-            fullpath += 'L' + newendpt;
+            console.log('add new endpoint:', newendpt);
+            fullpath += 'L' + ab2p(newendpt);
         }
 
         if(nexti === pi.edgepaths.length) {
@@ -290,11 +304,11 @@ function makeFills(plotgroup, pathinfo, perimeter, contours) {
 
     // finally add the interior paths
     for(i = 0; i < pi.paths.length; i++) {
-        fullpath += Drawing.smoothclosed(pi.paths[i], pi.smoothing);
+        fullpath += Drawing.smoothclosed(pi.paths[i].map(ab2p), pi.smoothing);
     }
 
     return fullpath;
-}*/
+}
 
 /* function clipGaps(plotGroup, plotinfo, cd0, perimeter) {
     var clipId = 'clip' + cd0.trace.uid;

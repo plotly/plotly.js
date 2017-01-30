@@ -88,8 +88,9 @@ function drawClipPath(trace, layer, xaxis, yaxis) {
     // at the corners, but it's so negligible that I don't think it's worth
     // the extra complexity
     trace.clipPathId = 'clip' + trace.uid + 'carpet';
+    trace.clipPathData = 'M' + segs.join('L') + 'Z';
     clip.attr('id', trace.clipPathId);
-    path.attr('d', 'M' + segs.join('L') + 'Z');
+    path.attr('d', trace.clipPathData);
         // .style('stroke-width', 20)
         // .style('vector-effect', 'non-scaling-stroke')
         // .style('stroke', 'black')
