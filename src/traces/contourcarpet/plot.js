@@ -9,11 +9,19 @@
 'use strict';
 
 var d3 = require('d3');
+var map1dArray = require('../carpet/map_1d_array');
+var makepath = require('../carpet/makepath');
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
 
 var makeCrossings = require('../contour/make_crossings');
 var findAllPaths = require('../contour/find_all_paths');
+
+function makeg(el, type, klass) {
+    var join = el.selectAll(type + '.' + klass).data([0]);
+    join.enter().append(type).classed(klass, true);
+    return join;
+}
 
 module.exports = function plot(gd, plotinfo, cdcontours) {
     for(var i = 0; i < cdcontours.length; i++) {
@@ -22,7 +30,7 @@ module.exports = function plot(gd, plotinfo, cdcontours) {
 };
 
 function plotOne(gd, plotinfo, cd) {
-    var i, j, k, path, pt;
+    var i, j, k, path;
     var trace = cd[0].trace;
     var carpet = trace._carpet;
     var a = cd[0].a;
@@ -89,10 +97,10 @@ function plotOne(gd, plotinfo, cd) {
 
     // draw everything
     var plotGroup = makeContourGroup(plotinfo, cd, id);
-    makeBackground(plotGroup, contours, carpet);
+    makeBackground(plotGroup, xa, ya, contours, carpet);
     makeFills(plotGroup, pathinfo, perimeter, contours, ab2p);
     makeLines(plotGroup, pathinfo, contours);
-    // clipBoundary(plotGroup, carpet);
+    clipBoundary(plotGroup, carpet);
     // clipGaps(plotGroup, plotinfo, cd[0], perimeter);
 }
 
@@ -182,16 +190,27 @@ function makeLines(plotgroup, pathinfo, contours) {
         .style('stroke-miterlimit', 1);
 }
 
-function makeBackground(plotgroup, contours, carpet) {
-    var bggroup = plotgroup.selectAll('g.contourbg').data([0]);
-    bggroup.enter().append('g').classed('contourbg', true);
+function makeBackground(plotgroup, xaxis, yaxis, contours, carpet) {
+    var seg, xp, yp, i;
+    var bggroup = makeg(plotgroup, 'g', 'contourbg');
 
     var bgfill = bggroup.selectAll('path')
         .data(contours.coloring === 'fill' ? [0] : []);
     bgfill.enter().append('path');
     bgfill.exit().remove();
+
+    var segments = carpet._clipsegments;
+    var segs = [];
+
+    for(i = 0; i < segments.length; i++) {
+        seg = segments[i];
+        xp = map1dArray([], seg.x, xaxis.c2p);
+        yp = map1dArray([], seg.y, yaxis.c2p);
+        segs.push(makepath(xp, yp, seg.bicubic));
+    }
+
     bgfill
-        .attr('d', carpet.clipPathData)
+        .attr('d', 'M' + segs.join('L') + 'Z')
         .style('stroke', 'none');
 }
 
@@ -219,7 +238,6 @@ function makeFills(plotgroup, pathinfo, perimeter, contours, ab2p) {
 }
 
 function joinAllPaths(pi, perimeter, ab2p) {
-    console.log('pi:', pi);
     var fullpath = (pi.edgepaths.length || pi.z[0][0] < pi.level) ?
             '' : ('M' + perimeter.map(ab2p).join('L') + 'Z'),
         i = 0,
@@ -282,7 +300,6 @@ function joinAllPaths(pi, perimeter, ab2p) {
             endpt = newendpt;
 
             if(nexti >= 0) break;
-            console.log('add new endpoint:', newendpt);
             fullpath += 'L' + ab2p(newendpt);
         }
 
