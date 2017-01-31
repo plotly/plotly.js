@@ -84,6 +84,21 @@ describe('Test plot api', function() {
                 expect(gd._transitionData._frames[2].name).toEqual('frame3');
             }).catch(fail).then(done);
         });
+
+        it('should emit afterplot event after plotting is done', function(done) {
+            var afterPlot = false;
+
+            var promise = Plotly.plot(gd, [{ y: [2, 1, 2]}]);
+
+            gd.on('plotly_afterplot', function() {
+                afterPlot = true;
+            });
+
+            promise.then(function() {
+                expect(afterPlot).toBe(true);
+            })
+            .then(done);
+        });
     });
 
     describe('Plotly.relayout', function() {
