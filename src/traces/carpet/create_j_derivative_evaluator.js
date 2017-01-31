@@ -32,7 +32,7 @@ module.exports = function(arrays, asmoothing, bsmoothing) {
             for(k = 0; k < arrays.length; k++) {
                 ak = arrays[k];
                 // Compute the derivatives in the u-direction:
-                f0 = 3 * ((v2 - 1) * ak[j0][i0 ] + ov2 * ak[j0 + 1][i0 ] + v * (2 - 3 * v) * ak[j0 + 2][i0 ] + v2 * ak[j0 + 3][i0 ]);
+                f0 = 3 * ((v2 - 1) * ak[j0][i0] + ov2 * ak[j0 + 1][i0] + v * (2 - 3 * v) * ak[j0 + 2][i0] + v2 * ak[j0 + 3][i0]);
                 f1 = 3 * ((v2 - 1) * ak[j0][i0 + 1] + ov2 * ak[j0 + 1][i0 + 1] + v * (2 - 3 * v) * ak[j0 + 2][i0 + 1] + v2 * ak[j0 + 3][i0 + 1]);
                 f2 = 3 * ((v2 - 1) * ak[j0][i0 + 2] + ov2 * ak[j0 + 1][i0 + 2] + v * (2 - 3 * v) * ak[j0 + 2][i0 + 2] + v2 * ak[j0 + 3][i0 + 2]);
                 f3 = 3 * ((v2 - 1) * ak[j0][i0 + 3] + ov2 * ak[j0 + 1][i0 + 3] + v * (2 - 3 * v) * ak[j0 + 2][i0 + 3] + v2 * ak[j0 + 3][i0 + 3]);
@@ -58,7 +58,7 @@ module.exports = function(arrays, asmoothing, bsmoothing) {
             for(k = 0; k < arrays.length; k++) {
                 ak = arrays[k];
 
-                f0 = ak[j0 + 1][i0 ] - ak[j0][i0 ];
+                f0 = ak[j0 + 1][i0] - ak[j0][i0];
                 f1 = ak[j0 + 1][i0 + 1] - ak[j0][i0 + 1];
                 f2 = ak[j0 + 1][i0 + 2] - ak[j0][i0 + 2];
                 f3 = ak[j0 + 1][i0 + 3] - ak[j0][i0 + 3];
@@ -86,7 +86,7 @@ module.exports = function(arrays, asmoothing, bsmoothing) {
             var ou = 1 - u;
             for(k = 0; k < arrays.length; k++) {
                 ak = arrays[k];
-                f0 = 3 * ((v2 - 1) * ak[j0][i0 ] + ov2 * ak[j0 + 1][i0 ] + v * (2 - 3 * v) * ak[j0 + 2][i0 ] + v2 * ak[j0 + 3][i0 ]);
+                f0 = 3 * ((v2 - 1) * ak[j0][i0] + ov2 * ak[j0 + 1][i0] + v * (2 - 3 * v) * ak[j0 + 2][i0] + v2 * ak[j0 + 3][i0]);
                 f1 = 3 * ((v2 - 1) * ak[j0][i0 + 1] + ov2 * ak[j0 + 1][i0 + 1] + v * (2 - 3 * v) * ak[j0 + 2][i0 + 1] + v2 * ak[j0 + 3][i0 + 1]);
 
                 out[k] = ou * f0 + u * f1;

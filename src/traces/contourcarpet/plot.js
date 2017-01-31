@@ -16,6 +16,7 @@ var Drawing = require('../../components/drawing');
 
 var makeCrossings = require('../contour/make_crossings');
 var findAllPaths = require('../contour/find_all_paths');
+var axisAlignedLine = require('../carpet/axis_aligned_line');
 
 function makeg(el, type, klass) {
     var join = el.selectAll(type + '.' + klass).data([0]);
@@ -25,9 +26,7 @@ function makeg(el, type, klass) {
 
 module.exports = function plot(gd, plotinfo, cdcontours) {
     for(var i = 0; i < cdcontours.length; i++) {
-        //console.group('plot contourcarpet');
         plotOne(gd, plotinfo, cdcontours[i]);
-        //console.groupEnd();
     }
 };
 
@@ -255,65 +254,23 @@ function joinAllPaths(pi, perimeter, ab2p, carpet, xa, ya) {
     function isleft(pt) { return Math.abs(pt[0] - perimeter[0][0]) < atol; }
     function isright(pt) { return Math.abs(pt[0] - perimeter[2][0]) < atol; }
 
-    var aax = carpet.aaxis;
-    var bax = carpet.baxis;
-    var astride = aax.smoothing ? 3 : 1;
-    var bstride = bax.smoothing ? 3 : 1;
-    var a = carpet.a;
-    var b = carpet.b;
-    var xctrl = carpet._xctrl;
-    var yctrl = carpet._yctrl;
-    // console.log('xctrl, yctrl:', xctrl, yctrl);
-
-    // Draw a path along the edge to a new point:
     function pathto(pt0, pt1) {
-        // console.log('pathto:', pt0, pt1);
-        var i0, i1, i, j0, j1, j, a0, a1, b0, b1, dir, ie, je;
+        var i, j, segments, axis;
         var path = '';
+
         if((istop(pt0) && !isright(pt0)) || (isbottom(pt0) && !isleft(pt0))) {
-            j = isbottom(pt0) ? 0 : b.length - 1;
-            je = j * bstride;
-            dir = pt1[0] - pt0[0] > 0 ? 1 : -1;
-            a0 = carpet.a2i(pt0[0]);
-            a1 = carpet.a2i(pt1[0]);
-
-            i0 = (dir > 0 ? Math.floor : Math.ceil)(a0);
-            i1 = (dir > 0 ? Math.floor : Math.ceil)(a1);
-
-            // console.log('leftright');
-            // console.log('j, dir, a0, a1, i0, i1:', j, dir, a0, a1, i0, i1);
-
-            for(i = i0 + dir; i * dir <= i1 * dir; i += dir) {
-                path += aax.smoothing ? 'C' : 'L';
-                if(aax.smoothing) {
-                    path += [xa.c2p(xctrl[je][i * astride - 2 * dir]), ya.c2p(yctrl[je][i * astride - 2 * dir])] + ' ';
-                    path += [xa.c2p(xctrl[je][i * astride - 1 * dir]), ya.c2p(yctrl[je][i * astride - 1 * dir])] + ' ';
-                }
-                path += [xa.c2p(xctrl[je][i * astride]), ya.c2p(yctrl[je][i * astride])];
-            }
+            axis = carpet.aaxis;
+            segments = axisAlignedLine(carpet, [pt0[0], pt1[0]], 0.5 * (pt0[1] + pt1[1]));
         } else {
-            // console.log('isleft(pt0)', pt0, isleft(pt0));
-            i = isleft(pt0) ? 0 : a.length - 1;
-            ie = i * astride;
-            dir = pt1[1] - pt0[1] > 0 ? 1 : -1;
-            b0 = carpet.b2j(pt0[1]);
-            b1 = carpet.b2j(pt1[1]);
+            axis = carpet.baxis;
+            segments = axisAlignedLine(carpet, 0.5 * (pt0[0] + pt1[0]), [pt0[1], pt1[1]]);
+        }
 
-            j0 = (dir > 0 ? Math.floor : Math.ceil)(b0);
-            j1 = (dir > 0 ? Math.floor : Math.ceil)(b1);
-
-            // console.log('j0, j1:', j0, j1);
-
-            // console.log('j0, j1, dir, i:', j0, j1, dir, i);
-            for(j = j0 + dir; j * dir <= j1 * dir; j += dir) {
-                // console.log('j:', j);
-                path += bax.smoothing ? 'C' : 'L';
-                // console.log('append', i, j, xctrl[j][i], yctrl[j][i]);
-                if(bax.smoothing) {
-                    path += [xa.c2p(xctrl[j * bstride - 2 * dir][ie]), ya.c2p(yctrl[j * bstride - 2 * dir][ie])] + ' ';
-                    path += [xa.c2p(xctrl[j * bstride - 1 * dir][ie]), ya.c2p(yctrl[j * bstride - 1 * dir][ie])] + ' ';
-                }
-                path += [xa.c2p(xctrl[j * bstride][ie]), ya.c2p(yctrl[j * bstride][ie])];
+        for (i = 1; i < segments.length; i++) {
+            path += axis.smoothing ? 'C' : 'L';
+            for (j = 0; j < segments[i].length; j++) {
+                var pt = segments[i][j]
+                path += [xa.c2p(pt[0]), ya.c2p(pt[1])] + ' ';
             }
         }
         return path;
@@ -324,12 +281,9 @@ function joinAllPaths(pi, perimeter, ab2p, carpet, xa, ya) {
         var startpt = pi.edgepaths[i][0];
 
         if(endpt) {
-            // console.log('trace a path from the last endpoint to the next point', endpt, startpt);
-            // console.log('to the next edgepath', endpt, startpt);
             fullpath += pathto(endpt, startpt);
         }
 
-        // console.log('add edgepath', i, JSON.stringify(pi.edgepaths[i]));
         addpath = Drawing.smoothopen(pi.edgepaths[i].map(ab2p), pi.smoothing);
         fullpath += newloop ? addpath : addpath.replace(/^M/, 'L');
         startsleft.splice(startsleft.indexOf(i), 1);
@@ -343,22 +297,14 @@ function joinAllPaths(pi, perimeter, ab2p, carpet, xa, ya) {
                 break;
             }
 
-            // console.log('endpt:', endpt);
-            // console.log('endpt:', endpt);
-            // console.log('top, right, bottom, left', istop(endpt), isright(endpt), isbottom(endpt), isleft(endpt));
-
             if(istop(endpt) && !isright(endpt)) {
-                // right top
-                newendpt = perimeter[1];
+                newendpt = perimeter[1]; // right top
             } else if(isleft(endpt)) {
-                // left top
-                newendpt = perimeter[0];
+                newendpt = perimeter[0]; // left top
             } else if(isbottom(endpt)) {
-                // right bottom
-                newendpt = perimeter[3];
+                newendpt = perimeter[3]; // right bottom
             } else if(isright(endpt)) {
-                // left bottom
-                newendpt = perimeter[2];
+                newendpt = perimeter[2]; // left bottom
             }
 
             for(possiblei = 0; possiblei < pi.edgepaths.length; possiblei++) {
@@ -379,11 +325,7 @@ function joinAllPaths(pi, perimeter, ab2p, carpet, xa, ya) {
                 }
             }
 
-            if(nexti >= 0) {
-                break;
-            }
-
-            // console.log('upper loop pathto', endpt, newendpt);
+            if(nexti >= 0) break;
             fullpath += pathto(endpt, newendpt);
             endpt = newendpt;
         }
@@ -399,9 +341,7 @@ function joinAllPaths(pi, perimeter, ab2p, carpet, xa, ya) {
         // close it and start a new loop
         newloop = (startsleft.indexOf(i) === -1);
         if(newloop) {
-            // console.log('newendpt, startpt:', newendpt, startpt);
             i = startsleft[0];
-            // console.log('newloop pathto', endpt, newendpt);
             fullpath += pathto(endpt, newendpt) + 'Z';
             endpt = null;
         }
