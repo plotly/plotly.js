@@ -1897,7 +1897,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
             x,
             y;
         if(avoidSelection.size()) {
-            var translation = Lib.getTranslate(avoidSelection.node().parentNode);
+            var translation = Drawing.getTranslate(avoidSelection.node().parentNode);
             avoid.offsetLeft = translation.x;
             avoid.offsetTop = translation.y;
         }

@@ -1,5 +1,6 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
+var Drawing = require('@src/components/drawing');
 var DBLCLICKDELAY = require('@src/plots/cartesian/constants').DBLCLICKDELAY;
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -760,8 +761,8 @@ describe('Test click interactions:', function() {
                 }
             };
 
-            var translate = Lib.getTranslate(mockEl),
-                scale = Lib.getScale(mockEl);
+            var translate = Drawing.getTranslate(mockEl),
+                scale = Drawing.getScale(mockEl);
 
             expect([translate.x, translate.y]).toBeCloseToArray([61.070, 97.712]);
             expect([scale.x, scale.y]).toBeCloseToArray([1.221, 1.221]);

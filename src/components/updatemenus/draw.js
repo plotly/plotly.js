@@ -12,7 +12,6 @@
 var d3 = require('d3');
 
 var Plots = require('../../plots/plots');
-var Lib = require('../../lib');
 var Color = require('../color');
 var Drawing = require('../drawing');
 var svgTextUtils = require('../../lib/svg_text_utils');
@@ -220,7 +219,7 @@ function drawHeader(gd, gHeader, gButton, menuOpts) {
     });
 
     // translate header group
-    Lib.setTranslate(gHeader, menuOpts.lx, menuOpts.ly);
+    Drawing.setTranslate(gHeader, menuOpts.lx, menuOpts.ly);
 }
 
 function drawButtons(gd, gHeader, gButton, menuOpts) {
@@ -316,7 +315,7 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
     buttons.call(styleButtons, menuOpts);
 
     // translate button group
-    Lib.setTranslate(gButton, menuOpts.lx, menuOpts.ly);
+    Drawing.setTranslate(gButton, menuOpts.lx, menuOpts.ly);
 }
 
 function setActive(gd, menuOpts, buttonOpts, gHeader, gButton, buttonIndex, isSilentUpdate) {
@@ -531,7 +530,7 @@ function setItemPosition(item, menuOpts, posOpts, overrideOpts) {
         borderWidth = menuOpts.borderwidth,
         index = posOpts.index;
 
-    Lib.setTranslate(item, borderWidth + posOpts.x, borderWidth + posOpts.y);
+    Drawing.setTranslate(item, borderWidth + posOpts.x, borderWidth + posOpts.y);
 
     var isVertical = ['up', 'down'].indexOf(menuOpts.direction) !== -1;
 
