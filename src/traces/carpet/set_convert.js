@@ -102,8 +102,8 @@ module.exports = function setConvert(trace) {
      * Convert from i/j coordinates to x/y caretesian coordinates. This means either bilinear
      * or bicubic spline evaluation, but the hard part is already done at this point.
      */
-    trace.i2c = function(ij) {
-        return trace._evalxy([], ij[0], ij[1]);
+    trace.i2c = function(i, j) {
+        return trace._evalxy([], i, j);
     };
 
     trace.ab2xy = function(aval, bval, extrapolate) {

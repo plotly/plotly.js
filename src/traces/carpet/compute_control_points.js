@@ -128,22 +128,22 @@ function inferCubicControlPoint(p0, p2, p3) {
 }
 
 module.exports = function computeControlPoints(xe, ye, x, y, asmoothing, bsmoothing) {
-    var i, j, ie, je, xei, yei, xi, yi, cp, p1;
+    var i, j, ie, je, xej, yej, xj, yj, cp, p1;
     // At this point, we know these dimensions are correct and representative of
     // the whole 2D arrays:
-    var na = x.length;
-    var nb = x[0].length;
+    var na = x[0].length;
+    var nb = x.length;
 
     // (n)umber of (e)xpanded points:
     var nea = asmoothing ? 3 * na - 2 : na;
     var neb = bsmoothing ? 3 * nb - 2 : nb;
 
-    xe = ensureArray(xe, nea);
-    ye = ensureArray(ye, nea);
+    xe = ensureArray(xe, neb);
+    ye = ensureArray(ye, neb);
 
-    for(ie = 0; ie < nea; ie++) {
-        xe[ie] = ensureArray(xe[ie], neb);
-        ye[ie] = ensureArray(ye[ie], neb);
+    for(ie = 0; ie < neb; ie++) {
+        xe[ie] = ensureArray(xe[ie], nea);
+        ye[ie] = ensureArray(ye[ie], nea);
     }
 
     // This loop fills in the X'd points:
@@ -160,16 +160,16 @@ module.exports = function computeControlPoints(xe, ye, x, y, asmoothing, bsmooth
     //
     //
     // ie = (i) (e)xpanded:
-    for(i = 0, ie = 0; i < na; i++, ie += asmoothing ? 3 : 1) {
-        xei = xe[ie];
-        yei = ye[ie];
-        xi = x[i];
-        yi = y[i];
+    for(j = 0, je = 0; j < nb; j++, je += bsmoothing ? 3 : 1) {
+        xej = xe[je];
+        yej = ye[je];
+        xj = x[j];
+        yj = y[j];
 
         // je = (j) (e)xpanded:
-        for(j = 0, je = 0; j < nb; j++, je += bsmoothing ? 3 : 1) {
-            xei[je] = xi[j];
-            yei[je] = yi[j];
+        for(i = 0, ie = 0; i < na; i++, ie += asmoothing ? 3 : 1) {
+            xej[ie] = xj[i];
+            yej[ie] = yj[i];
         }
     }
 
@@ -196,16 +196,16 @@ module.exports = function computeControlPoints(xe, ye, x, y, asmoothing, bsmooth
             // Fill in the points marked X for this a-row:
             for(i = 1, ie = 3; i < na - 1; i++, ie += 3) {
                 cp = makeControlPoints(
-                    [x[i - 1][j], y[i - 1][j]],
-                    [x[i ][j], y[i ][j]],
-                    [x[i + 1][j], y[i + 1][j]],
+                    [x[j][i - 1], y[j][i - 1]],
+                    [x[j][i ], y[j][i]],
+                    [x[j][i + 1], y[j][i + 1]],
                     asmoothing
                 );
 
-                xe[ie - 1][je] = cp[0][0];
-                ye[ie - 1][je] = cp[0][1];
-                xe[ie + 1][je] = cp[1][0];
-                ye[ie + 1][je] = cp[1][1];
+                xe[je][ie - 1] = cp[0][0];
+                ye[je][ie - 1] = cp[0][1];
+                xe[je][ie + 1] = cp[1][0];
+                ye[je][ie + 1] = cp[1][1];
             }
 
             // The very first cubic interpolation point (to the left for i = 1 above) is
@@ -215,21 +215,21 @@ module.exports = function computeControlPoints(xe, ye, x, y, asmoothing, bsmooth
             // tangent by 1/3 and also construct a new cubic spline control point 1/3 from
             // the original to the i = 0 point.
             p1 = inferCubicControlPoint(
-                [xe[0][je], ye[0][je]],
-                [xe[2][je], ye[2][je]],
-                [xe[3][je], ye[3][je]]
+                [xe[je][0], ye[je][0]],
+                [xe[je][2], ye[je][2]],
+                [xe[je][3], ye[je][3]]
             );
-            xe[1][je] = p1[0];
-            ye[1][je] = p1[1];
+            xe[je][1] = p1[0];
+            ye[je][1] = p1[1];
 
             // Ditto last points, sans explanation:
             p1 = inferCubicControlPoint(
-                [xe[nea - 1][je], ye[nea - 1][je]],
-                [xe[nea - 3][je], ye[nea - 3][je]],
-                [xe[nea - 4][je], ye[nea - 4][je]]
+                [xe[je][nea - 1], ye[je][nea - 1]],
+                [xe[je][nea - 3], ye[je][nea - 3]],
+                [xe[je][nea - 4], ye[je][nea - 4]]
             );
-            xe[nea - 2][je] = p1[0];
-            ye[nea - 2][je] = p1[1];
+            xe[je][nea - 2] = p1[0];
+            ye[je][nea - 2] = p1[1];
         }
     }
 
@@ -255,33 +255,33 @@ module.exports = function computeControlPoints(xe, ye, x, y, asmoothing, bsmooth
         for(ie = 0; ie < nea; ie++) {
             for(je = 3; je < neb - 3; je += 3) {
                 cp = makeControlPoints(
-                    [xe[ie][je - 3], ye[ie][je - 3]],
-                    [xe[ie][je ], ye[ie][je ]],
-                    [xe[ie][je + 3], ye[ie][je + 3]],
+                    [xe[je - 3][ie], ye[je - 3][ie]],
+                    [xe[je][ie], ye[je][ie]],
+                    [xe[je + 3][ie], ye[je + 3][ie]],
                     bsmoothing
                 );
 
-                xe[ie][je - 1] = cp[0][0];
-                ye[ie][je - 1] = cp[0][1];
-                xe[ie][je + 1] = cp[1][0];
-                ye[ie][je + 1] = cp[1][1];
+                xe[je - 1][ie] = cp[0][0];
+                ye[je - 1][ie] = cp[0][1];
+                xe[je + 1][ie] = cp[1][0];
+                ye[je + 1][ie] = cp[1][1];
             }
             // Do the same boundary condition magic for these control points marked Y above:
             p1 = inferCubicControlPoint(
-                [xe[ie][0], ye[ie][0]],
-                [xe[ie][2], ye[ie][2]],
-                [xe[ie][3], ye[ie][3]]
+                [xe[0][ie], ye[0][ie]],
+                [xe[2][ie], ye[2][ie]],
+                [xe[3][ie], ye[3][ie]]
             );
-            xe[ie][1] = p1[0];
-            ye[ie][1] = p1[1];
+            xe[1][ie] = p1[0];
+            ye[1][ie] = p1[1];
 
             p1 = inferCubicControlPoint(
-                [xe[ie][neb - 1], ye[ie][neb - 1]],
-                [xe[ie][neb - 3], ye[ie][neb - 3]],
-                [xe[ie][neb - 4], ye[ie][neb - 4]]
+                [xe[neb - 1][ie], ye[neb - 1][ie]],
+                [xe[neb - 3][ie], ye[neb - 3][ie]],
+                [xe[neb - 4][ie], ye[neb - 4][ie]]
             );
-            xe[ie][neb - 2] = p1[0];
-            ye[ie][neb - 2] = p1[1];
+            xe[neb - 2][ie] = p1[0];
+            ye[neb - 2][ie] = p1[1];
         }
     }
 
@@ -314,35 +314,35 @@ module.exports = function computeControlPoints(xe, ye, x, y, asmoothing, bsmooth
             // Fill in the points marked X for this a-row:
             for(ie = 3; ie < nea - 3; ie += 3) {
                 cp = makeControlPoints(
-                    [xe[ie - 3][je], ye[ie - 3][je]],
-                    [xe[ie ][je], ye[ie ][je]],
-                    [xe[ie + 3][je], ye[ie + 3][je]],
+                    [xe[je][ie - 3], ye[je][ie - 3]],
+                    [xe[je][ie], ye[je][ie]],
+                    [xe[je][ie + 3], ye[je][ie + 3]],
                     asmoothing
                 );
 
-                xe[ie - 1][je] = 0.5 * (xe[ie - 1][je] + cp[0][0]);
-                ye[ie - 1][je] = 0.5 * (ye[ie - 1][je] + cp[0][1]);
-                xe[ie + 1][je] = 0.5 * (xe[ie + 1][je] + cp[1][0]);
-                ye[ie + 1][je] = 0.5 * (ye[ie + 1][je] + cp[1][1]);
+                xe[je][ie - 1] = 0.5 * (xe[je][ie - 1] + cp[0][0]);
+                ye[je][ie - 1] = 0.5 * (ye[je][ie - 1] + cp[0][1]);
+                xe[je][ie + 1] = 0.5 * (xe[je][ie + 1] + cp[1][0]);
+                ye[je][ie + 1] = 0.5 * (ye[je][ie + 1] + cp[1][1]);
             }
 
             // This case is just slightly different. The computation is the same,
             // but having computed this, we'll average with the existing result.
             p1 = inferCubicControlPoint(
-                [xe[0][je], ye[0][je]],
-                [xe[2][je], ye[2][je]],
-                [xe[3][je], ye[3][je]]
+                [xe[je][0], ye[je][0]],
+                [xe[je][2], ye[je][2]],
+                [xe[je][3], ye[je][3]]
             );
-            xe[1][je] = 0.5 * (xe[1][je] + p1[0]);
-            ye[1][je] = 0.5 * (ye[1][je] + p1[1]);
+            xe[je][1] = 0.5 * (xe[je][1] + p1[0]);
+            ye[je][1] = 0.5 * (ye[je][1] + p1[1]);
 
             p1 = inferCubicControlPoint(
-                [xe[nea - 1][je], ye[nea - 1][je]],
-                [xe[nea - 3][je], ye[nea - 3][je]],
-                [xe[nea - 4][je], ye[nea - 4][je]]
+                [xe[je][nea - 1], ye[je][nea - 1]],
+                [xe[je][nea - 3], ye[je][nea - 3]],
+                [xe[je][nea - 4], ye[je][nea - 4]]
             );
-            xe[nea - 2][je] = 0.5 * (xe[nea - 2][je] + p1[0]);
-            ye[nea - 2][je] = 0.5 * (ye[nea - 2][je] + p1[1]);
+            xe[je][nea - 2] = 0.5 * (xe[je][nea - 2] + p1[0]);
+            ye[je][nea - 2] = 0.5 * (ye[je][nea - 2] + p1[1]);
         }
     }
 

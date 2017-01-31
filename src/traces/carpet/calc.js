@@ -20,12 +20,12 @@ var clean2dArray = require('../heatmap/clean_2d_array');
 var smoothFill2dArray = require('./smooth_fill_2d_array');
 
 module.exports = function calc(gd, trace) {
-    var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
-        ya = Axes.getFromId(gd, trace.yaxis || 'y'),
-        aax = trace.aaxis,
-        bax = trace.baxis,
-        a = trace.a,
-        b = trace.b;
+    var xa = Axes.getFromId(gd, trace.xaxis || 'x');
+    var ya = Axes.getFromId(gd, trace.yaxis || 'y');
+    var aax = trace.aaxis;
+    var bax = trace.baxis;
+    var a = trace.a;
+    var b = trace.b;
 
     var x;
     var y = trace.y;

@@ -44,7 +44,7 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
 
     // The default is an empty array that will cause the join to remove the gridline if
     // it's just disappeared:
-    axis._startline = axis._endline = [];
+    // axis._startline = axis._endline = [];
 
     // If the cross axis uses bicubic interpolation, then the grid
     // lines fall once every three expanded grid row/cols:
