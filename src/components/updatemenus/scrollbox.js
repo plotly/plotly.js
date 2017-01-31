@@ -246,6 +246,8 @@ ScrollBox.prototype.enable = function enable() {
                 .on('.drag', null)
                 .call(onBarDrag);
         }
+
+        this.container.on('wheel', this._onBoxWheel.bind(this));
     }
 
     // set initial position
@@ -279,6 +281,8 @@ ScrollBox.prototype.disable = function disable() {
         delete this._vbarYMin;
         delete this._vbarTranslateMax;
     }
+
+    this.container.on('wheel', null);
 };
 
 /**
@@ -296,6 +300,26 @@ ScrollBox.prototype._onBoxDrag = function onBarDrag() {
 
     if(this._vbar) {
         translateY -= d3.event.dy;
+    }
+
+    this.setTranslate(translateX, translateY);
+};
+
+/**
+ * Handles scroll box wheel events
+ *
+ * @method
+ */
+ScrollBox.prototype._onBoxWheel = function onBarWheel() {
+    var translateX = this._translateX,
+        translateY = this._translateY;
+
+    if(this._hbar) {
+        translateX += d3.event.deltaY;
+    }
+
+    if(this._vbar) {
+        translateY += d3.event.deltaY;
     }
 
     this.setTranslate(translateX, translateY);
