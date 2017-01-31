@@ -254,7 +254,13 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
 
         exit.transition()
             .attr('opacity', '0')
-            .remove();
+            .remove()
+            .each('end', function() {
+                // remove the scrollbox, if all the buttons have been removed
+                if(gButton.selectAll('g.' + klass).size() === 0) {
+                    gButton.call(removeAllButtons);
+                }
+            });
     } else {
         exit.remove();
     }
@@ -315,8 +321,6 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
             setActive(gd, menuOpts, buttonOpts, gHeader, gButton, buttonIndex);
 
             Plots.executeAPICommand(gd, buttonOpts.method, buttonOpts.args);
-
-            scrollBox.disable();
 
             gd.emit('plotly_buttonclicked', {menu: menuOpts, button: buttonOpts, active: menuOpts.active});
         });
