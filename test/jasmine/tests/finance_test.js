@@ -962,4 +962,44 @@ describe('finance charts updates:', function() {
             done();
         });
     });
+
+    it('Plotly.plot with data-less trace and adding with Plotly.restyle', function(done) {
+        var data = [
+            { type: 'candlestick' },
+            { type: 'ohlc' },
+            { type: 'bar', y: [2, 1, 2] }
+        ];
+
+        Plotly.plot(gd, data).then(function() {
+            expect(countScatterTraces()).toEqual(0);
+            expect(countBoxTraces()).toEqual(0);
+            expect(countRangeSliders()).toEqual(0);
+
+            return Plotly.restyle(gd, {
+                open: [mock0.open],
+                high: [mock0.high],
+                low: [mock0.low],
+                close: [mock0.close]
+            }, [0]);
+        })
+        .then(function() {
+            expect(countScatterTraces()).toEqual(0);
+            expect(countBoxTraces()).toEqual(2);
+            expect(countRangeSliders()).toEqual(1);
+
+            return Plotly.restyle(gd, {
+                open: [mock0.open],
+                high: [mock0.high],
+                low: [mock0.low],
+                close: [mock0.close]
+            }, [1]);
+        })
+        .then(function() {
+            expect(countScatterTraces()).toEqual(2);
+            expect(countBoxTraces()).toEqual(2);
+            expect(countRangeSliders()).toEqual(1);
+        })
+        .then(done);
+    });
+
 });
