@@ -287,24 +287,18 @@ ScrollBox.prototype.disable = function disable() {
  * @method
  */
 ScrollBox.prototype._onBoxDrag = function onBarDrag() {
-    var xf = this._xf,
-        yf = this._yf;
+    var translateX = this._translateX,
+        translateY = this._translateY;
 
     if(this._hbar) {
-        var translateXMax = this.position.w - this._box.w;
-
-        xf = Lib.constrain(xf - d3.event.dx / translateXMax, 0, 1);
+        translateX -= d3.event.dx;
     }
-    else xf = 0;
 
     if(this._vbar) {
-        var translateYMax = this.position.h - this._box.h;
-
-        yf = Lib.constrain(yf - d3.event.dy / translateYMax, 0, 1);
+        translateY -= d3.event.dy;
     }
-    else yf = 0;
 
-    this.setTranslate(xf, yf);
+    this.setTranslate(translateX, translateY);
 };
 
 /**
@@ -313,53 +307,51 @@ ScrollBox.prototype._onBoxDrag = function onBarDrag() {
  * @method
  */
 ScrollBox.prototype._onBarDrag = function onBarDrag() {
-    var xf = this._xf,
-        yf = this._yf;
+    var translateX = this._translateX,
+        translateY = this._translateY;
 
     if(this._hbar) {
-        var translateXMax = this.position.w - this._box.w,
-            translateX = xf * translateXMax,
-            xMin = translateX + this._hbarXMin,
+        var xMin = translateX + this._hbarXMin,
             xMax = xMin + this._hbarTranslateMax,
-            x = Lib.constrain(d3.event.x, xMin, xMax);
+            x = Lib.constrain(d3.event.x, xMin, xMax),
+            xf = (x - xMin) / (xMax - xMin);
 
-        xf = (x - xMin) / (xMax - xMin);
+        var translateXMax = this.position.w - this._box.w;
+
+        translateX = xf * translateXMax;
     }
-    else xf = 0;
 
     if(this._vbar) {
-        var translateYMax = this.position.h - this._box.h,
-            translateY = yf * translateYMax,
-            yMin = translateY + this._vbarYMin,
+        var yMin = translateY + this._vbarYMin,
             yMax = yMin + this._vbarTranslateMax,
-            y = Lib.constrain(d3.event.y, yMin, yMax);
+            y = Lib.constrain(d3.event.y, yMin, yMax),
+            yf = (y - yMin) / (yMax - yMin);
 
-        yf = (y - yMin) / (yMax - yMin);
+        var translateYMax = this.position.h - this._box.h;
+
+        translateY = yf * translateYMax;
     }
-    else yf = 0;
 
-    this.setTranslate(xf, yf);
+    this.setTranslate(translateX, translateY);
 };
 
 /**
  * Set clip path and scroll bar translate transform
  *
  * @method
- * @param {number}  [xf=0]  Horizontal position as a container fraction
- * @param {number}  [yf=0]  Vertical position as a container fraction
+ * @param {number}  [translateX=0]  Horizontal offset (in pixels)
+ * @param {number}  [translateY=0]  Vertical offset (in pixels)
  */
-ScrollBox.prototype.setTranslate = function setTranslate(xf, yf) {
-    xf = Lib.constrain(xf || 0, 0, 1);
-    yf = Lib.constrain(yf || 0, 0, 1);
-
-    // store xf and yf (needed by ScrollBox.prototype._on*Drag)
-    this._xf = xf;
-    this._yf = yf;
-
+ScrollBox.prototype.setTranslate = function setTranslate(translateX, translateY) {
+    // store translateX and translateY (needed by mouse event handlers)
     var translateXMax = this.position.w - this._box.w,
-        translateYMax = this.position.h - this._box.h,
-        translateX = xf * translateXMax,
-        translateY = yf * translateYMax;
+        translateYMax = this.position.h - this._box.h;
+
+    translateX = Lib.constrain(translateX || 0, 0, translateXMax);
+    translateY = Lib.constrain(translateY || 0, 0, translateYMax);
+
+    this._translateX = translateX;
+    this._translateY = translateY;
 
     this.container.call(Lib.setTranslate,
         this._box.l - this.position.l - translateX,
@@ -373,12 +365,16 @@ ScrollBox.prototype.setTranslate = function setTranslate(xf, yf) {
     }
 
     if(this._hbar) {
+        var xf = translateX / translateXMax;
+
         this._hbar.call(Lib.setTranslate,
             translateX + xf * this._hbarTranslateMax,
             translateY);
     }
 
     if(this._vbar) {
+        var yf = translateY / translateYMax;
+
         this._vbar.call(Lib.setTranslate,
             translateX,
             translateY + yf * this._vbarTranslateMax);

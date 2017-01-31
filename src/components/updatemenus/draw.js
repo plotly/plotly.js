@@ -345,8 +345,7 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
             }
             translateY -= constants.gapButton;
 
-            var yf = translateY / (scrollBox.position.h - scrollBox._box.h);
-            scrollBox.setTranslate(0, yf);
+            scrollBox.setTranslate(0, translateY);
         }
     }
     else {
@@ -357,8 +356,7 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
             }
             translateX -= constants.gapButton;
 
-            var xf = translateX / (scrollBox.position.w - scrollBox._box.w);
-            scrollBox.setTranslate(xf, 0);
+            scrollBox.setTranslate(translateX, 0);
         }
     }
 }
