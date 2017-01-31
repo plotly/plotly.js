@@ -21,7 +21,7 @@
             {"text":"left<br>justified","showarrow":false,"align":"left","x":1,"y":4},
             {"text":"center<br>justified","showarrow":false,"x":2,"y":4},
             {"text":"right<br>justified","showarrow":false,"align":"right","x":3,"y":4},
-            {"text":"no arrow<br>page auto TR","showarrow":false,"xref":"paper","yref":"paper","x":0.75,"y":0.75},
+            {"text":"no\narrow<br>page\rauto\r\nTR","showarrow":false,"xref":"paper","yref":"paper","x":0.75,"y":0.75},
             {"text":"no arrow<br>page auto ML","showarrow":false,"xref":"paper","yref":"paper","x":0.25,"y":0.5},
             {"text":"no arrow<br>page auto BC","showarrow":false,"xref":"paper","yref":"paper","x":0.5,"y":0.25},
             {"text":"default"},
