@@ -266,10 +266,10 @@ function joinAllPaths(pi, perimeter, ab2p, carpet, xa, ya) {
             segments = axisAlignedLine(carpet, 0.5 * (pt0[0] + pt1[0]), [pt0[1], pt1[1]]);
         }
 
-        for (i = 1; i < segments.length; i++) {
+        for(i = 1; i < segments.length; i++) {
             path += axis.smoothing ? 'C' : 'L';
-            for (j = 0; j < segments[i].length; j++) {
-                var pt = segments[i][j]
+            for(j = 0; j < segments[i].length; j++) {
+                var pt = segments[i][j];
                 path += [xa.c2p(pt[0]), ya.c2p(pt[1])] + ' ';
             }
         }

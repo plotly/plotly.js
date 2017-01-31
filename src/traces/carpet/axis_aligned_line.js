@@ -15,8 +15,10 @@
  * Honestly this is the most complicated function I've implemente here so far because
  * of the way it handles knot insertion and direction/axis-agnostic slices.
  */
-module.exports = function (carpet, a, b, startpoint) {
-    var idx;
+module.exports = function(carpet, a, b) {
+    var idx, tangent, tanIsoIdx, tanIsoPar, segment, refidx;
+    var p0, p1, v0, v1, start, end, range;
+
     var axis = Array.isArray(a) ? 'a' : 'b';
     var ax = axis === 'a' ? carpet.aaxis : carpet.baxis;
     var smoothing = ax.smoothing;
@@ -27,18 +29,18 @@ module.exports = function (carpet, a, b, startpoint) {
     var m = axis === 'a' ? carpet.b.length : carpet.a.length;
     var isoIdx = axis === 'a' ? carpet.b2j(iso) : carpet.a2i(iso);
 
-    var xy = axis === 'a' ? function (value) {
+    var xy = axis === 'a' ? function(value) {
         return carpet._evalxy([], value, isoIdx);
-    } : function (value) {
+    } : function(value) {
         return carpet._evalxy([], isoIdx, value);
     };
 
-    if (smoothing) {
-        var tanIsoIdx = Math.max(0, Math.min(m - 2, isoIdx));
-        var tanIsoPar = isoIdx - tanIsoIdx;
-        var tangent = axis === 'a' ? function (i, ti) {
+    if(smoothing) {
+        tanIsoIdx = Math.max(0, Math.min(m - 2, isoIdx));
+        tanIsoPar = isoIdx - tanIsoIdx;
+        tangent = axis === 'a' ? function(i, ti) {
             return carpet.dxydi([], i, tanIsoIdx, ti, tanIsoPar);
-        } : function (j, tj) {
+        } : function(j, tj) {
             return carpet.dxydj([], tanIsoIdx, j, tanIsoPar, tj);
         };
     }
@@ -60,15 +62,11 @@ module.exports = function (carpet, a, b, startpoint) {
     var idx0 = dirfloor(vstart + tol);
     var idx1 = dirceil(vend - tol);
 
-    var segments = [];
-
-    var p0, p1, v0, v1, start, end, range;
-
     p0 = xy(vstart);
-    segments.push([p0]);
+    var segments = [[p0]];
 
     for(idx = idx0; idx * dir < idx1 * dir; idx += dir) {
-        var segment = [];
+        segment = [];
         start = dirmax(vstart, idx);
         end = dirmin(vend, idx + dir);
         range = end - start;
@@ -77,15 +75,22 @@ module.exports = function (carpet, a, b, startpoint) {
         // the derivatives are *not* constant across grid lines), let's just average
         // the start and end points. This cuts out just a tiny bit of logic and
         // there's really no computational difference:
-        var refidx = Math.max(0, Math.min(n - 2, Math.floor(0.5 * (start + end))));
+        refidx = Math.max(0, Math.min(n - 2, Math.floor(0.5 * (start + end))));
 
         p1 = xy(end);
-        if (smoothing) {
+        if(smoothing) {
             v0 = tangent(refidx, start - refidx);
             v1 = tangent(refidx, end - refidx);
 
-            segment.push([p0[0] + v0[0] / 3 * range, p0[1] + v0[1] / 3 * range]);
-            segment.push([p1[0] - v1[0] / 3 * range, p1[1] - v1[1] / 3 * range]);
+            segment.push([
+                p0[0] + v0[0] / 3 * range,
+                p0[1] + v0[1] / 3 * range
+            ]);
+
+            segment.push([
+                p1[0] - v1[0] / 3 * range,
+                p1[1] - v1[1] / 3 * range
+            ]);
         }
 
         segment.push(p1);

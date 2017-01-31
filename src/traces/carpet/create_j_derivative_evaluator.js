@@ -28,14 +28,20 @@ module.exports = function(arrays, asmoothing, bsmoothing) {
             var v2 = v * v;
             var ov = 1 - v;
             var ov2 = ov * ov;
+            var ovv2 = ov * v * 2;
+            var a = -3 * ov2;
+            var b = 3 * (ov2 - ovv2);
+            var c = 3 * (ovv2 - v2);
+            var d = 3 * v2;
 
             for(k = 0; k < arrays.length; k++) {
                 ak = arrays[k];
-                // Compute the derivatives in the u-direction:
-                f0 = 3 * ((v2 - 1) * ak[j0][i0] + ov2 * ak[j0 + 1][i0] + v * (2 - 3 * v) * ak[j0 + 2][i0] + v2 * ak[j0 + 3][i0]);
-                f1 = 3 * ((v2 - 1) * ak[j0][i0 + 1] + ov2 * ak[j0 + 1][i0 + 1] + v * (2 - 3 * v) * ak[j0 + 2][i0 + 1] + v2 * ak[j0 + 3][i0 + 1]);
-                f2 = 3 * ((v2 - 1) * ak[j0][i0 + 2] + ov2 * ak[j0 + 1][i0 + 2] + v * (2 - 3 * v) * ak[j0 + 2][i0 + 2] + v2 * ak[j0 + 3][i0 + 2]);
-                f3 = 3 * ((v2 - 1) * ak[j0][i0 + 3] + ov2 * ak[j0 + 1][i0 + 3] + v * (2 - 3 * v) * ak[j0 + 2][i0 + 3] + v2 * ak[j0 + 3][i0 + 3]);
+
+                // Compute the derivatives in the v-direction:
+                f0 = a * ak[j0][i0] + b * ak[j0 + 1][i0] + c * ak[j0 + 2][i0] + d * ak[j0 + 3][i0];
+                f1 = a * ak[j0][i0 + 1] + b * ak[j0 + 1][i0 + 1] + c * ak[j0 + 2][i0 + 1] + d * ak[j0 + 3][i0 + 1];
+                f2 = a * ak[j0][i0 + 2] + b * ak[j0 + 1][i0 + 2] + c * ak[j0 + 2][i0 + 2] + d * ak[j0 + 3][i0 + 2];
+                f3 = a * ak[j0][i0 + 3] + b * ak[j0 + 1][i0 + 3] + c * ak[j0 + 2][i0 + 3] + d * ak[j0 + 3][i0 + 3];
 
                 // Now just interpolate in the v-direction since it's all separable:
                 out[k] = ou3 * f0 + 3 * (ou2 * u * f1 + ou * u2 * f2) + u3 * f3;
@@ -80,14 +86,19 @@ module.exports = function(arrays, asmoothing, bsmoothing) {
             if(!out) out = [];
             var f0, f1, k, ak;
             j0 *= 3;
+            var ou = 1 - u;
             var v2 = v * v;
             var ov = 1 - v;
             var ov2 = ov * ov;
-            var ou = 1 - u;
+            var ovv2 = ov * v * 2;
+            var a = -3 * ov2;
+            var b = 3 * (ov2 - ovv2);
+            var c = 3 * (ovv2 - v2);
+            var d = 3 * v2;
             for(k = 0; k < arrays.length; k++) {
                 ak = arrays[k];
-                f0 = 3 * ((v2 - 1) * ak[j0][i0] + ov2 * ak[j0 + 1][i0] + v * (2 - 3 * v) * ak[j0 + 2][i0] + v2 * ak[j0 + 3][i0]);
-                f1 = 3 * ((v2 - 1) * ak[j0][i0 + 1] + ov2 * ak[j0 + 1][i0 + 1] + v * (2 - 3 * v) * ak[j0 + 2][i0 + 1] + v2 * ak[j0 + 3][i0 + 1]);
+                f0 = a * ak[j0][i0] + b * ak[j0 + 1][i0] + c * ak[j0 + 2][i0] + d * ak[j0 + 3][i0];
+                f1 = a * ak[j0][i0 + 1] + b * ak[j0 + 1][i0 + 1] + c * ak[j0 + 2][i0 + 1] + d * ak[j0 + 3][i0 + 1];
 
                 out[k] = ou * f0 + u * f1;
             }
