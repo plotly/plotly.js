@@ -23,18 +23,19 @@ var Lib = require('../../lib');
  * @class
  * @param           gd          Plotly's graph div
  * @param           container   Container to be scroll-boxed (as a D3 selection)
- * @param {Object}  position
- * @param {number}  position.l  Left side position (in pixels)
- * @param {number}  position.t  Top side (in pixels)
- * @param {number}  position.w  Width (in pixels)
- * @param {number}  position.h  Height (in pixels)
  * @param {string}  id          Id for the clip path to implement the scroll box
  */
-function ScrollBox(gd, container, position, id) {
+function ScrollBox(gd, container, id) {
     this.gd = gd;
     this.container = container;
-    this.position = position;
     this.id = id;
+
+    // See ScrollBox.prototype.enable for further definition
+    this.position = null;  // scrollbox position
+    this.translateX = null;  // scrollbox horizontal translation
+    this.translateY = null;  // scrollbox vertical translation
+    this.hbar = null;  // horizontal scrollbar D3 selection
+    this.vbar = null;  // vertical scrollbar D3 selection
 }
 
 // scroll bar dimensions
@@ -48,13 +49,22 @@ ScrollBox.barColor = '#808BA4';
  * If needed, setup a clip path and scrollbars
  *
  * @method
+ * @param {Object}  position
+ * @param {number}  position.l  Left side position (in pixels)
+ * @param {number}  position.t  Top side (in pixels)
+ * @param {number}  position.w  Width (in pixels)
+ * @param {number}  position.h  Height (in pixels)
+ * @param {number}  [translateX=0]  Horizontal offset (in pixels)
+ * @param {number}  [translateY=0]  Vertical offset (in pixels)
  */
-ScrollBox.prototype.enable = function enable() {
+ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
     var fullLayout = this.gd._fullLayout,
         fullWidth = fullLayout.width,
         fullHeight = fullLayout.height;
 
-    // compute position of scroll box
+    // compute position of scrollbox
+    this.position = position;
+
     var l = this.position.l,
         w = this.position.w,
         t = this.position.t,
@@ -129,7 +139,7 @@ ScrollBox.prototype.enable = function enable() {
         .call(Color.fill, ScrollBox.barColor);
 
     if(needsHorizontalScrollBar) {
-        this._hbar = hbar.attr({
+        this.hbar = hbar.attr({
             'rx': ScrollBox.barRadius,
             'ry': ScrollBox.barRadius,
             'x': hbarL,
@@ -143,7 +153,7 @@ ScrollBox.prototype.enable = function enable() {
         this._hbarTranslateMax = boxW - hbarW;
     }
     else {
-        delete this._hbar;
+        delete this.hbar;
         delete this._hbarXMin;
         delete this._hbarTranslateMax;
     }
@@ -167,7 +177,7 @@ ScrollBox.prototype.enable = function enable() {
         .call(Color.fill, ScrollBox.barColor);
 
     if(needsVerticalScrollBar) {
-        this._vbar = vbar.attr({
+        this.vbar = vbar.attr({
             'rx': ScrollBox.barRadius,
             'ry': ScrollBox.barRadius,
             'x': vbarL,
@@ -181,7 +191,7 @@ ScrollBox.prototype.enable = function enable() {
         this._vbarTranslateMax = boxH - vbarH;
     }
     else {
-        delete this._vbar;
+        delete this.vbar;
         delete this._vbarYMin;
         delete this._vbarTranslateMax;
     }
@@ -236,13 +246,13 @@ ScrollBox.prototype.enable = function enable() {
             .on('drag', this._onBarDrag.bind(this));
 
         if(needsHorizontalScrollBar) {
-            this._hbar
+            this.hbar
                 .on('.drag', null)
                 .call(onBarDrag);
         }
 
         if(needsVerticalScrollBar) {
-            this._vbar
+            this.vbar
                 .on('.drag', null)
                 .call(onBarDrag);
         }
@@ -250,8 +260,8 @@ ScrollBox.prototype.enable = function enable() {
         this.container.on('wheel', this._onBoxWheel.bind(this));
     }
 
-    // set initial position
-    this.setTranslate();
+    // set scrollbox translation
+    this.setTranslate(translateX, translateY);
 };
 
 /**
@@ -260,24 +270,24 @@ ScrollBox.prototype.enable = function enable() {
  * @method
  */
 ScrollBox.prototype.disable = function disable() {
-    if(this._hbar || this._vbar) {
+    if(this.hbar || this.vbar) {
         this.container.call(Drawing.setClipUrl, null);
         this.container.on('.drag', null);
         delete this._clipRect;
     }
 
-    if(this._hbar) {
-        this._hbar.on('.drag', null);
-        this._hbar.remove();
-        delete this._hbar;
+    if(this.hbar) {
+        this.hbar.on('.drag', null);
+        this.hbar.remove();
+        delete this.hbar;
         delete this._hbarXMin;
         delete this._hbarTranslateMax;
     }
 
-    if(this._vbar) {
-        this._vbar.on('.drag', null);
-        this._vbar.remove();
-        delete this._vbar;
+    if(this.vbar) {
+        this.vbar.on('.drag', null);
+        this.vbar.remove();
+        delete this.vbar;
         delete this._vbarYMin;
         delete this._vbarTranslateMax;
     }
@@ -291,14 +301,14 @@ ScrollBox.prototype.disable = function disable() {
  * @method
  */
 ScrollBox.prototype._onBoxDrag = function onBarDrag() {
-    var translateX = this._translateX,
-        translateY = this._translateY;
+    var translateX = this.translateX,
+        translateY = this.translateY;
 
-    if(this._hbar) {
+    if(this.hbar) {
         translateX -= d3.event.dx;
     }
 
-    if(this._vbar) {
+    if(this.vbar) {
         translateY -= d3.event.dy;
     }
 
@@ -311,14 +321,14 @@ ScrollBox.prototype._onBoxDrag = function onBarDrag() {
  * @method
  */
 ScrollBox.prototype._onBoxWheel = function onBarWheel() {
-    var translateX = this._translateX,
-        translateY = this._translateY;
+    var translateX = this.translateX,
+        translateY = this.translateY;
 
-    if(this._hbar) {
+    if(this.hbar) {
         translateX += d3.event.deltaY;
     }
 
-    if(this._vbar) {
+    if(this.vbar) {
         translateY += d3.event.deltaY;
     }
 
@@ -331,10 +341,10 @@ ScrollBox.prototype._onBoxWheel = function onBarWheel() {
  * @method
  */
 ScrollBox.prototype._onBarDrag = function onBarDrag() {
-    var translateX = this._translateX,
-        translateY = this._translateY;
+    var translateX = this.translateX,
+        translateY = this.translateY;
 
-    if(this._hbar) {
+    if(this.hbar) {
         var xMin = translateX + this._hbarXMin,
             xMax = xMin + this._hbarTranslateMax,
             x = Lib.constrain(d3.event.x, xMin, xMax),
@@ -345,7 +355,7 @@ ScrollBox.prototype._onBarDrag = function onBarDrag() {
         translateX = xf * translateXMax;
     }
 
-    if(this._vbar) {
+    if(this.vbar) {
         var yMin = translateY + this._vbarYMin,
             yMax = yMin + this._vbarTranslateMax,
             y = Lib.constrain(d3.event.y, yMin, yMax),
@@ -374,8 +384,8 @@ ScrollBox.prototype.setTranslate = function setTranslate(translateX, translateY)
     translateX = Lib.constrain(translateX || 0, 0, translateXMax);
     translateY = Lib.constrain(translateY || 0, 0, translateYMax);
 
-    this._translateX = translateX;
-    this._translateY = translateY;
+    this.translateX = translateX;
+    this.translateY = translateY;
 
     this.container.call(Lib.setTranslate,
         this._box.l - this.position.l - translateX,
@@ -388,18 +398,18 @@ ScrollBox.prototype.setTranslate = function setTranslate(translateX, translateY)
         });
     }
 
-    if(this._hbar) {
+    if(this.hbar) {
         var xf = translateX / translateXMax;
 
-        this._hbar.call(Lib.setTranslate,
+        this.hbar.call(Lib.setTranslate,
             translateX + xf * this._hbarTranslateMax,
             translateY);
     }
 
-    if(this._vbar) {
+    if(this.vbar) {
         var yf = translateY / translateYMax;
 
-        this._vbar.call(Lib.setTranslate,
+        this.vbar.call(Lib.setTranslate,
             translateX,
             translateY + yf * this._vbarTranslateMax);
     }
