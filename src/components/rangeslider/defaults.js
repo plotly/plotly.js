@@ -36,7 +36,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     coerce('range');
 
     // Expand slider range to the axis range
-    if(containerOut.range && !axOut.autorange) {
+    if(containerOut.range) {
         // TODO: what if the ranges are reversed?
         var outRange = containerOut.range,
             axRange = axOut.range;

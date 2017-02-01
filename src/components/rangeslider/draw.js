@@ -82,7 +82,7 @@ module.exports = function(gd) {
         // compute new slider range using axis autorange if necessary
         // copy back range to input range slider container to skip
         // this step in subsequent draw calls
-        if(!opts.range) {
+        if(axisOpts._needsExpand && axisOpts._min.length && axisOpts._max.length) {
             opts._input.range = opts.range = Axes.getAutoRange(axisOpts);
         }
 
