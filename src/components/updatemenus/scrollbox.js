@@ -36,6 +36,25 @@ function ScrollBox(gd, container, id) {
     this.translateY = null;  // scrollbox vertical translation
     this.hbar = null;  // horizontal scrollbar D3 selection
     this.vbar = null;  // vertical scrollbar D3 selection
+
+    // <rect> element to capture pointer events
+    this.bg = this.container.selectAll('rect.scrollbox-bg').data([0]);
+
+    this.bg.exit()
+        .on('.drag', null)
+        .on('wheel', null)
+        .remove();
+
+    this.bg.enter().append('rect')
+        .classed('scrollbox-bg', true)
+        .style('pointer-events', 'all')
+        .attr({
+            opacity: 0,
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0
+        });
 }
 
 // scroll bar dimensions
@@ -219,11 +238,26 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
             width: Math.ceil(clipR) - Math.floor(clipL),
             height: Math.ceil(clipB) - Math.floor(clipT)
         });
+
         this.container.call(Drawing.setClipUrl, clipId);
+
+        this.bg.attr({
+            x: l,
+            y: t,
+            width: w,
+            height: h
+        });
     }
     else {
+        this.bg.attr({
+            width: 0,
+            height: 0
+        });
+        this.container
+            .on('wheel', null)
+            .on('.drag', null)
+            .call(Drawing.setClipUrl, null);
         delete this._clipRect;
-        this.container.call(Drawing.setClipUrl, null);
     }
 
     // set up drag listeners (if scroll bars are needed)
@@ -235,6 +269,8 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
             .on('drag', this._onBoxDrag.bind(this));
 
         this.container
+            .on('wheel', null)
+            .on('wheel', this._onBoxWheel.bind(this))
             .on('.drag', null)
             .call(onBoxDrag);
 
@@ -256,8 +292,6 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
                 .on('.drag', null)
                 .call(onBarDrag);
         }
-
-        this.container.on('wheel', this._onBoxWheel.bind(this));
     }
 
     // set scrollbox translation
@@ -271,8 +305,14 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
  */
 ScrollBox.prototype.disable = function disable() {
     if(this.hbar || this.vbar) {
-        this.container.call(Drawing.setClipUrl, null);
-        this.container.on('.drag', null);
+        this.bg.attr({
+            width: 0,
+            height: 0
+        });
+        this.container
+            .on('wheel', null)
+            .on('.drag', null)
+            .call(Drawing.setClipUrl, null);
         delete this._clipRect;
     }
 
@@ -291,8 +331,6 @@ ScrollBox.prototype.disable = function disable() {
         delete this._vbarYMin;
         delete this._vbarTranslateMax;
     }
-
-    this.container.on('wheel', null);
 };
 
 /**
