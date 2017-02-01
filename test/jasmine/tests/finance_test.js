@@ -963,3 +963,79 @@ describe('finance charts updates:', function() {
         });
     });
 });
+
+describe('finance charts *special* handlers:', function() {
+
+    afterEach(destroyGraphDiv);
+
+    it('`editable: true` handles should work', function(done) {
+
+        function editText(itemNumber, newText) {
+            var textNode = d3.selectAll('text.legendtext')
+                .filter(function(_, i) { return i === itemNumber; }).node();
+            textNode.dispatchEvent(new window.MouseEvent('click'));
+
+            var editNode = d3.select('.plugin-editable.editable').node();
+            editNode.dispatchEvent(new window.FocusEvent('focus'));
+
+            editNode.textContent = newText;
+            editNode.dispatchEvent(new window.FocusEvent('focus'));
+            editNode.dispatchEvent(new window.FocusEvent('blur'));
+
+            editNode.remove();
+        }
+
+        Plotly.plot(createGraphDiv(), [
+            Lib.extendDeep({}, mock0, { type: 'ohlc' }),
+            Lib.extendDeep({}, mock0, { type: 'candlestick' })
+        ], {}, {
+            editable: true
+        })
+        .then(function(gd) {
+            return new Promise(function(resolve) {
+                gd.once('plotly_restyle', function(eventData) {
+                    expect(eventData[0]['increasing.name']).toEqual('0');
+                    expect(eventData[1]).toEqual([0]);
+                    resolve(gd);
+                });
+
+                editText(0, '0');
+            });
+        })
+        .then(function(gd) {
+            return new Promise(function(resolve) {
+                gd.once('plotly_restyle', function(eventData) {
+                    expect(eventData[0]['decreasing.name']).toEqual('1');
+                    expect(eventData[1]).toEqual([0]);
+                    resolve(gd);
+                });
+
+                editText(1, '1');
+            });
+        })
+        .then(function(gd) {
+            return new Promise(function(resolve) {
+                gd.once('plotly_restyle', function(eventData) {
+                    expect(eventData[0]['decreasing.name']).toEqual('2');
+                    expect(eventData[1]).toEqual([1]);
+                    resolve(gd);
+                });
+
+                editText(3, '2');
+            });
+        })
+        .then(function(gd) {
+            return new Promise(function(resolve) {
+                gd.once('plotly_restyle', function(eventData) {
+                    expect(eventData[0]['increasing.name']).toEqual('3');
+                    expect(eventData[1]).toEqual([1]);
+                    resolve(gd);
+                });
+
+                editText(2, '3');
+            });
+        })
+        .then(done);
+    });
+
+});
