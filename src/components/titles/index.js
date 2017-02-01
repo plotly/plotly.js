@@ -151,10 +151,12 @@ Titles.draw = function(gd, titleClass, options) {
             else {
                 // so we don't have to offset each avoided element,
                 // give the title the opposite offset
-                titlebb.left -= avoid.offsetLeft;
-                titlebb.right -= avoid.offsetLeft;
-                titlebb.top -= avoid.offsetTop;
-                titlebb.bottom -= avoid.offsetTop;
+                var offsetLeft = avoid.offsetLeft || 0,
+                    offsetTop = avoid.offsetTop || 0;
+                titlebb.left -= offsetLeft;
+                titlebb.right -= offsetLeft;
+                titlebb.top -= offsetTop;
+                titlebb.bottom -= offsetTop;
 
                 // iterate over a set of elements (avoid.selection)
                 // to avoid collisions with

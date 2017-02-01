@@ -792,7 +792,9 @@ fx.loneHover = function(hoverItem, opts) {
 };
 
 fx.loneUnhover = function(containerOrSelection) {
-    var selection = containerOrSelection instanceof d3.selection ?
+    // duck type whether the arg is a d3 selection because ie9 doesn't
+    // handle instanceof like modern browsers do.
+    var selection = Lib.isD3Selection(containerOrSelection) ?
             containerOrSelection :
             d3.select(containerOrSelection);
 

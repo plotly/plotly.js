@@ -103,7 +103,9 @@ describe('hover info', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
         mockCopy.data[0].text = [];
-        mockCopy.data[0].text[17] = 'hover text';
+        // we convert newlines to spaces
+        // see https://github.com/plotly/plotly.js/issues/746
+        mockCopy.data[0].text[17] = 'hover\ntext\n\rwith\r\nspaces\n\nnot\rnewlines';
         mockCopy.data[0].hoverinfo = 'text';
 
         beforeEach(function(done) {
@@ -123,7 +125,8 @@ describe('hover info', function() {
 
             expect(d3.selectAll('g.axistext').size()).toEqual(0);
             expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').select('text').html()).toEqual('hover text');
+            expect(d3.selectAll('g.hovertext').select('text').html())
+                .toEqual('hover text  with spaces  not newlines');
         });
     });
 

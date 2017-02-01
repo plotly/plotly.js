@@ -28,11 +28,7 @@ loggers.log = function() {
             messages.push(arguments[i]);
         }
 
-        if(console.trace) {
-            console.trace.apply(console, messages);
-        } else {
-            console.log.apply(console, messages);
-        }
+        apply(console.trace || console.log, messages);
     }
 };
 
@@ -44,11 +40,7 @@ loggers.warn = function() {
             messages.push(arguments[i]);
         }
 
-        if(console.trace) {
-            console.trace.apply(console, messages);
-        } else {
-            console.log.apply(console, messages);
-        }
+        apply(console.trace || console.log, messages);
     }
 };
 
@@ -60,6 +52,21 @@ loggers.error = function() {
             messages.push(arguments[i]);
         }
 
-        console.error.apply(console, arguments);
+        apply(console.error, messages);
     }
 };
+
+/*
+ * Robust apply, for IE9 where console.log doesn't support
+ * apply like other functions do
+ */
+function apply(f, args) {
+    if(f.apply) {
+        f.apply(f, args);
+    }
+    else {
+        for(var i = 0; i < args.length; i++) {
+            f(args[i]);
+        }
+    }
+}

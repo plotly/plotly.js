@@ -250,6 +250,8 @@ var UNICODE_TO_ENTITY = Object.keys(stringMappings.unicodeToEntity).map(function
     };
 });
 
+var NEWLINES = /(\r\n?|\n)/g;
+
 exports.plainText = function(_str) {
     // strip out our pseudo-html so we have a readable
     // version to put into text fields
@@ -277,6 +279,13 @@ function encodeForHTML(_str) {
 
 function convertToSVG(_str) {
     _str = convertEntities(_str);
+
+    // normalize behavior between IE and others wrt newlines and whitespace:pre
+    // this combination makes IE barf https://github.com/plotly/plotly.js/issues/746
+    // Chrome and FF display \n, \r, or \r\n as a space in this mode.
+    // I feel like at some point we turned these into <br> but currently we don't so
+    // I'm just going to cement what we do now in Chrome and FF
+    _str = _str.replace(NEWLINES, ' ');
 
     var result = _str
         .split(/(<[^<>]*>)/).map(function(d) {
