@@ -151,7 +151,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             name: axName,
             data: fullData,
             bgColor: bgColor,
-            calendar: layoutOut.calendar
+            calendar: layoutOut.calendar,
+            cheateronly: axLetter === 'x' && xaListNotCheater.indexOf(axName) === -1
         };
 
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);

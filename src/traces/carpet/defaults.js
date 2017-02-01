@@ -28,6 +28,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, dfltColor, fullLayou
 
     handleABDefaults(traceIn, traceOut, fullLayout, coerce, defaultColor);
 
+    if(!traceOut.a || !traceOut.b) {
+        traceOut.visible = false;
+        return;
+    }
+
     if(traceOut.a.length < 3) {
         traceOut.aaxis.smoothing = 0;
     }

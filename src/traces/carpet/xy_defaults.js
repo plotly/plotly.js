@@ -29,7 +29,7 @@ module.exports = function handleXYDefaults(traceIn, traceOut, coerce) {
     if(!x && !y) return;
 
     if(cols.length) {
-        convertColumnData(traceOut, traceOut.baxis, traceOut.aaxis, 'b', 'a', cols);
+        convertColumnData(traceOut, traceOut.aaxis, traceOut.baxis, 'a', 'b', cols);
     }
 
     return true;

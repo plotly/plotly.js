@@ -64,7 +64,6 @@ module.exports = function smoothFill2dArray(data, a, b) {
         }
     }
 
-
     if(!ip.length) return data;
 
     // The tolerance doesn't need to be excessive. It's just for display positioning

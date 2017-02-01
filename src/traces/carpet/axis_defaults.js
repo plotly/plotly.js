@@ -61,7 +61,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     // now figure out type and do some more initialization
     var axType = coerce('type');
     if(axType === '-') {
-        setAutoType(containerOut, options.data);
+        if(options.data) setAutoType(containerOut, options.data);
 
         if(containerOut.type === '-') {
             containerOut.type = 'linear';
