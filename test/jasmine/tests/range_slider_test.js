@@ -536,6 +536,9 @@ describe('the range slider', function() {
 
     describe('in general', function() {
 
+        // lower toBeCloseToArray precision for FF38 on CI
+        var precision = 1e-2;
+
         beforeAll(function() {
             jasmine.addMatchers(customMatchers);
         });
@@ -569,8 +572,8 @@ describe('the range slider', function() {
         it('should expand its range in accordance with new data arrays', function(done) {
 
             function assertRange(expected) {
-                expect(gd.layout.xaxis.range).toBeCloseToArray(expected);
-                expect(gd.layout.xaxis.rangeslider.range).toBeCloseToArray(expected);
+                expect(gd.layout.xaxis.range).toBeCloseToArray(expected, precision);
+                expect(gd.layout.xaxis.rangeslider.range).toBeCloseToArray(expected, precision);
             }
 
             Plotly.plot(gd, [{
@@ -608,8 +611,8 @@ describe('the range slider', function() {
             var rangeSliderRange = [-1, 11];
 
             function assertRange(expected) {
-                expect(gd.layout.xaxis.range).toBeCloseToArray(expected);
-                expect(gd.layout.xaxis.rangeslider.range).toEqual(rangeSliderRange);
+                expect(gd.layout.xaxis.range).toBeCloseToArray(expected, precision);
+                expect(gd.layout.xaxis.rangeslider.range).toEqual(rangeSliderRange, precision);
             }
 
             Plotly.plot(gd, [{
