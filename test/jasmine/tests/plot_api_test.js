@@ -178,6 +178,28 @@ describe('Test plot api', function() {
                 })
                 .then(done);
         });
+
+        it('can set empty text nodes', function(done) {
+            var data = [{
+                x: [1, 2, 3],
+                y: [0, 0, 0],
+                text: ['', 'Text', ''],
+                mode: 'lines+text'
+            }];
+            var scatter = null;
+            var oldHeight = 0;
+            Plotly.plot(gd, data)
+                .then(function() {
+                    scatter = document.getElementsByClassName('scatter')[0];
+                    oldHeight = scatter.getBoundingClientRect().height;
+                    return Plotly.relayout(gd, 'yaxis.range', [0.5, 0.5, 0.5]);
+                })
+                .then(function() {
+                    var newHeight = scatter.getBoundingClientRect().height;
+                    expect(newHeight).toEqual(oldHeight);
+                })
+                .then(done);
+        });
     });
 
     describe('Plotly.restyle', function() {
