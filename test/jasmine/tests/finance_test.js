@@ -968,7 +968,9 @@ describe('finance charts *special* handlers:', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('`editable: true` handles should work', function(done) {
+    it('`editable: true` handlers should work', function(done) {
+
+        var gd = createGraphDiv();
 
         function editText(itemNumber, newText) {
             var textNode = d3.selectAll('text.legendtext')
@@ -981,11 +983,17 @@ describe('finance charts *special* handlers:', function() {
             editNode.textContent = newText;
             editNode.dispatchEvent(new window.FocusEvent('focus'));
             editNode.dispatchEvent(new window.FocusEvent('blur'));
-
-            editNode.remove();
         }
 
-        Plotly.plot(createGraphDiv(), [
+        // makeEditable in svg_text_utils clears the edit <div> in
+        // a 0-second transition, so push the resolve call at the back
+        // of the rendering queue to make sure the edit <div> is properly
+        // cleared after each mocked text edits.
+        function delayedResolve(resolve) {
+            setTimeout(function() { return resolve(gd); }, 0);
+        }
+
+        Plotly.plot(gd, [
             Lib.extendDeep({}, mock0, { type: 'ohlc' }),
             Lib.extendDeep({}, mock0, { type: 'candlestick' })
         ], {}, {
@@ -996,7 +1004,7 @@ describe('finance charts *special* handlers:', function() {
                 gd.once('plotly_restyle', function(eventData) {
                     expect(eventData[0]['increasing.name']).toEqual('0');
                     expect(eventData[1]).toEqual([0]);
-                    resolve(gd);
+                    delayedResolve(resolve);
                 });
 
                 editText(0, '0');
@@ -1007,7 +1015,7 @@ describe('finance charts *special* handlers:', function() {
                 gd.once('plotly_restyle', function(eventData) {
                     expect(eventData[0]['decreasing.name']).toEqual('1');
                     expect(eventData[1]).toEqual([0]);
-                    resolve(gd);
+                    delayedResolve(resolve);
                 });
 
                 editText(1, '1');
@@ -1018,7 +1026,7 @@ describe('finance charts *special* handlers:', function() {
                 gd.once('plotly_restyle', function(eventData) {
                     expect(eventData[0]['decreasing.name']).toEqual('2');
                     expect(eventData[1]).toEqual([1]);
-                    resolve(gd);
+                    delayedResolve(resolve);
                 });
 
                 editText(3, '2');
@@ -1029,7 +1037,7 @@ describe('finance charts *special* handlers:', function() {
                 gd.once('plotly_restyle', function(eventData) {
                     expect(eventData[0]['increasing.name']).toEqual('3');
                     expect(eventData[1]).toEqual([1]);
-                    resolve(gd);
+                    delayedResolve(resolve);
                 });
 
                 editText(2, '3');
