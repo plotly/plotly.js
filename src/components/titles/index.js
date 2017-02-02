@@ -18,6 +18,7 @@ var Lib = require('../../lib');
 var Drawing = require('../drawing');
 var Color = require('../color');
 var svgTextUtils = require('../../lib/svg_text_utils');
+var interactConstants = require('../../constants/interactions');
 
 
 var Titles = module.exports = {};
@@ -196,11 +197,11 @@ Titles.draw = function(gd, titleClass, options) {
             .text(txt)
             .on('mouseover.opacity', function() {
                 d3.select(this).transition()
-                    .duration(100).style('opacity', 1);
+                    .duration(interactConstants.SHOW_PLACEHOLDER).style('opacity', 1);
             })
             .on('mouseout.opacity', function() {
                 d3.select(this).transition()
-                    .duration(1000).style('opacity', 0);
+                    .duration(interactConstants.HIDE_PLACEHOLDER).style('opacity', 0);
             });
     }
 
