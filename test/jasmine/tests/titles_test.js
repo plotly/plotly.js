@@ -6,6 +6,7 @@ var interactConstants = require('@src/constants/interactions');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
+var Plots = require('@src/plots/plots');
 
 describe('editable titles', function() {
     'use strict';
@@ -43,6 +44,24 @@ describe('editable titles', function() {
         }, interactConstants.SHOW_PLACEHOLDER + 50);
 
         return promise;
+    }
+
+    function editTitle(letter, attr, text) {
+        return new Promise(function(resolve) {
+            gd.once('plotly_relayout', function(eventData) {
+                expect(eventData[attr]).toEqual(text, [letter, attr, eventData]);
+                setTimeout(resolve, 10);
+            });
+
+            var textNode = document.querySelector('.' + letter + 'title');
+            textNode.dispatchEvent(new window.MouseEvent('click'));
+
+            var editNode = document.querySelector('.plugin-editable.editable');
+            editNode.dispatchEvent(new window.FocusEvent('focus'));
+            editNode.textContent = text;
+            editNode.dispatchEvent(new window.FocusEvent('focus'));
+            editNode.dispatchEvent(new window.FocusEvent('blur'));
+        });
     }
 
     it('shows default titles semi-opaque with no hover effects', function(done) {
@@ -84,11 +103,13 @@ describe('editable titles', function() {
             title: ''
         }, {editable: true})
         .then(function() {
-            return Plotly.relayout(gd, {
-                'xaxis.title': 'XXX',
-                'yaxis.title': 'YYY',
-                'title': 'TTT'
-            });
+            return editTitle('x', 'xaxis.title', 'XXX');
+        })
+        .then(function() {
+            return editTitle('y', 'yaxis.title', 'YYY');
+        })
+        .then(function() {
+            return editTitle('g', 'title', 'TTT');
         })
         .then(function() {
             return Promise.all([
