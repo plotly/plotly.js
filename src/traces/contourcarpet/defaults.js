@@ -24,6 +24,21 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('carpetid');
 
+    // If either a or b is not present, then it's not a valid trace *unless* the carpet
+    // axis has the a or b valeus we're looking for. So if these are not found, just defer
+    // that decision until the calc step.
+    //
+    // NB: the calc step will modify the original data input by assigning whichever of
+    // a or b are missing. This is necessary because panning goes right from supplyDefaults
+    // to plot (skipping calc). That means on subsequent updates, this *will* need to be
+    // able to find a and b.
+    //
+    // The long-term proper fix is that this should perhaps use underscored attributes to
+    // at least modify the user input to a slightly lesser extent. Fully removing the
+    // input mutation is challenging. The underscore approach is not currently taken since
+    // it requires modification to all of the functions below that expect the coerced
+    // attribute name to match the property name -- except '_a' !== 'a' so that is not
+    // straightforward.
     if (traceIn.a && traceIn.b) {
         var len = handleXYZDefaults(traceIn, traceOut, coerce, layout, 'a', 'b');
 
