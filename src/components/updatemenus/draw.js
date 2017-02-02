@@ -314,6 +314,11 @@ function drawButtons(gd, gHeader, gButton, scrollBox, menuOpts) {
         index: 0,
     };
 
+    var scrollBoxPosition = {
+        l: posOpts.x + menuOpts.borderwidth,
+        t: posOpts.y + menuOpts.borderwidth
+    };
+
     buttons.each(function(buttonOpts, buttonIndex) {
         var button = d3.select(this);
 
@@ -344,9 +349,18 @@ function drawButtons(gd, gHeader, gButton, scrollBox, menuOpts) {
 
     buttons.call(styleButtons, menuOpts);
 
+    if(isVertical) {
+        scrollBoxPosition.w = Math.max(menuOpts.openWidth, menuOpts.headerWidth);
+        scrollBoxPosition.h = posOpts.y - scrollBoxPosition.t;
+    }
+    else {
+        scrollBoxPosition.w = posOpts.x - scrollBoxPosition.l;
+        scrollBoxPosition.h = Math.max(menuOpts.openHeight, menuOpts.headerHeight);
+    }
+
     if(scrollBox) {
         if(buttons.size()) {
-            drawScrollBox(gd, gHeader, gButton, scrollBox, menuOpts);
+            drawScrollBox(gd, gHeader, gButton, scrollBox, menuOpts, scrollBoxPosition);
         }
         else {
             hideScrollBox(scrollBox);
@@ -354,39 +368,10 @@ function drawButtons(gd, gHeader, gButton, scrollBox, menuOpts) {
     }
 }
 
-function drawScrollBox(gd, gHeader, gButton, scrollBox, menuOpts) {
+function drawScrollBox(gd, gHeader, gButton, scrollBox, menuOpts, position) {
     // enable the scrollbox
     var direction = menuOpts.direction,
-        isUp = (direction === 'up'),
-        isDown = (direction === 'down'),
-        isLeft = (direction === 'left'),
-        isRight = (direction === 'right'),
-        isVertical = (isUp || isDown);
-
-    var x0, y0;
-    if(isDown) {
-        x0 = 0;
-        y0 = menuOpts.headerHeight + constants.gapButtonHeader;
-    }
-    else if(isUp) {
-        x0 = 0;
-        y0 = menuOpts.headerHeight + constants.gapButton - menuOpts.openHeight;
-    }
-    else if(isRight) {
-        x0 = menuOpts.headerWidth + constants.gapButtonHeader;
-        y0 = 0;
-    }
-    else if(isLeft) {
-        x0 = menuOpts.headerWidth + constants.gapButton - menuOpts.openWidth;
-        y0 = 0;
-    }
-
-    var position = {
-        l: menuOpts.lx + menuOpts.borderwidth + x0 + menuOpts.pad.l,
-        t: menuOpts.ly + menuOpts.borderwidth + y0 + menuOpts.pad.t,
-        w: Math.max(menuOpts.openWidth, menuOpts.headerWidth),
-        h: menuOpts.openHeight
-    };
+        isVertical = (direction === 'up' || direction === 'down');
 
     var active = menuOpts.active,
         translateX, translateY,
