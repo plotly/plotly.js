@@ -6,7 +6,6 @@ var interactConstants = require('@src/constants/interactions');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
-var Plots = require('@src/plots/plots');
 
 describe('editable titles', function() {
     'use strict';
