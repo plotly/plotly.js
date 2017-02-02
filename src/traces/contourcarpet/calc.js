@@ -21,12 +21,14 @@ var maxRowLength = require('../heatmap/max_row_length');
 var interp2d = require('../heatmap/interp2d');
 var findEmpties = require('../heatmap/find_empties');
 var makeBoundArray = require('../heatmap/make_bound_array');
+var supplyDefaults = require('./defaults');
 
 
 // most is the same as heatmap calc, then adjust it
 // though a few things inside heatmap calc still look for
 // contour maps, because the makeBoundArray calls are too entangled
 module.exports = function calc(gd, trace) {
+    //console.trace('calc');
     var i, carpet;
 
     for(i = 0; i < gd._fullData.length; i++) {
@@ -38,6 +40,23 @@ module.exports = function calc(gd, trace) {
 
     if(!carpet) return;
     trace._carpet = carpet;
+
+    if (!trace.a || !trace.b) {
+        // Look up the original incoming carpet data:
+        var carpetdata = gd.data[carpet.index];
+
+        // Look up the incoming trace data, *except* perform a shallow
+        // copy so that we're not actually modifying it when we use it
+        // to supply defaults:
+        var tracedata = gd.data[trace.index];
+        //var tracedata = extendFlat({}, gd.data[trace.index]);
+
+        // If the data is not specified
+        if (!tracedata.a) tracedata.a = carpetdata.a;
+        if (!tracedata.b) tracedata.b = carpetdata.b;
+
+        supplyDefaults(tracedata, trace, null, gd._fullLayout);
+    }
 
     var cd = heatmappishCalc(gd, trace),
         contours = trace.contours;

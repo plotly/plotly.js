@@ -31,6 +31,7 @@ module.exports = function plot(gd, plotinfo, cdcontours) {
 };
 
 function plotOne(gd, plotinfo, cd) {
+    //console.trace('plotone');
     var i, j, k, path;
     var trace = cd[0].trace;
     var carpet = trace._carpet;

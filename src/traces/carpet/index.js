@@ -17,6 +17,7 @@ Carpet.plot = require('./plot');
 Carpet.calc = require('./calc');
 Carpet.animatable = true;
 Carpet.calcPriority = 1;
+Carpet.defaultPriority = 1;
 
 Carpet.moduleType = 'trace';
 Carpet.name = 'carpet';
