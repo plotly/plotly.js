@@ -96,13 +96,17 @@ module.exports = function draw(gd) {
 
     // remove exiting header, remove dropped buttons and reset margins
     if(headerGroups.enter().size()) {
-        foldDropdownMenu(gButton, scrollBox);
+        gButton
+            .call(removeAllButtons)
+            .attr(constants.menuIndexAttrName, '-1');
     }
 
     headerGroups.exit().each(function(menuOpts) {
         d3.select(this).remove();
 
-        foldDropdownMenu(gButton, scrollBox);
+        gButton
+            .call(removeAllButtons)
+            .attr(constants.menuIndexAttrName, '-1');
 
         Plots.autoMargin(gd, constants.autoMarginIdRoot + menuOpts._index);
     });
@@ -119,12 +123,12 @@ module.exports = function draw(gd) {
         if(menuOpts.type === 'dropdown') {
             drawHeader(gd, gHeader, gButton, scrollBox, menuOpts);
 
-            // update dropdown buttons if this menu is active
+            // if this menu is active, update the dropdown container
             if(isActive(gButton, menuOpts)) {
-                unfoldDropdownMenu(gd, gHeader, gButton, scrollBox, menuOpts);
+                drawButtons(gd, gHeader, gButton, scrollBox, menuOpts);
             }
         } else {
-            drawButtons(gd, gHeader, null, scrollBox, menuOpts);
+            drawButtons(gd, gHeader, null, null, menuOpts);
         }
 
     });
@@ -163,86 +167,22 @@ function isActive(gButton, menuOpts) {
     return +gButton.attr(constants.menuIndexAttrName) === menuOpts._index;
 }
 
-function unfoldDropdownMenu(gd, gHeader, gButton, scrollBox, menuOpts) {
-    // enable the scrollbox
-    var direction = menuOpts.direction,
-        isUp = (direction === 'up'),
-        isDown = (direction === 'down'),
-        isLeft = (direction === 'left'),
-        isRight = (direction === 'right'),
-        isVertical = (isUp || isDown);
-
-    var x0, y0;
-    if(isDown) {
-        x0 = 0;
-        y0 = menuOpts.headerHeight + constants.gapButtonHeader;
-    }
-    else if(isUp) {
-        x0 = 0;
-        y0 = menuOpts.headerHeight + constants.gapButton - menuOpts.openHeight;
-    }
-    else if(isRight) {
-        x0 = menuOpts.headerWidth + constants.gapButtonHeader;
-        y0 = 0;
-    }
-    else if(isLeft) {
-        x0 = menuOpts.headerWidth + constants.gapButton - menuOpts.openWidth;
-        y0 = 0;
-    }
-
-    var position = {
-        l: menuOpts.lx + menuOpts.borderwidth + x0 + menuOpts.pad.l,
-        t: menuOpts.ly + menuOpts.borderwidth + y0 + menuOpts.pad.t,
-        w: Math.max(menuOpts.openWidth, menuOpts.headerWidth),
-        h: menuOpts.openHeight
-    };
-
-    var active = menuOpts.active,
-        translateX, translateY,
-        i;
-    if(isVertical) {
-        translateY = 0;
-        for(i = 0; i < active; i++) {
-            translateY += menuOpts.heights[i] + constants.gapButton;
-        }
-    }
-    else {
-        translateX = 0;
-        for(i = 0; i < active; i++) {
-            translateX += menuOpts.widths[i] + constants.gapButton;
-        }
-    }
-
-    scrollBox.enable(position, translateX, translateY);
-
-    // store index of active menu (-1 means dropdown menu is folded)
-    gButton.attr(constants.menuIndexAttrName, menuOpts._index);
-
-    drawButtons(gd, gHeader, gButton, scrollBox, menuOpts);
-}
-
-function foldDropdownMenu(gButton, scrollBox) {
-    scrollBox.disable();
-
-    // -1 means dropdown menu is folded
-    gButton
-        .attr(constants.menuIndexAttrName, '-1')
-        .call(removeAllButtons);
-}
-
 function setActive(gd, menuOpts, buttonOpts, gHeader, gButton, scrollBox, buttonIndex, isSilentUpdate) {
     // update 'active' attribute in menuOpts
     menuOpts._input.active = menuOpts.active = buttonIndex;
 
-    if(menuOpts.type === 'dropdown') {
+    if(menuOpts.type === 'buttons') {
+        drawButtons(gd, gHeader, null, null, menuOpts);
+    }
+    else if(menuOpts.type === 'dropdown') {
         // fold up buttons and redraw header
         gButton.attr(constants.menuIndexAttrName, '-1');
 
         drawHeader(gd, gHeader, gButton, scrollBox, menuOpts);
-    }
 
-    if(!isSilentUpdate || menuOpts.type === 'buttons') {
-        drawButtons(gd, gHeader, gButton, scrollBox, menuOpts);
+        if(!isSilentUpdate) {
+            drawButtons(gd, gHeader, gButton, scrollBox, menuOpts);
+        }
     }
 }
 
@@ -283,18 +223,19 @@ function drawHeader(gd, gHeader, gButton, scrollBox, menuOpts) {
     });
 
     header.on('click', function() {
-        if(isFolded(gButton)) {
-            unfoldDropdownMenu(gd, gHeader, gButton, scrollBox, menuOpts);
-        }
-        else if(isActive(gButton, menuOpts)) {
-            foldDropdownMenu(gButton, scrollBox);
-        }
-        else {
-            // the dropdown menu is unfolded,
-            // but the clicked header is not the active header
-            foldDropdownMenu(gButton, scrollBox);
-            unfoldDropdownMenu(gd, gHeader, gButton, scrollBox, menuOpts);
-        }
+        gButton.call(removeAllButtons);
+
+
+        // if this menu is active, fold the dropdown container
+        // otherwise, make this menu active
+        gButton.attr(
+            constants.menuIndexAttrName,
+            isActive(gButton, menuOpts) ?
+                -1 :
+                String(menuOpts._index)
+        );
+
+        drawButtons(gd, gHeader, gButton, scrollBox, menuOpts);
     });
 
     header.on('mouseover', function() {
@@ -339,19 +280,10 @@ function drawButtons(gd, gHeader, gButton, scrollBox, menuOpts) {
 
         exit.transition()
             .attr('opacity', '0')
-            .remove()
-            .each('end', function() {
-                // remove the scrollbox, if all the buttons have been removed
-                if(gButton.selectAll('g.' + klass).size() === 0) {
-                    foldDropdownMenu(gButton, scrollBox);
-                }
-            });
+            .remove();
     } else {
         exit.remove();
     }
-
-    // if folding a dropdown menu, don't draw the buttons
-    if(!buttons.size()) return;
 
     var x0 = 0;
     var y0 = 0;
@@ -411,6 +343,107 @@ function drawButtons(gd, gHeader, gButton, scrollBox, menuOpts) {
     });
 
     buttons.call(styleButtons, menuOpts);
+
+    if(scrollBox) {
+        if(buttons.size()) {
+            drawScrollBox(gd, gHeader, gButton, scrollBox, menuOpts);
+        }
+        else {
+            hideScrollBox(scrollBox);
+        }
+    }
+}
+
+function drawScrollBox(gd, gHeader, gButton, scrollBox, menuOpts) {
+    // enable the scrollbox
+    var direction = menuOpts.direction,
+        isUp = (direction === 'up'),
+        isDown = (direction === 'down'),
+        isLeft = (direction === 'left'),
+        isRight = (direction === 'right'),
+        isVertical = (isUp || isDown);
+
+    var x0, y0;
+    if(isDown) {
+        x0 = 0;
+        y0 = menuOpts.headerHeight + constants.gapButtonHeader;
+    }
+    else if(isUp) {
+        x0 = 0;
+        y0 = menuOpts.headerHeight + constants.gapButton - menuOpts.openHeight;
+    }
+    else if(isRight) {
+        x0 = menuOpts.headerWidth + constants.gapButtonHeader;
+        y0 = 0;
+    }
+    else if(isLeft) {
+        x0 = menuOpts.headerWidth + constants.gapButton - menuOpts.openWidth;
+        y0 = 0;
+    }
+
+    var position = {
+        l: menuOpts.lx + menuOpts.borderwidth + x0 + menuOpts.pad.l,
+        t: menuOpts.ly + menuOpts.borderwidth + y0 + menuOpts.pad.t,
+        w: Math.max(menuOpts.openWidth, menuOpts.headerWidth),
+        h: menuOpts.openHeight
+    };
+
+    var active = menuOpts.active,
+        translateX, translateY,
+        i;
+    if(isVertical) {
+        translateY = 0;
+        for(i = 0; i < active; i++) {
+            translateY += menuOpts.heights[i] + constants.gapButton;
+        }
+    }
+    else {
+        translateX = 0;
+        for(i = 0; i < active; i++) {
+            translateX += menuOpts.widths[i] + constants.gapButton;
+        }
+    }
+
+    scrollBox.enable(position, translateX, translateY);
+
+    if(scrollBox.hbar) {
+        scrollBox.hbar
+            .attr('opacity', '0')
+            .transition()
+            .attr('opacity', '1');
+    }
+
+    if(scrollBox.vbar) {
+        scrollBox.vbar
+            .attr('opacity', '0')
+            .transition()
+            .attr('opacity', '1');
+    }
+}
+
+function hideScrollBox(scrollBox) {
+    var hasHBar = !!scrollBox.hbar,
+        hasVBar = !!scrollBox.vbar;
+
+    if(hasHBar) {
+        scrollBox.hbar
+            .transition()
+            .attr('opacity', '0')
+            .each('end', function() {
+                hasHBar = false;
+                if(!hasVBar) scrollBox.disable();
+            });
+    }
+
+    if(hasVBar) {
+        scrollBox.vbar
+            .transition()
+            .attr('opacity', '0')
+            .each('end', function() {
+                hasVBar = false;
+                if(!hasHBar) scrollBox.disable();
+            });
+    }
 }
 
 function drawItem(item, menuOpts, itemOpts) {
