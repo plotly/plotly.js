@@ -9,6 +9,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var TRANSITION_DELAY = 100;
 var fail = require('../assets/fail_test');
+var getBBox = require('../assets/get_bbox');
 
 describe('update menus defaults', function() {
     'use strict';
@@ -799,4 +800,407 @@ describe('update menus interaction with other components:', function() {
         })
         .then(done);
     });
+});
+
+
+describe('update menus interaction with scrollbox:', function() {
+    'use strict';
+
+    var gd,
+        mock,
+        menuDown,
+        menuLeft,
+        menuRight,
+        menuUp;
+
+    // Adapted from https://github.com/plotly/plotly.js/pull/770#issuecomment-234669383
+    mock = {
+        data: [],
+        layout: {
+            width: 1100,
+            height: 450,
+            updatemenus: [{
+                buttons: [{
+                    method: 'restyle',
+                    args: ['line.color', 'red'],
+                    label: 'red'
+                }, {
+                    method: 'restyle',
+                    args: ['line.color', 'blue'],
+                    label: 'blue'
+                }, {
+                    method: 'restyle',
+                    args: ['line.color', 'green'],
+                    label: 'green'
+                }]
+            }, {
+                x: 0.5,
+                xanchor: 'left',
+                y: 0.5,
+                yanchor: 'top',
+                direction: 'down',
+                buttons: []
+            }, {
+                x: 0.5,
+                xanchor: 'right',
+                y: 0.5,
+                yanchor: 'top',
+                direction: 'left',
+                buttons: []
+            }, {
+                x: 0.5,
+                xanchor: 'left',
+                y: 0.5,
+                yanchor: 'bottom',
+                direction: 'right',
+                buttons: []
+            }, {
+                x: 0.5,
+                xanchor: 'right',
+                y: 0.5,
+                yanchor: 'bottom',
+                direction: 'up',
+                buttons: []
+            }]
+        }
+    };
+
+    for(var i = 0, n = 20; i < n; i++) {
+        var j;
+
+        var y;
+        for(j = 0, y = []; j < 10; j++) y.push(Math.random);
+
+        mock.data.push({
+            y: y,
+            line: {
+                shape: 'spline',
+                color: 'red'
+            },
+            visible: i === 0,
+            name: 'Data set ' + i,
+        });
+
+        var visible;
+        for(j = 0, visible = []; j < n; j++) visible.push(i === j);
+
+        for(j = 1; j <= 4; j++) {
+            mock.layout.updatemenus[j].buttons.push({
+                method: 'restyle',
+                args: ['visible', visible],
+                label: 'Data set ' + i
+            });
+        }
+    }
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            var menus = document.getElementsByClassName('updatemenu-header');
+
+            expect(menus.length).toBe(5);
+
+            menuDown = menus[1];
+            menuLeft = menus[2];
+            menuRight = menus[3];
+            menuUp = menus[4];
+        }).catch(fail).then(done);
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('scrollbox can be dragged', function() {
+        var deltaX = -50,
+            deltaY = -100,
+            scrollBox,
+            scrollBar,
+            scrollBoxTranslate0,
+            scrollBarTranslate0,
+            scrollBoxTranslate1,
+            scrollBarTranslate1;
+
+        scrollBox = getScrollBox();
+        expect(scrollBox).toBeDefined();
+
+        // down menu
+        click(menuDown);
+
+        scrollBar = getVerticalScrollBar();
+        expect(scrollBar).toBeDefined();
+
+        scrollBoxTranslate0 = Lib.getTranslate(scrollBox);
+        scrollBarTranslate0 = Lib.getTranslate(scrollBar);
+        dragScrollBox(scrollBox, 0, deltaY);
+        scrollBoxTranslate1 = Lib.getTranslate(scrollBox);
+        scrollBarTranslate1 = Lib.getTranslate(scrollBar);
+
+        expect(scrollBoxTranslate1.y).toEqual(scrollBoxTranslate0.y + deltaY);
+        expect(scrollBarTranslate1.y).toBeGreaterThan(scrollBarTranslate0.y);
+
+        // left menu
+        click(menuLeft);
+
+        scrollBar = getHorizontalScrollBar();
+        expect(scrollBar).toBeDefined();
+
+        scrollBoxTranslate0 = Lib.getTranslate(scrollBox);
+        scrollBarTranslate0 = Lib.getTranslate(scrollBar);
+        dragScrollBox(scrollBox, deltaX, 0);
+        scrollBoxTranslate1 = Lib.getTranslate(scrollBox);
+        scrollBarTranslate1 = Lib.getTranslate(scrollBar);
+
+        expect(scrollBoxTranslate1.x).toEqual(scrollBoxTranslate0.x + deltaX);
+        expect(scrollBarTranslate1.x).toBeGreaterThan(scrollBarTranslate0.x);
+
+        // right menu
+        click(menuRight);
+
+        scrollBar = getHorizontalScrollBar();
+        expect(scrollBar).toBeDefined();
+
+        scrollBoxTranslate0 = Lib.getTranslate(scrollBox);
+        scrollBarTranslate0 = Lib.getTranslate(scrollBar);
+        dragScrollBox(scrollBox, deltaX, 0);
+        scrollBoxTranslate1 = Lib.getTranslate(scrollBox);
+        scrollBarTranslate1 = Lib.getTranslate(scrollBar);
+
+        expect(scrollBoxTranslate1.x).toEqual(scrollBoxTranslate0.x + deltaX);
+        expect(scrollBarTranslate1.x).toBeGreaterThan(scrollBarTranslate0.x);
+
+        // up menu
+        click(menuUp);
+
+        scrollBar = getVerticalScrollBar();
+        expect(scrollBar).toBeDefined();
+
+        scrollBoxTranslate0 = Lib.getTranslate(scrollBox);
+        scrollBarTranslate0 = Lib.getTranslate(scrollBar);
+        dragScrollBox(scrollBox, 0, deltaY);
+        scrollBoxTranslate1 = Lib.getTranslate(scrollBox);
+        scrollBarTranslate1 = Lib.getTranslate(scrollBar);
+
+        expect(scrollBoxTranslate1.y).toEqual(scrollBoxTranslate0.y + deltaY);
+        expect(scrollBarTranslate1.y).toBeGreaterThan(scrollBarTranslate0.y);
+    });
+
+    it('scrollbox handles wheel events', function() {
+        var deltaY = 100,
+            scrollBox,
+            scrollBar,
+            scrollBoxTranslate0,
+            scrollBarTranslate0,
+            scrollBoxTranslate1,
+            scrollBarTranslate1;
+
+        scrollBox = getScrollBox();
+        expect(scrollBox).toBeDefined();
+
+        // down menu
+        click(menuDown);
+
+        scrollBar = getVerticalScrollBar();
+        expect(scrollBar).toBeDefined();
+
+        scrollBoxTranslate0 = Lib.getTranslate(scrollBox);
+        scrollBarTranslate0 = Lib.getTranslate(scrollBar);
+        wheel(scrollBox, deltaY);
+        scrollBoxTranslate1 = Lib.getTranslate(scrollBox);
+        scrollBarTranslate1 = Lib.getTranslate(scrollBar);
+
+        expect(scrollBoxTranslate1.y).toEqual(scrollBoxTranslate0.y - deltaY);
+        expect(scrollBarTranslate1.y).toBeGreaterThan(scrollBarTranslate0.y);
+
+        // left menu
+        click(menuLeft);
+
+        scrollBar = getHorizontalScrollBar();
+        expect(scrollBar).toBeDefined();
+
+        scrollBoxTranslate0 = Lib.getTranslate(scrollBox);
+        scrollBarTranslate0 = Lib.getTranslate(scrollBar);
+        wheel(scrollBox, deltaY);
+        scrollBoxTranslate1 = Lib.getTranslate(scrollBox);
+        scrollBarTranslate1 = Lib.getTranslate(scrollBar);
+
+        expect(scrollBoxTranslate1.x).toEqual(scrollBoxTranslate0.x - deltaY);
+        expect(scrollBarTranslate1.x).toBeGreaterThan(scrollBarTranslate0.x);
+
+        // right menu
+        click(menuRight);
+
+        scrollBar = getHorizontalScrollBar();
+        expect(scrollBar).toBeDefined();
+
+        scrollBoxTranslate0 = Lib.getTranslate(scrollBox);
+        scrollBarTranslate0 = Lib.getTranslate(scrollBar);
+        wheel(scrollBox, deltaY);
+        scrollBoxTranslate1 = Lib.getTranslate(scrollBox);
+        scrollBarTranslate1 = Lib.getTranslate(scrollBar);
+
+        expect(scrollBoxTranslate1.x).toEqual(scrollBoxTranslate0.x - deltaY);
+        expect(scrollBarTranslate1.x).toBeGreaterThan(scrollBarTranslate0.x);
+
+        // up menu
+        click(menuUp);
+
+        scrollBar = getVerticalScrollBar();
+        expect(scrollBar).toBeDefined();
+
+        scrollBoxTranslate0 = Lib.getTranslate(scrollBox);
+        scrollBarTranslate0 = Lib.getTranslate(scrollBar);
+        wheel(scrollBox, deltaY);
+        scrollBoxTranslate1 = Lib.getTranslate(scrollBox);
+        scrollBarTranslate1 = Lib.getTranslate(scrollBar);
+
+        expect(scrollBoxTranslate1.y).toEqual(scrollBoxTranslate0.y - deltaY);
+        expect(scrollBarTranslate1.y).toBeGreaterThan(scrollBarTranslate0.y);
+    });
+
+    it('scrollbar can be dragged', function() {
+        var deltaX = 20,
+            deltaY = 10,
+            scrollBox,
+            scrollBar,
+            scrollBoxPosition0,
+            scrollBarPosition0,
+            scrollBoxPosition1,
+            scrollBarPosition1;
+
+        scrollBox = getScrollBox();
+        expect(scrollBox).toBeDefined();
+
+        // down menu
+        click(menuDown);
+
+        scrollBar = getVerticalScrollBar();
+        expect(scrollBar).toBeDefined();
+
+        scrollBoxPosition0 = Lib.getTranslate(scrollBox);
+        scrollBarPosition0 = getScrollBarCenter(scrollBox, scrollBar);
+        dragScrollBar(scrollBar, scrollBarPosition0, 0, deltaY);
+        scrollBoxPosition1 = Lib.getTranslate(scrollBox);
+        scrollBarPosition1 = getScrollBarCenter(scrollBox, scrollBar);
+
+        expect(scrollBoxPosition1.y).toBeLessThan(scrollBoxPosition0.y);
+        expect(scrollBarPosition1.y).toEqual(scrollBarPosition0.y + deltaY);
+
+        // left menu
+        click(menuLeft);
+
+        scrollBar = getHorizontalScrollBar();
+        expect(scrollBar).toBeDefined();
+
+        scrollBoxPosition0 = Lib.getTranslate(scrollBox);
+        scrollBarPosition0 = getScrollBarCenter(scrollBox, scrollBar);
+        dragScrollBar(scrollBar, scrollBarPosition0, deltaX, 0);
+        scrollBoxPosition1 = Lib.getTranslate(scrollBox);
+        scrollBarPosition1 = getScrollBarCenter(scrollBox, scrollBar);
+
+        expect(scrollBoxPosition1.x).toBeLessThan(scrollBoxPosition0.x);
+        expect(scrollBarPosition1.x).toEqual(scrollBarPosition0.x + deltaX);
+
+        // right menu
+        click(menuRight);
+
+        scrollBar = getHorizontalScrollBar();
+        expect(scrollBar).toBeDefined();
+
+        scrollBoxPosition0 = Lib.getTranslate(scrollBox);
+        scrollBarPosition0 = getScrollBarCenter(scrollBox, scrollBar);
+        dragScrollBar(scrollBar, scrollBarPosition0, deltaX, 0);
+        scrollBoxPosition1 = Lib.getTranslate(scrollBox);
+        scrollBarPosition1 = getScrollBarCenter(scrollBox, scrollBar);
+
+        expect(scrollBoxPosition1.x).toBeLessThan(scrollBoxPosition0.x);
+        expect(scrollBarPosition1.x).toEqual(scrollBarPosition0.x + deltaX);
+
+        // up menu
+        click(menuUp);
+
+        scrollBar = getVerticalScrollBar();
+        expect(scrollBar).toBeDefined();
+
+        scrollBoxPosition0 = Lib.getTranslate(scrollBox);
+        scrollBarPosition0 = getScrollBarCenter(scrollBox, scrollBar);
+        dragScrollBar(scrollBar, scrollBarPosition0, 0, deltaY);
+        scrollBoxPosition1 = Lib.getTranslate(scrollBox);
+        scrollBarPosition1 = getScrollBarCenter(scrollBox, scrollBar);
+
+        expect(scrollBoxPosition1.y).toBeLessThan(scrollBoxPosition0.y);
+        expect(scrollBarPosition1.y).toEqual(scrollBarPosition0.y + deltaY);
+    });
+
+    function getScrollBox() {
+        return document.getElementsByClassName('updatemenu-dropdown-button-group')[0];
+    }
+
+    function getHorizontalScrollBar() {
+        return document.getElementsByClassName('scrollbar-horizontal')[0];
+    }
+
+    function getVerticalScrollBar() {
+        return document.getElementsByClassName('scrollbar-vertical')[0];
+    }
+
+    function getCenter(node) {
+        var bbox = getBBox(node),
+            x = bbox.x + 0.5 * bbox.width,
+            y = bbox.y + 0.5 * bbox.height;
+
+        return { x: x, y: y };
+    }
+
+    function getScrollBarCenter(scrollBox, scrollBar) {
+        var scrollBoxTranslate = Lib.getTranslate(scrollBox),
+            scrollBarTranslate = Lib.getTranslate(scrollBar),
+            translateX = scrollBoxTranslate.x + scrollBarTranslate.x,
+            translateY = scrollBoxTranslate.y + scrollBarTranslate.y,
+            center = getCenter(scrollBar),
+            x = center.x + translateX,
+            y = center.y + translateY;
+
+        return { x: x, y: y };
+    }
+
+    function click(node) {
+        node.dispatchEvent(new MouseEvent('click'), {
+            bubbles: true
+        });
+    }
+
+    function drag(node, x, y, deltaX, deltaY) {
+        node.dispatchEvent(new MouseEvent('mousedown', {
+            bubbles: true,
+            clientX: x,
+            clientY: y
+        }));
+        node.dispatchEvent(new MouseEvent('mousemove', {
+            bubbles: true,
+            clientX: x + deltaX,
+            clientY: y + deltaY
+        }));
+    }
+
+    function dragScrollBox(node, deltaX, deltaY) {
+        var position = getCenter(node);
+
+        drag(node, position.x, position.y, deltaX, deltaY);
+    }
+
+    function dragScrollBar(node, position, deltaX, deltaY) {
+        drag(node, position.x, position.y, deltaX, deltaY);
+    }
+
+    function wheel(node, deltaY) {
+        node.dispatchEvent(new WheelEvent('wheel', {
+            bubbles: true,
+            deltaY: deltaY
+        }));
+    }
 });
