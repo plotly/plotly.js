@@ -453,7 +453,7 @@ lib.addStyleRule = function(selector, styleString) {
 
 lib.getTranslate = function(element) {
 
-    var re = /.*\btranslate\((\d*\.?\d*)[^\d]*(\d*\.?\d*)[^\d].*/,
+    var re = /.*\btranslate\((-?\d*\.?\d*)[^-\d]*(-?\d*\.?\d*)[^\d].*/,
         getter = element.attr ? 'attr' : 'getAttribute',
         transform = element[getter]('transform') || '';
 
