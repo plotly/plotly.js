@@ -480,7 +480,7 @@ function drawOne(gd, index, opt, value) {
         annTextBG.call(Drawing.setRect, borderwidth / 2, borderwidth / 2,
             outerwidth - borderwidth, outerheight - borderwidth);
 
-        annTextGroupInner.call(Lib.setTranslate,
+        annTextGroupInner.call(Drawing.setTranslate,
             Math.round(annPosPx.x.text - outerwidth / 2),
             Math.round(annPosPx.y.text - outerheight / 2));
 
@@ -601,7 +601,7 @@ function drawOne(gd, index, opt, value) {
                 dragElement.init({
                     element: arrowDrag.node(),
                     prepFn: function() {
-                        var pos = Lib.getTranslate(annTextGroupInner);
+                        var pos = Drawing.getTranslate(annTextGroupInner);
 
                         annx0 = pos.x;
                         anny0 = pos.y;
@@ -617,7 +617,7 @@ function drawOne(gd, index, opt, value) {
                         var annxy0 = applyTransform(annx0, anny0),
                             xcenter = annxy0[0] + dx,
                             ycenter = annxy0[1] + dy;
-                        annTextGroupInner.call(Lib.setTranslate, xcenter, ycenter);
+                        annTextGroupInner.call(Drawing.setTranslate, xcenter, ycenter);
 
                         update[annbase + '.x'] = xa ?
                             xa.p2r(xa.r2p(options.x) + dx) :

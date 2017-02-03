@@ -165,7 +165,7 @@ plotChoropleth.style = function(geo) {
                     d3.select(this)
                         .attr('fill', function(pt) { return sclFunc(pt.z); })
                         .call(Color.stroke, pt.mlc || markerLine.color)
-                        .call(Drawing.dashLine, '', pt.mlw || markerLine.width);
+                        .call(Drawing.dashLine, '', pt.mlw || markerLine.width || 0);
                 });
         });
 };

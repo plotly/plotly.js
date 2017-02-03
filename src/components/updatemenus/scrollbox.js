@@ -440,7 +440,7 @@ ScrollBox.prototype.setTranslate = function setTranslate(translateX, translateY)
     this.translateX = translateX;
     this.translateY = translateY;
 
-    this.container.call(Lib.setTranslate,
+    this.container.call(Drawing.setTranslate,
         this._box.l - this.position.l - translateX,
         this._box.t - this.position.t - translateY);
 
@@ -454,7 +454,7 @@ ScrollBox.prototype.setTranslate = function setTranslate(translateX, translateY)
     if(this.hbar) {
         var xf = translateX / translateXMax;
 
-        this.hbar.call(Lib.setTranslate,
+        this.hbar.call(Drawing.setTranslate,
             translateX + xf * this._hbarTranslateMax,
             translateY);
     }
@@ -462,7 +462,7 @@ ScrollBox.prototype.setTranslate = function setTranslate(translateX, translateY)
     if(this.vbar) {
         var yf = translateY / translateYMax;
 
-        this.vbar.call(Lib.setTranslate,
+        this.vbar.call(Drawing.setTranslate,
             translateX,
             translateY + yf * this._vbarTranslateMax);
     }

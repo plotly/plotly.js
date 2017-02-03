@@ -5,6 +5,7 @@ var d3 = require('d3');
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 var Events = require('@src/lib/events');
+var Drawing = require('@src/components/drawing');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var TRANSITION_DELAY = 100;
@@ -934,11 +935,11 @@ describe('update menus interaction with scrollbox:', function() {
         scrollBar = getVerticalScrollBar();
         expect(scrollBar).toBeDefined();
 
-        scrollBoxTranslate0 = Lib.getTranslate(scrollBox);
-        scrollBarTranslate0 = Lib.getTranslate(scrollBar);
+        scrollBoxTranslate0 = Drawing.getTranslate(scrollBox);
+        scrollBarTranslate0 = Drawing.getTranslate(scrollBar);
         dragScrollBox(scrollBox, 0, deltaY);
-        scrollBoxTranslate1 = Lib.getTranslate(scrollBox);
-        scrollBarTranslate1 = Lib.getTranslate(scrollBar);
+        scrollBoxTranslate1 = Drawing.getTranslate(scrollBox);
+        scrollBarTranslate1 = Drawing.getTranslate(scrollBar);
 
         expect(scrollBoxTranslate1.y).toEqual(scrollBoxTranslate0.y + deltaY);
         expect(scrollBarTranslate1.y).toBeGreaterThan(scrollBarTranslate0.y);
@@ -949,11 +950,11 @@ describe('update menus interaction with scrollbox:', function() {
         scrollBar = getHorizontalScrollBar();
         expect(scrollBar).toBeDefined();
 
-        scrollBoxTranslate0 = Lib.getTranslate(scrollBox);
-        scrollBarTranslate0 = Lib.getTranslate(scrollBar);
+        scrollBoxTranslate0 = Drawing.getTranslate(scrollBox);
+        scrollBarTranslate0 = Drawing.getTranslate(scrollBar);
         dragScrollBox(scrollBox, deltaX, 0);
-        scrollBoxTranslate1 = Lib.getTranslate(scrollBox);
-        scrollBarTranslate1 = Lib.getTranslate(scrollBar);
+        scrollBoxTranslate1 = Drawing.getTranslate(scrollBox);
+        scrollBarTranslate1 = Drawing.getTranslate(scrollBar);
 
         expect(scrollBoxTranslate1.x).toEqual(scrollBoxTranslate0.x + deltaX);
         expect(scrollBarTranslate1.x).toBeGreaterThan(scrollBarTranslate0.x);
@@ -964,11 +965,11 @@ describe('update menus interaction with scrollbox:', function() {
         scrollBar = getHorizontalScrollBar();
         expect(scrollBar).toBeDefined();
 
-        scrollBoxTranslate0 = Lib.getTranslate(scrollBox);
-        scrollBarTranslate0 = Lib.getTranslate(scrollBar);
+        scrollBoxTranslate0 = Drawing.getTranslate(scrollBox);
+        scrollBarTranslate0 = Drawing.getTranslate(scrollBar);
         dragScrollBox(scrollBox, deltaX, 0);
-        scrollBoxTranslate1 = Lib.getTranslate(scrollBox);
-        scrollBarTranslate1 = Lib.getTranslate(scrollBar);
+        scrollBoxTranslate1 = Drawing.getTranslate(scrollBox);
+        scrollBarTranslate1 = Drawing.getTranslate(scrollBar);
 
         expect(scrollBoxTranslate1.x).toEqual(scrollBoxTranslate0.x + deltaX);
         expect(scrollBarTranslate1.x).toBeGreaterThan(scrollBarTranslate0.x);
@@ -979,11 +980,11 @@ describe('update menus interaction with scrollbox:', function() {
         scrollBar = getVerticalScrollBar();
         expect(scrollBar).toBeDefined();
 
-        scrollBoxTranslate0 = Lib.getTranslate(scrollBox);
-        scrollBarTranslate0 = Lib.getTranslate(scrollBar);
+        scrollBoxTranslate0 = Drawing.getTranslate(scrollBox);
+        scrollBarTranslate0 = Drawing.getTranslate(scrollBar);
         dragScrollBox(scrollBox, 0, deltaY);
-        scrollBoxTranslate1 = Lib.getTranslate(scrollBox);
-        scrollBarTranslate1 = Lib.getTranslate(scrollBar);
+        scrollBoxTranslate1 = Drawing.getTranslate(scrollBox);
+        scrollBarTranslate1 = Drawing.getTranslate(scrollBar);
 
         expect(scrollBoxTranslate1.y).toEqual(scrollBoxTranslate0.y + deltaY);
         expect(scrollBarTranslate1.y).toBeGreaterThan(scrollBarTranslate0.y);
@@ -1007,11 +1008,11 @@ describe('update menus interaction with scrollbox:', function() {
         scrollBar = getVerticalScrollBar();
         expect(scrollBar).toBeDefined();
 
-        scrollBoxTranslate0 = Lib.getTranslate(scrollBox);
-        scrollBarTranslate0 = Lib.getTranslate(scrollBar);
+        scrollBoxTranslate0 = Drawing.getTranslate(scrollBox);
+        scrollBarTranslate0 = Drawing.getTranslate(scrollBar);
         wheel(scrollBox, deltaY);
-        scrollBoxTranslate1 = Lib.getTranslate(scrollBox);
-        scrollBarTranslate1 = Lib.getTranslate(scrollBar);
+        scrollBoxTranslate1 = Drawing.getTranslate(scrollBox);
+        scrollBarTranslate1 = Drawing.getTranslate(scrollBar);
 
         expect(scrollBoxTranslate1.y).toEqual(scrollBoxTranslate0.y - deltaY);
         expect(scrollBarTranslate1.y).toBeGreaterThan(scrollBarTranslate0.y);
@@ -1022,11 +1023,11 @@ describe('update menus interaction with scrollbox:', function() {
         scrollBar = getHorizontalScrollBar();
         expect(scrollBar).toBeDefined();
 
-        scrollBoxTranslate0 = Lib.getTranslate(scrollBox);
-        scrollBarTranslate0 = Lib.getTranslate(scrollBar);
+        scrollBoxTranslate0 = Drawing.getTranslate(scrollBox);
+        scrollBarTranslate0 = Drawing.getTranslate(scrollBar);
         wheel(scrollBox, deltaY);
-        scrollBoxTranslate1 = Lib.getTranslate(scrollBox);
-        scrollBarTranslate1 = Lib.getTranslate(scrollBar);
+        scrollBoxTranslate1 = Drawing.getTranslate(scrollBox);
+        scrollBarTranslate1 = Drawing.getTranslate(scrollBar);
 
         expect(scrollBoxTranslate1.x).toEqual(scrollBoxTranslate0.x - deltaY);
         expect(scrollBarTranslate1.x).toBeGreaterThan(scrollBarTranslate0.x);
@@ -1037,11 +1038,11 @@ describe('update menus interaction with scrollbox:', function() {
         scrollBar = getHorizontalScrollBar();
         expect(scrollBar).toBeDefined();
 
-        scrollBoxTranslate0 = Lib.getTranslate(scrollBox);
-        scrollBarTranslate0 = Lib.getTranslate(scrollBar);
+        scrollBoxTranslate0 = Drawing.getTranslate(scrollBox);
+        scrollBarTranslate0 = Drawing.getTranslate(scrollBar);
         wheel(scrollBox, deltaY);
-        scrollBoxTranslate1 = Lib.getTranslate(scrollBox);
-        scrollBarTranslate1 = Lib.getTranslate(scrollBar);
+        scrollBoxTranslate1 = Drawing.getTranslate(scrollBox);
+        scrollBarTranslate1 = Drawing.getTranslate(scrollBar);
 
         expect(scrollBoxTranslate1.x).toEqual(scrollBoxTranslate0.x - deltaY);
         expect(scrollBarTranslate1.x).toBeGreaterThan(scrollBarTranslate0.x);
@@ -1052,11 +1053,11 @@ describe('update menus interaction with scrollbox:', function() {
         scrollBar = getVerticalScrollBar();
         expect(scrollBar).toBeDefined();
 
-        scrollBoxTranslate0 = Lib.getTranslate(scrollBox);
-        scrollBarTranslate0 = Lib.getTranslate(scrollBar);
+        scrollBoxTranslate0 = Drawing.getTranslate(scrollBox);
+        scrollBarTranslate0 = Drawing.getTranslate(scrollBar);
         wheel(scrollBox, deltaY);
-        scrollBoxTranslate1 = Lib.getTranslate(scrollBox);
-        scrollBarTranslate1 = Lib.getTranslate(scrollBar);
+        scrollBoxTranslate1 = Drawing.getTranslate(scrollBox);
+        scrollBarTranslate1 = Drawing.getTranslate(scrollBar);
 
         expect(scrollBoxTranslate1.y).toEqual(scrollBoxTranslate0.y - deltaY);
         expect(scrollBarTranslate1.y).toBeGreaterThan(scrollBarTranslate0.y);
@@ -1081,10 +1082,10 @@ describe('update menus interaction with scrollbox:', function() {
         scrollBar = getVerticalScrollBar();
         expect(scrollBar).toBeDefined();
 
-        scrollBoxPosition0 = Lib.getTranslate(scrollBox);
+        scrollBoxPosition0 = Drawing.getTranslate(scrollBox);
         scrollBarPosition0 = getScrollBarCenter(scrollBox, scrollBar);
         dragScrollBar(scrollBar, scrollBarPosition0, 0, deltaY);
-        scrollBoxPosition1 = Lib.getTranslate(scrollBox);
+        scrollBoxPosition1 = Drawing.getTranslate(scrollBox);
         scrollBarPosition1 = getScrollBarCenter(scrollBox, scrollBar);
 
         expect(scrollBoxPosition1.y).toBeLessThan(scrollBoxPosition0.y);
@@ -1096,10 +1097,10 @@ describe('update menus interaction with scrollbox:', function() {
         scrollBar = getHorizontalScrollBar();
         expect(scrollBar).toBeDefined();
 
-        scrollBoxPosition0 = Lib.getTranslate(scrollBox);
+        scrollBoxPosition0 = Drawing.getTranslate(scrollBox);
         scrollBarPosition0 = getScrollBarCenter(scrollBox, scrollBar);
         dragScrollBar(scrollBar, scrollBarPosition0, deltaX, 0);
-        scrollBoxPosition1 = Lib.getTranslate(scrollBox);
+        scrollBoxPosition1 = Drawing.getTranslate(scrollBox);
         scrollBarPosition1 = getScrollBarCenter(scrollBox, scrollBar);
 
         expect(scrollBoxPosition1.x).toBeLessThan(scrollBoxPosition0.x);
@@ -1111,10 +1112,10 @@ describe('update menus interaction with scrollbox:', function() {
         scrollBar = getHorizontalScrollBar();
         expect(scrollBar).toBeDefined();
 
-        scrollBoxPosition0 = Lib.getTranslate(scrollBox);
+        scrollBoxPosition0 = Drawing.getTranslate(scrollBox);
         scrollBarPosition0 = getScrollBarCenter(scrollBox, scrollBar);
         dragScrollBar(scrollBar, scrollBarPosition0, deltaX, 0);
-        scrollBoxPosition1 = Lib.getTranslate(scrollBox);
+        scrollBoxPosition1 = Drawing.getTranslate(scrollBox);
         scrollBarPosition1 = getScrollBarCenter(scrollBox, scrollBar);
 
         expect(scrollBoxPosition1.x).toBeLessThan(scrollBoxPosition0.x);
@@ -1126,10 +1127,10 @@ describe('update menus interaction with scrollbox:', function() {
         scrollBar = getVerticalScrollBar();
         expect(scrollBar).toBeDefined();
 
-        scrollBoxPosition0 = Lib.getTranslate(scrollBox);
+        scrollBoxPosition0 = Drawing.getTranslate(scrollBox);
         scrollBarPosition0 = getScrollBarCenter(scrollBox, scrollBar);
         dragScrollBar(scrollBar, scrollBarPosition0, 0, deltaY);
-        scrollBoxPosition1 = Lib.getTranslate(scrollBox);
+        scrollBoxPosition1 = Drawing.getTranslate(scrollBox);
         scrollBarPosition1 = getScrollBarCenter(scrollBox, scrollBar);
 
         expect(scrollBoxPosition1.y).toBeLessThan(scrollBoxPosition0.y);
@@ -1157,8 +1158,8 @@ describe('update menus interaction with scrollbox:', function() {
     }
 
     function getScrollBarCenter(scrollBox, scrollBar) {
-        var scrollBoxTranslate = Lib.getTranslate(scrollBox),
-            scrollBarTranslate = Lib.getTranslate(scrollBar),
+        var scrollBoxTranslate = Drawing.getTranslate(scrollBox),
+            scrollBarTranslate = Drawing.getTranslate(scrollBar),
             translateX = scrollBoxTranslate.x + scrollBarTranslate.x,
             translateY = scrollBoxTranslate.y + scrollBarTranslate.y,
             center = getCenter(scrollBar),

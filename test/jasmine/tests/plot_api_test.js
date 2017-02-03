@@ -84,6 +84,21 @@ describe('Test plot api', function() {
                 expect(gd._transitionData._frames[2].name).toEqual('frame3');
             }).catch(fail).then(done);
         });
+
+        it('should emit afterplot event after plotting is done', function(done) {
+            var afterPlot = false;
+
+            var promise = Plotly.plot(gd, [{ y: [2, 1, 2]}]);
+
+            gd.on('plotly_afterplot', function() {
+                afterPlot = true;
+            });
+
+            promise.then(function() {
+                expect(afterPlot).toBe(true);
+            })
+            .then(done);
+        });
     });
 
     describe('Plotly.relayout', function() {
@@ -160,6 +175,28 @@ describe('Test plot api', function() {
                 })
                 .then(function() {
                     expect(gd.layout.rando).toEqual([1, 45, 3]);
+                })
+                .then(done);
+        });
+
+        it('can set empty text nodes', function(done) {
+            var data = [{
+                x: [1, 2, 3],
+                y: [0, 0, 0],
+                text: ['', 'Text', ''],
+                mode: 'lines+text'
+            }];
+            var scatter = null;
+            var oldHeight = 0;
+            Plotly.plot(gd, data)
+                .then(function() {
+                    scatter = document.getElementsByClassName('scatter')[0];
+                    oldHeight = scatter.getBoundingClientRect().height;
+                    return Plotly.relayout(gd, 'yaxis.range', [0.5, 0.5, 0.5]);
+                })
+                .then(function() {
+                    var newHeight = scatter.getBoundingClientRect().height;
+                    expect(newHeight).toEqual(oldHeight);
                 })
                 .then(done);
         });
@@ -282,7 +319,36 @@ describe('Test plot api', function() {
             expect(gd._fullData[0].marker.color).toBe(colorDflt[0]);
             expect(gd._fullData[1].marker.color).toBe(colorDflt[1]);
         });
+    });
 
+    describe('Plotly.restyle unmocked', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(function() {
+            destroyGraphDiv();
+        });
+
+        it('should redo auto z/contour when editing z array', function() {
+            Plotly.plot(gd, [{type: 'contour', z: [[1, 2], [3, 4]]}]).then(function() {
+                expect(gd.data[0].zauto).toBe(true, gd.data[0]);
+                expect(gd.data[0].zmin).toBe(1);
+                expect(gd.data[0].zmax).toBe(4);
+
+                expect(gd.data[0].autocontour).toBe(true);
+                expect(gd.data[0].contours).toEqual({start: 1.5, end: 3.5, size: 0.5});
+
+                return Plotly.restyle(gd, {'z[0][0]': 10});
+            }).then(function() {
+                expect(gd.data[0].zmin).toBe(2);
+                expect(gd.data[0].zmax).toBe(10);
+
+                expect(gd.data[0].contours).toEqual({start: 3, end: 9, size: 1});
+            });
+        });
     });
 
     describe('Plotly.deleteTraces', function() {

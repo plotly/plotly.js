@@ -42,7 +42,15 @@ module.exports = function calc(gd, trace) {
         }
 
         // copy auto-contour info back to the source data.
-        trace._input.contours = extendFlat({}, contours);
+        // previously we copied the whole contours object back, but that had
+        // other info (coloring, showlines) that should be left to supplyDefaults
+        if(!trace._input.contours) trace._input.contours = {};
+        extendFlat(trace._input.contours, {
+            start: contours.start,
+            end: contours.end,
+            size: contours.size
+        });
+        trace._input.autocontour = true;
     }
     else {
         // sanity checks on manually-supplied start/end/size

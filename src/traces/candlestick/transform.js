@@ -42,7 +42,7 @@ exports.transform = function transform(dataIn, state) {
         );
     }
 
-    helpers.addRangeSlider(state.layout);
+    helpers.addRangeSlider(dataOut, state.layout);
 
     return dataOut;
 };
