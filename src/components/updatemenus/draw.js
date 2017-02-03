@@ -358,6 +358,8 @@ function drawButtons(gd, gHeader, gButton, scrollBox, menuOpts) {
         scrollBoxPosition.h = Math.max(menuOpts.openHeight, menuOpts.headerHeight);
     }
 
+    scrollBoxPosition.direction = menuOpts.direction;
+
     if(scrollBox) {
         if(buttons.size()) {
             drawScrollBox(gd, gHeader, gButton, scrollBox, menuOpts, scrollBoxPosition);

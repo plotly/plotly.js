@@ -73,6 +73,8 @@ ScrollBox.barColor = '#808BA4';
  * @param {number}  position.t  Top side (in pixels)
  * @param {number}  position.w  Width (in pixels)
  * @param {number}  position.h  Height (in pixels)
+ * @param {string}  [position.direction='down']
+ *                  Either 'down', 'left', 'right' or 'up'
  * @param {number}  [translateX=0]  Horizontal offset (in pixels)
  * @param {number}  [translateY=0]  Vertical offset (in pixels)
  */
@@ -88,48 +90,55 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
         w = this.position.w,
         t = this.position.t,
         h = this.position.h,
+        direction = this.position.direction,
+        isDown = (direction === 'down'),
+        isLeft = (direction === 'left'),
+        isRight = (direction === 'right'),
+        isUp = (direction === 'up'),
         boxW = w,
         boxH = h,
         boxL, boxR,
         boxT, boxB;
 
-    if(boxW > fullWidth) boxW = fullWidth / 4;
-    if(boxH > fullHeight) boxH = fullHeight / 4;
+    if(!isDown && !isLeft && !isRight && !isUp) {
+        this.position.direction = 'down';
+        isDown = true;
+    }
 
-    var minSize = 4 + (ScrollBox.barLength + 2 * ScrollBox.barPad);
-    boxW = Math.max(boxW, minSize);
-    boxH = Math.max(boxH, minSize);
-
-    if(0 <= l && l <= fullWidth) {
+    var isVertical = isDown || isUp;
+    if(isVertical) {
         boxL = l;
         boxR = boxL + boxW;
+
+        if(isDown) {
+            // anchor to top side
+            boxT = t;
+            boxB = Math.min(boxT + boxH, fullHeight);
+            boxH = boxB - boxT;
+        }
+        else {
+            // anchor to bottom side
+            boxB = t + boxH;
+            boxT = Math.max(boxB - boxH, 0);
+            boxH = boxB - boxT;
+        }
     }
     else {
-        // align left
-        boxL = 0;
-        boxR = boxL + boxW;
-    }
-
-    if(0 <= t && t <= fullHeight) {
         boxT = t;
         boxB = boxT + boxH;
-    }
-    else {
-        // align top
-        boxT = 0;
-        boxB = boxT + boxH;
-    }
 
-    if(boxR > fullWidth) {
-        // align right
-        boxR = fullWidth;
-        boxL = boxR - boxW;
-    }
-
-    if(boxB > fullHeight) {
-        // align bottom
-        boxB = fullHeight;
-        boxT = boxB - boxH;
+        if(isLeft) {
+            // anchor to right side
+            boxR = l + boxW;
+            boxL = Math.max(boxR - boxW, 0);
+            boxW = boxR - boxL;
+        }
+        else {
+            // anchor to left side
+            boxL = l;
+            boxR = Math.min(boxL + boxW, fullWidth);
+            boxW = boxR - boxL;
+        }
     }
 
     this._box = {
@@ -143,8 +152,11 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
     var needsHorizontalScrollBar = (w > boxW),
         hbarW = ScrollBox.barLength + 2 * ScrollBox.barPad,
         hbarH = ScrollBox.barWidth + 2 * ScrollBox.barPad,
-        hbarL = boxL,
-        hbarT = (boxB + hbarH < fullHeight) ? boxB : fullHeight - hbarH;
+        // draw horizontal scrollbar on the bottom side
+        hbarL = l,
+        hbarT = t + h;
+
+    if(hbarT + hbarH > fullHeight) hbarT = fullHeight - hbarH;
 
     var hbar = this.container.selectAll('rect.scrollbar-horizontal').data(
             (needsHorizontalScrollBar) ? [0] : []);
@@ -181,8 +193,11 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
     var needsVerticalScrollBar = (h > boxH),
         vbarW = ScrollBox.barWidth + 2 * ScrollBox.barPad,
         vbarH = ScrollBox.barLength + 2 * ScrollBox.barPad,
-        vbarL = (boxR + vbarW < fullWidth) ? boxR : fullWidth - vbarW,
-        vbarT = boxT;
+        // draw vertical scrollbar on the right side
+        vbarL = l + w,
+        vbarT = t;
+
+    if(vbarL + vbarW > fullWidth) vbarL = fullWidth - vbarW;
 
     var vbar = this.container.selectAll('rect.scrollbar-vertical').data(
             (needsVerticalScrollBar) ? [0] : []);
