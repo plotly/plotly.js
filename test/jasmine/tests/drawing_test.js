@@ -113,6 +113,42 @@ describe('Drawing', function() {
             el.attr('transform', 'rotate(20)');
             expect(Drawing.getTranslate(el)).toEqual({ x: 0, y: 0 });
         });
+
+        it('should work with negative values', function() {
+            var el = document.createElement('div'),
+                el3 = d3.select(document.createElement('div'));
+
+            expect(Drawing.getTranslate(el)).toEqual({ x: 0, y: 0 });
+
+            var testCases = [
+                { transform: 'translate(-123.45px, -67)', x: -123.45, y: -67 },
+                { transform: 'translate(-123.45px, 67)', x: -123.45, y: 67 },
+                { transform: 'translate(123.45px, -67)', x: 123.45, y: -67 },
+                { transform: 'translate(-123.45)', x: -123.45, y: 0 },
+                { transform: 'translate(-1 -2)', x: -1, y: -2 },
+                { transform: 'translate(-1 2)', x: -1, y: 2 },
+                { transform: 'translate(1 -2)', x: 1, y: -2 },
+                { transform: 'translate(-1 -2); rotate(20deg)', x: -1, y: -2 },
+                { transform: 'translate(-1 2); rotate(20deg)', x: -1, y: 2 },
+                { transform: 'translate(1 -2); rotate(20deg)', x: 1, y: -2 },
+                { transform: 'rotate(20deg) translate(-1 -2);', x: -1, y: -2 },
+                { transform: 'rotate(20deg) translate(-1 2);', x: -1, y: 2 },
+                { transform: 'rotate(20deg) translate(1 -2);', x: 1, y: -2 }
+            ];
+
+            for(var i = 0; i < testCases.length; i++) {
+                var testCase = testCases[i],
+                    transform = testCase.transform,
+                    x = testCase.x,
+                    y = testCase.y;
+
+                el.setAttribute('transform', transform);
+                expect(Drawing.getTranslate(el)).toEqual({ x: x, y: y });
+
+                el3.attr('transform', transform);
+                expect(Drawing.getTranslate(el)).toEqual({ x: x, y: y });
+            }
+        });
     });
 
     describe('setTranslate', function() {
