@@ -93,6 +93,14 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         color: dfltFontColor
     });
 
+    var validBound = (
+        (containerIn.bound || []).length === 2 &&
+        isNumeric(containerOut.r2l(containerIn.bound[0])) &&
+        isNumeric(containerOut.r2l(containerIn.bound[1]))
+    );
+    var autoBound = coerce('autorange', !validBound);
+    if(autoBound) coerce('bound');
+
     var validRange = (
         (containerIn.range || []).length === 2 &&
         isNumeric(containerOut.r2l(containerIn.range[0])) &&
