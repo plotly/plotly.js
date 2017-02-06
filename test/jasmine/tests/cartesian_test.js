@@ -298,7 +298,7 @@ describe('relayout', function() {
                 return Plotly.relayout(gd, 'xaxis.range', [2, 3]);
             })
             .then(function() {
-                assertPointTranslate([0, 540], [-540, 135]);
+                assertPointTranslate([-540, 135], [-540, 135]);
             })
             .then(done);
         });
