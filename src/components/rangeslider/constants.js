@@ -48,4 +48,6 @@ module.exports = {
     handleRadius: 1,
     handleFill: '#fff',
     handleStroke: '#666',
+
+    extraPad: 15
 };
