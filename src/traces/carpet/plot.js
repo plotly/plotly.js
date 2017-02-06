@@ -43,7 +43,7 @@ function plotOne(gd, plotinfo, cd) {
     // var b = cd[0].b;
 
     // XXX: Layer choice??
-    var gridLayer = plotinfo.plot.selectAll('.maplayer');
+    var gridLayer = plotinfo.plot.selectAll('.barlayer');
     var clipLayer = makeg(fullLayout._defs, 'g', 'clips');
 
     var minorLayer = makeg(gridLayer, 'g', 'minorlayer');

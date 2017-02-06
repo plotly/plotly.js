@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -16,6 +16,7 @@ var colorbarAttrs = require('../../components/colorbar/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterLineAttrs = scatterAttrs.line;
+var constants = require('./constants');
 
 module.exports = extendFlat({}, {
     carpetid: {
@@ -115,7 +116,61 @@ module.exports = extendFlat({}, {
                 'Determines whether or not the contour lines are drawn.',
                 'Has only an effect if `contours.coloring` is set to *fill*.'
             ].join(' ')
-        }
+        },
+        constraint: {
+            operation: {
+                valType: 'enumerated',
+                values: [].concat(constants.INEQUALITY_OPS).concat(constants.INTERVAL_OPS).concat(constants.SET_OPS),
+                description: [
+                    'Sets the filter operation.',
+
+                    '*=* keeps items equal to `value`',
+
+                    '*<* keeps items less than `value`',
+                    '*<=* keeps items less than or equal to `value`',
+
+                    '*>* keeps items greater than `value`',
+                    '*>=* keeps items greater than or equal to `value`',
+
+                    '*[]* keeps items inside `value[0]` to value[1]` including both bounds`',
+                    '*()* keeps items inside `value[0]` to value[1]` excluding both bounds`',
+                    '*[)* keeps items inside `value[0]` to value[1]` including `value[0]` but excluding `value[1]',
+                    '*(]* keeps items inside `value[0]` to value[1]` excluding `value[0]` but including `value[1]',
+
+                    '*][* keeps items outside `value[0]` to value[1]` and equal to both bounds`',
+                    '*)(* keeps items outside `value[0]` to value[1]`',
+                    '*](* keeps items outside `value[0]` to value[1]` and equal to `value[0]`',
+                    '*)[* keeps items outside `value[0]` to value[1]` and equal to `value[1]`',
+
+                    '*{}* keeps items present in a set of values',
+                    '*}{* keeps items not present in a set of values'
+                ].join(' ')
+            },
+            value: {
+                valType: 'any',
+                dflt: 0,
+                description: [
+                    'Sets the value or values by which to filter by.',
+
+                    'Values are expected to be in the same type as the data linked',
+                    'to *target*.',
+
+                    'When `operation` is set to one of the inequality values',
+                    '(' + constants.INEQUALITY_OPS + ')',
+                    '*value* is expected to be a number or a string.',
+
+                    'When `operation` is set to one of the interval value',
+                    '(' + constants.INTERVAL_OPS + ')',
+                    '*value* is expected to be 2-item array where the first item',
+                    'is the lower bound and the second item is the upper bound.',
+
+                    'When `operation`, is set to one of the set value',
+                    '(' + constants.SET_OPS + ')',
+                    '*value* is expected to be an array with as many items as',
+                    'the desired set elements.'
+                ].join(' ')
+            }
+        },
     },
 
     line: {

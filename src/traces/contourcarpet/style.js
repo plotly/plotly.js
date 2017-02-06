@@ -24,12 +24,16 @@ module.exports = function style(gd) {
     });
 
     contours.each(function(d) {
-        var c = d3.select(this),
-            trace = d.trace,
-            contours = trace.contours,
-            line = trace.line,
-            cs = contours.size || 1,
-            start = contours.start;
+        var c = d3.select(this);
+        var trace = d.trace;
+        var contours = trace.contours;
+        var line = trace.line;
+        var cs = contours.size || 1;
+        var start = contours.start;
+
+        if(!isFinite(cs)) {
+            cs = 0;
+        }
 
         var colorMap = makeColorMap(trace);
 

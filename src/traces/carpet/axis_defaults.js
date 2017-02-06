@@ -11,7 +11,7 @@
 var carpetAttrs = require('./attributes');
 
 var isNumeric = require('fast-isnumeric');
-var colorMix = require('tinycolor2').mix;
+var addOpacity = require('../../components/color').addOpacity;
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var handleTickValueDefaults = require('../../plots/cartesian/tick_value_defaults');
@@ -146,7 +146,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     handleTickMarkDefaults(containerIn, containerOut, coerce, options);
     handleCategoryOrderDefaults(containerIn, containerOut, coerce);
 
-    var gridColor = coerce2('gridcolor', colorMix(dfltColor, options.bgColor, 70).toRgbString());
+    var gridColor = coerce2('gridcolor', addOpacity(dfltColor, 0.3));
     var gridWidth = coerce2('gridwidth');
     var showGrid = coerce('showgrid');
 
@@ -174,7 +174,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
         coerce('minorgridcount');
         coerce('minorgridwidth', gridWidth);
-        coerce('minorgridcolor', colorMix(gridColor, options.bgColor, 95).toRgbString());
+        coerce('minorgridcolor', addOpacity(gridColor, 0.06));
     }
 
 

@@ -35,7 +35,7 @@ module.exports = function mapArray(out, data, func) {
             out[i] = out[i].slice(0, data.length);
         }
 
-        for(j = 0; j < data[1].length; j++) {
+        for(j = 0; j < data[0].length; j++) {
             out[i][j] = func(data[i][j]);
         }
     }

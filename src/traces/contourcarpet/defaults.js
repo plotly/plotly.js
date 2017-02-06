@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -15,9 +15,9 @@ var handleXYZDefaults = require('../heatmap/xyz_defaults');
 var attributes = require('./attributes');
 var hasColumns = require('../heatmap/has_columns');
 var handleStyleDefaults = require('../contour/style_defaults');
+var constraintMapping = require('./constraint_mapping');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    //console.trace('defaults');
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -39,7 +39,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // it requires modification to all of the functions below that expect the coerced
     // attribute name to match the property name -- except '_a' !== 'a' so that is not
     // straightforward.
-    if (traceIn.a && traceIn.b) {
+    if(traceIn.a && traceIn.b) {
+        var contourSize, contourStart, contourEnd, missingEnd, autoContour, constraint, map, op;
+
         var len = handleXYZDefaults(traceIn, traceOut, coerce, layout, 'a', 'b');
 
         if(!len) {
@@ -50,16 +52,31 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         coerce('text');
         coerce('connectgaps', hasColumns(traceOut));
 
-        var contourStart = Lib.coerce2(traceIn, traceOut, attributes, 'contours.start');
-        var contourEnd = Lib.coerce2(traceIn, traceOut, attributes, 'contours.end');
-        var missingEnd = (contourStart === false) || (contourEnd === false);
+        op = coerce('contours.constraint.operation');
+        coerce('contours.constraint.value');
 
-            // normally we only need size if autocontour is off. But contour.calc
-            // pushes its calculated contour size back to the input trace, so for
-            // things like restyle that can call supplyDefaults without calc
-            // after the initial draw, we can just reuse the previous calculation
-        var contourSize = coerce('contours.size');
-        var autoContour;
+        if(op) {
+            constraint = traceOut.contours.constraint;
+            map = constraintMapping[constraint.operation](constraint.value);
+
+            traceOut.contours.start = map.start;
+            traceOut.contours.end = map.end;
+            traceOut.contours.size = map.size;
+            traceOut.contours.constraint._map = map.fn;
+            traceOut._hasConstraint = true;
+        } else {
+            contourStart = Lib.coerce2(traceIn, traceOut, attributes, 'contours.start');
+            contourEnd = Lib.coerce2(traceIn, traceOut, attributes, 'contours.end');
+
+                // normally we only need size if autocontour is off. But contour.calc
+                // pushes its calculated contour size back to the input trace, so for
+                // things like restyle that can call supplyDefaults without calc
+                // after the initial draw, we can just reuse the previous calculation
+            contourSize = coerce('contours.size');
+        }
+
+        missingEnd = (contourStart === false) || (contourEnd === false);
+        autoContour;
 
         if(missingEnd) {
             autoContour = traceOut.autocontour = true;
@@ -72,5 +89,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
 
         handleStyleDefaults(traceIn, traceOut, coerce, layout);
+
+        if(constraint && constraint.operation === '=') {
+            traceOut.contours.coloring = 'none';
+        }
     }
 };

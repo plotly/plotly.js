@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -17,6 +17,7 @@ var Drawing = require('../../components/drawing');
 var makeCrossings = require('../contour/make_crossings');
 var findAllPaths = require('../contour/find_all_paths');
 var axisAlignedLine = require('../carpet/axis_aligned_line');
+var convertToConstraints = require('./convert_to_constraints');
 
 function makeg(el, type, klass) {
     var join = el.selectAll(type + '.' + klass).data([0]);
@@ -31,7 +32,6 @@ module.exports = function plot(gd, plotinfo, cdcontours) {
 };
 
 function plotOne(gd, plotinfo, cd) {
-    //console.trace('plotone');
     var i, j, k, path;
     var trace = cd[0].trace;
     var carpet = trace._carpet;
@@ -57,6 +57,7 @@ function plotOne(gd, plotinfo, cd) {
 
     makeCrossings(pathinfo);
     findAllPaths(pathinfo);
+    if(trace._hasConstraint) convertToConstraints(pathinfo, trace.contours.constraint);
 
     function ab2p(ab) {
         var pt = carpet.ab2xy(ab[0], ab[1], true);
@@ -99,7 +100,7 @@ function plotOne(gd, plotinfo, cd) {
 
     // draw everything
     var plotGroup = makeContourGroup(plotinfo, cd, id);
-    makeBackground(plotGroup, xa, ya, contours, carpet);
+    makeBackground(plotGroup, xa, ya, contours, carpet, trace._hasConstraint);
     makeFills(plotGroup, pathinfo, perimeter, contours, ab2p, carpet, xa, ya);
     makeLines(plotGroup, pathinfo, contours);
     clipBoundary(plotGroup, carpet);
@@ -192,12 +193,12 @@ function makeLines(plotgroup, pathinfo, contours) {
         .style('stroke-miterlimit', 1);
 }
 
-function makeBackground(plotgroup, xaxis, yaxis, contours, carpet) {
+function makeBackground(plotgroup, xaxis, yaxis, contours, carpet, hasConstraint) {
     var seg, xp, yp, i;
     var bggroup = makeg(plotgroup, 'g', 'contourbg');
 
     var bgfill = bggroup.selectAll('path')
-        .data(contours.coloring === 'fill' ? [0] : []);
+        .data((contours.coloring === 'fill' && !hasConstraint) ? [0] : []);
     bgfill.enter().append('path');
     bgfill.exit().remove();
 

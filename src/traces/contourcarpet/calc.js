@@ -28,7 +28,6 @@ var supplyDefaults = require('./defaults');
 // though a few things inside heatmap calc still look for
 // contour maps, because the makeBoundArray calls are too entangled
 module.exports = function calc(gd, trace) {
-    //console.trace('calc');
     var i, carpet;
 
     for(i = 0; i < gd._fullData.length; i++) {
@@ -41,7 +40,7 @@ module.exports = function calc(gd, trace) {
     if(!carpet) return;
     trace._carpet = carpet;
 
-    if (!trace.a || !trace.b) {
+    if(!trace.a || !trace.b) {
         // Look up the original incoming carpet data:
         var carpetdata = gd.data[carpet.index];
 
@@ -49,11 +48,11 @@ module.exports = function calc(gd, trace) {
         // copy so that we're not actually modifying it when we use it
         // to supply defaults:
         var tracedata = gd.data[trace.index];
-        //var tracedata = extendFlat({}, gd.data[trace.index]);
+        // var tracedata = extendFlat({}, gd.data[trace.index]);
 
         // If the data is not specified
-        if (!tracedata.a) tracedata.a = carpetdata.a;
-        if (!tracedata.b) tracedata.b = carpetdata.b;
+        if(!tracedata.a) tracedata.a = carpetdata.a;
+        if(!tracedata.b) tracedata.b = carpetdata.b;
 
         supplyDefaults(tracedata, trace, null, gd._fullLayout);
     }
@@ -209,7 +208,12 @@ function heatmappishCalc(gd, trace) {
         yIn = trace.ytype === 'scaled' ? '' : b,
         yArray = makeBoundArray(trace, yIn, b0, db, z.length, bax);
 
-    var cd0 = {a: xArray, b: yArray, z: z};
+    var cd0 = {
+        a: xArray,
+        b: yArray,
+        z: z,
+        //mappedZ: mappedZ
+    };
 
     // auto-z and autocolorscale if applicable
     colorscaleCalc(trace, z, '', 'z');
