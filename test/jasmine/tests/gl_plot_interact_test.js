@@ -3,6 +3,7 @@ var d3 = require('d3');
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
+var Drawing = require('@src/components/drawing');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -587,6 +588,7 @@ describe('Test gl plot interactions', function() {
                 });
             });
         });
+
         describe('Plotly.newPlot', function() {
 
             var mockData2dNew = [{
@@ -761,20 +763,18 @@ describe('gl2d interaction', function() {
     it('data-referenced annotations should update on drag', function(done) {
 
         function drag(start, end) {
-            var opts = { buttons: 1 };
-
-            mouseEvent('mousemove', start[0], start[1], opts);
-            mouseEvent('mousedown', start[0], start[1], opts);
-            mouseEvent('mousemove', end[0], end[1], opts);
-            mouseEvent('mouseup', end[0], end[1], opts);
+            mouseEvent('mousemove', start[0], start[1]);
+            mouseEvent('mousedown', start[0], start[1], { buttons: 1 });
+            mouseEvent('mousemove', end[0], end[1], { buttons: 1 });
+            mouseEvent('mouseup', end[0], end[1]);
         }
 
         function assertAnnotation(xy) {
-            var ann = d3.select('g.annotation-text-g');
-            var x = +ann.attr('x');
-            var y = +ann.attr('y');
+            var ann = d3.select('g.annotation-text-g').select('g');
+            var translate = Drawing.getTranslate(ann);
 
-            expect([x, y]).toBeCloseToArray(xy);
+            expect(translate.x).toBeWithin(xy[0], 1.5);
+            expect(translate.y).toBeWithin(xy[1], 1.5);
         }
 
         Plotly.plot(gd, [{
@@ -790,10 +790,10 @@ describe('gl2d interaction', function() {
             dragmode: 'pan'
         })
         .then(function() {
-            assertAnnotation([340, 334]);
+            assertAnnotation([327, 325]);
 
-            drag([250, 200], [150, 300]);
-            assertAnnotation([410, 264]);
+            drag([250, 200], [200, 150]);
+            assertAnnotation([277, 275]);
 
             return Plotly.relayout(gd, {
                 'xaxis.range': [1.5, 2.5],
@@ -801,7 +801,7 @@ describe('gl2d interaction', function() {
             });
         })
         .then(function() {
-            assertAnnotation([340, 340]);
+            assertAnnotation([327, 331]);
         })
         .then(done);
     });
