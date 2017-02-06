@@ -39,7 +39,7 @@ describe('carpet supplyDefaults', function() {
         expect(traceOut.visible).toBe(false);
     });
 
-    it('sets _cheater = true when x is provided', function() {
+    /*it('sets _cheater = true when x is provided', function() {
         traceIn = {y: [[1, 2], [3, 4]]};
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
         expect(traceOut._cheater).toBe(true);
@@ -49,7 +49,7 @@ describe('carpet supplyDefaults', function() {
         traceIn = {y: [[1, 2], [3, 4]], x: [[3, 4], [1, 2]]};
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
         expect(traceOut._cheater).toBe(false);
-    });
+    });*/
 
     it('defaults to cheaterslope = 1', function() {
         traceIn = {y: [[1, 2], [3, 4]]};
