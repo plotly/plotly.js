@@ -11,6 +11,7 @@
 
 var Scene = require('./scene');
 var Plots = require('../plots');
+var Lib = require('../../lib');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 var axesNames = ['xaxis', 'yaxis', 'zaxis'];
@@ -58,6 +59,11 @@ exports.plot = function plotGl3d(gd) {
 
             // set ref to Scene instance
             sceneLayout._scene = scene;
+        }
+
+        // save 'initial' camera settings for modebar button
+        if(!scene.cameraInitial) {
+            scene.cameraInitial = Lib.extendDeep({}, sceneLayout.camera);
         }
 
         scene.plot(fullSceneData, fullLayout, gd.layout);
