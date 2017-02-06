@@ -10,6 +10,25 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.23.0] -- 2016-02-06
+
+### Added
+- Add scrollbox to long dropdown updatemenus [#1214]
+
+### Fixed
+- Multiple IE9 fixes [#1332]
+- Ensure that `plotly_afterplot` is fired before `Plotly.plot` promise is
+  resolved [#1342]
+- Fix exception when dragging graphs with empty text labels [#1336]
+- Fix exception when creating empty `ohlc` and `candlestick` traces [#1348]
+- Fix `editable: true` legend items logic for `ohlc` and `candlestick` traces [#1349]
+- Fix restyle for contour traces in cases where autocontour is defaulted to true
+  [#1338]
+- Fix edge case in axis label tick assignments [#1324]
+- Fix vanishing titles text in `editable: true` [#1351]
+- Fix 3D thumbnail image generation [#1327]
+
+
 ## [1.22.0] -- 2016-01-19
 
 ### Added
