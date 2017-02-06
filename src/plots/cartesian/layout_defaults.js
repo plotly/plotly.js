@@ -27,7 +27,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         yaListCartesian = [],
         xaListGl2d = [],
         yaListGl2d = [],
-        xaListNotCheater = [],
+        xaListCheater = [],
         outerTicks = {},
         noGrids = {},
         i;
@@ -58,11 +58,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         // cheater (which is to say, visible by default):
         //   1. It's not in the carpet category at all
         //   2. Or if it is, then it's not a non-cheater carpet axis
-        //   3. And the axis isn't already marked non-cheater
-        if((!Registry.traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) &&
-            xaListNotCheater.indexOf(xaName) === -1
-        ) {
-            xaListNotCheater.push(xaName);
+        if(Registry.traceIs(trace, 'carpet') && (!trace.type === 'carpet' || trace._cheater)) {
+            if(xaName) Lib.pushUnique(xaListCheater, xaName);
         }
 
         // add axes implied by traces
@@ -152,7 +149,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             data: fullData,
             bgColor: bgColor,
             calendar: layoutOut.calendar,
-            cheateronly: axLetter === 'x' && xaListNotCheater.indexOf(axName) === -1
+            cheateronly: axLetter === 'x' && xaListCheater.indexOf(axName) !== -1
         };
 
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
