@@ -393,7 +393,14 @@ describe('the range slider', function() {
 
             _supply(layoutIn, layoutOut, 'xaxis');
             expect(layoutOut.xaxis.rangeslider).toEqual(expected);
+        });
 
+        it('should return early if *visible: false*', function() {
+            var layoutIn = { xaxis: { rangeslider: { visible: false, range: [10, 20] }} },
+                layoutOut = { xaxis: { rangeslider: {}} };
+
+            _supply(layoutIn, layoutOut, 'xaxis');
+            expect(layoutOut.xaxis.rangeslider).toEqual({ visible: false });
         });
 
         it('should set defaults if properties are invalid', function() {

@@ -13,7 +13,6 @@ var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
 var attributes = require('./attributes');
 
-
 module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     if(!layoutIn[axName].rangeslider) return;
 
@@ -30,6 +29,9 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
     }
 
+    var visible = coerce('visible');
+    if(!visible) return;
+
     coerce('bgcolor', layoutOut.plot_bgcolor);
     coerce('bordercolor');
     coerce('borderwidth');
@@ -40,7 +42,6 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
         isNumeric(axOut.r2l(containerIn.range[0])) &&
         isNumeric(axOut.r2l(containerIn.range[1]))
     ));
-    coerce('visible');
     coerce('range');
 
     // Expand slider range to the axis range
