@@ -79,13 +79,6 @@ module.exports = function(gd) {
         var rangeSlider = d3.select(this),
             opts = axisOpts[constants.name];
 
-        // compute new slider range using axis autorange if necessary
-        // copy back range to input range slider container to skip
-        // this step in subsequent draw calls
-        if(!opts.range) {
-            opts._input.range = opts.range = Axes.getAutoRange(axisOpts);
-        }
-
         // update range slider dimensions
 
         var margin = fullLayout.margin,

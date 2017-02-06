@@ -8,6 +8,8 @@
 
 'use strict';
 
+var isNumeric = require('fast-isnumeric');
+
 var Lib = require('../../lib');
 var attributes = require('./attributes');
 
@@ -32,20 +34,26 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     coerce('bordercolor');
     coerce('borderwidth');
     coerce('thickness');
+
+    coerce('autorange', !(
+        (containerIn.range || []).length === 2 &&
+        isNumeric(axOut.r2l(containerIn.range[0])) &&
+        isNumeric(axOut.r2l(containerIn.range[1]))
+    ));
     coerce('visible');
     coerce('range');
 
     // Expand slider range to the axis range
-    if(containerOut.range && !axOut.autorange) {
-        // TODO: what if the ranges are reversed?
+    // TODO: what if the ranges are reversed?
+    if(containerOut.range) {
         var outRange = containerOut.range,
             axRange = axOut.range;
 
         outRange[0] = axOut.l2r(Math.min(axOut.r2l(outRange[0]), axOut.r2l(axRange[0])));
         outRange[1] = axOut.l2r(Math.max(axOut.r2l(outRange[1]), axOut.r2l(axRange[1])));
-    } else {
-        axOut._needsExpand = true;
     }
+
+    axOut.cleanRange('rangeslider.range');
 
     // to map back range slider (auto) range
     containerOut._input = containerIn;

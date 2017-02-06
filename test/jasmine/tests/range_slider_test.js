@@ -336,13 +336,17 @@ describe('the range slider', function() {
 
     describe('handleDefaults function', function() {
 
+        function _supply(layoutIn, layoutOut, axName) {
+            setConvert(layoutOut[axName]);
+            RangeSlider.handleDefaults(layoutIn, layoutOut, axName);
+        }
+
         it('should not coerce anything if rangeslider isn\'t set', function() {
             var layoutIn = { xaxis: {} },
                 layoutOut = { xaxis: {} },
                 expected = { xaxis: {} };
 
-            RangeSlider.handleDefaults(layoutIn, layoutOut, 'xaxis');
-
+            _supply(layoutIn, layoutOut, 'xaxis');
             expect(layoutIn).toEqual(expected);
         });
 
@@ -351,8 +355,7 @@ describe('the range slider', function() {
                 layoutOut = { xaxis: { rangeslider: {}} },
                 expected = { xaxis: { rangeslider: { visible: true }} };
 
-            RangeSlider.handleDefaults(layoutIn, layoutOut, 'xaxis');
-
+            _supply(layoutIn, layoutOut, 'xaxis');
             expect(layoutIn).toEqual(expected);
         });
 
@@ -360,44 +363,37 @@ describe('the range slider', function() {
             var layoutIn = { xaxis: { rangeslider: {} }},
                 layoutOut = { xaxis: {} },
                 expected = {
-                    xaxis: {
-                        rangeslider: {
-                            visible: true,
-                            thickness: 0.15,
-                            bgcolor: '#fff',
-                            borderwidth: 0,
-                            bordercolor: '#444',
-                            _input: layoutIn.xaxis.rangeslider
-                        },
-                        _needsExpand: true
-                    }
+                    visible: true,
+                    autorange: true,
+                    range: [-1, 6],
+                    thickness: 0.15,
+                    bgcolor: '#fff',
+                    borderwidth: 0,
+                    bordercolor: '#444',
+                    _input: layoutIn.xaxis.rangeslider
                 };
 
-            RangeSlider.handleDefaults(layoutIn, layoutOut, 'xaxis');
-
-            expect(layoutOut).toEqual(expected);
+            _supply(layoutIn, layoutOut, 'xaxis');
+            expect(layoutOut.xaxis.rangeslider).toEqual(expected);
         });
 
         it('should set defaults if rangeslider.visible is true', function() {
             var layoutIn = { xaxis: { rangeslider: { visible: true }} },
                 layoutOut = { xaxis: { rangeslider: {}} },
                 expected = {
-                    xaxis: {
-                        rangeslider: {
-                            visible: true,
-                            thickness: 0.15,
-                            bgcolor: '#fff',
-                            borderwidth: 0,
-                            bordercolor: '#444',
-                            _input: layoutIn.xaxis.rangeslider
-                        },
-                        _needsExpand: true
-                    }
+                    visible: true,
+                    autorange: true,
+                    range: [-1, 6],
+                    thickness: 0.15,
+                    bgcolor: '#fff',
+                    borderwidth: 0,
+                    bordercolor: '#444',
+                    _input: layoutIn.xaxis.rangeslider
                 };
 
-            RangeSlider.handleDefaults(layoutIn, layoutOut, 'xaxis');
+            _supply(layoutIn, layoutOut, 'xaxis');
+            expect(layoutOut.xaxis.rangeslider).toEqual(expected);
 
-            expect(layoutOut).toEqual(expected);
         });
 
         it('should set defaults if properties are invalid', function() {
@@ -410,72 +406,57 @@ describe('the range slider', function() {
                 }}},
                 layoutOut = { xaxis: {} },
                 expected = {
-                    xaxis: {
-                        rangeslider: {
-                            visible: true,
-                            thickness: 0.15,
-                            bgcolor: '#fff',
-                            borderwidth: 0,
-                            bordercolor: '#444',
-                            _input: layoutIn.xaxis.rangeslider
-                        },
-                        _needsExpand: true
-                    }
+                    visible: true,
+                    autorange: true,
+                    range: [-1, 6],
+                    thickness: 0.15,
+                    bgcolor: '#fff',
+                    borderwidth: 0,
+                    bordercolor: '#444',
+                    _input: layoutIn.xaxis.rangeslider
                 };
 
-            RangeSlider.handleDefaults(layoutIn, layoutOut, 'xaxis');
-
-            expect(layoutOut).toEqual(expected);
+            _supply(layoutIn, layoutOut, 'xaxis');
+            expect(layoutOut.xaxis.rangeslider).toEqual(expected);
         });
 
         it('should expand the rangeslider range to axis range', function() {
             var layoutIn = { xaxis: { rangeslider: { range: [5, 6] } } },
                 layoutOut = { xaxis: { range: [1, 10], type: 'linear'} },
                 expected = {
-                    xaxis: {
-                        rangeslider: {
-                            visible: true,
-                            thickness: 0.15,
-                            bgcolor: '#fff',
-                            borderwidth: 0,
-                            bordercolor: '#444',
-                            range: [1, 10],
-                            _input: layoutIn.xaxis.rangeslider
-                        },
-                        range: [1, 10]
-                    }
+                    visible: true,
+                    autorange: false,
+                    range: [1, 10],
+                    thickness: 0.15,
+                    bgcolor: '#fff',
+                    borderwidth: 0,
+                    bordercolor: '#444',
+                    _input: layoutIn.xaxis.rangeslider
                 };
 
-            setConvert(layoutOut.xaxis);
-
-            RangeSlider.handleDefaults(layoutIn, layoutOut, 'xaxis');
+            _supply(layoutIn, layoutOut, 'xaxis');
 
             // don't compare the whole layout, because we had to run setConvert which
             // attaches all sorts of other stuff to xaxis
-            expect(layoutOut.xaxis.rangeslider).toEqual(expected.xaxis.rangeslider);
+            expect(layoutOut.xaxis.rangeslider).toEqual(expected);
         });
 
-        it('should set _needsExpand when an axis range is set', function() {
-            var layoutIn = { xaxis: { rangeslider: true } },
-                layoutOut = { xaxis: { range: [2, 40]} },
+        it('should set autorange to true when range input is invalid', function() {
+            var layoutIn = { xaxis: { rangeslider: { range: 'not-gonna-work'}} },
+                layoutOut = { xaxis: {} },
                 expected = {
-                    xaxis: {
-                        rangeslider: {
-                            visible: true,
-                            thickness: 0.15,
-                            bgcolor: '#fff',
-                            borderwidth: 0,
-                            bordercolor: '#444',
-                            _input: {}
-                        },
-                        range: [2, 40],
-                        _needsExpand: true
-                    },
+                    visible: true,
+                    autorange: true,
+                    range: [-1, 6],
+                    thickness: 0.15,
+                    bgcolor: '#fff',
+                    borderwidth: 0,
+                    bordercolor: '#444',
+                    _input: layoutIn.xaxis.rangeslider
                 };
 
-            RangeSlider.handleDefaults(layoutIn, layoutOut, 'xaxis');
-
-            expect(layoutOut).toEqual(expected);
+            _supply(layoutIn, layoutOut, 'xaxis');
+            expect(layoutOut.xaxis.rangeslider).toEqual(expected);
         });
 
         it('should default \'bgcolor\' to layout \'plot_bgcolor\'', function() {
@@ -488,8 +469,7 @@ describe('the range slider', function() {
                 plot_bgcolor: 'blue'
             };
 
-            RangeSlider.handleDefaults(layoutIn, layoutOut, 'xaxis');
-
+            _supply(layoutIn, layoutOut, 'xaxis');
             expect(layoutOut.xaxis.rangeslider.bgcolor).toEqual('blue');
         });
     });
