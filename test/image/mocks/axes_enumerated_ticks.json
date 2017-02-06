@@ -32,8 +32,8 @@
         "width": 400,
         "xaxis": {
             "ticktext": [
-                "<span style=\"fill:green\">green</span> eggs",
-                "&amp; ham",
+                "<span style=\"fill:green\">green</span>\neggs",
+                "&amp;\r\nham",
                 "H<sub>2</sub>O",
                 "Gorgonzola"
             ],

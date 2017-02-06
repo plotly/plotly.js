@@ -13,7 +13,7 @@ var bundleTestGlob = path.join(constants.pathToJasmineBundleTests, '**/*.js');
 
 // main
 assertJasmineSuites();
-assertHeaders();
+assertSrcContents();
 assertFileNames();
 assertCircularDeps();
 
@@ -44,8 +44,12 @@ function assertJasmineSuites() {
     });
 }
 
-// check for header in src and lib files
-function assertHeaders() {
+/*
+ * tests about the contents of source (and lib) files:
+ * - check for header comment
+ * - check that we don't have .classList
+ */
+function assertSrcContents() {
     var licenseSrc = constants.licenseSrc;
     var licenseStr = licenseSrc.substring(2, licenseSrc.length - 2);
     var logs = [];
@@ -56,7 +60,15 @@ function assertHeaders() {
 
             // parse through code string while keeping track of comments
             var comments = [];
-            falafel(code, {onComment: comments, locations: true}, function() {});
+            falafel(code, {onComment: comments, locations: true}, function(node) {
+                // look for .classList
+                if(node.type === 'MemberExpression') {
+                    var parts = node.source().split('.');
+                    if(parts[parts.length - 1] === 'classList') {
+                        logs.push(file + ' : contains .classList (IE failure)');
+                    }
+                }
+            });
 
             var header = comments[0];
 
@@ -70,7 +82,7 @@ function assertHeaders() {
             }
         });
 
-        log('correct headers in lib/ and src/', logs);
+        log('correct headers and contents in lib/ and src/', logs);
     });
 }
 
