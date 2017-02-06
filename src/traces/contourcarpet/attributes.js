@@ -121,6 +121,7 @@ module.exports = extendFlat({}, {
             operation: {
                 valType: 'enumerated',
                 values: [].concat(constants.INEQUALITY_OPS).concat(constants.INTERVAL_OPS).concat(constants.SET_OPS),
+                role: 'info',
                 description: [
                     'Sets the filter operation.',
 
@@ -149,6 +150,7 @@ module.exports = extendFlat({}, {
             value: {
                 valType: 'any',
                 dflt: 0,
+                role: 'info',
                 description: [
                     'Sets the value or values by which to filter by.',
 

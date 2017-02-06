@@ -349,14 +349,6 @@ module.exports = {
         role: 'style',
         description: 'Sets a axis label suffix.'
     },
-    showstartlabel: {
-        valType: 'boolean',
-        dflt: true,
-    },
-    showendlabel: {
-        valType: 'boolean',
-        dflt: true,
-    },
     labelfont: extendFlat({}, fontAttrs, {
         description: 'Sets the label font.'
     }),
@@ -464,14 +456,14 @@ module.exports = {
         description: 'Sets the line color of the end line.'
     },
     tick0: {
-        valType: 'any',
+        valType: 'integer',
         min: 0,
         dflt: 0,
         role: 'info',
         description: 'The starting index of grid lines along the axis'
     },
     dtick: {
-        valType: 'any',
+        valType: 'integer',
         min: 1,
         dflt: 1,
         role: 'info',

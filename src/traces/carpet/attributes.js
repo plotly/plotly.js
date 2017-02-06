@@ -33,7 +33,7 @@ module.exports = {
     },
     y: {
         valType: 'data_array',
-        descripotion: 'A two dimensional array of y coordinates at each carpet point.'
+        description: 'A two dimensional array of y coordinates at each carpet point.'
     },
     a: {
         valType: 'data_array',
@@ -63,7 +63,7 @@ module.exports = {
     },
     b: {
         valType: 'data_array',
-        descripotion: 'A two dimensional array of y coordinates at each carpet point.'
+        description: 'A two dimensional array of y coordinates at each carpet point.'
     },
     b0: {
         valType: 'number',
@@ -87,6 +87,7 @@ module.exports = {
     },
     cheaterslope: {
         valType: 'number',
+        role: 'info',
         dflt: 1,
         description: [
             'The shift applied to each successive row of data in creating a cheater plot.',

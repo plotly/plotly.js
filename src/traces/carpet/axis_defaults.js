@@ -94,9 +94,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     // coerce('gridoffset');
     // coerce('gridstep');
 
-    coerce('showstartlabel');
-    coerce('showendlabel');
-
     coerce('labelpadding');
 
     containerOut._hovertitle = letter;
