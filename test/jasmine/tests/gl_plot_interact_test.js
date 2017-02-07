@@ -404,95 +404,90 @@ describe('Test gl plot interactions', function() {
 
         describe('modebar click handlers', function() {
 
-            describe('button zoom3d', function() {
-                it('should updates the scene dragmode and dragmode button', function() {
-                    var buttonTurntable = selectButton(modeBar, 'tableRotation'),
-                        buttonZoom3d = selectButton(modeBar, 'zoom3d');
+            it('button zoom3d should updates the scene dragmode and dragmode button', function() {
+                var buttonTurntable = selectButton(modeBar, 'tableRotation'),
+                    buttonZoom3d = selectButton(modeBar, 'zoom3d');
 
-                    assertScenes(gd._fullLayout, 'dragmode', 'turntable');
-                    expect(buttonTurntable.isActive()).toBe(true);
-                    expect(buttonZoom3d.isActive()).toBe(false);
+                assertScenes(gd._fullLayout, 'dragmode', 'turntable');
+                expect(buttonTurntable.isActive()).toBe(true);
+                expect(buttonZoom3d.isActive()).toBe(false);
 
-                    buttonZoom3d.click();
-                    assertScenes(gd.layout, 'dragmode', 'zoom');
-                    expect(gd.layout.dragmode).toBe(undefined);
-                    expect(gd._fullLayout.dragmode).toBe('zoom');
-                    expect(buttonTurntable.isActive()).toBe(false);
-                    expect(buttonZoom3d.isActive()).toBe(true);
+                buttonZoom3d.click();
+                assertScenes(gd.layout, 'dragmode', 'zoom');
+                expect(gd.layout.dragmode).toBe(undefined);
+                expect(gd._fullLayout.dragmode).toBe('zoom');
+                expect(buttonTurntable.isActive()).toBe(false);
+                expect(buttonZoom3d.isActive()).toBe(true);
 
-                    buttonTurntable.click();
-                    assertScenes(gd._fullLayout, 'dragmode', 'turntable');
-                    expect(buttonTurntable.isActive()).toBe(true);
-                    expect(buttonZoom3d.isActive()).toBe(false);
-                });
+                buttonTurntable.click();
+                assertScenes(gd._fullLayout, 'dragmode', 'turntable');
+                expect(buttonTurntable.isActive()).toBe(true);
+                expect(buttonZoom3d.isActive()).toBe(false);
             });
 
-            describe('button pan3d', function() {
-                it('should updates the scene dragmode and dragmode button', function() {
-                    var buttonTurntable = selectButton(modeBar, 'tableRotation'),
-                        buttonPan3d = selectButton(modeBar, 'pan3d');
+            it('button pan3d should updates the scene dragmode and dragmode button', function() {
+                var buttonTurntable = selectButton(modeBar, 'tableRotation'),
+                    buttonPan3d = selectButton(modeBar, 'pan3d');
 
-                    assertScenes(gd._fullLayout, 'dragmode', 'turntable');
-                    expect(buttonTurntable.isActive()).toBe(true);
-                    expect(buttonPan3d.isActive()).toBe(false);
+                assertScenes(gd._fullLayout, 'dragmode', 'turntable');
+                expect(buttonTurntable.isActive()).toBe(true);
+                expect(buttonPan3d.isActive()).toBe(false);
 
-                    buttonPan3d.click();
-                    assertScenes(gd.layout, 'dragmode', 'pan');
-                    expect(gd.layout.dragmode).toBe(undefined);
-                    expect(gd._fullLayout.dragmode).toBe('zoom');
-                    expect(buttonTurntable.isActive()).toBe(false);
-                    expect(buttonPan3d.isActive()).toBe(true);
+                buttonPan3d.click();
+                assertScenes(gd.layout, 'dragmode', 'pan');
+                expect(gd.layout.dragmode).toBe(undefined);
+                expect(gd._fullLayout.dragmode).toBe('zoom');
+                expect(buttonTurntable.isActive()).toBe(false);
+                expect(buttonPan3d.isActive()).toBe(true);
 
-                    buttonTurntable.click();
-                    assertScenes(gd._fullLayout, 'dragmode', 'turntable');
-                    expect(buttonTurntable.isActive()).toBe(true);
-                    expect(buttonPan3d.isActive()).toBe(false);
-                });
+                buttonTurntable.click();
+                assertScenes(gd._fullLayout, 'dragmode', 'turntable');
+                expect(buttonTurntable.isActive()).toBe(true);
+                expect(buttonPan3d.isActive()).toBe(false);
             });
 
-            describe('button orbitRotation', function() {
-                it('should updates the scene dragmode and dragmode button', function() {
-                    var buttonTurntable = selectButton(modeBar, 'tableRotation'),
-                        buttonOrbit = selectButton(modeBar, 'orbitRotation');
+            it('button orbitRotation should updates the scene dragmode and dragmode button', function() {
+                var buttonTurntable = selectButton(modeBar, 'tableRotation'),
+                    buttonOrbit = selectButton(modeBar, 'orbitRotation');
 
-                    assertScenes(gd._fullLayout, 'dragmode', 'turntable');
-                    expect(buttonTurntable.isActive()).toBe(true);
-                    expect(buttonOrbit.isActive()).toBe(false);
+                assertScenes(gd._fullLayout, 'dragmode', 'turntable');
+                expect(buttonTurntable.isActive()).toBe(true);
+                expect(buttonOrbit.isActive()).toBe(false);
 
-                    buttonOrbit.click();
-                    assertScenes(gd.layout, 'dragmode', 'orbit');
-                    expect(gd.layout.dragmode).toBe(undefined);
-                    expect(gd._fullLayout.dragmode).toBe('zoom');
-                    expect(buttonTurntable.isActive()).toBe(false);
-                    expect(buttonOrbit.isActive()).toBe(true);
+                buttonOrbit.click();
+                assertScenes(gd.layout, 'dragmode', 'orbit');
+                expect(gd.layout.dragmode).toBe(undefined);
+                expect(gd._fullLayout.dragmode).toBe('zoom');
+                expect(buttonTurntable.isActive()).toBe(false);
+                expect(buttonOrbit.isActive()).toBe(true);
 
-                    buttonTurntable.click();
-                    assertScenes(gd._fullLayout, 'dragmode', 'turntable');
-                    expect(buttonTurntable.isActive()).toBe(true);
-                    expect(buttonOrbit.isActive()).toBe(false);
-                });
+                buttonTurntable.click();
+                assertScenes(gd._fullLayout, 'dragmode', 'turntable');
+                expect(buttonTurntable.isActive()).toBe(true);
+                expect(buttonOrbit.isActive()).toBe(false);
             });
 
-            describe('button hoverClosest3d', function() {
-                it('should update the scene hovermode and spikes', function() {
-                    var buttonHover = selectButton(modeBar, 'hoverClosest3d');
+            it('button hoverClosest3d should update the scene hovermode and spikes', function() {
+                var buttonHover = selectButton(modeBar, 'hoverClosest3d');
 
-                    assertScenes(gd._fullLayout, 'hovermode', 'closest');
-                    expect(buttonHover.isActive()).toBe(true);
+                assertScenes(gd._fullLayout, 'hovermode', 'closest');
+                expect(buttonHover.isActive()).toBe(true);
 
-                    buttonHover.click();
-                    assertScenes(gd._fullLayout, 'hovermode', false);
-                    assertScenes(gd._fullLayout, 'xaxis.showspikes', false);
-                    assertScenes(gd._fullLayout, 'yaxis.showspikes', false);
-                    assertScenes(gd._fullLayout, 'zaxis.showspikes', false);
-                    expect(buttonHover.isActive()).toBe(false);
+                buttonHover.click();
+                assertScenes(gd._fullLayout, 'hovermode', false);
+                assertScenes(gd._fullLayout, 'xaxis.showspikes', false);
+                assertScenes(gd._fullLayout, 'yaxis.showspikes', false);
+                assertScenes(gd._fullLayout, 'zaxis.showspikes', false);
+                expect(buttonHover.isActive()).toBe(false);
 
-                    buttonHover.click();
-                    assertScenes(gd._fullLayout, 'hovermode', 'closest');
-                    assertScenes(gd._fullLayout, 'xaxis.showspikes', true);
-                    assertScenes(gd._fullLayout, 'yaxis.showspikes', true);
-                    assertScenes(gd._fullLayout, 'zaxis.showspikes', true);
-                    expect(buttonHover.isActive()).toBe(true);
+                buttonHover.click();
+                assertScenes(gd._fullLayout, 'hovermode', 'closest');
+                assertScenes(gd._fullLayout, 'xaxis.showspikes', true);
+                assertScenes(gd._fullLayout, 'yaxis.showspikes', true);
+                assertScenes(gd._fullLayout, 'zaxis.showspikes', true);
+                expect(buttonHover.isActive()).toBe(true);
+            });
+
                 });
             });
         });
