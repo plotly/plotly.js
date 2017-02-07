@@ -207,6 +207,7 @@ function isBoxWithoutPositionCoords(trace, axLetter) {
 
     return (
         Registry.traceIs(trace, 'box') &&
+        trace._fullInput.type === 'box' &&
         axLetter === posLetter &&
         trace[posLetter] === undefined &&
         trace[posLetter + '0'] === undefined
