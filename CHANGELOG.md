@@ -10,7 +10,7 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
-## [1.23.0] -- 2016-02-06
+## [1.23.0] -- 2017-02-06
 
 ### Added
 - Add scrollbox to long dropdown updatemenus [#1214]
@@ -29,7 +29,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
 - Fix 3D thumbnail image generation [#1327]
 
 
-## [1.22.0] -- 2016-01-19
+## [1.22.0] -- 2017-01-19
 
 ### Added
 - Add `cumulative` histogram attributes to generate Cumulative Distribution
@@ -62,7 +62,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
 - Allow style fields in sub and sup text [#1288]
 
 
-## [1.21.3] -- 2016-01-05
+## [1.21.3] -- 2017-01-05
 
 ### Fixed
 - Fix zoom behavior on transformed traces [#1257]
