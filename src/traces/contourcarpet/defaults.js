@@ -40,7 +40,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // attribute name to match the property name -- except '_a' !== 'a' so that is not
     // straightforward.
     if(traceIn.a && traceIn.b) {
-        var contourSize, contourStart, contourEnd, missingEnd, autoContour, constraint, map, op;
+        var contourSize, contourStart, contourEnd, missingEnd, autoContour, map;
 
         var len = handleXYZDefaults(traceIn, traceOut, coerce, layout, 'a', 'b');
 
@@ -52,18 +52,17 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         coerce('text');
         coerce('connectgaps', hasColumns(traceOut));
 
-        op = coerce('contours.constraint.operation');
-        coerce('contours.constraint.value');
+        coerce('contours.type');
 
-        if(op) {
-            constraint = traceOut.contours.constraint;
-            map = constraintMapping[constraint.operation](constraint.value);
+        if(traceOut.contours.type === 'constraint') {
+            coerce('contours.operation');
+            coerce('contours.value');
+
+            map = constraintMapping[traceOut.contours.operation](traceOut.contours.value);
 
             traceOut.contours.start = map.start;
             traceOut.contours.end = map.end;
             traceOut.contours.size = map.size;
-            traceOut.contours.constraint._map = map.fn;
-            traceOut._hasConstraint = true;
         } else {
             contourStart = Lib.coerce2(traceIn, traceOut, attributes, 'contours.start');
             contourEnd = Lib.coerce2(traceIn, traceOut, attributes, 'contours.end');
@@ -90,7 +89,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
         handleStyleDefaults(traceIn, traceOut, coerce, layout);
 
-        if(constraint && constraint.operation === '=') {
+        if(traceOut.contours.type === 'constraint' && traceOut.contours.operation === '=') {
             traceOut.contours.coloring = 'none';
         }
     }

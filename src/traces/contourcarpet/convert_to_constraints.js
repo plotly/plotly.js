@@ -14,13 +14,13 @@ var Lib = require('../../lib');
 // need weird range loops and flipped contours instead of the usual format. This function
 // does some weird manipulation of the extracted pathinfo data such that it magically
 // draws contours correctly *as* constraints.
-module.exports = function(pathinfo, constraints) {
+module.exports = function(pathinfo, operation) {
     var i, pi0, pi1;
 
     var op0 = function(arr) { return arr.reverse(); };
     var op1 = function(arr) { return arr; };
 
-    switch(constraints.operation) {
+    switch(operation) {
         case '][':
         case ')[':
         case '](':

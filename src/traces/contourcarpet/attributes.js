@@ -66,6 +66,18 @@ module.exports = extendFlat({}, {
     },
 
     contours: {
+        type: {
+            valType: 'enumerated',
+            values: ['levels', 'constraint'],
+            dflt: 'levels',
+            role: 'info',
+            description: [
+                'If `levels`, the data is represented as a contour plot with multiple',
+                'levels displayed. If `constraint`, the data is represented as constraints',
+                'with the invalid region shaded as specified by the `operation` and',
+                '`value` parameters.'
+            ].join(' ')
+        },
         start: {
             valType: 'number',
             dflt: null,
@@ -117,62 +129,60 @@ module.exports = extendFlat({}, {
                 'Has only an effect if `contours.coloring` is set to *fill*.'
             ].join(' ')
         },
-        constraint: {
-            operation: {
-                valType: 'enumerated',
-                values: [].concat(constants.INEQUALITY_OPS).concat(constants.INTERVAL_OPS).concat(constants.SET_OPS),
-                role: 'info',
-                description: [
-                    'Sets the filter operation.',
+        operation: {
+            valType: 'enumerated',
+            values: [].concat(constants.INEQUALITY_OPS).concat(constants.INTERVAL_OPS).concat(constants.SET_OPS),
+            role: 'info',
+            description: [
+                'Sets the filter operation.',
 
-                    '*=* keeps items equal to `value`',
+                '*=* keeps items equal to `value`',
 
-                    '*<* keeps items less than `value`',
-                    '*<=* keeps items less than or equal to `value`',
+                '*<* keeps items less than `value`',
+                '*<=* keeps items less than or equal to `value`',
 
-                    '*>* keeps items greater than `value`',
-                    '*>=* keeps items greater than or equal to `value`',
+                '*>* keeps items greater than `value`',
+                '*>=* keeps items greater than or equal to `value`',
 
-                    '*[]* keeps items inside `value[0]` to value[1]` including both bounds`',
-                    '*()* keeps items inside `value[0]` to value[1]` excluding both bounds`',
-                    '*[)* keeps items inside `value[0]` to value[1]` including `value[0]` but excluding `value[1]',
-                    '*(]* keeps items inside `value[0]` to value[1]` excluding `value[0]` but including `value[1]',
+                '*[]* keeps items inside `value[0]` to value[1]` including both bounds`',
+                '*()* keeps items inside `value[0]` to value[1]` excluding both bounds`',
+                '*[)* keeps items inside `value[0]` to value[1]` including `value[0]` but excluding `value[1]',
+                '*(]* keeps items inside `value[0]` to value[1]` excluding `value[0]` but including `value[1]',
 
-                    '*][* keeps items outside `value[0]` to value[1]` and equal to both bounds`',
-                    '*)(* keeps items outside `value[0]` to value[1]`',
-                    '*](* keeps items outside `value[0]` to value[1]` and equal to `value[0]`',
-                    '*)[* keeps items outside `value[0]` to value[1]` and equal to `value[1]`',
+                '*][* keeps items outside `value[0]` to value[1]` and equal to both bounds`',
+                '*)(* keeps items outside `value[0]` to value[1]`',
+                '*](* keeps items outside `value[0]` to value[1]` and equal to `value[0]`',
+                '*)[* keeps items outside `value[0]` to value[1]` and equal to `value[1]`',
 
-                    '*{}* keeps items present in a set of values',
-                    '*}{* keeps items not present in a set of values'
-                ].join(' ')
-            },
-            value: {
-                valType: 'any',
-                dflt: 0,
-                role: 'info',
-                description: [
-                    'Sets the value or values by which to filter by.',
-
-                    'Values are expected to be in the same type as the data linked',
-                    'to *target*.',
-
-                    'When `operation` is set to one of the inequality values',
-                    '(' + constants.INEQUALITY_OPS + ')',
-                    '*value* is expected to be a number or a string.',
-
-                    'When `operation` is set to one of the interval value',
-                    '(' + constants.INTERVAL_OPS + ')',
-                    '*value* is expected to be 2-item array where the first item',
-                    'is the lower bound and the second item is the upper bound.',
-
-                    'When `operation`, is set to one of the set value',
-                    '(' + constants.SET_OPS + ')',
-                    '*value* is expected to be an array with as many items as',
-                    'the desired set elements.'
-                ].join(' ')
-            }
+                '*{}* keeps items present in a set of values',
+                '*}{* keeps items not present in a set of values'
+            ].join(' ')
         },
+        value: {
+            valType: 'any',
+            dflt: 0,
+            role: 'info',
+            description: [
+                'Sets the value or values by which to filter by.',
+
+                'Values are expected to be in the same type as the data linked',
+                'to *target*.',
+
+                'When `operation` is set to one of the inequality values',
+                '(' + constants.INEQUALITY_OPS + ')',
+                '*value* is expected to be a number or a string.',
+
+                'When `operation` is set to one of the interval value',
+                '(' + constants.INTERVAL_OPS + ')',
+                '*value* is expected to be 2-item array where the first item',
+                'is the lower bound and the second item is the upper bound.',
+
+                'When `operation`, is set to one of the set value',
+                '(' + constants.SET_OPS + ')',
+                '*value* is expected to be an array with as many items as',
+                'the desired set elements.'
+            ].join(' ')
+        }
     },
 
     line: {

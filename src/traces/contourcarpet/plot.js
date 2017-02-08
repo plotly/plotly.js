@@ -57,7 +57,10 @@ function plotOne(gd, plotinfo, cd) {
 
     makeCrossings(pathinfo);
     findAllPaths(pathinfo);
-    if(trace._hasConstraint) convertToConstraints(pathinfo, trace.contours.constraint);
+
+    if(trace.contours.type === 'constraint') {
+        convertToConstraints(pathinfo, trace.contours.operation);
+    }
 
     function ab2p(ab) {
         var pt = carpet.ab2xy(ab[0], ab[1], true);
@@ -100,7 +103,7 @@ function plotOne(gd, plotinfo, cd) {
 
     // draw everything
     var plotGroup = makeContourGroup(plotinfo, cd, id);
-    makeBackground(plotGroup, xa, ya, contours, carpet, trace._hasConstraint);
+    makeBackground(plotGroup, xa, ya, contours, carpet, trace.contours.type === 'constraint');
     makeFills(plotGroup, pathinfo, perimeter, contours, ab2p, carpet, xa, ya);
     makeLines(plotGroup, pathinfo, contours);
     clipBoundary(plotGroup, carpet);
@@ -193,12 +196,12 @@ function makeLines(plotgroup, pathinfo, contours) {
         .style('stroke-miterlimit', 1);
 }
 
-function makeBackground(plotgroup, xaxis, yaxis, contours, carpet, hasConstraint) {
+function makeBackground(plotgroup, xaxis, yaxis, contours, carpet, isConstraint) {
     var seg, xp, yp, i;
     var bggroup = makeg(plotgroup, 'g', 'contourbg');
 
     var bgfill = bggroup.selectAll('path')
-        .data((contours.coloring === 'fill' && !hasConstraint) ? [0] : []);
+        .data((contours.coloring === 'fill' && !isConstraint) ? [0] : []);
     bgfill.enter().append('path');
     bgfill.exit().remove();
 
