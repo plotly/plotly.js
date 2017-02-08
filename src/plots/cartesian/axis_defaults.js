@@ -205,7 +205,7 @@ function getBoxPosLetter(trace) {
 function isBoxWithoutPositionCoords(trace, axLetter) {
     var posLetter = getBoxPosLetter(trace),
         isBox = Registry.traceIs(trace, 'box'),
-        isCandlestick = isBox && Registry.traceIs(trace._fullInput || {}, 'candlestick');
+        isCandlestick = Registry.traceIs(trace._fullInput || {}, 'candlestick');
 
     return (
         isBox &&
