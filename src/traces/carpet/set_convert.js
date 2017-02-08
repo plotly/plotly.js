@@ -34,6 +34,34 @@ module.exports = function setConvert(trace) {
     var x = trace.x;
     var y = trace.y;
 
+    // Grab the limits once rather than recomputing the bounds for every point
+    // independently:
+    var amin = a[0];
+    var amax = a[na - 1];
+    var bmin = b[0];
+    var bmax = b[nb - 1];
+    var arange = a[a.length - 1] - a[0];
+    var brange = b[b.length - 1] - b[0];
+
+    // Compute the tolerance so that points are visible slightly outside the
+    // defined carpet axis:
+    var atol = arange * constants.RELATIVE_CULL_TOLERANCE;
+    var btol = brange * constants.RELATIVE_CULL_TOLERANCE;
+
+    // Expand the limits to include the relative tolerance:
+    amin -= atol;
+    amax += atol;
+    bmin -= btol;
+    bmax += btol;
+
+    trace.isVisible = function(a, b) {
+        return a > amin && a < amax && b > bmin && b < bmax;
+    };
+
+    trace.isOccluded = function(a, b) {
+        return a < amin || a > amax || b < bmin || b > bmax;
+    };
+
     // XXX: ONLY PASSTHRU. ONLY. No, ONLY.
     aax.c2p = function(v) { return v; };
     bax.c2p = function(v) { return v; };
@@ -116,7 +144,10 @@ module.exports = function setConvert(trace) {
         var pt = trace._evalxy([], i, j);
 
         if(extrapolate) {
-            // The amount by which to extrapolate:
+            // This section uses the boundary derivatives to extrapolate linearly outside
+            // the defined range. Consider a scatter line with one point inside the carpet
+            // axis and one point outside. If we don't extrapolate, we can't draw the line
+            // at all.
             var iex = 0;
             var jex = 0;
             var der = [];
@@ -216,38 +247,36 @@ module.exports = function setConvert(trace) {
         return [dxydj[0] / dbdj, dxydj[1] / dbdj];
     };
 
+    // Sometimes we don't care about precision and all we really want is decent rough
+    // directions (as is the case with labels). In that case, we can do a very rough finite
+    // difference and spare having to worry about precise grid coordinates:
+    trace.dxyda_rough = function(a, b, reldiff) {
+        var h = arange * (reldiff || 0.1);
+        var plus = trace.ab2xy(a + h, b, true);
+        var minus = trace.ab2xy(a - h, b, true);
+
+        return [
+            (plus[0] - minus[0]) * 0.5 / h,
+            (plus[1] - minus[1]) * 0.5 / h
+        ];
+    };
+
+    trace.dxydb_rough = function(a, b, reldiff) {
+        var h = brange * (reldiff || 0.1);
+        var plus = trace.ab2xy(a, b + h, true);
+        var minus = trace.ab2xy(a, b - h, true);
+
+        return [
+            (plus[0] - minus[0]) * 0.5 / h,
+            (plus[1] - minus[1]) * 0.5 / h
+        ];
+    };
+
     trace.dpdx = function(xa) {
         return xa._m;
     };
 
     trace.dpdy = function(ya) {
         return ya._m;
-    };
-
-
-    // Grab the limits once rather than recomputing the bounds for every point
-    // independently:
-    var amin = a[0];
-    var amax = a[na - 1];
-    var bmin = b[0];
-    var bmax = b[nb - 1];
-
-    // Compute the tolerance so that points are visible slightly outside the
-    // defined carpet axis:
-    var atol = (amax - amin) * constants.RELATIVE_CULL_TOLERANCE;
-    var btol = (bmax - bmin) * constants.RELATIVE_CULL_TOLERANCE;
-
-    // Expand the limits to include the relative tolerance:
-    amin -= atol;
-    amax += atol;
-    bmin -= btol;
-    bmax += btol;
-
-    trace.isVisible = function(a, b) {
-        return a > amin && a < amax && b > bmin && b < bmax;
-    };
-
-    trace.isOccluded = function(a, b) {
-        return a < amin || a > amax || b < bmin || b > bmax;
     };
 };

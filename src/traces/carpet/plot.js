@@ -10,10 +10,11 @@
 'use strict';
 
 var d3 = require('d3');
-
 var Drawing = require('../../components/drawing');
 var map1dArray = require('./map_1d_array');
 var makepath = require('./makepath');
+var orientText = require('./orient_text');
+var measureText = require('./measure_text');
 
 module.exports = function plot(gd, plotinfo, cdcarpet) {
     for(var i = 0; i < cdcarpet.length; i++) {
@@ -61,8 +62,10 @@ function plotOne(gd, plotinfo, cd) {
     drawGridLines(xa, ya, boundaryLayer, aax, 'a-boundary', aax._boundarylines);
     drawGridLines(xa, ya, boundaryLayer, bax, 'b-boundary', bax._boundarylines);
 
-    drawAxisLabels(xa, ya, trace, labelLayer, aax._labels, 'a-label');
-    drawAxisLabels(xa, ya, trace, labelLayer, bax._labels, 'b-label');
+    var maxAExtent = drawAxisLabels(gd._tester, xa, ya, trace, labelLayer, aax._labels, 'a-label');
+    var maxBExtent = drawAxisLabels(gd._tester, xa, ya, trace, labelLayer, bax._labels, 'b-label');
+
+    drawAxisTitles(labelLayer, trace, xa, ya, maxAExtent, maxBExtent);
 
     // Swap for debugging in order to draw directly:
     // drawClipPath(trace, gridLayer, xa, ya);
@@ -126,42 +129,83 @@ function drawGridLines(xaxis, yaxis, layer, axis, axisLetter, gridlines) {
     gridJoin.exit().remove();
 }
 
-function drawAxisLabels(xaxis, yaxis, trace, layer, labels, labelClass) {
+function drawAxisLabels(tester, xaxis, yaxis, trace, layer, labels, labelClass) {
     var labelJoin = layer.selectAll('text.' + labelClass).data(labels);
 
     labelJoin.enter().append('text')
         .classed(labelClass, true);
 
+    var maxExtent = 0;
+
     labelJoin.each(function(label) {
-        // The rest of the calculation is in calc_labels. Only the parts that depend upon
+        // Most of the positioning is done in calc_labels. Only the parts that depend upon
         // the screen space representation of the x and y axes are here:
-        //
-        // Compute the direction of the labels in pixel coordinates:
-        var dx = label.dxy[0] * trace.dpdx(xaxis);
-        var dy = label.dxy[1] * trace.dpdy(yaxis);
+        var orientation = orientText(trace, xaxis, yaxis, label.xy, label.dxy);
+        var direction = (label.endAnchor ? -1 : 1) * orientation.flip;
+        var bbox = measureText(tester, label.text, label.font);
 
-        // Compute the angle and adjust so that the labels are always upright
-        // and the anchor is on the correct side:
-        var angle = Math.atan2(dy, dx) * 180 / Math.PI;
-        var endAnchor = label.endAnchor;
-        if(angle < -90) {
-            angle += 180;
-            endAnchor = !endAnchor;
-        } else if(angle > 90) {
-            angle -= 180;
-            endAnchor = !endAnchor;
-        }
-
-        // Compute the position in pixel coordinates
-        var xy = trace.c2p(label.xy, xaxis, yaxis);
-
-        d3.select(this).attr('x', xy[0] + label.axis.labelpadding * (endAnchor ? -1 : 1))
-            .attr('y', xy[1] + label.font.size * 0.3)
-            .attr('text-anchor', endAnchor ? 'end' : 'start')
+        d3.select(this)
+            .attr('text-anchor', direction > 0 ? 'start' : 'end')
             .text(label.text)
-            .attr('transform', 'rotate(' + angle + ' ' + xy[0] + ',' + xy[1] + ')')
+            .attr('transform',
+                // Translate to the correct point:
+                'translate(' + orientation.p[0] + ',' + orientation.p[1] + ') ' +
+                // Rotate to line up with grid line tangent:
+                'rotate(' + orientation.angle + ')' +
+                // Adjust the baseline and indentation:
+                'translate(' + label.axis.labelpadding * direction + ',' + bbox.height * 0.3 + ')'
+            )
             .call(Drawing.font, label.font.family, label.font.size, label.font.color);
+
+        maxExtent = Math.max(maxExtent, bbox.width + label.axis.labelpadding);
     });
 
     labelJoin.exit().remove();
+
+    return maxExtent;
+}
+
+function drawAxisTitles(layer, trace, xa, ya, maxAExtent, maxBExtent) {
+    var a, b, xy, dxy;
+
+    a = 0.5 * (trace.a[0] + trace.a[trace.a.length - 1]);
+    b = trace.b[0];
+    xy = trace.ab2xy(a, b, true);
+    dxy = trace.dxyda_rough(a, b);
+    drawAxisTitle(layer, trace, xy, dxy, trace.aaxis, xa, ya, maxAExtent, 'a-title');
+
+    a = trace.a[0];
+    b = 0.5 * (trace.b[0] + trace.b[trace.b.length - 1]);
+    xy = trace.ab2xy(a, b, true);
+    dxy = trace.dxydb_rough(a, b);
+    drawAxisTitle(layer, trace, xy, dxy, trace.baxis, xa, ya, maxBExtent, 'b-title');
+}
+
+function drawAxisTitle(layer, trace, xy, dxy, axis, xa, ya, offset, labelClass) {
+    var titleJoin = layer.selectAll('text.' + labelClass).data([0]);
+
+    titleJoin.enter().append('text')
+        .classed(labelClass, true);
+
+    var orientation = orientText(trace, xa, ya, xy, dxy);
+
+    // In addition to the size of the labels, add on some extra padding:
+    offset += axis.titlefont.size + axis.titleoffset;
+
+    // There's only one, but we'll do it as a join so it's updated nicely:
+    titleJoin.each(function() {
+        var el = d3.select(this);
+
+        el.text(axis.title)
+            .attr('transform',
+                'translate(' + orientation.p[0] + ',' + orientation.p[1] + ') ' +
+                'rotate(' + orientation.angle + ') ' +
+                'translate(0,' + offset + ')'
+            )
+            .classed('user-select-none', true)
+            .attr('text-anchor', 'middle')
+            .call(Drawing.font, axis.titlefont);
+    });
+
+    titleJoin.exit().remove();
 }

@@ -40,6 +40,15 @@ module.exports = {
             'Sets this axis\' title font.'
         ].join(' ')
     }),
+    titleoffset: {
+        valType: 'number',
+        role: 'info',
+        dflt: 10,
+        description: [
+            'An additional amount by which to offset the title from the tick',
+            'labels, given in pixels'
+        ].join(' '),
+    },
     type: {
         valType: 'enumerated',
         // '-' means we haven't yet run autotype or couldn't find any data

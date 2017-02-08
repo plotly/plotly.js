@@ -117,6 +117,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
         size: Math.round(font.size * 1.2),
         color: dfltFontColor
     });
+    coerce('titleoffset');
 
     Lib.coerceFont(coerce, 'tickfont', {
         family: font.family,
@@ -185,7 +186,8 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
     // We'll never draw this. We just need a couple category management functions.
     Lib.coerceFont(coerce, 'labelfont', {
-        size: 12,
+        family: font.family,
+        size: font.size,
         color: containerOut.startlinecolor
     });
 
