@@ -34,9 +34,13 @@ describe('Test click interactions:', function() {
     beforeEach(function() {
         gd = createGraphDiv();
         mockCopy = Lib.extendDeep({}, mock);
+        Lib.notifier.disable();
     });
 
-    afterEach(destroyGraphDiv);
+    afterEach(function() {
+        Lib.notifier.enable();
+        destroyGraphDiv();
+    });
 
     function drag(fromX, fromY, toX, toY, delay) {
         return new Promise(function(resolve) {
@@ -209,13 +213,7 @@ describe('Test click interactions:', function() {
 
     describe('drag interactions', function() {
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-                // Do not let the notifier hide the drag elements
-                var tooltip = document.querySelector('.notifier-note');
-                if(tooltip) tooltip.style.display = 'None';
-
-                done();
-            });
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('on nw dragbox should update the axis ranges', function(done) {

@@ -12,6 +12,7 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
+var DISABLED = false;
 var NOTEDATA = [];
 
 /**
@@ -22,6 +23,7 @@ var NOTEDATA = [];
  * @return {undefined} this function does not return a value
  */
 module.exports = function(text, displayLength) {
+    if(DISABLED) return;
     if(NOTEDATA.indexOf(text) !== -1) return;
 
     NOTEDATA.push(text);
@@ -77,4 +79,12 @@ module.exports = function(text, displayLength) {
                     .delay(ts)
                     .call(killNote);
         });
+};
+
+module.exports.disable = function() {
+    DISABLED = true;
+};
+
+module.exports.enable = function() {
+    DISABLED = false;
 };
