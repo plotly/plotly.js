@@ -488,7 +488,109 @@ describe('Test gl plot interactions', function() {
                 expect(buttonHover.isActive()).toBe(true);
             });
 
+            it('button resetCameraDefault3d should reset camera to default', function(done) {
+                var buttonDefault = selectButton(modeBar, 'resetCameraDefault3d');
+
+                expect(gd._fullLayout.scene._scene.cameraInitial.eye).toEqual({ x: 0.1, y: 0.1, z: 1 });
+                expect(gd._fullLayout.scene2._scene.cameraInitial.eye).toEqual({ x: 2.5, y: 2.5, z: 2.5 });
+
+                gd.once('plotly_relayout', function() {
+                    assertScenes(gd._fullLayout, 'camera.eye.x', 1.25);
+                    assertScenes(gd._fullLayout, 'camera.eye.y', 1.25);
+                    assertScenes(gd._fullLayout, 'camera.eye.z', 1.25);
+
+                    expect(gd._fullLayout.scene._scene.getCamera().eye.z).toBeCloseTo(1.25);
+                    expect(gd._fullLayout.scene2._scene.getCamera().eye.z).toBeCloseTo(1.25);
+
+                    done();
                 });
+
+                buttonDefault.click();
+            });
+
+            it('button resetCameraLastSave3d should reset camera to default', function(done) {
+                var buttonDefault = selectButton(modeBar, 'resetCameraDefault3d');
+                var buttonLastSave = selectButton(modeBar, 'resetCameraLastSave3d');
+
+                function assertCameraEye(sceneLayout, eyeX, eyeY, eyeZ) {
+                    expect(sceneLayout.camera.eye.x).toEqual(eyeX);
+                    expect(sceneLayout.camera.eye.y).toEqual(eyeY);
+                    expect(sceneLayout.camera.eye.z).toEqual(eyeZ);
+
+                    var camera = sceneLayout._scene.getCamera();
+                    expect(camera.eye.x).toBeCloseTo(eyeX);
+                    expect(camera.eye.y).toBeCloseTo(eyeY);
+                    expect(camera.eye.z).toBeCloseTo(eyeZ);
+                }
+
+                Plotly.relayout(gd, {
+                    'scene.camera.eye.z': 4,
+                    'scene2.camera.eye.z': 5
+                })
+                .then(function() {
+                    assertCameraEye(gd._fullLayout.scene, 0.1, 0.1, 4);
+                    assertCameraEye(gd._fullLayout.scene2, 2.5, 2.5, 5);
+
+                    return new Promise(function(resolve) {
+                        gd.once('plotly_relayout', resolve);
+                        buttonLastSave.click();
+                    });
+                })
+                .then(function() {
+                    assertCameraEye(gd._fullLayout.scene, 0.1, 0.1, 1);
+                    assertCameraEye(gd._fullLayout.scene2, 2.5, 2.5, 2.5);
+
+                    return new Promise(function(resolve) {
+                        gd.once('plotly_relayout', resolve);
+                        buttonDefault.click();
+                    });
+                })
+                .then(function() {
+                    assertCameraEye(gd._fullLayout.scene, 1.25, 1.25, 1.25);
+                    assertCameraEye(gd._fullLayout.scene2, 1.25, 1.25, 1.25);
+
+                    return new Promise(function(resolve) {
+                        gd.once('plotly_relayout', resolve);
+                        buttonLastSave.click();
+                    });
+                })
+                .then(function() {
+                    assertCameraEye(gd._fullLayout.scene, 0.1, 0.1, 1);
+                    assertCameraEye(gd._fullLayout.scene2, 2.5, 2.5, 2.5);
+
+                    delete gd._fullLayout.scene._scene.cameraInitial;
+                    delete gd._fullLayout.scene2._scene.cameraInitial;
+
+                    Plotly.relayout(gd, {
+                        'scene.bgcolor': '#d3d3d3',
+                        'scene.camera.eye.z': 4,
+                        'scene2.camera.eye.z': 5
+                    });
+                })
+                .then(function() {
+                    assertCameraEye(gd._fullLayout.scene, 0.1, 0.1, 4);
+                    assertCameraEye(gd._fullLayout.scene2, 2.5, 2.5, 5);
+
+                    return new Promise(function(resolve) {
+                        gd.once('plotly_relayout', resolve);
+                        buttonDefault.click();
+                    });
+                })
+                .then(function() {
+                    assertCameraEye(gd._fullLayout.scene, 1.25, 1.25, 1.25);
+                    assertCameraEye(gd._fullLayout.scene2, 1.25, 1.25, 1.25);
+
+                    return new Promise(function(resolve) {
+                        gd.once('plotly_relayout', resolve);
+                        buttonLastSave.click();
+                    });
+                })
+                .then(function() {
+                    assertCameraEye(gd._fullLayout.scene, 0.1, 0.1, 4);
+                    assertCameraEye(gd._fullLayout.scene2, 2.5, 2.5, 5);
+                })
+                .then(done);
+
             });
         });
 
