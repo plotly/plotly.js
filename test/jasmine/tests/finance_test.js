@@ -367,6 +367,13 @@ describe('finance charts defaults:', function() {
             expect(fullTrace.xcalendar).toBe(i < 2 ? 'hebrew' : 'julian');
         });
     });
+
+    it('should make empty candlestick traces autotype to *linear* (as opposed to real box traces)', function() {
+        var trace0 = { type: 'candlestick' };
+        var out = _supply([trace0], { xaxis: {} });
+
+        expect(out._fullLayout.xaxis.type).toEqual('linear');
+    });
 });
 
 describe('finance charts calc transforms:', function() {

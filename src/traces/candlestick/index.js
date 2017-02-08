@@ -15,7 +15,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'candlestick',
     basePlotModule: require('../../plots/cartesian'),
-    categories: ['cartesian', 'showLegend'],
+    categories: ['cartesian', 'showLegend', 'candlestick'],
     meta: {
         description: [
             'The candlestick is a style of financial chart describing',
