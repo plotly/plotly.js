@@ -89,7 +89,7 @@ function plotOne(gd, plotinfo, cd) {
 
     // Draw the baseline background fill that fills in the space behind any other
     // contour levels:
-    makeBackground(plotGroup, xa, ya, carpet._clipsegments, isConstraint, contours.coloring);
+    makeBackground(plotGroup, carpet._clipsegments, xa, ya, isConstraint, contours.coloring);
 
     // Draw the specific contour fills. As a simplification, they're assumed to be
     // fully opaque so that it's easy to draw them simply overlapping. The alternative
