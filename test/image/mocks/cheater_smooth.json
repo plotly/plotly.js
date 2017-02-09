@@ -27,14 +27,12 @@
       "aaxis":{
         "title":"width, cm",
         "tickformat":".1f",
-        "type":"linear",
-        "smoothing": 0
+        "type":"linear"
       },
       "baxis":{
         "title":"height, cm",
         "tickformat":".2f",
-        "type":"linear",
-        "smoothing": 0
+        "type":"linear"
       }
     },
     {
@@ -55,9 +53,6 @@
           400,
           540
         ]
-      },
-      "line": {
-        "smoothing": 0
       },
       "colorscale":[
         [ 0, "red" ],
@@ -95,9 +90,6 @@
         "value":[
           0.5
         ]
-      },
-      "line": {
-        "smoothing": 0
       },
       "colorscale":[
         [ 0, "blue" ],
@@ -139,9 +131,6 @@
         [ 0, "green" ],
         [ 1, "green" ]
       ],
-      "line": {
-        "smoothing": 0
-      },
       "a":[
         0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
         0.2, 0.2, 0.2, 0.2, 0.2, 0.2,
