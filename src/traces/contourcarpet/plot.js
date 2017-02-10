@@ -94,7 +94,7 @@ function plotOne(gd, plotinfo, cd) {
     // Draw the specific contour fills. As a simplification, they're assumed to be
     // fully opaque so that it's easy to draw them simply overlapping. The alternative
     // would be to flip adjacent paths and draw closed paths for each level instead.
-    makeFills(plotGroup, xa, ya, pathinfo, perimeter, ab2p, carpet, contours.coloring);
+    makeFills(trace, plotGroup, xa, ya, pathinfo, perimeter, ab2p, carpet, contours.coloring);
 
     // Draw contour lines:
     makeLines(plotGroup, pathinfo, contours);
@@ -179,7 +179,7 @@ function makeBackground(plotgroup, clipsegments, xaxis, yaxis, isConstraint, col
         .style('stroke', 'none');
 }
 
-function makeFills(plotgroup, xa, ya, pathinfo, perimeter, ab2p, carpet, coloring) {
+function makeFills(trace, plotgroup, xa, ya, pathinfo, perimeter, ab2p, carpet, coloring) {
     var fillgroup = plotgroup.selectAll('g.contourfill')
         .data([0]);
     fillgroup.enter().append('g')
@@ -195,10 +195,15 @@ function makeFills(plotgroup, xa, ya, pathinfo, perimeter, ab2p, carpet, colorin
         // if the whole perimeter is above this level, start with a path
         // enclosing the whole thing. With all that, the parity should mean
         // that we always fill everything above the contour, nothing below
-        var fullpath = joinAllPaths(pi, perimeter, ab2p, carpet, xa, ya);
+        var fullpath = joinAllPaths(trace, pi, perimeter, ab2p, carpet, xa, ya);
 
-        if(!fullpath) d3.select(this).remove();
-        else d3.select(this).attr('d', fullpath).style('stroke', 'none');
+        if(!fullpath) {
+            d3.select(this).remove();
+        } else {
+            d3.select(this)
+                .attr('d', fullpath)
+                .style('stroke', 'none');
+        }
     });
 }
 

@@ -11,11 +11,39 @@
 var Drawing = require('../../components/drawing');
 var axisAlignedLine = require('../carpet/axis_aligned_line');
 var Lib = require('../../lib');
+var map1dArray = require('../carpet/map_1d_array');
+var makepath = require('../carpet/makepath');
 
-module.exports = function joinAllPaths(pi, perimeter, ab2p, carpet, xa, ya) {
-    var fullpath = (pi.edgepaths.length || pi.z[0][0] < pi.level) ?
-            '' : ('M' + perimeter.map(ab2p).join('L') + 'Z');
-    var i = 0;
+module.exports = function joinAllPaths(trace, pi, perimeter, ab2p, carpet, xa, ya) {
+    var i;
+    var fullpath = '';
+
+    if(!pi.edgepaths.length) { // ||
+        var needsOutline = false;
+
+        if(trace.contours.type === 'levels') {
+            // If the lower-left point is in bounds, then it's the case that
+            // the whole thing needs at least an outline:
+            needsOutline = pi.z[0][0] < pi.level;
+        } /* else {
+            // TODO: TODO!
+            switch(trace.contours.operation) {
+            }
+        }*/
+
+        if(needsOutline) {
+            var seg, xp, yp;
+            var segs = [];
+            for(i = 0; i < carpet._clipsegments.length; i++) {
+                seg = carpet._clipsegments[i];
+                xp = map1dArray([], seg.x, xa.c2p);
+                yp = map1dArray([], seg.y, ya.c2p);
+                segs.push(makepath(xp, yp, seg.bicubic));
+            }
+            fullpath = 'M' + segs.join('L') + 'Z';
+        }
+    }
+
     var startsleft = pi.edgepaths.map(function(v, i) { return i; });
     var newloop = true;
     var endpt, newendpt, cnt, nexti, possiblei, addpath;
@@ -50,6 +78,7 @@ module.exports = function joinAllPaths(pi, perimeter, ab2p, carpet, xa, ya) {
         return path;
     }
 
+    i = 0;
     endpt = null;
     while(startsleft.length) {
         var startpt = pi.edgepaths[i][0];
