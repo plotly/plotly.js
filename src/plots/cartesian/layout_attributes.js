@@ -52,6 +52,35 @@ module.exports = {
             'the axis in question.'
         ].join(' ')
     },
+    autobound: {
+        valType: 'boolean',
+        dflt: true,
+        role: 'style',
+        description: [
+            'Determines the bound of this axis for layout',
+            'If `bound` is provided, then `autobound` is set to *false*.'
+        ].join(' ')
+    },
+    bound: {
+        valType: 'info_array',
+        role: 'info',
+        items: [
+            {valType: 'any'},
+            {valType: 'any'}
+        ],
+        description: [
+            'Sets the bound of this axis.',
+            'If the axis `type` is *log*, then you must take the log of your',
+            'desired bound (e.g. to set the bound from 1 to 100,',
+            'set the bound from 0 to 2).',
+            'If the axis `type` is *date*, it should be date strings,',
+            'like date data, though Date objects and unix milliseconds',
+            'will be accepted and converted to strings.',
+            'If the axis `type` is *category*, it should be numbers,',
+            'using the scale where each category is assigned a serial',
+            'number from zero in the order it appears.'
+        ].join(' ')
+    },
     autorange: {
         valType: 'enumerated',
         values: [true, false, 'reversed'],

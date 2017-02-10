@@ -1771,7 +1771,8 @@ function _relayout(gd, aobj) {
         doplot: false,
         docalc: false,
         domodebar: false,
-        layoutReplot: false
+        layoutReplot: false,
+        overBounds: false
     };
 
     // copies of the change (and previous values of anything affected)
@@ -1819,6 +1820,19 @@ function _relayout(gd, aobj) {
             parentFull = Lib.nestedProperty(fullLayout, ptrunk).get();
 
         if(vi === undefined) continue;
+
+        if(pleaf === 'range' && parentIn.bound) {
+            var boundIdx = p.parts[2];
+            var val = vi;
+            var bound = parentIn.bound[boundIdx];
+            if(parentFull.type === 'date') {
+                val = +new Date(val);
+                bound = +new Date(bound);
+            }
+            if(boundIdx === 0 ? vi < bound : vi > bound) {
+                flags.overBounds = true;
+            }
+        }
 
         redoit[ai] = vi;
 
@@ -2018,6 +2032,12 @@ function _relayout(gd, aobj) {
 
             p.set(vi);
         }
+    }
+
+    if(flags.overBounds) {
+        // TODO: Handle per xaxis & yaxis / Set range to max bound
+        flags.docalc = false;
+        redoit = {};
     }
 
     var oldWidth = gd._fullLayout.width,
