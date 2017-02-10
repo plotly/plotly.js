@@ -8,8 +8,6 @@
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-
 var Lib = require('../../lib');
 var attributes = require('./attributes');
 
@@ -37,11 +35,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     coerce('borderwidth');
     coerce('thickness');
 
-    coerce('autorange', !(
-        (containerIn.range || []).length === 2 &&
-        isNumeric(axOut.r2l(containerIn.range[0])) &&
-        isNumeric(axOut.r2l(containerIn.range[1]))
-    ));
+    coerce('autorange', !axOut.isValidRange(containerIn.range));
     coerce('range');
 
     // Expand slider range to the axis range
