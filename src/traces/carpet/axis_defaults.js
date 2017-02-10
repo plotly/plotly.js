@@ -38,10 +38,7 @@ var autoType = require('../../plots/cartesian/axis_autotype');
 module.exports = function handleAxisDefaults(containerIn, containerOut, options) {
     var letter = options.letter,
         font = options.font || {},
-        attributes = carpetAttrs[letter + 'axis'],
-        defaultTitle = 'Click to enter ' +
-            (options.title || (letter.toUpperCase() + ' axis')) +
-            ' title';
+        attributes = carpetAttrs[letter + 'axis'];
 
     function coerce(attr, dflt) {
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
@@ -111,7 +108,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     // inherit from global font color in case that was provided.
     var dfltFontColor = (dfltColor === containerIn.color) ? dfltColor : font.color;
 
-    coerce('title', defaultTitle);
+    coerce('title');
     Lib.coerceFont(coerce, 'titlefont', {
         family: font.family,
         size: Math.round(font.size * 1.2),
