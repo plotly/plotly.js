@@ -680,6 +680,23 @@ describe('Bar.setPositions', function() {
         expect(Axes.getAutoRange(xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
         expect(Axes.getAutoRange(ya)).toBeCloseToArray([-1.11, 1.11], undefined, '(ya.range)');
     });
+
+    it('should skip placeholder trace in position computations', function() {
+        var gd = mockBarPlot([{
+            x: [1, 2, 3],
+            y: [2, 1, 2]
+        }, {
+            x: [null],
+            y: [null]
+        }]);
+
+        expect(gd.calcdata[0][0].t.barwidth).toEqual(0.8);
+
+        expect(gd.calcdata[1][0].x).toBe(false);
+        expect(gd.calcdata[1][0].y).toBe(false);
+        expect(gd.calcdata[1][0].placeholder).toBe(true);
+        expect(gd.calcdata[1][0].t.barwidth).toBeUndefined();
+    });
 });
 
 describe('A bar plot', function() {
@@ -1231,18 +1248,8 @@ function mockBarPlot(dataWithoutTraceType, layout) {
         calcdata: []
     };
 
-    // call Bar.supplyDefaults
     Plots.supplyDefaults(gd);
-
-    // call Bar.calc
-    gd._fullData.forEach(function(fullTrace) {
-        var cd = Bar.calc(gd, fullTrace);
-
-        cd[0].t = {};
-        cd[0].trace = fullTrace;
-
-        gd.calcdata.push(cd);
-    });
+    Plots.doCalcdata(gd);
 
     var plotinfo = {
         xaxis: gd._fullLayout.xaxis,
