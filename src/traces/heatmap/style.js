@@ -6,14 +6,13 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var d3 = require('d3')
 
-var d3 = require('d3');
-
-module.exports = function style(gd) {
-    d3.select(gd).selectAll('.hm image')
-        .style('opacity', function(d) {
-            return d.trace.opacity;
-        });
-};
+module.exports = function style (gd) {
+  d3.select(gd).selectAll('.hm image')
+        .style('opacity', function (d) {
+          return d.trace.opacity
+        })
+}

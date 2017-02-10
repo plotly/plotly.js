@@ -6,114 +6,111 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var Registry = require('../../registry')
+var Lib = require('../../lib')
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
+var colorscaleDefaults = require('../../components/colorscale/defaults')
+var attributes = require('./attributes')
 
-var colorscaleDefaults = require('../../components/colorscale/defaults');
-var attributes = require('./attributes');
+module.exports = function supplyDefaults (traceIn, traceOut, defaultColor, layout) {
+  var i, j
 
+  function coerce (attr, dflt) {
+    return Lib.coerce(traceIn, traceOut, attributes, attr, dflt)
+  }
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    var i, j;
+  var z = coerce('z')
+  if (!z) {
+    traceOut.visible = false
+    return
+  }
 
-    function coerce(attr, dflt) {
-        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
-    }
+  var xlen = z[0].length
+  var ylen = z.length
 
-    var z = coerce('z');
-    if(!z) {
-        traceOut.visible = false;
-        return;
-    }
+  coerce('x')
+  coerce('y')
 
-    var xlen = z[0].length;
-    var ylen = z.length;
+  var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults')
+  handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout)
 
-    coerce('x');
-    coerce('y');
-
-    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
-    handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
-
-    if(!Array.isArray(traceOut.x)) {
+  if (!Array.isArray(traceOut.x)) {
         // build a linearly scaled x
-        traceOut.x = [];
-        for(i = 0; i < xlen; ++i) {
-            traceOut.x[i] = i;
-        }
+    traceOut.x = []
+    for (i = 0; i < xlen; ++i) {
+      traceOut.x[i] = i
     }
+  }
 
-    coerce('text');
-    if(!Array.isArray(traceOut.y)) {
-        traceOut.y = [];
-        for(i = 0; i < ylen; ++i) {
-            traceOut.y[i] = i;
-        }
+  coerce('text')
+  if (!Array.isArray(traceOut.y)) {
+    traceOut.y = []
+    for (i = 0; i < ylen; ++i) {
+      traceOut.y[i] = i
     }
+  }
 
     // Coerce remaining properties
-    [
-        'lighting.ambient',
-        'lighting.diffuse',
-        'lighting.specular',
-        'lighting.roughness',
-        'lighting.fresnel',
-        'lightposition.x',
-        'lightposition.y',
-        'lightposition.z',
-        'hidesurface',
-        'opacity'
-    ].forEach(function(x) { coerce(x); });
+  [
+    'lighting.ambient',
+    'lighting.diffuse',
+    'lighting.specular',
+    'lighting.roughness',
+    'lighting.fresnel',
+    'lightposition.x',
+    'lightposition.y',
+    'lightposition.z',
+    'hidesurface',
+    'opacity'
+  ].forEach(function (x) { coerce(x) })
 
-    var surfaceColor = coerce('surfacecolor');
+  var surfaceColor = coerce('surfacecolor')
 
-    coerce('colorscale');
+  coerce('colorscale')
 
-    var dims = ['x', 'y', 'z'];
-    for(i = 0; i < 3; ++i) {
+  var dims = ['x', 'y', 'z']
+  for (i = 0; i < 3; ++i) {
+    var contourDim = 'contours.' + dims[i]
+    var show = coerce(contourDim + '.show')
+    var highlight = coerce(contourDim + '.highlight')
 
-        var contourDim = 'contours.' + dims[i];
-        var show = coerce(contourDim + '.show');
-        var highlight = coerce(contourDim + '.highlight');
-
-        if(show || highlight) {
-            for(j = 0; j < 3; ++j) {
-                coerce(contourDim + '.project.' + dims[j]);
-            }
-        }
-
-        if(show) {
-            coerce(contourDim + '.color');
-            coerce(contourDim + '.width');
-            coerce(contourDim + '.usecolormap');
-        }
-
-        if(highlight) {
-            coerce(contourDim + '.highlightcolor');
-            coerce(contourDim + '.highlightwidth');
-        }
+    if (show || highlight) {
+      for (j = 0; j < 3; ++j) {
+        coerce(contourDim + '.project.' + dims[j])
+      }
     }
+
+    if (show) {
+      coerce(contourDim + '.color')
+      coerce(contourDim + '.width')
+      coerce(contourDim + '.usecolormap')
+    }
+
+    if (highlight) {
+      coerce(contourDim + '.highlightcolor')
+      coerce(contourDim + '.highlightwidth')
+    }
+  }
 
     // backward compatibility block
-    if(!surfaceColor) {
-        mapLegacy(traceIn, 'zmin', 'cmin');
-        mapLegacy(traceIn, 'zmax', 'cmax');
-        mapLegacy(traceIn, 'zauto', 'cauto');
-    }
+  if (!surfaceColor) {
+    mapLegacy(traceIn, 'zmin', 'cmin')
+    mapLegacy(traceIn, 'zmax', 'cmax')
+    mapLegacy(traceIn, 'zauto', 'cauto')
+  }
 
     // TODO if contours.?.usecolormap are false and hidesurface is true
     // the colorbar shouldn't be shown by default
 
-    colorscaleDefaults(
+  colorscaleDefaults(
         traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'}
-    );
-};
+    )
+}
 
-function mapLegacy(traceIn, oldAttr, newAttr) {
-    if(oldAttr in traceIn && !(newAttr in traceIn)) {
-        traceIn[newAttr] = traceIn[oldAttr];
-    }
+function mapLegacy (traceIn, oldAttr, newAttr) {
+  if (oldAttr in traceIn && !(newAttr in traceIn)) {
+    traceIn[newAttr] = traceIn[oldAttr]
+  }
 }

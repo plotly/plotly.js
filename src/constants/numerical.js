@@ -6,8 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-'use strict';
-
+'use strict'
 
 module.exports = {
     /**
@@ -16,14 +15,14 @@ module.exports = {
      * That way we can use !==undefined, or !== BADNUM,
      * to test for real data
      */
-    BADNUM: undefined,
+  BADNUM: undefined,
 
     /*
      * Limit certain operations to well below floating point max value
      * to avoid glitches: Make sure that even when you multiply it by the
      * number of pixels on a giant screen it still works
      */
-    FP_SAFE: Number.MAX_VALUE / 10000,
+  FP_SAFE: Number.MAX_VALUE / 10000,
 
     /*
      * conversion of date units to milliseconds
@@ -31,16 +30,16 @@ module.exports = {
      * to remind us that not all years and months
      * have the same length
      */
-    ONEAVGYEAR: 31557600000, // 365.25 days
-    ONEAVGMONTH: 2629800000, // 1/12 of ONEAVGYEAR
-    ONEDAY: 86400000,
-    ONEHOUR: 3600000,
-    ONEMIN: 60000,
-    ONESEC: 1000,
+  ONEAVGYEAR: 31557600000, // 365.25 days
+  ONEAVGMONTH: 2629800000, // 1/12 of ONEAVGYEAR
+  ONEDAY: 86400000,
+  ONEHOUR: 3600000,
+  ONEMIN: 60000,
+  ONESEC: 1000,
 
     /*
      * For fast conversion btwn world calendars and epoch ms, the Julian Day Number
      * of the unix epoch. From calendars.instance().newDate(1970, 1, 1).toJD()
      */
-    EPOCHJD: 2440587.5
-};
+  EPOCHJD: 2440587.5
+}

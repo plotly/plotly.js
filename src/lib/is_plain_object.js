@@ -6,22 +6,20 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
-'use strict';
+'use strict'
 
 // more info: http://stackoverflow.com/questions/18531624/isplainobject-thing
-module.exports = function isPlainObject(obj) {
-
+module.exports = function isPlainObject (obj) {
     // We need to be a little less strict in the `imagetest` container because
     // of how async image requests are handled.
     //
     // N.B. isPlainObject(new Constructor()) will return true in `imagetest`
-    if(window && window.process && window.process.versions) {
-        return Object.prototype.toString.call(obj) === '[object Object]';
-    }
+  if (window && window.process && window.process.versions) {
+    return Object.prototype.toString.call(obj) === '[object Object]'
+  }
 
-    return (
+  return (
         Object.prototype.toString.call(obj) === '[object Object]' &&
         Object.getPrototypeOf(obj) === Object.prototype
-    );
-};
+  )
+}

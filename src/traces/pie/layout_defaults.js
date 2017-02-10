@@ -6,15 +6,15 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-'use strict';
+'use strict'
 
-var Lib = require('../../lib');
+var Lib = require('../../lib')
 
-var layoutAttributes = require('./layout_attributes');
+var layoutAttributes = require('./layout_attributes')
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
-    function coerce(attr, dflt) {
-        return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
-    }
-    coerce('hiddenlabels');
-};
+module.exports = function supplyLayoutDefaults (layoutIn, layoutOut) {
+  function coerce (attr, dflt) {
+    return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt)
+  }
+  coerce('hiddenlabels')
+}

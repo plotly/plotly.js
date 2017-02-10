@@ -6,89 +6,87 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var Lib = require('../../lib')
 
-var Lib = require('../../lib');
+var handleSubplotDefaults = require('../subplot_defaults')
+var layoutAttributes = require('./layout_attributes')
 
-var handleSubplotDefaults = require('../subplot_defaults');
-var layoutAttributes = require('./layout_attributes');
-
-
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    handleSubplotDefaults(layoutIn, layoutOut, fullData, {
-        type: 'mapbox',
-        attributes: layoutAttributes,
-        handleDefaults: handleDefaults,
-        partition: 'y'
-    });
-};
-
-function handleDefaults(containerIn, containerOut, coerce) {
-    coerce('accesstoken');
-    coerce('style');
-    coerce('center.lon');
-    coerce('center.lat');
-    coerce('zoom');
-    coerce('bearing');
-    coerce('pitch');
-
-    handleLayerDefaults(containerIn, containerOut);
-
-    // copy ref to input container to update 'center' and 'zoom' on map move
-    containerOut._input = containerIn;
+module.exports = function supplyLayoutDefaults (layoutIn, layoutOut, fullData) {
+  handleSubplotDefaults(layoutIn, layoutOut, fullData, {
+    type: 'mapbox',
+    attributes: layoutAttributes,
+    handleDefaults: handleDefaults,
+    partition: 'y'
+  })
 }
 
-function handleLayerDefaults(containerIn, containerOut) {
-    var layersIn = containerIn.layers || [],
-        layersOut = containerOut.layers = [];
+function handleDefaults (containerIn, containerOut, coerce) {
+  coerce('accesstoken')
+  coerce('style')
+  coerce('center.lon')
+  coerce('center.lat')
+  coerce('zoom')
+  coerce('bearing')
+  coerce('pitch')
 
-    var layerIn, layerOut;
+  handleLayerDefaults(containerIn, containerOut)
 
-    function coerce(attr, dflt) {
-        return Lib.coerce(layerIn, layerOut, layoutAttributes.layers, attr, dflt);
-    }
+    // copy ref to input container to update 'center' and 'zoom' on map move
+  containerOut._input = containerIn
+}
 
-    for(var i = 0; i < layersIn.length; i++) {
-        layerIn = layersIn[i];
-        layerOut = {};
+function handleLayerDefaults (containerIn, containerOut) {
+  var layersIn = containerIn.layers || [],
+    layersOut = containerOut.layers = []
 
-        if(!Lib.isPlainObject(layerIn)) continue;
+  var layerIn, layerOut
 
-        var sourceType = coerce('sourcetype');
-        coerce('source');
+  function coerce (attr, dflt) {
+    return Lib.coerce(layerIn, layerOut, layoutAttributes.layers, attr, dflt)
+  }
 
-        if(sourceType === 'vector') coerce('sourcelayer');
+  for (var i = 0; i < layersIn.length; i++) {
+    layerIn = layersIn[i]
+    layerOut = {}
+
+    if (!Lib.isPlainObject(layerIn)) continue
+
+    var sourceType = coerce('sourcetype')
+    coerce('source')
+
+    if (sourceType === 'vector') coerce('sourcelayer')
 
         // maybe add smart default based off GeoJSON geometry?
-        var type = coerce('type');
+    var type = coerce('type')
 
-        coerce('below');
-        coerce('color');
-        coerce('opacity');
+    coerce('below')
+    coerce('color')
+    coerce('opacity')
 
-        if(type === 'circle') {
-            coerce('circle.radius');
-        }
-
-        if(type === 'line') {
-            coerce('line.width');
-        }
-
-        if(type === 'fill') {
-            coerce('fill.outlinecolor');
-        }
-
-        if(type === 'symbol') {
-            coerce('symbol.icon');
-            coerce('symbol.iconsize');
-
-            coerce('symbol.text');
-            Lib.coerceFont(coerce, 'symbol.textfont');
-            coerce('symbol.textposition');
-        }
-
-        layerOut._index = i;
-        layersOut.push(layerOut);
+    if (type === 'circle') {
+      coerce('circle.radius')
     }
+
+    if (type === 'line') {
+      coerce('line.width')
+    }
+
+    if (type === 'fill') {
+      coerce('fill.outlinecolor')
+    }
+
+    if (type === 'symbol') {
+      coerce('symbol.icon')
+      coerce('symbol.iconsize')
+
+      coerce('symbol.text')
+      Lib.coerceFont(coerce, 'symbol.textfont')
+      coerce('symbol.textposition')
+    }
+
+    layerOut._index = i
+    layersOut.push(layerOut)
+  }
 }

@@ -6,29 +6,27 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var scatterPlot = require('../scatter/plot')
 
-var scatterPlot = require('../scatter/plot');
-
-
-module.exports = function plot(ternary, moduleCalcData) {
-    var plotContainer = ternary.plotContainer;
+module.exports = function plot (ternary, moduleCalcData) {
+  var plotContainer = ternary.plotContainer
 
     // remove all nodes inside the scatter layer
-    plotContainer.select('.scatterlayer').selectAll('*').remove();
+  plotContainer.select('.scatterlayer').selectAll('*').remove()
 
     // mimic cartesian plotinfo
-    var plotinfo = {
-        xaxis: ternary.xaxis,
-        yaxis: ternary.yaxis,
-        plot: plotContainer
-    };
+  var plotinfo = {
+    xaxis: ternary.xaxis,
+    yaxis: ternary.yaxis,
+    plot: plotContainer
+  }
 
     // add ref to ternary subplot object in fullData traces
-    for(var i = 0; i < moduleCalcData.length; i++) {
-        moduleCalcData[i][0].trace._ternary = ternary;
-    }
+  for (var i = 0; i < moduleCalcData.length; i++) {
+    moduleCalcData[i][0].trace._ternary = ternary
+  }
 
-    scatterPlot(ternary.graphDiv, plotinfo, moduleCalcData);
-};
+  scatterPlot(ternary.graphDiv, plotinfo, moduleCalcData)
+}

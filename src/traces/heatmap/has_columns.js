@@ -6,9 +6,8 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
-
-module.exports = function(trace) {
-    return !Array.isArray(trace.z[0]);
-};
+module.exports = function (trace) {
+  return !Array.isArray(trace.z[0])
+}

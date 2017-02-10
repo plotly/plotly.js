@@ -6,55 +6,53 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var Registry = require('../../registry')
+var Lib = require('../../lib')
+var Color = require('../../components/color')
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
-var Color = require('../../components/color');
+var handleBinDefaults = require('./bin_defaults')
+var handleStyleDefaults = require('../bar/style_defaults')
+var errorBarsSupplyDefaults = require('../../components/errorbars/defaults')
+var attributes = require('./attributes')
 
-var handleBinDefaults = require('./bin_defaults');
-var handleStyleDefaults = require('../bar/style_defaults');
-var errorBarsSupplyDefaults = require('../../components/errorbars/defaults');
-var attributes = require('./attributes');
+module.exports = function supplyDefaults (traceIn, traceOut, defaultColor, layout) {
+  function coerce (attr, dflt) {
+    return Lib.coerce(traceIn, traceOut, attributes, attr, dflt)
+  }
 
+  var x = coerce('x'),
+    y = coerce('y')
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    function coerce(attr, dflt) {
-        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
-    }
+  var cumulative = coerce('cumulative.enabled')
+  if (cumulative) {
+    coerce('cumulative.direction')
+    coerce('cumulative.currentbin')
+  }
 
-    var x = coerce('x'),
-        y = coerce('y');
+  coerce('text')
 
-    var cumulative = coerce('cumulative.enabled');
-    if(cumulative) {
-        coerce('cumulative.direction');
-        coerce('cumulative.currentbin');
-    }
+  var orientation = coerce('orientation', (y && !x) ? 'h' : 'v'),
+    sample = traceOut[orientation === 'v' ? 'x' : 'y']
 
-    coerce('text');
+  if (!(sample && sample.length)) {
+    traceOut.visible = false
+    return
+  }
 
-    var orientation = coerce('orientation', (y && !x) ? 'h' : 'v'),
-        sample = traceOut[orientation === 'v' ? 'x' : 'y'];
+  var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults')
+  handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout)
 
-    if(!(sample && sample.length)) {
-        traceOut.visible = false;
-        return;
-    }
+  var hasAggregationData = traceOut[orientation === 'h' ? 'x' : 'y']
+  if (hasAggregationData) coerce('histfunc')
 
-    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
-    handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
+  var binDirections = (orientation === 'h') ? ['y'] : ['x']
+  handleBinDefaults(traceIn, traceOut, coerce, binDirections)
 
-    var hasAggregationData = traceOut[orientation === 'h' ? 'x' : 'y'];
-    if(hasAggregationData) coerce('histfunc');
-
-    var binDirections = (orientation === 'h') ? ['y'] : ['x'];
-    handleBinDefaults(traceIn, traceOut, coerce, binDirections);
-
-    handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
+  handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout)
 
     // override defaultColor for error bars with defaultLine
-    errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'y'});
-    errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'x', inherit: 'y'});
-};
+  errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'y'})
+  errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'x', inherit: 'y'})
+}

@@ -6,28 +6,27 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-'use strict';
+'use strict'
 
+var heatmapAttrs = require('../heatmap/attributes')
+var colorscaleAttrs = require('../../components/colorscale/attributes')
+var colorbarAttrs = require('../../components/colorbar/attributes')
 
-var heatmapAttrs = require('../heatmap/attributes');
-var colorscaleAttrs = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
-
-var extendFlat = require('../../lib/extend').extendFlat;
+var extendFlat = require('../../lib/extend').extendFlat
 
 var commonList = [
-    'z',
-    'x', 'x0', 'dx',
-    'y', 'y0', 'dy',
-    'text', 'transpose',
-    'xtype', 'ytype'
-];
+  'z',
+  'x', 'x0', 'dx',
+  'y', 'y0', 'dy',
+  'text', 'transpose',
+  'xtype', 'ytype'
+]
 
-var attrs = {};
+var attrs = {}
 
-for(var i = 0; i < commonList.length; i++) {
-    var k = commonList[i];
-    attrs[k] = heatmapAttrs[k];
+for (var i = 0; i < commonList.length; i++) {
+  var k = commonList[i]
+  attrs[k] = heatmapAttrs[k]
 }
 
 extendFlat(
@@ -35,6 +34,6 @@ extendFlat(
     colorscaleAttrs,
     { autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}) },
     { colorbar: colorbarAttrs }
-);
+)
 
-module.exports = attrs;
+module.exports = attrs

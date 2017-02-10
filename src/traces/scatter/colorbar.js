@@ -6,50 +6,48 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var isNumeric = require('fast-isnumeric')
 
-var isNumeric = require('fast-isnumeric');
+var Lib = require('../../lib')
+var Plots = require('../../plots/plots')
+var Colorscale = require('../../components/colorscale')
+var drawColorbar = require('../../components/colorbar/draw')
 
-var Lib = require('../../lib');
-var Plots = require('../../plots/plots');
-var Colorscale = require('../../components/colorscale');
-var drawColorbar = require('../../components/colorbar/draw');
+module.exports = function colorbar (gd, cd) {
+  var trace = cd[0].trace,
+    marker = trace.marker,
+    cbId = 'cb' + trace.uid
 
-
-module.exports = function colorbar(gd, cd) {
-    var trace = cd[0].trace,
-        marker = trace.marker,
-        cbId = 'cb' + trace.uid;
-
-    gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
+  gd._fullLayout._infolayer.selectAll('.' + cbId).remove()
 
     // TODO unify scatter and heatmap colorbar
     // TODO make Colorbar.draw support multiple colorbar per trace
 
-    if((marker === undefined) || !marker.showscale) {
-        Plots.autoMargin(gd, cbId);
-        return;
-    }
+  if ((marker === undefined) || !marker.showscale) {
+    Plots.autoMargin(gd, cbId)
+    return
+  }
 
-    var vals = marker.color,
-        cmin = marker.cmin,
-        cmax = marker.cmax;
+  var vals = marker.color,
+    cmin = marker.cmin,
+    cmax = marker.cmax
 
-    if(!isNumeric(cmin)) cmin = Lib.aggNums(Math.min, null, vals);
-    if(!isNumeric(cmax)) cmax = Lib.aggNums(Math.max, null, vals);
+  if (!isNumeric(cmin)) cmin = Lib.aggNums(Math.min, null, vals)
+  if (!isNumeric(cmax)) cmax = Lib.aggNums(Math.max, null, vals)
 
-    var cb = cd[0].t.cb = drawColorbar(gd, cbId);
-    var sclFunc = Colorscale.makeColorScaleFunc(
+  var cb = cd[0].t.cb = drawColorbar(gd, cbId)
+  var sclFunc = Colorscale.makeColorScaleFunc(
         Colorscale.extractScale(
             marker.colorscale,
             cmin,
             cmax
         ),
         { noNumericCheck: true }
-    );
+    )
 
-    cb.fillcolor(sclFunc)
+  cb.fillcolor(sclFunc)
         .filllevels({start: cmin, end: cmax, size: (cmax - cmin) / 254})
-        .options(marker.colorbar)();
-};
+        .options(marker.colorbar)()
+}

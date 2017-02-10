@@ -6,13 +6,12 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var d3 = require('d3')
+var isNumeric = require('fast-isnumeric')
 
-var d3 = require('d3');
-var isNumeric = require('fast-isnumeric');
-
-var NOTEDATA = [];
+var NOTEDATA = []
 
 /**
  * notifier
@@ -21,60 +20,60 @@ var NOTEDATA = [];
  *          or 'long' which provides 2000 ms delay time.
  * @return {undefined} this function does not return a value
  */
-module.exports = function(text, displayLength) {
-    if(NOTEDATA.indexOf(text) !== -1) return;
+module.exports = function (text, displayLength) {
+  if (NOTEDATA.indexOf(text) !== -1) return
 
-    NOTEDATA.push(text);
+  NOTEDATA.push(text)
 
-    var ts = 1000;
-    if(isNumeric(displayLength)) ts = displayLength;
-    else if(displayLength === 'long') ts = 3000;
+  var ts = 1000
+  if (isNumeric(displayLength)) ts = displayLength
+  else if (displayLength === 'long') ts = 3000
 
-    var notifierContainer = d3.select('body')
+  var notifierContainer = d3.select('body')
         .selectAll('.plotly-notifier')
-        .data([0]);
-    notifierContainer.enter()
+        .data([0])
+  notifierContainer.enter()
         .append('div')
-        .classed('plotly-notifier', true);
+        .classed('plotly-notifier', true)
 
-    var notes = notifierContainer.selectAll('.notifier-note').data(NOTEDATA);
+  var notes = notifierContainer.selectAll('.notifier-note').data(NOTEDATA)
 
-    function killNote(transition) {
-        transition
+  function killNote (transition) {
+    transition
             .duration(700)
             .style('opacity', 0)
-            .each('end', function(thisText) {
-                var thisIndex = NOTEDATA.indexOf(thisText);
-                if(thisIndex !== -1) NOTEDATA.splice(thisIndex, 1);
-                d3.select(this).remove();
-            });
-    }
+            .each('end', function (thisText) {
+              var thisIndex = NOTEDATA.indexOf(thisText)
+              if (thisIndex !== -1) NOTEDATA.splice(thisIndex, 1)
+              d3.select(this).remove()
+            })
+  }
 
-    notes.enter().append('div')
+  notes.enter().append('div')
         .classed('notifier-note', true)
         .style('opacity', 0)
-        .each(function(thisText) {
-            var note = d3.select(this);
+        .each(function (thisText) {
+          var note = d3.select(this)
 
-            note.append('button')
+          note.append('button')
                 .classed('notifier-close', true)
                 .html('&times;')
-                .on('click', function() {
-                    note.transition().call(killNote);
-                });
+                .on('click', function () {
+                  note.transition().call(killNote)
+                })
 
-            var p = note.append('p');
-            var lines = thisText.split(/<br\s*\/?>/g);
-            for(var i = 0; i < lines.length; i++) {
-                if(i) p.append('br');
-                p.append('span').text(lines[i]);
-            }
+          var p = note.append('p')
+          var lines = thisText.split(/<br\s*\/?>/g)
+          for (var i = 0; i < lines.length; i++) {
+            if (i) p.append('br')
+            p.append('span').text(lines[i])
+          }
 
-            note.transition()
+          note.transition()
                     .duration(700)
                     .style('opacity', 1)
                 .transition()
                     .delay(ts)
-                    .call(killNote);
-        });
-};
+                    .call(killNote)
+        })
+}

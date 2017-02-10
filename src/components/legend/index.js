@@ -6,17 +6,15 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
-'use strict';
-
+'use strict'
 
 module.exports = {
-    moduleType: 'component',
-    name: 'legend',
+  moduleType: 'component',
+  name: 'legend',
 
-    layoutAttributes: require('./attributes'),
-    supplyLayoutDefaults: require('./defaults'),
+  layoutAttributes: require('./attributes'),
+  supplyLayoutDefaults: require('./defaults'),
 
-    draw: require('./draw'),
-    style: require('./style')
-};
+  draw: require('./draw'),
+  style: require('./style')
+}

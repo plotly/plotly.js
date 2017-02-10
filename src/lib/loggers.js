@@ -6,13 +6,13 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-'use strict';
+'use strict'
 
 /* eslint-disable no-console */
 
-var config = require('../plot_api/plot_config');
+var config = require('../plot_api/plot_config')
 
-var loggers = module.exports = {};
+var loggers = module.exports = {}
 
 /**
  * ------------------------------------------
@@ -20,53 +20,52 @@ var loggers = module.exports = {};
  * ------------------------------------------
  */
 
-loggers.log = function() {
-    if(config.logging > 1) {
-        var messages = ['LOG:'];
+loggers.log = function () {
+  if (config.logging > 1) {
+    var messages = ['LOG:']
 
-        for(var i = 0; i < arguments.length; i++) {
-            messages.push(arguments[i]);
-        }
-
-        apply(console.trace || console.log, messages);
+    for (var i = 0; i < arguments.length; i++) {
+      messages.push(arguments[i])
     }
-};
 
-loggers.warn = function() {
-    if(config.logging > 0) {
-        var messages = ['WARN:'];
+    apply(console.trace || console.log, messages)
+  }
+}
 
-        for(var i = 0; i < arguments.length; i++) {
-            messages.push(arguments[i]);
-        }
+loggers.warn = function () {
+  if (config.logging > 0) {
+    var messages = ['WARN:']
 
-        apply(console.trace || console.log, messages);
+    for (var i = 0; i < arguments.length; i++) {
+      messages.push(arguments[i])
     }
-};
 
-loggers.error = function() {
-    if(config.logging > 0) {
-        var messages = ['ERROR:'];
+    apply(console.trace || console.log, messages)
+  }
+}
 
-        for(var i = 0; i < arguments.length; i++) {
-            messages.push(arguments[i]);
-        }
+loggers.error = function () {
+  if (config.logging > 0) {
+    var messages = ['ERROR:']
 
-        apply(console.error, messages);
+    for (var i = 0; i < arguments.length; i++) {
+      messages.push(arguments[i])
     }
-};
+
+    apply(console.error, messages)
+  }
+}
 
 /*
  * Robust apply, for IE9 where console.log doesn't support
  * apply like other functions do
  */
-function apply(f, args) {
-    if(f.apply) {
-        f.apply(f, args);
+function apply (f, args) {
+  if (f.apply) {
+    f.apply(f, args)
+  } else {
+    for (var i = 0; i < args.length; i++) {
+      f(args[i])
     }
-    else {
-        for(var i = 0; i < args.length; i++) {
-            f(args[i]);
-        }
-    }
+  }
 }

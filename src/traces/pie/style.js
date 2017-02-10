@@ -6,22 +6,22 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-'use strict';
+'use strict'
 
-var d3 = require('d3');
+var d3 = require('d3')
 
-var styleOne = require('./style_one');
+var styleOne = require('./style_one')
 
-module.exports = function style(gd) {
-    gd._fullLayout._pielayer.selectAll('.trace').each(function(cd) {
-        var cd0 = cd[0],
-            trace = cd0.trace,
-            traceSelection = d3.select(this);
+module.exports = function style (gd) {
+  gd._fullLayout._pielayer.selectAll('.trace').each(function (cd) {
+    var cd0 = cd[0],
+      trace = cd0.trace,
+      traceSelection = d3.select(this)
 
-        traceSelection.style({opacity: trace.opacity});
+    traceSelection.style({opacity: trace.opacity})
 
-        traceSelection.selectAll('.top path.surface').each(function(pt) {
-            d3.select(this).call(styleOne, pt, trace);
-        });
-    });
-};
+    traceSelection.selectAll('.top path.surface').each(function (pt) {
+      d3.select(this).call(styleOne, pt, trace)
+    })
+  })
+}

@@ -6,13 +6,12 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-'use strict';
-
+'use strict'
 
 module.exports = {
     /**
      * Timing information for interactive elements
      */
-    SHOW_PLACEHOLDER: 100,
-    HIDE_PLACEHOLDER: 1000
-};
+  SHOW_PLACEHOLDER: 100,
+  HIDE_PLACEHOLDER: 1000
+}

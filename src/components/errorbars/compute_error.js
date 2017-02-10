@@ -6,9 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
-'use strict';
-
+'use strict'
 
 /**
  * Error bar computing function generator
@@ -25,46 +23,43 @@
  *        - error[0] : error magnitude in the negative direction
  *        - error[1] : " " " " positive "
  */
-module.exports = function makeComputeError(opts) {
-    var type = opts.type,
-        symmetric = opts.symmetric;
+module.exports = function makeComputeError (opts) {
+  var type = opts.type,
+    symmetric = opts.symmetric
 
-    if(type === 'data') {
-        var array = opts.array,
-            arrayminus = opts.arrayminus;
+  if (type === 'data') {
+    var array = opts.array,
+      arrayminus = opts.arrayminus
 
-        if(symmetric || arrayminus === undefined) {
-            return function computeError(dataPt, index) {
-                var val = +(array[index]);
-                return [val, val];
-            };
-        }
-        else {
-            return function computeError(dataPt, index) {
-                return [+arrayminus[index], +array[index]];
-            };
-        }
+    if (symmetric || arrayminus === undefined) {
+      return function computeError (dataPt, index) {
+        var val = +(array[index])
+        return [val, val]
+      }
+    } else {
+      return function computeError (dataPt, index) {
+        return [+arrayminus[index], +array[index]]
+      }
     }
-    else {
-        var computeErrorValue = makeComputeErrorValue(type, opts.value),
-            computeErrorValueMinus = makeComputeErrorValue(type, opts.valueminus);
+  } else {
+    var computeErrorValue = makeComputeErrorValue(type, opts.value),
+      computeErrorValueMinus = makeComputeErrorValue(type, opts.valueminus)
 
-        if(symmetric || opts.valueminus === undefined) {
-            return function computeError(dataPt) {
-                var val = computeErrorValue(dataPt);
-                return [val, val];
-            };
-        }
-        else {
-            return function computeError(dataPt) {
-                return [
-                    computeErrorValueMinus(dataPt),
-                    computeErrorValue(dataPt)
-                ];
-            };
-        }
+    if (symmetric || opts.valueminus === undefined) {
+      return function computeError (dataPt) {
+        var val = computeErrorValue(dataPt)
+        return [val, val]
+      }
+    } else {
+      return function computeError (dataPt) {
+        return [
+          computeErrorValueMinus(dataPt),
+          computeErrorValue(dataPt)
+        ]
+      }
     }
-};
+  }
+}
 
 /**
  * Compute error bar magnitude (for all types except data)
@@ -75,20 +70,20 @@ module.exports = function makeComputeError(opts) {
  * @return {function} :
  *      @param {numeric} dataPt
  */
-function makeComputeErrorValue(type, value) {
-    if(type === 'percent') {
-        return function(dataPt) {
-            return Math.abs(dataPt * value / 100);
-        };
+function makeComputeErrorValue (type, value) {
+  if (type === 'percent') {
+    return function (dataPt) {
+      return Math.abs(dataPt * value / 100)
     }
-    if(type === 'constant') {
-        return function() {
-            return Math.abs(value);
-        };
+  }
+  if (type === 'constant') {
+    return function () {
+      return Math.abs(value)
     }
-    if(type === 'sqrt') {
-        return function(dataPt) {
-            return Math.sqrt(Math.abs(dataPt));
-        };
+  }
+  if (type === 'sqrt') {
+    return function (dataPt) {
+      return Math.sqrt(Math.abs(dataPt))
     }
+  }
 }

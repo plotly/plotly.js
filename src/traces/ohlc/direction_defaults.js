@@ -6,19 +6,17 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
-
-
-module.exports = function handleDirectionDefaults(traceIn, traceOut, coerce, direction) {
-    coerce(direction + '.showlegend');
+module.exports = function handleDirectionDefaults (traceIn, traceOut, coerce, direction) {
+  coerce(direction + '.showlegend')
 
     // trace-wide *showlegend* overrides direction *showlegend*
-    if(traceIn.showlegend === false) {
-        traceOut[direction].showlegend = false;
-    }
+  if (traceIn.showlegend === false) {
+    traceOut[direction].showlegend = false
+  }
 
-    var nameDflt = traceOut.name + ' - ' + direction;
+  var nameDflt = traceOut.name + ' - ' + direction
 
-    coerce(direction + '.name', nameDflt);
-};
+  coerce(direction + '.name', nameDflt)
+}

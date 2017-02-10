@@ -6,31 +6,30 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
-'use strict';
+'use strict'
 
 // N.B. HTML entities are listed without the leading '&' and trailing ';'
 
 module.exports = {
 
-    entityToUnicode: {
-        'mu': 'μ',
-        'amp': '&',
-        'lt': '<',
-        'gt': '>',
-        'nbsp': ' ',
-        'times': '×',
-        'plusmn': '±',
-        'deg': '°'
-    },
+  entityToUnicode: {
+    'mu': 'μ',
+    'amp': '&',
+    'lt': '<',
+    'gt': '>',
+    'nbsp': ' ',
+    'times': '×',
+    'plusmn': '±',
+    'deg': '°'
+  },
 
-    unicodeToEntity: {
-        '&': 'amp',
-        '<': 'lt',
-        '>': 'gt',
-        '"': 'quot',
-        '\'': '#x27',
-        '\/': '#x2F'
-    }
+  unicodeToEntity: {
+    '&': 'amp',
+    '<': 'lt',
+    '>': 'gt',
+    '"': 'quot',
+    '\'': '#x27',
+    '\/': '#x2F'
+  }
 
-};
+}

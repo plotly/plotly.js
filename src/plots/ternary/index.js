@@ -6,67 +6,65 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var Ternary = require('./ternary')
 
-var Ternary = require('./ternary');
+var Plots = require('../../plots/plots')
 
-var Plots = require('../../plots/plots');
+exports.name = 'ternary'
 
+exports.attr = 'subplot'
 
-exports.name = 'ternary';
+exports.idRoot = 'ternary'
 
-exports.attr = 'subplot';
+exports.idRegex = /^ternary([2-9]|[1-9][0-9]+)?$/
 
-exports.idRoot = 'ternary';
+exports.attrRegex = /^ternary([2-9]|[1-9][0-9]+)?$/
 
-exports.idRegex = /^ternary([2-9]|[1-9][0-9]+)?$/;
+exports.attributes = require('./layout/attributes')
 
-exports.attrRegex = /^ternary([2-9]|[1-9][0-9]+)?$/;
+exports.layoutAttributes = require('./layout/layout_attributes')
 
-exports.attributes = require('./layout/attributes');
+exports.supplyLayoutDefaults = require('./layout/defaults')
 
-exports.layoutAttributes = require('./layout/layout_attributes');
+exports.plot = function plotTernary (gd) {
+  var fullLayout = gd._fullLayout,
+    calcData = gd.calcdata,
+    ternaryIds = Plots.getSubplotIds(fullLayout, 'ternary')
 
-exports.supplyLayoutDefaults = require('./layout/defaults');
-
-exports.plot = function plotTernary(gd) {
-    var fullLayout = gd._fullLayout,
-        calcData = gd.calcdata,
-        ternaryIds = Plots.getSubplotIds(fullLayout, 'ternary');
-
-    for(var i = 0; i < ternaryIds.length; i++) {
-        var ternaryId = ternaryIds[i],
-            ternaryCalcData = Plots.getSubplotCalcData(calcData, 'ternary', ternaryId),
-            ternary = fullLayout[ternaryId]._subplot;
+  for (var i = 0; i < ternaryIds.length; i++) {
+    var ternaryId = ternaryIds[i],
+      ternaryCalcData = Plots.getSubplotCalcData(calcData, 'ternary', ternaryId),
+      ternary = fullLayout[ternaryId]._subplot
 
         // If ternary is not instantiated, create one!
-        if(!ternary) {
-            ternary = new Ternary({
-                id: ternaryId,
-                graphDiv: gd,
-                container: fullLayout._ternarylayer.node()
-            },
+    if (!ternary) {
+      ternary = new Ternary({
+        id: ternaryId,
+        graphDiv: gd,
+        container: fullLayout._ternarylayer.node()
+      },
                 fullLayout
-            );
+            )
 
-            fullLayout[ternaryId]._subplot = ternary;
-        }
-
-        ternary.plot(ternaryCalcData, fullLayout, gd._promises);
+      fullLayout[ternaryId]._subplot = ternary
     }
-};
 
-exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    var oldTernaryKeys = Plots.getSubplotIds(oldFullLayout, 'ternary');
+    ternary.plot(ternaryCalcData, fullLayout, gd._promises)
+  }
+}
 
-    for(var i = 0; i < oldTernaryKeys.length; i++) {
-        var oldTernaryKey = oldTernaryKeys[i];
-        var oldTernary = oldFullLayout[oldTernaryKey]._subplot;
+exports.clean = function (newFullData, newFullLayout, oldFullData, oldFullLayout) {
+  var oldTernaryKeys = Plots.getSubplotIds(oldFullLayout, 'ternary')
 
-        if(!newFullLayout[oldTernaryKey] && !!oldTernary) {
-            oldTernary.plotContainer.remove();
-            oldTernary.clipDef.remove();
-        }
+  for (var i = 0; i < oldTernaryKeys.length; i++) {
+    var oldTernaryKey = oldTernaryKeys[i]
+    var oldTernary = oldFullLayout[oldTernaryKey]._subplot
+
+    if (!newFullLayout[oldTernaryKey] && !!oldTernary) {
+      oldTernary.plotContainer.remove()
+      oldTernary.clipDef.remove()
     }
-};
+  }
+}

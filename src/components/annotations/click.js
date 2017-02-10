@@ -6,16 +6,14 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
-
-var Plotly = require('../../plotly');
-
+var Plotly = require('../../plotly')
 
 module.exports = {
-    hasClickToShow: hasClickToShow,
-    onClick: onClick
-};
+  hasClickToShow: hasClickToShow,
+  onClick: onClick
+}
 
 /*
  * hasClickToShow: does the given hoverData have ANY annotations which will
@@ -27,9 +25,9 @@ module.exports = {
  *
  * returns: boolean
  */
-function hasClickToShow(gd, hoverData) {
-    var sets = getToggleSets(gd, hoverData);
-    return sets.on.length > 0 || sets.explicitOff.length > 0;
+function hasClickToShow (gd, hoverData) {
+  var sets = getToggleSets(gd, hoverData)
+  return sets.on.length > 0 || sets.explicitOff.length > 0
 }
 
 /*
@@ -42,24 +40,24 @@ function hasClickToShow(gd, hoverData) {
  *
  * returns: Promise that the update is complete
  */
-function onClick(gd, hoverData) {
-    var toggleSets = getToggleSets(gd, hoverData),
-        onSet = toggleSets.on,
-        offSet = toggleSets.off.concat(toggleSets.explicitOff),
-        update = {},
-        i;
+function onClick (gd, hoverData) {
+  var toggleSets = getToggleSets(gd, hoverData),
+    onSet = toggleSets.on,
+    offSet = toggleSets.off.concat(toggleSets.explicitOff),
+    update = {},
+    i
 
-    if(!(onSet.length || offSet.length)) return;
+  if (!(onSet.length || offSet.length)) return
 
-    for(i = 0; i < onSet.length; i++) {
-        update['annotations[' + onSet[i] + '].visible'] = true;
-    }
+  for (i = 0; i < onSet.length; i++) {
+    update['annotations[' + onSet[i] + '].visible'] = true
+  }
 
-    for(i = 0; i < offSet.length; i++) {
-        update['annotations[' + offSet[i] + '].visible'] = false;
-    }
+  for (i = 0; i < offSet.length; i++) {
+    update['annotations[' + offSet[i] + '].visible'] = false
+  }
 
-    return Plotly.update(gd, {}, update);
+  return Plotly.update(gd, {}, update)
 }
 
 /*
@@ -76,46 +74,45 @@ function onClick(gd, hoverData) {
  *   explicitOff: Array (indices to turn off because you *are* hovering on them)
  * }
  */
-function getToggleSets(gd, hoverData) {
-    var annotations = gd._fullLayout.annotations,
-        onSet = [],
-        offSet = [],
-        explicitOffSet = [],
-        hoverLen = (hoverData || []).length;
+function getToggleSets (gd, hoverData) {
+  var annotations = gd._fullLayout.annotations,
+    onSet = [],
+    offSet = [],
+    explicitOffSet = [],
+    hoverLen = (hoverData || []).length
 
-    var i, j, anni, showMode, pointj, toggleType;
+  var i, j, anni, showMode, pointj, toggleType
 
-    for(i = 0; i < annotations.length; i++) {
-        anni = annotations[i];
-        showMode = anni.clicktoshow;
-        if(showMode) {
-            for(j = 0; j < hoverLen; j++) {
-                pointj = hoverData[j];
-                if(pointj.x === anni._xclick && pointj.y === anni._yclick &&
+  for (i = 0; i < annotations.length; i++) {
+    anni = annotations[i]
+    showMode = anni.clicktoshow
+    if (showMode) {
+      for (j = 0; j < hoverLen; j++) {
+        pointj = hoverData[j]
+        if (pointj.x === anni._xclick && pointj.y === anni._yclick &&
                         pointj.xaxis._id === anni.xref &&
                         pointj.yaxis._id === anni.yref) {
                     // match! toggle this annotation
                     // regardless of its clicktoshow mode
                     // but if it's onout mode, off is implicit
-                    if(anni.visible) {
-                        if(showMode === 'onout') toggleType = offSet;
-                        else toggleType = explicitOffSet;
-                    }
-                    else {
-                        toggleType = onSet;
-                    }
-                    toggleType.push(i);
-                    break;
-                }
-            }
+          if (anni.visible) {
+            if (showMode === 'onout') toggleType = offSet
+            else toggleType = explicitOffSet
+          } else {
+            toggleType = onSet
+          }
+          toggleType.push(i)
+          break
+        }
+      }
 
-            if(j === hoverLen) {
+      if (j === hoverLen) {
                 // no match - only turn this annotation OFF, and only if
                 // showmode is 'onout'
-                if(anni.visible && showMode === 'onout') offSet.push(i);
-            }
-        }
+        if (anni.visible && showMode === 'onout') offSet.push(i)
+      }
     }
+  }
 
-    return {on: onSet, off: offSet, explicitOff: explicitOffSet};
+  return {on: onSet, off: offSet, explicitOff: explicitOffSet}
 }

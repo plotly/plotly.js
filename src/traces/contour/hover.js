@@ -6,12 +6,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var heatmapHoverPoints = require('../heatmap/hover')
 
-var heatmapHoverPoints = require('../heatmap/hover');
-
-
-module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
-    return heatmapHoverPoints(pointData, xval, yval, hovermode, true);
-};
+module.exports = function hoverPoints (pointData, xval, yval, hovermode) {
+  return heatmapHoverPoints(pointData, xval, yval, hovermode, true)
+}

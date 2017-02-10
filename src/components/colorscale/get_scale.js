@@ -6,33 +6,30 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var scales = require('./scales')
+var defaultScale = require('./default_scale')
+var isValidScaleArray = require('./is_valid_scale_array')
 
-var scales = require('./scales');
-var defaultScale = require('./default_scale');
-var isValidScaleArray = require('./is_valid_scale_array');
+module.exports = function getScale (scl, dflt) {
+  if (!dflt) dflt = defaultScale
+  if (!scl) return dflt
 
-
-module.exports = function getScale(scl, dflt) {
-    if(!dflt) dflt = defaultScale;
-    if(!scl) return dflt;
-
-    function parseScale() {
-        try {
-            scl = scales[scl] || JSON.parse(scl);
-        }
-        catch(e) {
-            scl = dflt;
-        }
+  function parseScale () {
+    try {
+      scl = scales[scl] || JSON.parse(scl)
+    } catch (e) {
+      scl = dflt
     }
+  }
 
-    if(typeof scl === 'string') {
-        parseScale();
+  if (typeof scl === 'string') {
+    parseScale()
         // occasionally scl is double-JSON encoded...
-        if(typeof scl === 'string') parseScale();
-    }
+    if (typeof scl === 'string') parseScale()
+  }
 
-    if(!isValidScaleArray(scl)) return dflt;
-    return scl;
-};
+  if (!isValidScaleArray(scl)) return dflt
+  return scl
+}

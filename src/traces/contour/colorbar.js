@@ -6,55 +6,53 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var Plots = require('../../plots/plots')
+var drawColorbar = require('../../components/colorbar/draw')
 
-var Plots = require('../../plots/plots');
-var drawColorbar = require('../../components/colorbar/draw');
+var makeColorMap = require('./make_color_map')
+var endPlus = require('./end_plus')
 
-var makeColorMap = require('./make_color_map');
-var endPlus = require('./end_plus');
+module.exports = function colorbar (gd, cd) {
+  var trace = cd[0].trace,
+    cbId = 'cb' + trace.uid
 
+  gd._fullLayout._infolayer.selectAll('.' + cbId).remove()
 
-module.exports = function colorbar(gd, cd) {
-    var trace = cd[0].trace,
-        cbId = 'cb' + trace.uid;
+  if (trace.showscale === false) {
+    Plots.autoMargin(gd, cbId)
+    return
+  }
 
-    gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
+  var cb = drawColorbar(gd, cbId)
+  cd[0].t.cb = cb
 
-    if(trace.showscale === false) {
-        Plots.autoMargin(gd, cbId);
-        return;
-    }
+  var contours = trace.contours,
+    line = trace.line,
+    cs = contours.size || 1,
+    coloring = contours.coloring
 
-    var cb = drawColorbar(gd, cbId);
-    cd[0].t.cb = cb;
+  var colorMap = makeColorMap(trace, {isColorbar: true})
 
-    var contours = trace.contours,
-        line = trace.line,
-        cs = contours.size || 1,
-        coloring = contours.coloring;
+  if (coloring === 'heatmap') {
+    cb.filllevels({
+      start: trace.zmin,
+      end: trace.zmax,
+      size: (trace.zmax - trace.zmin) / 254
+    })
+  }
 
-    var colorMap = makeColorMap(trace, {isColorbar: true});
-
-    if(coloring === 'heatmap') {
-        cb.filllevels({
-            start: trace.zmin,
-            end: trace.zmax,
-            size: (trace.zmax - trace.zmin) / 254
-        });
-    }
-
-    cb.fillcolor((coloring === 'fill' || coloring === 'heatmap') ? colorMap : '')
+  cb.fillcolor((coloring === 'fill' || coloring === 'heatmap') ? colorMap : '')
         .line({
-            color: coloring === 'lines' ? colorMap : line.color,
-            width: contours.showlines !== false ? line.width : 0,
-            dash: line.dash
+          color: coloring === 'lines' ? colorMap : line.color,
+          width: contours.showlines !== false ? line.width : 0,
+          dash: line.dash
         })
         .levels({
-            start: contours.start,
-            end: endPlus(contours),
-            size: cs
+          start: contours.start,
+          end: endPlus(contours),
+          size: cs
         })
-        .options(trace.colorbar)();
-};
+        .options(trace.colorbar)()
+}

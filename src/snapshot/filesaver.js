@@ -19,48 +19,48 @@
 *   See https://github.com/eligrey/FileSaver.js/blob/master/LICENSE.md
 */
 
-'use strict';
+'use strict'
 
-var fileSaver = function(url, name) {
-    var saveLink = document.createElement('a');
-    var canUseSaveLink = 'download' in saveLink;
-    var isSafari = /Version\/[\d\.]+.*Safari/.test(navigator.userAgent);
-    var promise = new Promise(function(resolve, reject) {
+var fileSaver = function (url, name) {
+  var saveLink = document.createElement('a')
+  var canUseSaveLink = 'download' in saveLink
+  var isSafari = /Version\/[\d\.]+.*Safari/.test(navigator.userAgent)
+  var promise = new Promise(function (resolve, reject) {
         // IE <10 is explicitly unsupported
-        if(typeof navigator !== 'undefined' && /MSIE [1-9]\./.test(navigator.userAgent)) {
-            reject(new Error('IE < 10 unsupported'));
-        }
+    if (typeof navigator !== 'undefined' && /MSIE [1-9]\./.test(navigator.userAgent)) {
+      reject(new Error('IE < 10 unsupported'))
+    }
 
         // First try a.download, then web filesystem, then object URLs
-        if(isSafari) {
+    if (isSafari) {
             // Safari doesn't allow downloading of blob urls
-            document.location.href = 'data:application/octet-stream' + url.slice(url.search(/[,;]/));
-            resolve(name);
-        }
+      document.location.href = 'data:application/octet-stream' + url.slice(url.search(/[,;]/))
+      resolve(name)
+    }
 
-        if(!name) {
-            name = 'download';
-        }
+    if (!name) {
+      name = 'download'
+    }
 
-        if(canUseSaveLink) {
-            saveLink.href = url;
-            saveLink.download = name;
-            document.body.appendChild(saveLink);
-            saveLink.click();
-            document.body.removeChild(saveLink);
-            resolve(name);
-        }
+    if (canUseSaveLink) {
+      saveLink.href = url
+      saveLink.download = name
+      document.body.appendChild(saveLink)
+      saveLink.click()
+      document.body.removeChild(saveLink)
+      resolve(name)
+    }
 
         // IE 10+ (native saveAs)
-        if(typeof navigator !== 'undefined' && navigator.msSaveBlob) {
-            navigator.msSaveBlob(new Blob([url]), name);
-            resolve(name);
-        }
+    if (typeof navigator !== 'undefined' && navigator.msSaveBlob) {
+      navigator.msSaveBlob(new Blob([url]), name)
+      resolve(name)
+    }
 
-        reject(new Error('download error'));
-    });
+    reject(new Error('download error'))
+  })
 
-    return promise;
-};
+  return promise
+}
 
-module.exports = fileSaver;
+module.exports = fileSaver

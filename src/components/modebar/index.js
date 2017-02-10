@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
-
-exports.manage = require('./manage');
+exports.manage = require('./manage')

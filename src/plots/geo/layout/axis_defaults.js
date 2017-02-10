@@ -6,67 +6,64 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var Lib = require('../../../lib')
+var constants = require('../constants')
+var axisAttributes = require('./axis_attributes')
 
-var Lib = require('../../../lib');
-var constants = require('../constants');
-var axisAttributes = require('./axis_attributes');
+module.exports = function supplyGeoAxisLayoutDefaults (geoLayoutIn, geoLayoutOut) {
+  var axesNames = constants.axesNames
 
+  var axisIn, axisOut
 
-module.exports = function supplyGeoAxisLayoutDefaults(geoLayoutIn, geoLayoutOut) {
-    var axesNames = constants.axesNames;
+  function coerce (attr, dflt) {
+    return Lib.coerce(axisIn, axisOut, axisAttributes, attr, dflt)
+  }
 
-    var axisIn, axisOut;
+  function getRangeDflt (axisName) {
+    var scope = geoLayoutOut.scope
 
-    function coerce(attr, dflt) {
-        return Lib.coerce(axisIn, axisOut, axisAttributes, attr, dflt);
-    }
+    var projLayout, projType, projRotation, rotateAngle, dfltSpans, halfSpan
 
-    function getRangeDflt(axisName) {
-        var scope = geoLayoutOut.scope;
+    if (scope === 'world') {
+      projLayout = geoLayoutOut.projection
+      projType = projLayout.type
+      projRotation = projLayout.rotation
+      dfltSpans = constants[axisName + 'Span']
 
-        var projLayout, projType, projRotation, rotateAngle, dfltSpans, halfSpan;
-
-        if(scope === 'world') {
-            projLayout = geoLayoutOut.projection;
-            projType = projLayout.type;
-            projRotation = projLayout.rotation;
-            dfltSpans = constants[axisName + 'Span'];
-
-            halfSpan = dfltSpans[projType] !== undefined ?
+      halfSpan = dfltSpans[projType] !== undefined ?
                 dfltSpans[projType] / 2 :
-                dfltSpans['*'] / 2;
-            rotateAngle = axisName === 'lonaxis' ?
+                dfltSpans['*'] / 2
+      rotateAngle = axisName === 'lonaxis' ?
                 projRotation.lon :
-                projRotation.lat;
+                projRotation.lat
 
-            return [rotateAngle - halfSpan, rotateAngle + halfSpan];
-        }
-        else return constants.scopeDefaults[scope][axisName + 'Range'];
+      return [rotateAngle - halfSpan, rotateAngle + halfSpan]
+    } else return constants.scopeDefaults[scope][axisName + 'Range']
+  }
+
+  for (var i = 0; i < axesNames.length; i++) {
+    var axisName = axesNames[i]
+    axisIn = geoLayoutIn[axisName] || {}
+    axisOut = {}
+
+    var rangeDflt = getRangeDflt(axisName)
+
+    var range = coerce('range', rangeDflt)
+
+    Lib.noneOrAll(axisIn.range, axisOut.range, [0, 1])
+
+    coerce('tick0', range[0])
+    coerce('dtick', axisName === 'lonaxis' ? 30 : 10)
+
+    var show = coerce('showgrid')
+    if (show) {
+      coerce('gridcolor')
+      coerce('gridwidth')
     }
 
-    for(var i = 0; i < axesNames.length; i++) {
-        var axisName = axesNames[i];
-        axisIn = geoLayoutIn[axisName] || {};
-        axisOut = {};
-
-        var rangeDflt = getRangeDflt(axisName);
-
-        var range = coerce('range', rangeDflt);
-
-        Lib.noneOrAll(axisIn.range, axisOut.range, [0, 1]);
-
-        coerce('tick0', range[0]);
-        coerce('dtick', axisName === 'lonaxis' ? 30 : 10);
-
-        var show = coerce('showgrid');
-        if(show) {
-            coerce('gridcolor');
-            coerce('gridwidth');
-        }
-
-        geoLayoutOut[axisName] = axisOut;
-        geoLayoutOut[axisName]._fullRange = rangeDflt;
-    }
-};
+    geoLayoutOut[axisName] = axisOut
+    geoLayoutOut[axisName]._fullRange = rangeDflt
+  }
+}

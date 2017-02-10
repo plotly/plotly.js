@@ -6,9 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
-'use strict';
-
+'use strict'
 
 /**
  * Determine the position anchor property of x/y xanchor/yanchor components.
@@ -18,30 +16,30 @@
  * - values > 2/3 align the right at that fraction.
  */
 
-exports.isRightAnchor = function isRightAnchor(opts) {
-    return (
+exports.isRightAnchor = function isRightAnchor (opts) {
+  return (
         opts.xanchor === 'right' ||
         (opts.xanchor === 'auto' && opts.x >= 2 / 3)
-    );
-};
+  )
+}
 
-exports.isCenterAnchor = function isCenterAnchor(opts) {
-    return (
+exports.isCenterAnchor = function isCenterAnchor (opts) {
+  return (
         opts.xanchor === 'center' ||
         (opts.xanchor === 'auto' && opts.x > 1 / 3 && opts.x < 2 / 3)
-    );
-};
+  )
+}
 
-exports.isBottomAnchor = function isBottomAnchor(opts) {
-    return (
+exports.isBottomAnchor = function isBottomAnchor (opts) {
+  return (
         opts.yanchor === 'bottom' ||
         (opts.yanchor === 'auto' && opts.y <= 1 / 3)
-    );
-};
+  )
+}
 
-exports.isMiddleAnchor = function isMiddleAnchor(opts) {
-    return (
+exports.isMiddleAnchor = function isMiddleAnchor (opts) {
+  return (
         opts.yanchor === 'middle' ||
         (opts.yanchor === 'auto' && opts.y > 1 / 3 && opts.y < 2 / 3)
-    );
-};
+  )
+}

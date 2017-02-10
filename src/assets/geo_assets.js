@@ -6,12 +6,11 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-'use strict';
+'use strict'
 
-var saneTopojson = require('sane-topojson');
-
+var saneTopojson = require('sane-topojson')
 
 // package version injected by `npm run preprocess`
-exports.version = '1.23.0';
+exports.version = '1.23.0'
 
-exports.topojson = saneTopojson;
+exports.topojson = saneTopojson

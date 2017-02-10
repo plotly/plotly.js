@@ -6,7 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-'use strict';
+'use strict'
 
 /*
  * Pack internal modules unto an object.
@@ -19,13 +19,13 @@
  */
 
 // configuration
-exports.defaultConfig = require('./plot_api/plot_config');
+exports.defaultConfig = require('./plot_api/plot_config')
 
 // plots
-exports.Plots = require('./plots/plots');
-exports.Axes = require('./plots/cartesian/axes');
-exports.Fx = require('./plots/cartesian/graph_interact');
-exports.ModeBar = require('./components/modebar');
+exports.Plots = require('./plots/plots')
+exports.Axes = require('./plots/cartesian/axes')
+exports.Fx = require('./plots/cartesian/graph_interact')
+exports.ModeBar = require('./components/modebar')
 
 // plot api
-require('./plot_api/plot_api');
+require('./plot_api/plot_api')

@@ -6,7 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-'use strict';
+'use strict'
 
 module.exports = {
     /**
@@ -14,5 +14,5 @@ module.exports = {
      * but it can contain many labels, and can hide slices
      * from several pies simultaneously
      */
-    hiddenlabels: {valType: 'data_array'}
-};
+  hiddenlabels: {valType: 'data_array'}
+}

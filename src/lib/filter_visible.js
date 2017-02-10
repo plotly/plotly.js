@@ -6,8 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
-'use strict';
+'use strict'
 
 /** Filter out object items with visible !== true
  *  insider array container.
@@ -16,14 +15,14 @@
  *  @return {array of objects} of length <= container
  *
  */
-module.exports = function filterVisible(container) {
-    var out = [];
+module.exports = function filterVisible (container) {
+  var out = []
 
-    for(var i = 0; i < container.length; i++) {
-        var item = container[i];
+  for (var i = 0; i < container.length; i++) {
+    var item = container[i]
 
-        if(item.visible === true) out.push(item);
-    }
+    if (item.visible === true) out.push(item)
+  }
 
-    return out;
-};
+  return out
+}
