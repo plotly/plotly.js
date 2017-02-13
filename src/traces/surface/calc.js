@@ -6,17 +6,15 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
-
-var colorscaleCalc = require('../../components/colorscale/calc');
-
+var colorscaleCalc = require('../../components/colorscale/calc')
 
 // Compute auto-z and autocolorscale if applicable
-module.exports = function calc(gd, trace) {
-    if(trace.surfacecolor) {
-        colorscaleCalc(trace, trace.surfacecolor, '', 'c');
-    } else {
-        colorscaleCalc(trace, trace.z, '', 'c');
-    }
-};
+module.exports = function calc (gd, trace) {
+  if (trace.surfacecolor) {
+    colorscaleCalc(trace, trace.surfacecolor, '', 'c')
+  } else {
+    colorscaleCalc(trace, trace.z, '', 'c')
+  }
+}

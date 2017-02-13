@@ -6,14 +6,12 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var scales = require('./scales')
+var isValidScaleArray = require('./is_valid_scale_array')
 
-var scales = require('./scales');
-var isValidScaleArray = require('./is_valid_scale_array');
-
-
-module.exports = function isValidScale(scl) {
-    if(scales[scl] !== undefined) return true;
-    else return isValidScaleArray(scl);
-};
+module.exports = function isValidScale (scl) {
+  if (scales[scl] !== undefined) return true
+  else return isValidScaleArray(scl)
+}

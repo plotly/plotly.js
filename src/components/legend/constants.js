@@ -6,11 +6,11 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-'use strict';
+'use strict'
 
 module.exports = {
-    scrollBarWidth: 4,
-    scrollBarHeight: 20,
-    scrollBarColor: '#808BA4',
-    scrollBarMargin: 4
-};
+  scrollBarWidth: 4,
+  scrollBarHeight: 20,
+  scrollBarColor: '#808BA4',
+  scrollBarMargin: 4
+}

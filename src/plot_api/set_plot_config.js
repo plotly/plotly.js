@@ -6,11 +6,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
-
-var Plotly = require('../plotly');
-var Lib = require('../lib');
+var Plotly = require('../plotly')
+var Lib = require('../lib')
 
 /**
  * Extends the plot config
@@ -19,6 +18,6 @@ var Lib = require('../lib');
  *      to extend the current plot configuration.
  *
  */
-module.exports = function setPlotConfig(configObj) {
-    return Lib.extendFlat(Plotly.defaultConfig, configObj);
-};
+module.exports = function setPlotConfig (configObj) {
+  return Lib.extendFlat(Plotly.defaultConfig, configObj)
+}

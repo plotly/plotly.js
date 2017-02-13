@@ -6,7 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-'use strict';
+'use strict'
 
 /* eslint-disable no-console */
 
@@ -21,98 +21,97 @@
 module.exports = {
 
     // no interactivity, for export or image generation
-    staticPlot: false,
+  staticPlot: false,
 
     // we can edit titles, move annotations, etc
-    editable: false,
+  editable: false,
 
     // DO autosize once regardless of layout.autosize
     // (use default width or height values otherwise)
-    autosizable: false,
+  autosizable: false,
 
     // set the length of the undo/redo queue
-    queueLength: 0,
+  queueLength: 0,
 
     // if we DO autosize, do we fill the container or the screen?
-    fillFrame: false,
+  fillFrame: false,
 
     // if we DO autosize, set the frame margins in percents of plot size
-    frameMargins: 0,
+  frameMargins: 0,
 
     // mousewheel or two-finger scroll zooms the plot
-    scrollZoom: false,
+  scrollZoom: false,
 
     // double click interaction (false, 'reset', 'autosize' or 'reset+autosize')
-    doubleClick: 'reset+autosize',
+  doubleClick: 'reset+autosize',
 
     // new users see some hints about interactivity
-    showTips: true,
+  showTips: true,
 
     // link to open this plot in plotly
-    showLink: false,
+  showLink: false,
 
     // if we show a link, does it contain data or just link to a plotly file?
-    sendData: true,
+  sendData: true,
 
     // text appearing in the sendData link
-    linkText: 'Edit chart',
+  linkText: 'Edit chart',
 
     // false or function adding source(s) to linkText <text>
-    showSources: false,
+  showSources: false,
 
     // display the mode bar (true, false, or 'hover')
-    displayModeBar: 'hover',
+  displayModeBar: 'hover',
 
     // remove mode bar button by name
     // (see ./components/modebar/buttons.js for the list of names)
-    modeBarButtonsToRemove: [],
+  modeBarButtonsToRemove: [],
 
     // add mode bar button using config objects
     // (see ./components/modebar/buttons.js for list of arguments)
-    modeBarButtonsToAdd: [],
+  modeBarButtonsToAdd: [],
 
     // fully custom mode bar buttons as nested array,
     // where the outer arrays represents button groups, and
     // the inner arrays have buttons config objects or names of default buttons
     // (see ./components/modebar/buttons.js for more info)
-    modeBarButtons: false,
+  modeBarButtons: false,
 
     // add the plotly logo on the end of the mode bar
-    displaylogo: true,
+  displaylogo: true,
 
     // increase the pixel ratio for Gl plot images
-    plotGlPixelRatio: 2,
+  plotGlPixelRatio: 2,
 
     // function to add the background color to a different container
     // or 'opaque' to ensure there's white behind it
-    setBackground: defaultSetBackground,
+  setBackground: defaultSetBackground,
 
     // URL to topojson files used in geo charts
-    topojsonURL: 'https://cdn.plot.ly/',
+  topojsonURL: 'https://cdn.plot.ly/',
 
     // Mapbox access token (required to plot mapbox trace types)
     // If using an Mapbox Atlas server, set this option to '',
     // so that plotly.js won't attempt to authenticate to the public Mapbox server.
-    mapboxAccessToken: null,
+  mapboxAccessToken: null,
 
     // Turn all console logging on or off (errors will be thrown)
     // This should ONLY be set via Plotly.setPlotConfig
-    logging: false,
+  logging: false,
 
     // Set global transform to be applied to all traces with no
     // specification needed
-    globalTransforms: []
-};
+  globalTransforms: []
+}
 
 // where and how the background gets set can be overridden by context
 // so we define the default (plotly.js) behavior here
-function defaultSetBackground(gd, bgColor) {
-    try {
-        gd._fullLayout._paper.style('background', bgColor);
+function defaultSetBackground (gd, bgColor) {
+  try {
+    gd._fullLayout._paper.style('background', bgColor)
+  } catch (e) {
+    if (module.exports.logging > 0) {
+      console.error(e)
     }
-    catch(e) {
-        if(module.exports.logging > 0) {
-            console.error(e);
-        }
-    }
+  }
 }

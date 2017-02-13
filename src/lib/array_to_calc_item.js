@@ -6,10 +6,9 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
-'use strict';
+'use strict'
 
 // similar to Lib.mergeArray, but using inside a loop
-module.exports = function arrayToCalcItem(traceAttr, calcItem, calcAttr, i) {
-    if(Array.isArray(traceAttr)) calcItem[calcAttr] = traceAttr[i];
-};
+module.exports = function arrayToCalcItem (traceAttr, calcItem, calcAttr, i) {
+  if (Array.isArray(traceAttr)) calcItem[calcAttr] = traceAttr[i]
+}

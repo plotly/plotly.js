@@ -6,48 +6,46 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var Lib = require('../../lib')
 
-var Lib = require('../../lib');
+var colorscaleDefaults = require('../../components/colorscale/defaults')
+var attributes = require('./attributes')
 
-var colorscaleDefaults = require('../../components/colorscale/defaults');
-var attributes = require('./attributes');
+module.exports = function supplyDefaults (traceIn, traceOut, defaultColor, layout) {
+  function coerce (attr, dflt) {
+    return Lib.coerce(traceIn, traceOut, attributes, attr, dflt)
+  }
 
+  var locations = coerce('locations')
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    function coerce(attr, dflt) {
-        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
-    }
+  var len
+  if (locations) len = locations.length
 
-    var locations = coerce('locations');
+  if (!locations || !len) {
+    traceOut.visible = false
+    return
+  }
 
-    var len;
-    if(locations) len = locations.length;
+  var z = coerce('z')
+  if (!Array.isArray(z)) {
+    traceOut.visible = false
+    return
+  }
 
-    if(!locations || !len) {
-        traceOut.visible = false;
-        return;
-    }
+  if (z.length > len) traceOut.z = z.slice(0, len)
 
-    var z = coerce('z');
-    if(!Array.isArray(z)) {
-        traceOut.visible = false;
-        return;
-    }
+  coerce('locationmode')
 
-    if(z.length > len) traceOut.z = z.slice(0, len);
+  coerce('text')
 
-    coerce('locationmode');
+  coerce('marker.line.color')
+  coerce('marker.line.width')
 
-    coerce('text');
-
-    coerce('marker.line.color');
-    coerce('marker.line.width');
-
-    colorscaleDefaults(
+  colorscaleDefaults(
         traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
-    );
+    )
 
-    coerce('hoverinfo', (layout._dataLength === 1) ? 'location+z+text' : undefined);
-};
+  coerce('hoverinfo', (layout._dataLength === 1) ? 'location+z+text' : undefined)
+}

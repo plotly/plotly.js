@@ -6,20 +6,20 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-'use strict';
+'use strict'
 
 module.exports = {
-    moduleType: 'component',
-    name: 'rangeslider',
+  moduleType: 'component',
+  name: 'rangeslider',
 
-    schema: {
-        layout: {
-            'xaxis.rangeslider': require('./attributes')
-        }
-    },
+  schema: {
+    layout: {
+      'xaxis.rangeslider': require('./attributes')
+    }
+  },
 
-    layoutAttributes: require('./attributes'),
-    handleDefaults: require('./defaults'),
+  layoutAttributes: require('./attributes'),
+  handleDefaults: require('./defaults'),
 
-    draw: require('./draw')
-};
+  draw: require('./draw')
+}

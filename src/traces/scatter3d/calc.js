@@ -6,22 +6,21 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-'use strict';
+'use strict'
 
-var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
-var calcColorscales = require('../scatter/colorscale_calc');
-
+var arraysToCalcdata = require('../scatter/arrays_to_calcdata')
+var calcColorscales = require('../scatter/colorscale_calc')
 
 /**
  * This is a kludge to put the array attributes into
  * calcdata the way Scatter.plot does, so that legends and
  * popovers know what to do with them.
  */
-module.exports = function calc(gd, trace) {
-    var cd = [{x: false, y: false, trace: trace, t: {}}];
+module.exports = function calc (gd, trace) {
+  var cd = [{x: false, y: false, trace: trace, t: {}}]
 
-    arraysToCalcdata(cd, trace);
-    calcColorscales(trace);
+  arraysToCalcdata(cd, trace)
+  calcColorscales(trace)
 
-    return cd;
-};
+  return cd
+}

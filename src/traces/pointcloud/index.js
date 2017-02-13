@@ -6,26 +6,26 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-'use strict';
+'use strict'
 
-var pointcloud = {};
+var pointcloud = {}
 
-pointcloud.attributes = require('./attributes');
-pointcloud.supplyDefaults = require('./defaults');
+pointcloud.attributes = require('./attributes')
+pointcloud.supplyDefaults = require('./defaults')
 
 // reuse the Scatter3D 'dummy' calc step so that legends know what to do
-pointcloud.calc = require('../scatter3d/calc');
-pointcloud.plot = require('./convert');
+pointcloud.calc = require('../scatter3d/calc')
+pointcloud.plot = require('./convert')
 
-pointcloud.moduleType = 'trace';
-pointcloud.name = 'pointcloud';
-pointcloud.basePlotModule = require('../../plots/gl2d');
-pointcloud.categories = ['gl2d', 'showLegend'];
+pointcloud.moduleType = 'trace'
+pointcloud.name = 'pointcloud'
+pointcloud.basePlotModule = require('../../plots/gl2d')
+pointcloud.categories = ['gl2d', 'showLegend']
 pointcloud.meta = {
-    description: [
-        'The data visualized as a point cloud set in `x` and `y`',
-        'using the WebGl plotting engine.'
-    ].join(' ')
-};
+  description: [
+    'The data visualized as a point cloud set in `x` and `y`',
+    'using the WebGl plotting engine.'
+  ].join(' ')
+}
 
-module.exports = pointcloud;
+module.exports = pointcloud

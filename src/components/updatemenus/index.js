@@ -6,16 +6,16 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-'use strict';
+'use strict'
 
-var constants = require('./constants');
+var constants = require('./constants')
 
 module.exports = {
-    moduleType: 'component',
-    name: constants.name,
+  moduleType: 'component',
+  name: constants.name,
 
-    layoutAttributes: require('./attributes'),
-    supplyLayoutDefaults: require('./defaults'),
+  layoutAttributes: require('./attributes'),
+  supplyLayoutDefaults: require('./defaults'),
 
-    draw: require('./draw')
-};
+  draw: require('./draw')
+}

@@ -6,14 +6,12 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+module.exports = function eventData (out, pt) {
+  out.lon = pt.lon
+  out.lat = pt.lat
+  out.location = pt.lon ? pt.lon : null
 
-
-module.exports = function eventData(out, pt) {
-    out.lon = pt.lon;
-    out.lat = pt.lat;
-    out.location = pt.lon ? pt.lon : null;
-
-    return out;
-};
+  return out
+}

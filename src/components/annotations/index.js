@@ -6,23 +6,22 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
-
-var drawModule = require('./draw');
-var clickModule = require('./click');
+var drawModule = require('./draw')
+var clickModule = require('./click')
 
 module.exports = {
-    moduleType: 'component',
-    name: 'annotations',
+  moduleType: 'component',
+  name: 'annotations',
 
-    layoutAttributes: require('./attributes'),
-    supplyLayoutDefaults: require('./defaults'),
+  layoutAttributes: require('./attributes'),
+  supplyLayoutDefaults: require('./defaults'),
 
-    calcAutorange: require('./calc_autorange'),
-    draw: drawModule.draw,
-    drawOne: drawModule.drawOne,
+  calcAutorange: require('./calc_autorange'),
+  draw: drawModule.draw,
+  drawOne: drawModule.drawOne,
 
-    hasClickToShow: clickModule.hasClickToShow,
-    onClick: clickModule.onClick
-};
+  hasClickToShow: clickModule.hasClickToShow,
+  onClick: clickModule.onClick
+}

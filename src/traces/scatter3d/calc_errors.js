@@ -6,64 +6,62 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var makeComputeError = require('../../components/errorbars/compute_error')
 
-var makeComputeError = require('../../components/errorbars/compute_error');
+function calculateAxisErrors (data, params, scaleFactor) {
+  if (!params || !params.visible) return null
 
+  var computeError = makeComputeError(params)
+  var result = new Array(data.length)
 
-function calculateAxisErrors(data, params, scaleFactor) {
-    if(!params || !params.visible) return null;
+  for (var i = 0; i < data.length; i++) {
+    var errors = computeError(+data[i], i)
 
-    var computeError = makeComputeError(params);
-    var result = new Array(data.length);
+    result[i] = [
+      -errors[0] * scaleFactor,
+      errors[1] * scaleFactor
+    ]
+  }
 
-    for(var i = 0; i < data.length; i++) {
-        var errors = computeError(+data[i], i);
-
-        result[i] = [
-            -errors[0] * scaleFactor,
-            errors[1] * scaleFactor
-        ];
-    }
-
-    return result;
+  return result
 }
 
-function dataLength(array) {
-    for(var i = 0; i < array.length; i++) {
-        if(array[i]) return array[i].length;
-    }
-    return 0;
+function dataLength (array) {
+  for (var i = 0; i < array.length; i++) {
+    if (array[i]) return array[i].length
+  }
+  return 0
 }
 
-function calculateErrors(data, scaleFactor) {
-    var errors = [
-        calculateAxisErrors(data.x, data.error_x, scaleFactor[0]),
-        calculateAxisErrors(data.y, data.error_y, scaleFactor[1]),
-        calculateAxisErrors(data.z, data.error_z, scaleFactor[2])
-    ];
+function calculateErrors (data, scaleFactor) {
+  var errors = [
+    calculateAxisErrors(data.x, data.error_x, scaleFactor[0]),
+    calculateAxisErrors(data.y, data.error_y, scaleFactor[1]),
+    calculateAxisErrors(data.z, data.error_z, scaleFactor[2])
+  ]
 
-    var n = dataLength(errors);
-    if(n === 0) return null;
+  var n = dataLength(errors)
+  if (n === 0) return null
 
-    var errorBounds = new Array(n);
+  var errorBounds = new Array(n)
 
-    for(var i = 0; i < n; i++) {
-        var bound = [[0, 0, 0], [0, 0, 0]];
+  for (var i = 0; i < n; i++) {
+    var bound = [[0, 0, 0], [0, 0, 0]]
 
-        for(var j = 0; j < 3; j++) {
-            if(errors[j]) {
-                for(var k = 0; k < 2; k++) {
-                    bound[k][j] = errors[j][i][k];
-                }
-            }
+    for (var j = 0; j < 3; j++) {
+      if (errors[j]) {
+        for (var k = 0; k < 2; k++) {
+          bound[k][j] = errors[j][i][k]
         }
-
-        errorBounds[i] = bound;
+      }
     }
 
-    return errorBounds;
+    errorBounds[i] = bound
+  }
+
+  return errorBounds
 }
 
-module.exports = calculateErrors;
+module.exports = calculateErrors

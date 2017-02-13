@@ -6,14 +6,13 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var d3 = require('d3')
+var tinycolor = require('tinycolor2')
+var isNumeric = require('fast-isnumeric')
 
-var d3 = require('d3');
-var tinycolor = require('tinycolor2');
-var isNumeric = require('fast-isnumeric');
-
-var Color = require('../color');
+var Color = require('../color')
 
 /**
  * General colorscale function generator.
@@ -28,67 +27,64 @@ var Color = require('../color');
  *
  * @return {function}
  */
-module.exports = function makeColorScaleFunc(specs, opts) {
-    opts = opts || {};
+module.exports = function makeColorScaleFunc (specs, opts) {
+  opts = opts || {}
 
-    var domain = specs.domain,
-        range = specs.range,
-        N = range.length,
-        _range = new Array(N);
+  var domain = specs.domain,
+    range = specs.range,
+    N = range.length,
+    _range = new Array(N)
 
-    for(var i = 0; i < N; i++) {
-        var rgba = tinycolor(range[i]).toRgb();
-        _range[i] = [rgba.r, rgba.g, rgba.b, rgba.a];
-    }
+  for (var i = 0; i < N; i++) {
+    var rgba = tinycolor(range[i]).toRgb()
+    _range[i] = [rgba.r, rgba.g, rgba.b, rgba.a]
+  }
 
-    var _sclFunc = d3.scale.linear()
+  var _sclFunc = d3.scale.linear()
         .domain(domain)
         .range(_range)
-        .clamp(true);
+        .clamp(true)
 
-    var noNumericCheck = opts.noNumericCheck,
-        returnArray = opts.returnArray,
-        sclFunc;
+  var noNumericCheck = opts.noNumericCheck,
+    returnArray = opts.returnArray,
+    sclFunc
 
-    if(noNumericCheck && returnArray) {
-        sclFunc = _sclFunc;
+  if (noNumericCheck && returnArray) {
+    sclFunc = _sclFunc
+  } else if (noNumericCheck) {
+    sclFunc = function (v) {
+      return colorArray2rbga(_sclFunc(v))
     }
-    else if(noNumericCheck) {
-        sclFunc = function(v) {
-            return colorArray2rbga(_sclFunc(v));
-        };
+  } else if (returnArray) {
+    sclFunc = function (v) {
+      if (isNumeric(v)) return _sclFunc(v)
+      else if (tinycolor(v).isValid()) return v
+      else return Color.defaultLine
     }
-    else if(returnArray) {
-        sclFunc = function(v) {
-            if(isNumeric(v)) return _sclFunc(v);
-            else if(tinycolor(v).isValid()) return v;
-            else return Color.defaultLine;
-        };
+  } else {
+    sclFunc = function (v) {
+      if (isNumeric(v)) return colorArray2rbga(_sclFunc(v))
+      else if (tinycolor(v).isValid()) return v
+      else return Color.defaultLine
     }
-    else {
-        sclFunc = function(v) {
-            if(isNumeric(v)) return colorArray2rbga(_sclFunc(v));
-            else if(tinycolor(v).isValid()) return v;
-            else return Color.defaultLine;
-        };
-    }
+  }
 
     // colorbar draw looks into the d3 scale closure for domain and range
 
-    sclFunc.domain = _sclFunc.domain;
+  sclFunc.domain = _sclFunc.domain
 
-    sclFunc.range = function() { return range; };
+  sclFunc.range = function () { return range }
 
-    return sclFunc;
-};
+  return sclFunc
+}
 
-function colorArray2rbga(colorArray) {
-    var colorObj = {
-        r: colorArray[0],
-        g: colorArray[1],
-        b: colorArray[2],
-        a: colorArray[3]
-    };
+function colorArray2rbga (colorArray) {
+  var colorObj = {
+    r: colorArray[0],
+    g: colorArray[1],
+    b: colorArray[2],
+    a: colorArray[3]
+  }
 
-    return tinycolor(colorObj).toRgbString();
+  return tinycolor(colorObj).toRgbString()
 }

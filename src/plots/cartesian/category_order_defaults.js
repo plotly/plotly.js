@@ -6,27 +6,26 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-'use strict';
+'use strict'
 
+module.exports = function handleCategoryOrderDefaults (containerIn, containerOut, coerce) {
+  if (containerOut.type !== 'category') return
 
-module.exports = function handleCategoryOrderDefaults(containerIn, containerOut, coerce) {
-    if(containerOut.type !== 'category') return;
+  var arrayIn = containerIn.categoryarray,
+    orderDefault
 
-    var arrayIn = containerIn.categoryarray,
-        orderDefault;
-
-    var isValidArray = (Array.isArray(arrayIn) && arrayIn.length > 0);
+  var isValidArray = (Array.isArray(arrayIn) && arrayIn.length > 0)
 
     // override default 'categoryorder' value when non-empty array is supplied
-    if(isValidArray) orderDefault = 'array';
+  if (isValidArray) orderDefault = 'array'
 
-    var order = coerce('categoryorder', orderDefault);
+  var order = coerce('categoryorder', orderDefault)
 
     // coerce 'categoryarray' only in array order case
-    if(order === 'array') coerce('categoryarray');
+  if (order === 'array') coerce('categoryarray')
 
     // cannot set 'categoryorder' to 'array' with an invalid 'categoryarray'
-    if(!isValidArray && order === 'array') {
-        containerOut.categoryorder = 'trace';
-    }
-};
+  if (!isValidArray && order === 'array') {
+    containerOut.categoryorder = 'trace'
+  }
+}

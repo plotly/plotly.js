@@ -6,46 +6,46 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-'use strict';
+'use strict'
 
 module.exports = {
 
     // attribute container name
-    name: 'rangeslider',
+  name: 'rangeslider',
 
     // class names
 
-    containerClassName: 'rangeslider-container',
-    bgClassName: 'rangeslider-bg',
-    rangePlotClassName: 'rangeslider-rangeplot',
+  containerClassName: 'rangeslider-container',
+  bgClassName: 'rangeslider-bg',
+  rangePlotClassName: 'rangeslider-rangeplot',
 
-    maskMinClassName: 'rangeslider-mask-min',
-    maskMaxClassName: 'rangeslider-mask-max',
-    slideBoxClassName: 'rangeslider-slidebox',
+  maskMinClassName: 'rangeslider-mask-min',
+  maskMaxClassName: 'rangeslider-mask-max',
+  slideBoxClassName: 'rangeslider-slidebox',
 
-    grabberMinClassName: 'rangeslider-grabber-min',
-    grabAreaMinClassName: 'rangeslider-grabarea-min',
-    handleMinClassName: 'rangeslider-handle-min',
+  grabberMinClassName: 'rangeslider-grabber-min',
+  grabAreaMinClassName: 'rangeslider-grabarea-min',
+  handleMinClassName: 'rangeslider-handle-min',
 
-    grabberMaxClassName: 'rangeslider-grabber-max',
-    grabAreaMaxClassName: 'rangeslider-grabarea-max',
-    handleMaxClassName: 'rangeslider-handle-max',
+  grabberMaxClassName: 'rangeslider-grabber-max',
+  grabAreaMaxClassName: 'rangeslider-grabarea-max',
+  handleMaxClassName: 'rangeslider-handle-max',
 
     // style constants
 
-    maskColor: 'rgba(0,0,0,0.4)',
+  maskColor: 'rgba(0,0,0,0.4)',
 
-    slideBoxFill: 'transparent',
-    slideBoxCursor: 'ew-resize',
+  slideBoxFill: 'transparent',
+  slideBoxCursor: 'ew-resize',
 
-    grabAreaFill: 'transparent',
-    grabAreaCursor: 'col-resize',
-    grabAreaWidth: 10,
-    grabAreaMinOffset: -6,
-    grabAreaMaxOffset: -2,
+  grabAreaFill: 'transparent',
+  grabAreaCursor: 'col-resize',
+  grabAreaWidth: 10,
+  grabAreaMinOffset: -6,
+  grabAreaMaxOffset: -2,
 
-    handleWidth: 2,
-    handleRadius: 1,
-    handleFill: '#fff',
-    handleStroke: '#666',
-};
+  handleWidth: 2,
+  handleRadius: 1,
+  handleFill: '#fff',
+  handleStroke: '#666'
+}

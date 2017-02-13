@@ -6,8 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
-'use strict';
+'use strict'
 
 /**
  * Extract colorscale into numeric domain and color range.
@@ -16,20 +15,20 @@
  * @param {number} cmin minimum color value (used to clamp scale)
  * @param {number} cmax maximum color value (used to clamp scale)
  */
-module.exports = function extractScale(scl, cmin, cmax) {
-    var N = scl.length,
-        domain = new Array(N),
-        range = new Array(N);
+module.exports = function extractScale (scl, cmin, cmax) {
+  var N = scl.length,
+    domain = new Array(N),
+    range = new Array(N)
 
-    for(var i = 0; i < N; i++) {
-        var si = scl[i];
+  for (var i = 0; i < N; i++) {
+    var si = scl[i]
 
-        domain[i] = cmin + si[0] * (cmax - cmin);
-        range[i] = si[1];
-    }
+    domain[i] = cmin + si[0] * (cmax - cmin)
+    range[i] = si[1]
+  }
 
-    return {
-        domain: domain,
-        range: range
-    };
-};
+  return {
+    domain: domain,
+    range: range
+  }
+}

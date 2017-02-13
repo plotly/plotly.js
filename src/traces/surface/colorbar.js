@@ -6,45 +6,43 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var isNumeric = require('fast-isnumeric')
 
-var isNumeric = require('fast-isnumeric');
+var Lib = require('../../lib')
+var Plots = require('../../plots/plots')
+var Colorscale = require('../../components/colorscale')
+var drawColorbar = require('../../components/colorbar/draw')
 
-var Lib = require('../../lib');
-var Plots = require('../../plots/plots');
-var Colorscale = require('../../components/colorscale');
-var drawColorbar = require('../../components/colorbar/draw');
+module.exports = function colorbar (gd, cd) {
+  var trace = cd[0].trace,
+    cbId = 'cb' + trace.uid,
+    cmin = trace.cmin,
+    cmax = trace.cmax,
+    vals = trace.surfacecolor || trace.z
 
+  if (!isNumeric(cmin)) cmin = Lib.aggNums(Math.min, null, vals)
+  if (!isNumeric(cmax)) cmax = Lib.aggNums(Math.max, null, vals)
 
-module.exports = function colorbar(gd, cd) {
-    var trace = cd[0].trace,
-        cbId = 'cb' + trace.uid,
-        cmin = trace.cmin,
-        cmax = trace.cmax,
-        vals = trace.surfacecolor || trace.z;
+  gd._fullLayout._infolayer.selectAll('.' + cbId).remove()
 
-    if(!isNumeric(cmin)) cmin = Lib.aggNums(Math.min, null, vals);
-    if(!isNumeric(cmax)) cmax = Lib.aggNums(Math.max, null, vals);
+  if (!trace.showscale) {
+    Plots.autoMargin(gd, cbId)
+    return
+  }
 
-    gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
-
-    if(!trace.showscale) {
-        Plots.autoMargin(gd, cbId);
-        return;
-    }
-
-    var cb = cd[0].t.cb = drawColorbar(gd, cbId);
-    var sclFunc = Colorscale.makeColorScaleFunc(
+  var cb = cd[0].t.cb = drawColorbar(gd, cbId)
+  var sclFunc = Colorscale.makeColorScaleFunc(
         Colorscale.extractScale(
             trace.colorscale,
             cmin,
             cmax
         ),
         { noNumericCheck: true }
-    );
+    )
 
-    cb.fillcolor(sclFunc)
+  cb.fillcolor(sclFunc)
         .filllevels({start: cmin, end: cmax, size: (cmax - cmin) / 254})
-        .options(trace.colorbar)();
-};
+        .options(trace.colorbar)()
+}

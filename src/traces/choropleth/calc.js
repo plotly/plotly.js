@@ -6,12 +6,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var colorscaleCalc = require('../../components/colorscale/calc')
 
-var colorscaleCalc = require('../../components/colorscale/calc');
-
-
-module.exports = function calc(gd, trace) {
-    colorscaleCalc(trace, trace.z, '', 'z');
-};
+module.exports = function calc (gd, trace) {
+  colorscaleCalc(trace, trace.z, '', 'z')
+}

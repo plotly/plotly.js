@@ -6,15 +6,14 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var tinycolor = require('tinycolor2')
+var arrtools = require('arraytools')
 
-var tinycolor = require('tinycolor2');
-var arrtools = require('arraytools');
-
-function str2RgbaArray(color) {
-    color = tinycolor(color);
-    return arrtools.str2RgbaArray(color.toRgbString());
+function str2RgbaArray (color) {
+  color = tinycolor(color)
+  return arrtools.str2RgbaArray(color.toRgbString())
 }
 
-module.exports = str2RgbaArray;
+module.exports = str2RgbaArray

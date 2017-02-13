@@ -6,35 +6,35 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-'use strict';
+'use strict'
 
-var histogram2dAttrs = require('../histogram2d/attributes');
-var contourAttrs = require('../contour/attributes');
-var colorscaleAttrs = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
+var histogram2dAttrs = require('../histogram2d/attributes')
+var contourAttrs = require('../contour/attributes')
+var colorscaleAttrs = require('../../components/colorscale/attributes')
+var colorbarAttrs = require('../../components/colorbar/attributes')
 
-var extendFlat = require('../../lib/extend').extendFlat;
+var extendFlat = require('../../lib/extend').extendFlat
 
 module.exports = extendFlat({}, {
-    x: histogram2dAttrs.x,
-    y: histogram2dAttrs.y,
-    z: histogram2dAttrs.z,
-    marker: histogram2dAttrs.marker,
+  x: histogram2dAttrs.x,
+  y: histogram2dAttrs.y,
+  z: histogram2dAttrs.z,
+  marker: histogram2dAttrs.marker,
 
-    histnorm: histogram2dAttrs.histnorm,
-    histfunc: histogram2dAttrs.histfunc,
-    autobinx: histogram2dAttrs.autobinx,
-    nbinsx: histogram2dAttrs.nbinsx,
-    xbins: histogram2dAttrs.xbins,
-    autobiny: histogram2dAttrs.autobiny,
-    nbinsy: histogram2dAttrs.nbinsy,
-    ybins: histogram2dAttrs.ybins,
+  histnorm: histogram2dAttrs.histnorm,
+  histfunc: histogram2dAttrs.histfunc,
+  autobinx: histogram2dAttrs.autobinx,
+  nbinsx: histogram2dAttrs.nbinsx,
+  xbins: histogram2dAttrs.xbins,
+  autobiny: histogram2dAttrs.autobiny,
+  nbinsy: histogram2dAttrs.nbinsy,
+  ybins: histogram2dAttrs.ybins,
 
-    autocontour: contourAttrs.autocontour,
-    ncontours: contourAttrs.ncontours,
-    contours: contourAttrs.contours,
-    line: contourAttrs.line
+  autocontour: contourAttrs.autocontour,
+  ncontours: contourAttrs.ncontours,
+  contours: contourAttrs.contours,
+  line: contourAttrs.line
 },
     colorscaleAttrs,
     { colorbar: colorbarAttrs }
-);
+)

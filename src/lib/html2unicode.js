@@ -6,62 +6,61 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var toSuperScript = require('superscript-text')
+var stringMappings = require('../constants/string_mappings')
 
-var toSuperScript = require('superscript-text');
-var stringMappings = require('../constants/string_mappings');
+function fixSuperScript (x) {
+  var idx = 0
 
-function fixSuperScript(x) {
-    var idx = 0;
+  while ((idx = x.indexOf('<sup>', idx)) >= 0) {
+    var nidx = x.indexOf('</sup>', idx)
+    if (nidx < idx) break
 
-    while((idx = x.indexOf('<sup>', idx)) >= 0) {
-        var nidx = x.indexOf('</sup>', idx);
-        if(nidx < idx) break;
+    x = x.slice(0, idx) + toSuperScript(x.slice(idx + 5, nidx)) + x.slice(nidx + 6)
+  }
 
-        x = x.slice(0, idx) + toSuperScript(x.slice(idx + 5, nidx)) + x.slice(nidx + 6);
+  return x
+}
+
+function fixBR (x) {
+  return x.replace(/\<br\>/g, '\n')
+}
+
+function stripTags (x) {
+  return x.replace(/\<.*\>/g, '')
+}
+
+function fixEntities (x) {
+  var entityToUnicode = stringMappings.entityToUnicode
+  var idx = 0
+
+  while ((idx = x.indexOf('&', idx)) >= 0) {
+    var nidx = x.indexOf(';', idx)
+    if (nidx < idx) {
+      idx += 1
+      continue
     }
 
-    return x;
-}
-
-function fixBR(x) {
-    return x.replace(/\<br\>/g, '\n');
-}
-
-function stripTags(x) {
-    return x.replace(/\<.*\>/g, '');
-}
-
-function fixEntities(x) {
-    var entityToUnicode = stringMappings.entityToUnicode;
-    var idx = 0;
-
-    while((idx = x.indexOf('&', idx)) >= 0) {
-        var nidx = x.indexOf(';', idx);
-        if(nidx < idx) {
-            idx += 1;
-            continue;
-        }
-
-        var entity = entityToUnicode[x.slice(idx + 1, nidx)];
-        if(entity) {
-            x = x.slice(0, idx) + entity + x.slice(nidx + 1);
-        } else {
-            x = x.slice(0, idx) + x.slice(nidx + 1);
-        }
+    var entity = entityToUnicode[x.slice(idx + 1, nidx)]
+    if (entity) {
+      x = x.slice(0, idx) + entity + x.slice(nidx + 1)
+    } else {
+      x = x.slice(0, idx) + x.slice(nidx + 1)
     }
+  }
 
-    return x;
+  return x
 }
 
-function convertHTMLToUnicode(html) {
-    return '' +
+function convertHTMLToUnicode (html) {
+  return '' +
         fixEntities(
         stripTags(
         fixSuperScript(
         fixBR(
-          html))));
+          html))))
 }
 
-module.exports = convertHTMLToUnicode;
+module.exports = convertHTMLToUnicode

@@ -6,44 +6,39 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var Events = require('../../lib/events')
 
+var unhover = module.exports = {}
 
-var Events = require('../../lib/events');
-
-
-var unhover = module.exports = {};
-
-
-unhover.wrapped = function(gd, evt, subplot) {
-    if(typeof gd === 'string') gd = document.getElementById(gd);
+unhover.wrapped = function (gd, evt, subplot) {
+  if (typeof gd === 'string') gd = document.getElementById(gd)
 
     // Important, clear any queued hovers
-    if(gd._hoverTimer) {
-        clearTimeout(gd._hoverTimer);
-        gd._hoverTimer = undefined;
-    }
+  if (gd._hoverTimer) {
+    clearTimeout(gd._hoverTimer)
+    gd._hoverTimer = undefined
+  }
 
-    unhover.raw(gd, evt, subplot);
-};
-
+  unhover.raw(gd, evt, subplot)
+}
 
 // remove hover effects on mouse out, and emit unhover event
-unhover.raw = function unhoverRaw(gd, evt) {
-    var fullLayout = gd._fullLayout;
+unhover.raw = function unhoverRaw (gd, evt) {
+  var fullLayout = gd._fullLayout
 
-    if(!evt) evt = {};
-    if(evt.target &&
+  if (!evt) evt = {}
+  if (evt.target &&
        Events.triggerHandler(gd, 'plotly_beforehover', evt) === false) {
-        return;
-    }
+    return
+  }
 
-    fullLayout._hoverlayer.selectAll('g').remove();
+  fullLayout._hoverlayer.selectAll('g').remove()
 
-    if(evt.target && gd._hoverdata) {
-        gd.emit('plotly_unhover', {points: gd._hoverdata});
-    }
+  if (evt.target && gd._hoverdata) {
+    gd.emit('plotly_unhover', {points: gd._hoverdata})
+  }
 
-    gd._hoverdata = undefined;
-};
+  gd._hoverdata = undefined
+}

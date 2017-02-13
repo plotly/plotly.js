@@ -6,33 +6,32 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var Registry = require('../registry')
+var Lib = require('../lib')
 
-var Registry = require('../registry');
-var Lib = require('../lib');
-
-var baseAttributes = require('../plots/attributes');
-var baseLayoutAttributes = require('../plots/layout_attributes');
-var frameAttributes = require('../plots/frame_attributes');
-var animationAttributes = require('../plots/animation_attributes');
+var baseAttributes = require('../plots/attributes')
+var baseLayoutAttributes = require('../plots/layout_attributes')
+var frameAttributes = require('../plots/frame_attributes')
+var animationAttributes = require('../plots/animation_attributes')
 
 // polar attributes are not part of the Registry yet
-var polarAreaAttrs = require('../plots/polar/area_attributes');
-var polarAxisAttrs = require('../plots/polar/axis_attributes');
+var polarAreaAttrs = require('../plots/polar/area_attributes')
+var polarAxisAttrs = require('../plots/polar/axis_attributes')
 
-var extendFlat = Lib.extendFlat;
-var extendDeep = Lib.extendDeep;
+var extendFlat = Lib.extendFlat
+var extendDeep = Lib.extendDeep
 
-var IS_SUBPLOT_OBJ = '_isSubplotObj';
-var IS_LINKED_TO_ARRAY = '_isLinkedToArray';
-var DEPRECATED = '_deprecated';
-var UNDERSCORE_ATTRS = [IS_SUBPLOT_OBJ, IS_LINKED_TO_ARRAY, DEPRECATED];
+var IS_SUBPLOT_OBJ = '_isSubplotObj'
+var IS_LINKED_TO_ARRAY = '_isLinkedToArray'
+var DEPRECATED = '_deprecated'
+var UNDERSCORE_ATTRS = [IS_SUBPLOT_OBJ, IS_LINKED_TO_ARRAY, DEPRECATED]
 
-exports.IS_SUBPLOT_OBJ = IS_SUBPLOT_OBJ;
-exports.IS_LINKED_TO_ARRAY = IS_LINKED_TO_ARRAY;
-exports.DEPRECATED = DEPRECATED;
-exports.UNDERSCORE_ATTRS = UNDERSCORE_ATTRS;
+exports.IS_SUBPLOT_OBJ = IS_SUBPLOT_OBJ
+exports.IS_LINKED_TO_ARRAY = IS_LINKED_TO_ARRAY
+exports.DEPRECATED = DEPRECATED
+exports.UNDERSCORE_ATTRS = UNDERSCORE_ATTRS
 
 /** Outputs the full plotly.js plot schema
  *
@@ -45,34 +44,34 @@ exports.UNDERSCORE_ATTRS = UNDERSCORE_ATTRS;
  *  - animations
  *  - config (coming soon ...)
  */
-exports.get = function() {
-    var traces = {};
+exports.get = function () {
+  var traces = {}
 
-    Registry.allTypes.concat('area').forEach(function(type) {
-        traces[type] = getTraceAttributes(type);
-    });
+  Registry.allTypes.concat('area').forEach(function (type) {
+    traces[type] = getTraceAttributes(type)
+  })
 
-    var transforms = {};
+  var transforms = {}
 
-    Object.keys(Registry.transformsRegistry).forEach(function(type) {
-        transforms[type] = getTransformAttributes(type);
-    });
+  Object.keys(Registry.transformsRegistry).forEach(function (type) {
+    transforms[type] = getTransformAttributes(type)
+  })
 
-    return {
-        defs: {
-            valObjects: Lib.valObjects,
-            metaKeys: UNDERSCORE_ATTRS.concat(['description', 'role'])
-        },
+  return {
+    defs: {
+      valObjects: Lib.valObjects,
+      metaKeys: UNDERSCORE_ATTRS.concat(['description', 'role'])
+    },
 
-        traces: traces,
-        layout: getLayoutAttributes(),
+    traces: traces,
+    layout: getLayoutAttributes(),
 
-        transforms: transforms,
+    transforms: transforms,
 
-        frames: getFramesAttributes(),
-        animation: formatAttributes(animationAttributes)
-    };
-};
+    frames: getFramesAttributes(),
+    animation: formatAttributes(animationAttributes)
+  }
+}
 
 /**
  * Crawl the attribute tree, recursively calling a callback function
@@ -97,21 +96,21 @@ exports.get = function() {
  * @return {object} transformOut
  *  copy of transformIn that contains attribute defaults
  */
-exports.crawl = function(attrs, callback, specifiedLevel) {
-    var level = specifiedLevel || 0;
+exports.crawl = function (attrs, callback, specifiedLevel) {
+  var level = specifiedLevel || 0
 
-    Object.keys(attrs).forEach(function(attrName) {
-        var attr = attrs[attrName];
+  Object.keys(attrs).forEach(function (attrName) {
+    var attr = attrs[attrName]
 
-        if(UNDERSCORE_ATTRS.indexOf(attrName) !== -1) return;
+    if (UNDERSCORE_ATTRS.indexOf(attrName) !== -1) return
 
-        callback(attr, attrName, attrs, level);
+    callback(attr, attrName, attrs, level)
 
-        if(exports.isValObject(attr)) return;
+    if (exports.isValObject(attr)) return
 
-        if(Lib.isPlainObject(attr)) exports.crawl(attr, callback, level + 1);
-    });
-};
+    if (Lib.isPlainObject(attr)) exports.crawl(attr, callback, level + 1)
+  })
+}
 
 /** Is object a value object (or a container object)?
  *
@@ -120,9 +119,9 @@ exports.crawl = function(attrs, callback, specifiedLevel) {
  *  returns true for a valid value object and
  *  false for tree nodes in the attribute hierarchy
  */
-exports.isValObject = function(obj) {
-    return obj && obj.valType !== undefined;
-};
+exports.isValObject = function (obj) {
+  return obj && obj.valType !== undefined
+}
 
 /**
  * Find all data array attributes in a given trace object - including
@@ -134,40 +133,40 @@ exports.isValObject = function(obj) {
  * @return {array} arrayAttributes
  *  list of array attributes for the given trace
  */
-exports.findArrayAttributes = function(trace) {
-    var arrayAttributes = [],
-        stack = [];
+exports.findArrayAttributes = function (trace) {
+  var arrayAttributes = [],
+    stack = []
 
-    function callback(attr, attrName, attrs, level) {
-        stack = stack.slice(0, level).concat([attrName]);
+  function callback (attr, attrName, attrs, level) {
+    stack = stack.slice(0, level).concat([attrName])
 
-        var splittableAttr = attr && (attr.valType === 'data_array' || attr.arrayOk === true);
-        if(!splittableAttr) return;
+    var splittableAttr = attr && (attr.valType === 'data_array' || attr.arrayOk === true)
+    if (!splittableAttr) return
 
-        var astr = toAttrString(stack);
-        var val = Lib.nestedProperty(trace, astr).get();
-        if(!Array.isArray(val)) return;
+    var astr = toAttrString(stack)
+    var val = Lib.nestedProperty(trace, astr).get()
+    if (!Array.isArray(val)) return
 
-        arrayAttributes.push(astr);
+    arrayAttributes.push(astr)
+  }
+
+  function toAttrString (stack) {
+    return stack.join('.')
+  }
+
+  exports.crawl(trace._module.attributes, callback)
+
+  if (trace.transforms) {
+    var transforms = trace.transforms
+
+    for (var i = 0; i < transforms.length; i++) {
+      var transform = transforms[i]
+
+      stack = ['transforms[' + i + ']']
+
+      exports.crawl(transform._module.attributes, callback, 1)
     }
-
-    function toAttrString(stack) {
-        return stack.join('.');
-    }
-
-    exports.crawl(trace._module.attributes, callback);
-
-    if(trace.transforms) {
-        var transforms = trace.transforms;
-
-        for(var i = 0; i < transforms.length; i++) {
-            var transform = transforms[i];
-
-            stack = ['transforms[' + i + ']'];
-
-            exports.crawl(transform._module.attributes, callback, 1);
-        }
-    }
+  }
 
     // Look into the fullInput module attributes for array attributes
     // to make sure that 'custom' array attributes are detected.
@@ -175,232 +174,225 @@ exports.findArrayAttributes = function(trace) {
     // At the moment, we need this block to make sure that
     // ohlc and candlestick 'open', 'high', 'low', 'close' can be
     // used with filter ang groupby transforms.
-    if(trace._fullInput) {
-        exports.crawl(trace._fullInput._module.attributes, callback);
+  if (trace._fullInput) {
+    exports.crawl(trace._fullInput._module.attributes, callback)
 
-        arrayAttributes = Lib.filterUnique(arrayAttributes);
-    }
+    arrayAttributes = Lib.filterUnique(arrayAttributes)
+  }
 
-    return arrayAttributes;
-};
+  return arrayAttributes
+}
 
-function getTraceAttributes(type) {
-    var _module, basePlotModule;
+function getTraceAttributes (type) {
+  var _module, basePlotModule
 
-    if(type === 'area') {
-        _module = { attributes: polarAreaAttrs };
-        basePlotModule = {};
-    }
-    else {
-        _module = Registry.modules[type]._module,
-        basePlotModule = _module.basePlotModule;
-    }
+  if (type === 'area') {
+    _module = { attributes: polarAreaAttrs }
+    basePlotModule = {}
+  } else {
+    _module = Registry.modules[type]._module,
+        basePlotModule = _module.basePlotModule
+  }
 
-    var attributes = {};
+  var attributes = {}
 
     // make 'type' the first attribute in the object
-    attributes.type = null;
+  attributes.type = null
 
     // base attributes (same for all trace types)
-    extendDeep(attributes, baseAttributes);
+  extendDeep(attributes, baseAttributes)
 
     // module attributes
-    extendDeep(attributes, _module.attributes);
+  extendDeep(attributes, _module.attributes)
 
     // subplot attributes
-    if(basePlotModule.attributes) {
-        extendDeep(attributes, basePlotModule.attributes);
-    }
+  if (basePlotModule.attributes) {
+    extendDeep(attributes, basePlotModule.attributes)
+  }
 
     // add registered components trace attributes
-    Object.keys(Registry.componentsRegistry).forEach(function(k) {
-        var _module = Registry.componentsRegistry[k];
+  Object.keys(Registry.componentsRegistry).forEach(function (k) {
+    var _module = Registry.componentsRegistry[k]
 
-        if(_module.schema && _module.schema.traces && _module.schema.traces[type]) {
-            Object.keys(_module.schema.traces[type]).forEach(function(v) {
-                insertAttrs(attributes, _module.schema.traces[type][v], v);
-            });
-        }
-    });
+    if (_module.schema && _module.schema.traces && _module.schema.traces[type]) {
+      Object.keys(_module.schema.traces[type]).forEach(function (v) {
+        insertAttrs(attributes, _module.schema.traces[type][v], v)
+      })
+    }
+  })
 
     // 'type' gets overwritten by baseAttributes; reset it here
-    attributes.type = type;
+  attributes.type = type
 
-    var out = {
-        meta: _module.meta || {},
-        attributes: formatAttributes(attributes),
-    };
+  var out = {
+    meta: _module.meta || {},
+    attributes: formatAttributes(attributes)
+  }
 
     // trace-specific layout attributes
-    if(_module.layoutAttributes) {
-        var layoutAttributes = {};
+  if (_module.layoutAttributes) {
+    var layoutAttributes = {}
 
-        extendDeep(layoutAttributes, _module.layoutAttributes);
-        out.layoutAttributes = formatAttributes(layoutAttributes);
-    }
+    extendDeep(layoutAttributes, _module.layoutAttributes)
+    out.layoutAttributes = formatAttributes(layoutAttributes)
+  }
 
-    return out;
+  return out
 }
 
-function getLayoutAttributes() {
-    var layoutAttributes = {};
+function getLayoutAttributes () {
+  var layoutAttributes = {}
 
     // global layout attributes
-    extendDeep(layoutAttributes, baseLayoutAttributes);
+  extendDeep(layoutAttributes, baseLayoutAttributes)
 
     // add base plot module layout attributes
-    Object.keys(Registry.subplotsRegistry).forEach(function(k) {
-        var _module = Registry.subplotsRegistry[k];
+  Object.keys(Registry.subplotsRegistry).forEach(function (k) {
+    var _module = Registry.subplotsRegistry[k]
 
-        if(!_module.layoutAttributes) return;
+    if (!_module.layoutAttributes) return
 
-        if(_module.name === 'cartesian') {
-            handleBasePlotModule(layoutAttributes, _module, 'xaxis');
-            handleBasePlotModule(layoutAttributes, _module, 'yaxis');
-        }
-        else {
-            var astr = _module.attr === 'subplot' ? _module.name : _module.attr;
+    if (_module.name === 'cartesian') {
+      handleBasePlotModule(layoutAttributes, _module, 'xaxis')
+      handleBasePlotModule(layoutAttributes, _module, 'yaxis')
+    } else {
+      var astr = _module.attr === 'subplot' ? _module.name : _module.attr
 
-            handleBasePlotModule(layoutAttributes, _module, astr);
-        }
-    });
+      handleBasePlotModule(layoutAttributes, _module, astr)
+    }
+  })
 
     // polar layout attributes
-    layoutAttributes = assignPolarLayoutAttrs(layoutAttributes);
+  layoutAttributes = assignPolarLayoutAttrs(layoutAttributes)
 
     // add registered components layout attributes
-    Object.keys(Registry.componentsRegistry).forEach(function(k) {
-        var _module = Registry.componentsRegistry[k];
+  Object.keys(Registry.componentsRegistry).forEach(function (k) {
+    var _module = Registry.componentsRegistry[k]
 
-        if(!_module.layoutAttributes) return;
+    if (!_module.layoutAttributes) return
 
-        if(_module.schema && _module.schema.layout) {
-            Object.keys(_module.schema.layout).forEach(function(v) {
-                insertAttrs(layoutAttributes, _module.schema.layout[v], v);
-            });
-        }
-        else {
-            insertAttrs(layoutAttributes, _module.layoutAttributes, _module.name);
-        }
-    });
+    if (_module.schema && _module.schema.layout) {
+      Object.keys(_module.schema.layout).forEach(function (v) {
+        insertAttrs(layoutAttributes, _module.schema.layout[v], v)
+      })
+    } else {
+      insertAttrs(layoutAttributes, _module.layoutAttributes, _module.name)
+    }
+  })
 
-    return {
-        layoutAttributes: formatAttributes(layoutAttributes)
-    };
+  return {
+    layoutAttributes: formatAttributes(layoutAttributes)
+  }
 }
 
-function getTransformAttributes(type) {
-    var _module = Registry.transformsRegistry[type];
-    var attributes = extendDeep({}, _module.attributes);
+function getTransformAttributes (type) {
+  var _module = Registry.transformsRegistry[type]
+  var attributes = extendDeep({}, _module.attributes)
 
     // add registered components transform attributes
-    Object.keys(Registry.componentsRegistry).forEach(function(k) {
-        var _module = Registry.componentsRegistry[k];
+  Object.keys(Registry.componentsRegistry).forEach(function (k) {
+    var _module = Registry.componentsRegistry[k]
 
-        if(_module.schema && _module.schema.transforms && _module.schema.transforms[type]) {
-            Object.keys(_module.schema.transforms[type]).forEach(function(v) {
-                insertAttrs(attributes, _module.schema.transforms[type][v], v);
-            });
-        }
-    });
+    if (_module.schema && _module.schema.transforms && _module.schema.transforms[type]) {
+      Object.keys(_module.schema.transforms[type]).forEach(function (v) {
+        insertAttrs(attributes, _module.schema.transforms[type][v], v)
+      })
+    }
+  })
 
+  return {
+    attributes: formatAttributes(attributes)
+  }
+}
+
+function getFramesAttributes () {
+  var attrs = {
+    frames: Lib.extendDeep({}, frameAttributes)
+  }
+
+  formatAttributes(attrs)
+
+  return attrs.frames
+}
+
+function formatAttributes (attrs) {
+  mergeValTypeAndRole(attrs)
+  formatArrayContainers(attrs)
+
+  return attrs
+}
+
+function mergeValTypeAndRole (attrs) {
+  function makeSrcAttr (attrName) {
     return {
-        attributes: formatAttributes(attributes)
-    };
-}
-
-function getFramesAttributes() {
-    var attrs = {
-        frames: Lib.extendDeep({}, frameAttributes)
-    };
-
-    formatAttributes(attrs);
-
-    return attrs.frames;
-}
-
-function formatAttributes(attrs) {
-    mergeValTypeAndRole(attrs);
-    formatArrayContainers(attrs);
-
-    return attrs;
-}
-
-function mergeValTypeAndRole(attrs) {
-
-    function makeSrcAttr(attrName) {
-        return {
-            valType: 'string',
-            role: 'info',
-            description: [
-                'Sets the source reference on plot.ly for ',
-                attrName, '.'
-            ].join(' ')
-        };
+      valType: 'string',
+      role: 'info',
+      description: [
+        'Sets the source reference on plot.ly for ',
+        attrName, '.'
+      ].join(' ')
     }
+  }
 
-    function callback(attr, attrName, attrs) {
-        if(exports.isValObject(attr)) {
-            if(attr.valType === 'data_array') {
+  function callback (attr, attrName, attrs) {
+    if (exports.isValObject(attr)) {
+      if (attr.valType === 'data_array') {
                 // all 'data_array' attrs have role 'data'
-                attr.role = 'data';
+        attr.role = 'data'
                 // all 'data_array' attrs have a corresponding 'src' attr
-                attrs[attrName + 'src'] = makeSrcAttr(attrName);
-            }
-            else if(attr.arrayOk === true) {
+        attrs[attrName + 'src'] = makeSrcAttr(attrName)
+      } else if (attr.arrayOk === true) {
                 // all 'arrayOk' attrs have a corresponding 'src' attr
-                attrs[attrName + 'src'] = makeSrcAttr(attrName);
-            }
-        }
-        else if(Lib.isPlainObject(attr)) {
+        attrs[attrName + 'src'] = makeSrcAttr(attrName)
+      }
+    } else if (Lib.isPlainObject(attr)) {
             // all attrs container objects get role 'object'
-            attr.role = 'object';
-        }
+      attr.role = 'object'
     }
+  }
 
-    exports.crawl(attrs, callback);
+  exports.crawl(attrs, callback)
 }
 
-function formatArrayContainers(attrs) {
+function formatArrayContainers (attrs) {
+  function callback (attr, attrName, attrs) {
+    if (!attr) return
 
-    function callback(attr, attrName, attrs) {
-        if(!attr) return;
+    var itemName = attr[IS_LINKED_TO_ARRAY]
 
-        var itemName = attr[IS_LINKED_TO_ARRAY];
+    if (!itemName) return
 
-        if(!itemName) return;
+    delete attr[IS_LINKED_TO_ARRAY]
 
-        delete attr[IS_LINKED_TO_ARRAY];
+    attrs[attrName] = { items: {} }
+    attrs[attrName].items[itemName] = attr
+    attrs[attrName].role = 'object'
+  }
 
-        attrs[attrName] = { items: {} };
-        attrs[attrName].items[itemName] = attr;
-        attrs[attrName].role = 'object';
-    }
-
-    exports.crawl(attrs, callback);
+  exports.crawl(attrs, callback)
 }
 
-function assignPolarLayoutAttrs(layoutAttributes) {
-    extendFlat(layoutAttributes, {
-        radialaxis: polarAxisAttrs.radialaxis,
-        angularaxis: polarAxisAttrs.angularaxis
-    });
+function assignPolarLayoutAttrs (layoutAttributes) {
+  extendFlat(layoutAttributes, {
+    radialaxis: polarAxisAttrs.radialaxis,
+    angularaxis: polarAxisAttrs.angularaxis
+  })
 
-    extendFlat(layoutAttributes, polarAxisAttrs.layout);
+  extendFlat(layoutAttributes, polarAxisAttrs.layout)
 
-    return layoutAttributes;
+  return layoutAttributes
 }
 
-function handleBasePlotModule(layoutAttributes, _module, astr) {
-    var np = Lib.nestedProperty(layoutAttributes, astr),
-        attrs = extendDeep({}, _module.layoutAttributes);
+function handleBasePlotModule (layoutAttributes, _module, astr) {
+  var np = Lib.nestedProperty(layoutAttributes, astr),
+    attrs = extendDeep({}, _module.layoutAttributes)
 
-    attrs[IS_SUBPLOT_OBJ] = true;
-    np.set(attrs);
+  attrs[IS_SUBPLOT_OBJ] = true
+  np.set(attrs)
 }
 
-function insertAttrs(baseAttrs, newAttrs, astr) {
-    var np = Lib.nestedProperty(baseAttrs, astr);
+function insertAttrs (baseAttrs, newAttrs, astr) {
+  var np = Lib.nestedProperty(baseAttrs, astr)
 
-    np.set(extendDeep(np.get() || {}, newAttrs));
+  np.set(extendDeep(np.get() || {}, newAttrs))
 }

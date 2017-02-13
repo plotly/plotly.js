@@ -14,7 +14,7 @@
  * into a CommonJS require-able module.
  */
 
-'use strict';
+'use strict'
 
 /* eslint-disable */
 

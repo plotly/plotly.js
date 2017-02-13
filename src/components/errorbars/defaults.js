@@ -6,70 +6,68 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-'use strict';
+'use strict'
 
-var isNumeric = require('fast-isnumeric');
+var isNumeric = require('fast-isnumeric')
 
-var Registry = require('../../registry');
-var Lib = require('../../lib');
+var Registry = require('../../registry')
+var Lib = require('../../lib')
 
-var attributes = require('./attributes');
+var attributes = require('./attributes')
 
+module.exports = function (traceIn, traceOut, defaultColor, opts) {
+  var objName = 'error_' + opts.axis,
+    containerOut = traceOut[objName] = {},
+    containerIn = traceIn[objName] || {}
 
-module.exports = function(traceIn, traceOut, defaultColor, opts) {
-    var objName = 'error_' + opts.axis,
-        containerOut = traceOut[objName] = {},
-        containerIn = traceIn[objName] || {};
+  function coerce (attr, dflt) {
+    return Lib.coerce(containerIn, containerOut, attributes, attr, dflt)
+  }
 
-    function coerce(attr, dflt) {
-        return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
-    }
-
-    var hasErrorBars = (
+  var hasErrorBars = (
         containerIn.array !== undefined ||
         containerIn.value !== undefined ||
         containerIn.type === 'sqrt'
-    );
+    )
 
-    var visible = coerce('visible', hasErrorBars);
+  var visible = coerce('visible', hasErrorBars)
 
-    if(visible === false) return;
+  if (visible === false) return
 
-    var type = coerce('type', 'array' in containerIn ? 'data' : 'percent'),
-        symmetric = true;
+  var type = coerce('type', 'array' in containerIn ? 'data' : 'percent'),
+    symmetric = true
 
-    if(type !== 'sqrt') {
-        symmetric = coerce('symmetric',
-            !((type === 'data' ? 'arrayminus' : 'valueminus') in containerIn));
+  if (type !== 'sqrt') {
+    symmetric = coerce('symmetric',
+            !((type === 'data' ? 'arrayminus' : 'valueminus') in containerIn))
+  }
+
+  if (type === 'data') {
+    var array = coerce('array')
+    if (!array) containerOut.array = []
+    coerce('traceref')
+    if (!symmetric) {
+      var arrayminus = coerce('arrayminus')
+      if (!arrayminus) containerOut.arrayminus = []
+      coerce('tracerefminus')
     }
+  } else if (type === 'percent' || type === 'constant') {
+    coerce('value')
+    if (!symmetric) coerce('valueminus')
+  }
 
-    if(type === 'data') {
-        var array = coerce('array');
-        if(!array) containerOut.array = [];
-        coerce('traceref');
-        if(!symmetric) {
-            var arrayminus = coerce('arrayminus');
-            if(!arrayminus) containerOut.arrayminus = [];
-            coerce('tracerefminus');
-        }
-    }
-    else if(type === 'percent' || type === 'constant') {
-        coerce('value');
-        if(!symmetric) coerce('valueminus');
-    }
-
-    var copyAttr = 'copy_' + opts.inherit + 'style';
-    if(opts.inherit) {
-        var inheritObj = traceOut['error_' + opts.inherit];
-        if((inheritObj || {}).visible) {
-            coerce(copyAttr, !(containerIn.color ||
+  var copyAttr = 'copy_' + opts.inherit + 'style'
+  if (opts.inherit) {
+    var inheritObj = traceOut['error_' + opts.inherit]
+    if ((inheritObj || {}).visible) {
+      coerce(copyAttr, !(containerIn.color ||
                                isNumeric(containerIn.thickness) ||
-                               isNumeric(containerIn.width)));
-        }
+                               isNumeric(containerIn.width)))
     }
-    if(!opts.inherit || !containerOut[copyAttr]) {
-        coerce('color', defaultColor);
-        coerce('thickness');
-        coerce('width', Registry.traceIs(traceOut, 'gl3d') ? 0 : 4);
-    }
-};
+  }
+  if (!opts.inherit || !containerOut[copyAttr]) {
+    coerce('color', defaultColor)
+    coerce('thickness')
+    coerce('width', Registry.traceIs(traceOut, 'gl3d') ? 0 : 4)
+  }
+}

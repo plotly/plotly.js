@@ -6,14 +6,12 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+exports.attributes = require('./attributes')
 
+exports.supplyDefaults = require('./defaults')
 
-exports.attributes = require('./attributes');
+exports.draw = require('./draw')
 
-exports.supplyDefaults = require('./defaults');
-
-exports.draw = require('./draw');
-
-exports.hasColorbar = require('./has_colorbar');
+exports.hasColorbar = require('./has_colorbar')

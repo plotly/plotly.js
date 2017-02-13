@@ -6,31 +6,29 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var Lib = require('../../lib')
 
-var Lib = require('../../lib');
+var handleSampleDefaults = require('./sample_defaults')
+var colorscaleDefaults = require('../../components/colorscale/defaults')
+var attributes = require('./attributes')
 
-var handleSampleDefaults = require('./sample_defaults');
-var colorscaleDefaults = require('../../components/colorscale/defaults');
-var attributes = require('./attributes');
+module.exports = function supplyDefaults (traceIn, traceOut, defaultColor, layout) {
+  function coerce (attr, dflt) {
+    return Lib.coerce(traceIn, traceOut, attributes, attr, dflt)
+  }
 
+  handleSampleDefaults(traceIn, traceOut, coerce, layout)
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    function coerce(attr, dflt) {
-        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
-    }
-
-    handleSampleDefaults(traceIn, traceOut, coerce, layout);
-
-    var zsmooth = coerce('zsmooth');
-    if(zsmooth === false) {
+  var zsmooth = coerce('zsmooth')
+  if (zsmooth === false) {
         // ensure that xgap and ygap are coerced only when zsmooth allows them to have an effect.
-        coerce('xgap');
-        coerce('ygap');
-    }
+    coerce('xgap')
+    coerce('ygap')
+  }
 
-    colorscaleDefaults(
+  colorscaleDefaults(
         traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
-    );
-};
+    )
+}

@@ -6,9 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
-'use strict';
-
+'use strict'
 
 /**
  * Return news array containing only the unique items
@@ -31,19 +29,19 @@
  * @param {array} array base array
  * @return {array} new filtered array
  */
-module.exports = function filterUnique(array) {
-    var seen = {},
-        out = [],
-        j = 0;
+module.exports = function filterUnique (array) {
+  var seen = {},
+    out = [],
+    j = 0
 
-    for(var i = 0; i < array.length; i++) {
-        var item = array[i];
+  for (var i = 0; i < array.length; i++) {
+    var item = array[i]
 
-        if(seen[item] !== 1) {
-            seen[item] = 1;
-            out[j++] = item;
-        }
+    if (seen[item] !== 1) {
+      seen[item] = 1
+      out[j++] = item
     }
+  }
 
-    return out;
-};
+  return out
+}

@@ -6,18 +6,16 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var handleArrayContainerDefaults = require('../../plots/array_container_defaults')
+var handleAnnotationDefaults = require('./annotation_defaults')
 
-var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
-var handleAnnotationDefaults = require('./annotation_defaults');
+module.exports = function supplyLayoutDefaults (layoutIn, layoutOut) {
+  var opts = {
+    name: 'annotations',
+    handleItemDefaults: handleAnnotationDefaults
+  }
 
-
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
-    var opts = {
-        name: 'annotations',
-        handleItemDefaults: handleAnnotationDefaults
-    };
-
-    handleArrayContainerDefaults(layoutIn, layoutOut, opts);
-};
+  handleArrayContainerDefaults(layoutIn, layoutOut, opts)
+}

@@ -6,29 +6,27 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
+var colorscaleDefaults = require('../../components/colorscale/defaults')
 
-var colorscaleDefaults = require('../../components/colorscale/defaults');
+module.exports = function handleStyleDefaults (traceIn, traceOut, coerce, layout) {
+  var coloring = coerce('contours.coloring')
 
+  var showLines
+  if (coloring === 'fill') showLines = coerce('contours.showlines')
 
-module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout) {
-    var coloring = coerce('contours.coloring');
+  if (showLines !== false) {
+    if (coloring !== 'lines') coerce('line.color', '#000')
+    coerce('line.width', 0.5)
+    coerce('line.dash')
+  }
 
-    var showLines;
-    if(coloring === 'fill') showLines = coerce('contours.showlines');
+  coerce('line.smoothing')
 
-    if(showLines !== false) {
-        if(coloring !== 'lines') coerce('line.color', '#000');
-        coerce('line.width', 0.5);
-        coerce('line.dash');
-    }
-
-    coerce('line.smoothing');
-
-    if((traceOut.contours || {}).coloring !== 'none') {
-        colorscaleDefaults(
+  if ((traceOut.contours || {}).coloring !== 'none') {
+    colorscaleDefaults(
             traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
-        );
-    }
-};
+        )
+  }
+}

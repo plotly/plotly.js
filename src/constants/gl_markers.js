@@ -6,16 +6,15 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
-'use strict';
+'use strict'
 
 module.exports = {
-    circle: '●',
-    'circle-open': '○',
-    square: '■',
-    'square-open': '□',
-    diamond: '◆',
-    'diamond-open': '◇',
-    cross: '+',
-    x: '❌'
-};
+  circle: '●',
+  'circle-open': '○',
+  square: '■',
+  'square-open': '□',
+  diamond: '◆',
+  'diamond-open': '◇',
+  cross: '+',
+  x: '❌'
+}

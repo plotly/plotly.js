@@ -6,11 +6,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict'
 
-'use strict';
-
-var isNumeric = require('fast-isnumeric');
-var isArray = require('./is_array');
+var isNumeric = require('fast-isnumeric')
+var isArray = require('./is_array')
 
 /**
  * convert a string s (such as 'xaxis.range[0]')
@@ -26,90 +25,90 @@ var isArray = require('./is_array');
  * you can't do nestedProperty(obj, 'arr[-1]').set(5)
  * but you can do nestedProperty(obj, 'arr').set([5, 5, 5])
  */
-module.exports = function nestedProperty(container, propStr) {
-    if(isNumeric(propStr)) propStr = String(propStr);
-    else if(typeof propStr !== 'string' ||
+module.exports = function nestedProperty (container, propStr) {
+  if (isNumeric(propStr)) propStr = String(propStr)
+  else if (typeof propStr !== 'string' ||
             propStr.substr(propStr.length - 4) === '[-1]') {
-        throw 'bad property string';
-    }
+    throw 'bad property string'
+  }
 
-    var j = 0,
-        propParts = propStr.split('.'),
-        indexed,
-        indices,
-        i;
+  var j = 0,
+    propParts = propStr.split('.'),
+    indexed,
+    indices,
+    i
 
     // check for parts of the nesting hierarchy that are numbers (ie array elements)
-    while(j < propParts.length) {
+  while (j < propParts.length) {
         // look for non-bracket chars, then any number of [##] blocks
-        indexed = String(propParts[j]).match(/^([^\[\]]*)((\[\-?[0-9]*\])+)$/);
-        if(indexed) {
-            if(indexed[1]) propParts[j] = indexed[1];
+    indexed = String(propParts[j]).match(/^([^\[\]]*)((\[\-?[0-9]*\])+)$/)
+    if (indexed) {
+      if (indexed[1]) propParts[j] = indexed[1]
             // allow propStr to start with bracketed array indices
-            else if(j === 0) propParts.splice(0, 1);
-            else throw 'bad property string';
+      else if (j === 0) propParts.splice(0, 1)
+      else throw 'bad property string'
 
-            indices = indexed[2]
+      indices = indexed[2]
                 .substr(1, indexed[2].length - 2)
-                .split('][');
+                .split('][')
 
-            for(i = 0; i < indices.length; i++) {
-                j++;
-                propParts.splice(j, 0, Number(indices[i]));
-            }
-        }
-        j++;
+      for (i = 0; i < indices.length; i++) {
+        j++
+        propParts.splice(j, 0, Number(indices[i]))
+      }
     }
+    j++
+  }
 
-    if(typeof container !== 'object') {
-        return badContainer(container, propStr, propParts);
-    }
+  if (typeof container !== 'object') {
+    return badContainer(container, propStr, propParts)
+  }
 
-    return {
-        set: npSet(container, propParts),
-        get: npGet(container, propParts),
-        astr: propStr,
-        parts: propParts,
-        obj: container
-    };
-};
+  return {
+    set: npSet(container, propParts),
+    get: npGet(container, propParts),
+    astr: propStr,
+    parts: propParts,
+    obj: container
+  }
+}
 
-function npGet(cont, parts) {
-    return function() {
-        var curCont = cont,
-            curPart,
-            allSame,
-            out,
-            i,
-            j;
+function npGet (cont, parts) {
+  return function () {
+    var curCont = cont,
+      curPart,
+      allSame,
+      out,
+      i,
+      j
 
-        for(i = 0; i < parts.length - 1; i++) {
-            curPart = parts[i];
-            if(curPart === -1) {
-                allSame = true;
-                out = [];
-                for(j = 0; j < curCont.length; j++) {
-                    out[j] = npGet(curCont[j], parts.slice(i + 1))();
-                    if(out[j] !== out[0]) allSame = false;
-                }
-                return allSame ? out[0] : out;
-            }
-            if(typeof curPart === 'number' && !isArray(curCont)) {
-                return undefined;
-            }
-            curCont = curCont[curPart];
-            if(typeof curCont !== 'object' || curCont === null) {
-                return undefined;
-            }
+    for (i = 0; i < parts.length - 1; i++) {
+      curPart = parts[i]
+      if (curPart === -1) {
+        allSame = true
+        out = []
+        for (j = 0; j < curCont.length; j++) {
+          out[j] = npGet(curCont[j], parts.slice(i + 1))()
+          if (out[j] !== out[0]) allSame = false
         }
+        return allSame ? out[0] : out
+      }
+      if (typeof curPart === 'number' && !isArray(curCont)) {
+        return undefined
+      }
+      curCont = curCont[curPart]
+      if (typeof curCont !== 'object' || curCont === null) {
+        return undefined
+      }
+    }
 
         // only hit this if parts.length === 1
-        if(typeof curCont !== 'object' || curCont === null) return undefined;
+    if (typeof curCont !== 'object' || curCont === null) return undefined
 
-        out = curCont[parts[i]];
-        if(out === null) return undefined;
-        return out;
-    };
+    out = curCont[parts[i]]
+    if (out === null) return undefined
+    return out
+  }
 }
 
 /*
@@ -118,78 +117,76 @@ function npGet(cont, parts) {
  * The ONLY case we are looking for is where the entire array is selected, parts[end] === 'x'
  * AND the replacement value is an array.
  */
-function isDataArray(val, key) {
+function isDataArray (val, key) {
+  var containers = ['annotations', 'shapes', 'range', 'domain', 'buttons'],
+    isNotAContainer = containers.indexOf(key) === -1
 
-    var containers = ['annotations', 'shapes', 'range', 'domain', 'buttons'],
-        isNotAContainer = containers.indexOf(key) === -1;
-
-    return isArray(val) && isNotAContainer;
+  return isArray(val) && isNotAContainer
 }
 
-function npSet(cont, parts) {
-    return function(val) {
-        var curCont = cont,
-            containerLevels = [cont],
-            toDelete = emptyObj(val) && !isDataArray(val, parts[parts.length - 1]),
-            curPart,
-            i;
+function npSet (cont, parts) {
+  return function (val) {
+    var curCont = cont,
+      containerLevels = [cont],
+      toDelete = emptyObj(val) && !isDataArray(val, parts[parts.length - 1]),
+      curPart,
+      i
 
-        for(i = 0; i < parts.length - 1; i++) {
-            curPart = parts[i];
+    for (i = 0; i < parts.length - 1; i++) {
+      curPart = parts[i]
 
-            if(typeof curPart === 'number' && !isArray(curCont)) {
-                throw 'array index but container is not an array';
-            }
+      if (typeof curPart === 'number' && !isArray(curCont)) {
+        throw 'array index but container is not an array'
+      }
 
             // handle special -1 array index
-            if(curPart === -1) {
-                toDelete = !setArrayAll(curCont, parts.slice(i + 1), val);
-                if(toDelete) break;
-                else return;
-            }
+      if (curPart === -1) {
+        toDelete = !setArrayAll(curCont, parts.slice(i + 1), val)
+        if (toDelete) break
+        else return
+      }
 
-            if(!checkNewContainer(curCont, curPart, parts[i + 1], toDelete)) {
-                break;
-            }
+      if (!checkNewContainer(curCont, curPart, parts[i + 1], toDelete)) {
+        break
+      }
 
-            curCont = curCont[curPart];
+      curCont = curCont[curPart]
 
-            if(typeof curCont !== 'object' || curCont === null) {
-                throw 'container is not an object';
-            }
+      if (typeof curCont !== 'object' || curCont === null) {
+        throw 'container is not an object'
+      }
 
-            containerLevels.push(curCont);
-        }
+      containerLevels.push(curCont)
+    }
 
-        if(toDelete) {
-            if(i === parts.length - 1) delete curCont[parts[i]];
-            pruneContainers(containerLevels);
-        }
-        else curCont[parts[i]] = val;
-    };
+    if (toDelete) {
+      if (i === parts.length - 1) delete curCont[parts[i]]
+      pruneContainers(containerLevels)
+    } else curCont[parts[i]] = val
+  }
 }
 
 // handle special -1 array index
-function setArrayAll(containerArray, innerParts, val) {
-    var arrayVal = isArray(val),
-        allSet = true,
-        thisVal = val,
-        deleteThis = arrayVal ? false : emptyObj(val),
-        firstPart = innerParts[0],
-        i;
+function setArrayAll (containerArray, innerParts, val) {
+  var arrayVal = isArray(val),
+    allSet = true,
+    thisVal = val,
+    deleteThis = arrayVal ? false : emptyObj(val),
+    firstPart = innerParts[0],
+    i
 
-    for(i = 0; i < containerArray.length; i++) {
-        if(arrayVal) {
-            thisVal = val[i % val.length];
-            deleteThis = emptyObj(thisVal);
-        }
-        if(deleteThis) allSet = false;
-        if(!checkNewContainer(containerArray, i, firstPart, deleteThis)) {
-            continue;
-        }
-        npSet(containerArray[i], innerParts)(thisVal);
+  for (i = 0; i < containerArray.length; i++) {
+    if (arrayVal) {
+      thisVal = val[i % val.length]
+      deleteThis = emptyObj(thisVal)
     }
-    return allSet;
+    if (deleteThis) allSet = false
+    if (!checkNewContainer(containerArray, i, firstPart, deleteThis)) {
+      continue
+    }
+    npSet(containerArray[i], innerParts)(thisVal)
+  }
+  return allSet
 }
 
 /**
@@ -197,59 +194,57 @@ function setArrayAll(containerArray, innerParts, val) {
  * returns false if there's no container and none is needed
  * because we're only deleting an attribute
  */
-function checkNewContainer(container, part, nextPart, toDelete) {
-    if(container[part] === undefined) {
-        if(toDelete) return false;
+function checkNewContainer (container, part, nextPart, toDelete) {
+  if (container[part] === undefined) {
+    if (toDelete) return false
 
-        if(typeof nextPart === 'number') container[part] = [];
-        else container[part] = {};
+    if (typeof nextPart === 'number') container[part] = []
+    else container[part] = {}
+  }
+  return true
+}
+
+function pruneContainers (containerLevels) {
+  var i,
+    j,
+    curCont,
+    keys,
+    remainingKeys
+  for (i = containerLevels.length - 1; i >= 0; i--) {
+    curCont = containerLevels[i]
+    remainingKeys = false
+    if (isArray(curCont)) {
+      for (j = curCont.length - 1; j >= 0; j--) {
+        if (emptyObj(curCont[j])) {
+          if (remainingKeys) curCont[j] = undefined
+          else curCont.pop()
+        } else remainingKeys = true
+      }
+    } else if (typeof curCont === 'object' && curCont !== null) {
+      keys = Object.keys(curCont)
+      remainingKeys = false
+      for (j = keys.length - 1; j >= 0; j--) {
+        if (emptyObj(curCont[keys[j]]) && !isDataArray(curCont[keys[j]], keys[j])) delete curCont[keys[j]]
+        else remainingKeys = true
+      }
     }
-    return true;
+    if (remainingKeys) return
+  }
 }
 
-function pruneContainers(containerLevels) {
-    var i,
-        j,
-        curCont,
-        keys,
-        remainingKeys;
-    for(i = containerLevels.length - 1; i >= 0; i--) {
-        curCont = containerLevels[i];
-        remainingKeys = false;
-        if(isArray(curCont)) {
-            for(j = curCont.length - 1; j >= 0; j--) {
-                if(emptyObj(curCont[j])) {
-                    if(remainingKeys) curCont[j] = undefined;
-                    else curCont.pop();
-                }
-                else remainingKeys = true;
-            }
-        }
-        else if(typeof curCont === 'object' && curCont !== null) {
-            keys = Object.keys(curCont);
-            remainingKeys = false;
-            for(j = keys.length - 1; j >= 0; j--) {
-                if(emptyObj(curCont[keys[j]]) && !isDataArray(curCont[keys[j]], keys[j])) delete curCont[keys[j]];
-                else remainingKeys = true;
-            }
-        }
-        if(remainingKeys) return;
-    }
+function emptyObj (obj) {
+  if (obj === undefined || obj === null) return true
+  if (typeof obj !== 'object') return false // any plain value
+  if (isArray(obj)) return !obj.length // []
+  return !Object.keys(obj).length // {}
 }
 
-function emptyObj(obj) {
-    if(obj === undefined || obj === null) return true;
-    if(typeof obj !== 'object') return false; // any plain value
-    if(isArray(obj)) return !obj.length; // []
-    return !Object.keys(obj).length; // {}
-}
-
-function badContainer(container, propStr, propParts) {
-    return {
-        set: function() { throw 'bad container'; },
-        get: function() {},
-        astr: propStr,
-        parts: propParts,
-        obj: container
-    };
+function badContainer (container, propStr, propParts) {
+  return {
+    set: function () { throw 'bad container' },
+    get: function () {},
+    astr: propStr,
+    parts: propParts,
+    obj: container
+  }
 }
