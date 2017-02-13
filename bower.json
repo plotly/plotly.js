@@ -1,7 +1,7 @@
 {
   "name": "plotly.js",
   "description": "The open source javascript graphing library that powers plotly",
-  "main": "./dist/plotly.min.js",
+  "main": "./dist/plotly.js",
   "authors": [
     "Plotly, Inc."
   ],
