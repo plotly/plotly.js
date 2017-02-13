@@ -196,8 +196,8 @@ Plotly.plot = function(gd, data, layout, config) {
 
         Registry.getComponentMethod('legend', 'draw')(gd);
         Registry.getComponentMethod('rangeselector', 'draw')(gd);
-        Registry.getComponentMethod('updatemenus', 'draw')(gd);
         Registry.getComponentMethod('sliders', 'draw')(gd);
+        Registry.getComponentMethod('updatemenus', 'draw')(gd);
 
         for(i = 0; i < calcdata.length; i++) {
             cd = calcdata[i];
@@ -333,14 +333,8 @@ Plotly.plot = function(gd, data, layout, config) {
         Registry.getComponentMethod('legend', 'draw')(gd);
         Registry.getComponentMethod('rangeslider', 'draw')(gd);
         Registry.getComponentMethod('rangeselector', 'draw')(gd);
-        Registry.getComponentMethod('updatemenus', 'draw')(gd);
         Registry.getComponentMethod('sliders', 'draw')(gd);
-    }
-
-    function cleanUp() {
-        // now we're REALLY TRULY done plotting...
-        // so mark it as done and let other procedures call a replot
-        gd.emit('plotly_afterplot');
+        Registry.getComponentMethod('updatemenus', 'draw')(gd);
     }
 
     var seq = [
@@ -365,6 +359,7 @@ Plotly.plot = function(gd, data, layout, config) {
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
     return Promise.all(gd._promises).then(function() {
+        gd.emit('plotly_afterplot');
         return gd;
     });
 };
@@ -1305,7 +1300,8 @@ function _restyle(gd, aobj, _traces) {
         'tilt', 'tiltaxis', 'depth', 'direction', 'rotation', 'pull',
         'line.showscale', 'line.cauto', 'line.autocolorscale', 'line.reversescale',
         'marker.line.showscale', 'marker.line.cauto', 'marker.line.autocolorscale', 'marker.line.reversescale',
-        'xcalendar', 'ycalendar'
+        'xcalendar', 'ycalendar',
+        'cumulative', 'cumulative.enabled', 'cumulative.direction', 'cumulative.currentbin'
     ];
 
     for(i = 0; i < traces.length; i++) {
@@ -1607,7 +1603,10 @@ function _restyle(gd, aobj, _traces) {
             flags.docolorbars = true;
         }
 
-        if(recalcAttrs.indexOf(ai) !== -1) {
+        var aiArrayStart = ai.indexOf('['),
+            aiAboveArray = aiArrayStart === -1 ? ai : ai.substr(0, aiArrayStart);
+
+        if(recalcAttrs.indexOf(aiAboveArray) !== -1) {
             // major enough changes deserve autoscale, autobin, and
             // non-reversed axes so people don't get confused
             if(['orientation', 'type'].indexOf(ai) !== -1) {
@@ -1630,8 +1629,8 @@ function _restyle(gd, aobj, _traces) {
             }
             flags.docalc = true;
         }
-        else if(replotAttrs.indexOf(ai) !== -1) flags.doplot = true;
-        else if(autorangeAttrs.indexOf(ai) !== -1) flags.docalcAutorange = true;
+        else if(replotAttrs.indexOf(aiAboveArray) !== -1) flags.doplot = true;
+        else if(autorangeAttrs.indexOf(aiAboveArray) !== -1) flags.docalcAutorange = true;
     }
 
     // do we need to force a recalc?
@@ -1735,6 +1734,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
         if(flags.dolayoutstyle) seq.push(subroutines.layoutStyles);
         if(flags.doticks) seq.push(subroutines.doTicksRelayout);
         if(flags.domodebar) seq.push(subroutines.doModeBar);
+        if(flags.docamera) seq.push(subroutines.doCamera);
     }
 
     if(gd._fullLayout._rehover) {
@@ -1786,6 +1786,7 @@ function _relayout(gd, aobj) {
         doplot: false,
         docalc: false,
         domodebar: false,
+        docamera: false,
         layoutReplot: false
     };
 
@@ -1982,7 +1983,10 @@ function _relayout(gd, aobj) {
             var pp1 = String(p.parts[1] || '');
             // check whether we can short-circuit a full redraw
             // 3d or geo at this point just needs to redraw.
-            if(p.parts[0].indexOf('scene') === 0) flags.doplot = true;
+            if(p.parts[0].indexOf('scene') === 0) {
+                if(p.parts[1] === 'camera') flags.docamera = true;
+                else flags.doplot = true;
+            }
             else if(p.parts[0].indexOf('geo') === 0) flags.doplot = true;
             else if(p.parts[0].indexOf('ternary') === 0) flags.doplot = true;
             else if(ai === 'paper_bgcolor') flags.doplot = true;
@@ -2134,6 +2138,7 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, traces) {
         if(relayoutFlags.dolayoutstyle) seq.push(subroutines.layoutStyles);
         if(relayoutFlags.doticks) seq.push(subroutines.doTicksRelayout);
         if(relayoutFlags.domodebar) seq.push(subroutines.doModeBar);
+        if(relayoutFlags.doCamera) seq.push(subroutines.doCamera);
     }
 
     if(gd._fullLayout._rehover) {

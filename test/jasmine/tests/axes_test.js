@@ -1809,7 +1809,7 @@ describe('Test axes', function() {
             );
 
             expect(out).toEqual({
-                start: -0.5,
+                start: 0.5,
                 end: 4.5,
                 size: 1
             });
@@ -1822,6 +1822,9 @@ describe('Test axes', function() {
                 2
             );
 
+            // when size > 1 with all integers, we want the starting point to be
+            // a half integer below the round number a tick would be at (in this case 0)
+            // to approximate the half-open interval [) that's commonly used.
             expect(out).toEqual({
                 start: -0.5,
                 end: 5.5,

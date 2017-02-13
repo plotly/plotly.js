@@ -12,11 +12,11 @@
                 1
             ],
             "mode": "lines+markers+text",
-            "name": "Lines, Markers and Text",
+            "name": "Lines,\nMarkers\rand\r\nText",
             "text": [
-                "Text A",
-                "Text B",
-                "Text C"
+                "Text\nA",
+                "Text\rB",
+                "Text\r\nC"
             ],
             "textfont": {
                 "family": [

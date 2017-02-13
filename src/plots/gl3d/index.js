@@ -11,6 +11,7 @@
 
 var Scene = require('./scene');
 var Plots = require('../plots');
+var Lib = require('../../lib');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 var axesNames = ['xaxis', 'yaxis', 'zaxis'];
@@ -37,21 +38,13 @@ exports.plot = function plotGl3d(gd) {
         fullData = gd._fullData,
         sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d');
 
-    fullLayout._paperdiv.style({
-        width: fullLayout.width + 'px',
-        height: fullLayout.height + 'px'
-    });
-
-    gd._context.setBackground(gd, fullLayout.paper_bgcolor);
-
     for(var i = 0; i < sceneIds.length; i++) {
         var sceneId = sceneIds[i],
             fullSceneData = Plots.getSubplotData(fullData, 'gl3d', sceneId),
             sceneLayout = fullLayout[sceneId],
             scene = sceneLayout._scene;
 
-        // If Scene is not instantiated, create one!
-        if(scene === undefined) {
+        if(!scene) {
             initAxes(gd, sceneLayout);
 
             scene = new Scene({
@@ -66,6 +59,11 @@ exports.plot = function plotGl3d(gd) {
 
             // set ref to Scene instance
             sceneLayout._scene = scene;
+        }
+
+        // save 'initial' camera settings for modebar button
+        if(!scene.cameraInitial) {
+            scene.cameraInitial = Lib.extendDeep({}, sceneLayout.camera);
         }
 
         scene.plot(fullSceneData, fullLayout, gd.layout);

@@ -17,6 +17,7 @@ var Drawing = require('../../components/drawing');
 var heatmapPlot = require('../heatmap/plot');
 var makeCrossings = require('./make_crossings');
 var findAllPaths = require('./find_all_paths');
+var endPlus = require('./end_plus');
 
 
 module.exports = function plot(gd, plotinfo, cdcontours) {
@@ -81,9 +82,10 @@ function plotOne(gd, plotinfo, cd) {
 
 function emptyPathinfo(contours, plotinfo, cd0) {
     var cs = contours.size,
-        pathinfo = [];
+        pathinfo = [],
+        end = endPlus(contours);
 
-    for(var ci = contours.start; ci < contours.end + cs / 10; ci += cs) {
+    for(var ci = contours.start; ci < end; ci += cs) {
         pathinfo.push({
             level: ci,
             // all the cells with nontrivial marching index
@@ -163,7 +165,8 @@ function makeFills(plotgroup, pathinfo, perimeter, contours) {
 }
 
 function joinAllPaths(pi, perimeter) {
-    var fullpath = (pi.edgepaths.length || pi.z[0][0] < pi.level) ?
+    var edgeVal2 = Math.min(pi.z[0][0], pi.z[0][1]),
+        fullpath = (pi.edgepaths.length || edgeVal2 <= pi.level) ?
             '' : ('M' + perimeter.join('L') + 'Z'),
         i = 0,
         startsleft = pi.edgepaths.map(function(v, i) { return i; }),

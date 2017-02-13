@@ -58,7 +58,7 @@ var Tabs = {
         var mockURL = '/test/image/mocks/' + mockName + '.json';
 
         d3.json(mockURL, function(err, fig) {
-            Plotly.plot(Tabs.fresh(id), fig.data, fig.layout);
+            Plotly.plot(Tabs.fresh(id), fig);
 
             console.warn('Plotting:', mockURL);
         });

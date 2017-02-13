@@ -91,6 +91,7 @@ function createCamera(scene) {
                     updateRange(1, result.boxStart[1], result.boxEnd[1]);
                     unSetAutoRange();
                     result.boxEnabled = false;
+                    scene.relayoutCallback();
                 }
                 break;
 
@@ -110,9 +111,15 @@ function createCamera(scene) {
 
                     scene.setRanges(dataBox);
 
+                    result.panning = true;
                     result.lastInputTime = Date.now();
                     unSetAutoRange();
                     scene.cameraChanged();
+                    scene.handleAnnotations();
+                }
+                else if(result.panning) {
+                    result.panning = false;
+                    scene.relayoutCallback();
                 }
                 break;
         }
@@ -152,6 +159,8 @@ function createCamera(scene) {
                 result.lastInputTime = Date.now();
                 unSetAutoRange();
                 scene.cameraChanged();
+                scene.handleAnnotations();
+                scene.relayoutCallback();
                 break;
         }
 

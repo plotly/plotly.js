@@ -3,6 +3,7 @@ var d3 = require('d3');
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
+var Drawing = require('@src/components/drawing');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -236,6 +237,13 @@ describe('Test gl plot interactions', function() {
 
         it('should respond to drag interactions', function(done) {
 
+            function mouseTo(p0, p1) {
+                mouseEvent('mousemove', p0[0], p0[1]);
+                mouseEvent('mousedown', p0[0], p0[1], { buttons: 1 });
+                mouseEvent('mousemove', p1[0], p1[1], { buttons: 1 });
+                mouseEvent('mouseup', p1[0], p1[1]);
+            }
+
             jasmine.addMatchers(customMatchers);
 
             var precision = 5;
@@ -263,14 +271,10 @@ describe('Test gl plot interactions', function() {
             expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
 
             setTimeout(function() {
-
-                mouseEvent('mousemove', 200, 200);
-
                 relayoutCallback.calls.reset();
 
                 // Drag scene along the X axis
-
-                mouseEvent('mousemove', 220, 200, {buttons: 1});
+                mouseTo([200, 200], [220, 200]);
 
                 expect(gd.layout.xaxis.autorange).toBe(false);
                 expect(gd.layout.yaxis.autorange).toBe(false);
@@ -279,36 +283,31 @@ describe('Test gl plot interactions', function() {
                 expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
 
                 // Drag scene back along the X axis
-
-                mouseEvent('mousemove', 200, 200, {buttons: 1});
+                mouseTo([220, 200], [200, 200]);
 
                 expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
 
                 // Drag scene along the Y axis
-
-                mouseEvent('mousemove', 200, 150, {buttons: 1});
+                mouseTo([200, 200], [200, 150]);
 
                 expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(newY, precision);
 
                 // Drag scene back along the Y axis
-
-                mouseEvent('mousemove', 200, 200, {buttons: 1});
+                mouseTo([200, 150], [200, 200]);
 
                 expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
 
                 // Drag scene along both the X and Y axis
-
-                mouseEvent('mousemove', 220, 150, {buttons: 1});
+                mouseTo([200, 200], [220, 150]);
 
                 expect(gd.layout.xaxis.range).toBeCloseToArray(newX, precision);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(newY, precision);
 
                 // Drag scene back along the X and Y axis
-
-                mouseEvent('mousemove', 200, 200, {buttons: 1});
+                mouseTo([220, 150], [200, 200]);
 
                 expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
@@ -330,6 +329,39 @@ describe('Test gl plot interactions', function() {
                 }, MODEBAR_DELAY);
 
             }, MODEBAR_DELAY);
+        });
+
+        it('should be able to toggle visibility', function(done) {
+            var OBJECT_PER_TRACE = 5;
+
+            var objects = function() {
+                return gd._fullLayout._plots.xy._scene2d.glplot.objects;
+            };
+
+            expect(objects().length).toEqual(OBJECT_PER_TRACE);
+
+            Plotly.restyle(gd, 'visible', 'legendonly').then(function() {
+                expect(objects().length).toEqual(OBJECT_PER_TRACE);
+                expect(objects()[0].data.length).toEqual(0);
+
+                return Plotly.restyle(gd, 'visible', true);
+            })
+            .then(function() {
+                expect(objects().length).toEqual(OBJECT_PER_TRACE);
+                expect(objects()[0].data.length).not.toEqual(0);
+
+                return Plotly.restyle(gd, 'visible', false);
+            })
+            .then(function() {
+                expect(gd._fullLayout._plots.xy._scene2d).toBeUndefined();
+
+                return Plotly.restyle(gd, 'visible', true);
+            })
+            .then(function() {
+                expect(objects().length).toEqual(OBJECT_PER_TRACE);
+                expect(objects()[0].data.length).not.toEqual(0);
+            })
+            .then(done);
         });
     });
 
@@ -372,96 +404,193 @@ describe('Test gl plot interactions', function() {
 
         describe('modebar click handlers', function() {
 
-            describe('button zoom3d', function() {
-                it('should updates the scene dragmode and dragmode button', function() {
-                    var buttonTurntable = selectButton(modeBar, 'tableRotation'),
-                        buttonZoom3d = selectButton(modeBar, 'zoom3d');
+            it('button zoom3d should updates the scene dragmode and dragmode button', function() {
+                var buttonTurntable = selectButton(modeBar, 'tableRotation'),
+                    buttonZoom3d = selectButton(modeBar, 'zoom3d');
 
-                    assertScenes(gd._fullLayout, 'dragmode', 'turntable');
-                    expect(buttonTurntable.isActive()).toBe(true);
-                    expect(buttonZoom3d.isActive()).toBe(false);
+                assertScenes(gd._fullLayout, 'dragmode', 'turntable');
+                expect(buttonTurntable.isActive()).toBe(true);
+                expect(buttonZoom3d.isActive()).toBe(false);
 
-                    buttonZoom3d.click();
-                    assertScenes(gd.layout, 'dragmode', 'zoom');
-                    expect(gd.layout.dragmode).toBe(undefined);
-                    expect(gd._fullLayout.dragmode).toBe('zoom');
-                    expect(buttonTurntable.isActive()).toBe(false);
-                    expect(buttonZoom3d.isActive()).toBe(true);
+                buttonZoom3d.click();
+                assertScenes(gd.layout, 'dragmode', 'zoom');
+                expect(gd.layout.dragmode).toBe(undefined);
+                expect(gd._fullLayout.dragmode).toBe('zoom');
+                expect(buttonTurntable.isActive()).toBe(false);
+                expect(buttonZoom3d.isActive()).toBe(true);
 
-                    buttonTurntable.click();
-                    assertScenes(gd._fullLayout, 'dragmode', 'turntable');
-                    expect(buttonTurntable.isActive()).toBe(true);
-                    expect(buttonZoom3d.isActive()).toBe(false);
-                });
+                buttonTurntable.click();
+                assertScenes(gd._fullLayout, 'dragmode', 'turntable');
+                expect(buttonTurntable.isActive()).toBe(true);
+                expect(buttonZoom3d.isActive()).toBe(false);
             });
 
-            describe('button pan3d', function() {
-                it('should updates the scene dragmode and dragmode button', function() {
-                    var buttonTurntable = selectButton(modeBar, 'tableRotation'),
-                        buttonPan3d = selectButton(modeBar, 'pan3d');
+            it('button pan3d should updates the scene dragmode and dragmode button', function() {
+                var buttonTurntable = selectButton(modeBar, 'tableRotation'),
+                    buttonPan3d = selectButton(modeBar, 'pan3d');
 
-                    assertScenes(gd._fullLayout, 'dragmode', 'turntable');
-                    expect(buttonTurntable.isActive()).toBe(true);
-                    expect(buttonPan3d.isActive()).toBe(false);
+                assertScenes(gd._fullLayout, 'dragmode', 'turntable');
+                expect(buttonTurntable.isActive()).toBe(true);
+                expect(buttonPan3d.isActive()).toBe(false);
 
-                    buttonPan3d.click();
-                    assertScenes(gd.layout, 'dragmode', 'pan');
-                    expect(gd.layout.dragmode).toBe(undefined);
-                    expect(gd._fullLayout.dragmode).toBe('zoom');
-                    expect(buttonTurntable.isActive()).toBe(false);
-                    expect(buttonPan3d.isActive()).toBe(true);
+                buttonPan3d.click();
+                assertScenes(gd.layout, 'dragmode', 'pan');
+                expect(gd.layout.dragmode).toBe(undefined);
+                expect(gd._fullLayout.dragmode).toBe('zoom');
+                expect(buttonTurntable.isActive()).toBe(false);
+                expect(buttonPan3d.isActive()).toBe(true);
 
-                    buttonTurntable.click();
-                    assertScenes(gd._fullLayout, 'dragmode', 'turntable');
-                    expect(buttonTurntable.isActive()).toBe(true);
-                    expect(buttonPan3d.isActive()).toBe(false);
-                });
+                buttonTurntable.click();
+                assertScenes(gd._fullLayout, 'dragmode', 'turntable');
+                expect(buttonTurntable.isActive()).toBe(true);
+                expect(buttonPan3d.isActive()).toBe(false);
             });
 
-            describe('button orbitRotation', function() {
-                it('should updates the scene dragmode and dragmode button', function() {
-                    var buttonTurntable = selectButton(modeBar, 'tableRotation'),
-                        buttonOrbit = selectButton(modeBar, 'orbitRotation');
+            it('button orbitRotation should updates the scene dragmode and dragmode button', function() {
+                var buttonTurntable = selectButton(modeBar, 'tableRotation'),
+                    buttonOrbit = selectButton(modeBar, 'orbitRotation');
 
-                    assertScenes(gd._fullLayout, 'dragmode', 'turntable');
-                    expect(buttonTurntable.isActive()).toBe(true);
-                    expect(buttonOrbit.isActive()).toBe(false);
+                assertScenes(gd._fullLayout, 'dragmode', 'turntable');
+                expect(buttonTurntable.isActive()).toBe(true);
+                expect(buttonOrbit.isActive()).toBe(false);
 
-                    buttonOrbit.click();
-                    assertScenes(gd.layout, 'dragmode', 'orbit');
-                    expect(gd.layout.dragmode).toBe(undefined);
-                    expect(gd._fullLayout.dragmode).toBe('zoom');
-                    expect(buttonTurntable.isActive()).toBe(false);
-                    expect(buttonOrbit.isActive()).toBe(true);
+                buttonOrbit.click();
+                assertScenes(gd.layout, 'dragmode', 'orbit');
+                expect(gd.layout.dragmode).toBe(undefined);
+                expect(gd._fullLayout.dragmode).toBe('zoom');
+                expect(buttonTurntable.isActive()).toBe(false);
+                expect(buttonOrbit.isActive()).toBe(true);
 
-                    buttonTurntable.click();
-                    assertScenes(gd._fullLayout, 'dragmode', 'turntable');
-                    expect(buttonTurntable.isActive()).toBe(true);
-                    expect(buttonOrbit.isActive()).toBe(false);
-                });
+                buttonTurntable.click();
+                assertScenes(gd._fullLayout, 'dragmode', 'turntable');
+                expect(buttonTurntable.isActive()).toBe(true);
+                expect(buttonOrbit.isActive()).toBe(false);
             });
 
-            describe('button hoverClosest3d', function() {
-                it('should update the scene hovermode and spikes', function() {
-                    var buttonHover = selectButton(modeBar, 'hoverClosest3d');
+            it('button hoverClosest3d should update the scene hovermode and spikes', function() {
+                var buttonHover = selectButton(modeBar, 'hoverClosest3d');
 
-                    assertScenes(gd._fullLayout, 'hovermode', 'closest');
-                    expect(buttonHover.isActive()).toBe(true);
+                assertScenes(gd._fullLayout, 'hovermode', 'closest');
+                expect(buttonHover.isActive()).toBe(true);
 
-                    buttonHover.click();
-                    assertScenes(gd._fullLayout, 'hovermode', false);
-                    assertScenes(gd._fullLayout, 'xaxis.showspikes', false);
-                    assertScenes(gd._fullLayout, 'yaxis.showspikes', false);
-                    assertScenes(gd._fullLayout, 'zaxis.showspikes', false);
-                    expect(buttonHover.isActive()).toBe(false);
+                buttonHover.click();
+                assertScenes(gd._fullLayout, 'hovermode', false);
+                assertScenes(gd._fullLayout, 'xaxis.showspikes', false);
+                assertScenes(gd._fullLayout, 'yaxis.showspikes', false);
+                assertScenes(gd._fullLayout, 'zaxis.showspikes', false);
+                expect(buttonHover.isActive()).toBe(false);
 
-                    buttonHover.click();
-                    assertScenes(gd._fullLayout, 'hovermode', 'closest');
-                    assertScenes(gd._fullLayout, 'xaxis.showspikes', true);
-                    assertScenes(gd._fullLayout, 'yaxis.showspikes', true);
-                    assertScenes(gd._fullLayout, 'zaxis.showspikes', true);
-                    expect(buttonHover.isActive()).toBe(true);
+                buttonHover.click();
+                assertScenes(gd._fullLayout, 'hovermode', 'closest');
+                assertScenes(gd._fullLayout, 'xaxis.showspikes', true);
+                assertScenes(gd._fullLayout, 'yaxis.showspikes', true);
+                assertScenes(gd._fullLayout, 'zaxis.showspikes', true);
+                expect(buttonHover.isActive()).toBe(true);
+            });
+
+            it('button resetCameraDefault3d should reset camera to default', function(done) {
+                var buttonDefault = selectButton(modeBar, 'resetCameraDefault3d');
+
+                expect(gd._fullLayout.scene._scene.cameraInitial.eye).toEqual({ x: 0.1, y: 0.1, z: 1 });
+                expect(gd._fullLayout.scene2._scene.cameraInitial.eye).toEqual({ x: 2.5, y: 2.5, z: 2.5 });
+
+                gd.once('plotly_relayout', function() {
+                    assertScenes(gd._fullLayout, 'camera.eye.x', 1.25);
+                    assertScenes(gd._fullLayout, 'camera.eye.y', 1.25);
+                    assertScenes(gd._fullLayout, 'camera.eye.z', 1.25);
+
+                    expect(gd._fullLayout.scene._scene.getCamera().eye.z).toBeCloseTo(1.25);
+                    expect(gd._fullLayout.scene2._scene.getCamera().eye.z).toBeCloseTo(1.25);
+
+                    done();
                 });
+
+                buttonDefault.click();
+            });
+
+            it('button resetCameraLastSave3d should reset camera to default', function(done) {
+                var buttonDefault = selectButton(modeBar, 'resetCameraDefault3d');
+                var buttonLastSave = selectButton(modeBar, 'resetCameraLastSave3d');
+
+                function assertCameraEye(sceneLayout, eyeX, eyeY, eyeZ) {
+                    expect(sceneLayout.camera.eye.x).toEqual(eyeX);
+                    expect(sceneLayout.camera.eye.y).toEqual(eyeY);
+                    expect(sceneLayout.camera.eye.z).toEqual(eyeZ);
+
+                    var camera = sceneLayout._scene.getCamera();
+                    expect(camera.eye.x).toBeCloseTo(eyeX);
+                    expect(camera.eye.y).toBeCloseTo(eyeY);
+                    expect(camera.eye.z).toBeCloseTo(eyeZ);
+                }
+
+                Plotly.relayout(gd, {
+                    'scene.camera.eye.z': 4,
+                    'scene2.camera.eye.z': 5
+                })
+                .then(function() {
+                    assertCameraEye(gd._fullLayout.scene, 0.1, 0.1, 4);
+                    assertCameraEye(gd._fullLayout.scene2, 2.5, 2.5, 5);
+
+                    return new Promise(function(resolve) {
+                        gd.once('plotly_relayout', resolve);
+                        buttonLastSave.click();
+                    });
+                })
+                .then(function() {
+                    assertCameraEye(gd._fullLayout.scene, 0.1, 0.1, 1);
+                    assertCameraEye(gd._fullLayout.scene2, 2.5, 2.5, 2.5);
+
+                    return new Promise(function(resolve) {
+                        gd.once('plotly_relayout', resolve);
+                        buttonDefault.click();
+                    });
+                })
+                .then(function() {
+                    assertCameraEye(gd._fullLayout.scene, 1.25, 1.25, 1.25);
+                    assertCameraEye(gd._fullLayout.scene2, 1.25, 1.25, 1.25);
+
+                    return new Promise(function(resolve) {
+                        gd.once('plotly_relayout', resolve);
+                        buttonLastSave.click();
+                    });
+                })
+                .then(function() {
+                    assertCameraEye(gd._fullLayout.scene, 0.1, 0.1, 1);
+                    assertCameraEye(gd._fullLayout.scene2, 2.5, 2.5, 2.5);
+
+                    delete gd._fullLayout.scene._scene.cameraInitial;
+                    delete gd._fullLayout.scene2._scene.cameraInitial;
+
+                    Plotly.relayout(gd, {
+                        'scene.bgcolor': '#d3d3d3',
+                        'scene.camera.eye.z': 4,
+                        'scene2.camera.eye.z': 5
+                    });
+                })
+                .then(function() {
+                    assertCameraEye(gd._fullLayout.scene, 0.1, 0.1, 4);
+                    assertCameraEye(gd._fullLayout.scene2, 2.5, 2.5, 5);
+
+                    return new Promise(function(resolve) {
+                        gd.once('plotly_relayout', resolve);
+                        buttonDefault.click();
+                    });
+                })
+                .then(function() {
+                    assertCameraEye(gd._fullLayout.scene, 1.25, 1.25, 1.25);
+                    assertCameraEye(gd._fullLayout.scene2, 1.25, 1.25, 1.25);
+
+                    return new Promise(function(resolve) {
+                        gd.once('plotly_relayout', resolve);
+                        buttonLastSave.click();
+                    });
+                })
+                .then(function() {
+                    assertCameraEye(gd._fullLayout.scene, 0.1, 0.1, 4);
+                    assertCameraEye(gd._fullLayout.scene2, 2.5, 2.5, 5);
+                })
+                .then(done);
+
             });
         });
 
@@ -556,6 +685,7 @@ describe('Test gl plot interactions', function() {
                 });
             });
         });
+
         describe('Plotly.newPlot', function() {
 
             var mockData2dNew = [{
@@ -708,5 +838,68 @@ describe('Test gl plot side effects', function() {
 
             return Plotly.purge(gd);
         }).then(done);
+    });
+});
+
+describe('gl2d interaction', function() {
+    var gd;
+
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('data-referenced annotations should update on drag', function(done) {
+
+        function drag(start, end) {
+            mouseEvent('mousemove', start[0], start[1]);
+            mouseEvent('mousedown', start[0], start[1], { buttons: 1 });
+            mouseEvent('mousemove', end[0], end[1], { buttons: 1 });
+            mouseEvent('mouseup', end[0], end[1]);
+        }
+
+        function assertAnnotation(xy) {
+            var ann = d3.select('g.annotation-text-g').select('g');
+            var translate = Drawing.getTranslate(ann);
+
+            expect(translate.x).toBeWithin(xy[0], 1.5);
+            expect(translate.y).toBeWithin(xy[1], 1.5);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scattergl',
+            x: [1, 2, 3],
+            y: [2, 1, 2]
+        }], {
+            annotations: [{
+                x: 2,
+                y: 1,
+                text: 'text'
+            }],
+            dragmode: 'pan'
+        })
+        .then(function() {
+            assertAnnotation([327, 325]);
+
+            drag([250, 200], [200, 150]);
+            assertAnnotation([277, 275]);
+
+            return Plotly.relayout(gd, {
+                'xaxis.range': [1.5, 2.5],
+                'yaxis.range': [1, 1.5]
+            });
+        })
+        .then(function() {
+            assertAnnotation([327, 331]);
+        })
+        .then(done);
     });
 });

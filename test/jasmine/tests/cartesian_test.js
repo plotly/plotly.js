@@ -2,6 +2,7 @@ var d3 = require('d3');
 
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
+var Drawing = require('@src/components/drawing');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -283,7 +284,7 @@ describe('relayout', function() {
                 expect(points.attr('y')).toBe(null);
                 expect(texts.attr('transform')).toBe(null);
 
-                var translate = Lib.getTranslate(points);
+                var translate = Drawing.getTranslate(points);
                 expect(Math.abs(translate.x - pointT[0])).toBeLessThan(TOLERANCE);
                 expect(Math.abs(translate.y - pointT[1])).toBeLessThan(TOLERANCE);
 
@@ -297,7 +298,7 @@ describe('relayout', function() {
                 return Plotly.relayout(gd, 'xaxis.range', [2, 3]);
             })
             .then(function() {
-                assertPointTranslate([0, 540], [-540, 135]);
+                assertPointTranslate([-540, 135], [-540, 135]);
             })
             .then(done);
         });

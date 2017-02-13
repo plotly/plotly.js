@@ -367,6 +367,13 @@ describe('finance charts defaults:', function() {
             expect(fullTrace.xcalendar).toBe(i < 2 ? 'hebrew' : 'julian');
         });
     });
+
+    it('should make empty candlestick traces autotype to *linear* (as opposed to real box traces)', function() {
+        var trace0 = { type: 'candlestick' };
+        var out = _supply([trace0], { xaxis: {} });
+
+        expect(out._fullLayout.xaxis.type).toEqual('linear');
+    });
 });
 
 describe('finance charts calc transforms:', function() {
@@ -962,4 +969,128 @@ describe('finance charts updates:', function() {
             done();
         });
     });
+
+    it('Plotly.plot with data-less trace and adding with Plotly.restyle', function(done) {
+        var data = [
+            { type: 'candlestick' },
+            { type: 'ohlc' },
+            { type: 'bar', y: [2, 1, 2] }
+        ];
+
+        Plotly.plot(gd, data).then(function() {
+            expect(countScatterTraces()).toEqual(0);
+            expect(countBoxTraces()).toEqual(0);
+            expect(countRangeSliders()).toEqual(0);
+
+            return Plotly.restyle(gd, {
+                open: [mock0.open],
+                high: [mock0.high],
+                low: [mock0.low],
+                close: [mock0.close]
+            }, [0]);
+        })
+        .then(function() {
+            expect(countScatterTraces()).toEqual(0);
+            expect(countBoxTraces()).toEqual(2);
+            expect(countRangeSliders()).toEqual(1);
+
+            return Plotly.restyle(gd, {
+                open: [mock0.open],
+                high: [mock0.high],
+                low: [mock0.low],
+                close: [mock0.close]
+            }, [1]);
+        })
+        .then(function() {
+            expect(countScatterTraces()).toEqual(2);
+            expect(countBoxTraces()).toEqual(2);
+            expect(countRangeSliders()).toEqual(1);
+        })
+        .then(done);
+    });
+
+});
+
+describe('finance charts *special* handlers:', function() {
+
+    afterEach(destroyGraphDiv);
+
+    it('`editable: true` handlers should work', function(done) {
+
+        var gd = createGraphDiv();
+
+        function editText(itemNumber, newText) {
+            var textNode = d3.selectAll('text.legendtext')
+                .filter(function(_, i) { return i === itemNumber; }).node();
+            textNode.dispatchEvent(new window.MouseEvent('click'));
+
+            var editNode = d3.select('.plugin-editable.editable').node();
+            editNode.dispatchEvent(new window.FocusEvent('focus'));
+
+            editNode.textContent = newText;
+            editNode.dispatchEvent(new window.FocusEvent('focus'));
+            editNode.dispatchEvent(new window.FocusEvent('blur'));
+        }
+
+        // makeEditable in svg_text_utils clears the edit <div> in
+        // a 0-second transition, so push the resolve call at the back
+        // of the rendering queue to make sure the edit <div> is properly
+        // cleared after each mocked text edits.
+        function delayedResolve(resolve) {
+            setTimeout(function() { return resolve(gd); }, 0);
+        }
+
+        Plotly.plot(gd, [
+            Lib.extendDeep({}, mock0, { type: 'ohlc' }),
+            Lib.extendDeep({}, mock0, { type: 'candlestick' })
+        ], {}, {
+            editable: true
+        })
+        .then(function(gd) {
+            return new Promise(function(resolve) {
+                gd.once('plotly_restyle', function(eventData) {
+                    expect(eventData[0]['increasing.name']).toEqual('0');
+                    expect(eventData[1]).toEqual([0]);
+                    delayedResolve(resolve);
+                });
+
+                editText(0, '0');
+            });
+        })
+        .then(function(gd) {
+            return new Promise(function(resolve) {
+                gd.once('plotly_restyle', function(eventData) {
+                    expect(eventData[0]['decreasing.name']).toEqual('1');
+                    expect(eventData[1]).toEqual([0]);
+                    delayedResolve(resolve);
+                });
+
+                editText(1, '1');
+            });
+        })
+        .then(function(gd) {
+            return new Promise(function(resolve) {
+                gd.once('plotly_restyle', function(eventData) {
+                    expect(eventData[0]['decreasing.name']).toEqual('2');
+                    expect(eventData[1]).toEqual([1]);
+                    delayedResolve(resolve);
+                });
+
+                editText(3, '2');
+            });
+        })
+        .then(function(gd) {
+            return new Promise(function(resolve) {
+                gd.once('plotly_restyle', function(eventData) {
+                    expect(eventData[0]['increasing.name']).toEqual('3');
+                    expect(eventData[1]).toEqual([1]);
+                    delayedResolve(resolve);
+                });
+
+                editText(2, '3');
+            });
+        })
+        .then(done);
+    });
+
 });

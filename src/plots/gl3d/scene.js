@@ -201,7 +201,6 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
         });
     }
 
-    scene.glplot.mouseListener.enabled = false;
     scene.glplot.camera = scene.camera;
 
     scene.glplot.oncontextloss = function() {
@@ -322,6 +321,7 @@ function computeTraceBounds(scene, trace, bounds) {
 }
 
 proto.plot = function(sceneData, fullLayout, layout) {
+
     // Save parameters
     this.plotArgs = [sceneData, fullLayout, layout];
 
@@ -344,7 +344,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
     this.axesOptions.merge(fullSceneLayout);
     this.spikeOptions.merge(fullSceneLayout);
 
-    // Update camera mode
+    // Update camera and camera mode
+    this.setCamera(fullSceneLayout.camera);
     this.updateFx(fullSceneLayout.dragmode, fullSceneLayout.hovermode);
 
     // Update scene
@@ -565,18 +566,6 @@ proto.destroy = function() {
     this.glplot = null;
 };
 
-
-// for reset camera button in mode bar
-proto.setCameraToDefault = function setCameraToDefault() {
-    // as in Gl3d.layoutAttributes
-
-    this.setCamera({
-        eye: { x: 1.25, y: 1.25, z: 1.25 },
-        center: { x: 0, y: 0, z: 0 },
-        up: { x: 0, y: 0, z: 1 }
-    });
-};
-
 // getOrbitCamera :: plotly_coords -> orbit_camera_coords
 // inverse of getLayoutCamera
 function getOrbitCamera(camera) {
@@ -605,13 +594,7 @@ proto.getCamera = function getCamera() {
 
 // set camera position with a set of plotly coords
 proto.setCamera = function setCamera(cameraData) {
-
-    var update = {};
-
-    update[this.id] = cameraData;
-
     this.glplot.camera.lookAt.apply(this, getOrbitCamera(cameraData));
-    this.graphDiv.emit('plotly_relayout', update);
 };
 
 // save camera to user layout (i.e. gd.layout)

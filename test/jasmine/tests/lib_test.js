@@ -1,5 +1,7 @@
 var Lib = require('@src/lib');
 var setCursor = require('@src/lib/setcursor');
+var overrideCursor = require('@src/lib/override_cursor');
+var config = require('@src/plot_api/plot_config');
 
 var d3 = require('d3');
 var Plotly = require('@lib');
@@ -1191,207 +1193,53 @@ describe('Test lib.js:', function() {
         });
     });
 
-    describe('getTranslate', function() {
-
-        it('should work with regular DOM elements', function() {
-            var el = document.createElement('div');
-
-            expect(Lib.getTranslate(el)).toEqual({ x: 0, y: 0 });
-
-            el.setAttribute('transform', 'translate(123.45px, 67)');
-            expect(Lib.getTranslate(el)).toEqual({ x: 123.45, y: 67 });
-
-            el.setAttribute('transform', 'translate(123.45)');
-            expect(Lib.getTranslate(el)).toEqual({ x: 123.45, y: 0 });
-
-            el.setAttribute('transform', 'translate(1 2)');
-            expect(Lib.getTranslate(el)).toEqual({ x: 1, y: 2 });
-
-            el.setAttribute('transform', 'translate(1 2); rotate(20deg)');
-            expect(Lib.getTranslate(el)).toEqual({ x: 1, y: 2 });
-
-            el.setAttribute('transform', 'rotate(20deg) translate(1 2);');
-            expect(Lib.getTranslate(el)).toEqual({ x: 1, y: 2 });
-
-            el.setAttribute('transform', 'rotate(20deg)');
-            expect(Lib.getTranslate(el)).toEqual({ x: 0, y: 0 });
-        });
-
-        it('should work with d3 elements', function() {
-            var el = d3.select(document.createElement('div'));
-
-            el.attr('transform', 'translate(123.45px, 67)');
-            expect(Lib.getTranslate(el)).toEqual({ x: 123.45, y: 67 });
-
-            el.attr('transform', 'translate(123.45)');
-            expect(Lib.getTranslate(el)).toEqual({ x: 123.45, y: 0 });
-
-            el.attr('transform', 'translate(1 2)');
-            expect(Lib.getTranslate(el)).toEqual({ x: 1, y: 2 });
-
-            el.attr('transform', 'translate(1 2); rotate(20)');
-            expect(Lib.getTranslate(el)).toEqual({ x: 1, y: 2 });
-
-            el.attr('transform', 'rotate(20)');
-            expect(Lib.getTranslate(el)).toEqual({ x: 0, y: 0 });
-        });
-    });
-
-    describe('setTranslate', function() {
-
-        it('should work with regular DOM elements', function() {
-            var el = document.createElement('div');
-
-            Lib.setTranslate(el, 5);
-            expect(el.getAttribute('transform')).toBe('translate(5, 0)');
-
-            Lib.setTranslate(el, 10, 20);
-            expect(el.getAttribute('transform')).toBe('translate(10, 20)');
-
-            Lib.setTranslate(el);
-            expect(el.getAttribute('transform')).toBe('translate(0, 0)');
-
-            el.setAttribute('transform', 'translate(0, 0); rotate(30)');
-            Lib.setTranslate(el, 30, 40);
-            expect(el.getAttribute('transform')).toBe('rotate(30) translate(30, 40)');
-        });
-
-        it('should work with d3 elements', function() {
-            var el = d3.select(document.createElement('div'));
-
-            Lib.setTranslate(el, 5);
-            expect(el.attr('transform')).toBe('translate(5, 0)');
-
-            Lib.setTranslate(el, 30, 40);
-            expect(el.attr('transform')).toBe('translate(30, 40)');
-
-            Lib.setTranslate(el);
-            expect(el.attr('transform')).toBe('translate(0, 0)');
-
-            el.attr('transform', 'translate(0, 0); rotate(30)');
-            Lib.setTranslate(el, 30, 40);
-            expect(el.attr('transform')).toBe('rotate(30) translate(30, 40)');
-        });
-    });
-
-    describe('getScale', function() {
-
-        it('should work with regular DOM elements', function() {
-            var el = document.createElement('div');
-
-            expect(Lib.getScale(el)).toEqual({ x: 1, y: 1 });
-
-            el.setAttribute('transform', 'scale(1.23, 45)');
-            expect(Lib.getScale(el)).toEqual({ x: 1.23, y: 45 });
-
-            el.setAttribute('transform', 'scale(123.45)');
-            expect(Lib.getScale(el)).toEqual({ x: 123.45, y: 1 });
-
-            el.setAttribute('transform', 'scale(0.1 2)');
-            expect(Lib.getScale(el)).toEqual({ x: 0.1, y: 2 });
-
-            el.setAttribute('transform', 'scale(0.1 2); rotate(20deg)');
-            expect(Lib.getScale(el)).toEqual({ x: 0.1, y: 2 });
-
-            el.setAttribute('transform', 'rotate(20deg) scale(0.1 2);');
-            expect(Lib.getScale(el)).toEqual({ x: 0.1, y: 2 });
-
-            el.setAttribute('transform', 'rotate(20deg)');
-            expect(Lib.getScale(el)).toEqual({ x: 1, y: 1 });
-        });
-
-        it('should work with d3 elements', function() {
-            var el = d3.select(document.createElement('div'));
-
-            el.attr('transform', 'scale(1.23, 45)');
-            expect(Lib.getScale(el)).toEqual({ x: 1.23, y: 45 });
-
-            el.attr('transform', 'scale(123.45)');
-            expect(Lib.getScale(el)).toEqual({ x: 123.45, y: 1 });
-
-            el.attr('transform', 'scale(0.1 2)');
-            expect(Lib.getScale(el)).toEqual({ x: 0.1, y: 2 });
-
-            el.attr('transform', 'scale(0.1 2); rotate(20)');
-            expect(Lib.getScale(el)).toEqual({ x: 0.1, y: 2 });
-
-            el.attr('transform', 'rotate(20)');
-            expect(Lib.getScale(el)).toEqual({ x: 1, y: 1 });
-        });
-    });
-
-    describe('setScale', function() {
-
-        it('should work with regular DOM elements', function() {
-            var el = document.createElement('div');
-
-            Lib.setScale(el, 5);
-            expect(el.getAttribute('transform')).toBe('scale(5, 1)');
-
-            Lib.setScale(el, 30, 40);
-            expect(el.getAttribute('transform')).toBe('scale(30, 40)');
-
-            Lib.setScale(el);
-            expect(el.getAttribute('transform')).toBe('scale(1, 1)');
-
-            el.setAttribute('transform', 'scale(1, 1); rotate(30)');
-            Lib.setScale(el, 30, 40);
-            expect(el.getAttribute('transform')).toBe('rotate(30) scale(30, 40)');
-        });
-
-        it('should work with d3 elements', function() {
-            var el = d3.select(document.createElement('div'));
-
-            Lib.setScale(el, 5);
-            expect(el.attr('transform')).toBe('scale(5, 1)');
-
-            Lib.setScale(el, 30, 40);
-            expect(el.attr('transform')).toBe('scale(30, 40)');
-
-            Lib.setScale(el);
-            expect(el.attr('transform')).toBe('scale(1, 1)');
-
-            el.attr('transform', 'scale(0, 0); rotate(30)');
-            Lib.setScale(el, 30, 40);
-            expect(el.attr('transform')).toBe('rotate(30) scale(30, 40)');
-        });
-    });
-
-    describe('setPointGroupScale', function() {
-        var el, sel;
+    describe('overrideCursor', function() {
 
         beforeEach(function() {
-            el = document.createElement('div');
-            sel = d3.select(el);
+            this.el3 = d3.select(createGraphDiv());
         });
 
-        it('sets the scale of a point', function() {
-            Lib.setPointGroupScale(sel, 2, 2);
-            expect(el.getAttribute('transform')).toBe('scale(2,2)');
+        afterEach(destroyGraphDiv);
+
+        it('should apply the new cursor(s) and revert to the original when removed', function() {
+            this.el3
+                .classed('cursor-before', true)
+                .classed('not-a-cursor', true)
+                .classed('another', true);
+
+            overrideCursor(this.el3, 'after');
+            expect(this.el3.attr('class')).toBe('not-a-cursor another cursor-after');
+
+            overrideCursor(this.el3, 'later');
+            expect(this.el3.attr('class')).toBe('not-a-cursor another cursor-later');
+
+            overrideCursor(this.el3);
+            expect(this.el3.attr('class')).toBe('not-a-cursor another cursor-before');
         });
 
-        it('appends the scale of a point', function() {
-            el.setAttribute('transform', 'translate(1,2)');
-            Lib.setPointGroupScale(sel, 2, 2);
-            expect(el.getAttribute('transform')).toBe('translate(1,2) scale(2,2)');
+        it('should apply the new cursor(s) and revert to the none when removed', function() {
+            this.el3
+                .classed('not-a-cursor', true)
+                .classed('another', true);
+
+            overrideCursor(this.el3, 'after');
+            expect(this.el3.attr('class')).toBe('not-a-cursor another cursor-after');
+
+            overrideCursor(this.el3, 'later');
+            expect(this.el3.attr('class')).toBe('not-a-cursor another cursor-later');
+
+            overrideCursor(this.el3);
+            expect(this.el3.attr('class')).toBe('not-a-cursor another');
         });
 
-        it('modifies the scale of a point', function() {
-            el.setAttribute('transform', 'translate(1,2) scale(3,4)');
-            Lib.setPointGroupScale(sel, 2, 2);
-            expect(el.getAttribute('transform')).toBe('translate(1,2) scale(2,2)');
-        });
+        it('should do nothing if no existing or new override is present', function() {
+            this.el3
+                .classed('cursor-before', true)
+                .classed('not-a-cursor', true);
 
-        it('does not apply the scale of a point if scale (1, 1)', function() {
-            el.setAttribute('transform', 'translate(1,2)');
-            Lib.setPointGroupScale(sel, 1, 1);
-            expect(el.getAttribute('transform')).toBe('translate(1,2)');
-        });
+            overrideCursor(this.el3);
 
-        it('removes the scale of a point if scale (1, 1)', function() {
-            el.setAttribute('transform', 'translate(1,2) scale(3,4)');
-            Lib.setPointGroupScale(sel, 1, 1);
-            expect(el.getAttribute('transform')).toBe('translate(1,2)');
+            expect(this.el3.attr('class')).toBe('cursor-before not-a-cursor');
         });
     });
 
@@ -1546,6 +1394,172 @@ describe('Test lib.js:', function() {
     describe('isPlotDiv', function() {
         it('should work on plain objects', function() {
             expect(Lib.isPlotDiv({})).toBe(false);
+        });
+    });
+
+    describe('isD3Selection', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(function() {
+            destroyGraphDiv();
+            Plotly.setPlotConfig({ queueLength: 0 });
+        });
+
+        it('recognizes real and duck typed selections', function() {
+            var yesSelections = [
+                d3.select(gd),
+                // this is what got us into trouble actually - d3 selections can
+                // contain non-nodes - say for example d3 selections! then they
+                // don't work correctly. But it makes a convenient test!
+                d3.select(1),
+                // just showing what we actually do in this function: duck type
+                // using the `classed` method.
+                {classed: function(v) { return !!v; }}
+            ];
+
+            yesSelections.forEach(function(v) {
+                expect(Lib.isD3Selection(v)).toBe(true, v);
+            });
+        });
+
+        it('rejects non-selections', function() {
+            var notSelections = [
+                1,
+                'path',
+                [1, 2],
+                [[1, 2]],
+                {classed: 1},
+                gd
+            ];
+
+            notSelections.forEach(function(v) {
+                expect(Lib.isD3Selection(v)).toBe(false, v);
+            });
+        });
+    });
+
+    describe('loggers', function() {
+        var stashConsole,
+            stashLogLevel;
+
+        function consoleFn(name, hasApply, messages) {
+            var out = function() {
+                var args = [];
+                for(var i = 0; i < arguments.length; i++) args.push(arguments[i]);
+                messages.push([name, args]);
+            };
+
+            if(!hasApply) out.apply = undefined;
+
+            return out;
+        }
+
+        function mockConsole(hasApply, hasTrace) {
+            var out = {
+                MESSAGES: []
+            };
+            out.log = consoleFn('log', hasApply, out.MESSAGES);
+            out.error = consoleFn('error', hasApply, out.MESSAGES);
+
+            if(hasTrace) out.trace = consoleFn('trace', hasApply, out.MESSAGES);
+
+            return out;
+        }
+
+        beforeEach(function() {
+            stashConsole = window.console;
+            stashLogLevel = config.logging;
+        });
+
+        afterEach(function() {
+            window.console = stashConsole;
+            config.logging = stashLogLevel;
+        });
+
+        it('emits one console message if apply is available', function() {
+            var c = window.console = mockConsole(true, true);
+            config.logging = 2;
+
+            Lib.log('tick', 'tock', 'tick', 'tock', 1);
+            Lib.warn('I\'m', 'a', 'little', 'cuckoo', 'clock', [1, 2]);
+            Lib.error('cuckoo!', 'cuckoo!!!', {a: 1, b: 2});
+
+            expect(c.MESSAGES).toEqual([
+                ['trace', ['LOG:', 'tick', 'tock', 'tick', 'tock', 1]],
+                ['trace', ['WARN:', 'I\'m', 'a', 'little', 'cuckoo', 'clock', [1, 2]]],
+                ['error', ['ERROR:', 'cuckoo!', 'cuckoo!!!', {a: 1, b: 2}]]
+            ]);
+        });
+
+        it('falls back on console.log if no trace', function() {
+            var c = window.console = mockConsole(true, false);
+            config.logging = 2;
+
+            Lib.log('Hi');
+            Lib.warn(42);
+
+            expect(c.MESSAGES).toEqual([
+                ['log', ['LOG:', 'Hi']],
+                ['log', ['WARN:', 42]]
+            ]);
+        });
+
+        it('falls back on separate calls if no apply', function() {
+            var c = window.console = mockConsole(false, false);
+            config.logging = 2;
+
+            Lib.log('tick', 'tock', 'tick', 'tock', 1);
+            Lib.warn('I\'m', 'a', 'little', 'cuckoo', 'clock', [1, 2]);
+            Lib.error('cuckoo!', 'cuckoo!!!', {a: 1, b: 2});
+
+            expect(c.MESSAGES).toEqual([
+                ['log', ['LOG:']],
+                ['log', ['tick']],
+                ['log', ['tock']],
+                ['log', ['tick']],
+                ['log', ['tock']],
+                ['log', [1]],
+                ['log', ['WARN:']],
+                ['log', ['I\'m']],
+                ['log', ['a']],
+                ['log', ['little']],
+                ['log', ['cuckoo']],
+                ['log', ['clock']],
+                ['log', [[1, 2]]],
+                ['error', ['ERROR:']],
+                ['error', ['cuckoo!']],
+                ['error', ['cuckoo!!!']],
+                ['error', [{a: 1, b: 2}]]
+            ]);
+        });
+
+        it('omits .log at log level 1', function() {
+            var c = window.console = mockConsole(true, true);
+            config.logging = 1;
+
+            Lib.log(1);
+            Lib.warn(2);
+            Lib.error(3);
+
+            expect(c.MESSAGES).toEqual([
+                ['trace', ['WARN:', 2]],
+                ['error', ['ERROR:', 3]]
+            ]);
+        });
+
+        it('logs nothing at log level 0', function() {
+            var c = window.console = mockConsole(true, true);
+            config.logging = 0;
+
+            Lib.log(1);
+            Lib.warn(2);
+            Lib.error(3);
+
+            expect(c.MESSAGES).toEqual([]);
         });
     });
 });

@@ -37,8 +37,9 @@ module.exports = function plot(gd, plotinfo, cdbar) {
 
     var bartraces = plotinfo.plot.select('.barlayer')
         .selectAll('g.trace.bars')
-            .data(cdbar)
-      .enter().append('g')
+        .data(cdbar);
+
+    bartraces.enter().append('g')
         .attr('class', 'trace bars');
 
     bartraces.append('g')

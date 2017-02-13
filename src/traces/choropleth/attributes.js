@@ -37,7 +37,7 @@ module.exports = extendFlat({}, {
     marker: {
         line: {
             color: ScatterGeoMarkerLineAttrs.color,
-            width: ScatterGeoMarkerLineAttrs.width
+            width: extendFlat({}, ScatterGeoMarkerLineAttrs.width, {dflt: 1})
         }
     },
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {

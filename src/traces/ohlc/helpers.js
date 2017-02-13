@@ -104,7 +104,18 @@ exports.getFilterFn = function(direction) {
     }
 };
 
-exports.addRangeSlider = function(layout) {
-    if(!layout.xaxis) layout.xaxis = {};
-    if(!layout.xaxis.rangeslider) layout.xaxis.rangeslider = {};
+exports.addRangeSlider = function(data, layout) {
+    var hasOneVisibleTrace = false;
+
+    for(var i = 0; i < data.length; i++) {
+        if(data[i].visible === true) {
+            hasOneVisibleTrace = true;
+            break;
+        }
+    }
+
+    if(hasOneVisibleTrace) {
+        if(!layout.xaxis) layout.xaxis = {};
+        if(!layout.xaxis.rangeslider) layout.xaxis.rangeslider = {};
+    }
 };

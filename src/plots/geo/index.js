@@ -45,11 +45,11 @@ exports.plot = function plotGeo(gd) {
 
     for(var i = 0; i < geoIds.length; i++) {
         var geoId = geoIds[i],
-            geoCalcData = getSubplotCalcData(calcData, geoId),
+            geoCalcData = Plots.getSubplotCalcData(calcData, 'geo', geoId),
             geo = fullLayout[geoId]._subplot;
 
         // If geo is not instantiated, create one!
-        if(geo === undefined) {
+        if(!geo) {
             geo = new Geo({
                 id: geoId,
                 graphDiv: gd,
@@ -102,16 +102,3 @@ exports.toSVG = function(gd) {
             .appendChild(geoFramework.node());
     }
 };
-
-function getSubplotCalcData(calcData, id) {
-    var subplotCalcData = [];
-
-    for(var i = 0; i < calcData.length; i++) {
-        var calcTrace = calcData[i],
-            trace = calcTrace[0].trace;
-
-        if(trace.geo === id) subplotCalcData.push(calcTrace);
-    }
-
-    return subplotCalcData;
-}

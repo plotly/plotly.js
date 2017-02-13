@@ -103,7 +103,9 @@ describe('hover info', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
         mockCopy.data[0].text = [];
-        mockCopy.data[0].text[17] = 'hover text';
+        // we convert newlines to spaces
+        // see https://github.com/plotly/plotly.js/issues/746
+        mockCopy.data[0].text[17] = 'hover\ntext\n\rwith\r\nspaces\n\nnot\rnewlines';
         mockCopy.data[0].hoverinfo = 'text';
 
         beforeEach(function(done) {
@@ -123,7 +125,8 @@ describe('hover info', function() {
 
             expect(d3.selectAll('g.axistext').size()).toEqual(0);
             expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').select('text').html()).toEqual('hover text');
+            expect(d3.selectAll('g.hovertext').select('text').html())
+                .toEqual('hover text  with spaces  not newlines');
         });
     });
 
@@ -155,6 +158,45 @@ describe('hover info', function() {
             expect(d3.selectAll('g.hovertext').select('text').selectAll('tspan').size()).toEqual(2);
             expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('1');
             expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('hover text');
+        });
+    });
+
+    describe('hover info with bad name', function() {
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        mockCopy.data[0].text = [];
+        mockCopy.data[0].text[17] = 'hover text';
+        mockCopy.data[0].hoverinfo = 'all';
+        mockCopy.data[0].name = '<img src=x onerror=y>';
+        mockCopy.data.push({
+            x: [0.002, 0.004],
+            y: [12.5, 16.25],
+            mode: 'lines+markers',
+            name: 'another trace'
+        });
+
+        beforeEach(function(done) {
+            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('cleans the name', function() {
+            var gd = document.getElementById('graph');
+            Fx.hover('graph', evt, 'xy');
+
+            var hoverTrace = gd._hoverdata[0];
+
+            expect(hoverTrace.curveNumber).toEqual(0);
+            expect(hoverTrace.pointNumber).toEqual(17);
+            expect(hoverTrace.x).toEqual(0.388);
+            expect(hoverTrace.y).toEqual(1);
+
+            expect(d3.selectAll('g.axistext').size()).toEqual(1);
+            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
+            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
+            expect(d3.selectAll('g.hovertext').select('text.nums').selectAll('tspan').size()).toEqual(2);
+            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('1');
+            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('hover text');
+            expect(d3.selectAll('g.hovertext').selectAll('text.name').node().innerHTML).toEqual('&lt;img src=x o...');
         });
     });
 
