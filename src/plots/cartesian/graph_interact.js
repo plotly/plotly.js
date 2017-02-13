@@ -117,20 +117,17 @@ fx.init = function(gd) {
                 // This is on `gd._fullLayout`, *not* fullLayout because the reference
                 // changes by the time this is called again.
                 gd._fullLayout._rehover = function() {
-                    if(gd._fullLayout._hoversubplot === plotinfo.id) {
+                    if(gd._fullLayout._hoversubplot === subplot) {
                         fx.hover(gd, evt, subplot);
                     }
                 };
 
-                // Track the hovered subplot. This prevents rehover from accidetally
-                // reapplying a hover label after the mouse has left the plot or if
-                // the mouse has entered another subplot.
-                gd._fullLayout._hoversubplot = plotinfo.id;
+                fx.hover(gd, evt, subplot);
 
-                gd._fullLayout._rehover();
-
-                fullLayout._lasthover = maindrag;
-                fullLayout._hoversubplot = subplot;
+                // Not that we have *not* used the cached fullLayout variable here
+                // since that may be outdated when this is called as a callback later on
+                gd._fullLayout._lasthover = maindrag;
+                gd._fullLayout._hoversubplot = subplot;
             };
 
             /*
