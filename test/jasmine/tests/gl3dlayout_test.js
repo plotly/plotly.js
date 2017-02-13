@@ -1,5 +1,4 @@
 var Gl3d = require('@src/plots/gl3d');
-var Plots = require('@src/plots/plots');
 
 var tinycolor = require('tinycolor2');
 var Color = require('@src/components/color');
@@ -14,9 +13,7 @@ describe('Test Gl3d layout defaults', function() {
         var supplyLayoutDefaults = Gl3d.supplyLayoutDefaults;
 
         beforeEach(function() {
-            layoutOut = {
-                _has: Plots._hasPlotType
-            };
+            layoutOut = { _basePlotModules: ['gl3d'] };
 
             // needs a scene-ref in a trace in order to be detected
             fullData = [ { type: 'scatter3d', scene: 'scene' }];
@@ -174,8 +171,13 @@ describe('Test Gl3d layout defaults', function() {
             expect(layoutOut.scene.dragmode)
                 .toBe('orbit', 'to user layout val if valid and 3d only');
 
+            layoutIn = { scene: {}, dragmode: 'invalid' };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.scene.dragmode)
+                .toBe('turntable', 'to turntable if invalid and 3d only');
+
             layoutIn = { scene: {}, dragmode: 'orbit' };
-            layoutOut._basePlotModules = [{ name: 'cartesian' }];
+            layoutOut._basePlotModules.push({ name: 'cartesian' });
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.dragmode)
                 .toBe('turntable', 'to default if not 3d only');
@@ -202,8 +204,13 @@ describe('Test Gl3d layout defaults', function() {
             expect(layoutOut.scene.hovermode)
                 .toBe(false, 'to user layout val if valid and 3d only');
 
+            layoutIn = { scene: {}, hovermode: 'invalid' };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.scene.hovermode)
+                .toBe('closest', 'to closest if invalid and 3d only');
+
             layoutIn = { scene: {}, hovermode: false };
-            layoutOut._basePlotModules = [{ name: 'cartesian' }];
+            layoutOut._basePlotModules.push({ name: 'cartesian' });
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.hovermode)
                 .toBe('closest', 'to default if not 3d only');
