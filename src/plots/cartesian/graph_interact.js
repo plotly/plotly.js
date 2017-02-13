@@ -124,7 +124,7 @@ fx.init = function(gd) {
 
                 fx.hover(gd, evt, subplot);
 
-                // Not that we have *not* used the cached fullLayout variable here
+                // Note that we have *not* used the cached fullLayout variable here
                 // since that may be outdated when this is called as a callback later on
                 gd._fullLayout._lasthover = maindrag;
                 gd._fullLayout._hoversubplot = subplot;
