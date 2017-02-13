@@ -5,10 +5,7 @@
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-
-
-'use strict';
-
+"use strict";
 /**
  * Convert calcTrace to GeoJSON 'MultiLineString' coordinate arrays
  *
@@ -21,28 +18,25 @@
  *
  */
 exports.calcTraceToLineCoords = function(calcTrace) {
-    var trace = calcTrace[0].trace,
-        connectgaps = trace.connectgaps;
+  var trace = calcTrace[0].trace, connectgaps = trace.connectgaps;
 
-    var coords = [],
-        lineString = [];
+  var coords = [], lineString = [];
 
-    for(var i = 0; i < calcTrace.length; i++) {
-        var calcPt = calcTrace[i];
+  for (var i = 0; i < calcTrace.length; i++) {
+    var calcPt = calcTrace[i];
 
-        lineString.push(calcPt.lonlat);
+    lineString.push(calcPt.lonlat);
 
-        if(!connectgaps && calcPt.gapAfter && lineString.length > 0) {
-            coords.push(lineString);
-            lineString = [];
-        }
+    if (!connectgaps && calcPt.gapAfter && lineString.length > 0) {
+      coords.push(lineString);
+      lineString = [];
     }
+  }
 
-    coords.push(lineString);
+  coords.push(lineString);
 
-    return coords;
+  return coords;
 };
-
 
 /**
  * Make line ('LineString' or 'MultiLineString') GeoJSON
@@ -57,24 +51,17 @@ exports.calcTraceToLineCoords = function(calcTrace) {
  *
  */
 exports.makeLine = function(coords, trace) {
-    var out = {};
+  var out = {};
 
-    if(coords.length === 1) {
-        out = {
-            type: 'LineString',
-            coordinates: coords[0]
-        };
-    }
-    else {
-        out = {
-            type: 'MultiLineString',
-            coordinates: coords
-        };
-    }
+  if (coords.length === 1) {
+    out = { type: "LineString", coordinates: coords[0] };
+  } else {
+    out = { type: "MultiLineString", coordinates: coords };
+  }
 
-    if(trace) out.trace = trace;
+  if (trace) out.trace = trace;
 
-    return out;
+  return out;
 };
 
 /**
@@ -89,30 +76,23 @@ exports.makeLine = function(coords, trace) {
  *  GeoJSON object
  */
 exports.makePolygon = function(coords, trace) {
-    var out = {};
+  var out = {};
 
-    if(coords.length === 1) {
-        out = {
-            type: 'Polygon',
-            coordinates: coords
-        };
-    }
-    else {
-        var _coords = new Array(coords.length);
+  if (coords.length === 1) {
+    out = { type: "Polygon", coordinates: coords };
+  } else {
+    var _coords = new Array(coords.length);
 
-        for(var i = 0; i < coords.length; i++) {
-            _coords[i] = [coords[i]];
-        }
-
-        out = {
-            type: 'MultiPolygon',
-            coordinates: _coords
-        };
+    for (var i = 0; i < coords.length; i++) {
+      _coords[i] = [coords[i]];
     }
 
-    if(trace) out.trace = trace;
+    out = { type: "MultiPolygon", coordinates: _coords };
+  }
 
-    return out;
+  if (trace) out.trace = trace;
+
+  return out;
 };
 
 /**
@@ -123,8 +103,5 @@ exports.makePolygon = function(coords, trace) {
  *
  */
 exports.makeBlank = function() {
-    return {
-        type: 'Point',
-        coordinates: []
-    };
+  return { type: "Point", coordinates: [] };
 };

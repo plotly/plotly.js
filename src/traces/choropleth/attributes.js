@@ -5,45 +5,42 @@
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
+"use strict";
+var ScatterGeoAttrs = require("../scattergeo/attributes");
+var colorscaleAttrs = require("../../components/colorscale/attributes");
+var colorbarAttrs = require("../../components/colorbar/attributes");
+var plotAttrs = require("../../plots/attributes");
 
-'use strict';
-
-var ScatterGeoAttrs = require('../scattergeo/attributes');
-var colorscaleAttrs = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
-var plotAttrs = require('../../plots/attributes');
-
-var extendFlat = require('../../lib/extend').extendFlat;
+var extendFlat = require("../../lib/extend").extendFlat;
 
 var ScatterGeoMarkerLineAttrs = ScatterGeoAttrs.marker.line;
 
-module.exports = extendFlat({}, {
+module.exports = extendFlat(
+  {},
+  {
     locations: {
-        valType: 'data_array',
-        description: [
-            'Sets the coordinates via location IDs or names.',
-            'See `locationmode` for more info.'
-        ].join(' ')
+      valType: "data_array",
+      description: [
+        "Sets the coordinates via location IDs or names.",
+        "See `locationmode` for more info."
+      ].join(" ")
     },
     locationmode: ScatterGeoAttrs.locationmode,
-    z: {
-        valType: 'data_array',
-        description: 'Sets the color values.'
-    },
+    z: { valType: "data_array", description: "Sets the color values." },
     text: {
-        valType: 'data_array',
-        description: 'Sets the text elements associated with each location.'
+      valType: "data_array",
+      description: "Sets the text elements associated with each location."
     },
     marker: {
-        line: {
-            color: ScatterGeoMarkerLineAttrs.color,
-            width: extendFlat({}, ScatterGeoMarkerLineAttrs.width, {dflt: 1})
-        }
+      line: {
+        color: ScatterGeoMarkerLineAttrs.color,
+        width: extendFlat({}, ScatterGeoMarkerLineAttrs.width, { dflt: 1 })
+      }
     },
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
-        flags: ['location', 'z', 'text', 'name']
-    }),
-},
-    colorscaleAttrs,
-    { colorbar: colorbarAttrs }
+      flags: ["location", "z", "text", "name"]
+    })
+  },
+  colorscaleAttrs,
+  { colorbar: colorbarAttrs }
 );

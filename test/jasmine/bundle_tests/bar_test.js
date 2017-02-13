@@ -1,34 +1,32 @@
-var d3 = require('d3');
+var d3 = require("d3");
 
-var Plotly = require('@lib/core');
-var PlotlyBar = require('@lib/bar');
+var Plotly = require("@lib/core");
+var PlotlyBar = require("@lib/bar");
 
-var createGraphDiv = require('../assets/create_graph_div');
-var destroyGraphDiv = require('../assets/destroy_graph_div');
+var createGraphDiv = require("../assets/create_graph_div");
+var destroyGraphDiv = require("../assets/destroy_graph_div");
 
+describe("Bundle with bar", function() {
+  "use strict";
+  Plotly.register(PlotlyBar);
 
-describe('Bundle with bar', function() {
-    'use strict';
+  var mock = require("@mocks/bar_line.json");
 
-    Plotly.register(PlotlyBar);
+  beforeEach(function(done) {
+    Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
+  });
 
-    var mock = require('@mocks/bar_line.json');
+  afterEach(destroyGraphDiv);
 
-    beforeEach(function(done) {
-        Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
-    });
+  it("should graph scatter traces", function() {
+    var nodes = d3.selectAll("g.trace.scatter");
 
-    afterEach(destroyGraphDiv);
+    expect(nodes.size()).toEqual(1);
+  });
 
-    it('should graph scatter traces', function() {
-        var nodes = d3.selectAll('g.trace.scatter');
+  it("should graph bar traces", function() {
+    var nodes = d3.selectAll("g.trace.bars");
 
-        expect(nodes.size()).toEqual(1);
-    });
-
-    it('should graph bar traces', function() {
-        var nodes = d3.selectAll('g.trace.bars');
-
-        expect(nodes.size()).toEqual(1);
-    });
+    expect(nodes.size()).toEqual(1);
+  });
 });

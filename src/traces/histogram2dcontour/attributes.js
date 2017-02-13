@@ -5,22 +5,21 @@
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
+"use strict";
+var histogram2dAttrs = require("../histogram2d/attributes");
+var contourAttrs = require("../contour/attributes");
+var colorscaleAttrs = require("../../components/colorscale/attributes");
+var colorbarAttrs = require("../../components/colorbar/attributes");
 
-'use strict';
+var extendFlat = require("../../lib/extend").extendFlat;
 
-var histogram2dAttrs = require('../histogram2d/attributes');
-var contourAttrs = require('../contour/attributes');
-var colorscaleAttrs = require('../../components/colorscale/attributes');
-var colorbarAttrs = require('../../components/colorbar/attributes');
-
-var extendFlat = require('../../lib/extend').extendFlat;
-
-module.exports = extendFlat({}, {
+module.exports = extendFlat(
+  {},
+  {
     x: histogram2dAttrs.x,
     y: histogram2dAttrs.y,
     z: histogram2dAttrs.z,
     marker: histogram2dAttrs.marker,
-
     histnorm: histogram2dAttrs.histnorm,
     histfunc: histogram2dAttrs.histfunc,
     autobinx: histogram2dAttrs.autobinx,
@@ -29,12 +28,11 @@ module.exports = extendFlat({}, {
     autobiny: histogram2dAttrs.autobiny,
     nbinsy: histogram2dAttrs.nbinsy,
     ybins: histogram2dAttrs.ybins,
-
     autocontour: contourAttrs.autocontour,
     ncontours: contourAttrs.ncontours,
     contours: contourAttrs.contours,
     line: contourAttrs.line
-},
-    colorscaleAttrs,
-    { colorbar: colorbarAttrs }
+  },
+  colorscaleAttrs,
+  { colorbar: colorbarAttrs }
 );

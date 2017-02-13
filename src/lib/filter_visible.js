@@ -5,10 +5,7 @@
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-
-
-'use strict';
-
+"use strict";
 /** Filter out object items with visible !== true
  *  insider array container.
  *
@@ -17,13 +14,13 @@
  *
  */
 module.exports = function filterVisible(container) {
-    var out = [];
+  var out = [];
 
-    for(var i = 0; i < container.length; i++) {
-        var item = container[i];
+  for (var i = 0; i < container.length; i++) {
+    var item = container[i];
 
-        if(item.visible === true) out.push(item);
-    }
+    if (item.visible === true) out.push(item);
+  }
 
-    return out;
+  return out;
 };

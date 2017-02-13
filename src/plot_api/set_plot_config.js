@@ -5,12 +5,9 @@
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-
-
-'use strict';
-
-var Plotly = require('../plotly');
-var Lib = require('../lib');
+"use strict";
+var Plotly = require("../plotly");
+var Lib = require("../lib");
 
 /**
  * Extends the plot config
@@ -20,5 +17,5 @@ var Lib = require('../lib');
  *
  */
 module.exports = function setPlotConfig(configObj) {
-    return Lib.extendFlat(Plotly.defaultConfig, configObj);
+  return Lib.extendFlat(Plotly.defaultConfig, configObj);
 };

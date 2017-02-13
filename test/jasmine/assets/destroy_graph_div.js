@@ -1,7 +1,6 @@
-'use strict';
-
+"use strict";
 module.exports = function destroyGraphDiv() {
-    var gd = document.getElementById('graph');
+  var gd = document.getElementById("graph");
 
-    if(gd) document.body.removeChild(gd);
+  if (gd) document.body.removeChild(gd);
 };

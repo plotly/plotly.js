@@ -5,21 +5,12 @@
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-
-'use strict';
-
+"use strict";
 module.exports = {
-    moduleType: 'component',
-    name: 'rangeselector',
-
-    schema: {
-        layout: {
-            'xaxis.rangeselector': require('./attributes')
-        }
-    },
-
-    layoutAttributes: require('./attributes'),
-    handleDefaults: require('./defaults'),
-
-    draw: require('./draw')
+  moduleType: "component",
+  name: "rangeselector",
+  schema: { layout: { "xaxis.rangeselector": require("./attributes") } },
+  layoutAttributes: require("./attributes"),
+  handleDefaults: require("./defaults"),
+  draw: require("./draw")
 };

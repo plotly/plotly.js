@@ -5,28 +5,28 @@
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
+"use strict";
+module.exports = function handleCategoryOrderDefaults(
+  containerIn,
+  containerOut,
+  coerce
+) {
+  if (containerOut.type !== "category") return;
 
-'use strict';
+  var arrayIn = containerIn.categoryarray, orderDefault;
 
+  var isValidArray = Array.isArray(arrayIn) && arrayIn.length > 0;
 
-module.exports = function handleCategoryOrderDefaults(containerIn, containerOut, coerce) {
-    if(containerOut.type !== 'category') return;
+  // override default 'categoryorder' value when non-empty array is supplied
+  if (isValidArray) orderDefault = "array";
 
-    var arrayIn = containerIn.categoryarray,
-        orderDefault;
+  var order = coerce("categoryorder", orderDefault);
 
-    var isValidArray = (Array.isArray(arrayIn) && arrayIn.length > 0);
+  // coerce 'categoryarray' only in array order case
+  if (order === "array") coerce("categoryarray");
 
-    // override default 'categoryorder' value when non-empty array is supplied
-    if(isValidArray) orderDefault = 'array';
-
-    var order = coerce('categoryorder', orderDefault);
-
-    // coerce 'categoryarray' only in array order case
-    if(order === 'array') coerce('categoryarray');
-
-    // cannot set 'categoryorder' to 'array' with an invalid 'categoryarray'
-    if(!isValidArray && order === 'array') {
-        containerOut.categoryorder = 'trace';
-    }
+  // cannot set 'categoryorder' to 'array' with an invalid 'categoryarray'
+  if (!isValidArray && order === "array") {
+    containerOut.categoryorder = "trace";
+  }
 };

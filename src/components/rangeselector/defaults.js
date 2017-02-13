@@ -5,93 +5,102 @@
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
+"use strict";
+var Lib = require("../../lib");
+var Color = require("../color");
 
-'use strict';
+var attributes = require("./attributes");
+var buttonAttrs = require("./button_attributes");
+var constants = require("./constants");
 
-var Lib = require('../../lib');
-var Color = require('../color');
+module.exports = function handleDefaults(
+  containerIn,
+  containerOut,
+  layout,
+  counterAxes,
+  calendar
+) {
+  var selectorIn = containerIn.rangeselector || {},
+    selectorOut = containerOut.rangeselector = {};
 
-var attributes = require('./attributes');
-var buttonAttrs = require('./button_attributes');
-var constants = require('./constants');
+  function coerce(attr, dflt) {
+    return Lib.coerce(selectorIn, selectorOut, attributes, attr, dflt);
+  }
 
+  var buttons = buttonsDefaults(selectorIn, selectorOut, calendar);
 
-module.exports = function handleDefaults(containerIn, containerOut, layout, counterAxes, calendar) {
-    var selectorIn = containerIn.rangeselector || {},
-        selectorOut = containerOut.rangeselector = {};
+  var visible = coerce("visible", buttons.length > 0);
+  if (!visible) return;
 
-    function coerce(attr, dflt) {
-        return Lib.coerce(selectorIn, selectorOut, attributes, attr, dflt);
-    }
+  var posDflt = getPosDflt(containerOut, layout, counterAxes);
+  coerce("x", posDflt[0]);
+  coerce("y", posDflt[1]);
+  Lib.noneOrAll(containerIn, containerOut, ["x", "y"]);
 
-    var buttons = buttonsDefaults(selectorIn, selectorOut, calendar);
+  coerce("xanchor");
+  coerce("yanchor");
 
-    var visible = coerce('visible', buttons.length > 0);
-    if(!visible) return;
+  Lib.coerceFont(coerce, "font", layout.font);
 
-    var posDflt = getPosDflt(containerOut, layout, counterAxes);
-    coerce('x', posDflt[0]);
-    coerce('y', posDflt[1]);
-    Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
-
-    coerce('xanchor');
-    coerce('yanchor');
-
-    Lib.coerceFont(coerce, 'font', layout.font);
-
-    var bgColor = coerce('bgcolor');
-    coerce('activecolor', Color.contrast(bgColor, constants.lightAmount, constants.darkAmount));
-    coerce('bordercolor');
-    coerce('borderwidth');
+  var bgColor = coerce("bgcolor");
+  coerce(
+    "activecolor",
+    Color.contrast(bgColor, constants.lightAmount, constants.darkAmount)
+  );
+  coerce("bordercolor");
+  coerce("borderwidth");
 };
 
 function buttonsDefaults(containerIn, containerOut, calendar) {
-    var buttonsIn = containerIn.buttons || [],
-        buttonsOut = containerOut.buttons = [];
+  var buttonsIn = containerIn.buttons || [],
+    buttonsOut = containerOut.buttons = [];
 
-    var buttonIn, buttonOut;
+  var buttonIn, buttonOut;
 
-    function coerce(attr, dflt) {
-        return Lib.coerce(buttonIn, buttonOut, buttonAttrs, attr, dflt);
+  function coerce(attr, dflt) {
+    return Lib.coerce(buttonIn, buttonOut, buttonAttrs, attr, dflt);
+  }
+
+  for (var i = 0; i < buttonsIn.length; i++) {
+    buttonIn = buttonsIn[i];
+    buttonOut = {};
+
+    if (!Lib.isPlainObject(buttonIn)) continue;
+
+    var step = coerce("step");
+    if (step !== "all") {
+      if (
+        calendar &&
+          calendar !== "gregorian" &&
+          (step === "month" || step === "year")
+      ) {
+        buttonOut.stepmode = "backward";
+      } else {
+        coerce("stepmode");
+      }
+
+      coerce("count");
     }
 
-    for(var i = 0; i < buttonsIn.length; i++) {
-        buttonIn = buttonsIn[i];
-        buttonOut = {};
+    coerce("label");
 
-        if(!Lib.isPlainObject(buttonIn)) continue;
+    buttonOut._index = i;
+    buttonsOut.push(buttonOut);
+  }
 
-        var step = coerce('step');
-        if(step !== 'all') {
-            if(calendar && calendar !== 'gregorian' && (step === 'month' || step === 'year')) {
-                buttonOut.stepmode = 'backward';
-            }
-            else {
-                coerce('stepmode');
-            }
-
-            coerce('count');
-        }
-
-        coerce('label');
-
-        buttonOut._index = i;
-        buttonsOut.push(buttonOut);
-    }
-
-    return buttonsOut;
+  return buttonsOut;
 }
 
 function getPosDflt(containerOut, layout, counterAxes) {
-    var anchoredList = counterAxes.filter(function(ax) {
-        return layout[ax].anchor === containerOut._id;
-    });
+  var anchoredList = counterAxes.filter(function(ax) {
+    return layout[ax].anchor === containerOut._id;
+  });
 
-    var posY = 0;
-    for(var i = 0; i < anchoredList.length; i++) {
-        var domain = layout[anchoredList[i]].domain;
-        if(domain) posY = Math.max(domain[1], posY);
-    }
+  var posY = 0;
+  for (var i = 0; i < anchoredList.length; i++) {
+    var domain = layout[anchoredList[i]].domain;
+    if (domain) posY = Math.max(domain[1], posY);
+  }
 
-    return [containerOut.domain[0], posY + constants.yPad];
+  return [containerOut.domain[0], posY + constants.yPad];
 }

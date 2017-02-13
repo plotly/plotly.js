@@ -1,7 +1,7 @@
-var path = require('path');
-var constants = require('../../../tasks/util/constants');
+var path = require("path");
+var constants = require("../../../tasks/util/constants");
 
-var DEFAULT_FORMAT = 'png';
+var DEFAULT_FORMAT = "png";
 var DEFAULT_SCALE = 1;
 
 /**
@@ -14,21 +14,22 @@ var DEFAULT_SCALE = 1;
  *      url (optional): URL of image server
  */
 module.exports = function getRequestOpts(specs) {
-    var pathToMock = path.join(constants.pathToTestImageMocks, specs.mockName) + '.json';
-    var figure = require(pathToMock);
+  var pathToMock = path.join(constants.pathToTestImageMocks, specs.mockName) +
+    ".json";
+  var figure = require(pathToMock);
 
-    var body = {
-        figure: figure,
-        format: specs.format || DEFAULT_FORMAT,
-        scale: specs.scale || DEFAULT_SCALE
-    };
+  var body = {
+    figure: figure,
+    format: specs.format || DEFAULT_FORMAT,
+    scale: specs.scale || DEFAULT_SCALE
+  };
 
-    if(specs.width) body.width = specs.width;
-    if(specs.height) body.height = specs.height;
+  if (specs.width) body.width = specs.width;
+  if (specs.height) body.height = specs.height;
 
-    return {
-        method: 'POST',
-        url: constants.testContainerUrl,
-        body: JSON.stringify(body)
-    };
+  return {
+    method: "POST",
+    url: constants.testContainerUrl,
+    body: JSON.stringify(body)
+  };
 };
