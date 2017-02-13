@@ -354,7 +354,7 @@ Plotly.plot = function(gd, data, layout, config) {
         seq.push(function() { Plots.rehover(gd); });
     }
 
-    Lib.syncOrAsync(seq, gd, cleanUp);
+    Lib.syncOrAsync(seq, gd);
 
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
