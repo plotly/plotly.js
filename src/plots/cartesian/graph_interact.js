@@ -118,9 +118,19 @@ fx.init = function(gd) {
                 // This is on `gd._fullLayout`, *not* fullLayout because the reference
                 // changes by the time this is called again.
                 gd._fullLayout._rehover = function() {
-                    fx.hover(gd, evt, subplot);
+                    if(gd._fullLayout._hoversubplot === plotinfo.id) {
+                        fx.hover(gd, evt, subplot);
+                    }
                 };
+
+                // Track the hovered subplot. This prevents rehover from accidetally
+                // reapplying a hover label after the mouse has left the plot or if
+                // the mouse has entered another subplot.
+                gd._fullLayout._hoversubplot = plotinfo.id;
+
                 gd._fullLayout._rehover();
+
+                fx.hover(gd, evt, subplot);
                 fullLayout._lasthover = maindrag;
                 fullLayout._hoversubplot = subplot;
             };
@@ -134,6 +144,11 @@ fx.init = function(gd) {
              */
             maindrag.onmouseout = function(evt) {
                 if(gd._dragging) return;
+
+                // When the mouse leaves this maindrag, unset the hovered subplot.
+                // This may cause problems if it leaves the subplot directly *onto*
+                // another subplot, but that's a tiny corner case at the moment.
+                gd._fullLayout._hoversubplot = null;
 
                 dragElement.unhover(gd, evt);
             };

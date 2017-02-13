@@ -1905,7 +1905,11 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
         }
     }
 
-    var seq = [plots.previousPromises, interruptPreviousTransitions, prepareTransitions, executeTransitions];
+    function rehover() {
+        plots.rehover(gd);
+    }
+
+    var seq = [plots.previousPromises, interruptPreviousTransitions, prepareTransitions, rehover, executeTransitions];
 
     var transitionStarting = Lib.syncOrAsync(seq, gd);
 
@@ -2026,6 +2030,10 @@ plots.doCalcdata = function(gd, traces) {
 
         calcdata[i] = cd;
     }
+};
 
-    if(gd._fullLayout._rehover) gd._fullLayout._rehover();
+plots.rehover = function(gd) {
+    if(gd._fullLayout._rehover) {
+        gd._fullLayout._rehover();
+    }
 };

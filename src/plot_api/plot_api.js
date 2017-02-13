@@ -343,7 +343,7 @@ Plotly.plot = function(gd, data, layout, config) {
         gd.emit('plotly_afterplot');
     }
 
-    Lib.syncOrAsync([
+    var seq = [
         Plots.previousPromises,
         addFrames,
         drawFramework,
@@ -353,8 +353,14 @@ Plotly.plot = function(gd, data, layout, config) {
         subroutines.layoutStyles,
         drawAxes,
         drawData,
-        finalDraw
-    ], gd, cleanUp);
+        finalDraw,
+    ];
+
+    if(gd._fullLayout._rehover) {
+        seq.push(function() { Plots.rehover(gd); });
+    }
+
+    Lib.syncOrAsync(seq, gd, cleanUp);
 
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
@@ -1206,14 +1212,17 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
 
     if(flags.fullReplot) {
         seq.push(Plotly.plot);
-    }
-    else {
+    } else {
         seq.push(Plots.previousPromises);
 
         Plots.supplyDefaults(gd);
 
         if(flags.dostyle) seq.push(subroutines.doTraceStyle);
         if(flags.docolorbars) seq.push(subroutines.doColorBars);
+    }
+
+    if(gd._fullLayout._rehover) {
+        seq.push(function() { Plots.rehover(gd); });
     }
 
     Queue.add(gd,
@@ -1696,9 +1705,11 @@ Plotly.relayout = function relayout(gd, astr, val) {
     }
 
     var aobj = {};
-    if(typeof astr === 'string') aobj[astr] = val;
-    else if(Lib.isPlainObject(astr)) aobj = astr;
-    else {
+    if(typeof astr === 'string') {
+        aobj[astr] = val;
+    } else if(Lib.isPlainObject(astr)) {
+        aobj = astr;
+    } else {
         Lib.warn('Relayout fail.', astr, val);
         return Promise.reject();
     }
@@ -1716,8 +1727,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
     if(flags.layoutReplot) {
         seq.push(subroutines.layoutReplot);
-    }
-    else if(Object.keys(aobj).length) {
+    } else if(Object.keys(aobj).length) {
         seq.push(Plots.previousPromises);
         Plots.supplyDefaults(gd);
 
@@ -1725,6 +1735,10 @@ Plotly.relayout = function relayout(gd, astr, val) {
         if(flags.dolayoutstyle) seq.push(subroutines.layoutStyles);
         if(flags.doticks) seq.push(subroutines.doTicksRelayout);
         if(flags.domodebar) seq.push(subroutines.doModeBar);
+    }
+
+    if(gd._fullLayout._rehover) {
+        seq.push(function() { Plots.rehover(gd); });
     }
 
     Queue.add(gd,
@@ -2120,6 +2134,10 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, traces) {
         if(relayoutFlags.dolayoutstyle) seq.push(subroutines.layoutStyles);
         if(relayoutFlags.doticks) seq.push(subroutines.doTicksRelayout);
         if(relayoutFlags.domodebar) seq.push(subroutines.doModeBar);
+    }
+
+    if(gd._fullLayout._rehover) {
+        seq.push(function() { Plots.rehover(gd); });
     }
 
     Queue.add(gd,
