@@ -129,7 +129,6 @@ fx.init = function(gd) {
 
                 gd._fullLayout._rehover();
 
-                fx.hover(gd, evt, subplot);
                 fullLayout._lasthover = maindrag;
                 fullLayout._hoversubplot = subplot;
             };

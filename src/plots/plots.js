@@ -1934,11 +1934,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
         }
     }
 
-    function rehover() {
-        plots.rehover(gd);
-    }
-
-    var seq = [plots.previousPromises, interruptPreviousTransitions, prepareTransitions, rehover, executeTransitions];
+    var seq = [plots.previousPromises, interruptPreviousTransitions, prepareTransitions, plots.rehover, executeTransitions];
 
     var transitionStarting = Lib.syncOrAsync(seq, gd);
 

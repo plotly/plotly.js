@@ -348,11 +348,8 @@ Plotly.plot = function(gd, data, layout, config) {
         drawAxes,
         drawData,
         finalDraw,
+        Plots.rehover
     ];
-
-    if(gd._fullLayout._rehover) {
-        seq.push(function() { Plots.rehover(gd); });
-    }
 
     Lib.syncOrAsync(seq, gd);
 
@@ -1216,9 +1213,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         if(flags.docolorbars) seq.push(subroutines.doColorBars);
     }
 
-    if(gd._fullLayout._rehover) {
-        seq.push(function() { Plots.rehover(gd); });
-    }
+    seq.push(Plots.rehover);
 
     Queue.add(gd,
         restyle, [gd, specs.undoit, specs.traces],
@@ -1737,9 +1732,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
         if(flags.docamera) seq.push(subroutines.doCamera);
     }
 
-    if(gd._fullLayout._rehover) {
-        seq.push(function() { Plots.rehover(gd); });
-    }
+    seq.push(Plots.rehover);
 
     Queue.add(gd,
         relayout, [gd, specs.undoit],
@@ -2141,9 +2134,7 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, traces) {
         if(relayoutFlags.doCamera) seq.push(subroutines.doCamera);
     }
 
-    if(gd._fullLayout._rehover) {
-        seq.push(function() { Plots.rehover(gd); });
-    }
+    seq.push(Plots.rehover);
 
     Queue.add(gd,
         update, [gd, restyleSpecs.undoit, relayoutSpecs.undoit, restyleSpecs.traces],
