@@ -820,7 +820,7 @@ describe('hover updates', function() {
 
     function assertLabelsCorrect(mousePos, labelPos, labelText) {
         return new Promise(function(resolve) {
-            if (mousePos) {
+            if(mousePos) {
                 mouseEvent('mousemove', mousePos[0], mousePos[1]);
             }
 
@@ -859,12 +859,12 @@ describe('hover updates', function() {
         Plotly.plot(gd, mock).then(function() {
             // The label text gets concatenated together when queried. Such is life.
             return assertLabelsCorrect([100, 100], [103, 100], 'trace 00.5');
-        }).then(function () {
+        }).then(function() {
             return Plotly.animate(gd, [{
                 data: [{x: [0], y: [0]}, {x: [0.5], y: [0.5]}],
                 traces: [0, 1],
             }], {frame: {redraw: false, duration: 0}});
-        }).then(function () {
+        }).then(function() {
             // No mouse event this time. Just change the data and check the label.
             // Ditto on concatenation. This is "trace 1" + "0.5"
             return assertLabelsCorrect(null, [103, 100], 'trace 10.5');
