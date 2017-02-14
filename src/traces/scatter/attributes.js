@@ -58,7 +58,7 @@ module.exports = {
     },
     customdata: {
         valType: 'data_array',
-        description: 'When markers present, assigns extra data to each scatter point DOM element'
+        description: 'Assigns extra data to each scatter point DOM element'
     },
     dy: {
         valType: 'number',
