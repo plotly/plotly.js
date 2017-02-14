@@ -862,4 +862,19 @@ describe('calculated data and points', function() {
             });
         });
     });
+
+    describe('customdata', function() {
+        it('should pass customdata to the calcdata points', function() {
+            Plotly.plot(gd, [{
+                x: [0, 1, 2, 3],
+                y: [4, 5, 6, 7],
+                customdata: ['a', 'b', 'c', 'd']
+            }], {});
+
+            expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({data: 'a'}));
+            expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({data: 'b'}));
+            expect(gd.calcdata[0][2]).toEqual(jasmine.objectContaining({data: 'c'}));
+            expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({data: 'd'}));
+        });
+    });
 });
