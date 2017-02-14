@@ -10,6 +10,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 var doubleClick = require('../assets/double_click');
+var fail = require('../assets/fail_test');
 
 describe('hover info', function() {
     'use strict';
@@ -809,5 +810,64 @@ describe('hover on fill', function() {
             // then make sure we can still select a *different* item afterward
             return assertLabelsCorrect([237, 218], [266.75, 265], 'trace 1');
         }).then(done);
+    });
+});
+
+describe('hover updates', function() {
+    'use strict';
+
+    afterEach(destroyGraphDiv);
+
+    function assertLabelsCorrect(mousePos, labelPos, labelText) {
+        return new Promise(function(resolve) {
+            if (mousePos) {
+                mouseEvent('mousemove', mousePos[0], mousePos[1]);
+            }
+
+            setTimeout(function() {
+                var hoverText = d3.selectAll('g.hovertext');
+                expect(hoverText.size()).toEqual(1);
+                expect(hoverText.text()).toEqual(labelText);
+
+                var transformParts = hoverText.attr('transform').split('(');
+                expect(transformParts[0]).toEqual('translate');
+                var transformCoords = transformParts[1].split(')')[0].split(',');
+                expect(+transformCoords[0]).toBeCloseTo(labelPos[0], -1, labelText + ':x');
+                expect(+transformCoords[1]).toBeCloseTo(labelPos[1], -1, labelText + ':y');
+
+                resolve();
+            }, constants.HOVERMINTIME);
+        });
+    }
+
+    it('should update the labels on animation', function(done) {
+        var mock = {
+            data: [
+                {x: [0.5], y: [0.5], showlegend: false},
+                {x: [0], y: [0], showlegend: false},
+            ],
+            layout: {
+                margin: {t: 0, r: 0, b: 0, l: 0},
+                width: 200,
+                height: 200,
+                xaxis: {range: [0, 1]},
+                yaxis: {range: [0, 1]},
+            }
+        };
+
+        var gd = createGraphDiv();
+        Plotly.plot(gd, mock).then(function() {
+            // The label text gets concatenated together when queried. Such is life.
+            return assertLabelsCorrect([100, 100], [103, 100], 'trace 00.5');
+        }).then(function () {
+            return Plotly.animate(gd, [{
+                data: [{x: [0], y: [0]}, {x: [0.5], y: [0.5]}],
+                traces: [0, 1],
+            }], {frame: {redraw: false, duration: 0}});
+        }).then(function () {
+            // No mouse event this time. Just change the data and check the label.
+            // Ditto on concatenation. This is "trace 1" + "0.5"
+            return assertLabelsCorrect(null, [103, 100], 'trace 10.5');
+        }).catch(fail).then(done);
     });
 });
