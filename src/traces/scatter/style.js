@@ -24,9 +24,16 @@ module.exports = function style(gd) {
 
     s.selectAll('g.points')
         .each(function(d) {
-            d3.select(this).selectAll('path.point')
-                .call(Drawing.pointStyle, d.trace || d[0].trace);
-            d3.select(this).selectAll('text')
+            var el = d3.select(this);
+            var pt = el.selectAll('path.point');
+
+            pt.call(Drawing.pointStyle, d.trace || d[0].trace);
+
+            pt.each(function(cd) {
+                d3.select(this).classed('plotly-customdata', cd.data !== null && cd.data !== undefined);
+            });
+
+            el.selectAll('text')
                 .call(Drawing.textPointStyle, d.trace || d[0].trace);
         });
 
