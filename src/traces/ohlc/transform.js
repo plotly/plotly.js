@@ -5,88 +5,80 @@
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
+"use strict";
+var Lib = require("../../lib");
+var helpers = require("./helpers");
+var Axes = require("../../plots/cartesian/axes");
+var axisIds = require("../../plots/cartesian/axis_ids");
 
+exports.moduleType = "transform";
 
-'use strict';
-
-var Lib = require('../../lib');
-var helpers = require('./helpers');
-var Axes = require('../../plots/cartesian/axes');
-var axisIds = require('../../plots/cartesian/axis_ids');
-
-exports.moduleType = 'transform';
-
-exports.name = 'ohlc';
+exports.name = "ohlc";
 
 exports.attributes = {};
 
 exports.supplyDefaults = function(transformIn, traceOut, layout, traceIn) {
-    helpers.clearEphemeralTransformOpts(traceIn);
-    helpers.copyOHLC(transformIn, traceOut);
+  helpers.clearEphemeralTransformOpts(traceIn);
+  helpers.copyOHLC(transformIn, traceOut);
 
-    return transformIn;
+  return transformIn;
 };
 
 exports.transform = function transform(dataIn, state) {
-    var dataOut = [];
+  var dataOut = [];
 
-    for(var i = 0; i < dataIn.length; i++) {
-        var traceIn = dataIn[i];
+  for (var i = 0; i < dataIn.length; i++) {
+    var traceIn = dataIn[i];
 
-        if(traceIn.type !== 'ohlc') {
-            dataOut.push(traceIn);
-            continue;
-        }
-
-        dataOut.push(
-            makeTrace(traceIn, state, 'increasing'),
-            makeTrace(traceIn, state, 'decreasing')
-        );
+    if (traceIn.type !== "ohlc") {
+      dataOut.push(traceIn);
+      continue;
     }
 
-    helpers.addRangeSlider(dataOut, state.layout);
+    dataOut.push(
+      makeTrace(traceIn, state, "increasing"),
+      makeTrace(traceIn, state, "decreasing")
+    );
+  }
 
-    return dataOut;
+  helpers.addRangeSlider(dataOut, state.layout);
+
+  return dataOut;
 };
 
 function makeTrace(traceIn, state, direction) {
-    var traceOut = {
-        type: 'scatter',
-        mode: 'lines',
-        connectgaps: false,
+  var traceOut = {
+    type: "scatter",
+    mode: "lines",
+    connectgaps: false,
+    visible: traceIn.visible,
+    opacity: traceIn.opacity,
+    xaxis: traceIn.xaxis,
+    yaxis: traceIn.yaxis,
+    hoverinfo: makeHoverInfo(traceIn),
+    transforms: helpers.makeTransform(traceIn, state, direction)
+  };
 
-        visible: traceIn.visible,
-        opacity: traceIn.opacity,
-        xaxis: traceIn.xaxis,
-        yaxis: traceIn.yaxis,
+  // the rest of below may not have been coerced
+  var directionOpts = traceIn[direction];
 
-        hoverinfo: makeHoverInfo(traceIn),
-        transforms: helpers.makeTransform(traceIn, state, direction)
-    };
+  if (directionOpts) {
+    Lib.extendFlat(traceOut, {
+      // to make autotype catch date axes soon!!
+      x: (
+        traceIn.x || [0]
+      ),
+      xcalendar: traceIn.xcalendar,
+      // concat low and high to get correct autorange
+      y: [].concat(traceIn.low).concat(traceIn.high),
+      text: traceIn.text,
+      name: directionOpts.name,
+      showlegend: directionOpts.showlegend,
+      line: directionOpts.line
+    });
+  }
 
-    // the rest of below may not have been coerced
-
-    var directionOpts = traceIn[direction];
-
-    if(directionOpts) {
-        Lib.extendFlat(traceOut, {
-
-            // to make autotype catch date axes soon!!
-            x: traceIn.x || [0],
-            xcalendar: traceIn.xcalendar,
-
-            // concat low and high to get correct autorange
-            y: [].concat(traceIn.low).concat(traceIn.high),
-
-            text: traceIn.text,
-
-            name: directionOpts.name,
-            showlegend: directionOpts.showlegend,
-            line: directionOpts.line
-        });
-    }
-
-    return traceOut;
+  return traceOut;
 }
 
 // Let scatter hoverPoint format 'x' coordinates, if desired.
@@ -99,159 +91,156 @@ function makeTrace(traceIn, state, direction) {
 // A future iteration should perhaps try to add a hook for transforms in
 // the hoverPoints handlers.
 function makeHoverInfo(traceIn) {
-    var hoverinfo = traceIn.hoverinfo;
+  var hoverinfo = traceIn.hoverinfo;
 
-    if(hoverinfo === 'all') return 'x+text+name';
+  if (hoverinfo === "all") return "x+text+name";
 
-    var parts = hoverinfo.split('+'),
-        indexOfY = parts.indexOf('y'),
-        indexOfText = parts.indexOf('text');
+  var parts = hoverinfo.split("+"),
+    indexOfY = parts.indexOf("y"),
+    indexOfText = parts.indexOf("text");
 
-    if(indexOfY !== -1) {
-        parts.splice(indexOfY, 1);
+  if (indexOfY !== -1) {
+    parts.splice(indexOfY, 1);
 
-        if(indexOfText === -1) parts.push('text');
-    }
+    if (indexOfText === -1) parts.push("text");
+  }
 
-    return parts.join('+');
+  return parts.join("+");
 }
 
 exports.calcTransform = function calcTransform(gd, trace, opts) {
-    var direction = opts.direction,
-        filterFn = helpers.getFilterFn(direction);
+  var direction = opts.direction, filterFn = helpers.getFilterFn(direction);
 
-    var xa = axisIds.getFromTrace(gd, trace, 'x'),
-        ya = axisIds.getFromTrace(gd, trace, 'y'),
-        tickWidth = convertTickWidth(gd, xa, trace);
+  var xa = axisIds.getFromTrace(gd, trace, "x"),
+    ya = axisIds.getFromTrace(gd, trace, "y"),
+    tickWidth = convertTickWidth(gd, xa, trace);
 
-    var open = trace.open,
-        high = trace.high,
-        low = trace.low,
-        close = trace.close,
-        textIn = trace.text;
+  var open = trace.open,
+    high = trace.high,
+    low = trace.low,
+    close = trace.close,
+    textIn = trace.text;
 
-    var len = open.length,
-        x = [],
-        y = [],
-        textOut = [];
+  var len = open.length, x = [], y = [], textOut = [];
 
-    var appendX;
-    if(trace._fullInput.x) {
-        appendX = function(i) {
-            var xi = trace.x[i],
-                xcalendar = trace.xcalendar,
-                xcalc = xa.d2c(xi, 0, xcalendar);
+  var appendX;
+  if (trace._fullInput.x) {
+    appendX = function(i) {
+      var xi = trace.x[i],
+        xcalendar = trace.xcalendar,
+        xcalc = xa.d2c(xi, 0, xcalendar);
 
-            x.push(
-                xa.c2d(xcalc - tickWidth, 0, xcalendar),
-                xi, xi, xi, xi,
-                xa.c2d(xcalc + tickWidth, 0, xcalendar),
-                null);
-        };
-    }
-    else {
-        appendX = function(i) {
-            x.push(
-                i - tickWidth,
-                i, i, i, i,
-                i + tickWidth,
-                null);
-        };
-    }
-
-    var appendY = function(o, h, l, c) {
-        y.push(o, o, h, l, c, c, null);
+      x.push(
+        xa.c2d(xcalc - tickWidth, 0, xcalendar),
+        xi,
+        xi,
+        xi,
+        xi,
+        xa.c2d(xcalc + tickWidth, 0, xcalendar),
+        null
+      );
     };
-
-    var format = function(ax, val) {
-        return Axes.tickText(ax, ax.c2l(val), 'hover').text;
+  } else {
+    appendX = function(i) {
+      x.push(i - tickWidth, i, i, i, i, i + tickWidth, null);
     };
+  }
 
-    var hoverinfo = trace._fullInput.hoverinfo,
-        hoverParts = hoverinfo.split('+'),
-        hasAll = hoverinfo === 'all',
-        hasY = hasAll || hoverParts.indexOf('y') !== -1,
-        hasText = hasAll || hoverParts.indexOf('text') !== -1;
+  var appendY = function(o, h, l, c) {
+    y.push(o, o, h, l, c, c, null);
+  };
 
-    var getTextItem = Array.isArray(textIn) ?
-        function(i) { return textIn[i] || ''; } :
-        function() { return textIn; };
+  var format = function(ax, val) {
+    return Axes.tickText(ax, ax.c2l(val), "hover").text;
+  };
 
-    var appendText = function(i, o, h, l, c) {
-        var t = [];
+  var hoverinfo = trace._fullInput.hoverinfo,
+    hoverParts = hoverinfo.split("+"),
+    hasAll = hoverinfo === "all",
+    hasY = hasAll || hoverParts.indexOf("y") !== -1,
+    hasText = hasAll || hoverParts.indexOf("text") !== -1;
 
-        if(hasY) {
-            t.push('Open: ' + format(ya, o));
-            t.push('High: ' + format(ya, h));
-            t.push('Low: ' + format(ya, l));
-            t.push('Close: ' + format(ya, c));
-        }
+  var getTextItem = Array.isArray(textIn)
+    ? (function(i) {
+        return textIn[i] || "";
+      })
+    : (function() {
+        return textIn;
+      });
 
-        if(hasText) t.push(getTextItem(i));
+  var appendText = function(i, o, h, l, c) {
+    var t = [];
 
-        var _t = t.join('<br>');
-
-        textOut.push(_t, _t, _t, _t, _t, _t, null);
-    };
-
-    for(var i = 0; i < len; i++) {
-        if(filterFn(open[i], close[i])) {
-            appendX(i);
-            appendY(open[i], high[i], low[i], close[i]);
-            appendText(i, open[i], high[i], low[i], close[i]);
-        }
+    if (hasY) {
+      t.push("Open: " + format(ya, o));
+      t.push("High: " + format(ya, h));
+      t.push("Low: " + format(ya, l));
+      t.push("Close: " + format(ya, c));
     }
 
-    trace.x = x;
-    trace.y = y;
-    trace.text = textOut;
+    if (hasText) t.push(getTextItem(i));
+
+    var _t = t.join("<br>");
+
+    textOut.push(_t, _t, _t, _t, _t, _t, null);
+  };
+
+  for (var i = 0; i < len; i++) {
+    if (filterFn(open[i], close[i])) {
+      appendX(i);
+      appendY(open[i], high[i], low[i], close[i]);
+      appendText(i, open[i], high[i], low[i], close[i]);
+    }
+  }
+
+  trace.x = x;
+  trace.y = y;
+  trace.text = textOut;
 };
 
 function convertTickWidth(gd, xa, trace) {
-    var fullInput = trace._fullInput,
-        tickWidth = fullInput.tickwidth,
-        minDiff = fullInput._minDiff;
+  var fullInput = trace._fullInput,
+    tickWidth = fullInput.tickwidth,
+    minDiff = fullInput._minDiff;
 
-    if(!minDiff) {
-        var fullData = gd._fullData,
-            ohlcTracesOnThisXaxis = [];
+  if (!minDiff) {
+    var fullData = gd._fullData, ohlcTracesOnThisXaxis = [];
 
-        minDiff = Infinity;
+    minDiff = Infinity;
 
-        // find min x-coordinates difference of all traces
-        // attached to this x-axis and stash the result
+    // find min x-coordinates difference of all traces
+    // attached to this x-axis and stash the result
+    var i;
 
-        var i;
+    for (i = 0; i < fullData.length; i++) {
+      var _trace = fullData[i]._fullInput;
 
-        for(i = 0; i < fullData.length; i++) {
-            var _trace = fullData[i]._fullInput;
+      if (
+        _trace.type === "ohlc" &&
+          _trace.visible === true &&
+          _trace.xaxis === xa._id
+      ) {
+        ohlcTracesOnThisXaxis.push(_trace);
 
-            if(_trace.type === 'ohlc' &&
-                _trace.visible === true &&
-                _trace.xaxis === xa._id
-            ) {
-                ohlcTracesOnThisXaxis.push(_trace);
-
-                // - _trace.x may be undefined here,
-                // it is filled later in calcTransform
-                //
-                // - handle trace of length 1 separately.
-
-                if(_trace.x && _trace.x.length > 1) {
-                    var xcalc = Lib.simpleMap(_trace.x, xa.d2c, 0, trace.xcalendar),
-                        _minDiff = Lib.distinctVals(xcalc).minDiff;
-                    minDiff = Math.min(minDiff, _minDiff);
-                }
-            }
+        // - _trace.x may be undefined here,
+        // it is filled later in calcTransform
+        //
+        // - handle trace of length 1 separately.
+        if (_trace.x && _trace.x.length > 1) {
+          var xcalc = Lib.simpleMap(_trace.x, xa.d2c, 0, trace.xcalendar),
+            _minDiff = Lib.distinctVals(xcalc).minDiff;
+          minDiff = Math.min(minDiff, _minDiff);
         }
-
-        // if minDiff is still Infinity here, set it to 1
-        if(minDiff === Infinity) minDiff = 1;
-
-        for(i = 0; i < ohlcTracesOnThisXaxis.length; i++) {
-            ohlcTracesOnThisXaxis[i]._minDiff = minDiff;
-        }
+      }
     }
 
-    return minDiff * tickWidth;
+    // if minDiff is still Infinity here, set it to 1
+    if (minDiff === Infinity) minDiff = 1;
+
+    for (i = 0; i < ohlcTracesOnThisXaxis.length; i++) {
+      ohlcTracesOnThisXaxis[i]._minDiff = minDiff;
+    }
+  }
+
+  return minDiff * tickWidth;
 }

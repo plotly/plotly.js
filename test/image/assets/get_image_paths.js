@@ -1,8 +1,7 @@
-var path = require('path');
-var constants = require('../../../tasks/util/constants');
+var path = require("path");
+var constants = require("../../../tasks/util/constants");
 
-var DEFAULT_FORMAT = 'png';
-
+var DEFAULT_FORMAT = "png";
 
 /**
  * Return paths to baseline, test-image and diff images for a given mock name.
@@ -15,15 +14,15 @@ var DEFAULT_FORMAT = 'png';
  *      diff
  */
 module.exports = function getImagePaths(mockName, format) {
-    format = format || DEFAULT_FORMAT;
+  format = format || DEFAULT_FORMAT;
 
-    return {
-        baseline: join(constants.pathToTestImageBaselines, mockName, format),
-        test: join(constants.pathToTestImages, mockName, format),
-        diff: join(constants.pathToTestImagesDiff, 'diff-' + mockName, format)
-    };
+  return {
+    baseline: join(constants.pathToTestImageBaselines, mockName, format),
+    test: join(constants.pathToTestImages, mockName, format),
+    diff: join(constants.pathToTestImagesDiff, "diff-" + mockName, format)
+  };
 };
 
 function join(basePath, fileName, format) {
-    return path.join(basePath, fileName) + '.' + format;
+  return path.join(basePath, fileName) + "." + format;
 }

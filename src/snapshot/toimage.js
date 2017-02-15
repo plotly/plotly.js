@@ -5,19 +5,16 @@
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
+"use strict";
+var EventEmitter = require("events").EventEmitter;
 
-'use strict';
+var Plotly = require("../plotly");
+var Lib = require("../lib");
 
-var EventEmitter = require('events').EventEmitter;
-
-var Plotly = require('../plotly');
-var Lib = require('../lib');
-
-var helpers = require('./helpers');
-var clonePlot = require('./cloneplot');
-var toSVG = require('./tosvg');
-var svgToImg = require('./svgtoimg');
-
+var helpers = require("./helpers");
+var clonePlot = require("./cloneplot");
+var toSVG = require("./tosvg");
+var svgToImg = require("./svgtoimg");
 
 /**
  * @param {object} gd figure Object
@@ -25,54 +22,54 @@ var svgToImg = require('./svgtoimg');
  * @param opts.format 'jpeg' | 'png' | 'webp' | 'svg'
  */
 function toImage(gd, opts) {
+  // first clone the GD so we can operate in a clean environment
+  var ev = new EventEmitter();
 
-    // first clone the GD so we can operate in a clean environment
-    var ev = new EventEmitter();
+  var clone = clonePlot(gd, { format: "png" });
+  var clonedGd = clone.gd;
 
-    var clone = clonePlot(gd, {format: 'png'});
-    var clonedGd = clone.gd;
+  // put the cloned div somewhere off screen before attaching to DOM
+  clonedGd.style.position = "absolute";
+  clonedGd.style.left = "-5000px";
+  document.body.appendChild(clonedGd);
 
-    // put the cloned div somewhere off screen before attaching to DOM
-    clonedGd.style.position = 'absolute';
-    clonedGd.style.left = '-5000px';
-    document.body.appendChild(clonedGd);
+  function wait() {
+    var delay = helpers.getDelay(clonedGd._fullLayout);
 
-    function wait() {
-        var delay = helpers.getDelay(clonedGd._fullLayout);
+    setTimeout(
+      function() {
+        var svg = toSVG(clonedGd);
 
-        setTimeout(function() {
-            var svg = toSVG(clonedGd);
+        var canvas = document.createElement("canvas");
+        canvas.id = Lib.randstr();
 
-            var canvas = document.createElement('canvas');
-            canvas.id = Lib.randstr();
-
-            ev = svgToImg({
-                format: opts.format,
-                width: clonedGd._fullLayout.width,
-                height: clonedGd._fullLayout.height,
-                canvas: canvas,
-                emitter: ev,
-                svg: svg
-            });
-
-            ev.clean = function() {
-                if(clonedGd) document.body.removeChild(clonedGd);
-            };
-
-        }, delay);
-    }
-
-    var redrawFunc = helpers.getRedrawFunc(clonedGd);
-
-    Plotly.plot(clonedGd, clone.data, clone.layout, clone.config)
-        .then(redrawFunc)
-        .then(wait)
-        .catch(function(err) {
-            ev.emit('error', err);
+        ev = svgToImg({
+          format: opts.format,
+          width: clonedGd._fullLayout.width,
+          height: clonedGd._fullLayout.height,
+          canvas: canvas,
+          emitter: ev,
+          svg: svg
         });
 
+        ev.clean = function() {
+          if (clonedGd) document.body.removeChild(clonedGd);
+        };
+      },
+      delay
+    );
+  }
 
-    return ev;
+  var redrawFunc = helpers.getRedrawFunc(clonedGd);
+
+  Plotly.plot(clonedGd, clone.data, clone.layout, clone.config)
+    .then(redrawFunc)
+    .then(wait)
+    .catch(function(err) {
+      ev.emit("error", err);
+    });
+
+  return ev;
 }
 
 module.exports = toImage;

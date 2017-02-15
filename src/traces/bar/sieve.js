@@ -5,12 +5,10 @@
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-
-'use strict';
-
+"use strict";
 module.exports = Sieve;
 
-var Lib = require('../../lib');
+var Lib = require("../../lib");
 
 /**
  * Helper class to sieve data from traces into bins
@@ -25,27 +23,27 @@ var Lib = require('../../lib');
  *                  If true, then don't merge overlapping bars into a single bar
  */
 function Sieve(traces, separateNegativeValues, dontMergeOverlappingData) {
-    this.traces = traces;
-    this.separateNegativeValues = separateNegativeValues;
-    this.dontMergeOverlappingData = dontMergeOverlappingData;
+  this.traces = traces;
+  this.separateNegativeValues = separateNegativeValues;
+  this.dontMergeOverlappingData = dontMergeOverlappingData;
 
-    var positions = [];
-    for(var i = 0; i < traces.length; i++) {
-        var trace = traces[i];
-        for(var j = 0; j < trace.length; j++) {
-            var bar = trace[j];
-            positions.push(bar.p);
-        }
+  var positions = [];
+  for (var i = 0; i < traces.length; i++) {
+    var trace = traces[i];
+    for (var j = 0; j < trace.length; j++) {
+      var bar = trace[j];
+      positions.push(bar.p);
     }
-    this.positions = positions;
+  }
+  this.positions = positions;
 
-    var dv = Lib.distinctVals(this.positions);
-    this.distinctPositions = dv.vals;
-    this.minDiff = dv.minDiff;
+  var dv = Lib.distinctVals(this.positions);
+  this.distinctPositions = dv.vals;
+  this.minDiff = dv.minDiff;
 
-    this.binWidth = this.minDiff;
+  this.binWidth = this.minDiff;
 
-    this.bins = {};
+  this.bins = {};
 }
 
 /**
@@ -57,12 +55,11 @@ function Sieve(traces, separateNegativeValues, dontMergeOverlappingData) {
  * @returns {number} Previous bin value
  */
 Sieve.prototype.put = function put(position, value) {
-    var label = this.getLabel(position, value),
-        oldValue = this.bins[label] || 0;
+  var label = this.getLabel(position, value), oldValue = this.bins[label] || 0;
 
-    this.bins[label] = oldValue + value;
+  this.bins[label] = oldValue + value;
 
-    return oldValue;
+  return oldValue;
 };
 
 /**
@@ -75,8 +72,8 @@ Sieve.prototype.put = function put(position, value) {
  * @returns {number} Current bin value
  */
 Sieve.prototype.get = function put(position, value) {
-    var label = this.getLabel(position, value);
-    return this.bins[label] || 0;
+  var label = this.getLabel(position, value);
+  return this.bins[label] || 0;
 };
 
 /**
@@ -91,9 +88,9 @@ Sieve.prototype.get = function put(position, value) {
  * true; otherwise prefixed with '^')
  */
 Sieve.prototype.getLabel = function getLabel(position, value) {
-    var prefix = (value < 0 && this.separateNegativeValues) ? 'v' : '^',
-        label = (this.dontMergeOverlappingData) ?
-            position :
-            Math.round(position / this.binWidth);
-    return prefix + label;
+  var prefix = value < 0 && this.separateNegativeValues ? "v" : "^",
+    label = this.dontMergeOverlappingData
+      ? position
+      : Math.round(position / this.binWidth);
+  return prefix + label;
 };

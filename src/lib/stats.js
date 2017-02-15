@@ -5,12 +5,8 @@
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-
-
-'use strict';
-
-var isNumeric = require('fast-isnumeric');
-
+"use strict";
+var isNumeric = require("fast-isnumeric");
 
 /**
  * aggNums() returns the result of an aggregate function applied to an array of
@@ -26,21 +22,22 @@ var isNumeric = require('fast-isnumeric');
  * @return {Number} - result of f applied to a starting from v
  */
 exports.aggNums = function(f, v, a, len) {
-    var i,
-        b;
-    if(!len) len = a.length;
-    if(!isNumeric(v)) v = false;
-    if(Array.isArray(a[0])) {
-        b = new Array(len);
-        for(i = 0; i < len; i++) b[i] = exports.aggNums(f, v, a[i]);
-        a = b;
+  var i, b;
+  if (!len) len = a.length;
+  if (!isNumeric(v)) v = false;
+  if (Array.isArray(a[0])) {
+    b = new Array(len);
+    for (i = 0; i < len; i++) {
+      b[i] = exports.aggNums(f, v, a[i]);
     }
+    a = b;
+  }
 
-    for(i = 0; i < len; i++) {
-        if(!isNumeric(v)) v = a[i];
-        else if(isNumeric(a[i])) v = f(+v, +a[i]);
-    }
-    return v;
+  for (i = 0; i < len; i++) {
+    if (!isNumeric(v)) v = a[i];
+    else if (isNumeric(a[i])) v = f(+v, +a[i]);
+  }
+  return v;
 };
 
 /**
@@ -48,25 +45,43 @@ exports.aggNums = function(f, v, a, len) {
  * even need to use aggNums instead of .length, to toss out non-numerics
  */
 exports.len = function(data) {
-    return exports.aggNums(function(a) { return a + 1; }, 0, data);
+  return exports.aggNums(
+    function(a) {
+      return a + 1;
+    },
+    0,
+    data
+  );
 };
 
 exports.mean = function(data, len) {
-    if(!len) len = exports.len(data);
-    return exports.aggNums(function(a, b) { return a + b; }, 0, data) / len;
+  if (!len) len = exports.len(data);
+  return exports.aggNums(
+    function(a, b) {
+      return a + b;
+    },
+    0,
+    data
+  ) /
+    len;
 };
 
 exports.variance = function(data, len, mean) {
-    if(!len) len = exports.len(data);
-    if(!isNumeric(mean)) mean = exports.mean(data, len);
+  if (!len) len = exports.len(data);
+  if (!isNumeric(mean)) mean = exports.mean(data, len);
 
-    return exports.aggNums(function(a, b) {
-        return a + Math.pow(b - mean, 2);
-    }, 0, data) / len;
+  return exports.aggNums(
+    function(a, b) {
+      return a + Math.pow(b - mean, 2);
+    },
+    0,
+    data
+  ) /
+    len;
 };
 
 exports.stdev = function(data, len, mean) {
-    return Math.sqrt(exports.variance(data, len, mean));
+  return Math.sqrt(exports.variance(data, len, mean));
 };
 
 /**
@@ -85,10 +100,10 @@ exports.stdev = function(data, len, mean) {
  * @return {Number} - percentile
  */
 exports.interp = function(arr, n) {
-    if(!isNumeric(n)) throw 'n should be a finite number';
-    n = n * arr.length - 0.5;
-    if(n < 0) return arr[0];
-    if(n > arr.length - 1) return arr[arr.length - 1];
-    var frac = n % 1;
-    return frac * arr[Math.ceil(n)] + (1 - frac) * arr[Math.floor(n)];
+  if (!isNumeric(n)) throw "n should be a finite number";
+  n = n * arr.length - 0.5;
+  if (n < 0) return arr[0];
+  if (n > arr.length - 1) return arr[arr.length - 1];
+  var frac = n % 1;
+  return frac * arr[Math.ceil(n)] + (1 - frac) * arr[Math.floor(n)];
 };

@@ -1,28 +1,26 @@
-var d3 = require('d3');
+var d3 = require("d3");
 
-var Plotly = require('@lib/core');
-var PlotlyChoropleth = require('@lib/choropleth');
+var Plotly = require("@lib/core");
+var PlotlyChoropleth = require("@lib/choropleth");
 
-var createGraphDiv = require('../assets/create_graph_div');
-var destroyGraphDiv = require('../assets/destroy_graph_div');
+var createGraphDiv = require("../assets/create_graph_div");
+var destroyGraphDiv = require("../assets/destroy_graph_div");
 
+describe("Bundle with choropleth", function() {
+  "use strict";
+  Plotly.register(PlotlyChoropleth);
 
-describe('Bundle with choropleth', function() {
-    'use strict';
+  var mock = require("@mocks/geo_multiple-usa-choropleths.json");
 
-    Plotly.register(PlotlyChoropleth);
+  beforeEach(function(done) {
+    Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
+  });
 
-    var mock = require('@mocks/geo_multiple-usa-choropleths.json');
+  afterEach(destroyGraphDiv);
 
-    beforeEach(function(done) {
-        Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
-    });
+  it("should graph choropleth traces", function() {
+    var nodes = d3.selectAll("g.trace.choropleth");
 
-    afterEach(destroyGraphDiv);
-
-    it('should graph choropleth traces', function() {
-        var nodes = d3.selectAll('g.trace.choropleth');
-
-        expect(nodes.size()).toEqual(4);
-    });
+    expect(nodes.size()).toEqual(4);
+  });
 });

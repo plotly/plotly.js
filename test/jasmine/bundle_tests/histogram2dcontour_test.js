@@ -1,41 +1,39 @@
-var d3 = require('d3');
+var d3 = require("d3");
 
-var Plotly = require('@lib/core');
-var PlotlyHistogram2dContour = require('@lib/histogram2dcontour');
-var PlotlyHistogram = require('@lib/histogram');
+var Plotly = require("@lib/core");
+var PlotlyHistogram2dContour = require("@lib/histogram2dcontour");
+var PlotlyHistogram = require("@lib/histogram");
 
-var createGraphDiv = require('../assets/create_graph_div');
-var destroyGraphDiv = require('../assets/destroy_graph_div');
+var createGraphDiv = require("../assets/create_graph_div");
+var destroyGraphDiv = require("../assets/destroy_graph_div");
 
+describe("Bundle with histogram2dcontour and histogram", function() {
+  "use strict";
+  Plotly.register([PlotlyHistogram2dContour, PlotlyHistogram]);
 
-describe('Bundle with histogram2dcontour and histogram', function() {
-    'use strict';
+  var mock = require("@mocks/2dhistogram_contour_subplots.json");
 
-    Plotly.register([PlotlyHistogram2dContour, PlotlyHistogram]);
+  beforeEach(function(done) {
+    Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
+  });
 
-    var mock = require('@mocks/2dhistogram_contour_subplots.json');
+  afterEach(destroyGraphDiv);
 
-    beforeEach(function(done) {
-        Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
-    });
+  it("should graph scatter traces", function() {
+    var nodes = d3.selectAll("g.trace.scatter");
 
-    afterEach(destroyGraphDiv);
+    expect(nodes.size()).toEqual(1);
+  });
 
-    it('should graph scatter traces', function() {
-        var nodes = d3.selectAll('g.trace.scatter');
+  it("should graph contour traces", function() {
+    var nodes = d3.selectAll("g.contour");
 
-        expect(nodes.size()).toEqual(1);
-    });
+    expect(nodes.size()).toEqual(1);
+  });
 
-    it('should graph contour traces', function() {
-        var nodes = d3.selectAll('g.contour');
+  it("should graph histogram traces", function() {
+    var nodes = d3.selectAll("g.bars");
 
-        expect(nodes.size()).toEqual(1);
-    });
-
-    it('should graph histogram traces', function() {
-        var nodes = d3.selectAll('g.bars');
-
-        expect(nodes.size()).toEqual(2);
-    });
+    expect(nodes.size()).toEqual(2);
+  });
 });

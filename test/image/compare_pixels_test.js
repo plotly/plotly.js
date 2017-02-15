@@ -1,14 +1,14 @@
-var fs = require('fs');
+var fs = require("fs");
 
-var common = require('../../tasks/util/common');
-var getMockList = require('./assets/get_mock_list');
-var getRequestOpts = require('./assets/get_image_request_options');
-var getImagePaths = require('./assets/get_image_paths');
+var common = require("../../tasks/util/common");
+var getMockList = require("./assets/get_mock_list");
+var getRequestOpts = require("./assets/get_image_request_options");
+var getImagePaths = require("./assets/get_image_paths");
 
 // packages inside the image server docker
-var test = require('tape');
-var request = require('request');
-var gm = require('gm');
+var test = require("tape");
+var request = require("request");
+var gm = require("gm");
 
 // pixel comparison tolerance
 var TOLERANCE = 1e-6;
@@ -47,46 +47,42 @@ var QUEUE_WAIT = 10;
  *
  *      npm run test-image -- gl3d_* --queue
  */
-
 var pattern = process.argv[2];
 var mockList = getMockList(pattern);
-var isInQueue = (process.argv[3] === '--queue');
+var isInQueue = process.argv[3] === "--queue";
 var isCI = process.env.CIRCLECI;
 
-
-if(mockList.length === 0) {
-    throw new Error('No mocks found with pattern ' + pattern);
+if (mockList.length === 0) {
+  throw new Error("No mocks found with pattern " + pattern);
 }
 
 // filter out untestable mocks if no pattern is specified
-if(!pattern) {
-    console.log('Filtering out untestable mocks:');
-    mockList = mockList.filter(untestableFilter);
-    console.log('\n');
+if (!pattern) {
+  console.log("Filtering out untestable mocks:");
+  mockList = mockList.filter(untestableFilter);
+  console.log("\n");
 }
 
 // gl2d have limited image-test support
-if(pattern === 'gl2d_*') {
+if (pattern === "gl2d_*") {
+  if (!isInQueue) {
+    console.log(
+      "WARN: Running gl2d image tests in batch may lead to unwanted results\n"
+    );
+  }
 
-    if(!isInQueue) {
-        console.log('WARN: Running gl2d image tests in batch may lead to unwanted results\n');
-    }
-
-    if(isCI) {
-        console.log('Filtering out multiple-subplot gl2d mocks:');
-        mockList = mockList
-            .filter(untestableGL2DonCIfilter)
-            .sort(sortForGL2DonCI);
-        console.log('\n');
-    }
+  if (isCI) {
+    console.log("Filtering out multiple-subplot gl2d mocks:");
+    mockList = mockList.filter(untestableGL2DonCIfilter).sort(sortForGL2DonCI);
+    console.log("\n");
+  }
 }
 
 // main
-if(isInQueue) {
-    runInQueue(mockList);
-}
-else {
-    runInBatch(mockList);
+if (isInQueue) {
+  runInQueue(mockList);
+} else {
+  runInBatch(mockList);
 }
 
 /* Test cases:
@@ -100,15 +96,13 @@ else {
  *
  */
 function untestableFilter(mockName) {
-    var cond = !(
-        mockName === 'font-wishlist' ||
-        mockName.indexOf('gl2d_') !== -1 ||
-        mockName.indexOf('mapbox_') !== -1
-    );
+  var cond = !(mockName === "font-wishlist" ||
+    mockName.indexOf("gl2d_") !== -1 ||
+    mockName.indexOf("mapbox_") !== -1);
 
-    if(!cond) console.log(' -', mockName);
+  if (!cond) console.log(" -", mockName);
 
-    return cond;
+  return cond;
 }
 
 /* gl2d mocks that have multiple subplots
@@ -120,16 +114,17 @@ function untestableFilter(mockName) {
  *
  */
 function untestableGL2DonCIfilter(mockName) {
-    var cond = [
-        'gl2d_multiple_subplots',
-        'gl2d_simple_inset',
-        'gl2d_stacked_coupled_subplots',
-        'gl2d_stacked_subplots'
-    ].indexOf(mockName) === -1;
+  var cond = [
+    "gl2d_multiple_subplots",
+    "gl2d_simple_inset",
+    "gl2d_stacked_coupled_subplots",
+    "gl2d_stacked_subplots"
+  ].indexOf(mockName) ===
+    -1;
 
-    if(!cond) console.log(' -', mockName);
+  if (!cond) console.log(" -", mockName);
 
-    return cond;
+  return cond;
 }
 
 /* gl2d pointcloud mock(s) must be tested first
@@ -145,82 +140,84 @@ function untestableGL2DonCIfilter(mockName) {
  * https://github.com/plotly/plotly.js/pull/1037
  */
 function sortForGL2DonCI(a, b) {
-    var root = 'gl2d_pointcloud',
-        ai = a.indexOf(root),
-        bi = b.indexOf(root);
+  var root = "gl2d_pointcloud", ai = a.indexOf(root), bi = b.indexOf(root);
 
-    if(ai < bi) return 1;
-    if(ai > bi) return -1;
+  if (ai < bi) return 1;
+  if (ai > bi) return -1;
 
-    return 0;
+  return 0;
 }
 
 function runInBatch(mockList) {
-    var running = 0;
+  var running = 0;
 
-    test('testing mocks in batch', function(t) {
-        t.plan(mockList.length);
+  test("testing mocks in batch", function(t) {
+    t.plan(mockList.length);
 
-        for(var i = 0; i < mockList.length; i++) {
-            run(mockList[i], t);
-        }
-    });
-
-    function run(mockName, t) {
-        if(running >= BATCH_SIZE) {
-            setTimeout(function() {
-                run(mockName, t);
-            }, BATCH_WAIT);
-            return;
-        }
-        running++;
-
-        // throttle the number of tests running concurrently
-
-        comparePixels(mockName, function(isEqual, mockName) {
-            running--;
-            t.ok(isEqual, mockName + ' should be pixel perfect');
-        });
+    for (var i = 0; i < mockList.length; i++) {
+      run(mockList[i], t);
     }
+  });
+
+  function run(mockName, t) {
+    if (running >= BATCH_SIZE) {
+      setTimeout(
+        function() {
+          run(mockName, t);
+        },
+        BATCH_WAIT
+      );
+      return;
+    }
+    running++;
+
+    // throttle the number of tests running concurrently
+    comparePixels(mockName, function(isEqual, mockName) {
+      running--;
+      t.ok(isEqual, mockName + " should be pixel perfect");
+    });
+  }
 }
 
 function runInQueue(mockList) {
-    var index = 0;
+  var index = 0;
 
-    test('testing mocks in queue', function(t) {
-        t.plan(mockList.length);
+  test("testing mocks in queue", function(t) {
+    t.plan(mockList.length);
 
-        run(mockList[index], t);
+    run(mockList[index], t);
+  });
+
+  function run(mockName, t) {
+    comparePixels(mockName, function(isEqual, mockName) {
+      t.ok(isEqual, mockName + " should be pixel perfect");
+
+      index++;
+      if (index < mockList.length) {
+        setTimeout(
+          function() {
+            run(mockList[index], t);
+          },
+          QUEUE_WAIT
+        );
+      }
     });
-
-    function run(mockName, t) {
-        comparePixels(mockName, function(isEqual, mockName) {
-            t.ok(isEqual, mockName + ' should be pixel perfect');
-
-            index++;
-            if(index < mockList.length) {
-                setTimeout(function() {
-                    run(mockList[index], t);
-                }, QUEUE_WAIT);
-            }
-        });
-    }
+  }
 }
 
 function comparePixels(mockName, cb) {
-    var requestOpts = getRequestOpts({ mockName: mockName }),
-        imagePaths = getImagePaths(mockName),
-        saveImageStream = fs.createWriteStream(imagePaths.test);
+  var requestOpts = getRequestOpts({ mockName: mockName }),
+    imagePaths = getImagePaths(mockName),
+    saveImageStream = fs.createWriteStream(imagePaths.test);
 
-    function checkImage() {
+  function checkImage() {
+    // baseline image must be generated first
+    if (!common.doesFileExist(imagePaths.baseline)) {
+      var err = new Error("baseline image not found");
+      return onEqualityCheck(err, false);
+    }
 
-        // baseline image must be generated first
-        if(!common.doesFileExist(imagePaths.baseline)) {
-            var err = new Error('baseline image not found');
-            return onEqualityCheck(err, false);
-        }
-
-        /*
+    /*
          * N.B. The non-zero tolerance was added in
          * https://github.com/plotly/plotly.js/pull/243
          * where some legend mocks started generating different png outputs
@@ -235,44 +232,38 @@ function comparePixels(mockName, cb) {
          *
          * Further investigation is needed.
          */
+    var gmOpts = {
+      file: imagePaths.diff,
+      highlightColor: "purple",
+      tolerance: TOLERANCE
+    };
 
-        var gmOpts = {
-            file: imagePaths.diff,
-            highlightColor: 'purple',
-            tolerance: TOLERANCE
-        };
+    gm.compare(imagePaths.test, imagePaths.baseline, gmOpts, onEqualityCheck);
+  }
 
-        gm.compare(
-            imagePaths.test,
-            imagePaths.baseline,
-            gmOpts,
-            onEqualityCheck
-        );
+  function onEqualityCheck(err, isEqual) {
+    if (err) {
+      common.touch(imagePaths.diff);
+      console.error(err);
+      return;
+    }
+    if (isEqual) {
+      fs.unlinkSync(imagePaths.diff);
     }
 
-    function onEqualityCheck(err, isEqual) {
-        if(err) {
-            common.touch(imagePaths.diff);
-            console.error(err);
-            return;
-        }
-        if(isEqual) {
-            fs.unlinkSync(imagePaths.diff);
-        }
+    cb(isEqual, mockName);
+  }
 
-        cb(isEqual, mockName);
+  // 525 means a plotly.js error
+  function onResponse(response) {
+    if (+response.statusCode === 525) {
+      console.error("plotly.js error while generating", mockName);
+      cb(false, mockName);
     }
+  }
 
-    // 525 means a plotly.js error
-    function onResponse(response) {
-        if(+response.statusCode === 525) {
-            console.error('plotly.js error while generating', mockName);
-            cb(false, mockName);
-        }
-    }
-
-    request(requestOpts)
-        .on('response', onResponse)
-        .pipe(saveImageStream)
-        .on('close', checkImage);
+  request(requestOpts)
+    .on("response", onResponse)
+    .pipe(saveImageStream)
+    .on("close", checkImage);
 }

@@ -5,26 +5,24 @@
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-
-'use strict';
-
+"use strict";
 /*
  * Export the plotly.js API methods.
  */
 
-var Plotly = require('./plotly');
+var Plotly = require("./plotly");
 
 // package version injected by `npm run preprocess`
-exports.version = '1.23.1';
+exports.version = "1.23.1";
 
 // inject promise polyfill
-require('es6-promise').polyfill();
+require("es6-promise").polyfill();
 
 // inject plot css
-require('../build/plotcss');
+require("../build/plotcss");
 
 // inject default MathJax config
-require('./fonts/mathjax_config');
+require("./fonts/mathjax_config");
 
 // plot api
 exports.plot = Plotly.plot;
@@ -39,39 +37,39 @@ exports.addTraces = Plotly.addTraces;
 exports.deleteTraces = Plotly.deleteTraces;
 exports.moveTraces = Plotly.moveTraces;
 exports.purge = Plotly.purge;
-exports.setPlotConfig = require('./plot_api/set_plot_config');
-exports.register = require('./plot_api/register');
-exports.toImage = require('./plot_api/to_image');
-exports.downloadImage = require('./snapshot/download');
-exports.validate = require('./plot_api/validate');
+exports.setPlotConfig = require("./plot_api/set_plot_config");
+exports.register = require("./plot_api/register");
+exports.toImage = require("./plot_api/to_image");
+exports.downloadImage = require("./snapshot/download");
+exports.validate = require("./plot_api/validate");
 exports.addFrames = Plotly.addFrames;
 exports.deleteFrames = Plotly.deleteFrames;
 exports.animate = Plotly.animate;
 
 // scatter is the only trace included by default
-exports.register(require('./traces/scatter'));
+exports.register(require("./traces/scatter"));
 
 // register all registrable components modules
 exports.register([
-    require('./components/legend'),
-    require('./components/annotations'),
-    require('./components/shapes'),
-    require('./components/images'),
-    require('./components/updatemenus'),
-    require('./components/sliders'),
-    require('./components/rangeslider'),
-    require('./components/rangeselector')
+  require("./components/legend"),
+  require("./components/annotations"),
+  require("./components/shapes"),
+  require("./components/images"),
+  require("./components/updatemenus"),
+  require("./components/sliders"),
+  require("./components/rangeslider"),
+  require("./components/rangeselector")
 ]);
 
 // plot icons
-exports.Icons = require('../build/ploticon');
+exports.Icons = require("../build/ploticon");
 
 // unofficial 'beta' plot methods, use at your own risk
 exports.Plots = Plotly.Plots;
 exports.Fx = Plotly.Fx;
-exports.Snapshot = require('./snapshot');
-exports.PlotSchema = require('./plot_api/plot_schema');
-exports.Queue = require('./lib/queue');
+exports.Snapshot = require("./snapshot");
+exports.PlotSchema = require("./plot_api/plot_schema");
+exports.Queue = require("./lib/queue");
 
 // export d3 used in the bundle
-exports.d3 = require('d3');
+exports.d3 = require("d3");

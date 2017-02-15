@@ -1,31 +1,29 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require("@lib/index");
+var Lib = require("@src/lib");
 
-var createGraphDiv = require('../assets/create_graph_div');
-var destroyGraphDiv = require('../assets/destroy_graph_div');
-var mouseEvent = require('../assets/mouse_event');
+var createGraphDiv = require("../assets/create_graph_div");
+var destroyGraphDiv = require("../assets/destroy_graph_div");
+var mouseEvent = require("../assets/mouse_event");
 
-describe('pie hovering', function() {
-    var mock = require('@mocks/pie_simple.json');
+describe("pie hovering", function() {
+  var mock = require("@mocks/pie_simple.json");
 
-    describe('event data', function() {
-        var mockCopy = Lib.extendDeep({}, mock),
-            width = mockCopy.layout.width,
-            height = mockCopy.layout.height,
-            gd;
+  describe("event data", function() {
+    var mockCopy = Lib.extendDeep({}, mock),
+      width = mockCopy.layout.width,
+      height = mockCopy.layout.height,
+      gd;
 
-        beforeEach(function(done) {
-            gd = createGraphDiv();
+    beforeEach(function(done) {
+      gd = createGraphDiv();
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
-                .then(done);
-        });
+      Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+    });
 
-        afterEach(destroyGraphDiv);
+    afterEach(destroyGraphDiv);
 
-        it('should contain the correct fields', function() {
-
-            /*
+    it("should contain the correct fields", function() {
+      /*
              * expected = [{
              *         v: 4,
              *         label: '3',
@@ -42,126 +40,141 @@ describe('pie hovering', function() {
              *         cyFinal: 160
              *     }];
              */
-            var hoverData,
-                unhoverData;
+      var hoverData, unhoverData;
 
+      gd.on("plotly_hover", function(data) {
+        hoverData = data;
+      });
 
-            gd.on('plotly_hover', function(data) {
-                hoverData = data;
-            });
+      gd.on("plotly_unhover", function(data) {
+        unhoverData = data;
+      });
 
-            gd.on('plotly_unhover', function(data) {
-                unhoverData = data;
-            });
+      mouseEvent("mouseover", width / 2 - 7, height / 2 - 7);
+      mouseEvent("mouseout", width / 2 - 7, height / 2 - 7);
 
-            mouseEvent('mouseover', width / 2 - 7, height / 2 - 7);
-            mouseEvent('mouseout', width / 2 - 7, height / 2 - 7);
+      expect(hoverData.points.length).toEqual(1);
+      expect(unhoverData.points.length).toEqual(1);
 
-            expect(hoverData.points.length).toEqual(1);
-            expect(unhoverData.points.length).toEqual(1);
+      var fields = [
+        "v",
+        "label",
+        "color",
+        "i",
+        "hidden",
+        "text",
+        "px1",
+        "pxmid",
+        "midangle",
+        "px0",
+        "largeArc",
+        "cxFinal",
+        "cyFinal"
+      ];
 
-            var fields = [
-                'v', 'label', 'color', 'i', 'hidden',
-                'text', 'px1', 'pxmid', 'midangle',
-                'px0', 'largeArc', 'cxFinal', 'cyFinal'
-            ];
+      expect(Object.keys(hoverData.points[0])).toEqual(fields);
+      expect(hoverData.points[0].i).toEqual(3);
 
-            expect(Object.keys(hoverData.points[0])).toEqual(fields);
-            expect(hoverData.points[0].i).toEqual(3);
-
-            expect(Object.keys(unhoverData.points[0])).toEqual(fields);
-            expect(unhoverData.points[0].i).toEqual(3);
-        });
-
-        it('should fire hover event when moving from one slice to another', function(done) {
-            var count = 0,
-                hoverData = [];
-
-            gd.on('plotly_hover', function(data) {
-                count++;
-                hoverData.push(data);
-            });
-
-            mouseEvent('mouseover', 173, 133);
-            setTimeout(function() {
-                mouseEvent('mouseover', 233, 193);
-                expect(count).toEqual(2);
-                expect(hoverData[0]).not.toEqual(hoverData[1]);
-                done();
-            }, 100);
-        });
-
-        it('should fire unhover event when the mouse moves off the graph', function(done) {
-            var count = 0,
-                unhoverData = [];
-
-            gd.on('plotly_unhover', function(data) {
-                count++;
-                unhoverData.push(data);
-            });
-
-            mouseEvent('mouseover', 173, 133);
-            mouseEvent('mouseout', 173, 133);
-            setTimeout(function() {
-                mouseEvent('mouseover', 233, 193);
-                mouseEvent('mouseout', 233, 193);
-                expect(count).toEqual(2);
-                expect(unhoverData[0]).not.toEqual(unhoverData[1]);
-                done();
-            }, 100);
-        });
+      expect(Object.keys(unhoverData.points[0])).toEqual(fields);
+      expect(unhoverData.points[0].i).toEqual(3);
     });
 
-    describe('labels', function() {
+    it(
+      "should fire hover event when moving from one slice to another",
+      function(done) {
+        var count = 0, hoverData = [];
 
-        var gd,
-            mockCopy;
-
-        beforeEach(function() {
-            gd = createGraphDiv();
-            mockCopy = Lib.extendDeep({}, mock);
+        gd.on("plotly_hover", function(data) {
+          count++;
+          hoverData.push(data);
         });
 
-        afterEach(destroyGraphDiv);
+        mouseEvent("mouseover", 173, 133);
+        setTimeout(
+          function() {
+            mouseEvent("mouseover", 233, 193);
+            expect(count).toEqual(2);
+            expect(hoverData[0]).not.toEqual(hoverData[1]);
+            done();
+          },
+          100
+        );
+      }
+    );
 
-        it('should show the default selected values', function(done) {
+    it("should fire unhover event when the mouse moves off the graph", function(
+      done
+    ) {
+      var count = 0, unhoverData = [];
 
-            var expected = ['4', '5', '33.3%'];
+      gd.on("plotly_unhover", function(data) {
+        count++;
+        unhoverData.push(data);
+      });
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-
-                mouseEvent('mouseover', 223, 143);
-
-                var labels = Plotly.d3.selectAll('.hovertext .nums .line');
-
-                expect(labels[0].length).toBe(3);
-
-                labels.each(function(_, i) {
-                    expect(Plotly.d3.select(this).text()).toBe(expected[i]);
-                });
-            }).then(done);
-        });
-
-        it('should show the correct separators for values', function(done) {
-
-            var expected = ['0', '12|345|678@91', '99@9%'];
-
-            mockCopy.layout.separators = '@|';
-            mockCopy.data[0].values[0] = 12345678.912;
-            mockCopy.data[0].values[1] = 10000;
-
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-
-                mouseEvent('mouseover', 223, 143);
-
-                var labels = Plotly.d3.selectAll('.hovertext .nums .line');
-
-                expect(labels[0].length).toBe(3);
-
-                labels.each(function(_, i) {
-                    expect(Plotly.d3.select(this).text()).toBe(expected[i]);
-                });
-            }).then(done);
-        });
+      mouseEvent("mouseover", 173, 133);
+      mouseEvent("mouseout", 173, 133);
+      setTimeout(
+        function() {
+          mouseEvent("mouseover", 233, 193);
+          mouseEvent("mouseout", 233, 193);
+          expect(count).toEqual(2);
+          expect(unhoverData[0]).not.toEqual(unhoverData[1]);
+          done();
+        },
+        100
+      );
     });
+  });
+
+  describe("labels", function() {
+    var gd, mockCopy;
+
+    beforeEach(function() {
+      gd = createGraphDiv();
+      mockCopy = Lib.extendDeep({}, mock);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it("should show the default selected values", function(done) {
+      var expected = ["4", "5", "33.3%"];
+
+      Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+        .then(function() {
+          mouseEvent("mouseover", 223, 143);
+
+          var labels = Plotly.d3.selectAll(".hovertext .nums .line");
+
+          expect(labels[0].length).toBe(3);
+
+          labels.each(function(_, i) {
+            expect(Plotly.d3.select(this).text()).toBe(expected[i]);
+          });
+        })
+        .then(done);
+    });
+
+    it("should show the correct separators for values", function(done) {
+      var expected = ["0", "12|345|678@91", "99@9%"];
+
+      mockCopy.layout.separators = "@|";
+      mockCopy.data[0].values[0] = 12345678.912;
+      mockCopy.data[0].values[1] = 10000;
+
+      Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+        .then(function() {
+          mouseEvent("mouseover", 223, 143);
+
+          var labels = Plotly.d3.selectAll(".hovertext .nums .line");
+
+          expect(labels[0].length).toBe(3);
+
+          labels.each(function(_, i) {
+            expect(Plotly.d3.select(this).text()).toBe(expected[i]);
+          });
+        })
+        .then(done);
+    });
+  });
 });

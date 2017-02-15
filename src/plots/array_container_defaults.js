@@ -5,11 +5,8 @@
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-
-'use strict';
-
-var Lib = require('../lib');
-
+"use strict";
+var Lib = require("../lib");
 
 /** Convenience wrapper for making array container logic DRY and consistent
  *
@@ -41,27 +38,29 @@ var Lib = require('../lib');
  *    links to supplementary data (e.g. fullData for layout components)
  *
  */
-module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut, opts) {
-    var name = opts.name;
+module.exports = function handleArrayContainerDefaults(
+  parentObjIn,
+  parentObjOut,
+  opts
+) {
+  var name = opts.name;
 
-    var contIn = Array.isArray(parentObjIn[name]) ? parentObjIn[name] : [],
-        contOut = parentObjOut[name] = [];
+  var contIn = Array.isArray(parentObjIn[name]) ? parentObjIn[name] : [],
+    contOut = parentObjOut[name] = [];
 
-    for(var i = 0; i < contIn.length; i++) {
-        var itemIn = contIn[i],
-            itemOut = {},
-            itemOpts = {};
+  for (var i = 0; i < contIn.length; i++) {
+    var itemIn = contIn[i], itemOut = {}, itemOpts = {};
 
-        if(!Lib.isPlainObject(itemIn)) {
-            itemOpts.itemIsNotPlainObject = true;
-            itemIn = {};
-        }
-
-        opts.handleItemDefaults(itemIn, itemOut, parentObjOut, opts, itemOpts);
-
-        itemOut._input = itemIn;
-        itemOut._index = i;
-
-        contOut.push(itemOut);
+    if (!Lib.isPlainObject(itemIn)) {
+      itemOpts.itemIsNotPlainObject = true;
+      itemIn = {};
     }
+
+    opts.handleItemDefaults(itemIn, itemOut, parentObjOut, opts, itemOpts);
+
+    itemOut._input = itemIn;
+    itemOut._index = i;
+
+    contOut.push(itemOut);
+  }
 };
