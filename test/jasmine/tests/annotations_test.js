@@ -185,12 +185,19 @@ describe('annotations relayout', function() {
     });
 
     it('should be able update annotations', function(done) {
+        var updateObj = { 'annotations[0].text': 'hello' };
 
         function assertText(index, expected) {
             var query = '.annotation[data-index="' + index + '"]',
                 actual = d3.select(query).select('text').text();
 
             expect(actual).toEqual(expected);
+        }
+
+        function assertUpdateObj() {
+            // w/o mutating relayout update object
+            expect(Object.keys(updateObj)).toEqual(['annotations[0].text']);
+            expect(updateObj['annotations[0].text']).toEqual('hello');
         }
 
         assertText(0, 'left top');
@@ -202,9 +209,25 @@ describe('annotations relayout', function() {
         })
         .then(function() {
             assertText(0, 'new text');
+
+            return Plotly.relayout(gd, updateObj);
+        })
+        .then(function() {
+            assertText(0, 'hello');
+            assertUpdateObj();
+
+            return Plotly.relayout(gd, 'annotations[0].text', null);
+        })
+        .then(function() {
+            assertText(0, 'new text');
+
+            return Plotly.update(gd, {}, updateObj);
+        })
+        .then(function() {
+            assertText(0, 'hello');
+            assertUpdateObj();
         })
         .then(done);
-
     });
 });
 
