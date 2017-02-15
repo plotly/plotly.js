@@ -26,15 +26,18 @@ module.exports = function style(gd) {
         .each(function(d) {
             var el = d3.select(this);
             var pt = el.selectAll('path.point');
+            var trace = d.trace || d[0].trace;
 
-            pt.call(Drawing.pointStyle, d.trace || d[0].trace);
+            pt.call(Drawing.pointStyle, trace);
 
-            pt.each(function(cd) {
-                d3.select(this).classed('plotly-customdata', cd.data !== null && cd.data !== undefined);
-            });
+            if(trace.customdata) {
+                pt.each(function(cd) {
+                    d3.select(this).classed('plotly-customdata', cd.data !== null && cd.data !== undefined);
+                });
+            }
 
             el.selectAll('text')
-                .call(Drawing.textPointStyle, d.trace || d[0].trace);
+                .call(Drawing.textPointStyle, trace);
         });
 
     s.selectAll('g.trace path.js-line')
