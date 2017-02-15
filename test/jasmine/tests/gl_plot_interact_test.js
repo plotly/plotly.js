@@ -595,6 +595,23 @@ describe('Test gl plot interactions', function() {
         });
 
         describe('drag and wheel interactions', function() {
+
+            function scroll(target) {
+                return new Promise(function(resolve) {
+                    target.dispatchEvent(new WheelEvent('wheel', {deltaY: 1}));
+                    setTimeout(resolve, 0);
+                });
+            }
+
+            function drag(target) {
+                return new Promise(function(resolve) {
+                    target.dispatchEvent(new MouseEvent('mousedown', {x: 0, y: 0}));
+                    target.dispatchEvent(new MouseEvent('mousemove', { x: 100, y: 100}));
+                    target.dispatchEvent(new MouseEvent('mouseup', { x: 100, y: 100}));
+                    setTimeout(resolve, 0);
+                });
+            }
+
             it('should update the scene camera', function(done) {
                 var sceneLayout = gd._fullLayout.scene,
                     sceneLayout2 = gd._fullLayout.scene2,
@@ -606,37 +623,63 @@ describe('Test gl plot interactions', function() {
                 expect(sceneLayout2.camera.eye)
                     .toEqual({x: 2.5, y: 2.5, z: 2.5});
 
-                // Wheel scene 1
-                sceneTarget.dispatchEvent(new WheelEvent('wheel', {deltaY: 1}));
-
-                // Wheel scene 2
-                sceneTarget2.dispatchEvent(new WheelEvent('wheel', {deltaY: 1}));
-
-                setTimeout(function() {
-
-                    expect(relayoutCallback).toHaveBeenCalledTimes(2);
-
+                scroll(sceneTarget).then(function() {
+                    expect(relayoutCallback).toHaveBeenCalledTimes(1);
                     relayoutCallback.calls.reset();
 
-                    // Drag scene 1
-                    sceneTarget.dispatchEvent(new MouseEvent('mousedown', {x: 0, y: 0}));
-                    sceneTarget.dispatchEvent(new MouseEvent('mousemove', { x: 100, y: 100}));
-                    sceneTarget.dispatchEvent(new MouseEvent('mouseup', { x: 100, y: 100}));
+                    return scroll(sceneTarget2);
+                })
+                .then(function() {
+                    expect(relayoutCallback).toHaveBeenCalledTimes(1);
+                    relayoutCallback.calls.reset();
 
-                    // Drag scene 2
-                    sceneTarget2.dispatchEvent(new MouseEvent('mousedown', {x: 0, y: 0 }));
-                    sceneTarget2.dispatchEvent(new MouseEvent('mousemove', {x: 100, y: 100}));
-                    sceneTarget2.dispatchEvent(new MouseEvent('mouseup', {x: 100, y: 100}));
+                    return drag(sceneTarget2);
+                })
+                .then(function() {
+                    expect(relayoutCallback).toHaveBeenCalledTimes(1);
+                    relayoutCallback.calls.reset();
 
-                    setTimeout(function() {
+                    return drag(sceneTarget);
+                })
+                .then(function() {
+                    expect(relayoutCallback).toHaveBeenCalledTimes(1);
+                    relayoutCallback.calls.reset();
 
-                        expect(relayoutCallback).toHaveBeenCalledTimes(2);
+                    return Plotly.relayout(gd, {
+                        'scene.dragmode': false,
+                        'scene2.dragmode': false
+                    });
+                })
+                .then(function() {
+                    expect(relayoutCallback).toHaveBeenCalledTimes(1);
+                    relayoutCallback.calls.reset();
 
-                        done();
+                    return drag(sceneTarget);
+                })
+                .then(function() {
+                    return drag(sceneTarget2);
+                })
+                .then(function() {
+                    expect(relayoutCallback).toHaveBeenCalledTimes(0);
 
-                    }, MODEBAR_DELAY);
+                    return Plotly.relayout(gd, {
+                        'scene.dragmode': 'orbit',
+                        'scene2.dragmode': 'turntable'
+                    });
+                })
+                .then(function() {
+                    expect(relayoutCallback).toHaveBeenCalledTimes(1);
+                    relayoutCallback.calls.reset();
 
-                }, MODEBAR_DELAY);
+                    return drag(sceneTarget);
+                })
+                .then(function() {
+                    return drag(sceneTarget2);
+                })
+                .then(function() {
+                    expect(relayoutCallback).toHaveBeenCalledTimes(2);
+                })
+                .then(done);
             });
         });
     });
