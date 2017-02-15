@@ -358,6 +358,17 @@ describe('end-to-end scatter tests', function() {
             points.each(function(cd, i) {
                 expect(d3.select(this).classed('plotly-customdata')).toBe(expected[i]);
             });
+
+            return Plotly.animate(gd, [{
+                data: [{customdata: []}]
+            }], {frame: {redraw: false, duration: 0}});
+        }).then(function() {
+            var points = d3.selectAll('g.scatterlayer').selectAll('.point');
+
+            points.each(function() {
+                expect(d3.select(this).classed('plotly-customdata')).toBe(false);
+            });
+
         }).catch(fail).then(done);
     });
 });

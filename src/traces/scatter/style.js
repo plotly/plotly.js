@@ -30,12 +30,6 @@ module.exports = function style(gd) {
 
             pts.call(Drawing.pointStyle, trace);
 
-            if(trace.customdata) {
-                pts.each(function(cd) {
-                    d3.select(this).classed('plotly-customdata', cd.data !== null && cd.data !== undefined);
-                });
-            }
-
             el.selectAll('text')
                 .call(Drawing.textPointStyle, trace);
         });
