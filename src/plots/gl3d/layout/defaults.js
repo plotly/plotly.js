@@ -9,6 +9,7 @@
 
 'use strict';
 
+var Lib = require('../../../lib');
 var Color = require('../../../components/color');
 
 var handleSubplotDefaults = require('../../subplot_defaults');
@@ -17,20 +18,14 @@ var supplyGl3dAxisLayoutDefaults = require('./axis_defaults');
 
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    var hasNon3D = (
-        layoutOut._has('cartesian') ||
-        layoutOut._has('geo') ||
-        layoutOut._has('gl2d') ||
-        layoutOut._has('pie') ||
-        layoutOut._has('ternary')
-    );
+    var hasNon3D = layoutOut._basePlotModules.length > 1;
 
     // some layout-wide attribute are used in all scenes
     // if 3D is the only visible plot type
     function getDfltFromLayout(attr) {
         if(hasNon3D) return;
 
-        var isValid = layoutAttributes[attr].values.indexOf(layoutIn[attr]) !== -1;
+        var isValid = Lib.validate(layoutIn[attr], layoutAttributes[attr]);
         if(isValid) return layoutIn[attr];
     }
 

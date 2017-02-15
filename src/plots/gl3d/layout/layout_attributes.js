@@ -142,7 +142,7 @@ module.exports = {
     dragmode: {
         valType: 'enumerated',
         role: 'info',
-        values: ['orbit', 'turntable', 'zoom', 'pan'],
+        values: ['orbit', 'turntable', 'zoom', 'pan', false],
         dflt: 'turntable',
         description: [
             'Determines the mode of drag interactions for this scene.'

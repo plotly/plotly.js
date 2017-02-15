@@ -173,6 +173,8 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
     }
 
     var relayoutCallback = function(scene) {
+        if(scene.fullSceneLayout.dragmode === false) return;
+
         var update = {};
         update[scene.id] = getLayoutCamera(scene.camera);
         scene.saveCamera(scene.graphDiv.layout);
