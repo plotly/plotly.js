@@ -10,6 +10,13 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.23.2] -- 2017-02-15
+
+### Changed
+- Bower installs now fetch un-minified `dist/plotly.js` bundle [#1373]
+- Add package to packagist repository [#1375]
+
+
 ## [1.23.1] -- 2017-02-13
 
 ### Fixed
@@ -18,7 +25,6 @@ where X.Y.Z is the semver of most recent plotly.js release.
 - Allow `bar` and `histogram` traces to coexist on same subplot [#1365]
 - Fix `bar` position computations when placeholder traces are present [#1310]
 - Fix auto-axis-type routine for data-less `candelestick`traces [#1359]
-- Bower installs now fetch un-minified `dist/plotly.js` bundle [#1373]
 
 
 ## [1.23.0] -- 2017-02-06
