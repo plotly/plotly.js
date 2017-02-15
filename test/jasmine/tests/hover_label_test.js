@@ -826,14 +826,18 @@ describe('hover updates', function() {
 
             setTimeout(function() {
                 var hoverText = d3.selectAll('g.hovertext');
-                expect(hoverText.size()).toEqual(1);
-                expect(hoverText.text()).toEqual(labelText);
+                if(labelPos) {
+                    expect(hoverText.size()).toEqual(1);
+                    expect(hoverText.text()).toEqual(labelText);
 
-                var transformParts = hoverText.attr('transform').split('(');
-                expect(transformParts[0]).toEqual('translate');
-                var transformCoords = transformParts[1].split(')')[0].split(',');
-                expect(+transformCoords[0]).toBeCloseTo(labelPos[0], -1, labelText + ':x');
-                expect(+transformCoords[1]).toBeCloseTo(labelPos[1], -1, labelText + ':y');
+                    var transformParts = hoverText.attr('transform').split('(');
+                    expect(transformParts[0]).toEqual('translate');
+                    var transformCoords = transformParts[1].split(')')[0].split(',');
+                    expect(+transformCoords[0]).toBeCloseTo(labelPos[0], -1, labelText + ':x');
+                    expect(+transformCoords[1]).toBeCloseTo(labelPos[1], -1, labelText + ':y');
+                } else {
+                    expect(hoverText.size()).toEqual(0);
+                }
 
                 resolve();
             }, constants.HOVERMINTIME);
@@ -867,6 +871,18 @@ describe('hover updates', function() {
         }).then(function() {
             // No mouse event this time. Just change the data and check the label.
             // Ditto on concatenation. This is "trace 1" + "0.5"
+            return assertLabelsCorrect(null, [103, 100], 'trace 10.5');
+        }).then(function() {
+            // Restyle to move the point out of the window:
+            return Plotly.relayout(gd, {'xaxis.range': [2, 3]});
+        }).then(function() {
+            // Assert label removed:
+            return assertLabelsCorrect(null, null);
+        }).then(function() {
+            // Move back to the original xaxis range:
+            return Plotly.relayout(gd, {'xaxis.range': [0, 1]});
+        }).then(function() {
+            // Assert label restored:
             return assertLabelsCorrect(null, [103, 100], 'trace 10.5');
         }).catch(fail).then(done);
     });
