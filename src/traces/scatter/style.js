@@ -25,13 +25,13 @@ module.exports = function style(gd) {
     s.selectAll('g.points')
         .each(function(d) {
             var el = d3.select(this);
-            var pt = el.selectAll('path.point');
+            var pts = el.selectAll('path.point');
             var trace = d.trace || d[0].trace;
 
-            pt.call(Drawing.pointStyle, trace);
+            pts.call(Drawing.pointStyle, trace);
 
             if(trace.customdata) {
-                pt.each(function(cd) {
+                pts.each(function(cd) {
                     d3.select(this).classed('plotly-customdata', cd.data !== null && cd.data !== undefined);
                 });
             }
