@@ -48,6 +48,9 @@ module.exports = {
     // new users see some hints about interactivity
     showTips: true,
 
+    // enable/disable direct range entry at the pan/zoom drag points
+    enableRangeEntry: true,
+
     // link to open this plot in plotly
     showLink: false,
 
