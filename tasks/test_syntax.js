@@ -11,6 +11,8 @@ var libGlob = path.join(constants.pathToLib, '**/*.js');
 var testGlob = path.join(constants.pathToJasmineTests, '**/*.js');
 var bundleTestGlob = path.join(constants.pathToJasmineBundleTests, '**/*.js');
 
+var EXIT_CODE = 0;
+
 // main
 assertJasmineSuites();
 assertSrcContents();
@@ -117,7 +119,7 @@ function assertCircularDeps() {
         // as of v1.17.0 - 2016/09/08
         // see https://github.com/plotly/plotly.js/milestone/9
         // for more details
-        var MAX_ALLOWED_CIRCULAR_DEPS = 17;
+        var MAX_ALLOWED_CIRCULAR_DEPS = 18;
 
         if(circularDeps.length > MAX_ALLOWED_CIRCULAR_DEPS) {
             logs.push('some new circular dependencies were added to src/');
@@ -133,9 +135,15 @@ function combineGlobs(arr) {
 
 function log(name, logs) {
     if(logs.length) {
-        console.error('test-syntax error [' + name + ']\n');
-        throw new Error('\n' + logs.join('\n') + '\n');
+        console.error('test-syntax error [' + name + ']');
+        EXIT_CODE = 1;
+    } else {
+        console.log('ok ' + name);
     }
-
-    console.log('ok ' + name);
 }
+
+process.on('exit', function() {
+    if(EXIT_CODE) {
+        throw new Error('test syntax failed.');
+    }
+});
