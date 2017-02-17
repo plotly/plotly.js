@@ -11,6 +11,8 @@ var libGlob = path.join(constants.pathToLib, '**/*.js');
 var testGlob = path.join(constants.pathToJasmineTests, '**/*.js');
 var bundleTestGlob = path.join(constants.pathToJasmineBundleTests, '**/*.js');
 
+var EXIT_CODE = 0;
+
 // main
 assertJasmineSuites();
 assertSrcContents();
@@ -133,9 +135,15 @@ function combineGlobs(arr) {
 
 function log(name, logs) {
     if(logs.length) {
-        console.error('test-syntax error [' + name + ']\n');
-        throw new Error('\n' + logs.join('\n') + '\n');
+        console.error('test-syntax error [' + name + ']');
+        EXIT_CODE = 1;
+    } else {
+        console.log('ok ' + name);
     }
-
-    console.log('ok ' + name);
 }
+
+process.on('exit', function() {
+    if(EXIT_CODE) {
+        throw new Error('test syntax failed.');
+    }
+});
