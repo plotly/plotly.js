@@ -70,7 +70,7 @@
     "gl-plot3d": "^1.5.1",
     "gl-pointcloud2d": "^1.0.0",
     "gl-scatter2d": "^1.2.2",
-    "gl-scatter2d-fancy": "^1.2.1",
+    "gl-scatter2d-sdf": "^1.3.0",
     "gl-scatter3d": "^1.0.4",
     "gl-select-box": "^1.0.1",
     "gl-shader": "4.2.0",
