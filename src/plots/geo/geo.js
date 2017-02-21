@@ -25,7 +25,6 @@ var createGeoZoom = require('./zoom');
 var createGeoZoomReset = require('./zoom_reset');
 var constants = require('./constants');
 
-var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var topojsonUtils = require('../../lib/topojson_utils');
 var topojsonFeature = require('topojson-client').feature;
 
@@ -38,8 +37,6 @@ function Geo(options, fullLayout) {
     this.graphDiv = options.graphDiv;
     this.container = options.container;
     this.topojsonURL = options.topojsonURL;
-
-    this.hoverContainer = null;
 
     this.topojsonName = null;
     this.topojson = null;
@@ -54,8 +51,6 @@ function Geo(options, fullLayout) {
     this.zoom = null;
     this.zoomReset = null;
 
-    this.xaxis = null;
-    this.yaxis = null;
 
     this.makeFramework();
     this.updateFx(fullLayout.hovermode);
@@ -232,38 +227,30 @@ proto.makePath = function() {
     this.path = d3.geo.path().projection(this.projection);
 };
 
-/*
- * <div this.container>
- *   <div this.geoDiv>
- *     <svg this.hoverContainer>
- *     <svg this.framework>
- */
 proto.makeFramework = function() {
-    var geoDiv = this.geoDiv = d3.select(this.container).append('div');
-    geoDiv
-        .attr('id', this.id)
-        .style('position', 'absolute');
+    var fullLayout = this.graphDiv._fullLayout;
+    var clipId = 'clip' + fullLayout._uid + this.id;
 
-    // only choropleth traces use this,
-    // scattergeo traces use Fx.hover and fullLayout._hoverlayer
-    var hoverContainer = this.hoverContainer = geoDiv.append('svg');
-    hoverContainer
-        .attr(xmlnsNamespaces.svgAttrs)
-        .style({
-            'position': 'absolute',
-            'z-index': 20,
-            'pointer-events': 'none'
-        });
+    var defGroup = fullLayout._defs.selectAll('g.clips')
+        .data([0]);
+    defGroup.enter().append('g')
+        .classed('clips', true);
 
-    var framework = this.framework = geoDiv.append('svg');
+    var clipDef = this.clipDef = defGroup.selectAll('#' + clipId)
+        .data([0]);
+
+    clipDef.enter().append('clipPath').attr('id', clipId)
+        .append('rect');
+
+    var framework = this.framework = d3.select(this.container).append('g');
+
     framework
-        .attr(xmlnsNamespaces.svgAttrs)
-        .attr({
-            'position': 'absolute',
-            'preserveAspectRatio': 'none'
-        });
+        .attr('class', 'geo ' + this.id)
+        .style('pointer-events', 'all')
+        .call(Drawing.setClipUrl, clipId);
 
-    framework.append('g').attr('class', 'bglayer')
+    framework.append('g')
+        .attr('class', 'bglayer')
         .append('rect');
 
     framework.append('g').attr('class', 'baselayer');
@@ -273,8 +260,6 @@ proto.makeFramework = function() {
 
     // N.B. disable dblclick zoom default
     framework.on('dblclick.zoom', null);
-
-    // TODO use clip paths instead of nested SVG
 
     this.xaxis = { _id: 'x' };
     this.yaxis = { _id: 'y' };
@@ -286,28 +271,20 @@ proto.adjustLayout = function(geoLayout, graphSize) {
     var left = graphSize.l + graphSize.w * domain.x[0] + geoLayout._marginX,
         top = graphSize.t + graphSize.h * (1 - domain.y[1]) + geoLayout._marginY;
 
-    this.geoDiv.style({
-        left: left + 'px',
-        top: top + 'px',
-        width: geoLayout._width + 'px',
-        height: geoLayout._height + 'px'
-    });
+    Drawing.setTranslate(this.framework, left, top);
 
-    this.hoverContainer.attr({
+    var dimsAttrs = {
+        x: 0,
+        y: 0,
         width: geoLayout._width,
         height: geoLayout._height
-    });
+    };
 
-    this.framework.attr({
-        width: geoLayout._width,
-        height: geoLayout._height
-    });
+    this.clipDef.select('rect')
+        .attr(dimsAttrs);
 
     this.framework.select('.bglayer').select('rect')
-        .attr({
-            width: geoLayout._width,
-            height: geoLayout._height
-        })
+        .attr(dimsAttrs)
         .call(Color.fill, geoLayout.bgcolor);
 
     this.xaxis._offset = left;

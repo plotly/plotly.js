@@ -404,7 +404,7 @@ describe('Test geo interactions', function() {
         }
 
         function countGeos() {
-            return d3.select('div.geo-container').selectAll('div').size();
+            return d3.select('g.geolayer').selectAll('.geo').size();
         }
 
         function countColorBars() {
