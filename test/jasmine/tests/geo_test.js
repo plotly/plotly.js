@@ -380,6 +380,25 @@ describe('geojson / topojson utils', function() {
             expect(out).toEqual(false);
         });
     });
+
+    describe('should distinguish between US and US Virgin Island', function() {
+
+        // N.B. Virgin Island don't appear at the 'world_110m' resolution
+        var topojsonName = 'world_50m';
+        var topojson = GeoAssets.topojson[topojsonName];
+
+        var shouldPass = [
+            'Virgin Islands (U.S.)',
+            ' Virgin   Islands (U.S.) '
+        ];
+
+        shouldPass.forEach(function(str) {
+            it('(case ' + str + ')', function() {
+                var out = _locationToFeature(topojson, str, 'country names');
+                expect(out.id).toEqual('VIR');
+            });
+        });
+    });
 });
 
 describe('Test geo interactions', function() {

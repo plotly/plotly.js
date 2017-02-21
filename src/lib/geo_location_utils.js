@@ -51,7 +51,7 @@ function countryNameToISO3(countryName) {
         var iso3 = countryIds[i],
             regex = new RegExp(countryRegex[iso3]);
 
-        if(regex.test(countryName.toLowerCase())) return iso3;
+        if(regex.test(countryName.trim().toLowerCase())) return iso3;
     }
 
     Lib.warn('Unrecognized country name: ' + countryName + '.');
