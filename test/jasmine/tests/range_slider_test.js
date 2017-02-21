@@ -536,6 +536,13 @@ describe('the range slider', function() {
 
     describe('in general', function() {
 
+        // lower toBeCloseToArray precision for FF38 on CI
+        var precision = 1e-2;
+
+        beforeAll(function() {
+            jasmine.addMatchers(customMatchers);
+        });
+
         beforeEach(function() {
             gd = createGraphDiv();
         });
@@ -560,6 +567,83 @@ describe('the range slider', function() {
                     expect(rangeSlider).toBeDefined();
                 })
                 .then(done);
+        });
+
+        it('should expand its range in accordance with new data arrays', function(done) {
+
+            function assertRange(expected) {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(expected, precision);
+                expect(gd.layout.xaxis.rangeslider.range).toBeCloseToArray(expected, precision);
+            }
+
+            Plotly.plot(gd, [{
+                y: [2, 1, 2]
+            }], {
+                xaxis: { rangeslider: {} }
+            })
+            .then(function() {
+                assertRange([-0.13, 2.13]);
+
+                return Plotly.restyle(gd, 'y', [[2, 1, 2, 1]]);
+            })
+            .then(function() {
+                assertRange([-0.19, 3.19]);
+
+                return Plotly.extendTraces(gd, { y: [[2, 1]] }, [0]);
+            })
+            .then(function() {
+                assertRange([-0.32, 5.32]);
+
+                return Plotly.addTraces(gd, { x: [0, 10], y: [2, 1] });
+            })
+            .then(function() {
+                assertRange([-0.68, 10.68]);
+
+                return Plotly.deleteTraces(gd, [1]);
+            })
+            .then(function() {
+                assertRange([-0.31, 5.31]);
+            })
+            .then(done);
+        });
+
+        it('should not expand its range when range slider range is set', function(done) {
+            var rangeSliderRange = [-1, 11];
+
+            function assertRange(expected) {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(expected, precision);
+                expect(gd.layout.xaxis.rangeslider.range).toEqual(rangeSliderRange, precision);
+            }
+
+            Plotly.plot(gd, [{
+                y: [2, 1, 2]
+            }], {
+                xaxis: { rangeslider: { range: [-1, 11]} }
+            })
+            .then(function() {
+                assertRange([-0.13, 2.13]);
+
+                return Plotly.restyle(gd, 'y', [[2, 1, 2, 1]]);
+            })
+            .then(function() {
+                assertRange([-0.19, 3.19]);
+
+                return Plotly.extendTraces(gd, { y: [[2, 1]] }, [0]);
+            })
+            .then(function() {
+                assertRange([-0.32, 5.32]);
+
+                return Plotly.addTraces(gd, { x: [0, 10], y: [2, 1] });
+            })
+            .then(function() {
+                assertRange([-0.68, 10.68]);
+
+                return Plotly.deleteTraces(gd, [1]);
+            })
+            .then(function() {
+                assertRange([-0.31, 5.31]);
+            })
+            .then(done);
         });
     });
 });
