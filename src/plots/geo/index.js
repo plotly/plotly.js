@@ -54,9 +54,7 @@ exports.plot = function plotGeo(gd) {
                 graphDiv: gd,
                 container: fullLayout._geolayer.node(),
                 topojsonURL: gd._context.topojsonURL
-            },
-                fullLayout
-            );
+            });
 
             fullLayout[geoId]._subplot = geo;
         }

@@ -306,12 +306,6 @@ exports.doModeBar = function(gd) {
     // no need to do this for gl2d subplots,
     // Plots.linkSubplots takes care of it all.
 
-    subplotIds = Plots.getSubplotIds(fullLayout, 'geo');
-    for(i = 0; i < subplotIds.length; i++) {
-        var geo = fullLayout[subplotIds[i]]._subplot;
-        geo.updateFx(fullLayout.hovermode);
-    }
-
     return Plots.previousPromises(gd);
 };
 

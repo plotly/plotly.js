@@ -32,7 +32,7 @@ var topojsonFeature = require('topojson-client').feature;
 addProjectionsToD3(d3);
 
 
-function Geo(options, fullLayout) {
+function Geo(options) {
     this.id = options.id;
     this.graphDiv = options.graphDiv;
     this.container = options.container;
@@ -51,9 +51,7 @@ function Geo(options, fullLayout) {
     this.zoom = null;
     this.zoomReset = null;
 
-
     this.makeFramework();
-    this.updateFx(fullLayout.hovermode);
 
     this.traceHash = {};
 }
@@ -171,15 +169,6 @@ proto.onceTopojsonIsLoaded = function(geoCalcData, geoLayout) {
     Plots.generalUpdatePerTraceModule(this, geoCalcData, geoLayout);
 
     this.render();
-};
-
-proto.updateFx = function(hovermode) {
-    this.showHover = (hovermode !== false);
-
-    // TODO should more strict, any layout.hovermode other
-    // then false will make all geo subplot display hover text.
-    // Instead each geo should have its own geo.hovermode
-    // to control hover visibility independently of other subplots.
 };
 
 proto.makeProjection = function(geoLayout) {
