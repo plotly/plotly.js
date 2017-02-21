@@ -328,6 +328,7 @@ describe('Layout images', function() {
 
             Plotly.plot(gd, data, layout).then(function() {
                 assertImages(0);
+                expect(gd.layout.images).toBeUndefined();
 
                 return Plotly.relayout(gd, 'images[0]', makeImage(jsLogo, 0.1, 0.1));
             })
@@ -375,7 +376,7 @@ describe('Layout images', function() {
             })
             .then(function() {
                 assertImages(0);
-                expect(gd.layout.images).toEqual([]);
+                expect(gd.layout.images).toBeUndefined();
 
                 done();
             });

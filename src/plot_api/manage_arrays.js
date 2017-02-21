@@ -141,12 +141,8 @@ exports.editContainerArray = function editContainerArray(gd, np, edits, flags) {
     }
 
     var componentNums = Object.keys(edits).map(Number).sort(),
-        componentArray = np.get();
-
-    if(!componentArray) {
-        componentArray = [];
-        np.set(componentArray);
-    }
+        componentArrayIn = np.get(),
+        componentArray = componentArrayIn || [];
 
     var deletes = [],
         firstIndexChange = -1,
@@ -206,6 +202,7 @@ exports.editContainerArray = function editContainerArray(gd, np, edits, flags) {
     }
 
     if(!componentArray.length) np.set(null);
+    else if(!componentArrayIn) np.set(componentArray);
 
     if(replotLater) return false;
 

@@ -31,6 +31,7 @@ var svgTextUtils = require('../lib/svg_text_utils');
 var manageArrays = require('./manage_arrays');
 var helpers = require('./helpers');
 var subroutines = require('./subroutines');
+var cartesianConstants = require('../plots/cartesian/constants');
 
 
 /**
@@ -1950,6 +1951,17 @@ function _relayout(gd, aobj) {
                 doextra(ptrunk + '.autorange', true);
             }
         }
+        else if(pleaf.match(cartesianConstants.AX_NAME_PATTERN)) {
+            var fullProp = Lib.nestedProperty(fullLayout, ai).get(),
+                newType = (vi || {}).type;
+
+            // This can potentially cause strange behavior if the autotype is not
+            // numeric (linear, because we don't auto-log) but the previous type
+            // was log. That's a very strange edge case though
+            if(!newType || newType === '-') newType = 'linear';
+            Registry.getComponentMethod('annotations', 'convertCoords')(gd, fullProp, newType, doextra);
+            Registry.getComponentMethod('images', 'convertCoords')(gd, fullProp, newType, doextra);
+        }
 
         // alter gd.layout
 
@@ -1967,7 +1979,7 @@ function _relayout(gd, aobj) {
 
             if(i === '') {
                 // replacing the entire array: too much going on, force recalc
-                flags.docalc = true;
+                if(ai.indexOf('updatemenus') === -1) flags.docalc = true;
             }
             else if(propStr === '') {
                 // special handling of undoit if we're adding or removing an element
@@ -1982,12 +1994,13 @@ function _relayout(gd, aobj) {
                 }
                 else Lib.warn('unrecognized full object value', aobj);
 
-                if(refAutorange(toggledObj, 'x') || refAutorange(toggledObj, 'y')) {
+                if(refAutorange(toggledObj, 'x') || refAutorange(toggledObj, 'y') &&
+                        ai.indexOf('updatemenus') === -1) {
                     flags.docalc = true;
                 }
             }
             else if((refAutorange(obji, 'x') || refAutorange(obji, 'y')) &&
-                    !Lib.containsAny(ai, ['color', 'opacity', 'align', 'dash'])) {
+                    !Lib.containsAny(ai, ['color', 'opacity', 'align', 'dash', 'updatemenus'])) {
                 flags.docalc = true;
             }
 

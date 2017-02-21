@@ -545,17 +545,22 @@ describe('mapbox plots', function() {
             return layerLen;
         }
 
+        function getLayerLength(gd) {
+            return (gd.layout.mapbox.layers || []).length;
+        }
+
         function assertLayerStyle(gd, expectations, index) {
             var mapInfo = getMapInfo(gd),
                 layers = mapInfo.layers,
                 layerNames = mapInfo.layoutLayers;
 
             var layer = layers[layerNames[index]];
+            expect(layer).toBeDefined(layerNames[index]);
 
             return new Promise(function(resolve) {
                 setTimeout(function() {
                     Object.keys(expectations).forEach(function(k) {
-                        expect(layer.paint[k]).toEqual(expectations[k]);
+                        expect(((layer || {}).paint || {})[k]).toEqual(expectations[k]);
                     });
                     resolve();
                 }, TRANSITION_DELAY);
@@ -565,26 +570,26 @@ describe('mapbox plots', function() {
         expect(countVisibleLayers(gd)).toEqual(0);
 
         Plotly.relayout(gd, 'mapbox.layers[0]', layer0).then(function() {
-            expect(gd.layout.mapbox.layers.length).toEqual(1);
+            expect(getLayerLength(gd)).toEqual(1);
             expect(countVisibleLayers(gd)).toEqual(1);
 
             // add a new layer at the beginning
             return Plotly.relayout(gd, 'mapbox.layers[1]', layer1);
         })
         .then(function() {
-            expect(gd.layout.mapbox.layers.length).toEqual(2);
+            expect(getLayerLength(gd)).toEqual(2);
             expect(countVisibleLayers(gd)).toEqual(2);
 
             return Plotly.relayout(gd, mapUpdate);
         })
         .then(function() {
-            expect(gd.layout.mapbox.layers.length).toEqual(2);
+            expect(getLayerLength(gd)).toEqual(2);
             expect(countVisibleLayers(gd)).toEqual(2);
 
             return Plotly.relayout(gd, styleUpdate0);
         })
         .then(function() {
-            expect(gd.layout.mapbox.layers.length).toEqual(2);
+            expect(getLayerLength(gd)).toEqual(2);
             expect(countVisibleLayers(gd)).toEqual(2);
 
             return assertLayerStyle(gd, {
@@ -594,13 +599,13 @@ describe('mapbox plots', function() {
             }, 0);
         })
         .then(function() {
-            expect(gd.layout.mapbox.layers.length).toEqual(2);
+            expect(getLayerLength(gd)).toEqual(2);
             expect(countVisibleLayers(gd)).toEqual(2);
 
             return Plotly.relayout(gd, styleUpdate1);
         })
         .then(function() {
-            expect(gd.layout.mapbox.layers.length).toEqual(2);
+            expect(getLayerLength(gd)).toEqual(2);
             expect(countVisibleLayers(gd)).toEqual(2);
 
             return assertLayerStyle(gd, {
@@ -610,20 +615,20 @@ describe('mapbox plots', function() {
             }, 1);
         })
         .then(function() {
-            expect(gd.layout.mapbox.layers.length).toEqual(2);
+            expect(getLayerLength(gd)).toEqual(2);
             expect(countVisibleLayers(gd)).toEqual(2);
 
             // delete the first layer
             return Plotly.relayout(gd, 'mapbox.layers[0]', null);
         })
         .then(function() {
-            expect(gd.layout.mapbox.layers.length).toEqual(1);
+            expect(getLayerLength(gd)).toEqual(1);
             expect(countVisibleLayers(gd)).toEqual(1);
 
             return Plotly.relayout(gd, 'mapbox.layers[0]', null);
         })
         .then(function() {
-            expect(gd.layout.mapbox.layers).toBeUndefined();
+            expect(getLayerLength(gd)).toEqual(0);
             expect(countVisibleLayers(gd)).toEqual(0);
 
             return Plotly.relayout(gd, 'mapbox.layers[0]', {});
@@ -637,7 +642,7 @@ describe('mapbox plots', function() {
             return Plotly.relayout(gd, 'mapbox.layers[0].source', layer0.source);
         })
         .then(function() {
-            expect(gd.layout.mapbox.layers.length).toEqual(1);
+            expect(getLayerLength(gd)).toEqual(1);
             expect(countVisibleLayers(gd)).toEqual(1);
         })
         .catch(failTest)

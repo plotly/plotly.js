@@ -204,7 +204,10 @@ describe('plot schema', function() {
         expect(plotSchema.defs.valObjects).toBeDefined();
 
         expect(plotSchema.defs.metaKeys)
-            .toEqual(['_isSubplotObj', '_isLinkedToArray', '_deprecated', 'description', 'role']);
+            .toEqual([
+                '_isSubplotObj', '_isLinkedToArray', '_arrayAttrRegexps',
+                '_deprecated', 'description', 'role'
+            ]);
     });
 
     it('should list the correct frame attributes', function() {
