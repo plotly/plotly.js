@@ -353,7 +353,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             }
             else if(ew === 'e') hAlign = 'right';
 
-            if(gd._context.enableRangeEntry) {
+            if(gd._context.showAxisRangeEntryBoxes) {
                 dragger3
                     .call(svgTextUtils.makeEditable, null, {
                         immediate: true,
