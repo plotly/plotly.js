@@ -252,6 +252,7 @@ Plotly.plot = function(gd, data, layout, config) {
         ErrorBars.calc(gd);
 
         // TODO: autosize extra for text markers and images
+        // see https://github.com/plotly/plotly.js/issues/1111
         return Lib.syncOrAsync([
             Registry.getComponentMethod('shapes', 'calcAutorange'),
             Registry.getComponentMethod('annotations', 'calcAutorange'),
