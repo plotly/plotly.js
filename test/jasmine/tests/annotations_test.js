@@ -474,7 +474,7 @@ describe('annotations log/linear axis changes', function() {
 
 });
 
-describe('annotations autosize', function() {
+describe('annotations autorange', function() {
     'use strict';
 
     var mock = Lib.extendDeep({}, require('@mocks/annotations-autorange.json'));
@@ -482,35 +482,35 @@ describe('annotations autosize', function() {
 
     beforeAll(function() {
         jasmine.addMatchers(customMatchers);
+
+        gd = createGraphDiv();
     });
 
     afterEach(destroyGraphDiv);
 
+    function assertRanges(x, y, x2, y2, x3, y3) {
+        var fullLayout = gd._fullLayout;
+        var PREC = 1;
+
+        // xaxis2 need a bit more tolerance to pass on CI
+        // this most likely due to the different text bounding box values
+        // on headfull vs headless browsers.
+        // but also because it's a date axis that we've converted to ms
+        var PRECX2 = -10;
+        // yaxis2 needs a bit more now too...
+        var PRECY2 = 0.2;
+        var dateAx = fullLayout.xaxis2;
+
+        expect(fullLayout.xaxis.range).toBeCloseToArray(x, PREC, '- xaxis');
+        expect(fullLayout.yaxis.range).toBeCloseToArray(y, PREC, '- yaxis');
+        expect(Lib.simpleMap(dateAx.range, dateAx.r2l))
+            .toBeCloseToArray(Lib.simpleMap(x2, dateAx.r2l), PRECX2, 'xaxis2 ' + dateAx.range);
+        expect(fullLayout.yaxis2.range).toBeCloseToArray(y2, PRECY2, 'yaxis2');
+        expect(fullLayout.xaxis3.range).toBeCloseToArray(x3, PREC, 'xaxis3');
+        expect(fullLayout.yaxis3.range).toBeCloseToArray(y3, PREC, 'yaxis3');
+    }
+
     it('should adapt to relayout calls', function(done) {
-        gd = createGraphDiv();
-
-        function assertRanges(x, y, x2, y2, x3, y3) {
-            var fullLayout = gd._fullLayout;
-            var PREC = 1;
-
-            // xaxis2 need a bit more tolerance to pass on CI
-            // this most likely due to the different text bounding box values
-            // on headfull vs headless browsers.
-            // but also because it's a date axis that we've converted to ms
-            var PRECX2 = -10;
-            // yaxis2 needs a bit more now too...
-            var PRECY2 = 0.2;
-            var dateAx = fullLayout.xaxis2;
-
-            expect(fullLayout.xaxis.range).toBeCloseToArray(x, PREC, '- xaxis');
-            expect(fullLayout.yaxis.range).toBeCloseToArray(y, PREC, '- yaxis');
-            expect(Lib.simpleMap(dateAx.range, dateAx.r2l))
-                .toBeCloseToArray(Lib.simpleMap(x2, dateAx.r2l), PRECX2, 'xaxis2 ' + dateAx.range);
-            expect(fullLayout.yaxis2.range).toBeCloseToArray(y2, PRECY2, 'yaxis2');
-            expect(fullLayout.xaxis3.range).toBeCloseToArray(x3, PREC, 'xaxis3');
-            expect(fullLayout.yaxis3.range).toBeCloseToArray(y3, PREC, 'yaxis3');
-        }
-
         Plotly.plot(gd, mock).then(function() {
             assertRanges(
                 [0.97, 2.03], [0.97, 2.03],
@@ -556,6 +556,30 @@ describe('annotations autosize', function() {
         .then(function() {
             assertRanges(
                 [0.97, 2.03], [0.97, 2.03],
+                ['2000-10-01 08:23:18.0583', '2001-06-05 19:20:23.301'], [-0.245, 4.245],
+                [0.9, 2.1], [0.86, 2.14]
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('catches bad xref/yref', function(done) {
+        Plotly.plot(gd, mock).then(function() {
+            return Plotly.relayout(gd, {'annotations[1]': {
+                text: 'LT',
+                x: -1,
+                y: 3,
+                xref: 'x5', // will be converted to 'x' and xaxis should autorange
+                yref: 'y5', // same 'y' -> yaxis
+                ax: 50,
+                ay: 50
+            }});
+        })
+        .then(function() {
+            assertRanges(
+                [-1.09, 2.09], [0.94, 3.06],
+                // the other axes shouldn't change
                 ['2000-10-01 08:23:18.0583', '2001-06-05 19:20:23.301'], [-0.245, 4.245],
                 [0.9, 2.1], [0.86, 2.14]
             );
