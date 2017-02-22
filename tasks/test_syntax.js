@@ -119,13 +119,14 @@ function assertCircularDeps() {
         // as of v1.17.0 - 2016/09/08
         // see https://github.com/plotly/plotly.js/milestone/9
         // for more details
-        var MAX_ALLOWED_CIRCULAR_DEPS = 18;
+        var MAX_ALLOWED_CIRCULAR_DEPS = 17;
 
         if(circularDeps.length > MAX_ALLOWED_CIRCULAR_DEPS) {
+            console.log(circularDeps.join('\n'));
             logs.push('some new circular dependencies were added to src/');
         }
 
-        log('circular dependencies', logs);
+        log('circular dependencies: ' + circularDeps.length, logs);
     });
 }
 

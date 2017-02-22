@@ -9,60 +9,21 @@
 
 'use strict';
 
-var Lib = require('../lib');
+var nestedProperty = require('../lib/nested_property');
+var isPlainObject = require('../lib/is_plain_object');
+var noop = require('../lib/noop');
+var Loggers = require('../lib/loggers');
 var Registry = require('../registry');
 
 
+exports.containerArrayMatch = require('./container_array_match');
+
 var isAddVal = exports.isAddVal = function isAddVal(val) {
-    return val === 'add' || Lib.isPlainObject(val);
+    return val === 'add' || isPlainObject(val);
 };
 
 var isRemoveVal = exports.isRemoveVal = function isRemoveVal(val) {
     return val === null || val === 'remove';
-};
-
-/*
- * containerArrayMatch: does this attribute string point into a
- * layout container array?
- *
- * @param {String} astr: an attribute string, like *annotations[2].text*
- *
- * @returns {Object | false} Returns false if `astr` doesn't match a container
- *  array. If it does, returns:
- *     {array: {String}, index: {Number}, property: {String}}
- *  ie the attribute string for the array, the index within the array (or ''
- *  if the whole array) and the property within that (or '' if the whole array
- *  or the whole object)
- */
-exports.containerArrayMatch = function containerArrayMatch(astr) {
-    var rootContainers = Registry.layoutArrayContainers,
-        regexpContainers = Registry.layoutArrayRegexes,
-        rootPart = astr.split('[')[0],
-        arrayStr,
-        match;
-
-    // look for regexp matches first, because they may be nested inside root matches
-    // eg updatemenus[i].buttons is nested inside updatemenus
-    for(var i = 0; i < regexpContainers.length; i++) {
-        match = astr.match(regexpContainers[i]);
-        if(match && match.index === 0) {
-            arrayStr = match[0];
-            break;
-        }
-    }
-
-    // now look for root matches
-    if(!arrayStr) arrayStr = rootContainers[rootContainers.indexOf(rootPart)];
-
-    if(!arrayStr) return false;
-
-    var tail = astr.substr(arrayStr.length);
-    if(!tail) return {array: arrayStr, index: '', property: ''};
-
-    match = tail.match(/^\[(0|[1-9][0-9]*)\](\.(.+))?$/);
-    if(!match) return false;
-
-    return {array: arrayStr, index: Number(match[1]), property: match[3] || ''};
 };
 
 /*
@@ -113,14 +74,14 @@ exports.editContainerArray = function editContainerArray(gd, np, edits, flags) {
         supplyComponentDefaults = Registry.getComponentMethod(componentType, 'supplyLayoutDefaults'),
         draw = Registry.getComponentMethod(componentType, 'draw'),
         drawOne = Registry.getComponentMethod(componentType, 'drawOne'),
-        replotLater = flags.replot || flags.recalc || (supplyComponentDefaults === Lib.noop) ||
-            (draw === Lib.noop),
+        replotLater = flags.replot || flags.recalc || (supplyComponentDefaults === noop) ||
+            (draw === noop),
         layout = gd.layout,
         fullLayout = gd._fullLayout;
 
     if(edits['']) {
         if(Object.keys(edits).length > 1) {
-            Lib.warn('Full array edits are incompatible with other edits',
+            Loggers.warn('Full array edits are incompatible with other edits',
                 componentType);
         }
 
@@ -129,7 +90,7 @@ exports.editContainerArray = function editContainerArray(gd, np, edits, flags) {
         if(isRemoveVal(fullVal)) np.set(null);
         else if(Array.isArray(fullVal)) np.set(fullVal);
         else {
-            Lib.warn('Unrecognized full array edit value', componentType, fullVal);
+            Loggers.warn('Unrecognized full array edit value', componentType, fullVal);
             return true;
         }
 
@@ -164,13 +125,13 @@ exports.editContainerArray = function editContainerArray(gd, np, edits, flags) {
         adding = isAddVal(objVal);
 
         if(componentNum < 0 || componentNum > componentArray.length - (adding ? 0 : 1)) {
-            Lib.warn('index out of range', componentType, componentNum);
+            Loggers.warn('index out of range', componentType, componentNum);
             continue;
         }
 
         if(objVal !== undefined) {
             if(objKeys.length > 1) {
-                Lib.warn(
+                Loggers.warn(
                     'Insertion & removal are incompatible with edits to the same index.',
                     componentType, componentNum);
             }
@@ -183,7 +144,7 @@ exports.editContainerArray = function editContainerArray(gd, np, edits, flags) {
                 componentArray.splice(componentNum, 0, objVal);
             }
             else {
-                Lib.warn('Unrecognized full object edit value',
+                Loggers.warn('Unrecognized full object edit value',
                     componentType, componentNum, objVal);
             }
 
@@ -191,7 +152,7 @@ exports.editContainerArray = function editContainerArray(gd, np, edits, flags) {
         }
         else {
             for(j = 0; j < objKeys.length; j++) {
-                Lib.nestedProperty(componentArray[componentNum], objKeys[j]).set(objEdits[objKeys[j]]);
+                nestedProperty(componentArray[componentNum], objKeys[j]).set(objEdits[objKeys[j]]);
             }
         }
     }
@@ -210,7 +171,7 @@ exports.editContainerArray = function editContainerArray(gd, np, edits, flags) {
 
     // finally draw all the components we need to
     // if we added or removed any, redraw all after it
-    if(drawOne !== Lib.noop) {
+    if(drawOne !== noop) {
         var indicesToDraw;
         if(firstIndexChange === -1) {
             // there's no re-indexing to do, so only redraw components that changed

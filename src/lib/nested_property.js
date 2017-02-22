@@ -12,7 +12,7 @@
 var isNumeric = require('fast-isnumeric');
 var isArray = require('./is_array');
 var isPlainObject = require('./is_plain_object');
-var containerArrayMatch = require('../plot_api/manage_arrays').containerArrayMatch;
+var containerArrayMatch = require('../plot_api/container_array_match');
 
 /**
  * convert a string s (such as 'xaxis.range[0]')

@@ -3,6 +3,7 @@ var Annotations = require('@src/components/annotations');
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
+var Loggers = require('@src/lib/loggers');
 var Axes = require('@src/plots/cartesian/axes');
 
 var d3 = require('d3');
@@ -146,7 +147,7 @@ describe('annotations relayout', function() {
 
         Plotly.plot(gd, mockData, mockLayout).then(done);
 
-        spyOn(Lib, 'warn');
+        spyOn(Loggers, 'warn');
     });
 
     afterEach(destroyGraphDiv);
@@ -200,7 +201,7 @@ describe('annotations relayout', function() {
         })
         .then(function() {
             expect(countAnnotations()).toEqual(0);
-            expect(Lib.warn).not.toHaveBeenCalled();
+            expect(Loggers.warn).not.toHaveBeenCalled();
         })
         .catch(failTest)
         .then(done);
@@ -279,7 +280,7 @@ describe('annotations relayout', function() {
             assertText(3, 'lime');
             anno3.text = 'lime';
             expect(annos[3]).toEqual(anno3);
-            expect(Lib.warn).not.toHaveBeenCalled();
+            expect(Loggers.warn).not.toHaveBeenCalled();
         })
         .catch(failTest)
         .then(done);
@@ -298,7 +299,7 @@ describe('annotations relayout', function() {
     ].forEach(function(update) {
         it('warns on ambiguous combinations and invalid values: ' + JSON.stringify(update), function() {
             Plotly.relayout(gd, update);
-            expect(Lib.warn).toHaveBeenCalled();
+            expect(Loggers.warn).toHaveBeenCalled();
             // we could test the results here, but they're ambiguous and/or undefined so why bother?
             // the important thing is the developer is warned that something went wrong.
         });
@@ -342,7 +343,7 @@ describe('annotations relayout', function() {
             expect(annos[2].y).toBe(0.3);
             expect(annos[2].xref).toBe('paper');
             expect(annos[2].yref).toBe('paper');
-            expect(Lib.warn).not.toHaveBeenCalled();
+            expect(Loggers.warn).not.toHaveBeenCalled();
         })
         .catch(failTest)
         .then(done);

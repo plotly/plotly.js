@@ -9,7 +9,9 @@
 
 'use strict';
 
-var Lib = require('./lib');
+var Loggers = require('./lib/loggers');
+var noop = require('./lib/noop');
+var pushUnique = require('./lib/push_unique');
 var basePlotAttributes = require('./plots/attributes');
 
 exports.modules = {};
@@ -32,7 +34,7 @@ exports.layoutArrayRegexes = [];
  */
 exports.register = function(_module, thisType, categoriesIn, meta) {
     if(exports.modules[thisType]) {
-        Lib.log('Type ' + thisType + ' already registered');
+        Loggers.log('Type ' + thisType + ' already registered');
         return;
     }
 
@@ -77,7 +79,7 @@ exports.registerSubplot = function(_module) {
     var plotType = _module.name;
 
     if(exports.subplotsRegistry[plotType]) {
-        Lib.log('Plot type ' + plotType + ' already registered.');
+        Loggers.log('Plot type ' + plotType + ' already registered.');
         return;
     }
 
@@ -97,7 +99,7 @@ exports.registerComponent = function(_module) {
 
     if(_module.layoutAttributes) {
         if(_module.layoutAttributes._isLinkedToArray) {
-            Lib.pushUnique(exports.layoutArrayContainers, name);
+            pushUnique(exports.layoutArrayContainers, name);
         }
         findArrayRegexps(_module);
     }
@@ -108,7 +110,7 @@ function findArrayRegexps(_module) {
         var arrayAttrRegexps = _module.layoutAttributes._arrayAttrRegexps;
         if(arrayAttrRegexps) {
             for(var i = 0; i < arrayAttrRegexps.length; i++) {
-                Lib.pushUnique(exports.layoutArrayRegexes, arrayAttrRegexps[i]);
+                pushUnique(exports.layoutArrayRegexes, arrayAttrRegexps[i]);
             }
         }
     }
@@ -124,7 +126,7 @@ function findArrayRegexps(_module) {
  */
 exports.getModule = function(trace) {
     if(trace.r !== undefined) {
-        Lib.warn('Tried to put a polar trace ' +
+        Loggers.warn('Tried to put a polar trace ' +
             'on an incompatible graph of cartesian ' +
             'data. Ignoring this dataset.', trace
         );
@@ -155,7 +157,7 @@ exports.traceIs = function(traceType, category) {
 
     if(!_module) {
         if(traceType && traceType !== 'area') {
-            Lib.log('Unrecognized trace type ' + traceType + '.');
+            Loggers.log('Unrecognized trace type ' + traceType + '.');
         }
 
         _module = exports.modules[basePlotAttributes.type.dflt];
@@ -165,7 +167,7 @@ exports.traceIs = function(traceType, category) {
 };
 
 /**
- * Retrieve component module method. Falls back on Lib.noop if either the
+ * Retrieve component module method. Falls back on noop if either the
  * module or the method is missing, so the result can always be safely called
  *
  * @param {string} name
@@ -177,8 +179,8 @@ exports.traceIs = function(traceType, category) {
 exports.getComponentMethod = function(name, method) {
     var _module = exports.componentsRegistry[name];
 
-    if(!_module) return Lib.noop;
-    return _module[method] || Lib.noop;
+    if(!_module) return noop;
+    return _module[method] || noop;
 };
 
 function getTraceType(traceType) {
