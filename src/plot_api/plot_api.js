@@ -2092,9 +2092,6 @@ function _relayout(gd, aobj) {
     var oldWidth = gd._fullLayout.width,
         oldHeight = gd._fullLayout.height;
 
-    // coerce the updated layout
-    Plots.supplyDefaults(gd);
-
     // calculate autosizing
     if(gd.layout.autosize) Plots.plotAutoSize(gd, gd.layout, gd._fullLayout);
 
