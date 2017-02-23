@@ -279,8 +279,8 @@ function setPixelRange(rangeSlider, gd, axisOpts, opts) {
     // ..
     var offset = 0.5;
 
-    var xMin = clampHandle(pixelMin - hw2 + offset),
-        xMax = clampHandle(pixelMax - hw2 + offset);
+    var xMin = Math.round(clampHandle(pixelMin - hw2)) - offset,
+        xMax = Math.round(clampHandle(pixelMax - hw2)) + offset;
 
     rangeSlider.select('g.' + constants.grabberMinClassName)
         .attr('transform', 'translate(' + xMin + ',' + offset + ')');
