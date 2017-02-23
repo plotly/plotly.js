@@ -276,7 +276,8 @@ function setPixelRange(rangeSlider, gd, axisOpts, opts) {
         .attr('x', pixelMax)
         .attr('width', opts._width - pixelMax);
 
-    // ..
+    // add offset for crispier corners
+    // https://github.com/plotly/plotly.js/pull/1409
     var offset = 0.5;
 
     var xMin = Math.round(clampHandle(pixelMin - hw2)) - offset,
