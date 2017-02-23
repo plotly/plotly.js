@@ -648,40 +648,45 @@ describe('parcoords', function() {
 
         it('Should emit a \'plotly_hover\' event', function(done) {
 
-            var tester = (function() {
+            function testMaker() {
 
                 var eventCalled = false;
 
                 return {
-                    set: function(d) {eventCalled = d;},
+                    set: function() {eventCalled = eventCalled || true;},
                     get: function() {return eventCalled;}
                 };
-            })();
+            }
+
+            var hoverTester = testMaker();
+            var unhoverTester = testMaker();
 
             gd.on('plotly_hover', function(d) {
-                tester.set({hover: d});
+                hoverTester.set({hover: d});
             });
 
             gd.on('plotly_unhover', function(d) {
-                tester.set({unhover: d});
+                unhoverTester.set({unhover: d});
             });
 
-            expect(tester.get()).toBe(false);
+            expect(hoverTester.get()).toBe(false);
+            expect(unhoverTester.get()).toBe(false);
 
             mouseEvent('mousemove', 324, 216);
             mouseEvent('mouseover', 324, 216);
+            mouseEvent('mousemove', 315, 218);
+            mouseEvent('mouseover', 315, 218);
 
             window.setTimeout(function() {
 
-                expect(tester.get().hover && tester.get().hover.curveNumber).not.toBe(null);
-                expect(tester.get().hover && tester.get().hover.curveNumber).not.toBe(undefined);
+                expect(hoverTester.get()).toBe(true);
 
                 mouseEvent('mousemove', 329, 153);
                 mouseEvent('mouseover', 329, 153);
 
                 window.setTimeout(function() {
 
-                    expect(tester.get().unhover && tester.get().unhover.curveNumber).toBe(null);
+                    expect(unhoverTester.get()).toBe(true);
                     done();
                 }, 20);
 
