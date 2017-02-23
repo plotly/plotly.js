@@ -116,20 +116,36 @@ function npGet(cont, parts) {
 
 /*
  * Can this value be deleted? We can delete any empty object (null, undefined, [], {})
- * EXCEPT empty data arrays. Info arrays can be safely deleted, but not deleting them
- * has no ill effects other than leaving a trace or layout object with some cruft in it.
- * But deleting data arrays can change the meaning of the object, as `[]` means there is
+ * EXCEPT empty data arrays, {} inside an array, or anything INSIDE an *args* array.
+ *
+ * Info arrays can be safely deleted, but not deleting them has no ill effects other
+ * than leaving a trace or layout object with some cruft in it.
+ *
+ * Deleting data arrays can change the meaning of the object, as `[]` means there is
  * data for this attribute, it's just empty right now while `undefined` means the data
- * should be filled in with defaults to match other data arrays. So we do some simple
- * tests here to find known non-data arrays but don't worry too much about not deleting
- * some arrays that would actually be safe to delete.
+ * should be filled in with defaults to match other data arrays.
+ *
+ * `{}` inside an array means "the default object" which is clearly different from
+ * popping it off the end of the array, or setting it `undefined` inside the array.
+ *
+ * *args* arrays get passed directly to API methods and we should respect precisely
+ * what the user has put there - although if the whole *args* array is empty it's fine
+ * to delete that.
+ *
+ * So we do some simple tests here to find known non-data arrays but don't worry too
+ * much about not deleting some arrays that would actually be safe to delete.
  */
-var INFO_PATTERNS = /(^|.)((domain|range)(\.[xy])?|args|parallels)$/;
+var INFO_PATTERNS = /(^|\.)((domain|range)(\.[xy])?|args|parallels)$/;
+var ARGS_PATTERN = /(^|\.)args\[/;
 function isDeletable(val, propStr) {
-    if(!emptyObj(val)) return false;
+    if(!emptyObj(val) ||
+        (isPlainObject(val) && propStr.charAt(propStr.length - 1) === ']') ||
+        (propStr.match(ARGS_PATTERN) && val !== undefined)
+    ) {
+        return false;
+    }
     if(!isArray(val)) return true;
 
-    // domain and range are special - they show up in lots of places so hard code here.
     if(propStr.match(INFO_PATTERNS)) return true;
 
     var match = containerArrayMatch(propStr);
@@ -186,8 +202,11 @@ function npSet(cont, parts, propStr) {
 }
 
 function joinPropStr(propStr, newPart) {
-    if(!propStr) return newPart;
-    return propStr + isNumeric(newPart) ? ('[' + newPart + ']') : ('.' + newPart);
+    var toAdd = newPart;
+    if(isNumeric(newPart)) toAdd = '[' + newPart + ']';
+    else if(propStr) toAdd = '.' + newPart;
+
+    return propStr + toAdd;
 }
 
 // handle special -1 array index
@@ -244,11 +263,7 @@ function pruneContainers(containerLevels) {
         remainingKeys = false;
         if(isArray(curCont)) {
             for(j = curCont.length - 1; j >= 0; j--) {
-                // If there's a plain object in an array, it's a container array
-                // so we don't delete empty containers because they still have meaning.
-                // `editContainerArray` handles the API for adding/removing objects
-                // in this case.
-                if(emptyObj(curCont[j]) && !isPlainObject(curCont[j])) {
+                if(isDeletable(curCont[j], joinPropStr(propPart, j))) {
                     if(remainingKeys) curCont[j] = undefined;
                     else curCont.pop();
                 }

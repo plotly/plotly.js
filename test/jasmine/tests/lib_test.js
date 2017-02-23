@@ -375,6 +375,30 @@ describe('Test lib.js:', function() {
             expect(obj).toEqual({a: [undefined, {}]});
         });
 
+        it('does not prune inside `args` arrays', function() {
+            var obj = {},
+                args = np(obj, 'args');
+
+            args.set([]);
+            expect(obj.args).toBeUndefined();
+
+            args.set([null]);
+            expect(obj.args).toEqual([null]);
+
+            np(obj, 'args[1]').set([]);
+            expect(obj.args).toEqual([null, []]);
+
+            np(obj, 'args[2]').set({});
+            expect(obj.args).toEqual([null, [], {}]);
+
+            np(obj, 'args[1]').set();
+            expect(obj.args).toEqual([null, undefined, {}]);
+
+            // we still trim undefined off the end of arrays, but nothing else.
+            np(obj, 'args[2]').set();
+            expect(obj.args).toEqual([null]);
+        });
+
         it('should get empty, and fail on set, with a bad input object', function() {
             var badProps = [
                 np(5, 'a'),
