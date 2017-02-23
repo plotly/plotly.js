@@ -413,6 +413,37 @@ describe('Test axes', function() {
             expect(layoutOut.xaxis.calendar).toBe('coptic');
             expect(layoutOut.yaxis.calendar).toBe('thai');
         });
+
+        it('should set autorange to true when input range is invalid', function() {
+            layoutIn = {
+                xaxis: { range: 'not-gonna-work' },
+                xaxis2: { range: [1, 2, 3] },
+                yaxis: { range: ['a', 2] },
+                yaxis2: { range: [1, 'b'] },
+                yaxis3: { range: [null, {}] }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            Axes.list({ _fullLayout: layoutOut }).forEach(function(ax) {
+                expect(ax.autorange).toBe(true, ax._name);
+            });
+        });
+
+        it('should set autorange to false when input range is valid', function() {
+            layoutIn = {
+                xaxis: { range: [1, 2] },
+                xaxis2: { range: [-2, 1] },
+                yaxis: { range: ['1', 2] },
+                yaxis2: { range: [1, '2'] }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            Axes.list({ _fullLayout: layoutOut }).forEach(function(ax) {
+                expect(ax.autorange).toBe(false, ax._name);
+            });
+        });
     });
 
     describe('categoryorder', function() {

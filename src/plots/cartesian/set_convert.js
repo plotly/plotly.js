@@ -254,7 +254,7 @@ module.exports = function setConvert(ax) {
      */
     ax.cleanRange = function(rangeAttr) {
         if(!rangeAttr) rangeAttr = 'range';
-        var range = ax[rangeAttr],
+        var range = Lib.nestedProperty(ax, rangeAttr).get(),
             axLetter = (ax._id || 'x').charAt(0),
             i, dflt;
 
@@ -266,7 +266,7 @@ module.exports = function setConvert(ax) {
         dflt = dflt.slice();
 
         if(!range || range.length !== 2) {
-            ax[rangeAttr] = dflt;
+            Lib.nestedProperty(ax, rangeAttr).set(dflt);
             return;
         }
 
@@ -400,6 +400,15 @@ module.exports = function setConvert(ax) {
             for(i = 0; i < arrayIn.length; i++) arrayOut[i] = v0 + i * dv;
         }
         return arrayOut;
+    };
+
+    ax.isValidRange = function(range) {
+        return (
+            Array.isArray(range) &&
+            range.length === 2 &&
+            isNumeric(ax.r2l(range[0])) &&
+            isNumeric(ax.r2l(range[1]))
+        );
     };
 
     // for autoranging: arrays of objects:
