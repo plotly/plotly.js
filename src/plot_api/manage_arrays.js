@@ -103,7 +103,13 @@ exports.editContainerArray = function editContainerArray(gd, np, edits, flags) {
 
     var componentNums = Object.keys(edits).map(Number).sort(),
         componentArrayIn = np.get(),
-        componentArray = componentArrayIn || [];
+        componentArray = componentArrayIn || [],
+        // componentArrayFull is used just to keep splices in line between
+        // full and input arrays, so private keys can be copied over after
+        // redoing supplyDefaults
+        // TODO: this assumes componentArray is in gd.layout - which will not be
+        // true after we extend this to restyle
+        componentArrayFull = nestedProperty(fullLayout, componentType).get();
 
     var deletes = [],
         firstIndexChange = -1,
@@ -142,6 +148,7 @@ exports.editContainerArray = function editContainerArray(gd, np, edits, flags) {
             else if(adding) {
                 if(objVal === 'add') objVal = {};
                 componentArray.splice(componentNum, 0, objVal);
+                if(componentArrayFull) componentArrayFull.splice(componentNum, 0, {});
             }
             else {
                 Loggers.warn('Unrecognized full object edit value',
@@ -160,6 +167,9 @@ exports.editContainerArray = function editContainerArray(gd, np, edits, flags) {
     // now do deletes
     for(i = deletes.length - 1; i >= 0; i--) {
         componentArray.splice(deletes[i], 1);
+        // TODO: this drops private keys that had been stored in componentArrayFull
+        // does this have any ill effects?
+        if(componentArrayFull) componentArrayFull.splice(deletes[i], 1);
     }
 
     if(!componentArray.length) np.set(null);

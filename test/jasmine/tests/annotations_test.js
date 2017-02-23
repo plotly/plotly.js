@@ -255,6 +255,15 @@ describe('annotations relayout', function() {
             anno1 = Lib.extendFlat(annos[1]),
             anno3 = Lib.extendFlat(annos[3]);
 
+        // store some (unused) private keys and make sure they are copied over
+        // correctly during relayout
+        var fullAnnos = gd._fullLayout.annotations;
+        fullAnnos[0]._boo = 'hoo';
+        fullAnnos[1]._foo = 'bar';
+        fullAnnos[3]._cheese = ['gorgonzola', 'gouda', 'gloucester'];
+        // this one gets lost
+        fullAnnos[2]._splat = 'the cat';
+
         Plotly.relayout(gd, {
             'annotations[0].text': 'tortilla',
             'annotations[0].x': 3.45,
@@ -266,21 +275,35 @@ describe('annotations relayout', function() {
         .then(function() {
             expect(countAnnotations()).toEqual(len);
 
+            var fullAnnosAfter = gd._fullLayout.annotations,
+                fullStr = JSON.stringify(fullAnnosAfter);
+
             assertText(0, 'tortilla');
             anno0.text = 'tortilla';
             expect(annos[0]).toEqual(anno0);
+            expect(fullAnnosAfter[0]._boo).toBe('hoo');
+
 
             assertText(1, 'chips');
             expect(annos[1]).toEqual({text: 'chips', x: 1.1, y: 2.2});
+            expect(fullAnnosAfter[1]._foo).toBeUndefined();
 
             assertText(2, 'guacamole');
             anno1.text = 'guacamole';
             expect(annos[2]).toEqual(anno1);
+            expect(fullAnnosAfter[2]._foo).toBe('bar');
+            expect(fullAnnosAfter[2]._splat).toBeUndefined();
 
             assertText(3, 'lime');
             anno3.text = 'lime';
             expect(annos[3]).toEqual(anno3);
+            expect(fullAnnosAfter[3]._cheese).toEqual(['gorgonzola', 'gouda', 'gloucester']);
+
+            expect(fullStr.indexOf('_splat')).toBe(-1);
+            expect(fullStr.indexOf('the cat')).toBe(-1);
+
             expect(Loggers.warn).not.toHaveBeenCalled();
+
         })
         .catch(failTest)
         .then(done);
