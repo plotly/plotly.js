@@ -115,29 +115,22 @@ function npGet(cont, parts) {
 }
 
 /*
- * Check known non-data-array arrays (containers). Data arrays only contain scalars,
- * so parts[end] values, such as -1 or n, indicate we are not dealing with a dataArray.
- * The ONLY case we are looking for is where the entire array is selected, parts[end] === 'x'
- * AND the replacement value is an array.
- */
-// function isNotAContainer(key) {
-//     var containers = ['annotations', 'shapes', 'range', 'domain', 'buttons'];
-
-//     return containers.indexOf(key) === -1;
-// }
-
-/*
  * Can this value be deleted? We can delete any empty object (null, undefined, [], {})
- * EXCEPT empty data arrays. If it's not a data array, it's a container array,
- * ie containing objects like annotations, buttons, etc
+ * EXCEPT empty data arrays. Info arrays can be safely deleted, but not deleting them
+ * has no ill effects other than leaving a trace or layout object with some cruft in it.
+ * But deleting data arrays can change the meaning of the object, as `[]` means there is
+ * data for this attribute, it's just empty right now while `undefined` means the data
+ * should be filled in with defaults to match other data arrays. So we do some simple
+ * tests here to find known non-data arrays but don't worry too much about not deleting
+ * some arrays that would actually be safe to delete.
  */
-var DOMAIN_RANGE = /(^|.)(domain|range)$/;
+var INFO_PATTERNS = /(^|.)((domain|range)(\.[xy])?|args|parallels)$/;
 function isDeletable(val, propStr) {
     if(!emptyObj(val)) return false;
     if(!isArray(val)) return true;
 
     // domain and range are special - they show up in lots of places so hard code here.
-    if(propStr.match(DOMAIN_RANGE)) return true;
+    if(propStr.match(INFO_PATTERNS)) return true;
 
     var match = containerArrayMatch(propStr);
     // if propStr matches the container array itself, index is an empty string
