@@ -1,0 +1,38 @@
+{
+  "layout": {
+    "width": 500,
+    "height": 500
+  },
+
+  "data": [{
+
+    "type": "parcoords",
+
+    "domain": {
+      "x": [0.2, 0.9],
+      "y": [0.2, 0.7]
+    },
+
+    "line": {
+      "showscale": true,
+      "reversescale": true,
+      "colorscale": "Jet",
+      "cmin": -4000,
+      "cmax": -100,
+      "color": [-41, -1317, -164, -1856, -79, -931, -191, -2983, -341, -3846]
+    },
+
+    "dimensions": [
+      {
+        "constraintrange": [200, 700],
+        "label": "Block height",
+        "values": [321, 534, 542, 674, 31, 674, 124, 246, 456, 743]
+      },
+      {
+        "label": "Block width",
+        "range": [0, 700000],
+        "values": [268630, 489543, 379086, 600000, 489543, 268630, 600000, 379086, 268630, 489543]
+      }
+    ]
+  }]
+}
