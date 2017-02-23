@@ -39,7 +39,7 @@ describe('the range slider', function() {
         var transformParts = node.getAttribute('transform').split('(');
 
         expect(transformParts[0]).toEqual('translate');
-        expect(+transformParts[1].split(',0)')[0]).toBeWithin(val, TOL);
+        expect(+transformParts[1].split(',0.5)')[0]).toBeWithin(val, TOL);
     }
 
     describe('when specified as visible', function() {
@@ -99,7 +99,7 @@ describe('the range slider', function() {
 
                 expect(gd.layout.xaxis.range).toBeCloseToArray([4, 49], -0.5);
                 expect(maskMin.getAttribute('width')).toEqual(String(diff));
-                expect(handleMin.getAttribute('transform')).toBe('translate(' + (diff - 3) + ',0)');
+                expect(handleMin.getAttribute('transform')).toBe('translate(' + (diff - 2.5) + ',0.5)');
             }).then(done);
         });
 
@@ -204,7 +204,7 @@ describe('the range slider', function() {
                 expect(+maskMin.getAttribute('width')).toBeWithin(126, TOL);
                 expect(+maskMax.getAttribute('width')).toEqual(0);
                 testTranslate1D(handleMin, 123.32);
-                testTranslate1D(handleMax, 619);
+                testTranslate1D(handleMax, 617);
             })
             .then(done);
         });
