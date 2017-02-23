@@ -95,9 +95,9 @@ module.exports = function(gd) {
         opts._height = (fullLayout.height - margin.b - margin.t) * opts.thickness;
         opts._offsetShift = Math.floor(opts.borderwidth / 2);
 
-        var x = margin.l + (graphSize.w * domain[0]);
+        var x = Math.round(margin.l + (graphSize.w * domain[0]));
 
-        var y = (
+        var y = Math.round(
             margin.t + graphSize.h * (1 - oppDomain[0]) +
             tickHeight +
             opts._offsetShift + constants.extraPad
@@ -492,8 +492,8 @@ function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
     };
 
     var handleDynamicAttrs = {
-        y: opts._height / 4,
-        height: opts._height / 2,
+        y: Math.round(opts._height / 4),
+        height: Math.round(opts._height / 2),
     };
 
     var handleMin = grabberMin.selectAll('rect.' + constants.handleMinClassName)
