@@ -1,7 +1,9 @@
 var Plotly = require('@lib/index');
 var Plots = Plotly.Plots;
+var Lib = require('@src/lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var click = require('../assets/click');
 var mouseEvent = require('../assets/mouse_event');
 
 describe('config argument', function() {
@@ -267,6 +269,121 @@ describe('config argument', function() {
         it('should make legends draggable', function() {
             checkIfDraggable('legend');
         });
+
+    });
+
+    describe('axis drag handles attribute', function() {
+        var mock = require('@mocks/14.json');
+
+        var gd;
+        var mockCopy;
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            mockCopy = Lib.extendDeep({}, mock);
+            done();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should have drag rectangles cursors by default', function() {
+            Plotly.plot(gd, mockCopy.data, {});
+
+            var nwdrag = document.getElementsByClassName('drag nwdrag');
+            expect(nwdrag.length).toBe(1);
+            var nedrag = document.getElementsByClassName('drag nedrag');
+            expect(nedrag.length).toBe(1);
+            var swdrag = document.getElementsByClassName('drag swdrag');
+            expect(swdrag.length).toBe(1);
+            var sedrag = document.getElementsByClassName('drag sedrag');
+            expect(sedrag.length).toBe(1);
+            var ewdrag = document.getElementsByClassName('drag ewdrag');
+            expect(ewdrag.length).toBe(1);
+            var wdrag = document.getElementsByClassName('drag wdrag');
+            expect(wdrag.length).toBe(1);
+            var edrag = document.getElementsByClassName('drag edrag');
+            expect(edrag.length).toBe(1);
+            var nsdrag = document.getElementsByClassName('drag nsdrag');
+            expect(nsdrag.length).toBe(1);
+            var sdrag = document.getElementsByClassName('drag sdrag');
+            expect(sdrag.length).toBe(1);
+            var ndrag = document.getElementsByClassName('drag ndrag');
+            expect(ndrag.length).toBe(1);
+
+        });
+
+        it('should not have drag rectangles when disabled', function() {
+            Plotly.plot(gd, mockCopy.data, {}, { showAxisDragHandles: false });
+
+            var nwdrag = document.getElementsByClassName('drag nwdrag');
+            expect(nwdrag.length).toBe(0);
+            var nedrag = document.getElementsByClassName('drag nedrag');
+            expect(nedrag.length).toBe(0);
+            var swdrag = document.getElementsByClassName('drag swdrag');
+            expect(swdrag.length).toBe(0);
+            var sedrag = document.getElementsByClassName('drag sedrag');
+            expect(sedrag.length).toBe(0);
+            var ewdrag = document.getElementsByClassName('drag ewdrag');
+            expect(ewdrag.length).toBe(0);
+            var wdrag = document.getElementsByClassName('drag wdrag');
+            expect(wdrag.length).toBe(0);
+            var edrag = document.getElementsByClassName('drag edrag');
+            expect(edrag.length).toBe(0);
+            var nsdrag = document.getElementsByClassName('drag nsdrag');
+            expect(nsdrag.length).toBe(0);
+            var sdrag = document.getElementsByClassName('drag sdrag');
+            expect(sdrag.length).toBe(0);
+            var ndrag = document.getElementsByClassName('drag ndrag');
+            expect(ndrag.length).toBe(0);
+        });
+
+    });
+
+    describe('axis range entry attribute', function() {
+        var mock = require('@mocks/14.json');
+
+        var gd;
+        var mockCopy;
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            mockCopy = Lib.extendDeep({}, mock);
+            done();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('show allow axis range entry by default', function() {
+            Plotly.plot(gd, mockCopy.data, {});
+
+            var corner = document.getElementsByClassName('edrag')[0];
+
+            var cornerBox = corner.getBoundingClientRect(),
+                cornerX = cornerBox.left + cornerBox.width / 2,
+                cornerY = cornerBox.top + cornerBox.height / 2;
+
+            click(cornerX, cornerY);
+
+            var editBox = document.getElementsByClassName('plugin-editable editable')[0];
+            expect(editBox).toBeDefined();
+            expect(editBox.getAttribute('contenteditable')).toBe('true');
+        });
+
+        it('show not allow axis range entry when', function() {
+            Plotly.plot(gd, mockCopy.data, {}, { showAxisRangeEntryBoxes: false });
+
+            var corner = document.getElementsByClassName('edrag')[0];
+
+            var cornerBox = corner.getBoundingClientRect(),
+                cornerX = cornerBox.left + cornerBox.width / 2,
+                cornerY = cornerBox.top + cornerBox.height / 2;
+
+            click(cornerX, cornerY);
+
+            var editBox = document.getElementsByClassName('plugin-editable editable')[0];
+            expect(editBox).toBeUndefined();
+        });
+
 
     });
 });
