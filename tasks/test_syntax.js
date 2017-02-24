@@ -154,6 +154,7 @@ function combineGlobs(arr) {
 function log(name, logs) {
     if(logs.length) {
         console.error('test-syntax error [' + name + ']');
+        console.error(logs.join('\n'));
         EXIT_CODE = 1;
     } else {
         console.log('ok ' + name);
