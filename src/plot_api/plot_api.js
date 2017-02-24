@@ -1564,7 +1564,7 @@ function _restyle(gd, aobj, _traces) {
                 helpers.swapXYData(cont);
             }
             else if(Plots.dataArrayContainers.indexOf(param.parts[0]) !== -1) {
-                // TODO: use manageArrays.editContainerArray here too
+                // TODO: use manageArrays.applyContainerArrayChanges here too
                 helpers.manageArrayContainers(param, newVal, undoit);
                 flags.docalc = true;
             }
@@ -2017,7 +2017,7 @@ function _relayout(gd, aobj) {
                 flags.docalc = true;
             }
 
-            // prepare the edits object we'll send to editContainerArray
+            // prepare the edits object we'll send to applyContainerArrayChanges
             if(!arrayEdits[arrayStr]) arrayEdits[arrayStr] = {};
             var objEdits = arrayEdits[arrayStr][i];
             if(!objEdits) objEdits = arrayEdits[arrayStr][i] = {};
@@ -2097,7 +2097,7 @@ function _relayout(gd, aobj) {
 
     // now we've collected component edits - execute them all together
     for(arrayStr in arrayEdits) {
-        var finished = manageArrays.editContainerArray(gd,
+        var finished = manageArrays.applyContainerArrayChanges(gd,
             Lib.nestedProperty(layout, arrayStr), arrayEdits[arrayStr], flags);
         if(!finished) flags.doplot = true;
     }

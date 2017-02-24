@@ -27,7 +27,7 @@ var isRemoveVal = exports.isRemoveVal = function isRemoveVal(val) {
 };
 
 /*
- * editContainerArray: for managing arrays of layout components in relayout
+ * applyContainerArrayChanges: for managing arrays of layout components in relayout
  * handles them all with a consistent interface.
  *
  * Here are the supported actions -> relayout calls -> edits we get here
@@ -69,7 +69,7 @@ var isRemoveVal = exports.isRemoveVal = function isRemoveVal(val) {
  * @returns {bool} `true` if it managed to complete drawing of the changes
  *  `false` would mean the parent should replot.
  */
-exports.editContainerArray = function editContainerArray(gd, np, edits, flags) {
+exports.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np, edits, flags) {
     var componentType = np.astr,
         supplyComponentDefaults = Registry.getComponentMethod(componentType, 'supplyLayoutDefaults'),
         draw = Registry.getComponentMethod(componentType, 'draw'),
