@@ -148,6 +148,34 @@ describe('Plotly.validate', function() {
         );
     });
 
+    it('should work with colorscale attributes', function() {
+        var out = Plotly.validate([{
+            x: [1, 2, 3],
+            marker: {
+                color: [20, 10, 30],
+                colorscale: 'Reds'
+            }
+        }, {
+            x: [1, 2, 3],
+            marker: {
+                color: [20, 10, 30],
+                colorscale: 'not-gonna-work'
+            }
+        }, {
+            x: [1, 2, 3],
+            marker: {
+                color: [20, 10, 30],
+                colorscale: [[0, 'red'], [1, 'blue']]
+            }
+        }]);
+
+        expect(out.length).toEqual(1);
+        assertErrorContent(
+            out[0], 'value', 'data', 1, ['marker', 'colorscale'], 'marker.colorscale',
+            'In data trace 1, key marker.colorscale is set to an invalid value (not-gonna-work)'
+        );
+    });
+
     it('should work with isLinkedToArray attributes', function() {
         var out = Plotly.validate([], {
             annotations: [{
