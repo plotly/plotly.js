@@ -1878,7 +1878,7 @@ function _relayout(gd, aobj) {
 
         // toggling log without autorange: need to also recalculate ranges
         // logical XOR (ie are we toggling log)
-        if(pleaf === 'type' && ((parentFull.type === 'log') !== (vi === 'log'))) {
+        if(pleaf === 'type' && ((parentFull && parentFull.type === 'log') !== (vi === 'log'))) {
             var ax = parentIn;
 
             if(!ax || !ax.range) {
