@@ -153,36 +153,39 @@ fx.init = function(gd) {
             };
 
             // corner draggers
-            dragBox(gd, plotinfo, -DRAGGERSIZE, -DRAGGERSIZE,
-                DRAGGERSIZE, DRAGGERSIZE, 'n', 'w');
-            dragBox(gd, plotinfo, xa._length, -DRAGGERSIZE,
-                DRAGGERSIZE, DRAGGERSIZE, 'n', 'e');
-            dragBox(gd, plotinfo, -DRAGGERSIZE, ya._length,
-                DRAGGERSIZE, DRAGGERSIZE, 's', 'w');
-            dragBox(gd, plotinfo, xa._length, ya._length,
-                DRAGGERSIZE, DRAGGERSIZE, 's', 'e');
+            if(gd._context.showAxisDragHandles) {
+                dragBox(gd, plotinfo, -DRAGGERSIZE, -DRAGGERSIZE,
+                    DRAGGERSIZE, DRAGGERSIZE, 'n', 'w');
+                dragBox(gd, plotinfo, xa._length, -DRAGGERSIZE,
+                    DRAGGERSIZE, DRAGGERSIZE, 'n', 'e');
+                dragBox(gd, plotinfo, -DRAGGERSIZE, ya._length,
+                    DRAGGERSIZE, DRAGGERSIZE, 's', 'w');
+                dragBox(gd, plotinfo, xa._length, ya._length,
+                    DRAGGERSIZE, DRAGGERSIZE, 's', 'e');
+            }
         }
-
-        // x axis draggers - if you have overlaid plots,
-        // these drag each axis separately
-        if(isNumeric(y0)) {
-            if(xa.anchor === 'free') y0 -= fullLayout._size.h * (1 - ya.domain[1]);
-            dragBox(gd, plotinfo, xa._length * 0.1, y0,
-                xa._length * 0.8, DRAGGERSIZE, '', 'ew');
-            dragBox(gd, plotinfo, 0, y0,
-                xa._length * 0.1, DRAGGERSIZE, '', 'w');
-            dragBox(gd, plotinfo, xa._length * 0.9, y0,
-                xa._length * 0.1, DRAGGERSIZE, '', 'e');
-        }
-        // y axis draggers
-        if(isNumeric(x0)) {
-            if(ya.anchor === 'free') x0 -= fullLayout._size.w * xa.domain[0];
-            dragBox(gd, plotinfo, x0, ya._length * 0.1,
-                DRAGGERSIZE, ya._length * 0.8, 'ns', '');
-            dragBox(gd, plotinfo, x0, ya._length * 0.9,
-                DRAGGERSIZE, ya._length * 0.1, 's', '');
-            dragBox(gd, plotinfo, x0, 0,
-                DRAGGERSIZE, ya._length * 0.1, 'n', '');
+        if(gd._context.showAxisDragHandles) {
+            // x axis draggers - if you have overlaid plots,
+            // these drag each axis separately
+            if(isNumeric(y0)) {
+                if(xa.anchor === 'free') y0 -= fullLayout._size.h * (1 - ya.domain[1]);
+                dragBox(gd, plotinfo, xa._length * 0.1, y0,
+                    xa._length * 0.8, DRAGGERSIZE, '', 'ew');
+                dragBox(gd, plotinfo, 0, y0,
+                    xa._length * 0.1, DRAGGERSIZE, '', 'w');
+                dragBox(gd, plotinfo, xa._length * 0.9, y0,
+                    xa._length * 0.1, DRAGGERSIZE, '', 'e');
+            }
+            // y axis draggers
+            if(isNumeric(x0)) {
+                if(ya.anchor === 'free') x0 -= fullLayout._size.w * xa.domain[0];
+                dragBox(gd, plotinfo, x0, ya._length * 0.1,
+                    DRAGGERSIZE, ya._length * 0.8, 'ns', '');
+                dragBox(gd, plotinfo, x0, ya._length * 0.9,
+                    DRAGGERSIZE, ya._length * 0.1, 's', '');
+                dragBox(gd, plotinfo, x0, 0,
+                    DRAGGERSIZE, ya._length * 0.1, 'n', '');
+            }
         }
     });
 
