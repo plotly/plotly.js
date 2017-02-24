@@ -4,6 +4,7 @@ var fs = require('fs');
 var falafel = require('falafel');
 var glob = require('glob');
 var madge = require('madge');
+var readLastLines = require('read-last-lines');
 
 var constants = require('./util/constants');
 var srcGlob = path.join(constants.pathToSrc, '**/*.js');
@@ -17,6 +18,7 @@ var EXIT_CODE = 0;
 assertJasmineSuites();
 assertSrcContents();
 assertFileNames();
+assertTrailingNewLine();
 assertCircularDeps();
 
 
@@ -125,7 +127,39 @@ function assertFileNames() {
 
         log('lower case only file names', logs);
     });
+}
 
+// check that all files have a trailing new line character
+function assertTrailingNewLine() {
+    var pattern = combineGlobs([
+        path.join(constants.pathToSrc, '**/*.glsl'),
+        path.join(constants.pathToRoot, 'test', 'image', 'mocks', '*')
+    ]);
+
+    var regex = /\r?\n$/;
+    var promises = [];
+    var logs = [];
+
+    glob(pattern, function(err, files) {
+        files.forEach(function(file) {
+            var promise = readLastLines.read(file, 1);
+
+            promises.push(promise);
+
+            promise.then(function(lines) {
+                if(!regex.test(lines)) {
+                    logs.push([
+                        file, ':',
+                        'does not have a trailing new line character'
+                    ].join(' '));
+                }
+            });
+        });
+
+        Promise.all(promises).then(function() {
+            log('trailing new line character', logs);
+        });
+    });
 }
 
 // check circular dependencies
