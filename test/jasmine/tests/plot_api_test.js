@@ -180,6 +180,42 @@ describe('Test plot api', function() {
                 .then(done);
         });
 
+        it('errors if child and parent are edited together', function(done) {
+            var edit1 = {rando: [{a: 1}, {b: 2}]};
+            var edit2 = {'rando[1]': {c: 3}};
+            var edit3 = {'rando[1].d': 4};
+
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }])
+                .then(function() {
+                    return Plotly.relayout(gd, edit1);
+                })
+                .then(function() {
+                    expect(gd.layout.rando).toEqual([{a: 1}, {b: 2}]);
+                    return Plotly.relayout(gd, edit2);
+                })
+                .then(function() {
+                    expect(gd.layout.rando).toEqual([{a: 1}, {c: 3}]);
+                    return Plotly.relayout(gd, edit3);
+                })
+                .then(function() {
+                    expect(gd.layout.rando).toEqual([{a: 1}, {c: 3, d: 4}]);
+
+                    // OK, setup is done - test the failing combinations
+                    [[edit1, edit2], [edit1, edit3], [edit2, edit3]].forEach(function(v) {
+                        // combine properties in both orders - which results in the same object
+                        // but the properties are iterated in opposite orders
+                        expect(function() {
+                            return Plotly.relayout(gd, Lib.extendFlat({}, v[0], v[1]));
+                        }).toThrow();
+                        expect(function() {
+                            return Plotly.relayout(gd, Lib.extendFlat({}, v[1], v[0]));
+                        }).toThrow();
+                    });
+                })
+                .catch(fail)
+                .then(done);
+        });
+
         it('can set empty text nodes', function(done) {
             var data = [{
                 x: [1, 2, 3],
@@ -333,7 +369,7 @@ describe('Test plot api', function() {
             destroyGraphDiv();
         });
 
-        it('should redo auto z/contour when editing z array', function() {
+        it('should redo auto z/contour when editing z array', function(done) {
             Plotly.plot(gd, [{type: 'contour', z: [[1, 2], [3, 4]]}]).then(function() {
                 expect(gd.data[0].zauto).toBe(true, gd.data[0]);
                 expect(gd.data[0].zmin).toBe(1);
@@ -348,7 +384,45 @@ describe('Test plot api', function() {
                 expect(gd.data[0].zmax).toBe(10);
 
                 expect(gd.data[0].contours).toEqual({start: 3, end: 9, size: 1});
-            });
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('errors if child and parent are edited together', function(done) {
+            var edit1 = {rando: [[{a: 1}, {b: 2}]]};
+            var edit2 = {'rando[1]': {c: 3}};
+            var edit3 = {'rando[1].d': 4};
+
+            Plotly.plot(gd, [{x: [1, 2, 3], y: [1, 2, 3], type: 'scatter'}])
+                .then(function() {
+                    return Plotly.restyle(gd, edit1);
+                })
+                .then(function() {
+                    expect(gd.data[0].rando).toEqual([{a: 1}, {b: 2}]);
+                    return Plotly.restyle(gd, edit2);
+                })
+                .then(function() {
+                    expect(gd.data[0].rando).toEqual([{a: 1}, {c: 3}]);
+                    return Plotly.restyle(gd, edit3);
+                })
+                .then(function() {
+                    expect(gd.data[0].rando).toEqual([{a: 1}, {c: 3, d: 4}]);
+
+                    // OK, setup is done - test the failing combinations
+                    [[edit1, edit2], [edit1, edit3], [edit2, edit3]].forEach(function(v) {
+                        // combine properties in both orders - which results in the same object
+                        // but the properties are iterated in opposite orders
+                        expect(function() {
+                            return Plotly.restyle(gd, Lib.extendFlat({}, v[0], v[1]));
+                        }).toThrow();
+                        expect(function() {
+                            return Plotly.restyle(gd, Lib.extendFlat({}, v[1], v[0]));
+                        }).toThrow();
+                    });
+                })
+                .catch(fail)
+                .then(done);
         });
     });
 
