@@ -262,7 +262,7 @@ proto.update = function(data) {
         dynamicColor: [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]],
         dynamicWidth: [1, 1, 1],
         dynamicTint: [1, 1, 1],
-        opacity: 1
+        opacity: data.opacity
     };
 
     params.intensityBounds = [data.cmin, data.cmax];
@@ -288,12 +288,6 @@ proto.update = function(data) {
 
     if(data.surfacecolor) {
         params.intensity = coords.pop();
-    }
-
-    if('opacity' in data) {
-        if(data.opacity < 1) {
-            params.opacity = 0.25 * data.opacity;
-        }
     }
 
     var highlightEnable = [true, true, true];
