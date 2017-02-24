@@ -365,6 +365,23 @@ describe('scattermapbox convert', function() {
         expect(actualText).toEqual(['A', 'B', 'C', 'F', '']);
     });
 
+    it('for lines traces with trailing gaps', function() {
+        var opts = _convert(Lib.extendFlat({}, base, {
+            mode: 'lines',
+            lon: [10, '20', 30, 20, null, 20, 10, null],
+            lat: [20, 20, '10', null, 10, 10, 20, null]
+        }));
+
+        assertVisibility(opts, ['none', 'visible', 'none', 'none']);
+
+        var lineCoords = [
+            [[10, 20], [20, 20], [30, 10]],
+            [[20, 10], [10, 20]]
+        ];
+
+        expect(opts.line.geojson.coordinates).toEqual(lineCoords, 'have correct line coords');
+    });
+
     it('should correctly convert \'textposition\' to \'text-anchor\' and \'text-offset\'', function() {
         var specs = {
             'top left': ['top-right', [-0.65, -1.65]],
