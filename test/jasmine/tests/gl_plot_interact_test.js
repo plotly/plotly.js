@@ -88,7 +88,7 @@ describe('Test gl plot interactions', function() {
 
         describe('scatter3d hover', function() {
 
-            var node, ptData;
+            var ptData;
 
             beforeEach(function(done) {
                 gd.on('plotly_hover', function(eventData) {
@@ -100,14 +100,18 @@ describe('Test gl plot interactions', function() {
                 delay(done);
             });
 
-            it('should have', function() {
-                node = d3.selectAll('g.hovertext');
+            function assertHoverText(xLabel, yLabel, zLabel) {
+                var node = d3.selectAll('g.hovertext');
                 expect(node.size()).toEqual(1, 'one hover text group');
 
-                node = d3.selectAll('g.hovertext').selectAll('tspan')[0];
-                expect(node[0].innerHTML).toEqual('x: 140.72', 'x val on hover');
-                expect(node[1].innerHTML).toEqual('y: −96.97', 'y val on hover');
-                expect(node[2].innerHTML).toEqual('z: −96.97', 'z val on hover');
+                var tspan = d3.selectAll('g.hovertext').selectAll('tspan')[0];
+                expect(tspan[0].innerHTML).toEqual(xLabel, 'x val on hover');
+                expect(tspan[1].innerHTML).toEqual(yLabel, 'y val on hover');
+                expect(tspan[2].innerHTML).toEqual(zLabel, 'z val on hover');
+            }
+
+            it('should have', function(done) {
+                assertHoverText('x: 140.72', 'y: −96.97', 'z: −96.97');
 
                 expect(Object.keys(ptData)).toEqual([
                     'x', 'y', 'z',
@@ -119,8 +123,44 @@ describe('Test gl plot interactions', function() {
                 expect(ptData.z).toEqual('−96.97', 'z val hover data');
                 expect(ptData.curveNumber).toEqual(0, 'curveNumber hover data');
                 expect(ptData.pointNumber).toEqual(2, 'pointNumber hover data');
-            });
 
+                Plotly.restyle(gd, {
+                    x: [['2016-01-11', '2016-01-12', '2017-01-01', '2017-02']]
+                })
+                .then(function() {
+                    mouseEventScatter3d('mouseover');
+                    return delay;
+                })
+                .then(function() {
+                    assertHoverText('x: Jan 1, 2017', 'y: −96.97', 'z: −96.97');
+
+                    return Plotly.restyle(gd, {
+                        x: [[new Date(2017, 2, 1), new Date(2017, 2, 2), new Date(2017, 2, 3), new Date(2017, 2, 4)]]
+                    });
+                })
+                .then(function() {
+                    mouseEventScatter3d('mouseover');
+                    return delay;
+                })
+                .then(function() {
+                    assertHoverText('x: Mar 3, 2017', 'y: −96.97', 'z: −96.97');
+
+                    return Plotly.update(gd, {
+                        y: [['a', 'b', 'c', 'd']],
+                        z: [[10, 1e3, 1e5, 1e10]]
+                    }, {
+                        'scene.zaxis.type': 'log'
+                    });
+                })
+                .then(function() {
+                    mouseEventScatter3d('mouseover');
+                    return delay;
+                })
+                .then(function() {
+                    assertHoverText('x: Mar 3, 2017', 'y: c', 'z: 100k');
+                })
+                .then(done);
+            });
         });
 
         describe('scatter3d click events', function() {
