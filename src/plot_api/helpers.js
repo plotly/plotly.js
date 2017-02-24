@@ -485,6 +485,12 @@ exports.manageArrayContainers = function(np, newVal, undoit) {
     }
 };
 
+/*
+ * Match the part to strip off to turn an attribute into its parent
+ * really it should be either '.some_characters' or '[number]'
+ * but we're a little more permissive here and match either
+ * '.not_brackets_or_dot' or '[not_brackets_or_dot]'
+ */
 var ATTR_TAIL_RE = /(\.[^\[\]\.]+|\[[^\[\]\.]+\])$/;
 
 function getParent(attr) {
@@ -492,6 +498,17 @@ function getParent(attr) {
     if(tail > 0) return attr.substr(0, tail);
 }
 
+/*
+ * hasParent: does an attribute object contain a parent of the given attribute?
+ * for example, given 'images[2].x' do we also have 'images' or 'images[2]'?
+ *
+ * @param {Object} aobj
+ *  update object, whose keys are attribute strings and values are their new settings
+ * @param {string} attr
+ *  the attribute string to test against
+ * @returns {Boolean}
+ *  is a parent of attr present in aobj?
+ */
 exports.hasParent = function(aobj, attr) {
     var attrParent = getParent(attr);
     while(attrParent) {

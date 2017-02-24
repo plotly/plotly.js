@@ -7,6 +7,7 @@ var Bar = require('@src/traces/bar');
 var Legend = require('@src/components/legend');
 var pkg = require('../../../package.json');
 var subroutines = require('@src/plot_api/subroutines');
+var helpers = require('@src/plot_api/helpers');
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -1306,6 +1307,55 @@ describe('Test plot api', function() {
                 expect(calcdata).toBe(gd.calcdata);
                 done();
             });
+        });
+    });
+});
+
+describe('plot_api helpers', function() {
+    describe('hasParent', function() {
+        var attr = 'annotations[2].xref';
+        var attr2 = 'marker.line.width';
+
+        it('does not match the attribute itself or other related non-parent attributes', function() {
+            var aobj = {
+                // '' wouldn't be valid as an attribute in our framework, but tested
+                // just in case this would count as a parent.
+                '': true,
+                'annotations[1]': {}, // parent structure, just a different array element
+                'xref': 1, // another substring
+                'annotations[2].x': 0.5, // substring of the attribute, but not a parent
+                'annotations[2].xref': 'x2' // the attribute we're testing - not its own parent
+            };
+
+            expect(helpers.hasParent(aobj, attr)).toBe(false);
+
+            var aobj2 = {
+                'marker.line.color': 'red',
+                'marker.line.width': 2,
+                'marker.color': 'blue',
+                'line': {}
+            };
+
+            expect(helpers.hasParent(aobj2, attr2)).toBe(false);
+        });
+
+        it('is false when called on a top-level attribute', function() {
+            var aobj = {
+                '': true,
+                'width': 100
+            };
+
+            expect(helpers.hasParent(aobj, 'width')).toBe(false);
+        });
+
+        it('matches any kind of parent', function() {
+            expect(helpers.hasParent({'annotations': []}, attr)).toBe(true);
+            expect(helpers.hasParent({'annotations[2]': {}}, attr)).toBe(true);
+
+            expect(helpers.hasParent({'marker': {}}, attr2)).toBe(true);
+            // this one wouldn't actually make sense: marker.line needs to be an object...
+            // but hasParent doesn't look at the values in aobj, just its keys.
+            expect(helpers.hasParent({'marker.line': 1}, attr2)).toBe(true);
         });
     });
 });
