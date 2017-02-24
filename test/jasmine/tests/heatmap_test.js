@@ -528,18 +528,9 @@ describe('heatmap hover', function() {
 
     var gd;
 
-    beforeAll(function(done) {
+    beforeAll(function() {
         jasmine.addMatchers(customMatchers);
-
-        gd = createGraphDiv();
-
-        var mock = require('@mocks/heatmap_multi-trace.json'),
-            mockCopy = Lib.extendDeep({}, mock);
-
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
     });
-
-    afterAll(destroyGraphDiv);
 
     function _hover(gd, xval, yval) {
         var fullLayout = gd._fullLayout,
@@ -563,24 +554,39 @@ describe('heatmap hover', function() {
         return hoverData;
     }
 
-    function assertLabels(hoverPoint, xLabel, yLabel, zLabel) {
+    function assertLabels(hoverPoint, xLabel, yLabel, zLabel, text) {
         expect(hoverPoint.xLabelVal).toEqual(xLabel, 'have correct x label');
         expect(hoverPoint.yLabelVal).toEqual(yLabel, 'have correct y label');
         expect(hoverPoint.zLabelVal).toEqual(zLabel, 'have correct z label');
+        expect(hoverPoint.text).toEqual(text, 'have correct text label');
     }
 
-    it('should find closest point (case 1) and should', function() {
-        var pt = _hover(gd, 0.5, 0.5)[0];
+    describe('for `heatmap_multi-trace`', function() {
 
-        expect(pt.index).toEqual([1, 0], 'have correct index');
-        assertLabels(pt, 1, 1, 4);
-    });
+        beforeAll(function(done) {
+            gd = createGraphDiv();
 
-    it('should find closest point (case 2) and should', function() {
-        var pt = _hover(gd, 1.5, 0.5)[0];
+            var mock = require('@mocks/heatmap_multi-trace.json'),
+                mockCopy = Lib.extendDeep({}, mock);
 
-        expect(pt.index).toEqual([0, 0], 'have correct index');
-        assertLabels(pt, 2, 0.2, 6);
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        afterAll(destroyGraphDiv);
+
+        it('should find closest point (case 1) and should', function() {
+            var pt = _hover(gd, 0.5, 0.5)[0];
+
+            expect(pt.index).toEqual([1, 0], 'have correct index');
+            assertLabels(pt, 1, 1, 4);
+        });
+
+        it('should find closest point (case 2) and should', function() {
+            var pt = _hover(gd, 1.5, 0.5)[0];
+
+            expect(pt.index).toEqual([0, 0], 'have correct index');
+            assertLabels(pt, 2, 0.2, 6);
+        });
     });
 
 });
