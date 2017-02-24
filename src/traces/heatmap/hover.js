@@ -96,8 +96,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
     if(zmask && !zmask[ny][nx]) zVal = undefined;
 
     var text;
-    if(Array.isArray(trace.text) && Array.isArray(trace.text[ny])) {
-        text = trace.text[ny][nx];
+    if(Array.isArray(cd0.text) && Array.isArray(cd0.text[ny])) {
+        text = cd0.text[ny][nx];
     }
 
     return [Lib.extendFlat(pointData, {
