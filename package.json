@@ -49,7 +49,9 @@
     "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\""
   },
   "browserify": {
-    "transform": ["glslify"]
+    "transform": [
+      "glslify"
+    ]
   },
   "dependencies": {
     "3d-view": "^2.0.0",
