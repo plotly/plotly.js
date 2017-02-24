@@ -589,4 +589,38 @@ describe('heatmap hover', function() {
         });
     });
 
+    describe('for xyz-column traces', function() {
+
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                type: 'heatmap',
+                x: [1, 2, 3],
+                y: [1, 1, 1],
+                z: [10, 4, 20],
+                text: ['a', 'b', 'c'],
+                hoverinfo: 'text'
+            }])
+            .then(done);
+        });
+
+        afterAll(destroyGraphDiv);
+
+        it('should find closest point and should', function(done) {
+            var pt = _hover(gd, 0.5, 0.5)[0];
+
+            expect(pt.index).toEqual([0, 0], 'have correct index');
+            assertLabels(pt, 1, 1, 10, 'a');
+
+            Plotly.relayout(gd, 'xaxis.range', [1, 2]).then(function() {
+                var pt2 = _hover(gd, 1.5, 0.5)[0];
+
+                expect(pt2.index).toEqual([0, 1], 'have correct index');
+                assertLabels(pt2, 2, 1, 4, 'b');
+            })
+            .then(done);
+        });
+
+    });
 });
