@@ -58,10 +58,10 @@ function render(scene) {
     }
 
     function formatter(axisName, val) {
-        if(typeof val === 'string') return val;
-
         var axis = scene.fullSceneLayout[axisName];
-        return Axes.tickText(axis, axis.c2l(val), 'hover').text;
+        var calendar = trace[axis._id.charAt(0) + 'calendar'];
+
+        return Axes.tickText(axis, axis.d2l(val, 0, calendar), 'hover').text;
     }
 
     var oldEventData;
