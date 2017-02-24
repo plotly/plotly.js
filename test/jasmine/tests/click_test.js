@@ -14,7 +14,7 @@ var customMatchers = require('../assets/custom_matchers');
 // from the mousemove events and then simulate
 // a click event on mouseup
 var click = require('../assets/click');
-var doubleClick = require('../assets/double_click');
+var doubleClickRaw = require('../assets/double_click');
 
 
 describe('Test click interactions:', function() {
@@ -49,6 +49,12 @@ describe('Test click interactions:', function() {
                 mouseEvent('mouseup', toX, toY);
                 resolve();
             }, delay || DBLCLICKDELAY / 4);
+        });
+    }
+
+    function doubleClick(x, y) {
+        return doubleClickRaw(x, y).then(function() {
+            return Plotly.Plots.previousPromises(gd);
         });
     }
 

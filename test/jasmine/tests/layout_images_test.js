@@ -1,10 +1,12 @@
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Images = require('@src/components/images');
+var Lib = require('@src/lib');
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 
 var jsLogo = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
@@ -326,6 +328,7 @@ describe('Layout images', function() {
 
             Plotly.plot(gd, data, layout).then(function() {
                 assertImages(0);
+                expect(gd.layout.images).toBeUndefined();
 
                 return Plotly.relayout(gd, 'images[0]', makeImage(jsLogo, 0.1, 0.1));
             })
@@ -337,7 +340,8 @@ describe('Layout images', function() {
             .then(function() {
                 assertImages(2);
 
-                return Plotly.relayout(gd, 'images[2]', makeImage(pythonLogo, 0.2, 0.5));
+                // insert an image not at the end of the array
+                return Plotly.relayout(gd, 'images[0]', makeImage(pythonLogo, 0.2, 0.5));
             })
             .then(function() {
                 assertImages(3);
@@ -355,7 +359,8 @@ describe('Layout images', function() {
                 assertImages(3);
                 expect(gd.layout.images.length).toEqual(3);
 
-                return Plotly.relayout(gd, 'images[2]', null);
+                // delete not from the end of the array
+                return Plotly.relayout(gd, 'images[0]', null);
             })
             .then(function() {
                 assertImages(2);
@@ -371,7 +376,7 @@ describe('Layout images', function() {
             })
             .then(function() {
                 assertImages(0);
-                expect(gd.layout.images).toEqual([]);
+                expect(gd.layout.images).toBeUndefined();
 
                 done();
             });
@@ -379,4 +384,123 @@ describe('Layout images', function() {
 
     });
 
+});
+
+describe('images log/linear axis changes', function() {
+    'use strict';
+
+    var mock = {
+        data: [
+            {x: [1, 2, 3], y: [1, 2, 3]},
+            {x: [1, 2, 3], y: [3, 2, 1], yaxis: 'y2'}
+        ],
+        layout: {
+            images: [{
+                source: 'https://images.plot.ly/language-icons/api-home/python-logo.png',
+                x: 1,
+                y: 1,
+                xref: 'x',
+                yref: 'y',
+                sizex: 2,
+                sizey: 2
+            }],
+            yaxis: {range: [1, 3]},
+            yaxis2: {range: [0, 1], overlaying: 'y', type: 'log'}
+        }
+    };
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+
+        var mockData = Lib.extendDeep([], mock.data),
+            mockLayout = Lib.extendDeep({}, mock.layout);
+
+        Plotly.plot(gd, mockData, mockLayout).then(done);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('doesnt try to update position automatically with ref changes', function(done) {
+        // we don't try to figure out the position on a new axis / canvas
+        // automatically when you change xref / yref, we leave it to the caller.
+
+        // linear to log
+        Plotly.relayout(gd, {'images[0].yref': 'y2'})
+        .then(function() {
+            expect(gd.layout.images[0].y).toBe(1);
+
+            // log to paper
+            return Plotly.relayout(gd, {'images[0].yref': 'paper'});
+        })
+        .then(function() {
+            expect(gd.layout.images[0].y).toBe(1);
+
+            // paper to log
+            return Plotly.relayout(gd, {'images[0].yref': 'y2'});
+        })
+        .then(function() {
+            expect(gd.layout.images[0].y).toBe(1);
+
+            // log to linear
+            return Plotly.relayout(gd, {'images[0].yref': 'y'});
+        })
+        .then(function() {
+            expect(gd.layout.images[0].y).toBe(1);
+
+            // y and yref together
+            return Plotly.relayout(gd, {'images[0].y': 0.2, 'images[0].yref': 'y2'});
+        })
+        .then(function() {
+            expect(gd.layout.images[0].y).toBe(0.2);
+
+            // yref first, then y
+            return Plotly.relayout(gd, {'images[0].yref': 'y', 'images[0].y': 2});
+        })
+        .then(function() {
+            expect(gd.layout.images[0].y).toBe(2);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('keeps the same data value if the axis type is changed without position', function(done) {
+        // because images (and images) use linearized positions on log axes,
+        // we have `relayout` update the positions so the data value the annotation
+        // points to is unchanged by the axis type change.
+
+        Plotly.relayout(gd, {'yaxis.type': 'log'})
+        .then(function() {
+            expect(gd.layout.images[0].y).toBe(0);
+            expect(gd.layout.images[0].sizey).toBeCloseTo(0.765551370675726, 6);
+
+            return Plotly.relayout(gd, {'yaxis.type': 'linear'});
+        })
+        .then(function() {
+            expect(gd.layout.images[0].y).toBe(1);
+            expect(gd.layout.images[0].sizey).toBeCloseTo(2, 6);
+
+            return Plotly.relayout(gd, {
+                'yaxis.type': 'log',
+                'images[0].y': 0.2,
+                'images[0].sizey': 0.3
+            });
+        })
+        .then(function() {
+            expect(gd.layout.images[0].y).toBe(0.2);
+            expect(gd.layout.images[0].sizey).toBe(0.3);
+
+            return Plotly.relayout(gd, {
+                'images[0].y': 2,
+                'images[0].sizey': 2.5,
+                'yaxis.type': 'linear'
+            });
+        })
+        .then(function() {
+            expect(gd.layout.images[0].y).toBe(2);
+            expect(gd.layout.images[0].sizey).toBe(2.5);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });

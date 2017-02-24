@@ -24,5 +24,7 @@ module.exports = {
     drawOne: drawModule.drawOne,
 
     hasClickToShow: clickModule.hasClickToShow,
-    onClick: clickModule.onClick
+    onClick: clickModule.onClick,
+
+    convertCoords: require('./convert_coords')
 };

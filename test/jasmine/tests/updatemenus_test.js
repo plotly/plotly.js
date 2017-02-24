@@ -315,6 +315,7 @@ describe('update menus interactions', function() {
     });
 
     it('should draw only visible menus', function(done) {
+        var initialUM1 = Lib.extendDeep({}, gd.layout.updatemenus[1]);
         assertMenus([0, 0]);
         expect(gd._fullLayout._pushmargin['updatemenu-0']).toBeDefined();
         expect(gd._fullLayout._pushmargin['updatemenu-1']).toBeDefined();
@@ -333,7 +334,7 @@ describe('update menus interactions', function() {
 
             return Plotly.relayout(gd, {
                 'updatemenus[0].visible': true,
-                'updatemenus[1].visible': true
+                'updatemenus[1]': initialUM1
             });
         })
         .then(function() {
@@ -655,7 +656,7 @@ describe('update menus interactions', function() {
     });
 
     function assertNodeCount(query, cnt) {
-        expect(d3.selectAll(query).size()).toEqual(cnt);
+        expect(d3.selectAll(query).size()).toEqual(cnt, query);
     }
 
     // call assertMenus([0, 3]); to check that the 2nd update menu is dropped

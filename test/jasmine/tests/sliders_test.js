@@ -97,15 +97,15 @@ describe('sliders defaults', function() {
 
         expect(layoutOut.sliders[0].steps.length).toEqual(3);
         expect(layoutOut.sliders[0].steps).toEqual([{
-            method: 'relayout', args: [],
+            method: 'relayout',
             label: 'Label #1',
             value: 'label-1'
         }, {
-            method: 'update', args: [],
+            method: 'update',
             label: 'Label #2',
             value: 'Label #2'
         }, {
-            method: 'animate', args: [],
+            method: 'animate',
             label: 'step-2',
             value: 'lacks-label'
         }]);
