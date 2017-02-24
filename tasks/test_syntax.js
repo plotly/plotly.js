@@ -90,18 +90,36 @@ function assertSrcContents() {
 
 // check that all file names are in lower case
 function assertFileNames() {
+    var pattern = combineGlobs([
+        path.join(constants.pathToRoot, '*.*'),
+        path.join(constants.pathToSrc, '**/*.*'),
+        path.join(constants.pathToLib, '**/*.*'),
+        path.join(constants.pathToDist, '**/*.*'),
+        path.join(constants.pathToRoot, 'test', '**/*.*'),
+        path.join(constants.pathToRoot, 'tasks', '**/*.*'),
+        path.join(constants.pathToRoot, 'devtools', '**/*.*')
+    ]);
+
     var logs = [];
 
-    glob(combineGlobs([srcGlob, libGlob, testGlob, bundleTestGlob]), function(err, files) {
+    glob(pattern, function(err, files) {
         files.forEach(function(file) {
             var base = path.basename(file);
 
+            if(
+                base === 'README.md' ||
+                base === 'CONTRIBUTING.md' ||
+                base === 'CHANGELOG.md' ||
+                base === 'SECURITY.md' ||
+                file.indexOf('mathjax') !== -1
+            ) return;
+
             if(base !== base.toLowerCase()) {
                 logs.push([
-                    file, ' :',
+                    file, ':',
                     'has a file name containing some',
                     'non-lower-case characters'
-                ]);
+                ].join(' '));
             }
         });
 
