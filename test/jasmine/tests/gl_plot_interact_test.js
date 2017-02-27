@@ -155,6 +155,12 @@ describe('Test gl plot interactions', function() {
                 .then(hover)
                 .then(function() {
                     assertHoverText('x: Mar 3, 2017', 'y: c', 'z: 100k');
+
+                    return Plotly.relayout(gd, 'scene.xaxis.calendar', 'chinese');
+                })
+                .then(hover)
+                .then(function() {
+                    assertHoverText('x: 二 6, 2017', 'y: c', 'z: 100k');
                 })
                 .then(done);
             });

@@ -59,9 +59,8 @@ function render(scene) {
 
     function formatter(axisName, val) {
         var axis = scene.fullSceneLayout[axisName];
-        var calendar = trace[axis._id.charAt(0) + 'calendar'];
 
-        return Axes.tickText(axis, axis.d2l(val, 0, calendar), 'hover').text;
+        return Axes.tickText(axis, axis.d2l(val), 'hover').text;
     }
 
     var oldEventData;
