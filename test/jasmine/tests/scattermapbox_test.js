@@ -259,7 +259,7 @@ describe('scattermapbox convert', function() {
         lat: [20, 20, '10', null, 10, 10, 20]
     };
 
-    it('for markers + circle bubbles traces, should', function() {
+    it('should generate correct output for markers + circle bubbles traces', function() {
         var opts = _convert(Lib.extendFlat({}, base, {
             mode: 'markers',
             marker: {
@@ -276,12 +276,12 @@ describe('scattermapbox convert', function() {
             stops: [
                 [0, 'rgb(220, 220, 220)'], [1, '#444'], [2, 'rgb(178, 10, 28)']
             ]
-        }, 'have correct circle-color stops');
+        }, 'circle-color stops');
 
         expect(opts.circle.paint['circle-radius']).toEqual({
             property: 'circle-radius',
             stops: [ [0, 5], [1, 10], [2, 0] ]
-        }, 'have correct circle-radius stops');
+        }, 'circle-radius stops');
 
         var circleProps = opts.circle.geojson.features.map(function(f) {
             return f.properties;
@@ -294,10 +294,10 @@ describe('scattermapbox convert', function() {
             { 'circle-color': 2, 'circle-radius': 2 },
             { 'circle-color': 1, 'circle-radius': 2 },
             { 'circle-color': 1, 'circle-radius': 2 }
-        ], 'have correct geojson feature properties');
+        ], 'geojson feature properties');
     });
 
-    it('fill + markers + lines traces, should', function() {
+    it('should generate correct output for fill + markers + lines traces', function() {
         var opts = _convert(Lib.extendFlat({}, base, {
             mode: 'markers+lines',
             marker: { symbol: 'circle' },
@@ -312,8 +312,8 @@ describe('scattermapbox convert', function() {
         var lineCoords = [segment1, segment2],
             fillCoords = [[segment1], [segment2]];
 
-        expect(opts.line.geojson.coordinates).toEqual(lineCoords, 'have correct line coords');
-        expect(opts.fill.geojson.coordinates).toEqual(fillCoords, 'have correct fill coords');
+        expect(opts.line.geojson.coordinates).toEqual(lineCoords, 'line coords');
+        expect(opts.fill.geojson.coordinates).toEqual(fillCoords, 'fill coords');
 
         var circleCoords = opts.circle.geojson.features.map(function(f) {
             return f.geometry.coordinates;
@@ -321,10 +321,10 @@ describe('scattermapbox convert', function() {
 
         expect(circleCoords).toEqual([
             [10, 20], [20, 20], [30, 10], [20, 10], [10, 20]
-        ], 'have correct circle coords');
+        ], 'circle coords');
     });
 
-    it('for markers + non-circle traces, should', function() {
+    it('should generate correct output for markers + non-circle traces', function() {
         var opts = _convert(Lib.extendFlat({}, base, {
             mode: 'markers',
             marker: { symbol: 'monument' }
@@ -340,10 +340,10 @@ describe('scattermapbox convert', function() {
             return ['monument', ''];
         });
 
-        expect(symbolProps).toEqual(expected, 'have correct geojson properties');
+        expect(symbolProps).toEqual(expected, 'geojson properties');
     });
 
-    it('for text + lines traces, should', function() {
+    it('should generate correct output for text + lines traces', function() {
         var opts = _convert(Lib.extendFlat({}, base, {
             mode: 'lines+text',
             connectgaps: true,
@@ -356,13 +356,30 @@ describe('scattermapbox convert', function() {
             [10, 20], [20, 20], [30, 10], [20, 10], [10, 20]
         ];
 
-        expect(opts.line.geojson.coordinates).toEqual(lineCoords, 'have correct line coords');
+        expect(opts.line.geojson.coordinates).toEqual(lineCoords, 'line coords');
 
         var actualText = opts.symbol.geojson.features.map(function(f) {
             return f.properties.text;
         });
 
         expect(actualText).toEqual(['A', 'B', 'C', 'F', '']);
+    });
+
+    it('should generate correct output for lines traces with trailing gaps', function() {
+        var opts = _convert(Lib.extendFlat({}, base, {
+            mode: 'lines',
+            lon: [10, '20', 30, 20, null, 20, 10, null, null],
+            lat: [20, 20, '10', null, 10, 10, 20, null]
+        }));
+
+        assertVisibility(opts, ['none', 'visible', 'none', 'none']);
+
+        var lineCoords = [
+            [[10, 20], [20, 20], [30, 10]],
+            [[20, 10], [10, 20]]
+        ];
+
+        expect(opts.line.geojson.coordinates).toEqual(lineCoords, 'have correct line coords');
     });
 
     it('should correctly convert \'textposition\' to \'text-anchor\' and \'text-offset\'', function() {
@@ -395,7 +412,7 @@ describe('scattermapbox convert', function() {
         });
     });
 
-    it('for markers + circle bubbles traces with repeated values, should', function() {
+    it('should generate correct output for markers + circle bubbles traces with repeated values', function() {
         var opts = _convert(Lib.extendFlat({}, base, {
             lon: ['-96.796988', '-81.379236', '-85.311819', ''],
             lat: ['32.776664', '28.538335', '35.047157', '' ],
@@ -403,7 +420,7 @@ describe('scattermapbox convert', function() {
         }));
 
         expect(opts.circle.paint['circle-radius'].stops)
-            .toBeCloseTo2DArray([[0, 2.5], [1, 24.5]], 'not replicate stops');
+            .toBeCloseTo2DArray([[0, 2.5], [1, 24.5]], 'no replicate stops');
 
         var radii = opts.circle.geojson.features.map(function(f) {
             return f.properties['circle-radius'];
@@ -412,7 +429,7 @@ describe('scattermapbox convert', function() {
         expect(radii).toBeCloseToArray([0, 1, 0], 'link features to correct stops');
     });
 
-    it('for input only blank pts', function() {
+    it('should generate correct output for traces with only blank points', function() {
         var opts = _convert(Lib.extendFlat({}, base, {
             mode: 'lines',
             lon: ['', null],
@@ -422,8 +439,8 @@ describe('scattermapbox convert', function() {
 
         assertVisibility(opts, ['none', 'none', 'none', 'none']);
 
-        expect(opts.line.geojson.coordinates).toEqual([], 'have correct line coords');
-        expect(opts.fill.geojson.coordinates).toEqual([], 'have correct fill coords');
+        expect(opts.line.geojson.coordinates).toEqual([], 'line coords');
+        expect(opts.fill.geojson.coordinates).toEqual([], 'fill coords');
     });
 
     function assertVisibility(opts, expectations) {
@@ -431,9 +448,7 @@ describe('scattermapbox convert', function() {
             return opts[l].layout.visibility;
         });
 
-        var msg = 'set layer visibility properly';
-
-        expect(actual).toEqual(expectations, msg);
+        expect(actual).toEqual(expectations, 'layer visibility');
     }
 });
 
