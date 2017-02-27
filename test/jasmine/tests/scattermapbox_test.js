@@ -368,7 +368,7 @@ describe('scattermapbox convert', function() {
     it('for lines traces with trailing gaps', function() {
         var opts = _convert(Lib.extendFlat({}, base, {
             mode: 'lines',
-            lon: [10, '20', 30, 20, null, 20, 10, null],
+            lon: [10, '20', 30, 20, null, 20, 10, null, null],
             lat: [20, 20, '10', null, 10, 10, 20, null]
         }));
 
