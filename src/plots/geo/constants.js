@@ -33,7 +33,9 @@ params.projNames = {
     'hammer': 'hammer',
     'transverse mercator': 'transverseMercator',
     'albers usa': 'albersUsa',
-    'winkel tripel': 'winkel3'
+    'winkel tripel': 'winkel3',
+    'aitoff': 'aitoff',
+    'sinusoidal': 'sinusoidal'
 };
 
 // name of the axes
