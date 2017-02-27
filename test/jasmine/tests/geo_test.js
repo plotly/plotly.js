@@ -423,7 +423,7 @@ describe('Test geo interactions', function() {
         }
 
         function countGeos() {
-            return d3.select('div.geo-container').selectAll('div').size();
+            return d3.select('g.geolayer').selectAll('.geo').size();
         }
 
         function countColorBars() {
@@ -615,6 +615,7 @@ describe('Test geo interactions', function() {
         describe('choropleth hover labels', function() {
             beforeEach(function() {
                 mouseEventChoropleth('mouseover');
+                mouseEventChoropleth('mousemove');
             });
 
             it('should show one hover text group', function() {
@@ -644,6 +645,7 @@ describe('Test geo interactions', function() {
                 });
 
                 mouseEventChoropleth('mouseover');
+                mouseEventChoropleth('mousemove');
             });
 
             it('should contain the correct fields', function() {
@@ -669,6 +671,8 @@ describe('Test geo interactions', function() {
                     ptData = eventData.points[0];
                 });
 
+                mouseEventChoropleth('mouseover');
+                mouseEventChoropleth('mousemove');
                 mouseEventChoropleth('click');
             });
 
@@ -690,13 +694,18 @@ describe('Test geo interactions', function() {
         describe('choropleth unhover events', function() {
             var ptData;
 
-            beforeEach(function() {
+            beforeEach(function(done) {
                 gd.on('plotly_unhover', function(eventData) {
                     ptData = eventData.points[0];
                 });
 
                 mouseEventChoropleth('mouseover');
+                mouseEventChoropleth('mousemove');
                 mouseEventChoropleth('mouseout');
+                setTimeout(function() {
+                    mouseEvent('mousemove', 300, 235);
+                    done();
+                }, HOVERMINTIME + 100);
             });
 
             it('should contain the correct fields', function() {
