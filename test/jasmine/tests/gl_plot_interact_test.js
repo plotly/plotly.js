@@ -363,6 +363,28 @@ describe('Test gl plot interactions', function() {
             })
             .then(done);
         });
+
+        it('should clear orphan cartesian subplots on addTraces', function(done) {
+
+            Plotly.newPlot(gd, [], {
+                xaxis: { title: 'X' },
+                yaxis: { title: 'Y' }
+            })
+            .then(function() {
+                return Plotly.addTraces(gd, [{
+                    type: 'scattergl',
+                    x: [1, 2, 3, 4, 5, 6, 7],
+                    y: [0, 5, 8, 9, 8, 5, 0]
+                }]);
+            })
+            .then(function() {
+                expect(d3.select('.subplot.xy').size()).toEqual(0);
+                expect(d3.select('.xtitle').size()).toEqual(0);
+                expect(d3.select('.ytitle').size()).toEqual(0);
+            })
+            .then(done);
+
+        });
     });
 
     describe('gl3d event handlers', function() {

@@ -306,3 +306,40 @@ describe('relayout', function() {
     });
 
 });
+
+describe('subplot creation / deletion:', function() {
+
+    afterEach(destroyGraphDiv);
+
+    it('should clear orphan subplot when adding traces to blank graph', function(done) {
+
+        function assertCartesianSubplot(len) {
+            expect(d3.select('.subplot.xy').size()).toEqual(len);
+            expect(d3.select('.subplot.x2y2').size()).toEqual(len);
+            expect(d3.select('.x2title').size()).toEqual(len);
+            expect(d3.select('.x2title').size()).toEqual(len);
+            expect(d3.select('.ytitle').size()).toEqual(len);
+            expect(d3.select('.ytitle').size()).toEqual(len);
+        }
+
+        Plotly.plot(createGraphDiv(), [], {
+            xaxis: { title: 'X' },
+            yaxis: { title: 'Y' },
+            xaxis2: { title: 'X2', anchor: 'y2' },
+            yaxis2: { title: 'Y2', anchor: 'x2' }
+        })
+        .then(function(gd) {
+            assertCartesianSubplot(1);
+
+            return Plotly.addTraces(gd, [{
+                type: 'scattergeo',
+                lon: [10, 20, 30],
+                lat: [20, 30, 10]
+            }]);
+        })
+        .then(function() {
+            assertCartesianSubplot(0);
+        })
+        .then(done);
+    });
+});
