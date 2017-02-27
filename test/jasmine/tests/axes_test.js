@@ -1264,11 +1264,11 @@ describe('Test axes', function() {
         // way of getting a new clean copy each time.
         function getDefaultAx() {
             return {
+                autorange: true,
                 c2l: Number,
                 type: 'linear',
                 _length: 100,
-                _m: 1,
-                _needsExpand: true
+                _m: 1
             };
         }
 
@@ -1284,15 +1284,14 @@ describe('Test axes', function() {
 
         it('calls ax.setScale if necessary', function() {
             ax = {
+                autorange: true,
                 c2l: Number,
                 type: 'linear',
-                setScale: function() {},
-                _needsExpand: true
+                setScale: function() {}
             };
             spyOn(ax, 'setScale');
-            data = [1];
 
-            expand(ax, data);
+            expand(ax, [1]);
 
             expect(ax.setScale).toHaveBeenCalled();
         });
