@@ -136,7 +136,8 @@ function assertTrailingNewLine() {
         path.join(constants.pathToRoot, 'test', 'image', 'mocks', '*')
     ]);
 
-    var regex = /\r?\n$/;
+    var regexNewLine = /\r?\n$/;
+    var regexEmptyNewLine = /^\r?\n$/;
     var promises = [];
     var logs = [];
 
@@ -147,10 +148,15 @@ function assertTrailingNewLine() {
             promises.push(promise);
 
             promise.then(function(lines) {
-                if(!regex.test(lines)) {
+                if(!regexNewLine.test(lines)) {
                     logs.push([
                         file, ':',
                         'does not have a trailing new line character'
+                    ].join(' '));
+                } else if(regexEmptyNewLine.test(lines)) {
+                    logs.push([
+                        file, ':',
+                        'has more than one trailing new line'
                     ].join(' '));
                 }
             });
