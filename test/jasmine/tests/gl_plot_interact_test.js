@@ -102,15 +102,21 @@ describe('Test gl plot interactions', function() {
 
             function assertHoverText(xLabel, yLabel, zLabel) {
                 var node = d3.selectAll('g.hovertext');
-                expect(node.size()).toEqual(1, 'one hover text group');
+                expect(node.size()).toEqual(1, 'hover text group');
 
                 var tspan = d3.selectAll('g.hovertext').selectAll('tspan')[0];
-                expect(tspan[0].innerHTML).toEqual(xLabel, 'x val on hover');
-                expect(tspan[1].innerHTML).toEqual(yLabel, 'y val on hover');
-                expect(tspan[2].innerHTML).toEqual(zLabel, 'z val on hover');
+                expect(tspan[0].innerHTML).toEqual(xLabel, 'x val');
+                expect(tspan[1].innerHTML).toEqual(yLabel, 'y val');
+                expect(tspan[2].innerHTML).toEqual(zLabel, 'z val');
             }
 
-            it('should have', function(done) {
+            it('makes the right hover text and point data', function(done) {
+
+                function hover() {
+                    mouseEventScatter3d('mouseover');
+                    return delay;
+                }
+
                 assertHoverText('x: 140.72', 'y: −96.97', 'z: −96.97');
 
                 expect(Object.keys(ptData)).toEqual([
@@ -118,19 +124,16 @@ describe('Test gl plot interactions', function() {
                     'data', 'fullData', 'curveNumber', 'pointNumber'
                 ], 'correct hover data fields');
 
-                expect(ptData.x).toBe('140.72', 'x val hover data');
-                expect(ptData.y).toBe('−96.97', 'y val hover data');
-                expect(ptData.z).toEqual('−96.97', 'z val hover data');
-                expect(ptData.curveNumber).toEqual(0, 'curveNumber hover data');
-                expect(ptData.pointNumber).toEqual(2, 'pointNumber hover data');
+                expect(ptData.x).toBe('140.72', 'x val');
+                expect(ptData.y).toBe('−96.97', 'y val');
+                expect(ptData.z).toEqual('−96.97', 'z val');
+                expect(ptData.curveNumber).toEqual(0, 'curveNumber');
+                expect(ptData.pointNumber).toEqual(2, 'pointNumber');
 
                 Plotly.restyle(gd, {
                     x: [['2016-01-11', '2016-01-12', '2017-01-01', '2017-02']]
                 })
-                .then(function() {
-                    mouseEventScatter3d('mouseover');
-                    return delay;
-                })
+                .then(hover)
                 .then(function() {
                     assertHoverText('x: Jan 1, 2017', 'y: −96.97', 'z: −96.97');
 
@@ -138,10 +141,7 @@ describe('Test gl plot interactions', function() {
                         x: [[new Date(2017, 2, 1), new Date(2017, 2, 2), new Date(2017, 2, 3), new Date(2017, 2, 4)]]
                     });
                 })
-                .then(function() {
-                    mouseEventScatter3d('mouseover');
-                    return delay;
-                })
+                .then(hover)
                 .then(function() {
                     assertHoverText('x: Mar 3, 2017', 'y: −96.97', 'z: −96.97');
 
@@ -152,10 +152,7 @@ describe('Test gl plot interactions', function() {
                         'scene.zaxis.type': 'log'
                     });
                 })
-                .then(function() {
-                    mouseEventScatter3d('mouseover');
-                    return delay;
-                })
+                .then(hover)
                 .then(function() {
                     assertHoverText('x: Mar 3, 2017', 'y: c', 'z: 100k');
                 })
