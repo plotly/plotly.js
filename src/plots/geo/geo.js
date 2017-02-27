@@ -89,7 +89,7 @@ proto.plot = function(geoCalcData, fullLayout, promises) {
         var mouse = d3.mouse(this),
             lonlat = _this.projection.invert(mouse);
 
-        if(isNaN(lonlat[0]) || isNaN(lonlat[1])) return;
+        if(!lonlat || isNaN(lonlat[0]) || isNaN(lonlat[1])) return;
 
         var evt = {
             target: true,
