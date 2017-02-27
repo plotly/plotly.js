@@ -86,6 +86,12 @@ module.exports = {
             role: 'info',
             description: 'An integer number `[0..nodes.length - 1]` that represents the target node.'
         },
+        value: {
+            valType: 'number',
+            dflt: 1,
+            role: 'info',
+            description: 'A numeric value representing the flow volume value.'
+        },
         description: 'The nodes of the Sankey plot.'
     },
 

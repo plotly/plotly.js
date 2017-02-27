@@ -11,6 +11,7 @@
 var c = require('./constants');
 var Lib = require('../../lib');
 var d3 = require('d3');
+var d3sankey = require('d3-sankey').sankey;
 
 
 function keyFun(d) {return d.key;}
@@ -118,7 +119,9 @@ function model(layout, d, i) {
         line = trace.line,
         domain = trace.domain,
         dimensions = trace.dimensions,
-        width = layout.width;
+        width = layout.width,
+        nodes = trace.nodes,
+        links = trace.links;
 
     var lines = Lib.extendDeep({}, line, {
         color: line.color.map(domainToUnitScale({values: line.color, range: [line.cmin, line.cmax]})),
@@ -147,7 +150,9 @@ function model(layout, d, i) {
         canvasHeight: rowHeight * c.canvasPixelRatio,
         width: rowContentWidth,
         height: rowHeight,
-        canvasPixelRatio: c.canvasPixelRatio
+        canvasPixelRatio: c.canvasPixelRatio,
+        nodes: nodes,
+        links: links
     };
 }
 
@@ -164,10 +169,25 @@ function viewModel(model) {
     var unitPadScale = (1 - 2 * unitPad);
     var paddedUnitScale = function(d) {return unitPad + unitPadScale * d;};
 
+    var sankey = d3sankey()
+        .size([width, height])
+        // .nodeWidth(20)
+        // .nodePadding(10)
+        .nodes(model.nodes.map(function(d) {return {name: d.label};}))
+        .links(model.links.map(function(d) {
+            return {
+                source: d.source,
+                target: d.target,
+                value: d.value
+            };
+        }))
+        .layout(500);
+
     var viewModel = {
         key: model.key,
         xScale: xScale,
-        model: model
+        model: model,
+        sankey: sankey
     };
 
     var uniqueKeys = {};
@@ -320,7 +340,7 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
                     return;
                 }
 
-                var pixel = d.lineLayer.readPixel(x, ch - 1 - y);
+                var pixel = [0, 0, 0, 0]; // d.lineLayer.readPixel(x, ch - 1 - y);
                 var found = pixel[3] !== 0;
                 // inverse of the calcPickColor in `lines.js`; detailed comment there
                 var curveNumber = found ? pixel[2] + 256 * (pixel[1] + 256 * pixel[0]) : null;
@@ -389,6 +409,82 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
 
     sankeyControlView
         .attr('transform', function(d) {return 'translate(' + d.model.pad.l + ',' + d.model.pad.t + ')';});
+
+    var realSankey = sankeyControlView.selectAll('.realSankey')
+        .data(repeat, keyFun);
+
+    realSankey.enter()
+        .append('g')
+        .classed('realSankey', true)
+        .style('shape-rendering', 'geometricPrecision');
+
+    var sankeyNodes = realSankey.selectAll('.sankeyNodes')
+        .data(repeat, keyFun);
+
+    sankeyNodes.enter()
+        .append('g')
+        .classed('sankeyNodes', true)
+        .style('fill', 'none')
+        .style('stroke', 'magenta')
+        .style('stroke-opacity', 1)
+        .style('stroke-width', 1);
+
+    var sankeyNode = sankeyNodes.selectAll('.sankeyPath')
+        .data(function(d) {
+            return d.sankey.nodes().map(function(l) {
+                return {
+                    node: l,
+                    sankey: d.sankey
+                };
+            });
+        });
+
+    sankeyNode.enter()
+        .append('g')
+        .classed('sankeyNode', true);
+
+    sankeyNode
+        .style('transform', function(d) {return 'translate(' + d.node.x + 'px, ' + d.node.y + 'px)';});
+
+    var nodeRect = sankeyNode.selectAll('.nodeRect')
+        .data(repeat);
+
+    nodeRect.enter()
+        .append('rect')
+        .classed('nodeRect', true);
+
+    nodeRect
+        .attr('width', function(d) {return d.node.dx;})
+        .attr('height', function(d) {return d.node.dy;});
+
+    var sankeyLinks = realSankey.selectAll('.sankeyLinks')
+        .data(repeat, keyFun);
+
+    sankeyLinks.enter()
+        .append('g')
+        .classed('sankeyLinks', true)
+        .style('fill', 'none')
+        .style('stroke', 'black')
+        .style('stroke-opacity', 0.25);
+
+    var sankeyLink = sankeyLinks.selectAll('.sankeyPath')
+        .data(function(d) {
+            return d.sankey.links().map(function(l) {
+                return {
+                    link: l,
+                    sankey: d.sankey
+                };
+            });
+        });
+
+    sankeyLink.enter()
+        .append('path')
+        .classed('sankeyPath', true);
+
+    sankeyLink
+        .attr('d', function(d) {return d.sankey.link()(d.link);})
+        .style('stroke-width', function(d) {return Math.max(1, d.link.dy);});
+
 
     var yAxis = sankeyControlView.selectAll('.yAxis')
         .data(function(vm) {return vm.dimensions;}, keyFun);

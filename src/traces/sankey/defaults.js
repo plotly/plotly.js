@@ -126,6 +126,7 @@ function linksDefaults(traceIn, traceOut) {
 
         if(visible) {
             coerce('label');
+            coerce('value');
             coerce('source');
             coerce('target');
         }
