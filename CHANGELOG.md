@@ -10,6 +10,40 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.24.0] -- 2017-02-27
+
+### Added
+- Add `parcoords` trace type (parallel coordinate plots) [#1256]
+- Add support for multiple range sliders [#1355]
+- Add `'aitoff'` and `'sinusoidal'` geo projection types [#1422]
+- Implement `scene.dragmode: false` to disable drag interaction on 3D subplots
+  [#1377]
+- Add `showAxisDragHandles` and `showAxisRangeEntryBoxes` configuration options
+  [#1389]
+- Add `customdata` attribute to scatter traces to add custom data to scatter SVG
+  nodes [#1379]
+
+### Changed
+- Consistent handling of array containers during `relayout` [#1403]
+- Improve hover for `choropleth` traces [#1401]
+- Make range slider handles and mask crispier [#1409]
+- Bump `country-regex` dependency to `1.1.0` [#1392]
+
+### Fixed
+- Fix 3D on iOS devices [#1411]
+- Fix `surface` trace opacity scaling [#1415]
+- Fix hover data in animations [#1274]
+- Fix annotations edit when dragging from one axis to another [#1403]
+- Fix 3D hover labels for date axes [#1414]
+- Deleting cartesian subplots now clear their corresponding axis titles [#1393]
+- Fix hover for xyz column `heatmap` trace `'text'` [#1417]
+- Fix `scattermapbox` lines with trailing gaps [#1421]
+- Make `restyle`, `relayout` and `update` not mutate input update objects [#1376]
+- Fix race condition in gl2d `toImage` [#1388]
+- Fix handling of `Virgin Islands` country name [#1392]
+- Fix `Plotly.validate` for `colorscale` attributes [#1420]
+
+
 ## [1.23.2] -- 2017-02-15
 
 ### Changed
