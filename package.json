@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "1.23.2",
+  "version": "1.24.0",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
@@ -49,7 +49,9 @@
     "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\""
   },
   "browserify": {
-    "transform": ["glslify"]
+    "transform": [
+      "glslify"
+    ]
   },
   "dependencies": {
     "3d-view": "^2.0.0",
