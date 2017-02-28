@@ -35,6 +35,14 @@ function func(config) {
     //     See CONTRIBUTING.md for additional notes on reporting.
     func.defaultConfig.logLevel = config.LOG_INFO;
 
+    // without this, console logs in the plotly.js code don't print to
+    // the terminal since karma v1.5.0
+    //
+    // See https://github.com/karma-runner/karma/commit/89a7a1c#commitcomment-21009216
+    func.defaultConfig.browserConsoleLogOptions = {
+        level: 'log'
+    };
+
     config.set(func.defaultConfig);
 }
 
