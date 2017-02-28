@@ -172,7 +172,7 @@ function viewModel(model) {
     var sankey = d3sankey()
         .size([width, height])
         // .nodeWidth(20)
-        // .nodePadding(10)
+        .nodePadding(5)
         .nodes(model.nodes.map(function(d) {return {name: d.label};}))
         .links(model.links.map(function(d) {
             return {
@@ -423,11 +423,8 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
 
     sankeyNodes.enter()
         .append('g')
-        .classed('sankeyNodes', true)
-        .style('fill', 'none')
-        .style('stroke', 'magenta')
-        .style('stroke-opacity', 1)
-        .style('stroke-width', 1);
+        .style('shape-rendering', 'crispEdges')
+        .classed('sankeyNodes', true);
 
     var sankeyNode = sankeyNodes.selectAll('.sankeyPath')
         .data(function(d) {
@@ -449,13 +446,34 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
     var nodeRect = sankeyNode.selectAll('.nodeRect')
         .data(repeat);
 
+    var colorer = d3.scale.category20();
+
     nodeRect.enter()
         .append('rect')
-        .classed('nodeRect', true);
+        .classed('nodeRect', true)
+        .style('shape-rendering', 'crispEdges')
+        .style('fill', function(d) {return colorer(d.sankey.nodes().indexOf(d.node));})
+        .style('stroke', 'black')
+        .style('stroke-opacity', 1)
+        .style('stroke-width', 0.5);
 
     nodeRect
         .attr('width', function(d) {return d.node.dx;})
         .attr('height', function(d) {return d.node.dy;});
+
+    var nodeLabel = sankeyNode.selectAll('.nodeLabel')
+        .data(repeat);
+
+    nodeLabel.enter()
+        .append('text')
+        .classed('nodeLabel', true);
+
+    nodeLabel
+        .style('transform', function(d) {return 'translate(' + (d.node.dx + 4) + 'px, ' + d.node.dy / 2 + 'px)';})
+        .text(function(d) {return d.node.name;})
+        .attr('alignment-baseline', 'middle')
+        .style('font-family', 'sans-serif')
+        .style('font-size', '10px');
 
     var sankeyLinks = realSankey.selectAll('.sankeyLinks')
         .data(repeat, keyFun);
@@ -541,7 +559,8 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
 
     yAxis.enter()
         .append('g')
-        .classed('yAxis', true);
+        .classed('yAxis', true)
+        .style('opacity', 0.05);
 
     sankeyControlView.each(function(vm) {
         updatePanelLayout(yAxis, vm);
