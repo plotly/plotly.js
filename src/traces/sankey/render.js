@@ -418,63 +418,6 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .classed('realSankey', true)
         .style('shape-rendering', 'geometricPrecision');
 
-    var sankeyNodes = realSankey.selectAll('.sankeyNodes')
-        .data(repeat, keyFun);
-
-    sankeyNodes.enter()
-        .append('g')
-        .style('shape-rendering', 'crispEdges')
-        .classed('sankeyNodes', true);
-
-    var sankeyNode = sankeyNodes.selectAll('.sankeyPath')
-        .data(function(d) {
-            return d.sankey.nodes().map(function(l) {
-                return {
-                    node: l,
-                    sankey: d.sankey
-                };
-            });
-        });
-
-    sankeyNode.enter()
-        .append('g')
-        .classed('sankeyNode', true);
-
-    sankeyNode
-        .style('transform', function(d) {return 'translate(' + d.node.x + 'px, ' + d.node.y + 'px)';});
-
-    var nodeRect = sankeyNode.selectAll('.nodeRect')
-        .data(repeat);
-
-    var colorer = d3.scale.category20();
-
-    nodeRect.enter()
-        .append('rect')
-        .classed('nodeRect', true)
-        .style('shape-rendering', 'crispEdges')
-        .style('fill', function(d) {return colorer(d.sankey.nodes().indexOf(d.node));})
-        .style('stroke', 'black')
-        .style('stroke-opacity', 1)
-        .style('stroke-width', 0.5);
-
-    nodeRect
-        .attr('width', function(d) {return d.node.dx;})
-        .attr('height', function(d) {return d.node.dy;});
-
-    var nodeLabel = sankeyNode.selectAll('.nodeLabel')
-        .data(repeat);
-
-    nodeLabel.enter()
-        .append('text')
-        .classed('nodeLabel', true);
-
-    nodeLabel
-        .style('transform', function(d) {return 'translate(' + (d.node.dx + 4) + 'px, ' + d.node.dy / 2 + 'px)';})
-        .text(function(d) {return d.node.name;})
-        .attr('alignment-baseline', 'middle')
-        .style('font-family', 'sans-serif')
-        .style('font-size', '10px');
-
     var sankeyLinks = realSankey.selectAll('.sankeyLinks')
         .data(repeat, keyFun);
 
@@ -503,6 +446,62 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .attr('d', function(d) {return d.sankey.link()(d.link);})
         .style('stroke-width', function(d) {return Math.max(1, d.link.dy);});
 
+    var sankeyNodes = realSankey.selectAll('.sankeyNodes')
+        .data(repeat, keyFun);
+
+    sankeyNodes.enter()
+        .append('g')
+        .style('shape-rendering', 'crispEdges')
+        .classed('sankeyNodes', true);
+
+    var sankeyNode = sankeyNodes.selectAll('.sankeyPath')
+        .data(function(d) {
+            return d.sankey.nodes().map(function(l) {
+                return {
+                    node: l,
+                    sankey: d.sankey
+                };
+            });
+        });
+
+    sankeyNode.enter()
+        .append('g')
+        .classed('sankeyNode', true);
+
+    sankeyNode
+        .style('transform', function(d) {return 'translate(' + (Math.floor(d.node.x) - 0.5) + 'px, ' + (Math.floor(d.node.y) + 0.5) + 'px)';});
+
+    var nodeRect = sankeyNode.selectAll('.nodeRect')
+        .data(repeat);
+
+    var colorer = d3.scale.category20();
+
+    nodeRect.enter()
+        .append('rect')
+        .classed('nodeRect', true)
+        .style('shape-rendering', 'crispEdges')
+        .style('fill', function(d) {return colorer(d.sankey.nodes().indexOf(d.node));})
+        .style('stroke', 'black')
+        .style('stroke-opacity', 1)
+        .style('stroke-width', 0.5);
+
+    nodeRect
+        .attr('width', function(d) {return Math.ceil(d.node.dx + 0.5);})
+        .attr('height', function(d) {return Math.ceil(d.node.dy - 0.5);});
+
+    var nodeLabel = sankeyNode.selectAll('.nodeLabel')
+        .data(repeat);
+
+    nodeLabel.enter()
+        .append('text')
+        .classed('nodeLabel', true);
+
+    nodeLabel
+        .style('transform', function(d) {return 'translate(' + (d.node.dx + 4) + 'px, ' + d.node.dy / 2 + 'px)';})
+        .text(function(d) {return d.node.name;})
+        .attr('alignment-baseline', 'middle')
+        .style('font-family', 'sans-serif')
+        .style('font-size', '10px');
 
     var yAxis = sankeyControlView.selectAll('.yAxis')
         .data(function(vm) {return vm.dimensions;}, keyFun);
