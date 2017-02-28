@@ -497,7 +497,8 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .classed('nodeLabel', true);
 
     nodeLabel
-        .style('transform', function(d) {return 'translate(' + d.node.dx + 'px, ' + d.node.dy / 2 + 'px)';})
+        .attr('x', function(d) {return d.node.dx + c.nodeTextOffsetX;})
+        .attr('y', function(d) {return d.node.dy / 2;})
         .text(function(d) {return d.node.name;})
         .attr('alignment-baseline', 'middle')
         .style('font-family', 'sans-serif')
