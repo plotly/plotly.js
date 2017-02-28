@@ -371,38 +371,50 @@ describe('Test hover and click interactions', function() {
 
             var modifiedMockCopy = Lib.extendDeep({}, mock4);
 
-            Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
+            function _hover() {
+                hover(435, 216);
 
-                .then(new Promise(function() {
+                return new Promise(function(resolve) {
+                    setTimeout(resolve, 350);
+                });
+            }
 
-                    gd.on('plotly_hover', function(data) {
-                        futureData = data;
-                    });
+            Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout).then(function() {
+                gd.on('plotly_hover', function(data) {
+                    futureData = data;
+                });
+            })
+            .then(_hover)
+            .then(function() {
+                expect(futureData.points.length).toEqual(1);
 
-                    hover(435, 216);
+                var pt = futureData.points[0];
 
-                    window.setTimeout(function() {
+                expect(Object.keys(pt)).toEqual([
+                    'x', 'y', 'curveNumber', 'pointNumber', 'data', 'fullData', 'xaxis', 'yaxis'
+                ]);
 
-                        expect(futureData.points.length).toEqual(1);
+                expect(pt.x).toEqual(8);
+                expect(pt.y).toEqual(18);
+                expect(pt.curveNumber).toEqual(2);
+                expect(pt.pointNumber).toEqual(0);
+                expect(pt.fullData.length).toEqual(3);
+                expect(typeof pt.data.uid).toEqual('string');
+                expect(pt.xaxis.domain.length).toEqual(2);
+                expect(pt.yaxis.domain.length).toEqual(2);
 
-                        var pt = futureData.points[0];
+                return Plotly.restyle(gd, 'visible', false, [1, 2]);
+            })
+            .then(_hover)
+            .then(function() {
+                var pt = futureData.points[0];
 
-                        expect(Object.keys(pt)).toEqual([
-                            'x', 'y', 'curveNumber', 'pointNumber', 'data', 'fullData', 'xaxis', 'yaxis'
-                        ]);
-
-                        expect(pt.x).toEqual(8);
-                        expect(pt.y).toEqual(18);
-                        expect(pt.curveNumber).toEqual(2);
-                        expect(pt.pointNumber).toEqual(0);
-                        expect(pt.fullData.length).toEqual(3);
-                        expect(typeof pt.data.uid).toEqual('string');
-                        expect(pt.xaxis.domain.length).toEqual(2);
-                        expect(pt.yaxis.domain.length).toEqual(2);
-
-                        done();
-                    }, 350);
-                }));
+                expect(pt.x).toEqual(8);
+                expect(pt.y).toEqual(18);
+                expect(pt.curveNumber).toEqual(2, 'matches input data index');
+                expect(pt.pointNumber).toEqual(0);
+            })
+            .then(done);
         });
 
         it('scattergl-fancy', function(done) {
