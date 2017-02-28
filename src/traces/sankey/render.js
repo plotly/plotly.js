@@ -171,7 +171,7 @@ function viewModel(model) {
 
     var sankey = d3sankey()
         .size([width, height])
-        // .nodeWidth(20)
+        .nodeWidth(50)
         .nodePadding(5)
         .nodes(model.nodes.map(function(d) {return {name: d.label};}))
         .links(model.links.map(function(d) {
@@ -313,7 +313,7 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         });
 
     var sankeyLineLayer = sankeyLineLayers.selectAll('.sankey-lines')
-        .data(lineLayerModel, keyFun);
+        .data(/*lineLayerModel*/[], keyFun);
 
     var lastHovered = null;
 
@@ -389,7 +389,7 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .style('left', 0)
         .style('overflow', 'visible')
         .style('shape-rendering', 'crispEdges')
-        .style('pointer-events', 'none')
+        .style('pointer-events', 'auto')
         .call(enterSvgDefs);
 
     sankeyControlOverlay
@@ -497,14 +497,14 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .classed('nodeLabel', true);
 
     nodeLabel
-        .style('transform', function(d) {return 'translate(' + (d.node.dx + 4) + 'px, ' + d.node.dy / 2 + 'px)';})
+        .style('transform', function(d) {return 'translate(' + d.node.dx + 'px, ' + d.node.dy / 2 + 'px)';})
         .text(function(d) {return d.node.name;})
         .attr('alignment-baseline', 'middle')
         .style('font-family', 'sans-serif')
         .style('font-size', '10px');
 
     var yAxis = sankeyControlView.selectAll('.yAxis')
-        .data(function(vm) {return vm.dimensions;}, keyFun);
+        .data(function(vm) {return []/*vm.dimensions*/;}, keyFun);
 
     function someFiltersActive(view) {
         return view.dimensions.some(function(p) {return p.filter[0] !== 0 || p.filter[1] !== 1;});
