@@ -25,6 +25,118 @@ var mock = require('@mocks/sankey_large.json');
 var lineStart = 30;
 var lineCount = 10;
 
+describe('sankey basic', function() {
+
+    var mock = require('@mocks/sankey_new.json');
+
+    fit('', function() {
+
+        var gd = createGraphDiv();
+
+
+        mock.data[0].domain = {x: [0, 1], y: [0, 1]};
+        var nodes = [];
+        mock.data[0].nodes = [];
+        var links = [];
+        mock.data[0].links = [];
+
+        var dims = mock.data[0].dimensions.slice(1, 4);
+
+        var dim, i, j, s, t;
+
+        for(j = 0; j < dims.length; j++) {
+            dim = dims[j];
+            for(i = 0; i < dim.ticktext.length; i++) {
+                nodes.push({
+                    label: dim.ticktext[i],
+                    visible: true
+                });
+            }
+        }
+
+        var nodeLabels = nodes.map(function(d) {return d.label;});
+
+        for(i = 0; i < dims[0].values.length; i++) {
+
+            for(j = 1; j < dims.length; j++) {
+                s = dims[j - 1];
+                t = dims[j];
+                links.push({
+                    source: nodeLabels.indexOf(s.ticktext[s.values[i]]),
+                    target: nodeLabels.indexOf(t.ticktext[t.values[i]]),
+                    value: 1
+                });
+            }
+        }
+
+        var aggregate = false;
+
+        if(aggregate) {
+
+            var agg = {}, link;
+            for (i = 0; i < links.length; i++) {
+                link = links[i];
+                if (agg[link.source] == undefined) {
+                    agg[link.source] = {};
+                }
+                if (agg[link.source][link.target] == undefined) {
+                    agg[link.source][link.target] = 0;
+                }
+                agg[link.source][link.target] += link.value;
+            }
+
+            for (i in agg) {
+                for (j in agg[i]) {
+                    mock.data[0].links.push({
+                        label: '',
+                        visible: true,
+                        source: i,
+                        target: j,
+                        value: agg[i][j]
+                    });
+                }
+            }
+        } else {
+            for (i = 0; i < links.length; i++) {
+                link = links[i];
+                mock.data[0].links.push({
+                    label: '',
+                    visible: true,
+                    source:  link.source,
+                    target: link.target,
+                    value: link.value
+                });
+            }
+            mock.data[0].links.sort(function(a, b) {
+                return a.source < b.source
+                    ? -1
+                    : a.source > b.source
+                        ? 1
+                        : a.target < b.target
+                            ? -1
+                            : a.target > b.target
+                                ? 1
+                                : 0
+            })
+        }
+
+        mock.data[0].nodes = nodes;
+        nodes = nodes.map(function(d) {return {name: d.label};});
+        links = mock.data[0].links.map(function(d) {
+            return {
+                source: nodes[d.source],
+                target: nodes[d.target],
+                value: d.value
+            };
+        });
+
+        Plotly.plot(gd, mock.data, mock.layout);
+
+    });
+
+});
+
+
 describe('sankey initialization tests', function() {
 
     'use strict';

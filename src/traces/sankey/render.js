@@ -11,7 +11,7 @@
 var c = require('./constants');
 var Lib = require('../../lib');
 var d3 = require('d3');
-var d3sankey = require('d3-sankey').sankey;
+var d3sankey = require('./sankey');
 
 
 function keyFun(d) {return d.key;}
@@ -444,7 +444,11 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
 
     sankeyLink
         .attr('d', function(d) {return d.sankey.link()(d.link);})
-        .style('stroke-width', function(d) {return Math.max(1, d.link.dy);});
+        .style('stroke-width', function(d) {return Math.max(1, d.link.dy);})
+        .append('title')
+        .text(function(d) {
+            return d.link.source.name + '⟿' + d.link.target.name + ' : ' + d.link.value;
+        });
 
     var sankeyNodes = realSankey.selectAll('.sankeyNodes')
         .data(repeat, keyFun);
@@ -483,7 +487,16 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .style('fill', function(d) {return colorer(d.sankey.nodes().indexOf(d.node));})
         .style('stroke', 'black')
         .style('stroke-opacity', 1)
-        .style('stroke-width', 0.5);
+        .style('stroke-width', 0.5)
+        .append('title')
+        .text(function(d) {
+            return [
+                d.node.name,
+                'in: ' + d.node.targetLinks.length,
+                'out: ' + d.node.sourceLinks.length,
+                'value: ' + d.node.value
+            ].join('\n');
+        });
 
     nodeRect
         .attr('width', function(d) {return Math.ceil(d.node.dx + 0.5);})
