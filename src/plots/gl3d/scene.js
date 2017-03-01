@@ -22,7 +22,6 @@ var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
 
 var createCamera = require('./camera');
 var project = require('./project');
-var setConvert = require('./set_convert');
 var createAxesOptions = require('./layout/convert');
 var createSpikeOptions = require('./layout/spikes');
 var computeTickMarks = require('./layout/tick_marks');
@@ -339,6 +338,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     this.glplot.snapToData = true;
 
     // Update layout
+    this.fullLayout = fullLayout;
     this.fullSceneLayout = fullSceneLayout;
 
     this.glplotLayout = fullSceneLayout;
@@ -353,10 +353,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     this.glplot.update({});
 
     // Update axes functions BEFORE updating traces
-    for(i = 0; i < 3; ++i) {
-        axis = fullSceneLayout[axisProperties[i]];
-        setConvert(axis);
-    }
+    this.setConvert(axis);
 
     // Convert scene data
     if(!sceneData) sceneData = [];
@@ -706,6 +703,13 @@ proto.toImage = function(format) {
     if(this.staticMode) this.container.removeChild(STATIC_CANVAS);
 
     return dataURL;
+};
+
+proto.setConvert = function() {
+    for(var i = 0; i < 3; ++i) {
+        var ax = this.fullSceneLayout[axisProperties[i]];
+        Axes.setConvert(ax, this.fullLayout);
+    }
 };
 
 module.exports = Scene;
