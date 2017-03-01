@@ -176,10 +176,9 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
             xDomainCenter - xDomainFinal / 2,
             xDomainCenter + xDomainFinal / 2
         ],
-        _id: 'x',
-        _gd: _this.graphDiv
+        _id: 'x'
     };
-    setConvert(_this.xaxis);
+    setConvert(_this.xaxis, _this.graphDiv._fullLayout);
     _this.xaxis.setScale();
 
     _this.yaxis = {
@@ -189,10 +188,9 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
             yDomainCenter - yDomainFinal / 2,
             yDomainCenter + yDomainFinal / 2
         ],
-        _id: 'y',
-        _gd: _this.graphDiv
+        _id: 'y'
     };
-    setConvert(_this.yaxis);
+    setConvert(_this.yaxis, _this.graphDiv._fullLayout);
     _this.yaxis.setScale();
 
     // set up the modified axes for tick drawing
@@ -212,12 +210,12 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         _axislayer: _this.layers.aaxis,
         _gridlayer: _this.layers.agrid,
         _pos: 0, // _this.xaxis.domain[0] * graphSize.w,
-        _gd: _this.graphDiv,
         _id: 'y',
         _length: w,
         _gridpath: 'M0,0l' + h + ',-' + (w / 2)
     });
-    setConvert(aaxis);
+    setConvert(aaxis, _this.graphDiv._fullLayout);
+    aaxis.setScale();
 
     // baxis goes across the bottom (backward). We can set it up as an x axis
     // without any enclosing transformation.
@@ -230,12 +228,12 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         _gridlayer: _this.layers.bgrid,
         _counteraxis: _this.aaxis,
         _pos: 0, // (1 - yDomain0) * graphSize.h,
-        _gd: _this.graphDiv,
         _id: 'x',
         _length: w,
         _gridpath: 'M0,0l-' + (w / 2) + ',-' + h
     });
-    setConvert(baxis);
+    setConvert(baxis, _this.graphDiv._fullLayout);
+    baxis.setScale();
     aaxis._counteraxis = baxis;
 
     // caxis goes down the right side. Set it up as a y axis, with
@@ -250,12 +248,12 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         _gridlayer: _this.layers.cgrid,
         _counteraxis: _this.baxis,
         _pos: 0, // _this.xaxis.domain[1] * graphSize.w,
-        _gd: _this.graphDiv,
         _id: 'y',
         _length: w,
         _gridpath: 'M0,0l-' + h + ',' + (w / 2)
     });
-    setConvert(caxis);
+    setConvert(caxis, _this.graphDiv._fullLayout);
+    caxis.setScale();
 
     var triangleClip = 'M' + x0 + ',' + (y0 + h) + 'h' + w + 'l-' + (w / 2) + ',-' + h + 'Z';
     _this.clipDef.select('path').attr('d', triangleClip);

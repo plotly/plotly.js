@@ -138,8 +138,13 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     for(i = 0; i < axesList.length; i++) {
         axName = axesList[i];
-        axLayoutIn = layoutIn[axName] || {};
-        axLayoutOut = {};
+
+        if(!Lib.isPlainObject(layoutIn[axName])) {
+            layoutIn[axName] = {};
+        }
+
+        axLayoutIn = layoutIn[axName];
+        axLayoutOut = layoutOut[axName] = {};
 
         var axLetter = axName.charAt(0);
 
@@ -164,13 +169,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
         handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, positioningOptions);
 
-        layoutOut[axName] = axLayoutOut;
-
-        // so we don't have to repeat autotype unnecessarily,
-        // copy an autotype back to layoutIn
-        if(!layoutIn[axName] && axLayoutIn.type !== '-') {
-            layoutIn[axName] = {type: axLayoutIn.type};
-        }
+        axLayoutOut._input = axLayoutIn;
     }
 
     // quick second pass for range slider and selector defaults
