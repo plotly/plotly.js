@@ -131,15 +131,18 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     sankeyLink.enter()
         .append('path')
-        .classed('sankeyPath', true);
-
-    sankeyLink
-        .attr('d', function(d) {return d.sankey.link()(d.link);})
-        .style('stroke-width', function(d) {return Math.max(1, d.link.dy);})
+        .classed('sankeyPath', true)
+        .on('mouseover', callbacks.linkEvents.hover)
+        .on('mouseout', callbacks.linkEvents.unhover)
+        .on('click', callbacks.linkEvents.select)
         .append('title')
         .text(function(d) {
             return d.link.source.name + '⟿' + d.link.target.name + ' : ' + d.link.value;
         });
+
+    sankeyLink
+        .attr('d', function(d) {return d.sankey.link()(d.link);})
+        .style('stroke-width', function(d) {return Math.max(1, d.link.dy);});
 
     var sankeyNodes = realSankey.selectAll('.sankeyNodes')
         .data(repeat, keyFun);
@@ -179,7 +182,9 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('stroke', 'black')
         .style('stroke-opacity', 1)
         .style('stroke-width', 0.5)
-        .append('title')
+        .on('mouseover', callbacks.nodeEvents.hover)
+        .on('mouseout', callbacks.nodeEvents.unhover)
+        .on('click', callbacks.nodeEvents.select).append('title')
         .text(function(d) {
             return [
                 d.node.name,
