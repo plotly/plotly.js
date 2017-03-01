@@ -7,6 +7,8 @@ Built on top of [d3.js](http://d3js.org/) and [stack.gl](http://stack.gl/),
 plotly.js is a high-level, declarative charting library. plotly.js ships with 20
 chart types, including 3D charts, statistical graphs, and SVG maps.
 
+[Contact us](https://plot.ly/products/consulting-and-oem/) for Plotly.js consulting, dashboard development, application integration, and feature additions.
+
 ## Table of contents
 
 * [Quick start options](#quick-start-options)
