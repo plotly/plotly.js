@@ -49,7 +49,8 @@ exports.lsInner = function(gd) {
             xa = Plotly.Axes.getFromId(gd, subplot, 'x'),
             ya = Plotly.Axes.getFromId(gd, subplot, 'y');
 
-        xa.setScale(); // this may already be done... not sure
+        // reset scale in case the margins have changed
+        xa.setScale();
         ya.setScale();
 
         if(plotinfo.bg) {
