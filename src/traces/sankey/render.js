@@ -64,12 +64,13 @@ module.exports = function(svg, styledData, layout, callbacks) {
     var dragInProgress = false;
     var hovered = false;
 
-    var vm = styledData
-        .filter(function(d) {return unwrap(d).trace.visible;})
-        .map(viewModel.bind(0, layout));
-    
     var sankey = svg.selectAll('.sankey')
-        .data(vm, keyFun);
+        .data(
+            styledData
+                .filter(function(d) {return unwrap(d).trace.visible;})
+                .map(viewModel.bind(0, layout)),
+            keyFun
+        );
 
     sankey.exit().remove();
 
