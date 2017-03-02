@@ -137,23 +137,23 @@ module.exports = function(svg, styledData, layout, callbacks) {
             selection
                 .on('mouseover', function (d) {
                     if (!dragInProgress) {
-                        eventSet.hover.bind(this)(d);
+                        eventSet.hover(this, d);
                         hovered = [this, d];
                     }
                 })
                 .on('mouseout', function (d) {
                     if (!dragInProgress) {
-                        eventSet.unhover.bind(this)(d);
+                        eventSet.unhover(this, d);
                         hovered = false;
                     }
                 })
                 .on('click', function (d) {
                     if (hovered) {
-                        eventSet.unhover.bind(this)(d);
+                        eventSet.unhover(this, d);
                         hovered = false;
                     }
                     if (!dragInProgress) {
-                        eventSet.select.bind(this)(d);
+                        eventSet.select(this, d);
                     }
                 });
         }
@@ -205,7 +205,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 this.parentNode.appendChild(this);
                 dragInProgress = true;
                 if(hovered) {
-                    callbacks.nodeEvents.unhover.bind(hovered[0])(hovered[1]);
+                    callbacks.nodeEvents.unhover.apply(0, hovered);
                     hovered = false;
                 }
             })

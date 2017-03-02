@@ -27,9 +27,8 @@ module.exports = function plot(gd, calcData) {
         Fx.click(gd, { target: true });
     };
 
-    var linkHover = function(d) {
-        var element = d3.select(this);
-        element
+    var linkHover = function(element, d) {
+        d3.select(element)
             .style('stroke-opacity', 1)
             .style('stroke', 'magenta');
         console.log('hover link', d.link);
@@ -44,9 +43,8 @@ module.exports = function plot(gd, calcData) {
         hasHoverData = true;
     };
 
-    var linkUnhover = function(d) {
-        var element = d3.select(this);
-        element
+    var linkUnhover = function(element, d) {
+        d3.select(element)
             .style('stroke-opacity', 0.25)
             .style('stroke', 'black');
         console.log('unhover link', d.link);
@@ -60,16 +58,15 @@ module.exports = function plot(gd, calcData) {
         }
     };
 
-    var nodeSelect = function(d) {
+    var nodeSelect = function(element, d) {
         console.log('select node', d.node);
         gd._hoverdata = [d.node];
         gd._hoverdata.trace = calcData.trace;
         Fx.click(gd, { target: true });
     };
 
-    var nodeHover = function(d) {
-        var element = d3.select(this);
-        element
+    var nodeHover = function(element, d) {
+        d3.select(element)
             .style('stroke-opacity', 1)
             .style('stroke-width', 4)
             .style('stroke', 'magenta');
@@ -85,9 +82,8 @@ module.exports = function plot(gd, calcData) {
         hasHoverData = true;
     };
 
-    var nodeUnhover = function(d) {
-        var element = d3.select(this);
-        element
+    var nodeUnhover = function(element, d) {
+        d3.select(element)
             .style('stroke-opacity', 0.25)
             .style('stroke-width', 1)
             .style('stroke', 'black');
