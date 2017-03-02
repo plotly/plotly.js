@@ -83,36 +83,18 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('position', 'absolute')
         .style('left', 0)
         .style('overflow', 'visible')
-        .style('shape-rendering', 'crispEdges')
-        .style('pointer-events', 'auto');
+        .style('shape-rendering', 'geometricPrecision')
+        .style('pointer-events', 'auto')
+        .style('box-sizing', 'content-box');
 
     sankey
         .attr('width', function(d) {return d.width + d.pad.l + d.pad.r;})
         .attr('height', function(d) {return d.height + d.pad.t + d.pad.b;})
         .attr('transform', function(d) {
-            return 'translate(' + d.translateX + ',' + d.translateY + ')';
+            return 'translate(' + (d.translateX + d.pad.l) + ',' + (d.translateY + d.pad.t) + ')';
         });
 
-    var sankeyControlView = sankey.selectAll('.sankeyControlView')
-        .data(repeat, keyFun);
-
-    sankeyControlView.enter()
-        .append('g')
-        .classed('sankeyControlView', true)
-        .style('box-sizing', 'content-box');
-
-    sankeyControlView
-        .attr('transform', function(d) {return 'translate(' + d.pad.l + ',' + d.pad.t + ')';});
-
-    var realSankey = sankeyControlView.selectAll('.realSankey')
-        .data(repeat, keyFun);
-
-    realSankey.enter()
-        .append('g')
-        .classed('realSankey', true)
-        .style('shape-rendering', 'geometricPrecision');
-
-    var sankeyLinks = realSankey.selectAll('.sankeyLinks')
+    var sankeyLinks = sankey.selectAll('.sankeyLinks')
         .data(repeat, keyFun);
 
     sankeyLinks.enter()
@@ -176,7 +158,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .attr('d', linkPath)
         .style('stroke-width', function(d) {return Math.max(1, d.link.dy);});
 
-    var sankeyNodes = realSankey.selectAll('.sankeyNodes')
+    var sankeyNodes = sankey.selectAll('.sankeyNodes')
         .data(repeat, keyFun);
 
     sankeyNodes.enter()
