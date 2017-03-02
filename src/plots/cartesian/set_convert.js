@@ -419,7 +419,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
     // copy ref to fullLayout.separators so that
     // methods in Axes can use it w/o having to pass fullLayout
-    ax.separators = fullLayout.separators;
+    ax._separators = fullLayout.separators;
 
     // and for bar charts and box plots: reset forced minimum tick spacing
     delete ax._minDtick;

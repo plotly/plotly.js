@@ -1343,7 +1343,7 @@ function numFormat(v, ax, fmtoverride, hover) {
             if(dp) v = v.substr(0, dp + tickRound).replace(/\.?0+$/, '');
         }
         // insert appropriate decimal point and thousands separator
-        v = Lib.numSeparate(v, ax.separators, separatethousands);
+        v = Lib.numSeparate(v, ax._separators, separatethousands);
     }
 
     // add exponent
