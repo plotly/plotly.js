@@ -44,7 +44,7 @@ function viewModel(layout, d, i) {
                 value: d.value
             };
         }))
-        .layout(5000);
+        .layout(50);
 
     return {
         key: i,
