@@ -11,5 +11,5 @@
 
 module.exports = {
     nodeTextOffset: 5,
-    vertical: true
+    vertical: false
 };

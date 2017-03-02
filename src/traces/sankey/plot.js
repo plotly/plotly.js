@@ -29,7 +29,7 @@ module.exports = function plot(gd, calcData) {
 
     var linkHover = function(element, d) {
         d3.select(element)
-            .style('stroke-opacity', 1)
+            .style('stroke-opacity', 0.8)
             .style('stroke', 'magenta');
         console.log('hover link', d.link);
 
@@ -67,7 +67,7 @@ module.exports = function plot(gd, calcData) {
 
     var nodeHover = function(element, d) {
         d3.select(element)
-            .style('stroke-opacity', 1)
+            //.style('stroke-opacity', 1)
             .style('stroke-width', 4)
             .style('stroke', 'magenta');
         console.log('hover node', d.node);
@@ -84,7 +84,7 @@ module.exports = function plot(gd, calcData) {
 
     var nodeUnhover = function(element, d) {
         d3.select(element)
-            .style('stroke-opacity', 0.25)
+            //.style('stroke-opacity', 0.25)
             .style('stroke-width', 1)
             .style('stroke', 'black');
         console.log('unhover node', d.node);

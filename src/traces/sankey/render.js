@@ -34,8 +34,8 @@ function viewModel(layout, d, i) {
 
     var sankey = d3sankey()
         .size(c.vertical ? [height, width]: [width, height])
-        .nodeWidth(50)
-        .nodePadding(5)
+        .nodeWidth(20)
+        .nodePadding(20)
         .nodes(nodes.map(function(d) {return {name: d.label};}))
         .links(links.map(function(d) {
             return {
@@ -44,7 +44,7 @@ function viewModel(layout, d, i) {
                 value: d.value
             };
         }))
-        .layout(0);
+        .layout(5000);
 
     return {
         key: i,
@@ -128,7 +128,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
     sankeyLinks.enter()
         .append('g')
         .classed('sankeyLinks', true)
-        .style('transform', 'matrix(0,1,1,0,0,0)')
+        .style('transform', c.vertical ? 'matrix(0,1,1,0,0,0)' : 'matrix(1,0,0,1,0,0)')
         .style('fill', 'none')
         .style('stroke', 'black')
         .style('stroke-opacity', 0.25);
@@ -245,7 +245,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .classed('nodeLabel', true);
 
     nodeLabel
-        .attr('x', function(d) {return c.vertical ? d.node.dy / 2 : d.node.dx + c.nodeTextOffsetX;})
+        .attr('x', function(d) {return c.vertical ? d.node.dy / 2 : d.node.dx + c.nodeTextOffset;})
         .attr('y', function(d) {return c.vertical ? d.node.dx / 2 : d.node.dy / 2;})
         .text(function(d) {return d.node.name;})
         .attr('alignment-baseline', 'middle')
