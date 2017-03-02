@@ -123,17 +123,22 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     function getCounterAxes(axLetter) {
         var list = {x: yaList, y: xaList}[axLetter];
-
-        return list.map(axisIds.name2id);
+        return Lib.simpleMap(list, axisIds.name2id);
     }
 
     function getOverlayableAxes(axLetter, axName) {
         var list = {x: xaList, y: yaList}[axLetter];
+        var out = [];
 
-        return list.filter(function(axName2) {
-            return axName2 !== axName && !(layoutIn[axName2] || {}).overlaying;
-        })
-        .map(axisIds.name2id);
+        for(var j = 0; j < list.length; j++) {
+            var axName2 = list[j];
+
+            if(axName2 !== axName && !(layoutIn[axName2] || {}).overlaying) {
+                out.push(axisIds.name2id(axName2));
+            }
+        }
+
+        return out;
     }
 
     for(i = 0; i < axesList.length; i++) {
