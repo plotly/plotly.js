@@ -35,7 +35,7 @@ function viewModel(layout, d, i) {
     var pad = layout.margin || {l: 80, r: 80, t: 100, b: 80};
 
     var sankey = d3sankey()
-        .size([width, height])
+        .size(c.vertical ? [height, width]: [width, height])
         .nodeWidth(50)
         .nodePadding(5)
         .nodes(nodes.map(function(d) {return {name: d.label};}))
@@ -70,12 +70,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .filter(function(d) {return unwrap(d).trace.visible;})
         .map(viewModel.bind(0, layout));
     
-    var sankeyControlOverlay = svg.selectAll('.sankey')
+    var sankey = svg.selectAll('.sankey')
         .data(vm, keyFun);
 
-    sankeyControlOverlay.exit().remove();
+    sankey.exit().remove();
 
-    sankeyControlOverlay.enter()
+    sankey.enter()
         .append('g')
         .classed('sankey', true)
         .attr('overflow', 'visible')
@@ -86,14 +86,14 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('shape-rendering', 'crispEdges')
         .style('pointer-events', 'auto');
 
-    sankeyControlOverlay
+    sankey
         .attr('width', function(d) {return d.width + d.pad.l + d.pad.r;})
         .attr('height', function(d) {return d.height + d.pad.t + d.pad.b;})
         .attr('transform', function(d) {
             return 'translate(' + d.translateX + ',' + d.translateY + ')';
         });
 
-    var sankeyControlView = sankeyControlOverlay.selectAll('.sankeyControlView')
+    var sankeyControlView = sankey.selectAll('.sankeyControlView')
         .data(repeat, keyFun);
 
     sankeyControlView.enter()
