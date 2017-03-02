@@ -418,7 +418,6 @@ describe('Test Plots', function() {
             expect(gd._testref).toBeUndefined();
             expect(gd._promises).toBeUndefined();
             expect(gd._redrawTimer).toBeUndefined();
-            expect(gd._replotting).toBeUndefined();
             expect(gd.firstscatter).toBeUndefined();
             expect(gd.hmlumcount).toBeUndefined();
             expect(gd.hmpixcount).toBeUndefined();

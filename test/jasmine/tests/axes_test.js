@@ -1485,9 +1485,8 @@ describe('Test axes', function() {
 
     describe('calcTicks and tickText', function() {
         function mockCalc(ax) {
-            Axes.setConvert(ax);
             ax.tickfont = {};
-            ax._gd = {_fullLayout: {separators: '.,'}};
+            Axes.setConvert(ax, {separators: '.,'});
             return Axes.calcTicks(ax).map(function(v) { return v.text; });
         }
 

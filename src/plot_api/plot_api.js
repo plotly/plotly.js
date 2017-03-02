@@ -133,12 +133,14 @@ Plotly.plot = function(gd, data, layout, config) {
 
     Plots.supplyDefaults(gd);
 
+    var fullLayout = gd._fullLayout;
+
     // Polar plots
     if(data && data[0] && data[0].r) return plotPolar(gd, data, layout);
 
     // so we don't try to re-call Plotly.plot from inside
     // legend and colorbar, if margins changed
-    gd._replotting = true;
+    fullLayout._replotting = true;
 
     // make or remake the framework if we need to
     if(graphWasEmpty) makePlotFramework(gd);
@@ -152,7 +154,6 @@ Plotly.plot = function(gd, data, layout, config) {
     // save initial axis range once per graph
     if(graphWasEmpty) Plotly.Axes.saveRangeInitial(gd);
 
-    var fullLayout = gd._fullLayout;
 
     // prepare the data and find the autorange
 
@@ -321,13 +322,13 @@ Plotly.plot = function(gd, data, layout, config) {
         Plots.addLinks(gd);
 
         // Mark the first render as complete
-        gd._replotting = false;
+        fullLayout._replotting = false;
 
         return Plots.previousPromises(gd);
     }
 
     // An initial paint must be completed before these components can be
-    // correctly sized and the whole plot re-margined. gd._replotting must
+    // correctly sized and the whole plot re-margined. fullLayout._replotting must
     // be set to false before these will work properly.
     function finalDraw() {
         Registry.getComponentMethod('shapes', 'draw')(gd);

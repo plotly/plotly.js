@@ -115,17 +115,43 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     var bgColor = Color.combine(plot_bgcolor, layoutOut.paper_bgcolor);
 
-    var axLayoutIn, axLayoutOut;
+    var axName, axLayoutIn, axLayoutOut;
 
     function coerce(attr, dflt) {
         return Lib.coerce(axLayoutIn, axLayoutOut, layoutAttributes, attr, dflt);
     }
 
-    axesList.forEach(function(axName) {
-        var axLetter = axName.charAt(0);
+    function getCounterAxes(axLetter) {
+        var list = {x: yaList, y: xaList}[axLetter];
+        return Lib.simpleMap(list, axisIds.name2id);
+    }
 
-        axLayoutIn = layoutIn[axName] || {};
-        axLayoutOut = {};
+    function getOverlayableAxes(axLetter, axName) {
+        var list = {x: xaList, y: yaList}[axLetter];
+        var out = [];
+
+        for(var j = 0; j < list.length; j++) {
+            var axName2 = list[j];
+
+            if(axName2 !== axName && !(layoutIn[axName2] || {}).overlaying) {
+                out.push(axisIds.name2id(axName2));
+            }
+        }
+
+        return out;
+    }
+
+    for(i = 0; i < axesList.length; i++) {
+        axName = axesList[i];
+
+        if(!Lib.isPlainObject(layoutIn[axName])) {
+            layoutIn[axName] = {};
+        }
+
+        axLayoutIn = layoutIn[axName];
+        axLayoutOut = layoutOut[axName] = {};
+
+        var axLetter = axName.charAt(0);
 
         var defaultOptions = {
             letter: axLetter,
@@ -142,29 +168,21 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
         var positioningOptions = {
             letter: axLetter,
-            counterAxes: {x: yaList, y: xaList}[axLetter].map(axisIds.name2id),
-            overlayableAxes: {x: xaList, y: yaList}[axLetter].filter(function(axName2) {
-                return axName2 !== axName && !(layoutIn[axName2] || {}).overlaying;
-            }).map(axisIds.name2id)
+            counterAxes: getCounterAxes(axLetter),
+            overlayableAxes: getOverlayableAxes(axLetter, axName)
         };
 
         handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, positioningOptions);
 
-        layoutOut[axName] = axLayoutOut;
-
-        // so we don't have to repeat autotype unnecessarily,
-        // copy an autotype back to layoutIn
-        if(!layoutIn[axName] && axLayoutIn.type !== '-') {
-            layoutIn[axName] = {type: axLayoutIn.type};
-        }
-
-    });
+        axLayoutOut._input = axLayoutIn;
+    }
 
     // quick second pass for range slider and selector defaults
     var rangeSliderDefaults = Registry.getComponentMethod('rangeslider', 'handleDefaults'),
         rangeSelectorDefaults = Registry.getComponentMethod('rangeselector', 'handleDefaults');
 
-    xaList.forEach(function(axName) {
+    for(i = 0; i < xaList.length; i++) {
+        axName = xaList[i];
         axLayoutIn = layoutIn[axName];
         axLayoutOut = layoutOut[axName];
 
@@ -181,9 +199,10 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         }
 
         coerce('fixedrange');
-    });
+    }
 
-    yaList.forEach(function(axName) {
+    for(i = 0; i < yaList.length; i++) {
+        axName = yaList[i];
         axLayoutIn = layoutIn[axName];
         axLayoutOut = layoutOut[axName];
 
@@ -196,5 +215,5 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         );
 
         coerce('fixedrange', fixedRangeDflt);
-    });
+    }
 };

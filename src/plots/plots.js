@@ -491,12 +491,10 @@ plots.supplyDefaults = function(gd) {
     // TODO may return a promise
     plots.doAutoMargin(gd);
 
-    // can't quite figure out how to get rid of this... each axis needs
-    // a reference back to the DOM object for just a few purposes
+    // set scale after auto margin routine
     var axList = Plotly.Axes.list(gd);
     for(i = 0; i < axList.length; i++) {
         var ax = axList[i];
-        ax._gd = gd;
         ax.setScale();
     }
 
@@ -1127,7 +1125,6 @@ plots.purge = function(gd) {
     delete gd._testref;
     delete gd._promises;
     delete gd._redrawTimer;
-    delete gd._replotting;
     delete gd.firstscatter;
     delete gd.hmlumcount;
     delete gd.hmpixcount;
@@ -1208,7 +1205,7 @@ plots.autoMargin = function(gd, id, o) {
             };
         }
 
-        if(!gd._replotting) plots.doAutoMargin(gd);
+        if(!fullLayout._replotting) plots.doAutoMargin(gd);
     }
 };
 
@@ -1301,7 +1298,7 @@ plots.doAutoMargin = function(gd) {
     gs.h = Math.round(fullLayout.height) - gs.t - gs.b;
 
     // if things changed and we're not already redrawing, trigger a redraw
-    if(!gd._replotting && oldmargins !== '{}' &&
+    if(!fullLayout._replotting && oldmargins !== '{}' &&
             oldmargins !== JSON.stringify(fullLayout._size)) {
         return Plotly.plot(gd);
     }
