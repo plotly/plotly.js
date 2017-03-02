@@ -361,6 +361,7 @@ module.exports = function setConvert(ax, fullLayout) {
             Lib.notifier(
                 'Something went wrong with axis scaling',
                 'long');
+            fullLayout._replotting = false;
             throw new Error('axis scaling');
         }
     };
