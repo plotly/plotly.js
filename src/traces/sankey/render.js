@@ -50,10 +50,8 @@ function viewModel(layout, d, i) {
 
     return {
         key: i,
-        translateX: domain.x[0] * width,
-        translateY: layout.height - domain.y[1] * layout.height,
-        pad: pad,
-        width: width,
+        translateX: domain.x[0] * width + pad.l,
+        translateY: layout.height - domain.y[1] * layout.height + pad.t,
         height: height,
         nodes: nodes,
         links: links,
@@ -88,10 +86,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('box-sizing', 'content-box');
 
     sankey
-        .attr('width', function(d) {return d.width + d.pad.l + d.pad.r;})
-        .attr('height', function(d) {return d.height + d.pad.t + d.pad.b;})
         .attr('transform', function(d) {
-            return 'translate(' + (d.translateX + d.pad.l) + ',' + (d.translateY + d.pad.t) + ')';
+            return 'translate(' + d.translateX + ',' + d.translateY + ')';
         });
 
     var sankeyLinks = sankey.selectAll('.sankeyLinks')
