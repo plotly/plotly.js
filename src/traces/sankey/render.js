@@ -32,8 +32,6 @@ function viewModel(layout, d, i) {
     var width = layout.width * (domain.x[1] - domain.x[0]);
     var height = layout.height * (domain.y[1] - domain.y[0]);
 
-    var pad = layout.margin || {l: 80, r: 80, t: 100, b: 80};
-
     var sankey = d3sankey()
         .size(c.vertical ? [height, width]: [width, height])
         .nodeWidth(50)
@@ -50,8 +48,8 @@ function viewModel(layout, d, i) {
 
     return {
         key: i,
-        translateX: domain.x[0] * width + pad.l,
-        translateY: layout.height - domain.y[1] * layout.height + pad.t,
+        translateX: domain.x[0] * width + layout.margin.l,
+        translateY: layout.height - domain.y[1] * layout.height + layout.margin.t,
         height: height,
         nodes: nodes,
         links: links,
