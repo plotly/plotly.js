@@ -63,8 +63,11 @@ function viewModel(layout, d, i) {
 
 module.exports = function(svg, styledData, layout, callbacks) {
 
+    var dragInProgress = false;
+    var hovered = false;
+
     var vm = styledData
-        .filter(function(d) { return unwrap(d).trace.visible; })
+        .filter(function(d) {return unwrap(d).trace.visible;})
         .map(viewModel.bind(0, layout));
     
     var sankeyControlOverlay = svg.selectAll('.sankey')
@@ -132,16 +135,35 @@ module.exports = function(svg, styledData, layout, callbacks) {
     sankeyLink.enter()
         .append('path')
         .classed('sankeyPath', true)
-        .on('mouseover', callbacks.linkEvents.hover)
-        .on('mouseout', callbacks.linkEvents.unhover)
-        .on('click', callbacks.linkEvents.select)
+        .on('mouseover', function(d) {
+            if(!dragInProgress) {
+                callbacks.linkEvents.hover.bind(this)(d);
+                hovered = [this, d];
+            }})
+        .on('mouseout', function(d) {
+            if(!dragInProgress) {
+                callbacks.linkEvents.unhover.bind(this)(d);
+                hovered = false;
+            }})
+        .on('click', function(d) {
+            if(hovered) {
+                callbacks.linkEvents.unhover.bind(this)(d);
+                hovered = false;
+            }
+            if(!dragInProgress) {
+                callbacks.linkEvents.select.bind(this)(d);
+            }})
         .append('title')
         .text(function(d) {
             return d.link.source.name + '⟿' + d.link.target.name + ' : ' + d.link.value;
         });
 
+    function linkPath(d) {
+        return d.sankey.link()(d.link);
+    }
+
     sankeyLink
-        .attr('d', function(d) {return d.sankey.link()(d.link);})
+        .attr('d', linkPath)
         .style('stroke-width', function(d) {return Math.max(1, d.link.dy);});
 
     var sankeyNodes = realSankey.selectAll('.sankeyNodes')
@@ -157,14 +179,36 @@ module.exports = function(svg, styledData, layout, callbacks) {
             return d.sankey.nodes().map(function(l) {
                 return {
                     node: l,
-                    sankey: d.sankey
+                    sankey: d.sankey,
+                    model: d
                 };
             });
         });
 
     sankeyNode.enter()
         .append('g')
-        .classed('sankeyNode', true);
+        .classed('sankeyNode', true)
+        .call(d3.behavior.drag()
+            .origin(function(d) {return d.node;})
+            .on('dragstart', function(d) {
+                d.node.dragStartY = d3.event.y;
+                this.parentNode.appendChild(this);
+                dragInProgress = true;
+                if(hovered) {
+                    callbacks.nodeEvents.unhover.bind(hovered[0])(hovered[1]);
+                    hovered = false;
+                }
+            })
+            .on('drag', function(d) {
+                    d.node.y = Math.max(0, Math.min(d.model.height - d.node.dy, d3.event.y));
+                    d3.select(this).style('transform', 'translate(' + d.node.x + 'px,' + d.node.y + 'px)');
+                    d.sankey.relayout();
+                    sankeyLink.attr('d', linkPath);
+                }
+            )
+            .on('dragend', function() {
+                dragInProgress = false;
+            }));
 
     sankeyNode
         .style('transform', function(d) {return 'translate(' + (Math.floor(d.node.x) - 0.5) + 'px, ' + (Math.floor(d.node.y) + 0.5) + 'px)';});
@@ -182,9 +226,25 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('stroke', 'black')
         .style('stroke-opacity', 1)
         .style('stroke-width', 0.5)
-        .on('mouseover', callbacks.nodeEvents.hover)
-        .on('mouseout', callbacks.nodeEvents.unhover)
-        .on('click', callbacks.nodeEvents.select).append('title')
+        .on('mouseover', function(d) {
+            if(!dragInProgress) {
+                callbacks.nodeEvents.hover.bind(this)(d);
+                hovered = [this, d];
+            }})
+        .on('mouseout', function(d) {
+            if(!dragInProgress) {
+                callbacks.nodeEvents.unhover.bind(this)(d);
+                hovered = false;
+            }})
+        .on('click', function(d) {
+            if(hovered) {
+                callbacks.nodeEvents.unhover.bind(this)(d);
+                hovered = false;
+            }
+            if(!dragInProgress) {
+                callbacks.nodeEvents.select.bind(this)(d);
+            }})
+        .append('title')
         .text(function(d) {
             return [
                 d.node.name,

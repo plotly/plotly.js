@@ -21,7 +21,7 @@ module.exports = function plot(gd, calcData) {
     var size = fullLayout._size;
 
     var linkSelect = function(d) {
-        console.log('select', d.link);
+        console.log('select link', d.link);
         gd._hoverdata = [d.link];
         gd._hoverdata.trace = calcData.trace;
         Fx.click(gd, { target: true });
@@ -32,7 +32,7 @@ module.exports = function plot(gd, calcData) {
         element
             .style('stroke-opacity', 1)
             .style('stroke', 'magenta');
-        console.log('hover', d.link);
+        console.log('hover link', d.link);
 
         Fx.loneHover({}, {
             container: fullLayout._hoverlayer.node(),
@@ -49,7 +49,7 @@ module.exports = function plot(gd, calcData) {
         element
             .style('stroke-opacity', 0.25)
             .style('stroke', 'black');
-        console.log('unhover', d.link);
+        console.log('unhover link', d.link);
         gd.emit('plotly_unhover', {
             points: [d.link]
         });
@@ -61,7 +61,7 @@ module.exports = function plot(gd, calcData) {
     };
 
     var nodeSelect = function(d) {
-        console.log('select', d.node);
+        console.log('select node', d.node);
         gd._hoverdata = [d.node];
         gd._hoverdata.trace = calcData.trace;
         Fx.click(gd, { target: true });
@@ -73,7 +73,7 @@ module.exports = function plot(gd, calcData) {
             .style('stroke-opacity', 1)
             .style('stroke-width', 4)
             .style('stroke', 'magenta');
-        console.log('hover', d.node);
+        console.log('hover node', d.node);
 
         Fx.loneHover({}, {
             container: fullLayout._hoverlayer.node(),
@@ -91,7 +91,7 @@ module.exports = function plot(gd, calcData) {
             .style('stroke-opacity', 0.25)
             .style('stroke-width', 1)
             .style('stroke', 'black');
-        console.log('unhover', d.node);
+        console.log('unhover node', d.node);
         gd.emit('plotly_unhover', {
             points: [d.node]
         });
