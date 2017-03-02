@@ -132,27 +132,37 @@ module.exports = function(svg, styledData, layout, callbacks) {
             });
         });
 
+    function attachPointerEvents(eventSet) {
+        return function(selection) {
+            selection
+                .on('mouseover', function (d) {
+                    if (!dragInProgress) {
+                        eventSet.hover.bind(this)(d);
+                        hovered = [this, d];
+                    }
+                })
+                .on('mouseout', function (d) {
+                    if (!dragInProgress) {
+                        eventSet.unhover.bind(this)(d);
+                        hovered = false;
+                    }
+                })
+                .on('click', function (d) {
+                    if (hovered) {
+                        eventSet.unhover.bind(this)(d);
+                        hovered = false;
+                    }
+                    if (!dragInProgress) {
+                        eventSet.select.bind(this)(d);
+                    }
+                });
+        }
+    }
+
     sankeyLink.enter()
         .append('path')
         .classed('sankeyPath', true)
-        .on('mouseover', function(d) {
-            if(!dragInProgress) {
-                callbacks.linkEvents.hover.bind(this)(d);
-                hovered = [this, d];
-            }})
-        .on('mouseout', function(d) {
-            if(!dragInProgress) {
-                callbacks.linkEvents.unhover.bind(this)(d);
-                hovered = false;
-            }})
-        .on('click', function(d) {
-            if(hovered) {
-                callbacks.linkEvents.unhover.bind(this)(d);
-                hovered = false;
-            }
-            if(!dragInProgress) {
-                callbacks.linkEvents.select.bind(this)(d);
-            }})
+        .call(attachPointerEvents(callbacks.linkEvents))
         .append('title')
         .text(function(d) {
             return d.link.source.name + '⟿' + d.link.target.name + ' : ' + d.link.value;
@@ -226,24 +236,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('stroke', 'black')
         .style('stroke-opacity', 1)
         .style('stroke-width', 0.5)
-        .on('mouseover', function(d) {
-            if(!dragInProgress) {
-                callbacks.nodeEvents.hover.bind(this)(d);
-                hovered = [this, d];
-            }})
-        .on('mouseout', function(d) {
-            if(!dragInProgress) {
-                callbacks.nodeEvents.unhover.bind(this)(d);
-                hovered = false;
-            }})
-        .on('click', function(d) {
-            if(hovered) {
-                callbacks.nodeEvents.unhover.bind(this)(d);
-                hovered = false;
-            }
-            if(!dragInProgress) {
-                callbacks.nodeEvents.select.bind(this)(d);
-            }})
+        .call(attachPointerEvents(callbacks.nodeEvents))
         .append('title')
         .text(function(d) {
             return [
