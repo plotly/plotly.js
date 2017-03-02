@@ -44,13 +44,13 @@ function viewModel(layout, d, i) {
                 value: d.value
             };
         }))
-        .layout(50);
+        .layout(0);
 
     return {
         key: i,
         translateX: domain.x[0] * width + layout.margin.l,
         translateY: layout.height - domain.y[1] * layout.height + layout.margin.t,
-        height: height,
+        dragLength: c.vertical ? width : height,
         nodes: nodes,
         links: links,
         sankey: sankey
@@ -128,6 +128,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
     sankeyLinks.enter()
         .append('g')
         .classed('sankeyLinks', true)
+        .style('transform', 'matrix(0,1,1,0,0,0)')
         .style('fill', 'none')
         .style('stroke', 'black')
         .style('stroke-opacity', 0.25);
@@ -178,9 +179,9 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .append('g')
         .classed('sankeyNode', true)
         .call(d3.behavior.drag()
-            .origin(function(d) {return d.node;})
+            .origin(function(d) {return c.vertical ? {x: d.node.y} : d.node;})
             .on('dragstart', function(d) {
-                d.node.dragStartY = d3.event.y;
+                d.node.dragStartLocation = c.vertical ? d3.event.x : d3.event.y;
                 this.parentNode.appendChild(this);
                 dragInProgress = true;
                 if(hovered) {
@@ -189,10 +190,16 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 }
             })
             .on('drag', function(d) {
-                    d.node.y = Math.max(0, Math.min(d.model.height - d.node.dy, d3.event.y));
+                if(c.vertical) {
+                    d.node.y = Math.max(0, Math.min(d.model.dragLength - d.node.dy, d3.event.x));
+                    d3.select(this).style('transform', 'translate(' + d.node.y + 'px,' + d.node.x + 'px)');
+                } else {
+                    d.node.y = Math.max(0, Math.min(d.model.dragLength - d.node.dy, d3.event.y));
                     d3.select(this).style('transform', 'translate(' + d.node.x + 'px,' + d.node.y + 'px)');
-                    d.sankey.relayout();
-                    sankeyLink.attr('d', linkPath);
+                }
+
+                d.sankey.relayout();
+                sankeyLink.attr('d', linkPath);
                 }
             )
             .on('dragend', function() {
@@ -200,7 +207,9 @@ module.exports = function(svg, styledData, layout, callbacks) {
             }));
 
     sankeyNode
-        .style('transform', function(d) {return 'translate(' + (Math.floor(d.node.x) - 0.5) + 'px, ' + (Math.floor(d.node.y) + 0.5) + 'px)';});
+        .style('transform', c.vertical ?
+            function(d) {return 'translate(' + (Math.floor(d.node.y) - 0.5) + 'px, ' + (Math.floor(d.node.x) + 0.5) + 'px)';} :
+            function(d) {return 'translate(' + (Math.floor(d.node.x) - 0.5) + 'px, ' + (Math.floor(d.node.y) + 0.5) + 'px)';});
 
     var nodeRect = sankeyNode.selectAll('.nodeRect')
         .data(repeat);
@@ -225,8 +234,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
         });
 
     nodeRect // ceil, +/-0.5 and crispEdges is wizardry for consistent border width on all 4 sides
-        .attr('width', function(d) {return Math.ceil(d.node.dx + 0.5);})
-        .attr('height', function(d) {return Math.ceil(d.node.dy - 0.5);});
+        .attr(c.vertical ? 'height' : 'width', function(d) {return Math.ceil(d.node.dx + 0.5);})
+        .attr(c.vertical ? 'width' : 'height', function(d) {return Math.ceil(d.node.dy - 0.5);});
 
     var nodeLabel = sankeyNode.selectAll('.nodeLabel')
         .data(repeat);
@@ -236,10 +245,11 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .classed('nodeLabel', true);
 
     nodeLabel
-        .attr('x', function(d) {return d.node.dx + c.nodeTextOffsetX;})
-        .attr('y', function(d) {return d.node.dy / 2;})
+        .attr('x', function(d) {return c.vertical ? d.node.dy / 2 : d.node.dx + c.nodeTextOffsetX;})
+        .attr('y', function(d) {return c.vertical ? d.node.dx / 2 : d.node.dy / 2;})
         .text(function(d) {return d.node.name;})
         .attr('alignment-baseline', 'middle')
+        .attr('text-anchor', c.vertical ? 'middle' : 'start')
         .style('font-family', 'sans-serif')
         .style('font-size', '10px');
 };
