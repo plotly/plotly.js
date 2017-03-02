@@ -64,6 +64,39 @@ module.exports = function(svg, styledData, layout, callbacks) {
     var dragInProgress = false;
     var hovered = false;
 
+    function attachPointerEvents(eventSet) {
+        return function(selection) {
+            selection
+                .on('mouseover', function (d) {
+                    if (!dragInProgress) {
+                        eventSet.hover(this, d);
+                        hovered = [this, d];
+                    }
+                })
+                .on('mouseout', function (d) {
+                    if (!dragInProgress) {
+                        eventSet.unhover(this, d);
+                        hovered = false;
+                    }
+                })
+                .on('click', function (d) {
+                    if (hovered) {
+                        eventSet.unhover(this, d);
+                        hovered = false;
+                    }
+                    if (!dragInProgress) {
+                        eventSet.select(this, d);
+                    }
+                });
+        }
+    }
+
+    function linkPath(d) {
+        return d.sankey.link()(d.link);
+    }
+
+    var colorer = d3.scale.category20();
+
     var sankey = svg.selectAll('.sankey')
         .data(
             styledData
@@ -111,33 +144,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
             });
         });
 
-    function attachPointerEvents(eventSet) {
-        return function(selection) {
-            selection
-                .on('mouseover', function (d) {
-                    if (!dragInProgress) {
-                        eventSet.hover(this, d);
-                        hovered = [this, d];
-                    }
-                })
-                .on('mouseout', function (d) {
-                    if (!dragInProgress) {
-                        eventSet.unhover(this, d);
-                        hovered = false;
-                    }
-                })
-                .on('click', function (d) {
-                    if (hovered) {
-                        eventSet.unhover(this, d);
-                        hovered = false;
-                    }
-                    if (!dragInProgress) {
-                        eventSet.select(this, d);
-                    }
-                });
-        }
-    }
-
     sankeyLink.enter()
         .append('path')
         .classed('sankeyPath', true)
@@ -146,10 +152,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .text(function(d) {
             return d.link.source.name + '⟿' + d.link.target.name + ' : ' + d.link.value;
         });
-
-    function linkPath(d) {
-        return d.sankey.link()(d.link);
-    }
 
     sankeyLink
         .attr('d', linkPath)
@@ -205,8 +207,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
     var nodeRect = sankeyNode.selectAll('.nodeRect')
         .data(repeat);
 
-    var colorer = d3.scale.category20();
-
     nodeRect.enter()
         .append('rect')
         .classed('nodeRect', true)
@@ -226,7 +226,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
             ].join('\n');
         });
 
-    nodeRect
+    nodeRect // ceil, +/-0.5 and crispEdges is wizardry for consistent border width on all 4 sides
         .attr('width', function(d) {return Math.ceil(d.node.dx + 0.5);})
         .attr('height', function(d) {return Math.ceil(d.node.dy - 0.5);});
 
