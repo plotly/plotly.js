@@ -285,8 +285,13 @@ function drawOne(gd, index) {
                 posPx.text = basePx + textShift;
             }
 
+            // padplus/minus are used by autorange
             options['_' + axLetter + 'padplus'] = (annSize / 2) + textPadShift;
             options['_' + axLetter + 'padminus'] = (annSize / 2) - textPadShift;
+
+            // size/shift are used during dragging
+            options['_' + axLetter + 'size'] = annSize;
+            options['_' + axLetter + 'shift'] = textShift;
         });
 
         if(annotationIsOffscreen) {

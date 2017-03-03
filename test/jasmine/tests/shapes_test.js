@@ -14,6 +14,7 @@ var customMatchers = require('../assets/custom_matchers');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
+var drag = require('../assets/drag');
 
 
 describe('Test shapes defaults:', function() {
@@ -748,7 +749,7 @@ describe('Test shapes', function() {
 
         var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
 
-        return resize(direction, node, dx, dy).then(function() {
+        return drag(node, dx, dy, direction).then(function() {
             var finalCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
 
             var keyN, keyS, keyW, keyE;
@@ -815,118 +816,3 @@ describe('Test shapes', function() {
         return coordinates;
     }
 });
-
-var DBLCLICKDELAY = require('@src/plots/cartesian/constants').DBLCLICKDELAY;
-
-function mouseDown(node, x, y) {
-    node.dispatchEvent(new MouseEvent('mousedown', {
-        bubbles: true,
-        clientX: x,
-        clientY: y
-    }));
-}
-
-function mouseMove(node, x, y) {
-    node.dispatchEvent(new MouseEvent('mousemove', {
-        bubbles: true,
-        clientX: x,
-        clientY: y
-    }));
-}
-
-function mouseUp(node, x, y) {
-    node.dispatchEvent(new MouseEvent('mouseup', {
-        bubbles: true,
-        clientX: x,
-        clientY: y
-    }));
-}
-
-function drag(node, dx, dy) {
-    var bbox = node.getBoundingClientRect(),
-        fromX = (bbox.left + bbox.right) / 2,
-        fromY = (bbox.bottom + bbox.top) / 2,
-        toX = fromX + dx,
-        toY = fromY + dy;
-
-    mouseMove(node, fromX, fromY);
-    mouseDown(node, fromX, fromY);
-
-    var promise = waitForDragCover().then(function(dragCoverNode) {
-        mouseMove(dragCoverNode, toX, toY);
-        mouseUp(dragCoverNode, toX, toY);
-        return waitForDragCoverRemoval();
-    });
-
-    return promise;
-}
-
-function resize(direction, node, dx, dy) {
-    var bbox = node.getBoundingClientRect();
-
-    var fromX, fromY, toX, toY;
-
-    if(~direction.indexOf('n')) fromY = bbox.top;
-    else if(~direction.indexOf('s')) fromY = bbox.bottom;
-    else fromY = (bbox.bottom + bbox.top) / 2;
-
-    if(~direction.indexOf('w')) fromX = bbox.left;
-    else if(~direction.indexOf('e')) fromX = bbox.right;
-    else fromX = (bbox.left + bbox.right) / 2;
-
-    toX = fromX + dx;
-    toY = fromY + dy;
-
-    mouseMove(node, fromX, fromY);
-    mouseDown(node, fromX, fromY);
-
-    var promise = waitForDragCover().then(function(dragCoverNode) {
-        mouseMove(dragCoverNode, toX, toY);
-        mouseUp(dragCoverNode, toX, toY);
-        return waitForDragCoverRemoval();
-    });
-
-    return promise;
-}
-
-function waitForDragCover() {
-    return new Promise(function(resolve) {
-        var interval = DBLCLICKDELAY / 4,
-            timeout = 5000;
-
-        var id = setInterval(function() {
-            var dragCoverNode = d3.selectAll('.dragcover').node();
-            if(dragCoverNode) {
-                clearInterval(id);
-                resolve(dragCoverNode);
-            }
-
-            timeout -= interval;
-            if(timeout < 0) {
-                clearInterval(id);
-                throw new Error('waitForDragCover: timeout');
-            }
-        }, interval);
-    });
-}
-
-function waitForDragCoverRemoval() {
-    return new Promise(function(resolve) {
-        var interval = DBLCLICKDELAY / 4,
-            timeout = 5000;
-
-        var id = setInterval(function() {
-            var dragCoverNode = d3.selectAll('.dragcover').node();
-            if(!dragCoverNode) {
-                clearInterval(id);
-                resolve(dragCoverNode);
-            }
-
-            timeout -= interval;
-            if(timeout < 0) {
-                clearInterval(id);
-                throw new Error('waitForDragCoverRemoval: timeout');
-            }
-        }, interval);
-    });
-}

@@ -10,7 +10,7 @@ module.exports = function(type, x, y, opts) {
         fullOpts.buttons = opts.buttons;
     }
 
-    var el = document.elementFromPoint(x, y),
+    var el = (opts && opts.element) || document.elementFromPoint(x, y),
         ev;
 
     if(type === 'scroll') {
@@ -20,4 +20,6 @@ module.exports = function(type, x, y, opts) {
     }
 
     el.dispatchEvent(ev);
+
+    return el;
 };
