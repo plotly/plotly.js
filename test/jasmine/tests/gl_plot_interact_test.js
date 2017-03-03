@@ -375,7 +375,9 @@ describe('Test gl plot interactions', function() {
         });
 
         it('should be able to toggle visibility', function(done) {
-            var OBJECT_PER_TRACE = 5;
+
+            // a line object + scatter fancy
+            var OBJECT_PER_TRACE = 2;
 
             var objects = function() {
                 return gd._fullLayout._plots.xy._scene2d.glplot.objects;

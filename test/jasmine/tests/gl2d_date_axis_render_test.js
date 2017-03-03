@@ -1,4 +1,4 @@
-var PlotlyInternal = require('@src/plotly');
+var Plotly = require('@lib');
 
 var hasWebGLSupport = require('../assets/has_webgl_support');
 
@@ -18,7 +18,7 @@ describe('date axis', function() {
     afterEach(destroyGraphDiv);
 
     it('should use the fancy gl-vis/gl-scatter2d', function() {
-        PlotlyInternal.plot(gd, [{
+        Plotly.plot(gd, [{
             type: 'scattergl',
             'marker': {
                 'color': 'rgb(31, 119, 180)',
@@ -38,11 +38,13 @@ describe('date axis', function() {
         expect(gd._fullData[0]._module.basePlotModule.name).toBe('gl2d');
 
         // one way of check which renderer - fancy vs not - we're using
-        expect(gd._fullLayout._plots.xy._scene2d.glplot.objects[3].pointCount).toBe(0);
+        var objs = gd._fullLayout._plots.xy._scene2d.glplot.objects;
+        expect(objs.length).toEqual(2);
+        expect(objs[1].points.length).toEqual(4);
     });
 
     it('should use the fancy gl-vis/gl-scatter2d once again', function() {
-        PlotlyInternal.plot(gd, [{
+        Plotly.plot(gd, [{
             type: 'scattergl',
             'marker': {
                 'color': 'rgb(31, 119, 180)',
@@ -62,11 +64,13 @@ describe('date axis', function() {
         expect(gd._fullData[0]._module.basePlotModule.name).toBe('gl2d');
 
         // one way of check which renderer - fancy vs not - we're using
-        expect(gd._fullLayout._plots.xy._scene2d.glplot.objects[3].pointCount).toBe(0);
+        var objs = gd._fullLayout._plots.xy._scene2d.glplot.objects;
+        expect(objs.length).toEqual(2);
+        expect(objs[1].points.length).toEqual(4);
     });
 
     it('should now use the non-fancy gl-vis/gl-scatter2d', function() {
-        PlotlyInternal.plot(gd, [{
+        Plotly.plot(gd, [{
             type: 'scattergl',
             mode: 'markers', // important, as otherwise lines are assumed (which needs fancy)
             x: [new Date('2016-10-10'), new Date('2016-10-11')],
@@ -78,11 +82,13 @@ describe('date axis', function() {
         expect(gd._fullData[0].type).toBe('scattergl');
         expect(gd._fullData[0]._module.basePlotModule.name).toBe('gl2d');
 
-        expect(gd._fullLayout._plots.xy._scene2d.glplot.objects[3].pointCount).toBe(2);
+        var objs = gd._fullLayout._plots.xy._scene2d.glplot.objects;
+        expect(objs.length).toEqual(1);
+        expect(objs[0].pointCount).toEqual(2);
     });
 
     it('should use the non-fancy gl-vis/gl-scatter2d with string dates', function() {
-        PlotlyInternal.plot(gd, [{
+        Plotly.plot(gd, [{
             type: 'scattergl',
             mode: 'markers', // important, as otherwise lines are assumed (which needs fancy)
             x: ['2016-10-10', '2016-10-11'],
@@ -94,6 +100,8 @@ describe('date axis', function() {
         expect(gd._fullData[0].type).toBe('scattergl');
         expect(gd._fullData[0]._module.basePlotModule.name).toBe('gl2d');
 
-        expect(gd._fullLayout._plots.xy._scene2d.glplot.objects[3].pointCount).toBe(2);
+        var objs = gd._fullLayout._plots.xy._scene2d.glplot.objects;
+        expect(objs.length).toEqual(1);
+        expect(objs[0].pointCount).toEqual(2);
     });
 });
