@@ -25,7 +25,7 @@ function calculateColor(colorIn, opacityIn) {
 }
 
 function validateColor(colorIn) {
-    return rgba(colorIn) || colorDfltRgba;
+    return isNumeric(colorIn) ? colorDfltRgba : (rgba(colorIn) || colorDfltRgba);
 }
 
 function validateOpacity(opacityIn) {
@@ -50,9 +50,7 @@ function formatColor(containerIn, opacityIn, len) {
         );
     }
     else {
-        sclFunc = function(c) {
-            return c;
-        };
+        sclFunc = validateColor;
     }
 
     if(isArrayColorIn) {
