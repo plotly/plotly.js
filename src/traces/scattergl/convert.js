@@ -65,8 +65,8 @@ function LineWithMarkers(scene, uid) {
             [0, 0, 0, 1],
             [0, 0, 0, 1],
             [0, 0, 0, 1]],
-        dashes: [1]
-    });
+        dashes: [1],
+    }, 0);
 
     this.errorX = this.initObject(createError, {
         positions: new Float64Array(0),
@@ -74,7 +74,7 @@ function LineWithMarkers(scene, uid) {
         lineWidth: 1,
         capSize: 0,
         color: [0, 0, 0, 1]
-    });
+    }, 1);
 
     this.errorY = this.initObject(createError, {
         positions: new Float64Array(0),
@@ -82,7 +82,7 @@ function LineWithMarkers(scene, uid) {
         lineWidth: 1,
         capSize: 0,
         color: [0, 0, 0, 1]
-    });
+    }, 2);
 
     var scatterOptions0 = {
         positions: new Float64Array(0),
@@ -97,24 +97,23 @@ function LineWithMarkers(scene, uid) {
         borderColor: [0, 0, 0, 1]
     };
 
-    this.scatter = this.initObject(createScatter, scatterOptions0);
-    this.fancyScatter = this.initObject(createFancyScatter, scatterOptions0);
+    this.scatter = this.initObject(createScatter, scatterOptions0, 3);
+    this.fancyScatter = this.initObject(createFancyScatter, scatterOptions0, 4);
 }
 
 var proto = LineWithMarkers.prototype;
 
-proto.initObject = function(createFn, options) {
+proto.initObject = function(createFn, options, index) {
     var _this = this;
     var glplot = _this.scene.glplot;
     var options0 = Lib.extendFlat({}, options);
     var obj = null;
 
-    // TODO how to handle ordering ???
-
     function update() {
         if(!obj) {
             obj = createFn(glplot, options);
             obj._trace = _this;
+            obj._index = index;
         }
         obj.update(options);
         return obj;
@@ -254,12 +253,6 @@ function _convertColor(colors, opacities, count) {
     return result;
 }
 
-/* Order is important here to get the correct laying:
- * - lines
- * - errorX
- * - errorY
- * - markers
- */
 proto.update = function(options) {
 
     if(options.visible !== true) {
@@ -296,6 +289,15 @@ proto.update = function(options) {
     else {
         this.updateFast(options);
     }
+
+    // sort objects so that order is preserve on updates:
+    // - lines
+    // - errorX
+    // - errorY
+    // - markers
+    this.scene.glplot.objects.sort(function(a, b) {
+        return a._index - b._index;
+    });
 
     // not quite on-par with 'scatter', but close enough for now
     // does not handle the colorscale case
