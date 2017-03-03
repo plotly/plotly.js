@@ -15,8 +15,6 @@ var rgba = require('color-rgba');
 var Colorscale = require('../components/colorscale');
 var colorDflt = require('../components/color/attributes').defaultLine;
 
-var str2RgbaArray = require('./str2rgbarray');
-
 var opacityDflt = 1;
 
 function calculateColor(colorIn, opacityIn) {
