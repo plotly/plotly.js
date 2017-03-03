@@ -15,6 +15,7 @@ var rgba = require('color-rgba');
 var Colorscale = require('../components/colorscale');
 var colorDflt = require('../components/color/attributes').defaultLine;
 
+var colorDfltRgba = rgba(colorDflt);
 var opacityDflt = 1;
 
 function calculateColor(colorIn, opacityIn) {
@@ -24,7 +25,7 @@ function calculateColor(colorIn, opacityIn) {
 }
 
 function validateColor(colorIn) {
-    return rgba(colorIn) || rgba(colorDflt);
+    return rgba(colorIn) || colorDfltRgba;
 }
 
 function validateOpacity(opacityIn) {
@@ -48,11 +49,15 @@ function formatColor(containerIn, opacityIn, len) {
             )
         );
     }
-    else sclFunc = validateColor;
+    else {
+        sclFunc = function (c) {
+            return c;
+        };
+    }
 
     if(isArrayColorIn) {
         getColor = function(c, i) {
-            return c[i] === undefined ? colorDflt : sclFunc(c[i]);
+            return c[i] === undefined ? colorDfltRgba : rgba(sclFunc(c[i]));
         };
     }
     else getColor = validateColor;
