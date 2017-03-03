@@ -50,7 +50,7 @@ function formatColor(containerIn, opacityIn, len) {
         );
     }
     else {
-        sclFunc = function (c) {
+        sclFunc = function(c) {
             return c;
         };
     }
