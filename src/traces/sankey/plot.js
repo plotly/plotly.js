@@ -29,8 +29,8 @@ module.exports = function plot(gd, calcData) {
 
     var linkHover = function(element, d) {
         d3.select(element)
-            .style('stroke-opacity', 0.8)
-            .style('stroke', 'magenta');
+            .style('stroke-opacity', 0.5)
+            //.style('stroke', 'magenta');
         console.log('hover link', d.link);
 
         Fx.loneHover({}, {
@@ -46,7 +46,7 @@ module.exports = function plot(gd, calcData) {
     var linkUnhover = function(element, d) {
         d3.select(element)
             .style('stroke-opacity', 0.25)
-            .style('stroke', 'black');
+            //.style('stroke', 'black');
         console.log('unhover link', d.link);
         gd.emit('plotly_unhover', {
             points: [d.link]
