@@ -329,9 +329,31 @@ module.exports = function draw(gd) {
                 xf = dragElement.align(newX, 0, gs.l, gs.l + gs.w, opts.xanchor);
                 yf = dragElement.align(newY, 0, gs.t + gs.h, gs.t, opts.yanchor);
             },
-            doneFn: function(dragged) {
+            doneFn: function(dragged, numClicks, e) {
                 if(dragged && xf !== undefined && yf !== undefined) {
                     Plotly.relayout(gd, {'legend.x': xf, 'legend.y': yf});
+                } else {
+                    var traces = [],
+                        clickedTrace;
+                    fullLayout._infolayer.selectAll('g.traces').each(function() { d3.select(this).call(function() { traces.push(this); }); });
+                    for(var i = 0; i < traces.length; i++) {
+                        var tracei = traces[i];
+                        var p = tracei[0][0].getBoundingClientRect();
+                        if(e.clientX >= p.left && e.clientX <= p.right && e.clientY >= p.top && e.clientY <= p.bottom) {
+                            clickedTrace = tracei;
+                            break;
+                        }
+                    }
+                    if(clickedTrace) {
+                        if(numClicks === 1) {
+                            legend._clickTimeout = setTimeout(function() { handleClick(clickedTrace, gd, numClicks); }, 300);
+                        } else if(numClicks === 2) {
+                            if(legend._clickTimeout) {
+                                clearTimeout(legend._clickTimeout);
+                            }
+                            handleClick(clickedTrace, gd, numClicks);
+                        }
+                    }
                 }
             }
         });
@@ -426,7 +448,7 @@ function setupTraceToggle(g, gd) {
         }
     });
     traceToggle.on('mouseup', function() {
-        if(gd._dragged) return;
+        if(gd._dragged || gd._editing) return;
         var legend = gd._fullLayout.legend;
 
         if((new Date()).getTime() - gd._legendMouseDownTime > DBLCLICKDELAY) {
@@ -445,6 +467,7 @@ function setupTraceToggle(g, gd) {
 }
 
 function handleClick(g, gd, numClicks) {
+    if(gd._dragged || gd._editing) return;
     var hiddenSlices = gd._fullLayout.hiddenlabels ?
         gd._fullLayout.hiddenlabels.slice() :
         [];

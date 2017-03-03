@@ -37,12 +37,13 @@ dragElement.unhoverRaw = unhover.raw;
  *          dx and dy are the net pixel offset of the drag,
  *          dragged is true/false, has the mouse moved enough to
  *          constitute a drag
- *      doneFn (optional) function(dragged, numClicks)
+ *      doneFn (optional) function(dragged, numClicks, e)
  *          executed on mouseup, or mouseout of window since
  *          we don't get events after that
  *          dragged is as in moveFn
  *          numClicks is how many clicks we've registered within
  *          a doubleclick time
+ *          e is the original event
  *      setCursor (optional) function(event)
  *          executed on mousemove before mousedown
  *          the purpose of this callback is to update the mouse cursor before
@@ -136,7 +137,7 @@ dragElement.init = function init(options) {
             numClicks = Math.max(numClicks - 1, 1);
         }
 
-        if(options.doneFn) options.doneFn(gd._dragged, numClicks);
+        if(options.doneFn) options.doneFn(gd._dragged, numClicks, e);
 
         if(!gd._dragged) {
             var e2 = document.createEvent('MouseEvents');
