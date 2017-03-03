@@ -365,6 +365,11 @@ module.exports = function(canvasGL, lines, canvasWidth, canvasHeight, initialDim
             }
         }
 
+        if(panelCount === 0) {
+            // clear canvas here, as the panel iteration below will not enter the loop body
+            clear(regl, 0, 0, canvasWidth, canvasHeight);
+        }
+
         for(I = 0; I < panelCount; I++) {
             var panel = panels[I];
             var dim1 = panel.dim1;
