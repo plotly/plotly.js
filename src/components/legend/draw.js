@@ -21,11 +21,13 @@ var Color = require('../color');
 var svgTextUtils = require('../../lib/svg_text_utils');
 
 var constants = require('./constants');
+var interactConstants = require('../../constants/interactions');
 var getLegendData = require('./get_legend_data');
 var style = require('./style');
 var helpers = require('./helpers');
 var anchorUtils = require('./anchor_utils');
 
+var SHOWISOLATETIP = true;
 
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout;
@@ -399,7 +401,7 @@ function drawTexts(g, gd) {
 function setupTraceToggle(g, gd) {
     var newMouseDownTime,
         numClicks = 1,
-        DBLCLICKDELAY = constants.DBLCLICKDELAY;
+        DBLCLICKDELAY = interactConstants.DBLCLICKDELAY;
 
     var traceToggle = g.selectAll('rect')
         .data([0]);
@@ -432,7 +434,7 @@ function setupTraceToggle(g, gd) {
         }
 
         if(numClicks === 1) {
-            legend._clickTimeout = setTimeout(function() { handleClick(g, gd, numClicks); }, 300);
+            legend._clickTimeout = setTimeout(function() { handleClick(g, gd, numClicks); }, DBLCLICKDELAY);
         } else if(numClicks === 2) {
             if(legend._clickTimeout) {
                 clearTimeout(legend._clickTimeout);
@@ -455,6 +457,13 @@ function handleClick(g, gd, numClicks) {
         tracei,
         newVisible;
 
+
+    if(numClicks === 1 && SHOWISOLATETIP && gd.data && gd._context.showTips) {
+        Lib.notifier('Double click on legend to isolate individual trace', 'long');
+        SHOWISOLATETIP = false;
+    } else {
+        SHOWISOLATETIP = false;
+    }
     if(Registry.traceIs(trace, 'pie')) {
         var thisLabel = legendItem.label,
             thisLabelIndex = hiddenSlices.indexOf(thisLabel);
@@ -469,37 +478,50 @@ function handleClick(g, gd, numClicks) {
                     hiddenSlices.push(d.label);
                 }
             });
+            if(gd._fullLayout.hiddenlabels && gd._fullLayout.hiddenlabels.length === hiddenSlices.length && thisLabelIndex === -1) {
+                hiddenSlices = [];
+            }
         }
 
         Plotly.relayout(gd, 'hiddenlabels', hiddenSlices);
     } else {
-        var otherTraces = [],
-            traceIndex,
+        var allTraces = [],
+            traceVisibility = [],
             i;
 
         for(i = 0; i < fullData.length; i++) {
-            otherTraces.push(i);
+            allTraces.push(i);
+            traceVisibility.push('legendonly');
         }
 
         if(legendgroup === '') {
             traceIndicesInGroup = [trace.index];
-            otherTraces.splice(trace.index, 1);
+            traceVisibility[trace.index] = true;
         } else {
             for(i = 0; i < fullData.length; i++) {
                 tracei = fullData[i];
                 if(tracei.legendgroup === legendgroup) {
                     traceIndicesInGroup.push(tracei.index);
-                    traceIndex = otherTraces.indexOf(i);
-                    otherTraces.splice(traceIndex, 1);
+                    traceVisibility[allTraces.indexOf(i)] = true;
                 }
             }
         }
+
         if(numClicks === 1) {
             newVisible = trace.visible === true ? 'legendonly' : true;
             Plotly.restyle(gd, 'visible', newVisible, traceIndicesInGroup);
         } else if(numClicks === 2) {
-            Plotly.restyle(gd, 'visible', true, traceIndicesInGroup);
-            Plotly.restyle(gd, 'visible', 'legendonly', otherTraces);
+            var sameAsLast = true;
+            for(i = 0; i < fullData.length; i++) {
+                if(fullData[i].visible !== traceVisibility[i]) {
+                    sameAsLast = false;
+                    break;
+                }
+            }
+            if(sameAsLast) {
+                traceVisibility = true;
+            }
+            Plotly.restyle(gd, 'visible', traceVisibility, allTraces);
         }
     }
 }

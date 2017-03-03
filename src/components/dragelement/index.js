@@ -13,7 +13,7 @@ var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 
 var constants = require('../../plots/cartesian/constants');
-
+var interactConstants = require('../../constants/interactions');
 
 var dragElement = module.exports = {};
 
@@ -51,7 +51,7 @@ dragElement.unhoverRaw = unhover.raw;
 dragElement.init = function init(options) {
     var gd = Lib.getPlotDiv(options.element) || {},
         numClicks = 1,
-        DBLCLICKDELAY = constants.DBLCLICKDELAY,
+        DBLCLICKDELAY = interactConstants.DBLCLICKDELAY,
         startX,
         startY,
         newMouseDownTime,
