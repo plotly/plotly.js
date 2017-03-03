@@ -9,12 +9,11 @@
 
 'use strict';
 
-var tinycolor = require('tinycolor2');
-var arrtools = require('arraytools');
+var rgba = require('color-rgba');
 
 function str2RgbaArray(color) {
-    color = tinycolor(color);
-    return arrtools.str2RgbaArray(color.toRgbString());
+  return rgba(color) || [0, 0, 0, 1];
 }
 
 module.exports = str2RgbaArray;
+
