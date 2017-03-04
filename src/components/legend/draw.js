@@ -28,6 +28,7 @@ var helpers = require('./helpers');
 var anchorUtils = require('./anchor_utils');
 
 var SHOWISOLATETIP = true;
+var DBLCLICKDELAY = interactConstants.DBLCLICKDELAY;
 
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout;
@@ -335,18 +336,15 @@ module.exports = function draw(gd) {
                 } else {
                     var traces = [],
                         clickedTrace;
-                    fullLayout._infolayer.selectAll('g.traces').each(function() { d3.select(this).call(function() { traces.push(this); }); });
-                    for(var i = 0; i < traces.length; i++) {
-                        var tracei = traces[i];
-                        var p = tracei[0][0].getBoundingClientRect();
-                        if(e.clientX >= p.left && e.clientX <= p.right && e.clientY >= p.top && e.clientY <= p.bottom) {
-                            clickedTrace = tracei;
-                            break;
-                        }
-                    }
-                    if(clickedTrace) {
+                    traces = fullLayout._infolayer.selectAll('g.traces').filter(function() {
+                        var bbox = this.getBoundingClientRect();
+                        return (e.clientX >= bbox.left && e.clientX <= bbox.right &&
+                            e.clientY >= bbox.top && e.clientY <= bbox.bottom);
+                    })[0];
+                    if(traces.length > 0) {
+                        clickedTrace = d3.select(traces[0]);
                         if(numClicks === 1) {
-                            legend._clickTimeout = setTimeout(function() { handleClick(clickedTrace, gd, numClicks); }, 300);
+                            legend._clickTimeout = setTimeout(function() { handleClick(clickedTrace, gd, numClicks); }, DBLCLICKDELAY);
                         } else if(numClicks === 2) {
                             if(legend._clickTimeout) {
                                 clearTimeout(legend._clickTimeout);
@@ -422,8 +420,7 @@ function drawTexts(g, gd) {
 
 function setupTraceToggle(g, gd) {
     var newMouseDownTime,
-        numClicks = 1,
-        DBLCLICKDELAY = interactConstants.DBLCLICKDELAY;
+        numClicks = 1;
 
     var traceToggle = g.selectAll('rect')
         .data([0]);
