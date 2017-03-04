@@ -25,7 +25,11 @@ function calculateColor(colorIn, opacityIn) {
 }
 
 function validateColor(colorIn) {
-    return isNumeric(colorIn) ? colorDfltRgba : (rgba(colorIn) || colorDfltRgba);
+    if (isNumeric(colorIn)) return colorDfltRgba;
+
+    var colorOut = rgba(colorIn);
+
+    return colorOut.length ? colorOut : colorDfltRgba;
 }
 
 function validateOpacity(opacityIn) {

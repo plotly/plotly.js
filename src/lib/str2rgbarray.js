@@ -12,7 +12,8 @@
 var rgba = require('color-rgba');
 
 function str2RgbaArray(color) {
-    return rgba(color) || [0, 0, 0, 1];
+	var colorOut = rgba(color);
+    return colorOut.length ? colorOut : [0, 0, 0, 1];
 }
 
 module.exports = str2RgbaArray;
