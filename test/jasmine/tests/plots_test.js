@@ -397,7 +397,7 @@ describe('Test Plots', function() {
                 '_ev', '_internalEv', 'on', 'once', 'removeListener', 'removeAllListeners',
                 '_internalOn', '_internalOnce', '_removeInternalListener',
                 '_removeAllInternalListeners', 'emit', '_context', '_replotPending',
-                '_hmpixcount', '_hmlumcount', '_mouseDownTime'
+                '_hmpixcount', '_hmlumcount', '_mouseDownTime', '_legendMouseDownTime',
             ];
 
             Plots.purge(gd);

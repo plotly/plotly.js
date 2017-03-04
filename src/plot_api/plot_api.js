@@ -2794,6 +2794,7 @@ Plotly.purge = function purge(gd) {
     delete gd._context;
     delete gd._replotPending;
     delete gd._mouseDownTime;
+    delete gd._legendMouseDownTime;
     delete gd._hmpixcount;
     delete gd._hmlumcount;
 
