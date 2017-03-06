@@ -886,4 +886,62 @@ describe('hover updates', function() {
             return assertLabelsCorrect(null, [103, 100], 'trace 10.5');
         }).catch(fail).then(done);
     });
+
+    it('should not trigger infinite loop of plotly_unhover events', function(done) {
+        var gd = createGraphDiv();
+        var colors0 = ['#00000', '#00000', '#00000', '#00000', '#00000', '#00000', '#00000'];
+
+        function unhover() {
+            return new Promise(function(resolve) {
+                mouseEvent('mousemove', 394, 285);
+                setTimeout(function() {
+                    resolve();
+                }, constants.HOVERMINTIME);
+            });
+        }
+
+        var hoverCnt = 0;
+        var unHoverCnt = 0;
+
+        Plotly.plot(gd, [{
+            mode: 'markers',
+            x: [1, 2, 3, 4, 5, 6, 7],
+            y: [1, 2, 3, 2, 3, 4, 3],
+            marker: {
+                size: 16,
+                colors: colors0.slice()
+            }
+        }])
+        .then(function() {
+
+            gd.on('plotly_hover', function(eventData) {
+                hoverCnt++;
+
+                var pt = eventData.points[0];
+                Plotly.restyle(gd, 'marker.color[' + pt.pointNumber + ']', 'red');
+            });
+
+            gd.on('plotly_unhover', function() {
+                unHoverCnt++;
+
+                Plotly.restyle(gd, 'marker.color', [colors0.slice()]);
+            });
+
+            return assertLabelsCorrect([351, 251], [358, 272], '2');
+        })
+        .then(unhover)
+        .then(function() {
+            expect(hoverCnt).toEqual(1);
+            expect(unHoverCnt).toEqual(1);
+
+            return assertLabelsCorrect([400, 200], [435, 198], '3');
+        })
+        .then(unhover)
+        .then(function() {
+            expect(hoverCnt).toEqual(2);
+            expect(unHoverCnt).toEqual(2);
+        })
+        .then(done);
+
+    });
 });
