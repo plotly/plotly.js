@@ -792,6 +792,36 @@ describe('parcoords', function() {
                 });
         });
 
+        it('Calling `Plotly.restyle` with zero panels left should erase lines', function(done) {
+
+            var mockCopy = Lib.extendDeep({}, mock2);
+            var gd = createGraphDiv();
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout);
+
+            function restyleDimension(key, dimIndex, setterValue) {
+                var value = Lib.isArray(setterValue) ? setterValue[0] : setterValue;
+                return function() {
+                    return Plotly.restyle(gd, 'dimensions[' + dimIndex + '].' + key, setterValue).then(function() {
+                        expect(gd.data[0].dimensions[dimIndex][key]).toEqual(value, 'for dimension attribute \'' + key + '\'');
+                    });
+                };
+            }
+
+            restyleDimension('values', 1, [[]])()
+                .then(function() {
+                    d3.selectAll('.parcoords-lines').each(function(d) {
+                        var imageArray = d.lineLayer.readPixels(0, 0, d.model.canvasWidth, d.model.canvasHeight);
+                        var foundPixel = false;
+                        var i = 0;
+                        do {
+                            foundPixel = foundPixel || imageArray[i++] !== 0;
+                        } while(!foundPixel && i < imageArray.length);
+                        expect(foundPixel).toEqual(false);
+                    });
+                    done();
+                });
+        });
+
         describe('Having two datasets', function() {
 
             it('Two subsequent calls to Plotly.plot should create two parcoords rows', function(done) {
