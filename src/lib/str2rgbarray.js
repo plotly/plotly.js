@@ -12,7 +12,7 @@
 var rgba = require('color-rgba');
 
 function str2RgbaArray(color) {
-	var colorOut = rgba(color);
+    var colorOut = rgba(color);
     return colorOut.length ? colorOut : [0, 0, 0, 1];
 }
 
