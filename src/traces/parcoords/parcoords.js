@@ -127,8 +127,8 @@ function model(layout, d, i) {
         canvasOverdrag: c.overdrag * c.canvasPixelRatio
     });
 
-    var groupWidth = width * (domain.x[1] - domain.x[0]);
-    var groupHeight = layout.height * (domain.y[1] - domain.y[0]);
+    var groupWidth = Math.floor(width * (domain.x[1] - domain.x[0]));
+    var groupHeight = Math.floor(layout.height * (domain.y[1] - domain.y[0]));
 
     var pad = layout.margin || {l: 80, r: 80, t: 100, b: 80};
     var rowContentWidth = groupWidth;
