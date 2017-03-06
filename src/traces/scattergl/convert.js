@@ -46,6 +46,7 @@ function LineWithMarkers(scene, uid) {
     this.hoverinfo = 'all';
     this.connectgaps = true;
 
+    this.index = null;
     this.idToIndex = [];
     this.bounds = [0, 0, 0, 0];
 
@@ -103,7 +104,7 @@ function LineWithMarkers(scene, uid) {
 
 var proto = LineWithMarkers.prototype;
 
-proto.initObject = function(createFn, options, index) {
+proto.initObject = function(createFn, options, objIndex) {
     var _this = this;
     var glplot = _this.scene.glplot;
     var options0 = Lib.extendFlat({}, options);
@@ -113,7 +114,7 @@ proto.initObject = function(createFn, options, index) {
         if(!obj) {
             obj = createFn(glplot, options);
             obj._trace = _this;
-            obj._index = index;
+            obj._index = objIndex;
         }
         obj.update(options);
         return obj;
@@ -298,6 +299,9 @@ proto.update = function(options) {
     this.scene.glplot.objects.sort(function(a, b) {
         return a._index - b._index;
     });
+
+    // set trace index so that scene2d can sort object per traces
+    this.index = options.index;
 
     // not quite on-par with 'scatter', but close enough for now
     // does not handle the colorscale case
