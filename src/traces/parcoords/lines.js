@@ -365,6 +365,11 @@ module.exports = function(canvasGL, lines, canvasWidth, canvasHeight, initialDim
             }
         }
 
+        if(panelCount === 0) {
+            // clear canvas here, as the panel iteration below will not enter the loop body
+            clear(regl, 0, 0, canvasWidth, canvasHeight);
+        }
+
         for(I = 0; I < panelCount; I++) {
             var panel = panels[I];
             var dim1 = panel.dim1;
@@ -396,10 +401,23 @@ module.exports = function(canvasGL, lines, canvasWidth, canvasHeight, initialDim
         return pickPixel;
     }
 
+    function readPixels(canvasX, canvasY, width, height) {
+        var pixelArray = new Uint8Array(4 * width * height);
+        regl.read({
+            x: canvasX,
+            y: canvasY,
+            width: width,
+            height: height,
+            data: pixelArray
+        });
+        return pixelArray;
+    }
+
     return {
         setColorDomain: setColorDomain,
         render: renderGLParcoords,
         readPixel: readPixel,
+        readPixels: readPixels,
         destroy: regl.destroy
     };
 };
