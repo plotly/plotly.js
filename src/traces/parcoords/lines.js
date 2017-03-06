@@ -401,10 +401,23 @@ module.exports = function(canvasGL, lines, canvasWidth, canvasHeight, initialDim
         return pickPixel;
     }
 
+    function readPixels(canvasX, canvasY, width, height) {
+        var pixelArray = new Uint8Array(4 * width * height);
+        regl.read({
+            x: canvasX,
+            y: canvasY,
+            width: width,
+            height: height,
+            data: pixelArray
+        });
+        return pixelArray;
+    }
+
     return {
         setColorDomain: setColorDomain,
         render: renderGLParcoords,
         readPixel: readPixel,
+        readPixels: readPixels,
         destroy: regl.destroy
     };
 };
