@@ -67,7 +67,7 @@ function renderBlock(regl, glAes, renderState, blockLineCount, sampleCount, item
 
         glAes(item);
 
-        if((blockNumber + 1) * blockLineCount + count < sampleCount) {
+        if(blockNumber * blockLineCount + count < sampleCount) {
             renderState.currentRafs[rafKey] = window.requestAnimationFrame(function() {
                 render(blockNumber + 1);
             });
