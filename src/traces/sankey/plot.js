@@ -33,12 +33,26 @@ module.exports = function plot(gd, calcData) {
             //.style('stroke', 'magenta');
         console.log('hover link', d.link);
 
-        Fx.loneHover({}, {
+        var hoverCenterX = d3.event.clientX;
+        var hoverCenterY = d3.event.clientY;
+
+        Fx.loneHover({
+            x: hoverCenterX,
+            y: hoverCenterY,
+            name: d.link.value + '',
+            text: [
+                d.link.label,
+                ['Source:', d.link.source.name].join(' '),
+                ['Target:', d.link.target.name].join(' ')
+            ].join('<br>'),
+            color: 'blue',
+            idealAlign: 'left'
+        }, {
             container: fullLayout._hoverlayer.node(),
             outerContainer: fullLayout._paper.node()
         });
 
-        Fx.hover(gd, d.link, 'pie');
+        Fx.hover(gd, d.link, 'sankey');
 
         hasHoverData = true;
     };
@@ -68,16 +82,31 @@ module.exports = function plot(gd, calcData) {
     var nodeHover = function(element, d) {
         d3.select(element)
             //.style('stroke-opacity', 1)
-            .style('stroke-width', 4)
-            .style('stroke', 'magenta');
+            .style('stroke-width', 2)
+            .style('stroke', 'black');
         console.log('hover node', d.node);
 
-        Fx.loneHover({}, {
+        var hoverCenterX = d3.event.clientX;
+        var hoverCenterY = d3.event.clientY;
+
+        Fx.loneHover({
+            x: hoverCenterX,
+            y: hoverCenterY,
+            name: d.node.value + '',
+            text: [
+                d.node.name,
+                ['Source count:', d.node.sourceLinks.length].join(' '),
+                ['Target count:', d.node.targetLinks.length].join(' ')
+            ].join('<br>'),
+            color: 'blue',
+            idealAlign: 'left'
+        }, {
             container: fullLayout._hoverlayer.node(),
             outerContainer: fullLayout._paper.node()
         });
 
-        Fx.hover(gd, d.node, 'pie');
+
+        Fx.hover(gd, d.node, 'sankey');
 
         hasHoverData = true;
     };

@@ -8,8 +8,14 @@
 
 'use strict';
 
-module.exports = {
+var extendFlat = require('../../lib/extend').extendFlat;
+var plotAttrs = require('../../plots/attributes');
 
+
+module.exports = {
+    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
+        flags: ['label', 'text', 'value', 'percent', 'name']
+    }),
     domain: {
         x: {
             valType: 'info_array',
@@ -44,7 +50,7 @@ module.exports = {
         label: {
             valType: 'string',
             role: 'info',
-            description: 'The shown name of the dimension.'
+            description: 'The shown name of the node.'
         },
         visible: {
             valType: 'boolean',
@@ -60,7 +66,7 @@ module.exports = {
         label: {
             valType: 'string',
             role: 'info',
-            description: 'The shown name of the dimension.'
+            description: 'The shown name of the link.'
         },
         visible: {
             valType: 'boolean',

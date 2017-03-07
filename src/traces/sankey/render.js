@@ -37,13 +37,7 @@ function viewModel(layout, d, i) {
         .nodeWidth(20)
         .nodePadding(20)
         .nodes(nodes.map(function(d) {return {name: d.label};}))
-        .links(links.map(function(d) {
-            return {
-                source: d.source,
-                target: d.target,
-                value: d.value
-            };
-        }))
+        .links(links)
         .layout(50);
 
     return {
@@ -146,11 +140,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
     sankeyLink.enter()
         .append('path')
         .classed('sankeyPath', true)
-        .call(attachPointerEvents(callbacks.linkEvents))
-        .append('title')
-        .text(function(d) {
-            return d.link.source.name + '⟿' + d.link.target.name + ' : ' + d.link.value;
-        });
+        .call(attachPointerEvents(callbacks.linkEvents));
 
     sankeyLink
         .attr('d', linkPath)
@@ -222,16 +212,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('stroke', 'black')
         .style('stroke-opacity', 1)
         .style('stroke-width', 0.5)
-        .call(attachPointerEvents(callbacks.nodeEvents))
-        .append('title')
-        .text(function(d) {
-            return [
-                d.node.name,
-                'in: ' + d.node.targetLinks.length,
-                'out: ' + d.node.sourceLinks.length,
-                'value: ' + d.node.value
-            ].join('\n');
-        });
+        .call(attachPointerEvents(callbacks.nodeEvents));
 
     nodeRect // ceil, +/-0.5 and crispEdges is wizardry for consistent border width on all 4 sides
         .attr(c.vertical ? 'height' : 'width', function(d) {return Math.ceil(d.node.dx + 0.5);})

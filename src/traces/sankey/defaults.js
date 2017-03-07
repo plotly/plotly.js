@@ -75,13 +75,15 @@ function linksDefaults(traceIn, traceOut) {
 }
 
 
-module.exports = function supplyDefaults(traceIn, traceOut) {
+module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
     nodesDefaults(traceIn, traceOut);
     linksDefaults(traceIn, traceOut);
+
+    coerce('hoverinfo', layout._dataLength === 1 ? 'label+text+value+percent' : undefined);
 
     coerce('domain.x');
     coerce('domain.y');
