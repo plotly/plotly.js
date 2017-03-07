@@ -63,7 +63,7 @@ function drawOne(gd, index) {
         .selectAll('.shapelayer [data-index="' + index + '"]')
         .remove();
 
-    var optionsIn = gd.layout.shapes[index],
+    var optionsIn = (gd.layout.shapes || [])[index],
         options = gd._fullLayout.shapes[index];
 
     // this shape is gone - quit now after deleting it
