@@ -10,6 +10,20 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.24.1] -- 2017-03-07
+
+### Fixed
+- Ensure that calling restyle or relayout in a `plotly_unhover` handler does not
+  result in an infinite loop (bug introduced in 1.24.0) [#1448]
+- Ensure autorange routine is bypassed when axis range is set (bug introduced in
+  1.24.0) [#1425]
+- Fix annotations dragging in editable mode (bug introduced in 1.22.0) [#1441]
+- Show correct curve number in gl2d hover data [#1427]
+- Clear parcoords canvas specially if no panel exist [#1440]
+- Fix parcoords to render last block increment [#1447]
+- Axis refs in hover data are not plagued by circular references [#1431]
+
+
 ## [1.24.0] -- 2017-02-27
 
 ### Added
