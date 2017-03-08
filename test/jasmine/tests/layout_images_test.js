@@ -90,17 +90,28 @@ describe('Layout images', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('should draw images on the right layers', function() {
+        function checkLayers(upper, lower, subplot) {
+            var upperLayer = gd._fullLayout._imageUpperLayer;
+            expect(upperLayer.size()).toBe(1);
+            expect(upperLayer.selectAll('image').size()).toBe(upper);
 
-            var layer;
+            var lowerLayer = gd._fullLayout._imageLowerLayer;
+            expect(lowerLayer.size()).toBe(1);
+            expect(lowerLayer.selectAll('image').size()).toBe(lower);
+
+            var subplotLayer = gd._fullLayout._plots.xy.imagelayer;
+            expect(subplotLayer.size()).toBe(1);
+            expect(subplotLayer.selectAll('image').size()).toBe(subplot);
+        }
+
+        it('should draw images on the right layers', function() {
 
             Plotly.plot(gd, data, { images: [{
                 source: 'imageabove',
                 layer: 'above'
             }]});
 
-            layer = gd._fullLayout._imageUpperLayer;
-            expect(layer.length).toBe(1);
+            checkLayers(1, 0, 0);
 
             destroyGraphDiv();
             gd = createGraphDiv();
@@ -109,8 +120,7 @@ describe('Layout images', function() {
                 layer: 'below'
             }]});
 
-            layer = gd._fullLayout._imageLowerLayer;
-            expect(layer.length).toBe(1);
+            checkLayers(0, 1, 0);
 
             destroyGraphDiv();
             gd = createGraphDiv();
@@ -121,8 +131,7 @@ describe('Layout images', function() {
                 yref: 'y'
             }]});
 
-            layer = gd._fullLayout._imageSubplotLayer;
-            expect(layer.length).toBe(1);
+            checkLayers(0, 0, 1);
         });
 
         describe('with anchors and sizing', function() {
