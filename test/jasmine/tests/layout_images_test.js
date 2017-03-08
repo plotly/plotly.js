@@ -307,7 +307,7 @@ describe('Layout images', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('should properly add and removing image', function(done) {
+        it('should properly add and remove image', function(done) {
             var gd = createGraphDiv(),
                 data = [{ x: [1, 2, 3], y: [1, 2, 3] }],
                 layout = { width: 500, height: 400 };
@@ -425,10 +425,15 @@ describe('images log/linear axis changes', function() {
         // we don't try to figure out the position on a new axis / canvas
         // automatically when you change xref / yref, we leave it to the caller.
 
+        // initial clip path should end in 'xy' to match xref/yref
+        expect(d3.select('image').attr('clip-path') || '').toMatch(/xy\)$/);
+
         // linear to log
         Plotly.relayout(gd, {'images[0].yref': 'y2'})
         .then(function() {
             expect(gd.layout.images[0].y).toBe(1);
+
+            expect(d3.select('image').attr('clip-path') || '').toMatch(/xy2\)$/);
 
             // log to paper
             return Plotly.relayout(gd, {'images[0].yref': 'paper'});
@@ -436,11 +441,21 @@ describe('images log/linear axis changes', function() {
         .then(function() {
             expect(gd.layout.images[0].y).toBe(1);
 
+            expect(d3.select('image').attr('clip-path') || '').toMatch(/x\)$/);
+
+            // change to full paper-referenced, to make sure the clip path disappears
+            return Plotly.relayout(gd, {'images[0].xref': 'paper'});
+        })
+        .then(function() {
+            expect(d3.select('image').attr('clip-path')).toBe(null);
+
             // paper to log
             return Plotly.relayout(gd, {'images[0].yref': 'y2'});
         })
         .then(function() {
             expect(gd.layout.images[0].y).toBe(1);
+
+            expect(d3.select('image').attr('clip-path') || '').toMatch(/^[^x]+y2\)$/);
 
             // log to linear
             return Plotly.relayout(gd, {'images[0].yref': 'y'});
