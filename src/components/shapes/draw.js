@@ -70,13 +70,11 @@ function drawOne(gd, index) {
     // TODO: use d3 idioms instead of deleting and redrawing every time
     if(!optionsIn || options.visible === false) return;
 
-    var clipAxes;
+    // var clipAxes;
     if(options.layer !== 'below') {
-        clipAxes = (options.xref + options.yref).replace(/paper/g, '');
         drawShape(gd._fullLayout._shapeUpperLayer);
     }
     else if(options.xref === 'paper' && options.yref === 'paper') {
-        clipAxes = '';
         drawShape(gd._fullLayout._shapeLowerLayer);
     }
     else {
@@ -86,10 +84,13 @@ function drawOne(gd, index) {
 
         for(i = 0, n = subplots.length; i < n; i++) {
             plotinfo = plots[subplots[i]];
-            clipAxes = subplots[i];
 
             if(isShapeInSubplot(gd, options, plotinfo)) {
                 drawShape(plotinfo.shapelayer);
+
+                // make sure we only draw the shape once.
+                // See https://github.com/plotly/plotly.js/issues/1452
+                break;
             }
         }
     }
@@ -110,10 +111,15 @@ function drawOne(gd, index) {
             .call(Color.fill, options.fillcolor)
             .call(Drawing.dashLine, options.line.dash, options.line.width);
 
-        if(clipAxes) {
-            path.call(Drawing.setClipUrl,
-                'clip' + gd._fullLayout._uid + clipAxes);
-        }
+        // note that for layer="below" the clipAxes can be different from the
+        // subplot we're drawing this in. This could cause problems if the shape
+        // spans two subplots. See https://github.com/plotly/plotly.js/issues/1452
+        var clipAxes = (options.xref + options.yref).replace(/paper/g, '');
+
+        path.call(Drawing.setClipUrl, clipAxes ?
+            ('clip' + gd._fullLayout._uid + clipAxes) :
+            null
+        );
 
         if(gd._context.editable) setupDragElement(gd, path, options, index);
     }
