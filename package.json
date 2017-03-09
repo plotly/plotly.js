@@ -33,7 +33,7 @@
     "docker": "node tasks/docker.js",
     "pretest": "node tasks/pretest.js",
     "test-jasmine": "karma start test/jasmine/karma.conf.js",
-    "citest-jasmine": "CIRCLECI=0 karma start test/jasmine/karma.conf.js",
+    "citest-jasmine": "CIRCLECI=1 karma start test/jasmine/karma.conf.js",
     "test-image": "node tasks/test_image.js",
     "test-image-gl2d": "node tasks/test_image.js gl2d_* --queue",
     "test-export": "node tasks/test_export.js",

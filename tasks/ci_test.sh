@@ -14,7 +14,7 @@ case $CIRCLE_NODE_INDEX in
         ;;
 
     1)
-        npm run citest-jasmine || EXIT_STATE=$?
+        npm run test-jasmine || EXIT_STATE=$?
         npm run test-bundle    || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
