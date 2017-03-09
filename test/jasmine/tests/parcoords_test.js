@@ -219,7 +219,7 @@ describe('parcoords initialization tests', function() {
     });
 });
 
-describe('parcoords', function() {
+describe('@noCI parcoords', function() {
 
     beforeAll(function() {
         mock.data[0].dimensions.forEach(function(d) {

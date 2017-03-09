@@ -451,7 +451,7 @@ describe('scattermapbox convert', function() {
     }
 });
 
-describe('scattermapbox hover', function() {
+describe('@noCI scattermapbox hover', function() {
     'use strict';
 
     var hoverPoints = ScatterMapbox.hoverPoints;

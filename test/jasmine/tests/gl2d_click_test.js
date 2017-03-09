@@ -16,7 +16,7 @@ Plotly.register([
     require('@lib/contourgl')
 ]);
 
-describe('Test hover and click interactions', function() {
+describe('@noCI Test hover and click interactions', function() {
 
     var mock = require('@mocks/gl2d_14.json');
     var mock2 = require('@mocks/gl2d_pointcloud-basic.json');

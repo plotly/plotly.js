@@ -276,7 +276,7 @@ describe('mapbox credentials', function() {
     }, LONG_TIMEOUT_INTERVAL);
 });
 
-describe('mapbox plots', function() {
+describe('@noCI, mapbox plots', function() {
     'use strict';
 
     var mock = require('@mocks/mapbox_0.json'),
