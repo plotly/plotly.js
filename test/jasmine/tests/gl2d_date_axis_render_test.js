@@ -1,13 +1,9 @@
 var PlotlyInternal = require('@src/plotly');
 
-var hasWebGLSupport = require('../assets/has_webgl_support');
-
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 describe('date axis', function() {
-
-    if(!hasWebGLSupport('axes_test date axis')) return;
 
     var gd;
 
