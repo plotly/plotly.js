@@ -408,7 +408,39 @@ function setupTraceToggle(g, gd) {
         .attr('pointer-events', 'all')
         .call(Color.fill, 'rgba(0,0,0,0)');
 
-    traceToggle.on('click', function() {
+       // This means it'll take a minimum of 200ms to take the single
+       // click action. If it's too short the single and double actions
+       // will be called.
+       // The default time between clicks on windows is 200ms (http://en.wikipedia.org/wiki/Double-click)
+       // Adjust accordingly.
+        var timeOut = 200;
+        var timeoutID = 0;
+        var ignoreSingleClicks = false;
+
+       traceToggle.on('click', function() {
+         if (!ignoreSingleClicks) {
+           // The double click generates two single click events
+           // and then a double click event so we always clear
+           // the last timeoutID
+           clearTimeout(timeoutID);
+
+           timeoutID = setTimeout(function() {
+            traceToggleByClickType(restyleBySingleClick);
+           }, timeOut);
+         }
+       });
+
+       traceToggle.on('dblclick', function() {
+         clearTimeout(timeoutID);
+         ignoreSingleClicks = true;
+
+         setTimeout(function() {
+           ignoreSingleClicks = false;
+         }, timeOut);
+         traceToggleByClickType(restyleByDoubleClick);
+       });
+
+    var traceToggleByClickType = function (restyleCondition) {
         if(gd._dragged) return;
 
         var legendItem = g.data()[0][0],
@@ -416,8 +448,7 @@ function setupTraceToggle(g, gd) {
             trace = legendItem.trace,
             legendgroup = trace.legendgroup,
             traceIndicesInGroup = [],
-            tracei,
-            newVisible;
+            tracei;
 
         if(Registry.traceIs(trace, 'pie')) {
             var thisLabel = legendItem.label,
@@ -438,11 +469,26 @@ function setupTraceToggle(g, gd) {
                     }
                 }
             }
-
-            newVisible = trace.visible === true ? 'legendonly' : true;
-            Plotly.restyle(gd, 'visible', newVisible, traceIndicesInGroup);
+            restyleCondition(trace, traceIndicesInGroup);
         }
-    });
+    };
+
+    var restyleBySingleClick = function (trace, traceIndicesInGroup) {
+        var newVisible = trace.visible === true ? 'legendonly' : true;
+        Plotly.restyle(gd, 'visible', newVisible, traceIndicesInGroup);
+    };
+
+    var restyleByDoubleClick = function (trace, traceIndicesInGroup) {
+        var calcdata = gd.calcdata;
+        var items = [];
+        Plotly.restyle(gd, 'visible', true, traceIndicesInGroup);
+
+        for(var i = 0; i < calcdata.length; i++){
+            if(i !== traceIndicesInGroup[0]){
+                items.push(i);
+            }
+        } Plotly.restyle(gd, 'visible', 'legendonly', items);
+    };
 }
 
 function computeTextDimensions(g, gd) {
