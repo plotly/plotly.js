@@ -285,6 +285,23 @@ describe('@noCI parcoords', function() {
             });
         });
 
+        it('Works with duplicate dimension labels', function(done) {
+
+            var mockCopy = Lib.extendDeep({}, mock2);
+
+            mockCopy.layout.width = 320;
+            mockCopy.data[0].dimensions[1].label = mockCopy.data[0].dimensions[0].label;
+
+            var gd = createGraphDiv();
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+
+                expect(gd.data.length).toEqual(1);
+                expect(gd.data[0].dimensions.length).toEqual(2);
+                expect(document.querySelectorAll('.axis').length).toEqual(2);
+                done();
+            });
+        });
+
         it('Works with a single line; also, use a longer color array than the number of lines', function(done) {
 
             var mockCopy = Lib.extendDeep({}, mock2);
