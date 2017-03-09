@@ -203,6 +203,17 @@ describe('annotations relayout', function() {
         .then(function() {
             expect(countAnnotations()).toEqual(0);
             expect(Loggers.warn).not.toHaveBeenCalled();
+
+            return Plotly.relayout(gd, {'annotations[0]': ann});
+        })
+        .then(function() {
+            expect(countAnnotations()).toEqual(1);
+
+            return Plotly.relayout(gd, {'annotations[0]': null});
+        })
+        .then(function() {
+            expect(countAnnotations()).toEqual(0);
+            expect(Loggers.warn).not.toHaveBeenCalled();
         })
         .catch(failTest)
         .then(done);

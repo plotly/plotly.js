@@ -320,6 +320,23 @@ describe('Test shapes:', function() {
                 expect(countShapePathsInLowerLayer()).toEqual(0);
                 expect(countShapePathsInSubplots()).toEqual(0);
             })
+            .then(function() {
+                return Plotly.relayout(gd, {'shapes[0]': getRandomShape()});
+            })
+            .then(function() {
+                expect(countShapePathsInUpperLayer()).toEqual(1);
+                expect(countShapePathsInLowerLayer()).toEqual(0);
+                expect(countShapePathsInSubplots()).toEqual(0);
+                expect(gd.layout.shapes.length).toBe(1);
+
+                return Plotly.relayout(gd, {'shapes[0]': null});
+            })
+            .then(function() {
+                expect(countShapePathsInUpperLayer()).toEqual(0);
+                expect(countShapePathsInLowerLayer()).toEqual(0);
+                expect(countShapePathsInSubplots()).toEqual(0);
+                expect(gd.layout.shapes).toBeUndefined();
+            })
             .catch(failTest)
             .then(done);
         });
