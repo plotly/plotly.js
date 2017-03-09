@@ -17,6 +17,7 @@ var constants = require('../../tasks/util/constants');
 
 var arg = process.argv[4];
 
+var isCI = !!process.env.CIRCLECI;
 var testFileGlob = arg ? arg : 'tests/*_test.js';
 var isSingleSuiteRun = (arg && arg.indexOf('bundle_tests/') === -1);
 var isRequireJSTest = (arg && arg.indexOf('bundle_tests/requirejs') !== -1);
@@ -84,7 +85,13 @@ func.defaultConfig = {
     colors: true,
 
     // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: true,
+    autoWatch: !isCI,
+
+    // if true, Karma captures browsers, runs the tests and exits
+    singleRun: isCI,
+
+    // how long will Karma wait for a message from a browser before disconnecting (30 ms)
+    browserNoActivityTimeout: 30000,
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
@@ -103,18 +110,13 @@ func.defaultConfig = {
         }
     },
 
-    // Continuous Integration mode
-    // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false,
-
     browserify: {
         transform: ['../../tasks/util/shortcut_paths.js'],
         extensions: ['.js'],
-        watch: true,
+        watch: !isCI,
         debug: true
     }
 };
-
 
 // Add lib/index.js to single-suite runs,
 // to avoid import conflicts due to plotly.js
