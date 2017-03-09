@@ -7,7 +7,6 @@ var attributes = require('@src/traces/parcoords/attributes');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var hasWebGLSupport = require('../assets/has_webgl_support');
 var mouseEvent = require('../assets/mouse_event');
 
 // mock with two dimensions (one panel); special case, e.g. left and right panel is obv. the same
@@ -220,9 +219,7 @@ describe('parcoords initialization tests', function() {
     });
 });
 
-describe('parcoords', function() {
-
-    if(!hasWebGLSupport('parcoords')) return;
+describe('@noCI parcoords', function() {
 
     beforeAll(function() {
         mock.data[0].dimensions.forEach(function(d) {

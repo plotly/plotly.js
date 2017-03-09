@@ -756,8 +756,8 @@ describe('hover on fill', function() {
                 var transformParts = hoverText.attr('transform').split('(');
                 expect(transformParts[0]).toEqual('translate');
                 var transformCoords = transformParts[1].split(')')[0].split(',');
-                expect(+transformCoords[0]).toBeCloseTo(labelPos[0], -1, labelText + ':x');
-                expect(+transformCoords[1]).toBeCloseTo(labelPos[1], -1, labelText + ':y');
+                expect(+transformCoords[0]).toBeCloseTo(labelPos[0], -1.2, labelText + ':x');
+                expect(+transformCoords[1]).toBeCloseTo(labelPos[1], -1.2, labelText + ':y');
 
                 resolve();
             }, constants.HOVERMINTIME);
