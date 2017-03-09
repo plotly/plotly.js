@@ -90,17 +90,28 @@ describe('Layout images', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('should draw images on the right layers', function() {
+        function checkLayers(upper, lower, subplot) {
+            var upperLayer = gd._fullLayout._imageUpperLayer;
+            expect(upperLayer.size()).toBe(1);
+            expect(upperLayer.selectAll('image').size()).toBe(upper);
 
-            var layer;
+            var lowerLayer = gd._fullLayout._imageLowerLayer;
+            expect(lowerLayer.size()).toBe(1);
+            expect(lowerLayer.selectAll('image').size()).toBe(lower);
+
+            var subplotLayer = gd._fullLayout._plots.xy.imagelayer;
+            expect(subplotLayer.size()).toBe(1);
+            expect(subplotLayer.selectAll('image').size()).toBe(subplot);
+        }
+
+        it('should draw images on the right layers', function() {
 
             Plotly.plot(gd, data, { images: [{
                 source: 'imageabove',
                 layer: 'above'
             }]});
 
-            layer = gd._fullLayout._imageUpperLayer;
-            expect(layer.length).toBe(1);
+            checkLayers(1, 0, 0);
 
             destroyGraphDiv();
             gd = createGraphDiv();
@@ -109,8 +120,7 @@ describe('Layout images', function() {
                 layer: 'below'
             }]});
 
-            layer = gd._fullLayout._imageLowerLayer;
-            expect(layer.length).toBe(1);
+            checkLayers(0, 1, 0);
 
             destroyGraphDiv();
             gd = createGraphDiv();
@@ -121,8 +131,7 @@ describe('Layout images', function() {
                 yref: 'y'
             }]});
 
-            layer = gd._fullLayout._imageSubplotLayer;
-            expect(layer.length).toBe(1);
+            checkLayers(0, 0, 1);
         });
 
         describe('with anchors and sizing', function() {
@@ -307,7 +316,7 @@ describe('Layout images', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('should properly add and removing image', function(done) {
+        it('should properly add and remove image', function(done) {
             var gd = createGraphDiv(),
                 data = [{ x: [1, 2, 3], y: [1, 2, 3] }],
                 layout = { width: 500, height: 400 };
@@ -425,10 +434,15 @@ describe('images log/linear axis changes', function() {
         // we don't try to figure out the position on a new axis / canvas
         // automatically when you change xref / yref, we leave it to the caller.
 
+        // initial clip path should end in 'xy' to match xref/yref
+        expect(d3.select('image').attr('clip-path') || '').toMatch(/xy\)$/);
+
         // linear to log
         Plotly.relayout(gd, {'images[0].yref': 'y2'})
         .then(function() {
             expect(gd.layout.images[0].y).toBe(1);
+
+            expect(d3.select('image').attr('clip-path') || '').toMatch(/xy2\)$/);
 
             // log to paper
             return Plotly.relayout(gd, {'images[0].yref': 'paper'});
@@ -436,11 +450,21 @@ describe('images log/linear axis changes', function() {
         .then(function() {
             expect(gd.layout.images[0].y).toBe(1);
 
+            expect(d3.select('image').attr('clip-path') || '').toMatch(/x\)$/);
+
+            // change to full paper-referenced, to make sure the clip path disappears
+            return Plotly.relayout(gd, {'images[0].xref': 'paper'});
+        })
+        .then(function() {
+            expect(d3.select('image').attr('clip-path')).toBe(null);
+
             // paper to log
             return Plotly.relayout(gd, {'images[0].yref': 'y2'});
         })
         .then(function() {
             expect(gd.layout.images[0].y).toBe(1);
+
+            expect(d3.select('image').attr('clip-path') || '').toMatch(/^[^x]+y2\)$/);
 
             // log to linear
             return Plotly.relayout(gd, {'images[0].yref': 'y'});
