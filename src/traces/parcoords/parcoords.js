@@ -176,7 +176,7 @@ function viewModel(model) {
     viewModel.dimensions = dimensions.filter(visible).map(function(dimension, i) {
         var domainToUnit = domainToUnitScale(dimension);
         var foundKey = uniqueKeys[dimension.label];
-        uniqueKeys[dimension.label] = (foundKey ? 0 : foundKey) + 1;
+        uniqueKeys[dimension.label] = (foundKey || 0) + 1;
         var key = dimension.label + (foundKey ? '__' + foundKey : '');
         return {
             key: key,
