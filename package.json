@@ -120,6 +120,7 @@
     "karma-firefox-launcher": "^1.0.0",
     "karma-jasmine": "^1.1.0",
     "karma-jasmine-spec-tags": "^1.0.1",
+    "karma-spec-reporter": "0.0.30",
     "karma-verbose-reporter": "0.0.6",
     "madge": "^1.6.0",
     "node-sass": "^4.5.0",

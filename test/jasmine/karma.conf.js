@@ -77,7 +77,7 @@ func.defaultConfig = {
     // See note in CONTRIBUTING.md about more verbose reporting via karma-verbose-reporter:
     // https://www.npmjs.com/package/karma-verbose-reporter ('verbose')
     //
-    reporters: ['progress'],
+    reporters: isSingleSuiteRun ? ['progress'] : ['dots', 'spec'],
 
     // web server port
     port: 9876,
@@ -119,6 +119,7 @@ func.defaultConfig = {
         extensions: ['.js'],
         watch: !isCI,
         debug: true
+    },
 
     // unfortunately a few tests don't behave well on CI
     // using `karma-jasmine-spec-tags`
@@ -128,6 +129,14 @@ func.defaultConfig = {
         skipTags: isCI ? 'noCI' : null
     },
 
+    // use 'karma-spec-reporter' to log info about skipped specs
+    specReporter: {
+        suppressErrorSummary: true,
+        suppressFailed: true,
+        suppressPassed: true,
+        suppressSkipped: false,
+        showSpecTiming: false,
+        failFast: false
     }
 };
 
