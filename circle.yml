@@ -1,7 +1,7 @@
 general:
   artifacts:
-      - "build/test_images/"
-      - "build/test_images_diff/"
+    - build/test_images/
+    - build/test_images_diff/
 
 machine:
   node:
