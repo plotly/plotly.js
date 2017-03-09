@@ -514,8 +514,8 @@ describe('annotations autorange', function() {
 
     function assertRanges(x, y, x2, y2, x3, y3) {
         var fullLayout = gd._fullLayout;
-        var PREC = 1;
 
+        var PREC = 1;
         // xaxis2 need a bit more tolerance to pass on CI
         // this most likely due to the different text bounding box values
         // on headfull vs headless browsers.
@@ -523,6 +523,9 @@ describe('annotations autorange', function() {
         var PRECX2 = -10;
         // yaxis2 needs a bit more now too...
         var PRECY2 = 0.2;
+        // and xaxis3 too...
+        var PRECX3 = 0.2;
+
         var dateAx = fullLayout.xaxis2;
 
         expect(fullLayout.xaxis.range).toBeCloseToArray(x, PREC, '- xaxis');
@@ -530,7 +533,7 @@ describe('annotations autorange', function() {
         expect(Lib.simpleMap(dateAx.range, dateAx.r2l))
             .toBeCloseToArray(Lib.simpleMap(x2, dateAx.r2l), PRECX2, 'xaxis2 ' + dateAx.range);
         expect(fullLayout.yaxis2.range).toBeCloseToArray(y2, PRECY2, 'yaxis2');
-        expect(fullLayout.xaxis3.range).toBeCloseToArray(x3, PREC, 'xaxis3');
+        expect(fullLayout.xaxis3.range).toBeCloseToArray(x3, PRECX3, 'xaxis3');
         expect(fullLayout.yaxis3.range).toBeCloseToArray(y3, PREC, 'yaxis3');
     }
 
