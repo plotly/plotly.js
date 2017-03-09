@@ -61,6 +61,7 @@ func.defaultConfig = {
     // N.B. this field is filled below
     files: [],
 
+    // list of files / pattern to exclude
     exclude: [],
 
     // preprocess matching files before serving them to the browser
@@ -98,7 +99,10 @@ func.defaultConfig = {
     browsers: ['Chrome_WindowSized'],
 
     // custom browser options
+    //
     // window-size values came from observing default size
+    //
+    // '--ignore-gpu-blacklist' allow to test WebGL on CI (!!!)
     customLaunchers: {
         Chrome_WindowSized: {
             base: 'Chrome',
@@ -122,11 +126,10 @@ func.defaultConfig = {
 // to avoid import conflicts due to plotly.js
 // circular dependencies.
 if(isSingleSuiteRun) {
-    func.defaultConfig.files = [
+    func.defaultConfig.files.push(
         pathToJQuery,
-        pathToMain,
-        testFileGlob
-    ];
+        pathToMain
+    );
 
     func.defaultConfig.preprocessors[pathToMain] = ['browserify'];
     func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
@@ -134,8 +137,7 @@ if(isSingleSuiteRun) {
 else if(isRequireJSTest) {
     func.defaultConfig.files = [
         constants.pathToRequireJS,
-        constants.pathToRequireJSFixture,
-        testFileGlob
+        constants.pathToRequireJSFixture
     ];
 }
 else if(isIE9Test) {
@@ -143,20 +145,15 @@ else if(isIE9Test) {
     // to catch reference errors that could occur
     // when plotly.js is first loaded.
 
-    func.defaultConfig.files = [
-        './assets/ie9_mock.js',
-        testFileGlob
-    ];
-
+    func.defaultConfig.files.push('./assets/ie9_mock.js');
     func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
 }
 else {
-    func.defaultConfig.files = [
-        pathToJQuery,
-        testFileGlob
-    ];
-
+    func.defaultConfig.files.push(pathToJQuery);
     func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
 }
+
+// lastly, load test file glob
+func.defaultConfig.files.push(testFileGlob);
 
 module.exports = func;
