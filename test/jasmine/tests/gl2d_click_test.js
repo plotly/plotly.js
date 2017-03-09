@@ -4,7 +4,6 @@ var Lib = require('@src/lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customMatchers = require('../assets/custom_matchers');
-var hasWebGLSupport = require('../assets/has_webgl_support');
 
 // cartesian click events events use the hover data
 // from the mousemove events and then simulate
@@ -17,9 +16,7 @@ Plotly.register([
     require('@lib/contourgl')
 ]);
 
-describe('Test hover and click interactions', function() {
-
-    if(!hasWebGLSupport('gl2d_click_test')) return;
+describe('@noCI Test hover and click interactions', function() {
 
     var mock = require('@mocks/gl2d_14.json');
     var mock2 = require('@mocks/gl2d_pointcloud-basic.json');
