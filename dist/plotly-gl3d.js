@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.24.1
+* plotly.js (gl3d) v1.24.2
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -46530,7 +46530,7 @@ function hiddenStore(obj, key) {
 }
 
 },{}],256:[function(require,module,exports){
-// Original - @Gozola. 
+// Original - @Gozola.
 // https://gist.github.com/Gozala/1269991
 // This is a reimplemented version (with a few bug fixes).
 
@@ -46549,6 +46549,7 @@ function weakMap() {
         },
         'set': function (key, value) {
             privates(key).value = value;
+            return this;
         },
         'has': function(key) {
             return 'value' in privates(key);
@@ -47403,7 +47404,7 @@ function drawOne(gd, index) {
     fullLayout._infolayer.selectAll('.annotation[data-index="' + index + '"]').remove();
 
     // remember a few things about what was already there,
-    var optionsIn = layout.annotations[index],
+    var optionsIn = (layout.annotations || [])[index],
         options = fullLayout.annotations[index];
 
     // this annotation is gone - quit now after deleting it
@@ -52247,16 +52248,28 @@ var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout,
         imageDataAbove = [],
-        imageDataSubplot = [],
-        imageDataBelow = [];
+        imageDataSubplot = {},
+        imageDataBelow = [],
+        subplot,
+        i;
 
     // Sort into top, subplot, and bottom layers
-    for(var i = 0; i < fullLayout.images.length; i++) {
+    for(i = 0; i < fullLayout.images.length; i++) {
         var img = fullLayout.images[i];
 
         if(img.visible) {
             if(img.layer === 'below' && img.xref !== 'paper' && img.yref !== 'paper') {
-                imageDataSubplot.push(img);
+                subplot = img.xref + img.yref;
+
+                var plotinfo = fullLayout._plots[subplot];
+                if(plotinfo.mainplot) {
+                    subplot = plotinfo.mainplot.id;
+                }
+
+                if(!imageDataSubplot[subplot]) {
+                    imageDataSubplot[subplot] = [];
+                }
+                imageDataSubplot[subplot].push(img);
             } else if(img.layer === 'above') {
                 imageDataAbove.push(img);
             } else {
@@ -52374,31 +52387,24 @@ module.exports = function draw(gd) {
             yId = ya ? ya._id : '',
             clipAxes = xId + yId;
 
-        if(clipAxes) {
-            thisImage.call(Drawing.setClipUrl, 'clip' + fullLayout._uid + clipAxes);
-        }
+        thisImage.call(Drawing.setClipUrl, clipAxes ?
+            ('clip' + fullLayout._uid + clipAxes) :
+            null
+        );
     }
 
     var imagesBelow = fullLayout._imageLowerLayer.selectAll('image')
             .data(imageDataBelow),
-        imagesSubplot = fullLayout._imageSubplotLayer.selectAll('image')
-            .data(imageDataSubplot),
         imagesAbove = fullLayout._imageUpperLayer.selectAll('image')
             .data(imageDataAbove);
 
     imagesBelow.enter().append('image');
-    imagesSubplot.enter().append('image');
     imagesAbove.enter().append('image');
 
     imagesBelow.exit().remove();
-    imagesSubplot.exit().remove();
     imagesAbove.exit().remove();
 
     imagesBelow.each(function(d) {
-        setImage.bind(this)(d);
-        applyAttributes.bind(this)(d);
-    });
-    imagesSubplot.each(function(d) {
         setImage.bind(this)(d);
         applyAttributes.bind(this)(d);
     });
@@ -52406,6 +52412,29 @@ module.exports = function draw(gd) {
         setImage.bind(this)(d);
         applyAttributes.bind(this)(d);
     });
+
+    var allSubplots = Object.keys(fullLayout._plots);
+    for(i = 0; i < allSubplots.length; i++) {
+        subplot = allSubplots[i];
+        var subplotObj = fullLayout._plots[subplot];
+
+        // filter out overlaid plots (which havd their images on the main plot)
+        // and gl2d plots (which don't support below images, at least not yet)
+        if(!subplotObj.imagelayer) continue;
+
+        var imagesOnSubplot = subplotObj.imagelayer.selectAll('image')
+            // even if there are no images on this subplot, we need to run
+            // enter and exit in case there were previously
+            .data(imageDataSubplot[subplot] || []);
+
+        imagesOnSubplot.enter().append('image');
+        imagesOnSubplot.exit().remove();
+
+        imagesOnSubplot.each(function(d) {
+            setImage.bind(this)(d);
+            applyAttributes.bind(this)(d);
+        });
+    }
 };
 
 },{"../../constants/xmlns_namespaces":359,"../../plots/cartesian/axes":409,"../drawing":294,"d3":73}],307:[function(require,module,exports){
@@ -56070,10 +56099,6 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
         }
 
         Cartesian.rangePlot(gd, plotinfo, filterRangePlotCalcData(calcData, id));
-
-        // no need for the bg layer,
-        // drawBg handles coloring the background
-        if(isMainPlot) plotinfo.bg.remove();
     });
 }
 
@@ -56557,7 +56582,7 @@ function draw(gd) {
     // Remove previous shapes before drawing new in shapes in fullLayout.shapes
     fullLayout._shapeUpperLayer.selectAll('path').remove();
     fullLayout._shapeLowerLayer.selectAll('path').remove();
-    fullLayout._shapeSubplotLayer.selectAll('path').remove();
+    fullLayout._shapeSubplotLayers.selectAll('path').remove();
 
     for(var i = 0; i < fullLayout.shapes.length; i++) {
         if(fullLayout.shapes[i].visible) {
@@ -56570,43 +56595,30 @@ function draw(gd) {
 }
 
 function drawOne(gd, index) {
-    var i, n;
-
     // remove the existing shape if there is one.
     // because indices can change, we need to look in all shape layers
     gd._fullLayout._paper
         .selectAll('.shapelayer [data-index="' + index + '"]')
         .remove();
 
-    var optionsIn = gd.layout.shapes[index],
+    var optionsIn = (gd.layout.shapes || [])[index],
         options = gd._fullLayout.shapes[index];
 
     // this shape is gone - quit now after deleting it
     // TODO: use d3 idioms instead of deleting and redrawing every time
     if(!optionsIn || options.visible === false) return;
 
-    var clipAxes;
     if(options.layer !== 'below') {
-        clipAxes = (options.xref + options.yref).replace(/paper/g, '');
         drawShape(gd._fullLayout._shapeUpperLayer);
     }
-    else if(options.xref === 'paper' && options.yref === 'paper') {
-        clipAxes = '';
+    else if(options.xref === 'paper' || options.yref === 'paper') {
         drawShape(gd._fullLayout._shapeLowerLayer);
     }
     else {
-        var plots = gd._fullLayout._plots || {},
-            subplots = Object.keys(plots),
-            plotinfo;
+        var plotinfo = gd._fullLayout._plots[options.xref + options.yref],
+            mainPlot = plotinfo.mainplot || plotinfo;
 
-        for(i = 0, n = subplots.length; i < n; i++) {
-            plotinfo = plots[subplots[i]];
-            clipAxes = subplots[i];
-
-            if(isShapeInSubplot(gd, options, plotinfo)) {
-                drawShape(plotinfo.shapelayer);
-            }
-        }
+        drawShape(mainPlot.shapelayer);
     }
 
     function drawShape(shapeLayer) {
@@ -56625,10 +56637,15 @@ function drawOne(gd, index) {
             .call(Color.fill, options.fillcolor)
             .call(Drawing.dashLine, options.line.dash, options.line.width);
 
-        if(clipAxes) {
-            path.call(Drawing.setClipUrl,
-                'clip' + gd._fullLayout._uid + clipAxes);
-        }
+        // note that for layer="below" the clipAxes can be different from the
+        // subplot we're drawing this in. This could cause problems if the shape
+        // spans two subplots. See https://github.com/plotly/plotly.js/issues/1452
+        var clipAxes = (options.xref + options.yref).replace(/paper/g, '');
+
+        path.call(Drawing.setClipUrl, clipAxes ?
+            ('clip' + gd._fullLayout._uid + clipAxes) :
+            null
+        );
 
         if(gd._context.editable) setupDragElement(gd, path, options, index);
     }
@@ -56784,15 +56801,6 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
 
         shapePath.attr('d', getPathString(gd, shapeOptions));
     }
-}
-
-function isShapeInSubplot(gd, shape, plotinfo) {
-    var xa = Axes.getFromId(gd, plotinfo.id, 'x')._id,
-        ya = Axes.getFromId(gd, plotinfo.id, 'y')._id,
-        isBelow = shape.layer === 'below',
-        inSuplotAxis = (xa === shape.xref || ya === shape.yref),
-        isNotAnOverlaidSubplot = !!plotinfo.shapelayer;
-    return isBelow && inSuplotAxis && isNotAnOverlaidSubplot;
 }
 
 function getPathString(gd, options) {
@@ -60067,7 +60075,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.24.1';
+exports.version = '1.24.2';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -65526,8 +65534,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
         // keep reference to shape layers in subplots
         var layerSubplot = fullLayout._paper.selectAll('.layer-subplot');
-        fullLayout._imageSubplotLayer = layerSubplot.selectAll('.imagelayer');
-        fullLayout._shapeSubplotLayer = layerSubplot.selectAll('.shapelayer');
+        fullLayout._shapeSubplotLayers = layerSubplot.selectAll('.shapelayer');
 
         // styling separate from drawing
         Plots.style(gd);
@@ -68073,11 +68080,20 @@ function makePlotFramework(gd) {
     fullLayout._topdefs = fullLayout._toppaper.append('defs')
         .attr('id', 'topdefs-' + fullLayout._uid);
 
+    fullLayout._bgLayer = fullLayout._paper.append('g')
+        .classed('bglayer', true);
+
     fullLayout._draggers = fullLayout._paper.append('g')
         .classed('draglayer', true);
 
-    // lower shape layer
-    // (only for shapes to be drawn below the whole plot)
+    // lower shape/image layer - note that this is behind
+    // all subplots data/grids but above the backgrounds
+    // except inset subplots, whose backgrounds are drawn
+    // inside their own group so that they appear above
+    // the data for the main subplot
+    // lower shapes and images which are fully referenced to
+    // a subplot still get drawn within the subplot's group
+    // so they will work correctly on insets
     var layerBelow = fullLayout._paper.append('g')
         .classed('layer-below', true);
     fullLayout._imageLowerLayer = layerBelow.append('g')
@@ -68788,6 +68804,7 @@ module.exports = function setPlotConfig(configObj) {
 
 'use strict';
 
+var d3 = require('d3');
 var Plotly = require('../plotly');
 var Registry = require('../registry');
 var Plots = require('../plots/plots');
@@ -68802,6 +68819,21 @@ var ModeBar = require('../components/modebar');
 exports.layoutStyles = function(gd) {
     return Lib.syncOrAsync([Plots.doAutoMargin, exports.lsInner], gd);
 };
+
+function overlappingDomain(xDomain, yDomain, domains) {
+    for(var i = 0; i < domains.length; i++) {
+        var existingX = domains[i][0],
+            existingY = domains[i][1];
+
+        if(existingX[0] >= xDomain[1] || existingX[1] <= xDomain[0]) {
+            continue;
+        }
+        if(existingY[0] < yDomain[1] && existingY[1] > yDomain[0]) {
+            return true;
+        }
+    }
+    return false;
+}
 
 exports.lsInner = function(gd) {
     var fullLayout = gd._fullLayout,
@@ -68822,8 +68854,73 @@ exports.lsInner = function(gd) {
 
     gd._context.setBackground(gd, fullLayout.paper_bgcolor);
 
+    var subplotSelection = fullLayout._paper.selectAll('g.subplot');
+
+    // figure out which backgrounds we need to draw, and in which layers
+    // to put them
+    var lowerBackgroundIDs = [];
+    var lowerDomains = [];
+    subplotSelection.each(function(subplot) {
+        var plotinfo = fullLayout._plots[subplot];
+
+        if(plotinfo.mainplot) {
+            // mainplot is a reference to the main plot this one is overlaid on
+            // so if it exists, this is an overlaid plot and we don't need to
+            // give it its own background
+            if(plotinfo.bg) {
+                plotinfo.bg.remove();
+            }
+            plotinfo.bg = undefined;
+            return;
+        }
+
+        var xa = Plotly.Axes.getFromId(gd, subplot, 'x'),
+            ya = Plotly.Axes.getFromId(gd, subplot, 'y'),
+            xDomain = xa.domain,
+            yDomain = ya.domain,
+            plotgroupBgData = [];
+
+        if(overlappingDomain(xDomain, yDomain, lowerDomains)) {
+            plotgroupBgData = [0];
+        }
+        else {
+            lowerBackgroundIDs.push(subplot);
+            lowerDomains.push([xDomain, yDomain]);
+        }
+
+        // create the plot group backgrounds now, since
+        // they're all independent selections
+        var plotgroupBg = plotinfo.plotgroup.selectAll('.bg')
+            .data(plotgroupBgData);
+
+        plotgroupBg.enter().append('rect')
+            .classed('bg', true);
+
+        plotgroupBg.exit().remove();
+
+        plotgroupBg.each(function() {
+            plotinfo.bg = plotgroupBg;
+            var pgNode = plotinfo.plotgroup.node();
+            pgNode.insertBefore(this, pgNode.childNodes[0]);
+        });
+    });
+
+    // now create all the lower-layer backgrounds at once now that
+    // we have the list of subplots that need them
+    var lowerBackgrounds = fullLayout._bgLayer.selectAll('.bg')
+        .data(lowerBackgroundIDs);
+
+    lowerBackgrounds.enter().append('rect')
+        .classed('bg', true);
+
+    lowerBackgrounds.exit().remove();
+
+    lowerBackgrounds.each(function(subplot) {
+        fullLayout._plots[subplot].bg = d3.select(this);
+    });
+
     var freefinished = [];
-    fullLayout._paper.selectAll('g.subplot').each(function(subplot) {
+    subplotSelection.each(function(subplot) {
         var plotinfo = fullLayout._plots[subplot],
             xa = Plotly.Axes.getFromId(gd, subplot, 'x'),
             ya = Plotly.Axes.getFromId(gd, subplot, 'y');
@@ -68837,7 +68934,8 @@ exports.lsInner = function(gd) {
                 .call(Drawing.setRect,
                     xa._offset - gs.p, ya._offset - gs.p,
                     xa._length + 2 * gs.p, ya._length + 2 * gs.p)
-                .call(Color.fill, fullLayout.plot_bgcolor);
+                .call(Color.fill, fullLayout.plot_bgcolor)
+                .style('stroke-width', 0);
         }
 
         // Clip so that data only shows up on the plot area.
@@ -69101,7 +69199,7 @@ exports.doCamera = function(gd) {
     }
 };
 
-},{"../components/color":271,"../components/drawing":294,"../components/modebar":318,"../components/titles":347,"../lib":372,"../plotly":404,"../plots/plots":445,"../registry":453}],402:[function(require,module,exports){
+},{"../components/color":271,"../components/drawing":294,"../components/modebar":318,"../components/titles":347,"../lib":372,"../plotly":404,"../plots/plots":445,"../registry":453,"d3":73}],402:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -75101,9 +75199,6 @@ function makeSubplotLayer(plotinfo) {
     }
 
     if(!plotinfo.mainplot) {
-        plotinfo.bg = joinLayer(plotgroup, 'rect', 'bg');
-        plotinfo.bg.style('stroke-width', 0);
-
         var backLayer = joinLayer(plotgroup, 'g', 'layer-subplot');
         plotinfo.shapelayer = joinLayer(backLayer, 'g', 'shapelayer');
         plotinfo.imagelayer = joinLayer(backLayer, 'g', 'imagelayer');
