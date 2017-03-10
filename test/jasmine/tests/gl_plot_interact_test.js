@@ -217,23 +217,64 @@ describe('Test gl3d plots', function() {
 
     it('should be able to toggle visibility', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
-        var objects;
+        _mock.data[0].x = [0, 1, 3];
+        _mock.data[0].y = [0, 1, 2];
+        _mock.data.push({
+            type: 'surface',
+            z: [[1, 2, 3], [1, 2, 3], [2, 1, 2]]
+        }, {
+            type: 'mesh3d',
+            x: [0, 1, 2, 0], y: [0, 0, 1, 2], z: [0, 2, 0, 1],
+            i: [0, 0, 0, 1], j: [1, 2, 3, 2], k: [2, 3, 1, 3]
+        });
+
+        // scatter3d traces are made of 5 gl-vis objects,
+        // surface and mesh3d are made of 1 gl-vis object each.
+        var order0 = [0, 0, 0, 0, 0, 1, 2];
+
+        function assertObjects(expected) {
+            var objects = gd._fullLayout.scene._scene.glplot.objects;
+            var actual = objects.map(function(o) {
+                return o._trace.data.index;
+            });
+
+            expect(actual).toEqual(expected);
+        }
 
         Plotly.plot(gd, _mock)
         .then(delay)
         .then(function() {
-            objects = gd._fullLayout.scene._scene.glplot.objects;
-            expect(objects.length).toEqual(5);
+            assertObjects(order0);
 
             return Plotly.restyle(gd, 'visible', 'legendonly');
         })
         .then(function() {
-            expect(objects.length).toEqual(0);
+            assertObjects([]);
 
             return Plotly.restyle(gd, 'visible', true);
         })
         .then(function() {
-            expect(objects.length).toEqual(5);
+            assertObjects(order0);
+
+            return Plotly.restyle(gd, 'visible', false, [0]);
+        })
+        .then(function() {
+            assertObjects([1, 2]);
+
+            return Plotly.restyle(gd, 'visible', true, [0]);
+        })
+        .then(function() {
+            assertObjects(order0);
+
+            return Plotly.restyle(gd, 'visible', 'legendonly', [1]);
+        })
+        .then(function() {
+            assertObjects([0, 0, 0, 0, 0, 2]);
+
+            return Plotly.restyle(gd, 'visible', true, [1]);
+        })
+        .then(function() {
+            assertObjects(order0);
         })
         .then(done);
     });

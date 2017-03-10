@@ -368,6 +368,7 @@ function createSurfaceTrace(scene, data) {
     var gl = scene.glplot.gl;
     var surface = createSurface({ gl: gl });
     var result = new SurfaceTrace(scene, surface, data.uid);
+    surface._trace = result;
     result.update(data);
     scene.glplot.add(surface);
     return result;
