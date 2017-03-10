@@ -49,7 +49,7 @@ exports.attributes = {
             description: [
                 'Sets each group style.',
                 'For example, with `groups` set to *[\'a\', \'b\', \'a\', \'b\']*',
-                'and `style` set to *{ a: { marker: { color: \'red\' } }}',
+                'and `style` set to *[{target: \'a\': { marker: { color: \'red\' } }}]',
                 'marker points in group *\'a\'* will be drawn in red.'
             ].join(' ')
         },
