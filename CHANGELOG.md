@@ -10,6 +10,16 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.24.2] -- 2017-03-10
+
+### Fixed
+- Fix removal of last annotation or shape [#1451]
+- Fix shape and image clip path removal [#1453]
+- Fix overdrawing of data-referenced images [#1453]
+- Make handling of `layer: 'below'` shape more robust [#1453]
+- Allow multiple `parcoords` dimensions with the same label [#1457]
+
+
 ## [1.24.1] -- 2017-03-07
 
 ### Fixed
