@@ -35,6 +35,7 @@ exports.attributes = {
         ].join(' ')
     },
     style: {
+        _isLinkedToArray: 'style',
         target: {
             valType: 'string',
             role: 'info',
