@@ -6,7 +6,6 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var assertDims = require('../assets/assert_dims');
 var assertStyle = require('../assets/assert_style');
 
-
 describe('groupby', function() {
 
     describe('one-to-many transforms:', function() {
@@ -109,22 +108,11 @@ describe('groupby', function() {
 
                 expect(gd._fullData[0].marker.opacity).toEqual(1);
                 expect(gd._fullData[1].marker.opacity).toEqual(1);
+            }).then(done);
 
-                return Plotly.restyle(gd, {
-                    'transforms[0].style': {
-                        a: {marker: {color: 'green'}},
-                        b: {marker: {color: 'red'}}
-                    },
-                    'marker.opacity': 0.4
-                });
-            }).then(function() {
-                assertStyle(dims,
-                    ['rgb(0, 128, 0)', 'rgb(255, 0, 0)'],
-                    [0.4, 0.4]
-                );
-
-                done();
-            });
+            // The final test for restyle updates using deprecated syntax
+            // is ommitted since old style syntax is *only* sanitized on
+            // initial plot, *not* on restyle.
         });
 
         it('Plotly.restyle should work', function(done) {

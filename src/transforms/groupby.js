@@ -85,17 +85,12 @@ exports.supplyDefaults = function(transformIn) {
     var styleIn = transformIn.style;
     var styleOut = transformOut.style = [];
 
-    if(Array.isArray(styleIn)) {
-        // If styles are an array, then sanitize them against the schema:
+    if(styleIn) {
         for(var i = 0; i < styleIn.length; i++) {
             styleOut[i] = {};
             Lib.coerce(styleIn[i], styleOut[i], exports.attributes.style, 'target');
             Lib.coerce(styleIn[i], styleOut[i], exports.attributes.style, 'value');
         }
-    } else {
-        // Otherwise, this is deprecated keyed-object-style styles and we
-        // just pass the object through as the index itself:
-        transformOut.style = transformIn.style;
     }
 
     return transformOut;
@@ -156,16 +151,9 @@ function transformOne(trace, state) {
     var arrayAttrs = PlotSchema.findArrayAttributes(trace);
 
     var style = opts.style || [];
-    var styleIndex = style;
-
-    // If the styles are an array, then translate it into an index keyed on the
-    // target. Otherwise just use the object provided for the sake of backward
-    // compatibility.
-    if(Array.isArray(style)) {
-        styleIndex = {};
-        for(i = 0; i < style.length; i++) {
-            styleIndex[style[i].target] = style[i].value;
-        }
+    var styleLookup = {};
+    for(i = 0; i < style.length; i++) {
+        styleLookup[style[i].target] = style[i].value;
     }
 
     for(i = 0; i < groupNames.length; i++) {
@@ -183,9 +171,9 @@ function transformOne(trace, state) {
 
         newTrace.name = groupName;
 
-        // there's no need to coerce styleIndex[groupName] here
+        // there's no need to coerce styleLookup[groupName] here
         // as another round of supplyDefaults is done on the transformed traces
-        newTrace = Lib.extendDeepNoArrays(newTrace, styleIndex[groupName] || {});
+        newTrace = Lib.extendDeepNoArrays(newTrace, styleLookup[groupName] || {});
     }
 
     return newData;
