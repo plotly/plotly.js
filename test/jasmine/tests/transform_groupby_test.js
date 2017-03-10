@@ -64,6 +64,69 @@ describe('groupby', function() {
             });
         });
 
+        it('Accepts deprecated object notation for styles', function(done) {
+            var oldStyleMockData = [{
+                mode: 'markers',
+                x: [1, -1, -2, 0, 1, 2, 3],
+                y: [1, 2, 3, 1, 2, 3, 1],
+                transforms: [{
+                    type: 'groupby',
+                    groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
+                    style: {
+                        a: {marker: {color: 'red'}},
+                        b: {marker: {color: 'blue'}}
+                    }
+                }]
+            }];
+            var data = Lib.extendDeep([], oldStyleMockData);
+            data[0].marker = { size: 20 };
+
+            var gd = createGraphDiv();
+            var dims = [4, 3];
+
+            Plotly.plot(gd, data).then(function() {
+                assertStyle(dims,
+                    ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
+                    [1, 1]
+                );
+
+                return Plotly.restyle(gd, 'marker.opacity', 0.4);
+            }).then(function() {
+                assertStyle(dims,
+                    ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
+                    [0.4, 0.4]
+                );
+
+                expect(gd._fullData[0].marker.opacity).toEqual(0.4);
+                expect(gd._fullData[1].marker.opacity).toEqual(0.4);
+
+                return Plotly.restyle(gd, 'marker.opacity', 1);
+            }).then(function() {
+                assertStyle(dims,
+                    ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
+                    [1, 1]
+                );
+
+                expect(gd._fullData[0].marker.opacity).toEqual(1);
+                expect(gd._fullData[1].marker.opacity).toEqual(1);
+
+                return Plotly.restyle(gd, {
+                    'transforms[0].style': {
+                        a: {marker: {color: 'green'}},
+                        b: {marker: {color: 'red'}}
+                    },
+                    'marker.opacity': 0.4
+                });
+            }).then(function() {
+                assertStyle(dims,
+                    ['rgb(0, 128, 0)', 'rgb(255, 0, 0)'],
+                    [0.4, 0.4]
+                );
+
+                done();
+            });
+        });
+
         it('Plotly.restyle should work', function(done) {
             var data = Lib.extendDeep([], mockData0);
             data[0].marker = { size: 20 };
@@ -98,10 +161,10 @@ describe('groupby', function() {
                 expect(gd._fullData[1].marker.opacity).toEqual(1);
 
                 return Plotly.restyle(gd, {
-                    'transforms[0].style': [
+                    'transforms[0].style': [[
                         {target: 'a', value: {marker: {color: 'green'}}},
                         {target: 'b', value: {marker: {color: 'red'}}}
-                    ],
+                    ]],
                     'marker.opacity': 0.4
                 });
             }).then(function() {
@@ -401,7 +464,7 @@ describe('groupby', function() {
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
                 style: [
                     {target: 'a', value: {marker: {color: 'red'}}},
-                    {taret: 'b', value: {marker: {color: 'blue'}}}
+                    {target: 'b', value: {marker: {color: 'blue'}}}
                 ]
             }]
         }];

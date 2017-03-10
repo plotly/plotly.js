@@ -35,14 +35,24 @@ exports.attributes = {
         ].join(' ')
     },
     style: {
-        valType: 'any',
-        dflt: {},
-        description: [
-            'Sets each group style.',
-            'For example, with `groups` set to *[\'a\', \'b\', \'a\', \'b\']*',
-            'and `style` set to *{ a: { marker: { color: \'red\' } }}',
-            'marker points in group *\'a\'* will be drawn in red.'
-        ].join(' ')
+        target: {
+            valType: 'any',
+            role: 'info',
+            description: [
+                'The group value which receives these styles.'
+            ].join(' ')
+        },
+        value: {
+            valType: 'any',
+            role: 'info',
+            dflt: {},
+            description: [
+                'Sets each group style.',
+                'For example, with `groups` set to *[\'a\', \'b\', \'a\', \'b\']*',
+                'and `style` set to *{ a: { marker: { color: \'red\' } }}',
+                'marker points in group *\'a\'* will be drawn in red.'
+            ].join(' ')
+        },
     }
 };
 
@@ -71,10 +81,26 @@ exports.supplyDefaults = function(transformIn) {
     if(!enabled) return transformOut;
 
     coerce('groups');
-    coerce('style');
+
+    var styleIn = transformIn.style;
+    var styleOut = transformOut.style = [];
+
+    if(Array.isArray(styleIn)) {
+        // If styles are an array, then sanitize them against the schema:
+        for(var i = 0; i < styleIn.length; i++) {
+            styleOut[i] = {};
+            Lib.coerce(styleIn[i], styleOut[i], exports.attributes.style, 'target');
+            Lib.coerce(styleIn[i], styleOut[i], exports.attributes.style, 'value');
+        }
+    } else {
+        // Otherwise, this is deprecated keyed-object-style styles and we
+        // just pass the object through as the index itself:
+        transformOut.style = transformIn.style;
+    }
 
     return transformOut;
 };
+
 
 /**
  * Apply transform !!!
@@ -115,6 +141,7 @@ function pasteArray(newTrace, trace, j, a) {
 }
 
 function transformOne(trace, state) {
+    var i;
     var opts = state.transform;
     var groups = trace.transforms[state.transformIndex].groups;
 
@@ -128,9 +155,20 @@ function transformOne(trace, state) {
 
     var arrayAttrs = PlotSchema.findArrayAttributes(trace);
 
-    var style = opts.style || {};
+    var style = opts.style || [];
+    var styleIndex = style;
 
-    for(var i = 0; i < groupNames.length; i++) {
+    // If the styles are an array, then translate it into an index keyed on the
+    // target. Otherwise just use the object provided for the sake of backward
+    // compatibility.
+    if(Array.isArray(style)) {
+        styleIndex = {};
+        for(i = 0; i < style.length; i++) {
+            styleIndex[style[i].target] = style[i].value;
+        }
+    }
+
+    for(i = 0; i < groupNames.length; i++) {
         var groupName = groupNames[i];
 
         var newTrace = newData[i] = Lib.extendDeepNoArrays({}, trace);
@@ -145,9 +183,9 @@ function transformOne(trace, state) {
 
         newTrace.name = groupName;
 
-        // there's no need to coerce style[groupName] here
+        // there's no need to coerce styleIndex[groupName] here
         // as another round of supplyDefaults is done on the transformed traces
-        newTrace = Lib.extendDeepNoArrays(newTrace, style[groupName] || {});
+        newTrace = Lib.extendDeepNoArrays(newTrace, styleIndex[groupName] || {});
     }
 
     return newData;
