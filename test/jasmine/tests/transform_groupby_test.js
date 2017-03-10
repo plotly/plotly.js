@@ -19,7 +19,10 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+                style: [
+                    {target: 'a', value: {marker: {color: 'red'}}},
+                    {target: 'b', value: {marker: {color: 'blue'}}}
+                ]
             }]
         }];
 
@@ -30,7 +33,10 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['b', 'a', 'b', 'b', 'b', 'a', 'a'],
-                style: { a: {marker: {color: 'green'}}, b: {marker: {color: 'black'}} }
+                style: [
+                    {target: 'a', value: {marker: {color: 'green'}}},
+                    {target: 'b', value: {marker: {color: 'black'}}}
+                ]
             }]
         }];
 
@@ -92,7 +98,10 @@ describe('groupby', function() {
                 expect(gd._fullData[1].marker.opacity).toEqual(1);
 
                 return Plotly.restyle(gd, {
-                    'transforms[0].style': { a: {marker: {color: 'green'}}, b: {marker: {color: 'red'}} },
+                    'transforms[0].style': [
+                        {target: 'a', value: {marker: {color: 'green'}}},
+                        {target: 'b', value: {marker: {color: 'red'}}}
+                    ],
                     'marker.opacity': 0.4
                 });
             }).then(function() {
@@ -192,7 +201,10 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+                style: [
+                    {target: 'a', value: {marker: {color: 'red'}}},
+                    {target: 'b', value: {marker: {color: 'blue'}}}
+                ]
             }]
         }];
 
@@ -387,7 +399,10 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+                style: [
+                    {target: 'a', value: {marker: {color: 'red'}}},
+                    {taret: 'b', value: {marker: {color: 'blue'}}}
+                ]
             }]
         }];
 
@@ -401,8 +416,9 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: {
-                    a: {
+                style: [{
+                    target: 'a',
+                    value: {
                         marker: {
                             color: 'orange',
                             size: 20,
@@ -410,8 +426,10 @@ describe('groupby', function() {
                                 color: 'red'
                             }
                         }
-                    },
-                    b: {
+                    }
+                }, {
+                    target: 'b',
+                    value: {
                         mode: 'markers+lines', // heterogeonos attributes are OK: group 'a' doesn't need to define this
                         marker: {
                             color: 'cyan',
@@ -426,7 +444,7 @@ describe('groupby', function() {
                             color: 'purple'
                         }
                     }
-                }
+                }]
             }]
         }];
 
@@ -447,11 +465,14 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: {
-                    a: {marker: {size: 30}},
+                style: [{
+                    target: 'a',
+                    value: {marker: {size: 30}}
+                }, {
                     // override general color:
-                    b: {marker: {size: 15, line: {color: 'yellow'}}, line: {color: 'purple'}}
-                }
+                    target: 'b',
+                    value: {marker: {size: 15, line: {color: 'yellow'}}, line: {color: 'purple'}}
+                }]
             }]
         }];
 
@@ -464,7 +485,7 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: {/* can be empty, or of partial group id coverage */}
+                style: [/* can be empty, or of partial group id coverage */]
             }]
         }];
 
@@ -548,7 +569,10 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 // groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+                style: [
+                    {target: 'a', value: {marker: {color: 'red'}}},
+                    {target: 'b', value: {marker: {color: 'blue'}}}
+                ]
             }]
         }];
 
@@ -561,7 +585,10 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: [],
-                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+                style: [
+                    {target: 'a', value: {marker: {color: 'red'}}},
+                    {target: 'b', value: {marker: {color: 'blue'}}}
+                ]
             }]
         }];
 
@@ -574,7 +601,10 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: null,
-                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+                style: [
+                    {target: 'a', value: {marker: {color: 'red'}}},
+                    {target: 'b', value: {marker: {color: 'blue'}}}
+                ]
             }]
         }];
 
