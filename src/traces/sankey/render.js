@@ -10,6 +10,7 @@
 
 var c = require('./constants');
 var d3 = require('d3');
+var Color = require('../../components/color');
 var d3sankey = require('./sankey');
 
 
@@ -56,31 +57,29 @@ module.exports = function(svg, styledData, layout, callbacks) {
     var dragInProgress = false;
     var hovered = false;
 
-    function attachPointerEvents(eventSet) {
-        return function(selection) {
-            selection
-                .on('mouseover', function (d) {
-                    if (!dragInProgress) {
-                        eventSet.hover(this, d);
-                        hovered = [this, d];
-                    }
-                })
-                .on('mouseout', function (d) {
-                    if (!dragInProgress) {
-                        eventSet.unhover(this, d);
-                        hovered = false;
-                    }
-                })
-                .on('click', function (d) {
-                    if (hovered) {
-                        eventSet.unhover(this, d);
-                        hovered = false;
-                    }
-                    if (!dragInProgress) {
-                        eventSet.select(this, d);
-                    }
-                });
-        }
+    function attachPointerEvents(selection, eventSet) {
+        selection
+            .on('mouseover', function (d) {
+                if (!dragInProgress) {
+                    eventSet.hover(this, d);
+                    hovered = [this, d];
+                }
+            })
+            .on('mouseout', function (d) {
+                if (!dragInProgress) {
+                    eventSet.unhover(this, d);
+                    hovered = false;
+                }
+            })
+            .on('click', function (d) {
+                if (hovered) {
+                    eventSet.unhover(this, d);
+                    hovered = false;
+                }
+                if (!dragInProgress) {
+                    eventSet.select(this, d);
+                }
+            });
     }
 
     function linkPath(d) {
@@ -124,8 +123,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .classed('sankeyLinks', true)
         .style('transform', c.vertical ? 'matrix(0,1,1,0,0,0)' : 'matrix(1,0,0,1,0,0)')
         .style('fill', 'none')
-        .style('stroke', 'black')
-        .style('stroke-opacity', 0.25);
+        .call(Color.stroke, 'rgba(0, 0, 0, 0.25)');
 
     var sankeyLink = sankeyLinks.selectAll('.sankeyPath')
         .data(function(d) {
@@ -140,7 +138,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
     sankeyLink.enter()
         .append('path')
         .classed('sankeyPath', true)
-        .call(attachPointerEvents(callbacks.linkEvents));
+        .call(attachPointerEvents, callbacks.linkEvents);
 
     sankeyLink
         .attr('d', linkPath)
@@ -209,10 +207,9 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .classed('nodeRect', true)
         .style('shape-rendering', 'crispEdges')
         .style('fill', function(d) {return colorer(d.sankey.nodes().indexOf(d.node));})
-        .style('stroke', 'black')
-        .style('stroke-opacity', 1)
         .style('stroke-width', 0.5)
-        .call(attachPointerEvents(callbacks.nodeEvents));
+        .call(Color.stroke, 'rgba(0, 0, 0, 1)')
+        .call(attachPointerEvents, callbacks.nodeEvents);
 
     nodeRect // ceil, +/-0.5 and crispEdges is wizardry for consistent border width on all 4 sides
         .attr(c.vertical ? 'height' : 'width', function(d) {return Math.ceil(d.node.dx + 0.5);})
