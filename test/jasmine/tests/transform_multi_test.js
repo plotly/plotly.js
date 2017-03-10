@@ -225,7 +225,13 @@ describe('multiple transforms:', function() {
         transforms: [{
             type: 'groupby',
             groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-            style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+            style: [{
+                target: 'a',
+                value: {marker: {color: 'red'}},
+            }, {
+                target: 'b',
+                value: {marker: {color: 'blue'}}
+            }]
         }, {
             type: 'filter',
             operation: '>'
@@ -239,7 +245,13 @@ describe('multiple transforms:', function() {
         transforms: [{
             type: 'groupby',
             groups: ['b', 'a', 'b', 'b', 'b', 'a', 'a'],
-            style: { a: {marker: {color: 'green'}}, b: {marker: {color: 'black'}} }
+            style: [{
+                target: 'a',
+                value: {marker: {color: 'green'}}
+            }, {
+                target: 'b',
+                value: {marker: {color: 'black'}}
+            }]
         }, {
             type: 'filter',
             operation: '<',
@@ -329,7 +341,13 @@ describe('multiple transforms:', function() {
             expect(gd._fullData[1].marker.opacity).toEqual(1);
 
             return Plotly.restyle(gd, {
-                'transforms[0].style': { a: {marker: {color: 'green'}}, b: {marker: {color: 'red'}} },
+                'transforms[0].style': [[{
+                    target: 'a',
+                    value: {marker: {color: 'green'}}
+                }, {
+                    target: 'b',
+                    value: {marker: {color: 'red'}}
+                }]],
                 'marker.opacity': 0.4
             });
         }).then(function() {
@@ -437,7 +455,13 @@ describe('multiple traces with transforms:', function() {
         transforms: [{
             type: 'groupby',
             groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-            style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+            style: [{
+                target: 'a',
+                value: {marker: {color: 'red'}},
+            }, {
+                target: 'b',
+                value: {marker: {color: 'blue'}}
+            }]
         }, {
             type: 'filter',
             operation: '>'
@@ -508,7 +532,13 @@ describe('multiple traces with transforms:', function() {
             });
 
             return Plotly.restyle(gd, {
-                'transforms[0].style': { a: {marker: {color: 'green'}}, b: {marker: {color: 'red'}} },
+                'transforms[0].style': [[{
+                    target: 'a',
+                    value: {marker: {color: 'green'}},
+                }, {
+                    target: 'b',
+                    value: {marker: {color: 'red'}}
+                }]],
                 'marker.opacity': [0.4, 0.6]
             });
         }).then(function() {
