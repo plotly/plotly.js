@@ -36,7 +36,7 @@ exports.attributes = {
     },
     style: {
         target: {
-            valType: 'any',
+            valType: 'string',
             role: 'info',
             description: [
                 'The group value which receives these styles.'
