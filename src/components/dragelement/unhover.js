@@ -41,6 +41,7 @@ unhover.raw = function unhoverRaw(gd, evt) {
     }
 
     fullLayout._hoverlayer.selectAll('g').remove();
+    fullLayout._hoverlayer.selectAll('line').remove();
     gd._hoverdata = undefined;
 
     if(evt.target && oldhoverdata) {

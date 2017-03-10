@@ -48,6 +48,9 @@ module.exports = {
     // new users see some hints about interactivity
     showTips: true,
 
+    // display droplines on cartesian graphs
+    showDroplines: false,
+
     // enable axis pan/zoom drag handles
     showAxisDragHandles: true,
 

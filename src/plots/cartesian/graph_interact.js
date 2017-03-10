@@ -559,29 +559,7 @@ function hover(gd, evt, subplot) {
     // nothing left: remove all labels and quit
     if(hoverData.length === 0) return dragElement.unhoverRaw(gd, evt);
 
-    // if there's more than one horz bar trace,
-    // rotate the labels so they don't overlap
-    var rotateLabels = hovermode === 'y' && searchData.length > 1;
-
     hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
-
-    var bgColor = Color.combine(
-        fullLayout.plot_bgcolor || Color.background,
-        fullLayout.paper_bgcolor
-    );
-
-    var labelOpts = {
-        hovermode: hovermode,
-        rotateLabels: rotateLabels,
-        bgColor: bgColor,
-        container: fullLayout._hoverlayer,
-        outerContainer: fullLayout._paperdiv
-    };
-    var hoverLabels = createHoverText(hoverData, labelOpts);
-
-    hoverAvoidOverlaps(hoverData, rotateLabels ? 'xa' : 'ya');
-
-    alignHoverText(hoverLabels, rotateLabels);
 
     // lastly, emit custom hover/unhover events
     var oldhoverdata = gd._hoverdata,
@@ -613,6 +591,38 @@ function hover(gd, evt, subplot) {
     }
 
     gd._hoverdata = newhoverdata;
+
+    if(gd._context.showDroplines && hoverChanged(gd, evt, oldhoverdata)) {
+        var droplineOpts = {
+            hovermode: hovermode,
+            container: fullLayout._hoverlayer,
+            outerContainer: fullLayout._paperdiv
+        };
+        createDroplines(hoverData, droplineOpts);
+    }
+
+    // if there's more than one horz bar trace,
+    // rotate the labels so they don't overlap
+    var rotateLabels = hovermode === 'y' && searchData.length > 1;
+
+    var bgColor = Color.combine(
+        fullLayout.plot_bgcolor || Color.background,
+        fullLayout.paper_bgcolor
+    );
+
+    var labelOpts = {
+        hovermode: hovermode,
+        rotateLabels: rotateLabels,
+        bgColor: bgColor,
+        container: fullLayout._hoverlayer,
+        outerContainer: fullLayout._paperdiv
+    };
+
+    var hoverLabels = createHoverText(hoverData, labelOpts);
+
+    hoverAvoidOverlaps(hoverData, rotateLabels ? 'xa' : 'ya');
+
+    alignHoverText(hoverLabels, rotateLabels);
 
     // TODO: tagName hack is needed to appease geo.js's hack of using evt.target=true
     // we should improve the "fx" API so other plots can use it without these hack.
@@ -818,7 +828,40 @@ fx.loneUnhover = function(containerOrSelection) {
             d3.select(containerOrSelection);
 
     selection.selectAll('g.hovertext').remove();
+    selection.selectAll('line.dropline').remove();
 };
+
+function createDroplines(hoverData, opts) {
+    var hovermode = opts.hovermode,
+        container = opts.container;
+
+    if(hovermode !== 'closest') return;
+    var c0 = hoverData[0];
+    var x = (c0.x0 + c0.x1) / 2;
+    var y = (c0.y0 + c0.y1) / 2;
+    var xOffset = c0.xa._offset;
+    var yOffset = c0.ya._offset;
+    container.selectAll('line.dropline').remove();
+    container.append('line')
+        .attr('x1', xOffset + (c0.ya.side === 'right' ? c0.xa._length : 0))
+        .attr('x2', xOffset + x)
+        .attr('y1', yOffset + y)
+        .attr('y2', yOffset + y)
+        .attr('stroke-width', 3)
+        .attr('stroke', c0.color)
+        .attr('stroke-dasharray', '5,5')
+        .attr('class', 'dropline');
+
+    container.append('line')
+        .attr('x1', xOffset + x)
+        .attr('x2', xOffset + x)
+        .attr('y1', yOffset + y)
+        .attr('y2', yOffset + c0.ya._length)
+        .attr('stroke-width', 3)
+        .attr('stroke', c0.color)
+        .attr('stroke-dasharray', '5,5')
+        .attr('class', 'dropline');
+}
 
 function createHoverText(hoverData, opts) {
     var hovermode = opts.hovermode,
