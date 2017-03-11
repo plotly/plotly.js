@@ -15,4 +15,5 @@ module.exports = {
     nodePadding: 15,
     sankeyIterations: 50,
     vertical: false
+
 };
