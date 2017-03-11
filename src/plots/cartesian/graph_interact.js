@@ -592,7 +592,7 @@ function hover(gd, evt, subplot) {
 
     gd._hoverdata = newhoverdata;
 
-    if(gd._context.showDroplines && hoverChanged(gd, evt, oldhoverdata)) {
+    if(hoverChanged(gd, evt, oldhoverdata)) {
         var droplineOpts = {
             hovermode: hovermode,
             container: fullLayout._hoverlayer,
@@ -829,38 +829,102 @@ fx.loneUnhover = function(containerOrSelection) {
 
     selection.selectAll('g.hovertext').remove();
     selection.selectAll('line.dropline').remove();
+    selection.selectAll('circle.dropline').remove();
 };
 
 function createDroplines(hoverData, opts) {
     var hovermode = opts.hovermode,
-        container = opts.container;
-
+        container = opts.container,
+        outerContainer = opts.outerContainer;
     if(hovermode !== 'closest') return;
-    var c0 = hoverData[0];
-    var x = (c0.x0 + c0.x1) / 2;
-    var y = (c0.y0 + c0.y1) / 2;
-    var xOffset = c0.xa._offset;
-    var yOffset = c0.ya._offset;
-    container.selectAll('line.dropline').remove();
-    container.append('line')
-        .attr('x1', xOffset + (c0.ya.side === 'right' ? c0.xa._length : 0))
-        .attr('x2', xOffset + x)
-        .attr('y1', yOffset + y)
-        .attr('y2', yOffset + y)
-        .attr('stroke-width', 3)
-        .attr('stroke', c0.color)
-        .attr('stroke-dasharray', '5,5')
-        .attr('class', 'dropline');
+    var c0 = hoverData[0],
+        x = (c0.x0 + c0.x1) / 2,
+        y = (c0.y0 + c0.y1) / 2,
+        xOffset = c0.xa._offset,
+        yOffset = c0.ya._offset,
+        xPoint = xOffset + x,
+        yPoint = yOffset + y,
+        xSide = c0.xa.side,
+        ySide = c0.ya.side,
+        xLength = c0.xa._length,
+        yLength = c0.ya._length,
+        xEdge = c0.ya._boundingBox.left + (ySide === 'left' ? c0.ya._boundingBox.width : 0),
+        yEdge = c0.xa._boundingBox.top + (xSide === 'top' ? c0.xa._boundingBox.height : 0),
+        outerBBox = outerContainer.node().getBoundingClientRect(),
+        xFreeBase = xOffset + (ySide === 'right' ? xLength : 0),
+        yFreeBase = yOffset + (xSide === 'top' ? yLength : 0),
+        xAnchoredBase = xEdge - outerBBox.left,
+        yAnchoredBase = yEdge - outerBBox.top,
+        xBase = c0.ya.anchor === 'free' ? xFreeBase : xAnchoredBase,
+        yBase = c0.xa.anchor === 'free' ? yFreeBase : yAnchoredBase,
+        color = c0.color;
 
-    container.append('line')
-        .attr('x1', xOffset + x)
-        .attr('x2', xOffset + x)
-        .attr('y1', yOffset + y)
-        .attr('y2', yOffset + c0.ya._length)
-        .attr('stroke-width', 3)
-        .attr('stroke', c0.color)
-        .attr('stroke-dasharray', '5,5')
-        .attr('class', 'dropline');
+    // Remove old dropline items
+    container.selectAll('line.dropline').remove();
+    container.selectAll('circle.dropline').remove();
+
+
+    if(c0.ya.showspikes) {
+        // Background horizontal Line (to y-axis)
+        container.append('line')
+            .attr('x1', xBase)
+            .attr('x2', xPoint)
+            .attr('y1', yPoint)
+            .attr('y2', yPoint)
+            .attr('stroke-width', 5)
+            .attr('stroke', '#fff')
+            .attr('class', 'dropline');
+
+        // Foreground horizontal line (to y-axis)
+        container.append('line')
+            .attr('x1', xBase)
+            .attr('x2', xPoint)
+            .attr('y1', yPoint)
+            .attr('y2', yPoint)
+            .attr('stroke-width', 3)
+            .attr('stroke', color)
+            .attr('stroke-dasharray', '5,5')
+            .attr('class', 'dropline');
+
+        // Y axis marker
+        container.append('circle')
+            .attr('cx', xBase)
+            .attr('cy', yPoint)
+            .attr('r', 3)
+            .attr('fill', color)
+            .attr('class', 'dropline');
+    }
+
+    if(c0.xa.showspikes) {
+        // Background vertical line (to x-axis)
+        container.append('line')
+            .attr('x1', xPoint)
+            .attr('x2', xPoint)
+            .attr('y1', yPoint)
+            .attr('y2', yBase)
+            .attr('stroke-width', 5)
+            .attr('stroke', '#fff')
+            .attr('class', 'dropline');
+
+        // Foreground vertical line (to x-axis)
+        container.append('line')
+            .attr('x1', xPoint)
+            .attr('x2', xPoint)
+            .attr('y1', yPoint)
+            .attr('y2', yBase)
+            .attr('stroke-width', 3)
+            .attr('stroke', color)
+            .attr('stroke-dasharray', '5,5')
+            .attr('class', 'dropline');
+
+        // X axis marker
+        container.append('circle')
+            .attr('cx', xPoint)
+            .attr('cy', yBase)
+            .attr('r', 3)
+            .attr('fill', color)
+            .attr('class', 'dropline');
+    }
 }
 
 function createHoverText(hoverData, opts) {

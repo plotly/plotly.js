@@ -244,6 +244,15 @@ module.exports = {
         role: 'style',
         description: 'Determines whether or not the tick labels are drawn.'
     },
+    showspikes: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'style',
+        description: [
+            'Determines whether or not spikes (aka droplines) are drawn for this axis.',
+            'Note: This only takes affect when hovermode = closest'
+        ].join(' ')
+    },
     tickfont: extendFlat({}, fontAttrs, {
         description: 'Sets the tick font.'
     }),
