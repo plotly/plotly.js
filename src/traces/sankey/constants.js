@@ -11,5 +11,8 @@
 
 module.exports = {
     nodeTextOffset: 5,
+    nodeWidth: 20,
+    nodePadding: 15,
+    sankeyIterations: 50,
     vertical: false
 };

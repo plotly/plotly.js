@@ -35,11 +35,11 @@ function viewModel(layout, d, i) {
 
     var sankey = d3sankey()
         .size(c.vertical ? [height, width]: [width, height])
-        .nodeWidth(20)
-        .nodePadding(20)
+        .nodeWidth(c.nodeWidth)
+        .nodePadding(c.nodePadding)
         .nodes(nodes.map(function(d) {return {name: d.label};}))
         .links(links)
-        .layout(50);
+        .layout(c.sankeyIterations);
 
     return {
         key: i,
