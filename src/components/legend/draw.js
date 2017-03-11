@@ -334,15 +334,13 @@ module.exports = function draw(gd) {
                 if(dragged && xf !== undefined && yf !== undefined) {
                     Plotly.relayout(gd, {'legend.x': xf, 'legend.y': yf});
                 } else {
-                    var traces = [],
-                        clickedTrace;
-                    traces = fullLayout._infolayer.selectAll('g.traces').filter(function() {
-                        var bbox = this.getBoundingClientRect();
-                        return (e.clientX >= bbox.left && e.clientX <= bbox.right &&
-                            e.clientY >= bbox.top && e.clientY <= bbox.bottom);
-                    })[0];
-                    if(traces.length > 0) {
-                        clickedTrace = d3.select(traces[0]);
+                    var clickedTrace =
+                        fullLayout._infolayer.selectAll('g.traces').filter(function() {
+                            var bbox = this.getBoundingClientRect();
+                            return (e.clientX >= bbox.left && e.clientX <= bbox.right &&
+                                e.clientY >= bbox.top && e.clientY <= bbox.bottom);
+                        });
+                    if(clickedTrace.size() > 0) {
                         if(numClicks === 1) {
                             legend._clickTimeout = setTimeout(function() { handleClick(clickedTrace, gd, numClicks); }, DBLCLICKDELAY);
                         } else if(numClicks === 2) {
@@ -458,6 +456,7 @@ function setupTraceToggle(g, gd) {
             if(legend._clickTimeout) {
                 clearTimeout(legend._clickTimeout);
             }
+            gd._legendMouseDownTime = 0;
             handleClick(g, gd, numClicks);
         }
     });

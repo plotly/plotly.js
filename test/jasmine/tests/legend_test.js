@@ -661,7 +661,7 @@ describe('legend interaction', function() {
                     expect(gd._fullLayout.hiddenlabels.length).toBe(1);
                     expect(gd._fullLayout.hiddenlabels[0]).toBe(legendLabel);
                     done();
-                }, DBLCLICKDELAY * 2);
+                }, DBLCLICKDELAY + 20);
             });
             it('should fade legend item', function() {
                 expect(+legendItem.parentNode.style.opacity).toBeLessThan(1);
@@ -672,7 +672,7 @@ describe('legend interaction', function() {
                 setTimeout(function() {
                     expect(gd._fullLayout.hiddenlabels.length).toBe(0);
                     done();
-                }, DBLCLICKDELAY * 2);
+                }, DBLCLICKDELAY + 20);
             });
             it('should unfade legend item', function() {
                 expect(+legendItem.parentNode.style.opacity).toBe(1);
@@ -689,7 +689,7 @@ describe('legend interaction', function() {
                     expect(gd._fullLayout.hiddenlabels.length).toBe((legendItems.length - 1));
                     expect(gd._fullLayout.hiddenlabels.indexOf(legendLabel)).toBe(-1);
                     done();
-                }, DBLCLICKDELAY);
+                }, 20);
             });
             it('should fade other legend items', function() {
                 var legendItemi;
@@ -710,7 +710,7 @@ describe('legend interaction', function() {
                 setTimeout(function() {
                     expect(gd._fullLayout.hiddenlabels.length).toBe(0);
                     done();
-                }, DBLCLICKDELAY);
+                }, 20);
             });
             it('should unfade legend items', function() {
                 var legendItemi;
@@ -747,7 +747,7 @@ describe('legend interaction', function() {
                 setTimeout(function() {
                     expect(gd.data[2].visible).toBe('legendonly');
                     done();
-                }, DBLCLICKDELAY * 2);
+                }, DBLCLICKDELAY + 20);
             });
             it('should fade legend item', function() {
                 expect(+legendItem.parentNode.style.opacity).toBeLessThan(1);
@@ -758,7 +758,7 @@ describe('legend interaction', function() {
                 setTimeout(function() {
                     expect(gd.data[2].visible).toBe(true);
                     done();
-                }, DBLCLICKDELAY * 2);
+                }, DBLCLICKDELAY + 20);
             });
             it('should unfade legend item', function() {
                 expect(+legendItem.parentNode.style.opacity).toBe(1);
@@ -779,7 +779,7 @@ describe('legend interaction', function() {
                         }
                     }
                     done();
-                }, DBLCLICKDELAY);
+                }, 20);
             });
             it('should fade legend item', function() {
                 var legendItemi;
@@ -802,7 +802,7 @@ describe('legend interaction', function() {
                         expect(gd.data[i].visible).toBe(true);
                     }
                     done();
-                }, DBLCLICKDELAY);
+                }, 20);
             });
             it('should unfade legend items', function() {
                 var legendItemi;
