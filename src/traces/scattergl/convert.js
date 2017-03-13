@@ -117,17 +117,14 @@ proto.initObject = function(createFn, options, objIndex) {
             obj._index = objIndex;
         }
         obj.update(options);
-        return obj;
     }
 
     function clear() {
         if(obj) obj.update(options0);
-        return obj;
     }
 
     function dispose() {
         if(obj) obj.dispose();
-        return obj;
     }
 
     return {
