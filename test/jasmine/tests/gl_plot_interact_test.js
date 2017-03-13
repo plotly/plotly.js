@@ -83,7 +83,7 @@ describe('Test gl3d plots', function() {
 
         function _hover() {
             mouseEventScatter3d('mouseover');
-            return delay;
+            return delay();
         }
 
         Plotly.plot(gd, _mock)
@@ -94,7 +94,6 @@ describe('Test gl3d plots', function() {
             });
         })
         .then(_hover)
-        .then(delay)
         .then(function() {
             assertHoverText('x: 140.72', 'y: −96.97', 'z: −96.97');
             assertEventData('140.72', '−96.97', '−96.97', 0, 2);
@@ -143,7 +142,7 @@ describe('Test gl3d plots', function() {
         // with button 1 pressed
         function _click() {
             mouseEventScatter3d('mouseover', {buttons: 1});
-            return delay;
+            return delay();
         }
 
         Plotly.plot(gd, _mock)
@@ -154,7 +153,6 @@ describe('Test gl3d plots', function() {
             });
         })
         .then(_click)
-        .then(delay)
         .then(function() {
             assertEventData('140.72', '−96.97', '−96.97', 0, 2);
         })
