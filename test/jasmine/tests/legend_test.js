@@ -1,6 +1,7 @@
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
+var DBLCLICKDELAY = require('@src/constants/interactions').DBLCLICKDELAY;
 
 var Legend = require('@src/components/legend');
 var getLegendData = require('@src/components/legend/get_legend_data');
@@ -625,6 +626,191 @@ describe('legend restyle update', function() {
             assertTraceToggleRect();
 
             done();
+        });
+    });
+});
+
+describe('legend interaction', function() {
+    'use strict';
+
+    describe('pie chart', function() {
+        var mockCopy, gd, legendItems, legendItem, legendLabels, legendLabel;
+        var testEntry = 2;
+
+        beforeAll(function(done) {
+            var mock = require('@mocks/pie_simple.json');
+            mockCopy = Lib.extendDeep({}, mock);
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+                legendItems = d3.selectAll('rect.legendtoggle')[0];
+                legendLabels = d3.selectAll('text.legendtext')[0];
+                legendItem = legendItems[testEntry];
+                legendLabel = legendLabels[testEntry].innerHTML;
+                done();
+            });
+        });
+        afterAll(function() {
+            destroyGraphDiv();
+        });
+        describe('single click', function() {
+            it('should hide slice', function(done) {
+                legendItem.dispatchEvent(new MouseEvent('mousedown'));
+                legendItem.dispatchEvent(new MouseEvent('mouseup'));
+                setTimeout(function() {
+                    expect(gd._fullLayout.hiddenlabels.length).toBe(1);
+                    expect(gd._fullLayout.hiddenlabels[0]).toBe(legendLabel);
+                    done();
+                }, DBLCLICKDELAY + 20);
+            });
+            it('should fade legend item', function() {
+                expect(+legendItem.parentNode.style.opacity).toBeLessThan(1);
+            });
+            it('should unhide slice', function(done) {
+                legendItem.dispatchEvent(new MouseEvent('mousedown'));
+                legendItem.dispatchEvent(new MouseEvent('mouseup'));
+                setTimeout(function() {
+                    expect(gd._fullLayout.hiddenlabels.length).toBe(0);
+                    done();
+                }, DBLCLICKDELAY + 20);
+            });
+            it('should unfade legend item', function() {
+                expect(+legendItem.parentNode.style.opacity).toBe(1);
+            });
+        });
+
+        describe('double click', function() {
+            it('should hide other slices', function(done) {
+                legendItem.dispatchEvent(new MouseEvent('mousedown'));
+                legendItem.dispatchEvent(new MouseEvent('mouseup'));
+                legendItem.dispatchEvent(new MouseEvent('mousedown'));
+                legendItem.dispatchEvent(new MouseEvent('mouseup'));
+                setTimeout(function() {
+                    expect(gd._fullLayout.hiddenlabels.length).toBe((legendItems.length - 1));
+                    expect(gd._fullLayout.hiddenlabels.indexOf(legendLabel)).toBe(-1);
+                    done();
+                }, 20);
+            });
+            it('should fade other legend items', function() {
+                var legendItemi;
+                for(var i = 0; i < legendItems.length; i++) {
+                    legendItemi = legendItems[i];
+                    if(i === testEntry) {
+                        expect(+legendItemi.parentNode.style.opacity).toBe(1);
+                    } else {
+                        expect(+legendItemi.parentNode.style.opacity).toBeLessThan(1);
+                    }
+                }
+            });
+            it('should unhide all slices', function(done) {
+                legendItem.dispatchEvent(new MouseEvent('mousedown'));
+                legendItem.dispatchEvent(new MouseEvent('mouseup'));
+                legendItem.dispatchEvent(new MouseEvent('mousedown'));
+                legendItem.dispatchEvent(new MouseEvent('mouseup'));
+                setTimeout(function() {
+                    expect(gd._fullLayout.hiddenlabels.length).toBe(0);
+                    done();
+                }, 20);
+            });
+            it('should unfade legend items', function() {
+                var legendItemi;
+                for(var i = 0; i < legendItems.length; i++) {
+                    legendItemi = legendItems[i];
+                    expect(+legendItemi.parentNode.style.opacity).toBe(1);
+                }
+            });
+        });
+    });
+    describe('non-pie chart', function() {
+        var mockCopy, gd, legendItems, legendItem;
+        var testEntry = 2;
+
+        beforeAll(function(done) {
+            var mock = require('@mocks/29.json');
+            mockCopy = Lib.extendDeep({}, mock);
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+                legendItems = d3.selectAll('rect.legendtoggle')[0];
+                legendItem = legendItems[testEntry];
+                done();
+            });
+        });
+        afterAll(function() {
+            destroyGraphDiv();
+        });
+
+        describe('single click', function() {
+            it('should hide series', function(done) {
+                legendItem.dispatchEvent(new MouseEvent('mousedown'));
+                legendItem.dispatchEvent(new MouseEvent('mouseup'));
+                setTimeout(function() {
+                    expect(gd.data[2].visible).toBe('legendonly');
+                    done();
+                }, DBLCLICKDELAY + 20);
+            });
+            it('should fade legend item', function() {
+                expect(+legendItem.parentNode.style.opacity).toBeLessThan(1);
+            });
+            it('should unhide series', function(done) {
+                legendItem.dispatchEvent(new MouseEvent('mousedown'));
+                legendItem.dispatchEvent(new MouseEvent('mouseup'));
+                setTimeout(function() {
+                    expect(gd.data[2].visible).toBe(true);
+                    done();
+                }, DBLCLICKDELAY + 20);
+            });
+            it('should unfade legend item', function() {
+                expect(+legendItem.parentNode.style.opacity).toBe(1);
+            });
+        });
+        describe('double click', function() {
+            it('should hide series', function(done) {
+                legendItem.dispatchEvent(new MouseEvent('mousedown'));
+                legendItem.dispatchEvent(new MouseEvent('mouseup'));
+                legendItem.dispatchEvent(new MouseEvent('mousedown'));
+                legendItem.dispatchEvent(new MouseEvent('mouseup'));
+                setTimeout(function() {
+                    for(var i = 0; i < legendItems.length; i++) {
+                        if(i === testEntry) {
+                            expect(gd.data[i].visible).toBe(true);
+                        } else {
+                            expect(gd.data[i].visible).toBe('legendonly');
+                        }
+                    }
+                    done();
+                }, 20);
+            });
+            it('should fade legend item', function() {
+                var legendItemi;
+                for(var i = 0; i < legendItems.length; i++) {
+                    legendItemi = legendItems[i];
+                    if(i === testEntry) {
+                        expect(+legendItemi.parentNode.style.opacity).toBe(1);
+                    } else {
+                        expect(+legendItemi.parentNode.style.opacity).toBeLessThan(1);
+                    }
+                }
+            });
+            it('should unhide series', function(done) {
+                legendItem.dispatchEvent(new MouseEvent('mousedown'));
+                legendItem.dispatchEvent(new MouseEvent('mouseup'));
+                legendItem.dispatchEvent(new MouseEvent('mousedown'));
+                legendItem.dispatchEvent(new MouseEvent('mouseup'));
+                setTimeout(function() {
+                    for(var i = 0; i < legendItems.length; i++) {
+                        expect(gd.data[i].visible).toBe(true);
+                    }
+                    done();
+                }, 20);
+            });
+            it('should unfade legend items', function() {
+                var legendItemi;
+                for(var i = 0; i < legendItems.length; i++) {
+                    legendItemi = legendItems[i];
+                    expect(+legendItemi.parentNode.style.opacity).toBe(1);
+                }
+            });
         });
     });
 });
