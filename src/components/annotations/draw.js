@@ -69,7 +69,7 @@ function drawOne(gd, index) {
     fullLayout._infolayer.selectAll('.annotation[data-index="' + index + '"]').remove();
 
     // remember a few things about what was already there,
-    var optionsIn = layout.annotations[index],
+    var optionsIn = (layout.annotations || [])[index],
         options = fullLayout.annotations[index];
 
     // this annotation is gone - quit now after deleting it

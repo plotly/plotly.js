@@ -11,12 +11,6 @@ var mouseEvent = require('../assets/mouse_event');
 var selectButton = require('../assets/modebar_button');
 var customMatchers = require('../assets/custom_matchers');
 
-/*
- * WebGL interaction test cases fail on the CircleCI
- * most likely due to a WebGL/driver issue
- *
- */
-
 var MODEBAR_DELAY = 500;
 
 

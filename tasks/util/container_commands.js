@@ -22,8 +22,6 @@ containerCommands.setup = [
     containerCommands.injectEnv,
     containerCommands.restart,
     'sleep 1',
-    containerCommands.ping,
-    'echo '
 ].join(' && ');
 
 containerCommands.dockerRun = [
