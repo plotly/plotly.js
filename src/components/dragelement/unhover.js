@@ -32,6 +32,7 @@ unhover.wrapped = function(gd, evt, subplot) {
 // remove hover effects on mouse out, and emit unhover event
 unhover.raw = function unhoverRaw(gd, evt) {
     var fullLayout = gd._fullLayout;
+    var oldhoverdata = gd._hoverdata;
 
     if(!evt) evt = {};
     if(evt.target &&
@@ -40,10 +41,9 @@ unhover.raw = function unhoverRaw(gd, evt) {
     }
 
     fullLayout._hoverlayer.selectAll('g').remove();
-
-    if(evt.target && gd._hoverdata) {
-        gd.emit('plotly_unhover', {points: gd._hoverdata});
-    }
-
     gd._hoverdata = undefined;
+
+    if(evt.target && oldhoverdata) {
+        gd.emit('plotly_unhover', {points: oldhoverdata});
+    }
 };

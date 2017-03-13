@@ -133,12 +133,14 @@ Plotly.plot = function(gd, data, layout, config) {
 
     Plots.supplyDefaults(gd);
 
+    var fullLayout = gd._fullLayout;
+
     // Polar plots
     if(data && data[0] && data[0].r) return plotPolar(gd, data, layout);
 
     // so we don't try to re-call Plotly.plot from inside
     // legend and colorbar, if margins changed
-    gd._replotting = true;
+    fullLayout._replotting = true;
 
     // make or remake the framework if we need to
     if(graphWasEmpty) makePlotFramework(gd);
@@ -152,7 +154,6 @@ Plotly.plot = function(gd, data, layout, config) {
     // save initial axis range once per graph
     if(graphWasEmpty) Plotly.Axes.saveRangeInitial(gd);
 
-    var fullLayout = gd._fullLayout;
 
     // prepare the data and find the autorange
 
@@ -307,8 +308,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
         // keep reference to shape layers in subplots
         var layerSubplot = fullLayout._paper.selectAll('.layer-subplot');
-        fullLayout._imageSubplotLayer = layerSubplot.selectAll('.imagelayer');
-        fullLayout._shapeSubplotLayer = layerSubplot.selectAll('.shapelayer');
+        fullLayout._shapeSubplotLayers = layerSubplot.selectAll('.shapelayer');
 
         // styling separate from drawing
         Plots.style(gd);
@@ -321,13 +321,13 @@ Plotly.plot = function(gd, data, layout, config) {
         Plots.addLinks(gd);
 
         // Mark the first render as complete
-        gd._replotting = false;
+        fullLayout._replotting = false;
 
         return Plots.previousPromises(gd);
     }
 
     // An initial paint must be completed before these components can be
-    // correctly sized and the whole plot re-margined. gd._replotting must
+    // correctly sized and the whole plot re-margined. fullLayout._replotting must
     // be set to false before these will work properly.
     function finalDraw() {
         Registry.getComponentMethod('shapes', 'draw')(gd);
@@ -2855,11 +2855,20 @@ function makePlotFramework(gd) {
     fullLayout._topdefs = fullLayout._toppaper.append('defs')
         .attr('id', 'topdefs-' + fullLayout._uid);
 
+    fullLayout._bgLayer = fullLayout._paper.append('g')
+        .classed('bglayer', true);
+
     fullLayout._draggers = fullLayout._paper.append('g')
         .classed('draglayer', true);
 
-    // lower shape layer
-    // (only for shapes to be drawn below the whole plot)
+    // lower shape/image layer - note that this is behind
+    // all subplots data/grids but above the backgrounds
+    // except inset subplots, whose backgrounds are drawn
+    // inside their own group so that they appear above
+    // the data for the main subplot
+    // lower shapes and images which are fully referenced to
+    // a subplot still get drawn within the subplot's group
+    // so they will work correctly on insets
     var layerBelow = fullLayout._paper.append('g')
         .classed('layer-below', true);
     fullLayout._imageLowerLayer = layerBelow.append('g')

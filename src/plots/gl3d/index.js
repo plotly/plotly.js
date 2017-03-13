@@ -14,9 +14,6 @@ var Plots = require('../plots');
 var Lib = require('../../lib');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
-var axesNames = ['xaxis', 'yaxis', 'zaxis'];
-
-
 exports.name = 'gl3d';
 
 exports.attr = 'scene';
@@ -45,8 +42,6 @@ exports.plot = function plotGl3d(gd) {
             scene = sceneLayout._scene;
 
         if(!scene) {
-            initAxes(gd, sceneLayout);
-
             scene = new Scene({
                 id: sceneId,
                 graphDiv: gd,
@@ -118,13 +113,3 @@ exports.cleanId = function cleanId(id) {
 
     return 'scene' + sceneNum;
 };
-
-exports.setConvert = require('./set_convert');
-
-function initAxes(gd, sceneLayout) {
-    for(var j = 0; j < 3; ++j) {
-        var axisName = axesNames[j];
-
-        sceneLayout[axisName]._gd = gd;
-    }
-}

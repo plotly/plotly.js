@@ -7,7 +7,6 @@ var convert = require('@src/traces/scattermapbox/convert');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var hasWebGLSupport = require('../assets/has_webgl_support');
 var customMatchers = require('../assets/custom_matchers');
 
 Plotly.setPlotConfig({
@@ -452,10 +451,8 @@ describe('scattermapbox convert', function() {
     }
 });
 
-describe('scattermapbox hover', function() {
+describe('@noCI scattermapbox hover', function() {
     'use strict';
-
-    if(!hasWebGLSupport('scattermapbox hover')) return;
 
     var hoverPoints = ScatterMapbox.hoverPoints;
 

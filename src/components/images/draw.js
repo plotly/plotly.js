@@ -16,16 +16,28 @@ var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout,
         imageDataAbove = [],
-        imageDataSubplot = [],
-        imageDataBelow = [];
+        imageDataSubplot = {},
+        imageDataBelow = [],
+        subplot,
+        i;
 
     // Sort into top, subplot, and bottom layers
-    for(var i = 0; i < fullLayout.images.length; i++) {
+    for(i = 0; i < fullLayout.images.length; i++) {
         var img = fullLayout.images[i];
 
         if(img.visible) {
             if(img.layer === 'below' && img.xref !== 'paper' && img.yref !== 'paper') {
-                imageDataSubplot.push(img);
+                subplot = img.xref + img.yref;
+
+                var plotinfo = fullLayout._plots[subplot];
+                if(plotinfo.mainplot) {
+                    subplot = plotinfo.mainplot.id;
+                }
+
+                if(!imageDataSubplot[subplot]) {
+                    imageDataSubplot[subplot] = [];
+                }
+                imageDataSubplot[subplot].push(img);
             } else if(img.layer === 'above') {
                 imageDataAbove.push(img);
             } else {
@@ -143,31 +155,24 @@ module.exports = function draw(gd) {
             yId = ya ? ya._id : '',
             clipAxes = xId + yId;
 
-        if(clipAxes) {
-            thisImage.call(Drawing.setClipUrl, 'clip' + fullLayout._uid + clipAxes);
-        }
+        thisImage.call(Drawing.setClipUrl, clipAxes ?
+            ('clip' + fullLayout._uid + clipAxes) :
+            null
+        );
     }
 
     var imagesBelow = fullLayout._imageLowerLayer.selectAll('image')
             .data(imageDataBelow),
-        imagesSubplot = fullLayout._imageSubplotLayer.selectAll('image')
-            .data(imageDataSubplot),
         imagesAbove = fullLayout._imageUpperLayer.selectAll('image')
             .data(imageDataAbove);
 
     imagesBelow.enter().append('image');
-    imagesSubplot.enter().append('image');
     imagesAbove.enter().append('image');
 
     imagesBelow.exit().remove();
-    imagesSubplot.exit().remove();
     imagesAbove.exit().remove();
 
     imagesBelow.each(function(d) {
-        setImage.bind(this)(d);
-        applyAttributes.bind(this)(d);
-    });
-    imagesSubplot.each(function(d) {
         setImage.bind(this)(d);
         applyAttributes.bind(this)(d);
     });
@@ -175,4 +180,27 @@ module.exports = function draw(gd) {
         setImage.bind(this)(d);
         applyAttributes.bind(this)(d);
     });
+
+    var allSubplots = Object.keys(fullLayout._plots);
+    for(i = 0; i < allSubplots.length; i++) {
+        subplot = allSubplots[i];
+        var subplotObj = fullLayout._plots[subplot];
+
+        // filter out overlaid plots (which havd their images on the main plot)
+        // and gl2d plots (which don't support below images, at least not yet)
+        if(!subplotObj.imagelayer) continue;
+
+        var imagesOnSubplot = subplotObj.imagelayer.selectAll('image')
+            // even if there are no images on this subplot, we need to run
+            // enter and exit in case there were previously
+            .data(imageDataSubplot[subplot] || []);
+
+        imagesOnSubplot.enter().append('image');
+        imagesOnSubplot.exit().remove();
+
+        imagesOnSubplot.each(function(d) {
+            setImage.bind(this)(d);
+            applyAttributes.bind(this)(d);
+        });
+    }
 };
