@@ -449,6 +449,13 @@ function updatePositionAxis(gd, pa, sieve, allowMinDtick) {
     Axes.expand(pa, [pMin, pMax], {padded: false});
 }
 
+function expandRange(range, newValue) {
+    if(isNumeric(range[0])) range[0] = Math.min(range[0], newValue);
+    else range[0] = newValue;
+
+    if(isNumeric(range[1])) range[1] = Math.max(range[1], newValue);
+    else range[1] = newValue;
+}
 
 function setBaseAndTop(gd, sa, sieve) {
     // store these bar bases and tops in calcdata
@@ -456,8 +463,8 @@ function setBaseAndTop(gd, sa, sieve) {
     // along with the bases and tops of each bar.
     var traces = sieve.traces,
         sLetter = getAxisLetter(sa),
-        sMax = sa.l2c(sa.c2l(0)),
-        sMin = sMax;
+        s0 = sa.l2c(sa.c2l(0)),
+        sRange = [s0, s0];
 
     for(var i = 0; i < traces.length; i++) {
         var trace = traces[i];
@@ -469,18 +476,12 @@ function setBaseAndTop(gd, sa, sieve) {
 
             bar[sLetter] = barTop;
 
-            if(isNumeric(sa.c2l(barTop))) {
-                sMax = Math.max(sMax, barTop);
-                sMin = Math.min(sMin, barTop);
-            }
-            if(isNumeric(sa.c2l(barBase))) {
-                sMax = Math.max(sMax, barBase);
-                sMin = Math.min(sMin, barBase);
-            }
+            if(isNumeric(sa.c2l(barTop))) expandRange(sRange, barTop);
+            if(isNumeric(sa.c2l(barBase))) expandRange(sRange, barBase);
         }
     }
 
-    Axes.expand(sa, [sMin, sMax], {tozero: true, padded: true});
+    Axes.expand(sa, sRange, {tozero: true, padded: true});
 }
 
 
@@ -492,8 +493,8 @@ function stackBars(gd, sa, sieve) {
         i, trace,
         j, bar;
 
-    var sMax = sa.l2c(sa.c2l(0)),
-        sMin = sMax;
+    var s0 = sa.l2c(sa.c2l(0)),
+        sRange = [s0, s0];
 
     for(i = 0; i < traces.length; i++) {
         trace = traces[i];
@@ -512,20 +513,14 @@ function stackBars(gd, sa, sieve) {
             bar[sLetter] = barTop;
 
             if(!barnorm) {
-                if(isNumeric(sa.c2l(barTop))) {
-                    sMax = Math.max(sMax, barTop);
-                    sMin = Math.min(sMin, barTop);
-                }
-                if(isNumeric(sa.c2l(barBase))) {
-                    sMax = Math.max(sMax, barBase);
-                    sMin = Math.min(sMin, barBase);
-                }
+                if(isNumeric(sa.c2l(barTop))) expandRange(sRange, barTop);
+                if(isNumeric(sa.c2l(barBase))) expandRange(sRange, barBase);
             }
         }
     }
 
     // if barnorm is set, let normalizeBars update the axis range
-    if(!barnorm) Axes.expand(sa, [sMin, sMax], {tozero: true, padded: true});
+    if(!barnorm) Axes.expand(sa, sRange, {tozero: true, padded: true});
 }
 
 
@@ -554,9 +549,19 @@ function normalizeBars(gd, sa, sieve) {
         sLetter = getAxisLetter(sa),
         sTop = (gd._fullLayout.barnorm === 'fraction') ? 1 : 100,
         sTiny = sTop / 1e9, // in case of rounding error in sum
-        sMin = 0,
-        sMax = (gd._fullLayout.barmode === 'stack') ? sTop : 0,
+        sMin = sa.l2c(sa.c2l(0)),
+        sMax = (gd._fullLayout.barmode === 'stack') ? sTop : sMin,
+        sRange = [sMin, sMax],
         padded = false;
+
+    function maybeExpand(newValue) {
+        if(isNumeric(sa.c2l(newValue)) &&
+            ((newValue < sMin - sTiny) || (newValue > sMax + sTiny) || !isNumeric(sMin))
+        ) {
+            padded = true;
+            expandRange(sRange, newValue);
+        }
+    }
 
     for(var i = 0; i < traces.length; i++) {
         var trace = traces[i];
@@ -574,32 +579,13 @@ function normalizeBars(gd, sa, sieve) {
                 barTop = barBase + bar.s;
             bar[sLetter] = barTop;
 
-            if(isNumeric(sa.c2l(barTop))) {
-                if(barTop < sMin - sTiny) {
-                    padded = true;
-                    sMin = barTop;
-                }
-                if(barTop > sMax + sTiny) {
-                    padded = true;
-                    sMax = barTop;
-                }
-            }
-
-            if(isNumeric(sa.c2l(barBase))) {
-                if(barBase < sMin - sTiny) {
-                    padded = true;
-                    sMin = barBase;
-                }
-                if(barBase > sMax + sTiny) {
-                    padded = true;
-                    sMax = barBase;
-                }
-            }
+            maybeExpand(barTop);
+            maybeExpand(barBase);
         }
     }
 
     // update range of size axis
-    Axes.expand(sa, [sMin, sMax], {tozero: true, padded: padded});
+    Axes.expand(sa, sRange, {tozero: true, padded: padded});
 }
 
 
