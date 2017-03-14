@@ -86,9 +86,9 @@ module.exports = function calc(gd, trace) {
     }
 
     // if no error bars, markers or text, or fill to y=0 remove x padding
-    else if(!trace.error_y.visible && (
+    else if(trace.forceNoXPadding || (!trace.error_y.visible && (
             ['tonexty', 'tozeroy'].indexOf(trace.fill) !== -1 ||
-            (!subTypes.hasMarkers(trace) && !subTypes.hasText(trace))
+            (!subTypes.hasMarkers(trace) && !subTypes.hasText(trace)))
         )) {
         xOptions.padded = false;
         xOptions.ppad = 0;

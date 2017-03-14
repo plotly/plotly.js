@@ -209,6 +209,11 @@ module.exports = {
             'marker color, or marker line color, whichever is available.'
         ].join(' ')
     },
+    forceNoXPadding: {
+        valType: 'boolean',
+        dflt: false,
+        description: 'Removes padding on the x axis regardless of other settings.'
+    },
     marker: extendFlat({}, {
         symbol: {
             valType: 'enumerated',
