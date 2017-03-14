@@ -46,12 +46,5 @@ switch(arg) {
         break;
 }
 
-// Log command string on CircleCI, to then `eval` them,
-// which appears to be more reliable then calling `child_process.exec()`
-if(isCI) {
-    console.log(cmd);
-}
-else {
-    console.log(msg);
-    common.execCmd(cmd, cb, errorCb);
-}
+console.log(msg);
+common.execCmd(cmd, cb, errorCb);

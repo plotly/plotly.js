@@ -144,7 +144,7 @@ describe('Bar.supplyDefaults', function() {
     });
 });
 
-describe('heatmap calc / setPositions', function() {
+describe('bar calc / setPositions', function() {
     'use strict';
 
     beforeAll(function() {
@@ -696,6 +696,47 @@ describe('Bar.setPositions', function() {
         expect(gd.calcdata[1][0].y).toBe(false);
         expect(gd.calcdata[1][0].placeholder).toBe(true);
         expect(gd.calcdata[1][0].t.barwidth).toBeUndefined();
+    });
+
+    it('works with log axes (grouped bars)', function() {
+        var gd = mockBarPlot([
+            {y: [1, 10, 1e10, -1]},
+            {y: [2, 20, 2e10, -2]}
+        ], {
+            yaxis: {type: 'log'},
+            barmode: 'group'
+        });
+
+        var ya = gd._fullLayout.yaxis;
+        expect(Axes.getAutoRange(ya)).toBeCloseToArray([-0.572, 10.873], undefined, '(ya.range)');
+    });
+
+    it('works with log axes (stacked bars)', function() {
+        var gd = mockBarPlot([
+            {y: [1, 10, 1e10, -1]},
+            {y: [2, 20, 2e10, -2]}
+        ], {
+            yaxis: {type: 'log'},
+            barmode: 'stack'
+        });
+
+        var ya = gd._fullLayout.yaxis;
+        expect(Axes.getAutoRange(ya)).toBeCloseToArray([-0.582, 11.059], undefined, '(ya.range)');
+    });
+
+    it('works with log axes (normalized bars)', function() {
+        // strange case... but it should work!
+        var gd = mockBarPlot([
+            {y: [1, 10, 1e10, -1]},
+            {y: [2, 20, 2e10, -2]}
+        ], {
+            yaxis: {type: 'log'},
+            barmode: 'stack',
+            barnorm: 'percent'
+        });
+
+        var ya = gd._fullLayout.yaxis;
+        expect(Axes.getAutoRange(ya)).toBeCloseToArray([1.496, 2.027], undefined, '(ya.range)');
     });
 });
 
