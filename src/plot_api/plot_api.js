@@ -288,11 +288,19 @@ Plotly.plot = function(gd, data, layout, config) {
                 uid = trace.uid;
 
             if(!isVisible || !Registry.traceIs(trace, '2dMap')) {
-                fullLayout._paper.selectAll(
+                var query = (
                     '.hm' + uid +
                     ',.contour' + uid +
                     ',#clip' + uid
-                ).remove();
+                );
+
+                fullLayout._paper
+                    .selectAll(query)
+                    .remove();
+
+                fullLayout._infolayer.selectAll('g.rangeslider-container')
+                    .selectAll(query)
+                    .remove();
             }
 
             if(!isVisible || !trace._module.colorbar) {

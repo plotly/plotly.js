@@ -345,6 +345,90 @@ describe('the range slider', function() {
             })
             .then(done);
         });
+
+        it('should clear traces in range plot when needed', function(done) {
+
+            function count(query) {
+                return d3.select(getRangeSlider()).selectAll(query).size();
+            }
+
+            Plotly.plot(gd, [{
+                type: 'scatter',
+                x: [1, 2, 3],
+                y: [2, 1, 2]
+            }, {
+                type: 'bar',
+                x: [1, 2, 3],
+                y: [2, 5, 2]
+            }], {
+                xaxis: {
+                    rangeslider: { visible: true }
+                }
+            })
+            .then(function() {
+                expect(count('g.scatterlayer > g.trace')).toEqual(1);
+                expect(count('g.barlayer > g.trace')).toEqual(1);
+
+                return Plotly.restyle(gd, 'visible', false);
+            })
+            .then(function() {
+                expect(count('g.scatterlayer > g.trace')).toEqual(0);
+                expect(count('g.barlayer > g.trace')).toEqual(0);
+
+                return Plotly.restyle(gd, 'visible', true);
+            })
+            .then(function() {
+                expect(count('g.scatterlayer > g.trace')).toEqual(1);
+                expect(count('g.barlayer > g.trace')).toEqual(1);
+
+                return Plotly.deleteTraces(gd, [0, 1]);
+            })
+            .then(function() {
+                expect(count('g.scatterlayer > g.trace')).toEqual(0);
+                expect(count('g.barlayer > g.trace')).toEqual(0);
+
+                return Plotly.addTraces(gd, [{
+                    type: 'heatmap',
+                    z: [[1, 2, 3], [2, 1, 3]]
+                }]);
+            })
+            .then(function() {
+                expect(count('g.imagelayer > g.hm')).toEqual(1);
+
+                return Plotly.restyle(gd, 'visible', false);
+            })
+            .then(function() {
+                expect(count('g.imagelayer > g.hm')).toEqual(0);
+
+                return Plotly.restyle(gd, {
+                    visible: true,
+                    type: 'contour'
+                });
+            })
+            .then(function() {
+                expect(count('g.maplayer > g.contour')).toEqual(1);
+
+                return Plotly.restyle(gd, 'type', 'heatmap');
+            })
+            .then(function() {
+                expect(count('g.imagelayer > g.hm')).toEqual(1);
+                expect(count('g.maplayer > g.contour')).toEqual(0);
+
+                return Plotly.restyle(gd, 'type', 'contour');
+            })
+            .then(function() {
+                expect(count('g.imagelayer > g.hm')).toEqual(0);
+                expect(count('g.maplayer > g.contour')).toEqual(1);
+
+                return Plotly.deleteTraces(gd, [0]);
+            })
+            .then(function() {
+                expect(count('g.imagelayer > g.hm')).toEqual(0);
+                expect(count('g.maplayer > g.contour')).toEqual(0);
+            })
+            .then(done);
+
+        });
     });
 
     describe('handleDefaults function', function() {
