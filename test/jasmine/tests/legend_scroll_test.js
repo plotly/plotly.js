@@ -1,13 +1,13 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var constants = require('@src/components/legend/constants');
+var DBLCLICKDELAY = require('@src/constants/interactions').DBLCLICKDELAY;
 
 var d3 = require('d3');
 var createGraph = require('../assets/create_graph_div');
 var destroyGraph = require('../assets/destroy_graph_div');
 var getBBox = require('../assets/get_bbox');
 var mock = require('../../image/mocks/legend_scroll.json');
-
 
 describe('The legend', function() {
     'use strict';
@@ -96,7 +96,7 @@ describe('The legend', function() {
                 'translate(0, ' + finalDataScroll + ')');
         });
 
-        it('should keep the scrollbar position after a toggle event', function() {
+        it('should keep the scrollbar position after a toggle event', function(done) {
             var legend = getLegend(),
                 scrollBox = getScrollBox(),
                 toggle = getToggle(),
@@ -105,14 +105,18 @@ describe('The legend', function() {
             legend.dispatchEvent(scrollTo(wheelDeltaY));
 
             var dataScroll = scrollBox.getAttribute('data-scroll');
-            toggle.dispatchEvent(new MouseEvent('click'));
-            expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
-            expect(scrollBox.getAttribute('data-scroll')).toBe(dataScroll);
-            expect(scrollBox.getAttribute('transform')).toBe(
-                'translate(0, ' + dataScroll + ')');
+            toggle.dispatchEvent(new MouseEvent('mousedown'));
+            toggle.dispatchEvent(new MouseEvent('mouseup'));
+            setTimeout(function() {
+                expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
+                expect(scrollBox.getAttribute('data-scroll')).toBe(dataScroll);
+                expect(scrollBox.getAttribute('transform')).toBe(
+                    'translate(0, ' + dataScroll + ')');
+                done();
+            }, DBLCLICKDELAY * 2);
         });
 
-        it('should be restored and functional after relayout', function() {
+        it('should be restored and functional after relayout', function(done) {
             var wheelDeltaY = 100,
                 legend = getLegend(),
                 scrollBox,
@@ -139,13 +143,17 @@ describe('The legend', function() {
             expect(scrollBar.getAttribute('y')).toBe(scrollBarY);
 
             var dataScroll = scrollBox.getAttribute('data-scroll');
-            toggle.dispatchEvent(new MouseEvent('click'));
-            expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
-            expect(scrollBox.getAttribute('data-scroll')).toBe(dataScroll);
-            expect(scrollBox.getAttribute('transform')).toBe(
-                'translate(0, ' + dataScroll + ')');
-            expect(scrollBar.getAttribute('width')).toBeGreaterThan(0);
-            expect(scrollBar.getAttribute('height')).toBeGreaterThan(0);
+            toggle.dispatchEvent(new MouseEvent('mousedown'));
+            toggle.dispatchEvent(new MouseEvent('mouseup'));
+            setTimeout(function() {
+                expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
+                expect(scrollBox.getAttribute('data-scroll')).toBe(dataScroll);
+                expect(scrollBox.getAttribute('transform')).toBe(
+                    'translate(0, ' + dataScroll + ')');
+                expect(scrollBar.getAttribute('width')).toBeGreaterThan(0);
+                expect(scrollBar.getAttribute('height')).toBeGreaterThan(0);
+                done();
+            }, DBLCLICKDELAY * 2);
         });
 
         it('should constrain scrolling to the contents', function() {

@@ -1,7 +1,7 @@
 general:
   artifacts:
-      - "build/test_images/"
-      - "build/test_images_diff/"
+    - build/test_images/
+    - build/test_images_diff/
 
 machine:
   node:
@@ -12,21 +12,16 @@ machine:
     - docker
 
 dependencies:
-  pre:
-    - eval $(node tasks/docker.js pull)
-  post:
-    - eval $(node tasks/docker.js run)
-    - npm run cibuild
+  override:
+    - npm install && npm dedupe && npm prune && npm install
+    - npm ls || true
+    - npm run docker -- pull
     - npm run pretest
-    - eval $(node tasks/docker.js setup)
-    - npm prune && npm ls
+    - npm run docker -- run
+    - npm run cibuild
+    - npm run docker -- setup
 
 test:
   override:
-    - npm run test-image
-    - npm run test-image-gl2d
-    - npm run test-export
-    - npm run citest-jasmine
-    - npm run test-bundle
-    - npm run test-syntax
-    - eslint .
+    - ./tasks/ci_test.sh:
+        parallel: true
