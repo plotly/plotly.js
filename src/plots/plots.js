@@ -589,7 +589,7 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
             oldFullLayout._infolayer.selectAll('.cb' + oldUid).remove();
 
             oldFullLayout._infolayer.selectAll('g.rangeslider-container')
-                .select(query).remove();
+                .selectAll(query).remove();
         }
     }
 };
