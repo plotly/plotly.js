@@ -510,7 +510,6 @@ describe('Test gl3d modebar handlers', function() {
             assertCameraEye(gd._fullLayout.scene2, 2.5, 2.5, 5);
         })
         .then(done);
-
     });
 });
 
@@ -745,7 +744,9 @@ describe('Test gl2d plots', function() {
 
     it('should be able to toggle visibility', function(done) {
         var _mock = Lib.extendDeep({}, mock);
-        var OBJECT_PER_TRACE = 5;
+
+        // a line object + scatter fancy
+        var OBJECT_PER_TRACE = 2;
 
         var objects = function() {
             return gd._fullLayout._plots.xy._scene2d.glplot.objects;
