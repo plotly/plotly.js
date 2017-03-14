@@ -14,7 +14,7 @@ var customMatchers = require('../assets/custom_matchers');
 // useful to put callback in the event queue
 function delay() {
     return new Promise(function(resolve) {
-        setTimeout(resolve, 0);
+        setTimeout(resolve, 20);
     });
 }
 
