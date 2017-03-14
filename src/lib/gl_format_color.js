@@ -19,33 +19,33 @@ var colorDfltRgba = rgba(colorDflt);
 var opacityDflt = 1;
 
 function calculateColor(colorIn, opacityIn) {
-var colorOut = colorIn;
-colorOut[3] *= opacityIn;
-return colorOut;
+    var colorOut = colorIn;
+    colorOut[3] *= opacityIn;
+    return colorOut;
 }
 
 function validateColor(colorIn) {
-if(isNumeric(colorIn)) return colorDfltRgba;
+    if(isNumeric(colorIn)) return colorDfltRgba;
 
-var colorOut = rgba(colorIn);
+    var colorOut = rgba(colorIn);
 
-return colorOut.length ? colorOut : colorDfltRgba;
+    return colorOut.length ? colorOut : colorDfltRgba;
 }
 
 function validateOpacity(opacityIn) {
-return isNumeric(opacityIn) ? opacityIn : opacityDflt;
+    return isNumeric(opacityIn) ? opacityIn : opacityDflt;
 }
 
 function formatColor(containerIn, opacityIn, len) {
-var colorIn = containerIn.color,
-    isArrayColorIn = Array.isArray(colorIn),
-    isArrayOpacityIn = Array.isArray(opacityIn),
-    colorOut = [];
+    var colorIn = containerIn.color,
+        isArrayColorIn = Array.isArray(colorIn),
+        isArrayOpacityIn = Array.isArray(opacityIn),
+        colorOut = [];
 
-var sclFunc, getColor, getOpacity, colori, opacityi;
+    var sclFunc, getColor, getOpacity, colori, opacityi;
 
-if(containerIn.colorscale !== undefined) {
-    sclFunc = Colorscale.makeColorScaleFunc(
+    if(containerIn.colorscale !== undefined) {
+        sclFunc = Colorscale.makeColorScaleFunc(
             Colorscale.extractScale(
                 containerIn.colorscale,
                 containerIn.cmin,
