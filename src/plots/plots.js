@@ -571,23 +571,25 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
             if(oldUid === newTrace.uid) continue oldLoop;
         }
 
-        // clean old heatmap, contour, and scatter traces
-        //
-        // Note: This is also how scatter traces (cartesian and scatterternary) get
-        // removed since otherwise the scatter module is not called (and so the join
-        // doesn't register the removal) if scatter traces disappear entirely.
+        var query = (
+            '.hm' + oldUid +
+            ',.contour' + oldUid +
+            ',#clip' + oldUid +
+            ',.trace' + oldUid
+        );
+
+        // clean old heatmap, contour traces and clip paths
+        // that rely on uid identifiers
         if(hasPaper) {
-            oldFullLayout._paper.selectAll(
-                '.hm' + oldUid +
-                ',.contour' + oldUid +
-                ',#clip' + oldUid +
-                ',.trace' + oldUid
-            ).remove();
+            oldFullLayout._paper.selectAll(query).remove();
         }
 
-        // clean old colorbars
+        // clean old colorbars and range slider plot
         if(hasInfoLayer) {
             oldFullLayout._infolayer.selectAll('.cb' + oldUid).remove();
+
+            oldFullLayout._infolayer.selectAll('g.rangeslider-container')
+                .selectAll(query).remove();
         }
     }
 };

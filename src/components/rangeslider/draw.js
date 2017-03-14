@@ -376,6 +376,7 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
         };
 
         mockFigure.layout[oppAxisName] = {
+            type: oppAxisOpts.type,
             domain: [0, 1],
             range: oppAxisOpts.range.slice(),
             calendar: oppAxisOpts.calendar

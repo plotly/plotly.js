@@ -294,43 +294,140 @@ describe('the range slider', function() {
 
         it('should not add the slider to the DOM by default', function(done) {
             Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
-                .then(function() {
-                    var rangeSlider = getRangeSlider();
-                    expect(rangeSlider).not.toBeDefined();
-                })
-                .then(done);
+            .then(function() {
+                var rangeSlider = getRangeSlider();
+                expect(rangeSlider).not.toBeDefined();
+            })
+            .then(done);
         });
 
         it('should add the slider if rangeslider is set to anything', function(done) {
             Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
-                .then(function() { Plotly.relayout(gd, 'xaxis.rangeslider', 'exists'); })
-                .then(function() {
-                    var rangeSlider = getRangeSlider();
-                    expect(rangeSlider).toBeDefined();
-                })
-                .then(done);
+            .then(function() {
+                return Plotly.relayout(gd, 'xaxis.rangeslider', 'exists');
+            })
+            .then(function() {
+                var rangeSlider = getRangeSlider();
+                expect(rangeSlider).toBeDefined();
+            })
+            .then(done);
         });
 
         it('should add the slider if visible changed to `true`', function(done) {
             Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
-                .then(function() { Plotly.relayout(gd, 'xaxis.rangeslider.visible', true); })
-                .then(function() {
-                    var rangeSlider = getRangeSlider();
-                    expect(rangeSlider).toBeDefined();
-                    expect(countRangeSliderClipPaths()).toEqual(1);
-                })
-                .then(done);
+            .then(function() {
+                return Plotly.relayout(gd, 'xaxis.rangeslider.visible', true);
+            })
+            .then(function() {
+                var rangeSlider = getRangeSlider();
+                expect(rangeSlider).toBeDefined();
+                expect(countRangeSliderClipPaths()).toEqual(1);
+            })
+            .then(done);
         });
 
         it('should remove the slider if changed to `false` or `undefined`', function(done) {
-            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], { xaxis: { rangeslider: { visible: true }}})
-                .then(function() { Plotly.relayout(gd, 'xaxis.rangeslider.visible', false); })
-                .then(function() {
-                    var rangeSlider = getRangeSlider();
-                    expect(rangeSlider).not.toBeDefined();
-                    expect(countRangeSliderClipPaths()).toEqual(0);
-                })
-                .then(done);
+            Plotly.plot(gd, [{
+                x: [1, 2, 3],
+                y: [2, 3, 4]
+            }], {
+                xaxis: {
+                    rangeslider: { visible: true }
+                }
+            })
+            .then(function() {
+                return Plotly.relayout(gd, 'xaxis.rangeslider.visible', false);
+            })
+            .then(function() {
+                var rangeSlider = getRangeSlider();
+                expect(rangeSlider).not.toBeDefined();
+                expect(countRangeSliderClipPaths()).toEqual(0);
+            })
+            .then(done);
+        });
+
+        it('should clear traces in range plot when needed', function(done) {
+
+            function count(query) {
+                return d3.select(getRangeSlider()).selectAll(query).size();
+            }
+
+            Plotly.plot(gd, [{
+                type: 'scatter',
+                x: [1, 2, 3],
+                y: [2, 1, 2]
+            }, {
+                type: 'bar',
+                x: [1, 2, 3],
+                y: [2, 5, 2]
+            }], {
+                xaxis: {
+                    rangeslider: { visible: true }
+                }
+            })
+            .then(function() {
+                expect(count('g.scatterlayer > g.trace')).toEqual(1);
+                expect(count('g.barlayer > g.trace')).toEqual(1);
+
+                return Plotly.restyle(gd, 'visible', false);
+            })
+            .then(function() {
+                expect(count('g.scatterlayer > g.trace')).toEqual(0);
+                expect(count('g.barlayer > g.trace')).toEqual(0);
+
+                return Plotly.restyle(gd, 'visible', true);
+            })
+            .then(function() {
+                expect(count('g.scatterlayer > g.trace')).toEqual(1);
+                expect(count('g.barlayer > g.trace')).toEqual(1);
+
+                return Plotly.deleteTraces(gd, [0, 1]);
+            })
+            .then(function() {
+                expect(count('g.scatterlayer > g.trace')).toEqual(0);
+                expect(count('g.barlayer > g.trace')).toEqual(0);
+
+                return Plotly.addTraces(gd, [{
+                    type: 'heatmap',
+                    z: [[1, 2, 3], [2, 1, 3]]
+                }]);
+            })
+            .then(function() {
+                expect(count('g.imagelayer > g.hm')).toEqual(1);
+
+                return Plotly.restyle(gd, 'visible', false);
+            })
+            .then(function() {
+                expect(count('g.imagelayer > g.hm')).toEqual(0);
+
+                return Plotly.restyle(gd, {
+                    visible: true,
+                    type: 'contour'
+                });
+            })
+            .then(function() {
+                expect(count('g.maplayer > g.contour')).toEqual(1);
+
+                return Plotly.restyle(gd, 'type', 'heatmap');
+            })
+            .then(function() {
+                expect(count('g.imagelayer > g.hm')).toEqual(1);
+                expect(count('g.maplayer > g.contour')).toEqual(0);
+
+                return Plotly.restyle(gd, 'type', 'contour');
+            })
+            .then(function() {
+                expect(count('g.imagelayer > g.hm')).toEqual(0);
+                expect(count('g.maplayer > g.contour')).toEqual(1);
+
+                return Plotly.deleteTraces(gd, [0]);
+            })
+            .then(function() {
+                expect(count('g.imagelayer > g.hm')).toEqual(0);
+                expect(count('g.maplayer > g.contour')).toEqual(0);
+            })
+            .then(done);
+
         });
     });
 
