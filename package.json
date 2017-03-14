@@ -57,6 +57,7 @@
     "3d-view": "^2.0.0",
     "alpha-shape": "^1.0.0",
     "arraytools": "^1.0.0",
+    "color-rgba": "^1.0.4",
     "convex-hull": "^1.0.3",
     "country-regex": "^1.1.0",
     "d3": "^3.5.12",
