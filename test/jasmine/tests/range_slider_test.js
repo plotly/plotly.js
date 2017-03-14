@@ -294,43 +294,56 @@ describe('the range slider', function() {
 
         it('should not add the slider to the DOM by default', function(done) {
             Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
-                .then(function() {
-                    var rangeSlider = getRangeSlider();
-                    expect(rangeSlider).not.toBeDefined();
-                })
-                .then(done);
+            .then(function() {
+                var rangeSlider = getRangeSlider();
+                expect(rangeSlider).not.toBeDefined();
+            })
+            .then(done);
         });
 
         it('should add the slider if rangeslider is set to anything', function(done) {
             Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
-                .then(function() { Plotly.relayout(gd, 'xaxis.rangeslider', 'exists'); })
-                .then(function() {
-                    var rangeSlider = getRangeSlider();
-                    expect(rangeSlider).toBeDefined();
-                })
-                .then(done);
+            .then(function() {
+                return Plotly.relayout(gd, 'xaxis.rangeslider', 'exists');
+            })
+            .then(function() {
+                var rangeSlider = getRangeSlider();
+                expect(rangeSlider).toBeDefined();
+            })
+            .then(done);
         });
 
         it('should add the slider if visible changed to `true`', function(done) {
             Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
-                .then(function() { Plotly.relayout(gd, 'xaxis.rangeslider.visible', true); })
-                .then(function() {
-                    var rangeSlider = getRangeSlider();
-                    expect(rangeSlider).toBeDefined();
-                    expect(countRangeSliderClipPaths()).toEqual(1);
-                })
-                .then(done);
+            .then(function() {
+                return Plotly.relayout(gd, 'xaxis.rangeslider.visible', true);
+            })
+            .then(function() {
+                var rangeSlider = getRangeSlider();
+                expect(rangeSlider).toBeDefined();
+                expect(countRangeSliderClipPaths()).toEqual(1);
+            })
+            .then(done);
         });
 
         it('should remove the slider if changed to `false` or `undefined`', function(done) {
-            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], { xaxis: { rangeslider: { visible: true }}})
-                .then(function() { Plotly.relayout(gd, 'xaxis.rangeslider.visible', false); })
-                .then(function() {
-                    var rangeSlider = getRangeSlider();
-                    expect(rangeSlider).not.toBeDefined();
-                    expect(countRangeSliderClipPaths()).toEqual(0);
-                })
-                .then(done);
+            Plotly.plot(gd, [{
+                x: [1, 2, 3],
+                y: [2, 3, 4]
+            }], {
+                xaxis: {
+                    rangeslider: { visible: true }
+                }
+            })
+            .then(function() {
+                return Plotly.relayout(gd, 'xaxis.rangeslider.visible', false);
+            })
+            .then(function() {
+                var rangeSlider = getRangeSlider();
+                expect(rangeSlider).not.toBeDefined();
+                expect(countRangeSliderClipPaths()).toEqual(0);
+            })
+            .then(done);
         });
     });
 
