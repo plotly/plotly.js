@@ -78,7 +78,7 @@ describe('Test gl3d plots', function() {
         destroyGraphDiv();
     });
 
-    it('should display correct hover labels and emit correct event data', function(done) {
+    it('@noCI should display correct hover labels and emit correct event data', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
         function _hover() {
@@ -136,7 +136,7 @@ describe('Test gl3d plots', function() {
 
     });
 
-    it('should emit correct event data on click', function(done) {
+    it('@noCI should emit correct event data on click', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
         // N.B. gl3d click events are 'mouseover' events
