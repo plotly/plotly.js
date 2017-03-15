@@ -397,7 +397,7 @@ describe('Test Plots', function() {
                 '_ev', '_internalEv', 'on', 'once', 'removeListener', 'removeAllListeners',
                 '_internalOn', '_internalOnce', '_removeInternalListener',
                 '_removeAllInternalListeners', 'emit', '_context', '_replotPending',
-                '_hmpixcount', '_hmlumcount', '_mouseDownTime'
+                '_hmpixcount', '_hmlumcount', '_mouseDownTime', '_legendMouseDownTime',
             ];
 
             Plots.purge(gd);
@@ -418,7 +418,6 @@ describe('Test Plots', function() {
             expect(gd._testref).toBeUndefined();
             expect(gd._promises).toBeUndefined();
             expect(gd._redrawTimer).toBeUndefined();
-            expect(gd._replotting).toBeUndefined();
             expect(gd.firstscatter).toBeUndefined();
             expect(gd.hmlumcount).toBeUndefined();
             expect(gd.hmpixcount).toBeUndefined();

@@ -1264,11 +1264,11 @@ describe('Test axes', function() {
         // way of getting a new clean copy each time.
         function getDefaultAx() {
             return {
+                autorange: true,
                 c2l: Number,
                 type: 'linear',
                 _length: 100,
-                _m: 1,
-                _needsExpand: true
+                _m: 1
             };
         }
 
@@ -1284,15 +1284,14 @@ describe('Test axes', function() {
 
         it('calls ax.setScale if necessary', function() {
             ax = {
+                autorange: true,
                 c2l: Number,
                 type: 'linear',
-                setScale: function() {},
-                _needsExpand: true
+                setScale: function() {}
             };
             spyOn(ax, 'setScale');
-            data = [1];
 
-            expand(ax, data);
+            expand(ax, [1]);
 
             expect(ax.setScale).toHaveBeenCalled();
         });
@@ -1450,13 +1449,44 @@ describe('Test axes', function() {
             expect(ax._min).toEqual([{val: 0, pad: 0}]);
             expect(ax._max).toEqual([{val: 6, pad: 15}]);
         });
+
+        it('should return early if no data is given', function() {
+            ax = getDefaultAx();
+
+            expand(ax);
+            expect(ax._min).toBeUndefined();
+            expect(ax._max).toBeUndefined();
+        });
+
+        it('should return early if `autorange` is falsy', function() {
+            ax = getDefaultAx();
+            data = [2, 5];
+
+            ax.autorange = false;
+            ax.rangeslider = { autorange: false };
+
+            expand(ax, data, {});
+            expect(ax._min).toBeUndefined();
+            expect(ax._max).toBeUndefined();
+        });
+
+        it('should consider range slider `autorange`', function() {
+            ax = getDefaultAx();
+            data = [2, 5];
+
+            ax.autorange = false;
+            ax.rangeslider = { autorange: true };
+
+            expand(ax, data, {});
+            expect(ax._min).toEqual([{val: 2, pad: 0}]);
+            expect(ax._max).toEqual([{val: 5, pad: 0}]);
+        });
     });
 
     describe('calcTicks and tickText', function() {
         function mockCalc(ax) {
-            Axes.setConvert(ax);
             ax.tickfont = {};
-            ax._gd = {_fullLayout: {separators: '.,'}};
+            Axes.setConvert(ax, {separators: '.,'});
             return Axes.calcTicks(ax).map(function(v) { return v.text; });
         }
 

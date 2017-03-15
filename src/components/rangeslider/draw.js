@@ -376,6 +376,7 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
         };
 
         mockFigure.layout[oppAxisName] = {
+            type: oppAxisOpts.type,
             domain: [0, 1],
             range: oppAxisOpts.range.slice(),
             calendar: oppAxisOpts.calendar
@@ -400,10 +401,6 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
         }
 
         Cartesian.rangePlot(gd, plotinfo, filterRangePlotCalcData(calcData, id));
-
-        // no need for the bg layer,
-        // drawBg handles coloring the background
-        if(isMainPlot) plotinfo.bg.remove();
     });
 }
 

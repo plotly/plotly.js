@@ -36,6 +36,8 @@ function plotOne(gd, plotinfo, cd) {
 
     // in case this used to be a contour map
     fullLayout._paper.selectAll('.contour' + uid).remove();
+    fullLayout._infolayer.selectAll('g.rangeslider-container')
+        .selectAll('.contour' + uid).remove();
 
     if(trace.visible !== true) {
         fullLayout._paper.selectAll('.' + id).remove();

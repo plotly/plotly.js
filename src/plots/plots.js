@@ -491,12 +491,10 @@ plots.supplyDefaults = function(gd) {
     // TODO may return a promise
     plots.doAutoMargin(gd);
 
-    // can't quite figure out how to get rid of this... each axis needs
-    // a reference back to the DOM object for just a few purposes
+    // set scale after auto margin routine
     var axList = Plotly.Axes.list(gd);
     for(i = 0; i < axList.length; i++) {
         var ax = axList[i];
-        ax._gd = gd;
         ax.setScale();
     }
 
@@ -573,23 +571,25 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
             if(oldUid === newTrace.uid) continue oldLoop;
         }
 
-        // clean old heatmap, contour, and scatter traces
-        //
-        // Note: This is also how scatter traces (cartesian and scatterternary) get
-        // removed since otherwise the scatter module is not called (and so the join
-        // doesn't register the removal) if scatter traces disappear entirely.
+        var query = (
+            '.hm' + oldUid +
+            ',.contour' + oldUid +
+            ',#clip' + oldUid +
+            ',.trace' + oldUid
+        );
+
+        // clean old heatmap, contour traces and clip paths
+        // that rely on uid identifiers
         if(hasPaper) {
-            oldFullLayout._paper.selectAll(
-                '.hm' + oldUid +
-                ',.contour' + oldUid +
-                ',#clip' + oldUid +
-                ',.trace' + oldUid
-            ).remove();
+            oldFullLayout._paper.selectAll(query).remove();
         }
 
-        // clean old colorbars
+        // clean old colorbars and range slider plot
         if(hasInfoLayer) {
             oldFullLayout._infolayer.selectAll('.cb' + oldUid).remove();
+
+            oldFullLayout._infolayer.selectAll('g.rangeslider-container')
+                .selectAll(query).remove();
         }
     }
 };
@@ -1127,7 +1127,6 @@ plots.purge = function(gd) {
     delete gd._testref;
     delete gd._promises;
     delete gd._redrawTimer;
-    delete gd._replotting;
     delete gd.firstscatter;
     delete gd.hmlumcount;
     delete gd.hmpixcount;
@@ -1208,7 +1207,7 @@ plots.autoMargin = function(gd, id, o) {
             };
         }
 
-        if(!gd._replotting) plots.doAutoMargin(gd);
+        if(!fullLayout._replotting) plots.doAutoMargin(gd);
     }
 };
 
@@ -1301,7 +1300,7 @@ plots.doAutoMargin = function(gd) {
     gs.h = Math.round(fullLayout.height) - gs.t - gs.b;
 
     // if things changed and we're not already redrawing, trigger a redraw
-    if(!gd._replotting && oldmargins !== '{}' &&
+    if(!fullLayout._replotting && oldmargins !== '{}' &&
             oldmargins !== JSON.stringify(fullLayout._size)) {
         return Plotly.plot(gd);
     }

@@ -69,7 +69,7 @@ function drawOne(gd, index) {
     fullLayout._infolayer.selectAll('.annotation[data-index="' + index + '"]').remove();
 
     // remember a few things about what was already there,
-    var optionsIn = layout.annotations[index],
+    var optionsIn = (layout.annotations || [])[index],
         options = fullLayout.annotations[index];
 
     // this annotation is gone - quit now after deleting it
@@ -285,8 +285,13 @@ function drawOne(gd, index) {
                 posPx.text = basePx + textShift;
             }
 
+            // padplus/minus are used by autorange
             options['_' + axLetter + 'padplus'] = (annSize / 2) + textPadShift;
             options['_' + axLetter + 'padminus'] = (annSize / 2) - textPadShift;
+
+            // size/shift are used during dragging
+            options['_' + axLetter + 'size'] = annSize;
+            options['_' + axLetter + 'shift'] = textShift;
         });
 
         if(annotationIsOffscreen) {

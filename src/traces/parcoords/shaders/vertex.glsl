@@ -51,7 +51,7 @@ void main() {
     mat4 pB = mat4(p4, p5, p6, p7);
     mat4 pC = mat4(p8, p9, pa, pb);
     mat4 pD = mat4(pc, pd, pe, abs(pf));
-    
+
     float show = float(mshow(pA, loA, hiA) &&
                        mshow(pB, loB, hiB) &&
                        mshow(pC, loC, hiC) &&

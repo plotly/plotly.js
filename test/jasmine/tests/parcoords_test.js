@@ -7,7 +7,6 @@ var attributes = require('@src/traces/parcoords/attributes');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var hasWebGLSupport = require('../assets/has_webgl_support');
 var mouseEvent = require('../assets/mouse_event');
 
 // mock with two dimensions (one panel); special case, e.g. left and right panel is obv. the same
@@ -220,9 +219,7 @@ describe('parcoords initialization tests', function() {
     });
 });
 
-describe('parcoords', function() {
-
-    if(!hasWebGLSupport('parcoords')) return;
+describe('@noCI parcoords', function() {
 
     beforeAll(function() {
         mock.data[0].dimensions.forEach(function(d) {
@@ -284,6 +281,23 @@ describe('parcoords', function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].dimensions.length).toEqual(0);
                 expect(document.querySelectorAll('.axis').length).toEqual(0);
+                done();
+            });
+        });
+
+        it('Works with duplicate dimension labels', function(done) {
+
+            var mockCopy = Lib.extendDeep({}, mock2);
+
+            mockCopy.layout.width = 320;
+            mockCopy.data[0].dimensions[1].label = mockCopy.data[0].dimensions[0].label;
+
+            var gd = createGraphDiv();
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+
+                expect(gd.data.length).toEqual(1);
+                expect(gd.data[0].dimensions.length).toEqual(2);
+                expect(document.querySelectorAll('.axis').length).toEqual(2);
                 done();
             });
         });
@@ -788,6 +802,36 @@ describe('parcoords', function() {
                     expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(0);
                     expect(document.querySelectorAll('.yAxis').length).toEqual(0);
                     expect(gd.data.length).toEqual(0);
+                    done();
+                });
+        });
+
+        it('Calling `Plotly.restyle` with zero panels left should erase lines', function(done) {
+
+            var mockCopy = Lib.extendDeep({}, mock2);
+            var gd = createGraphDiv();
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout);
+
+            function restyleDimension(key, dimIndex, setterValue) {
+                var value = Lib.isArray(setterValue) ? setterValue[0] : setterValue;
+                return function() {
+                    return Plotly.restyle(gd, 'dimensions[' + dimIndex + '].' + key, setterValue).then(function() {
+                        expect(gd.data[0].dimensions[dimIndex][key]).toEqual(value, 'for dimension attribute \'' + key + '\'');
+                    });
+                };
+            }
+
+            restyleDimension('values', 1, [[]])()
+                .then(function() {
+                    d3.selectAll('.parcoords-lines').each(function(d) {
+                        var imageArray = d.lineLayer.readPixels(0, 0, d.model.canvasWidth, d.model.canvasHeight);
+                        var foundPixel = false;
+                        var i = 0;
+                        do {
+                            foundPixel = foundPixel || imageArray[i++] !== 0;
+                        } while(!foundPixel && i < imageArray.length);
+                        expect(foundPixel).toEqual(false);
+                    });
                     done();
                 });
         });

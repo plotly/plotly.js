@@ -39,7 +39,7 @@ var autoType = require('./axis_autotype');
  *  data: the plot data to use in choosing auto type
  *  bgColor: the plot background color, to calculate default gridline colors
  */
-module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, options) {
+module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, options, layoutOut) {
     var letter = options.letter,
         font = options.font || {},
         defaultTitle = 'Click to enter ' +
@@ -78,7 +78,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         handleCalendarDefaults(containerIn, containerOut, 'calendar', options.calendar);
     }
 
-    setConvert(containerOut);
+    setConvert(containerOut, layoutOut);
 
     var dfltColor = coerce('color');
     // if axis.color was provided, use it for fonts too; otherwise,

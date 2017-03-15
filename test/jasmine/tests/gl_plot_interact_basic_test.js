@@ -49,11 +49,10 @@ function verifyInteractionEffects(tuple) {
 }
 
 function testEvents(plot) {
-    return plot
-        .then(function(graphDiv) {
-            var tuple = addEventCallback(graphDiv); // TODO disuse tuple with ES6
-            verifyInteractionEffects(tuple);
-        });
+    return plot.then(function(graphDiv) {
+        var tuple = addEventCallback(graphDiv);
+        verifyInteractionEffects(tuple);
+    });
 }
 
 describe('gl3d plots', function() {
@@ -71,13 +70,13 @@ describe('gl3d plots', function() {
 
     it('should respond to drag interactions with mock of unset camera', function(done) {
         testEvents(makePlot(gd, require('@mocks/gl3d_scatter3d-connectgaps.json')))
-            .then(null, failTest) // current linter balks on .catch with 'dot-notation'; fixme a linter
+            .catch(failTest)
             .then(done);
     });
 
     it('should respond to drag interactions with mock of partially set camera', function(done) {
         testEvents(makePlot(gd, require('@mocks/gl3d_errorbars_zx.json')))
-            .then(null, failTest)
+            .catch(failTest)
             .then(done);
     });
 });
