@@ -305,6 +305,7 @@ fx.hover = function(gd, evt, subplot) {
 function hover(gd, evt, subplot) {
     if(subplot === 'pie') {
         gd.emit('plotly_hover', {
+            event: evt,
             points: [evt]
         });
         return;
@@ -624,10 +625,14 @@ function hover(gd, evt, subplot) {
     if(!hoverChanged(gd, evt, oldhoverdata)) return;
 
     if(oldhoverdata) {
-        gd.emit('plotly_unhover', { points: oldhoverdata });
+        gd.emit('plotly_unhover', {
+            event: evt,
+            points: oldhoverdata
+        });
     }
 
     gd.emit('plotly_hover', {
+        event: evt,
         points: gd._hoverdata,
         xaxes: xaArray,
         yaxes: yaArray,
@@ -1350,7 +1355,7 @@ function hoverChanged(gd, evt, oldhoverdata) {
 fx.click = function(gd, evt) {
     var annotationsDone = Registry.getComponentMethod('annotations', 'onClick')(gd, gd._hoverdata);
 
-    function emitClick() { gd.emit('plotly_click', {points: gd._hoverdata}); }
+    function emitClick() { gd.emit('plotly_click', {points: gd._hoverdata, event: evt}); }
 
     if(gd._hoverdata && evt && evt.target) {
         if(annotationsDone && annotationsDone.then) {

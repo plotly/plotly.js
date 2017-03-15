@@ -44,6 +44,9 @@ unhover.raw = function unhoverRaw(gd, evt) {
     gd._hoverdata = undefined;
 
     if(evt.target && oldhoverdata) {
-        gd.emit('plotly_unhover', {points: oldhoverdata});
+        gd.emit('plotly_unhover', {
+            event: evt,
+            points: oldhoverdata
+        });
     }
 };
