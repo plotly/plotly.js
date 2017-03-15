@@ -162,7 +162,6 @@ describe('Layout images', function() {
         describe('with anchors and sizing', function() {
 
             function testAspectRatio(xAnchor, yAnchor, sizing, expected) {
-                // var anchorName = xAnchor + yAnchor;
                 Plotly.plot(gd, data, { images: [{
                     source: jsLogo,
                     xanchor: xAnchor,
