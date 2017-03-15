@@ -107,7 +107,7 @@ describe('Layout images', function() {
         it('should draw images on the right layers', function() {
 
             Plotly.plot(gd, data, { images: [{
-                source: 'imageabove',
+                source: jsLogo,
                 layer: 'above'
             }]});
 
@@ -116,7 +116,7 @@ describe('Layout images', function() {
             destroyGraphDiv();
             gd = createGraphDiv();
             Plotly.plot(gd, data, { images: [{
-                source: 'imagebelow',
+                source: jsLogo,
                 layer: 'below'
             }]});
 
@@ -125,7 +125,7 @@ describe('Layout images', function() {
             destroyGraphDiv();
             gd = createGraphDiv();
             Plotly.plot(gd, data, { images: [{
-                source: 'imagesubplot',
+                source: jsLogo,
                 layer: 'below',
                 xref: 'x',
                 yref: 'y'
@@ -162,9 +162,9 @@ describe('Layout images', function() {
         describe('with anchors and sizing', function() {
 
             function testAspectRatio(xAnchor, yAnchor, sizing, expected) {
-                var anchorName = xAnchor + yAnchor;
+                // var anchorName = xAnchor + yAnchor;
                 Plotly.plot(gd, data, { images: [{
-                    source: anchorName,
+                    source: jsLogo,
                     xanchor: xAnchor,
                     yanchor: yAnchor,
                     sizing: sizing
@@ -430,7 +430,7 @@ describe('images log/linear axis changes', function() {
         ],
         layout: {
             images: [{
-                source: 'https://images.plot.ly/language-icons/api-home/python-logo.png',
+                source: pythonLogo,
                 x: 1,
                 y: 1,
                 xref: 'x',
