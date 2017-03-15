@@ -1,9 +1,24 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
+var customMatchers = require('../assets/custom_matchers');
+
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+
+var click = require('../assets/click');
 var mouseEvent = require('../assets/mouse_event');
+
+
+function getClientPosition(selector, index) {
+    index = index || 0;
+    var selection = document.querySelectorAll(selector),
+        clientPos = selection[index].getBoundingClientRect(),
+        x = Math.floor((clientPos.left + clientPos.right) / 2),
+        y = Math.floor((clientPos.top + clientPos.bottom) / 2);
+    return [x, y];
+}
+
 
 describe('pie hovering', function() {
     var mock = require('@mocks/pie_simple.json');
@@ -39,7 +54,8 @@ describe('pie hovering', function() {
              *         px0: [-59.67131372209641,6.2717077960592],
              *         largeArc: 0,
              *         cxFinal: 200,
-             *         cyFinal: 160
+             *         cyFinal: 160,
+             *         originalEvent: MouseEvent
              *     }];
              */
             var hoverData,
@@ -63,7 +79,8 @@ describe('pie hovering', function() {
             var fields = [
                 'v', 'label', 'color', 'i', 'hidden',
                 'text', 'px1', 'pxmid', 'midangle',
-                'px0', 'largeArc', 'cxFinal', 'cyFinal'
+                'px0', 'largeArc', 'cxFinal', 'cyFinal',
+                'originalEvent'
             ];
 
             expect(Object.keys(hoverData.points[0])).toEqual(fields);
@@ -162,6 +179,192 @@ describe('pie hovering', function() {
                     expect(Plotly.d3.select(this).text()).toBe(expected[i]);
                 });
             }).then(done);
+        });
+    });
+});
+
+
+describe('Test event property of interactions on a pie plot:', function() {
+    var mock = require('@mocks/pie_simple.json');
+
+    var mockCopy, gd;
+
+    var blankPos = [10, 10],
+        pointPos;
+
+    beforeAll(function(done) {
+        jasmine.addMatchers(customMatchers);
+
+        gd = createGraphDiv();
+        mockCopy = Lib.extendDeep({}, mock);
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            pointPos = getClientPosition('g.slicetext');
+            destroyGraphDiv();
+            done();
+        });
+    });
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+        mockCopy = Lib.extendDeep({}, mock);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    describe('click events', function() {
+        var futureData;
+
+        beforeEach(function(done) {
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+
+            gd.on('plotly_click', function(data) {
+                futureData = data;
+            });
+        });
+
+        it('should not be trigged when not on data points', function() {
+            click(blankPos[0], blankPos[1]);
+            expect(futureData).toBe(undefined);
+        });
+
+        it('should contain the correct fields', function() {
+            click(pointPos[0], pointPos[1]);
+            expect(futureData.points.length).toEqual(1);
+
+            var pt = futureData.points[0];
+            expect(Object.keys(pt)).toEqual([
+                'v', 'label', 'color', 'i', 'hidden', 'vTotal', 'text', 't',
+                'trace', 'r', 'cx', 'cy', 'px1', 'pxmid', 'midangle', 'px0',
+                'largeArc', 'cxFinal', 'cyFinal'
+            ]);
+            expect(typeof pt.color).toEqual(typeof '#1f77b4', 'points[0].color');
+            expect(pt.cx).toEqual(200, 'points[0].cx');
+            expect(pt.cxFinal).toEqual(200, 'points[0].cxFinal');
+            expect(pt.cy).toEqual(160, 'points[0].cy');
+            expect(pt.cyFinal).toEqual(160, 'points[0].cyFinal');
+            expect(pt.hidden).toEqual(false, 'points[0].hidden');
+            expect(pt.i).toEqual(4, 'points[0].i');
+            expect(pt.label).toEqual('4', 'points[0].label');
+            expect(pt.largeArc).toEqual(0, 'points[0].largeArc');
+            expect(pt.midangle).toEqual(1.0471975511965976, 'points[0].midangle');
+            expect(pt.px0).toEqual([0, -60], 'points[0].px0');
+            expect(pt.px1).toEqual([51.96152422706632, 29.999999999999986], 'points[0].px1');
+            expect(pt.pxmid).toEqual([51.96152422706631, -30.000000000000007], 'points[0].pxmid');
+            expect(pt.r).toEqual(60, 'points[0].r');
+            expect(typeof pt.t).toEqual(typeof {}, 'points[0].t');
+            expect(pt.text).toEqual('33.3%', 'points[0].text');
+            expect(typeof pt.trace).toEqual(typeof {}, 'points[0].trace');
+            expect(pt.v).toEqual(5, 'points[0].v');
+            expect(pt.vTotal).toEqual(15, 'points[0].vTotal');
+
+            var evt = futureData.event;
+            expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
+            expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
+        });
+    });
+
+    describe('modified click events', function() {
+        var clickOpts = {
+                altKey: true,
+                ctrlKey: true,
+                metaKey: true,
+                shiftKey: true
+            },
+            futureData;
+
+        beforeEach(function(done) {
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+
+            gd.on('plotly_click', function(data) {
+                futureData = data;
+            });
+        });
+
+        it('should not be trigged when not on data points', function() {
+            click(blankPos[0], blankPos[1], clickOpts);
+            expect(futureData).toBe(undefined);
+        });
+
+        it('should contain the correct fields', function() {
+            click(pointPos[0], pointPos[1], clickOpts);
+            expect(futureData.points.length).toEqual(1);
+
+            var pt = futureData.points[0];
+            expect(Object.keys(pt)).toEqual([
+                'v', 'label', 'color', 'i', 'hidden', 'vTotal', 'text', 't',
+                'trace', 'r', 'cx', 'cy', 'px1', 'pxmid', 'midangle', 'px0',
+                'largeArc', 'cxFinal', 'cyFinal'
+            ]);
+            expect(typeof pt.color).toEqual(typeof '#1f77b4', 'points[0].color');
+            expect(pt.cx).toEqual(200, 'points[0].cx');
+            expect(pt.cxFinal).toEqual(200, 'points[0].cxFinal');
+            expect(pt.cy).toEqual(160, 'points[0].cy');
+            expect(pt.cyFinal).toEqual(160, 'points[0].cyFinal');
+            expect(pt.hidden).toEqual(false, 'points[0].hidden');
+            expect(pt.i).toEqual(4, 'points[0].i');
+            expect(pt.label).toEqual('4', 'points[0].label');
+            expect(pt.largeArc).toEqual(0, 'points[0].largeArc');
+            expect(pt.midangle).toEqual(1.0471975511965976, 'points[0].midangle');
+            expect(pt.px0).toEqual([0, -60], 'points[0].px0');
+            expect(pt.px1).toEqual([51.96152422706632, 29.999999999999986], 'points[0].px1');
+            expect(pt.pxmid).toEqual([51.96152422706631, -30.000000000000007], 'points[0].pxmid');
+            expect(pt.r).toEqual(60, 'points[0].r');
+            expect(typeof pt.t).toEqual(typeof {}, 'points[0].t');
+            expect(pt.text).toEqual('33.3%', 'points[0].text');
+            expect(typeof pt.trace).toEqual(typeof {}, 'points[0].trace');
+            expect(pt.v).toEqual(5, 'points[0].v');
+            expect(pt.vTotal).toEqual(15, 'points[0].vTotal');
+
+            var evt = futureData.event;
+            expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
+            expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
+            Object.getOwnPropertyNames(clickOpts).forEach(function(opt) {
+                expect(evt[opt]).toEqual(clickOpts[opt], 'event.' + opt);
+            });
+        });
+    });
+
+    describe('hover events', function() {
+        var futureData;
+
+        beforeEach(function(done) {
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+
+            gd.on('plotly_hover', function(data) {
+                futureData = data;
+            });
+        });
+
+        it('should contain the correct fields', function() {
+            mouseEvent('mouseover', pointPos[0], pointPos[1]);
+
+            var point0 = futureData.points[0],
+                evt = futureData.event;
+            expect(point0.originalEvent).toEqual(evt, 'points');
+            expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
+            expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
+        });
+    });
+
+    describe('unhover events', function() {
+        var futureData;
+
+        beforeEach(function(done) {
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+
+            gd.on('plotly_unhover', function(data) {
+                futureData = data;
+            });
+        });
+
+        it('should contain the correct fields', function() {
+            mouseEvent('mouseout', pointPos[0], pointPos[1]);
+
+            var point0 = futureData.points[0],
+                evt = futureData.event;
+            expect(point0.originalEvent).toEqual(evt, 'points');
+            expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
+            expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
         });
     });
 });
