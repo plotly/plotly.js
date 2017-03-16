@@ -465,15 +465,15 @@ module.exports = {
         description: 'Sets the line color of the end line.'
     },
     tick0: {
-        valType: 'integer',
+        valType: 'number',
         min: 0,
         dflt: 0,
         role: 'info',
         description: 'The starting index of grid lines along the axis'
     },
     dtick: {
-        valType: 'integer',
-        min: 1,
+        valType: 'number',
+        min: 0,
         dflt: 1,
         role: 'info',
         description: 'The stride between grid lines along the axis'

@@ -79,7 +79,7 @@ function drawClipPath(trace, layer, xaxis, yaxis) {
 
     var clip = layer.select('#' + trace.clipPathId);
 
-    if (!clip.size()) {
+    if(!clip.size()) {
         clip = layer.append('clipPath')
             .classed('carpetclip', true);
     }
