@@ -103,6 +103,59 @@ describe('Test shapes defaults:', function() {
     });
 });
 
+function countShapesInLowerLayer(gd) {
+    return gd._fullLayout.shapes.filter(isShapeInLowerLayer).length;
+}
+
+function countShapesInUpperLayer(gd) {
+    return gd._fullLayout.shapes.filter(isShapeInUpperLayer).length;
+}
+
+function countShapesInSubplots(gd) {
+    return gd._fullLayout.shapes.filter(isShapeInSubplot).length;
+}
+
+function isShapeInUpperLayer(shape) {
+    return shape.layer !== 'below';
+}
+
+function isShapeInLowerLayer(shape) {
+    return (shape.xref === 'paper' && shape.yref === 'paper') &&
+        !isShapeInUpperLayer(shape);
+}
+
+function isShapeInSubplot(shape) {
+    return !isShapeInUpperLayer(shape) && !isShapeInLowerLayer(shape);
+}
+
+function countShapeLowerLayerNodes() {
+    return d3.selectAll('.layer-below > .shapelayer').size();
+}
+
+function countShapeUpperLayerNodes() {
+    return d3.selectAll('.layer-above > .shapelayer').size();
+}
+
+function countShapeLayerNodesInSubplots() {
+    return d3.selectAll('.layer-subplot').size();
+}
+
+function countSubplots(gd) {
+    return Object.keys(gd._fullLayout._plots || {}).length;
+}
+
+function countShapePathsInLowerLayer() {
+    return d3.selectAll('.layer-below > .shapelayer > path').size();
+}
+
+function countShapePathsInUpperLayer() {
+    return d3.selectAll('.layer-above > .shapelayer > path').size();
+}
+
+function countShapePathsInSubplots() {
+    return d3.selectAll('.layer-subplot > .shapelayer > path').size();
+}
+
 describe('Test shapes:', function() {
     'use strict';
 
@@ -120,59 +173,6 @@ describe('Test shapes:', function() {
 
     afterEach(destroyGraphDiv);
 
-    function countShapesInLowerLayer() {
-        return gd._fullLayout.shapes.filter(isShapeInLowerLayer).length;
-    }
-
-    function countShapesInUpperLayer() {
-        return gd._fullLayout.shapes.filter(isShapeInUpperLayer).length;
-    }
-
-    function countShapesInSubplots() {
-        return gd._fullLayout.shapes.filter(isShapeInSubplot).length;
-    }
-
-    function isShapeInUpperLayer(shape) {
-        return shape.layer !== 'below';
-    }
-
-    function isShapeInLowerLayer(shape) {
-        return (shape.xref === 'paper' && shape.yref === 'paper') &&
-            !isShapeInUpperLayer(shape);
-    }
-
-    function isShapeInSubplot(shape) {
-        return !isShapeInUpperLayer(shape) && !isShapeInLowerLayer(shape);
-    }
-
-    function countShapeLowerLayerNodes() {
-        return d3.selectAll('.layer-below > .shapelayer').size();
-    }
-
-    function countShapeUpperLayerNodes() {
-        return d3.selectAll('.layer-above > .shapelayer').size();
-    }
-
-    function countShapeLayerNodesInSubplots() {
-        return d3.selectAll('.layer-subplot').size();
-    }
-
-    function countSubplots(gd) {
-        return Object.keys(gd._fullLayout._plots || {}).length;
-    }
-
-    function countShapePathsInLowerLayer() {
-        return d3.selectAll('.layer-below > .shapelayer > path').size();
-    }
-
-    function countShapePathsInUpperLayer() {
-        return d3.selectAll('.layer-above > .shapelayer > path').size();
-    }
-
-    function countShapePathsInSubplots() {
-        return d3.selectAll('.layer-subplot > .shapelayer > path').size();
-    }
-
     describe('*shapeLowerLayer*', function() {
         it('has one node', function() {
             expect(countShapeLowerLayerNodes()).toEqual(1);
@@ -180,14 +180,14 @@ describe('Test shapes:', function() {
 
         it('has as many *path* nodes as shapes in the lower layer', function() {
             expect(countShapePathsInLowerLayer())
-                .toEqual(countShapesInLowerLayer());
+                .toEqual(countShapesInLowerLayer(gd));
         });
 
         it('should be able to get relayout', function(done) {
             Plotly.relayout(gd, {height: 200, width: 400}).then(function() {
                 expect(countShapeLowerLayerNodes()).toEqual(1);
                 expect(countShapePathsInLowerLayer())
-                    .toEqual(countShapesInLowerLayer());
+                    .toEqual(countShapesInLowerLayer(gd));
             })
             .catch(failTest)
             .then(done);
@@ -201,14 +201,14 @@ describe('Test shapes:', function() {
 
         it('has as many *path* nodes as shapes in the upper layer', function() {
             expect(countShapePathsInUpperLayer())
-                .toEqual(countShapesInUpperLayer());
+                .toEqual(countShapesInUpperLayer(gd));
         });
 
         it('should be able to get relayout', function(done) {
             Plotly.relayout(gd, {height: 200, width: 400}).then(function() {
                 expect(countShapeUpperLayerNodes()).toEqual(1);
                 expect(countShapePathsInUpperLayer())
-                    .toEqual(countShapesInUpperLayer());
+                    .toEqual(countShapesInUpperLayer(gd));
             })
             .catch(failTest)
             .then(done);
@@ -223,7 +223,7 @@ describe('Test shapes:', function() {
 
         it('has as many *path* nodes as shapes in the subplot', function() {
             expect(countShapePathsInSubplots())
-                .toEqual(countShapesInSubplots());
+                .toEqual(countShapesInSubplots(gd));
         });
 
         it('should be able to get relayout', function(done) {
@@ -231,7 +231,7 @@ describe('Test shapes:', function() {
                 expect(countShapeLayerNodesInSubplots())
                     .toEqual(countSubplots(gd));
                 expect(countShapePathsInSubplots())
-                    .toEqual(countShapesInSubplots());
+                    .toEqual(countShapesInSubplots(gd));
             })
             .catch(failTest)
             .then(done);
@@ -458,6 +458,49 @@ describe('shapes axis reference changes', function() {
         })
         .then(function() {
             expect(getShape(0).attr('clip-path') || '').toMatch(/xy2\)$/);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('shapes edge cases', function() {
+    'use strict';
+
+    var gd;
+
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
+    beforeEach(function() { gd = createGraphDiv(); });
+
+    afterEach(destroyGraphDiv);
+
+    it('falls back on shapeLowerLayer for below missing subplots', function(done) {
+        Plotly.newPlot(gd, [
+            {x: [1, 3], y: [1, 3]},
+            {x: [1, 3], y: [1, 3], xaxis: 'x2', yaxis: 'y2'}
+        ], {
+            xaxis: {domain: [0, 0.5]},
+            yaxis: {domain: [0, 0.5]},
+            xaxis2: {domain: [0.5, 1], anchor: 'y2'},
+            yaxis2: {domain: [0.5, 1], anchor: 'x2'},
+            shapes: [{
+                x0: 1, x1: 2, y0: 1, y1: 2, type: 'circle',
+                layer: 'below',
+                xref: 'x',
+                yref: 'y2'
+            }, {
+                x0: 1, x1: 2, y0: 1, y1: 2, type: 'circle',
+                layer: 'below',
+                xref: 'x2',
+                yref: 'y'
+            }]
+        }).then(function() {
+            expect(countShapePathsInLowerLayer()).toBe(2);
+            expect(countShapePathsInUpperLayer()).toBe(0);
+            expect(countShapePathsInSubplots()).toBe(0);
         })
         .catch(failTest)
         .then(done);
