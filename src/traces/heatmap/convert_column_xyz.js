@@ -10,6 +10,7 @@
 'use strict';
 
 var Lib = require('../../lib');
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 
 module.exports = function convertColumnXYZ(trace, xa, ya) {
@@ -38,16 +39,18 @@ module.exports = function convertColumnXYZ(trace, xa, ya) {
         y = yColdv.vals,
         z = Lib.init2dArray(y.length, x.length);
 
-    var ix, iy, text;
+    var text;
 
     if(hasColumnText) text = Lib.init2dArray(y.length, x.length);
 
     for(i = 0; i < colLen; i++) {
-        ix = Lib.findBin(xCol[i] + xColdv.minDiff / 2, x);
-        iy = Lib.findBin(yCol[i] + yColdv.minDiff / 2, y);
+        if(xCol[i] !== BADNUM && yCol[i] !== BADNUM) {
+            var ix = Lib.findBin(xCol[i] + xColdv.minDiff / 2, x);
+            var iy = Lib.findBin(yCol[i] + yColdv.minDiff / 2, y);
 
-        z[iy][ix] = zCol[i];
-        if(hasColumnText) text[iy][ix] = textCol[i];
+            z[iy][ix] = zCol[i];
+            if(hasColumnText) text[iy][ix] = textCol[i];
+        }
     }
 
     trace.x = x;
