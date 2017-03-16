@@ -75,7 +75,15 @@ function plotOne(gd, plotinfo, cd) {
 function drawClipPath(trace, layer, xaxis, yaxis) {
     var seg, xp, yp, i;
     // var clip = makeg(layer, 'g', 'carpetclip');
-    var clip = makeg(layer, 'clipPath', 'carpetclip');
+    trace.clipPathId = 'clip' + trace.uid + 'carpet';
+
+    var clip = layer.select('#' + trace.clipPathId);
+
+    if (!clip.size()) {
+        clip = layer.append('clipPath')
+            .classed('carpetclip', true);
+    }
+
     var path = makeg(clip, 'path', 'carpetboundary');
     var segments = trace._clipsegments;
     var segs = [];
@@ -90,7 +98,6 @@ function drawClipPath(trace, layer, xaxis, yaxis) {
     // This could be optimized ever so slightly to avoid no-op L segments
     // at the corners, but it's so negligible that I don't think it's worth
     // the extra complexity
-    trace.clipPathId = 'clip' + trace.uid + 'carpet';
     trace.clipPathData = 'M' + segs.join('L') + 'Z';
     clip.attr('id', trace.clipPathId);
     path.attr('d', trace.clipPathData);

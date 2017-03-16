@@ -16,5 +16,7 @@ module.exports = function measureText(tester, text, font) {
         .text(text)
         .call(Drawing.font, font);
 
-    return Drawing.bBox(dummyText.node());
+    var bbox = Drawing.bBox(dummyText.node());
+    dummyText.remove();
+    return bbox;
 };
