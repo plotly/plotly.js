@@ -1576,9 +1576,17 @@ function _restyle(gd, aobj, _traces) {
                 helpers.manageArrayContainers(param, newVal, undoit);
                 flags.docalc = true;
             }
-            // all the other ones, just modify that one attribute
-            else param.set(newVal);
+            else {
+                var moduleAttrs = (contFull._module || {}).attributes || {};
+                var valObject = Lib.nestedProperty(moduleAttrs, ai).get() || {};
 
+                if(valObject.arrayOk && (Array.isArray(newVal) || Array.isArray(oldVal))) {
+                    flags.docalc = true;
+                }
+
+                // all the other ones, just modify that one attribute
+                param.set(newVal);
+            }
         }
 
         // swap the data attributes of the relevant x and y axes?
