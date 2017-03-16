@@ -107,7 +107,7 @@ describe('Layout images', function() {
         it('should draw images on the right layers', function() {
 
             Plotly.plot(gd, data, { images: [{
-                source: 'imageabove',
+                source: jsLogo,
                 layer: 'above'
             }]});
 
@@ -116,7 +116,7 @@ describe('Layout images', function() {
             destroyGraphDiv();
             gd = createGraphDiv();
             Plotly.plot(gd, data, { images: [{
-                source: 'imagebelow',
+                source: jsLogo,
                 layer: 'below'
             }]});
 
@@ -125,7 +125,7 @@ describe('Layout images', function() {
             destroyGraphDiv();
             gd = createGraphDiv();
             Plotly.plot(gd, data, { images: [{
-                source: 'imagesubplot',
+                source: jsLogo,
                 layer: 'below',
                 xref: 'x',
                 yref: 'y'
@@ -134,12 +134,36 @@ describe('Layout images', function() {
             checkLayers(0, 0, 1);
         });
 
+        it('should fall back on imageLowerLayer for below missing subplots', function() {
+            Plotly.newPlot(gd, [
+                {x: [1, 3], y: [1, 3]},
+                {x: [1, 3], y: [1, 3], xaxis: 'x2', yaxis: 'y2'}
+            ], {
+                xaxis: {domain: [0, 0.5]},
+                yaxis: {domain: [0, 0.5]},
+                xaxis2: {domain: [0.5, 1], anchor: 'y2'},
+                yaxis2: {domain: [0.5, 1], anchor: 'x2'},
+                images: [{
+                    source: jsLogo,
+                    layer: 'below',
+                    xref: 'x',
+                    yref: 'y2'
+                }, {
+                    source: jsLogo,
+                    layer: 'below',
+                    xref: 'x2',
+                    yref: 'y'
+                }]
+            });
+
+            checkLayers(0, 2, 0);
+        });
+
         describe('with anchors and sizing', function() {
 
             function testAspectRatio(xAnchor, yAnchor, sizing, expected) {
-                var anchorName = xAnchor + yAnchor;
                 Plotly.plot(gd, data, { images: [{
-                    source: anchorName,
+                    source: jsLogo,
                     xanchor: xAnchor,
                     yanchor: yAnchor,
                     sizing: sizing
@@ -405,7 +429,7 @@ describe('images log/linear axis changes', function() {
         ],
         layout: {
             images: [{
-                source: 'https://images.plot.ly/language-icons/api-home/python-logo.png',
+                source: pythonLogo,
                 x: 1,
                 y: 1,
                 xref: 'x',
