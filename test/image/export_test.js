@@ -30,6 +30,12 @@ var HEIGHT = 500;
 // minimum satisfactory file size [in bytes]
 var MIN_SIZE = 100;
 
+// wait time between each test batch
+var BATCH_WAIT = 500;
+
+// number of tests in each test batch
+var BATCH_SIZE = 5;
+
 /**
  *  Image export test script.
  *
@@ -65,21 +71,39 @@ if(mockList.length === 0) {
 runInBatch(mockList);
 
 function runInBatch(mockList) {
+    var running = 0;
+
     test('testing image export formats', function(t) {
         t.plan(mockList.length * FORMATS.length);
 
-        // send all requests out at once
-        mockList.forEach(function(mockName) {
-            FORMATS.forEach(function(format) {
-                testExport(mockName, format, t);
-            });
-        });
+        for(var i = 0; i < mockList.length; i++) {
+            for(var j = 0; j < FORMATS.length; j++) {
+                run(mockList[i], FORMATS[j], t);
+            }
+        }
     });
+
+    function run(mockName, format, t) {
+        if(running >= BATCH_SIZE) {
+            setTimeout(function() {
+                run(mockName, format, t);
+            }, BATCH_WAIT);
+            return;
+        }
+        running++;
+
+        // throttle the number of tests running concurrently
+
+        testExport(mockName, format, function(didExport, mockName, format) {
+            running--;
+            t.ok(didExport, mockName + ' should be properly exported as a ' + format);
+        });
+    }
 }
 
 // The tests below determine whether the images are properly
 // exported by (only) checking the file size of the generated images.
-function testExport(mockName, format, t) {
+function testExport(mockName, format, cb) {
     var specs = {
         mockName: mockName,
         format: format,
@@ -105,7 +129,7 @@ function testExport(mockName, format, t) {
             didExport = stats.size > MIN_SIZE;
         }
 
-        t.ok(didExport, mockName + ' should be properly exported as a ' + format);
+        cb(didExport, mockName, format);
     }
 
     request(requestOpts)
