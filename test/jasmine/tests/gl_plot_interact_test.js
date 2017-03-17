@@ -7,6 +7,7 @@ var Drawing = require('@src/components/drawing');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var selectButton = require('../assets/modebar_button');
 var customMatchers = require('../assets/custom_matchers');
@@ -629,6 +630,55 @@ describe('Test gl3d drag and wheel interactions', function() {
         })
         .then(done);
     });
+});
+
+describe('Test gl3d relayout calls', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('should be able to adjust margins', function(done) {
+        var w = 500;
+        var h = 500;
+
+        function assertMargins(t, l, b, r) {
+            var div3d = document.getElementById('scene');
+            expect(parseFloat(div3d.style.top)).toEqual(t, 'top');
+            expect(parseFloat(div3d.style.left)).toEqual(l, 'left');
+            expect(h - parseFloat(div3d.style.height) - t).toEqual(b, 'bottom');
+            expect(w - parseFloat(div3d.style.width) - l).toEqual(r, 'right');
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            z: [1, 2, 1]
+        }], {
+            width: w,
+            height: h
+        })
+        .then(function() {
+            assertMargins(100, 80, 80, 80);
+
+            return Plotly.relayout(gd, 'margin', {
+                l: 0, t: 0, r: 0, b: 0
+            });
+        })
+        .then(function() {
+            assertMargins(0, 0, 0, 0);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
 });
 
 describe('Test gl2d plots', function() {

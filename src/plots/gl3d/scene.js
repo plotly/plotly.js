@@ -714,6 +714,7 @@ proto.setConvert = function() {
     for(var i = 0; i < 3; ++i) {
         var ax = this.fullSceneLayout[axisProperties[i]];
         Axes.setConvert(ax, this.fullLayout);
+        ax.setScale = Lib.noop;
     }
 };
 
