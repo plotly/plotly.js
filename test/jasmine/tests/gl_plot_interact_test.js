@@ -679,6 +679,23 @@ describe('Test gl3d relayout calls', function() {
         .then(done);
     });
 
+    it('should skip root-level axis objects', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            z: [1, 2, 1]
+        }])
+        .then(function() {
+            return Plotly.relayout(gd, {
+                xaxis: {},
+                yaxis: {},
+                zaxis: {}
+            });
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
 
 describe('Test gl2d plots', function() {
