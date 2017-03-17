@@ -8,7 +8,10 @@ plotly.js is a high-level, declarative charting library. plotly.js ships with ov
 chart types, including scientific charts, 3D graphs, statistical charts, SVG maps, financial charts,
 and more.
 
-![](https://raw.githubusercontent.com/cldougl/plot_images/add_r_img/plotly_2017.png)
+<p align="center">
+    <a href="https://www.plot.ly/javascript">
+    <img src="https://raw.githubusercontent.com/cldougl/plot_images/add_r_img/plotly_2017.png">
+</a></p>
 
 [Contact us](https://plot.ly/products/consulting-and-oem/) for Plotly.js consulting, dashboard development, application integration, and feature additions.
 
