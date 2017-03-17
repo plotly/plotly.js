@@ -1,6 +1,7 @@
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
+var setConvert = require('@src/plots/cartesian/set_convert');
 
 var convertColumnXYZ = require('@src/traces/heatmap/convert_column_xyz');
 var Heatmap = require('@src/traces/heatmap');
@@ -262,6 +263,30 @@ describe('heatmap convertColumnXYZ', function() {
             [3.956225, 4.337909, 4.31226, 4.259435, 4.146854, 4.235799, 4.238752, 4.299876],
             [, 4.210373, 4.32009, 4.246728, 4.293992, 4.316364, 4.361856,, ],
             [,, 4.234497, 4.321701, 4.450315, 4.416136,,, ]
+        ]);
+    });
+
+    it('should convert x/y/z columns with nulls to z(x,y)', function() {
+        xa = { type: 'linear' };
+        ya = { type: 'linear' };
+
+        setConvert(xa);
+        setConvert(ya);
+
+        trace = {
+            x: [0, 0, 0, 5, null, 5, 10, 10, 10],
+            y: [0, 5, 10, 0, null, 10, 0, 5, 10],
+            z: [0, 50, 100, 50, null, 255, 100, 510, 1010]
+        };
+
+        convertColumnXYZ(trace, xa, ya);
+
+        expect(trace.x).toEqual([0, 5, 10]);
+        expect(trace.y).toEqual([0, 5, 10]);
+        expect(trace.z).toEqual([
+            [0, 50, 100],
+            [50, undefined, 510],
+            [100, 255, 1010]
         ]);
     });
 });
