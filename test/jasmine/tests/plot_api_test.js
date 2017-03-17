@@ -237,6 +237,21 @@ describe('Test plot api', function() {
                 })
                 .then(done);
         });
+
+        it('should skip empty axis objects', function(done) {
+            Plotly.plot(gd, [{
+                x: [1, 2, 3],
+                y: [1, 2, 1]
+            }], {
+                xaxis: { title: 'x title' },
+                yaxis: { title: 'y title' }
+            })
+            .then(function() {
+                return Plotly.relayout(gd, { zaxis: {} });
+            })
+            .catch(fail)
+            .then(done);
+        });
     });
 
     describe('Plotly.restyle', function() {
