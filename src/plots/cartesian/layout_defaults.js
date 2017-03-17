@@ -18,6 +18,7 @@ var constants = require('./constants');
 var layoutAttributes = require('./layout_attributes');
 var handleTypeDefaults = require('./type_defaults');
 var handleAxisDefaults = require('./axis_defaults');
+var handleConstraintDefaults = require('./constraint_defaults');
 var handlePositionDefaults = require('./position_defaults');
 var axisIds = require('./axis_ids');
 
@@ -183,6 +184,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         };
 
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
+
+        handleConstraintDefaults(axLayoutIn, axLayoutOut, coerce, counterAxes, layoutOut);
 
         var positioningOptions = {
             letter: axLetter,

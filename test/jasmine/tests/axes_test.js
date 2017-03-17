@@ -444,6 +444,82 @@ describe('Test axes', function() {
                 expect(ax.autorange).toBe(false, ax._name);
             });
         });
+
+        it('finds scaling groups and calculates relative scales', function() {
+            layoutIn = {
+                // first group: linked in series, scales compound
+                xaxis: {},
+                yaxis: {scalewith: 'x', scaleratio: 2},
+                xaxis2: {scalewith: 'y', scaleratio: 3},
+                yaxis2: {scalewith: 'x2', scaleratio: 5},
+                // second group: linked in parallel, scales don't compound
+                yaxis3: {},
+                xaxis3: {scalewith: 'y3'},  // default scaleratio: 1
+                xaxis4: {scalewith: 'y3', scaleratio: 7},
+                xaxis5: {scalewith: 'y3', scaleratio: 9}
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisConstraintGroups).toEqual([
+                {x: 1, y: 2, x2: 2 * 3, y2: 2 * 3 * 5},
+                {y3: 1, x3: 1, x4: 7, x5: 9}
+            ]);
+        });
+
+        it('breaks scalewith loops and drops conflicting ratios', function() {
+            var warnings = [];
+            spyOn(Lib, 'warn').and.callFake(function(msg) {
+                warnings.push(msg);
+            });
+
+            layoutIn = {
+                xaxis: {scalewith: 'y', scaleratio: 2},
+                yaxis: {scalewith: 'x', scaleratio: 3},
+
+                xaxis2: {scalewith: 'y2', scaleratio: 5},
+                yaxis2: {scalewith: 'x3', scaleratio: 7},
+                xaxis3: {scalewith: 'y3', scaleratio: 9},
+                yaxis3: {scalewith: 'x2', scaleratio: 11}
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisConstraintGroups).toEqual([
+                {x: 2, y: 1},
+                {x2: 5 * 7 * 9, y2: 7 * 9, y3: 1, x3: 9}
+            ]);
+
+            expect(warnings).toEqual([
+                'ignored yaxis.scalewith: "x" to avoid an infinite loop ' +
+                    'and possibly inconsistent scaleratios.',
+                'ignored yaxis3.scalewith: "x2" to avoid an infinite loop ' +
+                    'and possibly inconsistent scaleratios.'
+            ]);
+        });
+
+        it('silently drops invalid scalewith values', function() {
+            var warnings = [];
+            spyOn(Lib, 'warn').and.callFake(function(msg) {
+                warnings.push(msg);
+            });
+
+            layoutIn = {
+                xaxis: {scalewith: 'x2', scaleratio: 2}, // must be opposite letter
+                yaxis: {scalewith: 'x4', scaleratio: 3}, // doesn't exist
+                xaxis2: {scalewith: 'yaxis', scaleratio: 5} // must be an id, not a name
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisConstraintGroups).toEqual([]);
+            expect(warnings).toEqual([]);
+
+            ['xaxis', 'yaxis', 'xaxis2'].forEach(function(axName) {
+                expect(layoutOut[axName].scalewith).toBeUndefined();
+                expect(layoutOut[axName].scaleratio).toBeUndefined();
+            });
+        });
     });
 
     describe('categoryorder', function() {

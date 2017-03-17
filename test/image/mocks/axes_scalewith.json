@@ -1,0 +1,15 @@
+{
+  "data":[
+    {"x": [0,1,1,0,0,1,1,2,2,3,3,2,2,3], "y": [0,0,1,1,3,3,2,2,3,3,1,1,0,0]},
+    {"x": [0,1,2,3], "y": [1,2,4,8], "yaxis":"y2"}
+  ],
+  "layout":{
+    "width": 600,
+    "height":600,
+    "title": "fixed-ratio axes",
+    "xaxis": {"nticks": 10, "title": "shared X axis"},
+    "yaxis": {"scalewith": "x", "domain": [0, 0.45], "title": "1:1"},
+    "yaxis2": {"scalewith": "x", "scaleratio": 0.2, "domain": [0.55,1], "title": "1:5"},
+    "showlegend": false
+  }
+}
