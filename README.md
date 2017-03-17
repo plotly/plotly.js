@@ -9,7 +9,7 @@ chart types, including scientific charts, 3D graphs, statistical charts, SVG map
 and more.
 
 <p align="center">
-    <a href="https://www.plot.ly/javascript">
+    <a href="https://www.plot.ly/javascript" target="_blank">
     <img src="https://raw.githubusercontent.com/cldougl/plot_images/add_r_img/plotly_2017.png">
 </a></p>
 
