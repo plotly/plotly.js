@@ -278,10 +278,10 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .map(model.bind(0, layout))
         .map(viewModel);
 
+    root.selectAll('.parcoords-line-layers').remove();
+
     var parcoordsLineLayers = root.selectAll('.parcoords-line-layers')
         .data(vm, keyFun);
-
-    parcoordsLineLayers.exit().remove();
 
     parcoordsLineLayers.enter()
         .insert('div', '.' + svg.attr('class').split(' ').join(' .')) // not hardcoding .main-svg
