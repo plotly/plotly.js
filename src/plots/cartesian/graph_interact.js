@@ -237,9 +237,9 @@ function p2c(axArray, v) {
 }
 
 function quadrature(dx, dy) {
-    return function(di) {
-        var x = dx(di),
-            y = dy(di);
+    return function(di, i) {
+        var x = dx(di, i),
+            y = dy(di, i);
         return Math.sqrt(x * x + y * y);
     };
 }
@@ -661,7 +661,7 @@ fx.getClosest = function(cd, distfn, pointData) {
         // to create pre-sorted data (by x or y), not sure how to
         // do this for 'closest'
         for(var i = 0; i < cd.length; i++) {
-            var newDistance = distfn(cd[i]);
+            var newDistance = distfn(cd[i], i);
             if(newDistance <= pointData.distance) {
                 pointData.index = i;
                 pointData.distance = newDistance;
