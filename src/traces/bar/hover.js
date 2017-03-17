@@ -19,15 +19,16 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         trace = cd[0].trace,
         t = cd[0].t,
         xa = pointData.xa,
-        ya = pointData.ya,
-        barDelta = (hovermode === 'closest') ?
-            t.barwidth / 2 :
-            t.bargroupwidth / 2,
-        barPos;
+        ya = pointData.ya;
 
+    var barPos;
     if(hovermode !== 'closest') barPos = function(di) { return di.p; };
     else if(trace.orientation === 'h') barPos = function(di) { return di.y; };
     else barPos = function(di) { return di.x; };
+
+    var barDelta = (hovermode === 'closest') ?
+        function(i) { return (t.barwidth[i] || t.barwidth) / 2; } :
+        function() { return t.bargroupwidth / 2; };
 
     var dx, dy;
     if(trace.orientation === 'h') {
@@ -36,18 +37,20 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
             // bar makes it a little closer match
             return Fx.inbox(di.b - xval, di.x - xval) + (di.x - xval) / (di.x - di.b);
         };
-        dy = function(di) {
+        dy = function(di, i) {
             var centerPos = barPos(di) - yval;
-            return Fx.inbox(centerPos - barDelta, centerPos + barDelta);
+            var delta = barDelta(i);
+            return Fx.inbox(centerPos - delta, centerPos + delta);
         };
     }
     else {
         dy = function(di) {
             return Fx.inbox(di.b - yval, di.y - yval) + (di.y - yval) / (di.y - di.b);
         };
-        dx = function(di) {
+        dx = function(di, i) {
             var centerPos = barPos(di) - xval;
-            return Fx.inbox(centerPos - barDelta, centerPos + barDelta);
+            var delta = barDelta(i);
+            return Fx.inbox(centerPos - delta, centerPos + delta);
         };
     }
 
@@ -58,7 +61,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     if(pointData.index === false) return;
 
     // the closest data point
-    var di = cd[pointData.index],
+    var index = pointData.index,
+        di = cd[index],
         mc = di.mcc || trace.marker.color,
         mlc = di.mlcc || trace.marker.line.color,
         mlw = di.mlw || trace.marker.line.width;
@@ -70,16 +74,16 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         pointData.x0 = pointData.x1 = xa.c2p(di.x, true);
         pointData.xLabelVal = size;
 
-        pointData.y0 = ya.c2p(barPos(di) - barDelta, true);
-        pointData.y1 = ya.c2p(barPos(di) + barDelta, true);
+        pointData.y0 = ya.c2p(barPos(di) - barDelta(index), true);
+        pointData.y1 = ya.c2p(barPos(di) + barDelta(index), true);
         pointData.yLabelVal = di.p;
     }
     else {
         pointData.y0 = pointData.y1 = ya.c2p(di.y, true);
         pointData.yLabelVal = size;
 
-        pointData.x0 = xa.c2p(barPos(di) - barDelta, true);
-        pointData.x1 = xa.c2p(barPos(di) + barDelta, true);
+        pointData.x0 = xa.c2p(barPos(di) - barDelta(index), true);
+        pointData.x1 = xa.c2p(barPos(di) + barDelta(index), true);
         pointData.xLabelVal = di.p;
     }
 
