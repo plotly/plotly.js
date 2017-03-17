@@ -1191,9 +1191,9 @@ describe('bar hover', function() {
         };
     }
 
-    function _hover(gd, xval, yval, closest) {
+    function _hover(gd, xval, yval, hovermode) {
         var pointData = getPointData(gd);
-        var pt = Bar.hoverPoints(pointData, xval, yval, closest)[0];
+        var pt = Bar.hoverPoints(pointData, xval, yval, hovermode)[0];
 
         return {
             style: [pt.index, pt.color, pt.xLabelVal, pt.yLabelVal],
@@ -1272,6 +1272,66 @@ describe('bar hover', function() {
             expect(out.style).toEqual([0, '#1f77b4', 0.5, 0]);
             assertPos(out.pos, [x0, x1, y0, y1]);
         });
+    });
+
+    describe('with special width/offset combinations', function() {
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        it('should return correct \'closest\' hover data (single bar, trace width)', function(done) {
+            Plotly.plot(gd, [{
+                type: 'bar',
+                x: [1],
+                y: [2],
+                width: 10,
+                marker: { color: 'red' }
+            }], {
+                xaxis: { range: [-200, 200] }
+            })
+            .then(function() {
+                var out = _hover(gd, 0, 0, 'closest');
+
+                expect(out.style).toEqual([0, 'red', 1, 2]);
+                assertPos(out.pos, [264, 278, 14, 14]);
+            })
+            .then(done);
+        });
+
+        it('should return correct \'closest\' hover data (two bars, array width)', function(done) {
+            Plotly.plot(gd, [{
+                type: 'bar',
+                x: [1, 200],
+                y: [2, 1],
+                width: [10, 20],
+                marker: { color: 'red' }
+            }, {
+                type: 'bar',
+                x: [1, 200],
+                y: [1, 2],
+                width: [20, 10],
+                marker: { color: 'green' }
+            }], {
+                xaxis: { range: [-200, 300] },
+                width: 500,
+                height: 500
+            })
+            .then(function() {
+                var out = _hover(gd, -36, 1.5, 'closest');
+
+                expect(out.style).toEqual([0, 'red', 1, 2]);
+                assertPos(out.pos, [99, 106, 13, 13]);
+            })
+            .then(function() {
+                var out = _hover(gd, 164, 0.8, 'closest');
+
+                expect(out.style).toEqual([1, 'red', 200, 1]);
+                assertPos(out.pos, [222, 235, 168, 168]);
+            })
+            .then(done);
+        });
+
     });
 
 });
