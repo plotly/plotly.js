@@ -630,6 +630,8 @@ describe('annotations autorange', function() {
 describe('annotation clicktoshow', function() {
     var gd;
 
+    beforeEach(function() { gd = createGraphDiv(); });
+
     afterEach(destroyGraphDiv);
 
     function layout() {
@@ -716,8 +718,6 @@ describe('annotation clicktoshow', function() {
     var allIndices = layout().annotations.map(function(v, i) { return i; });
 
     it('should select only clicktoshow annotations matching x, y, and axes of any point', function(done) {
-        gd = createGraphDiv();
-
         // first try to select without adding clicktoshow, both visible and invisible
         Plotly.plot(gd, data, layout())
         // clicktoshow is off initially, so it doesn't *expect* clicking will
@@ -751,6 +751,62 @@ describe('annotation clicktoshow', function() {
         // finally click each one off
         .then(clickAndCheck({newPts: [[1, 2]], newCTS: true, on: [2], step: 15}))
         .then(clickAndCheck({newPts: [[2, 3]], newCTS: true, on: [], step: 16}))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('works on date and log axes', function(done) {
+        Plotly.plot(gd, [{
+            x: ['2016-01-01', '2016-01-02', '2016-01-03'],
+            y: [1, 1, 3]
+        }], {
+            yaxis: {type: 'log'},
+            annotations: [{
+                x: '2016-01-02',
+                y: 0,
+                text: 'boo',
+                showarrow: true,
+                clicktoshow: 'onoff',
+                visible: false
+            }]
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis.type).toBe('date');
+            expect(gd._fullLayout.yaxis.type).toBe('log');
+        })
+        .then(clickAndCheck({newPts: [['2016-01-02', 1]], newCTS: true, on: [0]}))
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('works on category axes', function(done) {
+        Plotly.plot(gd, [{
+            x: ['a', 'b', 'c'],
+            y: [1, 2, 3]
+        }], {
+            annotations: [{
+                x: 'b',
+                y: 2,
+                text: 'boo',
+                showarrow: true,
+                clicktoshow: 'onout',
+                visible: false
+            }, {
+                // you can also use category serial numbers
+                x: 2,
+                y: 3,
+                text: 'hoo',
+                showarrow: true,
+                clicktoshow: 'onout',
+                visible: false
+            }]
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis.type).toBe('category');
+            expect(gd._fullLayout.yaxis.type).toBe('linear');
+        })
+        .then(clickAndCheck({newPts: [['b', 2]], newCTS: true, on: [0], step: 1}))
+        .then(clickAndCheck({newPts: [['c', 3]], newCTS: true, on: [1], step: 2}))
         .catch(failTest)
         .then(done);
     });
