@@ -51,7 +51,6 @@ function Scene2D(options, fullLayout) {
 
     // trace set
     this.traces = {};
-    this._inputs = {};
 
     // create axes spikes
     this.spikes = createSpikes(this.glplot);
@@ -233,6 +232,9 @@ proto.updateSize = function(canvas) {
         canvas.height = pixelHeight;
     }
 
+    // make sure plots render right thing
+    if(this.redraw) this.redraw();
+
     return canvas;
 };
 
@@ -359,7 +361,6 @@ proto.destroy = function() {
     this.container.removeChild(this.mouseContainer);
 
     this.fullData = null;
-    this._inputs = null;
     this.glplot = null;
     this.stopped = true;
 };
@@ -484,7 +485,6 @@ proto.updateTraces = function(fullData, calcData) {
     // update / create trace objects
     for(i = 0; i < fullData.length; i++) {
         fullTrace = fullData[i];
-        this._inputs[fullTrace.uid] = i;
         var calcTrace = calcData[i],
             traceObj = this.traces[fullTrace.uid];
 
@@ -494,19 +494,31 @@ proto.updateTraces = function(fullData, calcData) {
             this.traces[fullTrace.uid] = traceObj;
         }
     }
+
+    // order object per traces
+    this.glplot.objects.sort(function(a, b) {
+        return a._trace.index - b._trace.index;
+    });
+
 };
 
 proto.emitPointAction = function(nextSelection, eventType) {
+    var uid = nextSelection.trace.uid;
+    var trace;
 
-    var curveIndex = this._inputs[nextSelection.trace.uid];
+    for(var i = 0; i < this.fullData.length; i++) {
+        if(this.fullData[i].uid === uid) {
+            trace = this.fullData[i];
+        }
+    }
 
     this.graphDiv.emit(eventType, {
         points: [{
             x: nextSelection.traceCoord[0],
             y: nextSelection.traceCoord[1],
-            curveNumber: curveIndex,
+            curveNumber: trace.index,
             pointNumber: nextSelection.pointIndex,
-            data: this.fullData[curveIndex]._input,
+            data: trace._input,
             fullData: this.fullData,
             xaxis: this.xaxis,
             yaxis: this.yaxis

@@ -16,6 +16,7 @@ var textposition = require('../../traces/scatter/attributes').textposition;
 
 
 module.exports = {
+    _arrayAttrRegexps: [/^mapbox([2-9]|[1-9][0-9]+)?\.layers/],
     domain: {
         x: {
             valType: 'info_array',

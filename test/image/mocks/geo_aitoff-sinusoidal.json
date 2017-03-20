@@ -1,0 +1,664 @@
+{
+  "data": [
+    {
+      "text": [
+        "Mt. Everest",
+        "Nanga Parbat",
+        "Jengish Chokusu (ex. Pik Pobedy)",
+        "Bogda Shan",
+        "Namcha Barwa",
+        "Kinabalu",
+        "K2",
+        "Yu Shan",
+        "Kangchenjunga",
+        "Tirich Mir",
+        "Gunung Kerinci",
+        "Fuji San",
+        "Gunung Rinjani",
+        "Gunung Semeru",
+        "Minya Konka",
+        "Kongur Shan"
+      ],
+      "lon": [
+        "86.91666667",
+        "74.6",
+        "80.11666667",
+        "88.33333333",
+        "95.05",
+        "116.5666667",
+        "76.51666667",
+        "120.95",
+        "88.15",
+        "71.85",
+        "101.2666667",
+        "138.7333333",
+        "116.4666667",
+        "112.9166667",
+        "101.8833333",
+        "75.31666667"
+      ],
+      "lat": [
+        "27.98333333",
+        "35.23333333",
+        "42.03333333",
+        "43.8",
+        "29.63333333",
+        "6.066666667",
+        "35.88333333",
+        "23.46666667",
+        "27.7",
+        "36.25",
+        "-1.7",
+        "35.36666667",
+        "-8.416666667",
+        "-8.1",
+        "29.6",
+        "38.6"
+      ],
+      "type": "scattergeo",
+      "marker": {
+        "symbol": "triangle-up",
+        "sizeref": 1451.4,
+        "size": [
+          "29028",
+          "15118",
+          "13609",
+          "13523",
+          "13471",
+          "13435",
+          "13179",
+          "12966",
+          "12867",
+          "12827",
+          "12483",
+          "12388",
+          "12224",
+          "12060",
+          "11949",
+          "11762"
+        ]
+      },
+      "name": "Asia"
+    },
+    {
+      "text": [
+        "Aconcagua",
+        "Mt. McKinley (Denali)",
+        "Cristobal Colon",
+        "Mt. Logan",
+        "Pico de Orizaba (Citlaltepetl)",
+        "Mauna Kea",
+        "Chimborazo",
+        "Mt. Rainier",
+        "Volcan Tajumulco",
+        "Pico Bolivar",
+        "Mt. Fairweather",
+        "Cerro Chirripo",
+        "Monte San Valentin",
+        "Nevado Ojos del Salado",
+        "Ritacuba Blanco",
+        "Mt. Blackburn"
+      ],
+      "lon": [
+        "-70.01666667",
+        "-151.05",
+        "-73.68333333",
+        "-140.4",
+        "-97.26666667",
+        "-155.4666667",
+        "-78.81666667",
+        "-121.7666667",
+        "-91.9",
+        "-71.05",
+        "-137.5166667",
+        "-83.48333333",
+        "-73.33333333",
+        "-68.53333333",
+        "-72.3",
+        "-143.4333333"
+      ],
+      "lat": [
+        "-32.65",
+        "63.1",
+        "10.83333333",
+        "60.56666667",
+        "19.03333333",
+        "19.81666667",
+        "-1.466666667",
+        "46.85",
+        "15.05",
+        "8.533333333",
+        "58.9",
+        "9.483333333",
+        "-46.6",
+        "-27.11666667",
+        "6.483333333",
+        "61.73333333"
+      ],
+      "type": "scattergeo",
+      "marker": {
+        "sizeref": 1142.05,
+        "symbol": "triangle-up",
+        "size": [
+          "22841",
+          "20138",
+          "18074",
+          "17224",
+          "16148",
+          "13796",
+          "13523",
+          "13196",
+          "13058",
+          "12982",
+          "12956",
+          "12228",
+          "12126",
+          "12100",
+          "11959",
+          "11598"
+        ]
+      },
+      "name": "Americas"
+    },
+    {
+      "text": [
+        "Kilimanjaro",
+        "Gora Elbrus",
+        "Damavand",
+        "Ras Dejen",
+        "Ngaliema (Mt. Stanley)",
+        "Mt. Cameroon",
+        "Mt. Kenya",
+        "Jebel Toubkal",
+        "Pico Teide",
+        "Mt. Ararat (Agri Dagi)"
+      ],
+      "lon": [
+        "37.35",
+        "42.43333333",
+        "52.11666667",
+        "38.36666667",
+        "29.86666667",
+        "9.166666667",
+        "37.3",
+        "-7.916666667",
+        "-16.65",
+        "44.3"
+      ],
+      "lat": [
+        "-3.066666667",
+        "43.35",
+        "35.95",
+        "13.23333333",
+        "0.383333333",
+        "4.216666667",
+        "-0.15",
+        "31.06666667",
+        "28.26666667",
+        "39.7"
+      ],
+      "type": "scattergeo",
+      "marker": {
+        "sizeref": 965.4,
+        "symbol": "triangle-up",
+        "size": [
+          "19308",
+          "15554",
+          "15311",
+          "13090",
+          "12962",
+          "12798",
+          "12549",
+          "12319",
+          "12198",
+          "11847"
+        ]
+      },
+      "name": "Middle East & Africa"
+    },
+    {
+      "text": [
+        "Mont Blanc",
+        "Klyuchevskaya Volcano",
+        "Gunnbjørnsfjeld"
+      ],
+      "lon": [
+        "6.866666667",
+        "160.65",
+        "-29.9"
+      ],
+      "lat": [
+        "45.83333333",
+        "56.05",
+        "68.91666667"
+      ],
+      "type": "scattergeo",
+      "marker": {
+        "sizeref": 770.3,
+        "symbol": "triangle-up",
+        "size": [
+          "15406",
+          "15252",
+          "12119"
+        ]
+      },
+      "name": "Europe"
+    },
+    {
+      "text": [
+        "Puncak Jaya",
+        "Mt. Cook",
+        "Finisterre Range HP"
+      ],
+      "lon": [
+        "137.1833333",
+        "170.1333333",
+        "146.3666667"
+      ],
+      "lat": [
+        "-4.066666667",
+        "-43.6",
+        "-5.95"
+      ],
+      "type": "scattergeo",
+      "marker": {
+        "sizeref": 801.15,
+        "symbol": "triangle-up",
+        "size": [
+          "16023",
+          "12319",
+          "12057"
+        ]
+      },
+      "name": "Oceania"
+    },
+    {
+      "text": [
+        "Vinson Massif",
+        "Mt. Erebus"
+      ],
+      "lon": [
+        "-85.6",
+        "167.1833333"
+      ],
+      "lat": [
+        "-78.51666667",
+        "-77.51666667"
+      ],
+      "type": "scattergeo",
+      "marker": {
+        "sizeref": 802.5,
+        "symbol": "triangle-up",
+        "size": [
+          "16050",
+          "12448"
+        ]
+      },
+      "name": "Antartica"
+    },
+    {
+      "text": [
+        "Mt. Everest",
+        "Nanga Parbat",
+        "Jengish Chokusu (ex. Pik Pobedy)",
+        "Bogda Shan",
+        "Namcha Barwa",
+        "Kinabalu",
+        "K2",
+        "Yu Shan",
+        "Kangchenjunga",
+        "Tirich Mir",
+        "Gunung Kerinci",
+        "Fuji San",
+        "Gunung Rinjani",
+        "Gunung Semeru",
+        "Minya Konka",
+        "Kongur Shan"
+      ],
+      "lon": [
+        "86.91666667",
+        "74.6",
+        "80.11666667",
+        "88.33333333",
+        "95.05",
+        "116.5666667",
+        "76.51666667",
+        "120.95",
+        "88.15",
+        "71.85",
+        "101.2666667",
+        "138.7333333",
+        "116.4666667",
+        "112.9166667",
+        "101.8833333",
+        "75.31666667"
+      ],
+      "lat": [
+        "27.98333333",
+        "35.23333333",
+        "42.03333333",
+        "43.8",
+        "29.63333333",
+        "6.066666667",
+        "35.88333333",
+        "23.46666667",
+        "27.7",
+        "36.25",
+        "-1.7",
+        "35.36666667",
+        "-8.416666667",
+        "-8.1",
+        "29.6",
+        "38.6"
+      ],
+      "type": "scattergeo",
+      "marker": {
+        "symbol": "triangle-up",
+        "sizeref": 1451.4,
+        "size": [
+          "29028",
+          "15118",
+          "13609",
+          "13523",
+          "13471",
+          "13435",
+          "13179",
+          "12966",
+          "12867",
+          "12827",
+          "12483",
+          "12388",
+          "12224",
+          "12060",
+          "11949",
+          "11762"
+        ]
+      },
+      "name": "Asia",
+      "geo": "geo2"
+    },
+    {
+      "text": [
+        "Aconcagua",
+        "Mt. McKinley (Denali)",
+        "Cristobal Colon",
+        "Mt. Logan",
+        "Pico de Orizaba (Citlaltepetl)",
+        "Mauna Kea",
+        "Chimborazo",
+        "Mt. Rainier",
+        "Volcan Tajumulco",
+        "Pico Bolivar",
+        "Mt. Fairweather",
+        "Cerro Chirripo",
+        "Monte San Valentin",
+        "Nevado Ojos del Salado",
+        "Ritacuba Blanco",
+        "Mt. Blackburn"
+      ],
+      "lon": [
+        "-70.01666667",
+        "-151.05",
+        "-73.68333333",
+        "-140.4",
+        "-97.26666667",
+        "-155.4666667",
+        "-78.81666667",
+        "-121.7666667",
+        "-91.9",
+        "-71.05",
+        "-137.5166667",
+        "-83.48333333",
+        "-73.33333333",
+        "-68.53333333",
+        "-72.3",
+        "-143.4333333"
+      ],
+      "lat": [
+        "-32.65",
+        "63.1",
+        "10.83333333",
+        "60.56666667",
+        "19.03333333",
+        "19.81666667",
+        "-1.466666667",
+        "46.85",
+        "15.05",
+        "8.533333333",
+        "58.9",
+        "9.483333333",
+        "-46.6",
+        "-27.11666667",
+        "6.483333333",
+        "61.73333333"
+      ],
+      "type": "scattergeo",
+      "marker": {
+        "sizeref": 1142.05,
+        "symbol": "triangle-up",
+        "size": [
+          "22841",
+          "20138",
+          "18074",
+          "17224",
+          "16148",
+          "13796",
+          "13523",
+          "13196",
+          "13058",
+          "12982",
+          "12956",
+          "12228",
+          "12126",
+          "12100",
+          "11959",
+          "11598"
+        ]
+      },
+      "name": "Americas",
+      "geo": "geo2"
+    },
+    {
+      "text": [
+        "Kilimanjaro",
+        "Gora Elbrus",
+        "Damavand",
+        "Ras Dejen",
+        "Ngaliema (Mt. Stanley)",
+        "Mt. Cameroon",
+        "Mt. Kenya",
+        "Jebel Toubkal",
+        "Pico Teide",
+        "Mt. Ararat (Agri Dagi)"
+      ],
+      "lon": [
+        "37.35",
+        "42.43333333",
+        "52.11666667",
+        "38.36666667",
+        "29.86666667",
+        "9.166666667",
+        "37.3",
+        "-7.916666667",
+        "-16.65",
+        "44.3"
+      ],
+      "lat": [
+        "-3.066666667",
+        "43.35",
+        "35.95",
+        "13.23333333",
+        "0.383333333",
+        "4.216666667",
+        "-0.15",
+        "31.06666667",
+        "28.26666667",
+        "39.7"
+      ],
+      "type": "scattergeo",
+      "marker": {
+        "sizeref": 965.4,
+        "symbol": "triangle-up",
+        "size": [
+          "19308",
+          "15554",
+          "15311",
+          "13090",
+          "12962",
+          "12798",
+          "12549",
+          "12319",
+          "12198",
+          "11847"
+        ]
+      },
+      "name": "Middle East & Africa",
+      "geo": "geo2"
+    },
+    {
+      "text": [
+        "Mont Blanc",
+        "Klyuchevskaya Volcano",
+        "Gunnbjørnsfjeld"
+      ],
+      "lon": [
+        "6.866666667",
+        "160.65",
+        "-29.9"
+      ],
+      "lat": [
+        "45.83333333",
+        "56.05",
+        "68.91666667"
+      ],
+      "type": "scattergeo",
+      "marker": {
+        "sizeref": 770.3,
+        "symbol": "triangle-up",
+        "size": [
+          "15406",
+          "15252",
+          "12119"
+        ]
+      },
+      "name": "Europe",
+      "geo": "geo2"
+    },
+    {
+      "text": [
+        "Puncak Jaya",
+        "Mt. Cook",
+        "Finisterre Range HP"
+      ],
+      "lon": [
+        "137.1833333",
+        "170.1333333",
+        "146.3666667"
+      ],
+      "lat": [
+        "-4.066666667",
+        "-43.6",
+        "-5.95"
+      ],
+      "type": "scattergeo",
+      "marker": {
+        "sizeref": 801.15,
+        "symbol": "triangle-up",
+        "size": [
+          "16023",
+          "12319",
+          "12057"
+        ]
+      },
+      "name": "Oceania",
+      "geo": "geo2"
+    },
+    {
+      "text": [
+        "Vinson Massif",
+        "Mt. Erebus"
+      ],
+      "lon": [
+        "-85.6",
+        "167.1833333"
+      ],
+      "lat": [
+        "-78.51666667",
+        "-77.51666667"
+      ],
+      "type": "scattergeo",
+      "marker": {
+        "sizeref": 802.5,
+        "symbol": "triangle-up",
+        "size": [
+          "16050",
+          "12448"
+        ]
+      },
+      "name": "Antartica",
+      "geo": "geo2"
+    }
+  ],
+  "layout": {
+    "geo": {
+      "showland": true,
+      "landcolor": "rgb(255, 255, 255)",
+      "lonaxis": {
+        "gridcolor": "rgb(102, 102, 102)",
+        "gridwidth": 0.5,
+        "showgrid": true
+      },
+      "projection": {
+        "type": "aitoff",
+        "rotation": {
+          "lon": -180
+        }
+      },
+      "lataxis": {
+        "gridcolor": "rgb(102, 102, 102)",
+        "gridwidth": 0.5,
+        "showgrid": true
+      },
+      "showlakes": true,
+      "framecolor": "rgb(127, 127, 127)",
+      "lakecolor": "rgb(127, 127, 127)",
+      "showocean": true,
+      "oceancolor": "rgb(255, 255, 255)",
+      "countrycolor": "rgb(127, 127, 127)",
+      "countrywidth": 0.5,
+      "showcountries": true,
+      "coastlinecolor": "rgb(127, 127, 127)"
+    },
+    "geo2": {
+      "showland": true,
+      "landcolor": "rgb(255, 255, 255)",
+      "lonaxis": {
+        "gridcolor": "rgb(102, 102, 102)",
+        "gridwidth": 0.5,
+        "showgrid": true
+      },
+      "projection": {
+        "type": "sinusoidal",
+        "rotation": {
+          "lon": -180
+        }
+      },
+      "lataxis": {
+        "gridcolor": "rgb(102, 102, 102)",
+        "gridwidth": 0.5,
+        "showgrid": true
+      },
+      "showlakes": true,
+      "framecolor": "rgb(127, 127, 127)",
+      "lakecolor": "rgb(127, 127, 127)",
+      "showocean": true,
+      "oceancolor": "rgb(255, 255, 255)",
+      "countrycolor": "rgb(127, 127, 127)",
+      "countrywidth": 0.5,
+      "showcountries": true,
+      "coastlinecolor": "rgb(127, 127, 127)"
+    },
+    "width": 800,
+    "showlegend": false
+  }
+}

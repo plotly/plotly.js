@@ -91,9 +91,11 @@ function getToggleSets(gd, hoverData) {
         if(showMode) {
             for(j = 0; j < hoverLen; j++) {
                 pointj = hoverData[j];
-                if(pointj.x === anni._xclick && pointj.y === anni._yclick &&
-                        pointj.xaxis._id === anni.xref &&
-                        pointj.yaxis._id === anni.yref) {
+                if(pointj.xaxis._id === anni.xref &&
+                    pointj.yaxis._id === anni.yref &&
+                    pointj.xaxis.d2r(pointj.x) === anni._xclick &&
+                    pointj.yaxis.d2r(pointj.y) === anni._yclick
+                ) {
                     // match! toggle this annotation
                     // regardless of its clicktoshow mode
                     // but if it's onout mode, off is implicit

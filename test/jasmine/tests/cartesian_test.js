@@ -7,6 +7,7 @@ var Drawing = require('@src/components/drawing');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
+var failTest = require('../assets/fail_test');
 
 
 describe('zoom box element', function() {
@@ -111,7 +112,9 @@ describe('restyle', function() {
             }).then(function() {
                 expect(d3.selectAll('g.trace.scatter').size()).toEqual(0);
 
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('reuses SVG lines', function(done) {
@@ -149,7 +152,9 @@ describe('restyle', function() {
 
                 // Second line was persisted:
                 expect(firstLine2).toBe(secondLine2);
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('can change scatter mode', function(done) {
@@ -194,6 +199,7 @@ describe('restyle', function() {
             .then(function() {
                 assertScatterModeSizes(3, 9, 9);
             })
+            .catch(failTest)
             .then(done);
 
         });
@@ -246,9 +252,9 @@ describe('relayout', function() {
                 expect(gd._fullLayout.xaxis.categoryarray).toEqual(list);
                 expect(gd._fullLayout.xaxis._initialCategories).toEqual(list);
                 assertCategories(list);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
     });
@@ -300,9 +306,116 @@ describe('relayout', function() {
             .then(function() {
                 assertPointTranslate([-540, 135], [-540, 135]);
             })
+            .catch(failTest)
             .then(done);
         });
 
     });
 
+});
+
+describe('subplot creation / deletion:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should clear orphan subplot when adding traces to blank graph', function(done) {
+
+        function assertCartesianSubplot(len) {
+            expect(d3.select('.subplot.xy').size()).toEqual(len);
+            expect(d3.select('.subplot.x2y2').size()).toEqual(len);
+            expect(d3.select('.x2title').size()).toEqual(len);
+            expect(d3.select('.x2title').size()).toEqual(len);
+            expect(d3.select('.ytitle').size()).toEqual(len);
+            expect(d3.select('.ytitle').size()).toEqual(len);
+        }
+
+        Plotly.plot(gd, [], {
+            xaxis: { title: 'X' },
+            yaxis: { title: 'Y' },
+            xaxis2: { title: 'X2', anchor: 'y2' },
+            yaxis2: { title: 'Y2', anchor: 'x2' }
+        })
+        .then(function() {
+            assertCartesianSubplot(1);
+
+            return Plotly.addTraces(gd, [{
+                type: 'scattergeo',
+                lon: [10, 20, 30],
+                lat: [20, 30, 10]
+            }]);
+        })
+        .then(function() {
+            assertCartesianSubplot(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('puts plot backgrounds behind everything except if they overlap', function(done) {
+        function checkBGLayers(behindCount, x2y2Count) {
+            expect(gd.querySelectorAll('.bglayer rect.bg').length).toBe(behindCount);
+            expect(gd.querySelectorAll('.subplot.x2y2 rect.bg').length).toBe(x2y2Count);
+
+            // xy is the first subplot, so it never gets put in front of others
+            expect(gd.querySelectorAll('.subplot.xy rect.bg').length).toBe(0);
+
+            // xy3 is an overlay, so never gets its own bg
+            expect(gd.querySelectorAll('.subplot.xy3 rect.bg').length).toBe(0);
+
+            // verify that these are *all* the subplots and backgrounds we have
+            expect(gd.querySelectorAll('.subplot').length).toBe(3);
+            ['xy', 'x2y2', 'xy3'].forEach(function(subplot) {
+                expect(gd.querySelectorAll('.subplot.' + subplot).length).toBe(1);
+            });
+            expect(gd.querySelectorAll('.bg').length).toBe(behindCount + x2y2Count);
+        }
+
+        Plotly.plot(gd, [
+            {y: [1, 2, 3]},
+            {y: [2, 3, 1], xaxis: 'x2', yaxis: 'y2'},
+            {y: [3, 1, 2], yaxis: 'y3'}
+        ], {
+            xaxis: {domain: [0, 0.5]},
+            xaxis2: {domain: [0.5, 1], anchor: 'y2'},
+            yaxis: {domain: [0, 1]},
+            yaxis2: {domain: [0.5, 1], anchor: 'x2'},
+            yaxis3: {overlaying: 'y'},
+            // legend makes its own .bg rect - delete so we can ignore that here
+            showlegend: false
+        })
+        .then(function() {
+            // touching but not overlapping: all backgrounds are in back
+            checkBGLayers(2, 0);
+
+            // now add a slight overlap: that's enough to put x2y2 in front
+            return Plotly.relayout(gd, {'xaxis2.domain': [0.49, 1]});
+        })
+        .then(function() {
+            checkBGLayers(1, 1);
+
+            // x ranges overlap, but now y ranges are disjoint
+            return Plotly.relayout(gd, {'xaxis2.domain': [0, 1], 'yaxis.domain': [0, 0.5]});
+        })
+        .then(function() {
+            checkBGLayers(2, 0);
+
+            // regular inset
+            return Plotly.relayout(gd, {
+                'xaxis.domain': [0, 1],
+                'yaxis.domain': [0, 1],
+                'xaxis2.domain': [0.6, 0.9],
+                'yaxis2.domain': [0.6, 0.9]
+            });
+        })
+        .then(function() {
+            checkBGLayers(1, 1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });

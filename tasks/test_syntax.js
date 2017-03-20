@@ -4,6 +4,7 @@ var fs = require('fs');
 var falafel = require('falafel');
 var glob = require('glob');
 var madge = require('madge');
+var readLastLines = require('read-last-lines');
 
 var constants = require('./util/constants');
 var srcGlob = path.join(constants.pathToSrc, '**/*.js');
@@ -11,10 +12,13 @@ var libGlob = path.join(constants.pathToLib, '**/*.js');
 var testGlob = path.join(constants.pathToJasmineTests, '**/*.js');
 var bundleTestGlob = path.join(constants.pathToJasmineBundleTests, '**/*.js');
 
+var EXIT_CODE = 0;
+
 // main
 assertJasmineSuites();
 assertSrcContents();
 assertFileNames();
+assertTrailingNewLine();
 assertCircularDeps();
 
 
@@ -88,24 +92,80 @@ function assertSrcContents() {
 
 // check that all file names are in lower case
 function assertFileNames() {
+    var pattern = combineGlobs([
+        path.join(constants.pathToRoot, '*.*'),
+        path.join(constants.pathToSrc, '**/*.*'),
+        path.join(constants.pathToLib, '**/*.*'),
+        path.join(constants.pathToDist, '**/*.*'),
+        path.join(constants.pathToRoot, 'test', '**/*.*'),
+        path.join(constants.pathToRoot, 'tasks', '**/*.*'),
+        path.join(constants.pathToRoot, 'devtools', '**/*.*')
+    ]);
+
     var logs = [];
 
-    glob(combineGlobs([srcGlob, libGlob, testGlob, bundleTestGlob]), function(err, files) {
+    glob(pattern, function(err, files) {
         files.forEach(function(file) {
             var base = path.basename(file);
 
+            if(
+                base === 'README.md' ||
+                base === 'CONTRIBUTING.md' ||
+                base === 'CHANGELOG.md' ||
+                base === 'SECURITY.md' ||
+                file.indexOf('mathjax') !== -1
+            ) return;
+
             if(base !== base.toLowerCase()) {
                 logs.push([
-                    file, ' :',
+                    file, ':',
                     'has a file name containing some',
                     'non-lower-case characters'
-                ]);
+                ].join(' '));
             }
         });
 
         log('lower case only file names', logs);
     });
+}
 
+// check that all files have a trailing new line character
+function assertTrailingNewLine() {
+    var pattern = combineGlobs([
+        path.join(constants.pathToSrc, '**/*.glsl'),
+        path.join(constants.pathToRoot, 'test', 'image', 'mocks', '*')
+    ]);
+
+    var regexNewLine = /\r?\n$/;
+    var regexEmptyNewLine = /^\r?\n$/;
+    var promises = [];
+    var logs = [];
+
+    glob(pattern, function(err, files) {
+        files.forEach(function(file) {
+            var promise = readLastLines.read(file, 1);
+
+            promises.push(promise);
+
+            promise.then(function(lines) {
+                if(!regexNewLine.test(lines)) {
+                    logs.push([
+                        file, ':',
+                        'does not have a trailing new line character'
+                    ].join(' '));
+                } else if(regexEmptyNewLine.test(lines)) {
+                    logs.push([
+                        file, ':',
+                        'has more than one trailing new line'
+                    ].join(' '));
+                }
+            });
+        });
+
+        Promise.all(promises).then(function() {
+            log('trailing new line character', logs);
+        });
+    });
 }
 
 // check circular dependencies
@@ -120,10 +180,11 @@ function assertCircularDeps() {
         var MAX_ALLOWED_CIRCULAR_DEPS = 17;
 
         if(circularDeps.length > MAX_ALLOWED_CIRCULAR_DEPS) {
+            console.log(circularDeps.join('\n'));
             logs.push('some new circular dependencies were added to src/');
         }
 
-        log('circular dependencies', logs);
+        log('circular dependencies: ' + circularDeps.length, logs);
     });
 }
 
@@ -133,9 +194,16 @@ function combineGlobs(arr) {
 
 function log(name, logs) {
     if(logs.length) {
-        console.error('test-syntax error [' + name + ']\n');
-        throw new Error('\n' + logs.join('\n') + '\n');
+        console.error('test-syntax error [' + name + ']');
+        console.error(logs.join('\n'));
+        EXIT_CODE = 1;
+    } else {
+        console.log('ok ' + name);
     }
-
-    console.log('ok ' + name);
 }
+
+process.on('exit', function() {
+    if(EXIT_CODE) {
+        throw new Error('test syntax failed.');
+    }
+});

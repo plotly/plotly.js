@@ -178,7 +178,7 @@ module.exports = {
         role: 'style',
         dflt: true,
         description: [
-            'Determines whether or not the sectors of reordered',
+            'Determines whether or not the sectors are reordered',
             'from largest to smallest.'
         ].join(' ')
     },

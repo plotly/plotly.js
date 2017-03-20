@@ -1,10 +1,12 @@
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Images = require('@src/components/images');
+var Lib = require('@src/lib');
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 
 var jsLogo = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
@@ -88,47 +90,80 @@ describe('Layout images', function() {
 
         afterEach(destroyGraphDiv);
 
+        function checkLayers(upper, lower, subplot) {
+            var upperLayer = gd._fullLayout._imageUpperLayer;
+            expect(upperLayer.size()).toBe(1);
+            expect(upperLayer.selectAll('image').size()).toBe(upper);
+
+            var lowerLayer = gd._fullLayout._imageLowerLayer;
+            expect(lowerLayer.size()).toBe(1);
+            expect(lowerLayer.selectAll('image').size()).toBe(lower);
+
+            var subplotLayer = gd._fullLayout._plots.xy.imagelayer;
+            expect(subplotLayer.size()).toBe(1);
+            expect(subplotLayer.selectAll('image').size()).toBe(subplot);
+        }
+
         it('should draw images on the right layers', function() {
 
-            var layer;
-
             Plotly.plot(gd, data, { images: [{
-                source: 'imageabove',
+                source: jsLogo,
                 layer: 'above'
             }]});
 
-            layer = gd._fullLayout._imageUpperLayer;
-            expect(layer.length).toBe(1);
+            checkLayers(1, 0, 0);
 
             destroyGraphDiv();
             gd = createGraphDiv();
             Plotly.plot(gd, data, { images: [{
-                source: 'imagebelow',
+                source: jsLogo,
                 layer: 'below'
             }]});
 
-            layer = gd._fullLayout._imageLowerLayer;
-            expect(layer.length).toBe(1);
+            checkLayers(0, 1, 0);
 
             destroyGraphDiv();
             gd = createGraphDiv();
             Plotly.plot(gd, data, { images: [{
-                source: 'imagesubplot',
+                source: jsLogo,
                 layer: 'below',
                 xref: 'x',
                 yref: 'y'
             }]});
 
-            layer = gd._fullLayout._imageSubplotLayer;
-            expect(layer.length).toBe(1);
+            checkLayers(0, 0, 1);
+        });
+
+        it('should fall back on imageLowerLayer for below missing subplots', function() {
+            Plotly.newPlot(gd, [
+                {x: [1, 3], y: [1, 3]},
+                {x: [1, 3], y: [1, 3], xaxis: 'x2', yaxis: 'y2'}
+            ], {
+                xaxis: {domain: [0, 0.5]},
+                yaxis: {domain: [0, 0.5]},
+                xaxis2: {domain: [0.5, 1], anchor: 'y2'},
+                yaxis2: {domain: [0.5, 1], anchor: 'x2'},
+                images: [{
+                    source: jsLogo,
+                    layer: 'below',
+                    xref: 'x',
+                    yref: 'y2'
+                }, {
+                    source: jsLogo,
+                    layer: 'below',
+                    xref: 'x2',
+                    yref: 'y'
+                }]
+            });
+
+            checkLayers(0, 2, 0);
         });
 
         describe('with anchors and sizing', function() {
 
             function testAspectRatio(xAnchor, yAnchor, sizing, expected) {
-                var anchorName = xAnchor + yAnchor;
                 Plotly.plot(gd, data, { images: [{
-                    source: anchorName,
+                    source: jsLogo,
                     xanchor: xAnchor,
                     yanchor: yAnchor,
                     sizing: sizing
@@ -305,7 +340,7 @@ describe('Layout images', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('should properly add and removing image', function(done) {
+        it('should properly add and remove image', function(done) {
             var gd = createGraphDiv(),
                 data = [{ x: [1, 2, 3], y: [1, 2, 3] }],
                 layout = { width: 500, height: 400 };
@@ -326,6 +361,7 @@ describe('Layout images', function() {
 
             Plotly.plot(gd, data, layout).then(function() {
                 assertImages(0);
+                expect(gd.layout.images).toBeUndefined();
 
                 return Plotly.relayout(gd, 'images[0]', makeImage(jsLogo, 0.1, 0.1));
             })
@@ -337,7 +373,8 @@ describe('Layout images', function() {
             .then(function() {
                 assertImages(2);
 
-                return Plotly.relayout(gd, 'images[2]', makeImage(pythonLogo, 0.2, 0.5));
+                // insert an image not at the end of the array
+                return Plotly.relayout(gd, 'images[0]', makeImage(pythonLogo, 0.2, 0.5));
             })
             .then(function() {
                 assertImages(3);
@@ -355,7 +392,8 @@ describe('Layout images', function() {
                 assertImages(3);
                 expect(gd.layout.images.length).toEqual(3);
 
-                return Plotly.relayout(gd, 'images[2]', null);
+                // delete not from the end of the array
+                return Plotly.relayout(gd, 'images[0]', null);
             })
             .then(function() {
                 assertImages(2);
@@ -371,7 +409,7 @@ describe('Layout images', function() {
             })
             .then(function() {
                 assertImages(0);
-                expect(gd.layout.images).toEqual([]);
+                expect(gd.layout.images).toBeUndefined();
 
                 done();
             });
@@ -379,4 +417,138 @@ describe('Layout images', function() {
 
     });
 
+});
+
+describe('images log/linear axis changes', function() {
+    'use strict';
+
+    var mock = {
+        data: [
+            {x: [1, 2, 3], y: [1, 2, 3]},
+            {x: [1, 2, 3], y: [3, 2, 1], yaxis: 'y2'}
+        ],
+        layout: {
+            images: [{
+                source: pythonLogo,
+                x: 1,
+                y: 1,
+                xref: 'x',
+                yref: 'y',
+                sizex: 2,
+                sizey: 2
+            }],
+            yaxis: {range: [1, 3]},
+            yaxis2: {range: [0, 1], overlaying: 'y', type: 'log'}
+        }
+    };
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+
+        var mockData = Lib.extendDeep([], mock.data),
+            mockLayout = Lib.extendDeep({}, mock.layout);
+
+        Plotly.plot(gd, mockData, mockLayout).then(done);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('doesnt try to update position automatically with ref changes', function(done) {
+        // we don't try to figure out the position on a new axis / canvas
+        // automatically when you change xref / yref, we leave it to the caller.
+
+        // initial clip path should end in 'xy' to match xref/yref
+        expect(d3.select('image').attr('clip-path') || '').toMatch(/xy\)$/);
+
+        // linear to log
+        Plotly.relayout(gd, {'images[0].yref': 'y2'})
+        .then(function() {
+            expect(gd.layout.images[0].y).toBe(1);
+
+            expect(d3.select('image').attr('clip-path') || '').toMatch(/xy2\)$/);
+
+            // log to paper
+            return Plotly.relayout(gd, {'images[0].yref': 'paper'});
+        })
+        .then(function() {
+            expect(gd.layout.images[0].y).toBe(1);
+
+            expect(d3.select('image').attr('clip-path') || '').toMatch(/x\)$/);
+
+            // change to full paper-referenced, to make sure the clip path disappears
+            return Plotly.relayout(gd, {'images[0].xref': 'paper'});
+        })
+        .then(function() {
+            expect(d3.select('image').attr('clip-path')).toBe(null);
+
+            // paper to log
+            return Plotly.relayout(gd, {'images[0].yref': 'y2'});
+        })
+        .then(function() {
+            expect(gd.layout.images[0].y).toBe(1);
+
+            expect(d3.select('image').attr('clip-path') || '').toMatch(/^[^x]+y2\)$/);
+
+            // log to linear
+            return Plotly.relayout(gd, {'images[0].yref': 'y'});
+        })
+        .then(function() {
+            expect(gd.layout.images[0].y).toBe(1);
+
+            // y and yref together
+            return Plotly.relayout(gd, {'images[0].y': 0.2, 'images[0].yref': 'y2'});
+        })
+        .then(function() {
+            expect(gd.layout.images[0].y).toBe(0.2);
+
+            // yref first, then y
+            return Plotly.relayout(gd, {'images[0].yref': 'y', 'images[0].y': 2});
+        })
+        .then(function() {
+            expect(gd.layout.images[0].y).toBe(2);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('keeps the same data value if the axis type is changed without position', function(done) {
+        // because images (and images) use linearized positions on log axes,
+        // we have `relayout` update the positions so the data value the annotation
+        // points to is unchanged by the axis type change.
+
+        Plotly.relayout(gd, {'yaxis.type': 'log'})
+        .then(function() {
+            expect(gd.layout.images[0].y).toBe(0);
+            expect(gd.layout.images[0].sizey).toBeCloseTo(0.765551370675726, 6);
+
+            return Plotly.relayout(gd, {'yaxis.type': 'linear'});
+        })
+        .then(function() {
+            expect(gd.layout.images[0].y).toBe(1);
+            expect(gd.layout.images[0].sizey).toBeCloseTo(2, 6);
+
+            return Plotly.relayout(gd, {
+                'yaxis.type': 'log',
+                'images[0].y': 0.2,
+                'images[0].sizey': 0.3
+            });
+        })
+        .then(function() {
+            expect(gd.layout.images[0].y).toBe(0.2);
+            expect(gd.layout.images[0].sizey).toBe(0.3);
+
+            return Plotly.relayout(gd, {
+                'images[0].y': 2,
+                'images[0].sizey': 2.5,
+                'yaxis.type': 'linear'
+            });
+        })
+        .then(function() {
+            expect(gd.layout.images[0].y).toBe(2);
+            expect(gd.layout.images[0].sizey).toBe(2.5);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });

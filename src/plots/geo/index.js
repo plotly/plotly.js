@@ -48,16 +48,13 @@ exports.plot = function plotGeo(gd) {
             geoCalcData = Plots.getSubplotCalcData(calcData, 'geo', geoId),
             geo = fullLayout[geoId]._subplot;
 
-        // If geo is not instantiated, create one!
         if(!geo) {
             geo = new Geo({
                 id: geoId,
                 graphDiv: gd,
-                container: fullLayout._geocontainer.node(),
+                container: fullLayout._geolayer.node(),
                 topojsonURL: gd._context.topojsonURL
-            },
-                fullLayout
-            );
+            });
 
             fullLayout[geoId]._subplot = geo;
         }
@@ -74,31 +71,8 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         var oldGeo = oldFullLayout[oldGeoKey]._subplot;
 
         if(!newFullLayout[oldGeoKey] && !!oldGeo) {
-            oldGeo.geoDiv.remove();
+            oldGeo.framework.remove();
+            oldGeo.clipDef.remove();
         }
-    }
-};
-
-exports.toSVG = function(gd) {
-    var fullLayout = gd._fullLayout,
-        geoIds = Plots.getSubplotIds(fullLayout, 'geo'),
-        size = fullLayout._size;
-
-    for(var i = 0; i < geoIds.length; i++) {
-        var geoLayout = fullLayout[geoIds[i]],
-            domain = geoLayout.domain,
-            geoFramework = geoLayout._subplot.framework;
-
-        geoFramework.attr('style', null);
-        geoFramework
-            .attr({
-                x: size.l + size.w * domain.x[0] + geoLayout._marginX,
-                y: size.t + size.h * (1 - domain.y[1]) + geoLayout._marginY,
-                width: geoLayout._width,
-                height: geoLayout._height
-            });
-
-        fullLayout._geoimages.node()
-            .appendChild(geoFramework.node());
     }
 };

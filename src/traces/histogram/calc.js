@@ -14,6 +14,7 @@ var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 
+var arraysToCalcdata = require('../bar/arrays_to_calcdata');
 var binFunctions = require('./bin_functions');
 var normFunctions = require('./norm_functions');
 var doAvg = require('./average');
@@ -167,6 +168,8 @@ module.exports = function calc(gd, trace) {
             cd.push({p: pos[i], s: size[i], b: 0});
         }
     }
+
+    arraysToCalcdata(cd, trace);
 
     return cd;
 };

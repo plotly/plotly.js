@@ -10,6 +10,7 @@
 'use strict';
 
 var Lib = require('../../lib');
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name, arrayVarNames) {
     var1Name = var1Name || 'x';
@@ -54,17 +55,19 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
     if(hasColumnText) text = Lib.init2dArray(col2vals.length, col1vals.length);
 
     for(i = 0; i < colLen; i++) {
-        i1 = Lib.findBin(col1[i] + col1dv.minDiff / 2, col1vals);
-        i2 = Lib.findBin(col2[i] + col2dv.minDiff / 2, col2vals);
+        if(col1[i] !== BADNUM && col2[i] !== BADNUM) {
+            i1 = Lib.findBin(col1[i] + col1dv.minDiff / 2, col1vals);
+            i2 = Lib.findBin(col2[i] + col2dv.minDiff / 2, col2vals);
 
-        for(j = 0; j < arrayVarNames.length; j++) {
-            arrayVarName = arrayVarNames[j];
-            arrayVar = trace[arrayVarName];
-            newArray = newArrays[j];
-            newArray[i2][i1] = arrayVar[i];
+            for(j = 0; j < arrayVarNames.length; j++) {
+                arrayVarName = arrayVarNames[j];
+                arrayVar = trace[arrayVarName];
+                newArray = newArrays[j];
+                newArray[i2][i1] = arrayVar[i];
+            }
+
+            if(hasColumnText) text[i2][i1] = textCol[i];
         }
-
-        if(hasColumnText) text[i2][i1] = textCol[i];
     }
 
     trace[var1Name] = col1vals;

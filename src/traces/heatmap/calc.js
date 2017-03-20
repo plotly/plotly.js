@@ -121,7 +121,7 @@ module.exports = function calc(gd, trace) {
         Axes.expand(ya, yArray);
     }
 
-    var cd0 = {x: xArray, y: yArray, z: z};
+    var cd0 = {x: xArray, y: yArray, z: z, text: trace.text};
 
     // auto-z and autocolorscale if applicable
     colorscaleCalc(trace, z, '', 'z');

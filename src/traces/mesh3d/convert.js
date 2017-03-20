@@ -152,6 +152,7 @@ function createMesh3DTrace(scene, data) {
     var gl = scene.glplot.gl;
     var mesh = createMesh({gl: gl});
     var result = new Mesh3DTrace(scene, mesh, data.uid);
+    mesh._trace = result;
     result.update(data);
     scene.glplot.add(mesh);
     return result;

@@ -10,7 +10,7 @@
 'use strict';
 
 var createScatter = require('gl-scatter2d');
-var createFancyScatter = require('gl-scatter2d-fancy');
+var createFancyScatter = require('gl-scatter2d-sdf');
 var createLine = require('gl-line2d');
 var createError = require('gl-error2d');
 var isNumeric = require('fast-isnumeric');
@@ -46,11 +46,17 @@ function LineWithMarkers(scene, uid) {
     this.hoverinfo = 'all';
     this.connectgaps = true;
 
+    this.index = null;
     this.idToIndex = [];
     this.bounds = [0, 0, 0, 0];
 
+    this.isVisible = false;
     this.hasLines = false;
-    this.lineOptions = {
+    this.hasErrorX = false;
+    this.hasErrorY = false;
+    this.hasMarkers = false;
+
+    this.line = this.initObject(createLine, {
         positions: new Float64Array(0),
         color: [0, 0, 0, 1],
         width: 1,
@@ -60,35 +66,26 @@ function LineWithMarkers(scene, uid) {
             [0, 0, 0, 1],
             [0, 0, 0, 1],
             [0, 0, 0, 1]],
-        dashes: [1]
-    };
-    this.line = createLine(scene.glplot, this.lineOptions);
-    this.line._trace = this;
+        dashes: [1],
+    }, 0);
 
-    this.hasErrorX = false;
-    this.errorXOptions = {
+    this.errorX = this.initObject(createError, {
         positions: new Float64Array(0),
         errors: new Float64Array(0),
         lineWidth: 1,
         capSize: 0,
         color: [0, 0, 0, 1]
-    };
-    this.errorX = createError(scene.glplot, this.errorXOptions);
-    this.errorX._trace = this;
+    }, 1);
 
-    this.hasErrorY = false;
-    this.errorYOptions = {
+    this.errorY = this.initObject(createError, {
         positions: new Float64Array(0),
         errors: new Float64Array(0),
         lineWidth: 1,
         capSize: 0,
         color: [0, 0, 0, 1]
-    };
-    this.errorY = createError(scene.glplot, this.errorYOptions);
-    this.errorY._trace = this;
+    }, 2);
 
-    this.hasMarkers = false;
-    this.scatterOptions = {
+    var scatterOptions0 = {
         positions: new Float64Array(0),
         sizes: [],
         colors: [],
@@ -100,15 +97,43 @@ function LineWithMarkers(scene, uid) {
         borderSize: 1,
         borderColor: [0, 0, 0, 1]
     };
-    this.scatter = createScatter(scene.glplot, this.scatterOptions);
-    this.scatter._trace = this;
-    this.fancyScatter = createFancyScatter(scene.glplot, this.scatterOptions);
-    this.fancyScatter._trace = this;
 
-    this.isVisible = false;
+    this.scatter = this.initObject(createScatter, scatterOptions0, 3);
+    this.fancyScatter = this.initObject(createFancyScatter, scatterOptions0, 4);
 }
 
 var proto = LineWithMarkers.prototype;
+
+proto.initObject = function(createFn, options, objIndex) {
+    var _this = this;
+    var glplot = _this.scene.glplot;
+    var options0 = Lib.extendFlat({}, options);
+    var obj = null;
+
+    function update() {
+        if(!obj) {
+            obj = createFn(glplot, options);
+            obj._trace = _this;
+            obj._index = objIndex;
+        }
+        obj.update(options);
+    }
+
+    function clear() {
+        if(obj) obj.update(options0);
+    }
+
+    function dispose() {
+        if(obj) obj.dispose();
+    }
+
+    return {
+        options: options,
+        update: update,
+        clear: clear,
+        dispose: dispose
+    };
+};
 
 proto.handlePick = function(pickResult) {
     var index = pickResult.pointId;
@@ -226,13 +251,8 @@ function _convertColor(colors, opacities, count) {
     return result;
 }
 
-/* Order is important here to get the correct laying:
- * - lines
- * - errorX
- * - errorY
- * - markers
- */
 proto.update = function(options) {
+
     if(options.visible !== true) {
         this.isVisible = false;
         this.hasLines = false;
@@ -255,7 +275,11 @@ proto.update = function(options) {
     this.connectgaps = !!options.connectgaps;
 
     if(!this.isVisible) {
-        this.clear();
+        this.line.clear();
+        this.errorX.clear();
+        this.errorY.clear();
+        this.scatter.clear();
+        this.fancyScatter.clear();
     }
     else if(this.isFancy(options)) {
         this.updateFancy(options);
@@ -263,6 +287,18 @@ proto.update = function(options) {
     else {
         this.updateFast(options);
     }
+
+    // sort objects so that order is preserve on updates:
+    // - lines
+    // - errorX
+    // - errorY
+    // - markers
+    this.scene.glplot.objects.sort(function(a, b) {
+        return a._index - b._index;
+    });
+
+    // set trace index so that scene2d can sort object per traces
+    this.index = options.index;
 
     // not quite on-par with 'scatter', but close enough for now
     // does not handle the colorscale case
@@ -291,22 +327,6 @@ function allFastTypesLikely(a) {
 
     return true;
 }
-
-proto.clear = function() {
-    this.lineOptions.positions = new Float64Array(0);
-    this.line.update(this.lineOptions);
-
-    this.errorXOptions.positions = new Float64Array(0);
-    this.errorX.update(this.errorXOptions);
-
-    this.errorYOptions.positions = new Float64Array(0);
-    this.errorY.update(this.errorYOptions);
-
-    this.scatterOptions.positions = new Float64Array(0);
-    this.scatterOptions.glyphs = [];
-    this.scatter.update(this.scatterOptions);
-    this.fancyScatter.update(this.scatterOptions);
-};
 
 proto.updateFast = function(options) {
     var x = this.xData = this.pickXData = options.x;
@@ -363,34 +383,30 @@ proto.updateFast = function(options) {
     var markerSize;
 
     if(this.hasMarkers) {
-        this.scatterOptions.positions = positions;
+        this.scatter.options.positions = positions;
 
         var markerColor = str2RGBArray(options.marker.color),
             borderColor = str2RGBArray(options.marker.line.color),
             opacity = (options.opacity) * (options.marker.opacity);
 
         markerColor[3] *= opacity;
-        this.scatterOptions.color = markerColor;
+        this.scatter.options.color = markerColor;
 
         borderColor[3] *= opacity;
-        this.scatterOptions.borderColor = borderColor;
+        this.scatter.options.borderColor = borderColor;
 
         markerSize = options.marker.size;
-        this.scatterOptions.size = markerSize;
-        this.scatterOptions.borderSize = options.marker.line.width;
+        this.scatter.options.size = markerSize;
+        this.scatter.options.borderSize = options.marker.line.width;
 
-        this.scatter.update(this.scatterOptions);
+        this.scatter.update();
     }
     else {
-        this.scatterOptions.positions = new Float64Array(0);
-        this.scatterOptions.glyphs = [];
-        this.scatter.update(this.scatterOptions);
+        this.scatter.clear();
     }
 
     // turn off fancy scatter plot
-    this.scatterOptions.positions = new Float64Array(0);
-    this.scatterOptions.glyphs = [];
-    this.fancyScatter.update(this.scatterOptions);
+    this.fancyScatter.clear();
 
     // add item for autorange routine
     this.expandAxesFast(bounds, markerSize);
@@ -464,16 +480,16 @@ proto.updateFancy = function(options) {
     var sizes;
 
     if(this.hasMarkers) {
-        this.scatterOptions.positions = positions;
+        this.scatter.options.positions = positions;
 
         // TODO rewrite convert function so that
         // we don't have to loop through the data another time
 
-        this.scatterOptions.sizes = new Array(pId);
-        this.scatterOptions.glyphs = new Array(pId);
-        this.scatterOptions.borderWidths = new Array(pId);
-        this.scatterOptions.colors = new Array(pId * 4);
-        this.scatterOptions.borderColors = new Array(pId * 4);
+        this.scatter.options.sizes = new Array(pId);
+        this.scatter.options.glyphs = new Array(pId);
+        this.scatter.options.borderWidths = new Array(pId);
+        this.scatter.options.colors = new Array(pId * 4);
+        this.scatter.options.borderColors = new Array(pId * 4);
 
         var markerSizeFunc = makeBubbleSizeFn(options),
             markerOpts = options.marker,
@@ -490,28 +506,24 @@ proto.updateFancy = function(options) {
         for(i = 0; i < pId; ++i) {
             index = idToIndex[i];
 
-            this.scatterOptions.sizes[i] = 4.0 * sizes[index];
-            this.scatterOptions.glyphs[i] = glyphs[index];
-            this.scatterOptions.borderWidths[i] = 0.5 * borderWidths[index];
+            this.scatter.options.sizes[i] = 4.0 * sizes[index];
+            this.scatter.options.glyphs[i] = glyphs[index];
+            this.scatter.options.borderWidths[i] = 0.5 * borderWidths[index];
 
             for(j = 0; j < 4; ++j) {
-                this.scatterOptions.colors[4 * i + j] = colors[4 * index + j];
-                this.scatterOptions.borderColors[4 * i + j] = borderColors[4 * index + j];
+                this.scatter.options.colors[4 * i + j] = colors[4 * index + j];
+                this.scatter.options.borderColors[4 * i + j] = borderColors[4 * index + j];
             }
         }
 
-        this.fancyScatter.update(this.scatterOptions);
+        this.fancyScatter.update();
     }
     else {
-        this.scatterOptions.positions = new Float64Array(0);
-        this.scatterOptions.glyphs = [];
-        this.fancyScatter.update(this.scatterOptions);
+        this.fancyScatter.clear();
     }
 
     // turn off fast scatter plot
-    this.scatterOptions.positions = new Float64Array(0);
-    this.scatterOptions.glyphs = [];
-    this.scatter.update(this.scatterOptions);
+    this.scatter.clear();
 
     // add item for autorange routine
     this.expandAxesFancy(x, y, sizes);
@@ -535,61 +547,60 @@ proto.updateLines = function(options, positions) {
             }
         }
 
-        this.lineOptions.positions = linePositions;
+        this.line.options.positions = linePositions;
 
         var lineColor = convertColor(options.line.color, options.opacity, 1),
-            lineWidth = Math.round(0.5 * this.lineOptions.width),
+            lineWidth = Math.round(0.5 * this.line.options.width),
             dashes = (DASHES[options.line.dash] || [1]).slice();
 
         for(i = 0; i < dashes.length; ++i) dashes[i] *= lineWidth;
 
         switch(options.fill) {
             case 'tozeroy':
-                this.lineOptions.fill = [false, true, false, false];
+                this.line.options.fill = [false, true, false, false];
                 break;
             case 'tozerox':
-                this.lineOptions.fill = [true, false, false, false];
+                this.line.options.fill = [true, false, false, false];
                 break;
             default:
-                this.lineOptions.fill = [false, false, false, false];
+                this.line.options.fill = [false, false, false, false];
                 break;
         }
 
         var fillColor = str2RGBArray(options.fillcolor);
 
-        this.lineOptions.color = lineColor;
-        this.lineOptions.width = 2.0 * options.line.width;
-        this.lineOptions.dashes = dashes;
-        this.lineOptions.fillColor = [fillColor, fillColor, fillColor, fillColor];
+        this.line.options.color = lineColor;
+        this.line.options.width = 2.0 * options.line.width;
+        this.line.options.dashes = dashes;
+        this.line.options.fillColor = [fillColor, fillColor, fillColor, fillColor];
+
+        this.line.update();
     }
     else {
-        this.lineOptions.positions = new Float64Array(0);
+        this.line.clear();
     }
-
-    this.line.update(this.lineOptions);
 };
 
 proto.updateError = function(axLetter, options, positions, errors) {
     var errorObj = this['error' + axLetter],
-        errorOptions = options['error_' + axLetter.toLowerCase()],
-        errorObjOptions = this['error' + axLetter + 'Options'];
+        errorOptions = options['error_' + axLetter.toLowerCase()];
 
     if(axLetter.toLowerCase() === 'x' && errorOptions.copy_ystyle) {
         errorOptions = options.error_y;
     }
 
     if(this['hasError' + axLetter]) {
-        errorObjOptions.positions = positions;
-        errorObjOptions.errors = errors;
-        errorObjOptions.capSize = errorOptions.width;
-        errorObjOptions.lineWidth = errorOptions.thickness / 2;  // ballpark rescaling
-        errorObjOptions.color = convertColor(errorOptions.color, 1, 1);
+        errorObj.options.positions = positions;
+        errorObj.options.errors = errors;
+        errorObj.options.capSize = errorOptions.width;
+        errorObj.options.lineWidth = errorOptions.thickness / 2;  // ballpark rescaling
+        errorObj.options.color = convertColor(errorOptions.color, 1, 1);
+
+        errorObj.update();
     }
     else {
-        errorObjOptions.positions = new Float64Array(0);
+        errorObj.clear();
     }
-
-    errorObj.update(errorObjOptions);
 };
 
 proto.expandAxesFast = function(bounds, markerSize) {

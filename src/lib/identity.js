@@ -6,14 +6,9 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var Lib = require('../../lib');
-var Axes = require('../cartesian/axes');
+// Simple helper functions
+// none of these need any external deps
 
-
-module.exports = function setConvert(containerOut) {
-    Axes.setConvert(containerOut);
-    containerOut.setScale = Lib.noop;
-};
+module.exports = function identity(d) { return d; };

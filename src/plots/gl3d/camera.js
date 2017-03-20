@@ -181,9 +181,13 @@ function createCamera(element, options) {
 
     var lastX = 0, lastY = 0;
     mouseChange(element, function(buttons, x, y, mods) {
-        var rotate = camera.keyBindingMode === 'rotate';
-        var pan = camera.keyBindingMode === 'pan';
-        var zoom = camera.keyBindingMode === 'zoom';
+        var keyBindingMode = camera.keyBindingMode;
+
+        if(keyBindingMode === false) return;
+
+        var rotate = keyBindingMode === 'rotate';
+        var pan = keyBindingMode === 'pan';
+        var zoom = keyBindingMode === 'zoom';
 
         var ctrl = !!mods.control;
         var alt = !!mods.alt;
@@ -226,6 +230,8 @@ function createCamera(element, options) {
     });
 
     mouseWheel(element, function(dx, dy) {
+        if(camera.keyBindingMode === false) return;
+
         var flipX = camera.flipX ? 1 : -1;
         var flipY = camera.flipY ? 1 : -1;
         var t = now();
