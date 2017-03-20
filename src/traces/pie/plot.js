@@ -85,9 +85,7 @@ module.exports = function plot(gd, cdpie) {
                     slicePath = sliceTop.selectAll('path.surface').data([pt]),
                     hasHoverData = false;
 
-                function handleMouseOver() {
-                    var evt = d3.event;
-
+                function handleMouseOver(evt) {
                     // in case fullLayout or fullData has changed without a replot
                     var fullLayout2 = gd._fullLayout,
                         trace2 = gd._fullData[trace.index],
@@ -128,16 +126,16 @@ module.exports = function plot(gd, cdpie) {
                         outerContainer: fullLayout2._paper.node()
                     });
 
+                    evt.originalEvent = d3.event;
                     Fx.hover(gd, evt, 'pie');
 
                     hasHoverData = true;
                 }
 
-                function handleMouseOut() {
-                    var evt = d3.event;
-
+                function handleMouseOut(evt) {
+                    evt.originalEvent = d3.event;
                     gd.emit('plotly_unhover', {
-                        event: evt,
+                        event: d3.event,
                         points: [evt]
                     });
 

@@ -305,7 +305,7 @@ fx.hover = function(gd, evt, subplot) {
 function hover(gd, evt, subplot) {
     if(subplot === 'pie') {
         gd.emit('plotly_hover', {
-            event: evt,
+            event: evt.originalEvent,
             points: [evt]
         });
         return;
