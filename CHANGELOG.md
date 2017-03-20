@@ -10,6 +10,39 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.25.0] -- 2017-03-20
+
+### Added
+- Double click handler on legend items to isolate 1 traces / group on graph
+  [#1432]
+
+### Changed
+- Use signed distance fields (SDF) method to render heterogeneous `scattergl`
+  traces improving performance [#1398]
+- Improve first-render performance in `scattergl` traces by only creating
+  visible objects [#1444]
+- Use `color-rgba` instead of `tinycolor2` to convert plotly color definitions to
+  WebGL buffers improving performance for gl3d and gl2d traces [#1443]
+- Bump `uglify-js` minifier to version `2.8.12` [#1450]
+
+### Fixed
+- Fix 3D trace ordering on visibility toggle [#1466]
+- Fix gl2d trace ordering on visibility toggle [#1444]
+- Fix autorange routine for bar traces [#1475]
+- Fix shapes and images referencing a missing subplot [#1481]
+- Ensure array attributes can be restyled in all situations [#1488]
+- Fix XYZ-column-to-2D-z convert routine for columns containing nulls [#1491]
+- Fix range slider display when anchored to log axes [#1472]
+- Make sure all trace types can be deleted from range sliders [#1472]
+- Let the `parcoords` object tree be garbage collected on `restyle` [#1479]
+- Bring back support for histogram colorscales (bug introduced in `1.21.3`)
+  [#1500]
+- Support all axis types for clicktoshow annotations [#1497]
+- Fix 3D margin relayout calls (bug introduced in `1.24.1`) [#1494]
+- Fix `relayout` when trying to update empty axis containers (bug introduced in
+  `1.24.0`) [#1494]
+
+
 ## [1.24.2] -- 2017-03-10
 
 ### Fixed
