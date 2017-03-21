@@ -285,6 +285,9 @@ describe('Test event property of interactions on a pie plot:', function() {
             click(pointPos[0], pointPos[1]);
             expect(futureData.points.length).toEqual(1);
 
+            var trace = futureData.points.trace;
+            expect(typeof trace).toEqual(typeof {}, 'points.trace');
+
             var pt = futureData.points[0];
             expect(Object.keys(pt)).toEqual([
                 'v', 'label', 'color', 'i', 'hidden', 'vTotal', 'text', 't',
@@ -342,6 +345,9 @@ describe('Test event property of interactions on a pie plot:', function() {
         it('should contain the correct fields', function() {
             click(pointPos[0], pointPos[1], clickOpts);
             expect(futureData.points.length).toEqual(1);
+
+            var trace = futureData.points.trace;
+            expect(typeof trace).toEqual(typeof {}, 'points.trace');
 
             var pt = futureData.points[0];
             expect(Object.keys(pt)).toEqual([
