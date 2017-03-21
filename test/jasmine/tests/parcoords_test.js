@@ -28,6 +28,18 @@ describe('parcoords initialization tests', function() {
 
     'use strict';
 
+    describe('parcoords global defaults', function() {
+
+        it('should not coerce trace opacity', function() {
+            var gd = Lib.extendDeep({}, mock1);
+
+            Plots.supplyDefaults(gd);
+
+            expect(gd._fullData[0].opacity).toBeUndefined();
+        });
+
+    });
+
     describe('parcoords defaults', function() {
 
         function _supply(traceIn) {
