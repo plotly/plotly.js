@@ -38,6 +38,14 @@ module.exports = extendFlat({}, {
     atype: heatmapAttrs.xtype,
     btype: heatmapAttrs.ytype,
 
+    mode: {
+        valType: 'flaglist',
+        flags: ['lines', 'fill'],
+        extras: ['none'],
+        role: 'info',
+        description: ['The mode.'].join(' ')
+    },
+
     connectgaps: heatmapAttrs.connectgaps,
 
     autocontour: {

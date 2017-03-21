@@ -81,6 +81,12 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     coerce('showtickprefix');
     coerce('showticksuffix');
 
+    coerce('separatethousands');
+    coerce('tickformat');
+    coerce('exponentformat');
+    coerce('showexponent');
+    coerce('categoryorder');
+
     coerce('tickmode');
     coerce('tickvals');
     coerce('ticktext');
@@ -172,13 +178,16 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
         coerce('minorgridcolor', addOpacity(gridColor, 0.06));
     }
 
+    // Pass on the separator:
+    containerOut._separators = options.separators;
 
     // fill in categories
     containerOut._initialCategories = axType === 'category' ?
         orderedCategories(letter, containerOut.categoryorder, containerOut.categoryarray, options.data) :
         [];
 
-    // Something above overrides this deep in the axis code, but no, we actually want to coerce this.
+    // It needs to be coerced, then something above overrides this deep in the axis code,
+    // but no, we *actually* want to coerce this.
     coerce('tickmode');
 
     // We'll never draw this. We just need a couple category management functions.

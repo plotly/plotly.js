@@ -16,6 +16,7 @@ var attributes = require('./attributes');
 var hasColumns = require('../heatmap/has_columns');
 var handleStyleDefaults = require('../contour/style_defaults');
 var constraintMapping = require('./constraint_mapping');
+//var tinycolor = require('tinycolor2');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -63,6 +64,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             traceOut.contours.start = map.start;
             traceOut.contours.end = map.end;
             traceOut.contours.size = map.size;
+
         } else {
             contourStart = Lib.coerce2(traceIn, traceOut, attributes, 'contours.start');
             contourEnd = Lib.coerce2(traceIn, traceOut, attributes, 'contours.end');

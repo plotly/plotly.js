@@ -62,8 +62,18 @@ module.exports = function style(s) {
 
 function styleLines(d) {
     var trace = d[0].trace,
-        showFill = trace.visible && trace.fill && trace.fill !== 'none',
+        showFill = trace.visible && ((trace.fill && trace.fill !== 'none') || trace.contours),
         showLine = subTypes.hasLines(trace);
+
+    if (trace && trace._module && trace._module.name === 'contourcarpet') {
+        showLine = trace.contours.type === 'constraint';
+        showFill = trace.contours.type === 'constraint';
+        console.log('ducktype fill data');
+        d = [{trace: {
+            fillcolor: trace.colorscale[0][1],
+            line: {color: 'red', width: 2}
+        }}];
+    }
 
     var fill = d3.select(this).select('.legendfill').selectAll('path')
         .data(showFill ? [d] : []);

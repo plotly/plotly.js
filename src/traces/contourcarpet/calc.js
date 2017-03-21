@@ -22,7 +22,7 @@ var interp2d = require('../heatmap/interp2d');
 var findEmpties = require('../heatmap/find_empties');
 var makeBoundArray = require('../heatmap/make_bound_array');
 var supplyDefaults = require('./defaults');
-
+var tinycolor = require('tinycolor2');
 
 // most is the same as heatmap calc, then adjust it
 // though a few things inside heatmap calc still look for
@@ -217,6 +217,14 @@ function heatmappishCalc(gd, trace) {
 
     // auto-z and autocolorscale if applicable
     colorscaleCalc(trace, z, '', 'z');
+
+    if (trace.contours.type === 'constraint') {
+        var c1 = tinycolor(trace.colorscale[0][1]);
+        var c2 = tinycolor(trace.colorscale[1][1]);
+
+        var mix = tinycolor.mix(c1, c2, 50);
+        console.log('mix:', mix);
+    }
 
     return [cd0];
 }

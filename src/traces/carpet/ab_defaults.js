@@ -58,6 +58,7 @@ function mimickAxisDefaults(traceIn, traceOut, fullLayout, dfltColor) {
             calendar: traceOut.calendar,
             dfltColor: dfltColor,
             bgColor: fullLayout.paper_bgcolor,
+            separators: fullLayout.separators,
         };
 
         handleAxisDefaults(axIn, axOut, defaultOptions);
