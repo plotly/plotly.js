@@ -149,7 +149,7 @@ module.exports = function plot(gd, cdpie) {
 
                 function handleClick() {
                     gd._hoverdata = [pt];
-                    gd._hoverdata.trace = cd.trace;
+                    gd._hoverdata.trace = cd0.trace;
                     Fx.click(gd, d3.event);
                 }
 
