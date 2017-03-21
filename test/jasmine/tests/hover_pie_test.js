@@ -23,6 +23,60 @@ function getClientPosition(selector, index) {
 describe('pie hovering', function() {
     var mock = require('@mocks/pie_simple.json');
 
+    describe('with hoverinfo set to none', function() {
+        var mockCopy = Lib.extendDeep({}, mock),
+            gd;
+
+        mockCopy.data[0].hoverinfo = 'none';
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+                .then(done);
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should fire hover event when moving from one slice to another', function(done) {
+            var count = 0,
+                hoverData = [];
+
+            gd.on('plotly_hover', function(data) {
+                count++;
+                hoverData.push(data);
+            });
+
+            mouseEvent('mouseover', 173, 133);
+            setTimeout(function() {
+                mouseEvent('mouseover', 233, 193);
+                expect(count).toEqual(2);
+                expect(hoverData[0]).not.toEqual(hoverData[1]);
+                done();
+            }, 100);
+        });
+
+        it('should fire unhover event when the mouse moves off the graph', function(done) {
+            var count = 0,
+                unhoverData = [];
+
+            gd.on('plotly_unhover', function(data) {
+                count++;
+                unhoverData.push(data);
+            });
+
+            mouseEvent('mouseover', 173, 133);
+            mouseEvent('mouseout', 173, 133);
+            setTimeout(function() {
+                mouseEvent('mouseover', 233, 193);
+                mouseEvent('mouseout', 233, 193);
+                expect(count).toEqual(2);
+                expect(unhoverData[0]).not.toEqual(unhoverData[1]);
+                done();
+            }, 100);
+        });
+    });
+
     describe('event data', function() {
         var mockCopy = Lib.extendDeep({}, mock),
             width = mockCopy.layout.width,
