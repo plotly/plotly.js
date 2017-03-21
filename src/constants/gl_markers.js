@@ -16,7 +16,7 @@ module.exports = {
     'square-open': '□',
     diamond: '◆',
     'diamond-open': '◇',
-    cross: '➕',
+    cross: '+',
     x: '❌',
     'triangle-up': '▲',
     'triangle-up-open': '△',
@@ -52,6 +52,5 @@ module.exports = {
     'circle-x': '⊗',
     'square-cross': '⊞',
     'square-x': '⊠',
-    'cross-thin': '+',
     'asterisk': '✱'
 };
