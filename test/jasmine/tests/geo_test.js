@@ -12,21 +12,13 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customMatchers = require('../assets/custom_matchers');
+var getClientPosition = require('../assets/get_client_position');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 
 var DBLCLICKDELAY = require('@src/constants/interactions').DBLCLICKDELAY;
 var HOVERMINTIME = require('@src/plots/cartesian/constants').HOVERMINTIME;
 
-
-function getClientPosition(selector, index) {
-    index = index || 0;
-    var selection = document.querySelectorAll(selector),
-        clientPos = selection[index].getBoundingClientRect(),
-        x = Math.floor((clientPos.left + clientPos.right) / 2),
-        y = Math.floor((clientPos.top + clientPos.bottom) / 2);
-    return [x, y];
-}
 
 function move(fromX, fromY, toX, toY, delay) {
     return new Promise(function(resolve) {

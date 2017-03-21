@@ -10,16 +10,7 @@ var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 var doubleClick = require('../assets/double_click');
 var customMatchers = require('../assets/custom_matchers');
-
-
-function getClientPosition(selector, index) {
-    index = index || 0;
-    var selection = document.querySelectorAll(selector),
-        clientPos = selection[index].getBoundingClientRect(),
-        x = Math.floor((clientPos.left + clientPos.right) / 2),
-        y = Math.floor((clientPos.top + clientPos.bottom) / 2);
-    return [x, y];
-}
+var getClientPosition = require('../assets/get_client_position');
 
 
 describe('ternary plots', function() {
