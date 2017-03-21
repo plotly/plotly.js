@@ -86,6 +86,8 @@ module.exports = function plot(gd, cdpie) {
                     hasHoverData = false;
 
                 function handleMouseOver(evt) {
+                    evt.originalEvent = d3.event;
+
                     // in case fullLayout or fullData has changed without a replot
                     var fullLayout2 = gd._fullLayout,
                         trace2 = gd._fullData[trace.index],
@@ -97,6 +99,7 @@ module.exports = function plot(gd, cdpie) {
                     // or if hover is turned off
                     if(gd._dragging || fullLayout2.hovermode === false ||
                             hoverinfo === 'none' || hoverinfo === 'skip' || !hoverinfo) {
+                        Fx.hover(gd, evt, 'pie');
                         return;
                     }
 
@@ -126,7 +129,6 @@ module.exports = function plot(gd, cdpie) {
                         outerContainer: fullLayout2._paper.node()
                     });
 
-                    evt.originalEvent = d3.event;
                     Fx.hover(gd, evt, 'pie');
 
                     hasHoverData = true;
