@@ -121,8 +121,14 @@ function model(layout, d, i) {
         dimensions = trace.dimensions,
         width = layout.width;
 
+    var cs = !!trace.line.colorscale && Lib.isArray(trace.line.color);
+    var lineColor = cs ?
+        trace.line.color :
+        Array.apply(0, Array(trace.dimensions.reduce(function(p, n) {return Math.max(p, n.values.length);}, 0))).map(function() {return 0.5;});
+    var lineColorScale = cs ? trace.line.colorscale : [[0, trace.line.color], [1, trace.line.color]];
+
     var lines = Lib.extendDeep({}, line, {
-        color: line.color.map(domainToUnitScale({values: line.color, range: [line.cmin, line.cmax]})),
+        color: lineColor.map(domainToUnitScale({values: lineColor, range: [line.cmin, line.cmax]})),
         blockLineCount: c.blockLineCount,
         canvasOverdrag: c.overdrag * c.canvasPixelRatio
     });
@@ -139,7 +145,7 @@ function model(layout, d, i) {
         colCount: dimensions.filter(visible).length,
         dimensions: dimensions,
         tickDistance: c.tickDistance,
-        unitToColor: unitToColorScale(line.colorscale),
+        unitToColor: unitToColorScale(lineColorScale),
         lines: lines,
         translateX: domain.x[0] * width,
         translateY: layout.height - domain.y[1] * layout.height,
