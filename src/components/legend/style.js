@@ -62,7 +62,7 @@ module.exports = function style(s) {
 
 function styleLines(d) {
     var trace = d[0].trace,
-        showFill = trace.visible && ((trace.fill && trace.fill !== 'none') || trace.contours),
+        showFill = trace.visible && trace.fill && trace.fill !== 'none',
         showLine = subTypes.hasLines(trace);
 
     if(trace && trace._module && trace._module.name === 'contourcarpet') {
