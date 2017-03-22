@@ -90,6 +90,7 @@
   "layout": {
     "width": 600,
     "height": 600,
+    "title": "Cheater plot with 1D input",
     "margin":{
       "t":40,
       "r":30,
