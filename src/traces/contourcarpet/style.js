@@ -46,13 +46,18 @@ module.exports = function style(gd) {
                     line.dash);
         });
 
-        c.selectAll('g.contourbg path')
-            .style('fill', colorMap(start - cs / 2));
+        if(trace.contours.type === 'levels') {
+            c.selectAll('g.contourbg path')
+                .style('fill', colorMap(start - cs / 2));
 
-        c.selectAll('g.contourfill path')
-            .style('fill', function(d, i) {
-                return colorMap(start + (i + 0.5) * cs);
-            });
+            c.selectAll('g.contourfill path')
+                .style('fill', function(d, i) {
+                    return colorMap(start + (i + 0.5) * cs);
+                });
+        } else {
+            c.selectAll('g.contourfill path')
+                .style('fill', trace.fillcolor);
+        }
     });
 
     heatmapStyle(gd);

@@ -79,87 +79,91 @@
     {
       "carpetid":"c1",
       "type":"contourcarpet",
+      "name": "1A",
       "z":[[1, 2.3, 3], [2.3, 3, 3.7], [3, 3.7, 5]],
-      "opacity":0.5,
       "contours":{
         "type":"constraint",
         "operation":"[]",
         "value":[2.5, 3.5]
       },
       "line":{
+        "dash": "dashdot",
+        "width": 2,
         "smoothing":1
-      },
-      "colorscale":[[0, "red"], [1, "red"]]
+      }
     },
     {
       "carpetid":"c1",
       "type":"contourcarpet",
+      "name": "1B",
       "z":[[1, 2.3, 3], [2.3, 3, 3.7], [3, 3.7, 5]],
-      "opacity":0.5,
       "contours":{
         "type":"constraint",
         "operation":"][",
         "value":[2.9, 3.1]
       },
       "line":{
+        "dash": "dash",
+        "width": 2,
         "smoothing":1
-      },
-      "colorscale":[[0, "gray"], [1, "gray"]]
+      }
     },
     {
       "carpetid":"c1",
       "type":"contourcarpet",
+      "name": "1C",
       "z":[[0, 0.5, 1], [-0.5, 0, 0.5], [-1, -0.5, 0]],
-      "opacity":0.5,
       "contours":{
         "type":"constraint",
         "operation":"<",
         "value":0.25
       },
       "line":{
+        "width": 2,
         "smoothing":1
-      },
-      "colorscale":[[0, "yellow"], [1, "yellow"]]
+      }
     },
     {
       "carpetid":"c1",
       "type":"contourcarpet",
+      "name": "1D",
       "z":[[0, 0.5, 1], [-0.5, 0, 0.5], [-1, -0.5, 0]],
-      "opacity":0.5,
       "contours":{
         "type":"constraint",
         "operation":">",
         "value":-0.25
       },
       "line":{
+        "dash": "dot",
+        "width": 2,
         "smoothing":1
-      },
-      "colorscale":[[0, "blue"], [1, "blue"]]
+      }
     },
     {
       "carpetid":"c2",
       "xaxis":"x2",
       "yaxis":"y",
       "type":"contourcarpet",
+      "name": "2A",
       "z":[[1, 2.3, 3], [2.3, 3, 3.7], [3, 3.7, 5]],
-      "opacity":0.5,
       "contours":{
         "type":"constraint",
         "operation":"[]",
         "value":[2.5, 3.5]
       },
       "line":{
-        "smoothing":1
-      },
-      "colorscale":[[0, "red"], [1, "red"]]
+        "dash": "dashdot",
+        "smoothing":1,
+        "width":2
+      }
     },
     {
       "carpetid":"c2",
       "xaxis":"x2",
       "yaxis":"y",
       "type":"contourcarpet",
+      "name": "2B",
       "z":[[1, 2.3, 3], [2.3, 3, 3.7], [3, 3.7, 5]],
-      "opacity":0.5,
       "contours":{
         "type":"constraint",
         "operation":"][",
@@ -169,188 +173,197 @@
         ]
       },
       "line":{
+        "dash": "dash",
+        "width": 2,
         "smoothing":1
-      },
-      "colorscale":[[0, "gray"], [1, "gray"]]
+      }
     },
     {
       "carpetid":"c2",
       "xaxis":"x2",
       "yaxis":"y",
       "type":"contourcarpet",
+      "name": "2C",
       "z":[[0, 0.5, 1], [-0.5, 0, 0.5], [-1, -0.5, 0]],
-      "opacity":0.5,
       "contours":{
         "type":"constraint",
         "operation":"<",
         "value":0.25
       },
       "line":{
-        "smoothing":1
-      },
-      "colorscale":[[0, "yellow"], [1, "yellow"]]
+        "smoothing":1,
+        "width": 2
+      }
     },
     {
       "carpetid":"c2",
       "xaxis":"x2",
       "yaxis":"y",
       "type":"contourcarpet",
+      "name": "2D",
       "z":[[0, 0.5, 1], [-0.5, 0, 0.5], [-1, -0.5, 0]],
-      "opacity":0.5,
       "contours":{
         "type":"constraint",
         "operation":">",
         "value":-0.25
       },
       "line":{
-        "smoothing":1
-      },
-      "colorscale":[[0, "blue"], [1, "blue"]]
+        "dash": "dot",
+        "smoothing":1,
+        "width": 2
+      }
     },
     {
       "carpetid":"c3",
       "xaxis":"x",
       "yaxis":"y2",
       "type":"contourcarpet",
+      "name": "3A",
       "z":[[1, 2.3, 3], [2.3, 3, 3.7], [3, 3.7, 5]],
-      "opacity":0.5,
       "contours":{
         "type":"constraint",
         "operation":"[]",
         "value":[2.5, 3.5]
       },
       "line":{
-        "smoothing":1
-      },
-      "colorscale":[[0, "red"], [1, "red"]]
+        "dash": "dashdot",
+        "smoothing":1,
+        "width":2
+      }
     },
     {
       "carpetid":"c3",
       "xaxis":"x",
       "yaxis":"y2",
       "type":"contourcarpet",
+      "name": "3B",
       "z":[[1, 2.3, 3], [2.3, 3, 3.7], [3, 3.7, 5]],
-      "opacity":0.5,
       "contours":{
         "type":"constraint",
         "operation":"][",
         "value":[2.9, 3.1]
       },
       "line":{
+        "dash": "dash",
+        "width": 2,
         "smoothing":1
-      },
-      "colorscale":[[0, "gray"], [1, "gray"]]
+      }
     },
     {
       "carpetid":"c3",
       "xaxis":"x",
       "yaxis":"y2",
       "type":"contourcarpet",
+      "name": "3C",
       "z":[[0, 0.5, 1], [-0.5, 0, 0.5], [-1, -0.5, 0]],
-      "opacity":0.5,
       "contours":{
         "type":"constraint",
         "operation":"<",
         "value":0.25
       },
       "line":{
-        "smoothing":1
-      },
-      "colorscale":[[0, "yellow"], [1, "yellow"]]
+        "smoothing":1,
+        "width": 2
+      }
     },
     {
       "carpetid":"c3",
       "xaxis":"x",
       "yaxis":"y2",
       "type":"contourcarpet",
+      "name": "3D",
       "z":[[0, 0.5, 1], [-0.5, 0, 0.5], [-1, -0.5, 0]],
-      "opacity":0.5,
       "contours":{
         "type":"constraint",
         "operation":">",
         "value":-0.25
       },
       "line":{
-        "smoothing":1
-      },
-      "colorscale":[[0, "blue"], [1, "blue"]]
+        "dash": "dot",
+        "smoothing":1,
+        "width": 2
+      }
     },
     {
       "carpetid":"c4",
       "xaxis":"x2",
       "yaxis":"y2",
       "type":"contourcarpet",
+      "name": "4A",
       "z":[[1, 2.3, 3], [2.3, 3, 3.7], [3, 3.7, 5]],
-      "opacity":0.5,
       "contours":{
         "type":"constraint",
         "operation":"[]",
         "value":[2.5, 3.5]
       },
       "line":{
-        "smoothing":1
-      },
-      "colorscale":[[0, "red"], [1, "red"]]
+        "dash": "dashdot",
+        "smoothing":1,
+        "width":2
+      }
     },
     {
       "carpetid":"c4",
       "xaxis":"x2",
       "yaxis":"y2",
       "type":"contourcarpet",
+      "name": "4B",
       "z":[[1, 2.3, 3], [2.3, 3, 3.7], [3, 3.7, 5]],
-      "opacity":0.5,
       "contours":{
         "type":"constraint",
         "operation":"][",
         "value":[2.9, 3.1]
       },
       "line":{
+        "dash": "dash",
+        "width": 2,
         "smoothing":1
-      },
-      "colorscale":[[0, "gray"], [1, "gray"]]
+      }
     },
     {
       "carpetid":"c4",
       "xaxis":"x2",
       "yaxis":"y2",
       "type":"contourcarpet",
+      "name": "4C",
       "z":[[0, 0.5, 1], [-0.5, 0, 0.5], [-1, -0.5, 0]],
-      "opacity":0.5,
       "contours":{
         "type":"constraint",
         "operation":"<",
         "value":0.25
       },
       "line":{
-        "smoothing":1
-      },
-      "colorscale":[[0, "yellow"], [1, "yellow"]]
+        "smoothing":1,
+        "width": 2
+      }
     },
     {
       "carpetid":"c4",
       "xaxis":"x2",
       "yaxis":"y2",
       "type":"contourcarpet",
+      "name": "4D",
       "z":[[0, 0.5, 1], [-0.5, 0, 0.5], [-1, -0.5, 0]],
-      "opacity":0.5,
+      "opacity":1.0,
       "contours":{
         "type":"constraint",
         "operation":">",
         "value":-0.25
       },
       "line":{
-        "smoothing":1
-      },
-      "colorscale":[[0, "blue"], [1, "blue"]]
+        "dash": "dot",
+        "smoothing":1,
+        "width": 2
+      }
     }
   ],
   "layout":{
     "width":800,
     "height":600,
     "margin":{
-      "t":0,
-      "r":0,
-      "b":0,
+      "t":30,
+      "r":30,
+      "b":30,
       "l":30
     },
     "dragmode":"pan",

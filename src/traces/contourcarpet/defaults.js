@@ -16,7 +16,8 @@ var attributes = require('./attributes');
 var hasColumns = require('../heatmap/has_columns');
 var handleStyleDefaults = require('../contour/style_defaults');
 var constraintMapping = require('./constraint_mapping');
-//var tinycolor = require('tinycolor2');
+var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
+var plotAttributes = require('../../plots/attributes');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -26,7 +27,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('carpetid');
 
     // If either a or b is not present, then it's not a valid trace *unless* the carpet
-    // axis has the a or b valeus we're looking for. So if these are not found, just defer
+    // axis has the a or b values we're looking for. So if these are not found, just defer
     // that decision until the calc step.
     //
     // NB: the calc step will modify the original data input by assigning whichever of
@@ -65,6 +66,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             traceOut.contours.end = map.end;
             traceOut.contours.size = map.size;
 
+            coerce('fillcolor', defaultColor);
         } else {
             contourStart = Lib.coerce2(traceIn, traceOut, attributes, 'contours.start');
             contourEnd = Lib.coerce2(traceIn, traceOut, attributes, 'contours.end');
@@ -74,7 +76,13 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
                 // things like restyle that can call supplyDefaults without calc
                 // after the initial draw, we can just reuse the previous calculation
             contourSize = coerce('contours.size');
+
+            traceOut.showlegend = false;
         }
+
+        // Override the trace-level showlegend default with a default that takes
+        // into account whether this is a constraint or level contours:
+        Lib.coerce(traceIn, traceOut, plotAttributes, 'showlegend', traceOut.contours.type === 'constraint');
 
         missingEnd = (contourStart === false) || (contourEnd === false);
         autoContour;
@@ -89,10 +97,17 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             coerce('ncontours');
         }
 
-        handleStyleDefaults(traceIn, traceOut, coerce, layout);
+        if(traceOut.contours.type === 'constraint') {
+            handleStyleDefaults(traceIn, traceOut, coerce, layout, defaultColor, 2);
+            handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
+        } else {
+            handleStyleDefaults(traceIn, traceOut, coerce, layout);
+        }
 
         if(traceOut.contours.type === 'constraint' && traceOut.contours.operation === '=') {
             traceOut.contours.coloring = 'none';
         }
+    } else {
+        traceOut._defaultColor = defaultColor;
     }
 };

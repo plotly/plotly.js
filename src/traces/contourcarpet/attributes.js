@@ -48,6 +48,16 @@ module.exports = extendFlat({}, {
 
     connectgaps: heatmapAttrs.connectgaps,
 
+    fillcolor: {
+        valType: 'color',
+        role: 'style',
+        description: [
+            'Sets the fill color.',
+            'Defaults to a half-transparent variant of the line color,',
+            'marker color, or marker line color, whichever is available.'
+        ].join(' ')
+    },
+
     autocontour: {
         valType: 'boolean',
         dflt: true,
