@@ -17,9 +17,9 @@ var maxDimensionCount = require('./constants').maxDimensionCount;
 function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
 
     coerce('line.color', defaultColor);
-    coerce('line.colorscale');
 
-    if(hasColorscale(traceIn, 'line')) {
+    if(hasColorscale(traceIn, 'line') && Lib.isArray(traceIn.line.color)) {
+        coerce('line.colorscale');
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'});
     }
     else {

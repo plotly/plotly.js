@@ -115,14 +115,17 @@ function unwrap(d) {
 }
 
 function model(layout, d, i) {
-    var trace = unwrap(d).trace,
+    var cd0 = unwrap(d),
+        trace = cd0.trace,
+        lineColor = cd0.lineColor,
+        cscale = cd0.cscale,
         line = trace.line,
         domain = trace.domain,
         dimensions = trace.dimensions,
         width = layout.width;
 
     var lines = Lib.extendDeep({}, line, {
-        color: line.color.map(domainToUnitScale({values: line.color, range: [line.cmin, line.cmax]})),
+        color: lineColor.map(domainToUnitScale({values: lineColor, range: [line.cmin, line.cmax]})),
         blockLineCount: c.blockLineCount,
         canvasOverdrag: c.overdrag * c.canvasPixelRatio
     });
@@ -139,7 +142,7 @@ function model(layout, d, i) {
         colCount: dimensions.filter(visible).length,
         dimensions: dimensions,
         tickDistance: c.tickDistance,
-        unitToColor: unitToColorScale(line.colorscale),
+        unitToColor: unitToColorScale(cscale),
         lines: lines,
         translateX: domain.x[0] * width,
         translateY: layout.height - domain.y[1] * layout.height,
