@@ -27,17 +27,18 @@ var supplyDefaults = require('./defaults');
 // though a few things inside heatmap calc still look for
 // contour maps, because the makeBoundArray calls are too entangled
 module.exports = function calc(gd, trace) {
-    var i, carpet;
+    var i;
 
-    for(i = 0; i < gd._fullData.length; i++) {
-        if(gd._fullData[i].carpetid === trace.carpetid && gd._fullData[i].type === 'carpet') {
-            carpet = gd._fullData[i];
-            break;
-        }
-    }
+    //for(i = 0; i < gd._fullData.length; i++) {
+        //if(gd._fullData[i].carpetid === trace.carpetid && gd._fullData[i].type === 'carpet') {
+            //carpet = gd._fullData[i];
+            //break;
+        //}
+    //}
 
-    if(!carpet) return;
-    trace._carpet = carpet;
+    //if(!carpet) return;
+    //trace._carpet = carpet;
+    var carpet = trace._carpet;
 
     if(!trace.a || !trace.b) {
         // Look up the original incoming carpet data:

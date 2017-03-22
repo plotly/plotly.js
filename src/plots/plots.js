@@ -646,6 +646,9 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
         cnt++;
     }
 
+    var carpetIndex = {};
+    var carpetDependents = [];
+
     for(var i = 0; i < dataIn.length; i++) {
         var trace = dataIn[i],
             fullTrace = plots.supplyTraceDefaults(trace, cnt, fullLayout, i);
@@ -685,6 +688,23 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
 
             pushModule(fullTrace);
         }
+
+        if (Registry.traceIs(fullTrace, 'carpetAxis')) {
+            carpetIndex[fullTrace.carpetid] = fullTrace;
+        }
+
+        if (Registry.traceIs(fullTrace, 'carpetDependent')) {
+            carpetDependents.push(fullTrace._expandedIndex);
+        }
+    }
+
+
+    for (var i = 0; i < carpetDependents.length; i++) {
+        var fullTrace = dataOut[carpetDependents[i]];
+        var carpetAxis = carpetIndex[fullTrace.carpetid];
+        fullTrace._carpet = carpetAxis;
+        fullTrace.xaxis = carpetAxis.xaxis;
+        fullTrace.yaxis = carpetAxis.yaxis;
     }
 };
 

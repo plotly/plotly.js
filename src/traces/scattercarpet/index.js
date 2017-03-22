@@ -22,7 +22,7 @@ ScatterCarpet.hoverPoints = require('./hover');
 ScatterCarpet.moduleType = 'trace';
 ScatterCarpet.name = 'scattercarpet';
 ScatterCarpet.basePlotModule = require('../../plots/cartesian');
-ScatterCarpet.categories = ['carpet', 'symbols', 'markerColorscale', 'showLegend'];
+ScatterCarpet.categories = ['carpet', 'symbols', 'markerColorscale', 'showLegend', 'carpetDependent'];
 ScatterCarpet.meta = {
     hrName: 'scatter_carpet',
     description: [].join(' ')

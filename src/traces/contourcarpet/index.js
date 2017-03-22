@@ -22,7 +22,7 @@ ContourCarpet.style = require('./style');
 ContourCarpet.moduleType = 'trace';
 ContourCarpet.name = 'contourcarpet';
 ContourCarpet.basePlotModule = require('../../plots/cartesian');
-ContourCarpet.categories = ['cartesian', 'carpet', 'contour', 'symbols', 'markerColorscale', 'showLegend', 'hasLines'];
+ContourCarpet.categories = ['cartesian', 'carpet', 'contour', 'symbols', 'markerColorscale', 'showLegend', 'hasLines', 'carpetDependent'];
 ContourCarpet.meta = {
     hrName: 'contour_carpet',
     description: [].join(' ')

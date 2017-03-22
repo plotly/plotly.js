@@ -1,0 +1,118 @@
+{
+  "data": [
+    {
+      "type": "contourcarpet",
+      "name": "y < 2.5",
+      "carpetid": "c2",
+      "z": [
+        [0, 0.8, 2],
+        [1.2, 2, 3.2],
+        [2, 2.8, 4]
+      ],
+      "contours": {
+        "type": "constraint",
+        "operation": "<",
+        "value": 2.5
+      }
+    },
+    {
+      "type": "contourcarpet",
+      "name": "y < 2.5",
+      "carpetid": "c1",
+      "z": [
+        [0, 0.8, 2],
+        [1.2, 2, 3.2],
+        [2, 2.8, 4]
+      ],
+      "contours": {
+        "type": "constraint",
+        "operation": "<",
+        "value": 2.5
+      }
+    },
+    {
+      "type": "contourcarpet",
+      "name": "y > 1.5",
+      "carpetid": "c2",
+      "z": [
+        [0, 0.8, 2],
+        [1.2, 2, 3.2],
+        [2, 2.8, 4]
+      ],
+      "contours": {
+        "type": "constraint",
+        "operation": ">",
+        "value": 1.5
+      }
+    },
+    {
+      "type": "contourcarpet",
+      "name": "y > 1.5",
+      "carpetid": "c1",
+      "z": [
+        [0, 0.8, 2],
+        [1.2, 2, 3.2],
+        [2, 2.8, 4]
+      ],
+      "contours": {
+        "type": "constraint",
+        "operation": ">",
+        "value": 1.5
+      }
+    },
+    {
+      "type": "carpet",
+      "carpetid": "c1",
+      "a": [1, 2, 3],
+      "b": [1, 2, 3],
+      "y": [
+        [0, 0.8, 2],
+        [1.2, 2, 3.2],
+        [2, 2.8, 4]
+      ],
+      "aaxis": {
+        "smoothing": 0
+      },
+      "baxis": {
+        "smoothing": 0
+      },
+      "xaxis": "x",
+      "cheaterslope": 0.5
+    },
+    {
+      "type": "carpet",
+      "carpetid": "c2",
+      "a": [1, 2, 3],
+      "b": [1, 2, 3],
+      "y": [
+        [0, 0.8, 2],
+        [1.2, 2, 3.2],
+        [2, 2.8, 4]
+      ],
+      "aaxis": {
+        "smoothing": 1
+      },
+      "baxis": {
+        "smoothing": 1
+      },
+      "xaxis": "x2",
+      "cheaterslope": 0.5
+    }
+  ],
+  "layout": {
+    "width": 800,
+    "height": 500,
+    "margin": {
+      "t": 40,
+      "r": 30,
+      "b": 30,
+      "l": 30
+    },
+    "xaxis": {
+      "domain": [0, 0.49]
+    },
+    "xaxis2": {
+      "domain": [0.51, 1.0]
+    }
+  }
+}
