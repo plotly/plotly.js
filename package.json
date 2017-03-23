@@ -44,6 +44,7 @@
     "start-image_viewer": "node devtools/image_viewer/server.js",
     "start": "npm run start-test_dashboard",
     "baseline": "node tasks/baseline.js",
+    "bench": "karma start bench/karma.conf.js",
     "preversion": "npm-link-check && npm dedupe && npm ls",
     "version": "npm run build && git add -A dist src build",
     "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\""
@@ -115,6 +116,9 @@
     "image-size": "^0.5.1",
     "jasmine-core": "^2.4.1",
     "karma": "^1.5.0",
+    "karma-benchmark": "^0.7.1",
+    "karma-benchmark-json-reporter": "^0.1.0",
+    "karma-benchmarkjs-reporter": "^1.0.0",
     "karma-browserify": "^5.1.1",
     "karma-chrome-launcher": "^2.0.0",
     "karma-coverage": "^1.0.0",
