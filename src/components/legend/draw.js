@@ -540,7 +540,13 @@ function handleClick(g, gd, numClicks) {
             if(sameAsLast) {
                 traceVisibility = true;
             }
-            Plotly.restyle(gd, 'visible', traceVisibility, allTraces);
+            var visibilityUpdates = [];
+            for(i = 0; i < fullData.length; i++) {
+                if(!Registry.traceIs(fullData[i], 'notLegendIsolatable')) {
+                    visibilityUpdates.push(allTraces[i]);
+                }
+            }
+            Plotly.restyle(gd, 'visible', traceVisibility, visibilityUpdates);
         }
     }
 }

@@ -22,7 +22,7 @@ Carpet.defaultPriority = 1;
 Carpet.moduleType = 'trace';
 Carpet.name = 'carpet';
 Carpet.basePlotModule = require('../../plots/cartesian');
-Carpet.categories = ['cartesian', 'carpet', 'carpetAxis'];
+Carpet.categories = ['cartesian', 'carpet', 'carpetAxis', 'notLegendIsolatable'];
 Carpet.meta = {
     description: [
     ].join(' ')
