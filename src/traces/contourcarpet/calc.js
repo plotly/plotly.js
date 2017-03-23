@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -22,23 +21,14 @@ var interp2d = require('../heatmap/interp2d');
 var findEmpties = require('../heatmap/find_empties');
 var makeBoundArray = require('../heatmap/make_bound_array');
 var supplyDefaults = require('./defaults');
+var lookupCarpet = require('../carpet/lookup_carpetid');
 
 // most is the same as heatmap calc, then adjust it
 // though a few things inside heatmap calc still look for
 // contour maps, because the makeBoundArray calls are too entangled
 module.exports = function calc(gd, trace) {
-    var i;
-
-    //for(i = 0; i < gd._fullData.length; i++) {
-        //if(gd._fullData[i].carpetid === trace.carpetid && gd._fullData[i].type === 'carpet') {
-            //carpet = gd._fullData[i];
-            //break;
-        //}
-    //}
-
-    //if(!carpet) return;
-    //trace._carpet = carpet;
-    var carpet = trace._carpet;
+    var carpet = trace.carpet = lookupCarpet(gd, trace);
+    if(!carpet) return;
 
     if(!trace.a || !trace.b) {
         // Look up the original incoming carpet data:
@@ -135,7 +125,7 @@ function autoContours(start, end, ncontours) {
 function heatmappishCalc(gd, trace) {
     // prepare the raw data
     // run makeCalcdata on x and y even for heatmaps, in case of category mappings
-    var carpet = trace._carpet;
+    var carpet = trace.carpet;
     var aax = carpet.aaxis,
         bax = carpet.baxis,
         isContour = Registry.traceIs(trace, 'contour'),

@@ -24,9 +24,10 @@ module.exports = function calc(gd, trace) {
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
     var aax = trace.aaxis;
     var bax = trace.baxis;
-    var a = trace.a;
-    var b = trace.b;
+    var a = trace._a = trace.a;
+    var b = trace._b = trace.b;
 
+    var t = {};
     var x;
     var y = trace.y;
 
@@ -38,8 +39,8 @@ module.exports = function calc(gd, trace) {
         x = trace.x;
     }
 
-    trace.x = x = clean2dArray(x);
-    trace.y = y = clean2dArray(y);
+    trace._x = trace.x = x = clean2dArray(x);
+    trace._y = trace.y = y = clean2dArray(y);
 
     // Fill in any undefined values with elliptic smoothing. This doesn't take
     // into account the spacing of the values. That is, the derivatives should
@@ -49,11 +50,11 @@ module.exports = function calc(gd, trace) {
     smoothFill2dArray(y, a, b);
 
     // Create conversions from one coordinate system to another:
-    setConvert(trace, xa, ya);
+    setConvert(trace, t, xa, ya);
 
     // Convert cartesian-space x/y coordinates to screen space pixel coordinates:
-    trace.xp = map2dArray(trace.xp, x, xa.c2p);
-    trace.yp = map2dArray(trace.yp, y, ya.c2p);
+    t.xp = trace.xp = map2dArray(trace.xp, x, xa.c2p);
+    t.yp = trace.yp = map2dArray(trace.yp, y, ya.c2p);
 
     // This is a rather expensive scan. Nothing guarantees monotonicity,
     // so we need to scan through all data to get proper ranges:
@@ -78,8 +79,8 @@ module.exports = function calc(gd, trace) {
 
     // Enumerate the gridlines, both major and minor, and store them on the trace
     // object:
-    calcGridlines(trace, 'a', 'b');
-    calcGridlines(trace, 'b', 'a');
+    calcGridlines(trace, t, 'a', 'b');
+    calcGridlines(trace, t, 'b', 'a');
 
     // Calculate the text labels for each major gridline and store them on the
     // trace object:
@@ -88,12 +89,12 @@ module.exports = function calc(gd, trace) {
 
     // Tabulate points for the four segments that bound the axes so that we can
     // map to pixel coordinates in the plot function and create a clip rect:
-    trace._clipsegments = calcClipPath(trace._xctrl, trace._yctrl, aax, bax);
+    t.clipsegments = calcClipPath(t.xctrl, t.yctrl, aax, bax);
 
-    return [{
-        x: x,
-        y: y,
-        a: a,
-        b: b
-    }];
+    t.x = x;
+    t.y = y;
+    t.a = a;
+    t.b = b;
+
+    return [t];
 };

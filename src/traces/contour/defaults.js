@@ -18,6 +18,7 @@ var attributes = require('./attributes');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+    console.log('carpet defaults', traceOut.index);
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }

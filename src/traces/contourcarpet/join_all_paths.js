@@ -14,7 +14,7 @@ var Lib = require('../../lib');
 var map1dArray = require('../carpet/map_1d_array');
 var makepath = require('../carpet/makepath');
 
-module.exports = function joinAllPaths(trace, pi, perimeter, ab2p, carpet, xa, ya) {
+module.exports = function joinAllPaths(trace, pi, perimeter, ab2p, carpet, carpetcd, xa, ya) {
     var i;
     var fullpath = '';
 
@@ -34,8 +34,8 @@ module.exports = function joinAllPaths(trace, pi, perimeter, ab2p, carpet, xa, y
         if(needsOutline) {
             var seg, xp, yp;
             var segs = [];
-            for(i = 0; i < carpet._clipsegments.length; i++) {
-                seg = carpet._clipsegments[i];
+            for(i = 0; i < carpetcd.clipsegments.length; i++) {
+                seg = carpetcd.clipsegments[i];
                 xp = map1dArray([], seg.x, xa.c2p);
                 yp = map1dArray([], seg.y, ya.c2p);
                 segs.push(makepath(xp, yp, seg.bicubic));
@@ -62,10 +62,10 @@ module.exports = function joinAllPaths(trace, pi, perimeter, ab2p, carpet, xa, y
 
         if((istop(pt0) && !isright(pt0)) || (isbottom(pt0) && !isleft(pt0))) {
             axis = carpet.aaxis;
-            segments = axisAlignedLine(carpet, [pt0[0], pt1[0]], 0.5 * (pt0[1] + pt1[1]));
+            segments = axisAlignedLine(carpet, carpetcd, [pt0[0], pt1[0]], 0.5 * (pt0[1] + pt1[1]));
         } else {
             axis = carpet.baxis;
-            segments = axisAlignedLine(carpet, 0.5 * (pt0[0] + pt1[0]), [pt0[1], pt1[1]]);
+            segments = axisAlignedLine(carpet, carpetcd, 0.5 * (pt0[0] + pt1[0]), [pt0[1], pt1[1]]);
         }
 
         for(i = 1; i < segments.length; i++) {

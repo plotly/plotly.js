@@ -24,7 +24,7 @@ var createJDerivativeEvaluator = require('./create_j_derivative_evaluator');
  *   c: cartesian x-y coordinates
  *   p: screen-space pixel coordinates
  */
-module.exports = function setConvert(trace) {
+module.exports = function setConvert(trace, output) {
     var a = trace.a;
     var b = trace.b;
     var na = trace.a.length;
@@ -54,11 +54,11 @@ module.exports = function setConvert(trace) {
     bmin -= btol;
     bmax += btol;
 
-    trace.isVisible = function(a, b) {
+    output.isVisible = function(a, b) {
         return a > amin && a < amax && b > bmin && b < bmax;
     };
 
-    trace.isOccluded = function(a, b) {
+    output.isOccluded = function(a, b) {
         return a < amin || a > amax || b < bmin || b > bmax;
     };
 
@@ -70,37 +70,37 @@ module.exports = function setConvert(trace) {
     // an expanded basis of control points. Note in particular that it overwrites the existing
     // basis without creating a new array since that would potentially thrash the garbage
     // collector.
-    var result = computeControlPoints(trace._xctrl, trace._yctrl, x, y, aax.smoothing, bax.smoothing);
-    trace._xctrl = result[0];
-    trace._yctrl = result[1];
+    var result = computeControlPoints(output.xctrl, output.yctrl, x, y, aax.smoothing, bax.smoothing);
+    output.xctrl = result[0];
+    output.yctrl = result[1];
 
     // This step is the second step in the process, but it's somewhat simpler. It just unrolls
     // some logic since it would be unnecessarily expensive to compute both interpolations
     // nearly identically but separately and to include a bunch of linear vs. bicubic logic in
     // every single call.
-    trace._evalxy = createSplineEvaluator([trace._xctrl, trace._yctrl], na, nb, aax.smoothing, bax.smoothing);
+    output.evalxy = createSplineEvaluator([output.xctrl, output.yctrl], na, nb, aax.smoothing, bax.smoothing);
 
-    trace.dxydi = createIDerivativeEvaluator([trace._xctrl, trace._yctrl], aax.smoothing, bax.smoothing);
-    trace.dxydj = createJDerivativeEvaluator([trace._xctrl, trace._yctrl], aax.smoothing, bax.smoothing);
+    output.dxydi = createIDerivativeEvaluator([output.xctrl, output.yctrl], aax.smoothing, bax.smoothing);
+    output.dxydj = createJDerivativeEvaluator([output.xctrl, output.yctrl], aax.smoothing, bax.smoothing);
 
     /*
      * Convert from i/j data grid coordinates to a/b values. Note in particular that this
      * is *linear* interpolation, even if the data is interpolated bicubically.
      */
-    trace.i2a = function(i) {
+    output.i2a = function(i) {
         var i0 = Math.max(0, Math.floor(i[0]), na - 2);
         var ti = i[0] - i0;
         return (1 - ti) * a[i0] + ti * a[i0 + 1];
     };
 
-    trace.j2b = function(j) {
+    output.j2b = function(j) {
         var j0 = Math.max(0, Math.floor(j[1]), na - 2);
         var tj = j[1] - j0;
         return (1 - tj) * b[j0] + tj * b[j0 + 1];
     };
 
-    trace.ij2ab = function(ij) {
-        return [trace.i2a(ij[0]), trace.j2b(ij[1])];
+    output.ij2ab = function(ij) {
+        return [output.i2a(ij[0]), output.j2b(ij[1])];
     };
 
     /*
@@ -108,40 +108,40 @@ module.exports = function setConvert(trace) {
      * through the a/b data arrays and assumes they are monotonic, which is presumed to have
      * been enforced already.
      */
-    trace.a2i = function(aval) {
+    output.a2i = function(aval) {
         var i0 = Math.max(0, Math.min(search(aval, a), na - 2));
         var a0 = a[i0];
         var a1 = a[i0 + 1];
         return Math.max(0, Math.min(na - 1, i0 + (aval - a0) / (a1 - a0)));
     };
 
-    trace.b2j = function(bval) {
+    output.b2j = function(bval) {
         var j0 = Math.max(0, Math.min(search(bval, b), nb - 2));
         var b0 = b[j0];
         var b1 = b[j0 + 1];
         return Math.max(0, Math.min(nb - 1, j0 + (bval - b0) / (b1 - b0)));
     };
 
-    trace.ab2ij = function(ab) {
-        return [trace.a2i(ab[0]), trace.b2j(ab[1])];
+    output.ab2ij = function(ab) {
+        return [output.a2i(ab[0]), output.b2j(ab[1])];
     };
 
     /*
      * Convert from i/j coordinates to x/y caretesian coordinates. This means either bilinear
      * or bicubic spline evaluation, but the hard part is already done at this point.
      */
-    trace.i2c = function(i, j) {
-        return trace._evalxy([], i, j);
+    output.i2c = function(i, j) {
+        return output.evalxy([], i, j);
     };
 
-    trace.ab2xy = function(aval, bval, extrapolate) {
+    output.ab2xy = function(aval, bval, extrapolate) {
         if(!extrapolate && (aval < a[0] || aval > a[na - 1] | bval < b[0] || bval > b[nb - 1])) {
             return [false, false];
         }
-        var i = trace.a2i(aval);
-        var j = trace.b2j(bval);
+        var i = output.a2i(aval);
+        var j = output.b2j(bval);
 
-        var pt = trace._evalxy([], i, j);
+        var pt = output.evalxy([], i, j);
 
         if(extrapolate) {
             // This section uses the boundary derivatives to extrapolate linearly outside
@@ -180,13 +180,13 @@ module.exports = function setConvert(trace) {
             }
 
             if(iex) {
-                trace.dxydi(der, i0, j0, ti, tj);
+                output.dxydi(der, i0, j0, ti, tj);
                 pt[0] += der[0] * iex;
                 pt[1] += der[1] * iex;
             }
 
             if(jex) {
-                trace.dxydj(der, i0, j0, ti, tj);
+                output.dxydj(der, i0, j0, ti, tj);
                 pt[0] += der[0] * jex;
                 pt[1] += der[1] * jex;
             }
@@ -196,15 +196,15 @@ module.exports = function setConvert(trace) {
     };
 
 
-    trace.c2p = function(xy, xa, ya) {
+    output.c2p = function(xy, xa, ya) {
         return [xa.c2p(xy[0]), ya.c2p(xy[1])];
     };
 
-    trace.p2x = function(p, xa, ya) {
+    output.p2x = function(p, xa, ya) {
         return [xa.p2c(p[0]), ya.p2c(p[1])];
     };
 
-    trace.dadi = function(i /* , u*/) {
+    output.dadi = function(i /* , u*/) {
         // Right now only a piecewise linear a or b basis is permitted since smoother interpolation
         // would cause monotonicity problems. As a retult, u is entirely disregarded in this
         // computation, though we'll specify it as a parameter for the sake of completeness and
@@ -220,7 +220,7 @@ module.exports = function setConvert(trace) {
         return a[i0 + 1] - a[i0];
     };
 
-    trace.dbdj = function(j /* , v*/) {
+    output.dbdj = function(j /* , v*/) {
         // See above caveats for dadi which also apply here
         var j0 = Math.max(0, Math.min(b.length - 2, j));
 
@@ -233,16 +233,16 @@ module.exports = function setConvert(trace) {
     //
     // NB: separate grid cell + fractional grid cell coordinate format is due to the discontinuous
     // derivative, as described better in create_i_derivative_evaluator.js
-    trace.dxyda = function(i0, j0, u, v) {
-        var dxydi = trace.dxydi(null, i0, j0, u, v);
-        var dadi = trace.dadi(i0, u);
+    output.dxyda = function(i0, j0, u, v) {
+        var dxydi = output.dxydi(null, i0, j0, u, v);
+        var dadi = output.dadi(i0, u);
 
         return [dxydi[0] / dadi, dxydi[1] / dadi];
     };
 
-    trace.dxydb = function(i0, j0, u, v) {
-        var dxydj = trace.dxydj(null, i0, j0, u, v);
-        var dbdj = trace.dbdj(j0, v);
+    output.dxydb = function(i0, j0, u, v) {
+        var dxydj = output.dxydj(null, i0, j0, u, v);
+        var dbdj = output.dbdj(j0, v);
 
         return [dxydj[0] / dbdj, dxydj[1] / dbdj];
     };
@@ -250,10 +250,10 @@ module.exports = function setConvert(trace) {
     // Sometimes we don't care about precision and all we really want is decent rough
     // directions (as is the case with labels). In that case, we can do a very rough finite
     // difference and spare having to worry about precise grid coordinates:
-    trace.dxyda_rough = function(a, b, reldiff) {
+    output.dxyda_rough = function(a, b, reldiff) {
         var h = arange * (reldiff || 0.1);
-        var plus = trace.ab2xy(a + h, b, true);
-        var minus = trace.ab2xy(a - h, b, true);
+        var plus = output.ab2xy(a + h, b, true);
+        var minus = output.ab2xy(a - h, b, true);
 
         return [
             (plus[0] - minus[0]) * 0.5 / h,
@@ -261,10 +261,10 @@ module.exports = function setConvert(trace) {
         ];
     };
 
-    trace.dxydb_rough = function(a, b, reldiff) {
+    output.dxydb_rough = function(a, b, reldiff) {
         var h = brange * (reldiff || 0.1);
-        var plus = trace.ab2xy(a, b + h, true);
-        var minus = trace.ab2xy(a, b - h, true);
+        var plus = output.ab2xy(a, b + h, true);
+        var minus = output.ab2xy(a, b - h, true);
 
         return [
             (plus[0] - minus[0]) * 0.5 / h,
@@ -272,11 +272,11 @@ module.exports = function setConvert(trace) {
         ];
     };
 
-    trace.dpdx = function(xa) {
+    output.dpdx = function(xa) {
         return xa._m;
     };
 
-    trace.dpdy = function(ya) {
+    output.dpdy = function(ya) {
         return ya._m;
     };
 };

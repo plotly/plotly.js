@@ -66,7 +66,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var j0 = Math.floor(ij[1]);
     var tj = ij[1] - j0;
 
-    var xy = carpet._evalxy([], i0, j0, ti, tj);
+    var xy = carpet.evalxy([], i0, j0, ti, tj);
     text.push('y: ' + xy[1].toFixed(3));
 
     newPointData.extraText = text.join('<br>');

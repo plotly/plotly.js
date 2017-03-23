@@ -19,6 +19,7 @@ var convertToConstraints = require('./convert_to_constraints');
 var joinAllPaths = require('./join_all_paths');
 var emptyPathinfo = require('./empty_pathinfo');
 var mapPathinfo = require('./map_pathinfo');
+var lookupCarpet = require('../carpet/lookup_carpetid');
 
 function makeg(el, type, klass) {
     var join = el.selectAll(type + '.' + klass).data([0]);
@@ -34,7 +35,10 @@ module.exports = function plot(gd, plotinfo, cdcontours) {
 
 function plotOne(gd, plotinfo, cd) {
     var trace = cd[0].trace;
-    var carpet = trace._carpet;
+
+    var carpet = trace.carpet = lookupCarpet(gd, trace);
+    var carpetcd = gd.calcdata[carpet.index][0];
+
     var a = cd[0].a;
     var b = cd[0].b;
     var contours = trace.contours;
@@ -48,7 +52,7 @@ function plotOne(gd, plotinfo, cd) {
 
     // Map [a, b] (data) --> [i, j] (pixels)
     function ab2p(ab) {
-        var pt = carpet.ab2xy(ab[0], ab[1], true);
+        var pt = carpetcd.ab2xy(ab[0], ab[1], true);
         return [xa.c2p(pt[0]), ya.c2p(pt[1])];
     }
 
@@ -89,12 +93,12 @@ function plotOne(gd, plotinfo, cd) {
 
     // Draw the baseline background fill that fills in the space behind any other
     // contour levels:
-    makeBackground(plotGroup, carpet._clipsegments, xa, ya, isConstraint, contours.coloring);
+    makeBackground(plotGroup, carpetcd.clipsegments, xa, ya, isConstraint, contours.coloring);
 
     // Draw the specific contour fills. As a simplification, they're assumed to be
     // fully opaque so that it's easy to draw them simply overlapping. The alternative
     // would be to flip adjacent paths and draw closed paths for each level instead.
-    makeFills(trace, plotGroup, xa, ya, pathinfo, perimeter, ab2p, carpet, contours.coloring);
+    makeFills(trace, plotGroup, xa, ya, pathinfo, perimeter, ab2p, carpet, carpetcd, contours.coloring);
 
     // Draw contour lines:
     makeLines(plotGroup, pathinfo, contours);
@@ -179,7 +183,7 @@ function makeBackground(plotgroup, clipsegments, xaxis, yaxis, isConstraint, col
         .style('stroke', 'none');
 }
 
-function makeFills(trace, plotgroup, xa, ya, pathinfo, perimeter, ab2p, carpet, coloring) {
+function makeFills(trace, plotgroup, xa, ya, pathinfo, perimeter, ab2p, carpet, carpetcd, coloring) {
     var fillgroup = plotgroup.selectAll('g.contourfill')
         .data([0]);
     fillgroup.enter().append('g')
@@ -195,7 +199,7 @@ function makeFills(trace, plotgroup, xa, ya, pathinfo, perimeter, ab2p, carpet, 
         // if the whole perimeter is above this level, start with a path
         // enclosing the whole thing. With all that, the parity should mean
         // that we always fill everything above the contour, nothing below
-        var fullpath = joinAllPaths(trace, pi, perimeter, ab2p, carpet, xa, ya);
+        var fullpath = joinAllPaths(trace, pi, perimeter, ab2p, carpet, carpetcd, xa, ya);
 
         if(!fullpath) {
             d3.select(this).remove();

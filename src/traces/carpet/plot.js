@@ -29,6 +29,7 @@ function makeg(el, type, klass) {
 }
 
 function plotOne(gd, plotinfo, cd) {
+    var t = cd[0];
     var trace = cd[0].trace,
         xa = plotinfo.xaxis,
         ya = plotinfo.yaxis,
@@ -37,11 +38,6 @@ function plotOne(gd, plotinfo, cd) {
         fullLayout = gd._fullLayout;
         // uid = trace.uid,
         // id = 'carpet' + uid;
-
-    // var x = cd[0].x;
-    // var y = cd[0].y;
-    // var a = cd[0].a;
-    // var b = cd[0].b;
 
     // XXX: Layer choice??
     var gridLayer = plotinfo.plot.selectAll('.barlayer');
@@ -62,17 +58,17 @@ function plotOne(gd, plotinfo, cd) {
     drawGridLines(xa, ya, boundaryLayer, aax, 'a-boundary', aax._boundarylines);
     drawGridLines(xa, ya, boundaryLayer, bax, 'b-boundary', bax._boundarylines);
 
-    var maxAExtent = drawAxisLabels(gd._tester, xa, ya, trace, labelLayer, aax._labels, 'a-label');
-    var maxBExtent = drawAxisLabels(gd._tester, xa, ya, trace, labelLayer, bax._labels, 'b-label');
+    var maxAExtent = drawAxisLabels(gd._tester, xa, ya, trace, t, labelLayer, aax._labels, 'a-label');
+    var maxBExtent = drawAxisLabels(gd._tester, xa, ya, trace, t, labelLayer, bax._labels, 'b-label');
 
-    drawAxisTitles(labelLayer, trace, xa, ya, maxAExtent, maxBExtent);
+    drawAxisTitles(labelLayer, trace, t, xa, ya, maxAExtent, maxBExtent);
 
     // Swap for debugging in order to draw directly:
     // drawClipPath(trace, gridLayer, xa, ya);
-    drawClipPath(trace, clipLayer, xa, ya);
+    drawClipPath(trace, t, clipLayer, xa, ya);
 }
 
-function drawClipPath(trace, layer, xaxis, yaxis) {
+function drawClipPath(trace, t, layer, xaxis, yaxis) {
     var seg, xp, yp, i;
     // var clip = makeg(layer, 'g', 'carpetclip');
     trace.clipPathId = 'clip' + trace.uid + 'carpet';
@@ -85,7 +81,7 @@ function drawClipPath(trace, layer, xaxis, yaxis) {
     }
 
     var path = makeg(clip, 'path', 'carpetboundary');
-    var segments = trace._clipsegments;
+    var segments = t.clipsegments;
     var segs = [];
 
     for(i = 0; i < segments.length; i++) {
@@ -136,7 +132,7 @@ function drawGridLines(xaxis, yaxis, layer, axis, axisLetter, gridlines) {
     gridJoin.exit().remove();
 }
 
-function drawAxisLabels(tester, xaxis, yaxis, trace, layer, labels, labelClass) {
+function drawAxisLabels(tester, xaxis, yaxis, trace, t, layer, labels, labelClass) {
     var labelJoin = layer.selectAll('text.' + labelClass).data(labels);
 
     labelJoin.enter().append('text')
@@ -147,7 +143,7 @@ function drawAxisLabels(tester, xaxis, yaxis, trace, layer, labels, labelClass) 
     labelJoin.each(function(label) {
         // Most of the positioning is done in calc_labels. Only the parts that depend upon
         // the screen space representation of the x and y axes are here:
-        var orientation = orientText(trace, xaxis, yaxis, label.xy, label.dxy);
+        var orientation = orientText(t, xaxis, yaxis, label.xy, label.dxy);
         var direction = (label.endAnchor ? -1 : 1) * orientation.flip;
         var bbox = measureText(tester, label.text, label.font);
 
@@ -172,29 +168,29 @@ function drawAxisLabels(tester, xaxis, yaxis, trace, layer, labels, labelClass) 
     return maxExtent;
 }
 
-function drawAxisTitles(layer, trace, xa, ya, maxAExtent, maxBExtent) {
+function drawAxisTitles(layer, trace, t, xa, ya, maxAExtent, maxBExtent) {
     var a, b, xy, dxy;
 
     a = 0.5 * (trace.a[0] + trace.a[trace.a.length - 1]);
     b = trace.b[0];
-    xy = trace.ab2xy(a, b, true);
-    dxy = trace.dxyda_rough(a, b);
-    drawAxisTitle(layer, trace, xy, dxy, trace.aaxis, xa, ya, maxAExtent, 'a-title');
+    xy = t.ab2xy(a, b, true);
+    dxy = t.dxyda_rough(a, b);
+    drawAxisTitle(layer, t, xy, dxy, trace.aaxis, xa, ya, maxAExtent, 'a-title');
 
     a = trace.a[0];
     b = 0.5 * (trace.b[0] + trace.b[trace.b.length - 1]);
-    xy = trace.ab2xy(a, b, true);
-    dxy = trace.dxydb_rough(a, b);
-    drawAxisTitle(layer, trace, xy, dxy, trace.baxis, xa, ya, maxBExtent, 'b-title');
+    xy = t.ab2xy(a, b, true);
+    dxy = t.dxydb_rough(a, b);
+    drawAxisTitle(layer, t, xy, dxy, trace.baxis, xa, ya, maxBExtent, 'b-title');
 }
 
-function drawAxisTitle(layer, trace, xy, dxy, axis, xa, ya, offset, labelClass) {
+function drawAxisTitle(layer, t, xy, dxy, axis, xa, ya, offset, labelClass) {
     var titleJoin = layer.selectAll('text.' + labelClass).data([0]);
 
     titleJoin.enter().append('text')
         .classed(labelClass, true);
 
-    var orientation = orientText(trace, xa, ya, xy, dxy);
+    var orientation = orientText(t, xa, ya, xy, dxy);
 
     // In addition to the size of the labels, add on some extra padding:
     offset += axis.titlefont.size + axis.titleoffset;

@@ -15,33 +15,33 @@
  * Honestly this is the most complicated function I've implemente here so far because
  * of the way it handles knot insertion and direction/axis-agnostic slices.
  */
-module.exports = function(carpet, a, b) {
+module.exports = function(carpet, carpetcd, a, b) {
     var idx, tangent, tanIsoIdx, tanIsoPar, segment, refidx;
     var p0, p1, v0, v1, start, end, range;
 
     var axis = Array.isArray(a) ? 'a' : 'b';
     var ax = axis === 'a' ? carpet.aaxis : carpet.baxis;
     var smoothing = ax.smoothing;
-    var toIdx = axis === 'a' ? carpet.a2i : carpet.b2j;
+    var toIdx = axis === 'a' ? carpetcd.a2i : carpetcd.b2j;
     var pt = axis === 'a' ? a : b;
     var iso = axis === 'a' ? b : a;
-    var n = axis === 'a' ? carpet.a.length : carpet.b.length;
-    var m = axis === 'a' ? carpet.b.length : carpet.a.length;
-    var isoIdx = axis === 'a' ? carpet.b2j(iso) : carpet.a2i(iso);
+    var n = axis === 'a' ? carpetcd.a.length : carpetcd.b.length;
+    var m = axis === 'a' ? carpetcd.b.length : carpetcd.a.length;
+    var isoIdx = axis === 'a' ? carpetcd.b2j(iso) : carpetcd.a2i(iso);
 
     var xy = axis === 'a' ? function(value) {
-        return carpet._evalxy([], value, isoIdx);
+        return carpetcd.evalxy([], value, isoIdx);
     } : function(value) {
-        return carpet._evalxy([], isoIdx, value);
+        return carpetcd.evalxy([], isoIdx, value);
     };
 
     if(smoothing) {
         tanIsoIdx = Math.max(0, Math.min(m - 2, isoIdx));
         tanIsoPar = isoIdx - tanIsoIdx;
         tangent = axis === 'a' ? function(i, ti) {
-            return carpet.dxydi([], i, tanIsoIdx, ti, tanIsoPar);
+            return carpetcd.dxydi([], i, tanIsoIdx, ti, tanIsoPar);
         } : function(j, tj) {
-            return carpet.dxydj([], tanIsoIdx, j, tanIsoPar, tj);
+            return carpetcd.dxydj([], tanIsoIdx, j, tanIsoPar, tj);
         };
     }
 
