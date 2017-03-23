@@ -12,23 +12,21 @@
 /*
  * Given a trace, look up the carpet axis by carpetid.
  */
-module.exports = function (gd, trace) {
-    var carpetid = trace.carpetid;
-
+module.exports = function(gd, trace) {
     var n = gd._fullData.length;
     var firstAxis;
-    for (var i = 0; i < n; i++) {
+    for(var i = 0; i < n; i++) {
         var maybeCarpet = gd._fullData[i];
-        if (maybeCarpet.type === 'carpet') {
-            if (!firstAxis) {
+        if(maybeCarpet.type === 'carpet') {
+            if(!firstAxis) {
                 firstAxis = maybeCarpet;
             }
 
-            if (maybeCarpet.carpetid === trace.carpetid) {
+            if(maybeCarpet.carpetid === trace.carpetid) {
                 return maybeCarpet;
             }
         }
     }
 
     return firstAxis;
-}
+};

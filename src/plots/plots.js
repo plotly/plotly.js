@@ -628,6 +628,7 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
 };
 
 plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
+    var i, fullTrace, trace;
     var modules = fullLayout._modules = [],
         basePlotModules = fullLayout._basePlotModules = [],
         cnt = 0;
@@ -649,9 +650,9 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
     var carpetIndex = {};
     var carpetDependents = [];
 
-    for(var i = 0; i < dataIn.length; i++) {
-        var trace = dataIn[i],
-            fullTrace = plots.supplyTraceDefaults(trace, cnt, fullLayout, i);
+    for(i = 0; i < dataIn.length; i++) {
+        trace = dataIn[i];
+        fullTrace = plots.supplyTraceDefaults(trace, cnt, fullLayout, i);
 
         fullTrace.index = i;
         fullTrace._input = trace;
@@ -689,18 +690,18 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
             pushModule(fullTrace);
         }
 
-        if (Registry.traceIs(fullTrace, 'carpetAxis')) {
+        if(Registry.traceIs(fullTrace, 'carpetAxis')) {
             carpetIndex[fullTrace.carpetid] = fullTrace;
         }
 
-        if (Registry.traceIs(fullTrace, 'carpetDependent')) {
+        if(Registry.traceIs(fullTrace, 'carpetDependent')) {
             carpetDependents.push(fullTrace._expandedIndex);
         }
     }
 
 
-    for (var i = 0; i < carpetDependents.length; i++) {
-        var fullTrace = dataOut[carpetDependents[i]];
+    for(i = 0; i < carpetDependents.length; i++) {
+        fullTrace = dataOut[carpetDependents[i]];
         var carpetAxis = carpetIndex[fullTrace.carpetid];
         fullTrace._carpet = carpetAxis;
         fullTrace.xaxis = carpetAxis.xaxis;
