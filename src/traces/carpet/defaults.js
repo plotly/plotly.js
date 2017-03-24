@@ -42,7 +42,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, dfltColor, fullLayou
 
     var len = handleXYDefaults(traceIn, traceOut, coerce);
 
-    if (traceOut._cheater) {
+    if(traceOut._cheater) {
         coerce('cheaterslope');
     }
 
