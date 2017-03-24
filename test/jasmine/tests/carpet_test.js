@@ -50,10 +50,4 @@ describe('carpet supplyDefaults', function() {
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
         expect(traceOut._cheater).toBe(false);
     });*/
-
-    it('defaults to cheaterslope = 1', function() {
-        traceIn = {y: [[1, 2], [3, 4]]};
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
-        expect(traceOut.cheaterslope).toEqual(1);
-    });
 });
