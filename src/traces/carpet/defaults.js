@@ -24,7 +24,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, dfltColor, fullLayou
     Lib.coerceFont(coerce, 'font');
 
     coerce('carpetid');
-    coerce('cheaterslope');
 
     handleABDefaults(traceIn, traceOut, fullLayout, coerce, defaultColor);
 
@@ -42,6 +41,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, dfltColor, fullLayou
     }
 
     var len = handleXYDefaults(traceIn, traceOut, coerce);
+
+    if (traceOut._cheater) {
+        coerce('cheaterslope');
+    }
 
     if(!len) {
         traceOut.visible = false;
