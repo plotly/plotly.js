@@ -8,9 +8,6 @@
 
 'use strict';
 
-// var Lib = require('../../lib');
-
-// var isNumeric = require('fast-isnumeric');
 var handleAxisDefaults = require('./axis_defaults');
 
 module.exports = function handleABDefaults(traceIn, traceOut, fullLayout, coerce, dfltColor) {
@@ -39,14 +36,7 @@ function mimickAxisDefaults(traceIn, traceOut, fullLayout, dfltColor) {
     axesList.forEach(function(axName) {
         var axLetter = axName.charAt(0);
         var axIn = traceIn[axName] || {};
-
-        var axOut = {
-            _gd: {
-                _fullLayout: {
-                    separators: fullLayout.separators
-                }
-            }
-        };
+        var axOut = {};
 
         var defaultOptions = {
             tickfont: 'x',
@@ -61,7 +51,7 @@ function mimickAxisDefaults(traceIn, traceOut, fullLayout, dfltColor) {
             separators: fullLayout.separators,
         };
 
-        handleAxisDefaults(axIn, axOut, defaultOptions);
+        handleAxisDefaults(axIn, axOut, defaultOptions, fullLayout);
 
         axOut._categories = axOut._categories || [];
 

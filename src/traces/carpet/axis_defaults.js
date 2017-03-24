@@ -35,7 +35,7 @@ var autoType = require('../../plots/cartesian/axis_autotype');
  *  data: the plot data to use in choosing auto type
  *  bgColor: the plot background color, to calculate default gridline colors
  */
-module.exports = function handleAxisDefaults(containerIn, containerOut, options) {
+module.exports = function handleAxisDefaults(containerIn, containerOut, options, fullLayout) {
     var letter = options.letter,
         font = options.font || {},
         attributes = carpetAttrs[letter + 'axis'];
@@ -107,7 +107,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
         handleCalendarDefaults(containerIn, containerOut, 'calendar', options.calendar);
     }
 
-    setConvert(containerOut);
+    setConvert(containerOut, fullLayout);
 
     var dfltColor = coerce('color', options.dfltColor);
     // if axis.color was provided, use it for fonts too; otherwise,
