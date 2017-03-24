@@ -12,7 +12,6 @@ var Axes = require('../../plots/cartesian/axes');
 var cheaterBasis = require('./cheater_basis');
 var arrayMinmax = require('./array_minmax');
 var map2dArray = require('./map_2d_array');
-var setConvert = require('./set_convert');
 var calcGridlines = require('./calc_gridlines');
 var calcLabels = require('./calc_labels');
 var calcClipPath = require('./calc_clippath');
@@ -49,8 +48,8 @@ module.exports = function calc(gd, trace) {
     smoothFill2dArray(x, a, b);
     smoothFill2dArray(y, a, b);
 
-    // Create conversions from one coordinate system to another:
-    setConvert(trace, t, xa, ya);
+    // create conversion functions that depend on the data
+    trace.setScale();
 
     // Convert cartesian-space x/y coordinates to screen space pixel coordinates:
     t.xp = trace.xp = map2dArray(trace.xp, x, xa.c2p);
@@ -89,7 +88,7 @@ module.exports = function calc(gd, trace) {
 
     // Tabulate points for the four segments that bound the axes so that we can
     // map to pixel coordinates in the plot function and create a clip rect:
-    t.clipsegments = calcClipPath(t.xctrl, t.yctrl, aax, bax);
+    t.clipsegments = calcClipPath(trace.xctrl, trace.yctrl, aax, bax);
 
     t.x = x;
     t.y = y;

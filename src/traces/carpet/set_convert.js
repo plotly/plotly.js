@@ -24,15 +24,13 @@ var createJDerivativeEvaluator = require('./create_j_derivative_evaluator');
  *   c: cartesian x-y coordinates
  *   p: screen-space pixel coordinates
  */
-module.exports = function setConvert(trace, output) {
+module.exports = function setConvert(trace) {
     var a = trace.a;
     var b = trace.b;
     var na = trace.a.length;
     var nb = trace.b.length;
     var aax = trace.aaxis;
     var bax = trace.baxis;
-    var x = trace.x;
-    var y = trace.y;
 
     // Grab the limits once rather than recomputing the bounds for every point
     // independently:
@@ -54,11 +52,11 @@ module.exports = function setConvert(trace, output) {
     bmin -= btol;
     bmax += btol;
 
-    output.isVisible = function(a, b) {
+    trace.isVisible = function(a, b) {
         return a > amin && a < amax && b > bmin && b < bmax;
     };
 
-    output.isOccluded = function(a, b) {
+    trace.isOccluded = function(a, b) {
         return a < amin || a > amax || b < bmin || b > bmax;
     };
 
@@ -66,41 +64,46 @@ module.exports = function setConvert(trace, output) {
     aax.c2p = function(v) { return v; };
     bax.c2p = function(v) { return v; };
 
-    // This is potentially a very expensive step! It does the bulk of the work of constructing
-    // an expanded basis of control points. Note in particular that it overwrites the existing
-    // basis without creating a new array since that would potentially thrash the garbage
-    // collector.
-    var result = computeControlPoints(output.xctrl, output.yctrl, x, y, aax.smoothing, bax.smoothing);
-    output.xctrl = result[0];
-    output.yctrl = result[1];
+    trace.setScale = function() {
+        var x = trace.x;
+        var y = trace.y;
 
-    // This step is the second step in the process, but it's somewhat simpler. It just unrolls
-    // some logic since it would be unnecessarily expensive to compute both interpolations
-    // nearly identically but separately and to include a bunch of linear vs. bicubic logic in
-    // every single call.
-    output.evalxy = createSplineEvaluator([output.xctrl, output.yctrl], na, nb, aax.smoothing, bax.smoothing);
+        // This is potentially a very expensive step! It does the bulk of the work of constructing
+        // an expanded basis of control points. Note in particular that it overwrites the existing
+        // basis without creating a new array since that would potentially thrash the garbage
+        // collector.
+        var result = computeControlPoints(trace.xctrl, trace.yctrl, x, y, aax.smoothing, bax.smoothing);
+        trace.xctrl = result[0];
+        trace.yctrl = result[1];
 
-    output.dxydi = createIDerivativeEvaluator([output.xctrl, output.yctrl], aax.smoothing, bax.smoothing);
-    output.dxydj = createJDerivativeEvaluator([output.xctrl, output.yctrl], aax.smoothing, bax.smoothing);
+        // This step is the second step in the process, but it's somewhat simpler. It just unrolls
+        // some logic since it would be unnecessarily expensive to compute both interpolations
+        // nearly identically but separately and to include a bunch of linear vs. bicubic logic in
+        // every single call.
+        trace.evalxy = createSplineEvaluator([trace.xctrl, trace.yctrl], na, nb, aax.smoothing, bax.smoothing);
+
+        trace.dxydi = createIDerivativeEvaluator([trace.xctrl, trace.yctrl], aax.smoothing, bax.smoothing);
+        trace.dxydj = createJDerivativeEvaluator([trace.xctrl, trace.yctrl], aax.smoothing, bax.smoothing);
+    };
 
     /*
      * Convert from i/j data grid coordinates to a/b values. Note in particular that this
      * is *linear* interpolation, even if the data is interpolated bicubically.
      */
-    output.i2a = function(i) {
+    trace.i2a = function(i) {
         var i0 = Math.max(0, Math.floor(i[0]), na - 2);
         var ti = i[0] - i0;
         return (1 - ti) * a[i0] + ti * a[i0 + 1];
     };
 
-    output.j2b = function(j) {
+    trace.j2b = function(j) {
         var j0 = Math.max(0, Math.floor(j[1]), na - 2);
         var tj = j[1] - j0;
         return (1 - tj) * b[j0] + tj * b[j0 + 1];
     };
 
-    output.ij2ab = function(ij) {
-        return [output.i2a(ij[0]), output.j2b(ij[1])];
+    trace.ij2ab = function(ij) {
+        return [trace.i2a(ij[0]), trace.j2b(ij[1])];
     };
 
     /*
@@ -108,40 +111,40 @@ module.exports = function setConvert(trace, output) {
      * through the a/b data arrays and assumes they are monotonic, which is presumed to have
      * been enforced already.
      */
-    output.a2i = function(aval) {
+    trace.a2i = function(aval) {
         var i0 = Math.max(0, Math.min(search(aval, a), na - 2));
         var a0 = a[i0];
         var a1 = a[i0 + 1];
         return Math.max(0, Math.min(na - 1, i0 + (aval - a0) / (a1 - a0)));
     };
 
-    output.b2j = function(bval) {
+    trace.b2j = function(bval) {
         var j0 = Math.max(0, Math.min(search(bval, b), nb - 2));
         var b0 = b[j0];
         var b1 = b[j0 + 1];
         return Math.max(0, Math.min(nb - 1, j0 + (bval - b0) / (b1 - b0)));
     };
 
-    output.ab2ij = function(ab) {
-        return [output.a2i(ab[0]), output.b2j(ab[1])];
+    trace.ab2ij = function(ab) {
+        return [trace.a2i(ab[0]), trace.b2j(ab[1])];
     };
 
     /*
      * Convert from i/j coordinates to x/y caretesian coordinates. This means either bilinear
      * or bicubic spline evaluation, but the hard part is already done at this point.
      */
-    output.i2c = function(i, j) {
-        return output.evalxy([], i, j);
+    trace.i2c = function(i, j) {
+        return trace.evalxy([], i, j);
     };
 
-    output.ab2xy = function(aval, bval, extrapolate) {
+    trace.ab2xy = function(aval, bval, extrapolate) {
         if(!extrapolate && (aval < a[0] || aval > a[na - 1] | bval < b[0] || bval > b[nb - 1])) {
             return [false, false];
         }
-        var i = output.a2i(aval);
-        var j = output.b2j(bval);
+        var i = trace.a2i(aval);
+        var j = trace.b2j(bval);
 
-        var pt = output.evalxy([], i, j);
+        var pt = trace.evalxy([], i, j);
 
         if(extrapolate) {
             // This section uses the boundary derivatives to extrapolate linearly outside
@@ -180,13 +183,13 @@ module.exports = function setConvert(trace, output) {
             }
 
             if(iex) {
-                output.dxydi(der, i0, j0, ti, tj);
+                trace.dxydi(der, i0, j0, ti, tj);
                 pt[0] += der[0] * iex;
                 pt[1] += der[1] * iex;
             }
 
             if(jex) {
-                output.dxydj(der, i0, j0, ti, tj);
+                trace.dxydj(der, i0, j0, ti, tj);
                 pt[0] += der[0] * jex;
                 pt[1] += der[1] * jex;
             }
@@ -196,15 +199,15 @@ module.exports = function setConvert(trace, output) {
     };
 
 
-    output.c2p = function(xy, xa, ya) {
+    trace.c2p = function(xy, xa, ya) {
         return [xa.c2p(xy[0]), ya.c2p(xy[1])];
     };
 
-    output.p2x = function(p, xa, ya) {
+    trace.p2x = function(p, xa, ya) {
         return [xa.p2c(p[0]), ya.p2c(p[1])];
     };
 
-    output.dadi = function(i /* , u*/) {
+    trace.dadi = function(i /* , u*/) {
         // Right now only a piecewise linear a or b basis is permitted since smoother interpolation
         // would cause monotonicity problems. As a retult, u is entirely disregarded in this
         // computation, though we'll specify it as a parameter for the sake of completeness and
@@ -220,7 +223,7 @@ module.exports = function setConvert(trace, output) {
         return a[i0 + 1] - a[i0];
     };
 
-    output.dbdj = function(j /* , v*/) {
+    trace.dbdj = function(j /* , v*/) {
         // See above caveats for dadi which also apply here
         var j0 = Math.max(0, Math.min(b.length - 2, j));
 
@@ -233,16 +236,16 @@ module.exports = function setConvert(trace, output) {
     //
     // NB: separate grid cell + fractional grid cell coordinate format is due to the discontinuous
     // derivative, as described better in create_i_derivative_evaluator.js
-    output.dxyda = function(i0, j0, u, v) {
-        var dxydi = output.dxydi(null, i0, j0, u, v);
-        var dadi = output.dadi(i0, u);
+    trace.dxyda = function(i0, j0, u, v) {
+        var dxydi = trace.dxydi(null, i0, j0, u, v);
+        var dadi = trace.dadi(i0, u);
 
         return [dxydi[0] / dadi, dxydi[1] / dadi];
     };
 
-    output.dxydb = function(i0, j0, u, v) {
-        var dxydj = output.dxydj(null, i0, j0, u, v);
-        var dbdj = output.dbdj(j0, v);
+    trace.dxydb = function(i0, j0, u, v) {
+        var dxydj = trace.dxydj(null, i0, j0, u, v);
+        var dbdj = trace.dbdj(j0, v);
 
         return [dxydj[0] / dbdj, dxydj[1] / dbdj];
     };
@@ -250,10 +253,10 @@ module.exports = function setConvert(trace, output) {
     // Sometimes we don't care about precision and all we really want is decent rough
     // directions (as is the case with labels). In that case, we can do a very rough finite
     // difference and spare having to worry about precise grid coordinates:
-    output.dxyda_rough = function(a, b, reldiff) {
+    trace.dxyda_rough = function(a, b, reldiff) {
         var h = arange * (reldiff || 0.1);
-        var plus = output.ab2xy(a + h, b, true);
-        var minus = output.ab2xy(a - h, b, true);
+        var plus = trace.ab2xy(a + h, b, true);
+        var minus = trace.ab2xy(a - h, b, true);
 
         return [
             (plus[0] - minus[0]) * 0.5 / h,
@@ -261,10 +264,10 @@ module.exports = function setConvert(trace, output) {
         ];
     };
 
-    output.dxydb_rough = function(a, b, reldiff) {
+    trace.dxydb_rough = function(a, b, reldiff) {
         var h = brange * (reldiff || 0.1);
-        var plus = output.ab2xy(a, b + h, true);
-        var minus = output.ab2xy(a, b - h, true);
+        var plus = trace.ab2xy(a, b + h, true);
+        var minus = trace.ab2xy(a, b - h, true);
 
         return [
             (plus[0] - minus[0]) * 0.5 / h,
@@ -272,11 +275,11 @@ module.exports = function setConvert(trace, output) {
         ];
     };
 
-    output.dpdx = function(xa) {
+    trace.dpdx = function(xa) {
         return xa._m;
     };
 
-    output.dpdy = function(ya) {
+    trace.dpdy = function(ya) {
         return ya._m;
     };
 };
