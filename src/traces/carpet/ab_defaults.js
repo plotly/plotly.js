@@ -39,14 +39,7 @@ function mimickAxisDefaults(traceIn, traceOut, fullLayout, dfltColor) {
     axesList.forEach(function(axName) {
         var axLetter = axName.charAt(0);
         var axIn = traceIn[axName] || {};
-
-        var axOut = {
-            _gd: {
-                _fullLayout: {
-                    separators: fullLayout.separators
-                }
-            }
-        };
+        var axOut = {};
 
         var defaultOptions = {
             tickfont: 'x',
@@ -58,7 +51,7 @@ function mimickAxisDefaults(traceIn, traceOut, fullLayout, dfltColor) {
             calendar: traceOut.calendar,
             dfltColor: dfltColor,
             bgColor: fullLayout.paper_bgcolor,
-            separators: fullLayout.separators,
+            fullLayout: fullLayout
         };
 
         handleAxisDefaults(axIn, axOut, defaultOptions);

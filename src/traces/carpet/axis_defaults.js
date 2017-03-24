@@ -107,7 +107,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
         handleCalendarDefaults(containerIn, containerOut, 'calendar', options.calendar);
     }
 
-    setConvert(containerOut);
+    setConvert(containerOut, options.fullLayout);
 
     var dfltColor = coerce('color', options.dfltColor);
     // if axis.color was provided, use it for fonts too; otherwise,
@@ -178,8 +178,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
         coerce('minorgridcolor', addOpacity(gridColor, 0.06));
     }
 
-    // Pass on the separator:
-    containerOut._separators = options.separators;
+    containerOut._separators = options.fullLayout.separators;
 
     // fill in categories
     containerOut._initialCategories = axType === 'category' ?
