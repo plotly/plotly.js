@@ -1307,7 +1307,9 @@ function _restyle(gd, aobj, _traces) {
         'line.showscale', 'line.cauto', 'line.autocolorscale', 'line.reversescale',
         'marker.line.showscale', 'marker.line.cauto', 'marker.line.autocolorscale', 'marker.line.reversescale',
         'xcalendar', 'ycalendar',
-        'cumulative', 'cumulative.enabled', 'cumulative.direction', 'cumulative.currentbin'
+        'cumulative', 'cumulative.enabled', 'cumulative.direction', 'cumulative.currentbin',
+        'a0', 'da', 'b0', 'db', 'atype', 'btype',
+        'cheaterslope', 'carpetid', 'sum'
     ];
 
     for(i = 0; i < traces.length; i++) {
@@ -1647,9 +1649,15 @@ function _restyle(gd, aobj, _traces) {
                 doextra(axlist.map(rangeAttr), [0, 1], 0);
             }
             flags.docalc = true;
+
+        } else if(replotAttrs.indexOf(aiAboveArray) !== -1) {
+            flags.doplot = true;
+
+        } else if(aiAboveArray.indexOf('aaxis') === 0 || aiAboveArray.indexOf('baxis') === 0) {
+            flags.doplot = true;
+        } else if(autorangeAttrs.indexOf(aiAboveArray) !== -1) {
+            flags.docalcAutorange = true;
         }
-        else if(replotAttrs.indexOf(aiAboveArray) !== -1) flags.doplot = true;
-        else if(autorangeAttrs.indexOf(aiAboveArray) !== -1) flags.docalcAutorange = true;
     }
 
     // do we need to force a recalc?
