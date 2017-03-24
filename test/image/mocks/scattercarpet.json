@@ -65,7 +65,7 @@
     }
   ],
   "layout": {
-    "title": "scattercarpet extrapolation and clipping",
+    "title": "scattercarpet extrapolation, clipping, and smoothing",
     "margin": {
       "t": 80,
       "r": 30,
