@@ -143,7 +143,7 @@ function drawAxisLabels(tester, xaxis, yaxis, trace, t, layer, labels, labelClas
     labelJoin.each(function(label) {
         // Most of the positioning is done in calc_labels. Only the parts that depend upon
         // the screen space representation of the x and y axes are here:
-        var orientation = orientText(t, xaxis, yaxis, label.xy, label.dxy);
+        var orientation = orientText(trace, xaxis, yaxis, label.xy, label.dxy);
         var direction = (label.endAnchor ? -1 : 1) * orientation.flip;
         var bbox = measureText(tester, label.text, label.font);
 
@@ -173,24 +173,24 @@ function drawAxisTitles(layer, trace, t, xa, ya, maxAExtent, maxBExtent) {
 
     a = 0.5 * (trace.a[0] + trace.a[trace.a.length - 1]);
     b = trace.b[0];
-    xy = t.ab2xy(a, b, true);
-    dxy = t.dxyda_rough(a, b);
-    drawAxisTitle(layer, t, xy, dxy, trace.aaxis, xa, ya, maxAExtent, 'a-title');
+    xy = trace.ab2xy(a, b, true);
+    dxy = trace.dxyda_rough(a, b);
+    drawAxisTitle(layer, trace, t, xy, dxy, trace.aaxis, xa, ya, maxAExtent, 'a-title');
 
     a = trace.a[0];
     b = 0.5 * (trace.b[0] + trace.b[trace.b.length - 1]);
-    xy = t.ab2xy(a, b, true);
-    dxy = t.dxydb_rough(a, b);
-    drawAxisTitle(layer, t, xy, dxy, trace.baxis, xa, ya, maxBExtent, 'b-title');
+    xy = trace.ab2xy(a, b, true);
+    dxy = trace.dxydb_rough(a, b);
+    drawAxisTitle(layer, trace, t, xy, dxy, trace.baxis, xa, ya, maxBExtent, 'b-title');
 }
 
-function drawAxisTitle(layer, t, xy, dxy, axis, xa, ya, offset, labelClass) {
+function drawAxisTitle(layer, trace, t, xy, dxy, axis, xa, ya, offset, labelClass) {
     var titleJoin = layer.selectAll('text.' + labelClass).data([0]);
 
     titleJoin.enter().append('text')
         .classed(labelClass, true);
 
-    var orientation = orientText(t, xa, ya, xy, dxy);
+    var orientation = orientText(trace, xa, ya, xy, dxy);
 
     // In addition to the size of the labels, add on some extra padding:
     offset += axis.titlefont.size + axis.titleoffset;

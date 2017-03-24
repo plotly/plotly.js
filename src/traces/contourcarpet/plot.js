@@ -52,7 +52,7 @@ function plotOne(gd, plotinfo, cd) {
 
     // Map [a, b] (data) --> [i, j] (pixels)
     function ab2p(ab) {
-        var pt = carpetcd.ab2xy(ab[0], ab[1], true);
+        var pt = carpet.ab2xy(ab[0], ab[1], true);
         return [xa.c2p(pt[0]), ya.c2p(pt[1])];
     }
 

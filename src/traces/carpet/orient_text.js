@@ -9,9 +9,9 @@
 
 'use strict';
 
-module.exports = function orientText(carpet, xaxis, yaxis, xy, dxy) {
-    var dx = dxy[0] * carpet.dpdx(xaxis);
-    var dy = dxy[1] * carpet.dpdy(yaxis);
+module.exports = function orientText(trace, xaxis, yaxis, xy, dxy) {
+    var dx = dxy[0] * trace.dpdx(xaxis);
+    var dy = dxy[1] * trace.dpdy(yaxis);
     var flip = 1;
 
     var angle = Math.atan2(dy, dx) * 180 / Math.PI;
@@ -26,6 +26,6 @@ module.exports = function orientText(carpet, xaxis, yaxis, xy, dxy) {
     return {
         angle: angle,
         flip: flip,
-        p: carpet.c2p(xy, xaxis, yaxis)
+        p: trace.c2p(xy, xaxis, yaxis)
     };
 };
