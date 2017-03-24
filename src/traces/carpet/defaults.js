@@ -12,6 +12,7 @@
 var Lib = require('../../lib');
 var handleXYDefaults = require('./xy_defaults');
 var handleABDefaults = require('./ab_defaults');
+var setConvert = require('./set_convert');
 var attributes = require('./attributes');
 var colorAttrs = require('../../components/color/attributes');
 
@@ -27,6 +28,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, dfltColor, fullLayou
     coerce('cheaterslope');
 
     handleABDefaults(traceIn, traceOut, fullLayout, coerce, defaultColor);
+
+    setConvert(traceOut);
 
     if(!traceOut.a || !traceOut.b) {
         traceOut.visible = false;
