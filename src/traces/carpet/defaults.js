@@ -28,8 +28,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, dfltColor, fullLayou
 
     handleABDefaults(traceIn, traceOut, fullLayout, coerce, defaultColor);
 
-    setConvert(traceOut);
-
     if(!traceOut.a || !traceOut.b) {
         traceOut.visible = false;
         return;
@@ -44,6 +42,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, dfltColor, fullLayou
     }
 
     var len = handleXYDefaults(traceIn, traceOut, coerce);
+
+    setConvert(traceOut);
 
     if(traceOut._cheater) {
         coerce('cheaterslope');

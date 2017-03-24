@@ -103,6 +103,7 @@ module.exports = function calcGridlines(trace, cd, axisLetter, crossAxisLetter) 
             i = trace.a2i(value);
             i0 = Math.floor(Math.max(0, Math.min(na - 2, i)));
             ti = i - i0;
+
             ret.length = na;
             ret.crossLength = nb;
 
