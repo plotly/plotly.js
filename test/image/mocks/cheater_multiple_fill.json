@@ -2,6 +2,36 @@
   "data": [
     {
       "type": "contourcarpet",
+      "name": "y < 10",
+      "carpetid": "c2",
+      "z": [
+        [0, 0.8, 2],
+        [1.2, 2, 3.2],
+        [2, 2.8, 4]
+      ],
+      "contours": {
+        "type": "constraint",
+        "operation": "<",
+        "value": 10
+      }
+    },
+    {
+      "type": "contourcarpet",
+      "name": "y < 10",
+      "carpetid": "c1",
+      "z": [
+        [0, 0.8, 2],
+        [1.2, 2, 3.2],
+        [2, 2.8, 4]
+      ],
+      "contours": {
+        "type": "constraint",
+        "operation": "<",
+        "value": 10
+      }
+    },
+    {
+      "type": "contourcarpet",
       "name": "y < 2.5",
       "carpetid": "c2",
       "z": [
@@ -32,7 +62,7 @@
     },
     {
       "type": "contourcarpet",
-      "name": "y > 1.5",
+      "name": "y < 1.5",
       "carpetid": "c2",
       "z": [
         [0, 0.8, 2],
@@ -41,13 +71,13 @@
       ],
       "contours": {
         "type": "constraint",
-        "operation": ">",
+        "operation": "<",
         "value": 1.5
       }
     },
     {
       "type": "contourcarpet",
-      "name": "y > 1.5",
+      "name": "y < 1.5",
       "carpetid": "c1",
       "z": [
         [0, 0.8, 2],
@@ -56,8 +86,38 @@
       ],
       "contours": {
         "type": "constraint",
-        "operation": ">",
+        "operation": "<",
         "value": 1.5
+      }
+    },
+    {
+      "type": "contourcarpet",
+      "name": "y < -5",
+      "carpetid": "c2",
+      "z": [
+        [0, 0.8, 2],
+        [1.2, 2, 3.2],
+        [2, 2.8, 4]
+      ],
+      "contours": {
+        "type": "constraint",
+        "operation": "<",
+        "value": -5
+      }
+    },
+    {
+      "type": "contourcarpet",
+      "name": "y < -5",
+      "carpetid": "c1",
+      "z": [
+        [0, 0.8, 2],
+        [1.2, 2, 3.2],
+        [2, 2.8, 4]
+      ],
+      "contours": {
+        "type": "constraint",
+        "operation": "<",
+        "value": -5
       }
     },
     {
