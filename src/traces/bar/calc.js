@@ -51,15 +51,21 @@ module.exports = function calc(gd, trace) {
     var serieslen = Math.min(pos.length, size.length),
         cd = [];
 
-    // set position
+    // set position and size
     for(i = 0; i < serieslen; i++) {
+        var p = pos[i];
+        var s = size[i];
 
         // add bars with non-numeric sizes to calcdata
         // so that ensure that traces with gaps are
         // plotted in the correct order
 
-        if(isNumeric(pos[i])) {
-            cd.push({p: pos[i]});
+        if(isNumeric(p)) {
+            if(isNumeric(s)) {
+                cd.push({ p: p, s: s });
+            } else {
+                cd.push({ p: p });
+            }
         }
     }
 
@@ -81,13 +87,6 @@ module.exports = function calc(gd, trace) {
         b = (isNumeric(b)) ? b : 0;
         for(i = 0; i < cd.length; i++) {
             cd[i].b = b;
-        }
-    }
-
-    // set size
-    for(i = 0; i < cd.length; i++) {
-        if(isNumeric(size[i])) {
-            cd[i].s = size[i];
         }
     }
 
