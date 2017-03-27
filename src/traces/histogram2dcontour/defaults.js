@@ -12,6 +12,7 @@
 var Lib = require('../../lib');
 
 var handleSampleDefaults = require('../histogram2d/sample_defaults');
+var handleContoursDefaults = require('../contour/contours_defaults');
 var handleStyleDefaults = require('../contour/style_defaults');
 var attributes = require('./attributes');
 
@@ -30,5 +31,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(autocontour) coerce('ncontours');
     else coerce('contours.size');
 
+    handleContoursDefaults(traceIn, traceOut, coerce);
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
 };
