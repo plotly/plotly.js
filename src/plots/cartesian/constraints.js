@@ -10,13 +10,13 @@
 'use strict';
 
 var id2name = require('./axis_ids').id2name;
+var scaleZoom = require('./scale_zoom');
 
-var ALMOST_EQUAL = 1 - 1e-6;
+var ALMOST_EQUAL = require('../../constants/numerical').ALMOST_EQUAL;
 
 
 module.exports = function enforceAxisConstraints(gd) {
     var fullLayout = gd._fullLayout;
-    var layout = gd.layout;
     var constraintGroups = fullLayout._axisConstraintGroups;
 
     var i, j, axisID, ax, normScale;
@@ -52,16 +52,8 @@ module.exports = function enforceAxisConstraints(gd) {
         for(j = 0; j < axisIDs.length; j++) {
             axisID = axisIDs[j];
             normScale = normScales[axisID];
-            if(normScale > minScale) {
-                ax = axes[axisID];
-                var rangeLinear = [ax.r2l(ax.range[0]), ax.r2l(ax.range[1])];
-                var center = (rangeLinear[0] + rangeLinear[1]) / 2;
-                var newHalfSpan = (center - rangeLinear[0]) * normScale / minScale;
-                ax.range = layout[id2name(axisID)].range = [
-                    ax.l2r(center - newHalfSpan),
-                    ax.l2r(center + newHalfSpan)
-                ];
-            }
+
+            if(normScale > minScale) scaleZoom(axes[axisID], normScale / minScale);
         }
     }
 };
