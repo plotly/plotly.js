@@ -27,6 +27,12 @@ module.exports = function enforceAxisConstraints(gd) {
 
         var minScale = Infinity;
         var maxScale = 0;
+        // mostly matchScale will be the same as minScale
+        // ie we expand axis ranges to encompass *everything*
+        // that's currently in any of their ranges, but during
+        // autorange of a subset of axes we will ignore other
+        // axes for this purpose.
+        var matchScale = Infinity;
         var normScales = {};
         var axes = {};
 
@@ -42,6 +48,13 @@ module.exports = function enforceAxisConstraints(gd) {
             // abs: inverted scales still satisfy the constraint
             normScales[axisID] = normScale = Math.abs(ax._m) / group[axisID];
             minScale = Math.min(minScale, normScale);
+            if(ax._constraintShrinkable) {
+                // this has served its purpose, so remove it
+                delete ax._constraintShrinkable;
+            }
+            else {
+                matchScale = Math.min(matchScale, normScale);
+            }
             maxScale = Math.max(maxScale, normScale);
         }
 
@@ -53,7 +66,19 @@ module.exports = function enforceAxisConstraints(gd) {
             axisID = axisIDs[j];
             normScale = normScales[axisID];
 
-            if(normScale > minScale) scaleZoom(axes[axisID], normScale / minScale);
+            if(normScale !== matchScale) {
+                ax = axes[axisID];
+                // if range matches _rangeInitial before the constraint is applied,
+                // change _rangeInitial to the new range - otherwise a doubleclick
+                // will never autorange because we're not starting at the reset point.
+                var wasAtInitial = (ax._rangeInitial &&
+                    ax.range[0] === ax._rangeInitial[0] &&
+                    ax.range[1] === ax._rangeInitial[1]);
+
+                scaleZoom(ax, normScale / matchScale);
+
+                if(wasAtInitial) ax._rangeInitial = ax.range.slice();
+            }
         }
     }
 };
