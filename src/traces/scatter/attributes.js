@@ -83,7 +83,23 @@ module.exports = {
             'If a single string, the same string appears over',
             'all the data points.',
             'If an array of string, the items are mapped in order to the',
-            'this trace\'s (x,y) coordinates.'
+            'this trace\'s (x,y) coordinates.',
+            'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
+            'these elements will be seen in the hover labels.'
+        ].join(' ')
+    },
+    hovertext: {
+        valType: 'string',
+        role: 'info',
+        dflt: '',
+        arrayOk: true,
+        description: [
+            'Sets hover text elements associated with each (x,y) pair.',
+            'If a single string, the same string appears over',
+            'all the data points.',
+            'If an array of string, the items are mapped in order to the',
+            'this trace\'s (x,y) coordinates.',
+            'To be seen, trace `hoverinfo` must contain a *text* flag.'
         ].join(' ')
     },
     mode: {
