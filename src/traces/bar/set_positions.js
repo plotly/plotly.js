@@ -38,8 +38,7 @@ module.exports = function setPositions(gd, plotinfo) {
             fullTrace.visible === true &&
             Registry.traceIs(fullTrace, 'bar') &&
             fullTrace.xaxis === xa._id &&
-            fullTrace.yaxis === ya._id &&
-            !calcTraces[i][0].placeholder
+            fullTrace.yaxis === ya._id
         ) {
             if(fullTrace.orientation === 'h') {
                 calcTracesHorizontal.push(calcTraces[i]);

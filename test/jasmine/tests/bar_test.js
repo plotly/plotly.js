@@ -703,23 +703,6 @@ describe('Bar.setPositions', function() {
         expect(Axes.getAutoRange(ya)).toBeCloseToArray([-1.11, 1.11], undefined, '(ya.range)');
     });
 
-    it('should skip placeholder trace in position computations', function() {
-        var gd = mockBarPlot([{
-            x: [1, 2, 3],
-            y: [2, 1, 2]
-        }, {
-            x: [null],
-            y: [null]
-        }]);
-
-        expect(gd.calcdata[0][0].t.barwidth).toEqual(0.8);
-
-        expect(gd.calcdata[1][0].x).toBe(false);
-        expect(gd.calcdata[1][0].y).toBe(false);
-        expect(gd.calcdata[1][0].placeholder).toBe(true);
-        expect(gd.calcdata[1][0].t.barwidth).toBeUndefined();
-    });
-
     it('works with log axes (grouped bars)', function() {
         var gd = mockBarPlot([
             {y: [1, 10, 1e10, -1]},
