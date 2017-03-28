@@ -49,24 +49,11 @@ module.exports = function calc(gd, trace) {
 
     // create the "calculated data" to plot
     var serieslen = Math.min(pos.length, size.length),
-        cd = [];
+        cd = new Array(serieslen);
 
     // set position and size
     for(i = 0; i < serieslen; i++) {
-        var p = pos[i];
-        var s = size[i];
-
-        // add bars with non-numeric sizes to calcdata
-        // so that ensure that traces with gaps are
-        // plotted in the correct order
-
-        if(isNumeric(p)) {
-            if(isNumeric(s)) {
-                cd.push({ p: p, s: s });
-            } else {
-                cd.push({ p: p });
-            }
-        }
+        cd[i] = { p: pos[i], s: size[i] };
     }
 
     // set base
