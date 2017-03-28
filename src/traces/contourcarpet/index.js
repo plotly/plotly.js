@@ -16,8 +16,6 @@ ContourCarpet.supplyDefaults = require('./defaults');
 ContourCarpet.calc = require('./calc');
 ContourCarpet.plot = require('./plot');
 ContourCarpet.style = require('./style');
-// ContourCarpet.hoverPoints = require('./hover');
-// ContourCarpet.selectPoints = require('./select');
 
 ContourCarpet.moduleType = 'trace';
 ContourCarpet.name = 'contourcarpet';

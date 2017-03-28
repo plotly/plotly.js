@@ -1,0 +1,323 @@
+{
+  "data": [
+    {
+      "type": "contourcarpet",
+      "carpetid": "c9",
+      "z": [[0, 0.8, 2], [1.2, 6, 3.2], [2, 2.8, 4]],
+      "showlegend": false,
+      "contours": {
+        "type": "constraint",
+        "operation": ">",
+        "value": 7
+      }
+    },
+    {
+      "type": "contourcarpet",
+      "carpetid": "c10",
+      "z": [[0, 0.8, 2], [1.2, 6, 3.2], [2, 2.8, 4]],
+      "showlegend": false,
+      "contours": {
+        "type": "constraint",
+        "operation": ">",
+        "value": 7
+      }
+    },
+    {
+      "type": "contourcarpet",
+      "carpetid": "c7",
+      "z": [[0, 0.8, 2], [1.2, 6, 3.2], [2, 2.8, 4]],
+      "showlegend": false,
+      "contours": {
+        "type": "constraint",
+        "operation": ">",
+        "value": 5
+      }
+    },
+    {
+      "type": "contourcarpet",
+      "carpetid": "c8",
+      "z": [[0, 0.8, 2], [1.2, 6, 3.2], [2, 2.8, 4]],
+      "showlegend": false,
+      "contours": {
+        "type": "constraint",
+        "operation": ">",
+        "value": 5
+      }
+    },
+    {
+      "type": "contourcarpet",
+      "carpetid": "c5",
+      "z": [[0, 0.8, 2], [1.2, 6, 3.2], [2, 2.8, 4]],
+      "showlegend": false,
+      "contours": {
+        "type": "constraint",
+        "operation": ">",
+        "value": 3
+      }
+    },
+    {
+      "type": "contourcarpet",
+      "carpetid": "c6",
+      "z": [[0, 0.8, 2], [1.2, 6, 3.2], [2, 2.8, 4]],
+      "showlegend": false,
+      "contours": {
+        "type": "constraint",
+        "operation": ">",
+        "value": 3
+      }
+    },
+    {
+      "type": "contourcarpet",
+      "carpetid": "c3",
+      "z": [[0, 0.8, 2], [1.2, 6, 3.2], [2, 2.8, 4]],
+      "showlegend": false,
+      "contours": {
+        "type": "constraint",
+        "operation": ">",
+        "value": 1
+      },
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "type": "contourcarpet",
+      "carpetid": "c4",
+      "showlegend": false,
+      "z": [[0, 0.8, 2], [1.2, 6, 3.2], [2, 2.8, 4]],
+      "contours": {
+        "type": "constraint",
+        "operation": ">",
+        "value": 1
+      }
+    },
+    {
+      "type": "contourcarpet",
+      "carpetid": "c1",
+      "z": [[0, 0.8, 2], [1.2, 6, 3.2], [2, 2.8, 4]],
+      "showlegend": false,
+      "contours": {
+        "type": "constraint",
+        "operation": ">",
+        "value": -1
+      },
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "type": "contourcarpet",
+      "carpetid": "c2",
+      "showlegend": false,
+      "z": [[0, 0.8, 2], [1.2, 6, 3.2], [2, 2.8, 4]],
+      "contours": {
+        "type": "constraint",
+        "operation": ">",
+        "value": -1
+      }
+    },
+    {
+      "type": "carpet",
+      "carpetid": "c1",
+      "a": [1, 2, 3],
+      "b": [1, 2, 3],
+      "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
+      "aaxis": {"smoothing": 0},
+      "baxis": {"smoothing": 0},
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "type": "carpet",
+      "carpetid": "c2",
+      "a": [1, 2, 3],
+      "b": [1, 2, 3],
+      "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
+      "aaxis": {"smoothing": 1},
+      "baxis": {"smoothing": 1},
+      "xaxis": "x2",
+      "yaxis": "y"
+    },
+    {
+      "type": "carpet",
+      "carpetid": "c3",
+      "a": [1, 2, 3],
+      "b": [1, 2, 3],
+      "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
+      "aaxis": {"smoothing": 0},
+      "baxis": {"smoothing": 0},
+      "xaxis": "x",
+      "yaxis": "y2"
+    },
+    {
+      "type": "carpet",
+      "carpetid": "c4",
+      "a": [1, 2, 3],
+      "b": [1, 2, 3],
+      "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
+      "aaxis": {"smoothing": 1},
+      "baxis": {"smoothing": 1},
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "carpet",
+      "carpetid": "c5",
+      "a": [1, 2, 3],
+      "b": [1, 2, 3],
+      "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
+      "aaxis": {"smoothing": 0},
+      "baxis": {"smoothing": 0},
+      "xaxis": "x",
+      "yaxis": "y3"
+    },
+    {
+      "type": "carpet",
+      "carpetid": "c6",
+      "a": [1, 2, 3],
+      "b": [1, 2, 3],
+      "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
+      "aaxis": {"smoothing": 1},
+      "baxis": {"smoothing": 1},
+      "xaxis": "x2",
+      "yaxis": "y3"
+    },
+    {
+      "type": "carpet",
+      "carpetid": "c7",
+      "a": [1, 2, 3],
+      "b": [1, 2, 3],
+      "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
+      "aaxis": {"smoothing": 0},
+      "baxis": {"smoothing": 0},
+      "xaxis": "x",
+      "yaxis": "y4"
+    },
+    {
+      "type": "carpet",
+      "carpetid": "c8",
+      "a": [1, 2, 3],
+      "b": [1, 2, 3],
+      "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
+      "aaxis": {"smoothing": 1},
+      "baxis": {"smoothing": 1},
+      "xaxis": "x2",
+      "yaxis": "y4"
+    },
+    {
+      "type": "carpet",
+      "carpetid": "c9",
+      "a": [1, 2, 3],
+      "b": [1, 2, 3],
+      "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
+      "aaxis": {"smoothing": 0},
+      "baxis": {"smoothing": 0},
+      "xaxis": "x",
+      "yaxis": "y5"
+    },
+    {
+      "type": "carpet",
+      "carpetid": "c10",
+      "a": [1, 2, 3],
+      "b": [1, 2, 3],
+      "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
+      "aaxis": {"smoothing": 1},
+      "baxis": {"smoothing": 1},
+      "xaxis": "x2",
+      "yaxis": "y5"
+    }
+  ],
+  "layout": {
+    "title": "Greater than constraint with hill in the middle",
+    "width": 600,
+    "height": 800,
+    "dragmode": "pan",
+    "margin": {
+      "t": 60,
+      "r": 30,
+      "b": 30,
+      "l": 30
+    },
+    "yaxis": {
+      "domain": [0, 0.19]
+    },
+    "yaxis2": {
+      "domain": [0.21, 0.39]
+    },
+    "yaxis3": {
+      "domain": [0.41, 0.59]
+    },
+    "yaxis4": {
+      "domain": [0.61, 0.79]
+    },
+    "yaxis5": {
+      "domain": [0.81, 1]
+    },
+    "xaxis": {
+      "domain": [0, 0.49]
+    },
+    "xaxis2": {
+      "domain": [0.51, 1.0]
+    },
+    "annotations": [
+      {
+        "x": -1,
+        "y": 4,
+        "align": "left",
+        "xref": "x",
+        "yref": "y",
+        "text": "z > -1:",
+        "showarrow": false,
+        "font": {
+          "size": 20
+        }
+      },
+      {
+        "x": -1,
+        "align": "left",
+        "y": 4,
+        "xref": "x",
+        "yref": "y2",
+        "text": "z > 1:",
+        "showarrow": false,
+        "font": {
+          "size": 20
+        }
+      },
+      {
+        "x": -1,
+        "y": 4,
+        "align": "left",
+        "xref": "x",
+        "yref": "y3",
+        "text": "z > 3:",
+        "showarrow": false,
+        "font": {
+          "size": 20
+        }
+      },
+      {
+        "x": -1,
+        "y": 4,
+        "align": "left",
+        "xref": "x",
+        "yref": "y4",
+        "text": "z > 5:",
+        "showarrow": false,
+        "font": {
+          "size": 20
+        }
+      },
+      {
+        "x": -1,
+        "y": 4,
+        "align": "left",
+        "xref": "x",
+        "yref": "y5",
+        "text": "z > 7:",
+        "showarrow": false,
+        "font": {
+          "size": 20
+        }
+      }
+    ]
+  }
+}

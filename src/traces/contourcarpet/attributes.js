@@ -126,14 +126,12 @@ module.exports = extendFlat({}, {
         },
         coloring: {
             valType: 'enumerated',
-            values: ['fill', 'heatmap', 'lines', 'none'],
+            values: ['fill', 'lines', 'none'],
             dflt: 'fill',
             role: 'style',
             description: [
                 'Determines the coloring method showing the contour values.',
                 'If *fill*, coloring is done evenly between each contour level',
-                'If *heatmap*, a heatmap gradient coloring is applied',
-                'between each contour level.',
                 'If *lines*, coloring is done on the contour lines.',
                 'If *none*, no coloring is applied on this trace.'
             ].join(' ')

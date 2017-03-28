@@ -20,6 +20,7 @@ var joinAllPaths = require('./join_all_paths');
 var emptyPathinfo = require('./empty_pathinfo');
 var mapPathinfo = require('./map_pathinfo');
 var lookupCarpet = require('../carpet/lookup_carpetid');
+var closeBoundaries = require('./close_boundaries');
 
 function makeg(el, type, klass) {
     var join = el.selectAll(type + '.' + klass).data([0]);
@@ -61,6 +62,14 @@ function plotOne(gd, plotinfo, cd) {
         return;
     }
 
+    // Define the perimeter in a/b coordinates:
+    var perimeter = [
+        [a[0], b[b.length - 1]],
+        [a[a.length - 1], b[b.length - 1]],
+        [a[a.length - 1], b[0]],
+        [a[0], b[0]]
+    ];
+
     // Extract the contour levels:
     makeCrossings(pathinfo);
     findAllPaths(pathinfo);
@@ -75,21 +84,27 @@ function plotOne(gd, plotinfo, cd) {
     // See: https://github.com/plotly/plotly.js/issues/1356
     if(trace.contours.type === 'constraint') {
         convertToConstraints(pathinfo, trace.contours.operation);
+        closeBoundaries(pathinfo, trace.contours.operation, perimeter, trace);
     }
 
     // Map the paths in a/b coordinates to pixel coordinates:
     mapPathinfo(pathinfo, ab2p);
 
-    // Define the perimeter in a/b coordinates:
-    var perimeter = [
-        [a[0], b[b.length - 1]],
-        [a[a.length - 1], b[b.length - 1]],
-        [a[a.length - 1], b[0]],
-        [a[0], b[0]]
-    ];
-
     // draw everything
     var plotGroup = makeContourGroup(plotinfo, cd, id);
+
+    // Compute the boundary path
+    var seg, xp, yp, i;
+    var segs = [];
+    for(i = carpetcd.clipsegments.length - 1; i >= 0; i--) {
+        seg = carpetcd.clipsegments[i];
+        xp = map1dArray([], seg.x, xa.c2p);
+        yp = map1dArray([], seg.y, ya.c2p);
+        xp.reverse();
+        yp.reverse();
+        segs.push(makepath(xp, yp, seg.bicubic));
+    }
+    var reversedBoundaryPath = 'M' + segs.join('L') + 'Z';
 
     // Draw the baseline background fill that fills in the space behind any other
     // contour levels:
@@ -98,7 +113,7 @@ function plotOne(gd, plotinfo, cd) {
     // Draw the specific contour fills. As a simplification, they're assumed to be
     // fully opaque so that it's easy to draw them simply overlapping. The alternative
     // would be to flip adjacent paths and draw closed paths for each level instead.
-    makeFills(trace, plotGroup, xa, ya, pathinfo, perimeter, ab2p, carpet, carpetcd, contours.coloring);
+    makeFills(trace, plotGroup, xa, ya, pathinfo, perimeter, ab2p, carpet, carpetcd, contours.coloring, reversedBoundaryPath);
 
     // Draw contour lines:
     makeLines(plotGroup, pathinfo, contours);
@@ -183,7 +198,7 @@ function makeBackground(plotgroup, clipsegments, xaxis, yaxis, isConstraint, col
         .style('stroke', 'none');
 }
 
-function makeFills(trace, plotgroup, xa, ya, pathinfo, perimeter, ab2p, carpet, carpetcd, coloring) {
+function makeFills(trace, plotgroup, xa, ya, pathinfo, perimeter, ab2p, carpet, carpetcd, coloring, boundaryPath) {
     var fillgroup = plotgroup.selectAll('g.contourfill')
         .data([0]);
     fillgroup.enter().append('g')
@@ -200,6 +215,10 @@ function makeFills(trace, plotgroup, xa, ya, pathinfo, perimeter, ab2p, carpet, 
         // enclosing the whole thing. With all that, the parity should mean
         // that we always fill everything above the contour, nothing below
         var fullpath = joinAllPaths(trace, pi, perimeter, ab2p, carpet, carpetcd, xa, ya);
+
+        if(pi.prefixBoundary) {
+            fullpath += boundaryPath;
+        }
 
         if(!fullpath) {
             d3.select(this).remove();

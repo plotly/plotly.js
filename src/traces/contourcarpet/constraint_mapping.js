@@ -65,8 +65,6 @@ function makeRangeSettings(operation) {
         var min = Math.min(value[0], value[1]);
         var max = Math.max(value[0], value[1]);
 
-        // Return a mapping function so that we don't have to repeat the math and sanitization
-        // for every point:
         return {
             start: min,
             end: max,
@@ -79,8 +77,6 @@ function makeInequalitySettings(operation) {
     return function(value) {
         value = coerceValue(operation, value);
 
-        // Return a mapping function so that we don't have to repeat the math and sanitization
-        // for every point:
         return {
             start: value,
             end: Infinity,
