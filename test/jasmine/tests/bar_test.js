@@ -305,6 +305,17 @@ describe('Bar.calc', function() {
         assertPointField(cd, 'x', [[0, 1, 2, 3]]);
         assertPointField(cd, 'y', [[1, NaN, NaN, 15]]);
     });
+
+    it('should not exclude items with non-numeric x from calcdata (to plots gaps correctly)', function() {
+        var gd = mockBarPlot([{
+            x: [1, null, 'nonsense', 15],
+            y: [1, 2, 10, 30]
+        }]);
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'x', [[1, NaN, NaN, 15]]);
+        assertPointField(cd, 'y', [[1, 2, 10, 30]]);
+    });
 });
 
 describe('Bar.setPositions', function() {
