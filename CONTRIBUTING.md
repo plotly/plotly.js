@@ -104,6 +104,8 @@ Both jasmine and image tests are run on
 [CircleCI](https://circleci.com/gh/plotly/plotly.js) on every push to this
 repo.
 
+### Jasmine tests
+
 Jasmine tests are run in a browser using
 [karma](https://github.com/karma-runner/karma). To run them locally:
 
@@ -114,17 +116,44 @@ npm run test-jasmine
 To run a specific suite, use:
 
 ```
-npm run test-jasmine -- tests/<suite>.js
+npm run test-jasmine -- <suite>
 ```
 
-where the `<suite>` corresponds to the suite's file name as found in [`test/jasmine/tests/`](https://github.com/plotly/plotly.js/tree/master/test/jasmine/tests). In certain situations, you may find that the default reporting is not verbose enough to pin down the source of the failing test. In this situation, you may wish to use [karma-verbose-reporter](https://www.npmjs.com/package/karma-verbose-reporter). You can use it without adding as a dev dependency by running:
+where the `<suite>` corresponds to the suite's file name as found in
+[`test/jasmine/tests/`](https://github.com/plotly/plotly.js/tree/master/test/jasmine/tests).
+
+You can also test multiple suites at a time, for example:
 
 ```
-npm install karma-verbose-reporter
+npm run test-jasmine -- bar axes scatter
 ```
 
-and adding `reporters: ['verbose']` to the corresponding karma configuration file. (You should disable the `progress` reporter when using `verbose`.)
+which will run tests in the `bar_test.js`, `axes_test.js` and `scatter_test.js`
+suites.
 
+To turn off the `autoWatch` / auto-bundle / multiple run mode:
+
+```
+npm run test-jasmine -- <suite> --nowatch
+```
+
+In certain situations, you may find that the default reporting is not verbose
+enough to pin down the source of the failing test. In this situation, you may
+wish to use
+[karma-verbose-reporter](https://www.npmjs.com/package/karma-verbose-reporter):
+
+```
+npm run test-jasmine -- <suite> --verbose
+```
+
+For more info on the karma / jasmine CLI:
+
+```
+npm run test-jasmine -- --help
+npm run test-jasmine -- --info
+```
+
+### Image pixel comparison tests
 
 Image pixel comparison tests are run in a docker container. For more
 information on how to run them locally, please refer to [image test
