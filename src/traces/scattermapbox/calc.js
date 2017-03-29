@@ -27,7 +27,8 @@ module.exports = function calc(gd, trace) {
         hasColorArray = (hasMarkers && Array.isArray(marker.color)),
         hasSizeArray = (hasMarkers && Array.isArray(marker.size)),
         hasSymbolArray = (hasMarkers && Array.isArray(marker.symbol)),
-        hasTextArray = Array.isArray(trace.text);
+        hasTextArray = Array.isArray(trace.text),
+        hasHoverTextArray = Array.isArray(trace.hovertext);
 
     calcMarkerColorscale(trace);
 
@@ -92,6 +93,11 @@ module.exports = function calc(gd, trace) {
         if(hasTextArray) {
             var tx = trace.text[i];
             calcPt.tx = (typeof tx === 'string') ? tx : '';
+        }
+
+        if(hasHoverTextArray) {
+            var htx = trace.hovertext[i];
+            calcPt.htx = (typeof htx === 'string') ? htx : '';
         }
 
         calcTrace.push(calcPt);
