@@ -27,19 +27,15 @@ module.exports = {
     // locations
     // locationmode
 
-    mode: {
-        valType: 'flaglist',
-        flags: ['lines', 'markers', 'text'],
+    mode: extendFlat({}, scatterAttrs.mode, {
         dflt: 'markers',
-        extras: ['none'],
-        role: 'info',
         description: [
             'Determines the drawing mode for this scatter trace.',
             'If the provided `mode` includes *text* then the `text` elements',
             'appear at the coordinates. Otherwise, the `text` elements',
             'appear on hover.'
         ].join(' ')
-    },
+    }),
 
     text: extendFlat({}, scatterAttrs.text, {
         description: [
