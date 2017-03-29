@@ -227,7 +227,7 @@
     }
   ],
   "layout": {
-    "title": "High-top outer range constraint with hill in the middle",
+    "title": "Outer range constraint with z = 6 in the middle",
     "width": 600,
     "height": 800,
     "dragmode": "pan",
@@ -262,7 +262,7 @@
       {
         "x": -1,
         "y": 4,
-        "text": "-100 < z < -1:",
+        "text": "z < -100 | z > -1:",
         "align": "left",
         "xref": "x",
         "yref": "y",
@@ -277,7 +277,7 @@
         "y": 4,
         "xref": "x",
         "yref": "y2",
-        "text": "-100 < z < 1:",
+        "text": "z < -100 | z > 1:",
         "showarrow": false,
         "font": {
           "size": 14
@@ -289,7 +289,7 @@
         "align": "left",
         "xref": "x",
         "yref": "y3",
-        "text": "-100 < z < 3:",
+        "text": "z < -100 | z > 3:",
         "showarrow": false,
         "font": {
           "size": 14
@@ -301,7 +301,7 @@
         "align": "left",
         "xref": "x",
         "yref": "y4",
-        "text": "-100 < z < 5:",
+        "text": "z < -100 | z > 5:",
         "showarrow": false,
         "font": {
           "size": 14
@@ -313,7 +313,7 @@
         "align": "left",
         "xref": "x",
         "yref": "y5",
-        "text": "-100 < z < 7:",
+        "text": "z < -100 | z > 7:",
         "showarrow": false,
         "font": {
           "size": 14

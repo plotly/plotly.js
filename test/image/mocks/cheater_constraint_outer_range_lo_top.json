@@ -182,7 +182,7 @@
     }
   ],
   "layout": {
-    "title": "High-top outer range constraint with hill in the middle",
+    "title": "Outer range constraint",
     "width": 600,
     "height": 800,
     "dragmode": "pan",
@@ -214,7 +214,7 @@
       {
         "x": -1,
         "y": 4,
-        "text": "-100 < y < -1:",
+        "text": "y < -100 | y > -1:",
         "align": "left",
         "xref": "x",
         "yref": "y",
@@ -229,7 +229,7 @@
         "y": 4,
         "xref": "x",
         "yref": "y2",
-        "text": "-100 < y < 1:",
+        "text": "y < -100 | y > 1:",
         "showarrow": false,
         "font": {
           "size": 14
@@ -241,7 +241,7 @@
         "align": "left",
         "xref": "x",
         "yref": "y3",
-        "text": "-100 < y < 3:",
+        "text": "y < -100 | y > 3:",
         "showarrow": false,
         "font": {
           "size": 14
@@ -253,7 +253,7 @@
         "align": "left",
         "xref": "x",
         "yref": "y4",
-        "text": "-100 < y < 5:",
+        "text": "y < -100 | y > 5:",
         "showarrow": false,
         "font": {
           "size": 14

@@ -16,18 +16,20 @@
     {
       "type": "contourcarpet",
       "z": [[0, 0, 0], [1, 1, 1], [2, -1, 2], [3, 3, 3]],
+      "name": "almost filled",
       "contours": {
         "type": "constraint",
-        "value": 0.01,
+        "value": 0.05,
         "operation": "<"
       }
     },
     {
       "type": "contourcarpet",
+      "name": "fully filled",
       "z": [[0, 0, 0], [1, 1, 1], [2, -1, 2], [3, 3, 3]],
       "contours": {
         "type": "constraint",
-        "value": -0.01,
+        "value": -0.05,
         "operation": "<"
       }
     }

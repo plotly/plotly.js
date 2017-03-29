@@ -182,7 +182,7 @@
     }
   ],
   "layout": {
-    "title": "Less than constraint with hill in the middle",
+    "title": "Greater than constraint",
     "width": 600,
     "height": 800,
     "dragmode": "pan",

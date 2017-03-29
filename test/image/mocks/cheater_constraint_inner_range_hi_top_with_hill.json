@@ -3,81 +3,81 @@
     {
       "type": "contourcarpet",
       "carpetid": "c9",
-      "z": [[0, 0.8, 2], [1.2, -2, 3.2], [2, 2.8, 4]],
+      "z": [[0, 0.8, 2], [1.2, 6, 3.2], [2, 2.8, 4]],
       "showlegend": false,
       "contours": {
         "type": "constraint",
-        "operation": "][",
-        "value": [5.5, 6.5]
+        "operation": "[]",
+        "value": [7, 100]
       },
       "line": {"smoothing": 0}
     },
     {
       "type": "contourcarpet",
       "carpetid": "c10",
-      "z": [[0, 0.8, 2], [1.2, -2, 3.2], [2, 2.8, 4]],
+      "z": [[0, 0.8, 2], [1.2, 6, 3.2], [2, 2.8, 4]],
       "showlegend": false,
       "contours": {
         "type": "constraint",
-        "operation": "][",
-        "value": [5.5, 6.5]
+        "operation": "[]",
+        "value": [7, 100]
       }
     },
     {
       "type": "contourcarpet",
       "carpetid": "c7",
-      "z": [[0, 0.8, 2], [1.2, -2, 3.2], [2, 2.8, 4]],
+      "z": [[0, 0.8, 2], [1.2, 6, 3.2], [2, 2.8, 4]],
       "showlegend": false,
       "contours": {
         "type": "constraint",
-        "operation": "][",
-        "value": [3.5, 4.5]
+        "operation": "[]",
+        "value": [5, 100]
       },
       "line": {"smoothing": 0}
     },
     {
       "type": "contourcarpet",
       "carpetid": "c8",
-      "z": [[0, 0.8, 2], [1.2, -2, 3.2], [2, 2.8, 4]],
+      "z": [[0, 0.8, 2], [1.2, 6, 3.2], [2, 2.8, 4]],
       "showlegend": false,
       "contours": {
         "type": "constraint",
-        "operation": "][",
-        "value": [3.5, 4.5]
+        "operation": "[]",
+        "value": [5, 100]
       }
     },
     {
       "type": "contourcarpet",
       "carpetid": "c5",
-      "z": [[0, 0.8, 2], [1.2, -2, 3.2], [2, 2.8, 4]],
+      "z": [[0, 0.8, 2], [1.2, 6, 3.2], [2, 2.8, 4]],
       "showlegend": false,
       "contours": {
         "type": "constraint",
-        "operation": "][",
-        "value": [1.5, 2.5]
+        "operation": "[]",
+        "value": [3, 100]
       },
       "line": {"smoothing": 0}
     },
     {
       "type": "contourcarpet",
       "carpetid": "c6",
-      "z": [[0, 0.8, 2], [1.2, -2, 3.2], [2, 2.8, 4]],
+      "z": [[0, 0.8, 2], [1.2, 6, 3.2], [2, 2.8, 4]],
       "showlegend": false,
       "contours": {
         "type": "constraint",
-        "operation": "][",
-        "value": [1.5, 2.5]
+        "operation": "[]",
+        "value": [3, 100]
       }
     },
     {
       "type": "contourcarpet",
       "carpetid": "c3",
-      "z": [[0, 0.8, 2], [1.2, -2, 3.2], [2, 2.8, 4]],
+      "z": [[0, 0.8, 2], [1.2, 6, 3.2], [2, 2.8, 4]],
       "showlegend": false,
       "contours": {
         "type": "constraint",
-        "operation": "][",
-        "value": [-0.5, 0.5]
+        "operation": "[]",
+        "value": [1, 100]
       },
       "line": {"smoothing": 0}
     },
@@ -85,22 +85,22 @@
       "type": "contourcarpet",
       "carpetid": "c4",
       "showlegend": false,
-      "z": [[0, 0.8, 2], [1.2, -2, 3.2], [2, 2.8, 4]],
+      "z": [[0, 0.8, 2], [1.2, 6, 3.2], [2, 2.8, 4]],
       "contours": {
         "type": "constraint",
-        "operation": "][",
-        "value": [-0.5, 0.5]
+        "operation": "[]",
+        "value": [1, 100]
       }
     },
     {
       "type": "contourcarpet",
       "carpetid": "c1",
-      "z": [[0, 0.8, 2], [1.2, -2, 3.2], [2, 2.8, 4]],
+      "z": [[0, 0.8, 2], [1.2, 6, 3.2], [2, 2.8, 4]],
       "showlegend": false,
       "contours": {
         "type": "constraint",
-        "operation": "][",
-        "value": [-2.5, -1.5]
+        "operation": "[]",
+        "value": [-1, 100]
       },
       "line": {"smoothing": 0}
     },
@@ -108,11 +108,11 @@
       "type": "contourcarpet",
       "carpetid": "c2",
       "showlegend": false,
-      "z": [[0, 0.8, 2], [1.2, -2, 3.2], [2, 2.8, 4]],
+      "z": [[0, 0.8, 2], [1.2, 6, 3.2], [2, 2.8, 4]],
       "contours": {
         "type": "constraint",
-        "operation": "][",
-        "value": [-2.5, -1.5]
+        "operation": "[]",
+        "value": [-1, 100]
       }
     },
     {
@@ -227,7 +227,7 @@
     }
   ],
   "layout": {
-    "title": "Outer range constraint with z = -2 in the middle",
+    "title": "Inner range constraint with z = 6 in the middle",
     "width": 600,
     "height": 800,
     "dragmode": "pan",
@@ -262,7 +262,7 @@
       {
         "x": -1,
         "y": 4,
-        "text": "z < -2.5 | z > -1.5:",
+        "text": "-1 < z < 100:",
         "align": "left",
         "xref": "x",
         "yref": "y",
@@ -277,7 +277,7 @@
         "y": 4,
         "xref": "x",
         "yref": "y2",
-        "text": "z < -0.5 | z > 0.5:",
+        "text": "1 < z < 100:",
         "showarrow": false,
         "font": {
           "size": 14
@@ -289,7 +289,7 @@
         "align": "left",
         "xref": "x",
         "yref": "y3",
-        "text": "z < 1.5 | z > 2.5:",
+        "text": "3 < z < 100:",
         "showarrow": false,
         "font": {
           "size": 14
@@ -301,7 +301,7 @@
         "align": "left",
         "xref": "x",
         "yref": "y4",
-        "text": "z < 3.5 | z > 4.5:",
+        "text": "5 < z < 100:",
         "showarrow": false,
         "font": {
           "size": 14
@@ -313,7 +313,7 @@
         "align": "left",
         "xref": "x",
         "yref": "y5",
-        "text": "z < 5.5 | z > 6.5:",
+        "text": "7 < z < 100:",
         "showarrow": false,
         "font": {
           "size": 14

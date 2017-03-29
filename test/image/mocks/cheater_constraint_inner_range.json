@@ -227,7 +227,7 @@
     }
   ],
   "layout": {
-    "title": "Inner range constraint with hill in the middle",
+    "title": "Inner range constraint",
     "width": 600,
     "height": 800,
     "dragmode": "pan",

@@ -262,7 +262,7 @@
       {
         "x": -1,
         "y": 4,
-        "text": "-2.5 < y < -1.5:",
+        "text": "y < -2.5 | y > -1.5:",
         "align": "left",
         "xref": "x",
         "yref": "y",
@@ -277,7 +277,7 @@
         "y": 4,
         "xref": "x",
         "yref": "y2",
-        "text": "-0.5 < y < 0.5:",
+        "text": "y < -0.5 | y > 0.5:",
         "showarrow": false,
         "font": {
           "size": 14
@@ -289,7 +289,7 @@
         "align": "left",
         "xref": "x",
         "yref": "y3",
-        "text": "1.5 < y < 2.5:",
+        "text": "y < 1.5 | y > 2.5:",
         "showarrow": false,
         "font": {
           "size": 14
@@ -301,7 +301,7 @@
         "align": "left",
         "xref": "x",
         "yref": "y4",
-        "text": "3.5 < y < 4.5:",
+        "text": "y < 3.5 | y > 4.5:",
         "showarrow": false,
         "font": {
           "size": 14
@@ -313,7 +313,7 @@
         "align": "left",
         "xref": "x",
         "yref": "y5",
-        "text": "5.5 < y < 6.5:",
+        "text": "y < 5.5 | y > 6.5:",
         "showarrow": false,
         "font": {
           "size": 14

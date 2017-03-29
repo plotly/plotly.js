@@ -227,7 +227,7 @@
     }
   ],
   "layout": {
-    "title": "Less than constraint with hill in the middle",
+    "title": "Less than constraint with z = 6 in the middle",
     "width": 600,
     "height": 800,
     "dragmode": "pan",
