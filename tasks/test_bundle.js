@@ -9,7 +9,7 @@ var pathToJasmineBundleTests = path.join(constants.pathToJasmineBundleTests);
 glob(pathToJasmineBundleTests + '/*.js', function(err, files) {
     files.forEach(function(file) {
         var baseName = path.basename(file);
-        var cmd = 'npm run citest-jasmine -- bundle_tests/' + baseName;
+        var cmd = 'npm run test-jasmine -- --bundleTest=' + baseName;
 
         common.execCmd(cmd);
     });
