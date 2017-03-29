@@ -2764,6 +2764,13 @@ Plotly.deleteFrames = function(gd, frameList) {
     var ops = [];
     var revops = [];
 
+    if(!frameList) {
+        frameList = [];
+        for(i = 0; i < _frames.length; i++) {
+            frameList.push(i);
+        }
+    }
+
     frameList = frameList.slice(0);
     frameList.sort();
 
