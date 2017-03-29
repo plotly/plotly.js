@@ -63,6 +63,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('sum');
 
     coerce('text');
+    coerce('hovertext');
 
     var defaultMode = len < constants.PTS_LINESONLY ? 'lines+markers' : 'lines';
     coerce('mode', defaultMode);
