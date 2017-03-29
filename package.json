@@ -124,6 +124,7 @@
     "karma-spec-reporter": "0.0.30",
     "karma-verbose-reporter": "0.0.6",
     "madge": "^1.6.0",
+    "minimist": "^1.2.0",
     "node-sass": "^4.5.0",
     "npm-link-check": "^1.2.0",
     "open": "0.0.5",
