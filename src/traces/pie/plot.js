@@ -137,8 +137,8 @@ module.exports = function plot(gd, cdpie) {
                 }
 
                 function handleClick() {
+                    pt.trace = trace;
                     gd._hoverdata = [pt];
-                    gd._hoverdata.trace = cd.trace;
                     Fx.click(gd, { target: true });
                 }
 
