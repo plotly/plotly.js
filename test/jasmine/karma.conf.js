@@ -7,15 +7,16 @@ var constants = require('../../tasks/util/constants');
 var isCI = !!process.env.CIRCLECI;
 var argv = minimist(process.argv.slice(4), {
     string: ['bundleTest', 'width', 'height'],
-    'boolean': ['info', 'watch', 'verbose', 'Chrome', 'Firefox'],
+    'boolean': ['info', 'nowatch', 'verbose', 'Chrome', 'Firefox'],
     alias: {
         'Chrome': 'chrome',
         'Firefox': ['firefox', 'FF'],
-        'bundleTest': ['bundletest', 'bundle_test']
+        'bundleTest': ['bundletest', 'bundle_test'],
+        'nowatch': 'no-watch'
     },
     'default': {
         info: false,
-        watch: false,
+        nowatch: isCI,
         verbose: false,
         width: '1035',
         height: '617'
@@ -28,8 +29,8 @@ if(argv.info) {
         '',
         'Examples:',
         '',
-        'Run `axes_test.js`, `bar_test.js` and `scatter_test.js` suites in `autoWatch` / multiple run mode:',
-        '  $ npm run test-jasmine -- axes bar_test.js scatter --watch',
+        'Run `axes_test.js`, `bar_test.js` and `scatter_test.js` suites w/o `autoWatch`:',
+        '  $ npm run test-jasmine -- axes bar_test.js scatter --nowatch',
         '',
         'Run all tests with the `noCI` tag on Firefox in a 1500px wide window:',
         '  $ npm run test-jasmine -- --tags=noCI --FF --width=1500',
@@ -47,7 +48,7 @@ if(argv.info) {
         '  - `--info`: show this info message',
         '  - `--Chrome` (alias `--chrome`): run test in (our custom) Chrome browser',
         '  - `--Firefox` (alias `--FF`, `--firefox`): run test in (our custom) Firefox browser',
-        '  - `--watch (dflt: `false`)`: run karma in `autoWatch` / multiple run mode',
+        '  - `--nowatch (dflt: `false`, `true` on CI)`: run karma w/o `autoWatch` / multiple run mode',
         '  - `--verbose` (dflt: `false`): show test result using verbose reporter',
         '  - `--tags`: run only test with given tags (using the `jasmine-spec-tags` framework)',
         '  - `--width`(dflt: 1035): set width of the browser window',
@@ -158,10 +159,10 @@ func.defaultConfig = {
     colors: true,
 
     // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: argv.watch,
+    autoWatch: !argv.nowatch,
 
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: !argv.watch,
+    singleRun: argv.nowatch,
 
     // how long will Karma wait for a message from a browser before disconnecting (30 ms)
     browserNoActivityTimeout: 30000,
@@ -194,7 +195,7 @@ func.defaultConfig = {
     browserify: {
         transform: [pathToShortcutPath],
         extensions: ['.js'],
-        watch: argv.watch,
+        watch: !argv.nowatch,
         debug: true
     },
 

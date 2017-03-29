@@ -131,10 +131,10 @@ npm run test-jasmine -- bar axes scatter
 which will run tests in the `bar_test.js`, `axes_test.js` and `scatter_test.js`
 suites.
 
-To run the tests in an `autoWatch` / auto-bundle / multiple run mode:
+To turn off the `autoWatch` / auto-bundle / multiple run mode:
 
 ```
-npm run test-jasmine -- <suite> --watch
+npm run test-jasmine -- <suite> --nowatch
 ```
 
 In certain situations, you may find that the default reporting is not verbose
