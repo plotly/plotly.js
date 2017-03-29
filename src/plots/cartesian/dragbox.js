@@ -567,14 +567,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         var doubleClickConfig = gd._context.doubleClick,
             axList = (xActive ? xa : []).concat(yActive ? ya : []),
-            linkedAxList = (xActive || isSubplotConstrained ? xaLinked : [])
-                .concat(yActive ? yaLinked : []),
             attrs = {};
-
-        if(isSubplotConstrained) {
-            if(!xActive) linkedAxList = linkedAxList.concat(xa);
-            else if(!yActive) linkedAxList = linkedAxList.concat(ya);
-        }
 
         var ax, i, rangeInitial;
 
@@ -602,14 +595,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
 
         if(doubleClickConfig === 'autosize') {
-            // when we're autosizing one or a few axes, mark the other axes as
-            // "shrinkable" so that we don't expand to cover whatever their
-            // current ranges might be, but instead we just autosize to the
-            // selected axes
-            for(i = 0; i < linkedAxList.length; i++) {
-                linkedAxList[i]._constraintShrinkable = true;
-            }
-
+            // don't set the linked axes here, so relayout marks them as shrinkable
+            // and we autosize just to the requested axis/axes
             for(i = 0; i < axList.length; i++) {
                 ax = axList[i];
                 if(!ax.fixedrange) attrs[ax._name + '.autorange'] = true;
@@ -618,7 +605,13 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         else if(doubleClickConfig === 'reset') {
             // when we're resetting, reset all linked axes too, so we get back
             // to the fully-auto-with-constraints situation
-            axList = axList.concat(linkedAxList);
+            if(xActive || isSubplotConstrained) axList = axList.concat(xaLinked);
+            if(yActive && !isSubplotConstrained) axList = axList.concat(yaLinked);
+
+            if(isSubplotConstrained) {
+                if(!xActive) axList = axList.concat(xa);
+                else if(!yActive) axList = axList.concat(ya);
+            }
 
             for(i = 0; i < axList.length; i++) {
                 ax = axList[i];
@@ -645,13 +638,10 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         var attrs = {};
         // revert to the previous axis settings, then apply the new ones
         // through relayout - this lets relayout manage undo/redo
-        var axesToModify = [];
-        if(zoommode === 'x' || zoommode === 'xy') {
-            axesToModify = xa.concat(xaLinked);
-        }
-        if(zoommode === 'y' || zoommode === 'xy') {
-            axesToModify = axesToModify.concat(ya, yaLinked);
-        }
+        var axesToModify;
+        if(zoommode === 'xy') axesToModify = xa.concat(ya);
+        else if(zoommode === 'x') axesToModify = xa;
+        else if(zoommode === 'y') axesToModify = ya;
 
         for(var i = 0; i < axesToModify.length; i++) {
             var axi = axesToModify[i];
