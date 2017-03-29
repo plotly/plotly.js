@@ -46,7 +46,7 @@ describe('Test gl3d plots', function() {
         mouseEvent(type, 605, 271, opts);
     }
 
-    function assertHoverText(xLabel, yLabel, zLabel) {
+    function assertHoverText(xLabel, yLabel, zLabel, textLabel) {
         var node = d3.selectAll('g.hovertext');
         expect(node.size()).toEqual(1, 'hover text group');
 
@@ -54,6 +54,10 @@ describe('Test gl3d plots', function() {
         expect(tspan[0].innerHTML).toEqual(xLabel, 'x val');
         expect(tspan[1].innerHTML).toEqual(yLabel, 'y val');
         expect(tspan[2].innerHTML).toEqual(zLabel, 'z val');
+
+        if(textLabel) {
+            expect(tspan[3].innerHTML).toEqual(textLabel, 'text label');
+        }
     }
 
     function assertEventData(x, y, z, curveNumber, pointNumber) {
@@ -132,6 +136,18 @@ describe('Test gl3d plots', function() {
         .then(_hover)
         .then(function() {
             assertHoverText('x: 二 6, 2017', 'y: c', 'z: 100k');
+
+            return Plotly.restyle(gd, 'text', [['A', 'B', 'C', 'D']]);
+        })
+        .then(_hover)
+        .then(function() {
+            assertHoverText('x: 二 6, 2017', 'y: c', 'z: 100k', 'C');
+
+            return Plotly.restyle(gd, 'hovertext', [['Apple', 'Banana', 'Clementine', 'Dragon fruit']]);
+        })
+        .then(_hover)
+        .then(function() {
+            assertHoverText('x: 二 6, 2017', 'y: c', 'z: 100k', 'Clementine');
         })
         .then(done);
 
