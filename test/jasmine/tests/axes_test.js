@@ -449,14 +449,14 @@ describe('Test axes', function() {
             layoutIn = {
                 // first group: linked in series, scales compound
                 xaxis: {},
-                yaxis: {scalewith: 'x', scaleratio: 2},
-                xaxis2: {scalewith: 'y', scaleratio: 3},
-                yaxis2: {scalewith: 'x2', scaleratio: 5},
+                yaxis: {scaleanchor: 'x', scaleratio: 2},
+                xaxis2: {scaleanchor: 'y', scaleratio: 3},
+                yaxis2: {scaleanchor: 'x2', scaleratio: 5},
                 // second group: linked in parallel, scales don't compound
                 yaxis3: {},
-                xaxis3: {scalewith: 'y3'},  // default scaleratio: 1
-                xaxis4: {scalewith: 'y3', scaleratio: 7},
-                xaxis5: {scalewith: 'y3', scaleratio: 9}
+                xaxis3: {scaleanchor: 'y3'},  // default scaleratio: 1
+                xaxis4: {scaleanchor: 'y3', scaleratio: 7},
+                xaxis5: {scaleanchor: 'y3', scaleratio: 9}
             };
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
@@ -467,20 +467,20 @@ describe('Test axes', function() {
             ]);
         });
 
-        it('breaks scalewith loops and drops conflicting ratios', function() {
+        it('breaks scaleanchor loops and drops conflicting ratios', function() {
             var warnings = [];
             spyOn(Lib, 'warn').and.callFake(function(msg) {
                 warnings.push(msg);
             });
 
             layoutIn = {
-                xaxis: {scalewith: 'y', scaleratio: 2},
-                yaxis: {scalewith: 'x', scaleratio: 3},
+                xaxis: {scaleanchor: 'y', scaleratio: 2},
+                yaxis: {scaleanchor: 'x', scaleratio: 3},
 
-                xaxis2: {scalewith: 'y2', scaleratio: 5},
-                yaxis2: {scalewith: 'x3', scaleratio: 7},
-                xaxis3: {scalewith: 'y3', scaleratio: 9},
-                yaxis3: {scalewith: 'x2', scaleratio: 11}
+                xaxis2: {scaleanchor: 'y2', scaleratio: 5},
+                yaxis2: {scaleanchor: 'x3', scaleratio: 7},
+                xaxis3: {scaleanchor: 'y3', scaleratio: 9},
+                yaxis3: {scaleanchor: 'x2', scaleratio: 11}
             };
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
@@ -490,24 +490,26 @@ describe('Test axes', function() {
                 {x2: 5 * 7 * 9, y2: 7 * 9, y3: 1, x3: 9}
             ]);
 
+            var warnTxt = ' to avoid either an infinite loop and possibly ' +
+                'inconsistent scaleratios, or because the targetaxis has ' +
+                'fixed range.';
+
             expect(warnings).toEqual([
-                'ignored yaxis.scalewith: "x" to avoid an infinite loop ' +
-                    'and possibly inconsistent scaleratios.',
-                'ignored yaxis3.scalewith: "x2" to avoid an infinite loop ' +
-                    'and possibly inconsistent scaleratios.'
+                'ignored yaxis.scaleanchor: "x"' + warnTxt,
+                'ignored yaxis3.scaleanchor: "x2"' + warnTxt
             ]);
         });
 
-        it('silently drops invalid scalewith values', function() {
+        it('silently drops invalid scaleanchor values', function() {
             var warnings = [];
             spyOn(Lib, 'warn').and.callFake(function(msg) {
                 warnings.push(msg);
             });
 
             layoutIn = {
-                xaxis: {scalewith: 'x2', scaleratio: 2}, // must be opposite letter
-                yaxis: {scalewith: 'x4', scaleratio: 3}, // doesn't exist
-                xaxis2: {scalewith: 'yaxis', scaleratio: 5} // must be an id, not a name
+                xaxis: {scaleanchor: 'x2', scaleratio: 2}, // must be opposite letter
+                yaxis: {scaleanchor: 'x4', scaleratio: 3}, // doesn't exist
+                xaxis2: {scaleanchor: 'yaxis', scaleratio: 5} // must be an id, not a name
             };
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
@@ -516,7 +518,50 @@ describe('Test axes', function() {
             expect(warnings).toEqual([]);
 
             ['xaxis', 'yaxis', 'xaxis2'].forEach(function(axName) {
-                expect(layoutOut[axName].scalewith).toBeUndefined();
+                expect(layoutOut[axName].scaleanchor).toBeUndefined(axName);
+                expect(layoutOut[axName].scaleratio).toBeUndefined(axName);
+            });
+        });
+
+        it('will not link axes of different types', function() {
+            layoutIn = {
+                xaxis: {type: 'linear'},
+                yaxis: {type: 'log', scaleanchor: 'x', scaleratio: 2},
+                xaxis2: {type: 'date', scaleanchor: 'y', scaleratio: 3},
+                yaxis2: {type: 'category', scaleanchor: 'x2', scaleratio: 5}
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisConstraintGroups).toEqual([]);
+
+            ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function(axName) {
+                expect(layoutOut[axName].scaleanchor).toBeUndefined(axName);
+                expect(layoutOut[axName].scaleratio).toBeUndefined(axName);
+            });
+        });
+
+        it('drops scaleanchor settings if either the axis or target has fixedrange', function() {
+            // some of these will create warnings... not too important, so not going to test,
+            // just want to keep the output clean
+            // spyOn(Lib, 'warn');
+
+            layoutIn = {
+                xaxis: {fixedrange: true, scaleanchor: 'y', scaleratio: 2},
+                yaxis: {scaleanchor: 'x2', scaleratio: 3}, // only this one should survive
+                xaxis2: {},
+                yaxis2: {scaleanchor: 'x', scaleratio: 5}
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisConstraintGroups).toEqual([{x2: 1, y: 3}]);
+
+            expect(layoutOut.yaxis.scaleanchor).toBe('x2');
+            expect(layoutOut.yaxis.scaleratio).toBe(3);
+
+            ['xaxis', 'yaxis2', 'xaxis2'].forEach(function(axName) {
+                expect(layoutOut[axName].scaleanchor).toBeUndefined();
                 expect(layoutOut[axName].scaleratio).toBeUndefined();
             });
         });

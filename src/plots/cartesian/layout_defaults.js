@@ -117,7 +117,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     var bgColor = Color.combine(plot_bgcolor, layoutOut.paper_bgcolor);
 
-    var axName, axLayoutIn, axLayoutOut;
+    var axName, axLetter, axLayoutIn, axLayoutOut;
 
     function coerce(attr, dflt) {
         return Lib.coerce(axLayoutIn, axLayoutOut, layoutAttributes, attr, dflt);
@@ -127,6 +127,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         var list = {x: yaList, y: xaList}[axLetter];
         return Lib.simpleMap(list, axisIds.name2id);
     }
+
+    var counterAxes = {x: getCounterAxes('x'), y: getCounterAxes('y')};
 
     function getOverlayableAxes(axLetter, axName) {
         var list = {x: xaList, y: yaList}[axLetter];
@@ -143,12 +145,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         return out;
     }
 
-    // sets of axes linked by `scaleanchor` along with the scaleratios compounded
-    // together, populated in handleConstraintDefaults
-    layoutOut._axisConstraintGroups = [];
-
-    // first pass creates the containers and determines types, because
-    // we need to have all types predetermined before setting constraints
+    // first pass creates the containers, determines types, and handles most of the settings
     for(i = 0; i < axesList.length; i++) {
         axName = axesList[i];
 
@@ -160,17 +157,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutOut = layoutOut[axName] = {};
 
         handleTypeDefaults(axLayoutIn, axLayoutOut, coerce, fullData, axName);
-    }
 
-    // second pass handles most of the settings
-    for(i = 0; i < axesList.length; i++) {
-        axName = axesList[i];
-
-        axLayoutIn = layoutIn[axName];
-        axLayoutOut = layoutOut[axName];
-
-        var axLetter = axName.charAt(0);
-        var counterAxes = getCounterAxes(axLetter);
+        axLetter = axName.charAt(0);
         var overlayableAxes = getOverlayableAxes(axLetter, axName);
 
         var defaultOptions = {
@@ -185,11 +173,9 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
 
-        handleConstraintDefaults(axLayoutIn, axLayoutOut, coerce, counterAxes, layoutOut);
-
         var positioningOptions = {
             letter: axLetter,
-            counterAxes: counterAxes,
+            counterAxes: counterAxes[axLetter],
             overlayableAxes: overlayableAxes
         };
 
@@ -198,7 +184,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutOut._input = axLayoutIn;
     }
 
-    // quick third pass for range slider and selector defaults
+    // quick second pass for range slider and selector defaults
     var rangeSliderDefaults = Registry.getComponentMethod('rangeslider', 'handleDefaults'),
         rangeSelectorDefaults = Registry.getComponentMethod('rangeselector', 'handleDefaults');
 
@@ -236,5 +222,23 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         );
 
         coerce('fixedrange', fixedRangeDflt);
+    }
+
+    // Finally, handle scale constraints. We need to do this after all axes have
+    // coerced both `type` (so we link only axes of the same type) and
+    // `fixedrange` (so we can avoid linking from OR TO a fixed axis).
+
+    // sets of axes linked by `scaleanchor` along with the scaleratios compounded
+    // together, populated in handleConstraintDefaults
+    layoutOut._axisConstraintGroups = [];
+
+    for(i = 0; i < axesList.length; i++) {
+        axName = axesList[i];
+        axLetter = axName.charAt(0);
+
+        axLayoutIn = layoutIn[axName];
+        axLayoutOut = layoutOut[axName];
+
+        handleConstraintDefaults(axLayoutIn, axLayoutOut, coerce, counterAxes[axLetter], layoutOut);
     }
 };

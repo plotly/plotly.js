@@ -2107,6 +2107,7 @@ function _relayout(gd, aobj) {
                     pp1 === 'rangemode' ||
                     pp1 === 'type' ||
                     pp1 === 'domain' ||
+                    pp1 === 'fixedrange' ||
                     ai.indexOf('calendar') !== -1 ||
                     ai.match(/^(bar|box|font)/)) {
                 flags.docalc = true;

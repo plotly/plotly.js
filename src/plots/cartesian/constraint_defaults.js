@@ -16,7 +16,7 @@ var id2name = require('./axis_ids').id2name;
 module.exports = function handleConstraintDefaults(containerIn, containerOut, coerce, counterAxes, layoutOut) {
     var constraintGroups = layoutOut._axisConstraintGroups;
 
-    if(!containerIn.scaleanchor) return;
+    if(containerOut.fixedrange || !containerIn.scaleanchor) return;
 
     var constraintOpts = getConstraintOpts(constraintGroups, containerOut._id, counterAxes, layoutOut);
 
@@ -41,8 +41,9 @@ module.exports = function handleConstraintDefaults(containerIn, containerOut, co
     }
     else if(counterAxes.indexOf(containerIn.scaleanchor) !== -1) {
         Lib.warn('ignored ' + containerOut._name + '.scaleanchor: "' +
-            containerIn.scaleanchor + '" to avoid an infinite loop ' +
-            'and possibly inconsistent scaleratios.');
+            containerIn.scaleanchor + '" to avoid either an infinite loop ' +
+            'and possibly inconsistent scaleratios, or because the target' +
+            'axis has fixed range.');
     }
 };
 
@@ -53,23 +54,29 @@ function getConstraintOpts(constraintGroups, thisID, counterAxes, layoutOut) {
 
     var thisType = layoutOut[id2name(thisID)].type;
 
-    var i, j, idj;
+    var i, j, idj, axj;
+
+    var linkableAxes = [];
+    for(j = 0; j < counterAxes.length; j++) {
+        idj = counterAxes[j];
+        axj = layoutOut[id2name(idj)];
+        if(axj.type === thisType && !axj.fixedrange) linkableAxes.push(idj);
+    }
+
     for(i = 0; i < constraintGroups.length; i++) {
         if(constraintGroups[i][thisID]) {
             var thisGroup = constraintGroups[i];
 
-            var linkableAxes = [];
-            for(j = 0; j < counterAxes.length; j++) {
-                idj = counterAxes[j];
-                if(!thisGroup[idj] && layoutOut[id2name(idj)].type === thisType) {
-                    linkableAxes.push(idj);
-                }
+            var linkableAxesNoLoops = [];
+            for(j = 0; j < linkableAxes.length; j++) {
+                idj = linkableAxes[j];
+                if(!thisGroup[idj]) linkableAxesNoLoops.push(idj);
             }
-            return {linkableAxes: linkableAxes, thisGroup: thisGroup};
+            return {linkableAxes: linkableAxesNoLoops, thisGroup: thisGroup};
         }
     }
 
-    return {linkableAxes: counterAxes, thisGroup: null};
+    return {linkableAxes: linkableAxes, thisGroup: null};
 }
 
 
