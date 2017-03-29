@@ -143,7 +143,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         return out;
     }
 
-    // sets of axes linked by `scalewith` along with the scaleratios compounded
+    // sets of axes linked by `scaleanchor` along with the scaleratios compounded
     // together, populated in handleConstraintDefaults
     layoutOut._axisConstraintGroups = [];
 

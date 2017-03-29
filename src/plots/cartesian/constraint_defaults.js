@@ -16,18 +16,18 @@ var id2name = require('./axis_ids').id2name;
 module.exports = function handleConstraintDefaults(containerIn, containerOut, coerce, counterAxes, layoutOut) {
     var constraintGroups = layoutOut._axisConstraintGroups;
 
-    if(!containerIn.scalewith) return;
+    if(!containerIn.scaleanchor) return;
 
     var constraintOpts = getConstraintOpts(constraintGroups, containerOut._id, counterAxes, layoutOut);
 
-    var scalewith = Lib.coerce(containerIn, containerOut, {
-        scalewith: {
+    var scaleanchor = Lib.coerce(containerIn, containerOut, {
+        scaleanchor: {
             valType: 'enumerated',
             values: constraintOpts.linkableAxes
         }
-    }, 'scalewith');
+    }, 'scaleanchor');
 
-    if(scalewith) {
+    if(scaleanchor) {
         var scaleratio = coerce('scaleratio');
         // TODO: I suppose I could do attribute.min: Number.MIN_VALUE to avoid zero,
         // but that seems hacky. Better way to say "must be a positive number"?
@@ -37,18 +37,18 @@ module.exports = function handleConstraintDefaults(containerIn, containerOut, co
         if(!scaleratio) scaleratio = containerOut.scaleratio = 1;
 
         updateConstraintGroups(constraintGroups, constraintOpts.thisGroup,
-            containerOut._id, scalewith, scaleratio);
+            containerOut._id, scaleanchor, scaleratio);
     }
-    else if(counterAxes.indexOf(containerIn.scalewith) !== -1) {
-        Lib.warn('ignored ' + containerOut._name + '.scalewith: "' +
-            containerIn.scalewith + '" to avoid an infinite loop ' +
+    else if(counterAxes.indexOf(containerIn.scaleanchor) !== -1) {
+        Lib.warn('ignored ' + containerOut._name + '.scaleanchor: "' +
+            containerIn.scaleanchor + '" to avoid an infinite loop ' +
             'and possibly inconsistent scaleratios.');
     }
 };
 
 function getConstraintOpts(constraintGroups, thisID, counterAxes, layoutOut) {
     // If this axis is already part of a constraint group, we can't
-    // scalewith any other axis in that group, or we'd make a loop.
+    // scaleanchor any other axis in that group, or we'd make a loop.
     // Filter counterAxes to enforce this, also matching axis types.
 
     var thisType = layoutOut[id2name(thisID)].type;
@@ -84,10 +84,10 @@ function getConstraintOpts(constraintGroups, thisID, counterAxes, layoutOut) {
  *
  * thisGroup: the group the current axis is already in
  * thisID: the id if the current axis
- * scalewith: the id of the axis to scale it with
- * scaleratio: the ratio of this axis to the scalewith axis
+ * scaleanchor: the id of the axis to scale it with
+ * scaleratio: the ratio of this axis to the scaleanchor axis
  */
-function updateConstraintGroups(constraintGroups, thisGroup, thisID, scalewith, scaleratio) {
+function updateConstraintGroups(constraintGroups, thisGroup, thisID, scaleanchor, scaleratio) {
     var i, j, groupi, keyj, thisGroupIndex;
 
     if(thisGroup === null) {
@@ -103,11 +103,11 @@ function updateConstraintGroups(constraintGroups, thisGroup, thisID, scalewith, 
     var thisGroupKeys = Object.keys(thisGroup);
 
     // we know that this axis isn't in any other groups, but we don't know
-    // about the scalewith axis. If it is, we need to merge the groups.
+    // about the scaleanchor axis. If it is, we need to merge the groups.
     for(i = 0; i < constraintGroups.length; i++) {
         groupi = constraintGroups[i];
-        if(i !== thisGroupIndex && groupi[scalewith]) {
-            var baseScale = groupi[scalewith];
+        if(i !== thisGroupIndex && groupi[scaleanchor]) {
+            var baseScale = groupi[scaleanchor];
             for(j = 0; j < thisGroupKeys.length; j++) {
                 keyj = thisGroupKeys[j];
                 groupi[keyj] = baseScale * scaleratio * thisGroup[keyj];
@@ -117,12 +117,12 @@ function updateConstraintGroups(constraintGroups, thisGroup, thisID, scalewith, 
         }
     }
 
-    // otherwise, we insert the new scalewith axis as the base scale (1)
+    // otherwise, we insert the new scaleanchor axis as the base scale (1)
     // in its group, and scale the rest of the group to it
     if(scaleratio !== 1) {
         for(j = 0; j < thisGroupKeys.length; j++) {
             thisGroup[thisGroupKeys[j]] *= scaleratio;
         }
     }
-    thisGroup[scalewith] = 1;
+    thisGroup[scaleanchor] = 1;
 }

@@ -8,8 +8,8 @@
     "height":600,
     "title": "fixed-ratio axes",
     "xaxis": {"nticks": 10, "title": "shared X axis"},
-    "yaxis": {"scalewith": "x", "domain": [0, 0.45], "title": "1:1"},
-    "yaxis2": {"scalewith": "x", "scaleratio": 0.2, "domain": [0.55,1], "title": "1:5"},
+    "yaxis": {"scaleanchor": "x", "domain": [0, 0.45], "title": "1:1"},
+    "yaxis2": {"scaleanchor": "x", "scaleratio": 0.2, "domain": [0.55,1], "title": "1:5"},
     "showlegend": false
   }
 }

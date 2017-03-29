@@ -107,9 +107,9 @@ module.exports = {
             'If true, then zoom is disabled.'
         ].join(' ')
     },
-    // scalewith: not used directly, just put here for reference
+    // scaleanchor: not used directly, just put here for reference
     // values are any opposite-letter axis id
-    scalewith: {
+    scaleanchor: {
         valType: 'enumerated',
         values: [
             constants.idRegex.x.toString(),
@@ -123,9 +123,9 @@ module.exports = {
             'Both axes are still zoomable, but when you zoom one, the other will',
             'zoom the same amount, keeping a fixed midpoint.',
             'Autorange will also expand about the midpoints to satisfy the constraint.',
-            'You can chain these, ie `yaxis: {scalewith: *x*}, xaxis2: {scalewith: *y*}`',
+            'You can chain these, ie `yaxis: {scaleanchor: *x*}, xaxis2: {scaleanchor: *y*}`',
             'but you can only link axes of the same `type`.',
-            'Loops (`yaxis: {scalewith: *x*}, xaxis: {scalewith: *y*}` or longer) are redundant',
+            'Loops (`yaxis: {scaleanchor: *x*}, xaxis: {scaleanchor: *y*}` or longer) are redundant',
             'and the last constraint encountered will be ignored to avoid possible',
             'inconsistent constraints via `scaleratio`.'
         ].join(' ')
@@ -136,7 +136,7 @@ module.exports = {
         dflt: 1,
         role: 'info',
         description: [
-            'If this axis is linked to another by `scalewith`, this determines the pixel',
+            'If this axis is linked to another by `scaleanchor`, this determines the pixel',
             'to unit scale ratio. For example, if this value is 10, then every unit on',
             'this axis spans 10 times the number of pixels as a unit on the linked axis.',
             'Use this for example to create an elevation profile where the vertical scale',
