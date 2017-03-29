@@ -7,7 +7,7 @@
       "showlegend": false,
       "contours": {
         "type": "constraint",
-        "operation": ">",
+        "operation": "<",
         "value": 5
       },
       "line": {"smoothing": 0}
@@ -19,7 +19,7 @@
       "showlegend": false,
       "contours": {
         "type": "constraint",
-        "operation": ">",
+        "operation": "<",
         "value": 5
       }
     },
@@ -30,7 +30,7 @@
       "showlegend": false,
       "contours": {
         "type": "constraint",
-        "operation": ">",
+        "operation": "<",
         "value": 3
       },
       "line": {"smoothing": 0}
@@ -42,7 +42,7 @@
       "showlegend": false,
       "contours": {
         "type": "constraint",
-        "operation": ">",
+        "operation": "<",
         "value": 3
       }
     },
@@ -53,7 +53,7 @@
       "showlegend": false,
       "contours": {
         "type": "constraint",
-        "operation": ">",
+        "operation": "<",
         "value": 1
       },
       "line": {"smoothing": 0}
@@ -65,7 +65,7 @@
       "z": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
       "contours": {
         "type": "constraint",
-        "operation": ">",
+        "operation": "<",
         "value": 1
       }
     },
@@ -76,7 +76,7 @@
       "showlegend": false,
       "contours": {
         "type": "constraint",
-        "operation": ">",
+        "operation": "<",
         "value": -1
       },
       "line": {"smoothing": 0}
@@ -88,7 +88,7 @@
       "z": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
       "contours": {
         "type": "constraint",
-        "operation": ">",
+        "operation": "<",
         "value": -1
       }
     },
@@ -217,7 +217,7 @@
         "align": "left",
         "xref": "x",
         "yref": "y",
-        "text": "y > -1:",
+        "text": "y < -1:",
         "showarrow": false,
         "font": {
           "size": 20
@@ -229,7 +229,7 @@
         "y": 4,
         "xref": "x",
         "yref": "y2",
-        "text": "y > 1:",
+        "text": "y < 1:",
         "showarrow": false,
         "font": {
           "size": 20
@@ -241,7 +241,7 @@
         "align": "left",
         "xref": "x",
         "yref": "y3",
-        "text": "y > 3:",
+        "text": "y < 3:",
         "showarrow": false,
         "font": {
           "size": 20
@@ -253,7 +253,7 @@
         "align": "left",
         "xref": "x",
         "yref": "y4",
-        "text": "y > 5:",
+        "text": "y < 5:",
         "showarrow": false,
         "font": {
           "size": 20

@@ -7,8 +7,8 @@
       "showlegend": false,
       "contours": {
         "type": "constraint",
-        "operation": ">",
-        "value": 5
+        "operation": "][",
+        "value": [5, 100]
       },
       "line": {"smoothing": 0}
     },
@@ -19,8 +19,8 @@
       "showlegend": false,
       "contours": {
         "type": "constraint",
-        "operation": ">",
-        "value": 5
+        "operation": "][",
+        "value": [5, 100]
       }
     },
     {
@@ -30,8 +30,8 @@
       "showlegend": false,
       "contours": {
         "type": "constraint",
-        "operation": ">",
-        "value": 3
+        "operation": "][",
+        "value": [3, 100]
       },
       "line": {"smoothing": 0}
     },
@@ -42,8 +42,8 @@
       "showlegend": false,
       "contours": {
         "type": "constraint",
-        "operation": ">",
-        "value": 3
+        "operation": "][",
+        "value": [3, 100]
       }
     },
     {
@@ -53,8 +53,8 @@
       "showlegend": false,
       "contours": {
         "type": "constraint",
-        "operation": ">",
-        "value": 1
+        "operation": "][",
+        "value": [1, 100]
       },
       "line": {"smoothing": 0}
     },
@@ -65,8 +65,8 @@
       "z": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
       "contours": {
         "type": "constraint",
-        "operation": ">",
-        "value": 1
+        "operation": "][",
+        "value": [1, 100]
       }
     },
     {
@@ -76,8 +76,8 @@
       "showlegend": false,
       "contours": {
         "type": "constraint",
-        "operation": ">",
-        "value": -1
+        "operation": "][",
+        "value": [-1, 100]
       },
       "line": {"smoothing": 0}
     },
@@ -88,8 +88,8 @@
       "z": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
       "contours": {
         "type": "constraint",
-        "operation": ">",
-        "value": -1
+        "operation": "][",
+        "value": [-1, 100]
       }
     },
     {
@@ -182,7 +182,7 @@
     }
   ],
   "layout": {
-    "title": "Less than constraint with hill in the middle",
+    "title": "High-top outer range constraint with hill in the middle",
     "width": 600,
     "height": 800,
     "dragmode": "pan",
@@ -214,13 +214,13 @@
       {
         "x": -1,
         "y": 4,
+        "text": "-1 < y < 100:",
         "align": "left",
         "xref": "x",
         "yref": "y",
-        "text": "y > -1:",
         "showarrow": false,
         "font": {
-          "size": 20
+          "size": 14
         }
       },
       {
@@ -229,10 +229,10 @@
         "y": 4,
         "xref": "x",
         "yref": "y2",
-        "text": "y > 1:",
+        "text": "1 < y < 100:",
         "showarrow": false,
         "font": {
-          "size": 20
+          "size": 14
         }
       },
       {
@@ -241,10 +241,10 @@
         "align": "left",
         "xref": "x",
         "yref": "y3",
-        "text": "y > 3:",
+        "text": "3 < y < 100:",
         "showarrow": false,
         "font": {
-          "size": 20
+          "size": 14
         }
       },
       {
@@ -253,10 +253,10 @@
         "align": "left",
         "xref": "x",
         "yref": "y4",
-        "text": "y > 5:",
+        "text": "5 < y < 100:",
         "showarrow": false,
         "font": {
-          "size": 20
+          "size": 14
         }
       }
     ]

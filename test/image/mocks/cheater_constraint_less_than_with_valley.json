@@ -9,7 +9,8 @@
         "type": "constraint",
         "operation": "<",
         "value": 5
-      }
+      },
+      "line": {"smoothing": 0}
     },
     {
       "type": "contourcarpet",
@@ -31,7 +32,8 @@
         "type": "constraint",
         "operation": "<",
         "value": 3
-      }
+      },
+      "line": {"smoothing": 0}
     },
     {
       "type": "contourcarpet",
@@ -53,7 +55,8 @@
         "type": "constraint",
         "operation": "<",
         "value": 1
-      }
+      },
+      "line": {"smoothing": 0}
     },
     {
       "type": "contourcarpet",
@@ -76,8 +79,7 @@
         "operation": "<",
         "value": -1
       },
-      "xaxis": "x",
-      "yaxis": "y"
+      "line": {"smoothing": 0}
     },
     {
       "type": "contourcarpet",
@@ -100,8 +102,7 @@
         "operation": "<",
         "value": -3
       },
-      "xaxis": "x",
-      "yaxis": "y"
+      "line": {"smoothing": 0}
     },
     {
       "type": "contourcarpet",

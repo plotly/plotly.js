@@ -95,16 +95,22 @@ function plotOne(gd, plotinfo, cd) {
 
     // Compute the boundary path
     var seg, xp, yp, i;
+    var revsegs = [];
     var segs = [];
     for(i = carpetcd.clipsegments.length - 1; i >= 0; i--) {
         seg = carpetcd.clipsegments[i];
         xp = map1dArray([], seg.x, xa.c2p);
         yp = map1dArray([], seg.y, ya.c2p);
+        segs.push(makepath(xp, yp, seg.bicubic));
         xp.reverse();
         yp.reverse();
-        segs.push(makepath(xp, yp, seg.bicubic));
+        revsegs.push(makepath(xp, yp, seg.bicubic));
     }
-    var reversedBoundaryPath = 'M' + segs.join('L') + 'Z';
+
+    var boundaryPath = {
+        forward: 'M' + segs.join('L') + 'Z',
+        reverse: 'M' + revsegs.join('L') + 'Z'
+    }
 
     // Draw the baseline background fill that fills in the space behind any other
     // contour levels:
@@ -113,7 +119,7 @@ function plotOne(gd, plotinfo, cd) {
     // Draw the specific contour fills. As a simplification, they're assumed to be
     // fully opaque so that it's easy to draw them simply overlapping. The alternative
     // would be to flip adjacent paths and draw closed paths for each level instead.
-    makeFills(trace, plotGroup, xa, ya, pathinfo, perimeter, ab2p, carpet, carpetcd, contours.coloring, reversedBoundaryPath);
+    makeFills(trace, plotGroup, xa, ya, pathinfo, perimeter, ab2p, carpet, carpetcd, contours.coloring, boundaryPath);
 
     // Draw contour lines:
     makeLines(plotGroup, pathinfo, contours);
@@ -217,7 +223,11 @@ function makeFills(trace, plotgroup, xa, ya, pathinfo, perimeter, ab2p, carpet, 
         var fullpath = joinAllPaths(trace, pi, perimeter, ab2p, carpet, carpetcd, xa, ya);
 
         if(pi.prefixBoundary) {
-            fullpath += boundaryPath;
+            fullpath = boundaryPath[pi.prefixBoundary] + fullpath;
+        }
+
+        if(pi.suffixBoundary) {
+            fullpath = fullpath + boundaryPath[pi.suffixBoundary];
         }
 
         if(!fullpath) {
