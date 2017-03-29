@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -14,14 +14,17 @@ module.exports = function handleBinDefaults(traceIn, traceOut, coerce, binDirect
     coerce('histnorm');
 
     binDirections.forEach(function(binDirection) {
-        // data being binned - note that even though it's a little weird,
-        // it's possible to have bins without data, if there's inferred data
-        var binstrt = coerce(binDirection + 'bins.start'),
-            binend = coerce(binDirection + 'bins.end'),
-            autobin = coerce('autobin' + binDirection, !(binstrt && binend));
-
-        if(autobin) coerce('nbins' + binDirection);
-        else coerce(binDirection + 'bins.size');
+        /*
+         * Because date axes have string values for start and end,
+         * and string options for size, we cannot validate these attributes
+         * now. We will do this during calc (immediately prior to binning)
+         * in ./clean_bins, and push the cleaned values back to _fullData.
+         */
+        coerce(binDirection + 'bins.start');
+        coerce(binDirection + 'bins.end');
+        coerce(binDirection + 'bins.size');
+        coerce('autobin' + binDirection);
+        coerce('nbins' + binDirection);
     });
 
     return traceOut;

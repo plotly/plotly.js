@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -33,12 +33,12 @@ module.exports = function hasColorscale(trace, containerStr) {
     }
 
     return (
-        (typeof container==='object' && container!==null) && (
+        Lib.isPlainObject(container) && (
             isArrayWithOneNumber ||
-            container.showscale===true ||
+            container.showscale === true ||
             (isNumeric(container.cmin) && isNumeric(container.cmax)) ||
             isValidScale(container.colorscale) ||
-            (typeof container.colorbar==='object' && container.colorbar!==null)
+            Lib.isPlainObject(container.colorbar)
         )
     );
 };

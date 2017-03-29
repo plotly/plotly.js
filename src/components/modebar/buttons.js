@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,8 +10,10 @@
 'use strict';
 
 var Plotly = require('../../plotly');
+var Plots = require('../../plots/plots');
+var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
-var Snapshot = require('../../snapshot');
+var downloadImage = require('../../snapshot/download');
 var Icons = require('../../../build/ploticon');
 
 
@@ -50,47 +52,20 @@ modeBarButtons.toImage = {
     click: function(gd) {
         var format = 'png';
 
-        if (Lib.isIE()) {
-            Lib.notifier('Snapshotting is unavailable in Internet Explorer. ' +
-                         'Consider exporting your images using the Plotly Cloud', 'long');
-            return;
-        }
-
-        if (gd._snapshotInProgress) {
-            Lib.notifier('Snapshotting is still in progress - please hold', 'long');
-            return;
-        }
-
-        gd._snapshotInProgress = true;
         Lib.notifier('Taking snapshot - this may take a few seconds', 'long');
 
-        var ev = Snapshot.toImage(gd, {format: format});
+        if(Lib.isIE()) {
+            Lib.notifier('IE only supports svg.  Changing format to svg.', 'long');
+            format = 'svg';
+        }
 
-        var filename = gd.fn || 'newplot';
-        filename += '.' + format;
-
-        ev.once('success', function(result) {
-            gd._snapshotInProgress = false;
-
-            var downloadLink = document.createElement('a');
-            downloadLink.href = result;
-            downloadLink.download = filename; // only supported by FF and Chrome
-
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-
-            ev.clean();
-        });
-
-        ev.once('error', function(err) {
-            gd._snapshotInProgress = false;
-
-            Lib.notifier('Sorry there was a problem downloading your ' + format, 'long');
-            console.error(err);
-
-            ev.clean();
-        });
+        downloadImage(gd, {'format': format})
+          .then(function(filename) {
+              Lib.notifier('Snapshot succeeded - ' + filename, 'long');
+          })
+          .catch(function() {
+              Lib.notifier('Sorry there was a problem downloading your snapshot!', 'long');
+          });
     }
 };
 
@@ -99,7 +74,7 @@ modeBarButtons.sendDataToCloud = {
     title: 'Save and edit plot in cloud',
     icon: Icons.disk,
     click: function(gd) {
-        Plotly.Plots.sendDataToCloud(gd);
+        Plots.sendDataToCloud(gd);
     }
 };
 
@@ -197,13 +172,6 @@ modeBarButtons.hoverCompareCartesian = {
     click: handleCartesian
 };
 
-var DRAGCURSORS = {
-    pan: 'move',
-    zoom: 'crosshair',
-    select: 'crosshair',
-    lasso: 'crosshair'
-};
-
 function handleCartesian(gd, ev) {
     var button = ev.currentTarget,
         astr = button.getAttribute('data-attr'),
@@ -215,12 +183,13 @@ function handleCartesian(gd, ev) {
         var mag = (val === 'in') ? 0.5 : 2,
             r0 = (1 + mag) / 2,
             r1 = (1 - mag) / 2,
-            axList = Plotly.Axes.list(gd, null, true);
+            axList = Axes.list(gd, null, true);
 
-        var ax, axName, initialRange;
+        var ax, axName;
 
         for(var i = 0; i < axList.length; i++) {
             ax = axList[i];
+
             if(!ax.fixedrange) {
                 axName = ax._name;
                 if(val === 'auto') aobj[axName + '.autorange'] = true;
@@ -228,21 +197,32 @@ function handleCartesian(gd, ev) {
                     if(ax._rangeInitial === undefined) {
                         aobj[axName + '.autorange'] = true;
                     }
-                    else aobj[axName + '.range'] = ax._rangeInitial.slice();
+                    else {
+                        var rangeInitial = ax._rangeInitial.slice();
+                        aobj[axName + '.range[0]'] = rangeInitial[0];
+                        aobj[axName + '.range[1]'] = rangeInitial[1];
+                    }
                 }
                 else {
-                    initialRange = ax.range;
-                    aobj[axName + '.range'] = [
-                        r0 * initialRange[0] + r1 * initialRange[1],
-                        r0 * initialRange[1] + r1 * initialRange[0]
+                    var rangeNow = [
+                        ax.r2l(ax.range[0]),
+                        ax.r2l(ax.range[1]),
                     ];
+
+                    var rangeNew = [
+                        r0 * rangeNow[0] + r1 * rangeNow[1],
+                        r0 * rangeNow[1] + r1 * rangeNow[0]
+                    ];
+
+                    aobj[axName + '.range[0]'] = ax.l2r(rangeNew[0]);
+                    aobj[axName + '.range[1]'] = ax.l2r(rangeNew[1]);
                 }
             }
         }
     }
     else {
         // if ALL traces have orientation 'h', 'hovermode': 'x' otherwise: 'y'
-        if (astr==='hovermode' && (val==='x' || val==='y')) {
+        if(astr === 'hovermode' && (val === 'x' || val === 'y')) {
             val = fullLayout._isHoriz ? 'y' : 'x';
             button.setAttribute('data-val', val);
         }
@@ -250,24 +230,13 @@ function handleCartesian(gd, ev) {
         aobj[astr] = val;
     }
 
-    Plotly.relayout(gd, aobj).then(function() {
-        if(astr === 'dragmode') {
-            if(fullLayout._hasCartesian) {
-                Plotly.Fx.setCursor(
-                    fullLayout._paper.select('.nsewdrag'),
-                    DRAGCURSORS[val]
-                );
-            }
-            Plotly.Fx.supplyLayoutDefaults(gd.layout, fullLayout, gd._fullData);
-            Plotly.Fx.init(gd);
-        }
-    });
+    Plotly.relayout(gd, aobj);
 }
 
 modeBarButtons.zoom3d = {
     name: 'zoom3d',
     title: 'Zoom',
-    attr: 'dragmode',
+    attr: 'scene.dragmode',
     val: 'zoom',
     icon: Icons.zoombox,
     click: handleDrag3d
@@ -276,7 +245,7 @@ modeBarButtons.zoom3d = {
 modeBarButtons.pan3d = {
     name: 'pan3d',
     title: 'Pan',
-    attr: 'dragmode',
+    attr: 'scene.dragmode',
     val: 'pan',
     icon: Icons.pan,
     click: handleDrag3d
@@ -285,7 +254,7 @@ modeBarButtons.pan3d = {
 modeBarButtons.orbitRotation = {
     name: 'orbitRotation',
     title: 'orbital rotation',
-    attr: 'dragmode',
+    attr: 'scene.dragmode',
     val: 'orbit',
     icon: Icons['3d_rotate'],
     click: handleDrag3d
@@ -294,7 +263,7 @@ modeBarButtons.orbitRotation = {
 modeBarButtons.tableRotation = {
     name: 'tableRotation',
     title: 'turntable rotation',
-    attr: 'dragmode',
+    attr: 'scene.dragmode',
     val: 'turntable',
     icon: Icons['z-axis'],
     click: handleDrag3d
@@ -304,14 +273,16 @@ function handleDrag3d(gd, ev) {
     var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
         val = button.getAttribute('data-val') || true,
+        fullLayout = gd._fullLayout,
+        sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d'),
         layoutUpdate = {};
 
-    layoutUpdate[attr] = val;
+    var parts = attr.split('.');
 
-    /*
-     * Dragmode will go through the relayout -> doplot -> scene.plot()
-     * routine where the dragmode will be set in scene.plot()
-     */
+    for(var i = 0; i < sceneIds.length; i++) {
+        layoutUpdate[sceneIds[i] + '.' + parts[1]] = val;
+    }
+
     Plotly.relayout(gd, layoutUpdate);
 }
 
@@ -334,29 +305,24 @@ modeBarButtons.resetCameraLastSave3d = {
 function handleCamera3d(gd, ev) {
     var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
-        layout = gd.layout,
         fullLayout = gd._fullLayout,
-        sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
+        sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d'),
+        aobj = {};
 
     for(var i = 0; i < sceneIds.length; i++) {
         var sceneId = sceneIds[i],
-            sceneLayout = layout[sceneId],
-            fullSceneLayout = fullLayout[sceneId],
-            scene = fullSceneLayout._scene;
+            key = sceneId + '.camera',
+            scene = fullLayout[sceneId]._scene;
 
-        if(!sceneLayout || attr==='resetDefault') scene.setCameraToDefault();
+        if(attr === 'resetDefault') {
+            aobj[key] = null;
+        }
         else if(attr === 'resetLastSave') {
-
-            var cameraPos = sceneLayout.camera;
-            if(cameraPos) scene.setCamera(cameraPos);
-            else scene.setCameraToDefault();
+            aobj[key] = Lib.extendDeep({}, scene.cameraInitial);
         }
     }
 
-    /*
-     * TODO have a sceneLastTouched in _fullLayout to only
-     * update the camera of the scene last touched by the user
-     */
+    Plotly.relayout(gd, aobj);
 }
 
 modeBarButtons.hoverClosest3d = {
@@ -367,50 +333,58 @@ modeBarButtons.hoverClosest3d = {
     toggle: true,
     icon: Icons.tooltip_basic,
     gravity: 'ne',
-    click: function(gd, ev) {
-        var button = ev.currentTarget,
-            val = JSON.parse(button.getAttribute('data-val')) || false,
-            fullLayout = gd._fullLayout,
-            sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
+    click: handleHover3d
+};
 
-        var axes = ['xaxis', 'yaxis', 'zaxis'],
-            spikeAttrs = ['showspikes', 'spikesides', 'spikethickness', 'spikecolor'];
+function handleHover3d(gd, ev) {
+    var button = ev.currentTarget,
+        val = button._previousVal || false,
+        layout = gd.layout,
+        fullLayout = gd._fullLayout,
+        sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d');
 
-        // initialize 'current spike' object to be stored in the DOM
-        var currentSpikes = {},
-            axisSpikes = {},
-            layoutUpdate = {};
+    var axes = ['xaxis', 'yaxis', 'zaxis'],
+        spikeAttrs = ['showspikes', 'spikesides', 'spikethickness', 'spikecolor'];
 
-        if(val) {
-            layoutUpdate = val;
-            button.setAttribute('data-val', JSON.stringify(null));
-        }
-        else {
-            layoutUpdate = {'allaxes.showspikes': false};
+    // initialize 'current spike' object to be stored in the DOM
+    var currentSpikes = {},
+        axisSpikes = {},
+        layoutUpdate = {};
 
-            for(var i = 0; i < sceneIds.length; i++) {
-                var sceneId = sceneIds[i],
-                    sceneLayout = fullLayout[sceneId],
-                    sceneSpikes = currentSpikes[sceneId] = {};
+    if(val) {
+        layoutUpdate = Lib.extendDeep(layout, val);
+        button._previousVal = null;
+    }
+    else {
+        layoutUpdate = {
+            'allaxes.showspikes': false
+        };
 
-                // copy all the current spike attrs
-                for(var j = 0; j < 3; j++) {
-                    var axis = axes[j];
-                    axisSpikes = sceneSpikes[axis] = {};
+        for(var i = 0; i < sceneIds.length; i++) {
+            var sceneId = sceneIds[i],
+                sceneLayout = fullLayout[sceneId],
+                sceneSpikes = currentSpikes[sceneId] = {};
 
-                    for(var k = 0; k < spikeAttrs.length; k++) {
-                        var spikeAttr = spikeAttrs[k];
-                        axisSpikes[spikeAttr] = sceneLayout[axis][spikeAttr];
-                    }
+            sceneSpikes.hovermode = sceneLayout.hovermode;
+            layoutUpdate[sceneId + '.hovermode'] = false;
+
+            // copy all the current spike attrs
+            for(var j = 0; j < 3; j++) {
+                var axis = axes[j];
+                axisSpikes = sceneSpikes[axis] = {};
+
+                for(var k = 0; k < spikeAttrs.length; k++) {
+                    var spikeAttr = spikeAttrs[k];
+                    axisSpikes[spikeAttr] = sceneLayout[axis][spikeAttr];
                 }
             }
-
-            button.setAttribute('data-val', JSON.stringify(currentSpikes));
         }
 
-        Plotly.relayout(gd, layoutUpdate);
+        button._previousVal = Lib.extendDeep({}, currentSpikes);
     }
-};
+
+    Plotly.relayout(gd, layoutUpdate);
+}
 
 modeBarButtons.zoomInGeo = {
     name: 'zoomInGeo',
@@ -447,7 +421,7 @@ modeBarButtons.hoverClosestGeo = {
     toggle: true,
     icon: Icons.tooltip_basic,
     gravity: 'ne',
-    click: handleGeo
+    click: toggleHover
 };
 
 function handleGeo(gd, ev) {
@@ -455,10 +429,10 @@ function handleGeo(gd, ev) {
         attr = button.getAttribute('data-attr'),
         val = button.getAttribute('data-val') || true,
         fullLayout = gd._fullLayout,
-        geoIds = Plotly.Plots.getSubplotIds(fullLayout, 'geo');
+        geoIds = Plots.getSubplotIds(fullLayout, 'geo');
 
     for(var i = 0; i < geoIds.length; i++) {
-        var geo = fullLayout[geoIds[i]]._geo;
+        var geo = fullLayout[geoIds[i]]._subplot;
 
         if(attr === 'zoom') {
             var scale = geo.projection.scale();
@@ -468,7 +442,6 @@ function handleGeo(gd, ev) {
             geo.render();
         }
         else if(attr === 'reset') geo.zoomReset();
-        else if(attr === 'hovermode') geo.showHover = !geo.showHover;
     }
 }
 
@@ -494,7 +467,54 @@ modeBarButtons.hoverClosestPie = {
 };
 
 function toggleHover(gd) {
-    var newHover = gd._fullLayout.hovermode ? false : 'closest';
+    var fullLayout = gd._fullLayout;
+
+    var onHoverVal;
+    if(fullLayout._has('cartesian')) {
+        onHoverVal = fullLayout._isHoriz ? 'y' : 'x';
+    }
+    else onHoverVal = 'closest';
+
+    var newHover = gd._fullLayout.hovermode ? false : onHoverVal;
 
     Plotly.relayout(gd, 'hovermode', newHover);
 }
+
+// buttons when more then one plot types are present
+
+modeBarButtons.toggleHover = {
+    name: 'toggleHover',
+    title: 'Toggle show closest data on hover',
+    attr: 'hovermode',
+    val: null,
+    toggle: true,
+    icon: Icons.tooltip_basic,
+    gravity: 'ne',
+    click: function(gd, ev) {
+        toggleHover(gd);
+
+        // the 3d hovermode update must come
+        // last so that layout.hovermode update does not
+        // override scene?.hovermode?.layout.
+        handleHover3d(gd, ev);
+    }
+};
+
+modeBarButtons.resetViews = {
+    name: 'resetViews',
+    title: 'Reset views',
+    icon: Icons.home,
+    click: function(gd, ev) {
+        var button = ev.currentTarget;
+
+        button.setAttribute('data-attr', 'zoom');
+        button.setAttribute('data-val', 'reset');
+        handleCartesian(gd, ev);
+
+        button.setAttribute('data-attr', 'resetLastSave');
+        handleCamera3d(gd, ev);
+
+        // N.B handleCamera3d also triggers a replot for
+        // geo subplots.
+    }
+};

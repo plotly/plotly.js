@@ -1,0 +1,65 @@
+html, body{
+  margin: 0;
+  padding: 40px 0 0 0;
+  font-family: helvetica, arial, sans-serif;
+  background-color: #fafafa;
+}
+header{
+  position: fixed;
+  top: 0;
+  height: 40px;
+  width: 100%;
+  border-bottom: 1px solid #4983EC;
+  background-color: #ffffff;
+  z-index: 100000;
+}
+header img{
+  height: 100%;
+  display: inline-block;
+  vertical-align: top;
+}
+header input{
+  float: right;
+  background-color: none;
+  border: none;
+  border-bottom: 1px solid #ddd;
+  padding: 5px;
+  outline: none;
+  margin-top: 6px;
+  margin-right: 10px;
+}
+header span{
+  color: #bbb;
+  font-size: 10px;
+  line-height: 40px;
+}
+#mocks-list{
+  position: fixed;
+  right: 0px;
+  top: 40px;
+  bottom: 0px;
+  z-index: 100000;
+  background-color: #fff;
+  border-left: 1px solid #4983EC;
+  border-bottom: 1px solid #4983EC;
+  border-top: 1px solid #4983EC;
+  overflow: scroll;
+}
+.search-result{
+  display: block;
+  margin-bottom: 2px;
+  padding: 5px 10px;
+  text-align: right;
+  font-size: 12px;
+}
+.search-result:hover{
+  color: #fff;
+  background-color: #4983EC;
+}
+#plots{
+  overflow: scroll;
+}
+.dashboard-plot{
+  margin-bottom: 30px;
+  width: 1100px;
+}

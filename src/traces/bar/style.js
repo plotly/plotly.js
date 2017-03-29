@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -13,6 +13,7 @@ var d3 = require('d3');
 
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
+var ErrorBars = require('../../components/errorbars');
 
 
 module.exports = function style(gd) {
@@ -26,30 +27,29 @@ module.exports = function style(gd) {
     // for gapless (either stacked or neighboring grouped) bars use
     // crispEdges to turn off antialiasing so an artificial gap
     // isn't introduced.
-    .each(function(d){
-        if((fullLayout.barmode==='stack' && barcount>1) ||
-                (fullLayout.bargap===0 &&
-                 fullLayout.bargroupgap===0 &&
-                 !d[0].trace.marker.line.width)){
-            d3.select(this).attr('shape-rendering','crispEdges');
+    .each(function(d) {
+        if((fullLayout.barmode === 'stack' && barcount > 1) ||
+                (fullLayout.bargap === 0 &&
+                 fullLayout.bargroupgap === 0 &&
+                 !d[0].trace.marker.line.width)) {
+            d3.select(this).attr('shape-rendering', 'crispEdges');
         }
     });
 
     // then style the individual bars
-    s.selectAll('g.points').each(function(d){
+    s.selectAll('g.points').each(function(d) {
         var trace = d[0].trace,
             marker = trace.marker,
             markerLine = marker.line,
-            markerIn = (trace._input||{}).marker||{},
-            markerScale = Drawing.tryColorscale(marker, markerIn, ''),
-            lineScale = Drawing.tryColorscale(marker, markerIn, 'line.');
+            markerScale = Drawing.tryColorscale(marker, ''),
+            lineScale = Drawing.tryColorscale(marker, 'line');
 
         d3.select(this).selectAll('path').each(function(d) {
             // allow all marker and marker line colors to be scaled
             // by given max and min to colorscales
             var fillColor,
                 lineColor,
-                lineWidth = (d.mlw+1 || markerLine.width+1) - 1,
+                lineWidth = (d.mlw + 1 || markerLine.width + 1) - 1,
                 p = d3.select(this);
 
             if('mc' in d) fillColor = d.mcc = markerScale(d.mc);
@@ -69,6 +69,8 @@ module.exports = function style(gd) {
         });
         // TODO: text markers on bars, either extra text or just bar values
         // d3.select(this).selectAll('text')
-        //     .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
+        //     .call(Drawing.textPointStyle,d.t||d[0].t);
     });
+
+    s.call(ErrorBars.style);
 };

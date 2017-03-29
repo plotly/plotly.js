@@ -17,10 +17,11 @@
             {"text":"right bottom","showarrow":false,"xref":"paper","yref":"paper","xanchor":"right","yanchor":"bottom","x":0.5,"y":1},
             {"text":"move with page","xref":"paper","yref":"paper","x":0.75,"y":1},
             {"text":"opacity","opacity":0.5,"x":5,"y":5},
+            {"text":"not-visible", "visible": false},
             {"text":"left<br>justified","showarrow":false,"align":"left","x":1,"y":4},
             {"text":"center<br>justified","showarrow":false,"x":2,"y":4},
             {"text":"right<br>justified","showarrow":false,"align":"right","x":3,"y":4},
-            {"text":"no arrow<br>page auto TR","showarrow":false,"xref":"paper","yref":"paper","x":0.75,"y":0.75},
+            {"text":"no\narrow<br>page\rauto\r\nTR","showarrow":false,"xref":"paper","yref":"paper","x":0.75,"y":0.75},
             {"text":"no arrow<br>page auto ML","showarrow":false,"xref":"paper","yref":"paper","x":0.25,"y":0.5},
             {"text":"no arrow<br>page auto BC","showarrow":false,"xref":"paper","yref":"paper","x":0.5,"y":0.25},
             {"text":"default"},
@@ -37,11 +38,24 @@
                 "ax":-34,"ay":37,"arrowsize":2,"x":4,"y":1
             },
             {
-                "text":"All together","opacity":0.6,"arrowwidth":5,"arrowhead":3,"ax":-77,"ay":-5,
+                "text":"All together<br>with<sup style=\"font-family:raleway;fill:rgb(0,255,255)\">STYLE</sup>",
+                "opacity":0.6,"arrowwidth":5,"arrowhead":3,"ax":-77,"ay":-5,
                 "bordercolor":"rgb(255, 0, 0)","borderwidth":4,"bgcolor":"rgba(255,255,0,0.5)",
                 "font":{"color":"rgb(0, 0, 255)","size":20},
                 "arrowcolor":"rgb(166, 28, 0)","borderpad":3,"textangle":50,"x":5,"y":1
-            }
+            },
+            {"text":"","showarrow":true,"borderwidth":1.2,"arrowhead":2,"axref":"x","ayref":"y","x":5,"y":3,"ax":4,"ay":5},
+            {"text":"","showarrow":true,"borderwidth":1.2,"arrowhead":2,"axref":"x","ayref":"y","x":6,"y":2,"ax":3,"ay":3},
+            {
+                "text": "arrow ML<br>+standoff", "x": 2, "y": 2, "ax": 20, "ay": 20,
+                "xanchor": "left", "yanchor": "middle", "standoff": 5
+            },
+            {
+                "text": "angle, arrow TR<br>box+standoff", "x": 2, "y": 2, "ax": -20, "ay": -20,
+                "xanchor": "right", "yanchor": "top", "standoff": 5, "textangle": 45, "bordercolor": "#444"
+            },
+            {"text": "off-plot, do not show!", "x": 5.1, "y": 3.5, "showarrow": false},
+            {"text": "off-plot 2", "x": 3, "y": 5.1, "showarrow": true, "ax": 0, "ay": 100}
         ]
     }
 }

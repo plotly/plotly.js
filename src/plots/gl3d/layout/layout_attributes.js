@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -138,6 +138,25 @@ module.exports = {
     xaxis: gl3dAxisAttrs,
     yaxis: gl3dAxisAttrs,
     zaxis: gl3dAxisAttrs,
+
+    dragmode: {
+        valType: 'enumerated',
+        role: 'info',
+        values: ['orbit', 'turntable', 'zoom', 'pan', false],
+        dflt: 'turntable',
+        description: [
+            'Determines the mode of drag interactions for this scene.'
+        ].join(' ')
+    },
+    hovermode: {
+        valType: 'enumerated',
+        role: 'info',
+        values: ['closest', false],
+        dflt: 'closest',
+        description: [
+            'Determines the mode of hover interactions for this scene.'
+        ].join(' ')
+    },
 
     _deprecated: {
         cameraposition: {

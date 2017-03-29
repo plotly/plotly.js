@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -7,7 +7,6 @@
 */
 
 'use strict';
-
 
 module.exports = {
     zauto: {
@@ -68,18 +67,5 @@ module.exports = {
         description: [
             'Determines whether or not a colorbar is displayed for this trace.'
         ].join(' ')
-    },
-
-    _deprecated: {
-        scl: {
-            valType: 'colorscale',
-            role: 'style',
-            description: 'Renamed to `colorscale`.'
-        },
-        reversescl: {
-            valType: 'boolean',
-            role: 'style',
-            description: 'Renamed to `reversescale`.'
-        }
     }
 };

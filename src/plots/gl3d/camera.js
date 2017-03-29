@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -59,9 +59,9 @@ function createCamera(element, options) {
             var t = now();
             var delay = this.delay;
             var ctime = t - 2 * delay;
-            view.idle(t-delay);
+            view.idle(t - delay);
             view.recalcMatrix(ctime);
-            view.flush(t - (100+delay * 2));
+            view.flush(t - (100 + delay * 2));
             var allEqual = true;
             var matrix = view.computedMatrix;
             for(var i = 0; i < 16; ++i) {
@@ -112,10 +112,10 @@ function createCamera(element, options) {
                 var curCenter = view.computedCenter.slice();
                 view.setMode(mode);
                 if(mode === 'turntable') {
-                    //Hacky time warping stuff to generate smooth animation
+                    // Hacky time warping stuff to generate smooth animation
                     var t0 = now();
                     view._active.lookAt(t0, curEye, curCenter, curUp);
-                    view._active.lookAt(t0 + 500, curEye, curCenter, [0,0,1]);
+                    view._active.lookAt(t0 + 500, curEye, curCenter, [0, 0, 1]);
                     view._active.flush(t0);
                 }
                 return view.getMode();
@@ -181,16 +181,20 @@ function createCamera(element, options) {
 
     var lastX = 0, lastY = 0;
     mouseChange(element, function(buttons, x, y, mods) {
-        var rotate = camera.keyBindingMode === 'rotate';
-        var pan = camera.keyBindingMode === 'pan';
-        var zoom = camera.keyBindingMode === 'zoom';
+        var keyBindingMode = camera.keyBindingMode;
+
+        if(keyBindingMode === false) return;
+
+        var rotate = keyBindingMode === 'rotate';
+        var pan = keyBindingMode === 'pan';
+        var zoom = keyBindingMode === 'zoom';
 
         var ctrl = !!mods.control;
         var alt = !!mods.alt;
         var shift = !!mods.shift;
-        var left = !!(buttons&1);
-        var right = !!(buttons&2);
-        var middle = !!(buttons&4);
+        var left = !!(buttons & 1);
+        var right = !!(buttons & 2);
+        var middle = !!(buttons & 4);
 
         var scale = 1.0 / element.clientHeight;
         var dx = scale * (x - lastX);
@@ -204,17 +208,17 @@ function createCamera(element, options) {
         var drot = Math.PI * camera.rotateSpeed;
 
         if((rotate && left && !ctrl && !alt && !shift) || (left && !ctrl && !alt && shift)) {
-            //Rotate
+            // Rotate
             view.rotate(t, flipX * drot * dx, -flipY * drot * dy, 0);
         }
 
         if((pan && left && !ctrl && !alt && !shift) || right || (left && ctrl && !alt && !shift)) {
-            //Pan
+            // Pan
             view.pan(t, -camera.translateSpeed * dx * distance, camera.translateSpeed * dy * distance, 0);
         }
 
         if((zoom && left && !ctrl && !alt && !shift) || middle || (left && !ctrl && alt && !shift)) {
-            //Zoom
+            // Zoom
             var kzoom = -camera.zoomSpeed * dy / window.innerHeight * (t - view.lastT()) * 100;
             view.pan(t, 0, 0, distance * (Math.exp(kzoom) - 1));
         }
@@ -226,6 +230,8 @@ function createCamera(element, options) {
     });
 
     mouseWheel(element, function(dx, dy) {
+        if(camera.keyBindingMode === false) return;
+
         var flipX = camera.flipX ? 1 : -1;
         var flipY = camera.flipY ? 1 : -1;
         var t = now();

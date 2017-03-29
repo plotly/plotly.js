@@ -1,31 +1,32 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
 
-/*eslint block-scoped-var: 0*/
-/*eslint no-redeclare: 0*/
+/* eslint block-scoped-var: 0*/
+/* eslint no-redeclare: 0*/
 
 'use strict';
 
 module.exports = computeTickMarks;
 
-var Plotly = require('../../../plotly');
-var convertHTML = require('../../../lib/html2unicode');
+var Axes = require('../../cartesian/axes');
+var Lib = require('../../../lib');
+var convertHTMLToUnicode = require('../../../lib/html2unicode');
 
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
 
-var centerPoint = [0,0,0];
+var centerPoint = [0, 0, 0];
 
 function contourLevelsFromTicks(ticks) {
     var result = new Array(3);
-    for(var i=0; i<3; ++i) {
+    for(var i = 0; i < 3; ++i) {
         var tlevel = ticks[i];
         var clevel = new Array(tlevel.length);
-        for(var j=0; j<tlevel.length; ++j) {
+        for(var j = 0; j < tlevel.length; ++j) {
             clevel[j] = tlevel[j].x;
         }
         result[i] = clevel;
@@ -38,15 +39,15 @@ function computeTickMarks(scene) {
     var glRange = scene.glplot.axesPixels;
     var sceneLayout = scene.fullSceneLayout;
 
-    var ticks = [[],[],[]];
+    var ticks = [[], [], []];
 
-    for (var i = 0; i < 3; ++i) {
+    for(var i = 0; i < 3; ++i) {
         var axes = sceneLayout[AXES_NAMES[i]];
 
         axes._length = (glRange[i].hi - glRange[i].lo) *
             glRange[i].pixelsPerDataUnit / scene.dataScale[i];
 
-        if (Math.abs(axes._length) === Infinity) {
+        if(Math.abs(axes._length) === Infinity) {
             ticks[i] = [];
         } else {
             axes.range[0] = (glRange[i].lo) / scene.dataScale[i];
@@ -62,15 +63,15 @@ function computeTickMarks(scene) {
             // running the autoticks here, then setting
             // autoticks to false to get around the 2D handling in calcTicks.
             var tickModeCached = axes.tickmode;
-            if (axes.tickmode === 'auto') {
+            if(axes.tickmode === 'auto') {
                 axes.tickmode = 'linear';
-                var nticks = axes.nticks || Plotly.Lib.constrain((axes._length/40), 4, 9);
-                Plotly.Axes.autoTicks(axes, Math.abs(axes.range[1]-axes.range[0])/nticks);
+                var nticks = axes.nticks || Lib.constrain((axes._length / 40), 4, 9);
+                Axes.autoTicks(axes, Math.abs(axes.range[1] - axes.range[0]) / nticks);
             }
-            var dataTicks = Plotly.Axes.calcTicks(axes);
-            for(var j=0; j<dataTicks.length; ++j) {
+            var dataTicks = Axes.calcTicks(axes);
+            for(var j = 0; j < dataTicks.length; ++j) {
                 dataTicks[j].x = dataTicks[j].x * scene.dataScale[i];
-                dataTicks[j].text = convertHTML(dataTicks[j].text);
+                dataTicks[j].text = convertHTMLToUnicode(dataTicks[j].text);
             }
             ticks[i] = dataTicks;
 
@@ -81,10 +82,10 @@ function computeTickMarks(scene) {
 
     axesOptions.ticks = ticks;
 
-    //Calculate tick lengths dynamically
-    for(var i=0; i<3; ++i) {
+    // Calculate tick lengths dynamically
+    for(var i = 0; i < 3; ++i) {
         centerPoint[i] = 0.5 * (scene.glplot.bounds[0][i] + scene.glplot.bounds[1][i]);
-        for(var j=0; j<2; ++j) {
+        for(var j = 0; j < 2; ++j) {
             axesOptions.bounds[j][i] = scene.glplot.bounds[j][i];
         }
     }

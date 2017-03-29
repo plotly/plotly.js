@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,10 +8,13 @@
 
 'use strict';
 
+var colorAttributes = require('../../components/colorscale/color_attributes');
+var errorBarAttrs = require('../../components/errorbars/attributes');
+var colorbarAttrs = require('../../components/colorbar/attributes');
+
 var Drawing = require('../../components/drawing');
-
 var constants = require('./constants');
-
+var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = {
     x: {
@@ -53,6 +56,10 @@ module.exports = {
             'where `y0` is the starting coordinate and `dy` the step.'
         ].join(' ')
     },
+    customdata: {
+        valType: 'data_array',
+        description: 'Assigns extra data to each scatter point DOM element'
+    },
     dy: {
         valType: 'number',
         dflt: 1,
@@ -61,6 +68,10 @@ module.exports = {
             'Sets the y coordinate step.',
             'See `y0` for more info.'
         ].join(' ')
+    },
+    ids: {
+        valType: 'data_array',
+        description: 'A list of keys for object constancy of data points during animation'
     },
     text: {
         valType: 'string',
@@ -87,6 +98,17 @@ module.exports = {
             'appear on hover.',
             'If there are less than ' + constants.PTS_LINESONLY + ' points,',
             'then the default is *lines+markers*. Otherwise, *lines*.'
+        ].join(' ')
+    },
+    hoveron: {
+        valType: 'flaglist',
+        flags: ['points', 'fills'],
+        role: 'info',
+        description: [
+            'Do the hover effects highlight individual points (markers or',
+            'line points) or do they highlight filled regions?',
+            'If the fill is *toself* or *tonext* and there are no markers',
+            'or text, then the default is *fills*, otherwise it is *points*.'
         ].join(' ')
     },
     line: {
@@ -120,7 +142,7 @@ module.exports = {
             dflt: 1,
             role: 'style',
             description: [
-                'Has only an effect if `shape` is set to *spline*',
+                'Has an effect only if `shape` is set to *spline*',
                 'Sets the amount of smoothing.',
                 '*0* corresponds to no smoothing (equivalent to a *linear* shape).'
             ].join(' ')
@@ -138,6 +160,16 @@ module.exports = {
                 'Sets the style of the lines. Set to a dash string type',
                 'or a dash length in px.'
             ].join(' ')
+        },
+        simplify: {
+            valType: 'boolean',
+            dflt: true,
+            role: 'info',
+            description: [
+                'Simplifies lines by removing nearly-collinear points. When transitioning',
+                'lines, it may be desirable to disable this so that the number of points',
+                'along the resulting SVG path is unaffected.'
+            ].join(' ')
         }
     },
     connectgaps: {
@@ -152,20 +184,36 @@ module.exports = {
     },
     fill: {
         valType: 'enumerated',
-        values: ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx'],
+        values: ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx', 'toself', 'tonext'],
         dflt: 'none',
         role: 'style',
         description: [
             'Sets the area to fill with a solid color.',
-            'Use with `fillcolor`.'
+            'Use with `fillcolor` if not *none*.',
+            '*tozerox* and *tozeroy* fill to x=0 and y=0 respectively.',
+            '*tonextx* and *tonexty* fill between the endpoints of this',
+            'trace and the endpoints of the trace before it, connecting those',
+            'endpoints with straight lines (to make a stacked area graph);',
+            'if there is no trace before it, they behave like *tozerox* and',
+            '*tozeroy*.',
+            '*toself* connects the endpoints of the trace (or each segment',
+            'of the trace if it has gaps) into a closed shape.',
+            '*tonext* fills the space between two traces if one completely',
+            'encloses the other (eg consecutive contour lines), and behaves like',
+            '*toself* if there is no trace before it. *tonext* should not be',
+            'used if one trace does not enclose the other.'
         ].join(' ')
     },
     fillcolor: {
         valType: 'color',
         role: 'style',
-        description: 'Sets the fill color.'
+        description: [
+            'Sets the fill color.',
+            'Defaults to a half-transparent variant of the line color,',
+            'marker color, or marker line color, whichever is available.'
+        ].join(' ')
     },
-    marker: {
+    marker: extendFlat({}, {
         symbol: {
             valType: 'enumerated',
             values: Drawing.symbolList,
@@ -196,12 +244,6 @@ module.exports = {
             role: 'style',
             description: 'Sets the marker size (in px).'
         },
-        color: {
-            valType: 'color',
-            arrayOk: true,
-            role: 'style',
-            description: 'Sets the marker color.'
-        },
         maxdisplayed: {
             valType: 'number',
             min: 0,
@@ -217,7 +259,7 @@ module.exports = {
             dflt: 1,
             role: 'style',
             description: [
-                'Has only an effect if `marker.size` is set to a numerical array.',
+                'Has an effect only if `marker.size` is set to a numerical array.',
                 'Sets the scale factor used to determine the rendered size of',
                 'marker points. Use with `sizemin` and `sizemode`.'
             ].join(' ')
@@ -228,7 +270,7 @@ module.exports = {
             dflt: 0,
             role: 'style',
             description: [
-                'Has only an effect if `marker.size` is set to a numerical array.',
+                'Has an effect only if `marker.size` is set to a numerical array.',
                 'Sets the minimum size (in px) of the rendered marker points.'
             ].join(' ')
         },
@@ -238,153 +280,37 @@ module.exports = {
             dflt: 'diameter',
             role: 'info',
             description: [
-                'Has only an effect if `marker.size` is set to a numerical array.',
+                'Has an effect only if `marker.size` is set to a numerical array.',
                 'Sets the rule for which the data in `size` is converted',
                 'to pixels.'
             ].join(' ')
         },
-        colorscale: {
-            valType: 'colorscale',
-            role: 'style',
-            description: [
-                'Sets the colorscale.',
-                'The colorscale must be an array containing',
-                'arrays mapping a normalized value to an',
-                'rgb, rgba, hex, hsl, hsv, or named color string.',
-                'At minimum, a mapping for the lowest (0) and highest (1)',
-                'values are required. For example,',
-                '`[[0, \'rgb(0,0,255)\', [1, \'rgb(255,0,0)\']]`.',
-                'To control the bounds of the colorscale in color space,',
-                'use cmin and cmax'
-            ].join(' ')
-        },
-        cauto: {
-            valType: 'boolean',
-            dflt: true,
-            role: 'style',
-            description: [
-                'Has only an effect if `marker.color` is set to a numerical array.',
-                'Determines the whether or not the color domain is computed',
-                'automatically.'
-            ].join(' ')
-        },
-        cmax: {
-            valType: 'number',
-            dflt: null,
-            role: 'info',
-            description: [
-                'Has only an effect if `marker.color` is set to a numerical array.',
-                'Sets the upper bound of the color domain.'
-            ].join(' ')
-        },
-        cmin: {
-            valType: 'number',
-            dflt: null,
-            role: 'info',
-            description: [
-                'Has only an effect if `marker.color` is set to a numerical array.',
-                'Sets the lower bound of the color domain.'
-            ].join(' ')
-        },
-        autocolorscale: {
-            valType: 'boolean',
-            dflt: true,
-            role: 'style',
-            description: [
-                'Has only an effect if `marker.color` is set to a numerical array.',
-                'Determines whether or not the colorscale is picked using',
-                'values inside `marker.color`.'
-            ].join(' ')
-        },
-        reversescale: {
-            valType: 'boolean',
-            role: 'style',
-            dflt: false,
-            description: [
-                'Has only an effect if `marker.color` is set to a numerical array.',
-                'Reverses the colorscale.'
-            ].join(' ')
-        },
+
         showscale: {
             valType: 'boolean',
             role: 'info',
             dflt: false,
             description: [
-                'Has only an effect if `marker.color` is set to a numerical array.',
+                'Has an effect only if `marker.color` is set to a numerical array.',
                 'Determines whether or not a colorbar is displayed.'
             ].join(' ')
         },
-        line: {
-            color: {
-                valType: 'color',
-                arrayOk: true,
-                role: 'style',
-                description: 'Sets the color of the lines bounding the marker points.'
-            },
+        colorbar: colorbarAttrs,
+
+        line: extendFlat({}, {
             width: {
                 valType: 'number',
                 min: 0,
                 arrayOk: true,
                 role: 'style',
                 description: 'Sets the width (in px) of the lines bounding the marker points.'
-            },
-            colorscale: {
-                valType: 'colorscale',
-                role: 'style',
-                description: [
-                    'Has only an effect if `marker.line.color` is set to a numerical array.',
-                    'Sets the colorscale.'
-                ].join(' ')
-            },
-            cauto: {
-                valType: 'boolean',
-                dflt: true,
-                role: 'style',
-                description: [
-                    'Has only an effect if `marker.line.color` is set to a numerical array.',
-                    'Determines the whether or not the color domain is computed',
-                    'with respect to the input data.'
-                ].join(' ')
-            },
-            cmax: {
-                valType: 'number',
-                dflt: null,
-                role: 'info',
-                description: [
-                    'Has only an effect if `marker.line.color` is set to a numerical array.',
-                    'Sets the upper bound of the color domain.'
-                ].join(' ')
-            },
-            cmin: {
-                valType: 'number',
-                dflt: null,
-                role: 'info',
-                description: [
-                    'Has only an effect if `marker.line.color` is set to a numerical array.',
-                    'Sets the lower bound of the color domain.'
-                ].join(' ')
-            },
-            autocolorscale: {
-                valType: 'boolean',
-                dflt: true,
-                role: 'style',
-                description: [
-                    'Has only an effect if `marker.line.color` is set to a numerical array.',
-                    'Determines whether or not the colorscale is picked using',
-                    'the sign of values inside `marker.line.color`.'
-                ].join(' ')
-            },
-            reversescale: {
-                valType: 'boolean',
-                dflt: false,
-                role: 'style',
-                description: [
-                    'Has only an effect if `marker.line.color` is set to a numerical array.',
-                    'Reverses the colorscale.'
-                ].join(' ')
             }
-        }
+        },
+            colorAttributes('marker.line')
+        )
     },
+        colorAttributes('marker')
+    ),
     textposition: {
         valType: 'enumerated',
         values: [
@@ -421,6 +347,7 @@ module.exports = {
         },
         description: 'Sets the text font.'
     },
+
     r: {
         valType: 'data_array',
         description: [
@@ -435,9 +362,7 @@ module.exports = {
             'Sets the angular coordinates.'
         ].join('')
     },
-    _nestedModules: {  // nested module coupling
-        'error_y': 'ErrorBars',
-        'error_x': 'ErrorBars',
-        'marker.colorbar': 'Colorbar'
-    }
+
+    error_y: errorBarAttrs,
+    error_x: errorBarAttrs
 };

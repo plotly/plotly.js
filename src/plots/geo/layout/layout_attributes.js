@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,7 +9,7 @@
 'use strict';
 
 var colorAttrs = require('../../../components/color/attributes');
-var constants = require('../../../constants/geo_constants');
+var constants = require('../constants');
 var geoAxesAttrs = require('./axis_attributes');
 
 

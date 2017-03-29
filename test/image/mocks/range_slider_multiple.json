@@ -1,0 +1,41 @@
+{
+  "data": [
+    {
+      "x": [ 1, 2, 3 ],
+      "y": [ 4, 5e5, 6e8 ],
+      "type": "bar"
+    },
+    {
+      "z": [
+        [ 20, 30, 40 ],
+        [ 50, 60, 70 ]
+      ],
+      "showscale": false,
+      "xaxis": "x2",
+      "yaxis": "y2",
+      "type": "heatmap"
+    }
+  ],
+  "layout": {
+    "xaxis": {
+      "domain": [ 0, 0.45 ],
+      "range": [ 1, 2 ],
+      "rangeslider": {}
+    },
+    "xaxis2": {
+      "anchor": "y2",
+      "domain": [ 0.55, 1 ],
+      "rangeslider": {
+        "range": [ -1, 4 ]
+      }
+    },
+    "yaxis": {
+      "domain": [ 0.3, 0.8 ],
+      "type": "log"
+    },
+    "yaxis2": {
+      "anchor": "x2",
+      "domain": [ 0.5, 1 ]
+    }
+  }
+}

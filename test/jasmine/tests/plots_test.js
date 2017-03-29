@@ -1,12 +1,152 @@
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
+
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 
-
 describe('Test Plots', function() {
     'use strict';
+
+    describe('Plots.supplyDefaults', function() {
+
+        it('should not throw an error when gd is a plain object', function() {
+            var height = 100,
+                gd = {
+                    layout: {
+                        height: height
+                    }
+                };
+
+            Plots.supplyDefaults(gd);
+            expect(gd.layout.height).toBe(height);
+            expect(gd._fullLayout).toBeDefined();
+            expect(gd._fullLayout.height).toBe(height);
+            expect(gd._fullLayout.width).toBe(Plots.layoutAttributes.width.dflt);
+            expect(gd._fullData).toBeDefined();
+        });
+
+        it('should relink private keys', function() {
+            var oldFullData = [{
+                type: 'scatter3d',
+                z: [1, 2, 3]
+            }, {
+                type: 'contour',
+                _empties: [1, 2, 3]
+            }];
+
+            var oldFullLayout = {
+                _plots: { xy: { plot: {} } },
+                xaxis: { c2p: function() {} },
+                yaxis: { _m: 20 },
+                scene: { _scene: {} },
+                annotations: [{ _min: 10, }, { _max: 20 }],
+                someFunc: function() {}
+            };
+
+            var newData = [{
+                type: 'scatter3d',
+                z: [1, 2, 3, 4]
+            }, {
+                type: 'contour',
+                z: [[1, 2, 3], [2, 3, 4]]
+            }];
+
+            var newLayout = {
+                annotations: [{}, {}, {}]
+            };
+
+            var gd = {
+                _fullData: oldFullData,
+                _fullLayout: oldFullLayout,
+                data: newData,
+                layout: newLayout
+            };
+
+            Plots.supplyDefaults(gd);
+
+            expect(gd._fullData[0].z).toBe(newData[0].z);
+            expect(gd._fullData[1].z).toBe(newData[1].z);
+            expect(gd._fullData[1]._empties).toBe(oldFullData[1]._empties);
+            expect(gd._fullLayout.scene._scene).toBe(oldFullLayout.scene._scene);
+            expect(gd._fullLayout._plots.plot).toBe(oldFullLayout._plots.plot);
+            expect(gd._fullLayout.annotations[0]._min).toBe(oldFullLayout.annotations[0]._min);
+            expect(gd._fullLayout.annotations[1]._max).toBe(oldFullLayout.annotations[1]._max);
+            expect(gd._fullLayout.someFunc).toBe(oldFullLayout.someFunc);
+
+            expect(gd._fullLayout.xaxis.c2p)
+                .not.toBe(oldFullLayout.xaxis.c2p, '(set during ax.setScale');
+            expect(gd._fullLayout.yaxis._m)
+                .not.toBe(oldFullLayout.yaxis._m, '(set during ax.setScale');
+        });
+
+        it('should include the correct reference to user data', function() {
+            var trace0 = { y: [1, 2, 3] };
+            var trace1 = { y: [5, 2, 3] };
+
+            var data = [trace0, trace1];
+            var gd = { data: data };
+
+            Plots.supplyDefaults(gd);
+
+            expect(gd.data).toBe(data);
+
+            expect(gd._fullData[0].index).toEqual(0);
+            expect(gd._fullData[1].index).toEqual(1);
+
+            expect(gd._fullData[0]._expandedIndex).toEqual(0);
+            expect(gd._fullData[1]._expandedIndex).toEqual(1);
+
+            expect(gd._fullData[0]._input).toBe(trace0);
+            expect(gd._fullData[1]._input).toBe(trace1);
+
+            expect(gd._fullData[0]._fullInput).toBe(gd._fullData[0]);
+            expect(gd._fullData[1]._fullInput).toBe(gd._fullData[1]);
+
+            expect(gd._fullData[0]._expandedInput).toBe(gd._fullData[0]);
+            expect(gd._fullData[1]._expandedInput).toBe(gd._fullData[1]);
+        });
+
+        function testSanitizeMarginsHasBeenCalledOnlyOnce(gd) {
+            spyOn(Plots, 'sanitizeMargins').and.callThrough();
+            Plots.supplyDefaults(gd);
+            expect(Plots.sanitizeMargins).toHaveBeenCalledTimes(1);
+        }
+
+        it('should call sanitizeMargins only once when both width and height are defined', function() {
+            var gd = {
+                layout: {
+                    width: 100,
+                    height: 100
+                }
+            };
+
+            testSanitizeMarginsHasBeenCalledOnlyOnce(gd);
+        });
+
+        it('should call sanitizeMargins only once when autosize is false', function() {
+            var gd = {
+                layout: {
+                    autosize: false,
+                    height: 100
+                }
+            };
+
+            testSanitizeMarginsHasBeenCalledOnlyOnce(gd);
+        });
+
+        it('should call sanitizeMargins only once when autosize is true', function() {
+            var gd = {
+                layout: {
+                    autosize: true,
+                    height: 100
+                }
+            };
+
+            testSanitizeMarginsHasBeenCalledOnlyOnce(gd);
+        });
+    });
 
     describe('Plots.supplyLayoutGlobalDefaults should', function() {
         var layoutIn,
@@ -67,8 +207,8 @@ describe('Test Plots', function() {
 
     });
 
-    describe('Plots.supplyDataDefaults', function() {
-        var supplyDataDefaults = Plots.supplyDataDefaults,
+    describe('Plots.supplyTraceDefaults', function() {
+        var supplyTraceDefaults = Plots.supplyTraceDefaults,
             layout = {};
 
         var traceIn, traceOut;
@@ -78,11 +218,11 @@ describe('Test Plots', function() {
                 layout._dataLength = 1;
 
                 traceIn = {};
-                traceOut = supplyDataDefaults(traceIn, 0, layout);
+                traceOut = supplyTraceDefaults(traceIn, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('x+y+z+text');
 
                 traceIn = { hoverinfo: 'name' };
-                traceOut = supplyDataDefaults(traceIn, 0, layout);
+                traceOut = supplyTraceDefaults(traceIn, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('name');
             });
 
@@ -90,11 +230,11 @@ describe('Test Plots', function() {
                 layout._dataLength = 2;
 
                 traceIn = {};
-                traceOut = supplyDataDefaults(traceIn, 0, layout);
+                traceOut = supplyTraceDefaults(traceIn, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('all');
 
                 traceIn = { hoverinfo: 'name' };
-                traceOut = supplyDataDefaults(traceIn, 0, layout);
+                traceOut = supplyTraceDefaults(traceIn, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('name');
             });
         });
@@ -102,12 +242,11 @@ describe('Test Plots', function() {
 
     describe('Plots.getSubplotIds', function() {
         var getSubplotIds = Plots.getSubplotIds;
-        var layout;
 
-        it('returns scene ids', function() {
-            layout = {
-                scene: {},
+        it('returns scene ids in order', function() {
+            var layout = {
                 scene2: {},
+                scene: {},
                 scene3: {}
             };
 
@@ -116,27 +255,46 @@ describe('Test Plots', function() {
 
             expect(getSubplotIds(layout, 'cartesian'))
                 .toEqual([]);
+            expect(getSubplotIds(layout, 'geo'))
+                .toEqual([]);
+            expect(getSubplotIds(layout, 'no-valid-subplot-type'))
+                .toEqual([]);
+        });
 
+        it('returns geo ids in order', function() {
+            var layout = {
+                geo2: {},
+                geo: {},
+                geo3: {}
+            };
+
+            expect(getSubplotIds(layout, 'geo'))
+                .toEqual(['geo', 'geo2', 'geo3']);
+
+            expect(getSubplotIds(layout, 'cartesian'))
+                .toEqual([]);
+            expect(getSubplotIds(layout, 'gl3d'))
+                .toEqual([]);
             expect(getSubplotIds(layout, 'no-valid-subplot-type'))
                 .toEqual([]);
         });
 
         it('returns cartesian ids', function() {
-            layout = {
+            var layout = {
+                _has: Plots._hasPlotType,
                 _plots: { xy: {}, x2y2: {} }
             };
 
             expect(getSubplotIds(layout, 'cartesian'))
                 .toEqual([]);
 
-            layout._hasCartesian = true;
+            layout._basePlotModules = [{ name: 'cartesian' }];
             expect(getSubplotIds(layout, 'cartesian'))
                 .toEqual(['xy', 'x2y2']);
             expect(getSubplotIds(layout, 'gl2d'))
                 .toEqual([]);
 
-            delete layout._hasCartesian;
-            layout._hasGL2D = true;
+            layout._basePlotModules = [{ name: 'gl2d' }];
             expect(getSubplotIds(layout, 'gl2d'))
                 .toEqual(['xy', 'x2y2']);
             expect(getSubplotIds(layout, 'cartesian'))
@@ -145,168 +303,83 @@ describe('Test Plots', function() {
         });
     });
 
-    describe('Plots.getSubplotIdsInData', function() {
-        var getSubplotIdsInData = Plots.getSubplotIdsInData;
+    describe('Plots.findSubplotIds', function() {
+        var findSubplotIds = Plots.findSubplotIds;
+        var ids;
 
-        var ids, data;
+        it('should return subplots ids found in the data', function() {
+            var data = [{
+                type: 'scatter3d',
+                scene: 'scene'
+            }, {
+                type: 'surface',
+                scene: 'scene2'
+            }, {
+                type: 'choropleth',
+                geo: 'geo'
+            }];
 
-        it('it should return scene ids', function() {
-            data = [
-                {
-                    type: 'scatter3d',
-                    scene: 'scene'
-                },
-                {
-                    type: 'surface',
-                    scene: 'scene2'
-                },
-                {
-                    type: 'choropleth',
-                    geo: 'geo'
-                }
-            ];
-
-            ids = getSubplotIdsInData(data, 'geo');
+            ids = findSubplotIds(data, 'geo');
             expect(ids).toEqual(['geo']);
 
-            ids = getSubplotIdsInData(data, 'gl3d');
+            ids = findSubplotIds(data, 'gl3d');
             expect(ids).toEqual(['scene', 'scene2']);
         });
-
     });
 
-    describe('Plots.register, getModule, and traceIs', function() {
-        beforeEach(function() {
-            this.modulesKeys = Object.keys(Plots.modules);
-            this.allTypesKeys = Object.keys(Plots.allTypes);
-            this.allCategoriesKeys = Object.keys(Plots.allCategories);
+    describe('Plots.resize', function() {
+        var gd;
 
-            this.fakeModule = {
-                calc: function() { return 42; },
-                plot: function() { return 1000000; }
-            };
-            this.fakeModule2 = {
-                plot: function() { throw new Error('nope!'); }
-            };
+        beforeAll(function(done) {
+            gd = createGraphDiv();
 
-            Plots.register(this.fakeModule, 'newtype', ['red', 'green']);
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }])
+                .then(function() {
+                    gd.style.width = '400px';
+                    gd.style.height = '400px';
 
-            spyOn(console, 'warn');
+                    return Plotly.Plots.resize(gd);
+                })
+                .then(done);
         });
 
-        afterEach(function() {
-            function revertObj(obj, initialKeys) {
-                Object.keys(obj).forEach(function(k) {
-                    if(initialKeys.indexOf(k) === -1) delete obj[k];
-                });
+        afterEach(destroyGraphDiv);
+
+        it('should resize the plot clip', function() {
+            var uid = gd._fullLayout._uid;
+
+            var plotClip = document.getElementById('clip' + uid + 'xyplot'),
+                clipRect = plotClip.children[0],
+                clipWidth = +clipRect.getAttribute('width'),
+                clipHeight = +clipRect.getAttribute('height');
+
+            expect(clipWidth).toBe(240);
+            expect(clipHeight).toBe(220);
+        });
+
+        it('should resize the main svgs', function() {
+            var mainSvgs = document.getElementsByClassName('main-svg');
+
+            for(var i = 0; i < mainSvgs.length; i++) {
+                var svg = mainSvgs[i],
+                    svgWidth = +svg.getAttribute('width'),
+                    svgHeight = +svg.getAttribute('height');
+
+                expect(svgWidth).toBe(400);
+                expect(svgHeight).toBe(400);
             }
-
-            revertObj(Plots.modules, this.modulesKeys);
-            revertObj(Plots.allTypes, this.allTypesKeys);
-            revertObj(Plots.allCategories, this.allCategoriesKeys);
         });
 
-        it('should not reregister a type', function() {
-            Plots.register(this.fakeModule2, 'newtype', ['yellow', 'blue']);
-            expect(Plots.allCategories.yellow).toBeUndefined();
+        it('should update the axis scales', function() {
+            var fullLayout = gd._fullLayout,
+                plotinfo = fullLayout._plots.xy;
+
+            expect(fullLayout.xaxis._length).toEqual(240);
+            expect(fullLayout.yaxis._length).toEqual(220);
+
+            expect(plotinfo.xaxis._length).toEqual(240);
+            expect(plotinfo.yaxis._length).toEqual(220);
         });
-
-        it('should find the module for a type', function() {
-            expect(Plots.getModule('newtype')).toBe(this.fakeModule);
-            expect(Plots.getModule({type: 'newtype'})).toBe(this.fakeModule);
-        });
-
-        it('should return false for types it doesn\'t know', function() {
-            expect(Plots.getModule('notatype')).toBe(false);
-            expect(Plots.getModule({type: 'notatype'})).toBe(false);
-            expect(Plots.getModule({type: 'newtype', r: 'this is polar'})).toBe(false);
-        });
-
-        it('should find the categories for this type', function() {
-            expect(Plots.traceIs('newtype', 'red')).toBe(true);
-            expect(Plots.traceIs({type: 'newtype'}, 'red')).toBe(true);
-        });
-
-        it('should not find other real categories', function() {
-            expect(Plots.traceIs('newtype', 'cartesian')).toBe(false);
-            expect(Plots.traceIs({type: 'newtype'}, 'cartesian')).toBe(false);
-            expect(console.warn).not.toHaveBeenCalled();
-        });
-    });
-
-    describe('Plots.registerSubplot', function() {
-        var fake = {
-            name: 'fake',
-            attr: 'abc',
-            idRoot: 'cba',
-            attrRegex: /^abc([2-9]|[1-9][0-9]+)?$/,
-            idRegex: /^cba([2-9]|[1-9][0-9]+)?$/,
-            attributes: { stuff: { 'more stuff': 102102 } }
-        };
-
-        Plots.registerSubplot(fake);
-
-        var subplotsRegistry = Plots.subplotsRegistry;
-
-        it('should register attr, idRoot and attributes', function() {
-            expect(subplotsRegistry.fake.attr).toEqual('abc');
-            expect(subplotsRegistry.fake.idRoot).toEqual('cba');
-            expect(subplotsRegistry.fake.attributes)
-                .toEqual({stuff: { 'more stuff': 102102 }});
-        });
-
-        describe('registered subplot type attribute regex', function() {
-            it('should compile to correct attribute regex string', function() {
-                expect(subplotsRegistry.fake.attrRegex.toString())
-                    .toEqual('/^abc([2-9]|[1-9][0-9]+)?$/');
-            });
-
-            var shouldPass = [
-                'abc', 'abc2', 'abc3', 'abc10', 'abc9', 'abc100', 'abc2002'
-            ];
-            var shouldFail = [
-                '0abc', 'abc0', 'abc1', 'abc021321', 'abc00021321'
-            ];
-
-            shouldPass.forEach(function(s) {
-                it('considers ' + JSON.stringify(s) + 'as a correct attribute name', function() {
-                    expect(subplotsRegistry.fake.attrRegex.test(s)).toBe(true);
-                });
-            });
-
-            shouldFail.forEach(function(s) {
-                it('considers ' + JSON.stringify(s) + 'as an incorrect attribute name', function() {
-                    expect(subplotsRegistry.fake.attrRegex.test(s)).toBe(false);
-                });
-            });
-        });
-
-        describe('registered subplot type id regex', function() {
-            it('should compile to correct id regular expression', function() {
-                expect(subplotsRegistry.fake.idRegex.toString())
-                    .toEqual('/^cba([2-9]|[1-9][0-9]+)?$/');
-            });
-
-            var shouldPass = [
-                'cba', 'cba2', 'cba3', 'cba10', 'cba9', 'cba100', 'cba2002'
-            ];
-            var shouldFail = [
-                '0cba', 'cba0', 'cba1', 'cba021321', 'cba00021321'
-            ];
-
-            shouldPass.forEach(function(s) {
-                it('considers ' + JSON.stringify(s) + 'as a correct attribute name', function() {
-                    expect(subplotsRegistry.fake.idRegex.test(s)).toBe(true);
-                });
-            });
-
-            shouldFail.forEach(function(s) {
-                it('considers ' + JSON.stringify(s) + 'as an incorrect attribute name', function() {
-                    expect(subplotsRegistry.fake.idRegex.test(s)).toBe(false);
-                });
-            });
-        });
-
     });
 
     describe('Plots.purge', function() {
@@ -314,16 +387,17 @@ describe('Test Plots', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4] }], {}).then(done);
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {}).then(done);
         });
 
         afterEach(destroyGraphDiv);
 
         it('should unset everything in the gd except _context', function() {
             var expectedKeys = [
-                '_ev', 'on', 'once', 'removeListener', 'removeAllListeners',
-                'emit', '_context', '_replotPending', '_mouseDownTime',
-                '_hmpixcount', '_hmlumcount'
+                '_ev', '_internalEv', 'on', 'once', 'removeListener', 'removeAllListeners',
+                '_internalOn', '_internalOnce', '_removeInternalListener',
+                '_removeAllInternalListeners', 'emit', '_context', '_replotPending',
+                '_hmpixcount', '_hmlumcount', '_mouseDownTime', '_legendMouseDownTime',
             ];
 
             Plots.purge(gd);
@@ -340,18 +414,301 @@ describe('Test Plots', function() {
             expect(gd.undonum).toBeUndefined();
             expect(gd.autoplay).toBeUndefined();
             expect(gd.changed).toBeUndefined();
-            expect(gd._modules).toBeUndefined();
             expect(gd._tester).toBeUndefined();
             expect(gd._testref).toBeUndefined();
             expect(gd._promises).toBeUndefined();
             expect(gd._redrawTimer).toBeUndefined();
-            expect(gd._replotting).toBeUndefined();
             expect(gd.firstscatter).toBeUndefined();
             expect(gd.hmlumcount).toBeUndefined();
             expect(gd.hmpixcount).toBeUndefined();
             expect(gd.numboxes).toBeUndefined();
             expect(gd._hoverTimer).toBeUndefined();
             expect(gd._lastHoverTime).toBeUndefined();
+            expect(gd._transitionData).toBeUndefined();
+            expect(gd._transitioning).toBeUndefined();
+        });
+    });
+
+    describe('extendObjectWithContainers', function() {
+
+        function assert(dest, src, expected) {
+            Plots.extendObjectWithContainers(dest, src, ['container']);
+            expect(dest).toEqual(expected);
+        }
+
+        it('extend each container items', function() {
+            var dest = {
+                container: [
+                    { text: '1', x: 1, y: 1 },
+                    { text: '2', x: 2, y: 2 }
+                ]
+            };
+
+            var src = {
+                container: [
+                    { text: '1-new' },
+                    { text: '2-new' }
+                ]
+            };
+
+            var expected = {
+                container: [
+                    { text: '1-new', x: 1, y: 1 },
+                    { text: '2-new', x: 2, y: 2 }
+                ]
+            };
+
+            assert(dest, src, expected);
+        });
+
+        it('clears container items when applying null src items', function() {
+            var dest = {
+                container: [
+                    { text: '1', x: 1, y: 1 },
+                    { text: '2', x: 2, y: 2 }
+                ]
+            };
+
+            var src = {
+                container: [null, null]
+            };
+
+            var expected = {
+                container: [null, null]
+            };
+
+            assert(dest, src, expected);
+        });
+
+        it('clears container applying null src', function() {
+            var dest = {
+                container: [
+                    { text: '1', x: 1, y: 1 },
+                    { text: '2', x: 2, y: 2 }
+                ]
+            };
+
+            var src = { container: null };
+
+            var expected = { container: null };
+
+            assert(dest, src, expected);
+        });
+    });
+
+    describe('Plots.graphJson', function() {
+
+        it('should serialize data, layout and frames', function(done) {
+            var mock = {
+                data: [{
+                    x: [1, 2, 3],
+                    y: [2, 1, 2]
+                }],
+                layout: {
+                    title: 'base'
+                },
+                frames: [{
+                    data: [{
+                        y: [1, 2, 1],
+                    }],
+                    layout: {
+                        title: 'frame A'
+                    },
+                    name: 'A'
+                }, null, {
+                    data: [{
+                        y: [1, 2, 3],
+                    }],
+                    layout: {
+                        title: 'frame B'
+                    },
+                    name: 'B'
+                }, {
+                    data: [null, false, undefined],
+                    layout: 'garbage',
+                    name: 'garbage'
+                }]
+            };
+
+            Plotly.plot(createGraphDiv(), mock).then(function(gd) {
+                var str = Plots.graphJson(gd, false, 'keepdata');
+                var obj = JSON.parse(str);
+
+                expect(obj.data).toEqual(mock.data);
+                expect(obj.layout).toEqual(mock.layout);
+                expect(obj.frames[0]).toEqual(mock.frames[0]);
+                expect(obj.frames[1]).toEqual(mock.frames[2]);
+                expect(obj.frames[2]).toEqual({
+                    data: [null, false, null],
+                    layout: 'garbage',
+                    name: 'garbage'
+                });
+            })
+            .then(function() {
+                destroyGraphDiv();
+                done();
+            });
+        });
+    });
+
+    describe('Plots.getSubplotCalcData', function() {
+        var trace0 = { geo: 'geo2' };
+        var trace1 = { subplot: 'ternary10' };
+        var trace2 = { subplot: 'ternary10' };
+
+        var cd = [
+            [{ trace: trace0 }],
+            [{ trace: trace1 }],
+            [{ trace: trace2}]
+        ];
+
+        it('should extract calcdata traces associated with subplot (1)', function() {
+            var out = Plots.getSubplotCalcData(cd, 'geo', 'geo2');
+            expect(out).toEqual([[{ trace: trace0 }]]);
+        });
+
+        it('should extract calcdata traces associated with subplot (2)', function() {
+            var out = Plots.getSubplotCalcData(cd, 'ternary', 'ternary10');
+            expect(out).toEqual([[{ trace: trace1 }], [{ trace: trace2 }]]);
+        });
+
+        it('should return [] when no calcdata traces where found', function() {
+            var out = Plots.getSubplotCalcData(cd, 'geo', 'geo');
+            expect(out).toEqual([]);
+        });
+
+        it('should return [] when subplot type is invalid', function() {
+            var out = Plots.getSubplotCalcData(cd, 'non-sense', 'geo2');
+            expect(out).toEqual([]);
+        });
+    });
+
+    describe('Plots.generalUpdatePerTraceModule', function() {
+
+        function _update(subplotCalcData, traceHashOld) {
+            var subplot = { traceHash: traceHashOld || {} };
+            var calcDataPerModule = [];
+
+            var plot = function(_, moduleCalcData) {
+                calcDataPerModule.push(moduleCalcData);
+            };
+
+            subplotCalcData.forEach(function(calcTrace) {
+                calcTrace[0].trace._module = { plot: plot };
+            });
+
+            Plots.generalUpdatePerTraceModule(subplot, subplotCalcData, {});
+
+            return {
+                traceHash: subplot.traceHash,
+                calcDataPerModule: calcDataPerModule
+            };
+        }
+
+        it('should update subplot trace hash and call module plot method with correct calcdata traces', function() {
+            var out = _update([
+                [ { trace: { type: 'A', visible: false } } ],
+                [ { trace: { type: 'A', visible: true } } ],
+                [ { trace: { type: 'B', visible: false } } ],
+                [ { trace: { type: 'C', visible: true } } ]
+            ]);
+
+            expect(Object.keys(out.traceHash)).toEqual(['A', 'C']);
+            expect(out.traceHash.A.length).toEqual(1);
+            expect(out.traceHash.C.length).toEqual(1);
+
+            expect(out.calcDataPerModule.length).toEqual(2);
+            expect(out.calcDataPerModule[0].length).toEqual(1);
+            expect(out.calcDataPerModule[1].length).toEqual(1);
+
+            var out2 = _update([
+                [ { trace: { type: 'A', visible: false } } ],
+                [ { trace: { type: 'A', visible: false } } ],
+                [ { trace: { type: 'B', visible: true } } ],
+                [ { trace: { type: 'C', visible: false } } ]
+            ], out.traceHash);
+
+            expect(Object.keys(out2.traceHash)).toEqual(['B', 'A', 'C']);
+            expect(out2.traceHash.B.length).toEqual(1);
+            expect(out2.traceHash.A.length).toEqual(1);
+            expect(out2.traceHash.A[0][0].trace.visible).toBe(false);
+            expect(out2.traceHash.C.length).toEqual(1);
+            expect(out2.traceHash.C[0][0].trace.visible).toBe(false);
+
+            expect(out2.calcDataPerModule.length).toEqual(1);
+            expect(out2.calcDataPerModule[0].length).toEqual(1);
+
+            var out3 = _update([
+                [ { trace: { type: 'A', visible: false } } ],
+                [ { trace: { type: 'A', visible: false } } ],
+                [ { trace: { type: 'B', visible: false } } ],
+                [ { trace: { type: 'C', visible: false } } ]
+            ], out2.traceHash);
+
+            expect(Object.keys(out3.traceHash)).toEqual(['B', 'A', 'C']);
+            expect(out3.traceHash.B.length).toEqual(1);
+            expect(out3.traceHash.B[0][0].trace.visible).toBe(false);
+            expect(out3.traceHash.A.length).toEqual(1);
+            expect(out3.traceHash.A[0][0].trace.visible).toBe(false);
+            expect(out3.traceHash.C.length).toEqual(1);
+            expect(out3.traceHash.C[0][0].trace.visible).toBe(false);
+
+            expect(out3.calcDataPerModule.length).toEqual(0);
+
+            var out4 = _update([
+                [ { trace: { type: 'A', visible: true } } ],
+                [ { trace: { type: 'A', visible: true } } ],
+                [ { trace: { type: 'B', visible: true } } ],
+                [ { trace: { type: 'C', visible: true } } ]
+            ], out3.traceHash);
+
+            expect(Object.keys(out4.traceHash)).toEqual(['A', 'B', 'C']);
+            expect(out4.traceHash.A.length).toEqual(2);
+            expect(out4.traceHash.B.length).toEqual(1);
+            expect(out4.traceHash.C.length).toEqual(1);
+
+            expect(out4.calcDataPerModule.length).toEqual(3);
+            expect(out4.calcDataPerModule[0].length).toEqual(2);
+            expect(out4.calcDataPerModule[1].length).toEqual(1);
+            expect(out4.calcDataPerModule[2].length).toEqual(1);
+        });
+
+        it('should handle cases when module plot is not set (geo case)', function(done) {
+            Plotly.plot(createGraphDiv(), [{
+                type: 'scattergeo',
+                visible: false,
+                lon: [10, 20],
+                lat: [20, 10]
+            }, {
+                type: 'scattergeo',
+                lon: [10, 20],
+                lat: [20, 10]
+            }])
+            .then(function() {
+                expect(d3.selectAll('g.trace.scattergeo').size()).toEqual(1);
+
+                destroyGraphDiv();
+                done();
+            });
+        });
+
+        it('should handle cases when module plot is not set (ternary case)', function(done) {
+            Plotly.plot(createGraphDiv(), [{
+                type: 'scatterternary',
+                visible: false,
+                a: [0.1, 0.2],
+                b: [0.2, 0.1]
+            }, {
+                type: 'scatterternary',
+                a: [0.1, 0.2],
+                b: [0.2, 0.1]
+            }])
+            .then(function() {
+                expect(d3.selectAll('g.trace.scatter').size()).toEqual(1);
+
+                destroyGraphDiv();
+                done();
+            });
         });
     });
 });

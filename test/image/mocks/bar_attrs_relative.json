@@ -1,0 +1,41 @@
+{
+    "data":[
+        {
+            "width":[1,0.8,0.6,0.4],
+            "text":[1,2,3333333333,4],
+            "textposition":"outside",
+            "y":[1,2,3,4],
+            "x":[1,2,3,4],
+            "type":"bar"
+        }, {
+            "width":[0.4,0.6,0.8,1],
+            "text":["Three",2,"inside text",0],
+            "textposition":"auto",
+            "textfont":{"size":[10]},
+            "y":[3,2,1,0],
+            "x":[1,2,3,4],
+            "type":"bar"
+        }, {
+            "width":1,
+            "text":[-1,-3,-2,-4],
+            "textposition":"inside",
+            "y":[-1,-3,-2,-4],
+            "x":[1,2,3,4],
+            "type":"bar"
+        }, {
+            "text":[0,"outside text",-3,-2],
+            "textposition":"auto",
+            "y":[0,-0.25,-3,-2],
+            "x":[1,2,3,4],
+            "type":"bar"
+        }
+    ],
+    "layout":{
+        "xaxis": {"showgrid":true},
+        "yaxis": {"range":[-6,6]},
+        "height":400,
+        "width":400,
+        "barmode":"relative",
+        "barnorm":false
+    }
+}

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -50,7 +50,7 @@ function calculateErrors(data, scaleFactor) {
     var errorBounds = new Array(n);
 
     for(var i = 0; i < n; i++) {
-        var bound = [[0,0,0], [0,0,0]];
+        var bound = [[0, 0, 0], [0, 0, 0]];
 
         for(var j = 0; j < 3; j++) {
             if(errors[j]) {

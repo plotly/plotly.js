@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,11 +9,9 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
-
 var Scene2D = require('./scene2d');
-
-var Plots = Plotly.Plots;
+var Plots = require('../plots');
+var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 
 exports.name = 'gl2d';
@@ -50,8 +48,9 @@ exports.plot = function plotGl2d(gd) {
         // If Scene is not instantiated, create one!
         if(scene === undefined) {
             scene = new Scene2D({
-                container: gd.querySelector('.gl-container'),
                 id: subplotId,
+                graphDiv: gd,
+                container: gd.querySelector('.gl-container'),
                 staticPlot: gd._context.staticPlot,
                 plotGlPixelRatio: gd._context.plotGlPixelRatio
             },
@@ -62,6 +61,50 @@ exports.plot = function plotGl2d(gd) {
             subplotObj._scene2d = scene;
         }
 
-        scene.plot(fullSubplotData, fullLayout, gd.layout);
+        scene.plot(fullSubplotData, gd.calcdata, fullLayout, gd.layout);
+    }
+};
+
+exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    var oldSceneKeys = Plots.getSubplotIds(oldFullLayout, 'gl2d');
+
+    for(var i = 0; i < oldSceneKeys.length; i++) {
+        var id = oldSceneKeys[i],
+            oldSubplot = oldFullLayout._plots[id];
+
+        // old subplot wasn't gl2d; nothing to do
+        if(!oldSubplot._scene2d) continue;
+
+        // if no traces are present, delete gl2d subplot
+        var subplotData = Plots.getSubplotData(newFullData, 'gl2d', id);
+        if(subplotData.length === 0) {
+            oldSubplot._scene2d.destroy();
+            delete oldFullLayout._plots[id];
+        }
+    }
+};
+
+exports.toSVG = function(gd) {
+    var fullLayout = gd._fullLayout,
+        subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d');
+
+    for(var i = 0; i < subplotIds.length; i++) {
+        var subplot = fullLayout._plots[subplotIds[i]],
+            scene = subplot._scene2d;
+
+        var imageData = scene.toImage('png');
+        var image = fullLayout._glimages.append('svg:image');
+
+        image.attr({
+            xmlns: xmlnsNamespaces.svg,
+            'xlink:href': imageData,
+            x: 0,
+            y: 0,
+            width: '100%',
+            height: '100%',
+            preserveAspectRatio: 'none'
+        });
+
+        scene.destroy();
     }
 };

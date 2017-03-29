@@ -1,0 +1,24 @@
+{
+    "data":[
+        {
+            "text":"50%",
+            "textposition":"inside",
+            "outsidetextfont": {"size":32},
+            "base":[100,40,25,10],
+            "x":[-50,10,25,40],
+            "type":"bar"
+        }, {
+            "text":"50%",
+            "textposition":"outside",
+            "base":[0,60,75,90],
+            "x":[50,-10,-25,-40],
+            "type":"bar"
+        }
+    ],
+    "layout":{
+        "height":400,
+        "width":400,
+        "barmode":"group",
+        "barnorm":"fraction"
+    }
+}

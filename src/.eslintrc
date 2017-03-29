@@ -4,6 +4,7 @@
     "browser": true
   },
   "rules": {
-    "strict": [2, "global"]
+    "strict": [2, "global"],
+    "no-console": [2]
   }
 }

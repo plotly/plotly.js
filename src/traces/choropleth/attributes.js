@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,12 +10,14 @@
 
 var ScatterGeoAttrs = require('../scattergeo/attributes');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
+var colorbarAttrs = require('../../components/colorbar/attributes');
 var plotAttrs = require('../../plots/attributes');
+
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var ScatterGeoMarkerLineAttrs = ScatterGeoAttrs.marker.line;
 
-module.exports = {
+module.exports = extendFlat({}, {
     locations: {
         valType: 'data_array',
         description: [
@@ -35,20 +37,13 @@ module.exports = {
     marker: {
         line: {
             color: ScatterGeoMarkerLineAttrs.color,
-            width: ScatterGeoMarkerLineAttrs.width
+            width: extendFlat({}, ScatterGeoMarkerLineAttrs.width, {dflt: 1})
         }
     },
-    zauto: colorscaleAttrs.zauto,
-    zmin: colorscaleAttrs.zmin,
-    zmax: colorscaleAttrs.zmax,
-    colorscale: colorscaleAttrs.colorscale,
-    autocolorscale: colorscaleAttrs.autocolorscale,
-    reversescale: colorscaleAttrs.reversescale,
-    showscale: colorscaleAttrs.showscale,
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['location', 'z', 'text', 'name']
     }),
-    _nestedModules: {
-        'colorbar': 'Colorbar'
-    }
-};
+},
+    colorscaleAttrs,
+    { colorbar: colorbarAttrs }
+);

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -15,7 +15,9 @@ ScatterGeo.attributes = require('./attributes');
 ScatterGeo.supplyDefaults = require('./defaults');
 ScatterGeo.colorbar = require('../scatter/colorbar');
 ScatterGeo.calc = require('./calc');
-ScatterGeo.plot = require('./plot').plot;
+ScatterGeo.plot = require('./plot');
+ScatterGeo.hoverPoints = require('./hover');
+ScatterGeo.eventData = require('./event_data');
 
 ScatterGeo.moduleType = 'trace';
 ScatterGeo.name = 'scattergeo';

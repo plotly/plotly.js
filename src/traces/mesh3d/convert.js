@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -62,7 +62,7 @@ function parseColorArray(colors) {
 
 function zip3(x, y, z) {
     var result = new Array(x.length);
-    for(var i=0; i<x.length; ++i) {
+    for(var i = 0; i < x.length; ++i) {
         result[i] = [x[i], y[i], z[i]];
     }
     return result;
@@ -74,17 +74,17 @@ proto.update = function(data) {
 
     this.data = data;
 
-    //Unpack position data
-    function toDataCoords(axis, coord, scale) {
+    // Unpack position data
+    function toDataCoords(axis, coord, scale, calendar) {
         return coord.map(function(x) {
-            return axis.d2l(x) * scale;
+            return axis.d2l(x, 0, calendar) * scale;
         });
     }
 
     var positions = zip3(
-      toDataCoords(layout.xaxis, data.x, scene.dataScale[0]),
-      toDataCoords(layout.yaxis, data.y, scene.dataScale[1]),
-      toDataCoords(layout.zaxis, data.z, scene.dataScale[2]));
+        toDataCoords(layout.xaxis, data.x, scene.dataScale[0], data.xcalendar),
+        toDataCoords(layout.yaxis, data.y, scene.dataScale[1], data.ycalendar),
+        toDataCoords(layout.zaxis, data.z, scene.dataScale[2], data.zcalendar));
 
     var cells;
     if(data.i && data.j && data.k) {
@@ -99,22 +99,25 @@ proto.update = function(data) {
     else {
         var d = ['x', 'y', 'z'].indexOf(data.delaunayaxis);
         cells = triangulate(positions.map(function(c) {
-            return [c[(d+1)%3], c[(d+2)%3]];
+            return [c[(d + 1) % 3], c[(d + 2) % 3]];
         }));
     }
 
     var config = {
         positions: positions,
-        cells:     cells,
-        ambient:   data.lighting.ambient,
-        diffuse:   data.lighting.diffuse,
-        specular:  data.lighting.specular,
+        cells: cells,
+        lightPosition: [data.lightposition.x, data.lightposition.y, data.lightposition.z],
+        ambient: data.lighting.ambient,
+        diffuse: data.lighting.diffuse,
+        specular: data.lighting.specular,
         roughness: data.lighting.roughness,
-        fresnel:   data.lighting.fresnel,
-        opacity:   data.opacity,
-        contourEnable:   data.contour.show,
-        contourColor:    str2RgbaArray(data.contour.color).slice(0,3),
-        contourWidth:    data.contour.width,
+        fresnel: data.lighting.fresnel,
+        vertexNormalsEpsilon: data.lighting.vertexnormalsepsilon,
+        faceNormalsEpsilon: data.lighting.facenormalsepsilon,
+        opacity: data.opacity,
+        contourEnable: data.contour.show,
+        contourColor: str2RgbaArray(data.contour.color).slice(0, 3),
+        contourWidth: data.contour.width,
         useFacetNormals: data.flatshading
     };
 
@@ -123,25 +126,25 @@ proto.update = function(data) {
         config.vertexIntensity = data.intensity;
         config.colormap = parseColorScale(data.colorscale);
     }
-    else if(data.vertexColor) {
-        this.color = data.vertexColor[0];
-        config.vertexColors = parseColorArray(data.vertexColor);
+    else if(data.vertexcolor) {
+        this.color = data.vertexcolors[0];
+        config.vertexColors = parseColorArray(data.vertexcolor);
     }
-    else if(data.faceColor) {
-        this.color = data.faceColor[0];
-        config.cellColors = parseColorArray(data.faceColor);
+    else if(data.facecolor) {
+        this.color = data.facecolor[0];
+        config.cellColors = parseColorArray(data.facecolor);
     }
     else {
         this.color = data.color;
         config.meshColor = str2RgbaArray(data.color);
     }
 
-    //Update mesh
+    // Update mesh
     this.mesh.update(config);
 };
 
 proto.dispose = function() {
-    this.glplot.remove(this.mesh);
+    this.scene.glplot.remove(this.mesh);
     this.mesh.dispose();
 };
 
@@ -149,6 +152,7 @@ function createMesh3DTrace(scene, data) {
     var gl = scene.glplot.gl;
     var mesh = createMesh({gl: gl});
     var result = new Mesh3DTrace(scene, mesh, data.uid);
+    mesh._trace = result;
     result.update(data);
     scene.glplot.add(mesh);
     return result;

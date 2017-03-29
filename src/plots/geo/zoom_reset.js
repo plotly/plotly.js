@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,9 +9,7 @@
 
 'use strict';
 
-var Fx = require('../cartesian/graph_interact');
-
-function createGeoZoomReset(geo, geoLayout) {
+module.exports = function createGeoZoomReset(geo, geoLayout) {
     var projection = geo.projection,
         zoom = geo.zoom;
 
@@ -22,12 +20,8 @@ function createGeoZoomReset(geo, geoLayout) {
         zoom.scale(projection.scale());
         zoom.translate(projection.translate());
 
-        Fx.loneUnhover(geo.hoverContainer);
-
         geo.render();
     };
 
     return zoomReset;
-}
-
-module.exports = createGeoZoomReset;
+};

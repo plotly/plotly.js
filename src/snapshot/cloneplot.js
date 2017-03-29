@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,16 +9,17 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
+var Lib = require('../lib');
+var Plots = require('../plots/plots');
 
-var extendFlat = Plotly.Lib.extendFlat;
-var extendDeep = Plotly.Lib.extendDeep;
+var extendFlat = Lib.extendFlat;
+var extendDeep = Lib.extendDeep;
 
 // Put default plotTile layouts here
 function cloneLayoutOverride(tileClass) {
     var override;
 
-    switch (tileClass) {
+    switch(tileClass) {
         case 'themes__thumb':
             override = {
                 autosize: true,
@@ -60,7 +61,7 @@ function keyIsAxis(keyName) {
 module.exports = function clonePlot(graphObj, options) {
 
     // Polar plot compatibility
-    if (graphObj.framework && graphObj.framework.isPolar) {
+    if(graphObj.framework && graphObj.framework.isPolar) {
         graphObj = graphObj.framework.getConfig();
     }
 
@@ -70,22 +71,22 @@ module.exports = function clonePlot(graphObj, options) {
     var newData = extendDeep([], oldData);
     var newLayout = extendDeep({}, oldLayout, cloneLayoutOverride(options.tileClass));
 
-    if (options.width) newLayout.width = options.width;
-    if (options.height) newLayout.height = options.height;
+    if(options.width) newLayout.width = options.width;
+    if(options.height) newLayout.height = options.height;
 
-    if (options.tileClass === 'thumbnail' || options.tileClass === 'themes__thumb') {
+    if(options.tileClass === 'thumbnail' || options.tileClass === 'themes__thumb') {
         // kill annotations
         newLayout.annotations = [];
         var keys = Object.keys(newLayout);
 
-        for (i = 0; i < keys.length; i++) {
-            if (keyIsAxis(keys[i])) {
+        for(i = 0; i < keys.length; i++) {
+            if(keyIsAxis(keys[i])) {
                 newLayout[keys[i]].title = '';
             }
         }
 
         // kill colorbar and pie labels
-        for (i = 0; i < newData.length; i++) {
+        for(i = 0; i < newData.length; i++) {
             var trace = newData[i];
             trace.showscale = false;
             if(trace.marker) trace.marker.showscale = false;
@@ -93,17 +94,17 @@ module.exports = function clonePlot(graphObj, options) {
         }
     }
 
-    if (Array.isArray(options.annotations)) {
-        for (i = 0; i < options.annotations.length; i++) {
+    if(Array.isArray(options.annotations)) {
+        for(i = 0; i < options.annotations.length; i++) {
             newLayout.annotations.push(options.annotations[i]);
         }
     }
 
-    var sceneIds = Plotly.Plots.getSubplotIds(newLayout, 'gl3d');
+    var sceneIds = Plots.getSubplotIds(newLayout, 'gl3d');
 
-    if (sceneIds.length) {
+    if(sceneIds.length) {
         var axesImageOverride = {};
-        if (options.tileClass === 'thumbnail') {
+        if(options.tileClass === 'thumbnail') {
             axesImageOverride = {
                 title: '',
                 showaxeslabels: false,
@@ -111,23 +112,36 @@ module.exports = function clonePlot(graphObj, options) {
                 linetickenable: false
             };
         }
-        for (i = 0; i < sceneIds.length; i++) {
-            var sceneId = sceneIds[i];
+        for(i = 0; i < sceneIds.length; i++) {
+            var scene = newLayout[sceneIds[i]];
 
-            extendFlat(newLayout[sceneId].xaxis, axesImageOverride);
-            extendFlat(newLayout[sceneId].yaxis, axesImageOverride);
-            extendFlat(newLayout[sceneId].zaxis, axesImageOverride);
+            if(!scene.xaxis) {
+                scene.xaxis = {};
+            }
+
+            if(!scene.yaxis) {
+                scene.yaxis = {};
+            }
+
+            if(!scene.zaxis) {
+                scene.zaxis = {};
+            }
+
+            extendFlat(scene.xaxis, axesImageOverride);
+            extendFlat(scene.yaxis, axesImageOverride);
+            extendFlat(scene.zaxis, axesImageOverride);
 
             // TODO what does this do?
-            newLayout[sceneId]._scene = null;
+            scene._scene = null;
         }
     }
 
-    var td = document.createElement('div');
-    if (options.tileClass) td.className = options.tileClass;
+    var gd = document.createElement('div');
+    if(options.tileClass) gd.className = options.tileClass;
 
     var plotTile = {
-        td: td,
+        gd: gd,
+        td: gd, // for external (image server) compatibility
         layout: newLayout,
         data: newData,
         config: {
@@ -143,12 +157,12 @@ module.exports = function clonePlot(graphObj, options) {
         }
     };
 
-    if (options.setBackground !== 'transparent') {
+    if(options.setBackground !== 'transparent') {
         plotTile.config.setBackground = options.setBackground || 'opaque';
     }
 
-    // attaching the default Layout the td, so you can grab it later
-    plotTile.td.defaultLayout = cloneLayoutOverride(options.tileClass);
+    // attaching the default Layout the gd, so you can grab it later
+    plotTile.gd.defaultLayout = cloneLayoutOverride(options.tileClass);
 
     return plotTile;
 };

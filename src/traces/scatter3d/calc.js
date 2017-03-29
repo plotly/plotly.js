@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,7 +9,7 @@
 'use strict';
 
 var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
-var calcMarkerColorscale = require('../scatter/marker_colorscale_calc');
+var calcColorscales = require('../scatter/colorscale_calc');
 
 
 /**
@@ -20,8 +20,8 @@ var calcMarkerColorscale = require('../scatter/marker_colorscale_calc');
 module.exports = function calc(gd, trace) {
     var cd = [{x: false, y: false, trace: trace, t: {}}];
 
-    arraysToCalcdata(cd);
-    calcMarkerColorscale(trace);
+    arraysToCalcdata(cd, trace);
+    calcColorscales(trace);
 
     return cd;
 };

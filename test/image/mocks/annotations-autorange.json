@@ -20,7 +20,8 @@
             "anchor":"y2",
             "mirror":true,
             "zeroline":false,
-            "showline":true
+            "showline":true,
+            "type": "date"
         },
         "xaxis3":{
             "domain":[0.7,1],
@@ -38,7 +39,8 @@
             "anchor":"x2",
             "mirror":true,
             "zeroline":false,
-            "showline":true
+            "showline":true,
+            "type": "log"
         },
         "yaxis3":{
             "anchor":"x3",
@@ -54,10 +56,16 @@
             {"ay":0,"ax":-50,"x":2,"y":1.5,"text":"Right"},
             {"x":1.5,"y":2,"text":"Top","ay":50,"ax":0},
             {"x":1.5,"y":1,"text":"Bottom","ay":-50,"ax":0},
-            {"xref":"x2","yref":"y2","text":"From left","y":1.5,"ax":-50,"ay":0,"x":1},
-            {"xref":"x2","yref":"y2","text":"From right","y":1.5,"x":2,"ay":0,"ax":50},
-            {"xref":"x2","yref":"y2","text":"From top","y":2,"ax":0,"ay":-50,"x":1.5},
-            {"xref":"x2","yref":"y2","text":"From Bottom","y":1,"ax":0,"ay":50,"x":1.5},
+            {
+                "xref":"x2","yref":"y2","text":"From left","y":2,"ax":-17,"ay":0,"x":"2001-01-01",
+                "xanchor": "right", "yanchor": "top", "textangle": 35, "bordercolor": "#444"
+            },
+            {"xref":"x2","yref":"y2","text":"From right","y":2,"x":"2001-03-01","ay":0,"ax":50},
+            {
+                "xref":"x2","yref":"y2","text":"From top","y":3,"ax":0,"ay":-27,"x":"2001-02-01",
+                "xanchor": "left", "yanchor": "bottom", "textangle": -15, "bordercolor": "#444"
+            },
+            {"xref":"x2","yref":"y2","text":"From Bottom","y":1,"ax":0,"ay":50,"x":"2001-02-01"},
             {"xref":"x3","yref":"y3","text":"Left<br>no<br>arrow","y":1.5,"x":1,"showarrow":false},
             {"xref":"x3","yref":"y3","text":"Right<br>no<br>arrow","y":1.5,"x":2,"showarrow":false},
             {"xref":"x3","yref":"y3","text":"Bottom<br>no<br>arrow","y":1,"x":1.5,"showarrow":false},

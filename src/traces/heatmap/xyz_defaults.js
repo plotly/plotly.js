@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,14 +11,15 @@
 
 var isNumeric = require('fast-isnumeric');
 
+var Registry = require('../../registry');
 var hasColumns = require('./has_columns');
 
 
-module.exports = function handleXYZDefaults(traceIn, traceOut, coerce) {
+module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout) {
     var z = coerce('z');
     var x, y;
 
-    if(z===undefined || !z.length) return 0;
+    if(z === undefined || !z.length) return 0;
 
     if(hasColumns(traceIn)) {
         x = coerce('x');
@@ -36,6 +37,9 @@ module.exports = function handleXYZDefaults(traceIn, traceOut, coerce) {
 
         coerce('transpose');
     }
+
+    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
+    handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
 
     return traceOut.z.length;
 };

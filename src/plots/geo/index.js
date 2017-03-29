@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -32,7 +32,7 @@ exports.supplyLayoutDefaults = require('./layout/defaults');
 
 exports.plot = function plotGeo(gd) {
     var fullLayout = gd._fullLayout,
-        fullData = gd._fullData,
+        calcData = gd.calcdata,
         geoIds = Plots.getSubplotIds(fullLayout, 'geo');
 
     /**
@@ -40,28 +40,39 @@ exports.plot = function plotGeo(gd) {
      * initialize object to keep reference to every loaded topojson
      */
     if(window.PlotlyGeoAssets === undefined) {
-        window.PlotlyGeoAssets = { topojson : {} };
+        window.PlotlyGeoAssets = { topojson: {} };
     }
 
     for(var i = 0; i < geoIds.length; i++) {
         var geoId = geoIds[i],
-            fullGeoData = Plots.getSubplotData(fullData, 'geo', geoId),
-            geo = fullLayout[geoId]._geo;
+            geoCalcData = Plots.getSubplotCalcData(calcData, 'geo', geoId),
+            geo = fullLayout[geoId]._subplot;
 
-        // If geo is not instantiated, create one!
-        if(geo === undefined) {
+        if(!geo) {
             geo = new Geo({
                 id: geoId,
                 graphDiv: gd,
-                container: fullLayout._geocontainer.node(),
+                container: fullLayout._geolayer.node(),
                 topojsonURL: gd._context.topojsonURL
-            },
-                fullLayout
-            );
+            });
 
-            fullLayout[geoId]._geo = geo;
+            fullLayout[geoId]._subplot = geo;
         }
 
-        geo.plot(fullGeoData, fullLayout, gd._promises);
+        geo.plot(geoCalcData, fullLayout, gd._promises);
+    }
+};
+
+exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    var oldGeoKeys = Plots.getSubplotIds(oldFullLayout, 'geo');
+
+    for(var i = 0; i < oldGeoKeys.length; i++) {
+        var oldGeoKey = oldGeoKeys[i];
+        var oldGeo = oldFullLayout[oldGeoKey]._subplot;
+
+        if(!newFullLayout[oldGeoKey] && !!oldGeo) {
+            oldGeo.framework.remove();
+            oldGeo.clipDef.remove();
+        }
     }
 };

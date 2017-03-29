@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,7 +9,9 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
+var Lib = require('../lib');
+var config = require('../plot_api/plot_config');
+
 
 /**
  * Copy arg array *without* removing `undefined` values from objects.
@@ -28,8 +30,8 @@ function copyArgArray(gd, args) {
         if(arg === gd) copy[i] = arg;
         else if(typeof arg === 'object') {
             copy[i] = Array.isArray(arg) ?
-                Plotly.Lib.extendDeep([], arg) :
-                Plotly.Lib.extendDeepAll({}, arg);
+                Lib.extendDeep([], arg) :
+                Lib.extendDeepAll({}, arg);
         }
         else copy[i] = arg;
     }
@@ -66,13 +68,13 @@ queue.add = function(gd, undoFunc, undoArgs, redoFunc, redoArgs) {
 
     // if we're already playing an undo or redo, or if this is an auto operation
     // (like pane resize... any others?) then we don't save this to the undo queue
-    if (gd.autoplay) {
-        if (!gd.undoQueue.inSequence) gd.autoplay = false;
+    if(gd.autoplay) {
+        if(!gd.undoQueue.inSequence) gd.autoplay = false;
         return;
     }
 
     // if we're not in a sequence or are just starting, we need a new queue item
-    if (!gd.undoQueue.sequence || gd.undoQueue.beginSequence) {
+    if(!gd.undoQueue.sequence || gd.undoQueue.beginSequence) {
         queueObj = {undo: {calls: [], args: []}, redo: {calls: [], args: []}};
         gd.undoQueue.queue.splice(queueIndex, gd.undoQueue.queue.length - queueIndex, queueObj);
         gd.undoQueue.index += 1;
@@ -82,11 +84,17 @@ queue.add = function(gd, undoFunc, undoArgs, redoFunc, redoArgs) {
     gd.undoQueue.beginSequence = false;
 
     // we unshift to handle calls for undo in a forward for loop later
-    queueObj.undo.calls.unshift(undoFunc);
-    queueObj.undo.args.unshift(undoArgs);
-    queueObj.redo.calls.push(redoFunc);
-    queueObj.redo.args.push(redoArgs);
+    if(queueObj) {
+        queueObj.undo.calls.unshift(undoFunc);
+        queueObj.undo.args.unshift(undoArgs);
+        queueObj.redo.calls.push(redoFunc);
+        queueObj.redo.args.push(redoArgs);
+    }
 
+    if(gd.undoQueue.queue.length > config.queueLength) {
+        gd.undoQueue.queue.shift();
+        gd.undoQueue.index--;
+    }
 };
 
 /**
@@ -121,11 +129,11 @@ queue.stopSequence = function(gd) {
 queue.undo = function undo(gd) {
     var queueObj, i;
 
-    if(gd.framework && gd.framework.isPolar){
+    if(gd.framework && gd.framework.isPolar) {
         gd.framework.undo();
         return;
     }
-    if (gd.undoQueue === undefined ||
+    if(gd.undoQueue === undefined ||
             isNaN(gd.undoQueue.index) ||
             gd.undoQueue.index <= 0) {
         return;
@@ -139,7 +147,7 @@ queue.undo = function undo(gd) {
 
     // this sequence keeps things from adding to the queue during undo/redo
     gd.undoQueue.inSequence = true;
-    for (i = 0; i < queueObj.undo.calls.length; i++) {
+    for(i = 0; i < queueObj.undo.calls.length; i++) {
         queue.plotDo(gd, queueObj.undo.calls[i], queueObj.undo.args[i]);
     }
     gd.undoQueue.inSequence = false;
@@ -154,11 +162,11 @@ queue.undo = function undo(gd) {
 queue.redo = function redo(gd) {
     var queueObj, i;
 
-    if(gd.framework && gd.framework.isPolar){
+    if(gd.framework && gd.framework.isPolar) {
         gd.framework.redo();
         return;
     }
-    if (gd.undoQueue === undefined ||
+    if(gd.undoQueue === undefined ||
             isNaN(gd.undoQueue.index) ||
             gd.undoQueue.index >= gd.undoQueue.queue.length) {
         return;
@@ -169,7 +177,7 @@ queue.redo = function redo(gd) {
 
     // this sequence keeps things from adding to the queue during undo/redo
     gd.undoQueue.inSequence = true;
-    for (i = 0; i < queueObj.redo.calls.length; i++) {
+    for(i = 0; i < queueObj.redo.calls.length; i++) {
         queue.plotDo(gd, queueObj.redo.calls[i], queueObj.redo.args[i]);
     }
     gd.undoQueue.inSequence = false;

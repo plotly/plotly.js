@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,6 +9,7 @@
 
 'use strict';
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 var colorbarDefaults = require('../../components/colorbar/defaults');
 var attributes = require('./attributes');
@@ -48,12 +49,21 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         });
     }
 
-    //Coerce remaining properties
-    ['lighting.ambient',
+    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
+    handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
+
+    // Coerce remaining properties
+    [
+        'lighting.ambient',
         'lighting.diffuse',
         'lighting.specular',
         'lighting.roughness',
         'lighting.fresnel',
+        'lighting.vertexnormalsepsilon',
+        'lighting.facenormalsepsilon',
+        'lightposition.x',
+        'lightposition.y',
+        'lightposition.z',
         'contour.show',
         'contour.color',
         'contour.width',
@@ -72,8 +82,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     else {
         traceOut.showscale = false;
 
-        if('vertexColor' in traceIn) coerce('vertexColor');
-        else if('faceColor' in traceIn) coerce('faceColor');
+        if('vertexcolor' in traceIn) coerce('vertexcolor');
+        else if('facecolor' in traceIn) coerce('facecolor');
         else coerce('color', defaultColor);
     }
 

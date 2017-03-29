@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,11 +10,11 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
+var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
-
-module.exports = {
+module.exports = extendFlat({}, {
     z: {
         valType: 'data_array',
         description: 'Sets the z data.'
@@ -25,6 +25,7 @@ module.exports = {
     y: scatterAttrs.y,
     y0: scatterAttrs.y0,
     dy: scatterAttrs.dy,
+
     text: {
         valType: 'data_array',
         description: 'Sets the text elements associated with each z value.'
@@ -57,14 +58,6 @@ module.exports = {
             '(the default behavior when `y` is not provided)'
         ].join(' ')
     },
-    zauto: colorscaleAttrs.zauto,
-    zmin: colorscaleAttrs.zmin,
-    zmax: colorscaleAttrs.zmax,
-    colorscale: colorscaleAttrs.colorscale,
-    autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale,
-        {dflt: false}),
-    reversescale: colorscaleAttrs.reversescale,
-    showscale: colorscaleAttrs.showscale,
     zsmooth: {
         valType: 'enumerated',
         values: ['fast', 'best', false],
@@ -84,8 +77,22 @@ module.exports = {
             'in the `z` data are filled in.'
         ].join(' ')
     },
-
-    _nestedModules: {
-        'colorbar': 'Colorbar'
-    }
-};
+    xgap: {
+        valType: 'number',
+        dflt: 0,
+        min: 0,
+        role: 'style',
+        description: 'Sets the horizontal gap (in pixels) between bricks.'
+    },
+    ygap: {
+        valType: 'number',
+        dflt: 0,
+        min: 0,
+        role: 'style',
+        description: 'Sets the vertical gap (in pixels) between bricks.'
+    },
+},
+    colorscaleAttrs,
+    { autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}) },
+    { colorbar: colorbarAttrs }
+);

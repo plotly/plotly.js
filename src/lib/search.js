@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,6 +10,7 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
+var loggers = require('./loggers');
 
 
 /**
@@ -40,12 +41,12 @@ exports.findBin = function(val, bins, linelow) {
             test = linelow ? greaterOrEqual : greaterThan;
         }
         // c is just to avoid infinite loops if there's an error
-        while(n1 < n2 && c++ < 100){
+        while(n1 < n2 && c++ < 100) {
             n = Math.floor((n1 + n2) / 2);
             if(test(bins[n], val)) n1 = n + 1;
             else n2 = n;
         }
-        if(c > 90) console.log('Long binary search...');
+        if(c > 90) loggers.log('Long binary search...');
         return n1 - 1;
     }
 };
@@ -90,7 +91,7 @@ exports.distinctVals = function(valsIn) {
  * particularly useful for date/time where things are not powers of 10
  * binary search is probably overkill here...
  */
-exports.roundUp = function(val, arrayIn, reverse){
+exports.roundUp = function(val, arrayIn, reverse) {
     var low = 0,
         high = arrayIn.length - 1,
         mid,
@@ -99,7 +100,7 @@ exports.roundUp = function(val, arrayIn, reverse){
         dhigh = reverse ? 1 : 0,
         rounded = reverse ? Math.ceil : Math.floor;
     // c is just to avoid infinite loops if there's an error
-    while(low < high && c++ < 100){
+    while(low < high && c++ < 100) {
         mid = rounded((low + high) / 2);
         if(arrayIn[mid] <= val) low = mid + dlow;
         else high = mid - dhigh;

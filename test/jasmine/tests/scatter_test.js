@@ -1,7 +1,13 @@
+var d3 = require('d3');
 var Scatter = require('@src/traces/scatter');
 var makeBubbleSizeFn = require('@src/traces/scatter/make_bubble_size_func');
 var linePoints = require('@src/traces/scatter/line_points');
 var Lib = require('@src/lib');
+
+var Plotly = require('@lib/index');
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
 
 describe('Test scatter', function() {
     'use strict';
@@ -60,6 +66,64 @@ describe('Test scatter', function() {
             expect(traceOut.visible).toBe(false);
         });
 
+        it('should correctly assign \'hoveron\' default', function() {
+            traceIn = {
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                mode: 'lines+markers',
+                fill: 'tonext'
+            };
+
+            // fills and markers, you get both hover types
+            // you need visible: true here, as that normally gets set
+            // outside of the module supplyDefaults
+            traceOut = {visible: true};
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.hoveron).toBe('points+fills');
+
+            // but with only lines (or just fill) and fill tonext or toself
+            // you get fills
+            traceIn.mode = 'lines';
+            traceOut = {visible: true};
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.hoveron).toBe('fills');
+
+            // with the wrong fill you always get points
+            // only area fills default to hoveron points. Vertical or
+            // horizontal fills don't have the same physical meaning,
+            // they're generally just filling their own slice, so they
+            // default to hoveron points.
+            traceIn.fill = 'tonexty';
+            traceOut = {visible: true};
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.hoveron).toBe('points');
+        });
+
+        it('should inherit layout.calendar', function() {
+            traceIn = {
+                x: [1, 2, 3],
+                y: [1, 2, 3]
+            };
+            supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+
+            // we always fill calendar attributes, because it's hard to tell if
+            // we're on a date axis at this point.
+            expect(traceOut.xcalendar).toBe('islamic');
+            expect(traceOut.ycalendar).toBe('islamic');
+        });
+
+        it('should take its own calendars', function() {
+            traceIn = {
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                xcalendar: 'coptic',
+                ycalendar: 'ethiopian'
+            };
+            supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+
+            expect(traceOut.xcalendar).toBe('coptic');
+            expect(traceOut.ycalendar).toBe('ethiopian');
+        });
     });
 
     describe('isBubble', function() {
@@ -171,7 +235,8 @@ describe('Test scatter', function() {
                 yaxis: ax,
                 connectGaps: false,
                 baseTolerance: 1,
-                linear: true
+                linear: true,
+                simplify: true
             };
 
         function makeCalcData(ptsIn) {
@@ -191,73 +256,119 @@ describe('Test scatter', function() {
         }
 
         it('should pass along well-separated non-linear points', function() {
-            var ptsIn = [[0,0], [10,20], [20,10], [30,40], [40,60], [50,30]];
+            var ptsIn = [[0, 0], [10, 20], [20, 10], [30, 40], [40, 60], [50, 30]];
             var ptsOut = callLinePoints(ptsIn);
 
             expect(ptsOut).toEqual([ptsIn]);
         });
 
         it('should collapse straight lines to just their endpoints', function() {
-            var ptsIn = [[0,0], [5,10], [13,26], [15,30], [22,16], [28,4], [30,0]];
+            var ptsIn = [[0, 0], [5, 10], [13, 26], [15, 30], [22, 16], [28, 4], [30, 0]];
             var ptsOut = callLinePoints(ptsIn);
             // TODO: [22,16] should not appear here. This is ok but not optimal.
-            expect(ptsOut).toEqual([[[0,0], [15,30], [22,16], [30,0]]]);
+            expect(ptsOut).toEqual([[[0, 0], [15, 30], [22, 16], [30, 0]]]);
+        });
+
+        it('should not collapse straight lines if simplify is false', function() {
+            var ptsIn = [[0, 0], [5, 10], [13, 26], [15, 30], [22, 16], [28, 4], [30, 0]];
+            var ptsOut = callLinePoints(ptsIn, {simplify: false});
+            expect(ptsOut).toEqual([ptsIn]);
         });
 
         it('should separate out blanks, unless connectgaps is true', function() {
             var ptsIn = [
-                [0,0], [10,20], [20,10], [undefined, undefined],
-                [30,40], [undefined, undefined],
-                [40,60], [50,30]];
+                [0, 0], [10, 20], [20, 10], [undefined, undefined],
+                [30, 40], [undefined, undefined],
+                [40, 60], [50, 30]];
             var ptsDisjoint = callLinePoints(ptsIn);
             var ptsConnected = callLinePoints(ptsIn, {connectGaps: true});
 
-            expect(ptsDisjoint).toEqual([[[0,0], [10,20], [20,10]], [[30,40]], [[40,60], [50,30]]]);
-            expect(ptsConnected).toEqual([[[0,0], [10,20], [20,10], [30,40], [40,60], [50,30]]]);
+            expect(ptsDisjoint).toEqual([[[0, 0], [10, 20], [20, 10]], [[30, 40]], [[40, 60], [50, 30]]]);
+            expect(ptsConnected).toEqual([[[0, 0], [10, 20], [20, 10], [30, 40], [40, 60], [50, 30]]]);
         });
 
         it('should collapse a vertical cluster into 4 points', function() {
             // the four being initial, high, low, and final if the high is before the low
-            var ptsIn = [[-10,0], [0,0], [0,10], [0,20], [0,-10], [0,15], [0,-25], [0,10], [0,5], [10,10]];
+            var ptsIn = [[-10, 0], [0, 0], [0, 10], [0, 20], [0, -10], [0, 15], [0, -25], [0, 10], [0, 5], [10, 10]];
             var ptsOut = callLinePoints(ptsIn);
 
             // TODO: [0, 10] should not appear in either of these results - this is OK but not optimal.
-            expect(ptsOut).toEqual([[[-10,0], [0,0], [0,10], [0,20], [0,-25], [0,5], [10,10]]]);
+            expect(ptsOut).toEqual([[[-10, 0], [0, 0], [0, 10], [0, 20], [0, -25], [0, 5], [10, 10]]]);
 
             // or initial, low, high, final if the low is before the high
-            ptsIn = [[-10,0], [0,0], [0,10], [0,-25], [0,-10], [0,15], [0,20], [0,10], [0,5], [10,10]];
+            ptsIn = [[-10, 0], [0, 0], [0, 10], [0, -25], [0, -10], [0, 15], [0, 20], [0, 10], [0, 5], [10, 10]];
             ptsOut = callLinePoints(ptsIn);
 
-            expect(ptsOut).toEqual([[[-10,0], [0,0], [0,10], [0,-25], [0,20], [0,5], [10,10]]]);
+            expect(ptsOut).toEqual([[[-10, 0], [0, 0], [0, 10], [0, -25], [0, 20], [0, 5], [10, 10]]]);
         });
 
         it('should collapse a horizontal cluster into 4 points', function() {
             // same deal
-            var ptsIn = [[0,-10], [0,0], [10,0], [20,0], [-10,0], [15,0], [-25,0], [10,0], [5,0], [10,10]];
+            var ptsIn = [[0, -10], [0, 0], [10, 0], [20, 0], [-10, 0], [15, 0], [-25, 0], [10, 0], [5, 0], [10, 10]];
             var ptsOut = callLinePoints(ptsIn);
 
             // TODO: [10, 0] should not appear in either of these results - this is OK but not optimal.
             // same problem as the test above
-            expect(ptsOut).toEqual([[[0,-10], [0,0], [10,0], [20,0], [-25,0], [5,0], [10,10]]]);
+            expect(ptsOut).toEqual([[[0, -10], [0, 0], [10, 0], [20, 0], [-25, 0], [5, 0], [10, 10]]]);
 
-            ptsIn = [[0,-10], [0,0], [10,0], [-25,0], [-10,0], [15,0], [20,0], [10,0], [5,0], [10,10]];
+            ptsIn = [[0, -10], [0, 0], [10, 0], [-25, 0], [-10, 0], [15, 0], [20, 0], [10, 0], [5, 0], [10, 10]];
             ptsOut = callLinePoints(ptsIn);
 
-            expect(ptsOut).toEqual([[[0,-10], [0,0], [10,0], [-25,0], [20,0], [5,0], [10,10]]]);
+            expect(ptsOut).toEqual([[[0, -10], [0, 0], [10, 0], [-25, 0], [20, 0], [5, 0], [10, 10]]]);
         });
 
         it('should use lineWidth to determine whether a cluster counts', function() {
-            var ptsIn = [[0,0], [20,0], [21,10], [22,20], [23,-10], [24,15], [25,-25], [26,10], [27,5], [100,10]];
+            var ptsIn = [[0, 0], [20, 0], [21, 10], [22, 20], [23, -10], [24, 15], [25, -25], [26, 10], [27, 5], [100, 10]];
             var ptsThin = callLinePoints(ptsIn);
             var ptsThick = callLinePoints(ptsIn, {baseTolerance: 8});
 
             // thin line, no decimation. thick line yes.
             expect(ptsThin).toEqual([ptsIn]);
             // TODO: [21,10] should not appear in this result (same issue again)
-            expect(ptsThick).toEqual([[[0,0], [20,0], [21,10], [22,20], [25,-25], [27,5], [100,10]]]);
+            expect(ptsThick).toEqual([[[0, 0], [20, 0], [21, 10], [22, 20], [25, -25], [27, 5], [100, 10]]]);
         });
 
         // TODO: test coarser decimation outside plot, and removing very near duplicates from the four of a cluster
     });
 
+});
+
+describe('end-to-end scatter tests', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should add a plotly-customdata class to points with custom data', function(done) {
+        Plotly.plot(gd, [{
+            x: [1, 2, 3, 4, 5, 6, 7],
+            y: [2, 3, 4, 5, 6, 7, 8],
+            customdata: [null, undefined, 0, false, {foo: 'bar'}, 'a']
+        }]).then(function() {
+            var points = d3.selectAll('g.scatterlayer').selectAll('.point');
+
+            // Rather than just duplicating the logic, let's be explicit about
+            // what's expected. Specifially, only null and undefined (the default)
+            // do *not* add the class.
+            var expected = [false, false, true, true, true, true, false];
+
+            points.each(function(cd, i) {
+                expect(d3.select(this).classed('plotly-customdata')).toBe(expected[i]);
+            });
+
+            return Plotly.animate(gd, [{
+                data: [{customdata: []}]
+            }], {frame: {redraw: false, duration: 0}});
+        }).then(function() {
+            var points = d3.selectAll('g.scatterlayer').selectAll('.point');
+
+            points.each(function() {
+                expect(d3.select(this).classed('plotly-customdata')).toBe(false);
+            });
+
+        }).catch(fail).then(done);
+    });
 });

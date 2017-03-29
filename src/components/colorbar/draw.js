@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,12 +10,16 @@
 'use strict';
 
 var d3 = require('d3');
+var tinycolor = require('tinycolor2');
 
 var Plotly = require('../../plotly');
 var Plots = require('../../plots/plots');
+var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
-var Fx = require('../../plots/cartesian/graph_interact');
+var dragElement = require('../dragelement');
 var Lib = require('../../lib');
+var extendFlat = require('../../lib/extend').extendFlat;
+var setCursor = require('../../lib/setcursor');
 var Drawing = require('../drawing');
 var Color = require('../color');
 var Titles = require('../titles');
@@ -50,11 +54,12 @@ module.exports = function draw(gd, id) {
     // evaluated halfway between levels
     opts.filllevels = null;
 
-    function component(){
-        var fullLayout = gd._fullLayout;
+    function component() {
+        var fullLayout = gd._fullLayout,
+            gs = fullLayout._size;
         if((typeof opts.fillcolor !== 'function') &&
                 (typeof opts.line.color !== 'function')) {
-            fullLayout._infolayer.selectAll('g.'+id).remove();
+            fullLayout._infolayer.selectAll('g.' + id).remove();
             return;
         }
         var zrange = d3.extent(((typeof opts.fillcolor === 'function') ?
@@ -63,11 +68,11 @@ module.exports = function draw(gd, id) {
             filllevels = [],
             l,
             linecolormap = typeof opts.line.color === 'function' ?
-                opts.line.color : function(){ return opts.line.color; },
+                opts.line.color : function() { return opts.line.color; },
             fillcolormap = typeof opts.fillcolor === 'function' ?
-                opts.fillcolor : function(){ return opts.fillcolor; };
+                opts.fillcolor : function() { return opts.fillcolor; };
 
-        var l0 = opts.levels.end + opts.levels.size/100,
+        var l0 = opts.levels.end + opts.levels.size / 100,
             ls = opts.levels.size,
             zr0 = (1.001 * zrange[0] - 0.001 * zrange[1]),
             zr1 = (1.001 * zrange[1] - 0.001 * zrange[0]);
@@ -84,20 +89,20 @@ module.exports = function draw(gd, id) {
                 }
             }
             else {
-                filllevels = linelevels.map(function(v){
-                    return v-opts.levels.size / 2;
+                filllevels = linelevels.map(function(v) {
+                    return v - opts.levels.size / 2;
                 });
                 filllevels.push(filllevels[filllevels.length - 1] +
                     opts.levels.size);
             }
         }
-        else if(opts.fillcolor && typeof opts.fillcolor==='string') {
+        else if(opts.fillcolor && typeof opts.fillcolor === 'string') {
             // doesn't matter what this value is, with a single value
             // we'll make a single fill rect covering the whole bar
             filllevels = [0];
         }
 
-        if(opts.levels.size<0) {
+        if(opts.levels.size < 0) {
             linelevels.reverse();
             filllevels.reverse();
         }
@@ -114,27 +119,27 @@ module.exports = function draw(gd, id) {
         var originalPlotHeight = fullLayout.height - fullLayout.margin.t - fullLayout.margin.b,
             originalPlotWidth = fullLayout.width - fullLayout.margin.l - fullLayout.margin.r,
             thickPx = Math.round(opts.thickness *
-                (opts.thicknessmode==='fraction' ? originalPlotWidth : 1)),
-            thickFrac = thickPx / fullLayout._size.w,
+                (opts.thicknessmode === 'fraction' ? originalPlotWidth : 1)),
+            thickFrac = thickPx / gs.w,
             lenPx = Math.round(opts.len *
-                (opts.lenmode==='fraction' ? originalPlotHeight : 1)),
-            lenFrac = lenPx / fullLayout._size.h,
-            xpadFrac = opts.xpad/fullLayout._size.w,
-            yExtraPx = (opts.borderwidth + opts.outlinewidth)/2,
-            ypadFrac = opts.ypad / fullLayout._size.h,
+                (opts.lenmode === 'fraction' ? originalPlotHeight : 1)),
+            lenFrac = lenPx / gs.h,
+            xpadFrac = opts.xpad / gs.w,
+            yExtraPx = (opts.borderwidth + opts.outlinewidth) / 2,
+            ypadFrac = opts.ypad / gs.h,
 
             // x positioning: do it initially just for left anchor,
             // then fix at the end (since we don't know the width yet)
-            xLeft = Math.round(opts.x*fullLayout._size.w + opts.xpad),
+            xLeft = Math.round(opts.x * gs.w + opts.xpad),
             // for dragging... this is getting a little muddled...
             xLeftFrac = opts.x - thickFrac *
                 ({middle: 0.5, right: 1}[opts.xanchor]||0),
 
             // y positioning we can do correctly from the start
             yBottomFrac = opts.y + lenFrac *
-                (({top:-0.5, bottom:0.5}[opts.yanchor]||0)-0.5),
-            yBottomPx = Math.round(fullLayout._size.h * (1-yBottomFrac)),
-            yTopPx = yBottomPx-lenPx,
+                (({top: -0.5, bottom: 0.5}[opts.yanchor] || 0) - 0.5),
+            yBottomPx = Math.round(gs.h * (1 - yBottomFrac)),
+            yTopPx = yBottomPx - lenPx,
             titleEl,
             cbAxisIn = {
                 type: 'linear',
@@ -154,6 +159,7 @@ module.exports = function draw(gd, id) {
                 tickangle: opts.tickangle,
                 tickformat: opts.tickformat,
                 exponentformat: opts.exponentformat,
+                separatethousands: opts.separatethousands,
                 showexponent: opts.showexponent,
                 showtickprefix: opts.showtickprefix,
                 tickprefix: opts.tickprefix,
@@ -168,7 +174,8 @@ module.exports = function draw(gd, id) {
             axisOptions = {
                 letter: 'y',
                 font: fullLayout.font,
-                noHover: true
+                noHover: true,
+                calendar: fullLayout.calendar  // not really necessary (yet?)
             };
 
         // Coerce w.r.t. Axes layoutAttributes:
@@ -178,11 +185,10 @@ module.exports = function draw(gd, id) {
         }
 
         // Prepare the Plotly axis object
-        handleAxisDefaults(cbAxisIn, cbAxisOut, coerce, axisOptions);
+        handleAxisDefaults(cbAxisIn, cbAxisOut, coerce, axisOptions, fullLayout);
         handleAxisPositionDefaults(cbAxisIn, cbAxisOut, coerce, axisOptions);
 
         cbAxisOut._id = 'y' + id;
-        cbAxisOut._td = gd;
 
         // position can't go in through supplyDefaults
         // because that restricts it to [0,1]
@@ -191,11 +197,11 @@ module.exports = function draw(gd, id) {
         // save for other callers to access this axis
         component.axis = cbAxisOut;
 
-        if(['top','bottom'].indexOf(opts.titleside)!==-1) {
+        if(['top', 'bottom'].indexOf(opts.titleside) !== -1) {
             cbAxisOut.titleside = opts.titleside;
             cbAxisOut.titlex = opts.x + xpadFrac;
             cbAxisOut.titley = yBottomFrac +
-                (opts.titleside==='top' ? lenFrac-ypadFrac : ypadFrac);
+                (opts.titleside === 'top' ? lenFrac - ypadFrac : ypadFrac);
         }
 
         if(opts.line.color && opts.tickmode === 'auto') {
@@ -204,18 +210,18 @@ module.exports = function draw(gd, id) {
             var dtick = opts.levels.size;
             // expand if too many contours, so we don't get too many ticks
             var autoNtick = Lib.constrain(
-                    (yBottomPx-yTopPx)/50, 4, 15) + 1,
-                dtFactor = (zrange[1]-zrange[0]) /
-                    ((opts.nticks||autoNtick)*dtick);
-            if(dtFactor>1) {
-                var dtexp = Math.pow(10,Math.floor(
-                    Math.log(dtFactor)/Math.LN10));
-                dtick *= dtexp * Lib.roundUp(dtFactor/dtexp,[2,5,10]);
+                    (yBottomPx - yTopPx) / 50, 4, 15) + 1,
+                dtFactor = (zrange[1] - zrange[0]) /
+                    ((opts.nticks || autoNtick) * dtick);
+            if(dtFactor > 1) {
+                var dtexp = Math.pow(10, Math.floor(
+                    Math.log(dtFactor) / Math.LN10));
+                dtick *= dtexp * Lib.roundUp(dtFactor / dtexp, [2, 5, 10]);
                 // if the contours are at round multiples, reset tick0
                 // so they're still at round multiples. Otherwise,
                 // keep the first label on the first contour level
-                if((Math.abs(opts.levels.start)/
-                        opts.levels.size+1e-6)%1 < 2e-6) {
+                if((Math.abs(opts.levels.start) /
+                        opts.levels.size + 1e-6) % 1 < 2e-6) {
                     cbAxisOut.tick0 = 0;
                 }
             }
@@ -225,50 +231,66 @@ module.exports = function draw(gd, id) {
         // set domain after init, because we may want to
         // allow it outside [0,1]
         cbAxisOut.domain = [
-            yBottomFrac+ypadFrac,
-            yBottomFrac+lenFrac-ypadFrac
+            yBottomFrac + ypadFrac,
+            yBottomFrac + lenFrac - ypadFrac
         ];
         cbAxisOut.setScale();
 
         // now draw the elements
-        var container = fullLayout._infolayer.selectAll('g.'+id).data([0]);
-        container.enter().append('g').classed(id,true)
-            .each(function(){
+        var container = fullLayout._infolayer.selectAll('g.' + id).data([0]);
+        container.enter().append('g').classed(id, true)
+            .each(function() {
                 var s = d3.select(this);
-                s.append('rect').classed('cbbg',true);
-                s.append('g').classed('cbfills',true);
-                s.append('g').classed('cblines',true);
-                s.append('g').classed('cbaxis',true).classed('crisp',true);
-                s.append('g').classed('cbtitleunshift',true)
-                    .append('g').classed('cbtitle',true);
-                s.append('rect').classed('cboutline',true);
+                s.append('rect').classed('cbbg', true);
+                s.append('g').classed('cbfills', true);
+                s.append('g').classed('cblines', true);
+                s.append('g').classed('cbaxis', true).classed('crisp', true);
+                s.append('g').classed('cbtitleunshift', true)
+                    .append('g').classed('cbtitle', true);
+                s.append('rect').classed('cboutline', true);
+                s.select('.cbtitle').datum(0);
             });
-        container.attr('transform','translate('+Math.round(fullLayout._size.l)+
-            ','+Math.round(fullLayout._size.t)+')');
+        container.attr('transform', 'translate(' + Math.round(gs.l) +
+            ',' + Math.round(gs.t) + ')');
         // TODO: this opposite transform is a hack until we make it
         // more rational which items get this offset
         var titleCont = container.select('.cbtitleunshift')
-            .attr('transform', 'translate(-'+
-                Math.round(fullLayout._size.l) + ',-' +
-                Math.round(fullLayout._size.t) + ')');
+            .attr('transform', 'translate(-' +
+                Math.round(gs.l) + ',-' +
+                Math.round(gs.t) + ')');
 
         cbAxisOut._axislayer = container.select('.cbaxis');
         var titleHeight = 0;
         if(['top', 'bottom'].indexOf(opts.titleside) !== -1) {
             // draw the title so we know how much room it needs
-            // when we squish the axis
-            Titles.draw(gd, cbAxisOut._id + 'title');
+            // when we squish the axis. This one only applies to
+            // top or bottom titles, not right side.
+            var x = gs.l + (opts.x + xpadFrac) * gs.w,
+                fontSize = cbAxisOut.titlefont.size,
+                y;
+
+            if(opts.titleside === 'top') {
+                y = (1 - (yBottomFrac + lenFrac - ypadFrac)) * gs.h +
+                    gs.t + 3 + fontSize * 0.75;
+            }
+            else {
+                y = (1 - (yBottomFrac + ypadFrac)) * gs.h +
+                    gs.t - 3 - fontSize * 0.25;
+            }
+            drawTitle(cbAxisOut._id + 'title', {
+                attributes: {x: x, y: y, 'text-anchor': 'start'}
+            });
         }
 
-        function drawAxis(){
-            if(['top','bottom'].indexOf(opts.titleside)!==-1) {
+        function drawAxis() {
+            if(['top', 'bottom'].indexOf(opts.titleside) !== -1) {
                 // squish the axis top to make room for the title
                 var titleGroup = container.select('.cbtitle'),
                     titleText = titleGroup.select('text'),
                     titleTrans =
-                        [-opts.outlinewidth/2, opts.outlinewidth/2],
+                        [-opts.outlinewidth / 2, opts.outlinewidth / 2],
                     mathJaxNode = titleGroup
-                        .select('.h'+cbAxisOut._id+'title-math-group')
+                        .select('.h' + cbAxisOut._id + 'title-math-group')
                         .node(),
                     lineSize = 15.6;
                 if(titleText.node()) {
@@ -277,10 +299,10 @@ module.exports = function draw(gd, id) {
                 }
                 if(mathJaxNode) {
                     titleHeight = Drawing.bBox(mathJaxNode).height;
-                    if(titleHeight>lineSize) {
+                    if(titleHeight > lineSize) {
                         // not entirely sure how mathjax is doing
                         // vertical alignment, but this seems to work.
-                        titleTrans[1] -= (titleHeight-lineSize)/2;
+                        titleTrans[1] -= (titleHeight - lineSize) / 2;
                     }
                 }
                 else if(titleText.node() &&
@@ -293,57 +315,66 @@ module.exports = function draw(gd, id) {
                     // TODO: configurable
                     titleHeight += 5;
 
-                    if(opts.titleside==='top') {
-                        cbAxisOut.domain[1] -= titleHeight/fullLayout._size.h;
+                    if(opts.titleside === 'top') {
+                        cbAxisOut.domain[1] -= titleHeight / gs.h;
                         titleTrans[1] *= -1;
                     }
                     else {
-                        cbAxisOut.domain[0] += titleHeight/fullLayout._size.h;
+                        cbAxisOut.domain[0] += titleHeight / gs.h;
                         var nlines = Math.max(1,
                             titleText.selectAll('tspan.line').size());
-                        titleTrans[1] += (1-nlines)*lineSize;
+                        titleTrans[1] += (1 - nlines) * lineSize;
                     }
 
                     titleGroup.attr('transform',
-                        'translate('+titleTrans+')');
+                        'translate(' + titleTrans + ')');
 
                     cbAxisOut.setScale();
                 }
             }
 
             container.selectAll('.cbfills,.cblines,.cbaxis')
-                .attr('transform','translate(0,'+
-                    Math.round(fullLayout._size.h*(1-cbAxisOut.domain[1]))+')');
+                .attr('transform', 'translate(0,' +
+                    Math.round(gs.h * (1 - cbAxisOut.domain[1])) + ')');
 
             var fills = container.select('.cbfills')
                 .selectAll('rect.cbfill')
                     .data(filllevels);
             fills.enter().append('rect')
-                .classed('cbfill',true)
-                .style('stroke','none');
+                .classed('cbfill', true)
+                .style('stroke', 'none');
             fills.exit().remove();
-            fills.each(function(d,i) {
+            fills.each(function(d, i) {
                 var z = [
-                    (i===0) ? zrange[0] :
-                        (filllevels[i]+filllevels[i-1])/2,
-                    (i===filllevels.length-1) ? zrange[1] :
-                        (filllevels[i]+filllevels[i+1])/2
+                    (i === 0) ? zrange[0] :
+                        (filllevels[i] + filllevels[i - 1]) / 2,
+                    (i === filllevels.length - 1) ? zrange[1] :
+                        (filllevels[i] + filllevels[i + 1]) / 2
                 ]
                 .map(cbAxisOut.c2p)
                 .map(Math.round);
 
                 // offset the side adjoining the next rectangle so they
                 // overlap, to prevent antialiasing gaps
-                if(i!==filllevels.length-1) {
-                    z[1] += (z[1]>z[0]) ? 1 : -1;
+                if(i !== filllevels.length - 1) {
+                    z[1] += (z[1] > z[0]) ? 1 : -1;
                 }
+
+
+                // Tinycolor can't handle exponents and
+                // at this scale, removing it makes no difference.
+                var colorString = fillcolormap(d).replace('e-', ''),
+                    opaqueColor = tinycolor(colorString).toHexString();
+
+                // Colorbar cannot currently support opacities so we
+                // use an opaque fill even when alpha channels present
                 d3.select(this).attr({
                     x: xLeft,
-                    width: Math.max(thickPx,2),
+                    width: Math.max(thickPx, 2),
                     y: d3.min(z),
-                    height: Math.max(d3.max(z)-d3.min(z),2)
-                })
-                .style('fill',fillcolormap(d));
+                    height: Math.max(d3.max(z) - d3.min(z), 2),
+                    fill: opaqueColor
+                });
             });
 
             var lines = container.select('.cblines')
@@ -351,67 +382,127 @@ module.exports = function draw(gd, id) {
                     .data(opts.line.color && opts.line.width ?
                         linelevels : []);
             lines.enter().append('path')
-                .classed('cbline',true);
+                .classed('cbline', true);
             lines.exit().remove();
             lines.each(function(d) {
                 d3.select(this)
-                    .attr('d','M'+xLeft+',' +
-                        (Math.round(cbAxisOut.c2p(d))+(opts.line.width/2)%1) +
-                        'h'+thickPx)
+                    .attr('d', 'M' + xLeft + ',' +
+                        (Math.round(cbAxisOut.c2p(d)) + (opts.line.width / 2) % 1) +
+                        'h' + thickPx)
                     .call(Drawing.lineGroupStyle,
                         opts.line.width, linecolormap(d), opts.line.dash);
             });
 
             // force full redraw of labels and ticks
-            cbAxisOut._axislayer.selectAll('g.'+cbAxisOut._id+'tick,path')
+            cbAxisOut._axislayer.selectAll('g.' + cbAxisOut._id + 'tick,path')
                 .remove();
 
-            cbAxisOut._pos = xLeft+thickPx +
-                (opts.outlinewidth||0)/2 - (opts.ticks==='outside' ? 1 : 0);
+            cbAxisOut._pos = xLeft + thickPx +
+                (opts.outlinewidth||0) / 2 - (opts.ticks === 'outside' ? 1 : 0);
             cbAxisOut.side = 'right';
 
-            return Axes.doTicks(gd, cbAxisOut);
+            // separate out axis and title drawing,
+            // so we don't need such complicated logic in Titles.draw
+            // if title is on the top or bottom, we've already drawn it
+            // this title call only handles side=right
+            return Lib.syncOrAsync([
+                function() {
+                    return Axes.doTicks(gd, cbAxisOut, true);
+                },
+                function() {
+                    if(['top', 'bottom'].indexOf(opts.titleside) === -1) {
+                        var fontSize = cbAxisOut.titlefont.size,
+                            y = cbAxisOut._offset + cbAxisOut._length / 2,
+                            x = gs.l + (cbAxisOut.position || 0) * gs.w + ((cbAxisOut.side === 'right') ?
+                                10 + fontSize * ((cbAxisOut.showticklabels ? 1 : 0.5)) :
+                                -10 - fontSize * ((cbAxisOut.showticklabels ? 0.5 : 0)));
+
+                        // the 'h' + is a hack to get around the fact that
+                        // convertToTspans rotates any 'y...' class by 90 degrees.
+                        // TODO: find a better way to control this.
+                        drawTitle('h' + cbAxisOut._id + 'title', {
+                            avoid: {
+                                selection: d3.select(gd).selectAll('g.' + cbAxisOut._id + 'tick'),
+                                side: opts.titleside,
+                                offsetLeft: gs.l,
+                                offsetTop: gs.t,
+                                maxShift: fullLayout.width
+                            },
+                            attributes: {x: x, y: y, 'text-anchor': 'middle'},
+                            transform: {rotate: '-90', offset: 0}
+                        });
+                    }
+                }]);
         }
 
-        function positionCB(){
+        function drawTitle(titleClass, titleOpts) {
+            var trace = getTrace(),
+                propName;
+            if(Registry.traceIs(trace, 'markerColorscale')) {
+                propName = 'marker.colorbar.title';
+            }
+            else propName = 'colorbar.title';
+
+            var dfltTitleOpts = {
+                propContainer: cbAxisOut,
+                propName: propName,
+                traceIndex: trace.index,
+                dfltName: 'colorscale',
+                containerGroup: container.select('.cbtitle')
+            };
+
+            // this class-to-rotate thing with convertToTspans is
+            // getting hackier and hackier... delete groups with the
+            // wrong class (in case earlier the colorbar was drawn on
+            // a different side, I think?)
+            var otherClass = titleClass.charAt(0) === 'h' ?
+                titleClass.substr(1) : ('h' + titleClass);
+            container.selectAll('.' + otherClass + ',.' + otherClass + '-math-group')
+                .remove();
+
+            Titles.draw(gd, titleClass,
+                extendFlat(dfltTitleOpts, titleOpts || {}));
+        }
+
+        function positionCB() {
             // wait for the axis & title to finish rendering before
             // continuing positioning
             // TODO: why are we redrawing multiple times now with this?
             // I guess autoMargin doesn't like being post-promise?
-            var innerWidth = thickPx + opts.outlinewidth/2 +
+            var innerWidth = thickPx + opts.outlinewidth / 2 +
                     Drawing.bBox(cbAxisOut._axislayer.node()).width;
             titleEl = titleCont.select('text');
             if(titleEl.node() && !titleEl.classed('js-placeholder')) {
                 var mathJaxNode = titleCont
-                        .select('.h'+cbAxisOut._id+'title-math-group')
+                        .select('.h' + cbAxisOut._id + 'title-math-group')
                         .node(),
                     titleWidth;
                 if(mathJaxNode &&
-                        ['top','bottom'].indexOf(opts.titleside)!==-1) {
+                        ['top', 'bottom'].indexOf(opts.titleside) !== -1) {
                     titleWidth = Drawing.bBox(mathJaxNode).width;
                 }
                 else {
                     // note: the formula below works for all titlesides,
                     // (except for top/bottom mathjax, above)
-                    // but the weird fullLayout._size.l is because the titleunshift
+                    // but the weird gs.l is because the titleunshift
                     // transform gets removed by Drawing.bBox
                     titleWidth =
                         Drawing.bBox(titleCont.node()).right -
-                        xLeft - fullLayout._size.l;
+                        xLeft - gs.l;
                 }
-                innerWidth = Math.max(innerWidth,titleWidth);
+                innerWidth = Math.max(innerWidth, titleWidth);
             }
 
-            var outerwidth = 2*opts.xpad + innerWidth +
-                    opts.borderwidth + opts.outlinewidth/2,
-                outerheight = yBottomPx-yTopPx;
+            var outerwidth = 2 * opts.xpad + innerWidth +
+                    opts.borderwidth + opts.outlinewidth / 2,
+                outerheight = yBottomPx - yTopPx;
 
             container.select('.cbbg').attr({
-                x: xLeft-opts.xpad -
-                    (opts.borderwidth + opts.outlinewidth)/2,
+                x: xLeft - opts.xpad -
+                    (opts.borderwidth + opts.outlinewidth) / 2,
                 y: yTopPx - yExtraPx,
-                width: Math.max(outerwidth,2),
-                height: Math.max(outerheight + 2*yExtraPx,2)
+                width: Math.max(outerwidth, 2),
+                height: Math.max(outerheight + 2 * yExtraPx, 2)
             })
             .call(Color.fill, opts.bgcolor)
             .call(Color.stroke, opts.bordercolor)
@@ -420,9 +511,9 @@ module.exports = function draw(gd, id) {
             container.selectAll('.cboutline').attr({
                 x: xLeft,
                 y: yTopPx + opts.ypad +
-                    (opts.titleside==='top' ? titleHeight : 0),
-                width: Math.max(thickPx,2),
-                height: Math.max(outerheight - 2*opts.ypad - titleHeight, 2)
+                    (opts.titleside === 'top' ? titleHeight : 0),
+                width: Math.max(thickPx, 2),
+                height: Math.max(outerheight - 2 * opts.ypad - titleHeight, 2)
             })
             .call(Color.stroke, opts.outlinecolor)
             .style({
@@ -431,19 +522,19 @@ module.exports = function draw(gd, id) {
             });
 
             // fix positioning for xanchor!='left'
-            var xoffset = ({center:0.5, right:1}[opts.xanchor]||0) *
+            var xoffset = ({center: 0.5, right: 1}[opts.xanchor] || 0) *
                 outerwidth;
             container.attr('transform',
-                'translate('+(fullLayout._size.l-xoffset)+','+fullLayout._size.t+')');
+                'translate(' + (gs.l - xoffset) + ',' + gs.t + ')');
 
-            //auto margin adjustment
-            Plots.autoMargin(gd, id,{
+            // auto margin adjustment
+            Plots.autoMargin(gd, id, {
                 x: opts.x,
                 y: opts.y,
-                l: outerwidth*({right:1, center:0.5}[opts.xanchor]||0),
-                r: outerwidth*({left:1, center:0.5}[opts.xanchor]||0),
-                t: outerheight*({bottom:1, middle:0.5}[opts.yanchor]||0),
-                b: outerheight*({top:1, middle:0.5}[opts.yanchor]||0)
+                l: outerwidth * ({right: 1, center: 0.5}[opts.xanchor] || 0),
+                r: outerwidth * ({left: 1, center: 0.5}[opts.xanchor] || 0),
+                t: outerheight * ({bottom: 1, middle: 0.5}[opts.yanchor] || 0),
+                b: outerheight * ({top: 1, middle: 0.5}[opts.yanchor] || 0)
             });
         }
 
@@ -462,48 +553,47 @@ module.exports = function draw(gd, id) {
                 xf,
                 yf;
 
-            Fx.dragElement({
+            dragElement.init({
                 element: container.node(),
                 prepFn: function() {
                     t0 = container.attr('transform');
-                    Fx.setCursor(container);
+                    setCursor(container);
                 },
                 moveFn: function(dx, dy) {
-                    var gs = gd._fullLayout._size;
-
                     container.attr('transform',
-                        t0+' ' + 'translate('+dx+','+dy+')');
+                        t0 + ' ' + 'translate(' + dx + ',' + dy + ')');
 
-                    xf = Fx.dragAlign(xLeftFrac + (dx/gs.w), thickFrac,
+                    xf = dragElement.align(xLeftFrac + (dx / gs.w), thickFrac,
                         0, 1, opts.xanchor);
-                    yf = Fx.dragAlign(yBottomFrac - (dy/gs.h), lenFrac,
+                    yf = dragElement.align(yBottomFrac - (dy / gs.h), lenFrac,
                         0, 1, opts.yanchor);
 
-                    var csr = Fx.dragCursors(xf, yf,
+                    var csr = dragElement.getCursor(xf, yf,
                         opts.xanchor, opts.yanchor);
-                    Fx.setCursor(container, csr);
+                    setCursor(container, csr);
                 },
                 doneFn: function(dragged) {
-                    Fx.setCursor(container);
+                    setCursor(container);
 
-                    if(dragged && xf!==undefined && yf!==undefined) {
-                        var idNum = id.substr(2),
-                            traceNum;
-                        gd._fullData.some(function(trace) {
-                            if(trace.uid===idNum) {
-                                traceNum = trace.index;
-                                return true;
-                            }
-                        });
-
+                    if(dragged && xf !== undefined && yf !== undefined) {
                         Plotly.restyle(gd,
                             {'colorbar.x': xf, 'colorbar.y': yf},
-                            traceNum);
+                            getTrace().index);
                     }
                 }
             });
         }
         return cbDone;
+    }
+
+    function getTrace() {
+        var idNum = id.substr(2),
+            i,
+            trace;
+        for(i = 0; i < gd._fullData.length; i++) {
+            trace = gd._fullData[i];
+            if(trace.uid === idNum) return trace;
+        }
     }
 
     // setter/getters for every item defined in opts
@@ -527,7 +617,7 @@ module.exports = function draw(gd, id) {
         Object.keys(o).forEach(function(name) {
             // in case something random comes through
             // that's not an option, ignore it
-            if(typeof component[name]==='function') {
+            if(typeof component[name] === 'function') {
                 component[name](o[name]);
             }
         });

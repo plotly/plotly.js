@@ -1,0 +1,121 @@
+{
+    "data": [
+        {
+            "type": "scatterternary",
+            "mode": "markers",
+            "a": [
+                75,
+                70,
+                75,
+                5,
+                10,
+                10,
+                20,
+                10,
+                15,
+                10,
+                20
+            ],
+            "b": [
+                25,
+                10,
+                20,
+                60,
+                80,
+                90,
+                70,
+                20,
+                5,
+                10,
+                10
+            ],
+            "c": [
+                0,
+                20,
+                5,
+                35,
+                10,
+                0,
+                10,
+                70,
+                80,
+                80,
+                70
+            ],
+            "text": [
+                "point 1",
+                "point 2",
+                "point 3",
+                "point 4",
+                "point 5",
+                "point 6",
+                "point 7",
+                "point 8",
+                "point 9",
+                "point 10",
+                "point 11"
+            ],
+            "marker": {
+                "symbol": 100,
+                "color": "#DB7365",
+                "size": 14,
+                "line": {
+                    "width": 2
+                }
+            },
+            "uid": "de1eca"
+        }
+    ],
+    "layout": {
+        "ternary": {
+            "sum": 100,
+            "aaxis": {
+                "titlefont": {
+                    "size": 20
+                },
+                "tickfont": {
+                    "size": 15
+                },
+                "tickcolor": "rgba(0, 0, 0, 0)",
+                "ticklen": 5,
+                "showline": true,
+                "showgrid": true,
+                "title": "Journalist",
+                "tickangle": 0
+            },
+            "baxis": {
+                "titlefont": {
+                    "size": 20
+                },
+                "tickfont": {
+                    "size": 15
+                },
+                "tickcolor": "rgba(0, 0, 0, 0)",
+                "ticklen": 5,
+                "showline": true,
+                "showgrid": true,
+                "title": "<br>Developer",
+                "tickangle": 45
+            },
+            "caxis": {
+                "titlefont": {
+                    "size": 20
+                },
+                "tickfont": {
+                    "size": 15
+                },
+                "tickcolor": "rgba(0, 0, 0, 0)",
+                "ticklen": 5,
+                "showline": true,
+                "showgrid": true,
+                "title": "<br>Designer",
+                "tickangle": -45
+            },
+            "bgcolor": "#fff1e0"
+        },
+        "paper_bgcolor": "#fff1e0",
+        "height": 450,
+        "width": 700,
+        "autosize": false
+    }
+}

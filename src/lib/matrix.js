@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -27,12 +27,12 @@ exports.transposeRagged = function(z) {
         i,
         j;
     // Maximum row length:
-    for (i = 0; i < zlen; i++) maxlen = Math.max(maxlen, z[i].length);
+    for(i = 0; i < zlen; i++) maxlen = Math.max(maxlen, z[i].length);
 
     var t = new Array(maxlen);
-    for (i = 0; i < maxlen; i++) {
+    for(i = 0; i < maxlen; i++) {
         t[i] = new Array(zlen);
-        for (j = 0; j < zlen; j++) t[i][j] = z[j][i];
+        for(j = 0; j < zlen; j++) t[i][j] = z[j][i];
     }
 
     return t;
@@ -40,7 +40,7 @@ exports.transposeRagged = function(z) {
 
 // our own dot function so that we don't need to include numeric
 exports.dot = function(x, y) {
-    if (!(x.length && y.length) || x.length !== y.length) return null;
+    if(!(x.length && y.length) || x.length !== y.length) return null;
 
     var len = x.length,
         out,
@@ -73,7 +73,7 @@ exports.translationMatrix = function(x, y) {
 
 // rotate by alpha around (0,0)
 exports.rotationMatrix = function(alpha) {
-    var a = alpha*Math.PI/180;
+    var a = alpha * Math.PI / 180;
     return [[Math.cos(a), -Math.sin(a), 0],
             [Math.sin(a), Math.cos(a), 0],
             [0, 0, 1]];
@@ -91,9 +91,9 @@ exports.rotationXYMatrix = function(a, x, y) {
 exports.apply2DTransform = function(transform) {
     return function() {
         var args = arguments;
-        if (args.length === 3) {
+        if(args.length === 3) {
             args = args[0];
-        }//from map
+        }// from map
         var xy = arguments.length === 1 ? args[0] : [args[0], args[1]];
         return exports.dot(transform, [xy[0], xy[1], 1]).slice(0, 2);
     };

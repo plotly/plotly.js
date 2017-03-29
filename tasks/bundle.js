@@ -1,10 +1,6 @@
-var fs = require('fs');
-
-var browserify = require('browserify');
-var UglifyJS = require('uglify-js');
-
-var compressAttributes = require('./util/compress_attributes');
 var constants = require('./util/constants');
+var common = require('./util/common');
+var _bundle = require('./util/browserify_wrapper');
 
 /*
  * This script takes one argument
@@ -22,54 +18,37 @@ var DEV = (arg === 'dev') || (arg === '--dev');
 
 
 // Check if style and font build files are there
-try {
-    fs.statSync(constants.pathToCSSBuild).isFile();
-    fs.statSync(constants.pathToFontSVGBuild).isFile();
-}
-catch(e) {
+var doesFileExist = common.doesFileExist;
+if(!doesFileExist(constants.pathToCSSBuild) || !doesFileExist(constants.pathToFontSVG)) {
     throw new Error([
-        'build/ is missing a or more files',
+        'build/ is missing one or more files',
         'Please run `npm run preprocess` first'
     ].join('\n'));
 }
 
-
 // Browserify plotly.js
-browserify(constants.pathToPlotlyIndex, {
-    debug: DEV,
+_bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDist, {
     standalone: 'Plotly',
-    transform: [compressAttributes]
-})
-.bundle(function(err, buf) {
-    if(err) throw err;
-
-    // generate plotly.min.js
-    if(!DEV) {
-        fs.writeFile(
-            constants.pathToPlotlyDistMin,
-            UglifyJS.minify(buf.toString(), constants.uglifyOptions).code
-        );
-    }
-})
-.pipe(fs.createWriteStream(constants.pathToPlotlyDist));
-
+    debug: DEV,
+    pathToMinBundle: constants.pathToPlotlyDistMin
+});
 
 // Browserify the geo assets
-browserify(constants.pathToPlotlyGeoAssetsSrc, {
+_bundle(constants.pathToPlotlyGeoAssetsSrc, constants.pathToPlotlyGeoAssetsDist, {
     standalone: 'PlotlyGeoAssets'
-})
-.bundle(function(err) {
-    if(err) throw err;
-})
-.pipe(fs.createWriteStream(constants.pathToPlotlyGeoAssetsDist));
-
+});
 
 // Browserify the plotly.js with meta
-browserify(constants.pathToPlotlyIndex, {
-    debug: DEV,
-    standalone: 'Plotly'
-})
-.bundle(function(err) {
-    if(err) throw err;
-})
-.pipe(fs.createWriteStream(constants.pathToPlotlyDistWithMeta));
+_bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDistWithMeta, {
+    standalone: 'Plotly',
+    debug: DEV
+});
+
+// Browserify the plotly.js partial bundles
+constants.partialBundlePaths.forEach(function(pathObj) {
+    _bundle(pathObj.index, pathObj.dist, {
+        standalone: 'Plotly',
+        debug: DEV,
+        pathToMinBundle: pathObj.distMin
+    });
+});

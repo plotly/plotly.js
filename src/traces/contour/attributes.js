@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,11 +10,13 @@
 
 var heatmapAttrs = require('../heatmap/attributes');
 var scatterAttrs = require('../scatter/attributes');
+var colorscaleAttrs = require('../../components/colorscale/attributes');
+var colorbarAttrs = require('../../components/colorbar/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterLineAttrs = scatterAttrs.line;
 
-module.exports = {
+module.exports = extendFlat({}, {
     z: heatmapAttrs.z,
     x: heatmapAttrs.x,
     x0: heatmapAttrs.x0,
@@ -27,14 +29,6 @@ module.exports = {
     xtype: heatmapAttrs.xtype,
     ytype: heatmapAttrs.ytype,
 
-    zauto: heatmapAttrs.zauto,
-    zmin: heatmapAttrs.zmin,
-    zmax: heatmapAttrs.zmax,
-    colorscale: heatmapAttrs.colorscale,
-    autocolorscale: heatmapAttrs.autocolorscale,
-    reversescale: heatmapAttrs.reversescale,
-    showscale: heatmapAttrs.showscale,
-
     connectgaps: heatmapAttrs.connectgaps,
 
     autocontour: {
@@ -42,7 +36,7 @@ module.exports = {
         dflt: true,
         role: 'style',
         description: [
-            'Determines whether of not the contour level attributes at',
+            'Determines whether or not the contour level attributes are',
             'picked by an algorithm.',
             'If *true*, the number of contour levels can be set in `ncontours`.',
             'If *false*, set the contour level attributes in `contours`.'
@@ -50,9 +44,16 @@ module.exports = {
     },
     ncontours: {
         valType: 'integer',
-        dflt: 0,
+        dflt: 15,
+        min: 1,
         role: 'style',
-        description: 'Sets the number of contour levels.'
+        description: [
+            'Sets the maximum number of contour levels. The actual number',
+            'of contours will be chosen automatically to be less than or',
+            'equal to the value of `ncontours`.',
+            'Has an effect only if `autocontour` is *true* or if',
+            '`contours.size` is missing.'
+        ].join(' ')
     },
 
     contours: {
@@ -60,19 +61,29 @@ module.exports = {
             valType: 'number',
             dflt: null,
             role: 'style',
-            description: 'Sets the starting contour level value.'
+            description: [
+                'Sets the starting contour level value.',
+                'Must be less than `contours.end`'
+            ].join(' ')
         },
         end: {
             valType: 'number',
             dflt: null,
             role: 'style',
-            description: 'Sets the end contour level value.'
+            description: [
+                'Sets the end contour level value.',
+                'Must be more than `contours.start`'
+            ].join(' ')
         },
         size: {
             valType: 'number',
             dflt: null,
+            min: 0,
             role: 'style',
-            description: 'Sets the step between each contour level.'
+            description: [
+                'Sets the step between each contour level.',
+                'Must be positive.'
+            ].join(' ')
         },
         coloring: {
             valType: 'enumerated',
@@ -82,7 +93,7 @@ module.exports = {
             description: [
                 'Determines the coloring method showing the contour values.',
                 'If *fill*, coloring is done evenly between each contour level',
-                'If *heatmap*, a heatmap gradient is coloring is applied',
+                'If *heatmap*, a heatmap gradient coloring is applied',
                 'between each contour level.',
                 'If *lines*, coloring is done on the contour lines.',
                 'If *none*, no coloring is applied on this trace.'
@@ -114,9 +125,9 @@ module.exports = {
                 'where *0* corresponds to no smoothing.'
             ].join(' ')
         })
-    },
-
-    _nestedModules: {
-        'colorbar': 'Colorbar'
     }
-};
+},
+    colorscaleAttrs,
+    { autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}) },
+    { colorbar: colorbarAttrs }
+);

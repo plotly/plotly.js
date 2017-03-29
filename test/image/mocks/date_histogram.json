@@ -9,165 +9,23 @@
                 "2012-03-01 00:00:00",
                 "2012-02-01 00:00:00"
             ],
-            "name": "trace 0",
-            "autobinx": false,
+            "autobinx": true,
             "nbinsx": 3,
-            "xbins": {
-                "start": 1325394000000,
-                "end": 1333252800000,
-                "size": "M1"
-            },
-            "autobiny": true,
-            "xaxis": "x",
-            "yaxis": "y",
             "showlegend": false,
             "type": "histogram"
         }
     ],
     "layout": {
-        "title": "Click to enter Plot title",
-        "titlefont": {
-            "family": "",
-            "size": 0,
-            "color": ""
-        },
-        "font": {
-            "family": "\"Open sans\", verdana, arial, sans-serif",
-            "size": 12,
-            "color": "#444"
-        },
-        "showlegend": true,
-        "autosize": true,
-        "width": 841,
-        "height": 662,
+        "width": 600,
+        "height": 400,
         "xaxis": {
-            "title": "month",
-            "titlefont": {
-                "family": "",
-                "size": 0,
-                "color": ""
-            },
-            "range": [
-                1325438100000,
-                1333210500000
-            ],
-            "domain": [
-                0,
-                1
-            ],
-            "type": "date",
-            "rangemode": "normal",
-            "autorange": true,
-            "showgrid": false,
-            "zeroline": false,
-            "showline": false,
-            "autotick": true,
-            "nticks": 41,
-            "ticks": "",
-            "showticklabels": true,
-            "tick0": 946789200000,
-            "dtick": 259200000,
-            "ticklen": 5,
-            "tickwidth": 1,
-            "tickcolor": "rgb(127,127,127)",
-            "tickangle": "auto",
-            "tickfont": {
-                "family": "",
-                "size": 0,
-                "color": ""
-            },
-            "exponentformat": "B",
-            "showexponent": "all",
-            "mirror": false,
-            "gridcolor": "rgb(255,255,255)",
-            "gridwidth": 1,
-            "zerolinecolor": "#444",
-            "zerolinewidth": 1,
-            "linecolor": "#444",
-            "linewidth": 1,
-            "anchor": "y",
-            "overlaying": false,
-            "position": 0
+            "title": "month"
         },
         "yaxis": {
             "title": "count",
-            "titlefont": {
-                "family": "",
-                "size": 0,
-                "color": ""
-            },
-            "range": [
-                0,
-                3.1578947368421053
-            ],
-            "domain": [
-                0,
-                1
-            ],
-            "type": "linear",
-            "rangemode": "normal",
-            "autorange": true,
-            "showgrid": true,
-            "zeroline": true,
-            "showline": false,
-            "autotick": true,
-            "nticks": 0,
-            "ticks": "",
-            "showticklabels": true,
-            "tick0": 0,
-            "dtick": 0.5,
-            "ticklen": 5,
-            "tickwidth": 1,
-            "tickcolor": "rgb(127,127,127)",
-            "tickangle": "auto",
-            "tickfont": {
-                "family": "",
-                "size": 0,
-                "color": ""
-            },
-            "exponentformat": "B",
-            "showexponent": "all",
-            "mirror": false,
-            "gridcolor": "rgb(255,255,255)",
-            "gridwidth": 1,
-            "zerolinecolor": "#444",
-            "zerolinewidth": 1,
-            "linecolor": "#444",
-            "linewidth": 1,
-            "anchor": "x",
-            "overlaying": false,
-            "position": 0
+            "gridcolor": "rgb(255,255,255)"
         },
-        "legend": {
-            "x": 100,
-            "y": 0.5,
-            "traceorder": "reversed",
-            "font": {
-                "family": "",
-                "size": 0,
-                "color": ""
-            },
-            "bgcolor": "#fff",
-            "bordercolor": "transparent",
-            "borderwidth": 0
-        },
-        "margin": {
-            "l": 80,
-            "r": 10,
-            "b": 80,
-            "t": 100,
-            "pad": 0,
-            "autoexpand": true
-        },
-        "paper_bgcolor": "#fff",
         "plot_bgcolor": "rgb(229,229,229)",
-        "hovermode": "x",
-        "dragmode": "zoom",
-        "separators": ".,",
-        "barmode": "stack",
-        "bargap": 0.2,
-        "bargroupgap": 0,
-        "boxmode": "overlay",
-        "hidesources": false
+        "bargap": 0.2
     }
 }

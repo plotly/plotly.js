@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,10 +9,9 @@
 
 'use strict';
 
+var Lib = require('../../lib');
+
 
 module.exports = function hasColorbar(container) {
-    return (
-        typeof container.colorbar === 'object' &&
-        container.colorbar !== null
-    );
+    return Lib.isPlainObject(container.colorbar);
 };

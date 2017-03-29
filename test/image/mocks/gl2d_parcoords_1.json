@@ -1,0 +1,28 @@
+{
+  "layout": {
+    "width": 284,
+    "height": 400
+  },
+
+  "data": [{
+
+    "type": "parcoords",
+
+    "line": {
+      "showscale": true,
+      "reversescale": true,
+      "colorscale": "Jet",
+      "cmin": -4000,
+      "cmax": -100,
+      "color": [-41, -1317, -164, -1856, -79, -931, -191, -2983, -341, -3846]
+    },
+
+    "dimensions": [
+      {
+        "constraintrange": [200, 700],
+        "label": "Block height",
+        "values": [321, 534, 542, 674, 31, 674, 124, 246, 456, 743]
+      }
+    ]
+  }]
+}

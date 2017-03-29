@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,8 +11,8 @@
 
 var topojsonUtils = module.exports = {};
 
-var locationmodeToLayer = require('../constants/geo_constants').locationmodeToLayer,
-    topojsonFeature = require('topojson').feature;
+var locationmodeToLayer = require('../plots/geo/constants').locationmodeToLayer;
+var topojsonFeature = require('topojson-client').feature;
 
 
 topojsonUtils.getTopojsonName = function(geoLayout) {

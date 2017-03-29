@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -218,7 +218,7 @@ function zoomClipped(geo, projLayout) {
     });
 
     function zoomstarted(dispatch) {
-        if (!zooming++) dispatch({type: 'zoomstart'});
+        if(!zooming++) dispatch({type: 'zoomstart'});
     }
 
     function zoomed(dispatch) {
@@ -226,7 +226,7 @@ function zoomClipped(geo, projLayout) {
     }
 
     function zoomended(dispatch) {
-        if (!--zooming) dispatch({type: 'zoomend'});
+        if(!--zooming) dispatch({type: 'zoomend'});
     }
 
     return d3.rebind(zoom, event, 'on');
@@ -266,7 +266,7 @@ function multiply(a, b) {
 }
 
 function rotateBetween(a, b) {
-    if (!a || !b) return;
+    if(!a || !b) return;
     var axis = cross(a, b),
         norm = Math.sqrt(dot(axis, axis)),
         halfgamma = 0.5 * Math.acos(Math.max(-1, Math.min(1, dot(a, b)))),
@@ -313,7 +313,7 @@ function unRoll(rotateAngles, pt, lastRotate) {
         b = Math.sqrt(a * a - g * g);
     }
 
-    var newYaw2 = 180 - newYaw1 - 2*theta,
+    var newYaw2 = 180 - newYaw1 - 2 * theta,
         newPitch1 = (Math.atan2(h, f) - Math.atan2(z, b)) * degrees,
         newPitch2 = (Math.atan2(h, f) - Math.atan2(z, -b)) * degrees;
 
@@ -333,7 +333,7 @@ function angleDistance(yaw0, pitch0, yaw1, pitch1) {
 
 // reduce an angle in degrees to [-180,180]
 function angleMod(angle) {
-    return (angle % 360 + 540) %360 - 180;
+    return (angle % 360 + 540) % 360 - 180;
 }
 
 // rotate a cartesian vector
@@ -342,8 +342,8 @@ function angleMod(angle) {
 function rotateCartesian(vector, axis, angle) {
     var angleRads = angle * radians,
         vectorOut = vector.slice(),
-        ax1 = (axis===0) ? 1 : 0,
-        ax2 = (axis===2) ? 1 : 2,
+        ax1 = (axis === 0) ? 1 : 0,
+        ax2 = (axis === 2) ? 1 : 2,
         cosa = Math.cos(angleRads),
         sina = Math.sin(angleRads);
 
@@ -373,7 +373,7 @@ function cartesian(spherical) {
 
 function dot(a, b) {
     var s = 0;
-    for (var i = 0, n = a.length; i < n; ++i) s += a[i] * b[i];
+    for(var i = 0, n = a.length; i < n; ++i) s += a[i] * b[i];
     return s;
 }
 
@@ -394,7 +394,7 @@ function d3_eventDispatch(target) {
         n = arguments.length,
         argumentz = [];
 
-    while (++i < n) argumentz.push(arguments[i]);
+    while(++i < n) argumentz.push(arguments[i]);
 
     var dispatch = d3.dispatch.apply(null, argumentz);
 

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,12 +9,11 @@
 
 'use strict';
 
-var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
-var Plots = require('../../plots/plots');
-var getColorscale = require('../../components/colorscale/get_scale');
+var Colorscale = require('../../components/colorscale');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 var maxRowLength = require('./max_row_length');
@@ -28,17 +27,17 @@ module.exports = function(gd, plotinfo, cdheatmaps) {
 
 // From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
 function plotOne(gd, plotinfo, cd) {
-    Lib.markTime('in Heatmap.plot');
-
     var trace = cd[0].trace,
         uid = trace.uid,
-        xa = plotinfo.x(),
-        ya = plotinfo.y(),
+        xa = plotinfo.xaxis,
+        ya = plotinfo.yaxis,
         fullLayout = gd._fullLayout,
         id = 'hm' + uid;
 
     // in case this used to be a contour map
     fullLayout._paper.selectAll('.contour' + uid).remove();
+    fullLayout._infolayer.selectAll('g.rangeslider-container')
+        .selectAll('.contour' + uid).remove();
 
     if(trace.visible !== true) {
         fullLayout._paper.selectAll('.' + id).remove();
@@ -47,12 +46,9 @@ function plotOne(gd, plotinfo, cd) {
     }
 
     var z = cd[0].z,
-        min = trace.zmin,
-        max = trace.zmax,
-        scl = getColorscale(trace.colorscale),
         x = cd[0].x,
         y = cd[0].y,
-        isContour = Plots.traceIs(trace, 'contour'),
+        isContour = Registry.traceIs(trace, 'contour'),
         zsmooth = isContour ? 'best' : trace.zsmooth,
 
         // get z dims
@@ -139,10 +135,24 @@ function plotOne(gd, plotinfo, cd) {
     var imageWidth = Math.round(right - left),
         imageHeight = Math.round(bottom - top);
 
-    // now redraw
+    // setup image nodes
 
     // if image is entirely off-screen, don't even draw it
-    if(imageWidth <= 0 || imageHeight <= 0) return;
+    var isOffScreen = (imageWidth <= 0 || imageHeight <= 0);
+
+    var plotgroup = plotinfo.plot.select('.imagelayer')
+        .selectAll('g.hm.' + id)
+        .data(isOffScreen ? [] : [0]);
+
+    plotgroup.enter().append('g')
+        .classed('hm', true)
+        .classed(id, true);
+
+    plotgroup.exit().remove();
+
+    if(isOffScreen) return;
+
+    // generate image data
 
     var canvasW, canvasH;
     if(zsmooth === 'fast') {
@@ -158,15 +168,14 @@ function plotOne(gd, plotinfo, cd) {
     canvas.height = canvasH;
     var context = canvas.getContext('2d');
 
-    // interpolate for color scale
-    // use an array instead of color strings, so we preserve alpha
-    var s = d3.scale.linear()
-        .domain(scl.map(function(si){ return si[0]; }))
-        .range(scl.map(function(si){
-            var c = tinycolor(si[1]).toRgb();
-            return [c.r, c.g, c.b, c.a];
-        }))
-        .clamp(true);
+    var sclFunc = Colorscale.makeColorScaleFunc(
+        Colorscale.extractScale(
+            trace.colorscale,
+            trace.zmin,
+            trace.zmax
+        ),
+        { noNumericCheck: true, returnArray: true }
+    );
 
     // map brick boundaries to image pixels
     var xpx,
@@ -180,11 +189,11 @@ function plotOne(gd, plotinfo, cd) {
             Lib.identity;
     }
     else {
-        xpx = function(index){
+        xpx = function(index) {
             return Lib.constrain(Math.round(xa.c2p(x[index]) - left),
                 0, imageWidth);
         };
-        ypx = function(index){
+        ypx = function(index) {
             return Lib.constrain(Math.round(ya.c2p(y[index]) - top),
                 0, imageHeight);
         };
@@ -226,6 +235,7 @@ function plotOne(gd, plotinfo, cd) {
         rcount = 0,
         gcount = 0,
         bcount = 0,
+        brickWithPadding,
         xb,
         j,
         xi,
@@ -233,9 +243,50 @@ function plotOne(gd, plotinfo, cd) {
         row,
         c;
 
+    function applyBrickPadding(trace, x0, x1, y0, y1, xIndex, xLength, yIndex, yLength) {
+        var padding = {
+                x0: x0,
+                x1: x1,
+                y0: y0,
+                y1: y1
+            },
+            xEdgeGap = trace.xgap * 2 / 3,
+            yEdgeGap = trace.ygap * 2 / 3,
+            xCenterGap = trace.xgap / 3,
+            yCenterGap = trace.ygap / 3;
+
+        if(yIndex === yLength - 1) { // top edge brick
+            padding.y1 = y1 - yEdgeGap;
+        }
+
+        if(xIndex === xLength - 1) { // right edge brick
+            padding.x0 = x0 + xEdgeGap;
+        }
+
+        if(yIndex === 0) { // bottom edge brick
+            padding.y0 = y0 + yEdgeGap;
+        }
+
+        if(xIndex === 0) { // left edge brick
+            padding.x1 = x1 - xEdgeGap;
+        }
+
+        if(xIndex > 0 && xIndex < xLength - 1) { // brick in the center along x
+            padding.x0 = x0 + xCenterGap;
+            padding.x1 = x1 - xCenterGap;
+        }
+
+        if(yIndex > 0 && yIndex < yLength - 1) { // brick in the center along y
+            padding.y0 = y0 + yCenterGap;
+            padding.y1 = y1 - yCenterGap;
+        }
+
+        return padding;
+    }
+
     function setColor(v, pixsize) {
         if(v !== undefined) {
-            var c = s((v - min) / (max - min));
+            var c = sclFunc(v);
             c[0] = Math.round(c[0]);
             c[1] = Math.round(c[1]);
             c[2] = Math.round(c[2]);
@@ -274,23 +325,28 @@ function plotOne(gd, plotinfo, cd) {
         if(z01 === undefined) {
             if(z11 === undefined) dxy = 0;
             else if(z10 === undefined) dxy = 2 * (z11 - z00);
-            else dxy = (2 * z11 - z10 - z00) * 2/3;
+            else dxy = (2 * z11 - z10 - z00) * 2 / 3;
         }
         else if(z11 === undefined) {
             if(z10 === undefined) dxy = 0;
-            else dxy = (2 * z00 - z01 - z10) * 2/3;
+            else dxy = (2 * z00 - z01 - z10) * 2 / 3;
         }
-        else if(z10 === undefined) dxy = (2 * z11 - z01 - z00) * 2/3;
+        else if(z10 === undefined) dxy = (2 * z11 - z01 - z00) * 2 / 3;
         else dxy = (z11 + z00 - z01 - z10);
 
         return setColor(z00 + xinterp.frac * dx + yinterp.frac * (dy + xinterp.frac * dxy));
     }
 
-    Lib.markTime('done init png');
-
     if(zsmooth) { // best or fast, works fastest with imageData
         var pxIndex = 0,
+            pixels;
+
+        try {
             pixels = new Uint8Array(imageWidth * imageHeight * 4);
+        }
+        catch(e) {
+            pixels = new Array(imageWidth * imageHeight * 4);
+        }
 
         if(zsmooth === 'best') {
             var xPixArray = new Array(x.length),
@@ -323,8 +379,8 @@ function plotOne(gd, plotinfo, cd) {
             for(j = 0; j < m; j++) {
                 row = z[j];
                 yb = ypx(j);
-                for(i = 0; i < n; i++) {
-                    c = setColor(row[i],1);
+                for(i = 0; i < imageWidth; i++) {
+                    c = setColor(row[i], 1);
                     pxIndex = (yb * imageWidth + xpx(i)) * 4;
                     putColor(pixels, pxIndex, c);
                 }
@@ -332,7 +388,17 @@ function plotOne(gd, plotinfo, cd) {
         }
 
         var imageData = context.createImageData(imageWidth, imageHeight);
-        imageData.data.set(pixels);
+        try {
+            imageData.data.set(pixels);
+        }
+        catch(e) {
+            var pxArray = imageData.data,
+                dlen = pxArray.length;
+            for(j = 0; j < dlen; j ++) {
+                pxArray[j] = pixels[j];
+            }
+        }
+
         context.putImageData(imageData, 0, 0);
     } else { // zsmooth = false -> filling potentially large bricks works fastest with fillRect
         for(j = 0; j < m; j++) {
@@ -354,43 +420,48 @@ function plotOne(gd, plotinfo, cd) {
                 v = row[i];
                 c = setColor(v, (xb[1] - xb[0]) * (yb[1] - yb[0]));
                 context.fillStyle = 'rgba(' + c.join(',') + ')';
-                context.fillRect(xb[0], yb[0], (xb[1] - xb[0]), (yb[1] - yb[0]));
+
+                brickWithPadding = applyBrickPadding(trace,
+                                                     xb[0],
+                                                     xb[1],
+                                                     yb[0],
+                                                     yb[1],
+                                                     i,
+                                                     n,
+                                                     j,
+                                                     m);
+
+                context.fillRect(brickWithPadding.x0,
+                                 brickWithPadding.y0,
+                                (brickWithPadding.x1 - brickWithPadding.x0),
+                                (brickWithPadding.y1 - brickWithPadding.y0));
             }
         }
     }
 
-    Lib.markTime('done filling png');
-
     rcount = Math.round(rcount / pixcount);
-    gcount = Math.round(gcount/ pixcount);
+    gcount = Math.round(gcount / pixcount);
     bcount = Math.round(bcount / pixcount);
     var avgColor = tinycolor('rgb(' + rcount + ',' + gcount + ',' + bcount + ')');
 
     gd._hmpixcount = (gd._hmpixcount||0) + pixcount;
     gd._hmlumcount = (gd._hmlumcount||0) + pixcount * avgColor.getLuminance();
 
-    var plotgroup = plotinfo.plot.select('.imagelayer')
-        .selectAll('g.hm.' + id)
-        .data([0]);
-    plotgroup.enter().append('g')
-        .classed('hm', true)
-        .classed(id, true);
-    plotgroup.exit().remove();
-
     var image3 = plotgroup.selectAll('image')
         .data(cd);
-    image3.enter().append('svg:image');
-    image3.exit().remove();
+
+    image3.enter().append('svg:image').attr({
+        xmlns: xmlnsNamespaces.svg,
+        preserveAspectRatio: 'none'
+    });
 
     image3.attr({
-        xmlns: xmlnsNamespaces.svg,
-        'xlink:href': canvas.toDataURL('image/png'),
         height: imageHeight,
         width: imageWidth,
         x: left,
         y: top,
-        preserveAspectRatio: 'none'
+        'xlink:href': canvas.toDataURL('image/png')
     });
 
-    Lib.markTime('done showing png');
+    image3.exit().remove();
 }

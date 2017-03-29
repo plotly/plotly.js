@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,22 +12,18 @@
 var isNumeric = require('fast-isnumeric');
 
 var Axes = require('../../plots/cartesian/axes');
-var Lib = require('../../lib');
 
 var subTypes = require('./subtypes');
-var calcMarkerColorscale = require('./marker_colorscale_calc');
+var calcColorscale = require('./colorscale_calc');
+var arraysToCalcdata = require('./arrays_to_calcdata');
 
 
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
         ya = Axes.getFromId(gd, trace.yaxis || 'y');
-    Lib.markTime('in Scatter.calc');
 
-    var x = xa.makeCalcdata(trace, 'x');
-    Lib.markTime('finished convert x');
-
-    var y = ya.makeCalcdata(trace, 'y');
-    Lib.markTime('finished convert y');
+    var x = xa.makeCalcdata(trace, 'x'),
+        y = ya.makeCalcdata(trace, 'y');
 
     var serieslen = Math.min(x.length, y.length),
         marker,
@@ -53,7 +49,7 @@ module.exports = function calc(gd, trace) {
         marker = trace.marker;
         s = marker.size;
 
-        if (Array.isArray(s)) {
+        if(Array.isArray(s)) {
             // I tried auto-type but category and dates dont make much sense.
             var ax = {type: 'linear'};
             Axes.setConvert(ax);
@@ -77,7 +73,7 @@ module.exports = function calc(gd, trace) {
             s.map(markerTrans) : markerTrans(s);
     }
 
-    calcMarkerColorscale(trace);
+    calcColorscale(trace);
 
     // TODO: text size
 
@@ -111,21 +107,21 @@ module.exports = function calc(gd, trace) {
         yOptions.padded = false;
     }
 
-    Lib.markTime('ready for Axes.expand');
     Axes.expand(xa, x, xOptions);
-    Lib.markTime('done expand x');
     Axes.expand(ya, y, yOptions);
-    Lib.markTime('done expand y');
 
     // create the "calculated data" to plot
     var cd = new Array(serieslen);
     for(i = 0; i < serieslen; i++) {
         cd[i] = (isNumeric(x[i]) && isNumeric(y[i])) ?
             {x: x[i], y: y[i]} : {x: false, y: false};
+
+        if(trace.ids) {
+            cd[i].id = String(trace.ids[i]);
+        }
     }
 
-    // this has migrated up from arraysToCalcdata as we have a reference to 's' here
-    if (typeof s !== undefined) Lib.mergeArray(s, cd, 'ms');
+    arraysToCalcdata(cd, trace);
 
     gd.firstscatter = false;
     return cd;

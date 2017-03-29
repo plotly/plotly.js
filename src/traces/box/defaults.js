@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,11 +9,12 @@
 'use strict';
 
 var Lib = require('../../lib');
+var Registry = require('../../registry');
 var Color = require('../../components/color');
 
 var attributes = require('./attributes');
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
+module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -22,10 +23,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
         x = coerce('x'),
         defaultOrientation;
 
-    if (y && y.length) {
+    if(y && y.length) {
         defaultOrientation = 'v';
-        if (!x) coerce('x0');
-    } else if (x && x.length) {
+        if(!x) coerce('x0');
+    } else if(x && x.length) {
         defaultOrientation = 'h';
         coerce('y0');
     } else {
@@ -33,9 +34,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
         return;
     }
 
+    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
+    handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
+
     coerce('orientation', defaultOrientation);
 
-    coerce('line.color', (traceIn.marker||{}).color || defaultColor);
+    coerce('line.color', (traceIn.marker || {}).color || defaultColor);
     coerce('line.width', 2);
     coerce('fillcolor', Color.addOpacity(traceOut.line.color, 0.5));
 
@@ -49,8 +53,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
                     coerce('boxpoints');
 
     if(boxpoints) {
-        coerce('jitter', boxpoints==='all' ? 0.3 : 0);
-        coerce('pointpos', boxpoints==='all' ? -1.5 : 0);
+        coerce('jitter', boxpoints === 'all' ? 0.3 : 0);
+        coerce('pointpos', boxpoints === 'all' ? -1.5 : 0);
 
         coerce('marker.symbol');
         coerce('marker.opacity');
@@ -59,7 +63,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
         coerce('marker.line.color');
         coerce('marker.line.width');
 
-        if(boxpoints==='suspectedoutliers') {
+        if(boxpoints === 'suspectedoutliers') {
             coerce('marker.line.outliercolor', traceOut.marker.color);
             coerce('marker.line.outlierwidth');
         }

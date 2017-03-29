@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -13,7 +13,7 @@
 /**
  * Check and configure MathJax
  */
-if (typeof MathJax !== 'undefined'){
+if(typeof MathJax !== 'undefined') {
     exports.MathJax = true;
 
     MathJax.Hub.Config({
@@ -21,7 +21,7 @@ if (typeof MathJax !== 'undefined'){
         skipStartupTypeset: true,
         displayAlign: 'left',
         tex2jax: {
-            inlineMath: [['$','$'],['\\(','\\)']]
+            inlineMath: [['$', '$'], ['\\(', '\\)']]
         }
     });
 

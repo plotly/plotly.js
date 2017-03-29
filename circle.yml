@@ -1,26 +1,27 @@
 general:
   artifacts:
-      - "build/test_images/"
-      - "build/test_images_diff/"
+    - build/test_images/
+    - build/test_images_diff/
 
 machine:
   node:
-    version: 4.2.1
+    version: 6.1.0
+  timezone:
+    America/Anchorage
   services:
     - docker
 
-
 dependencies:
-  pre:
-    - docker pull plotly/testbed:latest
-  post:
+  override:
+    - npm install && npm dedupe && npm prune && npm install
+    - npm ls || true
+    - npm run docker -- pull
+    - npm run pretest
+    - npm run docker -- run
     - npm run cibuild
-    - docker run -d --name mytestbed -v $PWD:/var/www/streambed/image_server/plotly.js -p 9010:9010 plotly/testbed:latest
-    - wget --server-response --spider --tries=8 --retry-connrefused http://localhost:9010/ping
+    - npm run docker -- setup
+
 test:
   override:
-    - sudo lxc-attach -n "$(docker inspect --format '{{.Id}}' mytestbed)" -- bash -c "cd /var/www/streambed/image_server/plotly.js && node test/image/compare_pixels_test.js"
-    - npm run citest-jasmine
-    - npm run test-bundle
-    - npm run test-syntax
-    - eslint .
+    - ./tasks/ci_test.sh:
+        parallel: true

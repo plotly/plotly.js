@@ -20,6 +20,13 @@ describe('Test colorscale:', function() {
 
         it('should accept only array of 2-item arrays', function() {
             expect(isValidScale('a')).toBe(false);
+            expect(isValidScale([])).toBe(false);
+            expect(isValidScale([null, undefined])).toBe(false);
+            expect(isValidScale([{}, [1, 'rgb(0, 0, 200']])).toBe(false);
+            expect(isValidScale([[0, 'rgb(200, 0, 0)'], {}])).toBe(false);
+            expect(isValidScale([[0, 'rgb(0, 0, 200)'], undefined])).toBe(false);
+            expect(isValidScale([null, [1, 'rgb(0, 0, 200)']])).toBe(false);
+            expect(isValidScale(['a', 'b'])).toBe(false);
             expect(isValidScale(['a'])).toBe(false);
             expect(isValidScale([['a'], ['b']])).toBe(false);
 
@@ -325,7 +332,7 @@ describe('Test colorscale:', function() {
             z = [[0, -1.5], [-2, -10]];
             calcColorscale(trace, z, '', 'z');
             expect(trace.autocolorscale).toBe(true);
-            expect(trace.colorscale[5]).toEqual([1, 'rgb(220, 220, 220)']);
+            expect(trace.colorscale[5]).toEqual([1, 'rgb(220,220,220)']);
         });
 
         it('should be Blues when the only numerical z <= -0.5', function() {
@@ -338,7 +345,7 @@ describe('Test colorscale:', function() {
             z = [[undefined, undefined], [-0.5, undefined]];
             calcColorscale(trace, z, '', 'z');
             expect(trace.autocolorscale).toBe(true);
-            expect(trace.colorscale[5]).toEqual([1, 'rgb(220, 220, 220)']);
+            expect(trace.colorscale[5]).toEqual([1, 'rgb(220,220,220)']);
         });
 
         it('should be Reds when the only numerical z >= 0.5', function() {
@@ -351,7 +358,7 @@ describe('Test colorscale:', function() {
             z = [[undefined, undefined], [0.5, undefined]];
             calcColorscale(trace, z, '', 'z');
             expect(trace.autocolorscale).toBe(true);
-            expect(trace.colorscale[0]).toEqual([0, 'rgb(220, 220, 220)']);
+            expect(trace.colorscale[0]).toEqual([0, 'rgb(220,220,220)']);
         });
 
         it('should be reverse the auto scale when reversescale is true', function() {
@@ -365,8 +372,35 @@ describe('Test colorscale:', function() {
             z = [[undefined, undefined], [0.5, undefined]];
             calcColorscale(trace, z, '', 'z');
             expect(trace.autocolorscale).toBe(true);
-            expect(trace.colorscale[trace.colorscale.length-1]).toEqual([1, 'rgb(220, 220, 220)']);
+            expect(trace.colorscale[trace.colorscale.length - 1])
+                .toEqual([1, 'rgb(220,220,220)']);
         });
 
+    });
+
+    describe('extractScale + makeColorScaleFunc', function() {
+        var scale = [
+            [0, 'rgb(5,10,172)'],
+            [0.35, 'rgb(106,137,247)'],
+            [0.5, 'rgb(190,190,190)'],
+            [0.6, 'rgb(220,170,132)'],
+            [0.7, 'rgb(230,145,90)'],
+            [1, 'rgb(178,10,28)']
+        ];
+
+        var specs = Colorscale.extractScale(scale, 2, 3);
+        var sclFunc = Colorscale.makeColorScaleFunc(specs);
+
+        it('should constrain color array values between cmin and cmax', function() {
+            var color1 = sclFunc(1),
+                color2 = sclFunc(2),
+                color3 = sclFunc(3),
+                color4 = sclFunc(4);
+
+            expect(color1).toEqual(color2);
+            expect(color1).toEqual('rgb(5, 10, 172)');
+            expect(color3).toEqual(color4);
+            expect(color4).toEqual('rgb(178, 10, 28)');
+        });
     });
 });

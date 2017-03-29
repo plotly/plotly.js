@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -20,31 +20,32 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         t = cd[0].t,
         xa = pointData.xa,
         ya = pointData.ya,
-        barDelta = (hovermode==='closest') ?
-            t.barwidth/2 : t.dbar*(1-xa._td._fullLayout.bargap)/2,
+        barDelta = (hovermode === 'closest') ?
+            t.barwidth / 2 :
+            t.bargroupwidth / 2,
         barPos;
 
-    if(hovermode!=='closest') barPos = function(di) { return di.p; };
-    else if(trace.orientation==='h') barPos = function(di) { return di.y; };
+    if(hovermode !== 'closest') barPos = function(di) { return di.p; };
+    else if(trace.orientation === 'h') barPos = function(di) { return di.y; };
     else barPos = function(di) { return di.x; };
 
     var dx, dy;
-    if(trace.orientation==='h') {
-        dx = function(di){
+    if(trace.orientation === 'h') {
+        dx = function(di) {
             // add a gradient so hovering near the end of a
             // bar makes it a little closer match
-            return Fx.inbox(di.b-xval, di.x-xval) + (di.x-xval)/(di.x-di.b);
+            return Fx.inbox(di.b - xval, di.x - xval) + (di.x - xval) / (di.x - di.b);
         };
-        dy = function(di){
+        dy = function(di) {
             var centerPos = barPos(di) - yval;
             return Fx.inbox(centerPos - barDelta, centerPos + barDelta);
         };
     }
     else {
-        dy = function(di){
-            return Fx.inbox(di.b-yval, di.y-yval) + (di.y-yval)/(di.y-di.b);
+        dy = function(di) {
+            return Fx.inbox(di.b - yval, di.y - yval) + (di.y - yval) / (di.y - di.b);
         };
-        dx = function(di){
+        dx = function(di) {
             var centerPos = barPos(di) - xval;
             return Fx.inbox(centerPos - barDelta, centerPos + barDelta);
         };
@@ -54,7 +55,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     Fx.getClosest(cd, distfn, pointData);
 
     // skip the rest (for this trace) if we didn't find a close point
-    if(pointData.index===false) return;
+    if(pointData.index === false) return;
 
     // the closest data point
     var di = cd[pointData.index],
@@ -64,17 +65,18 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     if(Color.opacity(mc)) pointData.color = mc;
     else if(Color.opacity(mlc) && mlw) pointData.color = mlc;
 
-    if(trace.orientation==='h') {
+    var size = (trace.base) ? di.b + di.s : di.s;
+    if(trace.orientation === 'h') {
         pointData.x0 = pointData.x1 = xa.c2p(di.x, true);
-        pointData.xLabelVal = di.s;
+        pointData.xLabelVal = size;
 
         pointData.y0 = ya.c2p(barPos(di) - barDelta, true);
         pointData.y1 = ya.c2p(barPos(di) + barDelta, true);
         pointData.yLabelVal = di.p;
     }
     else {
-        pointData.y0 = pointData.y1 = ya.c2p(di.y,true);
-        pointData.yLabelVal = di.s;
+        pointData.y0 = pointData.y1 = ya.c2p(di.y, true);
+        pointData.yLabelVal = size;
 
         pointData.x0 = xa.c2p(barPos(di) - barDelta, true);
         pointData.x1 = xa.c2p(barPos(di) + barDelta, true);

@@ -1,0 +1,22 @@
+{
+  "data": [
+    {
+      "x": [1, 2, 3, 4, 5],
+      "y": [1, 1, null, -1, -1],
+      "connectgaps": false,
+      "mode": "lines",
+      "type": "scattergl"
+    },
+    {
+      "x": [1, 2, 3, 4, 5],
+      "y": [-2, -2, null, 2, 2],
+      "connectgaps": true,
+      "mode": "lines",
+      "type": "scattergl",
+      "opacity": 0.4
+    }
+  ],
+  "layout": {
+    "title": "Connect gaps + line opacity test"
+  }
+}

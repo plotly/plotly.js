@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -23,14 +23,31 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len = handleXYDefaults(traceIn, traceOut, coerce);
+    var coerceFont = Lib.coerceFont;
+
+    var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
     if(!len) {
         traceOut.visible = false;
         return;
     }
 
     coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
+    coerce('base');
+    coerce('offset');
+    coerce('width');
+
     coerce('text');
+
+    var textPosition = coerce('textposition');
+
+    var hasBoth = Array.isArray(textPosition) || textPosition === 'auto',
+        hasInside = hasBoth || textPosition === 'inside',
+        hasOutside = hasBoth || textPosition === 'outside';
+    if(hasInside || hasOutside) {
+        var textFont = coerceFont(coerce, 'textfont', layout.font);
+        if(hasInside) coerceFont(coerce, 'insidetextfont', textFont);
+        if(hasOutside) coerceFont(coerce, 'outsidetextfont', textFont);
+    }
 
     handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
 

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,7 +11,7 @@
 
 var d3 = require('d3');
 
-var clipPad = require('../../constants/geo_constants').clipPad;
+var clipPad = require('./constants').clipPad;
 
 function createGeoScale(geoLayout, graphSize) {
     var projLayout = geoLayout.projection,
@@ -127,8 +127,8 @@ function makeRangeBox(lon0, lat0, lon1, lat1) {
     return {
         type: 'Polygon',
         coordinates: [
-          [ [lon0, lat0],
-            [lon0 , lat1],
+            [ [lon0, lat0],
+            [lon0, lat1],
             [lon0 + dlon4, lat1],
             [lon0 + 2 * dlon4, lat1],
             [lon0 + 3 * dlon4, lat1],

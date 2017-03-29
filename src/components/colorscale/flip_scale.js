@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -14,7 +14,7 @@ module.exports = function flipScale(scl) {
         sclNew = new Array(N),
         si;
 
-    for(var i = N-1, j = 0; i >= 0; i--, j++) {
+    for(var i = N - 1, j = 0; i >= 0; i--, j++) {
         si = scl[i];
         sclNew[j] = [1 - si[0], si[1]];
     }

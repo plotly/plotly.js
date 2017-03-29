@@ -2,6 +2,7 @@ var extendModule = require('@src/lib/extend.js');
 var extendFlat = extendModule.extendFlat;
 var extendDeep = extendModule.extendDeep;
 var extendDeepAll = extendModule.extendDeepAll;
+var extendDeepNoArrays = extendModule.extendDeepNoArrays;
 
 var str = 'me a test',
     integer = 10,
@@ -44,6 +45,13 @@ var undef = {
     arr: [1, 2, undefined]
 };
 
+var undef2 = {
+    str: undefined,
+    layer: {
+        date: undefined
+    },
+    arr: [1, undefined, 2]
+};
 
 
 describe('extendFlat', function() {
@@ -377,7 +385,7 @@ describe('extendDeep', function() {
 
         expect(ori).toEqual({
             layer: { },
-            arr: [1, 2 ]
+            arr: [1, 2]
         });
         expect(undef).toEqual({
             str: undefined,
@@ -388,7 +396,33 @@ describe('extendDeep', function() {
         });
         expect(target).toEqual({
             layer: { },
-            arr: [1, 2 ]
+            arr: [1, 2]
+        });
+    });
+
+    it('leaves a gap in the array for undefined of lower index than that of the highest defined value', function() {
+        ori = {};
+        target = extendDeep(ori, undef2);
+
+        var compare = [];
+        compare[0] = 1;
+        // compare[1] left undefined
+        compare[2] = 2;
+
+        expect(ori).toEqual({
+            layer: { },
+            arr: compare
+        });
+        expect(undef2).toEqual({
+            str: undefined,
+            layer: {
+                date: undefined
+            },
+            arr: [1, undefined, 2]
+        });
+        expect(target).toEqual({
+            layer: { },
+            arr: compare
         });
     });
 
@@ -418,4 +452,73 @@ describe('extendDeepAll', function() {
         expect(ori.layer.date).toBe(undefined);
         expect(ori.arr[2]).toBe(undefined);
     });
+});
+
+describe('array by reference vs deep-copy', function() {
+    'use strict';
+
+    it('extendDeep DOES deep-copy untyped source arrays', function() {
+        var src = {foo: {bar: [1, 2, 3], baz: [5, 4, 3]}};
+        var tar = {foo: {bar: [4, 5, 6], bop: [8, 2, 1]}};
+        var ext = extendDeep(tar, src);
+
+        expect(ext).not.toBe(src);
+        expect(ext).toBe(tar);
+
+        expect(ext.foo).not.toBe(src.foo);
+        expect(ext.foo).toBe(tar.foo);
+
+        expect(ext.foo.bar).not.toBe(src.foo.bar);
+        expect(ext.foo.baz).not.toBe(src.foo.baz);
+        expect(ext.foo.bop).toBe(tar.foo.bop); // what comes from the target isn't deep copied
+    });
+
+    it('extendDeepNoArrays includes by reference untyped arrays from source', function() {
+        var src = {foo: {bar: [1, 2, 3], baz: [5, 4, 3]}};
+        var tar = {foo: {bar: [4, 5, 6], bop: [8, 2, 1]}};
+        var ext = extendDeepNoArrays(tar, src);
+
+        expect(ext).not.toBe(src);
+        expect(ext).toBe(tar);
+
+        expect(ext.foo).not.toBe(src.foo);
+        expect(ext.foo).toBe(tar.foo);
+
+        expect(ext.foo.bar).toBe(src.foo.bar);
+        expect(ext.foo.baz).toBe(src.foo.baz);
+        expect(ext.foo.bop).toBe(tar.foo.bop);
+    });
+
+    it('extendDeepNoArrays includes by reference typed arrays from source', function() {
+        var src = {foo: {bar: new Int32Array([1, 2, 3]), baz: new Float32Array([5, 4, 3])}};
+        var tar = {foo: {bar: new Int16Array([4, 5, 6]), bop: new Float64Array([8, 2, 1])}};
+        var ext = extendDeepNoArrays(tar, src);
+
+        expect(ext).not.toBe(src);
+        expect(ext).toBe(tar);
+
+        expect(ext.foo).not.toBe(src.foo);
+        expect(ext.foo).toBe(tar.foo);
+
+        expect(ext.foo.bar).toBe(src.foo.bar);
+        expect(ext.foo.baz).toBe(src.foo.baz);
+        expect(ext.foo.bop).toBe(tar.foo.bop);
+    });
+
+    it('extendDeep ALSO includes by reference typed arrays from source', function() {
+        var src = {foo: {bar: new Int32Array([1, 2, 3]), baz: new Float32Array([5, 4, 3])}};
+        var tar = {foo: {bar: new Int16Array([4, 5, 6]), bop: new Float64Array([8, 2, 1])}};
+        var ext = extendDeep(tar, src);
+
+        expect(ext).not.toBe(src);
+        expect(ext).toBe(tar);
+
+        expect(ext.foo).not.toBe(src.foo);
+        expect(ext.foo).toBe(tar.foo);
+
+        expect(ext.foo.bar).toBe(src.foo.bar);
+        expect(ext.foo.baz).toBe(src.foo.baz);
+        expect(ext.foo.bop).toBe(tar.foo.bop);
+    });
+
 });

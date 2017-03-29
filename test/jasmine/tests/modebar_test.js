@@ -1,7 +1,14 @@
 var d3 = require('d3');
 
-var createModeBar = require('@src/components/modebar');
+var createModeBar = require('@src/components/modebar/modebar');
 var manageModeBar = require('@src/components/modebar/manage');
+var customMatchers = require('../assets/custom_matchers');
+
+var Plotly = require('@lib/index');
+var Plots = require('@src/plots/plots');
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var selectButton = require('../assets/modebar_button');
 
 
 describe('ModeBar', function() {
@@ -23,7 +30,8 @@ describe('ModeBar', function() {
         return {
             _fullLayout: {
                 dragmode: 'zoom',
-                _paperdiv: d3.select(getMockContainerTree())
+                _paperdiv: d3.select(getMockContainerTree()),
+                _has: Plots._hasPlotType
             },
             _fullData: [],
             _context: {
@@ -181,7 +189,7 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasCartesian = true;
+            gd._fullLayout._basePlotModules = [{ name: 'cartesian' }];
             gd._fullLayout.xaxis = {fixedrange: false};
 
             manageModeBar(gd);
@@ -199,12 +207,12 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasCartesian = true;
+            gd._fullLayout._basePlotModules = [{ name: 'cartesian' }];
             gd._fullLayout.xaxis = {fixedrange: false};
             gd._fullData = [{
-                type:'scatter',
+                type: 'scatter',
                 visible: true,
-                mode:'markers',
+                mode: 'markers',
                 _module: {selectPoints: true}
             }];
 
@@ -221,7 +229,7 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasCartesian = true;
+            gd._fullLayout._basePlotModules = [{ name: 'cartesian' }];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -238,7 +246,7 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasGL3D = true;
+            gd._fullLayout._basePlotModules = [{ name: 'gl3d' }];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -254,7 +262,7 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasGeo = true;
+            gd._fullLayout._basePlotModules = [{ name: 'geo' }];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -271,7 +279,7 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasGL2D = true;
+            gd._fullLayout._basePlotModules = [{ name: 'gl2d' }];
             gd._fullLayout.xaxis = {fixedrange: false};
 
             manageModeBar(gd);
@@ -287,7 +295,143 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasPie = true;
+            gd._fullLayout._basePlotModules = [{ name: 'pie' }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (cartesian + gl3d version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['resetViews', 'toggleHover']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._basePlotModules = [{ name: 'cartesian' }, { name: 'gl3d' }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (cartesian + geo version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['resetViews', 'toggleHover']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._basePlotModules = [{ name: 'cartesian' }, { name: 'geo' }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (cartesian + pie version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['zoom2d', 'pan2d', 'select2d', 'lasso2d'],
+                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
+                ['toggleHover']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullData = [{
+                type: 'scatter',
+                visible: true,
+                mode: 'markers',
+                _module: {selectPoints: true}
+            }];
+            gd._fullLayout.xaxis = {fixedrange: false};
+            gd._fullLayout._basePlotModules = [{ name: 'cartesian' }, { name: 'pie' }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (gl3d + geo version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['resetViews', 'toggleHover']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._basePlotModules = [{ name: 'geo' }, { name: 'gl3d' }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (un-selectable ternary version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['zoom2d', 'pan2d']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._basePlotModules = [{ name: 'ternary' }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (selectable ternary version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['zoom2d', 'pan2d', 'select2d', 'lasso2d']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullData = [{
+                type: 'scatterternary',
+                visible: true,
+                mode: 'markers',
+                _module: {selectPoints: true}
+            }];
+            gd._fullLayout._basePlotModules = [{ name: 'ternary' }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (ternary + cartesian version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['zoom2d', 'pan2d'],
+                ['hoverClosestCartesian', 'hoverCompareCartesian']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._basePlotModules = [{ name: 'ternary' }, { name: 'cartesian' }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (ternary + gl3d version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['resetViews', 'toggleHover']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._basePlotModules = [{ name: 'ternary' }, { name: 'gl3d' }];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -340,7 +484,7 @@ describe('ModeBar', function() {
         // gives 11 buttons in 5 groups by default
         function setupGraphInfo() {
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasCartesian = true;
+            gd._fullLayout._basePlotModules = [{ name: 'cartesian' }];
             gd._fullLayout.xaxis = {fixedrange: false};
             return gd;
         }
@@ -349,8 +493,7 @@ describe('ModeBar', function() {
             var gd = setupGraphInfo();
             manageModeBar(gd);
 
-            gd._fullLayout._hasCartesian = false;
-            gd._fullLayout._hasGL3D = true;
+            gd._fullLayout._basePlotModules = [{ name: 'gl3d' }];
             manageModeBar(gd);
 
             expect(countButtons(gd._fullLayout._modeBar)).toEqual(10);
@@ -468,4 +611,240 @@ describe('ModeBar', function() {
 
     });
 
+    describe('modebar on clicks', function() {
+        var gd, modeBar;
+
+        beforeAll(function() {
+            jasmine.addMatchers(customMatchers);
+        });
+
+        afterEach(destroyGraphDiv);
+
+        function assertRange(axName, expected) {
+            var PRECISION = 2;
+
+            var ax = gd._fullLayout[axName];
+            var actual = ax.range;
+
+            if(ax.type === 'date') {
+                var truncate = function(v) { return v.substr(0, 10); };
+                expect(actual.map(truncate)).toEqual(expected.map(truncate), axName);
+            }
+            else {
+                expect(actual).toBeCloseToArray(expected, PRECISION, axName);
+            }
+        }
+
+        function assertActive(buttons, activeButton) {
+            for(var i = 0; i < buttons.length; i++) {
+                expect(buttons[i].isActive()).toBe(
+                    buttons[i] === activeButton
+                );
+            }
+        }
+
+        describe('cartesian handlers', function() {
+
+            beforeEach(function(done) {
+                var mockData = [{
+                    type: 'scatter',
+                    x: ['2016-01-01', '2016-02-01', '2016-03-01'],
+                    y: [10, 100, 1000],
+                }, {
+                    type: 'bar',
+                    x: ['a', 'b', 'c'],
+                    y: [2, 1, 2],
+                    xaxis: 'x2',
+                    yaxis: 'y2'
+                }];
+
+                var mockLayout = {
+                    xaxis: {
+                        anchor: 'y',
+                        domain: [0, 0.5],
+                        range: ['2016-01-01', '2016-04-01']
+                    },
+                    yaxis: {
+                        anchor: 'x',
+                        type: 'log',
+                        range: [1, 3]
+                    },
+                    xaxis2: {
+                        anchor: 'y2',
+                        domain: [0.5, 1],
+                        range: [-1, 4]
+                    },
+                    yaxis2: {
+                        anchor: 'x2',
+                        range: [0, 4]
+                    },
+                    width: 600,
+                    height: 500
+                };
+
+                gd = createGraphDiv();
+                Plotly.plot(gd, mockData, mockLayout).then(function() {
+                    modeBar = gd._fullLayout._modeBar;
+                    done();
+                });
+            });
+
+            describe('buttons zoomIn2d, zoomOut2d, autoScale2d and resetScale2d', function() {
+                it('should update axis ranges', function() {
+                    var buttonZoomIn = selectButton(modeBar, 'zoomIn2d'),
+                        buttonZoomOut = selectButton(modeBar, 'zoomOut2d'),
+                        buttonAutoScale = selectButton(modeBar, 'autoScale2d'),
+                        buttonResetScale = selectButton(modeBar, 'resetScale2d');
+
+                    assertRange('xaxis', ['2016-01-01', '2016-04-01']);
+                    assertRange('yaxis', [1, 3]);
+                    assertRange('xaxis2', [-1, 4]);
+                    assertRange('yaxis2', [0, 4]);
+
+                    buttonZoomIn.click();
+                    assertRange('xaxis', ['2016-01-23 17:45', '2016-03-09 05:15']);
+                    assertRange('yaxis', [1.5, 2.5]);
+                    assertRange('xaxis2', [0.25, 2.75]);
+                    assertRange('yaxis2', [1, 3]);
+
+                    buttonZoomOut.click();
+                    assertRange('xaxis', ['2016-01-01', '2016-04-01']);
+                    assertRange('yaxis', [1, 3]);
+                    assertRange('xaxis2', [-1, 4]);
+                    assertRange('yaxis2', [0, 4]);
+
+                    buttonZoomIn.click();
+                    buttonAutoScale.click();
+                    assertRange('xaxis', ['2015-12-27 06:36:39.6661', '2016-03-05 17:23:20.3339']);
+                    assertRange('yaxis', [0.8591, 3.1408]);
+                    assertRange('xaxis2', [-0.5, 2.5]);
+                    assertRange('yaxis2', [0, 2.105263]);
+
+                    buttonResetScale.click();
+                    assertRange('xaxis', ['2016-01-01', '2016-04-01']);
+                    assertRange('yaxis', [1, 3]);
+                    assertRange('xaxis2', [-1, 4]);
+                    assertRange('yaxis2', [0, 4]);
+                });
+            });
+
+            describe('buttons zoom2d, pan2d, select2d and lasso2d', function() {
+                it('should update the layout dragmode', function() {
+                    var zoom2d = selectButton(modeBar, 'zoom2d'),
+                        pan2d = selectButton(modeBar, 'pan2d'),
+                        select2d = selectButton(modeBar, 'select2d'),
+                        lasso2d = selectButton(modeBar, 'lasso2d'),
+                        buttons = [zoom2d, pan2d, select2d, lasso2d];
+
+                    expect(gd._fullLayout.dragmode).toBe('zoom');
+                    assertActive(buttons, zoom2d);
+
+                    pan2d.click();
+                    expect(gd._fullLayout.dragmode).toBe('pan');
+                    assertActive(buttons, pan2d);
+
+                    select2d.click();
+                    expect(gd._fullLayout.dragmode).toBe('select');
+                    assertActive(buttons, select2d);
+
+                    lasso2d.click();
+                    expect(gd._fullLayout.dragmode).toBe('lasso');
+                    assertActive(buttons, lasso2d);
+
+                    zoom2d.click();
+                    expect(gd._fullLayout.dragmode).toBe('zoom');
+                    assertActive(buttons, zoom2d);
+                });
+            });
+
+            describe('buttons hoverCompareCartesian and hoverClosestCartesian ', function() {
+                it('should update layout hovermode', function() {
+                    var buttonCompare = selectButton(modeBar, 'hoverCompareCartesian'),
+                        buttonClosest = selectButton(modeBar, 'hoverClosestCartesian'),
+                        buttons = [buttonCompare, buttonClosest];
+
+                    expect(gd._fullLayout.hovermode).toBe('x');
+                    assertActive(buttons, buttonCompare);
+
+                    buttonClosest.click();
+                    expect(gd._fullLayout.hovermode).toBe('closest');
+                    assertActive(buttons, buttonClosest);
+
+                    buttonCompare.click();
+                    expect(gd._fullLayout.hovermode).toBe('x');
+                    assertActive(buttons, buttonCompare);
+                });
+            });
+        });
+
+        describe('pie handlers', function() {
+
+            beforeEach(function(done) {
+                var mockData = [{
+                    type: 'pie',
+                    labels: ['apples', 'bananas', 'grapes'],
+                    values: [10, 20, 30]
+                }];
+
+                gd = createGraphDiv();
+                Plotly.plot(gd, mockData).then(function() {
+                    modeBar = gd._fullLayout._modeBar;
+                    done();
+                });
+            });
+
+            describe('buttons hoverClosestPie', function() {
+                it('should update layout hovermode', function() {
+                    var button = selectButton(modeBar, 'hoverClosestPie');
+
+                    expect(gd._fullLayout.hovermode).toBe('closest');
+                    expect(button.isActive()).toBe(true);
+
+                    button.click();
+                    expect(gd._fullLayout.hovermode).toBe(false);
+                    expect(button.isActive()).toBe(false);
+
+                    button.click();
+                    expect(gd._fullLayout.hovermode).toBe('closest');
+                    expect(button.isActive()).toBe(true);
+                });
+            });
+        });
+
+        describe('geo handlers', function() {
+
+            beforeEach(function(done) {
+                var mockData = [{
+                    type: 'scattergeo',
+                    lon: [10, 20, 30],
+                    lat: [10, 20, 30]
+                }];
+
+                gd = createGraphDiv();
+                Plotly.plot(gd, mockData).then(function() {
+                    modeBar = gd._fullLayout._modeBar;
+                    done();
+                });
+            });
+
+            describe('buttons hoverClosestGeo', function() {
+                it('should update layout hovermode', function() {
+                    var button = selectButton(modeBar, 'hoverClosestGeo');
+
+                    expect(gd._fullLayout.hovermode).toBe('closest');
+                    expect(button.isActive()).toBe(true);
+
+                    button.click();
+                    expect(gd._fullLayout.hovermode).toBe(false);
+                    expect(button.isActive()).toBe(false);
+
+                    button.click();
+                    expect(gd._fullLayout.hovermode).toBe('closest');
+                    expect(button.isActive()).toBe(true);
+                });
+            });
+
+        });
+
+    });
 });

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,13 +8,11 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
+var Lib = require('../lib');
+var extendFlat = Lib.extendFlat;
 
 var fontAttrs = require('./font_attributes');
 var colorAttrs = require('../components/color/attributes');
-
-var extendFlat = Plotly.Lib.extendFlat;
-
 
 module.exports = {
     font: {
@@ -45,13 +43,17 @@ module.exports = {
         description: 'Sets the title font.'
     }),
     autosize: {
-        valType: 'enumerated',
+        valType: 'boolean',
         role: 'info',
-        // TODO: better handling of 'initial'
-        values: [true, false, 'initial'],
+        dflt: false,
         description: [
-            'Determines whether or not the dimensions of the figure are',
-            'computed as a function of the display size.'
+            'Determines whether or not a layout width or height',
+            'that has been left undefined by the user',
+            'is initialized on each relayout.',
+
+            'Note that, regardless of this attribute,',
+            'an undefined layout width or height',
+            'is always initialized on the first call to plot.'
         ].join(' ')
     },
     width: {
@@ -168,38 +170,22 @@ module.exports = {
         role: 'info',
         description: 'Determines whether or not a legend is drawn.'
     },
-    _hasCartesian: {
-        valType: 'boolean',
-        dflt: false
+    dragmode: {
+        valType: 'enumerated',
+        role: 'info',
+        values: ['zoom', 'pan', 'select', 'lasso', 'orbit', 'turntable'],
+        dflt: 'zoom',
+        description: [
+            'Determines the mode of drag interactions.',
+            '*select* and *lasso* apply only to scatter traces with',
+            'markers or text. *orbit* and *turntable* apply only to',
+            '3D scenes.'
+        ].join(' ')
     },
-    _hasGL3D: {
-        valType: 'boolean',
-        dflt: false
-    },
-    _hasGeo: {
-        valType: 'boolean',
-        dflt: false
-    },
-    _hasPie: {
-        valType: 'boolean',
-        dflt: false
-    },
-    _hasGL2D: {
-        valType: 'boolean',
-        dflt: false
-    },
-    _composedModules: {
-        '*': 'Fx'
-    },
-
-    // TODO merge with moduleLayoutDefaults in plots.js
-    _nestedModules: {
-        'xaxis': 'Axes',
-        'yaxis': 'Axes',
-        'scene': 'gl3d',
-        'geo': 'geo',
-        'legend': 'Legend',
-        'annotations': 'Annotations',
-        'shapes': 'Shapes'
+    hovermode: {
+        valType: 'enumerated',
+        role: 'info',
+        values: ['x', 'y', 'closest', false],
+        description: 'Determines the mode of hover interactions.'
     }
 };

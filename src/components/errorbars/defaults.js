@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,7 +10,7 @@
 
 var isNumeric = require('fast-isnumeric');
 
-var Plots = require('../../plots/plots');
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 
 var attributes = require('./attributes');
@@ -53,15 +53,15 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
             coerce('tracerefminus');
         }
     }
-    else if(type==='percent' || type==='constant') {
+    else if(type === 'percent' || type === 'constant') {
         coerce('value');
         if(!symmetric) coerce('valueminus');
     }
 
-    var copyAttr = 'copy_'+opts.inherit+'style';
+    var copyAttr = 'copy_' + opts.inherit + 'style';
     if(opts.inherit) {
         var inheritObj = traceOut['error_' + opts.inherit];
-        if((inheritObj||{}).visible) {
+        if((inheritObj || {}).visible) {
             coerce(copyAttr, !(containerIn.color ||
                                isNumeric(containerIn.thickness) ||
                                isNumeric(containerIn.width)));
@@ -70,6 +70,6 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
     if(!opts.inherit || !containerOut[copyAttr]) {
         coerce('color', defaultColor);
         coerce('thickness');
-        coerce('width', Plots.traceIs(traceOut, 'gl3d') ? 0 : 4);
+        coerce('width', Registry.traceIs(traceOut, 'gl3d') ? 0 : 4);
     }
 };

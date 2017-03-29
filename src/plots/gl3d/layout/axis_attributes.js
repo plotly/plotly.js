@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,7 +8,7 @@
 
 'use strict';
 
-
+var Color = require('../../../components/color');
 var axesAttrs = require('../../cartesian/layout_attributes');
 var extendFlat = require('../../../lib/extend').extendFlat;
 
@@ -43,7 +43,7 @@ module.exports = {
     spikecolor: {
         valType: 'color',
         role: 'style',
-        dflt: 'rgb(0,0,0)',
+        dflt: Color.defaultLine,
         description: 'Sets the color of the spikes.'
     },
     showbackground: {
@@ -67,13 +67,15 @@ module.exports = {
         dflt: true,
         description: 'Sets whether or not this axis is labeled'
     },
+    color: axesAttrs.color,
+    categoryorder: axesAttrs.categoryorder,
+    categoryarray: axesAttrs.categoryarray,
     title: axesAttrs.title,
     titlefont: axesAttrs.titlefont,
     type: axesAttrs.type,
     autorange: axesAttrs.autorange,
     rangemode: axesAttrs.rangemode,
     range: axesAttrs.range,
-    fixedrange: axesAttrs.fixedrange,
     // ticks
     tickmode: axesAttrs.tickmode,
     nticks: axesAttrs.nticks,
@@ -95,6 +97,7 @@ module.exports = {
     showticksuffix: axesAttrs.showticksuffix,
     showexponent: axesAttrs.showexponent,
     exponentformat: axesAttrs.exponentformat,
+    separatethousands: axesAttrs.separatethousands,
     tickformat: axesAttrs.tickformat,
     hoverformat: axesAttrs.hoverformat,
     // lines and grids

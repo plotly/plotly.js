@@ -14,7 +14,10 @@
         17
       ],
       "mode": "markers",
-      "type": "scatter"
+      "type": "scatter",
+      "marker": {
+        "opacity": 0.5
+      }
     },
     {
       "x": [
@@ -30,7 +33,8 @@
         9
       ],
       "mode": "lines",
-      "type": "scatter"
+      "type": "scatter",
+      "opacity": 0.5
     },
     {
       "x": [
@@ -46,7 +50,18 @@
         12
       ],
       "mode": "lines+markers",
-      "type": "scatter"
+      "type": "scatter",
+      "opacity": 0.707,
+      "marker": {
+        "opacity": 0.707
+      }
+    },
+    {
+      "x": [1, 2, 3],
+      "y": [1, 2, 3],
+      "opacity": 0.2,
+      "line": { "width": 10, "color": "red"},
+      "marker": { "size": 20, "color": "blue"}
     }
   ]
 }

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2016, Plotly, Inc.
+* Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -7,12 +7,26 @@
 */
 
 'use strict';
-var Cartesian = require('./index');
+
 var fontAttrs = require('../font_attributes');
 var colorAttrs = require('../../components/color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
+var constants = require('./constants');
+
+
 module.exports = {
+    color: {
+        valType: 'color',
+        dflt: colorAttrs.defaultLine,
+        role: 'style',
+        description: [
+            'Sets default for all colors associated with this axis',
+            'all at once: line, font, tick, and grid colors.',
+            'Grid color is lightened by blending this with the plot background',
+            'Individual pieces can override this.'
+        ].join(' ')
+    },
     title: {
         valType: 'string',
         role: 'info',
@@ -26,8 +40,8 @@ module.exports = {
     type: {
         valType: 'enumerated',
         // '-' means we haven't yet run autotype or couldn't find any data
-        // it gets turned into linear in td._fullLayout but not copied back
-        // to td.data like the others are.
+        // it gets turned into linear in gd._fullLayout but not copied back
+        // to gd.data like the others are.
         values: ['-', 'linear', 'log', 'date', 'category'],
         dflt: '-',
         role: 'info',
@@ -68,18 +82,23 @@ module.exports = {
         valType: 'info_array',
         role: 'info',
         items: [
-            {valType: 'number'},
-            {valType: 'number'}
+            {valType: 'any'},
+            {valType: 'any'}
         ],
         description: [
             'Sets the range of this axis.',
-            'If the axis `type` is *log*, then you must take the log of your desired range',
-            '(e.g. to set the range from 1 to 100, set the range from 0 to 2).',
-            'If the axis `type` is *date*, then you must convert the date to unix time in milliseconds',
-            '(the number of milliseconds since January 1st, 1970). For example, to set the date range from',
-            'January 1st 1970 to November 4th, 2013, set the range from 0 to 1380844800000.0'
+            'If the axis `type` is *log*, then you must take the log of your',
+            'desired range (e.g. to set the range from 1 to 100,',
+            'set the range from 0 to 2).',
+            'If the axis `type` is *date*, it should be date strings,',
+            'like date data, though Date objects and unix milliseconds',
+            'will be accepted and converted to strings.',
+            'If the axis `type` is *category*, it should be numbers,',
+            'using the scale where each category is assigned a serial',
+            'number from zero in the order it appears.'
         ].join(' ')
     },
+
     fixedrange: {
         valType: 'boolean',
         dflt: false,
@@ -111,40 +130,49 @@ module.exports = {
         dflt: 0,
         role: 'style',
         description: [
-            'Sets the number of ticks.',
+            'Specifies the maximum number of ticks for the particular axis.',
+            'The actual number of ticks will be chosen automatically to be',
+            'less than or equal to `nticks`.',
             'Has an effect only if `tickmode` is set to *auto*.'
         ].join(' ')
     },
     tick0: {
-        valType: 'number',
-        dflt: 0,
+        valType: 'any',
         role: 'style',
         description: [
             'Sets the placement of the first tick on this axis.',
             'Use with `dtick`.',
             'If the axis `type` is *log*, then you must take the log of your starting tick',
-            '(e.g. to set the starting tick to 100, set the `tick0` to 2).',
-            'If the axis `type` is *date*, then you must convert the date to unix time in milliseconds',
-            '(the number of milliseconds since January 1st, 1970).',
-            'For example, to set the starting tick to',
-            'November 4th, 2013, set the range to 1380844800000.0.'
+            '(e.g. to set the starting tick to 100, set the `tick0` to 2)',
+            'except when `dtick`=*L<f>* (see `dtick` for more info).',
+            'If the axis `type` is *date*, it should be a date string, like date data.',
+            'If the axis `type` is *category*, it should be a number, using the scale where',
+            'each category is assigned a serial number from zero in the order it appears.'
         ].join(' ')
     },
     dtick: {
         valType: 'any',
-        dflt: 1,
         role: 'style',
         description: [
-            'Sets the step in-between ticks on this axis',
-            'Use with `tick0`.',
+            'Sets the step in-between ticks on this axis. Use with `tick0`.',
+            'Must be a positive number, or special strings available to *log* and *date* axes.',
             'If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n',
             'is the tick number. For example,',
             'to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1.',
             'To set tick marks at 1, 100, 10000, ... set dtick to 2.',
             'To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433.',
+            '*log* has several special values; *L<f>*, where `f` is a positive number,',
+            'gives ticks linearly spaced in value (but not position).',
+            'For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc.',
+            'To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5).',
+            '`tick0` is ignored for *D1* and *D2*.',
             'If the axis `type` is *date*, then you must convert the time to milliseconds.',
             'For example, to set the interval between ticks to one day,',
-            'set `dtick` to 86400000.0.'
+            'set `dtick` to 86400000.0.',
+            '*date* also has special values *M<n>* gives ticks spaced by a number of months.',
+            '`n` must be a positive integer.',
+            'To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*.',
+            'To set ticks every 4 years, set `dtick` to *M48*'
         ].join(' ')
     },
     tickvals: {
@@ -160,7 +188,7 @@ module.exports = {
         description: [
             'Sets the text displayed at the ticks position via `tickvals`.',
             'Only has an effect if `tickmode` is set to *array*.',
-            'Used with `ticktext`.'
+            'Used with `tickvals`.'
         ].join(' ')
     },
     ticks: {
@@ -288,16 +316,27 @@ module.exports = {
             'If *B*, 1B.'
         ].join(' ')
     },
+    separatethousands: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'style',
+        description: [
+            'If "true", even 4-digit integers are separated'
+        ].join(' ')
+    },
     tickformat: {
         valType: 'string',
         dflt: '',
         role: 'style',
         description: [
-            'Sets the tick label formatting rule using the',
-            'python/d3 number formatting language.',
-            'See https://github.com/mbostock/d3/wiki/Formatting#numbers',
-            'or https://docs.python.org/release/3.1.3/library/string.html#formatspec',
-            'for more info.'
+            'Sets the tick label formatting rule using d3 formatting mini-languages',
+            'which are very similar to those in Python. For numbers, see:',
+            'https://github.com/d3/d3-format/blob/master/README.md#locale_format',
+            'And for dates see:',
+            'https://github.com/d3/d3-time-format/blob/master/README.md#locale_format',
+            'We add one item to d3\'s date formatter: *%{n}f* for fractional seconds',
+            'with n digits. For example, *2016-10-13 09:15:23.456* with tickformat',
+            '*%H~%M~%S.%2f* would display *09~15~23.46*'
         ].join(' ')
     },
     hoverformat: {
@@ -305,11 +344,14 @@ module.exports = {
         dflt: '',
         role: 'style',
         description: [
-            'Sets the hover text formatting rule for data values on this axis,',
-            'using the python/d3 number formatting language.',
-            'See https://github.com/mbostock/d3/wiki/Formatting#numbers',
-            'or https://docs.python.org/release/3.1.3/library/string.html#formatspec',
-            'for more info.'
+            'Sets the hover text formatting rule using d3 formatting mini-languages',
+            'which are very similar to those in Python. For numbers, see:',
+            'https://github.com/d3/d3-format/blob/master/README.md#locale_format',
+            'And for dates see:',
+            'https://github.com/d3/d3-time-format/blob/master/README.md#locale_format',
+            'We add one item to d3\'s date formatter: *%{n}f* for fractional seconds',
+            'with n digits. For example, *2016-10-13 09:15:23.456* with tickformat',
+            '*%H~%M~%S.%2f* would display *09~15~23.46*'
         ].join(' ')
     },
     // lines and grids
@@ -383,8 +425,8 @@ module.exports = {
         valType: 'enumerated',
         values: [
             'free',
-            Cartesian.idRegex.x.toString(),
-            Cartesian.idRegex.y.toString()
+            constants.idRegex.x.toString(),
+            constants.idRegex.y.toString()
         ],
         role: 'info',
         description: [
@@ -412,8 +454,8 @@ module.exports = {
         valType: 'enumerated',
         values: [
             'free',
-            Cartesian.idRegex.x.toString(),
-            Cartesian.idRegex.y.toString()
+            constants.idRegex.x.toString(),
+            constants.idRegex.y.toString()
         ],
         role: 'info',
         description: [
@@ -444,6 +486,35 @@ module.exports = {
             'Sets the position of this axis in the plotting space',
             '(in normalized coordinates).',
             'Only has an effect if `anchor` is set to *free*.'
+        ].join(' ')
+    },
+    categoryorder: {
+        valType: 'enumerated',
+        values: [
+            'trace', 'category ascending', 'category descending', 'array'
+            /* , 'value ascending', 'value descending'*/ // value ascending / descending to be implemented later
+        ],
+        dflt: 'trace',
+        role: 'info',
+        description: [
+            'Specifies the ordering logic for the case of categorical variables.',
+            'By default, plotly uses *trace*, which specifies the order that is present in the data supplied.',
+            'Set `categoryorder` to *category ascending* or *category descending* if order should be determined by',
+            'the alphanumerical order of the category names.',
+            /* 'Set `categoryorder` to *value ascending* or *value descending* if order should be determined by the',
+            'numerical order of the values.',*/ // // value ascending / descending to be implemented later
+            'Set `categoryorder` to *array* to derive the ordering from the attribute `categoryarray`. If a category',
+            'is not found in the `categoryarray` array, the sorting behavior for that attribute will be identical to',
+            'the *trace* mode. The unspecified categories will follow the categories in `categoryarray`.'
+        ].join(' ')
+    },
+    categoryarray: {
+        valType: 'data_array',
+        role: 'info',
+        description: [
+            'Sets the order in which categories on this axis appear.',
+            'Only has an effect if `categoryorder` is set to *array*.',
+            'Used with `categoryorder`.'
         ].join(' ')
     },
 
