@@ -475,18 +475,21 @@ describe('Test axes', function() {
 
             layoutIn = {
                 xaxis: {scaleanchor: 'y', scaleratio: 2},
-                yaxis: {scaleanchor: 'x', scaleratio: 3},
+                yaxis: {scaleanchor: 'x', scaleratio: 3}, // dropped loop
 
                 xaxis2: {scaleanchor: 'y2', scaleratio: 5},
                 yaxis2: {scaleanchor: 'x3', scaleratio: 7},
                 xaxis3: {scaleanchor: 'y3', scaleratio: 9},
-                yaxis3: {scaleanchor: 'x2', scaleratio: 11}
+                yaxis3: {scaleanchor: 'x2', scaleratio: 11}, // dropped loop
+
+                xaxis4: {scaleanchor: 'x', scaleratio: 13}, // x<->x is OK now
+                yaxis4: {scaleanchor: 'y', scaleratio: 17}, // y<->y is OK now
             };
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
             expect(layoutOut._axisConstraintGroups).toEqual([
-                {x: 2, y: 1},
+                {x: 2, y: 1, x4: 2 * 13, y4: 17},
                 {x2: 5 * 7 * 9, y2: 7 * 9, y3: 1, x3: 9}
             ]);
 
@@ -507,7 +510,7 @@ describe('Test axes', function() {
             });
 
             layoutIn = {
-                xaxis: {scaleanchor: 'x2', scaleratio: 2}, // must be opposite letter
+                xaxis: {scaleanchor: 'x', scaleratio: 2}, // can't link to itself
                 yaxis: {scaleanchor: 'x4', scaleratio: 3}, // doesn't exist
                 xaxis2: {scaleanchor: 'yaxis', scaleratio: 5} // must be an id, not a name
             };

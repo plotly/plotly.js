@@ -231,6 +231,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     // sets of axes linked by `scaleanchor` along with the scaleratios compounded
     // together, populated in handleConstraintDefaults
     layoutOut._axisConstraintGroups = [];
+    var allAxisIds = counterAxes.x.concat(counterAxes.y);
 
     for(i = 0; i < axesList.length; i++) {
         axName = axesList[i];
@@ -239,6 +240,6 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutIn = layoutIn[axName];
         axLayoutOut = layoutOut[axName];
 
-        handleConstraintDefaults(axLayoutIn, axLayoutOut, coerce, counterAxes[axLetter], layoutOut);
+        handleConstraintDefaults(axLayoutIn, axLayoutOut, coerce, allAxisIds, layoutOut);
     }
 };

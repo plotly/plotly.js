@@ -13,12 +13,12 @@ var Lib = require('../../lib');
 var id2name = require('./axis_ids').id2name;
 
 
-module.exports = function handleConstraintDefaults(containerIn, containerOut, coerce, counterAxes, layoutOut) {
+module.exports = function handleConstraintDefaults(containerIn, containerOut, coerce, allAxisIds, layoutOut) {
     var constraintGroups = layoutOut._axisConstraintGroups;
 
     if(containerOut.fixedrange || !containerIn.scaleanchor) return;
 
-    var constraintOpts = getConstraintOpts(constraintGroups, containerOut._id, counterAxes, layoutOut);
+    var constraintOpts = getConstraintOpts(constraintGroups, containerOut._id, allAxisIds, layoutOut);
 
     var scaleanchor = Lib.coerce(containerIn, containerOut, {
         scaleanchor: {
@@ -39,7 +39,7 @@ module.exports = function handleConstraintDefaults(containerIn, containerOut, co
         updateConstraintGroups(constraintGroups, constraintOpts.thisGroup,
             containerOut._id, scaleanchor, scaleratio);
     }
-    else if(counterAxes.indexOf(containerIn.scaleanchor) !== -1) {
+    else if(allAxisIds.indexOf(containerIn.scaleanchor) !== -1) {
         Lib.warn('ignored ' + containerOut._name + '.scaleanchor: "' +
             containerIn.scaleanchor + '" to avoid either an infinite loop ' +
             'and possibly inconsistent scaleratios, or because the target' +
@@ -47,18 +47,20 @@ module.exports = function handleConstraintDefaults(containerIn, containerOut, co
     }
 };
 
-function getConstraintOpts(constraintGroups, thisID, counterAxes, layoutOut) {
+function getConstraintOpts(constraintGroups, thisID, allAxisIds, layoutOut) {
     // If this axis is already part of a constraint group, we can't
     // scaleanchor any other axis in that group, or we'd make a loop.
-    // Filter counterAxes to enforce this, also matching axis types.
+    // Filter allAxisIds to enforce this, also matching axis types.
 
     var thisType = layoutOut[id2name(thisID)].type;
 
     var i, j, idj, axj;
 
     var linkableAxes = [];
-    for(j = 0; j < counterAxes.length; j++) {
-        idj = counterAxes[j];
+    for(j = 0; j < allAxisIds.length; j++) {
+        idj = allAxisIds[j];
+        if(idj === thisID) continue;
+
         axj = layoutOut[id2name(idj)];
         if(axj.type === thisType && !axj.fixedrange) linkableAxes.push(idj);
     }
