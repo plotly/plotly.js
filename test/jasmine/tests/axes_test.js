@@ -467,6 +467,10 @@ describe('Test axes', function() {
             ]);
         });
 
+        var warnTxt = ' to avoid either an infinite loop and possibly ' +
+            'inconsistent scaleratios, or because the targetaxis has ' +
+            'fixed range.';
+
         it('breaks scaleanchor loops and drops conflicting ratios', function() {
             var warnings = [];
             spyOn(Lib, 'warn').and.callFake(function(msg) {
@@ -493,10 +497,6 @@ describe('Test axes', function() {
                 {x2: 5 * 7 * 9, y2: 7 * 9, y3: 1, x3: 9}
             ]);
 
-            var warnTxt = ' to avoid either an infinite loop and possibly ' +
-                'inconsistent scaleratios, or because the targetaxis has ' +
-                'fixed range.';
-
             expect(warnings).toEqual([
                 'ignored yaxis.scaleanchor: "x"' + warnTxt,
                 'ignored yaxis3.scaleanchor: "x2"' + warnTxt
@@ -510,7 +510,7 @@ describe('Test axes', function() {
             });
 
             layoutIn = {
-                xaxis: {scaleanchor: 'x', scaleratio: 2}, // can't link to itself
+                xaxis: {scaleanchor: 'x', scaleratio: 2}, // can't link to itself - this one isn't ignored...
                 yaxis: {scaleanchor: 'x4', scaleratio: 3}, // doesn't exist
                 xaxis2: {scaleanchor: 'yaxis', scaleratio: 5} // must be an id, not a name
             };
@@ -518,7 +518,7 @@ describe('Test axes', function() {
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
             expect(layoutOut._axisConstraintGroups).toEqual([]);
-            expect(warnings).toEqual([]);
+            expect(warnings).toEqual(['ignored xaxis.scaleanchor: "x"' + warnTxt]);
 
             ['xaxis', 'yaxis', 'xaxis2'].forEach(function(axName) {
                 expect(layoutOut[axName].scaleanchor).toBeUndefined(axName);
