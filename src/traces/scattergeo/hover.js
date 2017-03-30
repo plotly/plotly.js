@@ -24,8 +24,6 @@ module.exports = function hoverPoints(pointData) {
         ya = pointData.ya,
         geo = pointData.subplot;
 
-    if(cd[0].placeholder) return;
-
     function c2p(lonlat) {
         return geo.projection(lonlat);
     }
