@@ -5,6 +5,7 @@ var falafel = require('falafel');
 var glob = require('glob');
 var madge = require('madge');
 var readLastLines = require('read-last-lines');
+var eslint = require('eslint');
 
 var constants = require('./util/constants');
 var srcGlob = path.join(constants.pathToSrc, '**/*.js');
@@ -20,6 +21,7 @@ assertSrcContents();
 assertFileNames();
 assertTrailingNewLine();
 assertCircularDeps();
+assertES5();
 
 
 // check for for focus and exclude jasmine blocks
@@ -187,6 +189,45 @@ function assertCircularDeps() {
         log('circular dependencies: ' + circularDeps.length, logs);
     });
 }
+
+// Ensure no ES6 has snuck through into the build:
+function assertES5() {
+    var CLIEngine = eslint.CLIEngine;
+
+    var cli = new CLIEngine({
+        useEslintrc: false,
+        ignore: false,
+        parserOptions: {
+            ecmaVersion: 5
+        }
+    });
+
+    // Filter out min and plotly-geo-assets.js since one is unnecessary
+    // and the other is super slow:
+    var files = fs.readdirSync(path.join(__dirname, '../dist'));
+    var validFiles = [];
+    for(var i = 0; i < files.length; i++) {
+        var f = files[i];
+        var isMin = !/[^(min)]\.js$/.test(f);
+        var isGeo = /geo-assets/.test(f);
+        if(!isMin && !isGeo) {
+            validFiles.push(path.join(__dirname, '../dist', f));
+        }
+    }
+
+    var report = cli.executeOnFiles(validFiles);
+    var formatter = cli.getFormatter();
+
+    if(report.errorCount > 0) {
+        console.log(formatter(report.results));
+
+        // It doesn't work well to pass formatted logs into this,
+        // so instead pass the empty string in a way that causes
+        // the test to fail
+        log('non-ES5 syntax found', ['']);
+    }
+}
+
 
 function combineGlobs(arr) {
     return '{' + arr.join(',') + '}';
