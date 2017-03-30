@@ -218,14 +218,16 @@ function assertES5() {
     var report = cli.executeOnFiles(validFiles);
     var formatter = cli.getFormatter();
 
+    var errors = [];
     if(report.errorCount > 0) {
         console.log(formatter(report.results));
-
-        // It doesn't work well to pass formatted logs into this,
-        // so instead pass the empty string in a way that causes
-        // the test to fail
-        log('non-ES5 syntax found', ['']);
+        errors.push('');
     }
+
+    // It doesn't work well to pass formatted logs into this,
+    // so instead pass the empty string in a way that causes
+    // the test to fail
+    log('es5-only syntax', errors);
 }
 
 
