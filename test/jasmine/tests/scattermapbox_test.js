@@ -9,6 +9,21 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customMatchers = require('../assets/custom_matchers');
 
+var mouseEvent = require('../assets/mouse_event');
+var click = require('../assets/click');
+var HOVERMINTIME = require('@src/plots/cartesian/constants').HOVERMINTIME;
+
+function move(fromX, fromY, toX, toY, delay) {
+    return new Promise(function(resolve) {
+        mouseEvent('mousemove', fromX, fromY);
+
+        setTimeout(function() {
+            mouseEvent('mousemove', toX, toY);
+            resolve();
+        }, delay || HOVERMINTIME + 10);
+    });
+}
+
 Plotly.setPlotConfig({
     mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
 });
@@ -597,6 +612,207 @@ describe('@noCI scattermapbox hover', function() {
 
             expect(out.extraText).toEqual('A');
             done();
+        });
+    });
+});
+
+
+describe('@noCI Test plotly events on a scattermapbox plot:', function() {
+    var mock = require('@mocks/mapbox_0.json');
+
+    var mockCopy, gd;
+
+    var blankPos = [10, 10],
+        pointPos,
+        nearPos;
+
+    function getPointData(gd) {
+        var cd = gd.calcdata,
+            mapbox = gd._fullLayout.mapbox._subplot;
+
+        return {
+            index: false,
+            distance: 20,
+            cd: cd[0],
+            trace: cd[0][0].trace,
+            xa: mapbox.xaxis,
+            ya: mapbox.yaxis
+        };
+    }
+
+    beforeAll(function(done) {
+        jasmine.addMatchers(customMatchers);
+
+        gd = createGraphDiv();
+        mockCopy = Lib.extendDeep({}, mock);
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            var bb = gd._fullLayout.mapbox._subplot.div.getBoundingClientRect(),
+                xval = 10,
+                yval = 10,
+                point = ScatterMapbox.hoverPoints(getPointData(gd), xval, yval)[0];
+            pointPos = [Math.floor(bb.left + (point.x0 + point.x1) / 2),
+                Math.floor(bb.top + (point.y0 + point.y1) / 2)];
+            nearPos = [pointPos[0] - 30, pointPos[1] - 30];
+        }).then(destroyGraphDiv).then(done);
+    });
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+        mockCopy = Lib.extendDeep({}, mock);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    describe('click events', function() {
+        var futureData;
+
+        beforeEach(function(done) {
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+
+            gd.on('plotly_click', function(data) {
+                futureData = data;
+            });
+        });
+
+        it('should not be trigged when not on data points', function() {
+            click(blankPos[0], blankPos[1]);
+            expect(futureData).toBe(undefined);
+        });
+
+        it('should contain the correct fields', function() {
+            click(pointPos[0], pointPos[1]);
+
+            var pt = futureData.points[0],
+                evt = futureData.event;
+
+            expect(Object.keys(pt)).toEqual([
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'lon', 'lat'
+            ]);
+
+            expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
+            expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
+            expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
+            expect(pt.lat).toEqual(undefined, 'points[0].lat');
+            expect(pt.lon).toEqual(undefined, 'points[0].lon');
+            expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
+
+            expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
+            expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
+        });
+    });
+
+    describe('modified click events', function() {
+        var clickOpts = {
+                altKey: true,
+                ctrlKey: true,
+                metaKey: true,
+                shiftKey: true
+            },
+            futureData;
+
+        beforeEach(function(done) {
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+
+            gd.on('plotly_click', function(data) {
+                futureData = data;
+            });
+        });
+
+        it('should not be trigged when not on data points', function() {
+            click(blankPos[0], blankPos[1], clickOpts);
+            expect(futureData).toBe(undefined);
+        });
+
+        it('should contain the correct fields', function() {
+            click(pointPos[0], pointPos[1], clickOpts);
+
+            var pt = futureData.points[0],
+                evt = futureData.event;
+
+            expect(Object.keys(pt)).toEqual([
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'lon', 'lat'
+            ]);
+
+            expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
+            expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
+            expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
+            expect(pt.lat).toEqual(undefined, 'points[0].lat');
+            expect(pt.lon).toEqual(undefined, 'points[0].lon');
+            expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
+
+            expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
+            expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
+            Object.getOwnPropertyNames(clickOpts).forEach(function(opt) {
+                expect(evt[opt]).toEqual(clickOpts[opt], 'event.' + opt);
+            });
+        });
+    });
+
+    describe('hover events', function() {
+        var futureData;
+
+        beforeEach(function(done) {
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+
+            gd.on('plotly_hover', function(data) {
+                futureData = data;
+            });
+        });
+
+        it('should contain the correct fields', function() {
+            mouseEvent('mousemove', blankPos[0], blankPos[1]);
+            mouseEvent('mousemove', pointPos[0], pointPos[1]);
+
+            var pt = futureData.points[0],
+                evt = futureData.event;
+
+            expect(Object.keys(pt)).toEqual([
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'lon', 'lat'
+            ]);
+
+            expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
+            expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
+            expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
+            expect(pt.lat).toEqual(undefined, 'points[0].lat');
+            expect(pt.lon).toEqual(undefined, 'points[0].lon');
+            expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
+
+            expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
+            expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
+        });
+    });
+
+    describe('unhover events', function() {
+        var futureData;
+
+        beforeEach(function(done) {
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+
+            gd.on('plotly_unhover', function(data) {
+                futureData = data;
+            });
+        });
+
+        it('should contain the correct fields', function(done) {
+            move(pointPos[0], pointPos[1], nearPos[0], nearPos[1], HOVERMINTIME + 10).then(function() {
+                var pt = futureData.points[0],
+                    evt = futureData.event;
+
+                expect(Object.keys(pt)).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'lon', 'lat'
+                ]);
+
+                expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
+                expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
+                expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
+                expect(pt.lat).toEqual(undefined, 'points[0].lat');
+                expect(pt.lon).toEqual(undefined, 'points[0].lon');
+                expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
+
+                expect(evt.clientX).toEqual(nearPos[0], 'event.clientX');
+                expect(evt.clientY).toEqual(nearPos[1], 'event.clientY');
+            }).then(done);
         });
     });
 });

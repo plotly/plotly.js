@@ -1,7 +1,8 @@
 var mouseEvent = require('./mouse_event');
 
-module.exports = function click(x, y) {
-    mouseEvent('mousemove', x, y);
-    mouseEvent('mousedown', x, y);
-    mouseEvent('mouseup', x, y);
+module.exports = function click(x, y, opts) {
+    mouseEvent('mousemove', x, y, opts);
+    mouseEvent('mousedown', x, y, opts);
+    mouseEvent('mouseup', x, y, opts);
+    mouseEvent('click', x, y, opts);
 };
