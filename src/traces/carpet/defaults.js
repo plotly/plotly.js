@@ -41,6 +41,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, dfltColor, fullLayou
         traceOut.baxis.smoothing = 0;
     }
 
+    // NB: the input is x/y arrays. You should know that the *first* dimension of x and y
+    // corresponds to b and the second to a. This sounds backwards but ends up making sense
+    // the important part to know is that when you write y[j][i], j goes from 0 to b.length - 1
+    // and i goes from 0 to a.length - 1.
     var len = handleXYDefaults(traceIn, traceOut, coerce);
 
     setConvert(traceOut);
@@ -53,4 +57,5 @@ module.exports = function supplyDefaults(traceIn, traceOut, dfltColor, fullLayou
         traceOut.visible = false;
         return;
     }
+    console.log(traceOut.visible)
 };

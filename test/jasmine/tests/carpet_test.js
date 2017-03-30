@@ -27,6 +27,42 @@ describe('carpet supplyDefaults', function() {
         traceOut = {};
     });
 
+    it('uses a, b, x, and y', function () {
+        traceIn = {
+            a: [0, 1],
+            b: [0, 1, 2],
+            x: [[1, 2, 3], [4, 5, 6]],
+            y: [[2, 3, 4], [5, 6, 7]]
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+        expect(traceOut.a).toEqual([0, 1])
+        expect(traceOut.b).toEqual([0, 1, 2])
+        expect(traceOut.x).toEqual([[1, 2, 3], [4, 5, 6]])
+        expect(traceOut.y).toEqual([[2, 3, 4], [5, 6, 7]])
+    });
+
+    it('fills in unspecified a', function () {
+        traceIn = {y: [[2, 3, 4], [5, 6, 7]]};
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.a).toEqual([0, 1])
+    });
+
+    return;
+
+    it('supplies defaults when given y', function () {
+        traceIn = {y: [[1, 2, 3], [4, 5, 6]]}
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+        console.log('a = ', traceOut.a)
+        console.log('b = ', traceOut.b)
+
+        expect(traceOut.visible).toBe(true)
+    });
+
+    return;
+
     it('sets visible = false when x is not valid', function() {
         traceIn = {y: [[1, 2], [3, 4]], x: [4]};
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
@@ -37,6 +73,15 @@ describe('carpet supplyDefaults', function() {
         traceIn = {y: [1, 2]};
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
         expect(traceOut.visible).toBe(false);
+    });
+
+    it('sets visible = false if dim x !== dim y', function () {
+        traceIn = {
+            x: [[1, 2], [3, 4]],
+            y: [[1, 2, 3], [4, 5, 6]]
+        }
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.visible).toBe(false)
     });
 
     /* it('sets _cheater = true when x is provided', function() {
