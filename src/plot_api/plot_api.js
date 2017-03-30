@@ -1585,6 +1585,7 @@ function _restyle(gd, aobj, _traces) {
                     flags.docalc = true;
                 }
 
+                // must redo calcdata when restyling array values of arrayOk attributes
                 if(valObject.arrayOk && (Array.isArray(newVal) || Array.isArray(oldVal))) {
                     flags.docalc = true;
                 }
