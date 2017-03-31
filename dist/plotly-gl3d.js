@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.25.1
+* plotly.js (gl3d) v1.25.2
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -1102,7 +1102,7 @@ function sign (x) {
 },{"bn.js":36}],24:[function(require,module,exports){
 'use strict'
 
-const sign = require('./bn-sign')
+var sign = require('./bn-sign')
 
 module.exports = bn2num
 
@@ -61839,7 +61839,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.25.1';
+exports.version = '1.25.2';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
