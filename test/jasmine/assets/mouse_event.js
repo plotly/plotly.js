@@ -9,6 +9,18 @@ module.exports = function(type, x, y, opts) {
     if(opts && opts.buttons) {
         fullOpts.buttons = opts.buttons;
     }
+    if(opts && opts.altKey) {
+        fullOpts.altKey = opts.altKey;
+    }
+    if(opts && opts.ctrlKey) {
+        fullOpts.ctrlKey = opts.ctrlKey;
+    }
+    if(opts && opts.metaKey) {
+        fullOpts.metaKey = opts.metaKey;
+    }
+    if(opts && opts.shiftKey) {
+        fullOpts.shiftKey = opts.shiftKey;
+    }
 
     var el = (opts && opts.element) || document.elementFromPoint(x, y),
         ev;

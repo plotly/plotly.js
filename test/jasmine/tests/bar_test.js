@@ -284,6 +284,39 @@ describe('Bar.calc', function() {
         var cd = gd.calcdata;
         assertPointField(cd, 'b', [[0, 1, 2], [0, 1, 0], [0, 0]]);
     });
+
+    it('should not exclude items with non-numeric x/y from calcdata', function() {
+        var gd = mockBarPlot([{
+            x: [5, NaN, 15, 20, null, 21],
+            y: [20, NaN, 23, 25, null, 26]
+        }]);
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'x', [[5, NaN, 15, 20, NaN, 21]]);
+        assertPointField(cd, 'y', [[20, NaN, 23, 25, NaN, 26]]);
+    });
+
+    it('should not exclude items with non-numeric y from calcdata (to plots gaps correctly)', function() {
+        var gd = mockBarPlot([{
+            x: ['a', 'b', 'c', 'd'],
+            y: [1, null, 'nonsense', 15]
+        }]);
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'x', [[0, 1, 2, 3]]);
+        assertPointField(cd, 'y', [[1, NaN, NaN, 15]]);
+    });
+
+    it('should not exclude items with non-numeric x from calcdata (to plots gaps correctly)', function() {
+        var gd = mockBarPlot([{
+            x: [1, null, 'nonsense', 15],
+            y: [1, 2, 10, 30]
+        }]);
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'x', [[1, NaN, NaN, 15]]);
+        assertPointField(cd, 'y', [[1, 2, 10, 30]]);
+    });
 });
 
 describe('Bar.setPositions', function() {
@@ -680,23 +713,6 @@ describe('Bar.setPositions', function() {
             ya = gd._fullLayout.yaxis;
         expect(Axes.getAutoRange(xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
         expect(Axes.getAutoRange(ya)).toBeCloseToArray([-1.11, 1.11], undefined, '(ya.range)');
-    });
-
-    it('should skip placeholder trace in position computations', function() {
-        var gd = mockBarPlot([{
-            x: [1, 2, 3],
-            y: [2, 1, 2]
-        }, {
-            x: [null],
-            y: [null]
-        }]);
-
-        expect(gd.calcdata[0][0].t.barwidth).toEqual(0.8);
-
-        expect(gd.calcdata[1][0].x).toBe(false);
-        expect(gd.calcdata[1][0].y).toBe(false);
-        expect(gd.calcdata[1][0].placeholder).toBe(true);
-        expect(gd.calcdata[1][0].t.barwidth).toBeUndefined();
     });
 
     it('works with log axes (grouped bars)', function() {
@@ -1322,7 +1338,7 @@ function mockBarPlot(dataWithoutTraceType, layout) {
 
     var gd = {
         data: dataWithTraceType,
-        layout: layout,
+        layout: layout || {},
         calcdata: []
     };
 

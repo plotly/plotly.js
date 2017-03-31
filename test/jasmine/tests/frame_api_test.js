@@ -263,5 +263,57 @@ describe('Test frame api', function() {
                 return Plotly.Queue.redo(gd);
             }).then(validate).catch(fail).then(done);
         });
+
+        it('deletes all frames if frameList is falsey', function(done) {
+            var i;
+            var n = 10;
+            var frames = [];
+            for(i = 0; i < n; i++) {
+                frames.push({name: 'frame' + i});
+            }
+
+            function validateCount(n) {
+                return function() {
+                    expect(f.length).toEqual(n);
+                };
+            }
+
+            Plotly.addFrames(gd, frames).then(function() {
+                // Delete with no args:
+                return Plotly.deleteFrames(gd);
+            }).then(validateCount(0)).then(function() {
+                // Restore:
+                return Plotly.Queue.undo(gd);
+            }).then(validateCount(n)).then(function() {
+                // Delete with null arg:
+                return Plotly.deleteFrames(gd, null);
+            }).then(validateCount(0)).then(function() {
+                // Restore:
+                return Plotly.Queue.undo(gd);
+            }).then(validateCount(n)).then(function() {
+                // Delete with undefined:
+                return Plotly.deleteFrames(gd, undefined);
+            }).then(validateCount(0)).catch(fail).then(done);
+        });
+
+        it('deleteFrames is a no-op with empty array', function(done) {
+            var i;
+            var n = 10;
+            var frames = [];
+            for(i = 0; i < n; i++) {
+                frames.push({name: 'frame' + i});
+            }
+
+            function validateCount(n) {
+                return function() {
+                    expect(f.length).toEqual(n);
+                };
+            }
+
+            Plotly.addFrames(gd, frames).then(function() {
+                // Delete with no args:
+                return Plotly.deleteFrames(gd, []);
+            }).then(validateCount(n)).catch(fail).then(done);
+        });
     });
 });

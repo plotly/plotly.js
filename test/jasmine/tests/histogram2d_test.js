@@ -1,9 +1,13 @@
+var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
 var supplyDefaults = require('@src/traces/histogram2d/defaults');
 var calc = require('@src/traces/histogram2d/calc');
 
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
 
 describe('Test histogram2d', function() {
     'use strict';
@@ -132,4 +136,26 @@ describe('Test histogram2d', function() {
             ]);
         });
     });
+
+    describe('relayout interaction', function() {
+
+        afterEach(destroyGraphDiv);
+
+        it('should update paths on zooms', function(done) {
+            var gd = createGraphDiv();
+
+            Plotly.newPlot(gd, [{
+                type: 'histogram2dcontour',
+                x: [1, 1, 2, 2, 3],
+                y: [0, 1, 1, 1, 3]
+            }])
+            .then(function() {
+                return Plotly.relayout(gd, 'xaxis.range', [0, 2]);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+    });
+
 });

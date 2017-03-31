@@ -91,11 +91,9 @@ proto.plot = function(geoCalcData, fullLayout, promises) {
 
         if(!lonlat || isNaN(lonlat[0]) || isNaN(lonlat[1])) return;
 
-        var evt = {
-            target: true,
-            xpx: mouse[0],
-            ypx: mouse[1]
-        };
+        var evt = d3.event;
+        evt.xpx = mouse[0];
+        evt.ypx = mouse[1];
 
         _this.xaxis.c2p = function() { return mouse[0]; };
         _this.xaxis.p2c = function() { return lonlat[0]; };
@@ -110,7 +108,7 @@ proto.plot = function(geoCalcData, fullLayout, promises) {
     });
 
     _this.framework.on('click', function() {
-        Fx.click(_this.graphDiv, { target: true });
+        Fx.click(_this.graphDiv, d3.event);
     });
 
     topojsonNameNew = topojsonUtils.getTopojsonName(geoLayout);
