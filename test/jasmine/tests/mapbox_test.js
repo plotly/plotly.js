@@ -859,7 +859,7 @@ describe('@noCI, mapbox plots', function() {
         var subplot = gd._fullLayout.mapbox._subplot,
             map = subplot.map;
 
-        var sources = map.style.sources,
+        var sources = map.style.sourceCaches,
             layers = map.style._layers,
             uid = subplot.uid;
 
