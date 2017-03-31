@@ -202,20 +202,10 @@ function assertES5() {
         }
     });
 
-    // Filter out min and plotly-geo-assets.js since one is unnecessary
-    // and the other is super slow:
-    var files = fs.readdirSync(path.join(__dirname, '../dist'));
-    var validFiles = [];
-    for(var i = 0; i < files.length; i++) {
-        var f = files[i];
-        var isMin = !/[^(min)]\.js$/.test(f);
-        var isGeo = /geo-assets/.test(f);
-        if(!isMin && !isGeo) {
-            validFiles.push(path.join(__dirname, '../dist', f));
-        }
-    }
+    var files = constants.partialBundlePaths.map(function(f) { return f.dist; });
+    files.unshift(constants.pathToPlotlyDist);
 
-    var report = cli.executeOnFiles(validFiles);
+    var report = cli.executeOnFiles(files);
     var formatter = cli.getFormatter();
 
     var errors = [];
