@@ -10,6 +10,13 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.25.2] -- 2017-03-31
+
+### Fixed
+- rm `const` token from dist bundles that depend on `big-rat`,
+  see https://github.com/rat-nest/big-rat/pull/4 for more details.
+
+
 ## [1.25.1] -- 2017-03-28
 
 ### Fixed
