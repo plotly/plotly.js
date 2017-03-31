@@ -31,7 +31,7 @@ module.exports = function hoverPoints(pointData) {
     function distFn(d) {
         var lonlat = d.lonlat;
 
-        if(lonlat[0] === BADNUM || lonlat[1] === BADNUM) return Infinity;
+        if(lonlat[0] === BADNUM) return Infinity;
 
         if(geo.isLonLatOverEdges(lonlat)) return Infinity;
 

@@ -33,7 +33,7 @@ exports.calcTraceToLineCoords = function(calcTrace) {
         var calcPt = calcTrace[i];
         var lonlat = calcPt.lonlat;
 
-        if(lonlat[0] !== BADNUM && lonlat[1] !== BADNUM) {
+        if(lonlat[0] !== BADNUM) {
             lineString.push(lonlat);
         } else if(!connectgaps && lineString.length > 0) {
             coords.push(lineString);
