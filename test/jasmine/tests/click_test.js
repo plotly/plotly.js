@@ -758,7 +758,7 @@ describe('Test click interactions:', function() {
             var plot = gd._fullLayout._plots.xy.plot;
 
             mouseEvent('mousemove', 393, 243);
-            mouseEvent('scroll', 393, 243, { deltaX: 0, deltaY: -1000 });
+            mouseEvent('scroll', 393, 243, { deltaX: 0, deltaY: -20 });
 
             var transform = plot.attr('transform');
 
@@ -771,7 +771,7 @@ describe('Test click interactions:', function() {
             var translate = Drawing.getTranslate(mockEl),
                 scale = Drawing.getScale(mockEl);
 
-            expect([translate.x, translate.y]).toBeCloseToArray([61.070, 97.712]);
+            expect([translate.x, translate.y]).toBeCloseToArray([-25.941, 43.911]);
             expect([scale.x, scale.y]).toBeCloseToArray([1.221, 1.221]);
         });
     });

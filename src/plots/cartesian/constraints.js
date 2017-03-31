@@ -67,17 +67,7 @@ module.exports = function enforceAxisConstraints(gd) {
             normScale = normScales[axisID];
 
             if(normScale !== matchScale) {
-                ax = axes[axisID];
-                // if range matches _rangeInitial before the constraint is applied,
-                // change _rangeInitial to the new range - otherwise a doubleclick
-                // will never autorange because we're not starting at the reset point.
-                var wasAtInitial = (ax._rangeInitial &&
-                    ax.range[0] === ax._rangeInitial[0] &&
-                    ax.range[1] === ax._rangeInitial[1]);
-
-                scaleZoom(ax, normScale / matchScale);
-
-                if(wasAtInitial) ax._rangeInitial = ax.range.slice();
+                scaleZoom(axes[axisID], normScale / matchScale);
             }
         }
     }

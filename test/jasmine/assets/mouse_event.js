@@ -14,7 +14,7 @@ module.exports = function(type, x, y, opts) {
         ev;
 
     if(type === 'scroll') {
-        ev = new window.WheelEvent('wheel', opts);
+        ev = new window.WheelEvent('wheel', Object.assign({}, fullOpts, opts));
     } else {
         ev = new window.MouseEvent(type, fullOpts);
     }
