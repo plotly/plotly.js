@@ -112,143 +112,6 @@ describe('scattermapbox defaults', function() {
     });
 });
 
-describe('scattermapbox calc', function() {
-    'use strict';
-
-    function _calc(trace) {
-        var gd = { data: [trace] };
-
-        Plots.supplyDefaults(gd);
-
-        var fullTrace = gd._fullData[0];
-        return ScatterMapbox.calc(gd, fullTrace);
-    }
-
-    var base = { type: 'scattermapbox' };
-
-    it('should place lon/lat data in lonlat pairs', function() {
-        var calcTrace = _calc(Lib.extendFlat({}, base, {
-            lon: [10, 20, 30],
-            lat: [20, 30, 10]
-        }));
-
-        expect(calcTrace).toEqual([
-            { lonlat: [10, 20] },
-            { lonlat: [20, 30] },
-            { lonlat: [30, 10] }
-        ]);
-    });
-
-    it('should coerce numeric strings lon/lat data into numbers', function() {
-        var calcTrace = _calc(Lib.extendFlat({}, base, {
-            lon: [10, 20, '30', '40'],
-            lat: [20, '30', 10, '50']
-        }));
-
-        expect(calcTrace).toEqual([
-            { lonlat: [10, 20] },
-            { lonlat: [20, 30] },
-            { lonlat: [30, 10] },
-            { lonlat: [40, 50] }
-        ]);
-    });
-
-    it('should keep track of gaps in data', function() {
-        var calcTrace = _calc(Lib.extendFlat({}, base, {
-            lon: [null, 10, null, null, 20, '30', null, '40', null, 10],
-            lat: [10, 20, '30', null, 10, '50', null, 60, null, null]
-        }));
-
-        expect(calcTrace).toEqual([
-            { lonlat: [10, 20], gapAfter: true },
-            { lonlat: [20, 10] },
-            { lonlat: [30, 50], gapAfter: true },
-            { lonlat: [40, 60], gapAfter: true }
-        ]);
-    });
-
-    it('should fill array text (base case)', function() {
-        var calcTrace = _calc(Lib.extendFlat({}, base, {
-            lon: [10, 20, 30],
-            lat: [20, 30, 10],
-            text: ['A', 'B', 'C']
-        }));
-
-        expect(calcTrace).toEqual([
-            { lonlat: [10, 20], tx: 'A' },
-            { lonlat: [20, 30], tx: 'B' },
-            { lonlat: [30, 10], tx: 'C' }
-        ]);
-    });
-
-    it('should fill array text (invalid entry case)', function() {
-        var calcTrace = _calc(Lib.extendFlat({}, base, {
-            lon: [10, 20, 30],
-            lat: [20, 30, 10],
-            text: ['A', 'B', null]
-        }));
-
-        expect(calcTrace).toEqual([
-            { lonlat: [10, 20], tx: 'A' },
-            { lonlat: [20, 30], tx: 'B' },
-            { lonlat: [30, 10], tx: '' }
-        ]);
-    });
-
-    it('should fill array marker attributes (base case)', function() {
-        var calcTrace = _calc(Lib.extendFlat({}, base, {
-            lon: [10, 20, null, 30],
-            lat: [20, 30, null, 10],
-            marker: {
-                color: ['red', 'blue', 'green', 'yellow'],
-                size: [10, 20, 8, 10]
-            }
-        }));
-
-        expect(calcTrace).toEqual([
-            { lonlat: [10, 20], mc: 'red', ms: 10, mcc: 'red', mrc: 5 },
-            { lonlat: [20, 30], mc: 'blue', ms: 20, mcc: 'blue', mrc: 10, gapAfter: true },
-            { lonlat: [30, 10], mc: 'yellow', ms: 10, mcc: 'yellow', mrc: 5 }
-        ]);
-    });
-
-    it('should fill array marker attributes (invalid scale case)', function() {
-        var calcTrace = _calc(Lib.extendFlat({}, base, {
-            lon: [10, 20, null, 30],
-            lat: [20, 30, null, 10],
-            marker: {
-                color: [0, null, 5, 10],
-                size: [10, NaN, 8, 10],
-                colorscale: [
-                    [0, 'blue'], [0.5, 'red'], [1, 'green']
-                ]
-            }
-        }));
-
-        expect(calcTrace).toEqual([
-            { lonlat: [10, 20], mc: 0, ms: 10, mcc: 'rgb(0, 0, 255)', mrc: 5 },
-            { lonlat: [20, 30], mc: null, ms: NaN, mcc: '#444', mrc: 0, gapAfter: true },
-            { lonlat: [30, 10], mc: 10, ms: 10, mcc: 'rgb(0, 128, 0)', mrc: 5 }
-        ]);
-    });
-
-    it('should fill marker attributes (symbol case)', function() {
-        var calcTrace = _calc(Lib.extendFlat({}, base, {
-            lon: [10, 20, null, 30],
-            lat: [20, 30, null, 10],
-            marker: {
-                symbol: ['monument', 'music', 'harbor', null]
-            }
-        }));
-
-        expect(calcTrace).toEqual([
-            { lonlat: [10, 20], mx: 'monument' },
-            { lonlat: [20, 30], mx: 'music', gapAfter: true },
-            { lonlat: [30, 10], mx: 'circle' }
-        ]);
-    });
-});
-
 describe('scattermapbox convert', function() {
     'use strict';
 
@@ -286,29 +149,26 @@ describe('scattermapbox convert', function() {
         assertVisibility(opts, ['none', 'none', 'visible', 'none']);
 
         expect(opts.circle.paint['circle-color']).toEqual({
-            property: 'circle-color',
-            stops: [
-                [0, 'rgb(220, 220, 220)'], [1, '#444'], [2, 'rgb(178, 10, 28)']
-            ]
-        }, 'circle-color stops');
+            type: 'identity',
+            property: 'mcc'
+        });
 
         expect(opts.circle.paint['circle-radius']).toEqual({
-            property: 'circle-radius',
-            stops: [ [0, 5], [1, 10], [2, 0] ]
-        }, 'circle-radius stops');
+            type: 'identity',
+            property: 'mrc'
+        });
 
-        var circleProps = opts.circle.geojson.features.map(function(f) {
+        var props = opts.circle.geojson.features.map(function(f) {
             return f.properties;
         });
 
-        // N.B repeated values have same geojson props
-        expect(circleProps).toEqual([
-            { 'circle-color': 0, 'circle-radius': 0 },
-            { 'circle-color': 1, 'circle-radius': 1 },
-            { 'circle-color': 2, 'circle-radius': 2 },
-            { 'circle-color': 1, 'circle-radius': 2 },
-            { 'circle-color': 1, 'circle-radius': 2 }
-        ], 'geojson feature properties');
+        expect(props).toEqual([
+            { mcc: 'rgb(220, 220, 220)', mrc: 5 },
+            { mcc: '#444', mrc: 10 },
+            { mcc: 'rgb(178, 10, 28)', mrc: 0 },
+            { mcc: '#444', mrc: 0 },
+            { mcc: '#444', mrc: 0 }
+        ], 'circle properties');
     });
 
     it('should generate correct output for fill + markers + lines traces', function() {
@@ -376,7 +236,7 @@ describe('scattermapbox convert', function() {
             return f.properties.text;
         });
 
-        expect(actualText).toEqual(['A', 'B', 'C', 'F', '']);
+        expect(actualText).toEqual(['A', 'B', 'C', 'F', undefined]);
     });
 
     it('should generate correct output for lines traces with trailing gaps', function() {
@@ -426,23 +286,6 @@ describe('scattermapbox convert', function() {
         });
     });
 
-    it('should generate correct output for markers + circle bubbles traces with repeated values', function() {
-        var opts = _convert(Lib.extendFlat({}, base, {
-            lon: ['-96.796988', '-81.379236', '-85.311819', ''],
-            lat: ['32.776664', '28.538335', '35.047157', '' ],
-            marker: { size: ['5', '49', '5', ''] }
-        }));
-
-        expect(opts.circle.paint['circle-radius'].stops)
-            .toBeCloseTo2DArray([[0, 2.5], [1, 24.5]], 'no replicate stops');
-
-        var radii = opts.circle.geojson.features.map(function(f) {
-            return f.properties['circle-radius'];
-        });
-
-        expect(radii).toBeCloseToArray([0, 1, 0], 'link features to correct stops');
-    });
-
     it('should generate correct output for traces with only blank points', function() {
         var opts = _convert(Lib.extendFlat({}, base, {
             mode: 'lines',
@@ -451,7 +294,9 @@ describe('scattermapbox convert', function() {
             fill: 'toself'
         }));
 
-        assertVisibility(opts, ['none', 'none', 'none', 'none']);
+        // not optimal, but doesn't break anything as mapbox-gl accepts empty
+        // coordinate arrays
+        assertVisibility(opts, ['visible', 'visible', 'none', 'none']);
 
         expect(opts.line.geojson.coordinates).toEqual([], 'line coords');
         expect(opts.fill.geojson.coordinates).toEqual([], 'fill coords');

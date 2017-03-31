@@ -11,6 +11,7 @@
 
 var Fx = require('../../plots/cartesian/graph_interact');
 var getTraceColor = require('../scatter/get_trace_color');
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 
 module.exports = function hoverPoints(pointData, xval, yval) {
@@ -31,10 +32,13 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var xval2 = xval - lonShift;
 
     function distFn(d) {
-        var lonlat = d.lonlat,
-            dx = Math.abs(xa.c2p(lonlat) - xa.c2p([xval2, lonlat[1]])),
-            dy = Math.abs(ya.c2p(lonlat) - ya.c2p([lonlat[0], yval])),
-            rad = Math.max(3, d.mrc || 0);
+        var lonlat = d.lonlat;
+
+        if(lonlat[0] === BADNUM) return Infinity;
+
+        var dx = Math.abs(xa.c2p(lonlat) - xa.c2p([xval2, lonlat[1]]));
+        var dy = Math.abs(ya.c2p(lonlat) - ya.c2p([lonlat[0], yval]));
+        var rad = Math.max(3, d.mrc || 0);
 
         return Math.max(Math.sqrt(dx * dx + dy * dy) - rad, 1 - 3 / rad);
     }
