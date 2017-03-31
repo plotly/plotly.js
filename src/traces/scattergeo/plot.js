@@ -27,8 +27,7 @@ module.exports = function plot(geo, calcData) {
     function keyFunc(d) { return d[0].trace.uid; }
 
     function removeBADNUM(d, node) {
-        var lonlat = d.lonlat;
-        if(lonlat[0] === BADNUM || lonlat[1] === BADNUM) {
+        if(d.lonlat[0] === BADNUM) {
             d3.select(node).remove();
         }
     }
