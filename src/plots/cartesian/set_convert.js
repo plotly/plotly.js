@@ -126,12 +126,16 @@ module.exports = function setConvert(ax, fullLayout) {
      */
     function setCategoryIndex(v) {
         if(v !== null && v !== undefined) {
-            var c = ax._categories.indexOf(v);
-            if(c === -1) {
+
+            if(ax._categoriesMap[v] === undefined) {
                 ax._categories.push(v);
-                return ax._categories.length - 1;
+
+                var curLength = ax._categories.length - 1;
+                ax._categoriesMap[v] = curLength;
+
+                return curLength;
             }
-            return c;
+            return ax._categoriesMap[v];
         }
         return BADNUM;
     }
@@ -325,6 +329,8 @@ module.exports = function setConvert(ax, fullLayout) {
 
         // TODO cleaner way to handle this case
         if(!ax._categories) ax._categories = [];
+        // Add a map to optimize the performance of category collection
+        if(!ax._categoriesMap) ax._categoriesMap = {};
 
         // make sure we have a domain (pull it in from the axis
         // this one is overlaying if necessary)
