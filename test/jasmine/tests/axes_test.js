@@ -10,6 +10,8 @@ var Axes = PlotlyInternal.Axes;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var customMatchers = require('../assets/custom_matchers');
+var failTest = require('../assets/fail_test');
 
 
 describe('Test axes', function() {
@@ -567,6 +569,49 @@ describe('Test axes', function() {
                 expect(layoutOut[axName].scaleanchor).toBeUndefined();
                 expect(layoutOut[axName].scaleratio).toBeUndefined();
             });
+        });
+    });
+
+    describe('constraints relayout', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+            jasmine.addMatchers(customMatchers);
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('updates ranges when adding, removing, or changing a constraint', function(done) {
+            PlotlyInternal.plot(gd,
+                [{z: [[0, 1], [2, 3]], type: 'heatmap'}],
+                // plot area is 200x100 px
+                {width: 400, height: 300, margin: {l: 100, r: 100, t: 100, b: 100}}
+            )
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.5, 1.5], 5);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.5, 1.5], 5);
+
+                return PlotlyInternal.relayout(gd, {'xaxis.scaleanchor': 'y'});
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-1.5, 2.5], 5);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.5, 1.5], 5);
+
+                return PlotlyInternal.relayout(gd, {'xaxis.scaleratio': 10});
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.5, 1.5], 5);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-4.5, 5.5], 5);
+
+                return PlotlyInternal.relayout(gd, {'xaxis.scaleanchor': null});
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.5, 1.5], 5);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.5, 1.5], 5);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
