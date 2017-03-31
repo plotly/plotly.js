@@ -217,11 +217,11 @@ describe('axis zoom/pan and main plot zoom', function() {
 
         var layout = {
             width: 700,
-            height: 700,
-            margin: {l: 100, r: 100, t: 100, b: 100},
+            height: 620,
+            margin: {l: 100, r: 100, t: 20, b: 100},
             showlegend: false,
             xaxis: {domain: [0, 0.4], range: [0, 2]},
-            yaxis: {domain: [0, 0.4], range: [0, 2]},
+            yaxis: {domain: [0.15, 0.55], range: [0, 2]},
             xaxis2: {domain: [0.6, 1], range: [0, 2]},
             yaxis2: {domain: [0.6, 1], range: [0, 2]},
             xaxis3: {domain: [0.6, 1], range: [0, 2], anchor: 'y3'},
