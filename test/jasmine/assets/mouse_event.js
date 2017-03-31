@@ -1,3 +1,5 @@
+var Lib = require('@src/lib');
+
 module.exports = function(type, x, y, opts) {
     var fullOpts = {
         bubbles: true,
@@ -14,7 +16,7 @@ module.exports = function(type, x, y, opts) {
         ev;
 
     if(type === 'scroll') {
-        ev = new window.WheelEvent('wheel', Object.assign({}, fullOpts, opts));
+        ev = new window.WheelEvent('wheel', Lib.extendFlat({}, fullOpts, opts));
     } else {
         ev = new window.MouseEvent(type, fullOpts);
     }
