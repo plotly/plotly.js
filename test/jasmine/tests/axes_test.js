@@ -1804,6 +1804,7 @@ describe('Test axes', function() {
 
         function _autoBin(x, ax, nbins) {
             ax._categories = [];
+            ax._categoriesMap = {};
             Axes.setConvert(ax);
 
             var d = ax.makeCalcdata({ x: x }, 'x');
