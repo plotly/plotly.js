@@ -6,6 +6,7 @@ var customMatchers = require('../assets/custom_matchers');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
+var d3 = require('d3');
 var click = require('../assets/click');
 var getClientPosition = require('../assets/get_client_position');
 var mouseEvent = require('../assets/mouse_event');
@@ -175,9 +176,7 @@ describe('pie hovering', function() {
     });
 
     describe('labels', function() {
-
-        var gd,
-            mockCopy;
+        var gd, mockCopy;
 
         beforeEach(function() {
             gd = createGraphDiv();
@@ -186,44 +185,60 @@ describe('pie hovering', function() {
 
         afterEach(destroyGraphDiv);
 
+        function _hover() {
+            mouseEvent('mouseover', 223, 143);
+        }
+
+        function assertLabel(expected) {
+            var labels = d3.selectAll('.hovertext .nums .line');
+
+            expect(labels[0].length).toBe(expected.length);
+
+            labels.each(function(_, i) {
+                expect(d3.select(this).text()).toBe(expected[i]);
+            });
+        }
+
         it('should show the default selected values', function(done) {
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(_hover)
+            .then(function() {
+                assertLabel(['4', '5', '33.3%']);
 
-            var expected = ['4', '5', '33.3%'];
+                return Plotly.restyle(gd, 'text', [['A', 'B', 'C', 'D', 'E']]);
+            })
+            .then(_hover)
+            .then(function() {
+                assertLabel(['4', 'E', '5', '33.3%']);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+                return Plotly.restyle(gd, 'hovertext', [[
+                    'Apple', 'Banana', 'Clementine', 'Dragon Fruit', 'Eggplant'
+                ]]);
+            })
+            .then(_hover)
+            .then(function() {
+                assertLabel(['4', 'Eggplant', '5', '33.3%']);
 
-                mouseEvent('mouseover', 223, 143);
-
-                var labels = Plotly.d3.selectAll('.hovertext .nums .line');
-
-                expect(labels[0].length).toBe(3);
-
-                labels.each(function(_, i) {
-                    expect(Plotly.d3.select(this).text()).toBe(expected[i]);
-                });
-            }).then(done);
+                return Plotly.restyle(gd, 'hovertext', 'SUP');
+            })
+            .then(_hover)
+            .then(function() {
+                assertLabel(['4', 'SUP', '5', '33.3%']);
+            })
+            .then(done);
         });
 
         it('should show the correct separators for values', function(done) {
-
-            var expected = ['0', '12|345|678@91', '99@9%'];
-
             mockCopy.layout.separators = '@|';
             mockCopy.data[0].values[0] = 12345678.912;
             mockCopy.data[0].values[1] = 10000;
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-
-                mouseEvent('mouseover', 223, 143);
-
-                var labels = Plotly.d3.selectAll('.hovertext .nums .line');
-
-                expect(labels[0].length).toBe(3);
-
-                labels.each(function(_, i) {
-                    expect(Plotly.d3.select(this).text()).toBe(expected[i]);
-                });
-            }).then(done);
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(_hover)
+            .then(function() {
+                assertLabel(['0', '12|345|678@91', '99@9%']);
+            })
+            .then(done);
         });
     });
 });
