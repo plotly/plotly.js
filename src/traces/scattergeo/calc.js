@@ -26,14 +26,12 @@ module.exports = function calc(gd, trace) {
         if(hasLocationData) {
             var loc = trace.locations[i];
             calcPt.loc = typeof loc === 'string' ? loc : null;
-        }
-        else {
+        } else {
             var lon = trace.lon[i];
             var lat = trace.lat[i];
-            calcPt.lonlat = new Array(2);
 
-            calcPt.lonlat[0] = isNumeric(lon) ? +lon : BADNUM;
-            calcPt.lonlat[1] = isNumeric(lat) ? +lat : BADNUM;
+            if(isNumeric(lon) && isNumeric(lat)) calcPt.lonlat = [+lon, +lat];
+            else calcPt.lonlat = [BADNUM, BADNUM];
         }
     }
 
