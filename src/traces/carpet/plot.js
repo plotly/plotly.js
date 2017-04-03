@@ -39,8 +39,7 @@ function plotOne(gd, plotinfo, cd) {
         // uid = trace.uid,
         // id = 'carpet' + uid;
 
-    // XXX: Layer choice??
-    var gridLayer = plotinfo.plot.selectAll('.barlayer');
+    var gridLayer = plotinfo.plot.selectAll('.carpetlayer');
     var clipLayer = makeg(fullLayout._defs, 'g', 'clips');
 
     var minorLayer = makeg(gridLayer, 'g', 'minorlayer');

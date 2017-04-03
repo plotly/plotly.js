@@ -303,6 +303,7 @@ function makeSubplotLayer(plotinfo) {
         joinLayer(parent, 'g', 'imagelayer');
         joinLayer(parent, 'g', 'maplayer');
         joinLayer(parent, 'g', 'barlayer');
+        joinLayer(parent, 'g', 'carpetlayer');
         joinLayer(parent, 'g', 'boxlayer');
         joinLayer(parent, 'g', 'scatterlayer');
     }
