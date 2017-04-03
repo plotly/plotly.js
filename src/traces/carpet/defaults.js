@@ -57,5 +57,4 @@ module.exports = function supplyDefaults(traceIn, traceOut, dfltColor, fullLayou
         traceOut.visible = false;
         return;
     }
-    console.log(traceOut.visible)
 };

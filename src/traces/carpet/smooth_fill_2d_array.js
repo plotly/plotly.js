@@ -10,6 +10,18 @@
 
 var Lib = require('../../lib');
 
+/*
+ * Given a 2D array as well as a basis in either direction, this function fills in the
+ * 2D array using a combination of smoothing and extrapolation. This is rather important
+ * for carpet plots since it's used for layout so that we can't simply omit or blank out
+ * points. We need a reasonable guess so that the interpolation puts points somewhere
+ * even if we were to somehow represent that the data was missing later on.
+ *
+ * input:
+ *  - data: 2D array of arrays
+ *  - a: array such that a.length === data[0].length
+ *  - b: array such that b.length === data.length
+ */
 module.exports = function smoothFill2dArray(data, a, b) {
     var i, j, k;
     var ip = [];
