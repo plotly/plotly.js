@@ -2001,6 +2001,8 @@ plots.doCalcdata = function(gd, traces) {
             axList[i]._min = [];
             axList[i]._max = [];
             axList[i]._categories = [];
+            //Reset the look up map
+            axList[i]._categoriesMap = {};
         }
     }
 
