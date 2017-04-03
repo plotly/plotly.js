@@ -126,8 +126,12 @@ module.exports = function setConvert(ax, fullLayout) {
      */
     function setCategoryIndex(v) {
         if(v !== null && v !== undefined) {
+            if (ax._categoriesMap === undefined) 
+                ax._categoriesMap = {};
 
-            if(ax._categoriesMap[v] === undefined) {
+            if (ax._categoriesMap[v] !== undefined) {
+                return ax._categoriesMap[v];
+            } else {
                 ax._categories.push(v);
 
                 var curLength = ax._categories.length - 1;
@@ -135,7 +139,6 @@ module.exports = function setConvert(ax, fullLayout) {
 
                 return curLength;
             }
-            return ax._categoriesMap[v];
         }
         return BADNUM;
     }
@@ -143,8 +146,10 @@ module.exports = function setConvert(ax, fullLayout) {
     function getCategoryIndex(v) {
         // d2l/d2c variant that that won't add categories but will also
         // allow numbers to be mapped to the linearized axis positions
-        var index = ax._categories.indexOf(v);
-        if(index !== -1) return index;
+        if(ax._categoriesMap)
+            var index = ax._categoriesMap[v]?ax._categoriesMap:undefined;
+        
+        if(index !== undefined) return index;
         if(typeof v === 'number') return v;
     }
 
