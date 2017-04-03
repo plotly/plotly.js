@@ -6,10 +6,10 @@ var Lib = require('@src/lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customMatchers = require('../assets/custom_matchers');
-var mouseEvent = require('../assets/mouse_event');
-var selectButton = require('../assets/modebar_button');
 
-var MODEBAR_DELAY = 500;
+// This suite is more of a test of the structure of interaction elements on
+// various plot types. Tests of actual mouse interactions on cartesian plots
+// are in cartesian_interact_test.js
 
 describe('Test plot structure', function() {
     'use strict';
@@ -162,122 +162,6 @@ describe('Test plot structure', function() {
 
                     done();
                 });
-            });
-        });
-
-        describe('scatter drag', function() {
-
-            var mock = require('@mocks/10.json'),
-                gd, modeBar, relayoutCallback;
-
-            beforeEach(function(done) {
-                gd = createGraphDiv();
-
-                Plotly.plot(gd, mock.data, mock.layout).then(function() {
-
-                    modeBar = gd._fullLayout._modeBar;
-                    relayoutCallback = jasmine.createSpy('relayoutCallback');
-
-                    gd.on('plotly_relayout', relayoutCallback);
-
-                    done();
-                });
-            });
-
-            it('scatter plot should respond to drag interactions', function(done) {
-
-                jasmine.addMatchers(customMatchers);
-
-                var precision = 5;
-
-                var buttonPan = selectButton(modeBar, 'pan2d');
-
-                var originalX = [-0.6225, 5.5];
-                var originalY = [-1.6340975059013805, 7.166241526218911];
-
-                var newX = [-2.0255729166666665, 4.096927083333333];
-                var newY = [-0.3769062155984817, 8.42343281652181];
-
-                expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-                expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
-
-                // Switch to pan mode
-                expect(buttonPan.isActive()).toBe(false); // initially, zoom is active
-                buttonPan.click();
-                expect(buttonPan.isActive()).toBe(true); // switched on dragmode
-
-                // Switching mode must not change visible range
-                expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-                expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
-
-                setTimeout(function() {
-
-                    expect(relayoutCallback).toHaveBeenCalledTimes(1);
-                    relayoutCallback.calls.reset();
-
-                    // Drag scene along the X axis
-
-                    mouseEvent('mousedown', 110, 150);
-                    mouseEvent('mousemove', 220, 150);
-                    mouseEvent('mouseup', 220, 150);
-
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(newX, precision);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
-
-                    // Drag scene back along the X axis (not from the same starting point but same X delta)
-
-                    mouseEvent('mousedown', 280, 150);
-                    mouseEvent('mousemove', 170, 150);
-                    mouseEvent('mouseup', 170, 150);
-
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
-
-                    // Drag scene along the Y axis
-
-                    mouseEvent('mousedown', 110, 150);
-                    mouseEvent('mousemove', 110, 190);
-                    mouseEvent('mouseup', 110, 190);
-
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(newY, precision);
-
-                    // Drag scene back along the Y axis (not from the same starting point but same Y delta)
-
-                    mouseEvent('mousedown', 280, 130);
-                    mouseEvent('mousemove', 280, 90);
-                    mouseEvent('mouseup', 280, 90);
-
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
-
-                    // Drag scene along both the X and Y axis
-
-                    mouseEvent('mousedown', 110, 150);
-                    mouseEvent('mousemove', 220, 190);
-                    mouseEvent('mouseup', 220, 190);
-
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(newX, precision);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(newY, precision);
-
-                    // Drag scene back along the X and Y axis (not from the same starting point but same delta vector)
-
-                    mouseEvent('mousedown', 280, 130);
-                    mouseEvent('mousemove', 170, 90);
-                    mouseEvent('mouseup', 170, 90);
-
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
-
-                    setTimeout(function() {
-
-                        expect(relayoutCallback).toHaveBeenCalledTimes(6); // X and back; Y and back; XY and back
-
-                        done();
-
-                    }, MODEBAR_DELAY);
-
-                }, MODEBAR_DELAY);
             });
         });
 

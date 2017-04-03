@@ -10,6 +10,8 @@ var Axes = PlotlyInternal.Axes;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var customMatchers = require('../assets/custom_matchers');
+var failTest = require('../assets/fail_test');
 
 
 describe('Test axes', function() {
@@ -443,6 +445,173 @@ describe('Test axes', function() {
             Axes.list({ _fullLayout: layoutOut }).forEach(function(ax) {
                 expect(ax.autorange).toBe(false, ax._name);
             });
+        });
+
+        it('finds scaling groups and calculates relative scales', function() {
+            layoutIn = {
+                // first group: linked in series, scales compound
+                xaxis: {},
+                yaxis: {scaleanchor: 'x', scaleratio: 2},
+                xaxis2: {scaleanchor: 'y', scaleratio: 3},
+                yaxis2: {scaleanchor: 'x2', scaleratio: 5},
+                // second group: linked in parallel, scales don't compound
+                yaxis3: {},
+                xaxis3: {scaleanchor: 'y3'},  // default scaleratio: 1
+                xaxis4: {scaleanchor: 'y3', scaleratio: 7},
+                xaxis5: {scaleanchor: 'y3', scaleratio: 9}
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisConstraintGroups).toEqual([
+                {x: 1, y: 2, x2: 2 * 3, y2: 2 * 3 * 5},
+                {y3: 1, x3: 1, x4: 7, x5: 9}
+            ]);
+        });
+
+        var warnTxt = ' to avoid either an infinite loop and possibly ' +
+            'inconsistent scaleratios, or because the targetaxis has ' +
+            'fixed range.';
+
+        it('breaks scaleanchor loops and drops conflicting ratios', function() {
+            var warnings = [];
+            spyOn(Lib, 'warn').and.callFake(function(msg) {
+                warnings.push(msg);
+            });
+
+            layoutIn = {
+                xaxis: {scaleanchor: 'y', scaleratio: 2},
+                yaxis: {scaleanchor: 'x', scaleratio: 3}, // dropped loop
+
+                xaxis2: {scaleanchor: 'y2', scaleratio: 5},
+                yaxis2: {scaleanchor: 'x3', scaleratio: 7},
+                xaxis3: {scaleanchor: 'y3', scaleratio: 9},
+                yaxis3: {scaleanchor: 'x2', scaleratio: 11}, // dropped loop
+
+                xaxis4: {scaleanchor: 'x', scaleratio: 13}, // x<->x is OK now
+                yaxis4: {scaleanchor: 'y', scaleratio: 17}, // y<->y is OK now
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisConstraintGroups).toEqual([
+                {x: 2, y: 1, x4: 2 * 13, y4: 17},
+                {x2: 5 * 7 * 9, y2: 7 * 9, y3: 1, x3: 9}
+            ]);
+
+            expect(warnings).toEqual([
+                'ignored yaxis.scaleanchor: "x"' + warnTxt,
+                'ignored yaxis3.scaleanchor: "x2"' + warnTxt
+            ]);
+        });
+
+        it('silently drops invalid scaleanchor values', function() {
+            var warnings = [];
+            spyOn(Lib, 'warn').and.callFake(function(msg) {
+                warnings.push(msg);
+            });
+
+            layoutIn = {
+                xaxis: {scaleanchor: 'x', scaleratio: 2}, // can't link to itself - this one isn't ignored...
+                yaxis: {scaleanchor: 'x4', scaleratio: 3}, // doesn't exist
+                xaxis2: {scaleanchor: 'yaxis', scaleratio: 5} // must be an id, not a name
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisConstraintGroups).toEqual([]);
+            expect(warnings).toEqual(['ignored xaxis.scaleanchor: "x"' + warnTxt]);
+
+            ['xaxis', 'yaxis', 'xaxis2'].forEach(function(axName) {
+                expect(layoutOut[axName].scaleanchor).toBeUndefined(axName);
+                expect(layoutOut[axName].scaleratio).toBeUndefined(axName);
+            });
+        });
+
+        it('will not link axes of different types', function() {
+            layoutIn = {
+                xaxis: {type: 'linear'},
+                yaxis: {type: 'log', scaleanchor: 'x', scaleratio: 2},
+                xaxis2: {type: 'date', scaleanchor: 'y', scaleratio: 3},
+                yaxis2: {type: 'category', scaleanchor: 'x2', scaleratio: 5}
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisConstraintGroups).toEqual([]);
+
+            ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function(axName) {
+                expect(layoutOut[axName].scaleanchor).toBeUndefined(axName);
+                expect(layoutOut[axName].scaleratio).toBeUndefined(axName);
+            });
+        });
+
+        it('drops scaleanchor settings if either the axis or target has fixedrange', function() {
+            // some of these will create warnings... not too important, so not going to test,
+            // just want to keep the output clean
+            // spyOn(Lib, 'warn');
+
+            layoutIn = {
+                xaxis: {fixedrange: true, scaleanchor: 'y', scaleratio: 2},
+                yaxis: {scaleanchor: 'x2', scaleratio: 3}, // only this one should survive
+                xaxis2: {},
+                yaxis2: {scaleanchor: 'x', scaleratio: 5}
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisConstraintGroups).toEqual([{x2: 1, y: 3}]);
+
+            expect(layoutOut.yaxis.scaleanchor).toBe('x2');
+            expect(layoutOut.yaxis.scaleratio).toBe(3);
+
+            ['xaxis', 'yaxis2', 'xaxis2'].forEach(function(axName) {
+                expect(layoutOut[axName].scaleanchor).toBeUndefined();
+                expect(layoutOut[axName].scaleratio).toBeUndefined();
+            });
+        });
+    });
+
+    describe('constraints relayout', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+            jasmine.addMatchers(customMatchers);
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('updates ranges when adding, removing, or changing a constraint', function(done) {
+            PlotlyInternal.plot(gd,
+                [{z: [[0, 1], [2, 3]], type: 'heatmap'}],
+                // plot area is 200x100 px
+                {width: 400, height: 300, margin: {l: 100, r: 100, t: 100, b: 100}}
+            )
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.5, 1.5], 5);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.5, 1.5], 5);
+
+                return PlotlyInternal.relayout(gd, {'xaxis.scaleanchor': 'y'});
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-1.5, 2.5], 5);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.5, 1.5], 5);
+
+                return PlotlyInternal.relayout(gd, {'xaxis.scaleratio': 10});
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.5, 1.5], 5);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-4.5, 5.5], 5);
+
+                return PlotlyInternal.relayout(gd, {'xaxis.scaleanchor': null});
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.5, 1.5], 5);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.5, 1.5], 5);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 

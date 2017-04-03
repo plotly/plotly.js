@@ -14,6 +14,7 @@ var colorMix = require('tinycolor2').mix;
 var Lib = require('../../../lib');
 
 var layoutAttributes = require('./axis_attributes');
+var handleTypeDefaults = require('../../cartesian/type_defaults');
 var handleAxisDefaults = require('../../cartesian/axis_defaults');
 
 var axesNames = ['xaxis', 'yaxis', 'zaxis'];
@@ -33,12 +34,14 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
         var axName = axesNames[j];
         containerIn = layoutIn[axName] || {};
 
-        containerOut = {
+        containerOut = layoutOut[axName] = {
             _id: axName[0] + options.scene,
             _name: axName
         };
 
-        layoutOut[axName] = containerOut = handleAxisDefaults(
+        handleTypeDefaults(containerIn, containerOut, coerce, options.data);
+
+        handleAxisDefaults(
             containerIn,
             containerOut,
             coerce, {
