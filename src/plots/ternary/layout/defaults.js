@@ -39,7 +39,7 @@ function handleTernaryDefaults(ternaryLayoutIn, ternaryLayoutOut, coerce, option
     for(var j = 0; j < axesNames.length; j++) {
         axName = axesNames[j];
         containerIn = ternaryLayoutIn[axName] || {};
-        containerOut = ternaryLayoutOut[axName] = {_name: axName};
+        containerOut = ternaryLayoutOut[axName] = {_name: axName, type: 'linear'};
 
         handleAxisDefaults(containerIn, containerOut, options);
     }

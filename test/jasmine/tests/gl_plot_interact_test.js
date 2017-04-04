@@ -7,6 +7,7 @@ var Drawing = require('@src/components/drawing');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var selectButton = require('../assets/modebar_button');
 var customMatchers = require('../assets/custom_matchers');
@@ -631,6 +632,72 @@ describe('Test gl3d drag and wheel interactions', function() {
     });
 });
 
+describe('Test gl3d relayout calls', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('should be able to adjust margins', function(done) {
+        var w = 500;
+        var h = 500;
+
+        function assertMargins(t, l, b, r) {
+            var div3d = document.getElementById('scene');
+            expect(parseFloat(div3d.style.top)).toEqual(t, 'top');
+            expect(parseFloat(div3d.style.left)).toEqual(l, 'left');
+            expect(h - parseFloat(div3d.style.height) - t).toEqual(b, 'bottom');
+            expect(w - parseFloat(div3d.style.width) - l).toEqual(r, 'right');
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            z: [1, 2, 1]
+        }], {
+            width: w,
+            height: h
+        })
+        .then(function() {
+            assertMargins(100, 80, 80, 80);
+
+            return Plotly.relayout(gd, 'margin', {
+                l: 0, t: 0, r: 0, b: 0
+            });
+        })
+        .then(function() {
+            assertMargins(0, 0, 0, 0);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should skip root-level axis objects', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            z: [1, 2, 1]
+        }])
+        .then(function() {
+            return Plotly.relayout(gd, {
+                xaxis: {},
+                yaxis: {},
+                zaxis: {}
+            });
+        })
+        .catch(fail)
+        .then(done);
+    });
+});
+
 describe('Test gl2d plots', function() {
     var gd;
 
@@ -649,6 +716,13 @@ describe('Test gl2d plots', function() {
         destroyGraphDiv();
     });
 
+    function mouseTo(p0, p1) {
+        mouseEvent('mousemove', p0[0], p0[1]);
+        mouseEvent('mousedown', p0[0], p0[1], { buttons: 1 });
+        mouseEvent('mousemove', p1[0], p1[1], { buttons: 1 });
+        mouseEvent('mouseup', p1[0], p1[1]);
+    }
+
     it('should respond to drag interactions', function(done) {
         var _mock = Lib.extendDeep({}, mock);
         var relayoutCallback = jasmine.createSpy('relayoutCallback');
@@ -658,13 +732,6 @@ describe('Test gl2d plots', function() {
         var newX = [-0.23224043715846995, 4.811895754518705];
         var newY = [-1.2962655110623016, 4.768255474123081];
         var precision = 5;
-
-        function mouseTo(p0, p1) {
-            mouseEvent('mousemove', p0[0], p0[1]);
-            mouseEvent('mousedown', p0[0], p0[1], { buttons: 1 });
-            mouseEvent('mousemove', p1[0], p1[1], { buttons: 1 });
-            mouseEvent('mouseup', p1[0], p1[1]);
-        }
 
         Plotly.plot(gd, _mock)
         .then(delay)
@@ -803,6 +870,103 @@ describe('Test gl2d plots', function() {
         })
         .then(done);
 
+    });
+
+    it('supports 1D and 2D Zoom', function(done) {
+        var centerX, centerY;
+        Plotly.newPlot(gd,
+            [{type: 'scattergl', x: [1, 15], y: [1, 15]}],
+            {
+                width: 400,
+                height: 400,
+                margin: {t: 100, b: 100, l: 100, r: 100},
+                xaxis: {range: [0, 16]},
+                yaxis: {range: [0, 16]}
+            }
+        )
+        .then(function() {
+            var bBox = gd.getBoundingClientRect();
+            centerX = bBox.left + 200;
+            centerY = bBox.top + 200;
+
+            // 2D
+            mouseTo([centerX - 50, centerY], [centerX + 50, centerY + 50]);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([4, 12], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([4, 8], 3);
+
+            // x only
+            mouseTo([centerX - 50, centerY], [centerX, centerY + 5]);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([6, 8], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([4, 8], 3);
+
+            // y only
+            mouseTo([centerX, centerY - 50], [centerX - 5, centerY + 50]);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([6, 8], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([5, 7], 3);
+
+            // no change - too small
+            mouseTo([centerX, centerY], [centerX - 5, centerY + 5]);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([6, 8], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([5, 7], 3);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('supports axis constraints with zoom', function(done) {
+        var centerX, centerY;
+        Plotly.newPlot(gd,
+            [{type: 'scattergl', x: [1, 15], y: [1, 15]}],
+            {
+                width: 400,
+                height: 400,
+                margin: {t: 100, b: 100, l: 100, r: 100},
+                xaxis: {range: [0, 16]},
+                yaxis: {range: [0, 16]}
+            }
+        )
+        .then(function() {
+            var bBox = gd.getBoundingClientRect();
+            centerX = bBox.left + 200;
+            centerY = bBox.top + 200;
+
+            return Plotly.relayout(gd, {
+                'yaxis.scaleanchor': 'x',
+                'yaxis.scaleratio': 2
+            });
+        })
+        .then(function() {
+            // x range is adjusted to fit constraint
+            expect(gd.layout.xaxis.range).toBeCloseToArray([-8, 24], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([0, 16], 3);
+
+            // now there should only be 2D zooming
+            // dy>>dx
+            mouseTo([centerX, centerY], [centerX - 1, centerY - 50]);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 8], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([8, 12], 3);
+
+            // dx>>dy
+            mouseTo([centerX, centerY], [centerX + 50, centerY + 1]);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([4, 6], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([9, 10], 3);
+
+            // no change - too small
+            mouseTo([centerX, centerY], [centerX - 5, centerY + 5]);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([4, 6], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([9, 10], 3);
+
+            return Plotly.relayout(gd, {
+                'xaxis.autorange': true,
+                'yaxis.autorange': true
+            });
+        })
+        .then(function() {
+            expect(gd.layout.xaxis.range).toBeCloseToArray([-8.09195, 24.09195], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([-0.04598, 16.04598], 3);
+        })
+        .catch(fail)
+        .then(done);
     });
 });
 

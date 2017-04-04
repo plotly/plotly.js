@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v1.24.2
+* plotly.js (gl2d) v1.25.2
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -68,7 +68,7 @@ for(var selector in rules) {
     Lib.addStyleRule(fullSelector, rules[selector]);
 }
 
-},{"../src/lib":311}],2:[function(require,module,exports){
+},{"../src/lib":322}],2:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -201,7 +201,7 @@ module.exports = {
 
 module.exports = require('../src/traces/contourgl');
 
-},{"../src/traces/contourgl":401}],4:[function(require,module,exports){
+},{"../src/traces/contourgl":413}],4:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -214,7 +214,7 @@ module.exports = require('../src/traces/contourgl');
 
 module.exports = require('../src/core');
 
-},{"../src/core":299}],5:[function(require,module,exports){
+},{"../src/core":310}],5:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -227,7 +227,7 @@ module.exports = require('../src/core');
 
 module.exports = require('../src/traces/heatmapgl');
 
-},{"../src/traces/heatmapgl":416}],6:[function(require,module,exports){
+},{"../src/traces/heatmapgl":428}],6:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -263,7 +263,7 @@ module.exports = Plotly;
 
 module.exports = require('../src/traces/parcoords');
 
-},{"../src/traces/parcoords":428}],8:[function(require,module,exports){
+},{"../src/traces/parcoords":440}],8:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -276,7 +276,7 @@ module.exports = require('../src/traces/parcoords');
 
 module.exports = require('../src/traces/pointcloud');
 
-},{"../src/traces/pointcloud":436}],9:[function(require,module,exports){
+},{"../src/traces/pointcloud":448}],9:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -289,7 +289,7 @@ module.exports = require('../src/traces/pointcloud');
 
 module.exports = require('../src/traces/scattergl');
 
-},{"../src/traces/scattergl":465}],10:[function(require,module,exports){
+},{"../src/traces/scattergl":477}],10:[function(require,module,exports){
 var padLeft = require('pad-left')
 
 module.exports = addLineNumbers
@@ -307,201 +307,12 @@ function addLineNumbers (string, start, delim) {
   }).join('\n')
 }
 
-},{"pad-left":150}],11:[function(require,module,exports){
-'use strict';
-
-var arraytools  = function () {
-
-  var that = {};
-
-  var RGB_REGEX =  /^rgba?\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*(,.*)?\)$/;
-  var RGB_GROUP_REGEX = /^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,?\s*(.*)?\)$/;
-
-  function isPlainObject (v) {
-    return !Array.isArray(v) && v !== null && typeof v === 'object';
-  }
-
-  function linspace (start, end, num) {
-    var inc = (end - start) / Math.max(num - 1, 1);
-    var a = [];
-    for( var ii = 0; ii < num; ii++)
-      a.push(start + ii*inc);
-    return a;
-  }
-
-  function zip () {
-      var arrays = [].slice.call(arguments);
-      var lengths = arrays.map(function (a) {return a.length;});
-      var len = Math.min.apply(null, lengths);
-      var zipped = [];
-      for (var i = 0; i < len; i++) {
-          zipped[i] = [];
-          for (var j = 0; j < arrays.length; ++j) {
-              zipped[i][j] = arrays[j][i];
-          }
-      }
-      return zipped;
-  }
-
-  function zip3 (a, b, c) {
-      var len = Math.min.apply(null, [a.length, b.length, c.length]);
-      var result = [];
-      for (var n = 0; n < len; n++) {
-          result.push([a[n], b[n], c[n]]);
-      }
-      return result;
-  }
-
-  function sum (A) {
-    var acc = 0;
-    accumulate(A, acc);
-    function accumulate(x) {
-      for (var i = 0; i < x.length; i++) {
-        if (Array.isArray(x[i]))
-          accumulate(x[i], acc);
-        else
-          acc += x[i];
-      }
-    }
-    return acc;
-  }
-
-  function copy2D (arr) {
-    var carr = [];
-    for (var i = 0; i < arr.length; ++i) {
-      carr[i] = [];
-      for (var j = 0; j < arr[i].length; ++j) {
-        carr[i][j] = arr[i][j];
-      }
-    }
-
-    return carr;
-  }
-
-
-  function copy1D (arr) {
-    var carr = [];
-    for (var i = 0; i < arr.length; ++i) {
-      carr[i] = arr[i];
-    }
-
-    return carr;
-  }
-
-
-  function isEqual(arr1, arr2) {
-    if(arr1.length !== arr2.length)
-      return false;
-    for(var i = arr1.length; i--;) {
-      if(arr1[i] !== arr2[i])
-        return false;
-    }
-
-    return true;
-  }
-
-
-  function str2RgbArray(str, twoFiftySix) {
-    // convert hex or rbg strings to 0->1 or 0->255 rgb array
-    var rgb,
-        match;
-
-    if (typeof str !== 'string') return str;
-
-    rgb = [];
-    // hex notation
-    if (str[0] === '#') {
-      str = str.substr(1) // remove hash
-      if (str.length === 3) str += str // fff -> ffffff
-      match = parseInt(str, 16);
-      rgb[0] = ((match >> 16) & 255);
-      rgb[1] = ((match >> 8) & 255);
-      rgb[2] = (match & 255);
-    }
-
-    // rgb(34, 34, 127) or rgba(34, 34, 127, 0.1) notation
-    else if (RGB_REGEX.test(str)) {
-      match = str.match(RGB_GROUP_REGEX);
-      rgb[0] = parseInt(match[1]);
-      rgb[1] = parseInt(match[2]);
-      rgb[2] = parseInt(match[3]);
-    }
-
-    if (!twoFiftySix) {
-      for (var j=0; j<3; ++j) rgb[j] = rgb[j]/255
-    }
-
-
-    return rgb;
-  }
-
-
-  function str2RgbaArray(str, twoFiftySix) {
-    // convert hex or rbg strings to 0->1 or 0->255 rgb array
-    var rgb,
-        match;
-
-    if (typeof str !== 'string') return str;
-
-    rgb = [];
-    // hex notation
-    if (str[0] === '#') {
-      str = str.substr(1) // remove hash
-      if (str.length === 3) str += str // fff -> ffffff
-      match = parseInt(str, 16);
-      rgb[0] = ((match >> 16) & 255);
-      rgb[1] = ((match >> 8) & 255);
-      rgb[2] = (match & 255);
-    }
-
-    // rgb(34, 34, 127) or rgba(34, 34, 127, 0.1) notation
-    else if (RGB_REGEX.test(str)) {
-      match = str.match(RGB_GROUP_REGEX);
-      rgb[0] = parseInt(match[1]);
-      rgb[1] = parseInt(match[2]);
-      rgb[2] = parseInt(match[3]);
-      if (match[4]) rgb[3] = parseFloat(match[4]);
-      else rgb[3] = 1.0;
-    }
-
-
-
-    if (!twoFiftySix) {
-      for (var j=0; j<3; ++j) rgb[j] = rgb[j]/255
-    }
-
-
-    return rgb;
-  }
-
-
-
-
-
-  that.isPlainObject = isPlainObject;
-  that.linspace = linspace;
-  that.zip3 = zip3;
-  that.sum = sum;
-  that.zip = zip;
-  that.isEqual = isEqual;
-  that.copy2D = copy2D;
-  that.copy1D = copy1D;
-  that.str2RgbArray = str2RgbArray;
-  that.str2RgbaArray = str2RgbaArray;
-
-  return that
-
-}
-
-
-module.exports = arraytools();
-
-},{}],12:[function(require,module,exports){
+},{"pad-left":160}],11:[function(require,module,exports){
 module.exports = function _atob(str) {
   return atob(str)
 }
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict'
 
 var rationalize = require('./lib/rationalize')
@@ -514,7 +325,7 @@ function add(a, b) {
     a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":23}],14:[function(require,module,exports){
+},{"./lib/rationalize":22}],13:[function(require,module,exports){
 'use strict'
 
 module.exports = cmp
@@ -523,7 +334,7 @@ function cmp(a, b) {
     return a[0].mul(b[1]).cmp(b[0].mul(a[1]))
 }
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 'use strict'
 
 var rationalize = require('./lib/rationalize')
@@ -534,7 +345,7 @@ function div(a, b) {
   return rationalize(a[0].mul(b[1]), a[1].mul(b[0]))
 }
 
-},{"./lib/rationalize":23}],16:[function(require,module,exports){
+},{"./lib/rationalize":22}],15:[function(require,module,exports){
 'use strict'
 
 var isRat = require('./is-rat')
@@ -589,14 +400,14 @@ function makeRational(numer, denom) {
     b = num2bn(denom)
   }
   if(shift > 0) {
-    a = a.shln(shift)
+    a = a.ushln(shift)
   } else if(shift < 0) {
-    b = b.shln(-shift)
+    b = b.ushln(-shift)
   }
   return rationalize(a, b)
 }
 
-},{"./div":15,"./is-rat":17,"./lib/is-bn":21,"./lib/num-to-bn":22,"./lib/rationalize":23,"./lib/str-to-bn":24}],17:[function(require,module,exports){
+},{"./div":14,"./is-rat":16,"./lib/is-bn":20,"./lib/num-to-bn":21,"./lib/rationalize":22,"./lib/str-to-bn":23}],16:[function(require,module,exports){
 'use strict'
 
 var isBN = require('./lib/is-bn')
@@ -607,19 +418,21 @@ function isRat(x) {
   return Array.isArray(x) && x.length === 2 && isBN(x[0]) && isBN(x[1])
 }
 
-},{"./lib/is-bn":21}],18:[function(require,module,exports){
+},{"./lib/is-bn":20}],17:[function(require,module,exports){
 'use strict'
 
-var bn = require('bn.js')
+var BN = require('bn.js')
 
 module.exports = sign
 
-function sign(x) {
-  return x.cmp(new bn(0))
+function sign (x) {
+  return x.cmp(new BN(0))
 }
 
-},{"bn.js":31}],19:[function(require,module,exports){
+},{"bn.js":30}],18:[function(require,module,exports){
 'use strict'
+
+var sign = require('./bn-sign')
 
 module.exports = bn2num
 
@@ -633,16 +446,15 @@ function bn2num(b) {
   } else if (l === 2) {
     out = words[0] + (words[1] * 0x4000000)
   } else {
-    var out = 0
     for (var i = 0; i < l; i++) {
       var w = words[i]
       out += w * Math.pow(0x4000000, i)
     }
   }
-  return b.sign ? -out : out
+  return sign(b) * out
 }
 
-},{}],20:[function(require,module,exports){
+},{"./bn-sign":17}],19:[function(require,module,exports){
 'use strict'
 
 var db = require('double-bits')
@@ -663,7 +475,7 @@ function ctzNumber(x) {
   return h + 32
 }
 
-},{"bit-twiddle":30,"double-bits":56}],21:[function(require,module,exports){
+},{"bit-twiddle":29,"double-bits":61}],20:[function(require,module,exports){
 'use strict'
 
 var BN = require('bn.js')
@@ -676,7 +488,7 @@ function isBN(x) {
   return x && typeof x === 'object' && Boolean(x.words)
 }
 
-},{"bn.js":31}],22:[function(require,module,exports){
+},{"bn.js":30}],21:[function(require,module,exports){
 'use strict'
 
 var BN = require('bn.js')
@@ -689,11 +501,11 @@ function num2bn(x) {
   if(e < 52) {
     return new BN(x)
   } else {
-    return (new BN(x * Math.pow(2, 52-e))).shln(e-52)
+    return (new BN(x * Math.pow(2, 52-e))).ushln(e-52)
   }
 }
 
-},{"bn.js":31,"double-bits":56}],23:[function(require,module,exports){
+},{"bn.js":30,"double-bits":61}],22:[function(require,module,exports){
 'use strict'
 
 var num2bn = require('./num-to-bn')
@@ -721,7 +533,7 @@ function rationalize(numer, denom) {
   return [ numer, denom ]
 }
 
-},{"./bn-sign":18,"./num-to-bn":22}],24:[function(require,module,exports){
+},{"./bn-sign":17,"./num-to-bn":21}],23:[function(require,module,exports){
 'use strict'
 
 var BN = require('bn.js')
@@ -732,7 +544,7 @@ function str2BN(x) {
   return new BN(x)
 }
 
-},{"bn.js":31}],25:[function(require,module,exports){
+},{"bn.js":30}],24:[function(require,module,exports){
 'use strict'
 
 var rationalize = require('./lib/rationalize')
@@ -743,7 +555,7 @@ function mul(a, b) {
   return rationalize(a[0].mul(b[0]), a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":23}],26:[function(require,module,exports){
+},{"./lib/rationalize":22}],25:[function(require,module,exports){
 'use strict'
 
 var bnsign = require('./lib/bn-sign')
@@ -754,7 +566,7 @@ function sign(x) {
   return bnsign(x[0]) * bnsign(x[1])
 }
 
-},{"./lib/bn-sign":18}],27:[function(require,module,exports){
+},{"./lib/bn-sign":17}],26:[function(require,module,exports){
 'use strict'
 
 var rationalize = require('./lib/rationalize')
@@ -765,7 +577,7 @@ function sub(a, b) {
   return rationalize(a[0].mul(b[1]).sub(a[1].mul(b[0])), a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":23}],28:[function(require,module,exports){
+},{"./lib/rationalize":22}],27:[function(require,module,exports){
 'use strict'
 
 var bn2num = require('./lib/bn-to-num')
@@ -773,42 +585,37 @@ var ctz = require('./lib/ctz')
 
 module.exports = roundRat
 
-//Round a rational to the closest float
-function roundRat(f) {
+// Round a rational to the closest float
+function roundRat (f) {
   var a = f[0]
   var b = f[1]
-  if(a.cmpn(0) === 0) {
+  if (a.cmpn(0) === 0) {
     return 0
   }
-  var h = a.divmod(b)
+  var h = a.abs().divmod(b.abs())
   var iv = h.div
   var x = bn2num(iv)
   var ir = h.mod
-  if(ir.cmpn(0) === 0) {
-    return x
+  var sgn = (a.negative !== b.negative) ? -1 : 1
+  if (ir.cmpn(0) === 0) {
+    return sgn * x
   }
-  if(x) {
+  if (x) {
     var s = ctz(x) + 4
-    var y = bn2num(ir.shln(s).divRound(b))
-
-    // flip the sign of y if x is negative
-    if (x<0) {
-      y = -y;
-    }
-
-    return x + y * Math.pow(2, -s)
+    var y = bn2num(ir.ushln(s).divRound(b))
+    return sgn * (x + y * Math.pow(2, -s))
   } else {
     var ybits = b.bitLength() - ir.bitLength() + 53
-    var y = bn2num(ir.shln(ybits).divRound(b))
-    if(ybits < 1023) {
-      return y * Math.pow(2, -ybits)
+    var y = bn2num(ir.ushln(ybits).divRound(b))
+    if (ybits < 1023) {
+      return sgn * y * Math.pow(2, -ybits)
     }
     y *= Math.pow(2, -1023)
-    return y * Math.pow(2, 1023-ybits)
+    return sgn * y * Math.pow(2, 1023 - ybits)
   }
 }
 
-},{"./lib/bn-to-num":19,"./lib/ctz":20}],29:[function(require,module,exports){
+},{"./lib/bn-to-num":18,"./lib/ctz":19}],28:[function(require,module,exports){
 "use strict"
 
 function compileSearch(funcName, predicate, reversed, extraArgs, useNdarray, earlyOut) {
@@ -870,7 +677,7 @@ module.exports = {
   eq: compileBoundsSearch("-", true, "EQ", true)
 }
 
-},{}],30:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /**
  * Bit twiddling hacks for JavaScript.
  *
@@ -1076,2327 +883,3436 @@ exports.nextCombination = function(v) {
 }
 
 
-},{}],31:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 (function (module, exports) {
+  'use strict';
 
-'use strict';
-
-// Utils
-
-function assert(val, msg) {
-  if (!val)
-    throw new Error(msg || 'Assertion failed');
-}
-
-// Could use `inherits` module, but don't want to move from single file
-// architecture yet.
-function inherits(ctor, superCtor) {
-  ctor.super_ = superCtor;
-  var TempCtor = function () {};
-  TempCtor.prototype = superCtor.prototype;
-  ctor.prototype = new TempCtor();
-  ctor.prototype.constructor = ctor;
-}
-
-// BN
-
-function BN(number, base, endian) {
-  // May be `new BN(bn)` ?
-  if (number !== null &&
-      typeof number === 'object' &&
-      Array.isArray(number.words)) {
-    return number;
+  // Utils
+  function assert (val, msg) {
+    if (!val) throw new Error(msg || 'Assertion failed');
   }
 
-  this.sign = false;
-  this.words = null;
-  this.length = 0;
-
-  // Reduction context
-  this.red = null;
-
-  if (base === 'le' || base === 'be') {
-    endian = base;
-    base = 10;
+  // Could use `inherits` module, but don't want to move from single file
+  // architecture yet.
+  function inherits (ctor, superCtor) {
+    ctor.super_ = superCtor;
+    var TempCtor = function () {};
+    TempCtor.prototype = superCtor.prototype;
+    ctor.prototype = new TempCtor();
+    ctor.prototype.constructor = ctor;
   }
 
-  if (number !== null)
-    this._init(number || 0, base || 10, endian || 'be');
-}
-if (typeof module === 'object')
-  module.exports = BN;
-else
-  exports.BN = BN;
+  // BN
 
-BN.BN = BN;
-BN.wordSize = 26;
+  function BN (number, base, endian) {
+    if (BN.isBN(number)) {
+      return number;
+    }
 
-BN.prototype._init = function init(number, base, endian) {
-  if (typeof number === 'number') {
-    return this._initNumber(number, base, endian);
-  } else if (typeof number === 'object') {
-    return this._initArray(number, base, endian);
-  }
-  if (base === 'hex')
-    base = 16;
-  assert(base === (base | 0) && base >= 2 && base <= 36);
+    this.negative = 0;
+    this.words = null;
+    this.length = 0;
 
-  number = number.toString().replace(/\s+/g, '');
-  var start = 0;
-  if (number[0] === '-')
-    start++;
+    // Reduction context
+    this.red = null;
 
-  if (base === 16)
-    this._parseHex(number, start);
-  else
-    this._parseBase(number, base, start);
-
-  if (number[0] === '-')
-    this.sign = true;
-
-  this.strip();
-
-  if (endian !== 'le')
-    return;
-
-  this._initArray(this.toArray(), base, endian);
-};
-
-BN.prototype._initNumber = function _initNumber(number, base, endian) {
-  if (number < 0) {
-    this.sign = true;
-    number = -number;
-  }
-  if (number < 0x4000000) {
-    this.words = [ number & 0x3ffffff ];
-    this.length = 1;
-  } else if (number < 0x10000000000000) {
-    this.words = [
-      number & 0x3ffffff,
-      (number / 0x4000000) & 0x3ffffff
-    ];
-    this.length = 2;
-  } else {
-    assert(number < 0x20000000000000); // 2 ^ 53 (unsafe)
-    this.words = [
-      number & 0x3ffffff,
-      (number / 0x4000000) & 0x3ffffff,
-      1
-    ];
-    this.length = 3;
-  }
-
-  if (endian !== 'le')
-    return;
-
-  // Reverse the bytes
-  this._initArray(this.toArray(), base, endian);
-};
-
-BN.prototype._initArray = function _initArray(number, base, endian) {
-  // Perhaps a Uint8Array
-  assert(typeof number.length === 'number');
-  if (number.length <= 0) {
-    this.words = [ 0 ];
-    this.length = 1;
-    return this;
-  }
-
-  this.length = Math.ceil(number.length / 3);
-  this.words = new Array(this.length);
-  for (var i = 0; i < this.length; i++)
-    this.words[i] = 0;
-
-  var off = 0;
-  if (endian === 'be') {
-    for (var i = number.length - 1, j = 0; i >= 0; i -= 3) {
-      var w = number[i] | (number[i - 1] << 8) | (number[i - 2] << 16);
-      this.words[j] |= (w << off) & 0x3ffffff;
-      this.words[j + 1] = (w >>> (26 - off)) & 0x3ffffff;
-      off += 24;
-      if (off >= 26) {
-        off -= 26;
-        j++;
+    if (number !== null) {
+      if (base === 'le' || base === 'be') {
+        endian = base;
+        base = 10;
       }
-    }
-  } else if (endian === 'le') {
-    for (var i = 0, j = 0; i < number.length; i += 3) {
-      var w = number[i] | (number[i + 1] << 8) | (number[i + 2] << 16);
-      this.words[j] |= (w << off) & 0x3ffffff;
-      this.words[j + 1] = (w >>> (26 - off)) & 0x3ffffff;
-      off += 24;
-      if (off >= 26) {
-        off -= 26;
-        j++;
-      }
+
+      this._init(number || 0, base || 10, endian || 'be');
     }
   }
-  return this.strip();
-};
-
-function parseHex(str, start, end) {
-  var r = 0;
-  var len = Math.min(str.length, end);
-  for (var i = start; i < len; i++) {
-    var c = str.charCodeAt(i) - 48;
-
-    r <<= 4;
-
-    // 'a' - 'f'
-    if (c >= 49 && c <= 54)
-      r |= c - 49 + 0xa;
-
-    // 'A' - 'F'
-    else if (c >= 17 && c <= 22)
-      r |= c - 17 + 0xa;
-
-    // '0' - '9'
-    else
-      r |= c & 0xf;
-  }
-  return r;
-}
-
-BN.prototype._parseHex = function _parseHex(number, start) {
-  // Create possibly bigger array to ensure that it fits the number
-  this.length = Math.ceil((number.length - start) / 6);
-  this.words = new Array(this.length);
-  for (var i = 0; i < this.length; i++)
-    this.words[i] = 0;
-
-  // Scan 24-bit chunks and add them to the number
-  var off = 0;
-  for (var i = number.length - 6, j = 0; i >= start; i -= 6) {
-    var w = parseHex(number, i, i + 6);
-    this.words[j] |= (w << off) & 0x3ffffff;
-    this.words[j + 1] |= w >>> (26 - off) & 0x3fffff;
-    off += 24;
-    if (off >= 26) {
-      off -= 26;
-      j++;
-    }
-  }
-  if (i + 6 !== start) {
-    var w = parseHex(number, start, i + 6);
-    this.words[j] |= (w << off) & 0x3ffffff;
-    this.words[j + 1] |= w >>> (26 - off) & 0x3fffff;
-  }
-  this.strip();
-};
-
-function parseBase(str, start, end, mul) {
-  var r = 0;
-  var len = Math.min(str.length, end);
-  for (var i = start; i < len; i++) {
-    var c = str.charCodeAt(i) - 48;
-
-    r *= mul;
-
-    // 'a'
-    if (c >= 49)
-      r += c - 49 + 0xa;
-
-    // 'A'
-    else if (c >= 17)
-      r += c - 17 + 0xa;
-
-    // '0' - '9'
-    else
-      r += c;
-  }
-  return r;
-}
-
-BN.prototype._parseBase = function _parseBase(number, base, start) {
-  // Initialize as zero
-  this.words = [ 0 ];
-  this.length = 1;
-
-  // Find length of limb in base
-  for (var limbLen = 0, limbPow = 1; limbPow <= 0x3ffffff; limbPow *= base)
-    limbLen++;
-  limbLen--;
-  limbPow = (limbPow / base) | 0;
-
-  var total = number.length - start;
-  var mod = total % limbLen;
-  var end = Math.min(total, total - mod) + start;
-
-  var word = 0;
-  for (var i = start; i < end; i += limbLen) {
-    word = parseBase(number, i, i + limbLen, base);
-
-    this.imuln(limbPow);
-    if (this.words[0] + word < 0x4000000)
-      this.words[0] += word;
-    else
-      this._iaddn(word);
-  }
-
-  if (mod !== 0) {
-    var pow = 1;
-    var word = parseBase(number, i, number.length, base);
-
-    for (var i = 0; i < mod; i++)
-      pow *= base;
-    this.imuln(pow);
-    if (this.words[0] + word < 0x4000000)
-      this.words[0] += word;
-    else
-      this._iaddn(word);
-  }
-};
-
-BN.prototype.copy = function copy(dest) {
-  dest.words = new Array(this.length);
-  for (var i = 0; i < this.length; i++)
-    dest.words[i] = this.words[i];
-  dest.length = this.length;
-  dest.sign = this.sign;
-  dest.red = this.red;
-};
-
-BN.prototype.clone = function clone() {
-  var r = new BN(null);
-  this.copy(r);
-  return r;
-};
-
-// Remove leading `0` from `this`
-BN.prototype.strip = function strip() {
-  while (this.length > 1 && this.words[this.length - 1] === 0)
-    this.length--;
-  return this._normSign();
-};
-
-BN.prototype._normSign = function _normSign() {
-  // -0 = 0
-  if (this.length === 1 && this.words[0] === 0)
-    this.sign = false;
-  return this;
-};
-
-BN.prototype.inspect = function inspect() {
-  return (this.red ? '<BN-R: ' : '<BN: ') + this.toString(16) + '>';
-};
-
-/*
-
-var zeros = [];
-var groupSizes = [];
-var groupBases = [];
-
-var s = '';
-var i = -1;
-while (++i < BN.wordSize) {
-  zeros[i] = s;
-  s += '0';
-}
-groupSizes[0] = 0;
-groupSizes[1] = 0;
-groupBases[0] = 0;
-groupBases[1] = 0;
-var base = 2 - 1;
-while (++base < 36 + 1) {
-  var groupSize = 0;
-  var groupBase = 1;
-  while (groupBase < (1 << BN.wordSize) / base) {
-    groupBase *= base;
-    groupSize += 1;
-  }
-  groupSizes[base] = groupSize;
-  groupBases[base] = groupBase;
-}
-
-*/
-
-var zeros = [
-  '',
-  '0',
-  '00',
-  '000',
-  '0000',
-  '00000',
-  '000000',
-  '0000000',
-  '00000000',
-  '000000000',
-  '0000000000',
-  '00000000000',
-  '000000000000',
-  '0000000000000',
-  '00000000000000',
-  '000000000000000',
-  '0000000000000000',
-  '00000000000000000',
-  '000000000000000000',
-  '0000000000000000000',
-  '00000000000000000000',
-  '000000000000000000000',
-  '0000000000000000000000',
-  '00000000000000000000000',
-  '000000000000000000000000',
-  '0000000000000000000000000'
-];
-
-var groupSizes = [
-  0, 0,
-  25, 16, 12, 11, 10, 9, 8,
-  8, 7, 7, 7, 7, 6, 6,
-  6, 6, 6, 6, 6, 5, 5,
-  5, 5, 5, 5, 5, 5, 5,
-  5, 5, 5, 5, 5, 5, 5
-];
-
-var groupBases = [
-  0, 0,
-  33554432, 43046721, 16777216, 48828125, 60466176, 40353607, 16777216,
-  43046721, 10000000, 19487171, 35831808, 62748517, 7529536, 11390625,
-  16777216, 24137569, 34012224, 47045881, 64000000, 4084101, 5153632,
-  6436343, 7962624, 9765625, 11881376, 14348907, 17210368, 20511149,
-  24300000, 28629151, 33554432, 39135393, 45435424, 52521875, 60466176
-];
-
-BN.prototype.toString = function toString(base, padding) {
-  base = base || 10;
-  if (base === 16 || base === 'hex') {
-    var out = '';
-    var off = 0;
-    var padding = padding | 0 || 1;
-    var carry = 0;
-    for (var i = 0; i < this.length; i++) {
-      var w = this.words[i];
-      var word = (((w << off) | carry) & 0xffffff).toString(16);
-      carry = (w >>> (24 - off)) & 0xffffff;
-      if (carry !== 0 || i !== this.length - 1)
-        out = zeros[6 - word.length] + word + out;
-      else
-        out = word + out;
-      off += 2;
-      if (off >= 26) {
-        off -= 26;
-        i--;
-      }
-    }
-    if (carry !== 0)
-      out = carry.toString(16) + out;
-    while (out.length % padding !== 0)
-      out = '0' + out;
-    if (this.sign)
-      out = '-' + out;
-    return out;
-  } else if (base === (base | 0) && base >= 2 && base <= 36) {
-    // var groupSize = Math.floor(BN.wordSize * Math.LN2 / Math.log(base));
-    var groupSize = groupSizes[base];
-    // var groupBase = Math.pow(base, groupSize);
-    var groupBase = groupBases[base];
-    var out = '';
-    var c = this.clone();
-    c.sign = false;
-    while (c.cmpn(0) !== 0) {
-      var r = c.modn(groupBase).toString(base);
-      c = c.idivn(groupBase);
-
-      if (c.cmpn(0) !== 0)
-        out = zeros[groupSize - r.length] + r + out;
-      else
-        out = r + out;
-    }
-    if (this.cmpn(0) === 0)
-      out = '0' + out;
-    if (this.sign)
-      out = '-' + out;
-    return out;
+  if (typeof module === 'object') {
+    module.exports = BN;
   } else {
-    assert(false, 'Base should be between 2 and 36');
-  }
-};
-
-BN.prototype.toJSON = function toJSON() {
-  return this.toString(16);
-};
-
-BN.prototype.toArray = function toArray(endian) {
-  this.strip();
-  var res = new Array(this.byteLength());
-  res[0] = 0;
-
-  var q = this.clone();
-  if (endian !== 'le') {
-    // Assume big-endian
-    for (var i = 0; q.cmpn(0) !== 0; i++) {
-      var b = q.andln(0xff);
-      q.ishrn(8);
-
-      res[res.length - i - 1] = b;
-    }
-  } else {
-    // Assume little-endian
-    for (var i = 0; q.cmpn(0) !== 0; i++) {
-      var b = q.andln(0xff);
-      q.ishrn(8);
-
-      res[i] = b;
-    }
+    exports.BN = BN;
   }
 
-  return res;
-};
+  BN.BN = BN;
+  BN.wordSize = 26;
 
-if (Math.clz32) {
-  BN.prototype._countBits = function _countBits(w) {
-    return 32 - Math.clz32(w);
+  var Buffer;
+  try {
+    Buffer = require('buf' + 'fer').Buffer;
+  } catch (e) {
+  }
+
+  BN.isBN = function isBN (num) {
+    if (num instanceof BN) {
+      return true;
+    }
+
+    return num !== null && typeof num === 'object' &&
+      num.constructor.wordSize === BN.wordSize && Array.isArray(num.words);
   };
-} else {
-  BN.prototype._countBits = function _countBits(w) {
-    var t = w;
-    var r = 0;
-    if (t >= 0x1000) {
-      r += 13;
-      t >>>= 13;
-    }
-    if (t >= 0x40) {
-      r += 7;
-      t >>>= 7;
-    }
-    if (t >= 0x8) {
-      r += 4;
-      t >>>= 4;
-    }
-    if (t >= 0x02) {
-      r += 2;
-      t >>>= 2;
-    }
-    return r + t;
+
+  BN.max = function max (left, right) {
+    if (left.cmp(right) > 0) return left;
+    return right;
   };
-}
 
-BN.prototype._zeroBits = function _zeroBits(w) {
-  // Short-cut
-  if (w === 0)
-    return 26;
+  BN.min = function min (left, right) {
+    if (left.cmp(right) < 0) return left;
+    return right;
+  };
 
-  var t = w;
-  var r = 0;
-  if ((t & 0x1fff) === 0) {
-    r += 13;
-    t >>>= 13;
-  }
-  if ((t & 0x7f) === 0) {
-    r += 7;
-    t >>>= 7;
-  }
-  if ((t & 0xf) === 0) {
-    r += 4;
-    t >>>= 4;
-  }
-  if ((t & 0x3) === 0) {
-    r += 2;
-    t >>>= 2;
-  }
-  if ((t & 0x1) === 0)
-    r++;
-  return r;
-};
-
-// Return number of used bits in a BN
-BN.prototype.bitLength = function bitLength() {
-  var hi = 0;
-  var w = this.words[this.length - 1];
-  var hi = this._countBits(w);
-  return (this.length - 1) * 26 + hi;
-};
-
-// Number of trailing zero bits
-BN.prototype.zeroBits = function zeroBits() {
-  if (this.cmpn(0) === 0)
-    return 0;
-
-  var r = 0;
-  for (var i = 0; i < this.length; i++) {
-    var b = this._zeroBits(this.words[i]);
-    r += b;
-    if (b !== 26)
-      break;
-  }
-  return r;
-};
-
-BN.prototype.byteLength = function byteLength() {
-  return Math.ceil(this.bitLength() / 8);
-};
-
-// Return negative clone of `this`
-BN.prototype.neg = function neg() {
-  if (this.cmpn(0) === 0)
-    return this.clone();
-
-  var r = this.clone();
-  r.sign = !this.sign;
-  return r;
-};
-
-
-// Or `num` with `this` in-place
-BN.prototype.ior = function ior(num) {
-  this.sign = this.sign || num.sign;
-
-  while (this.length < num.length)
-    this.words[this.length++] = 0;
-
-  for (var i = 0; i < num.length; i++)
-    this.words[i] = this.words[i] | num.words[i];
-
-  return this.strip();
-};
-
-
-// Or `num` with `this`
-BN.prototype.or = function or(num) {
-  if (this.length > num.length)
-    return this.clone().ior(num);
-  else
-    return num.clone().ior(this);
-};
-
-
-// And `num` with `this` in-place
-BN.prototype.iand = function iand(num) {
-  this.sign = this.sign && num.sign;
-
-  // b = min-length(num, this)
-  var b;
-  if (this.length > num.length)
-    b = num;
-  else
-    b = this;
-
-  for (var i = 0; i < b.length; i++)
-    this.words[i] = this.words[i] & num.words[i];
-
-  this.length = b.length;
-
-  return this.strip();
-};
-
-
-// And `num` with `this`
-BN.prototype.and = function and(num) {
-  if (this.length > num.length)
-    return this.clone().iand(num);
-  else
-    return num.clone().iand(this);
-};
-
-
-// Xor `num` with `this` in-place
-BN.prototype.ixor = function ixor(num) {
-  this.sign = this.sign || num.sign;
-
-  // a.length > b.length
-  var a;
-  var b;
-  if (this.length > num.length) {
-    a = this;
-    b = num;
-  } else {
-    a = num;
-    b = this;
-  }
-
-  for (var i = 0; i < b.length; i++)
-    this.words[i] = a.words[i] ^ b.words[i];
-
-  if (this !== a)
-    for (; i < a.length; i++)
-      this.words[i] = a.words[i];
-
-  this.length = a.length;
-
-  return this.strip();
-};
-
-
-// Xor `num` with `this`
-BN.prototype.xor = function xor(num) {
-  if (this.length > num.length)
-    return this.clone().ixor(num);
-  else
-    return num.clone().ixor(this);
-};
-
-
-// Set `bit` of `this`
-BN.prototype.setn = function setn(bit, val) {
-  assert(typeof bit === 'number' && bit >= 0);
-
-  var off = (bit / 26) | 0;
-  var wbit = bit % 26;
-
-  while (this.length <= off)
-    this.words[this.length++] = 0;
-
-  if (val)
-    this.words[off] = this.words[off] | (1 << wbit);
-  else
-    this.words[off] = this.words[off] & ~(1 << wbit);
-
-  return this.strip();
-};
-
-
-// Add `num` to `this` in-place
-BN.prototype.iadd = function iadd(num) {
-  // negative + positive
-  if (this.sign && !num.sign) {
-    this.sign = false;
-    var r = this.isub(num);
-    this.sign = !this.sign;
-    return this._normSign();
-
-  // positive + negative
-  } else if (!this.sign && num.sign) {
-    num.sign = false;
-    var r = this.isub(num);
-    num.sign = true;
-    return r._normSign();
-  }
-
-  // a.length > b.length
-  var a;
-  var b;
-  if (this.length > num.length) {
-    a = this;
-    b = num;
-  } else {
-    a = num;
-    b = this;
-  }
-
-  var carry = 0;
-  for (var i = 0; i < b.length; i++) {
-    var r = a.words[i] + b.words[i] + carry;
-    this.words[i] = r & 0x3ffffff;
-    carry = r >>> 26;
-  }
-  for (; carry !== 0 && i < a.length; i++) {
-    var r = a.words[i] + carry;
-    this.words[i] = r & 0x3ffffff;
-    carry = r >>> 26;
-  }
-
-  this.length = a.length;
-  if (carry !== 0) {
-    this.words[this.length] = carry;
-    this.length++;
-  // Copy the rest of the words
-  } else if (a !== this) {
-    for (; i < a.length; i++)
-      this.words[i] = a.words[i];
-  }
-
-  return this;
-};
-
-// Add `num` to `this`
-BN.prototype.add = function add(num) {
-  if (num.sign && !this.sign) {
-    num.sign = false;
-    var res = this.sub(num);
-    num.sign = true;
-    return res;
-  } else if (!num.sign && this.sign) {
-    this.sign = false;
-    var res = num.sub(this);
-    this.sign = true;
-    return res;
-  }
-
-  if (this.length > num.length)
-    return this.clone().iadd(num);
-  else
-    return num.clone().iadd(this);
-};
-
-// Subtract `num` from `this` in-place
-BN.prototype.isub = function isub(num) {
-  // this - (-num) = this + num
-  if (num.sign) {
-    num.sign = false;
-    var r = this.iadd(num);
-    num.sign = true;
-    return r._normSign();
-
-  // -this - num = -(this + num)
-  } else if (this.sign) {
-    this.sign = false;
-    this.iadd(num);
-    this.sign = true;
-    return this._normSign();
-  }
-
-  // At this point both numbers are positive
-  var cmp = this.cmp(num);
-
-  // Optimization - zeroify
-  if (cmp === 0) {
-    this.sign = false;
-    this.length = 1;
-    this.words[0] = 0;
-    return this;
-  }
-
-  // a > b
-  var a;
-  var b;
-  if (cmp > 0) {
-    a = this;
-    b = num;
-  } else {
-    a = num;
-    b = this;
-  }
-
-  var carry = 0;
-  for (var i = 0; i < b.length; i++) {
-    var r = a.words[i] - b.words[i] + carry;
-    carry = r >> 26;
-    this.words[i] = r & 0x3ffffff;
-  }
-  for (; carry !== 0 && i < a.length; i++) {
-    var r = a.words[i] + carry;
-    carry = r >> 26;
-    this.words[i] = r & 0x3ffffff;
-  }
-
-  // Copy rest of the words
-  if (carry === 0 && i < a.length && a !== this)
-    for (; i < a.length; i++)
-      this.words[i] = a.words[i];
-  this.length = Math.max(this.length, i);
-
-  if (a !== this)
-    this.sign = true;
-
-  return this.strip();
-};
-
-// Subtract `num` from `this`
-BN.prototype.sub = function sub(num) {
-  return this.clone().isub(num);
-};
-
-/*
-// NOTE: This could be potentionally used to generate loop-less multiplications
-function _genCombMulTo(alen, blen) {
-  var len = alen + blen - 1;
-  var src = [
-    'var a = this.words, b = num.words, o = out.words, c = 0, w, ' +
-        'mask = 0x3ffffff, shift = 0x4000000;',
-    'out.length = ' + len + ';'
-  ];
-  for (var k = 0; k < len; k++) {
-    var minJ = Math.max(0, k - alen + 1);
-    var maxJ = Math.min(k, blen - 1);
-
-    for (var j = minJ; j <= maxJ; j++) {
-      var i = k - j;
-      var mul = 'a[' + i + '] * b[' + j + ']';
-
-      if (j === minJ) {
-        src.push('w = ' + mul + ' + c;');
-        src.push('c = (w / shift) | 0;');
-      } else {
-        src.push('w += ' + mul + ';');
-        src.push('c += (w / shift) | 0;');
-      }
-      src.push('w &= mask;');
+  BN.prototype._init = function init (number, base, endian) {
+    if (typeof number === 'number') {
+      return this._initNumber(number, base, endian);
     }
-    src.push('o[' + k + '] = w;');
-  }
-  src.push('if (c !== 0) {',
-           '  o[' + k + '] = c;',
-           '  out.length++;',
-           '}',
-           'return out;');
 
-  return src.join('\n');
-}
-*/
-
-BN.prototype._smallMulTo = function _smallMulTo(num, out) {
-  out.sign = num.sign !== this.sign;
-  out.length = this.length + num.length;
-
-  var carry = 0;
-  for (var k = 0; k < out.length - 1; k++) {
-    // Sum all words with the same `i + j = k` and accumulate `ncarry`,
-    // note that ncarry could be >= 0x3ffffff
-    var ncarry = carry >>> 26;
-    var rword = carry & 0x3ffffff;
-    var maxJ = Math.min(k, num.length - 1);
-    for (var j = Math.max(0, k - this.length + 1); j <= maxJ; j++) {
-      var i = k - j;
-      var a = this.words[i] | 0;
-      var b = num.words[j] | 0;
-      var r = a * b;
-
-      var lo = r & 0x3ffffff;
-      ncarry = (ncarry + ((r / 0x4000000) | 0)) | 0;
-      lo = (lo + rword) | 0;
-      rword = lo & 0x3ffffff;
-      ncarry = (ncarry + (lo >>> 26)) | 0;
+    if (typeof number === 'object') {
+      return this._initArray(number, base, endian);
     }
-    out.words[k] = rword;
-    carry = ncarry;
-  }
-  if (carry !== 0) {
-    out.words[k] = carry;
-  } else {
-    out.length--;
-  }
 
-  return out.strip();
-};
-
-BN.prototype._bigMulTo = function _bigMulTo(num, out) {
-  out.sign = num.sign !== this.sign;
-  out.length = this.length + num.length;
-
-  var carry = 0;
-  var hncarry = 0;
-  for (var k = 0; k < out.length - 1; k++) {
-    // Sum all words with the same `i + j = k` and accumulate `ncarry`,
-    // note that ncarry could be >= 0x3ffffff
-    var ncarry = hncarry;
-    hncarry = 0;
-    var rword = carry & 0x3ffffff;
-    var maxJ = Math.min(k, num.length - 1);
-    for (var j = Math.max(0, k - this.length + 1); j <= maxJ; j++) {
-      var i = k - j;
-      var a = this.words[i] | 0;
-      var b = num.words[j] | 0;
-      var r = a * b;
-
-      var lo = r & 0x3ffffff;
-      ncarry = (ncarry + ((r / 0x4000000) | 0)) | 0;
-      lo = (lo + rword) | 0;
-      rword = lo & 0x3ffffff;
-      ncarry = (ncarry + (lo >>> 26)) | 0;
-
-      hncarry += ncarry >>> 26;
-      ncarry &= 0x3ffffff;
+    if (base === 'hex') {
+      base = 16;
     }
-    out.words[k] = rword;
-    carry = ncarry;
-    ncarry = hncarry;
-  }
-  if (carry !== 0) {
-    out.words[k] = carry;
-  } else {
-    out.length--;
-  }
+    assert(base === (base | 0) && base >= 2 && base <= 36);
 
-  return out.strip();
-};
-
-BN.prototype.mulTo = function mulTo(num, out) {
-  var res;
-  if (this.length + num.length < 63)
-    res = this._smallMulTo(num, out);
-  else
-    res = this._bigMulTo(num, out);
-  return res;
-};
-
-// Multiply `this` by `num`
-BN.prototype.mul = function mul(num) {
-  var out = new BN(null);
-  out.words = new Array(this.length + num.length);
-  return this.mulTo(num, out);
-};
-
-// In-place Multiplication
-BN.prototype.imul = function imul(num) {
-  if (this.cmpn(0) === 0 || num.cmpn(0) === 0) {
-    this.words[0] = 0;
-    this.length = 1;
-    return this;
-  }
-
-  var tlen = this.length;
-  var nlen = num.length;
-
-  this.sign = num.sign !== this.sign;
-  this.length = this.length + num.length;
-  this.words[this.length - 1] = 0;
-
-  for (var k = this.length - 2; k >= 0; k--) {
-    // Sum all words with the same `i + j = k` and accumulate `carry`,
-    // note that carry could be >= 0x3ffffff
-    var carry = 0;
-    var rword = 0;
-    var maxJ = Math.min(k, nlen - 1);
-    for (var j = Math.max(0, k - tlen + 1); j <= maxJ; j++) {
-      var i = k - j;
-      var a = this.words[i];
-      var b = num.words[j];
-      var r = a * b;
-
-      var lo = r & 0x3ffffff;
-      carry += (r / 0x4000000) | 0;
-      lo += rword;
-      rword = lo & 0x3ffffff;
-      carry += lo >>> 26;
+    number = number.toString().replace(/\s+/g, '');
+    var start = 0;
+    if (number[0] === '-') {
+      start++;
     }
-    this.words[k] = rword;
-    this.words[k + 1] += carry;
-    carry = 0;
-  }
 
-  // Propagate overflows
-  var carry = 0;
-  for (var i = 1; i < this.length; i++) {
-    var w = this.words[i] + carry;
-    this.words[i] = w & 0x3ffffff;
-    carry = w >>> 26;
-  }
-
-  return this.strip();
-};
-
-BN.prototype.imuln = function imuln(num) {
-  assert(typeof num === 'number');
-
-  // Carry
-  var carry = 0;
-  for (var i = 0; i < this.length; i++) {
-    var w = this.words[i] * num;
-    var lo = (w & 0x3ffffff) + (carry & 0x3ffffff);
-    carry >>= 26;
-    carry += (w / 0x4000000) | 0;
-    // NOTE: lo is 27bit maximum
-    carry += lo >>> 26;
-    this.words[i] = lo & 0x3ffffff;
-  }
-
-  if (carry !== 0) {
-    this.words[i] = carry;
-    this.length++;
-  }
-
-  return this;
-};
-
-BN.prototype.muln = function muln(num) {
-  return this.clone().imuln(num);
-};
-
-// `this` * `this`
-BN.prototype.sqr = function sqr() {
-  return this.mul(this);
-};
-
-// `this` * `this` in-place
-BN.prototype.isqr = function isqr() {
-  return this.mul(this);
-};
-
-// Shift-left in-place
-BN.prototype.ishln = function ishln(bits) {
-  assert(typeof bits === 'number' && bits >= 0);
-  var r = bits % 26;
-  var s = (bits - r) / 26;
-  var carryMask = (0x3ffffff >>> (26 - r)) << (26 - r);
-
-  if (r !== 0) {
-    var carry = 0;
-    for (var i = 0; i < this.length; i++) {
-      var newCarry = this.words[i] & carryMask;
-      var c = (this.words[i] - newCarry) << r;
-      this.words[i] = c | carry;
-      carry = newCarry >>> (26 - r);
+    if (base === 16) {
+      this._parseHex(number, start);
+    } else {
+      this._parseBase(number, base, start);
     }
-    if (carry) {
-      this.words[i] = carry;
-      this.length++;
+
+    if (number[0] === '-') {
+      this.negative = 1;
     }
-  }
 
-  if (s !== 0) {
-    for (var i = this.length - 1; i >= 0; i--)
-      this.words[i + s] = this.words[i];
-    for (var i = 0; i < s; i++)
-      this.words[i] = 0;
-    this.length += s;
-  }
+    this.strip();
 
-  return this.strip();
-};
+    if (endian !== 'le') return;
 
-// Shift-right in-place
-// NOTE: `hint` is a lowest bit before trailing zeroes
-// NOTE: if `extended` is present - it will be filled with destroyed bits
-BN.prototype.ishrn = function ishrn(bits, hint, extended) {
-  assert(typeof bits === 'number' && bits >= 0);
-  var h;
-  if (hint)
-    h = (hint - (hint % 26)) / 26;
-  else
-    h = 0;
+    this._initArray(this.toArray(), base, endian);
+  };
 
-  var r = bits % 26;
-  var s = Math.min((bits - r) / 26, this.length);
-  var mask = 0x3ffffff ^ ((0x3ffffff >>> r) << r);
-  var maskedWords = extended;
+  BN.prototype._initNumber = function _initNumber (number, base, endian) {
+    if (number < 0) {
+      this.negative = 1;
+      number = -number;
+    }
+    if (number < 0x4000000) {
+      this.words = [ number & 0x3ffffff ];
+      this.length = 1;
+    } else if (number < 0x10000000000000) {
+      this.words = [
+        number & 0x3ffffff,
+        (number / 0x4000000) & 0x3ffffff
+      ];
+      this.length = 2;
+    } else {
+      assert(number < 0x20000000000000); // 2 ^ 53 (unsafe)
+      this.words = [
+        number & 0x3ffffff,
+        (number / 0x4000000) & 0x3ffffff,
+        1
+      ];
+      this.length = 3;
+    }
 
-  h -= s;
-  h = Math.max(0, h);
+    if (endian !== 'le') return;
 
-  // Extended mode, copy masked part
-  if (maskedWords) {
-    for (var i = 0; i < s; i++)
-      maskedWords.words[i] = this.words[i];
-    maskedWords.length = s;
-  }
+    // Reverse the bytes
+    this._initArray(this.toArray(), base, endian);
+  };
 
-  if (s === 0) {
-    // No-op, we should not move anything at all
-  } else if (this.length > s) {
-    this.length -= s;
-    for (var i = 0; i < this.length; i++)
-      this.words[i] = this.words[i + s];
-  } else {
-    this.words[0] = 0;
-    this.length = 1;
-  }
-
-  var carry = 0;
-  for (var i = this.length - 1; i >= 0 && (carry !== 0 || i >= h); i--) {
-    var word = this.words[i];
-    this.words[i] = (carry << (26 - r)) | (word >>> r);
-    carry = word & mask;
-  }
-
-  // Push carried bits as a mask
-  if (maskedWords && carry !== 0)
-    maskedWords.words[maskedWords.length++] = carry;
-
-  if (this.length === 0) {
-    this.words[0] = 0;
-    this.length = 1;
-  }
-
-  this.strip();
-
-  return this;
-};
-
-// Shift-left
-BN.prototype.shln = function shln(bits) {
-  return this.clone().ishln(bits);
-};
-
-// Shift-right
-BN.prototype.shrn = function shrn(bits) {
-  return this.clone().ishrn(bits);
-};
-
-// Test if n bit is set
-BN.prototype.testn = function testn(bit) {
-  assert(typeof bit === 'number' && bit >= 0);
-  var r = bit % 26;
-  var s = (bit - r) / 26;
-  var q = 1 << r;
-
-  // Fast case: bit is much higher than all existing words
-  if (this.length <= s) {
-    return false;
-  }
-
-  // Check bit and return
-  var w = this.words[s];
-
-  return !!(w & q);
-};
-
-// Return only lowers bits of number (in-place)
-BN.prototype.imaskn = function imaskn(bits) {
-  assert(typeof bits === 'number' && bits >= 0);
-  var r = bits % 26;
-  var s = (bits - r) / 26;
-
-  assert(!this.sign, 'imaskn works only with positive numbers');
-
-  if (r !== 0)
-    s++;
-  this.length = Math.min(s, this.length);
-
-  if (r !== 0) {
-    var mask = 0x3ffffff ^ ((0x3ffffff >>> r) << r);
-    this.words[this.length - 1] &= mask;
-  }
-
-  return this.strip();
-};
-
-// Return only lowers bits of number
-BN.prototype.maskn = function maskn(bits) {
-  return this.clone().imaskn(bits);
-};
-
-// Add plain number `num` to `this`
-BN.prototype.iaddn = function iaddn(num) {
-  assert(typeof num === 'number');
-  if (num < 0)
-    return this.isubn(-num);
-
-  // Possible sign change
-  if (this.sign) {
-    if (this.length === 1 && this.words[0] < num) {
-      this.words[0] = num - this.words[0];
-      this.sign = false;
+  BN.prototype._initArray = function _initArray (number, base, endian) {
+    // Perhaps a Uint8Array
+    assert(typeof number.length === 'number');
+    if (number.length <= 0) {
+      this.words = [ 0 ];
+      this.length = 1;
       return this;
     }
 
-    this.sign = false;
-    this.isubn(num);
-    this.sign = true;
-    return this;
-  }
-
-  // Add without checks
-  return this._iaddn(num);
-};
-
-BN.prototype._iaddn = function _iaddn(num) {
-  this.words[0] += num;
-
-  // Carry
-  for (var i = 0; i < this.length && this.words[i] >= 0x4000000; i++) {
-    this.words[i] -= 0x4000000;
-    if (i === this.length - 1)
-      this.words[i + 1] = 1;
-    else
-      this.words[i + 1]++;
-  }
-  this.length = Math.max(this.length, i + 1);
-
-  return this;
-};
-
-// Subtract plain number `num` from `this`
-BN.prototype.isubn = function isubn(num) {
-  assert(typeof num === 'number');
-  if (num < 0)
-    return this.iaddn(-num);
-
-  if (this.sign) {
-    this.sign = false;
-    this.iaddn(num);
-    this.sign = true;
-    return this;
-  }
-
-  this.words[0] -= num;
-
-  // Carry
-  for (var i = 0; i < this.length && this.words[i] < 0; i++) {
-    this.words[i] += 0x4000000;
-    this.words[i + 1] -= 1;
-  }
-
-  return this.strip();
-};
-
-BN.prototype.addn = function addn(num) {
-  return this.clone().iaddn(num);
-};
-
-BN.prototype.subn = function subn(num) {
-  return this.clone().isubn(num);
-};
-
-BN.prototype.iabs = function iabs() {
-  this.sign = false;
-
-  return this;
-};
-
-BN.prototype.abs = function abs() {
-  return this.clone().iabs();
-};
-
-BN.prototype._ishlnsubmul = function _ishlnsubmul(num, mul, shift) {
-  // Bigger storage is needed
-  var len = num.length + shift;
-  var i;
-  if (this.words.length < len) {
-    var t = new Array(len);
-    for (var i = 0; i < this.length; i++)
-      t[i] = this.words[i];
-    this.words = t;
-  } else {
-    i = this.length;
-  }
-
-  // Zeroify rest
-  this.length = Math.max(this.length, len);
-  for (; i < this.length; i++)
-    this.words[i] = 0;
-
-  var carry = 0;
-  for (var i = 0; i < num.length; i++) {
-    var w = this.words[i + shift] + carry;
-    var right = num.words[i] * mul;
-    w -= right & 0x3ffffff;
-    carry = (w >> 26) - ((right / 0x4000000) | 0);
-    this.words[i + shift] = w & 0x3ffffff;
-  }
-  for (; i < this.length - shift; i++) {
-    var w = this.words[i + shift] + carry;
-    carry = w >> 26;
-    this.words[i + shift] = w & 0x3ffffff;
-  }
-
-  if (carry === 0)
-    return this.strip();
-
-  // Subtraction overflow
-  assert(carry === -1);
-  carry = 0;
-  for (var i = 0; i < this.length; i++) {
-    var w = -this.words[i] + carry;
-    carry = w >> 26;
-    this.words[i] = w & 0x3ffffff;
-  }
-  this.sign = true;
-
-  return this.strip();
-};
-
-BN.prototype._wordDiv = function _wordDiv(num, mode) {
-  var shift = this.length - num.length;
-
-  var a = this.clone();
-  var b = num;
-
-  // Normalize
-  var bhi = b.words[b.length - 1];
-  var bhiBits = this._countBits(bhi);
-  shift = 26 - bhiBits;
-  if (shift !== 0) {
-    b = b.shln(shift);
-    a.ishln(shift);
-    bhi = b.words[b.length - 1];
-  }
-
-  // Initialize quotient
-  var m = a.length - b.length;
-  var q;
-
-  if (mode !== 'mod') {
-    q = new BN(null);
-    q.length = m + 1;
-    q.words = new Array(q.length);
-    for (var i = 0; i < q.length; i++)
-      q.words[i] = 0;
-  }
-
-  var diff = a.clone()._ishlnsubmul(b, 1, m);
-  if (!diff.sign) {
-    a = diff;
-    if (q)
-      q.words[m] = 1;
-  }
-
-  for (var j = m - 1; j >= 0; j--) {
-    var qj = a.words[b.length + j] * 0x4000000 + a.words[b.length + j - 1];
-
-    // NOTE: (qj / bhi) is (0x3ffffff * 0x4000000 + 0x3ffffff) / 0x2000000 max
-    // (0x7ffffff)
-    qj = Math.min((qj / bhi) | 0, 0x3ffffff);
-
-    a._ishlnsubmul(b, qj, j);
-    while (a.sign) {
-      qj--;
-      a.sign = false;
-      a._ishlnsubmul(b, 1, j);
-      if (a.cmpn(0) !== 0)
-        a.sign = !a.sign;
-    }
-    if (q)
-      q.words[j] = qj;
-  }
-  if (q)
-    q.strip();
-  a.strip();
-
-  // Denormalize
-  if (mode !== 'div' && shift !== 0)
-    a.ishrn(shift);
-  return { div: q ? q : null, mod: a };
-};
-
-BN.prototype.divmod = function divmod(num, mode) {
-  assert(num.cmpn(0) !== 0);
-
-  if (this.sign && !num.sign) {
-    var res = this.neg().divmod(num, mode);
-    var div;
-    var mod;
-    if (mode !== 'mod')
-      div = res.div.neg();
-    if (mode !== 'div')
-      mod = res.mod.cmpn(0) === 0 ? res.mod : num.sub(res.mod);
-    return {
-      div: div,
-      mod: mod
-    };
-  } else if (!this.sign && num.sign) {
-    var res = this.divmod(num.neg(), mode);
-    var div;
-    if (mode !== 'mod')
-      div = res.div.neg();
-    return { div: div, mod: res.mod };
-  } else if (this.sign && num.sign) {
-    return this.neg().divmod(num.neg(), mode);
-  }
-
-  // Both numbers are positive at this point
-
-  // Strip both numbers to approximate shift value
-  if (num.length > this.length || this.cmp(num) < 0)
-    return { div: new BN(0), mod: this };
-
-  // Very short reduction
-  if (num.length === 1) {
-    if (mode === 'div')
-      return { div: this.divn(num.words[0]), mod: null };
-    else if (mode === 'mod')
-      return { div: null, mod: new BN(this.modn(num.words[0])) };
-    return {
-      div: this.divn(num.words[0]),
-      mod: new BN(this.modn(num.words[0]))
-    };
-  }
-
-  return this._wordDiv(num, mode);
-};
-
-// Find `this` / `num`
-BN.prototype.div = function div(num) {
-  return this.divmod(num, 'div').div;
-};
-
-// Find `this` % `num`
-BN.prototype.mod = function mod(num) {
-  return this.divmod(num, 'mod').mod;
-};
-
-// Find Round(`this` / `num`)
-BN.prototype.divRound = function divRound(num) {
-  var dm = this.divmod(num);
-
-  // Fast case - exact division
-  if (dm.mod.cmpn(0) === 0)
-    return dm.div;
-
-  var mod = dm.div.sign ? dm.mod.isub(num) : dm.mod;
-
-  var half = num.shrn(1);
-  var r2 = num.andln(1);
-  var cmp = mod.cmp(half);
-
-  // Round down
-  if (cmp < 0 || r2 === 1 && cmp === 0)
-    return dm.div;
-
-  // Round up
-  return dm.div.sign ? dm.div.isubn(1) : dm.div.iaddn(1);
-};
-
-BN.prototype.modn = function modn(num) {
-  assert(num <= 0x3ffffff);
-  var p = (1 << 26) % num;
-
-  var acc = 0;
-  for (var i = this.length - 1; i >= 0; i--)
-    acc = (p * acc + this.words[i]) % num;
-
-  return acc;
-};
-
-// In-place division by number
-BN.prototype.idivn = function idivn(num) {
-  assert(num <= 0x3ffffff);
-
-  var carry = 0;
-  for (var i = this.length - 1; i >= 0; i--) {
-    var w = this.words[i] + carry * 0x4000000;
-    this.words[i] = (w / num) | 0;
-    carry = w % num;
-  }
-
-  return this.strip();
-};
-
-BN.prototype.divn = function divn(num) {
-  return this.clone().idivn(num);
-};
-
-BN.prototype.egcd = function egcd(p) {
-  assert(!p.sign);
-  assert(p.cmpn(0) !== 0);
-
-  var x = this;
-  var y = p.clone();
-
-  if (x.sign)
-    x = x.mod(p);
-  else
-    x = x.clone();
-
-  // A * x + B * y = x
-  var A = new BN(1);
-  var B = new BN(0);
-
-  // C * x + D * y = y
-  var C = new BN(0);
-  var D = new BN(1);
-
-  var g = 0;
-
-  while (x.isEven() && y.isEven()) {
-    x.ishrn(1);
-    y.ishrn(1);
-    ++g;
-  }
-
-  var yp = y.clone();
-  var xp = x.clone();
-
-  while (x.cmpn(0) !== 0) {
-    while (x.isEven()) {
-      x.ishrn(1);
-      if (A.isEven() && B.isEven()) {
-        A.ishrn(1);
-        B.ishrn(1);
-      } else {
-        A.iadd(yp).ishrn(1);
-        B.isub(xp).ishrn(1);
-      }
-    }
-
-    while (y.isEven()) {
-      y.ishrn(1);
-      if (C.isEven() && D.isEven()) {
-        C.ishrn(1);
-        D.ishrn(1);
-      } else {
-        C.iadd(yp).ishrn(1);
-        D.isub(xp).ishrn(1);
-      }
-    }
-
-    if (x.cmp(y) >= 0) {
-      x.isub(y);
-      A.isub(C);
-      B.isub(D);
-    } else {
-      y.isub(x);
-      C.isub(A);
-      D.isub(B);
-    }
-  }
-
-  return {
-    a: C,
-    b: D,
-    gcd: y.ishln(g)
-  };
-};
-
-// This is reduced incarnation of the binary EEA
-// above, designated to invert members of the
-// _prime_ fields F(p) at a maximal speed
-BN.prototype._invmp = function _invmp(p) {
-  assert(!p.sign);
-  assert(p.cmpn(0) !== 0);
-
-  var a = this;
-  var b = p.clone();
-
-  if (a.sign)
-    a = a.mod(p);
-  else
-    a = a.clone();
-
-  var x1 = new BN(1);
-  var x2 = new BN(0);
-
-  var delta = b.clone();
-
-  while (a.cmpn(1) > 0 && b.cmpn(1) > 0) {
-    while (a.isEven()) {
-      a.ishrn(1);
-      if (x1.isEven())
-        x1.ishrn(1);
-      else
-        x1.iadd(delta).ishrn(1);
-    }
-    while (b.isEven()) {
-      b.ishrn(1);
-      if (x2.isEven())
-        x2.ishrn(1);
-      else
-        x2.iadd(delta).ishrn(1);
-    }
-    if (a.cmp(b) >= 0) {
-      a.isub(b);
-      x1.isub(x2);
-    } else {
-      b.isub(a);
-      x2.isub(x1);
-    }
-  }
-  if (a.cmpn(1) === 0)
-    return x1;
-  else
-    return x2;
-};
-
-BN.prototype.gcd = function gcd(num) {
-  if (this.cmpn(0) === 0)
-    return num.clone();
-  if (num.cmpn(0) === 0)
-    return this.clone();
-
-  var a = this.clone();
-  var b = num.clone();
-  a.sign = false;
-  b.sign = false;
-
-  // Remove common factor of two
-  for (var shift = 0; a.isEven() && b.isEven(); shift++) {
-    a.ishrn(1);
-    b.ishrn(1);
-  }
-
-  do {
-    while (a.isEven())
-      a.ishrn(1);
-    while (b.isEven())
-      b.ishrn(1);
-
-    var r = a.cmp(b);
-    if (r < 0) {
-      // Swap `a` and `b` to make `a` always bigger than `b`
-      var t = a;
-      a = b;
-      b = t;
-    } else if (r === 0 || b.cmpn(1) === 0) {
-      break;
-    }
-
-    a.isub(b);
-  } while (true);
-
-  return b.ishln(shift);
-};
-
-// Invert number in the field F(num)
-BN.prototype.invm = function invm(num) {
-  return this.egcd(num).a.mod(num);
-};
-
-BN.prototype.isEven = function isEven() {
-  return (this.words[0] & 1) === 0;
-};
-
-BN.prototype.isOdd = function isOdd() {
-  return (this.words[0] & 1) === 1;
-};
-
-// And first word and num
-BN.prototype.andln = function andln(num) {
-  return this.words[0] & num;
-};
-
-// Increment at the bit position in-line
-BN.prototype.bincn = function bincn(bit) {
-  assert(typeof bit === 'number');
-  var r = bit % 26;
-  var s = (bit - r) / 26;
-  var q = 1 << r;
-
-  // Fast case: bit is much higher than all existing words
-  if (this.length <= s) {
-    for (var i = this.length; i < s + 1; i++)
+    this.length = Math.ceil(number.length / 3);
+    this.words = new Array(this.length);
+    for (var i = 0; i < this.length; i++) {
       this.words[i] = 0;
-    this.words[s] |= q;
-    this.length = s + 1;
-    return this;
-  }
-
-  // Add bit and propagate, if needed
-  var carry = q;
-  for (var i = s; carry !== 0 && i < this.length; i++) {
-    var w = this.words[i];
-    w += carry;
-    carry = w >>> 26;
-    w &= 0x3ffffff;
-    this.words[i] = w;
-  }
-  if (carry !== 0) {
-    this.words[i] = carry;
-    this.length++;
-  }
-  return this;
-};
-
-BN.prototype.cmpn = function cmpn(num) {
-  var sign = num < 0;
-  if (sign)
-    num = -num;
-
-  if (this.sign && !sign)
-    return -1;
-  else if (!this.sign && sign)
-    return 1;
-
-  num &= 0x3ffffff;
-  this.strip();
-
-  var res;
-  if (this.length > 1) {
-    res = 1;
-  } else {
-    var w = this.words[0];
-    res = w === num ? 0 : w < num ? -1 : 1;
-  }
-  if (this.sign)
-    res = -res;
-  return res;
-};
-
-// Compare two numbers and return:
-// 1 - if `this` > `num`
-// 0 - if `this` == `num`
-// -1 - if `this` < `num`
-BN.prototype.cmp = function cmp(num) {
-  if (this.sign && !num.sign)
-    return -1;
-  else if (!this.sign && num.sign)
-    return 1;
-
-  var res = this.ucmp(num);
-  if (this.sign)
-    return -res;
-  else
-    return res;
-};
-
-// Unsigned comparison
-BN.prototype.ucmp = function ucmp(num) {
-  // At this point both numbers have the same sign
-  if (this.length > num.length)
-    return 1;
-  else if (this.length < num.length)
-    return -1;
-
-  var res = 0;
-  for (var i = this.length - 1; i >= 0; i--) {
-    var a = this.words[i];
-    var b = num.words[i];
-
-    if (a === b)
-      continue;
-    if (a < b)
-      res = -1;
-    else if (a > b)
-      res = 1;
-    break;
-  }
-  return res;
-};
-
-//
-// A reduce context, could be using montgomery or something better, depending
-// on the `m` itself.
-//
-BN.red = function red(num) {
-  return new Red(num);
-};
-
-BN.prototype.toRed = function toRed(ctx) {
-  assert(!this.red, 'Already a number in reduction context');
-  assert(!this.sign, 'red works only with positives');
-  return ctx.convertTo(this)._forceRed(ctx);
-};
-
-BN.prototype.fromRed = function fromRed() {
-  assert(this.red, 'fromRed works only with numbers in reduction context');
-  return this.red.convertFrom(this);
-};
-
-BN.prototype._forceRed = function _forceRed(ctx) {
-  this.red = ctx;
-  return this;
-};
-
-BN.prototype.forceRed = function forceRed(ctx) {
-  assert(!this.red, 'Already a number in reduction context');
-  return this._forceRed(ctx);
-};
-
-BN.prototype.redAdd = function redAdd(num) {
-  assert(this.red, 'redAdd works only with red numbers');
-  return this.red.add(this, num);
-};
-
-BN.prototype.redIAdd = function redIAdd(num) {
-  assert(this.red, 'redIAdd works only with red numbers');
-  return this.red.iadd(this, num);
-};
-
-BN.prototype.redSub = function redSub(num) {
-  assert(this.red, 'redSub works only with red numbers');
-  return this.red.sub(this, num);
-};
-
-BN.prototype.redISub = function redISub(num) {
-  assert(this.red, 'redISub works only with red numbers');
-  return this.red.isub(this, num);
-};
-
-BN.prototype.redShl = function redShl(num) {
-  assert(this.red, 'redShl works only with red numbers');
-  return this.red.shl(this, num);
-};
-
-BN.prototype.redMul = function redMul(num) {
-  assert(this.red, 'redMul works only with red numbers');
-  this.red._verify2(this, num);
-  return this.red.mul(this, num);
-};
-
-BN.prototype.redIMul = function redIMul(num) {
-  assert(this.red, 'redMul works only with red numbers');
-  this.red._verify2(this, num);
-  return this.red.imul(this, num);
-};
-
-BN.prototype.redSqr = function redSqr() {
-  assert(this.red, 'redSqr works only with red numbers');
-  this.red._verify1(this);
-  return this.red.sqr(this);
-};
-
-BN.prototype.redISqr = function redISqr() {
-  assert(this.red, 'redISqr works only with red numbers');
-  this.red._verify1(this);
-  return this.red.isqr(this);
-};
-
-// Square root over p
-BN.prototype.redSqrt = function redSqrt() {
-  assert(this.red, 'redSqrt works only with red numbers');
-  this.red._verify1(this);
-  return this.red.sqrt(this);
-};
-
-BN.prototype.redInvm = function redInvm() {
-  assert(this.red, 'redInvm works only with red numbers');
-  this.red._verify1(this);
-  return this.red.invm(this);
-};
-
-// Return negative clone of `this` % `red modulo`
-BN.prototype.redNeg = function redNeg() {
-  assert(this.red, 'redNeg works only with red numbers');
-  this.red._verify1(this);
-  return this.red.neg(this);
-};
-
-BN.prototype.redPow = function redPow(num) {
-  assert(this.red && !num.red, 'redPow(normalNum)');
-  this.red._verify1(this);
-  return this.red.pow(this, num);
-};
-
-// Prime numbers with efficient reduction
-var primes = {
-  k256: null,
-  p224: null,
-  p192: null,
-  p25519: null
-};
-
-// Pseudo-Mersenne prime
-function MPrime(name, p) {
-  // P = 2 ^ N - K
-  this.name = name;
-  this.p = new BN(p, 16);
-  this.n = this.p.bitLength();
-  this.k = new BN(1).ishln(this.n).isub(this.p);
-
-  this.tmp = this._tmp();
-}
-
-MPrime.prototype._tmp = function _tmp() {
-  var tmp = new BN(null);
-  tmp.words = new Array(Math.ceil(this.n / 13));
-  return tmp;
-};
-
-MPrime.prototype.ireduce = function ireduce(num) {
-  // Assumes that `num` is less than `P^2`
-  // num = HI * (2 ^ N - K) + HI * K + LO = HI * K + LO (mod P)
-  var r = num;
-  var rlen;
-
-  do {
-    this.split(r, this.tmp);
-    r = this.imulK(r);
-    r = r.iadd(this.tmp);
-    rlen = r.bitLength();
-  } while (rlen > this.n);
-
-  var cmp = rlen < this.n ? -1 : r.ucmp(this.p);
-  if (cmp === 0) {
-    r.words[0] = 0;
-    r.length = 1;
-  } else if (cmp > 0) {
-    r.isub(this.p);
-  } else {
-    r.strip();
-  }
-
-  return r;
-};
-
-MPrime.prototype.split = function split(input, out) {
-  input.ishrn(this.n, 0, out);
-};
-
-MPrime.prototype.imulK = function imulK(num) {
-  return num.imul(this.k);
-};
-
-function K256() {
-  MPrime.call(
-    this,
-    'k256',
-    'ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff fffffffe fffffc2f');
-}
-inherits(K256, MPrime);
-
-K256.prototype.split = function split(input, output) {
-  // 256 = 9 * 26 + 22
-  var mask = 0x3fffff;
-
-  var outLen = Math.min(input.length, 9);
-  for (var i = 0; i < outLen; i++)
-    output.words[i] = input.words[i];
-  output.length = outLen;
-
-  if (input.length <= 9) {
-    input.words[0] = 0;
-    input.length = 1;
-    return;
-  }
-
-  // Shift by 9 limbs
-  var prev = input.words[9];
-  output.words[output.length++] = prev & mask;
-
-  for (var i = 10; i < input.length; i++) {
-    var next = input.words[i];
-    input.words[i - 10] = ((next & mask) << 4) | (prev >>> 22);
-    prev = next;
-  }
-  input.words[i - 10] = prev >>> 22;
-  input.length -= 9;
-};
-
-K256.prototype.imulK = function imulK(num) {
-  // K = 0x1000003d1 = [ 0x40, 0x3d1 ]
-  num.words[num.length] = 0;
-  num.words[num.length + 1] = 0;
-  num.length += 2;
-
-  // bounded at: 0x40 * 0x3ffffff + 0x3d0 = 0x100000390
-  var hi;
-  var lo = 0;
-  for (var i = 0; i < num.length; i++) {
-    var w = num.words[i];
-    hi = w * 0x40;
-    lo += w * 0x3d1;
-    hi += (lo / 0x4000000) | 0;
-    lo &= 0x3ffffff;
-
-    num.words[i] = lo;
-
-    lo = hi;
-  }
-
-  // Fast length reduction
-  if (num.words[num.length - 1] === 0) {
-    num.length--;
-    if (num.words[num.length - 1] === 0)
-      num.length--;
-  }
-  return num;
-};
-
-function P224() {
-  MPrime.call(
-    this,
-    'p224',
-    'ffffffff ffffffff ffffffff ffffffff 00000000 00000000 00000001');
-}
-inherits(P224, MPrime);
-
-function P192() {
-  MPrime.call(
-    this,
-    'p192',
-    'ffffffff ffffffff ffffffff fffffffe ffffffff ffffffff');
-}
-inherits(P192, MPrime);
-
-function P25519() {
-  // 2 ^ 255 - 19
-  MPrime.call(
-    this,
-    '25519',
-    '7fffffffffffffff ffffffffffffffff ffffffffffffffff ffffffffffffffed');
-}
-inherits(P25519, MPrime);
-
-P25519.prototype.imulK = function imulK(num) {
-  // K = 0x13
-  var carry = 0;
-  for (var i = 0; i < num.length; i++) {
-    var hi = num.words[i] * 0x13 + carry;
-    var lo = hi & 0x3ffffff;
-    hi >>>= 26;
-
-    num.words[i] = lo;
-    carry = hi;
-  }
-  if (carry !== 0)
-    num.words[num.length++] = carry;
-  return num;
-};
-
-// Exported mostly for testing purposes, use plain name instead
-BN._prime = function prime(name) {
-  // Cached version of prime
-  if (primes[name])
-    return primes[name];
-
-  var prime;
-  if (name === 'k256')
-    prime = new K256();
-  else if (name === 'p224')
-    prime = new P224();
-  else if (name === 'p192')
-    prime = new P192();
-  else if (name === 'p25519')
-    prime = new P25519();
-  else
-    throw new Error('Unknown prime ' + name);
-  primes[name] = prime;
-
-  return prime;
-};
-
-//
-// Base reduction engine
-//
-function Red(m) {
-  if (typeof m === 'string') {
-    var prime = BN._prime(m);
-    this.m = prime.p;
-    this.prime = prime;
-  } else {
-    this.m = m;
-    this.prime = null;
-  }
-}
-
-Red.prototype._verify1 = function _verify1(a) {
-  assert(!a.sign, 'red works only with positives');
-  assert(a.red, 'red works only with red numbers');
-};
-
-Red.prototype._verify2 = function _verify2(a, b) {
-  assert(!a.sign && !b.sign, 'red works only with positives');
-  assert(a.red && a.red === b.red,
-         'red works only with red numbers');
-};
-
-Red.prototype.imod = function imod(a) {
-  if (this.prime)
-    return this.prime.ireduce(a)._forceRed(this);
-  return a.mod(this.m)._forceRed(this);
-};
-
-Red.prototype.neg = function neg(a) {
-  var r = a.clone();
-  r.sign = !r.sign;
-  return r.iadd(this.m)._forceRed(this);
-};
-
-Red.prototype.add = function add(a, b) {
-  this._verify2(a, b);
-
-  var res = a.add(b);
-  if (res.cmp(this.m) >= 0)
-    res.isub(this.m);
-  return res._forceRed(this);
-};
-
-Red.prototype.iadd = function iadd(a, b) {
-  this._verify2(a, b);
-
-  var res = a.iadd(b);
-  if (res.cmp(this.m) >= 0)
-    res.isub(this.m);
-  return res;
-};
-
-Red.prototype.sub = function sub(a, b) {
-  this._verify2(a, b);
-
-  var res = a.sub(b);
-  if (res.cmpn(0) < 0)
-    res.iadd(this.m);
-  return res._forceRed(this);
-};
-
-Red.prototype.isub = function isub(a, b) {
-  this._verify2(a, b);
-
-  var res = a.isub(b);
-  if (res.cmpn(0) < 0)
-    res.iadd(this.m);
-  return res;
-};
-
-Red.prototype.shl = function shl(a, num) {
-  this._verify1(a);
-  return this.imod(a.shln(num));
-};
-
-Red.prototype.imul = function imul(a, b) {
-  this._verify2(a, b);
-  return this.imod(a.imul(b));
-};
-
-Red.prototype.mul = function mul(a, b) {
-  this._verify2(a, b);
-  return this.imod(a.mul(b));
-};
-
-Red.prototype.isqr = function isqr(a) {
-  return this.imul(a, a);
-};
-
-Red.prototype.sqr = function sqr(a) {
-  return this.mul(a, a);
-};
-
-Red.prototype.sqrt = function sqrt(a) {
-  if (a.cmpn(0) === 0)
-    return a.clone();
-
-  var mod3 = this.m.andln(3);
-  assert(mod3 % 2 === 1);
-
-  // Fast case
-  if (mod3 === 3) {
-    var pow = this.m.add(new BN(1)).ishrn(2);
-    var r = this.pow(a, pow);
+    }
+
+    var j, w;
+    var off = 0;
+    if (endian === 'be') {
+      for (i = number.length - 1, j = 0; i >= 0; i -= 3) {
+        w = number[i] | (number[i - 1] << 8) | (number[i - 2] << 16);
+        this.words[j] |= (w << off) & 0x3ffffff;
+        this.words[j + 1] = (w >>> (26 - off)) & 0x3ffffff;
+        off += 24;
+        if (off >= 26) {
+          off -= 26;
+          j++;
+        }
+      }
+    } else if (endian === 'le') {
+      for (i = 0, j = 0; i < number.length; i += 3) {
+        w = number[i] | (number[i + 1] << 8) | (number[i + 2] << 16);
+        this.words[j] |= (w << off) & 0x3ffffff;
+        this.words[j + 1] = (w >>> (26 - off)) & 0x3ffffff;
+        off += 24;
+        if (off >= 26) {
+          off -= 26;
+          j++;
+        }
+      }
+    }
+    return this.strip();
+  };
+
+  function parseHex (str, start, end) {
+    var r = 0;
+    var len = Math.min(str.length, end);
+    for (var i = start; i < len; i++) {
+      var c = str.charCodeAt(i) - 48;
+
+      r <<= 4;
+
+      // 'a' - 'f'
+      if (c >= 49 && c <= 54) {
+        r |= c - 49 + 0xa;
+
+      // 'A' - 'F'
+      } else if (c >= 17 && c <= 22) {
+        r |= c - 17 + 0xa;
+
+      // '0' - '9'
+      } else {
+        r |= c & 0xf;
+      }
+    }
     return r;
   }
 
-  // Tonelli-Shanks algorithm (Totally unoptimized and slow)
-  //
-  // Find Q and S, that Q * 2 ^ S = (P - 1)
-  var q = this.m.subn(1);
-  var s = 0;
-  while (q.cmpn(0) !== 0 && q.andln(1) === 0) {
-    s++;
-    q.ishrn(1);
+  BN.prototype._parseHex = function _parseHex (number, start) {
+    // Create possibly bigger array to ensure that it fits the number
+    this.length = Math.ceil((number.length - start) / 6);
+    this.words = new Array(this.length);
+    for (var i = 0; i < this.length; i++) {
+      this.words[i] = 0;
+    }
+
+    var j, w;
+    // Scan 24-bit chunks and add them to the number
+    var off = 0;
+    for (i = number.length - 6, j = 0; i >= start; i -= 6) {
+      w = parseHex(number, i, i + 6);
+      this.words[j] |= (w << off) & 0x3ffffff;
+      // NOTE: `0x3fffff` is intentional here, 26bits max shift + 24bit hex limb
+      this.words[j + 1] |= w >>> (26 - off) & 0x3fffff;
+      off += 24;
+      if (off >= 26) {
+        off -= 26;
+        j++;
+      }
+    }
+    if (i + 6 !== start) {
+      w = parseHex(number, start, i + 6);
+      this.words[j] |= (w << off) & 0x3ffffff;
+      this.words[j + 1] |= w >>> (26 - off) & 0x3fffff;
+    }
+    this.strip();
+  };
+
+  function parseBase (str, start, end, mul) {
+    var r = 0;
+    var len = Math.min(str.length, end);
+    for (var i = start; i < len; i++) {
+      var c = str.charCodeAt(i) - 48;
+
+      r *= mul;
+
+      // 'a'
+      if (c >= 49) {
+        r += c - 49 + 0xa;
+
+      // 'A'
+      } else if (c >= 17) {
+        r += c - 17 + 0xa;
+
+      // '0' - '9'
+      } else {
+        r += c;
+      }
+    }
+    return r;
   }
-  assert(q.cmpn(0) !== 0);
 
-  var one = new BN(1).toRed(this);
-  var nOne = one.redNeg();
+  BN.prototype._parseBase = function _parseBase (number, base, start) {
+    // Initialize as zero
+    this.words = [ 0 ];
+    this.length = 1;
 
-  // Find quadratic non-residue
-  // NOTE: Max is such because of generalized Riemann hypothesis.
-  var lpow = this.m.subn(1).ishrn(1);
-  var z = this.m.bitLength();
-  z = new BN(2 * z * z).toRed(this);
-  while (this.pow(z, lpow).cmp(nOne) !== 0)
-    z.redIAdd(nOne);
+    // Find length of limb in base
+    for (var limbLen = 0, limbPow = 1; limbPow <= 0x3ffffff; limbPow *= base) {
+      limbLen++;
+    }
+    limbLen--;
+    limbPow = (limbPow / base) | 0;
 
-  var c = this.pow(z, q);
-  var r = this.pow(a, q.addn(1).ishrn(1));
-  var t = this.pow(a, q);
-  var m = s;
-  while (t.cmp(one) !== 0) {
-    var tmp = t;
-    for (var i = 0; tmp.cmp(one) !== 0; i++)
-      tmp = tmp.redSqr();
-    assert(i < m);
-    var b = this.pow(c, new BN(1).ishln(m - i - 1));
+    var total = number.length - start;
+    var mod = total % limbLen;
+    var end = Math.min(total, total - mod) + start;
 
-    r = r.redMul(b);
-    c = b.redSqr();
-    t = t.redMul(c);
-    m = i;
+    var word = 0;
+    for (var i = start; i < end; i += limbLen) {
+      word = parseBase(number, i, i + limbLen, base);
+
+      this.imuln(limbPow);
+      if (this.words[0] + word < 0x4000000) {
+        this.words[0] += word;
+      } else {
+        this._iaddn(word);
+      }
+    }
+
+    if (mod !== 0) {
+      var pow = 1;
+      word = parseBase(number, i, number.length, base);
+
+      for (i = 0; i < mod; i++) {
+        pow *= base;
+      }
+
+      this.imuln(pow);
+      if (this.words[0] + word < 0x4000000) {
+        this.words[0] += word;
+      } else {
+        this._iaddn(word);
+      }
+    }
+  };
+
+  BN.prototype.copy = function copy (dest) {
+    dest.words = new Array(this.length);
+    for (var i = 0; i < this.length; i++) {
+      dest.words[i] = this.words[i];
+    }
+    dest.length = this.length;
+    dest.negative = this.negative;
+    dest.red = this.red;
+  };
+
+  BN.prototype.clone = function clone () {
+    var r = new BN(null);
+    this.copy(r);
+    return r;
+  };
+
+  BN.prototype._expand = function _expand (size) {
+    while (this.length < size) {
+      this.words[this.length++] = 0;
+    }
+    return this;
+  };
+
+  // Remove leading `0` from `this`
+  BN.prototype.strip = function strip () {
+    while (this.length > 1 && this.words[this.length - 1] === 0) {
+      this.length--;
+    }
+    return this._normSign();
+  };
+
+  BN.prototype._normSign = function _normSign () {
+    // -0 = 0
+    if (this.length === 1 && this.words[0] === 0) {
+      this.negative = 0;
+    }
+    return this;
+  };
+
+  BN.prototype.inspect = function inspect () {
+    return (this.red ? '<BN-R: ' : '<BN: ') + this.toString(16) + '>';
+  };
+
+  /*
+
+  var zeros = [];
+  var groupSizes = [];
+  var groupBases = [];
+
+  var s = '';
+  var i = -1;
+  while (++i < BN.wordSize) {
+    zeros[i] = s;
+    s += '0';
+  }
+  groupSizes[0] = 0;
+  groupSizes[1] = 0;
+  groupBases[0] = 0;
+  groupBases[1] = 0;
+  var base = 2 - 1;
+  while (++base < 36 + 1) {
+    var groupSize = 0;
+    var groupBase = 1;
+    while (groupBase < (1 << BN.wordSize) / base) {
+      groupBase *= base;
+      groupSize += 1;
+    }
+    groupSizes[base] = groupSize;
+    groupBases[base] = groupBase;
   }
 
-  return r;
-};
+  */
 
-Red.prototype.invm = function invm(a) {
-  var inv = a._invmp(this.m);
-  if (inv.sign) {
-    inv.sign = false;
-    return this.imod(inv).redNeg();
+  var zeros = [
+    '',
+    '0',
+    '00',
+    '000',
+    '0000',
+    '00000',
+    '000000',
+    '0000000',
+    '00000000',
+    '000000000',
+    '0000000000',
+    '00000000000',
+    '000000000000',
+    '0000000000000',
+    '00000000000000',
+    '000000000000000',
+    '0000000000000000',
+    '00000000000000000',
+    '000000000000000000',
+    '0000000000000000000',
+    '00000000000000000000',
+    '000000000000000000000',
+    '0000000000000000000000',
+    '00000000000000000000000',
+    '000000000000000000000000',
+    '0000000000000000000000000'
+  ];
+
+  var groupSizes = [
+    0, 0,
+    25, 16, 12, 11, 10, 9, 8,
+    8, 7, 7, 7, 7, 6, 6,
+    6, 6, 6, 6, 6, 5, 5,
+    5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5
+  ];
+
+  var groupBases = [
+    0, 0,
+    33554432, 43046721, 16777216, 48828125, 60466176, 40353607, 16777216,
+    43046721, 10000000, 19487171, 35831808, 62748517, 7529536, 11390625,
+    16777216, 24137569, 34012224, 47045881, 64000000, 4084101, 5153632,
+    6436343, 7962624, 9765625, 11881376, 14348907, 17210368, 20511149,
+    24300000, 28629151, 33554432, 39135393, 45435424, 52521875, 60466176
+  ];
+
+  BN.prototype.toString = function toString (base, padding) {
+    base = base || 10;
+    padding = padding | 0 || 1;
+
+    var out;
+    if (base === 16 || base === 'hex') {
+      out = '';
+      var off = 0;
+      var carry = 0;
+      for (var i = 0; i < this.length; i++) {
+        var w = this.words[i];
+        var word = (((w << off) | carry) & 0xffffff).toString(16);
+        carry = (w >>> (24 - off)) & 0xffffff;
+        if (carry !== 0 || i !== this.length - 1) {
+          out = zeros[6 - word.length] + word + out;
+        } else {
+          out = word + out;
+        }
+        off += 2;
+        if (off >= 26) {
+          off -= 26;
+          i--;
+        }
+      }
+      if (carry !== 0) {
+        out = carry.toString(16) + out;
+      }
+      while (out.length % padding !== 0) {
+        out = '0' + out;
+      }
+      if (this.negative !== 0) {
+        out = '-' + out;
+      }
+      return out;
+    }
+
+    if (base === (base | 0) && base >= 2 && base <= 36) {
+      // var groupSize = Math.floor(BN.wordSize * Math.LN2 / Math.log(base));
+      var groupSize = groupSizes[base];
+      // var groupBase = Math.pow(base, groupSize);
+      var groupBase = groupBases[base];
+      out = '';
+      var c = this.clone();
+      c.negative = 0;
+      while (!c.isZero()) {
+        var r = c.modn(groupBase).toString(base);
+        c = c.idivn(groupBase);
+
+        if (!c.isZero()) {
+          out = zeros[groupSize - r.length] + r + out;
+        } else {
+          out = r + out;
+        }
+      }
+      if (this.isZero()) {
+        out = '0' + out;
+      }
+      while (out.length % padding !== 0) {
+        out = '0' + out;
+      }
+      if (this.negative !== 0) {
+        out = '-' + out;
+      }
+      return out;
+    }
+
+    assert(false, 'Base should be between 2 and 36');
+  };
+
+  BN.prototype.toNumber = function toNumber () {
+    var ret = this.words[0];
+    if (this.length === 2) {
+      ret += this.words[1] * 0x4000000;
+    } else if (this.length === 3 && this.words[2] === 0x01) {
+      // NOTE: at this stage it is known that the top bit is set
+      ret += 0x10000000000000 + (this.words[1] * 0x4000000);
+    } else if (this.length > 2) {
+      assert(false, 'Number can only safely store up to 53 bits');
+    }
+    return (this.negative !== 0) ? -ret : ret;
+  };
+
+  BN.prototype.toJSON = function toJSON () {
+    return this.toString(16);
+  };
+
+  BN.prototype.toBuffer = function toBuffer (endian, length) {
+    assert(typeof Buffer !== 'undefined');
+    return this.toArrayLike(Buffer, endian, length);
+  };
+
+  BN.prototype.toArray = function toArray (endian, length) {
+    return this.toArrayLike(Array, endian, length);
+  };
+
+  BN.prototype.toArrayLike = function toArrayLike (ArrayType, endian, length) {
+    var byteLength = this.byteLength();
+    var reqLength = length || Math.max(1, byteLength);
+    assert(byteLength <= reqLength, 'byte array longer than desired length');
+    assert(reqLength > 0, 'Requested array length <= 0');
+
+    this.strip();
+    var littleEndian = endian === 'le';
+    var res = new ArrayType(reqLength);
+
+    var b, i;
+    var q = this.clone();
+    if (!littleEndian) {
+      // Assume big-endian
+      for (i = 0; i < reqLength - byteLength; i++) {
+        res[i] = 0;
+      }
+
+      for (i = 0; !q.isZero(); i++) {
+        b = q.andln(0xff);
+        q.iushrn(8);
+
+        res[reqLength - i - 1] = b;
+      }
+    } else {
+      for (i = 0; !q.isZero(); i++) {
+        b = q.andln(0xff);
+        q.iushrn(8);
+
+        res[i] = b;
+      }
+
+      for (; i < reqLength; i++) {
+        res[i] = 0;
+      }
+    }
+
+    return res;
+  };
+
+  if (Math.clz32) {
+    BN.prototype._countBits = function _countBits (w) {
+      return 32 - Math.clz32(w);
+    };
   } else {
-    return this.imod(inv);
+    BN.prototype._countBits = function _countBits (w) {
+      var t = w;
+      var r = 0;
+      if (t >= 0x1000) {
+        r += 13;
+        t >>>= 13;
+      }
+      if (t >= 0x40) {
+        r += 7;
+        t >>>= 7;
+      }
+      if (t >= 0x8) {
+        r += 4;
+        t >>>= 4;
+      }
+      if (t >= 0x02) {
+        r += 2;
+        t >>>= 2;
+      }
+      return r + t;
+    };
   }
-};
 
-Red.prototype.pow = function pow(a, num) {
-  var w = [];
+  BN.prototype._zeroBits = function _zeroBits (w) {
+    // Short-cut
+    if (w === 0) return 26;
 
-  if (num.cmpn(0) === 0)
-    return new BN(1);
+    var t = w;
+    var r = 0;
+    if ((t & 0x1fff) === 0) {
+      r += 13;
+      t >>>= 13;
+    }
+    if ((t & 0x7f) === 0) {
+      r += 7;
+      t >>>= 7;
+    }
+    if ((t & 0xf) === 0) {
+      r += 4;
+      t >>>= 4;
+    }
+    if ((t & 0x3) === 0) {
+      r += 2;
+      t >>>= 2;
+    }
+    if ((t & 0x1) === 0) {
+      r++;
+    }
+    return r;
+  };
 
-  var q = num.clone();
+  // Return number of used bits in a BN
+  BN.prototype.bitLength = function bitLength () {
+    var w = this.words[this.length - 1];
+    var hi = this._countBits(w);
+    return (this.length - 1) * 26 + hi;
+  };
 
-  while (q.cmpn(0) !== 0) {
-    w.push(q.andln(1));
-    q.ishrn(1);
+  function toBitArray (num) {
+    var w = new Array(num.bitLength());
+
+    for (var bit = 0; bit < w.length; bit++) {
+      var off = (bit / 26) | 0;
+      var wbit = bit % 26;
+
+      w[bit] = (num.words[off] & (1 << wbit)) >>> wbit;
+    }
+
+    return w;
   }
 
-  // Skip leading zeroes
-  var res = a;
-  for (var i = 0; i < w.length; i++, res = this.sqr(res))
-    if (w[i] !== 0)
+  // Number of trailing zero bits
+  BN.prototype.zeroBits = function zeroBits () {
+    if (this.isZero()) return 0;
+
+    var r = 0;
+    for (var i = 0; i < this.length; i++) {
+      var b = this._zeroBits(this.words[i]);
+      r += b;
+      if (b !== 26) break;
+    }
+    return r;
+  };
+
+  BN.prototype.byteLength = function byteLength () {
+    return Math.ceil(this.bitLength() / 8);
+  };
+
+  BN.prototype.toTwos = function toTwos (width) {
+    if (this.negative !== 0) {
+      return this.abs().inotn(width).iaddn(1);
+    }
+    return this.clone();
+  };
+
+  BN.prototype.fromTwos = function fromTwos (width) {
+    if (this.testn(width - 1)) {
+      return this.notn(width).iaddn(1).ineg();
+    }
+    return this.clone();
+  };
+
+  BN.prototype.isNeg = function isNeg () {
+    return this.negative !== 0;
+  };
+
+  // Return negative clone of `this`
+  BN.prototype.neg = function neg () {
+    return this.clone().ineg();
+  };
+
+  BN.prototype.ineg = function ineg () {
+    if (!this.isZero()) {
+      this.negative ^= 1;
+    }
+
+    return this;
+  };
+
+  // Or `num` with `this` in-place
+  BN.prototype.iuor = function iuor (num) {
+    while (this.length < num.length) {
+      this.words[this.length++] = 0;
+    }
+
+    for (var i = 0; i < num.length; i++) {
+      this.words[i] = this.words[i] | num.words[i];
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.ior = function ior (num) {
+    assert((this.negative | num.negative) === 0);
+    return this.iuor(num);
+  };
+
+  // Or `num` with `this`
+  BN.prototype.or = function or (num) {
+    if (this.length > num.length) return this.clone().ior(num);
+    return num.clone().ior(this);
+  };
+
+  BN.prototype.uor = function uor (num) {
+    if (this.length > num.length) return this.clone().iuor(num);
+    return num.clone().iuor(this);
+  };
+
+  // And `num` with `this` in-place
+  BN.prototype.iuand = function iuand (num) {
+    // b = min-length(num, this)
+    var b;
+    if (this.length > num.length) {
+      b = num;
+    } else {
+      b = this;
+    }
+
+    for (var i = 0; i < b.length; i++) {
+      this.words[i] = this.words[i] & num.words[i];
+    }
+
+    this.length = b.length;
+
+    return this.strip();
+  };
+
+  BN.prototype.iand = function iand (num) {
+    assert((this.negative | num.negative) === 0);
+    return this.iuand(num);
+  };
+
+  // And `num` with `this`
+  BN.prototype.and = function and (num) {
+    if (this.length > num.length) return this.clone().iand(num);
+    return num.clone().iand(this);
+  };
+
+  BN.prototype.uand = function uand (num) {
+    if (this.length > num.length) return this.clone().iuand(num);
+    return num.clone().iuand(this);
+  };
+
+  // Xor `num` with `this` in-place
+  BN.prototype.iuxor = function iuxor (num) {
+    // a.length > b.length
+    var a;
+    var b;
+    if (this.length > num.length) {
+      a = this;
+      b = num;
+    } else {
+      a = num;
+      b = this;
+    }
+
+    for (var i = 0; i < b.length; i++) {
+      this.words[i] = a.words[i] ^ b.words[i];
+    }
+
+    if (this !== a) {
+      for (; i < a.length; i++) {
+        this.words[i] = a.words[i];
+      }
+    }
+
+    this.length = a.length;
+
+    return this.strip();
+  };
+
+  BN.prototype.ixor = function ixor (num) {
+    assert((this.negative | num.negative) === 0);
+    return this.iuxor(num);
+  };
+
+  // Xor `num` with `this`
+  BN.prototype.xor = function xor (num) {
+    if (this.length > num.length) return this.clone().ixor(num);
+    return num.clone().ixor(this);
+  };
+
+  BN.prototype.uxor = function uxor (num) {
+    if (this.length > num.length) return this.clone().iuxor(num);
+    return num.clone().iuxor(this);
+  };
+
+  // Not ``this`` with ``width`` bitwidth
+  BN.prototype.inotn = function inotn (width) {
+    assert(typeof width === 'number' && width >= 0);
+
+    var bytesNeeded = Math.ceil(width / 26) | 0;
+    var bitsLeft = width % 26;
+
+    // Extend the buffer with leading zeroes
+    this._expand(bytesNeeded);
+
+    if (bitsLeft > 0) {
+      bytesNeeded--;
+    }
+
+    // Handle complete words
+    for (var i = 0; i < bytesNeeded; i++) {
+      this.words[i] = ~this.words[i] & 0x3ffffff;
+    }
+
+    // Handle the residue
+    if (bitsLeft > 0) {
+      this.words[i] = ~this.words[i] & (0x3ffffff >> (26 - bitsLeft));
+    }
+
+    // And remove leading zeroes
+    return this.strip();
+  };
+
+  BN.prototype.notn = function notn (width) {
+    return this.clone().inotn(width);
+  };
+
+  // Set `bit` of `this`
+  BN.prototype.setn = function setn (bit, val) {
+    assert(typeof bit === 'number' && bit >= 0);
+
+    var off = (bit / 26) | 0;
+    var wbit = bit % 26;
+
+    this._expand(off + 1);
+
+    if (val) {
+      this.words[off] = this.words[off] | (1 << wbit);
+    } else {
+      this.words[off] = this.words[off] & ~(1 << wbit);
+    }
+
+    return this.strip();
+  };
+
+  // Add `num` to `this` in-place
+  BN.prototype.iadd = function iadd (num) {
+    var r;
+
+    // negative + positive
+    if (this.negative !== 0 && num.negative === 0) {
+      this.negative = 0;
+      r = this.isub(num);
+      this.negative ^= 1;
+      return this._normSign();
+
+    // positive + negative
+    } else if (this.negative === 0 && num.negative !== 0) {
+      num.negative = 0;
+      r = this.isub(num);
+      num.negative = 1;
+      return r._normSign();
+    }
+
+    // a.length > b.length
+    var a, b;
+    if (this.length > num.length) {
+      a = this;
+      b = num;
+    } else {
+      a = num;
+      b = this;
+    }
+
+    var carry = 0;
+    for (var i = 0; i < b.length; i++) {
+      r = (a.words[i] | 0) + (b.words[i] | 0) + carry;
+      this.words[i] = r & 0x3ffffff;
+      carry = r >>> 26;
+    }
+    for (; carry !== 0 && i < a.length; i++) {
+      r = (a.words[i] | 0) + carry;
+      this.words[i] = r & 0x3ffffff;
+      carry = r >>> 26;
+    }
+
+    this.length = a.length;
+    if (carry !== 0) {
+      this.words[this.length] = carry;
+      this.length++;
+    // Copy the rest of the words
+    } else if (a !== this) {
+      for (; i < a.length; i++) {
+        this.words[i] = a.words[i];
+      }
+    }
+
+    return this;
+  };
+
+  // Add `num` to `this`
+  BN.prototype.add = function add (num) {
+    var res;
+    if (num.negative !== 0 && this.negative === 0) {
+      num.negative = 0;
+      res = this.sub(num);
+      num.negative ^= 1;
+      return res;
+    } else if (num.negative === 0 && this.negative !== 0) {
+      this.negative = 0;
+      res = num.sub(this);
+      this.negative = 1;
+      return res;
+    }
+
+    if (this.length > num.length) return this.clone().iadd(num);
+
+    return num.clone().iadd(this);
+  };
+
+  // Subtract `num` from `this` in-place
+  BN.prototype.isub = function isub (num) {
+    // this - (-num) = this + num
+    if (num.negative !== 0) {
+      num.negative = 0;
+      var r = this.iadd(num);
+      num.negative = 1;
+      return r._normSign();
+
+    // -this - num = -(this + num)
+    } else if (this.negative !== 0) {
+      this.negative = 0;
+      this.iadd(num);
+      this.negative = 1;
+      return this._normSign();
+    }
+
+    // At this point both numbers are positive
+    var cmp = this.cmp(num);
+
+    // Optimization - zeroify
+    if (cmp === 0) {
+      this.negative = 0;
+      this.length = 1;
+      this.words[0] = 0;
+      return this;
+    }
+
+    // a > b
+    var a, b;
+    if (cmp > 0) {
+      a = this;
+      b = num;
+    } else {
+      a = num;
+      b = this;
+    }
+
+    var carry = 0;
+    for (var i = 0; i < b.length; i++) {
+      r = (a.words[i] | 0) - (b.words[i] | 0) + carry;
+      carry = r >> 26;
+      this.words[i] = r & 0x3ffffff;
+    }
+    for (; carry !== 0 && i < a.length; i++) {
+      r = (a.words[i] | 0) + carry;
+      carry = r >> 26;
+      this.words[i] = r & 0x3ffffff;
+    }
+
+    // Copy rest of the words
+    if (carry === 0 && i < a.length && a !== this) {
+      for (; i < a.length; i++) {
+        this.words[i] = a.words[i];
+      }
+    }
+
+    this.length = Math.max(this.length, i);
+
+    if (a !== this) {
+      this.negative = 1;
+    }
+
+    return this.strip();
+  };
+
+  // Subtract `num` from `this`
+  BN.prototype.sub = function sub (num) {
+    return this.clone().isub(num);
+  };
+
+  function smallMulTo (self, num, out) {
+    out.negative = num.negative ^ self.negative;
+    var len = (self.length + num.length) | 0;
+    out.length = len;
+    len = (len - 1) | 0;
+
+    // Peel one iteration (compiler can't do it, because of code complexity)
+    var a = self.words[0] | 0;
+    var b = num.words[0] | 0;
+    var r = a * b;
+
+    var lo = r & 0x3ffffff;
+    var carry = (r / 0x4000000) | 0;
+    out.words[0] = lo;
+
+    for (var k = 1; k < len; k++) {
+      // Sum all words with the same `i + j = k` and accumulate `ncarry`,
+      // note that ncarry could be >= 0x3ffffff
+      var ncarry = carry >>> 26;
+      var rword = carry & 0x3ffffff;
+      var maxJ = Math.min(k, num.length - 1);
+      for (var j = Math.max(0, k - self.length + 1); j <= maxJ; j++) {
+        var i = (k - j) | 0;
+        a = self.words[i] | 0;
+        b = num.words[j] | 0;
+        r = a * b + rword;
+        ncarry += (r / 0x4000000) | 0;
+        rword = r & 0x3ffffff;
+      }
+      out.words[k] = rword | 0;
+      carry = ncarry | 0;
+    }
+    if (carry !== 0) {
+      out.words[k] = carry | 0;
+    } else {
+      out.length--;
+    }
+
+    return out.strip();
+  }
+
+  // TODO(indutny): it may be reasonable to omit it for users who don't need
+  // to work with 256-bit numbers, otherwise it gives 20% improvement for 256-bit
+  // multiplication (like elliptic secp256k1).
+  var comb10MulTo = function comb10MulTo (self, num, out) {
+    var a = self.words;
+    var b = num.words;
+    var o = out.words;
+    var c = 0;
+    var lo;
+    var mid;
+    var hi;
+    var a0 = a[0] | 0;
+    var al0 = a0 & 0x1fff;
+    var ah0 = a0 >>> 13;
+    var a1 = a[1] | 0;
+    var al1 = a1 & 0x1fff;
+    var ah1 = a1 >>> 13;
+    var a2 = a[2] | 0;
+    var al2 = a2 & 0x1fff;
+    var ah2 = a2 >>> 13;
+    var a3 = a[3] | 0;
+    var al3 = a3 & 0x1fff;
+    var ah3 = a3 >>> 13;
+    var a4 = a[4] | 0;
+    var al4 = a4 & 0x1fff;
+    var ah4 = a4 >>> 13;
+    var a5 = a[5] | 0;
+    var al5 = a5 & 0x1fff;
+    var ah5 = a5 >>> 13;
+    var a6 = a[6] | 0;
+    var al6 = a6 & 0x1fff;
+    var ah6 = a6 >>> 13;
+    var a7 = a[7] | 0;
+    var al7 = a7 & 0x1fff;
+    var ah7 = a7 >>> 13;
+    var a8 = a[8] | 0;
+    var al8 = a8 & 0x1fff;
+    var ah8 = a8 >>> 13;
+    var a9 = a[9] | 0;
+    var al9 = a9 & 0x1fff;
+    var ah9 = a9 >>> 13;
+    var b0 = b[0] | 0;
+    var bl0 = b0 & 0x1fff;
+    var bh0 = b0 >>> 13;
+    var b1 = b[1] | 0;
+    var bl1 = b1 & 0x1fff;
+    var bh1 = b1 >>> 13;
+    var b2 = b[2] | 0;
+    var bl2 = b2 & 0x1fff;
+    var bh2 = b2 >>> 13;
+    var b3 = b[3] | 0;
+    var bl3 = b3 & 0x1fff;
+    var bh3 = b3 >>> 13;
+    var b4 = b[4] | 0;
+    var bl4 = b4 & 0x1fff;
+    var bh4 = b4 >>> 13;
+    var b5 = b[5] | 0;
+    var bl5 = b5 & 0x1fff;
+    var bh5 = b5 >>> 13;
+    var b6 = b[6] | 0;
+    var bl6 = b6 & 0x1fff;
+    var bh6 = b6 >>> 13;
+    var b7 = b[7] | 0;
+    var bl7 = b7 & 0x1fff;
+    var bh7 = b7 >>> 13;
+    var b8 = b[8] | 0;
+    var bl8 = b8 & 0x1fff;
+    var bh8 = b8 >>> 13;
+    var b9 = b[9] | 0;
+    var bl9 = b9 & 0x1fff;
+    var bh9 = b9 >>> 13;
+
+    out.negative = self.negative ^ num.negative;
+    out.length = 19;
+    /* k = 0 */
+    lo = Math.imul(al0, bl0);
+    mid = Math.imul(al0, bh0);
+    mid = (mid + Math.imul(ah0, bl0)) | 0;
+    hi = Math.imul(ah0, bh0);
+    var w0 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w0 >>> 26)) | 0;
+    w0 &= 0x3ffffff;
+    /* k = 1 */
+    lo = Math.imul(al1, bl0);
+    mid = Math.imul(al1, bh0);
+    mid = (mid + Math.imul(ah1, bl0)) | 0;
+    hi = Math.imul(ah1, bh0);
+    lo = (lo + Math.imul(al0, bl1)) | 0;
+    mid = (mid + Math.imul(al0, bh1)) | 0;
+    mid = (mid + Math.imul(ah0, bl1)) | 0;
+    hi = (hi + Math.imul(ah0, bh1)) | 0;
+    var w1 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w1 >>> 26)) | 0;
+    w1 &= 0x3ffffff;
+    /* k = 2 */
+    lo = Math.imul(al2, bl0);
+    mid = Math.imul(al2, bh0);
+    mid = (mid + Math.imul(ah2, bl0)) | 0;
+    hi = Math.imul(ah2, bh0);
+    lo = (lo + Math.imul(al1, bl1)) | 0;
+    mid = (mid + Math.imul(al1, bh1)) | 0;
+    mid = (mid + Math.imul(ah1, bl1)) | 0;
+    hi = (hi + Math.imul(ah1, bh1)) | 0;
+    lo = (lo + Math.imul(al0, bl2)) | 0;
+    mid = (mid + Math.imul(al0, bh2)) | 0;
+    mid = (mid + Math.imul(ah0, bl2)) | 0;
+    hi = (hi + Math.imul(ah0, bh2)) | 0;
+    var w2 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w2 >>> 26)) | 0;
+    w2 &= 0x3ffffff;
+    /* k = 3 */
+    lo = Math.imul(al3, bl0);
+    mid = Math.imul(al3, bh0);
+    mid = (mid + Math.imul(ah3, bl0)) | 0;
+    hi = Math.imul(ah3, bh0);
+    lo = (lo + Math.imul(al2, bl1)) | 0;
+    mid = (mid + Math.imul(al2, bh1)) | 0;
+    mid = (mid + Math.imul(ah2, bl1)) | 0;
+    hi = (hi + Math.imul(ah2, bh1)) | 0;
+    lo = (lo + Math.imul(al1, bl2)) | 0;
+    mid = (mid + Math.imul(al1, bh2)) | 0;
+    mid = (mid + Math.imul(ah1, bl2)) | 0;
+    hi = (hi + Math.imul(ah1, bh2)) | 0;
+    lo = (lo + Math.imul(al0, bl3)) | 0;
+    mid = (mid + Math.imul(al0, bh3)) | 0;
+    mid = (mid + Math.imul(ah0, bl3)) | 0;
+    hi = (hi + Math.imul(ah0, bh3)) | 0;
+    var w3 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w3 >>> 26)) | 0;
+    w3 &= 0x3ffffff;
+    /* k = 4 */
+    lo = Math.imul(al4, bl0);
+    mid = Math.imul(al4, bh0);
+    mid = (mid + Math.imul(ah4, bl0)) | 0;
+    hi = Math.imul(ah4, bh0);
+    lo = (lo + Math.imul(al3, bl1)) | 0;
+    mid = (mid + Math.imul(al3, bh1)) | 0;
+    mid = (mid + Math.imul(ah3, bl1)) | 0;
+    hi = (hi + Math.imul(ah3, bh1)) | 0;
+    lo = (lo + Math.imul(al2, bl2)) | 0;
+    mid = (mid + Math.imul(al2, bh2)) | 0;
+    mid = (mid + Math.imul(ah2, bl2)) | 0;
+    hi = (hi + Math.imul(ah2, bh2)) | 0;
+    lo = (lo + Math.imul(al1, bl3)) | 0;
+    mid = (mid + Math.imul(al1, bh3)) | 0;
+    mid = (mid + Math.imul(ah1, bl3)) | 0;
+    hi = (hi + Math.imul(ah1, bh3)) | 0;
+    lo = (lo + Math.imul(al0, bl4)) | 0;
+    mid = (mid + Math.imul(al0, bh4)) | 0;
+    mid = (mid + Math.imul(ah0, bl4)) | 0;
+    hi = (hi + Math.imul(ah0, bh4)) | 0;
+    var w4 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w4 >>> 26)) | 0;
+    w4 &= 0x3ffffff;
+    /* k = 5 */
+    lo = Math.imul(al5, bl0);
+    mid = Math.imul(al5, bh0);
+    mid = (mid + Math.imul(ah5, bl0)) | 0;
+    hi = Math.imul(ah5, bh0);
+    lo = (lo + Math.imul(al4, bl1)) | 0;
+    mid = (mid + Math.imul(al4, bh1)) | 0;
+    mid = (mid + Math.imul(ah4, bl1)) | 0;
+    hi = (hi + Math.imul(ah4, bh1)) | 0;
+    lo = (lo + Math.imul(al3, bl2)) | 0;
+    mid = (mid + Math.imul(al3, bh2)) | 0;
+    mid = (mid + Math.imul(ah3, bl2)) | 0;
+    hi = (hi + Math.imul(ah3, bh2)) | 0;
+    lo = (lo + Math.imul(al2, bl3)) | 0;
+    mid = (mid + Math.imul(al2, bh3)) | 0;
+    mid = (mid + Math.imul(ah2, bl3)) | 0;
+    hi = (hi + Math.imul(ah2, bh3)) | 0;
+    lo = (lo + Math.imul(al1, bl4)) | 0;
+    mid = (mid + Math.imul(al1, bh4)) | 0;
+    mid = (mid + Math.imul(ah1, bl4)) | 0;
+    hi = (hi + Math.imul(ah1, bh4)) | 0;
+    lo = (lo + Math.imul(al0, bl5)) | 0;
+    mid = (mid + Math.imul(al0, bh5)) | 0;
+    mid = (mid + Math.imul(ah0, bl5)) | 0;
+    hi = (hi + Math.imul(ah0, bh5)) | 0;
+    var w5 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w5 >>> 26)) | 0;
+    w5 &= 0x3ffffff;
+    /* k = 6 */
+    lo = Math.imul(al6, bl0);
+    mid = Math.imul(al6, bh0);
+    mid = (mid + Math.imul(ah6, bl0)) | 0;
+    hi = Math.imul(ah6, bh0);
+    lo = (lo + Math.imul(al5, bl1)) | 0;
+    mid = (mid + Math.imul(al5, bh1)) | 0;
+    mid = (mid + Math.imul(ah5, bl1)) | 0;
+    hi = (hi + Math.imul(ah5, bh1)) | 0;
+    lo = (lo + Math.imul(al4, bl2)) | 0;
+    mid = (mid + Math.imul(al4, bh2)) | 0;
+    mid = (mid + Math.imul(ah4, bl2)) | 0;
+    hi = (hi + Math.imul(ah4, bh2)) | 0;
+    lo = (lo + Math.imul(al3, bl3)) | 0;
+    mid = (mid + Math.imul(al3, bh3)) | 0;
+    mid = (mid + Math.imul(ah3, bl3)) | 0;
+    hi = (hi + Math.imul(ah3, bh3)) | 0;
+    lo = (lo + Math.imul(al2, bl4)) | 0;
+    mid = (mid + Math.imul(al2, bh4)) | 0;
+    mid = (mid + Math.imul(ah2, bl4)) | 0;
+    hi = (hi + Math.imul(ah2, bh4)) | 0;
+    lo = (lo + Math.imul(al1, bl5)) | 0;
+    mid = (mid + Math.imul(al1, bh5)) | 0;
+    mid = (mid + Math.imul(ah1, bl5)) | 0;
+    hi = (hi + Math.imul(ah1, bh5)) | 0;
+    lo = (lo + Math.imul(al0, bl6)) | 0;
+    mid = (mid + Math.imul(al0, bh6)) | 0;
+    mid = (mid + Math.imul(ah0, bl6)) | 0;
+    hi = (hi + Math.imul(ah0, bh6)) | 0;
+    var w6 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w6 >>> 26)) | 0;
+    w6 &= 0x3ffffff;
+    /* k = 7 */
+    lo = Math.imul(al7, bl0);
+    mid = Math.imul(al7, bh0);
+    mid = (mid + Math.imul(ah7, bl0)) | 0;
+    hi = Math.imul(ah7, bh0);
+    lo = (lo + Math.imul(al6, bl1)) | 0;
+    mid = (mid + Math.imul(al6, bh1)) | 0;
+    mid = (mid + Math.imul(ah6, bl1)) | 0;
+    hi = (hi + Math.imul(ah6, bh1)) | 0;
+    lo = (lo + Math.imul(al5, bl2)) | 0;
+    mid = (mid + Math.imul(al5, bh2)) | 0;
+    mid = (mid + Math.imul(ah5, bl2)) | 0;
+    hi = (hi + Math.imul(ah5, bh2)) | 0;
+    lo = (lo + Math.imul(al4, bl3)) | 0;
+    mid = (mid + Math.imul(al4, bh3)) | 0;
+    mid = (mid + Math.imul(ah4, bl3)) | 0;
+    hi = (hi + Math.imul(ah4, bh3)) | 0;
+    lo = (lo + Math.imul(al3, bl4)) | 0;
+    mid = (mid + Math.imul(al3, bh4)) | 0;
+    mid = (mid + Math.imul(ah3, bl4)) | 0;
+    hi = (hi + Math.imul(ah3, bh4)) | 0;
+    lo = (lo + Math.imul(al2, bl5)) | 0;
+    mid = (mid + Math.imul(al2, bh5)) | 0;
+    mid = (mid + Math.imul(ah2, bl5)) | 0;
+    hi = (hi + Math.imul(ah2, bh5)) | 0;
+    lo = (lo + Math.imul(al1, bl6)) | 0;
+    mid = (mid + Math.imul(al1, bh6)) | 0;
+    mid = (mid + Math.imul(ah1, bl6)) | 0;
+    hi = (hi + Math.imul(ah1, bh6)) | 0;
+    lo = (lo + Math.imul(al0, bl7)) | 0;
+    mid = (mid + Math.imul(al0, bh7)) | 0;
+    mid = (mid + Math.imul(ah0, bl7)) | 0;
+    hi = (hi + Math.imul(ah0, bh7)) | 0;
+    var w7 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w7 >>> 26)) | 0;
+    w7 &= 0x3ffffff;
+    /* k = 8 */
+    lo = Math.imul(al8, bl0);
+    mid = Math.imul(al8, bh0);
+    mid = (mid + Math.imul(ah8, bl0)) | 0;
+    hi = Math.imul(ah8, bh0);
+    lo = (lo + Math.imul(al7, bl1)) | 0;
+    mid = (mid + Math.imul(al7, bh1)) | 0;
+    mid = (mid + Math.imul(ah7, bl1)) | 0;
+    hi = (hi + Math.imul(ah7, bh1)) | 0;
+    lo = (lo + Math.imul(al6, bl2)) | 0;
+    mid = (mid + Math.imul(al6, bh2)) | 0;
+    mid = (mid + Math.imul(ah6, bl2)) | 0;
+    hi = (hi + Math.imul(ah6, bh2)) | 0;
+    lo = (lo + Math.imul(al5, bl3)) | 0;
+    mid = (mid + Math.imul(al5, bh3)) | 0;
+    mid = (mid + Math.imul(ah5, bl3)) | 0;
+    hi = (hi + Math.imul(ah5, bh3)) | 0;
+    lo = (lo + Math.imul(al4, bl4)) | 0;
+    mid = (mid + Math.imul(al4, bh4)) | 0;
+    mid = (mid + Math.imul(ah4, bl4)) | 0;
+    hi = (hi + Math.imul(ah4, bh4)) | 0;
+    lo = (lo + Math.imul(al3, bl5)) | 0;
+    mid = (mid + Math.imul(al3, bh5)) | 0;
+    mid = (mid + Math.imul(ah3, bl5)) | 0;
+    hi = (hi + Math.imul(ah3, bh5)) | 0;
+    lo = (lo + Math.imul(al2, bl6)) | 0;
+    mid = (mid + Math.imul(al2, bh6)) | 0;
+    mid = (mid + Math.imul(ah2, bl6)) | 0;
+    hi = (hi + Math.imul(ah2, bh6)) | 0;
+    lo = (lo + Math.imul(al1, bl7)) | 0;
+    mid = (mid + Math.imul(al1, bh7)) | 0;
+    mid = (mid + Math.imul(ah1, bl7)) | 0;
+    hi = (hi + Math.imul(ah1, bh7)) | 0;
+    lo = (lo + Math.imul(al0, bl8)) | 0;
+    mid = (mid + Math.imul(al0, bh8)) | 0;
+    mid = (mid + Math.imul(ah0, bl8)) | 0;
+    hi = (hi + Math.imul(ah0, bh8)) | 0;
+    var w8 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w8 >>> 26)) | 0;
+    w8 &= 0x3ffffff;
+    /* k = 9 */
+    lo = Math.imul(al9, bl0);
+    mid = Math.imul(al9, bh0);
+    mid = (mid + Math.imul(ah9, bl0)) | 0;
+    hi = Math.imul(ah9, bh0);
+    lo = (lo + Math.imul(al8, bl1)) | 0;
+    mid = (mid + Math.imul(al8, bh1)) | 0;
+    mid = (mid + Math.imul(ah8, bl1)) | 0;
+    hi = (hi + Math.imul(ah8, bh1)) | 0;
+    lo = (lo + Math.imul(al7, bl2)) | 0;
+    mid = (mid + Math.imul(al7, bh2)) | 0;
+    mid = (mid + Math.imul(ah7, bl2)) | 0;
+    hi = (hi + Math.imul(ah7, bh2)) | 0;
+    lo = (lo + Math.imul(al6, bl3)) | 0;
+    mid = (mid + Math.imul(al6, bh3)) | 0;
+    mid = (mid + Math.imul(ah6, bl3)) | 0;
+    hi = (hi + Math.imul(ah6, bh3)) | 0;
+    lo = (lo + Math.imul(al5, bl4)) | 0;
+    mid = (mid + Math.imul(al5, bh4)) | 0;
+    mid = (mid + Math.imul(ah5, bl4)) | 0;
+    hi = (hi + Math.imul(ah5, bh4)) | 0;
+    lo = (lo + Math.imul(al4, bl5)) | 0;
+    mid = (mid + Math.imul(al4, bh5)) | 0;
+    mid = (mid + Math.imul(ah4, bl5)) | 0;
+    hi = (hi + Math.imul(ah4, bh5)) | 0;
+    lo = (lo + Math.imul(al3, bl6)) | 0;
+    mid = (mid + Math.imul(al3, bh6)) | 0;
+    mid = (mid + Math.imul(ah3, bl6)) | 0;
+    hi = (hi + Math.imul(ah3, bh6)) | 0;
+    lo = (lo + Math.imul(al2, bl7)) | 0;
+    mid = (mid + Math.imul(al2, bh7)) | 0;
+    mid = (mid + Math.imul(ah2, bl7)) | 0;
+    hi = (hi + Math.imul(ah2, bh7)) | 0;
+    lo = (lo + Math.imul(al1, bl8)) | 0;
+    mid = (mid + Math.imul(al1, bh8)) | 0;
+    mid = (mid + Math.imul(ah1, bl8)) | 0;
+    hi = (hi + Math.imul(ah1, bh8)) | 0;
+    lo = (lo + Math.imul(al0, bl9)) | 0;
+    mid = (mid + Math.imul(al0, bh9)) | 0;
+    mid = (mid + Math.imul(ah0, bl9)) | 0;
+    hi = (hi + Math.imul(ah0, bh9)) | 0;
+    var w9 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w9 >>> 26)) | 0;
+    w9 &= 0x3ffffff;
+    /* k = 10 */
+    lo = Math.imul(al9, bl1);
+    mid = Math.imul(al9, bh1);
+    mid = (mid + Math.imul(ah9, bl1)) | 0;
+    hi = Math.imul(ah9, bh1);
+    lo = (lo + Math.imul(al8, bl2)) | 0;
+    mid = (mid + Math.imul(al8, bh2)) | 0;
+    mid = (mid + Math.imul(ah8, bl2)) | 0;
+    hi = (hi + Math.imul(ah8, bh2)) | 0;
+    lo = (lo + Math.imul(al7, bl3)) | 0;
+    mid = (mid + Math.imul(al7, bh3)) | 0;
+    mid = (mid + Math.imul(ah7, bl3)) | 0;
+    hi = (hi + Math.imul(ah7, bh3)) | 0;
+    lo = (lo + Math.imul(al6, bl4)) | 0;
+    mid = (mid + Math.imul(al6, bh4)) | 0;
+    mid = (mid + Math.imul(ah6, bl4)) | 0;
+    hi = (hi + Math.imul(ah6, bh4)) | 0;
+    lo = (lo + Math.imul(al5, bl5)) | 0;
+    mid = (mid + Math.imul(al5, bh5)) | 0;
+    mid = (mid + Math.imul(ah5, bl5)) | 0;
+    hi = (hi + Math.imul(ah5, bh5)) | 0;
+    lo = (lo + Math.imul(al4, bl6)) | 0;
+    mid = (mid + Math.imul(al4, bh6)) | 0;
+    mid = (mid + Math.imul(ah4, bl6)) | 0;
+    hi = (hi + Math.imul(ah4, bh6)) | 0;
+    lo = (lo + Math.imul(al3, bl7)) | 0;
+    mid = (mid + Math.imul(al3, bh7)) | 0;
+    mid = (mid + Math.imul(ah3, bl7)) | 0;
+    hi = (hi + Math.imul(ah3, bh7)) | 0;
+    lo = (lo + Math.imul(al2, bl8)) | 0;
+    mid = (mid + Math.imul(al2, bh8)) | 0;
+    mid = (mid + Math.imul(ah2, bl8)) | 0;
+    hi = (hi + Math.imul(ah2, bh8)) | 0;
+    lo = (lo + Math.imul(al1, bl9)) | 0;
+    mid = (mid + Math.imul(al1, bh9)) | 0;
+    mid = (mid + Math.imul(ah1, bl9)) | 0;
+    hi = (hi + Math.imul(ah1, bh9)) | 0;
+    var w10 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w10 >>> 26)) | 0;
+    w10 &= 0x3ffffff;
+    /* k = 11 */
+    lo = Math.imul(al9, bl2);
+    mid = Math.imul(al9, bh2);
+    mid = (mid + Math.imul(ah9, bl2)) | 0;
+    hi = Math.imul(ah9, bh2);
+    lo = (lo + Math.imul(al8, bl3)) | 0;
+    mid = (mid + Math.imul(al8, bh3)) | 0;
+    mid = (mid + Math.imul(ah8, bl3)) | 0;
+    hi = (hi + Math.imul(ah8, bh3)) | 0;
+    lo = (lo + Math.imul(al7, bl4)) | 0;
+    mid = (mid + Math.imul(al7, bh4)) | 0;
+    mid = (mid + Math.imul(ah7, bl4)) | 0;
+    hi = (hi + Math.imul(ah7, bh4)) | 0;
+    lo = (lo + Math.imul(al6, bl5)) | 0;
+    mid = (mid + Math.imul(al6, bh5)) | 0;
+    mid = (mid + Math.imul(ah6, bl5)) | 0;
+    hi = (hi + Math.imul(ah6, bh5)) | 0;
+    lo = (lo + Math.imul(al5, bl6)) | 0;
+    mid = (mid + Math.imul(al5, bh6)) | 0;
+    mid = (mid + Math.imul(ah5, bl6)) | 0;
+    hi = (hi + Math.imul(ah5, bh6)) | 0;
+    lo = (lo + Math.imul(al4, bl7)) | 0;
+    mid = (mid + Math.imul(al4, bh7)) | 0;
+    mid = (mid + Math.imul(ah4, bl7)) | 0;
+    hi = (hi + Math.imul(ah4, bh7)) | 0;
+    lo = (lo + Math.imul(al3, bl8)) | 0;
+    mid = (mid + Math.imul(al3, bh8)) | 0;
+    mid = (mid + Math.imul(ah3, bl8)) | 0;
+    hi = (hi + Math.imul(ah3, bh8)) | 0;
+    lo = (lo + Math.imul(al2, bl9)) | 0;
+    mid = (mid + Math.imul(al2, bh9)) | 0;
+    mid = (mid + Math.imul(ah2, bl9)) | 0;
+    hi = (hi + Math.imul(ah2, bh9)) | 0;
+    var w11 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w11 >>> 26)) | 0;
+    w11 &= 0x3ffffff;
+    /* k = 12 */
+    lo = Math.imul(al9, bl3);
+    mid = Math.imul(al9, bh3);
+    mid = (mid + Math.imul(ah9, bl3)) | 0;
+    hi = Math.imul(ah9, bh3);
+    lo = (lo + Math.imul(al8, bl4)) | 0;
+    mid = (mid + Math.imul(al8, bh4)) | 0;
+    mid = (mid + Math.imul(ah8, bl4)) | 0;
+    hi = (hi + Math.imul(ah8, bh4)) | 0;
+    lo = (lo + Math.imul(al7, bl5)) | 0;
+    mid = (mid + Math.imul(al7, bh5)) | 0;
+    mid = (mid + Math.imul(ah7, bl5)) | 0;
+    hi = (hi + Math.imul(ah7, bh5)) | 0;
+    lo = (lo + Math.imul(al6, bl6)) | 0;
+    mid = (mid + Math.imul(al6, bh6)) | 0;
+    mid = (mid + Math.imul(ah6, bl6)) | 0;
+    hi = (hi + Math.imul(ah6, bh6)) | 0;
+    lo = (lo + Math.imul(al5, bl7)) | 0;
+    mid = (mid + Math.imul(al5, bh7)) | 0;
+    mid = (mid + Math.imul(ah5, bl7)) | 0;
+    hi = (hi + Math.imul(ah5, bh7)) | 0;
+    lo = (lo + Math.imul(al4, bl8)) | 0;
+    mid = (mid + Math.imul(al4, bh8)) | 0;
+    mid = (mid + Math.imul(ah4, bl8)) | 0;
+    hi = (hi + Math.imul(ah4, bh8)) | 0;
+    lo = (lo + Math.imul(al3, bl9)) | 0;
+    mid = (mid + Math.imul(al3, bh9)) | 0;
+    mid = (mid + Math.imul(ah3, bl9)) | 0;
+    hi = (hi + Math.imul(ah3, bh9)) | 0;
+    var w12 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w12 >>> 26)) | 0;
+    w12 &= 0x3ffffff;
+    /* k = 13 */
+    lo = Math.imul(al9, bl4);
+    mid = Math.imul(al9, bh4);
+    mid = (mid + Math.imul(ah9, bl4)) | 0;
+    hi = Math.imul(ah9, bh4);
+    lo = (lo + Math.imul(al8, bl5)) | 0;
+    mid = (mid + Math.imul(al8, bh5)) | 0;
+    mid = (mid + Math.imul(ah8, bl5)) | 0;
+    hi = (hi + Math.imul(ah8, bh5)) | 0;
+    lo = (lo + Math.imul(al7, bl6)) | 0;
+    mid = (mid + Math.imul(al7, bh6)) | 0;
+    mid = (mid + Math.imul(ah7, bl6)) | 0;
+    hi = (hi + Math.imul(ah7, bh6)) | 0;
+    lo = (lo + Math.imul(al6, bl7)) | 0;
+    mid = (mid + Math.imul(al6, bh7)) | 0;
+    mid = (mid + Math.imul(ah6, bl7)) | 0;
+    hi = (hi + Math.imul(ah6, bh7)) | 0;
+    lo = (lo + Math.imul(al5, bl8)) | 0;
+    mid = (mid + Math.imul(al5, bh8)) | 0;
+    mid = (mid + Math.imul(ah5, bl8)) | 0;
+    hi = (hi + Math.imul(ah5, bh8)) | 0;
+    lo = (lo + Math.imul(al4, bl9)) | 0;
+    mid = (mid + Math.imul(al4, bh9)) | 0;
+    mid = (mid + Math.imul(ah4, bl9)) | 0;
+    hi = (hi + Math.imul(ah4, bh9)) | 0;
+    var w13 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w13 >>> 26)) | 0;
+    w13 &= 0x3ffffff;
+    /* k = 14 */
+    lo = Math.imul(al9, bl5);
+    mid = Math.imul(al9, bh5);
+    mid = (mid + Math.imul(ah9, bl5)) | 0;
+    hi = Math.imul(ah9, bh5);
+    lo = (lo + Math.imul(al8, bl6)) | 0;
+    mid = (mid + Math.imul(al8, bh6)) | 0;
+    mid = (mid + Math.imul(ah8, bl6)) | 0;
+    hi = (hi + Math.imul(ah8, bh6)) | 0;
+    lo = (lo + Math.imul(al7, bl7)) | 0;
+    mid = (mid + Math.imul(al7, bh7)) | 0;
+    mid = (mid + Math.imul(ah7, bl7)) | 0;
+    hi = (hi + Math.imul(ah7, bh7)) | 0;
+    lo = (lo + Math.imul(al6, bl8)) | 0;
+    mid = (mid + Math.imul(al6, bh8)) | 0;
+    mid = (mid + Math.imul(ah6, bl8)) | 0;
+    hi = (hi + Math.imul(ah6, bh8)) | 0;
+    lo = (lo + Math.imul(al5, bl9)) | 0;
+    mid = (mid + Math.imul(al5, bh9)) | 0;
+    mid = (mid + Math.imul(ah5, bl9)) | 0;
+    hi = (hi + Math.imul(ah5, bh9)) | 0;
+    var w14 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w14 >>> 26)) | 0;
+    w14 &= 0x3ffffff;
+    /* k = 15 */
+    lo = Math.imul(al9, bl6);
+    mid = Math.imul(al9, bh6);
+    mid = (mid + Math.imul(ah9, bl6)) | 0;
+    hi = Math.imul(ah9, bh6);
+    lo = (lo + Math.imul(al8, bl7)) | 0;
+    mid = (mid + Math.imul(al8, bh7)) | 0;
+    mid = (mid + Math.imul(ah8, bl7)) | 0;
+    hi = (hi + Math.imul(ah8, bh7)) | 0;
+    lo = (lo + Math.imul(al7, bl8)) | 0;
+    mid = (mid + Math.imul(al7, bh8)) | 0;
+    mid = (mid + Math.imul(ah7, bl8)) | 0;
+    hi = (hi + Math.imul(ah7, bh8)) | 0;
+    lo = (lo + Math.imul(al6, bl9)) | 0;
+    mid = (mid + Math.imul(al6, bh9)) | 0;
+    mid = (mid + Math.imul(ah6, bl9)) | 0;
+    hi = (hi + Math.imul(ah6, bh9)) | 0;
+    var w15 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w15 >>> 26)) | 0;
+    w15 &= 0x3ffffff;
+    /* k = 16 */
+    lo = Math.imul(al9, bl7);
+    mid = Math.imul(al9, bh7);
+    mid = (mid + Math.imul(ah9, bl7)) | 0;
+    hi = Math.imul(ah9, bh7);
+    lo = (lo + Math.imul(al8, bl8)) | 0;
+    mid = (mid + Math.imul(al8, bh8)) | 0;
+    mid = (mid + Math.imul(ah8, bl8)) | 0;
+    hi = (hi + Math.imul(ah8, bh8)) | 0;
+    lo = (lo + Math.imul(al7, bl9)) | 0;
+    mid = (mid + Math.imul(al7, bh9)) | 0;
+    mid = (mid + Math.imul(ah7, bl9)) | 0;
+    hi = (hi + Math.imul(ah7, bh9)) | 0;
+    var w16 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w16 >>> 26)) | 0;
+    w16 &= 0x3ffffff;
+    /* k = 17 */
+    lo = Math.imul(al9, bl8);
+    mid = Math.imul(al9, bh8);
+    mid = (mid + Math.imul(ah9, bl8)) | 0;
+    hi = Math.imul(ah9, bh8);
+    lo = (lo + Math.imul(al8, bl9)) | 0;
+    mid = (mid + Math.imul(al8, bh9)) | 0;
+    mid = (mid + Math.imul(ah8, bl9)) | 0;
+    hi = (hi + Math.imul(ah8, bh9)) | 0;
+    var w17 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w17 >>> 26)) | 0;
+    w17 &= 0x3ffffff;
+    /* k = 18 */
+    lo = Math.imul(al9, bl9);
+    mid = Math.imul(al9, bh9);
+    mid = (mid + Math.imul(ah9, bl9)) | 0;
+    hi = Math.imul(ah9, bh9);
+    var w18 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w18 >>> 26)) | 0;
+    w18 &= 0x3ffffff;
+    o[0] = w0;
+    o[1] = w1;
+    o[2] = w2;
+    o[3] = w3;
+    o[4] = w4;
+    o[5] = w5;
+    o[6] = w6;
+    o[7] = w7;
+    o[8] = w8;
+    o[9] = w9;
+    o[10] = w10;
+    o[11] = w11;
+    o[12] = w12;
+    o[13] = w13;
+    o[14] = w14;
+    o[15] = w15;
+    o[16] = w16;
+    o[17] = w17;
+    o[18] = w18;
+    if (c !== 0) {
+      o[19] = c;
+      out.length++;
+    }
+    return out;
+  };
+
+  // Polyfill comb
+  if (!Math.imul) {
+    comb10MulTo = smallMulTo;
+  }
+
+  function bigMulTo (self, num, out) {
+    out.negative = num.negative ^ self.negative;
+    out.length = self.length + num.length;
+
+    var carry = 0;
+    var hncarry = 0;
+    for (var k = 0; k < out.length - 1; k++) {
+      // Sum all words with the same `i + j = k` and accumulate `ncarry`,
+      // note that ncarry could be >= 0x3ffffff
+      var ncarry = hncarry;
+      hncarry = 0;
+      var rword = carry & 0x3ffffff;
+      var maxJ = Math.min(k, num.length - 1);
+      for (var j = Math.max(0, k - self.length + 1); j <= maxJ; j++) {
+        var i = k - j;
+        var a = self.words[i] | 0;
+        var b = num.words[j] | 0;
+        var r = a * b;
+
+        var lo = r & 0x3ffffff;
+        ncarry = (ncarry + ((r / 0x4000000) | 0)) | 0;
+        lo = (lo + rword) | 0;
+        rword = lo & 0x3ffffff;
+        ncarry = (ncarry + (lo >>> 26)) | 0;
+
+        hncarry += ncarry >>> 26;
+        ncarry &= 0x3ffffff;
+      }
+      out.words[k] = rword;
+      carry = ncarry;
+      ncarry = hncarry;
+    }
+    if (carry !== 0) {
+      out.words[k] = carry;
+    } else {
+      out.length--;
+    }
+
+    return out.strip();
+  }
+
+  function jumboMulTo (self, num, out) {
+    var fftm = new FFTM();
+    return fftm.mulp(self, num, out);
+  }
+
+  BN.prototype.mulTo = function mulTo (num, out) {
+    var res;
+    var len = this.length + num.length;
+    if (this.length === 10 && num.length === 10) {
+      res = comb10MulTo(this, num, out);
+    } else if (len < 63) {
+      res = smallMulTo(this, num, out);
+    } else if (len < 1024) {
+      res = bigMulTo(this, num, out);
+    } else {
+      res = jumboMulTo(this, num, out);
+    }
+
+    return res;
+  };
+
+  // Cooley-Tukey algorithm for FFT
+  // slightly revisited to rely on looping instead of recursion
+
+  function FFTM (x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  FFTM.prototype.makeRBT = function makeRBT (N) {
+    var t = new Array(N);
+    var l = BN.prototype._countBits(N) - 1;
+    for (var i = 0; i < N; i++) {
+      t[i] = this.revBin(i, l, N);
+    }
+
+    return t;
+  };
+
+  // Returns binary-reversed representation of `x`
+  FFTM.prototype.revBin = function revBin (x, l, N) {
+    if (x === 0 || x === N - 1) return x;
+
+    var rb = 0;
+    for (var i = 0; i < l; i++) {
+      rb |= (x & 1) << (l - i - 1);
+      x >>= 1;
+    }
+
+    return rb;
+  };
+
+  // Performs "tweedling" phase, therefore 'emulating'
+  // behaviour of the recursive algorithm
+  FFTM.prototype.permute = function permute (rbt, rws, iws, rtws, itws, N) {
+    for (var i = 0; i < N; i++) {
+      rtws[i] = rws[rbt[i]];
+      itws[i] = iws[rbt[i]];
+    }
+  };
+
+  FFTM.prototype.transform = function transform (rws, iws, rtws, itws, N, rbt) {
+    this.permute(rbt, rws, iws, rtws, itws, N);
+
+    for (var s = 1; s < N; s <<= 1) {
+      var l = s << 1;
+
+      var rtwdf = Math.cos(2 * Math.PI / l);
+      var itwdf = Math.sin(2 * Math.PI / l);
+
+      for (var p = 0; p < N; p += l) {
+        var rtwdf_ = rtwdf;
+        var itwdf_ = itwdf;
+
+        for (var j = 0; j < s; j++) {
+          var re = rtws[p + j];
+          var ie = itws[p + j];
+
+          var ro = rtws[p + j + s];
+          var io = itws[p + j + s];
+
+          var rx = rtwdf_ * ro - itwdf_ * io;
+
+          io = rtwdf_ * io + itwdf_ * ro;
+          ro = rx;
+
+          rtws[p + j] = re + ro;
+          itws[p + j] = ie + io;
+
+          rtws[p + j + s] = re - ro;
+          itws[p + j + s] = ie - io;
+
+          /* jshint maxdepth : false */
+          if (j !== l) {
+            rx = rtwdf * rtwdf_ - itwdf * itwdf_;
+
+            itwdf_ = rtwdf * itwdf_ + itwdf * rtwdf_;
+            rtwdf_ = rx;
+          }
+        }
+      }
+    }
+  };
+
+  FFTM.prototype.guessLen13b = function guessLen13b (n, m) {
+    var N = Math.max(m, n) | 1;
+    var odd = N & 1;
+    var i = 0;
+    for (N = N / 2 | 0; N; N = N >>> 1) {
+      i++;
+    }
+
+    return 1 << i + 1 + odd;
+  };
+
+  FFTM.prototype.conjugate = function conjugate (rws, iws, N) {
+    if (N <= 1) return;
+
+    for (var i = 0; i < N / 2; i++) {
+      var t = rws[i];
+
+      rws[i] = rws[N - i - 1];
+      rws[N - i - 1] = t;
+
+      t = iws[i];
+
+      iws[i] = -iws[N - i - 1];
+      iws[N - i - 1] = -t;
+    }
+  };
+
+  FFTM.prototype.normalize13b = function normalize13b (ws, N) {
+    var carry = 0;
+    for (var i = 0; i < N / 2; i++) {
+      var w = Math.round(ws[2 * i + 1] / N) * 0x2000 +
+        Math.round(ws[2 * i] / N) +
+        carry;
+
+      ws[i] = w & 0x3ffffff;
+
+      if (w < 0x4000000) {
+        carry = 0;
+      } else {
+        carry = w / 0x4000000 | 0;
+      }
+    }
+
+    return ws;
+  };
+
+  FFTM.prototype.convert13b = function convert13b (ws, len, rws, N) {
+    var carry = 0;
+    for (var i = 0; i < len; i++) {
+      carry = carry + (ws[i] | 0);
+
+      rws[2 * i] = carry & 0x1fff; carry = carry >>> 13;
+      rws[2 * i + 1] = carry & 0x1fff; carry = carry >>> 13;
+    }
+
+    // Pad with zeroes
+    for (i = 2 * len; i < N; ++i) {
+      rws[i] = 0;
+    }
+
+    assert(carry === 0);
+    assert((carry & ~0x1fff) === 0);
+  };
+
+  FFTM.prototype.stub = function stub (N) {
+    var ph = new Array(N);
+    for (var i = 0; i < N; i++) {
+      ph[i] = 0;
+    }
+
+    return ph;
+  };
+
+  FFTM.prototype.mulp = function mulp (x, y, out) {
+    var N = 2 * this.guessLen13b(x.length, y.length);
+
+    var rbt = this.makeRBT(N);
+
+    var _ = this.stub(N);
+
+    var rws = new Array(N);
+    var rwst = new Array(N);
+    var iwst = new Array(N);
+
+    var nrws = new Array(N);
+    var nrwst = new Array(N);
+    var niwst = new Array(N);
+
+    var rmws = out.words;
+    rmws.length = N;
+
+    this.convert13b(x.words, x.length, rws, N);
+    this.convert13b(y.words, y.length, nrws, N);
+
+    this.transform(rws, _, rwst, iwst, N, rbt);
+    this.transform(nrws, _, nrwst, niwst, N, rbt);
+
+    for (var i = 0; i < N; i++) {
+      var rx = rwst[i] * nrwst[i] - iwst[i] * niwst[i];
+      iwst[i] = rwst[i] * niwst[i] + iwst[i] * nrwst[i];
+      rwst[i] = rx;
+    }
+
+    this.conjugate(rwst, iwst, N);
+    this.transform(rwst, iwst, rmws, _, N, rbt);
+    this.conjugate(rmws, _, N);
+    this.normalize13b(rmws, N);
+
+    out.negative = x.negative ^ y.negative;
+    out.length = x.length + y.length;
+    return out.strip();
+  };
+
+  // Multiply `this` by `num`
+  BN.prototype.mul = function mul (num) {
+    var out = new BN(null);
+    out.words = new Array(this.length + num.length);
+    return this.mulTo(num, out);
+  };
+
+  // Multiply employing FFT
+  BN.prototype.mulf = function mulf (num) {
+    var out = new BN(null);
+    out.words = new Array(this.length + num.length);
+    return jumboMulTo(this, num, out);
+  };
+
+  // In-place Multiplication
+  BN.prototype.imul = function imul (num) {
+    return this.clone().mulTo(num, this);
+  };
+
+  BN.prototype.imuln = function imuln (num) {
+    assert(typeof num === 'number');
+    assert(num < 0x4000000);
+
+    // Carry
+    var carry = 0;
+    for (var i = 0; i < this.length; i++) {
+      var w = (this.words[i] | 0) * num;
+      var lo = (w & 0x3ffffff) + (carry & 0x3ffffff);
+      carry >>= 26;
+      carry += (w / 0x4000000) | 0;
+      // NOTE: lo is 27bit maximum
+      carry += lo >>> 26;
+      this.words[i] = lo & 0x3ffffff;
+    }
+
+    if (carry !== 0) {
+      this.words[i] = carry;
+      this.length++;
+    }
+
+    return this;
+  };
+
+  BN.prototype.muln = function muln (num) {
+    return this.clone().imuln(num);
+  };
+
+  // `this` * `this`
+  BN.prototype.sqr = function sqr () {
+    return this.mul(this);
+  };
+
+  // `this` * `this` in-place
+  BN.prototype.isqr = function isqr () {
+    return this.imul(this.clone());
+  };
+
+  // Math.pow(`this`, `num`)
+  BN.prototype.pow = function pow (num) {
+    var w = toBitArray(num);
+    if (w.length === 0) return new BN(1);
+
+    // Skip leading zeroes
+    var res = this;
+    for (var i = 0; i < w.length; i++, res = res.sqr()) {
+      if (w[i] !== 0) break;
+    }
+
+    if (++i < w.length) {
+      for (var q = res.sqr(); i < w.length; i++, q = q.sqr()) {
+        if (w[i] === 0) continue;
+
+        res = res.mul(q);
+      }
+    }
+
+    return res;
+  };
+
+  // Shift-left in-place
+  BN.prototype.iushln = function iushln (bits) {
+    assert(typeof bits === 'number' && bits >= 0);
+    var r = bits % 26;
+    var s = (bits - r) / 26;
+    var carryMask = (0x3ffffff >>> (26 - r)) << (26 - r);
+    var i;
+
+    if (r !== 0) {
+      var carry = 0;
+
+      for (i = 0; i < this.length; i++) {
+        var newCarry = this.words[i] & carryMask;
+        var c = ((this.words[i] | 0) - newCarry) << r;
+        this.words[i] = c | carry;
+        carry = newCarry >>> (26 - r);
+      }
+
+      if (carry) {
+        this.words[i] = carry;
+        this.length++;
+      }
+    }
+
+    if (s !== 0) {
+      for (i = this.length - 1; i >= 0; i--) {
+        this.words[i + s] = this.words[i];
+      }
+
+      for (i = 0; i < s; i++) {
+        this.words[i] = 0;
+      }
+
+      this.length += s;
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.ishln = function ishln (bits) {
+    // TODO(indutny): implement me
+    assert(this.negative === 0);
+    return this.iushln(bits);
+  };
+
+  // Shift-right in-place
+  // NOTE: `hint` is a lowest bit before trailing zeroes
+  // NOTE: if `extended` is present - it will be filled with destroyed bits
+  BN.prototype.iushrn = function iushrn (bits, hint, extended) {
+    assert(typeof bits === 'number' && bits >= 0);
+    var h;
+    if (hint) {
+      h = (hint - (hint % 26)) / 26;
+    } else {
+      h = 0;
+    }
+
+    var r = bits % 26;
+    var s = Math.min((bits - r) / 26, this.length);
+    var mask = 0x3ffffff ^ ((0x3ffffff >>> r) << r);
+    var maskedWords = extended;
+
+    h -= s;
+    h = Math.max(0, h);
+
+    // Extended mode, copy masked part
+    if (maskedWords) {
+      for (var i = 0; i < s; i++) {
+        maskedWords.words[i] = this.words[i];
+      }
+      maskedWords.length = s;
+    }
+
+    if (s === 0) {
+      // No-op, we should not move anything at all
+    } else if (this.length > s) {
+      this.length -= s;
+      for (i = 0; i < this.length; i++) {
+        this.words[i] = this.words[i + s];
+      }
+    } else {
+      this.words[0] = 0;
+      this.length = 1;
+    }
+
+    var carry = 0;
+    for (i = this.length - 1; i >= 0 && (carry !== 0 || i >= h); i--) {
+      var word = this.words[i] | 0;
+      this.words[i] = (carry << (26 - r)) | (word >>> r);
+      carry = word & mask;
+    }
+
+    // Push carried bits as a mask
+    if (maskedWords && carry !== 0) {
+      maskedWords.words[maskedWords.length++] = carry;
+    }
+
+    if (this.length === 0) {
+      this.words[0] = 0;
+      this.length = 1;
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.ishrn = function ishrn (bits, hint, extended) {
+    // TODO(indutny): implement me
+    assert(this.negative === 0);
+    return this.iushrn(bits, hint, extended);
+  };
+
+  // Shift-left
+  BN.prototype.shln = function shln (bits) {
+    return this.clone().ishln(bits);
+  };
+
+  BN.prototype.ushln = function ushln (bits) {
+    return this.clone().iushln(bits);
+  };
+
+  // Shift-right
+  BN.prototype.shrn = function shrn (bits) {
+    return this.clone().ishrn(bits);
+  };
+
+  BN.prototype.ushrn = function ushrn (bits) {
+    return this.clone().iushrn(bits);
+  };
+
+  // Test if n bit is set
+  BN.prototype.testn = function testn (bit) {
+    assert(typeof bit === 'number' && bit >= 0);
+    var r = bit % 26;
+    var s = (bit - r) / 26;
+    var q = 1 << r;
+
+    // Fast case: bit is much higher than all existing words
+    if (this.length <= s) return false;
+
+    // Check bit and return
+    var w = this.words[s];
+
+    return !!(w & q);
+  };
+
+  // Return only lowers bits of number (in-place)
+  BN.prototype.imaskn = function imaskn (bits) {
+    assert(typeof bits === 'number' && bits >= 0);
+    var r = bits % 26;
+    var s = (bits - r) / 26;
+
+    assert(this.negative === 0, 'imaskn works only with positive numbers');
+
+    if (this.length <= s) {
+      return this;
+    }
+
+    if (r !== 0) {
+      s++;
+    }
+    this.length = Math.min(s, this.length);
+
+    if (r !== 0) {
+      var mask = 0x3ffffff ^ ((0x3ffffff >>> r) << r);
+      this.words[this.length - 1] &= mask;
+    }
+
+    return this.strip();
+  };
+
+  // Return only lowers bits of number
+  BN.prototype.maskn = function maskn (bits) {
+    return this.clone().imaskn(bits);
+  };
+
+  // Add plain number `num` to `this`
+  BN.prototype.iaddn = function iaddn (num) {
+    assert(typeof num === 'number');
+    assert(num < 0x4000000);
+    if (num < 0) return this.isubn(-num);
+
+    // Possible sign change
+    if (this.negative !== 0) {
+      if (this.length === 1 && (this.words[0] | 0) < num) {
+        this.words[0] = num - (this.words[0] | 0);
+        this.negative = 0;
+        return this;
+      }
+
+      this.negative = 0;
+      this.isubn(num);
+      this.negative = 1;
+      return this;
+    }
+
+    // Add without checks
+    return this._iaddn(num);
+  };
+
+  BN.prototype._iaddn = function _iaddn (num) {
+    this.words[0] += num;
+
+    // Carry
+    for (var i = 0; i < this.length && this.words[i] >= 0x4000000; i++) {
+      this.words[i] -= 0x4000000;
+      if (i === this.length - 1) {
+        this.words[i + 1] = 1;
+      } else {
+        this.words[i + 1]++;
+      }
+    }
+    this.length = Math.max(this.length, i + 1);
+
+    return this;
+  };
+
+  // Subtract plain number `num` from `this`
+  BN.prototype.isubn = function isubn (num) {
+    assert(typeof num === 'number');
+    assert(num < 0x4000000);
+    if (num < 0) return this.iaddn(-num);
+
+    if (this.negative !== 0) {
+      this.negative = 0;
+      this.iaddn(num);
+      this.negative = 1;
+      return this;
+    }
+
+    this.words[0] -= num;
+
+    if (this.length === 1 && this.words[0] < 0) {
+      this.words[0] = -this.words[0];
+      this.negative = 1;
+    } else {
+      // Carry
+      for (var i = 0; i < this.length && this.words[i] < 0; i++) {
+        this.words[i] += 0x4000000;
+        this.words[i + 1] -= 1;
+      }
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.addn = function addn (num) {
+    return this.clone().iaddn(num);
+  };
+
+  BN.prototype.subn = function subn (num) {
+    return this.clone().isubn(num);
+  };
+
+  BN.prototype.iabs = function iabs () {
+    this.negative = 0;
+
+    return this;
+  };
+
+  BN.prototype.abs = function abs () {
+    return this.clone().iabs();
+  };
+
+  BN.prototype._ishlnsubmul = function _ishlnsubmul (num, mul, shift) {
+    var len = num.length + shift;
+    var i;
+
+    this._expand(len);
+
+    var w;
+    var carry = 0;
+    for (i = 0; i < num.length; i++) {
+      w = (this.words[i + shift] | 0) + carry;
+      var right = (num.words[i] | 0) * mul;
+      w -= right & 0x3ffffff;
+      carry = (w >> 26) - ((right / 0x4000000) | 0);
+      this.words[i + shift] = w & 0x3ffffff;
+    }
+    for (; i < this.length - shift; i++) {
+      w = (this.words[i + shift] | 0) + carry;
+      carry = w >> 26;
+      this.words[i + shift] = w & 0x3ffffff;
+    }
+
+    if (carry === 0) return this.strip();
+
+    // Subtraction overflow
+    assert(carry === -1);
+    carry = 0;
+    for (i = 0; i < this.length; i++) {
+      w = -(this.words[i] | 0) + carry;
+      carry = w >> 26;
+      this.words[i] = w & 0x3ffffff;
+    }
+    this.negative = 1;
+
+    return this.strip();
+  };
+
+  BN.prototype._wordDiv = function _wordDiv (num, mode) {
+    var shift = this.length - num.length;
+
+    var a = this.clone();
+    var b = num;
+
+    // Normalize
+    var bhi = b.words[b.length - 1] | 0;
+    var bhiBits = this._countBits(bhi);
+    shift = 26 - bhiBits;
+    if (shift !== 0) {
+      b = b.ushln(shift);
+      a.iushln(shift);
+      bhi = b.words[b.length - 1] | 0;
+    }
+
+    // Initialize quotient
+    var m = a.length - b.length;
+    var q;
+
+    if (mode !== 'mod') {
+      q = new BN(null);
+      q.length = m + 1;
+      q.words = new Array(q.length);
+      for (var i = 0; i < q.length; i++) {
+        q.words[i] = 0;
+      }
+    }
+
+    var diff = a.clone()._ishlnsubmul(b, 1, m);
+    if (diff.negative === 0) {
+      a = diff;
+      if (q) {
+        q.words[m] = 1;
+      }
+    }
+
+    for (var j = m - 1; j >= 0; j--) {
+      var qj = (a.words[b.length + j] | 0) * 0x4000000 +
+        (a.words[b.length + j - 1] | 0);
+
+      // NOTE: (qj / bhi) is (0x3ffffff * 0x4000000 + 0x3ffffff) / 0x2000000 max
+      // (0x7ffffff)
+      qj = Math.min((qj / bhi) | 0, 0x3ffffff);
+
+      a._ishlnsubmul(b, qj, j);
+      while (a.negative !== 0) {
+        qj--;
+        a.negative = 0;
+        a._ishlnsubmul(b, 1, j);
+        if (!a.isZero()) {
+          a.negative ^= 1;
+        }
+      }
+      if (q) {
+        q.words[j] = qj;
+      }
+    }
+    if (q) {
+      q.strip();
+    }
+    a.strip();
+
+    // Denormalize
+    if (mode !== 'div' && shift !== 0) {
+      a.iushrn(shift);
+    }
+
+    return {
+      div: q || null,
+      mod: a
+    };
+  };
+
+  // NOTE: 1) `mode` can be set to `mod` to request mod only,
+  //       to `div` to request div only, or be absent to
+  //       request both div & mod
+  //       2) `positive` is true if unsigned mod is requested
+  BN.prototype.divmod = function divmod (num, mode, positive) {
+    assert(!num.isZero());
+
+    if (this.isZero()) {
+      return {
+        div: new BN(0),
+        mod: new BN(0)
+      };
+    }
+
+    var div, mod, res;
+    if (this.negative !== 0 && num.negative === 0) {
+      res = this.neg().divmod(num, mode);
+
+      if (mode !== 'mod') {
+        div = res.div.neg();
+      }
+
+      if (mode !== 'div') {
+        mod = res.mod.neg();
+        if (positive && mod.negative !== 0) {
+          mod.iadd(num);
+        }
+      }
+
+      return {
+        div: div,
+        mod: mod
+      };
+    }
+
+    if (this.negative === 0 && num.negative !== 0) {
+      res = this.divmod(num.neg(), mode);
+
+      if (mode !== 'mod') {
+        div = res.div.neg();
+      }
+
+      return {
+        div: div,
+        mod: res.mod
+      };
+    }
+
+    if ((this.negative & num.negative) !== 0) {
+      res = this.neg().divmod(num.neg(), mode);
+
+      if (mode !== 'div') {
+        mod = res.mod.neg();
+        if (positive && mod.negative !== 0) {
+          mod.isub(num);
+        }
+      }
+
+      return {
+        div: res.div,
+        mod: mod
+      };
+    }
+
+    // Both numbers are positive at this point
+
+    // Strip both numbers to approximate shift value
+    if (num.length > this.length || this.cmp(num) < 0) {
+      return {
+        div: new BN(0),
+        mod: this
+      };
+    }
+
+    // Very short reduction
+    if (num.length === 1) {
+      if (mode === 'div') {
+        return {
+          div: this.divn(num.words[0]),
+          mod: null
+        };
+      }
+
+      if (mode === 'mod') {
+        return {
+          div: null,
+          mod: new BN(this.modn(num.words[0]))
+        };
+      }
+
+      return {
+        div: this.divn(num.words[0]),
+        mod: new BN(this.modn(num.words[0]))
+      };
+    }
+
+    return this._wordDiv(num, mode);
+  };
+
+  // Find `this` / `num`
+  BN.prototype.div = function div (num) {
+    return this.divmod(num, 'div', false).div;
+  };
+
+  // Find `this` % `num`
+  BN.prototype.mod = function mod (num) {
+    return this.divmod(num, 'mod', false).mod;
+  };
+
+  BN.prototype.umod = function umod (num) {
+    return this.divmod(num, 'mod', true).mod;
+  };
+
+  // Find Round(`this` / `num`)
+  BN.prototype.divRound = function divRound (num) {
+    var dm = this.divmod(num);
+
+    // Fast case - exact division
+    if (dm.mod.isZero()) return dm.div;
+
+    var mod = dm.div.negative !== 0 ? dm.mod.isub(num) : dm.mod;
+
+    var half = num.ushrn(1);
+    var r2 = num.andln(1);
+    var cmp = mod.cmp(half);
+
+    // Round down
+    if (cmp < 0 || r2 === 1 && cmp === 0) return dm.div;
+
+    // Round up
+    return dm.div.negative !== 0 ? dm.div.isubn(1) : dm.div.iaddn(1);
+  };
+
+  BN.prototype.modn = function modn (num) {
+    assert(num <= 0x3ffffff);
+    var p = (1 << 26) % num;
+
+    var acc = 0;
+    for (var i = this.length - 1; i >= 0; i--) {
+      acc = (p * acc + (this.words[i] | 0)) % num;
+    }
+
+    return acc;
+  };
+
+  // In-place division by number
+  BN.prototype.idivn = function idivn (num) {
+    assert(num <= 0x3ffffff);
+
+    var carry = 0;
+    for (var i = this.length - 1; i >= 0; i--) {
+      var w = (this.words[i] | 0) + carry * 0x4000000;
+      this.words[i] = (w / num) | 0;
+      carry = w % num;
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.divn = function divn (num) {
+    return this.clone().idivn(num);
+  };
+
+  BN.prototype.egcd = function egcd (p) {
+    assert(p.negative === 0);
+    assert(!p.isZero());
+
+    var x = this;
+    var y = p.clone();
+
+    if (x.negative !== 0) {
+      x = x.umod(p);
+    } else {
+      x = x.clone();
+    }
+
+    // A * x + B * y = x
+    var A = new BN(1);
+    var B = new BN(0);
+
+    // C * x + D * y = y
+    var C = new BN(0);
+    var D = new BN(1);
+
+    var g = 0;
+
+    while (x.isEven() && y.isEven()) {
+      x.iushrn(1);
+      y.iushrn(1);
+      ++g;
+    }
+
+    var yp = y.clone();
+    var xp = x.clone();
+
+    while (!x.isZero()) {
+      for (var i = 0, im = 1; (x.words[0] & im) === 0 && i < 26; ++i, im <<= 1);
+      if (i > 0) {
+        x.iushrn(i);
+        while (i-- > 0) {
+          if (A.isOdd() || B.isOdd()) {
+            A.iadd(yp);
+            B.isub(xp);
+          }
+
+          A.iushrn(1);
+          B.iushrn(1);
+        }
+      }
+
+      for (var j = 0, jm = 1; (y.words[0] & jm) === 0 && j < 26; ++j, jm <<= 1);
+      if (j > 0) {
+        y.iushrn(j);
+        while (j-- > 0) {
+          if (C.isOdd() || D.isOdd()) {
+            C.iadd(yp);
+            D.isub(xp);
+          }
+
+          C.iushrn(1);
+          D.iushrn(1);
+        }
+      }
+
+      if (x.cmp(y) >= 0) {
+        x.isub(y);
+        A.isub(C);
+        B.isub(D);
+      } else {
+        y.isub(x);
+        C.isub(A);
+        D.isub(B);
+      }
+    }
+
+    return {
+      a: C,
+      b: D,
+      gcd: y.iushln(g)
+    };
+  };
+
+  // This is reduced incarnation of the binary EEA
+  // above, designated to invert members of the
+  // _prime_ fields F(p) at a maximal speed
+  BN.prototype._invmp = function _invmp (p) {
+    assert(p.negative === 0);
+    assert(!p.isZero());
+
+    var a = this;
+    var b = p.clone();
+
+    if (a.negative !== 0) {
+      a = a.umod(p);
+    } else {
+      a = a.clone();
+    }
+
+    var x1 = new BN(1);
+    var x2 = new BN(0);
+
+    var delta = b.clone();
+
+    while (a.cmpn(1) > 0 && b.cmpn(1) > 0) {
+      for (var i = 0, im = 1; (a.words[0] & im) === 0 && i < 26; ++i, im <<= 1);
+      if (i > 0) {
+        a.iushrn(i);
+        while (i-- > 0) {
+          if (x1.isOdd()) {
+            x1.iadd(delta);
+          }
+
+          x1.iushrn(1);
+        }
+      }
+
+      for (var j = 0, jm = 1; (b.words[0] & jm) === 0 && j < 26; ++j, jm <<= 1);
+      if (j > 0) {
+        b.iushrn(j);
+        while (j-- > 0) {
+          if (x2.isOdd()) {
+            x2.iadd(delta);
+          }
+
+          x2.iushrn(1);
+        }
+      }
+
+      if (a.cmp(b) >= 0) {
+        a.isub(b);
+        x1.isub(x2);
+      } else {
+        b.isub(a);
+        x2.isub(x1);
+      }
+    }
+
+    var res;
+    if (a.cmpn(1) === 0) {
+      res = x1;
+    } else {
+      res = x2;
+    }
+
+    if (res.cmpn(0) < 0) {
+      res.iadd(p);
+    }
+
+    return res;
+  };
+
+  BN.prototype.gcd = function gcd (num) {
+    if (this.isZero()) return num.abs();
+    if (num.isZero()) return this.abs();
+
+    var a = this.clone();
+    var b = num.clone();
+    a.negative = 0;
+    b.negative = 0;
+
+    // Remove common factor of two
+    for (var shift = 0; a.isEven() && b.isEven(); shift++) {
+      a.iushrn(1);
+      b.iushrn(1);
+    }
+
+    do {
+      while (a.isEven()) {
+        a.iushrn(1);
+      }
+      while (b.isEven()) {
+        b.iushrn(1);
+      }
+
+      var r = a.cmp(b);
+      if (r < 0) {
+        // Swap `a` and `b` to make `a` always bigger than `b`
+        var t = a;
+        a = b;
+        b = t;
+      } else if (r === 0 || b.cmpn(1) === 0) {
+        break;
+      }
+
+      a.isub(b);
+    } while (true);
+
+    return b.iushln(shift);
+  };
+
+  // Invert number in the field F(num)
+  BN.prototype.invm = function invm (num) {
+    return this.egcd(num).a.umod(num);
+  };
+
+  BN.prototype.isEven = function isEven () {
+    return (this.words[0] & 1) === 0;
+  };
+
+  BN.prototype.isOdd = function isOdd () {
+    return (this.words[0] & 1) === 1;
+  };
+
+  // And first word and num
+  BN.prototype.andln = function andln (num) {
+    return this.words[0] & num;
+  };
+
+  // Increment at the bit position in-line
+  BN.prototype.bincn = function bincn (bit) {
+    assert(typeof bit === 'number');
+    var r = bit % 26;
+    var s = (bit - r) / 26;
+    var q = 1 << r;
+
+    // Fast case: bit is much higher than all existing words
+    if (this.length <= s) {
+      this._expand(s + 1);
+      this.words[s] |= q;
+      return this;
+    }
+
+    // Add bit and propagate, if needed
+    var carry = q;
+    for (var i = s; carry !== 0 && i < this.length; i++) {
+      var w = this.words[i] | 0;
+      w += carry;
+      carry = w >>> 26;
+      w &= 0x3ffffff;
+      this.words[i] = w;
+    }
+    if (carry !== 0) {
+      this.words[i] = carry;
+      this.length++;
+    }
+    return this;
+  };
+
+  BN.prototype.isZero = function isZero () {
+    return this.length === 1 && this.words[0] === 0;
+  };
+
+  BN.prototype.cmpn = function cmpn (num) {
+    var negative = num < 0;
+
+    if (this.negative !== 0 && !negative) return -1;
+    if (this.negative === 0 && negative) return 1;
+
+    this.strip();
+
+    var res;
+    if (this.length > 1) {
+      res = 1;
+    } else {
+      if (negative) {
+        num = -num;
+      }
+
+      assert(num <= 0x3ffffff, 'Number is too big');
+
+      var w = this.words[0] | 0;
+      res = w === num ? 0 : w < num ? -1 : 1;
+    }
+    if (this.negative !== 0) return -res | 0;
+    return res;
+  };
+
+  // Compare two numbers and return:
+  // 1 - if `this` > `num`
+  // 0 - if `this` == `num`
+  // -1 - if `this` < `num`
+  BN.prototype.cmp = function cmp (num) {
+    if (this.negative !== 0 && num.negative === 0) return -1;
+    if (this.negative === 0 && num.negative !== 0) return 1;
+
+    var res = this.ucmp(num);
+    if (this.negative !== 0) return -res | 0;
+    return res;
+  };
+
+  // Unsigned comparison
+  BN.prototype.ucmp = function ucmp (num) {
+    // At this point both numbers have the same sign
+    if (this.length > num.length) return 1;
+    if (this.length < num.length) return -1;
+
+    var res = 0;
+    for (var i = this.length - 1; i >= 0; i--) {
+      var a = this.words[i] | 0;
+      var b = num.words[i] | 0;
+
+      if (a === b) continue;
+      if (a < b) {
+        res = -1;
+      } else if (a > b) {
+        res = 1;
+      }
       break;
+    }
+    return res;
+  };
 
-  if (++i < w.length) {
-    for (var q = this.sqr(res); i < w.length; i++, q = this.sqr(q)) {
-      if (w[i] === 0)
-        continue;
-      res = this.mul(res, q);
+  BN.prototype.gtn = function gtn (num) {
+    return this.cmpn(num) === 1;
+  };
+
+  BN.prototype.gt = function gt (num) {
+    return this.cmp(num) === 1;
+  };
+
+  BN.prototype.gten = function gten (num) {
+    return this.cmpn(num) >= 0;
+  };
+
+  BN.prototype.gte = function gte (num) {
+    return this.cmp(num) >= 0;
+  };
+
+  BN.prototype.ltn = function ltn (num) {
+    return this.cmpn(num) === -1;
+  };
+
+  BN.prototype.lt = function lt (num) {
+    return this.cmp(num) === -1;
+  };
+
+  BN.prototype.lten = function lten (num) {
+    return this.cmpn(num) <= 0;
+  };
+
+  BN.prototype.lte = function lte (num) {
+    return this.cmp(num) <= 0;
+  };
+
+  BN.prototype.eqn = function eqn (num) {
+    return this.cmpn(num) === 0;
+  };
+
+  BN.prototype.eq = function eq (num) {
+    return this.cmp(num) === 0;
+  };
+
+  //
+  // A reduce context, could be using montgomery or something better, depending
+  // on the `m` itself.
+  //
+  BN.red = function red (num) {
+    return new Red(num);
+  };
+
+  BN.prototype.toRed = function toRed (ctx) {
+    assert(!this.red, 'Already a number in reduction context');
+    assert(this.negative === 0, 'red works only with positives');
+    return ctx.convertTo(this)._forceRed(ctx);
+  };
+
+  BN.prototype.fromRed = function fromRed () {
+    assert(this.red, 'fromRed works only with numbers in reduction context');
+    return this.red.convertFrom(this);
+  };
+
+  BN.prototype._forceRed = function _forceRed (ctx) {
+    this.red = ctx;
+    return this;
+  };
+
+  BN.prototype.forceRed = function forceRed (ctx) {
+    assert(!this.red, 'Already a number in reduction context');
+    return this._forceRed(ctx);
+  };
+
+  BN.prototype.redAdd = function redAdd (num) {
+    assert(this.red, 'redAdd works only with red numbers');
+    return this.red.add(this, num);
+  };
+
+  BN.prototype.redIAdd = function redIAdd (num) {
+    assert(this.red, 'redIAdd works only with red numbers');
+    return this.red.iadd(this, num);
+  };
+
+  BN.prototype.redSub = function redSub (num) {
+    assert(this.red, 'redSub works only with red numbers');
+    return this.red.sub(this, num);
+  };
+
+  BN.prototype.redISub = function redISub (num) {
+    assert(this.red, 'redISub works only with red numbers');
+    return this.red.isub(this, num);
+  };
+
+  BN.prototype.redShl = function redShl (num) {
+    assert(this.red, 'redShl works only with red numbers');
+    return this.red.shl(this, num);
+  };
+
+  BN.prototype.redMul = function redMul (num) {
+    assert(this.red, 'redMul works only with red numbers');
+    this.red._verify2(this, num);
+    return this.red.mul(this, num);
+  };
+
+  BN.prototype.redIMul = function redIMul (num) {
+    assert(this.red, 'redMul works only with red numbers');
+    this.red._verify2(this, num);
+    return this.red.imul(this, num);
+  };
+
+  BN.prototype.redSqr = function redSqr () {
+    assert(this.red, 'redSqr works only with red numbers');
+    this.red._verify1(this);
+    return this.red.sqr(this);
+  };
+
+  BN.prototype.redISqr = function redISqr () {
+    assert(this.red, 'redISqr works only with red numbers');
+    this.red._verify1(this);
+    return this.red.isqr(this);
+  };
+
+  // Square root over p
+  BN.prototype.redSqrt = function redSqrt () {
+    assert(this.red, 'redSqrt works only with red numbers');
+    this.red._verify1(this);
+    return this.red.sqrt(this);
+  };
+
+  BN.prototype.redInvm = function redInvm () {
+    assert(this.red, 'redInvm works only with red numbers');
+    this.red._verify1(this);
+    return this.red.invm(this);
+  };
+
+  // Return negative clone of `this` % `red modulo`
+  BN.prototype.redNeg = function redNeg () {
+    assert(this.red, 'redNeg works only with red numbers');
+    this.red._verify1(this);
+    return this.red.neg(this);
+  };
+
+  BN.prototype.redPow = function redPow (num) {
+    assert(this.red && !num.red, 'redPow(normalNum)');
+    this.red._verify1(this);
+    return this.red.pow(this, num);
+  };
+
+  // Prime numbers with efficient reduction
+  var primes = {
+    k256: null,
+    p224: null,
+    p192: null,
+    p25519: null
+  };
+
+  // Pseudo-Mersenne prime
+  function MPrime (name, p) {
+    // P = 2 ^ N - K
+    this.name = name;
+    this.p = new BN(p, 16);
+    this.n = this.p.bitLength();
+    this.k = new BN(1).iushln(this.n).isub(this.p);
+
+    this.tmp = this._tmp();
+  }
+
+  MPrime.prototype._tmp = function _tmp () {
+    var tmp = new BN(null);
+    tmp.words = new Array(Math.ceil(this.n / 13));
+    return tmp;
+  };
+
+  MPrime.prototype.ireduce = function ireduce (num) {
+    // Assumes that `num` is less than `P^2`
+    // num = HI * (2 ^ N - K) + HI * K + LO = HI * K + LO (mod P)
+    var r = num;
+    var rlen;
+
+    do {
+      this.split(r, this.tmp);
+      r = this.imulK(r);
+      r = r.iadd(this.tmp);
+      rlen = r.bitLength();
+    } while (rlen > this.n);
+
+    var cmp = rlen < this.n ? -1 : r.ucmp(this.p);
+    if (cmp === 0) {
+      r.words[0] = 0;
+      r.length = 1;
+    } else if (cmp > 0) {
+      r.isub(this.p);
+    } else {
+      r.strip();
+    }
+
+    return r;
+  };
+
+  MPrime.prototype.split = function split (input, out) {
+    input.iushrn(this.n, 0, out);
+  };
+
+  MPrime.prototype.imulK = function imulK (num) {
+    return num.imul(this.k);
+  };
+
+  function K256 () {
+    MPrime.call(
+      this,
+      'k256',
+      'ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff fffffffe fffffc2f');
+  }
+  inherits(K256, MPrime);
+
+  K256.prototype.split = function split (input, output) {
+    // 256 = 9 * 26 + 22
+    var mask = 0x3fffff;
+
+    var outLen = Math.min(input.length, 9);
+    for (var i = 0; i < outLen; i++) {
+      output.words[i] = input.words[i];
+    }
+    output.length = outLen;
+
+    if (input.length <= 9) {
+      input.words[0] = 0;
+      input.length = 1;
+      return;
+    }
+
+    // Shift by 9 limbs
+    var prev = input.words[9];
+    output.words[output.length++] = prev & mask;
+
+    for (i = 10; i < input.length; i++) {
+      var next = input.words[i] | 0;
+      input.words[i - 10] = ((next & mask) << 4) | (prev >>> 22);
+      prev = next;
+    }
+    prev >>>= 22;
+    input.words[i - 10] = prev;
+    if (prev === 0 && input.length > 10) {
+      input.length -= 10;
+    } else {
+      input.length -= 9;
+    }
+  };
+
+  K256.prototype.imulK = function imulK (num) {
+    // K = 0x1000003d1 = [ 0x40, 0x3d1 ]
+    num.words[num.length] = 0;
+    num.words[num.length + 1] = 0;
+    num.length += 2;
+
+    // bounded at: 0x40 * 0x3ffffff + 0x3d0 = 0x100000390
+    var lo = 0;
+    for (var i = 0; i < num.length; i++) {
+      var w = num.words[i] | 0;
+      lo += w * 0x3d1;
+      num.words[i] = lo & 0x3ffffff;
+      lo = w * 0x40 + ((lo / 0x4000000) | 0);
+    }
+
+    // Fast length reduction
+    if (num.words[num.length - 1] === 0) {
+      num.length--;
+      if (num.words[num.length - 1] === 0) {
+        num.length--;
+      }
+    }
+    return num;
+  };
+
+  function P224 () {
+    MPrime.call(
+      this,
+      'p224',
+      'ffffffff ffffffff ffffffff ffffffff 00000000 00000000 00000001');
+  }
+  inherits(P224, MPrime);
+
+  function P192 () {
+    MPrime.call(
+      this,
+      'p192',
+      'ffffffff ffffffff ffffffff fffffffe ffffffff ffffffff');
+  }
+  inherits(P192, MPrime);
+
+  function P25519 () {
+    // 2 ^ 255 - 19
+    MPrime.call(
+      this,
+      '25519',
+      '7fffffffffffffff ffffffffffffffff ffffffffffffffff ffffffffffffffed');
+  }
+  inherits(P25519, MPrime);
+
+  P25519.prototype.imulK = function imulK (num) {
+    // K = 0x13
+    var carry = 0;
+    for (var i = 0; i < num.length; i++) {
+      var hi = (num.words[i] | 0) * 0x13 + carry;
+      var lo = hi & 0x3ffffff;
+      hi >>>= 26;
+
+      num.words[i] = lo;
+      carry = hi;
+    }
+    if (carry !== 0) {
+      num.words[num.length++] = carry;
+    }
+    return num;
+  };
+
+  // Exported mostly for testing purposes, use plain name instead
+  BN._prime = function prime (name) {
+    // Cached version of prime
+    if (primes[name]) return primes[name];
+
+    var prime;
+    if (name === 'k256') {
+      prime = new K256();
+    } else if (name === 'p224') {
+      prime = new P224();
+    } else if (name === 'p192') {
+      prime = new P192();
+    } else if (name === 'p25519') {
+      prime = new P25519();
+    } else {
+      throw new Error('Unknown prime ' + name);
+    }
+    primes[name] = prime;
+
+    return prime;
+  };
+
+  //
+  // Base reduction engine
+  //
+  function Red (m) {
+    if (typeof m === 'string') {
+      var prime = BN._prime(m);
+      this.m = prime.p;
+      this.prime = prime;
+    } else {
+      assert(m.gtn(1), 'modulus must be greater than 1');
+      this.m = m;
+      this.prime = null;
     }
   }
 
-  return res;
-};
+  Red.prototype._verify1 = function _verify1 (a) {
+    assert(a.negative === 0, 'red works only with positives');
+    assert(a.red, 'red works only with red numbers');
+  };
 
-Red.prototype.convertTo = function convertTo(num) {
-  var r = num.mod(this.m);
-  if (r === num)
-    return r.clone();
-  else
+  Red.prototype._verify2 = function _verify2 (a, b) {
+    assert((a.negative | b.negative) === 0, 'red works only with positives');
+    assert(a.red && a.red === b.red,
+      'red works only with red numbers');
+  };
+
+  Red.prototype.imod = function imod (a) {
+    if (this.prime) return this.prime.ireduce(a)._forceRed(this);
+    return a.umod(this.m)._forceRed(this);
+  };
+
+  Red.prototype.neg = function neg (a) {
+    if (a.isZero()) {
+      return a.clone();
+    }
+
+    return this.m.sub(a)._forceRed(this);
+  };
+
+  Red.prototype.add = function add (a, b) {
+    this._verify2(a, b);
+
+    var res = a.add(b);
+    if (res.cmp(this.m) >= 0) {
+      res.isub(this.m);
+    }
+    return res._forceRed(this);
+  };
+
+  Red.prototype.iadd = function iadd (a, b) {
+    this._verify2(a, b);
+
+    var res = a.iadd(b);
+    if (res.cmp(this.m) >= 0) {
+      res.isub(this.m);
+    }
+    return res;
+  };
+
+  Red.prototype.sub = function sub (a, b) {
+    this._verify2(a, b);
+
+    var res = a.sub(b);
+    if (res.cmpn(0) < 0) {
+      res.iadd(this.m);
+    }
+    return res._forceRed(this);
+  };
+
+  Red.prototype.isub = function isub (a, b) {
+    this._verify2(a, b);
+
+    var res = a.isub(b);
+    if (res.cmpn(0) < 0) {
+      res.iadd(this.m);
+    }
+    return res;
+  };
+
+  Red.prototype.shl = function shl (a, num) {
+    this._verify1(a);
+    return this.imod(a.ushln(num));
+  };
+
+  Red.prototype.imul = function imul (a, b) {
+    this._verify2(a, b);
+    return this.imod(a.imul(b));
+  };
+
+  Red.prototype.mul = function mul (a, b) {
+    this._verify2(a, b);
+    return this.imod(a.mul(b));
+  };
+
+  Red.prototype.isqr = function isqr (a) {
+    return this.imul(a, a.clone());
+  };
+
+  Red.prototype.sqr = function sqr (a) {
+    return this.mul(a, a);
+  };
+
+  Red.prototype.sqrt = function sqrt (a) {
+    if (a.isZero()) return a.clone();
+
+    var mod3 = this.m.andln(3);
+    assert(mod3 % 2 === 1);
+
+    // Fast case
+    if (mod3 === 3) {
+      var pow = this.m.add(new BN(1)).iushrn(2);
+      return this.pow(a, pow);
+    }
+
+    // Tonelli-Shanks algorithm (Totally unoptimized and slow)
+    //
+    // Find Q and S, that Q * 2 ^ S = (P - 1)
+    var q = this.m.subn(1);
+    var s = 0;
+    while (!q.isZero() && q.andln(1) === 0) {
+      s++;
+      q.iushrn(1);
+    }
+    assert(!q.isZero());
+
+    var one = new BN(1).toRed(this);
+    var nOne = one.redNeg();
+
+    // Find quadratic non-residue
+    // NOTE: Max is such because of generalized Riemann hypothesis.
+    var lpow = this.m.subn(1).iushrn(1);
+    var z = this.m.bitLength();
+    z = new BN(2 * z * z).toRed(this);
+
+    while (this.pow(z, lpow).cmp(nOne) !== 0) {
+      z.redIAdd(nOne);
+    }
+
+    var c = this.pow(z, q);
+    var r = this.pow(a, q.addn(1).iushrn(1));
+    var t = this.pow(a, q);
+    var m = s;
+    while (t.cmp(one) !== 0) {
+      var tmp = t;
+      for (var i = 0; tmp.cmp(one) !== 0; i++) {
+        tmp = tmp.redSqr();
+      }
+      assert(i < m);
+      var b = this.pow(c, new BN(1).iushln(m - i - 1));
+
+      r = r.redMul(b);
+      c = b.redSqr();
+      t = t.redMul(c);
+      m = i;
+    }
+
     return r;
-};
+  };
 
-Red.prototype.convertFrom = function convertFrom(num) {
-  var res = num.clone();
-  res.red = null;
-  return res;
-};
+  Red.prototype.invm = function invm (a) {
+    var inv = a._invmp(this.m);
+    if (inv.negative !== 0) {
+      inv.negative = 0;
+      return this.imod(inv).redNeg();
+    } else {
+      return this.imod(inv);
+    }
+  };
 
-//
-// Montgomery method engine
-//
+  Red.prototype.pow = function pow (a, num) {
+    if (num.isZero()) return new BN(1);
+    if (num.cmpn(1) === 0) return a.clone();
 
-BN.mont = function mont(num) {
-  return new Mont(num);
-};
+    var windowSize = 4;
+    var wnd = new Array(1 << windowSize);
+    wnd[0] = new BN(1).toRed(this);
+    wnd[1] = a;
+    for (var i = 2; i < wnd.length; i++) {
+      wnd[i] = this.mul(wnd[i - 1], a);
+    }
 
-function Mont(m) {
-  Red.call(this, m);
+    var res = wnd[0];
+    var current = 0;
+    var currentLen = 0;
+    var start = num.bitLength() % 26;
+    if (start === 0) {
+      start = 26;
+    }
 
-  this.shift = this.m.bitLength();
-  if (this.shift % 26 !== 0)
-    this.shift += 26 - (this.shift % 26);
-  this.r = new BN(1).ishln(this.shift);
-  this.r2 = this.imod(this.r.sqr());
-  this.rinv = this.r._invmp(this.m);
+    for (i = num.length - 1; i >= 0; i--) {
+      var word = num.words[i];
+      for (var j = start - 1; j >= 0; j--) {
+        var bit = (word >> j) & 1;
+        if (res !== wnd[0]) {
+          res = this.sqr(res);
+        }
 
-  this.minv = this.rinv.mul(this.r).isubn(1).div(this.m);
-  this.minv.sign = true;
-  this.minv = this.minv.mod(this.r);
-}
-inherits(Mont, Red);
+        if (bit === 0 && current === 0) {
+          currentLen = 0;
+          continue;
+        }
 
-Mont.prototype.convertTo = function convertTo(num) {
-  return this.imod(num.shln(this.shift));
-};
+        current <<= 1;
+        current |= bit;
+        currentLen++;
+        if (currentLen !== windowSize && (i !== 0 || j !== 0)) continue;
 
-Mont.prototype.convertFrom = function convertFrom(num) {
-  var r = this.imod(num.mul(this.rinv));
-  r.red = null;
-  return r;
-};
+        res = this.mul(res, wnd[current]);
+        currentLen = 0;
+        current = 0;
+      }
+      start = 26;
+    }
 
-Mont.prototype.imul = function imul(a, b) {
-  if (a.cmpn(0) === 0 || b.cmpn(0) === 0) {
-    a.words[0] = 0;
-    a.length = 1;
-    return a;
+    return res;
+  };
+
+  Red.prototype.convertTo = function convertTo (num) {
+    var r = num.umod(this.m);
+
+    return r === num ? r.clone() : r;
+  };
+
+  Red.prototype.convertFrom = function convertFrom (num) {
+    var res = num.clone();
+    res.red = null;
+    return res;
+  };
+
+  //
+  // Montgomery method engine
+  //
+
+  BN.mont = function mont (num) {
+    return new Mont(num);
+  };
+
+  function Mont (m) {
+    Red.call(this, m);
+
+    this.shift = this.m.bitLength();
+    if (this.shift % 26 !== 0) {
+      this.shift += 26 - (this.shift % 26);
+    }
+
+    this.r = new BN(1).iushln(this.shift);
+    this.r2 = this.imod(this.r.sqr());
+    this.rinv = this.r._invmp(this.m);
+
+    this.minv = this.rinv.mul(this.r).isubn(1).div(this.m);
+    this.minv = this.minv.umod(this.r);
+    this.minv = this.r.sub(this.minv);
   }
+  inherits(Mont, Red);
 
-  var t = a.imul(b);
-  var c = t.maskn(this.shift).mul(this.minv).imaskn(this.shift).mul(this.m);
-  var u = t.isub(c).ishrn(this.shift);
-  var res = u;
-  if (u.cmp(this.m) >= 0)
-    res = u.isub(this.m);
-  else if (u.cmpn(0) < 0)
-    res = u.iadd(this.m);
+  Mont.prototype.convertTo = function convertTo (num) {
+    return this.imod(num.ushln(this.shift));
+  };
 
-  return res._forceRed(this);
-};
+  Mont.prototype.convertFrom = function convertFrom (num) {
+    var r = this.imod(num.mul(this.rinv));
+    r.red = null;
+    return r;
+  };
 
-Mont.prototype.mul = function mul(a, b) {
-  if (a.cmpn(0) === 0 || b.cmpn(0) === 0)
-    return new BN(0)._forceRed(this);
+  Mont.prototype.imul = function imul (a, b) {
+    if (a.isZero() || b.isZero()) {
+      a.words[0] = 0;
+      a.length = 1;
+      return a;
+    }
 
-  var t = a.mul(b);
-  var c = t.maskn(this.shift).mul(this.minv).imaskn(this.shift).mul(this.m);
-  var u = t.isub(c).ishrn(this.shift);
-  var res = u;
-  if (u.cmp(this.m) >= 0)
-    res = u.isub(this.m);
-  else if (u.cmpn(0) < 0)
-    res = u.iadd(this.m);
+    var t = a.imul(b);
+    var c = t.maskn(this.shift).mul(this.minv).imaskn(this.shift).mul(this.m);
+    var u = t.isub(c).iushrn(this.shift);
+    var res = u;
 
-  return res._forceRed(this);
-};
+    if (u.cmp(this.m) >= 0) {
+      res = u.isub(this.m);
+    } else if (u.cmpn(0) < 0) {
+      res = u.iadd(this.m);
+    }
 
-Mont.prototype.invm = function invm(a) {
-  // (AR)^-1 * R^2 = (A^-1 * R^-1) * R^2 = A^-1 * R
-  var res = this.imod(a._invmp(this.m).mul(this.r2));
-  return res._forceRed(this);
-};
+    return res._forceRed(this);
+  };
 
+  Mont.prototype.mul = function mul (a, b) {
+    if (a.isZero() || b.isZero()) return new BN(0)._forceRed(this);
+
+    var t = a.mul(b);
+    var c = t.maskn(this.shift).mul(this.minv).imaskn(this.shift).mul(this.m);
+    var u = t.isub(c).iushrn(this.shift);
+    var res = u;
+    if (u.cmp(this.m) >= 0) {
+      res = u.isub(this.m);
+    } else if (u.cmpn(0) < 0) {
+      res = u.iadd(this.m);
+    }
+
+    return res._forceRed(this);
+  };
+
+  Mont.prototype.invm = function invm (a) {
+    // (AR)^-1 * R^2 = (A^-1 * R^-1) * R^2 = A^-1 * R
+    var res = this.imod(a._invmp(this.m).mul(this.r2));
+    return res._forceRed(this);
+  };
 })(typeof module === 'undefined' || module, this);
 
-},{}],32:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict'
 
 module.exports = boxIntersectWrapper
@@ -3535,7 +4451,7 @@ function boxIntersectWrapper(arg0, arg1, arg2) {
       throw new Error('box-intersect: Invalid arguments')
   }
 }
-},{"./lib/intersect":34,"./lib/sweep":38,"typedarray-pool":188}],33:[function(require,module,exports){
+},{"./lib/intersect":33,"./lib/sweep":37,"typedarray-pool":199}],32:[function(require,module,exports){
 'use strict'
 
 var DIMENSION   = 'd'
@@ -3680,7 +4596,7 @@ function bruteForcePlanner(full) {
 
 exports.partial = bruteForcePlanner(false)
 exports.full    = bruteForcePlanner(true)
-},{}],34:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict'
 
 module.exports = boxIntersectIter
@@ -4175,7 +5091,7 @@ function boxIntersectIter(
     }
   }
 }
-},{"./brute":33,"./median":35,"./partition":36,"./sweep":38,"bit-twiddle":30,"typedarray-pool":188}],35:[function(require,module,exports){
+},{"./brute":32,"./median":34,"./partition":35,"./sweep":37,"bit-twiddle":29,"typedarray-pool":199}],34:[function(require,module,exports){
 'use strict'
 
 module.exports = findMedian
@@ -4318,7 +5234,7 @@ function findMedian(d, axis, start, end, boxes, ids) {
     start, mid, boxes, ids,
     boxes[elemSize*mid+axis])
 }
-},{"./partition":36}],36:[function(require,module,exports){
+},{"./partition":35}],35:[function(require,module,exports){
 'use strict'
 
 module.exports = genPartition
@@ -4339,7 +5255,7 @@ function genPartition(predicate, args) {
         .replace('$', predicate))
   return Function.apply(void 0, fargs)
 }
-},{}],37:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 
 //This code is extracted from ndarray-sort
@@ -4576,7 +5492,7 @@ function quickSort(left, right, data) {
     quickSort(less, great, data);
   }
 }
-},{}],38:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 'use strict'
 
 module.exports = {
@@ -5011,7 +5927,7 @@ red_loop:
     }
   }
 }
-},{"./sort":37,"bit-twiddle":30,"typedarray-pool":188}],39:[function(require,module,exports){
+},{"./sort":36,"bit-twiddle":29,"typedarray-pool":199}],38:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -6719,7 +7635,7 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-},{"base64-js":40,"ieee754":138}],40:[function(require,module,exports){
+},{"base64-js":39,"ieee754":147}],39:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -6835,7 +7751,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],41:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict'
 
 var monotoneTriangulate = require('./lib/monotone')
@@ -6919,7 +7835,7 @@ function cdt2d(points, edges, options) {
   }
 }
 
-},{"./lib/delaunay":42,"./lib/filter":43,"./lib/monotone":44,"./lib/triangulation":45}],42:[function(require,module,exports){
+},{"./lib/delaunay":41,"./lib/filter":42,"./lib/monotone":43,"./lib/triangulation":44}],41:[function(require,module,exports){
 'use strict'
 
 var inCircle = require('robust-in-sphere')[4]
@@ -7036,7 +7952,7 @@ function delaunayRefine(points, triangulation) {
   }
 }
 
-},{"binary-search-bounds":46,"robust-in-sphere":165}],43:[function(require,module,exports){
+},{"binary-search-bounds":45,"robust-in-sphere":175}],42:[function(require,module,exports){
 'use strict'
 
 var bsearch = require('binary-search-bounds')
@@ -7218,7 +8134,7 @@ function classifyFaces(triangulation, target, infinity) {
   return result
 }
 
-},{"binary-search-bounds":46}],44:[function(require,module,exports){
+},{"binary-search-bounds":45}],43:[function(require,module,exports){
 'use strict'
 
 var bsearch = require('binary-search-bounds')
@@ -7407,7 +8323,7 @@ function monotoneTriangulate(points, edges) {
   return cells
 }
 
-},{"binary-search-bounds":46,"robust-orientation":166}],45:[function(require,module,exports){
+},{"binary-search-bounds":45,"robust-orientation":176}],44:[function(require,module,exports){
 'use strict'
 
 var bsearch = require('binary-search-bounds')
@@ -7513,7 +8429,7 @@ function createTriangulation(numVerts, edges) {
   return new Triangulation(stars, edges)
 }
 
-},{"binary-search-bounds":46}],46:[function(require,module,exports){
+},{"binary-search-bounds":45}],45:[function(require,module,exports){
 "use strict"
 
 function compileSearch(funcName, predicate, reversed, extraArgs, earlyOut) {
@@ -7567,6 +8483,15 @@ module.exports = {
   eq: compileBoundsSearch("-", true, "EQ", true)
 }
 
+},{}],46:[function(require,module,exports){
+module.exports = clamp
+
+function clamp(value, min, max) {
+  return min < max
+    ? (value < min ? min : value > max ? max : value)
+    : (value < max ? max : value > min ? min : value)
+}
+
 },{}],47:[function(require,module,exports){
 'use strict'
 
@@ -7574,7 +8499,6 @@ module.exports = cleanPSLG
 
 var UnionFind = require('union-find')
 var boxIntersect = require('box-intersect')
-var compareCell = require('compare-cell')
 var segseg = require('robust-segment-intersect')
 var rat = require('big-rat')
 var ratCmp = require('big-rat/cmp')
@@ -7584,93 +8508,100 @@ var nextafter = require('nextafter')
 
 var solveIntersection = require('./lib/rat-seg-intersect')
 
-//Bounds on a rational number when rounded to a float
-function boundRat(r) {
+// Bounds on a rational number when rounded to a float
+function boundRat (r) {
   var f = ratToFloat(r)
-  var cmp = ratCmp(rat(f), r)
-  if(cmp < 0) {
-    return [f, nextafter(f, Infinity)]
-  } else if(cmp > 0) {
-    return [nextafter(f, -Infinity), f]
-  } else {
-    return [f, f]
-  }
+  return [
+    nextafter(f, -Infinity),
+    nextafter(f, Infinity)
+  ]
 }
 
-//Convert a list of edges in a pslg to bounding boxes
-function boundEdges(points, edges) {
+// Convert a list of edges in a pslg to bounding boxes
+function boundEdges (points, edges) {
   var bounds = new Array(edges.length)
-  for(var i=0; i<edges.length; ++i) {
+  for (var i = 0; i < edges.length; ++i) {
     var e = edges[i]
     var a = points[e[0]]
     var b = points[e[1]]
     bounds[i] = [
-      Math.min(a[0], b[0]),
-      Math.min(a[1], b[1]),
-      Math.max(a[0], b[0]),
-      Math.max(a[1], b[1]) ]
+      nextafter(Math.min(a[0], b[0]), -Infinity),
+      nextafter(Math.min(a[1], b[1]), -Infinity),
+      nextafter(Math.max(a[0], b[0]), Infinity),
+      nextafter(Math.max(a[1], b[1]), Infinity)
+    ]
   }
   return bounds
 }
 
-//Convert a list of points into bounding boxes by duplicating coords
-function boundPoints(points) {
+// Convert a list of points into bounding boxes by duplicating coords
+function boundPoints (points) {
   var bounds = new Array(points.length)
-  for(var i=0; i<points.length; ++i) {
+  for (var i = 0; i < points.length; ++i) {
     var p = points[i]
-    bounds[i] = [ p[0], p[1], p[0], p[1] ]
+    bounds[i] = [
+      nextafter(p[0], -Infinity),
+      nextafter(p[1], -Infinity),
+      nextafter(p[0], Infinity),
+      nextafter(p[1], Infinity)
+    ]
   }
   return bounds
 }
 
-//Find all pairs of crossing edges in a pslg (given edge bounds)
-function getCrossings(points, edges, edgeBounds) {
+// Find all pairs of crossing edges in a pslg (given edge bounds)
+function getCrossings (points, edges, edgeBounds) {
   var result = []
-  boxIntersect(edgeBounds, function(i, j) {
+  boxIntersect(edgeBounds, function (i, j) {
     var e = edges[i]
     var f = edges[j]
-    if(e[0] === f[0] || e[0] === f[1] ||
-       e[1] === f[0] || e[1] === f[1]) {
-         return
+    if (e[0] === f[0] || e[0] === f[1] ||
+      e[1] === f[0] || e[1] === f[1]) {
+      return
     }
     var a = points[e[0]]
     var b = points[e[1]]
     var c = points[f[0]]
     var d = points[f[1]]
-    if(segseg(a, b, c, d)) {
+    if (segseg(a, b, c, d)) {
       result.push([i, j])
     }
   })
   return result
 }
 
-//Find all pairs of crossing vertices in a pslg (given edge/vert bounds)
-function getTJunctions(points, edges, edgeBounds, vertBounds) {
+// Find all pairs of crossing vertices in a pslg (given edge/vert bounds)
+function getTJunctions (points, edges, edgeBounds, vertBounds) {
   var result = []
-  boxIntersect(edgeBounds, vertBounds, function(i, v) {
+  boxIntersect(edgeBounds, vertBounds, function (i, v) {
     var e = edges[i]
-    if(e[0] === v || e[1] === v) {
+    if (e[0] === v || e[1] === v) {
       return
     }
     var p = points[v]
     var a = points[e[0]]
     var b = points[e[1]]
-    if(segseg(a, b, p, p)) {
+    if (segseg(a, b, p, p)) {
       result.push([i, v])
     }
   })
   return result
 }
 
+// Cut edges along crossings/tjunctions
+function cutEdges (floatPoints, edges, crossings, junctions, useColor) {
+  var i, e
 
-//Cut edges along crossings/tjunctions
-function cutEdges(floatPoints, edges, crossings, junctions, useColor) {
-
-  //Convert crossings into tjunctions by constructing rational points
-  var ratPoints = []
-  for(var i=0; i<crossings.length; ++i) {
+  // Convert crossings into tjunctions by constructing rational points
+  var ratPoints = floatPoints.map(function(p) {
+      return [
+          rat(p[0]),
+          rat(p[1])
+      ]
+  })
+  for (i = 0; i < crossings.length; ++i) {
     var crossing = crossings[i]
-    var e = crossing[0]
+    e = crossing[0]
     var f = crossing[1]
     var ee = edges[e]
     var ef = edges[f]
@@ -7679,65 +8610,59 @@ function cutEdges(floatPoints, edges, crossings, junctions, useColor) {
       ratVec(floatPoints[ee[1]]),
       ratVec(floatPoints[ef[0]]),
       ratVec(floatPoints[ef[1]]))
-    if(!x) {
-      //Segments are parallel, should already be handled by t-junctions
+    if (!x) {
+      // Segments are parallel, should already be handled by t-junctions
       continue
     }
-    var idx = ratPoints.length + floatPoints.length
+    var idx = floatPoints.length
+    floatPoints.push([ratToFloat(x[0]), ratToFloat(x[1])])
     ratPoints.push(x)
     junctions.push([e, idx], [f, idx])
   }
 
-  //Sort tjunctions
-  function getPoint(idx) {
-    if(idx >= floatPoints.length) {
-      return ratPoints[idx-floatPoints.length]
-    }
-    var p = floatPoints[idx]
-    return [ rat(p[0]), rat(p[1]) ]
-  }
-  junctions.sort(function(a, b) {
-    if(a[0] !== b[0]) {
+  // Sort tjunctions
+  junctions.sort(function (a, b) {
+    if (a[0] !== b[0]) {
       return a[0] - b[0]
     }
-    var u = getPoint(a[1])
-    var v = getPoint(b[1])
+    var u = ratPoints[a[1]]
+    var v = ratPoints[b[1]]
     return ratCmp(u[0], v[0]) || ratCmp(u[1], v[1])
   })
 
-  //Split edges along junctions
-  for(var i=junctions.length-1; i>=0; --i) {
+  // Split edges along junctions
+  for (i = junctions.length - 1; i >= 0; --i) {
     var junction = junctions[i]
-    var e = junction[0]
+    e = junction[0]
 
     var edge = edges[e]
     var s = edge[0]
     var t = edge[1]
 
-    //Check if edge is not lexicographically sorted
+    // Check if edge is not lexicographically sorted
     var a = floatPoints[s]
     var b = floatPoints[t]
-    if(((a[0] - b[0]) || (a[1] - b[1])) < 0) {
+    if (((a[0] - b[0]) || (a[1] - b[1])) < 0) {
       var tmp = s
       s = t
       t = tmp
     }
 
-    //Split leading edge
+    // Split leading edge
     edge[0] = s
     var last = edge[1] = junction[1]
 
-    //If we are grouping edges by color, remember to track data
+    // If we are grouping edges by color, remember to track data
     var color
-    if(useColor) {
+    if (useColor) {
       color = edge[2]
     }
 
-    //Split other edges
-    while(i > 0 && junctions[i-1][0] === e) {
+    // Split other edges
+    while (i > 0 && junctions[i - 1][0] === e) {
       var junction = junctions[--i]
       var next = junction[1]
-      if(useColor) {
+      if (useColor) {
         edges.push([last, next, color])
       } else {
         edges.push([last, next])
@@ -7745,93 +8670,108 @@ function cutEdges(floatPoints, edges, crossings, junctions, useColor) {
       last = next
     }
 
-    //Add final edge
-    if(useColor) {
+    // Add final edge
+    if (useColor) {
       edges.push([last, t, color])
     } else {
       edges.push([last, t])
     }
   }
 
-  //Return constructed rational points
+  // Return constructed rational points
   return ratPoints
 }
 
-//Merge overlapping points
-function dedupPoints(floatPoints, ratPoints, floatBounds) {
-  var numPoints = floatPoints.length + ratPoints.length
-  var uf        = new UnionFind(numPoints)
+// Merge overlapping points
+function dedupPoints (floatPoints, ratPoints, floatBounds) {
+  var numPoints = ratPoints.length
+  var uf = new UnionFind(numPoints)
 
-  //Compute rational bounds
-  var bounds = floatBounds
-  for(var i=0; i<ratPoints.length; ++i) {
+  // Compute rational bounds
+  var bounds = []
+  for (var i = 0; i < ratPoints.length; ++i) {
     var p = ratPoints[i]
     var xb = boundRat(p[0])
     var yb = boundRat(p[1])
-    bounds.push([ xb[0], yb[0], xb[1], yb[1] ])
-    floatPoints.push([ ratToFloat(p[0]), ratToFloat(p[1]) ])
+    bounds.push([
+      nextafter(xb[0], -Infinity),
+      nextafter(yb[0], -Infinity),
+      nextafter(xb[1], Infinity),
+      nextafter(yb[1], Infinity)
+    ])
   }
 
-  //Link all points with over lapping boxes
-  boxIntersect(bounds, function(i, j) {
+  // Link all points with over lapping boxes
+  boxIntersect(bounds, function (i, j) {
     uf.link(i, j)
   })
 
-  //Call find on each point to get a relabeling
-  var ptr = 0
+  // Do 1 pass over points to combine points in label sets
   var noDupes = true
   var labels = new Array(numPoints)
-  for(var i=0; i<numPoints; ++i) {
+  for (var i = 0; i < numPoints; ++i) {
     var j = uf.find(i)
-    if(j === i) {
-      //If not a duplicate, then don't bother
-      labels[i] = ptr
-      floatPoints[ptr++] = floatPoints[i]
-    } else {
-      //Clear no-dupes flag, zero out label
+    if (j !== i) {
+      // Clear no-dupes flag, zero out label
       noDupes = false
-      labels[i] = -1
+      // Make each point the top-left point from its cell
+      floatPoints[j] = [
+        Math.min(floatPoints[i][0], floatPoints[j][0]),
+        Math.min(floatPoints[i][1], floatPoints[j][1])
+      ]
     }
   }
-  floatPoints.length = ptr
 
-  //If no duplicates, return null to signal termination
-  if(noDupes) {
+  // If no duplicates, return null to signal termination
+  if (noDupes) {
     return null
   }
 
-  //Do a second pass to fix up missing labels
-  for(var i=0; i<numPoints; ++i) {
-    if(labels[i] < 0) {
+  var ptr = 0
+  for (var i = 0; i < numPoints; ++i) {
+    var j = uf.find(i)
+    if (j === i) {
+      labels[i] = ptr
+      floatPoints[ptr++] = floatPoints[i]
+    } else {
+      labels[i] = -1
+    }
+  }
+
+  floatPoints.length = ptr
+
+  // Do a second pass to fix up missing labels
+  for (var i = 0; i < numPoints; ++i) {
+    if (labels[i] < 0) {
       labels[i] = labels[uf.find(i)]
     }
   }
 
-  //Return resulting union-find data structure
+  // Return resulting union-find data structure
   return labels
 }
 
-function compareLex2(a,b) { return (a[0]-b[0]) || (a[1]-b[1]) }
-function compareLex3(a,b) {
+function compareLex2 (a, b) { return (a[0] - b[0]) || (a[1] - b[1]) }
+function compareLex3 (a, b) {
   var d = (a[0] - b[0]) || (a[1] - b[1])
-  if(d) {
+  if (d) {
     return d
   }
-  if(a[2] < b[2]) {
+  if (a[2] < b[2]) {
     return -1
-  } else if(a[2] > b[2]) {
+  } else if (a[2] > b[2]) {
     return 1
   }
   return 0
 }
 
-//Remove duplicate edge labels
-function dedupEdges(edges, labels, useColor) {
-  if(edges.length === 0) {
+// Remove duplicate edge labels
+function dedupEdges (edges, labels, useColor) {
+  if (edges.length === 0) {
     return
   }
-  if(labels) {
-    for(var i=0; i<edges.length; ++i) {
+  if (labels) {
+    for (var i = 0; i < edges.length; ++i) {
       var e = edges[i]
       var a = labels[e[0]]
       var b = labels[e[1]]
@@ -7839,7 +8779,7 @@ function dedupEdges(edges, labels, useColor) {
       e[1] = Math.max(a, b)
     }
   } else {
-    for(var i=0; i<edges.length; ++i) {
+    for (var i = 0; i < edges.length; ++i) {
       var e = edges[i]
       var a = e[0]
       var b = e[1]
@@ -7847,16 +8787,16 @@ function dedupEdges(edges, labels, useColor) {
       e[1] = Math.max(a, b)
     }
   }
-  if(useColor) {
+  if (useColor) {
     edges.sort(compareLex3)
   } else {
     edges.sort(compareLex2)
   }
   var ptr = 1
-  for(var i=1; i<edges.length; ++i) {
-    var prev = edges[i-1]
+  for (var i = 1; i < edges.length; ++i) {
+    var prev = edges[i - 1]
     var next = edges[i]
-    if(next[0] === prev[0] && next[1] === prev[1] &&
+    if (next[0] === prev[0] && next[1] === prev[1] &&
       (!useColor || next[2] === prev[2])) {
       continue
     }
@@ -7865,28 +8805,33 @@ function dedupEdges(edges, labels, useColor) {
   edges.length = ptr
 }
 
-//Repeat until convergence
-function snapRound(points, edges, useColor) {
+function preRound (points, edges, useColor) {
+  var labels = dedupPoints(points, [], boundPoints(points))
+  dedupEdges(edges, labels, useColor)
+  return !!labels
+}
 
+// Repeat until convergence
+function snapRound (points, edges, useColor) {
   // 1. find edge crossings
   var edgeBounds = boundEdges(points, edges)
-  var crossings  = getCrossings(points, edges, edgeBounds)
+  var crossings = getCrossings(points, edges, edgeBounds)
 
   // 2. find t-junctions
   var vertBounds = boundPoints(points)
   var tjunctions = getTJunctions(points, edges, edgeBounds, vertBounds)
 
   // 3. cut edges, construct rational points
-  var ratPoints  = cutEdges(points, edges, crossings, tjunctions, useColor)
+  var ratPoints = cutEdges(points, edges, crossings, tjunctions, useColor)
 
   // 4. dedupe verts
-  var labels     = dedupPoints(points, ratPoints, vertBounds)
+  var labels = dedupPoints(points, ratPoints, vertBounds)
 
-  // 6. dedupe edges
+  // 5. dedupe edges
   dedupEdges(edges, labels, useColor)
 
-  // 5. check termination
-  if(!labels) {
+  // 6. check termination
+  if (!labels) {
     return (crossings.length > 0 || tjunctions.length > 0)
   }
 
@@ -7894,32 +8839,33 @@ function snapRound(points, edges, useColor) {
   return true
 }
 
-//Main loop, runs PSLG clean up until completion
-function cleanPSLG(points, edges, colors) {
-  var modified = false
-
-  //If using colors, augment edges with color data
+// Main loop, runs PSLG clean up until completion
+function cleanPSLG (points, edges, colors) {
+  // If using colors, augment edges with color data
   var prevEdges
-  if(colors) {
+  if (colors) {
     prevEdges = edges
     var augEdges = new Array(edges.length)
-    for(var i=0; i<edges.length; ++i) {
+    for (var i = 0; i < edges.length; ++i) {
       var e = edges[i]
       augEdges[i] = [e[0], e[1], colors[i]]
     }
     edges = augEdges
   }
 
-  //Run snap rounding until convergence
-  while(snapRound(points, edges, !!colors)) {
+  // First round: remove duplicate edges and points
+  var modified = preRound(points, edges, !!colors)
+
+  // Run snap rounding until convergence
+  while (snapRound(points, edges, !!colors)) {
     modified = true
   }
 
-  //Strip color tags
-  if(!!colors && modified) {
+  // Strip color tags
+  if (!!colors && modified) {
     prevEdges.length = 0
     colors.length = 0
-    for(var i=0; i<edges.length; ++i) {
+    for (var i = 0; i < edges.length; ++i) {
       var e = edges[i]
       prevEdges.push([e[0], e[1]])
       colors.push(e[2])
@@ -7929,10 +8875,8 @@ function cleanPSLG(points, edges, colors) {
   return modified
 }
 
-},{"./lib/rat-seg-intersect":48,"big-rat":16,"big-rat/cmp":14,"big-rat/to-float":28,"box-intersect":32,"compare-cell":50,"nextafter":149,"rat-vec":160,"robust-segment-intersect":169,"union-find":189}],48:[function(require,module,exports){
+},{"./lib/rat-seg-intersect":48,"big-rat":15,"big-rat/cmp":13,"big-rat/to-float":27,"box-intersect":31,"nextafter":159,"rat-vec":170,"robust-segment-intersect":179,"union-find":200}],48:[function(require,module,exports){
 'use strict'
-
-//TODO: Move this to a separate module
 
 module.exports = solveIntersection
 
@@ -7944,26 +8888,24 @@ var rvSub = require('rat-vec/sub')
 var rvAdd = require('rat-vec/add')
 var rvMuls = require('rat-vec/muls')
 
-var toFloat = require('big-rat/to-float')
-
-function ratPerp(a, b) {
+function ratPerp (a, b) {
   return ratSub(ratMul(a[0], b[1]), ratMul(a[1], b[0]))
 }
 
-//Solve for intersection
+// Solve for intersection
 //  x = a + t (b-a)
 //  (x - c) ^ (d-c) = 0
 //  (t * (b-a) + (a-c) ) ^ (d-c) = 0
 //  t * (b-a)^(d-c) = (d-c)^(a-c)
 //  t = (d-c)^(a-c) / (b-a)^(d-c)
 
-function solveIntersection(a, b, c, d) {
+function solveIntersection (a, b, c, d) {
   var ba = rvSub(b, a)
   var dc = rvSub(d, c)
 
   var baXdc = ratPerp(ba, dc)
 
-  if(ratSign(baXdc) === 0) {
+  if (ratSign(baXdc) === 0) {
     return null
   }
 
@@ -7971,11 +8913,539 @@ function solveIntersection(a, b, c, d) {
   var dcXac = ratPerp(dc, ac)
 
   var t = ratDiv(dcXac, baXdc)
+  var s = rvMuls(ba, t)
+  var r = rvAdd(a, s)
 
-  return rvAdd(a, rvMuls(ba, t))
+  return r
 }
 
-},{"big-rat/div":15,"big-rat/mul":25,"big-rat/sign":26,"big-rat/sub":27,"big-rat/to-float":28,"rat-vec/add":159,"rat-vec/muls":161,"rat-vec/sub":162}],49:[function(require,module,exports){
+},{"big-rat/div":14,"big-rat/mul":24,"big-rat/sign":25,"big-rat/sub":26,"rat-vec/add":169,"rat-vec/muls":171,"rat-vec/sub":172}],49:[function(require,module,exports){
+/** @module  color-number */
+
+'use strict'
+
+var clamp = require('clamp')
+
+module.exports = toNumber
+
+function toNumber (rgba, normalized) {
+	if(normalized == null) normalized = true
+
+	var r = rgba[0], g = rgba[1], b = rgba[2], a = rgba[3]
+
+	if (a == null) a = normalized ? 1 : 255
+
+	if (normalized) {
+		r *= 255
+		g *= 255
+		b *= 255
+		a *= 255
+	}
+
+	r = clamp(r, 0, 255) & 0xFF
+	g = clamp(g, 0, 255) & 0xFF
+	b = clamp(b, 0, 255) & 0xFF
+	a = clamp(a, 0, 255) & 0xFF
+
+	//hi-order shift converts to -1, so we can't use <<24
+	var n = (r * 0x01000000) + (g << 16) + (b << 8) + (a)
+
+	return n
+}
+
+},{"clamp":46}],50:[function(require,module,exports){
+module.exports = {
+	"aliceblue": [240, 248, 255],
+	"antiquewhite": [250, 235, 215],
+	"aqua": [0, 255, 255],
+	"aquamarine": [127, 255, 212],
+	"azure": [240, 255, 255],
+	"beige": [245, 245, 220],
+	"bisque": [255, 228, 196],
+	"black": [0, 0, 0],
+	"blanchedalmond": [255, 235, 205],
+	"blue": [0, 0, 255],
+	"blueviolet": [138, 43, 226],
+	"brown": [165, 42, 42],
+	"burlywood": [222, 184, 135],
+	"cadetblue": [95, 158, 160],
+	"chartreuse": [127, 255, 0],
+	"chocolate": [210, 105, 30],
+	"coral": [255, 127, 80],
+	"cornflowerblue": [100, 149, 237],
+	"cornsilk": [255, 248, 220],
+	"crimson": [220, 20, 60],
+	"cyan": [0, 255, 255],
+	"darkblue": [0, 0, 139],
+	"darkcyan": [0, 139, 139],
+	"darkgoldenrod": [184, 134, 11],
+	"darkgray": [169, 169, 169],
+	"darkgreen": [0, 100, 0],
+	"darkgrey": [169, 169, 169],
+	"darkkhaki": [189, 183, 107],
+	"darkmagenta": [139, 0, 139],
+	"darkolivegreen": [85, 107, 47],
+	"darkorange": [255, 140, 0],
+	"darkorchid": [153, 50, 204],
+	"darkred": [139, 0, 0],
+	"darksalmon": [233, 150, 122],
+	"darkseagreen": [143, 188, 143],
+	"darkslateblue": [72, 61, 139],
+	"darkslategray": [47, 79, 79],
+	"darkslategrey": [47, 79, 79],
+	"darkturquoise": [0, 206, 209],
+	"darkviolet": [148, 0, 211],
+	"deeppink": [255, 20, 147],
+	"deepskyblue": [0, 191, 255],
+	"dimgray": [105, 105, 105],
+	"dimgrey": [105, 105, 105],
+	"dodgerblue": [30, 144, 255],
+	"firebrick": [178, 34, 34],
+	"floralwhite": [255, 250, 240],
+	"forestgreen": [34, 139, 34],
+	"fuchsia": [255, 0, 255],
+	"gainsboro": [220, 220, 220],
+	"ghostwhite": [248, 248, 255],
+	"gold": [255, 215, 0],
+	"goldenrod": [218, 165, 32],
+	"gray": [128, 128, 128],
+	"green": [0, 128, 0],
+	"greenyellow": [173, 255, 47],
+	"grey": [128, 128, 128],
+	"honeydew": [240, 255, 240],
+	"hotpink": [255, 105, 180],
+	"indianred": [205, 92, 92],
+	"indigo": [75, 0, 130],
+	"ivory": [255, 255, 240],
+	"khaki": [240, 230, 140],
+	"lavender": [230, 230, 250],
+	"lavenderblush": [255, 240, 245],
+	"lawngreen": [124, 252, 0],
+	"lemonchiffon": [255, 250, 205],
+	"lightblue": [173, 216, 230],
+	"lightcoral": [240, 128, 128],
+	"lightcyan": [224, 255, 255],
+	"lightgoldenrodyellow": [250, 250, 210],
+	"lightgray": [211, 211, 211],
+	"lightgreen": [144, 238, 144],
+	"lightgrey": [211, 211, 211],
+	"lightpink": [255, 182, 193],
+	"lightsalmon": [255, 160, 122],
+	"lightseagreen": [32, 178, 170],
+	"lightskyblue": [135, 206, 250],
+	"lightslategray": [119, 136, 153],
+	"lightslategrey": [119, 136, 153],
+	"lightsteelblue": [176, 196, 222],
+	"lightyellow": [255, 255, 224],
+	"lime": [0, 255, 0],
+	"limegreen": [50, 205, 50],
+	"linen": [250, 240, 230],
+	"magenta": [255, 0, 255],
+	"maroon": [128, 0, 0],
+	"mediumaquamarine": [102, 205, 170],
+	"mediumblue": [0, 0, 205],
+	"mediumorchid": [186, 85, 211],
+	"mediumpurple": [147, 112, 219],
+	"mediumseagreen": [60, 179, 113],
+	"mediumslateblue": [123, 104, 238],
+	"mediumspringgreen": [0, 250, 154],
+	"mediumturquoise": [72, 209, 204],
+	"mediumvioletred": [199, 21, 133],
+	"midnightblue": [25, 25, 112],
+	"mintcream": [245, 255, 250],
+	"mistyrose": [255, 228, 225],
+	"moccasin": [255, 228, 181],
+	"navajowhite": [255, 222, 173],
+	"navy": [0, 0, 128],
+	"oldlace": [253, 245, 230],
+	"olive": [128, 128, 0],
+	"olivedrab": [107, 142, 35],
+	"orange": [255, 165, 0],
+	"orangered": [255, 69, 0],
+	"orchid": [218, 112, 214],
+	"palegoldenrod": [238, 232, 170],
+	"palegreen": [152, 251, 152],
+	"paleturquoise": [175, 238, 238],
+	"palevioletred": [219, 112, 147],
+	"papayawhip": [255, 239, 213],
+	"peachpuff": [255, 218, 185],
+	"peru": [205, 133, 63],
+	"pink": [255, 192, 203],
+	"plum": [221, 160, 221],
+	"powderblue": [176, 224, 230],
+	"purple": [128, 0, 128],
+	"rebeccapurple": [102, 51, 153],
+	"red": [255, 0, 0],
+	"rosybrown": [188, 143, 143],
+	"royalblue": [65, 105, 225],
+	"saddlebrown": [139, 69, 19],
+	"salmon": [250, 128, 114],
+	"sandybrown": [244, 164, 96],
+	"seagreen": [46, 139, 87],
+	"seashell": [255, 245, 238],
+	"sienna": [160, 82, 45],
+	"silver": [192, 192, 192],
+	"skyblue": [135, 206, 235],
+	"slateblue": [106, 90, 205],
+	"slategray": [112, 128, 144],
+	"slategrey": [112, 128, 144],
+	"snow": [255, 250, 250],
+	"springgreen": [0, 255, 127],
+	"steelblue": [70, 130, 180],
+	"tan": [210, 180, 140],
+	"teal": [0, 128, 128],
+	"thistle": [216, 191, 216],
+	"tomato": [255, 99, 71],
+	"turquoise": [64, 224, 208],
+	"violet": [238, 130, 238],
+	"wheat": [245, 222, 179],
+	"white": [255, 255, 255],
+	"whitesmoke": [245, 245, 245],
+	"yellow": [255, 255, 0],
+	"yellowgreen": [154, 205, 50]
+};
+},{}],51:[function(require,module,exports){
+/**
+ * @module color-parse
+ */
+
+'use strict'
+
+
+module.exports = parse;
+
+
+var names = require('color-name');
+var isObject = require('is-plain-obj');
+
+
+/**
+ * Base hues
+ * http://dev.w3.org/csswg/css-color/#typedef-named-hue
+ */
+//FIXME: use external hue detector
+var baseHues = {
+	red: 0,
+	orange: 60,
+	yellow: 120,
+	green: 180,
+	blue: 240,
+	purple: 300
+};
+
+
+/**
+ * Parse color from the string passed
+ *
+ * @return {Object} A space indicator `space`, an array `values` and `alpha`
+ */
+function parse (cstr) {
+	var m, parts = [], alpha = 1, space;
+
+	if (typeof cstr === 'string') {
+		//keyword
+		if (names[cstr]) {
+			parts = names[cstr].slice();
+			space = 'rgb'
+		}
+
+		//reserved words
+		else if (cstr === 'transparent') {
+			alpha = 0;
+			space = 'rgb'
+			parts = [0,0,0]
+		}
+
+		//hex
+		else if (/^#[A-Fa-f0-9]+$/.test(cstr)) {
+			var base = cstr.slice(1);
+			var size = base.length;
+			var isShort = size <= 4;
+			alpha = 1;
+
+			if (isShort) {
+				parts = [
+					parseInt(base[0] + base[0], 16),
+					parseInt(base[1] + base[1], 16),
+					parseInt(base[2] + base[2], 16)
+				]
+				if (size === 4) {
+					alpha = parseInt(base[3] + base[3], 16) / 255
+				}
+			}
+			else {
+				parts = [
+					parseInt(base[0] + base[1], 16),
+					parseInt(base[2] + base[3], 16),
+					parseInt(base[4] + base[5], 16)
+				]
+				if (size === 8) {
+					alpha = parseInt(base[6] + base[7], 16) / 255
+				}
+			}
+
+			if (!parts[0]) parts[0] = 0;
+			if (!parts[1]) parts[1] = 0;
+			if (!parts[2]) parts[2] = 0;
+
+			space = 'rgb'
+		}
+
+		//color space
+		else if (m = /^((?:rgb|hs[lvb]|hwb|cmyk?|xy[zy]|gray|lab|lchu?v?|[ly]uv|lms)a?)\s*\(([^\)]*)\)/.exec(cstr)) {
+			var name = m[1];
+			var base = name.replace(/a$/, '');
+			space = base;
+			var size = base === 'cmyk' ? 4 : base === 'gray' ? 1 : 3;
+			parts = m[2].trim()
+				.split(/\s*,\s*/)
+				.map(function (x, i) {
+					//<percentage>
+					if (/%$/.test(x)) {
+						//alpha
+						if (i === size)	return parseFloat(x) / 100;
+						//rgb
+						if (base === 'rgb') return parseFloat(x) * 255 / 100;
+						return parseFloat(x);
+					}
+					//hue
+					else if (base[i] === 'h') {
+						//<deg>
+						if (/deg$/.test(x)) {
+							return parseFloat(x);
+						}
+						//<base-hue>
+						else if (baseHues[x] !== undefined) {
+							return baseHues[x];
+						}
+					}
+					return parseFloat(x);
+				});
+
+			if (name === base) parts.push(1);
+			alpha = parts[size] === undefined ? 1 : parts[size];
+			parts = parts.slice(0, size);
+		}
+
+		//named channels case
+		else if (cstr.length > 10 && /[0-9](?:\s|\/)/.test(cstr)) {
+			parts = cstr.match(/([0-9]+)/g).map(function (value) {
+				return parseFloat(value);
+			});
+
+			space = cstr.match(/([a-z])/ig).join('').toLowerCase();
+		}
+	}
+
+	//numeric case
+	else if (typeof cstr === 'number') {
+		space = 'rgb'
+		parts = [cstr >>> 16, (cstr & 0x00ff00) >>> 8, cstr & 0x0000ff];
+	}
+
+	//object case - detects css cases of rgb and hsl
+	else if (isObject(cstr)) {
+		if (cstr.r != null) {
+			parts = [cstr.r, cstr.g, cstr.b];
+			space = 'rgb'
+		}
+		else if (cstr.red != null) {
+			parts = [cstr.red, cstr.green, cstr.blue];
+			space = 'rgb'
+		}
+		else if (cstr.h != null) {
+			parts = [cstr.h, cstr.s, cstr.l];
+			space = 'hsl';
+		}
+		else if (cstr.hue != null) {
+			parts = [cstr.hue, cstr.saturation, cstr.lightness];
+			space = 'hsl';
+		}
+
+		if (cstr.a != null) alpha = cstr.a;
+		else if (cstr.alpha != null) alpha = cstr.alpha;
+		else if (cstr.opacity != null) alpha = cstr.opacity / 100;
+	}
+
+	//array
+	else if (Array.isArray(cstr) || ArrayBuffer.isView(cstr)) {
+		parts = [cstr[0], cstr[1], cstr[2]];
+		space = 'rgb'
+		alpha = cstr.length === 4 ? cstr[3] : 1;
+	}
+
+	return {
+		space: space,
+		values: parts,
+		alpha: alpha
+	};
+}
+
+},{"color-name":50,"is-plain-obj":152}],52:[function(require,module,exports){
+/** @module  color-rgba */
+
+'use strict'
+
+var parse = require('color-parse')
+var hsl = require('color-space/hsl')
+var clamp = require('clamp')
+
+module.exports = function rgba (color, normalize) {
+	if (normalize == null) normalize = true
+
+	var parsed = parse(color);
+
+	if (!parsed.space) return [];
+
+	if (Array.isArray(color)) return color;
+
+	var values = parsed.values, i, l = values.length;
+	for (i = 0; i < l; i++) {
+		values[i] = clamp(values[i], 0, 255)
+	}
+
+	if (parsed.space[0] === 'h') {
+		values = hsl.rgb(values)
+	}
+
+	if (normalize) {
+		for (i = 0; i < l; i++) {
+			values[i] /= 255
+		}
+	}
+
+	values.push(clamp(parsed.alpha, 0, 1))
+
+	return values
+}
+
+
+},{"clamp":46,"color-parse":51,"color-space/hsl":53}],53:[function(require,module,exports){
+/**
+ * @module color-space/hsl
+ */
+'use strict'
+
+var rgb = require('./rgb');
+
+module.exports = {
+	name: 'hsl',
+	min: [0,0,0],
+	max: [360,100,100],
+	channel: ['hue', 'saturation', 'lightness'],
+	alias: ['HSL'],
+
+	rgb: function(hsl) {
+		var h = hsl[0] / 360,
+				s = hsl[1] / 100,
+				l = hsl[2] / 100,
+				t1, t2, t3, rgb, val;
+
+		if (s === 0) {
+			val = l * 255;
+			return [val, val, val];
+		}
+
+		if (l < 0.5) {
+			t2 = l * (1 + s);
+		}
+		else {
+			t2 = l + s - l * s;
+		}
+		t1 = 2 * l - t2;
+
+		rgb = [0, 0, 0];
+		for (var i = 0; i < 3; i++) {
+			t3 = h + 1 / 3 * - (i - 1);
+			if (t3 < 0) {
+				t3++;
+			}
+			else if (t3 > 1) {
+				t3--;
+			}
+
+			if (6 * t3 < 1) {
+				val = t1 + (t2 - t1) * 6 * t3;
+			}
+			else if (2 * t3 < 1) {
+				val = t2;
+			}
+			else if (3 * t3 < 2) {
+				val = t1 + (t2 - t1) * (2 / 3 - t3) * 6;
+			}
+			else {
+				val = t1;
+			}
+
+			rgb[i] = val * 255;
+		}
+
+		return rgb;
+	}
+};
+
+
+//extend rgb
+rgb.hsl = function(rgb) {
+	var r = rgb[0]/255,
+			g = rgb[1]/255,
+			b = rgb[2]/255,
+			min = Math.min(r, g, b),
+			max = Math.max(r, g, b),
+			delta = max - min,
+			h, s, l;
+
+	if (max === min) {
+		h = 0;
+	}
+	else if (r === max) {
+		h = (g - b) / delta;
+	}
+	else if (g === max) {
+		h = 2 + (b - r) / delta;
+	}
+	else if (b === max) {
+		h = 4 + (r - g)/ delta;
+	}
+
+	h = Math.min(h * 60, 360);
+
+	if (h < 0) {
+		h += 360;
+	}
+
+	l = (min + max) / 2;
+
+	if (max === min) {
+		s = 0;
+	}
+	else if (l <= 0.5) {
+		s = delta / (max + min);
+	}
+	else {
+		s = delta / (2 - max - min);
+	}
+
+	return [h, s * 100, l * 100];
+};
+
+},{"./rgb":54}],54:[function(require,module,exports){
+/**
+ * RGB space.
+ *
+ * @module  color-space/rgb
+ */
+'use strict'
+
+module.exports = {
+	name: 'rgb',
+	min: [0,0,0],
+	max: [255,255,255],
+	channel: ['red', 'green', 'blue'],
+	alias: ['RGB']
+};
+
+},{}],55:[function(require,module,exports){
 "use strict"
 
 module.exports = compareAngle
@@ -8061,63 +9531,7 @@ function compareAngle(a, b, c, d) {
     }
   }
 }
-},{"robust-orientation":166,"robust-product":167,"robust-sum":171,"signum":172,"two-sum":187}],50:[function(require,module,exports){
-module.exports = compareCells
-
-var min = Math.min
-
-function compareInt(a, b) {
-  return a - b
-}
-
-function compareCells(a, b) {
-  var n = a.length
-    , t = a.length - b.length
-  if(t) {
-    return t
-  }
-  switch(n) {
-    case 0:
-      return 0
-    case 1:
-      return a[0] - b[0]
-    case 2:
-      return (a[0]+a[1]-b[0]-b[1]) ||
-             min(a[0],a[1]) - min(b[0],b[1])
-    case 3:
-      var l1 = a[0]+a[1]
-        , m1 = b[0]+b[1]
-      t = l1+a[2] - (m1+b[2])
-      if(t) {
-        return t
-      }
-      var l0 = min(a[0], a[1])
-        , m0 = min(b[0], b[1])
-      return min(l0, a[2]) - min(m0, b[2]) ||
-             min(l0+a[2], l1) - min(m0+b[2], m1)
-    case 4:
-      var aw=a[0], ax=a[1], ay=a[2], az=a[3]
-        , bw=b[0], bx=b[1], by=b[2], bz=b[3]
-      return (aw+ax+ay+az)-(bw+bx+by+bz) ||
-             min(aw,ax,ay,az)-min(bw,bx,by,bz,bw) ||
-             min(aw+ax,aw+ay,aw+az,ax+ay,ax+az,ay+az) -
-               min(bw+bx,bw+by,bw+bz,bx+by,bx+bz,by+bz) ||
-             min(aw+ax+ay,aw+ax+az,aw+ay+az,ax+ay+az) -
-               min(bw+bx+by,bw+bx+bz,bw+by+bz,bx+by+bz)
-    default:
-      var as = a.slice().sort(compareInt)
-      var bs = b.slice().sort(compareInt)
-      for(var i=0; i<n; ++i) {
-        t = as[i] - bs[i]
-        if(t) {
-          return t
-        }
-      }
-      return 0
-  }
-}
-
-},{}],51:[function(require,module,exports){
+},{"robust-orientation":176,"robust-product":177,"robust-sum":181,"signum":182,"two-sum":198}],56:[function(require,module,exports){
 "use strict"
 
 var createThunk = require("./lib/thunk.js")
@@ -8228,7 +9642,7 @@ function compileCwise(user_args) {
 
 module.exports = compileCwise
 
-},{"./lib/thunk.js":53}],52:[function(require,module,exports){
+},{"./lib/thunk.js":58}],57:[function(require,module,exports){
 "use strict"
 
 var uniq = require("uniq")
@@ -8584,7 +9998,7 @@ function generateCWiseOp(proc, typesig) {
 }
 module.exports = generateCWiseOp
 
-},{"uniq":190}],53:[function(require,module,exports){
+},{"uniq":201}],58:[function(require,module,exports){
 "use strict"
 
 // The function below is called when constructing a cwise function object, and does the following:
@@ -8672,9 +10086,9 @@ function createThunk(proc) {
 
 module.exports = createThunk
 
-},{"./compile.js":52}],54:[function(require,module,exports){
+},{"./compile.js":57}],59:[function(require,module,exports){
 module.exports = require("cwise-compiler")
-},{"cwise-compiler":51}],55:[function(require,module,exports){
+},{"cwise-compiler":56}],60:[function(require,module,exports){
 !function() {
   var d3 = {
     version: "3.5.17"
@@ -18229,7 +19643,7 @@ module.exports = require("cwise-compiler")
   });
   if (typeof define === "function" && define.amd) this.d3 = d3, define(d3); else if (typeof module === "object" && module.exports) module.exports = d3; else this.d3 = d3;
 }();
-},{}],56:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 (function (Buffer){
 var hasTypedArrays = false
 if(typeof Float64Array !== "undefined") {
@@ -18333,7 +19747,7 @@ module.exports.denormalized = function(n) {
   return !(hi & 0x7ff00000)
 }
 }).call(this,require("buffer").Buffer)
-},{"buffer":39}],57:[function(require,module,exports){
+},{"buffer":38}],62:[function(require,module,exports){
 "use strict"
 
 function dupe_array(count, value, i) {
@@ -18383,7 +19797,7 @@ function dupe(count, value) {
 }
 
 module.exports = dupe
-},{}],58:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 "use strict"
 
 module.exports = edgeToAdjacency
@@ -18417,7 +19831,7 @@ function edgeToAdjacency(edges, numVertices) {
   }
   return adj
 }
-},{"uniq":190}],59:[function(require,module,exports){
+},{"uniq":201}],64:[function(require,module,exports){
 (function (process,global){
 /*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
@@ -19574,7 +20988,7 @@ return Promise;
 })));
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":158}],60:[function(require,module,exports){
+},{"_process":168}],65:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -19878,7 +21292,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],61:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 /**
  * inspired by is-number <https://github.com/jonschlinkert/is-number>
  * but significantly simplified and sped up by ignoring number and string constructors
@@ -19935,7 +21349,91 @@ module.exports = function(n) {
     return n - n < 1;
 };
 
-},{}],62:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
+'use strict'
+
+var SDF = require('tiny-sdf')
+
+module.exports = atlas
+
+function atlas(options) {
+	options = options || {}
+
+	var canvas = options.canvas || document.createElement('canvas')
+	var family = options.family || 'monospace'
+	var shape = options.shape || [512, 512]
+	var step = options.step || [32, 32]
+	var size = options.size || 16
+	var chars = options.chars || [32, 126]
+	var bufferSize = Math.floor((step[0] - size)/2)
+	var radius = options.radius || bufferSize*1.5
+	var sdf = new SDF(size, bufferSize, radius, 0, family)
+	var i, j
+
+	if (typeof size === 'number') {
+		size = size + 'px'
+	}
+
+	if (!Array.isArray(chars)) {
+		chars = String(chars).split('')
+	}
+	else if (
+		chars.length === 2
+		&& typeof chars[0] === 'number'
+		&& typeof chars[1] === 'number'
+	) {
+		var newchars = []
+
+		for (i = chars[0], j = 0; i <= chars[1]; i++) {
+			newchars[j++] = String.fromCharCode(i)
+		}
+
+		chars = newchars
+	}
+
+	shape = shape.slice()
+	canvas.width  = shape[0]
+	canvas.height = shape[1]
+
+	var ctx = canvas.getContext('2d')
+
+	ctx.fillStyle = '#000'
+	ctx.fillRect(0, 0, canvas.width, canvas.height)
+	ctx.font = size + ' ' + family
+	ctx.textBaseline = 'middle'
+
+	var x = 0
+	var y = 0
+	var len = Math.min(chars.length, Math.floor(shape[0]/step[0]) * Math.ceil(shape[1]/step[1]))
+
+	// hack tiny-sdf to render centered
+	//FIXME: get rif of it by [possibly] PR to tiny-sdf
+	var align = sdf.ctx.textAlign
+	var buffer = sdf.buffer
+
+	sdf.ctx.textAlign = 'center'
+	sdf.buffer = sdf.size/2
+
+	for (i = 0; i < len; i++) {
+		var data = sdf.draw(chars[i])
+
+		ctx.putImageData(data, x, y)
+
+		x += step[0]
+		if (x > shape[0] - step[0]) {
+			x = 0
+			y += step[1]
+		}
+	}
+
+	// unhack tiny-sdf
+	sdf.ctx.textAlign = align
+	sdf.buffer = buffer
+
+	return canvas
+}
+
+},{"tiny-sdf":193}],68:[function(require,module,exports){
 "use strict"
 
 module.exports = createRBTree
@@ -20932,7 +22430,7 @@ function defaultCompare(a, b) {
 function createRBTree(compare) {
   return new RedBlackTree(compare || defaultCompare, null)
 }
-},{}],63:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 // transliterated from the python snippet here:
 // http://en.wikipedia.org/wiki/Lanczos_approximation
 
@@ -21001,7 +22499,7 @@ module.exports = function gamma (z) {
 
 module.exports.log = lngamma;
 
-},{}],64:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 module.exports = getCanvasContext
 function getCanvasContext (type, opts) {
   if (typeof type !== 'string') {
@@ -21041,7 +22539,7 @@ function getCanvasContext (type, opts) {
   return (gl || null) // ensure null on fail
 }
 
-},{}],65:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 "use strict"
 
 var pool = require("typedarray-pool")
@@ -21195,7 +22693,7 @@ function createBuffer(gl, data, type, usage) {
 
 module.exports = createBuffer
 
-},{"ndarray":148,"ndarray-ops":147,"typedarray-pool":188}],66:[function(require,module,exports){
+},{"ndarray":158,"ndarray-ops":157,"typedarray-pool":199}],72:[function(require,module,exports){
 module.exports = {
   0: 'NONE',
   1: 'ONE',
@@ -21495,14 +22993,14 @@ module.exports = {
   37444: 'BROWSER_DEFAULT_WEBGL'
 }
 
-},{}],67:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 var gl10 = require('./1.0/numbers')
 
 module.exports = function lookupConstant (number) {
   return gl10[number]
 }
 
-},{"./1.0/numbers":66}],68:[function(require,module,exports){
+},{"./1.0/numbers":72}],74:[function(require,module,exports){
 'use strict'
 
 module.exports = createContour2D
@@ -21925,7 +23423,7 @@ function createContour2D (plot, options) {
   return contours
 }
 
-},{"./lib/shaders":69,"binary-search-bounds":70,"cdt2d":41,"clean-pslg":47,"gl-buffer":65,"gl-shader":121,"iota-array":141,"ndarray":148,"surface-nets":181}],69:[function(require,module,exports){
+},{"./lib/shaders":75,"binary-search-bounds":76,"cdt2d":40,"clean-pslg":47,"gl-buffer":71,"gl-shader":130,"iota-array":150,"ndarray":158,"surface-nets":191}],75:[function(require,module,exports){
 'use strict'
 
 
@@ -21936,9 +23434,9 @@ module.exports = {
   fillVertex: "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec4 color;\n\nuniform mat3 viewTransform;\n\nvarying vec4 fragColor;\n\nvoid main() {\n  fragColor = color;\n  vec3 vPosition = viewTransform * vec3(position, 1.0);\n  gl_Position = vec4(vPosition.xy, 0, vPosition.z);\n}\n"
 }
 
-},{}],70:[function(require,module,exports){
-arguments[4][46][0].apply(exports,arguments)
-},{"dup":46}],71:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
+arguments[4][45][0].apply(exports,arguments)
+},{"dup":45}],77:[function(require,module,exports){
 'use strict'
 
 var createShader = require('gl-shader')
@@ -22203,7 +23701,7 @@ function createError2D (plot, options) {
   return errorBars
 }
 
-},{"./lib/shaders":72,"gl-buffer":65,"gl-shader":121,"typedarray-pool":188}],72:[function(require,module,exports){
+},{"./lib/shaders":78,"gl-buffer":71,"gl-shader":130,"typedarray-pool":199}],78:[function(require,module,exports){
 
 
 module.exports = {
@@ -22211,7 +23709,7 @@ module.exports = {
   fragment: "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = vec4(color.rgb * color.a, color.a);\n}\n"
 }
 
-},{}],73:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 'use strict'
 
 var createTexture = require('gl-texture2d')
@@ -22678,7 +24176,7 @@ function createFBO(gl, width, height, options) {
     WEBGL_draw_buffers)
 }
 
-},{"gl-texture2d":129}],74:[function(require,module,exports){
+},{"gl-texture2d":138}],80:[function(require,module,exports){
 
 var sprintf = require('sprintf-js').sprintf;
 var glConstants = require('gl-constants/lookup');
@@ -22733,7 +24231,7 @@ function formatCompilerError(errLog, src, type) {
 }
 
 
-},{"add-line-numbers":10,"gl-constants/lookup":67,"glsl-shader-name":130,"sprintf-js":179}],75:[function(require,module,exports){
+},{"add-line-numbers":10,"gl-constants/lookup":73,"glsl-shader-name":139,"sprintf-js":189}],81:[function(require,module,exports){
 'use strict'
 
 module.exports = createHeatmap2D
@@ -23051,7 +24549,7 @@ function createHeatmap2D (plot, options) {
   return heatmap
 }
 
-},{"./lib/shaders":76,"binary-search-bounds":77,"gl-buffer":65,"gl-shader":121,"iota-array":141,"typedarray-pool":188}],76:[function(require,module,exports){
+},{"./lib/shaders":82,"binary-search-bounds":83,"gl-buffer":71,"gl-shader":130,"iota-array":150,"typedarray-pool":199}],82:[function(require,module,exports){
 'use strict'
 
 
@@ -23063,9 +24561,9 @@ module.exports = {
   pickVertex:   "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec4 pickId;\nattribute vec2 weight;\n\nuniform vec2 shape;\nuniform mat3 viewTransform;\n\nvarying vec4 fragId;\nvarying vec2 vWeight;\n\nvoid main() {\n  vWeight = weight;\n\n  fragId = pickId;\n\n  vec3 vPosition = viewTransform * vec3( position + (weight-.5)/(shape-1.) , 1.0);\n  gl_Position = vec4(vPosition.xy, 0, vPosition.z);\n}\n"
 }
 
-},{}],77:[function(require,module,exports){
-arguments[4][46][0].apply(exports,arguments)
-},{"dup":46}],78:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
+arguments[4][45][0].apply(exports,arguments)
+},{"dup":45}],84:[function(require,module,exports){
 
 
 exports.lineVertex    = "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 aHi, aLo, dHi, dLo;\n\nuniform vec2 scaleHi, translateHi, scaleLo, translateLo, screenShape;\nuniform float width;\n\nvarying vec2 direction;\n\n\nvec2 project_1_0(vec2 scHi, vec2 trHi, vec2 scLo, vec2 trLo, vec2 posHi, vec2 posLo) {\n  return (posHi + trHi) * scHi\n       + (posLo + trLo) * scHi\n       + (posHi + trHi) * scLo\n       + (posLo + trLo) * scLo;\n}\n\n\nvec2 project_2_1(vec2 scHi, vec2 scLo, vec2 posHi, vec2 posLo) {\n  return scHi * posHi\n       + scLo * posHi\n       + scHi * posLo\n       + scLo * posLo;\n}\n\nvoid main() {\n  vec2 p = project_1_0(scaleHi, translateHi, scaleLo, translateLo, aHi, aLo);\n  vec2 dir = project_2_1(scaleHi, scaleLo, dHi, dLo);\n  vec2 n = 0.5 * width * normalize(screenShape.yx * vec2(dir.y, -dir.x)) / screenShape.xy;\n  vec2 tangent = normalize(screenShape.xy * dir);\n  if(dir.x < 0.0 || (dir.x == 0.0 && dir.y < 0.0)) {\n    direction = -tangent;\n  } else {\n    direction = tangent;\n  }\n  gl_Position = vec4(p + n, 0.0, 1.0);\n}"
@@ -23076,7 +24574,7 @@ exports.pickVertex    = "precision highp float;\n#define GLSLIFY 1\n\nattribute 
 exports.pickFragment  = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 pickOffset;\n\nvarying vec4 pickA, pickB;\n\nvoid main() {\n  vec4 fragId = vec4(pickA.xyz, 0.0);\n  if(pickB.w > pickA.w) {\n    fragId.xyz = pickB.xyz;\n  }\n\n  fragId += pickOffset;\n\n  fragId.y += floor(fragId.x / 256.0);\n  fragId.x -= floor(fragId.x / 256.0) * 256.0;\n\n  fragId.z += floor(fragId.y / 256.0);\n  fragId.y -= floor(fragId.y / 256.0) * 256.0;\n\n  fragId.w += floor(fragId.z / 256.0);\n  fragId.z -= floor(fragId.z / 256.0) * 256.0;\n\n  gl_FragColor = fragId / 255.0;\n}"
 exports.fillVertex    = "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 aHi, aLo, dHi;\n\nuniform vec2 scaleHi, translateHi, scaleLo, translateLo, projectAxis;\nuniform float projectValue, depth;\n\n\nvec2 project_1_0(vec2 scHi, vec2 trHi, vec2 scLo, vec2 trLo, vec2 posHi, vec2 posLo) {\n  return (posHi + trHi) * scHi\n       + (posLo + trLo) * scHi\n       + (posHi + trHi) * scLo\n       + (posLo + trLo) * scLo;\n}\n\n\nvoid main() {\n  vec2 p = project_1_0(scaleHi, translateHi, scaleLo, translateLo, aHi, aLo);\n  if(dHi.y < 0.0 || (dHi.y == 0.0 && dHi.x < 0.0)) {\n    if(dot(p, projectAxis) < projectValue) {\n      p = p * (1.0 - abs(projectAxis)) + projectAxis * projectValue;\n    }\n  }\n  gl_Position = vec4(p, depth, 1);\n}"
 exports.fillFragment  = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = vec4(color.rgb * color.a, color.a);\n}"
-},{}],79:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 'use strict'
 
 module.exports = createLinePlot
@@ -23589,7 +25087,7 @@ function createLinePlot(plot, options) {
   linePlot.update(options)
   return linePlot
 }
-},{"./lib/shaders":78,"gl-buffer":65,"gl-shader":121,"gl-texture2d":129,"ndarray":148,"typedarray-pool":188}],80:[function(require,module,exports){
+},{"./lib/shaders":84,"gl-buffer":71,"gl-shader":130,"gl-texture2d":138,"ndarray":158,"typedarray-pool":199}],86:[function(require,module,exports){
 module.exports = fromQuat;
 
 /**
@@ -23637,7 +25135,7 @@ function fromQuat(out, q) {
 
     return out;
 };
-},{}],81:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 'use strict'
 
 module.exports = createBoxes
@@ -23700,7 +25198,7 @@ function createBoxes(plot) {
   return new Boxes(plot, vbo, shader)
 }
 
-},{"./shaders":84,"gl-buffer":65,"gl-shader":87}],82:[function(require,module,exports){
+},{"./shaders":90,"gl-buffer":71,"gl-shader":93}],88:[function(require,module,exports){
 'use strict'
 
 module.exports = createGrid
@@ -23947,7 +25445,7 @@ function createGrid(plot) {
   return grid
 }
 
-},{"./shaders":84,"binary-search-bounds":86,"gl-buffer":65,"gl-shader":87}],83:[function(require,module,exports){
+},{"./shaders":90,"binary-search-bounds":92,"gl-buffer":71,"gl-shader":93}],89:[function(require,module,exports){
 'use strict'
 
 module.exports = createLines
@@ -24012,7 +25510,7 @@ function createLines(plot) {
   return lines
 }
 
-},{"./shaders":84,"gl-buffer":65,"gl-shader":87}],84:[function(require,module,exports){
+},{"./shaders":90,"gl-buffer":71,"gl-shader":93}],90:[function(require,module,exports){
 'use strict'
 
 
@@ -24030,7 +25528,7 @@ module.exports = {
   tickVert: "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 dataCoord;\n\nuniform vec2 dataAxis, dataShift, dataScale, screenOffset, tickScale;\n\nvoid main() {\n  vec2 pos = dataAxis * (dataScale * dataCoord.x + dataShift);\n  gl_Position = vec4(pos + tickScale*dataCoord.yz + screenOffset, 0, 1);\n}\n"
 }
 
-},{}],85:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 'use strict'
 
 module.exports = createTextElements
@@ -24308,9 +25806,9 @@ function createTextElements(plot) {
   return text
 }
 
-},{"./shaders":84,"binary-search-bounds":86,"gl-buffer":65,"gl-shader":87,"text-cache":182}],86:[function(require,module,exports){
-arguments[4][46][0].apply(exports,arguments)
-},{"dup":46}],87:[function(require,module,exports){
+},{"./shaders":90,"binary-search-bounds":92,"gl-buffer":71,"gl-shader":93,"text-cache":192}],92:[function(require,module,exports){
+arguments[4][45][0].apply(exports,arguments)
+},{"dup":45}],93:[function(require,module,exports){
 'use strict'
 
 var createUniformWrapper   = require('./lib/create-uniforms')
@@ -24576,7 +26074,7 @@ function createShader(
 
 module.exports = createShader
 
-},{"./lib/GLError":88,"./lib/create-attributes":89,"./lib/create-uniforms":90,"./lib/reflect":91,"./lib/runtime-reflect":92,"./lib/shader-cache":93}],88:[function(require,module,exports){
+},{"./lib/GLError":94,"./lib/create-attributes":95,"./lib/create-uniforms":96,"./lib/reflect":97,"./lib/runtime-reflect":98,"./lib/shader-cache":99}],94:[function(require,module,exports){
 function GLError (rawError, shortMessage, longMessage) {
     this.shortMessage = shortMessage || ''
     this.longMessage = longMessage || ''
@@ -24591,7 +26089,7 @@ GLError.prototype.name = 'GLError'
 GLError.prototype.constructor = GLError
 module.exports = GLError
 
-},{}],89:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
 'use strict'
 
 module.exports = createAttributeWrapper
@@ -24856,7 +26354,7 @@ function createAttributeWrapper(
   return obj
 }
 
-},{"./GLError":88}],90:[function(require,module,exports){
+},{"./GLError":94}],96:[function(require,module,exports){
 'use strict'
 
 var coallesceUniforms = require('./reflect')
@@ -25049,7 +26547,7 @@ function createUniformWrapper(gl, wrapper, uniforms, locations) {
   }
 }
 
-},{"./GLError":88,"./reflect":91}],91:[function(require,module,exports){
+},{"./GLError":94,"./reflect":97}],97:[function(require,module,exports){
 'use strict'
 
 module.exports = makeReflectTypes
@@ -25107,7 +26605,7 @@ function makeReflectTypes(uniforms, useIndex) {
   }
   return obj
 }
-},{}],92:[function(require,module,exports){
+},{}],98:[function(require,module,exports){
 'use strict'
 
 exports.uniforms    = runtimeUniforms
@@ -25187,7 +26685,7 @@ function runtimeAttributes(gl, program) {
   return result
 }
 
-},{}],93:[function(require,module,exports){
+},{}],99:[function(require,module,exports){
 'use strict'
 
 exports.shader   = getShaderReference
@@ -25325,7 +26823,7 @@ function createProgram(gl, vref, fref, attribs, locations) {
   return getCache(gl).getProgram(vref, fref, attribs, locations)
 }
 
-},{"./GLError":88,"gl-format-compiler-error":74,"weakmap-shim":195}],94:[function(require,module,exports){
+},{"./GLError":94,"gl-format-compiler-error":80,"weakmap-shim":206}],100:[function(require,module,exports){
 'use strict'
 
 module.exports = createGLPlot2D
@@ -25906,7 +27404,7 @@ function createGLPlot2D(options) {
   return plot
 }
 
-},{"./lib/box":81,"./lib/grid":82,"./lib/line":83,"./lib/text":85,"gl-select-static":120}],95:[function(require,module,exports){
+},{"./lib/box":87,"./lib/grid":88,"./lib/line":89,"./lib/text":91,"gl-select-static":129}],101:[function(require,module,exports){
 
 
 exports.pointVertex       = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\n\nuniform mat3 matrix;\nuniform float pointSize;\nuniform float pointCloud;\n\nhighp float rand(vec2 co) {\n  highp float a = 12.9898;\n  highp float b = 78.233;\n  highp float c = 43758.5453;\n  highp float d = dot(co.xy, vec2(a, b));\n  highp float e = mod(d, 3.14);\n  return fract(sin(e) * c);\n}\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n    // if we don't jitter the point size a bit, overall point cloud\n    // saturation 'jumps' on zooming, which is disturbing and confusing\n  gl_PointSize = pointSize * ((19.5 + rand(position)) / 20.0);\n  if(pointCloud != 0.0) { // pointCloud is truthy\n    // get the same square surface as circle would be\n    gl_PointSize *= 0.886;\n  }\n}"
@@ -25914,21 +27412,21 @@ exports.pointFragment     = "precision mediump float;\n#define GLSLIFY 1\n\nunif
 exports.pickVertex        = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec4 pickId;\n\nuniform mat3 matrix;\nuniform float pointSize;\nuniform vec4 pickOffset;\n\nvarying vec4 fragId;\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n  gl_PointSize = pointSize;\n\n  vec4 id = pickId + pickOffset;\n  id.y += floor(id.x / 256.0);\n  id.x -= floor(id.x / 256.0) * 256.0;\n\n  id.z += floor(id.y / 256.0);\n  id.y -= floor(id.y / 256.0) * 256.0;\n\n  id.w += floor(id.z / 256.0);\n  id.z -= floor(id.z / 256.0) * 256.0;\n\n  fragId = id;\n}\n"
 exports.pickFragment      = "precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragId;\n\nvoid main() {\n  float radius = length(2.0 * gl_PointCoord.xy - 1.0);\n  if(radius > 1.0) {\n    discard;\n  }\n  gl_FragColor = fragId / 255.0;\n}\n"
 
-},{}],96:[function(require,module,exports){
-arguments[4][87][0].apply(exports,arguments)
-},{"./lib/GLError":97,"./lib/create-attributes":98,"./lib/create-uniforms":99,"./lib/reflect":100,"./lib/runtime-reflect":101,"./lib/shader-cache":102,"dup":87}],97:[function(require,module,exports){
-arguments[4][88][0].apply(exports,arguments)
-},{"dup":88}],98:[function(require,module,exports){
-arguments[4][89][0].apply(exports,arguments)
-},{"./GLError":97,"dup":89}],99:[function(require,module,exports){
-arguments[4][90][0].apply(exports,arguments)
-},{"./GLError":97,"./reflect":100,"dup":90}],100:[function(require,module,exports){
-arguments[4][91][0].apply(exports,arguments)
-},{"dup":91}],101:[function(require,module,exports){
-arguments[4][92][0].apply(exports,arguments)
-},{"dup":92}],102:[function(require,module,exports){
+},{}],102:[function(require,module,exports){
 arguments[4][93][0].apply(exports,arguments)
-},{"./GLError":97,"dup":93,"gl-format-compiler-error":74,"weakmap-shim":195}],103:[function(require,module,exports){
+},{"./lib/GLError":103,"./lib/create-attributes":104,"./lib/create-uniforms":105,"./lib/reflect":106,"./lib/runtime-reflect":107,"./lib/shader-cache":108,"dup":93}],103:[function(require,module,exports){
+arguments[4][94][0].apply(exports,arguments)
+},{"dup":94}],104:[function(require,module,exports){
+arguments[4][95][0].apply(exports,arguments)
+},{"./GLError":103,"dup":95}],105:[function(require,module,exports){
+arguments[4][96][0].apply(exports,arguments)
+},{"./GLError":103,"./reflect":106,"dup":96}],106:[function(require,module,exports){
+arguments[4][97][0].apply(exports,arguments)
+},{"dup":97}],107:[function(require,module,exports){
+arguments[4][98][0].apply(exports,arguments)
+},{"dup":98}],108:[function(require,module,exports){
+arguments[4][99][0].apply(exports,arguments)
+},{"./GLError":103,"dup":99,"gl-format-compiler-error":80,"weakmap-shim":206}],109:[function(require,module,exports){
 'use strict'
 
 var createShader = require('gl-shader')
@@ -26148,444 +27646,35 @@ function createPointcloud2D(plot, options) {
   return result
 }
 
-},{"./lib/shader":95,"gl-buffer":65,"gl-shader":96,"typedarray-pool":188}],104:[function(require,module,exports){
+},{"./lib/shader":101,"gl-buffer":71,"gl-shader":102,"typedarray-pool":199}],110:[function(require,module,exports){
 'use strict'
 
 
 
 module.exports = {
-  vertex:       "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 positionHi, positionLo;\nattribute vec2 offset;\nattribute vec4 color;\n\nuniform vec2 scaleHi, scaleLo, translateHi, translateLo, pixelScale;\n\nvarying vec4 fragColor;\n\n\nvec4 computePosition_1_0(vec2 posHi, vec2 posLo, vec2 scHi, vec2 scLo, vec2 trHi, vec2 trLo, vec2 screenScale, vec2 screenOffset) {\n  return vec4((posHi + trHi) * scHi\n            + (posLo + trLo) * scHi\n            + (posHi + trHi) * scLo\n            + (posLo + trLo) * scLo\n            + screenScale * screenOffset, 0, 1);\n}\n\nvoid main() {\n  fragColor = color;\n\n  gl_Position = computePosition_1_0(\n    positionHi, positionLo,\n    scaleHi, scaleLo,\n    translateHi, translateLo,\n    pixelScale, offset);\n}\n",
-  fragment:     "precision lowp float;\n#define GLSLIFY 1\nvarying vec4 fragColor;\nvoid main() {\n  gl_FragColor = vec4(fragColor.rgb * fragColor.a, fragColor.a);\n}\n",
-  pickVertex:   "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 positionHi, positionLo;\nattribute vec2 offset;\nattribute vec4 id;\n\nuniform vec2 scaleHi, scaleLo, translateHi, translateLo, pixelScale;\nuniform vec4 pickOffset;\n\nvarying vec4 fragColor;\n\n\nvec4 computePosition_1_0(vec2 posHi, vec2 posLo, vec2 scHi, vec2 scLo, vec2 trHi, vec2 trLo, vec2 screenScale, vec2 screenOffset) {\n  return vec4((posHi + trHi) * scHi\n            + (posLo + trLo) * scHi\n            + (posHi + trHi) * scLo\n            + (posLo + trLo) * scLo\n            + screenScale * screenOffset, 0, 1);\n}\n\nvoid main() {\n  vec4 fragId = id + pickOffset;\n\n  fragId.y += floor(fragId.x / 256.0);\n  fragId.x -= floor(fragId.x / 256.0) * 256.0;\n\n  fragId.z += floor(fragId.y / 256.0);\n  fragId.y -= floor(fragId.y / 256.0) * 256.0;\n\n  fragId.w += floor(fragId.z / 256.0);\n  fragId.z -= floor(fragId.z / 256.0) * 256.0;\n\n  fragColor = fragId / 255.0;\n\n  gl_Position = computePosition_1_0(\n    positionHi, positionLo,\n    scaleHi, scaleLo,\n    translateHi, translateLo,\n    pixelScale, offset);\n}\n",
+  vertex:       "precision highp float;\n#define GLSLIFY 1\n\n\nvec4 computePosition_1_0(vec2 posHi, vec2 posLo, vec2 scHi, vec2 scLo, vec2 trHi, vec2 trLo) {\n  return vec4((posHi + trHi) * scHi\n  \t\t\t//FIXME: this thingy does not give noticeable precision gain, need test\n            + (posLo + trLo) * scHi\n            + (posHi + trHi) * scLo\n            + (posLo + trLo) * scLo\n            , 0, 1);\n}\n\n\nattribute vec2 positionHi, positionLo;\nattribute float size, border;\nattribute vec2 char, color;\n\n//this is 64-bit form of scale and translate\nuniform vec2 scaleHi, scaleLo, translateHi, translateLo;\nuniform float pixelRatio;\nuniform vec4 viewBox;\nuniform sampler2D palette;\n\nvarying vec4 charColor, borderColor;\nvarying vec2 charId;\nvarying vec2 pointCoord;\nvarying float pointSize;\nvarying float borderWidth;\n\n\nvoid main() {\n  charColor = texture2D(palette, vec2(color.x / 255., 0));\n  borderColor = texture2D(palette, vec2(color.y / 255., 0));\n\n  gl_PointSize = size * pixelRatio;\n  pointSize = size * pixelRatio;\n\n  charId = char;\n  borderWidth = border;\n\n  gl_Position = computePosition_1_0(\n    positionHi, positionLo,\n    scaleHi, scaleLo,\n    translateHi, translateLo);\n\n  pointCoord = viewBox.xy + (viewBox.zw - viewBox.xy) * (gl_Position.xy * .5 + .5);\n}\n",
+  fragment:     "precision highp float;\n#define GLSLIFY 1\n\nuniform sampler2D chars;\nuniform vec2 charsShape;\nuniform float charsStep, pixelRatio, charOffset;\n\nvarying vec4 borderColor;\nvarying vec4 charColor;\nvarying vec2 charId;\nvarying vec2 pointCoord;\nvarying float pointSize;\nvarying float borderWidth;\n\nvoid main() {\n\tvec2 pointUV = (pointCoord - gl_FragCoord.xy + pointSize * .5) / pointSize;\n\tpointUV.x = 1. - pointUV.x;\n\tpointUV.y += charOffset;\n\tvec2 texCoord = ((charId + pointUV) * charsStep) / charsShape;\n\tfloat dist = texture2D(chars, texCoord).r;\n\n\t//max-distance alpha\n\tif (dist < 1e-2)\n\t\tdiscard;\n\n\tfloat dif = 5. * pixelRatio * borderWidth / pointSize;\n\tfloat borderLevel = .748 - dif * .5;\n\tfloat charLevel = .748 + dif * .5;\n\tfloat gamma = .005 * charsStep / pointSize;\n\n\tfloat borderAmt = smoothstep(borderLevel - gamma, borderLevel + gamma, dist);\n\tfloat charAmt = smoothstep(charLevel - gamma, charLevel + gamma, dist);\n\n\tvec4 color = borderColor;\n\tcolor.a *= borderAmt;\n\n\tgl_FragColor = mix(color, charColor, charAmt);\n}\n",
+  pickVertex:   "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 positionHi, positionLo;\nattribute vec4 id;\nattribute float size;\n\nuniform vec2 scaleHi, scaleLo, translateHi, translateLo;\nuniform vec4 pickOffset;\nuniform float pixelRatio;\n\nvarying vec4 fragColor;\n\n\nvec4 computePosition_1_0(vec2 posHi, vec2 posLo, vec2 scHi, vec2 scLo, vec2 trHi, vec2 trLo) {\n  return vec4((posHi + trHi) * scHi\n  \t\t\t//FIXME: this thingy does not give noticeable precision gain, need test\n            + (posLo + trLo) * scHi\n            + (posHi + trHi) * scLo\n            + (posLo + trLo) * scLo\n            , 0, 1);\n}\n\n\nvoid main() {\n  vec4 fragId = id + pickOffset;\n\n  fragId.y += floor(fragId.x / 256.0);\n  fragId.x -= floor(fragId.x / 256.0) * 256.0;\n\n  fragId.z += floor(fragId.y / 256.0);\n  fragId.y -= floor(fragId.y / 256.0) * 256.0;\n\n  fragId.w += floor(fragId.z / 256.0);\n  fragId.z -= floor(fragId.z / 256.0) * 256.0;\n\n  fragColor = fragId / 255.0;\n\n  gl_PointSize = size * .25 * pixelRatio;\n\n  gl_Position = computePosition_1_0(\n    positionHi, positionLo,\n    scaleHi, scaleLo,\n    translateHi, translateLo);\n}\n",
   pickFragment: "precision lowp float;\n#define GLSLIFY 1\nvarying vec4 fragColor;\nvoid main() {\n  gl_FragColor = fragColor;\n}\n"
 }
 
-},{}],105:[function(require,module,exports){
-arguments[4][87][0].apply(exports,arguments)
-},{"./lib/GLError":106,"./lib/create-attributes":107,"./lib/create-uniforms":108,"./lib/reflect":109,"./lib/runtime-reflect":110,"./lib/shader-cache":111,"dup":87}],106:[function(require,module,exports){
-arguments[4][88][0].apply(exports,arguments)
-},{"dup":88}],107:[function(require,module,exports){
-arguments[4][89][0].apply(exports,arguments)
-},{"./GLError":106,"dup":89}],108:[function(require,module,exports){
-arguments[4][90][0].apply(exports,arguments)
-},{"./GLError":106,"./reflect":109,"dup":90}],109:[function(require,module,exports){
-arguments[4][91][0].apply(exports,arguments)
-},{"dup":91}],110:[function(require,module,exports){
-arguments[4][92][0].apply(exports,arguments)
-},{"dup":92}],111:[function(require,module,exports){
+},{}],111:[function(require,module,exports){
+arguments[4][45][0].apply(exports,arguments)
+},{"dup":45}],112:[function(require,module,exports){
 arguments[4][93][0].apply(exports,arguments)
-},{"./GLError":106,"dup":93,"gl-format-compiler-error":74,"weakmap-shim":195}],112:[function(require,module,exports){
-'use strict'
-
-module.exports = createFancyScatter2D
-
-var createShader = require('gl-shader')
-var createBuffer = require('gl-buffer')
-var textCache = require('text-cache')
-var pool = require('typedarray-pool')
-var vectorizeText = require('vectorize-text')
-var shaders = require('./lib/shaders')
-
-var BOUNDARIES = {}
-
-function getBoundary(glyph) {
-  if(glyph in BOUNDARIES) {
-    return BOUNDARIES[glyph]
-  }
-
-  var polys = vectorizeText(glyph, {
-    polygons: true,
-    font: 'sans-serif',
-    textAlign: 'left',
-    textBaseline: 'alphabetic'
-  })
-
-  var coords  = []
-  var normals = []
-
-  polys.forEach(function(loops) {
-    loops.forEach(function(loop) {
-      for(var i=0; i < loop.length; ++i) {
-        var a = loop[(i + loop.length - 1) % loop.length]
-        var b = loop[i]
-        var c = loop[(i + 1) % loop.length]
-        var d = loop[(i + 2) % loop.length]
-
-        var dx = b[0] - a[0]
-        var dy = b[1] - a[1]
-        var dl = Math.sqrt(dx * dx + dy * dy)
-        dx /= dl
-        dy /= dl
-
-        coords.push(a[0], a[1] + 1.4)
-        normals.push(dy, -dx)
-        coords.push(a[0], a[1] + 1.4)
-        normals.push(-dy, dx)
-        coords.push(b[0], b[1] + 1.4)
-        normals.push(-dy, dx)
-
-        coords.push(b[0], b[1] + 1.4)
-        normals.push(-dy, dx)
-        coords.push(a[0], a[1] + 1.4)
-        normals.push(dy, -dx)
-        coords.push(b[0], b[1] + 1.4)
-        normals.push(dy, -dx)
-
-        var ex = d[0] - c[0]
-        var ey = d[1] - c[1]
-        var el = Math.sqrt(ex * ex + ey * ey)
-        ex /= el
-        ey /= el
-
-        coords.push(b[0], b[1] + 1.4)
-        normals.push(dy, -dx)
-        coords.push(b[0], b[1] + 1.4)
-        normals.push(-dy, dx)
-        coords.push(c[0], c[1] + 1.4)
-        normals.push(-ey, ex)
-
-        coords.push(c[0], c[1] + 1.4)
-        normals.push(-ey, ex)
-        coords.push(b[0], b[1] + 1.4)
-        normals.push(ey, -ex)
-        coords.push(c[0], c[1] + 1.4)
-        normals.push(ey, -ex)
-      }
-    })
-  })
-
-  var bounds = [Infinity, Infinity, -Infinity, -Infinity]
-  for(var i = 0; i < coords.length; i += 2) {
-    for(var j = 0; j < 2; ++j) {
-      bounds[j]     = Math.min(bounds[j],     coords[i + j])
-      bounds[2 + j] = Math.max(bounds[2 + j], coords[i + j])
-    }
-  }
-
-  return BOUNDARIES[glyph] = {
-    coords:  coords,
-    normals: normals,
-    bounds:  bounds
-  }
-}
-
-function GLScatterFancy(
-    plot,
-    shader,
-    pickShader,
-    positionHiBuffer,
-    positionLoBuffer,
-    offsetBuffer,
-    colorBuffer,
-    idBuffer) {
-  this.plot           = plot
-  this.shader         = shader
-  this.pickShader     = pickShader
-  this.posHiBuffer    = positionHiBuffer
-  this.posLoBuffer    = positionLoBuffer
-  this.offsetBuffer   = offsetBuffer
-  this.colorBuffer    = colorBuffer
-  this.idBuffer       = idBuffer
-  this.bounds         = [Infinity, Infinity, -Infinity, -Infinity]
-  this.numPoints      = 0
-  this.numVertices    = 0
-  this.pickOffset     = 0
-  this.points         = null
-}
-
-var proto = GLScatterFancy.prototype
-
-;(function() {
-  var SCALE_HI = new Float32Array([0, 0])
-  var SCALE_LO = new Float32Array([0, 0])
-  var TRANSLATE_HI = new Float32Array([0, 0])
-  var TRANSLATE_LO = new Float32Array([0, 0])
-
-  var PIXEL_SCALE = [0, 0]
-
-  function calcScales() {
-    var plot       = this.plot
-    var bounds     = this.bounds
-    var viewBox    = plot.viewBox
-    var dataBox    = plot.dataBox
-    var pixelRatio = plot.pixelRatio
-
-    var boundX = bounds[2] - bounds[0]
-    var boundY = bounds[3] - bounds[1]
-    var dataX  = dataBox[2] - dataBox[0]
-    var dataY  = dataBox[3] - dataBox[1]
-
-    var scaleX = 2 * boundX / dataX
-    var scaleY = 2 * boundY / dataY
-    var translateX = (bounds[0] - dataBox[0] - 0.5 * dataX) / boundX
-    var translateY = (bounds[1] - dataBox[1] - 0.5 * dataY) / boundY
-
-    SCALE_HI[0] = scaleX
-    SCALE_LO[0] = scaleX - SCALE_HI[0]
-    SCALE_HI[1] = scaleY
-    SCALE_LO[1] = scaleY - SCALE_HI[1]
-
-    TRANSLATE_HI[0] = translateX
-    TRANSLATE_LO[0] = translateX - TRANSLATE_HI[0]
-    TRANSLATE_HI[1] = translateY
-    TRANSLATE_LO[1] = translateY - TRANSLATE_HI[1]
-
-    var screenX = viewBox[2] - viewBox[0]
-    var screenY = viewBox[3] - viewBox[1]
-
-    PIXEL_SCALE[0] = 2 * pixelRatio / screenX
-    PIXEL_SCALE[1] = 2 * pixelRatio / screenY
-  }
-
-  var PICK_OFFSET = [0, 0, 0, 0]
-
-  proto.drawPick = function(offset) {
-
-    var pick = offset !== undefined
-    var plot = this.plot
-
-    var numVertices = this.numVertices
-
-    if(!numVertices) {
-      return offset
-    }
-
-    calcScales.call(this)
-
-    var gl = plot.gl
-    var shader = pick ? this.pickShader : this.shader
-
-    shader.bind()
-
-    if(pick) {
-
-      this.pickOffset = offset
-
-      for (var i = 0; i < 4; ++i) {
-        PICK_OFFSET[i] = (offset >> (i * 8)) & 0xff
-      }
-
-      shader.uniforms.pickOffset = PICK_OFFSET
-
-      this.idBuffer.bind()
-      shader.attributes.id.pointer(gl.UNSIGNED_BYTE, false)
-
-    } else {
-
-      this.colorBuffer.bind()
-      shader.attributes.color.pointer(gl.UNSIGNED_BYTE, true)
-
-    }
-
-    this.posHiBuffer.bind()
-    shader.attributes.positionHi.pointer()
-
-    this.posLoBuffer.bind()
-    shader.attributes.positionLo.pointer()
-
-    this.offsetBuffer.bind()
-    shader.attributes.offset.pointer()
-
-    shader.uniforms.pixelScale  = PIXEL_SCALE
-    shader.uniforms.scaleHi     = SCALE_HI
-    shader.uniforms.scaleLo     = SCALE_LO
-    shader.uniforms.translateHi = TRANSLATE_HI
-    shader.uniforms.translateLo = TRANSLATE_LO
-
-    gl.drawArrays(gl.TRIANGLES, 0, numVertices)
-
-    if(pick) return offset + this.numPoints
-  }
-})()
-
-proto.draw = proto.drawPick
-
-proto.pick = function(x, y, value) {
-  var pickOffset = this.pickOffset
-  var pointCount = this.numPoints
-  if(value < pickOffset || value >= pickOffset + pointCount) {
-    return null
-  }
-  var pointId = value - pickOffset
-  var points  = this.points
-  return {
-    object:    this,
-    pointId:   pointId,
-    dataCoord: [points[2 * pointId], points[2 * pointId + 1]]
-  }
-}
-
-proto.update = function(options) {
-  options = options || {}
-
-  var positions     = options.positions    || []
-  var colors        = options.colors       || []
-  var glyphs        = options.glyphs       || []
-  var sizes         = options.sizes        || []
-  var borderWidths  = options.borderWidths || []
-  var borderColors  = options.borderColors || []
-  var i, j
-
-  this.points = positions
-
-  var bounds = this.bounds = [Infinity, Infinity, -Infinity, -Infinity]
-  var numVertices = 0
-
-  var glyphMeshes = []
-  var glyphBoundaries = []
-  var glyph, border
-
-  for(i = 0; i < glyphs.length; ++i) {
-    glyph = textCache('sans-serif', glyphs[i])
-    border = getBoundary(glyphs[i])
-    glyphMeshes.push(glyph)
-    glyphBoundaries.push(border)
-    numVertices += (glyph.data.length + border.coords.length) >> 1
-    for(j = 0; j < 2; ++j) {
-      bounds[j]     = Math.min(bounds[j],     positions[2 * i + j])
-      bounds[2 + j] = Math.max(bounds[2 + j], positions[2 * i + j])
-    }
-  }
-
-  if(bounds[0] === bounds[2]) {
-    bounds[2] += 1
-  }
-  if(bounds[3] === bounds[1]) {
-    bounds[3] += 1
-  }
-
-  var sx = 1 / (bounds[2] - bounds[0])
-  var sy = 1 / (bounds[3] - bounds[1])
-  var tx = bounds[0]
-  var ty = bounds[1]
-
-  var v_position = pool.mallocFloat64(2 * numVertices)
-  var v_posHi    = pool.mallocFloat32(2 * numVertices)
-  var v_posLo    = pool.mallocFloat32(2 * numVertices)
-  var v_offset   = pool.mallocFloat32(2 * numVertices)
-  var v_color    = pool.mallocUint8(4 * numVertices)
-  var v_ids      = pool.mallocUint32(numVertices)
-  var ptr = 0
-
-  for(i = 0; i < glyphs.length; ++i) {
-    glyph = glyphMeshes[i]
-    border = glyphBoundaries[i]
-    var x = sx * (positions[2 * i]     - tx)
-    var y = sy * (positions[2 * i + 1] - ty)
-    var s = sizes[i]
-    var r = colors[4 * i]     * 255
-    var g = colors[4 * i + 1] * 255
-    var b = colors[4 * i + 2] * 255
-    var a = colors[4 * i + 3] * 255
-
-    var gx = 0.5 * (border.bounds[0] + border.bounds[2])
-    var gy = 0.5 * (border.bounds[1] + border.bounds[3])
-
-    for(j = 0; j < glyph.data.length; j += 2) {
-      v_position[2 * ptr]     = x
-      v_position[2 * ptr + 1] = y
-      v_offset[2 * ptr]       = -s * (glyph.data[j] - gx)
-      v_offset[2 * ptr + 1]   = -s * (glyph.data[j + 1] - gy)
-      v_color[4 * ptr]        = r
-      v_color[4 * ptr + 1]    = g
-      v_color[4 * ptr + 2]    = b
-      v_color[4 * ptr + 3]    = a
-      v_ids[ptr]              = i
-
-      ptr += 1
-    }
-
-    var w = borderWidths[i]
-    r = borderColors[4 * i]     * 255
-    g = borderColors[4 * i + 1] * 255
-    b = borderColors[4 * i + 2] * 255
-    a = borderColors[4 * i + 3] * 255
-
-    for(j = 0; j < border.coords.length; j += 2) {
-      v_position[2 * ptr]     = x
-      v_position[2 * ptr + 1] = y
-      v_offset[2 * ptr]       = - (s * (border.coords[j] - gx)     + w * border.normals[j])
-      v_offset[2 * ptr + 1]   = - (s * (border.coords[j + 1] - gy) + w * border.normals[j + 1])
-      v_color[4 * ptr]        = r
-      v_color[4 * ptr + 1]    = g
-      v_color[4 * ptr + 2]    = b
-      v_color[4 * ptr + 3]    = a
-      v_ids[ptr]              = i
-
-      ptr += 1
-    }
-  }
-
-  this.numPoints = glyphs.length
-  this.numVertices = numVertices
-
-  v_posHi.set(v_position)
-  for(i = 0; i < v_position.length; i++)
-    v_posLo[i] = v_position[i] - v_posHi[i]
-
-  this.posHiBuffer.update(v_posHi)
-  this.posLoBuffer.update(v_posLo)
-  this.offsetBuffer.update(v_offset)
-  this.colorBuffer.update(v_color)
-  this.idBuffer.update(v_ids)
-
-  pool.free(v_position)
-  pool.free(v_posHi)
-  pool.free(v_posLo)
-  pool.free(v_offset)
-  pool.free(v_color)
-  pool.free(v_ids)
-}
-
-proto.dispose = function() {
-  this.shader.dispose()
-  this.pickShader.dispose()
-  this.posHiBuffer.dispose()
-  this.posLoBuffer.dispose()
-  this.offsetBuffer.dispose()
-  this.colorBuffer.dispose()
-  this.idBuffer.dispose()
-  this.plot.removeObject(this)
-}
-
-function createFancyScatter2D(plot, options) {
-  var gl = plot.gl
-
-  var shader     = createShader(gl, shaders.vertex,     shaders.fragment)
-  var pickShader = createShader(gl, shaders.pickVertex, shaders.pickFragment)
-
-  var positionHiBuffer = createBuffer(gl)
-  var positionLoBuffer = createBuffer(gl)
-  var offsetBuffer     = createBuffer(gl)
-  var colorBuffer      = createBuffer(gl)
-  var idBuffer         = createBuffer(gl)
-
-  var scatter = new GLScatterFancy(
-    plot,
-    shader,
-    pickShader,
-    positionHiBuffer,
-    positionLoBuffer,
-    offsetBuffer,
-    colorBuffer,
-    idBuffer)
-
-  scatter.update(options)
-
-  plot.addObject(scatter)
-
-  return scatter
-}
-},{"./lib/shaders":104,"gl-buffer":65,"gl-shader":105,"text-cache":182,"typedarray-pool":188,"vectorize-text":191}],113:[function(require,module,exports){
-
-
-exports.pointVertex       = "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 positionHi, positionLo;\nattribute float weight;\n\nuniform vec2 scaleHi, scaleLo, translateHi, translateLo;\nuniform float pointSize, useWeight;\n\nvarying float fragWeight;\n\n\nvec4 pfx_1_0(vec2 scaleHi, vec2 scaleLo, vec2 translateHi, vec2 translateLo, vec2 positionHi, vec2 positionLo) {\n  return vec4((positionHi + translateHi) * scaleHi\n            + (positionLo + translateLo) * scaleHi\n            + (positionHi + translateHi) * scaleLo\n            + (positionLo + translateLo) * scaleLo, 0.0, 1.0);\n}\n\nvoid main() {\n  gl_Position = pfx_1_0(scaleHi, scaleLo, translateHi, translateLo, positionHi, positionLo);\n  gl_PointSize = pointSize;\n  fragWeight = mix(1.0, weight, useWeight);\n}"
-exports.pointFragment     = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color, borderColor;\nuniform float centerFraction;\n\nvarying float fragWeight;\n\nfloat smoothStep(float x, float y) {\n  return 1.0 / (1.0 + exp(50.0*(x - y)));\n}\n\nvoid main() {\n  float radius = length(2.0*gl_PointCoord.xy-1.0);\n  if(radius > 1.0) {\n    discard;\n  }\n  vec4 baseColor = mix(borderColor, color, smoothStep(radius, centerFraction));\n  float alpha = 1.0 - pow(1.0 - baseColor.a, fragWeight);\n  gl_FragColor = vec4(baseColor.rgb * alpha, alpha);\n}"
-exports.pickVertex        = "precision highp float;\n#define GLSLIFY 1\n\nvec4 pfx_1_0(vec2 scaleHi, vec2 scaleLo, vec2 translateHi, vec2 translateLo, vec2 positionHi, vec2 positionLo) {\n  return vec4((positionHi + translateHi) * scaleHi\n            + (positionLo + translateLo) * scaleHi\n            + (positionHi + translateHi) * scaleLo\n            + (positionLo + translateLo) * scaleLo, 0.0, 1.0);\n}\n\nattribute vec2 positionHi, positionLo;\nattribute vec4 pickId;\n\nuniform vec2 scaleHi, scaleLo, translateHi, translateLo;\nuniform float pointSize;\nuniform vec4 pickOffset;\n\nvarying vec4 fragId;\n\nvoid main() {\n\n  vec4 id = pickId + pickOffset;\n  id.y += floor(id.x / 256.0);\n  id.x -= floor(id.x / 256.0) * 256.0;\n\n  id.z += floor(id.y / 256.0);\n  id.y -= floor(id.y / 256.0) * 256.0;\n\n  id.w += floor(id.z / 256.0);\n  id.z -= floor(id.z / 256.0) * 256.0;\n\n  gl_Position = pfx_1_0(scaleHi, scaleLo, translateHi, translateLo, positionHi, positionLo);\n  gl_PointSize = pointSize;\n  fragId = id;\n}"
-exports.pickFragment      = "precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragId;\n\nvoid main() {\n  float radius = length(2.0 * gl_PointCoord.xy - 1.0);\n  if(radius > 1.0) {\n    discard;\n  }\n  gl_FragColor = fragId / 255.0;\n}"
-},{}],114:[function(require,module,exports){
-arguments[4][46][0].apply(exports,arguments)
-},{"dup":46}],115:[function(require,module,exports){
+},{"./lib/GLError":113,"./lib/create-attributes":114,"./lib/create-uniforms":115,"./lib/reflect":116,"./lib/runtime-reflect":117,"./lib/shader-cache":118,"dup":93}],113:[function(require,module,exports){
+arguments[4][94][0].apply(exports,arguments)
+},{"dup":94}],114:[function(require,module,exports){
+arguments[4][95][0].apply(exports,arguments)
+},{"./GLError":113,"dup":95}],115:[function(require,module,exports){
+arguments[4][96][0].apply(exports,arguments)
+},{"./GLError":113,"./reflect":116,"dup":96}],116:[function(require,module,exports){
+arguments[4][97][0].apply(exports,arguments)
+},{"dup":97}],117:[function(require,module,exports){
+arguments[4][98][0].apply(exports,arguments)
+},{"dup":98}],118:[function(require,module,exports){
+arguments[4][99][0].apply(exports,arguments)
+},{"./GLError":113,"dup":99,"gl-format-compiler-error":80,"weakmap-shim":206}],119:[function(require,module,exports){
 'use strict'
 
 module.exports = sortLevels
@@ -26883,7 +27972,7 @@ function quickSort(left, right, data_levels, data_points, data_ids, data_weights
   }
 }
 
-},{}],116:[function(require,module,exports){
+},{}],120:[function(require,module,exports){
 'use strict'
 
 var pool = require('typedarray-pool')
@@ -27023,7 +28112,458 @@ function snapPoints(points, ids, weights, bounds) {
   return lod
 }
 
-},{"./lib/sort":115,"typedarray-pool":188}],117:[function(require,module,exports){
+},{"./lib/sort":119,"typedarray-pool":199}],121:[function(require,module,exports){
+'use strict'
+
+module.exports = createFancyScatter2D
+
+var createShader = require('gl-shader')
+var createBuffer = require('gl-buffer')
+var pool = require('typedarray-pool')
+var shaders = require('./lib/shaders')
+var snapPoints = require('snap-points-2d')
+var atlas = require('font-atlas-sdf')
+var createTexture = require('gl-texture2d')
+var colorId = require('color-id')
+var ndarray = require('ndarray')
+var clamp = require('clamp')
+var search = require('binary-search-bounds')
+
+function GLScatterFancy(
+    plot,
+    shader,
+    pickShader,
+    positionBuffer,
+    sizeBuffer,
+    colorBuffer,
+    idBuffer,
+    charBuffer) {
+  this.plot           = plot
+  this.shader         = shader
+  this.pickShader     = pickShader
+
+  //buffers
+  this.positionBuffer = positionBuffer
+  this.sizeBuffer     = sizeBuffer
+  this.colorBuffer    = colorBuffer
+  this.idBuffer       = idBuffer
+  this.charBuffer       = charBuffer
+
+  this.pointCount     = 0
+  this.pickOffset     = 0
+
+  //positions data
+  this.points         = null
+
+  //lod scales
+  this.scales         = []
+  this.xCoords        = []
+
+  //font atlas texture
+  this.charCanvas     = document.createElement('canvas')
+  this.charTexture    = createTexture(this.plot.gl, this.charCanvas)
+  this.charStep       = 400
+
+  //due to font alignmens some glyphs are off a bit
+  this.charOffset     = .032
+
+  //snapping loses points sorting, so disable snapping on small number of points
+  this.snapThreshold  = 1e4
+
+  //border/char colors texture
+  this.paletteTexture   = createTexture(this.plot.gl, [256, 1])
+}
+
+var proto = GLScatterFancy.prototype
+
+;(function() {
+  var SCALE_HI = new Float32Array([0, 0])
+  var SCALE_LO = new Float32Array([0, 0])
+  var TRANSLATE_HI = new Float32Array([0, 0])
+  var TRANSLATE_LO = new Float32Array([0, 0])
+
+  var PIXEL_SCALE = [0, 0]
+
+  var pixelSize, xStart, xEnd
+
+
+  function calcScales() {
+    var plot       = this.plot
+
+    var viewBox    = plot.viewBox
+    var dataBox    = plot.dataBox
+    var pixelRatio = plot.pixelRatio
+
+    var dataX  = dataBox[2] - dataBox[0]
+    var dataY  = dataBox[3] - dataBox[1]
+
+    var scaleX = 2 / dataX
+    var scaleY = 2 / dataY
+    var translateX = (- dataBox[0] - 0.5 * dataX)
+    var translateY = (- dataBox[1] - 0.5 * dataY)
+
+    SCALE_HI[0] = scaleX
+    SCALE_LO[0] = scaleX - SCALE_HI[0]
+    SCALE_HI[1] = scaleY
+    SCALE_LO[1] = scaleY - SCALE_HI[1]
+
+    TRANSLATE_HI[0] = translateX
+    TRANSLATE_LO[0] = translateX - TRANSLATE_HI[0]
+    TRANSLATE_HI[1] = translateY
+    TRANSLATE_LO[1] = translateY - TRANSLATE_HI[1]
+
+    var screenX = viewBox[2] - viewBox[0]
+    var screenY = viewBox[3] - viewBox[1]
+
+    pixelSize   = Math.min(dataX / screenX, dataY / screenY)
+
+    //FIXME: why twice?
+    PIXEL_SCALE[0] = 2 * pixelRatio / screenX
+    PIXEL_SCALE[1] = 2 * pixelRatio / screenY
+
+    xStart = dataBox[0]
+    xEnd = dataBox[2]
+  }
+
+  var PICK_OFFSET = [0, 0, 0, 0]
+
+  proto.drawPick = function(offset) {
+    var pick = offset !== undefined
+    var plot = this.plot
+    var pointCount = this.pointCount
+    var snap = pointCount > this.snapThreshold
+
+    if(!pointCount) {
+      return offset
+    }
+
+    calcScales.call(this)
+
+    var gl = plot.gl
+    var shader = pick ? this.pickShader : this.shader
+    var blend = gl.isEnabled(gl.BLEND)
+
+    shader.bind()
+
+    if(pick) {
+      this.pickOffset = offset
+
+      for (var i = 0; i < 4; ++i) {
+        PICK_OFFSET[i] = (offset >> (i * 8)) & 0xff
+      }
+
+      shader.uniforms.pickOffset = PICK_OFFSET
+
+      this.idBuffer.bind()
+      shader.attributes.id.pointer(gl.UNSIGNED_BYTE, false)
+
+    } else {
+      gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      gl.blendColor(0,0,0,1);
+      if (!blend) gl.enable(gl.BLEND)
+
+      this.colorBuffer.bind()
+      shader.attributes.color.pointer(gl.UNSIGNED_BYTE, false)
+
+      this.charBuffer.bind()
+      shader.attributes.char.pointer(gl.UNSIGNED_BYTE, false)
+
+      shader.uniforms.chars = this.charTexture.bind(0)
+      shader.uniforms.charsShape = [this.charCanvas.width, this.charCanvas.height]
+      shader.uniforms.charsStep = this.charStep
+      shader.uniforms.palette = this.paletteTexture.bind(1)
+      shader.uniforms.charOffset = this.charOffset
+    }
+
+    this.sizeBuffer.bind()
+    shader.attributes.size.pointer(gl.FLOAT, false, 8, 0)
+    if (!pick) shader.attributes.border.pointer(gl.FLOAT, false, 8, 4)
+
+    this.positionBuffer.bind()
+    shader.attributes.positionHi.pointer(gl.FLOAT, false, 16, 0)
+    shader.attributes.positionLo.pointer(gl.FLOAT, false, 16, 8)
+
+    shader.uniforms.pixelRatio  = plot.pixelRatio
+    shader.uniforms.scaleHi     = SCALE_HI
+    shader.uniforms.scaleLo     = SCALE_LO
+    shader.uniforms.translateHi = TRANSLATE_HI
+    shader.uniforms.translateLo = TRANSLATE_LO
+    shader.uniforms.viewBox = plot.viewBox
+
+    var scales = this.scales
+
+    if (snap) {
+      for (var scaleNum = scales.length - 1; scaleNum >= 0; scaleNum--) {
+          var lod = scales[scaleNum]
+          if(lod.pixelSize && (lod.pixelSize < pixelSize * 1.25) && scaleNum > 1) {
+            continue
+          }
+
+          var intervalStart = lod.offset
+          var intervalEnd   = lod.count + intervalStart
+
+          var startOffset = search.ge(this.xCoords, xStart, intervalStart, intervalEnd - 1)
+          var endOffset   = search.lt(this.xCoords, xEnd, startOffset, intervalEnd - 1) + 1
+
+          if (endOffset > startOffset) {
+            gl.drawArrays(gl.POINTS, startOffset, (endOffset - startOffset))
+          }
+      }
+    }
+    else {
+      gl.drawArrays(gl.POINTS, 0, pointCount)
+    }
+
+    if (pick) return offset + pointCount
+    else {
+      if (!blend) gl.disable(gl.BLEND)
+      else {
+        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
+      }
+    }
+  }
+})()
+
+proto.draw = proto.drawPick
+
+proto.pick = function(x, y, value) {
+  var pickOffset = this.pickOffset
+  var pointCount = this.pointCount
+  if(value < pickOffset || value >= pickOffset + pointCount) {
+    return null
+  }
+  var pointId = value - pickOffset
+  var points  = this.points
+  return {
+    object:    this,
+    pointId:   pointId,
+    dataCoord: [points[2 * pointId], points[2 * pointId + 1]]
+  }
+}
+
+proto.update = function(options) {
+  options = options || {}
+
+  var positions     = options.positions    || []
+  var colors        = options.colors       || []
+  var glyphs        = options.glyphs       || []
+  var sizes         = options.sizes        || []
+  var borderWidths  = options.borderWidths || []
+  var borderColors  = options.borderColors || []
+  var gl = this.plot.gl
+
+  if (options.charOffset != null) this.charOffset = options.charOffset
+
+  this.points = positions
+
+  //create packed positions here
+  var pointCount         = this.points.length / 2
+  var packedId           = pool.mallocInt32(pointCount)
+  var packedW            = pool.mallocFloat32(2 * pointCount)
+  var packed             = pool.mallocFloat64(2 * pointCount)
+  packed.set(this.points)
+
+  this.pointCount = pointCount
+
+  var snap = pointCount > this.snapThreshold
+
+  if (snap) {
+    this.scales = snapPoints(packed, packedId, packedW)
+  }
+
+  //v_position contains normalized positions to the available range of positions
+  var v_position  = pool.mallocFloat32(4 * pointCount)
+  var v_sizeWidth = pool.mallocFloat32(2 * pointCount)
+  var v_color     = pool.mallocUint8(2 * pointCount)
+  var v_ids       = pool.mallocUint32(pointCount)
+  var v_chars     = pool.mallocUint8(2 * pointCount)
+
+  //aggregate colors
+  var paletteIds = {}, colorIds = [], paletteColors = [], bColorIds = []
+  for (var i = 0, l = pointCount, k = 0; i < l; ++i) {
+    var channels = [colors[4 * i] * 255, colors[4 * i + 1] * 255, colors[4 * i + 2] * 255, colors[4 * i + 3] * 255]
+    var cId = colorId(channels, false)
+    if (paletteIds[cId] == null) {
+      paletteIds[cId] = k++
+      paletteColors.push(channels[0])
+      paletteColors.push(channels[1])
+      paletteColors.push(channels[2])
+      paletteColors.push(channels[3])
+    }
+    colorIds.push(cId)
+
+    if (borderColors && borderColors.length) {
+      channels = [borderColors[4 * i] * 255, borderColors[4 * i + 1] * 255, borderColors[4 * i + 2] * 255, borderColors[4 * i + 3] * 255]
+      cId = colorId(channels, false)
+      if (paletteIds[cId] == null) {
+        paletteIds[cId] = k++
+        paletteColors.push(channels[0])
+        paletteColors.push(channels[1])
+        paletteColors.push(channels[2])
+        paletteColors.push(channels[3])
+      }
+      bColorIds.push(cId)
+    }
+  }
+
+  //aggregate glyphs
+  var glyphChars = {}
+  for (var i = 0, l = pointCount, k = 0; i < l; i++) {
+    var char = glyphs[i]
+    if (glyphChars[char] == null) {
+      glyphChars[char] = k++
+    }
+  }
+
+  //generate font atlas
+  var maxSize = 0
+  for (var i = 0, l = sizes.length; i < l; ++i) {
+    if (sizes[i] > maxSize) maxSize = sizes[i]
+  }
+  var oldStep = this.charStep
+  this.charStep = clamp(Math.ceil(maxSize*4), 128, 768)
+
+  var chars = Object.keys(glyphChars)
+  var step = this.charStep
+  var charSize = Math.floor(step / 2)
+  var maxW = gl.getParameter(gl.MAX_TEXTURE_SIZE)
+  var maxChars = (maxW / step) * (maxW / step)
+  var atlasW = Math.min(maxW, step*chars.length)
+  var atlasH = Math.min(maxW, step*Math.ceil(step*chars.length/maxW))
+  var cols = Math.floor(atlasW / step)
+  if (chars.length > maxChars) {
+    console.warn('gl-scatter2d-fancy: number of characters is more than maximum texture size. Try reducing it.')
+  }
+
+  //do not overupdate atlas
+  if (!this.chars || (this.chars+'' !== chars+'') || this.charStep != oldStep) {
+    this.charCanvas = atlas({
+      canvas: this.charCanvas,
+      family: 'sans-serif',
+      size: charSize,
+      shape: [atlasW, atlasH],
+      step: [step, step],
+      chars: chars
+    })
+    this.chars = chars
+  }
+
+  //collect buffers data
+  for(var i = 0; i < pointCount; ++i) {
+    var id = snap ? packedId[i] : i
+    var x = positions[2 * id]
+    var y = positions[2 * id + 1]
+    var s = sizes[id]
+    var w = borderWidths[id]
+
+    //write hi- and lo- position parts
+    v_position[4 * i]      = x
+    v_position[4 * i + 1]  = y
+    v_position[4 * i + 2]  = x - v_position[4 * i]
+    v_position[4 * i + 3]  = y - v_position[4 * i + 1]
+
+    this.xCoords[i] = x
+
+    //size is doubled bc character SDF is twice less than character step
+    v_sizeWidth[2 * i]     = s*2
+    v_sizeWidth[2 * i + 1] = w
+    v_ids[i]               = id
+
+    //color/bufferColor indexes
+    var cId = colorIds[id]
+    var pcId = paletteIds[cId]
+    v_color[2 * i] = pcId
+    var bcId = bColorIds[id]
+    var pbcId = paletteIds[bcId]
+    v_color[2 * i + 1] = pbcId
+
+    //char indexes
+    var char = glyphs[id]
+    var charId = glyphChars[char]
+    v_chars[2 * i + 1] = Math.floor(charId / cols)
+    v_chars[2 * i] = charId % cols
+  }
+
+  // if (!v_color.length) return
+
+  //fill buffes
+  this.positionBuffer.update(v_position)
+  this.sizeBuffer.update(v_sizeWidth)
+  this.colorBuffer.update(v_color)
+  this.idBuffer.update(v_ids)
+  this.charBuffer.update(v_chars)
+
+  //update char/color textures
+  this.charTexture.shape = [this.charCanvas.width, this.charCanvas.height]
+  if (this.charCanvas && this.charCanvas.width) {
+    this.charTexture.setPixels(this.charCanvas)
+  }
+  this.paletteTexture.setPixels(ndarray(paletteColors.slice(0, 256*4), [256, 1, 4]))
+
+  pool.free(v_position)
+  pool.free(v_sizeWidth)
+  pool.free(v_color)
+  pool.free(v_ids)
+  pool.free(v_chars)
+  pool.free(packed)
+  pool.free(packedId)
+  pool.free(packedW)
+}
+
+proto.dispose = function() {
+  this.shader.dispose()
+  this.pickShader.dispose()
+  this.positionBuffer.dispose()
+  this.sizeBuffer.dispose()
+  this.colorBuffer.dispose()
+  this.idBuffer.dispose()
+  this.charBuffer.dispose()
+  this.plot.removeObject(this)
+}
+
+function createFancyScatter2D(plot, options) {
+  var gl = plot.gl
+
+  var shader     = createShader(gl, shaders.vertex,     shaders.fragment)
+  var pickShader = createShader(gl, shaders.pickVertex, shaders.pickFragment)
+
+  var positionBuffer   = createBuffer(gl)
+  var sizeBuffer       = createBuffer(gl)
+  var colorBuffer      = createBuffer(gl)
+  var idBuffer         = createBuffer(gl)
+  var charBuffer       = createBuffer(gl)
+
+  var scatter = new GLScatterFancy(
+    plot,
+    shader,
+    pickShader,
+    positionBuffer,
+    sizeBuffer,
+    colorBuffer,
+    idBuffer,
+    charBuffer)
+
+  scatter.update(options)
+
+  plot.addObject(scatter)
+
+  return scatter
+}
+
+},{"./lib/shaders":110,"binary-search-bounds":111,"clamp":46,"color-id":49,"font-atlas-sdf":67,"gl-buffer":71,"gl-shader":112,"gl-texture2d":138,"ndarray":158,"snap-points-2d":120,"typedarray-pool":199}],122:[function(require,module,exports){
+
+
+exports.pointVertex       = "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 positionHi, positionLo;\nattribute float weight;\n\nuniform vec2 scaleHi, scaleLo, translateHi, translateLo;\nuniform float pointSize, useWeight;\n\nvarying float fragWeight;\n\n\nvec4 pfx_1_0(vec2 scaleHi, vec2 scaleLo, vec2 translateHi, vec2 translateLo, vec2 positionHi, vec2 positionLo) {\n  return vec4((positionHi + translateHi) * scaleHi\n            + (positionLo + translateLo) * scaleHi\n            + (positionHi + translateHi) * scaleLo\n            + (positionLo + translateLo) * scaleLo, 0.0, 1.0);\n}\n\nvoid main() {\n  gl_Position = pfx_1_0(scaleHi, scaleLo, translateHi, translateLo, positionHi, positionLo);\n  gl_PointSize = pointSize;\n  fragWeight = mix(1.0, weight, useWeight);\n}"
+exports.pointFragment     = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color, borderColor;\nuniform float centerFraction;\n\nvarying float fragWeight;\n\nfloat smoothStep(float x, float y) {\n  return 1.0 / (1.0 + exp(50.0*(x - y)));\n}\n\nvoid main() {\n  float radius = length(2.0*gl_PointCoord.xy-1.0);\n  if(radius > 1.0) {\n    discard;\n  }\n  vec4 baseColor = mix(borderColor, color, smoothStep(radius, centerFraction));\n  float alpha = 1.0 - pow(1.0 - baseColor.a, fragWeight);\n  gl_FragColor = vec4(baseColor.rgb * alpha, alpha);\n}"
+exports.pickVertex        = "precision highp float;\n#define GLSLIFY 1\n\nvec4 pfx_1_0(vec2 scaleHi, vec2 scaleLo, vec2 translateHi, vec2 translateLo, vec2 positionHi, vec2 positionLo) {\n  return vec4((positionHi + translateHi) * scaleHi\n            + (positionLo + translateLo) * scaleHi\n            + (positionHi + translateHi) * scaleLo\n            + (positionLo + translateLo) * scaleLo, 0.0, 1.0);\n}\n\nattribute vec2 positionHi, positionLo;\nattribute vec4 pickId;\n\nuniform vec2 scaleHi, scaleLo, translateHi, translateLo;\nuniform float pointSize;\nuniform vec4 pickOffset;\n\nvarying vec4 fragId;\n\nvoid main() {\n\n  vec4 id = pickId + pickOffset;\n  id.y += floor(id.x / 256.0);\n  id.x -= floor(id.x / 256.0) * 256.0;\n\n  id.z += floor(id.y / 256.0);\n  id.y -= floor(id.y / 256.0) * 256.0;\n\n  id.w += floor(id.z / 256.0);\n  id.z -= floor(id.z / 256.0) * 256.0;\n\n  gl_Position = pfx_1_0(scaleHi, scaleLo, translateHi, translateLo, positionHi, positionLo);\n  gl_PointSize = pointSize;\n  fragId = id;\n}"
+exports.pickFragment      = "precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragId;\n\nvoid main() {\n  float radius = length(2.0 * gl_PointCoord.xy - 1.0);\n  if(radius > 1.0) {\n    discard;\n  }\n  gl_FragColor = fragId / 255.0;\n}"
+},{}],123:[function(require,module,exports){
+arguments[4][45][0].apply(exports,arguments)
+},{"dup":45}],124:[function(require,module,exports){
+arguments[4][119][0].apply(exports,arguments)
+},{"dup":119}],125:[function(require,module,exports){
+arguments[4][120][0].apply(exports,arguments)
+},{"./lib/sort":124,"dup":120,"typedarray-pool":199}],126:[function(require,module,exports){
 'use strict'
 
 var createShader = require('gl-shader')
@@ -27260,7 +28800,7 @@ function createScatter2D(plot, options) {
 
   return result
 }
-},{"./lib/shader":113,"binary-search-bounds":114,"gl-buffer":65,"gl-shader":121,"snap-points-2d":116,"typedarray-pool":188}],118:[function(require,module,exports){
+},{"./lib/shader":122,"binary-search-bounds":123,"gl-buffer":71,"gl-shader":130,"snap-points-2d":125,"typedarray-pool":199}],127:[function(require,module,exports){
 'use strict'
 
 
@@ -27268,7 +28808,7 @@ function createScatter2D(plot, options) {
 exports.boxVertex = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 vertex;\n\nuniform vec2 cornerA, cornerB;\n\nvoid main() {\n  gl_Position = vec4(mix(cornerA, cornerB, vertex), 0, 1);\n}\n"
 exports.boxFragment = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = color;\n}\n"
 
-},{}],119:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 'use strict'
 
 var createShader = require('gl-shader')
@@ -27394,7 +28934,7 @@ function createSelectBox(plot, options) {
   return selectBox
 }
 
-},{"./lib/shaders":118,"gl-buffer":65,"gl-shader":121}],120:[function(require,module,exports){
+},{"./lib/shaders":127,"gl-buffer":71,"gl-shader":130}],129:[function(require,module,exports){
 'use strict'
 
 module.exports = createSelectBuffer
@@ -27405,7 +28945,7 @@ var ndarray   = require('ndarray')
 
 var nextPow2  = require('bit-twiddle').nextPow2
 
-var selectRange = require('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(_inline_55_arg0_<255||_inline_55_arg1_<255||_inline_55_arg2_<255||_inline_55_arg3_<255){var _inline_55_l=_inline_55_arg4_-_inline_55_arg6_[0],_inline_55_a=_inline_55_arg5_-_inline_55_arg6_[1],_inline_55_f=_inline_55_l*_inline_55_l+_inline_55_a*_inline_55_a;_inline_55_f<this_closestD2&&(this_closestD2=_inline_55_f,this_closestX=_inline_55_arg6_[0],this_closestY=_inline_55_arg6_[1])}}","args":[{"name":"_inline_55_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_55_a","_inline_55_f","_inline_55_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
+var selectRange = require('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(_inline_52_arg0_<255||_inline_52_arg1_<255||_inline_52_arg2_<255||_inline_52_arg3_<255){var _inline_52_l=_inline_52_arg4_-_inline_52_arg6_[0],_inline_52_a=_inline_52_arg5_-_inline_52_arg6_[1],_inline_52_f=_inline_52_l*_inline_52_l+_inline_52_a*_inline_52_a;_inline_52_f<this_closestD2&&(this_closestD2=_inline_52_f,this_closestX=_inline_52_arg6_[0],this_closestY=_inline_52_arg6_[1])}}","args":[{"name":"_inline_52_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_52_a","_inline_52_f","_inline_52_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
 
 function SelectResult(x, y, id, value, distance) {
   this.coord = [x, y]
@@ -27549,7 +29089,7 @@ function createSelectBuffer(gl, shape) {
   return new SelectBuffer(gl, fbo, buffer)
 }
 
-},{"bit-twiddle":30,"cwise/lib/wrapper":54,"gl-fbo":73,"ndarray":148,"typedarray-pool":188}],121:[function(require,module,exports){
+},{"bit-twiddle":29,"cwise/lib/wrapper":59,"gl-fbo":79,"ndarray":158,"typedarray-pool":199}],130:[function(require,module,exports){
 'use strict'
 
 var createUniformWrapper   = require('./lib/create-uniforms')
@@ -27785,19 +29325,19 @@ function createShader(
 
 module.exports = createShader
 
-},{"./lib/GLError":122,"./lib/create-attributes":123,"./lib/create-uniforms":124,"./lib/reflect":125,"./lib/runtime-reflect":126,"./lib/shader-cache":127}],122:[function(require,module,exports){
-arguments[4][88][0].apply(exports,arguments)
-},{"dup":88}],123:[function(require,module,exports){
-arguments[4][89][0].apply(exports,arguments)
-},{"./GLError":122,"dup":89}],124:[function(require,module,exports){
-arguments[4][90][0].apply(exports,arguments)
-},{"./GLError":122,"./reflect":125,"dup":90}],125:[function(require,module,exports){
-arguments[4][91][0].apply(exports,arguments)
-},{"dup":91}],126:[function(require,module,exports){
-arguments[4][92][0].apply(exports,arguments)
-},{"dup":92}],127:[function(require,module,exports){
-arguments[4][93][0].apply(exports,arguments)
-},{"./GLError":122,"dup":93,"gl-format-compiler-error":74,"weakmap-shim":195}],128:[function(require,module,exports){
+},{"./lib/GLError":131,"./lib/create-attributes":132,"./lib/create-uniforms":133,"./lib/reflect":134,"./lib/runtime-reflect":135,"./lib/shader-cache":136}],131:[function(require,module,exports){
+arguments[4][94][0].apply(exports,arguments)
+},{"dup":94}],132:[function(require,module,exports){
+arguments[4][95][0].apply(exports,arguments)
+},{"./GLError":131,"dup":95}],133:[function(require,module,exports){
+arguments[4][96][0].apply(exports,arguments)
+},{"./GLError":131,"./reflect":134,"dup":96}],134:[function(require,module,exports){
+arguments[4][97][0].apply(exports,arguments)
+},{"dup":97}],135:[function(require,module,exports){
+arguments[4][98][0].apply(exports,arguments)
+},{"dup":98}],136:[function(require,module,exports){
+arguments[4][99][0].apply(exports,arguments)
+},{"./GLError":131,"dup":99,"gl-format-compiler-error":80,"weakmap-shim":206}],137:[function(require,module,exports){
 'use strict'
 
 module.exports = createSpikes2D
@@ -27885,7 +29425,7 @@ function createSpikes2D(plot, options) {
   return spikes
 }
 
-},{}],129:[function(require,module,exports){
+},{}],138:[function(require,module,exports){
 'use strict'
 
 var ndarray = require('ndarray')
@@ -28191,13 +29731,14 @@ proto.setPixels = function(data, x_off, y_off, mip_level) {
     y_off = y_off || 0
   }
   mip_level = mip_level || 0
-  if(acceptTextureDOM(data)) {
+  var directData = acceptTextureDOM(data) ? data : data.raw
+  if(directData) {
     var needsMip = this._mipLevels.indexOf(mip_level) < 0
     if(needsMip) {
-      gl.texImage2D(gl.TEXTURE_2D, 0, this.format, this.format, this.type, data)
+      gl.texImage2D(gl.TEXTURE_2D, 0, this.format, this.format, this.type, directData)
       this._mipLevels.push(mip_level)
     } else {
-      gl.texSubImage2D(gl.TEXTURE_2D, mip_level, x_off, y_off, this.format, this.type, data)
+      gl.texSubImage2D(gl.TEXTURE_2D, mip_level, x_off, y_off, this.format, this.type, directData)
     }
   } else if(data.shape && data.stride && data.data) {
     if(data.shape.length < 2 ||
@@ -28344,10 +29885,10 @@ function createTextureShape(gl, width, height, format, type) {
   return new Texture2D(gl, tex, width, height, format, type)
 }
 
-function createTextureDOM(gl, element, format, type) {
+function createTextureDOM(gl, directData, width, height, format, type) {
   var tex = initTexture(gl)
-  gl.texImage2D(gl.TEXTURE_2D, 0, format, format, type, element)
-  return new Texture2D(gl, tex, element.width|0, element.height|0, format, type)
+  gl.texImage2D(gl.TEXTURE_2D, 0, format, format, type, directData)
+  return new Texture2D(gl, tex, width, height, format, type)
 }
 
 //Creates a texture from an ndarray
@@ -28437,8 +29978,9 @@ function createTexture2D(gl) {
   }
   if(typeof arguments[1] === 'object') {
     var obj = arguments[1]
-    if (acceptTextureDOM(obj)) {
-      return createTextureDOM(gl, obj, arguments[2]||gl.RGBA, arguments[3]||gl.UNSIGNED_BYTE)
+    var directData = acceptTextureDOM(obj) ? obj : obj.raw
+    if (directData) {
+      return createTextureDOM(gl, directData, obj.width|0, obj.height|0, arguments[2]||gl.RGBA, arguments[3]||gl.UNSIGNED_BYTE)
     } else if(obj.shape && obj.data && obj.stride) {
       return createTextureArray(gl, obj)
     }
@@ -28446,7 +29988,7 @@ function createTexture2D(gl) {
   throw new Error('gl-texture2d: Invalid arguments for texture2d constructor')
 }
 
-},{"ndarray":148,"ndarray-ops":147,"typedarray-pool":188}],130:[function(require,module,exports){
+},{"ndarray":158,"ndarray-ops":157,"typedarray-pool":199}],139:[function(require,module,exports){
 var tokenize = require('glsl-tokenizer')
 var atob     = require('atob-lite')
 
@@ -28471,7 +30013,7 @@ function getName(src) {
   }
 }
 
-},{"atob-lite":12,"glsl-tokenizer":137}],131:[function(require,module,exports){
+},{"atob-lite":11,"glsl-tokenizer":146}],140:[function(require,module,exports){
 module.exports = tokenize
 
 var literals100 = require('./lib/literals')
@@ -28835,7 +30377,7 @@ function tokenize(opt) {
   }
 }
 
-},{"./lib/builtins":133,"./lib/builtins-300es":132,"./lib/literals":135,"./lib/literals-300es":134,"./lib/operators":136}],132:[function(require,module,exports){
+},{"./lib/builtins":142,"./lib/builtins-300es":141,"./lib/literals":144,"./lib/literals-300es":143,"./lib/operators":145}],141:[function(require,module,exports){
 // 300es builtins/reserved words that were previously valid in v100
 var v100 = require('./builtins')
 
@@ -28906,7 +30448,7 @@ module.exports = v100.concat([
   , 'textureProjGradOffset'
 ])
 
-},{"./builtins":133}],133:[function(require,module,exports){
+},{"./builtins":142}],142:[function(require,module,exports){
 module.exports = [
   // Keep this list sorted
   'abs'
@@ -29058,7 +30600,7 @@ module.exports = [
   , 'textureCubeGradEXT'
 ]
 
-},{}],134:[function(require,module,exports){
+},{}],143:[function(require,module,exports){
 var v100 = require('./literals')
 
 module.exports = v100.slice().concat([
@@ -29148,7 +30690,7 @@ module.exports = v100.slice().concat([
   , 'usampler2DMSArray'
 ])
 
-},{"./literals":135}],135:[function(require,module,exports){
+},{"./literals":144}],144:[function(require,module,exports){
 module.exports = [
   // current
     'precision'
@@ -29243,7 +30785,7 @@ module.exports = [
   , 'using'
 ]
 
-},{}],136:[function(require,module,exports){
+},{}],145:[function(require,module,exports){
 module.exports = [
     '<<='
   , '>>='
@@ -29292,7 +30834,7 @@ module.exports = [
   , '}'
 ]
 
-},{}],137:[function(require,module,exports){
+},{}],146:[function(require,module,exports){
 var tokenize = require('./index')
 
 module.exports = tokenizeString
@@ -29307,7 +30849,7 @@ function tokenizeString(str, opt) {
   return tokens
 }
 
-},{"./index":131}],138:[function(require,module,exports){
+},{"./index":140}],147:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -29393,7 +30935,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],139:[function(require,module,exports){
+},{}],148:[function(require,module,exports){
 "use strict"
 
 var bounds = require("binary-search-bounds")
@@ -29760,7 +31302,7 @@ function createWrapper(intervals) {
   return new IntervalTree(createIntervalTree(intervals))
 }
 
-},{"binary-search-bounds":29}],140:[function(require,module,exports){
+},{"binary-search-bounds":28}],149:[function(require,module,exports){
 "use strict"
 
 function invertPermutation(pi, result) {
@@ -29772,7 +31314,7 @@ function invertPermutation(pi, result) {
 }
 
 module.exports = invertPermutation
-},{}],141:[function(require,module,exports){
+},{}],150:[function(require,module,exports){
 "use strict"
 
 function iota(n) {
@@ -29784,7 +31326,7 @@ function iota(n) {
 }
 
 module.exports = iota
-},{}],142:[function(require,module,exports){
+},{}],151:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -29807,7 +31349,16 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],143:[function(require,module,exports){
+},{}],152:[function(require,module,exports){
+'use strict';
+var toString = Object.prototype.toString;
+
+module.exports = function (x) {
+	var prototype;
+	return toString.call(x) === '[object Object]' && (prototype = Object.getPrototypeOf(x), prototype === null || prototype === Object.getPrototypeOf({}));
+};
+
+},{}],153:[function(require,module,exports){
 'use strict'
 
 module.exports = mouseListen
@@ -30014,7 +31565,7 @@ function mouseListen (element, callback) {
   return result
 }
 
-},{"mouse-event":144}],144:[function(require,module,exports){
+},{"mouse-event":154}],154:[function(require,module,exports){
 'use strict'
 
 function mouseButtons(ev) {
@@ -30076,7 +31627,7 @@ function mouseRelativeY(ev) {
 }
 exports.y = mouseRelativeY
 
-},{}],145:[function(require,module,exports){
+},{}],155:[function(require,module,exports){
 'use strict'
 
 var toPX = require('to-px')
@@ -30118,7 +31669,7 @@ function mouseWheelListen(element, callback, noScroll) {
   return listener
 }
 
-},{"to-px":184}],146:[function(require,module,exports){
+},{"to-px":195}],156:[function(require,module,exports){
 "use strict"
 
 var pool = require("typedarray-pool")
@@ -30534,7 +32085,7 @@ function createSurfaceExtractor(args) {
     order,
     typesig)
 }
-},{"typedarray-pool":188}],147:[function(require,module,exports){
+},{"typedarray-pool":199}],157:[function(require,module,exports){
 "use strict"
 
 var compile = require("cwise-compiler")
@@ -30997,7 +32548,7 @@ exports.equals = compile({
 
 
 
-},{"cwise-compiler":51}],148:[function(require,module,exports){
+},{"cwise-compiler":56}],158:[function(require,module,exports){
 var iota = require("iota-array")
 var isBuffer = require("is-buffer")
 
@@ -31342,7 +32893,7 @@ function wrappedNDArrayCtor(data, shape, stride, offset) {
 
 module.exports = wrappedNDArrayCtor
 
-},{"iota-array":141,"is-buffer":142}],149:[function(require,module,exports){
+},{"iota-array":150,"is-buffer":151}],159:[function(require,module,exports){
 "use strict"
 
 var doubleBits = require("double-bits")
@@ -31385,7 +32936,7 @@ function nextafter(x, y) {
   }
   return doubleBits.pack(lo, hi)
 }
-},{"double-bits":56}],150:[function(require,module,exports){
+},{"double-bits":61}],160:[function(require,module,exports){
 /*!
  * pad-left <https://github.com/jonschlinkert/pad-left>
  *
@@ -31401,7 +32952,7 @@ module.exports = function padLeft(str, num, ch) {
   ch = typeof ch !== 'undefined' ? (ch + '') : ' ';
   return repeat(ch, num) + str;
 };
-},{"repeat-string":164}],151:[function(require,module,exports){
+},{"repeat-string":174}],161:[function(require,module,exports){
 module.exports = function parseUnit(str, out) {
     if (!out)
         out = [ 0, '' ]
@@ -31412,7 +32963,7 @@ module.exports = function parseUnit(str, out) {
     out[1] = str.match(/[\d.\-\+]*\s*(.*)/)[1] || ''
     return out
 }
-},{}],152:[function(require,module,exports){
+},{}],162:[function(require,module,exports){
 "use strict"
 
 module.exports = permutationSign
@@ -31464,7 +33015,7 @@ function permutationSign(p) {
     return sgn
   }
 }
-},{"typedarray-pool":188}],153:[function(require,module,exports){
+},{"typedarray-pool":199}],163:[function(require,module,exports){
 "use strict"
 
 var pool = require("typedarray-pool")
@@ -31551,7 +33102,7 @@ function unrank(n, r, p) {
 exports.rank = rank
 exports.unrank = unrank
 
-},{"invert-permutation":140,"typedarray-pool":188}],154:[function(require,module,exports){
+},{"invert-permutation":149,"typedarray-pool":199}],164:[function(require,module,exports){
 "use strict"
 
 module.exports = planarDual
@@ -31682,7 +33233,7 @@ function planarDual(cells, positions) {
   //Combine paths and loops together
   return cycles
 }
-},{"compare-angle":49}],155:[function(require,module,exports){
+},{"compare-angle":55}],165:[function(require,module,exports){
 'use strict'
 
 module.exports = trimLeaves
@@ -31738,7 +33289,7 @@ function trimLeaves(edges, positions) {
   
   return [ nedges, npositions ]
 }
-},{"edges-to-adjacency-list":58}],156:[function(require,module,exports){
+},{"edges-to-adjacency-list":63}],166:[function(require,module,exports){
 'use strict'
 
 module.exports = planarGraphToPolyline
@@ -31943,7 +33494,7 @@ function planarGraphToPolyline(edges, positions) {
 
   return result
 }
-},{"./lib/trim-leaves":155,"edges-to-adjacency-list":58,"planar-dual":154,"point-in-big-polygon":157,"robust-sum":171,"two-product":186,"uniq":190}],157:[function(require,module,exports){
+},{"./lib/trim-leaves":165,"edges-to-adjacency-list":63,"planar-dual":164,"point-in-big-polygon":167,"robust-sum":181,"two-product":197,"uniq":201}],167:[function(require,module,exports){
 module.exports = preprocessPolygon
 
 var orient = require('robust-orientation')[3]
@@ -32095,7 +33646,7 @@ function preprocessPolygon(loops) {
       testSlab)
   }
 }
-},{"binary-search-bounds":29,"interval-tree-1d":139,"robust-orientation":166,"slab-decomposition":178}],158:[function(require,module,exports){
+},{"binary-search-bounds":28,"interval-tree-1d":148,"robust-orientation":176,"slab-decomposition":188}],168:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -32277,23 +33828,23 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],159:[function(require,module,exports){
+},{}],169:[function(require,module,exports){
 'use strict'
 
 var bnadd = require('big-rat/add')
 
 module.exports = add
 
-function add(a, b) {
+function add (a, b) {
   var n = a.length
   var r = new Array(n)
-    for(var i=0; i<n; ++i) {
+  for (var i=0; i<n; ++i) {
     r[i] = bnadd(a[i], b[i])
   }
   return r
 }
 
-},{"big-rat/add":13}],160:[function(require,module,exports){
+},{"big-rat/add":12}],170:[function(require,module,exports){
 'use strict'
 
 module.exports = float2rat
@@ -32308,7 +33859,7 @@ function float2rat(v) {
   return result
 }
 
-},{"big-rat":16}],161:[function(require,module,exports){
+},{"big-rat":15}],171:[function(require,module,exports){
 'use strict'
 
 var rat = require('big-rat')
@@ -32326,7 +33877,7 @@ function muls(a, x) {
   return r
 }
 
-},{"big-rat":16,"big-rat/mul":25}],162:[function(require,module,exports){
+},{"big-rat":15,"big-rat/mul":24}],172:[function(require,module,exports){
 'use strict'
 
 var bnsub = require('big-rat/sub')
@@ -32342,7 +33893,7 @@ function sub(a, b) {
   return r
 }
 
-},{"big-rat/sub":27}],163:[function(require,module,exports){
+},{"big-rat/sub":26}],173:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
@@ -41847,7 +43398,7 @@ return wrapREGL;
 })));
 
 
-},{}],164:[function(require,module,exports){
+},{}],174:[function(require,module,exports){
 /*!
  * repeat-string <https://github.com/jonschlinkert/repeat-string>
  *
@@ -41919,7 +43470,7 @@ function repeat(str, num) {
   return res;
 }
 
-},{}],165:[function(require,module,exports){
+},{}],175:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -42087,7 +43638,7 @@ function generateInSphereTest() {
 }
 
 generateInSphereTest()
-},{"robust-scale":168,"robust-subtract":170,"robust-sum":171,"two-product":186}],166:[function(require,module,exports){
+},{"robust-scale":178,"robust-subtract":180,"robust-sum":181,"two-product":197}],176:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -42278,7 +43829,7 @@ function generateOrientationProc() {
 }
 
 generateOrientationProc()
-},{"robust-scale":168,"robust-subtract":170,"robust-sum":171,"two-product":186}],167:[function(require,module,exports){
+},{"robust-scale":178,"robust-subtract":180,"robust-sum":181,"two-product":197}],177:[function(require,module,exports){
 "use strict"
 
 var robustSum = require("robust-sum")
@@ -42308,7 +43859,7 @@ function robustProduct(a, b) {
   }
   return r
 }
-},{"robust-scale":168,"robust-sum":171}],168:[function(require,module,exports){
+},{"robust-scale":178,"robust-sum":181}],178:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -42359,7 +43910,7 @@ function scaleLinearExpansion(e, scale) {
   g.length = count
   return g
 }
-},{"two-product":186,"two-sum":187}],169:[function(require,module,exports){
+},{"two-product":197,"two-sum":198}],179:[function(require,module,exports){
 "use strict"
 
 module.exports = segmentsIntersect
@@ -42407,7 +43958,7 @@ function segmentsIntersect(a0, a1, b0, b1) {
 
   return true
 }
-},{"robust-orientation":166}],170:[function(require,module,exports){
+},{"robust-orientation":176}],180:[function(require,module,exports){
 "use strict"
 
 module.exports = robustSubtract
@@ -42564,7 +44115,7 @@ function robustSubtract(e, f) {
   g.length = count
   return g
 }
-},{}],171:[function(require,module,exports){
+},{}],181:[function(require,module,exports){
 "use strict"
 
 module.exports = linearExpansionSum
@@ -42721,7 +44272,7 @@ function linearExpansionSum(e, f) {
   g.length = count
   return g
 }
-},{}],172:[function(require,module,exports){
+},{}],182:[function(require,module,exports){
 "use strict"
 
 module.exports = function signum(x) {
@@ -42729,9 +44280,9 @@ module.exports = function signum(x) {
   if(x > 0) { return 1 }
   return 0.0
 }
-},{}],173:[function(require,module,exports){
-arguments[4][30][0].apply(exports,arguments)
-},{"dup":30}],174:[function(require,module,exports){
+},{}],183:[function(require,module,exports){
+arguments[4][29][0].apply(exports,arguments)
+},{"dup":29}],184:[function(require,module,exports){
 "use strict"; "use restrict";
 
 var bits      = require("bit-twiddle")
@@ -43075,7 +44626,7 @@ function connectedComponents(cells, vertex_count) {
 }
 exports.connectedComponents = connectedComponents
 
-},{"bit-twiddle":173,"union-find":175}],175:[function(require,module,exports){
+},{"bit-twiddle":183,"union-find":185}],185:[function(require,module,exports){
 "use strict"; "use restrict";
 
 module.exports = UnionFind;
@@ -43132,7 +44683,7 @@ UnionFind.prototype.link = function(x, y) {
 }
 
 
-},{}],176:[function(require,module,exports){
+},{}],186:[function(require,module,exports){
 "use strict"
 
 module.exports = simplifyPolygon
@@ -43404,7 +44955,7 @@ function simplifyPolygon(cells, positions, minArea) {
     edges: ncells
   }
 }
-},{"robust-orientation":166,"simplicial-complex":174}],177:[function(require,module,exports){
+},{"robust-orientation":176,"simplicial-complex":184}],187:[function(require,module,exports){
 "use strict"
 
 module.exports = orderSegments
@@ -43500,7 +45051,7 @@ function orderSegments(b, a) {
   }
   return ar[0] - br[0]
 }
-},{"robust-orientation":166}],178:[function(require,module,exports){
+},{"robust-orientation":176}],188:[function(require,module,exports){
 "use strict"
 
 module.exports = createSlabDecomposition
@@ -43731,7 +45282,7 @@ function createSlabDecomposition(segments) {
   }
   return new SlabDecomposition(slabs, lines, horizontal)
 }
-},{"./lib/order-segments":177,"binary-search-bounds":29,"functional-red-black-tree":62,"robust-orientation":166}],179:[function(require,module,exports){
+},{"./lib/order-segments":187,"binary-search-bounds":28,"functional-red-black-tree":68,"robust-orientation":176}],189:[function(require,module,exports){
 (function(window) {
     var re = {
         not_string: /[^s]/,
@@ -43941,7 +45492,7 @@ function createSlabDecomposition(segments) {
     }
 })(typeof window === "undefined" ? this : window);
 
-},{}],180:[function(require,module,exports){
+},{}],190:[function(require,module,exports){
 'use strict'
 
 module.exports = toSuperScript
@@ -43996,7 +45547,7 @@ function toSuperScript(x) {
   }).join('')
 }
 
-},{}],181:[function(require,module,exports){
+},{}],191:[function(require,module,exports){
 "use strict"
 
 module.exports = surfaceNets
@@ -44204,7 +45755,7 @@ function surfaceNets(array,level) {
   }
   return proc(array,level)
 }
-},{"ndarray-extract-contour":146,"triangulate-hypercube":185,"zero-crossings":198}],182:[function(require,module,exports){
+},{"ndarray-extract-contour":156,"triangulate-hypercube":196,"zero-crossings":209}],192:[function(require,module,exports){
 (function (process){
 'use strict'
 
@@ -44294,7 +45845,116 @@ function textGet(font, text, opts) {
 }
 
 }).call(this,require('_process'))
-},{"_process":158,"vectorize-text":191}],183:[function(require,module,exports){
+},{"_process":168,"vectorize-text":202}],193:[function(require,module,exports){
+'use strict';
+
+module.exports = TinySDF;
+
+var INF = 1e20;
+
+function TinySDF(fontSize, buffer, radius, cutoff, fontFamily) {
+    this.fontSize = fontSize || 24;
+    this.buffer = buffer === undefined ? 3 : buffer;
+    this.cutoff = cutoff || 0.25;
+    this.fontFamily = fontFamily || 'sans-serif';
+    this.radius = radius || 8;
+    var size = this.size = this.fontSize + this.buffer * 2;
+
+    this.canvas = document.createElement('canvas');
+    this.canvas.width = this.canvas.height = size;
+
+    this.ctx = this.canvas.getContext('2d');
+    this.ctx.font = fontSize + 'px ' + this.fontFamily;
+    this.ctx.textBaseline = 'middle';
+    this.ctx.fillStyle = 'black';
+
+    // temporary arrays for the distance transform
+    this.gridOuter = new Float64Array(size * size);
+    this.gridInner = new Float64Array(size * size);
+    this.f = new Float64Array(size);
+    this.d = new Float64Array(size);
+    this.z = new Float64Array(size + 1);
+    this.v = new Int16Array(size);
+
+    // hack around https://bugzilla.mozilla.org/show_bug.cgi?id=737852
+    this.middle = Math.round((size / 2) * (navigator.userAgent.indexOf('Gecko/') >= 0 ? 1.2 : 1));
+}
+
+TinySDF.prototype.draw = function (char) {
+    this.ctx.clearRect(0, 0, this.size, this.size);
+    this.ctx.fillText(char, this.buffer, this.middle);
+
+    var imgData = this.ctx.getImageData(0, 0, this.size, this.size);
+    var data = imgData.data;
+
+    for (var i = 0; i < this.size * this.size; i++) {
+        var a = data[i * 4 + 3] / 255; // alpha value
+        this.gridOuter[i] = a === 1 ? 0 : a === 0 ? INF : Math.pow(Math.max(0, 0.5 - a), 2);
+        this.gridInner[i] = a === 1 ? INF : a === 0 ? 0 : Math.pow(Math.max(0, a - 0.5), 2);
+    }
+
+    edt(this.gridOuter, this.size, this.size, this.f, this.d, this.v, this.z);
+    edt(this.gridInner, this.size, this.size, this.f, this.d, this.v, this.z);
+
+    for (i = 0; i < this.size * this.size; i++) {
+        var d = this.gridOuter[i] - this.gridInner[i];
+        var c = Math.max(0, Math.min(255, Math.round(255 - 255 * (d / this.radius + this.cutoff))));
+        data[4 * i + 0] = c;
+        data[4 * i + 1] = c;
+        data[4 * i + 2] = c;
+        data[4 * i + 3] = 255;
+    }
+
+    return imgData;
+};
+
+// 2D Euclidean distance transform by Felzenszwalb & Huttenlocher https://cs.brown.edu/~pff/dt/
+function edt(data, width, height, f, d, v, z) {
+    for (var x = 0; x < width; x++) {
+        for (var y = 0; y < height; y++) {
+            f[y] = data[y * width + x];
+        }
+        edt1d(f, d, v, z, height);
+        for (y = 0; y < height; y++) {
+            data[y * width + x] = d[y];
+        }
+    }
+    for (y = 0; y < height; y++) {
+        for (x = 0; x < width; x++) {
+            f[x] = data[y * width + x];
+        }
+        edt1d(f, d, v, z, width);
+        for (x = 0; x < width; x++) {
+            data[y * width + x] = Math.sqrt(d[x]);
+        }
+    }
+}
+
+// 1D squared distance transform
+function edt1d(f, d, v, z, n) {
+    v[0] = 0;
+    z[0] = -INF;
+    z[1] = +INF;
+
+    for (var q = 1, k = 0; q < n; q++) {
+        var s = ((f[q] + q * q) - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]);
+        while (s <= z[k]) {
+            k--;
+            s = ((f[q] + q * q) - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]);
+        }
+        k++;
+        v[k] = q;
+        z[k] = s;
+        z[k + 1] = +INF;
+    }
+
+    for (q = 0, k = 0; q < n; q++) {
+        while (z[k + 1] < q) k++;
+        d[q] = (q - v[k]) * (q - v[k]) + f[v[k]];
+    }
+}
+
+},{}],194:[function(require,module,exports){
 // TinyColor v1.4.1
 // https://github.com/bgrins/TinyColor
 // Brian Grinstead, MIT License
@@ -45491,7 +47151,7 @@ else {
 
 })(Math);
 
-},{}],184:[function(require,module,exports){
+},{}],195:[function(require,module,exports){
 'use strict'
 
 var parseUnit = require('parse-unit')
@@ -45552,7 +47212,7 @@ function toPX(str, element) {
   }
   return 1
 }
-},{"parse-unit":151}],185:[function(require,module,exports){
+},{"parse-unit":161}],196:[function(require,module,exports){
 "use strict"
 
 module.exports = triangulateCube
@@ -45586,7 +47246,7 @@ function triangulateCube(dimension) {
   }
   return result
 }
-},{"gamma":63,"permutation-parity":152,"permutation-rank":153}],186:[function(require,module,exports){
+},{"gamma":69,"permutation-parity":162,"permutation-rank":163}],197:[function(require,module,exports){
 "use strict"
 
 module.exports = twoProduct
@@ -45620,7 +47280,7 @@ function twoProduct(a, b, result) {
 
   return [ y, x ]
 }
-},{}],187:[function(require,module,exports){
+},{}],198:[function(require,module,exports){
 "use strict"
 
 module.exports = fastTwoSum
@@ -45638,7 +47298,7 @@ function fastTwoSum(a, b, result) {
 	}
 	return [ar+br, x]
 }
-},{}],188:[function(require,module,exports){
+},{}],199:[function(require,module,exports){
 (function (global,Buffer){
 'use strict'
 
@@ -45855,7 +47515,7 @@ exports.clearCache = function clearCache() {
   }
 }
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"bit-twiddle":30,"buffer":39,"dup":57}],189:[function(require,module,exports){
+},{"bit-twiddle":29,"buffer":38,"dup":62}],200:[function(require,module,exports){
 "use strict"; "use restrict";
 
 module.exports = UnionFind;
@@ -45918,7 +47578,7 @@ proto.link = function(x, y) {
     ++ranks[xr];
   }
 }
-},{}],190:[function(require,module,exports){
+},{}],201:[function(require,module,exports){
 "use strict"
 
 function unique_pred(list, compare) {
@@ -45977,7 +47637,7 @@ function unique(list, compare, sorted) {
 
 module.exports = unique
 
-},{}],191:[function(require,module,exports){
+},{}],202:[function(require,module,exports){
 "use strict"
 
 module.exports = createText
@@ -46004,7 +47664,7 @@ function createText(str, options) {
     options)
 }
 
-},{"./lib/vtext":192}],192:[function(require,module,exports){
+},{"./lib/vtext":203}],203:[function(require,module,exports){
 "use strict"
 
 module.exports = vectorizeText
@@ -46210,7 +47870,7 @@ function vectorizeText(str, canvas, context, options) {
   return processPixels(pixels, options, size)
 }
 
-},{"cdt2d":41,"clean-pslg":47,"ndarray":148,"planar-graph-to-polyline":156,"simplify-planar-graph":176,"surface-nets":181}],193:[function(require,module,exports){
+},{"cdt2d":40,"clean-pslg":47,"ndarray":158,"planar-graph-to-polyline":166,"simplify-planar-graph":186,"surface-nets":191}],204:[function(require,module,exports){
 var hiddenStore = require('./hidden-store.js');
 
 module.exports = createStore;
@@ -46231,7 +47891,7 @@ function createStore() {
     };
 }
 
-},{"./hidden-store.js":194}],194:[function(require,module,exports){
+},{"./hidden-store.js":205}],205:[function(require,module,exports){
 module.exports = hiddenStore;
 
 function hiddenStore(obj, key) {
@@ -46249,7 +47909,7 @@ function hiddenStore(obj, key) {
     return store;
 }
 
-},{}],195:[function(require,module,exports){
+},{}],206:[function(require,module,exports){
 // Original - @Gozola.
 // https://gist.github.com/Gozala/1269991
 // This is a reimplemented version (with a few bug fixes).
@@ -46280,14 +47940,14 @@ function weakMap() {
     }
 }
 
-},{"./create-store.js":193}],196:[function(require,module,exports){
+},{"./create-store.js":204}],207:[function(require,module,exports){
 var getContext = require('get-canvas-context')
 
 module.exports = function getWebGLContext (opt) {
   return getContext('webgl', opt)
 }
 
-},{"get-canvas-context":64}],197:[function(require,module,exports){
+},{"get-canvas-context":70}],208:[function(require,module,exports){
 module.exports = require('cwise-compiler')({
     args: ['array', {
         offset: [1],
@@ -46339,7 +47999,7 @@ module.exports = require('cwise-compiler')({
     funcName: 'zeroCrossings'
 })
 
-},{"cwise-compiler":51}],198:[function(require,module,exports){
+},{"cwise-compiler":56}],209:[function(require,module,exports){
 "use strict"
 
 module.exports = findZeroCrossings
@@ -46352,7 +48012,7 @@ function findZeroCrossings(array, level) {
   core(array.hi(array.shape[0]-1), cross, level)
   return cross
 }
-},{"./lib/zc-core":197}],199:[function(require,module,exports){
+},{"./lib/zc-core":208}],210:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -46461,7 +48121,7 @@ module.exports = function handleAnnotationDefaults(annIn, annOut, fullLayout, op
     return annOut;
 };
 
-},{"../../lib":311,"../../plots/cartesian/axes":349,"../color":210,"./attributes":201}],200:[function(require,module,exports){
+},{"../../lib":322,"../../plots/cartesian/axes":360,"../color":221,"./attributes":212}],211:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -46526,7 +48186,7 @@ module.exports = [
     }
 ];
 
-},{}],201:[function(require,module,exports){
+},{}],212:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -46748,7 +48408,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":305,"../../plots/cartesian/constants":354,"../../plots/font_attributes":369,"./arrow_paths":200}],202:[function(require,module,exports){
+},{"../../lib/extend":316,"../../plots/cartesian/constants":365,"../../plots/font_attributes":380,"./arrow_paths":211}],213:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -46843,7 +48503,7 @@ function annAutorange(gd) {
     });
 }
 
-},{"../../lib":311,"../../plots/cartesian/axes":349,"./draw":206}],203:[function(require,module,exports){
+},{"../../lib":322,"../../plots/cartesian/axes":360,"./draw":217}],214:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -46937,9 +48597,11 @@ function getToggleSets(gd, hoverData) {
         if(showMode) {
             for(j = 0; j < hoverLen; j++) {
                 pointj = hoverData[j];
-                if(pointj.x === anni._xclick && pointj.y === anni._yclick &&
-                        pointj.xaxis._id === anni.xref &&
-                        pointj.yaxis._id === anni.yref) {
+                if(pointj.xaxis._id === anni.xref &&
+                    pointj.yaxis._id === anni.yref &&
+                    pointj.xaxis.d2r(pointj.x) === anni._xclick &&
+                    pointj.yaxis.d2r(pointj.y) === anni._yclick
+                ) {
                     // match! toggle this annotation
                     // regardless of its clicktoshow mode
                     // but if it's onout mode, off is implicit
@@ -46966,7 +48628,7 @@ function getToggleSets(gd, hoverData) {
     return {on: onSet, off: offSet, explicitOff: explicitOffSet};
 }
 
-},{"../../plotly":344}],204:[function(require,module,exports){
+},{"../../plotly":355}],215:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -46995,6 +48657,8 @@ var toLogRange = require('../../lib/to_log_range');
  *     same relayout call should override this conversion.
  */
 module.exports = function convertCoords(gd, ax, newType, doExtra) {
+    ax = ax || {};
+
     var toLog = (newType === 'log') && (ax.type === 'linear'),
         fromLog = (newType === 'linear') && (ax.type === 'log');
 
@@ -47027,7 +48691,7 @@ module.exports = function convertCoords(gd, ax, newType, doExtra) {
     }
 };
 
-},{"../../lib/to_log_range":331,"fast-isnumeric":61}],205:[function(require,module,exports){
+},{"../../lib/to_log_range":342,"fast-isnumeric":66}],216:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -47052,7 +48716,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     handleArrayContainerDefaults(layoutIn, layoutOut, opts);
 };
 
-},{"../../plots/array_container_defaults":346,"./annotation_defaults":199}],206:[function(require,module,exports){
+},{"../../plots/array_container_defaults":357,"./annotation_defaults":210}],217:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -47661,7 +49325,7 @@ function lineIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
     return {x: x1 + a * t, y: y1 + d * t};
 }
 
-},{"../../lib":311,"../../lib/setcursor":326,"../../lib/svg_text_utils":330,"../../plotly":344,"../../plots/cartesian/axes":349,"../../plots/plots":377,"../color":210,"../dragelement":231,"../drawing":233,"./draw_arrow_head":207,"d3":55}],207:[function(require,module,exports){
+},{"../../lib":322,"../../lib/setcursor":337,"../../lib/svg_text_utils":341,"../../plotly":355,"../../plots/cartesian/axes":360,"../../plots/plots":388,"../color":221,"../dragelement":242,"../drawing":244,"./draw_arrow_head":218,"d3":60}],218:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -47795,7 +49459,7 @@ module.exports = function drawArrowHead(el3, style, ends, mag, standoff) {
     if(doEnd) drawhead(end, endRot);
 };
 
-},{"../color":210,"../drawing":233,"./arrow_paths":200,"d3":55,"fast-isnumeric":61}],208:[function(require,module,exports){
+},{"../color":221,"../drawing":244,"./arrow_paths":211,"d3":60,"fast-isnumeric":66}],219:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -47827,7 +49491,7 @@ module.exports = {
     convertCoords: require('./convert_coords')
 };
 
-},{"./attributes":201,"./calc_autorange":202,"./click":203,"./convert_coords":204,"./defaults":205,"./draw":206}],209:[function(require,module,exports){
+},{"./attributes":212,"./calc_autorange":213,"./click":214,"./convert_coords":215,"./defaults":216,"./draw":217}],220:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -47867,7 +49531,7 @@ exports.borderLine = '#BEC8D9';
 // gives back exactly lightLine if the other colors are defaults.
 exports.lightFraction = 100 * (0xe - 0x4) / (0xf - 0x4);
 
-},{}],210:[function(require,module,exports){
+},{}],221:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -48024,7 +49688,7 @@ function cleanOne(val) {
     return 'rgb(' + rgbStr + ')';
 }
 
-},{"./attributes":209,"fast-isnumeric":61,"tinycolor2":183}],211:[function(require,module,exports){
+},{"./attributes":220,"fast-isnumeric":66,"tinycolor2":194}],222:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -48180,7 +49844,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":305,"../../plots/cartesian/layout_attributes":358,"../../plots/font_attributes":369}],212:[function(require,module,exports){
+},{"../../lib/extend":316,"../../plots/cartesian/layout_attributes":369,"../../plots/font_attributes":380}],223:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -48247,7 +49911,7 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     coerce('titleside');
 };
 
-},{"../../lib":311,"../../plots/cartesian/tick_label_defaults":364,"../../plots/cartesian/tick_mark_defaults":365,"../../plots/cartesian/tick_value_defaults":366,"./attributes":211}],213:[function(require,module,exports){
+},{"../../lib":322,"../../plots/cartesian/tick_label_defaults":375,"../../plots/cartesian/tick_mark_defaults":376,"../../plots/cartesian/tick_value_defaults":377,"./attributes":222}],224:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -48879,7 +50543,7 @@ module.exports = function draw(gd, id) {
     return component;
 };
 
-},{"../../lib":311,"../../lib/extend":305,"../../lib/setcursor":326,"../../plotly":344,"../../plots/cartesian/axes":349,"../../plots/cartesian/axis_defaults":351,"../../plots/cartesian/layout_attributes":358,"../../plots/cartesian/position_defaults":361,"../../plots/plots":377,"../../registry":384,"../color":210,"../dragelement":231,"../drawing":233,"../titles":286,"./attributes":211,"d3":55,"tinycolor2":183}],214:[function(require,module,exports){
+},{"../../lib":322,"../../lib/extend":316,"../../lib/setcursor":337,"../../plotly":355,"../../plots/cartesian/axes":360,"../../plots/cartesian/axis_defaults":362,"../../plots/cartesian/layout_attributes":369,"../../plots/cartesian/position_defaults":372,"../../plots/plots":388,"../../registry":395,"../color":221,"../dragelement":242,"../drawing":244,"../titles":297,"./attributes":222,"d3":60,"tinycolor2":194}],225:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -48898,7 +50562,7 @@ module.exports = function hasColorbar(container) {
     return Lib.isPlainObject(container.colorbar);
 };
 
-},{"../../lib":311}],215:[function(require,module,exports){
+},{"../../lib":322}],226:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -48953,7 +50617,7 @@ module.exports = {
     }
 };
 
-},{}],216:[function(require,module,exports){
+},{}],227:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -49032,7 +50696,7 @@ module.exports = function calc(trace, vals, containerStr, cLetter) {
     }
 };
 
-},{"../../lib":311,"./flip_scale":221,"./scales":228}],217:[function(require,module,exports){
+},{"../../lib":322,"./flip_scale":232,"./scales":239}],228:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -49076,7 +50740,7 @@ module.exports = function makeColorScaleAttributes(context) {
     };
 };
 
-},{"../../lib/extend":305,"./attributes":215,"./scales.js":228}],218:[function(require,module,exports){
+},{"../../lib/extend":316,"./attributes":226,"./scales.js":239}],229:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -49092,7 +50756,7 @@ var scales = require('./scales');
 
 module.exports = scales.RdBu;
 
-},{"./scales":228}],219:[function(require,module,exports){
+},{"./scales":239}],230:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -49156,7 +50820,7 @@ module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, 
     if(showScale) colorbarDefaults(containerIn, containerOut, layout);
 };
 
-},{"../../lib":311,"../colorbar/defaults":212,"../colorbar/has_colorbar":214,"./flip_scale":221,"./is_valid_scale":225,"fast-isnumeric":61}],220:[function(require,module,exports){
+},{"../../lib":322,"../colorbar/defaults":223,"../colorbar/has_colorbar":225,"./flip_scale":232,"./is_valid_scale":236,"fast-isnumeric":66}],231:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -49193,7 +50857,7 @@ module.exports = function extractScale(scl, cmin, cmax) {
     };
 };
 
-},{}],221:[function(require,module,exports){
+},{}],232:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -49218,7 +50882,7 @@ module.exports = function flipScale(scl) {
     return sclNew;
 };
 
-},{}],222:[function(require,module,exports){
+},{}],233:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -49258,7 +50922,7 @@ module.exports = function getScale(scl, dflt) {
     return scl;
 };
 
-},{"./default_scale":218,"./is_valid_scale_array":226,"./scales":228}],223:[function(require,module,exports){
+},{"./default_scale":229,"./is_valid_scale_array":237,"./scales":239}],234:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -49304,7 +50968,7 @@ module.exports = function hasColorscale(trace, containerStr) {
     );
 };
 
-},{"../../lib":311,"./is_valid_scale":225,"fast-isnumeric":61}],224:[function(require,module,exports){
+},{"../../lib":322,"./is_valid_scale":236,"fast-isnumeric":66}],235:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -49338,7 +51002,7 @@ exports.extractScale = require('./extract_scale');
 
 exports.makeColorScaleFunc = require('./make_color_scale_func');
 
-},{"./attributes":215,"./calc":216,"./default_scale":218,"./defaults":219,"./extract_scale":220,"./flip_scale":221,"./get_scale":222,"./has_colorscale":223,"./is_valid_scale":225,"./make_color_scale_func":227,"./scales":228}],225:[function(require,module,exports){
+},{"./attributes":226,"./calc":227,"./default_scale":229,"./defaults":230,"./extract_scale":231,"./flip_scale":232,"./get_scale":233,"./has_colorscale":234,"./is_valid_scale":236,"./make_color_scale_func":238,"./scales":239}],236:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -49359,7 +51023,7 @@ module.exports = function isValidScale(scl) {
     else return isValidScaleArray(scl);
 };
 
-},{"./is_valid_scale_array":226,"./scales":228}],226:[function(require,module,exports){
+},{"./is_valid_scale_array":237,"./scales":239}],237:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -49396,7 +51060,7 @@ module.exports = function isValidScaleArray(scl) {
     return true;
 };
 
-},{"tinycolor2":183}],227:[function(require,module,exports){
+},{"tinycolor2":194}],238:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -49492,7 +51156,7 @@ function colorArray2rbga(colorArray) {
     return tinycolor(colorObj).toRgbString();
 }
 
-},{"../color":210,"d3":55,"fast-isnumeric":61,"tinycolor2":183}],228:[function(require,module,exports){
+},{"../color":221,"d3":60,"fast-isnumeric":66,"tinycolor2":194}],239:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -49623,7 +51287,7 @@ module.exports = {
     ]
 };
 
-},{}],229:[function(require,module,exports){
+},{}],240:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -49656,7 +51320,7 @@ module.exports = function align(v, dv, v0, v1, anchor) {
     return vc;
 };
 
-},{}],230:[function(require,module,exports){
+},{}],241:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -49694,7 +51358,7 @@ module.exports = function getCursor(x, y, xanchor, yanchor) {
     return cursorset[y][x];
 };
 
-},{"../../lib":311}],231:[function(require,module,exports){
+},{"../../lib":322}],242:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -49710,7 +51374,7 @@ var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 
 var constants = require('../../plots/cartesian/constants');
-
+var interactConstants = require('../../constants/interactions');
 
 var dragElement = module.exports = {};
 
@@ -49734,12 +51398,13 @@ dragElement.unhoverRaw = unhover.raw;
  *          dx and dy are the net pixel offset of the drag,
  *          dragged is true/false, has the mouse moved enough to
  *          constitute a drag
- *      doneFn (optional) function(dragged, numClicks)
+ *      doneFn (optional) function(dragged, numClicks, e)
  *          executed on mouseup, or mouseout of window since
  *          we don't get events after that
  *          dragged is as in moveFn
  *          numClicks is how many clicks we've registered within
  *          a doubleclick time
+ *          e is the original event
  *      setCursor (optional) function(event)
  *          executed on mousemove before mousedown
  *          the purpose of this callback is to update the mouse cursor before
@@ -49748,7 +51413,7 @@ dragElement.unhoverRaw = unhover.raw;
 dragElement.init = function init(options) {
     var gd = Lib.getPlotDiv(options.element) || {},
         numClicks = 1,
-        DBLCLICKDELAY = constants.DBLCLICKDELAY,
+        DBLCLICKDELAY = interactConstants.DBLCLICKDELAY,
         startX,
         startY,
         newMouseDownTime,
@@ -49833,7 +51498,7 @@ dragElement.init = function init(options) {
             numClicks = Math.max(numClicks - 1, 1);
         }
 
-        if(options.doneFn) options.doneFn(gd._dragged, numClicks);
+        if(options.doneFn) options.doneFn(gd._dragged, numClicks, e);
 
         if(!gd._dragged) {
             var e2 = document.createEvent('MouseEvents');
@@ -49881,7 +51546,7 @@ function finishDrag(gd) {
     if(gd._replotPending) Plotly.plot(gd);
 }
 
-},{"../../lib":311,"../../plotly":344,"../../plots/cartesian/constants":354,"./align":229,"./cursor":230,"./unhover":232}],232:[function(require,module,exports){
+},{"../../constants/interactions":306,"../../lib":322,"../../plotly":355,"../../plots/cartesian/constants":365,"./align":240,"./cursor":241,"./unhover":243}],243:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -49932,7 +51597,7 @@ unhover.raw = function unhoverRaw(gd, evt) {
     }
 };
 
-},{"../../lib/events":304}],233:[function(require,module,exports){
+},{"../../lib/events":315}],244:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -50614,7 +52279,7 @@ drawing.setPointGroupScale = function(selection, x, y) {
     return scale;
 };
 
-},{"../../constants/xmlns_namespaces":298,"../../lib":311,"../../lib/svg_text_utils":330,"../../registry":384,"../../traces/scatter/make_bubble_size_func":453,"../../traces/scatter/subtypes":458,"../color":210,"../colorscale":224,"./symbol_defs":234,"d3":55,"fast-isnumeric":61}],234:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":309,"../../lib":322,"../../lib/svg_text_utils":341,"../../registry":395,"../../traces/scatter/make_bubble_size_func":465,"../../traces/scatter/subtypes":470,"../color":221,"../colorscale":235,"./symbol_defs":245,"d3":60,"fast-isnumeric":66}],245:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -51090,7 +52755,7 @@ module.exports = {
     }
 };
 
-},{"d3":55}],235:[function(require,module,exports){
+},{"d3":60}],246:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -51189,7 +52854,7 @@ module.exports = {
     }
 };
 
-},{}],236:[function(require,module,exports){
+},{}],247:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -51252,7 +52917,7 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
     Axes.expand(axis, vals, {padded: true});
 }
 
-},{"../../plots/cartesian/axes":349,"../../registry":384,"./compute_error":237,"fast-isnumeric":61}],237:[function(require,module,exports){
+},{"../../plots/cartesian/axes":360,"../../registry":395,"./compute_error":248,"fast-isnumeric":66}],248:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -51348,7 +53013,7 @@ function makeComputeErrorValue(type, value) {
     }
 }
 
-},{}],238:[function(require,module,exports){
+},{}],249:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -51425,7 +53090,7 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
     }
 };
 
-},{"../../lib":311,"../../registry":384,"./attributes":235,"fast-isnumeric":61}],239:[function(require,module,exports){
+},{"../../lib":322,"../../registry":395,"./attributes":246,"fast-isnumeric":66}],250:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -51484,7 +53149,7 @@ errorBars.hoverInfo = function(calcPoint, trace, hoverPoint) {
     }
 };
 
-},{"./attributes":235,"./calc":236,"./defaults":238,"./plot":240,"./style":241}],240:[function(require,module,exports){
+},{"./attributes":246,"./calc":247,"./defaults":249,"./plot":251,"./style":252}],251:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -51648,7 +53313,7 @@ function errorCoords(d, xa, ya) {
     return out;
 }
 
-},{"../../traces/scatter/subtypes":458,"d3":55,"fast-isnumeric":61}],241:[function(require,module,exports){
+},{"../../traces/scatter/subtypes":470,"d3":60,"fast-isnumeric":66}],252:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -51685,7 +53350,7 @@ module.exports = function style(traces) {
     });
 };
 
-},{"../color":210,"d3":55}],242:[function(require,module,exports){
+},{"../color":221,"d3":60}],253:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -51807,7 +53472,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/cartesian/constants":354}],243:[function(require,module,exports){
+},{"../../plots/cartesian/constants":365}],254:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -51841,6 +53506,8 @@ var toLogRange = require('../../lib/to_log_range');
  *     same relayout call should override this conversion.
  */
 module.exports = function convertCoords(gd, ax, newType, doExtra) {
+    ax = ax || {};
+
     var toLog = (newType === 'log') && (ax.type === 'linear'),
         fromLog = (newType === 'linear') && (ax.type === 'log');
 
@@ -51888,7 +53555,7 @@ module.exports = function convertCoords(gd, ax, newType, doExtra) {
     }
 };
 
-},{"../../lib/to_log_range":331,"fast-isnumeric":61}],244:[function(require,module,exports){
+},{"../../lib/to_log_range":342,"fast-isnumeric":66}],255:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -51949,7 +53616,7 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
     return imageOut;
 }
 
-},{"../../lib":311,"../../plots/array_container_defaults":346,"../../plots/cartesian/axes":349,"./attributes":242}],245:[function(require,module,exports){
+},{"../../lib":322,"../../plots/array_container_defaults":357,"../../plots/cartesian/axes":360,"./attributes":253}],256:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -51982,6 +53649,15 @@ module.exports = function draw(gd) {
                 subplot = img.xref + img.yref;
 
                 var plotinfo = fullLayout._plots[subplot];
+
+                if(!plotinfo) {
+                    // Fall back to _imageLowerLayer in case the requested subplot doesn't exist.
+                    // This can happen if you reference the image to an x / y axis combination
+                    // that doesn't have any data on it (and layer is below)
+                    imageDataBelow.push(img);
+                    continue;
+                }
+
                 if(plotinfo.mainplot) {
                     subplot = plotinfo.mainplot.id;
                 }
@@ -52157,7 +53833,7 @@ module.exports = function draw(gd) {
     }
 };
 
-},{"../../constants/xmlns_namespaces":298,"../../plots/cartesian/axes":349,"../drawing":233,"d3":55}],246:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":309,"../../plots/cartesian/axes":360,"../drawing":244,"d3":60}],257:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -52180,7 +53856,7 @@ module.exports = {
     convertCoords: require('./convert_coords')
 };
 
-},{"./attributes":242,"./convert_coords":243,"./defaults":244,"./draw":245}],247:[function(require,module,exports){
+},{"./attributes":253,"./convert_coords":254,"./defaults":255,"./draw":256}],258:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -52229,7 +53905,7 @@ exports.isMiddleAnchor = function isMiddleAnchor(opts) {
     );
 };
 
-},{}],248:[function(require,module,exports){
+},{}],259:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -52320,7 +53996,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":305,"../../plots/font_attributes":369,"../color/attributes":209}],249:[function(require,module,exports){
+},{"../../lib/extend":316,"../../plots/font_attributes":380,"../color/attributes":220}],260:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -52338,7 +54014,7 @@ module.exports = {
     scrollBarMargin: 4
 };
 
-},{}],250:[function(require,module,exports){
+},{}],261:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -52431,7 +54107,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
 };
 
-},{"../../lib":311,"../../plots/layout_attributes":375,"../../registry":384,"./attributes":248,"./helpers":253}],251:[function(require,module,exports){
+},{"../../lib":322,"../../plots/layout_attributes":386,"../../registry":395,"./attributes":259,"./helpers":264}],262:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -52455,17 +54131,22 @@ var Color = require('../color');
 var svgTextUtils = require('../../lib/svg_text_utils');
 
 var constants = require('./constants');
+var interactConstants = require('../../constants/interactions');
 var getLegendData = require('./get_legend_data');
 var style = require('./style');
 var helpers = require('./helpers');
 var anchorUtils = require('./anchor_utils');
 
+var SHOWISOLATETIP = true;
+var DBLCLICKDELAY = interactConstants.DBLCLICKDELAY;
 
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout;
     var clipId = 'legend' + fullLayout._uid;
 
     if(!fullLayout._infolayer || !gd.calcdata) return;
+
+    if(!gd._legendMouseDownTime) gd._legendMouseDownTime = 0;
 
     var opts = fullLayout.legend,
         legendData = fullLayout.showlegend && getLegendData(gd.calcdata, opts),
@@ -52759,9 +54440,26 @@ module.exports = function draw(gd) {
                 xf = dragElement.align(newX, 0, gs.l, gs.l + gs.w, opts.xanchor);
                 yf = dragElement.align(newY, 0, gs.t + gs.h, gs.t, opts.yanchor);
             },
-            doneFn: function(dragged) {
+            doneFn: function(dragged, numClicks, e) {
                 if(dragged && xf !== undefined && yf !== undefined) {
                     Plotly.relayout(gd, {'legend.x': xf, 'legend.y': yf});
+                } else {
+                    var clickedTrace =
+                        fullLayout._infolayer.selectAll('g.traces').filter(function() {
+                            var bbox = this.getBoundingClientRect();
+                            return (e.clientX >= bbox.left && e.clientX <= bbox.right &&
+                                e.clientY >= bbox.top && e.clientY <= bbox.bottom);
+                        });
+                    if(clickedTrace.size() > 0) {
+                        if(numClicks === 1) {
+                            legend._clickTimeout = setTimeout(function() { handleClick(clickedTrace, gd, numClicks); }, DBLCLICKDELAY);
+                        } else if(numClicks === 2) {
+                            if(legend._clickTimeout) {
+                                clearTimeout(legend._clickTimeout);
+                            }
+                            handleClick(clickedTrace, gd, numClicks);
+                        }
+                    }
                 }
             }
         });
@@ -52829,9 +54527,8 @@ function drawTexts(g, gd) {
 }
 
 function setupTraceToggle(g, gd) {
-    var hiddenSlices = gd._fullLayout.hiddenlabels ?
-        gd._fullLayout.hiddenlabels.slice() :
-        [];
+    var newMouseDownTime,
+        numClicks = 1;
 
     var traceToggle = g.selectAll('rect')
         .data([0]);
@@ -52842,41 +54539,120 @@ function setupTraceToggle(g, gd) {
         .attr('pointer-events', 'all')
         .call(Color.fill, 'rgba(0,0,0,0)');
 
-    traceToggle.on('click', function() {
-        if(gd._dragged) return;
 
-        var legendItem = g.data()[0][0],
-            fullData = gd._fullData,
-            trace = legendItem.trace,
-            legendgroup = trace.legendgroup,
-            traceIndicesInGroup = [],
-            tracei,
-            newVisible;
-
-        if(Registry.traceIs(trace, 'pie')) {
-            var thisLabel = legendItem.label,
-                thisLabelIndex = hiddenSlices.indexOf(thisLabel);
-
-            if(thisLabelIndex === -1) hiddenSlices.push(thisLabel);
-            else hiddenSlices.splice(thisLabelIndex, 1);
-
-            Plotly.relayout(gd, 'hiddenlabels', hiddenSlices);
-        } else {
-            if(legendgroup === '') {
-                traceIndicesInGroup = [trace.index];
-            } else {
-                for(var i = 0; i < fullData.length; i++) {
-                    tracei = fullData[i];
-                    if(tracei.legendgroup === legendgroup) {
-                        traceIndicesInGroup.push(tracei.index);
-                    }
-                }
-            }
-
-            newVisible = trace.visible === true ? 'legendonly' : true;
-            Plotly.restyle(gd, 'visible', newVisible, traceIndicesInGroup);
+    traceToggle.on('mousedown', function() {
+        newMouseDownTime = (new Date()).getTime();
+        if(newMouseDownTime - gd._legendMouseDownTime < DBLCLICKDELAY) {
+            // in a click train
+            numClicks += 1;
+        }
+        else {
+            // new click train
+            numClicks = 1;
+            gd._legendMouseDownTime = newMouseDownTime;
         }
     });
+    traceToggle.on('mouseup', function() {
+        if(gd._dragged || gd._editing) return;
+        var legend = gd._fullLayout.legend;
+
+        if((new Date()).getTime() - gd._legendMouseDownTime > DBLCLICKDELAY) {
+            numClicks = Math.max(numClicks - 1, 1);
+        }
+
+        if(numClicks === 1) {
+            legend._clickTimeout = setTimeout(function() { handleClick(g, gd, numClicks); }, DBLCLICKDELAY);
+        } else if(numClicks === 2) {
+            if(legend._clickTimeout) {
+                clearTimeout(legend._clickTimeout);
+            }
+            gd._legendMouseDownTime = 0;
+            handleClick(g, gd, numClicks);
+        }
+    });
+}
+
+function handleClick(g, gd, numClicks) {
+    if(gd._dragged || gd._editing) return;
+    var hiddenSlices = gd._fullLayout.hiddenlabels ?
+        gd._fullLayout.hiddenlabels.slice() :
+        [];
+
+    var legendItem = g.data()[0][0],
+        fullData = gd._fullData,
+        trace = legendItem.trace,
+        legendgroup = trace.legendgroup,
+        traceIndicesInGroup = [],
+        tracei,
+        newVisible;
+
+
+    if(numClicks === 1 && SHOWISOLATETIP && gd.data && gd._context.showTips) {
+        Lib.notifier('Double click on legend to isolate individual trace', 'long');
+        SHOWISOLATETIP = false;
+    } else {
+        SHOWISOLATETIP = false;
+    }
+    if(Registry.traceIs(trace, 'pie')) {
+        var thisLabel = legendItem.label,
+            thisLabelIndex = hiddenSlices.indexOf(thisLabel);
+
+        if(numClicks === 1) {
+            if(thisLabelIndex === -1) hiddenSlices.push(thisLabel);
+            else hiddenSlices.splice(thisLabelIndex, 1);
+        } else if(numClicks === 2) {
+            hiddenSlices = [];
+            gd.calcdata[0].forEach(function(d) {
+                if(thisLabel !== d.label) {
+                    hiddenSlices.push(d.label);
+                }
+            });
+            if(gd._fullLayout.hiddenlabels && gd._fullLayout.hiddenlabels.length === hiddenSlices.length && thisLabelIndex === -1) {
+                hiddenSlices = [];
+            }
+        }
+
+        Plotly.relayout(gd, 'hiddenlabels', hiddenSlices);
+    } else {
+        var allTraces = [],
+            traceVisibility = [],
+            i;
+
+        for(i = 0; i < fullData.length; i++) {
+            allTraces.push(i);
+            traceVisibility.push('legendonly');
+        }
+
+        if(legendgroup === '') {
+            traceIndicesInGroup = [trace.index];
+            traceVisibility[trace.index] = true;
+        } else {
+            for(i = 0; i < fullData.length; i++) {
+                tracei = fullData[i];
+                if(tracei.legendgroup === legendgroup) {
+                    traceIndicesInGroup.push(tracei.index);
+                    traceVisibility[allTraces.indexOf(i)] = true;
+                }
+            }
+        }
+
+        if(numClicks === 1) {
+            newVisible = trace.visible === true ? 'legendonly' : true;
+            Plotly.restyle(gd, 'visible', newVisible, traceIndicesInGroup);
+        } else if(numClicks === 2) {
+            var sameAsLast = true;
+            for(i = 0; i < fullData.length; i++) {
+                if(fullData[i].visible !== traceVisibility[i]) {
+                    sameAsLast = false;
+                    break;
+                }
+            }
+            if(sameAsLast) {
+                traceVisibility = true;
+            }
+            Plotly.restyle(gd, 'visible', traceVisibility, allTraces);
+        }
+    }
 }
 
 function computeTextDimensions(g, gd) {
@@ -53147,7 +54923,7 @@ function expandHorizontalMargin(gd) {
     });
 }
 
-},{"../../lib":311,"../../lib/svg_text_utils":330,"../../plotly":344,"../../plots/plots":377,"../../registry":384,"../color":210,"../dragelement":231,"../drawing":233,"./anchor_utils":247,"./constants":249,"./get_legend_data":252,"./helpers":253,"./style":255,"d3":55}],252:[function(require,module,exports){
+},{"../../constants/interactions":306,"../../lib":322,"../../lib/svg_text_utils":341,"../../plotly":355,"../../plots/plots":388,"../../registry":395,"../color":221,"../dragelement":242,"../drawing":244,"./anchor_utils":258,"./constants":260,"./get_legend_data":263,"./helpers":264,"./style":266,"d3":60}],263:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -53252,7 +55028,7 @@ module.exports = function getLegendData(calcdata, opts) {
     return legendData;
 };
 
-},{"../../registry":384,"./helpers":253}],253:[function(require,module,exports){
+},{"../../registry":395,"./helpers":264}],264:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -53283,7 +55059,7 @@ exports.isReversed = function isReversed(legendLayout) {
     return (legendLayout.traceorder || '').indexOf('reversed') !== -1;
 };
 
-},{"../../registry":384}],254:[function(require,module,exports){
+},{"../../registry":395}],265:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -53307,7 +55083,7 @@ module.exports = {
     style: require('./style')
 };
 
-},{"./attributes":248,"./defaults":250,"./draw":251,"./style":255}],255:[function(require,module,exports){
+},{"./attributes":259,"./defaults":261,"./draw":262,"./style":266}],266:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -53535,7 +55311,7 @@ function stylePies(d) {
     if(pts.size()) pts.call(stylePie, d[0], trace);
 }
 
-},{"../../lib":311,"../../registry":384,"../../traces/pie/style_one":432,"../../traces/scatter/subtypes":458,"../color":210,"../drawing":233,"d3":55}],256:[function(require,module,exports){
+},{"../../lib":322,"../../registry":395,"../../traces/pie/style_one":444,"../../traces/scatter/subtypes":470,"../color":221,"../drawing":244,"d3":60}],267:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -54057,7 +55833,7 @@ modeBarButtons.resetViews = {
     }
 };
 
-},{"../../../build/ploticon":2,"../../lib":311,"../../plotly":344,"../../plots/cartesian/axes":349,"../../plots/plots":377,"../../snapshot/download":386}],257:[function(require,module,exports){
+},{"../../../build/ploticon":2,"../../lib":322,"../../plotly":355,"../../plots/cartesian/axes":360,"../../plots/plots":388,"../../snapshot/download":397}],268:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -54071,7 +55847,7 @@ modeBarButtons.resetViews = {
 
 exports.manage = require('./manage');
 
-},{"./manage":258}],258:[function(require,module,exports){
+},{"./manage":269}],269:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -54299,7 +56075,7 @@ function fillCustomButton(customButtons) {
     return customButtons;
 }
 
-},{"../../plots/cartesian/axes":349,"../../traces/scatter/subtypes":458,"./buttons":256,"./modebar":259}],259:[function(require,module,exports){
+},{"../../plots/cartesian/axes":360,"../../traces/scatter/subtypes":470,"./buttons":267,"./modebar":270}],270:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -54589,7 +56365,7 @@ function createModeBar(gd, buttons) {
 
 module.exports = createModeBar;
 
-},{"../../../build/ploticon":2,"../../lib":311,"d3":55}],260:[function(require,module,exports){
+},{"../../../build/ploticon":2,"../../lib":322,"d3":60}],271:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -54679,7 +56455,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":305,"../../plots/font_attributes":369,"../color/attributes":209,"./button_attributes":261}],261:[function(require,module,exports){
+},{"../../lib/extend":316,"../../plots/font_attributes":380,"../color/attributes":220,"./button_attributes":272}],272:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -54720,7 +56496,7 @@ module.exports = {
     }
 };
 
-},{}],262:[function(require,module,exports){
+},{}],273:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -54749,7 +56525,7 @@ module.exports = {
     darkAmount: 10
 };
 
-},{}],263:[function(require,module,exports){
+},{}],274:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -54848,7 +56624,7 @@ function getPosDflt(containerOut, layout, counterAxes) {
     return [containerOut.domain[0], posY + constants.yPad];
 }
 
-},{"../../lib":311,"../color":210,"./attributes":260,"./button_attributes":261,"./constants":262}],264:[function(require,module,exports){
+},{"../../lib":322,"../color":221,"./attributes":271,"./button_attributes":272,"./constants":273}],275:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -55123,7 +56899,7 @@ function reposition(gd, buttons, opts, axName) {
     });
 }
 
-},{"../../lib/svg_text_utils":330,"../../plotly":344,"../../plots/cartesian/axis_ids":352,"../../plots/plots":377,"../color":210,"../drawing":233,"../legend/anchor_utils":247,"./constants":262,"./get_update_object":265,"d3":55}],265:[function(require,module,exports){
+},{"../../lib/svg_text_utils":341,"../../plotly":355,"../../plots/cartesian/axis_ids":363,"../../plots/plots":388,"../color":221,"../drawing":244,"../legend/anchor_utils":258,"./constants":273,"./get_update_object":276,"d3":60}],276:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -55180,7 +56956,7 @@ function getXRange(axisLayout, buttonLayout) {
     return [range0, range1];
 }
 
-},{"d3":55}],266:[function(require,module,exports){
+},{"d3":60}],277:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -55207,7 +56983,7 @@ module.exports = {
     draw: require('./draw')
 };
 
-},{"./attributes":260,"./defaults":263,"./draw":264}],267:[function(require,module,exports){
+},{"./attributes":271,"./defaults":274,"./draw":275}],278:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -55271,7 +57047,7 @@ module.exports = {
     }
 };
 
-},{"../color/attributes":209}],268:[function(require,module,exports){
+},{"../color/attributes":220}],279:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -55307,7 +57083,7 @@ module.exports = function calcAutorange(gd) {
     }
 };
 
-},{"../../plots/cartesian/axes":349,"./constants":269}],269:[function(require,module,exports){
+},{"../../plots/cartesian/axes":360,"./constants":280}],280:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -55359,7 +57135,7 @@ module.exports = {
     extraPad: 15
 };
 
-},{}],270:[function(require,module,exports){
+},{}],281:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -55416,7 +57192,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     containerOut._input = containerIn;
 };
 
-},{"../../lib":311,"./attributes":267}],271:[function(require,module,exports){
+},{"../../lib":322,"./attributes":278}],282:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -55795,6 +57571,7 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
         };
 
         mockFigure.layout[oppAxisName] = {
+            type: oppAxisOpts.type,
             domain: [0, 1],
             range: oppAxisOpts.range.slice(),
             calendar: oppAxisOpts.calendar
@@ -55966,7 +57743,7 @@ function clearPushMargins(gd) {
     }
 }
 
-},{"../../lib":311,"../../lib/setcursor":326,"../../plotly":344,"../../plots/cartesian":357,"../../plots/cartesian/axes":349,"../../plots/plots":377,"../color":210,"../dragelement":231,"../drawing":233,"./constants":269,"d3":55}],272:[function(require,module,exports){
+},{"../../lib":322,"../../lib/setcursor":337,"../../plotly":355,"../../plots/cartesian":368,"../../plots/cartesian/axes":360,"../../plots/plots":388,"../color":221,"../dragelement":242,"../drawing":244,"./constants":280,"d3":60}],283:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -55993,7 +57770,7 @@ module.exports = {
     draw: require('./draw')
 };
 
-},{"./attributes":267,"./calc_autorange":268,"./defaults":270,"./draw":271}],273:[function(require,module,exports){
+},{"./attributes":278,"./calc_autorange":279,"./defaults":281,"./draw":282}],284:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -56091,7 +57868,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":305,"../../traces/scatter/attributes":438,"../annotations/attributes":201}],274:[function(require,module,exports){
+},{"../../lib/extend":316,"../../traces/scatter/attributes":450,"../annotations/attributes":212}],285:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -56168,7 +57945,7 @@ function shapeBounds(ax, v0, v1, path, paramsToUse) {
     if(max >= min) return [min, max];
 }
 
-},{"../../lib":311,"../../plots/cartesian/axes":349,"./constants":275,"./helpers":278}],275:[function(require,module,exports){
+},{"../../lib":322,"../../plots/cartesian/axes":360,"./constants":286,"./helpers":289}],286:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -56232,7 +58009,7 @@ module.exports = {
     }
 };
 
-},{}],276:[function(require,module,exports){
+},{}],287:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -56257,7 +58034,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     handleArrayContainerDefaults(layoutIn, layoutOut, opts);
 };
 
-},{"../../plots/array_container_defaults":346,"./shape_defaults":280}],277:[function(require,module,exports){
+},{"../../plots/array_container_defaults":357,"./shape_defaults":291}],288:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -56335,10 +58112,17 @@ function drawOne(gd, index) {
         drawShape(gd._fullLayout._shapeLowerLayer);
     }
     else {
-        var plotinfo = gd._fullLayout._plots[options.xref + options.yref],
-            mainPlot = plotinfo.mainplot || plotinfo;
-
-        drawShape(mainPlot.shapelayer);
+        var plotinfo = gd._fullLayout._plots[options.xref + options.yref];
+        if(plotinfo) {
+            var mainPlot = plotinfo.mainplot || plotinfo;
+            drawShape(mainPlot.shapelayer);
+        }
+        else {
+            // Fall back to _shapeLowerLayer in case the requested subplot doesn't exist.
+            // This can happen if you reference the shape to an x / y axis combination
+            // that doesn't have any data on it (and layer is below)
+            drawShape(gd._fullLayout._shapeLowerLayer);
+        }
     }
 
     function drawShape(shapeLayer) {
@@ -56625,7 +58409,7 @@ function movePath(pathIn, moveX, moveY) {
     });
 }
 
-},{"../../lib":311,"../../lib/setcursor":326,"../../plotly":344,"../../plots/cartesian/axes":349,"../color":210,"../dragelement":231,"../drawing":233,"./constants":275,"./helpers":278}],278:[function(require,module,exports){
+},{"../../lib":322,"../../lib/setcursor":337,"../../plotly":355,"../../plots/cartesian/axes":360,"../color":221,"../dragelement":242,"../drawing":244,"./constants":286,"./helpers":289}],289:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -56706,7 +58490,7 @@ exports.getPixelToData = function(gd, axis, isVertical) {
     return pixelToData;
 };
 
-},{}],279:[function(require,module,exports){
+},{}],290:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -56732,7 +58516,7 @@ module.exports = {
     drawOne: drawModule.drawOne
 };
 
-},{"./attributes":273,"./calc_autorange":274,"./defaults":276,"./draw":277}],280:[function(require,module,exports){
+},{"./attributes":284,"./calc_autorange":285,"./defaults":287,"./draw":288}],291:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -56831,7 +58615,7 @@ module.exports = function handleShapeDefaults(shapeIn, shapeOut, fullLayout, opt
     return shapeOut;
 };
 
-},{"../../lib":311,"../../plots/cartesian/axes":349,"./attributes":273,"./helpers":278}],281:[function(require,module,exports){
+},{"../../lib":322,"../../plots/cartesian/axes":360,"./attributes":284,"./helpers":289}],292:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -57065,7 +58849,7 @@ module.exports = {
     },
 };
 
-},{"../../lib/extend":305,"../../plots/animation_attributes":345,"../../plots/font_attributes":369,"../../plots/pad_attributes":376,"./constants":282}],282:[function(require,module,exports){
+},{"../../lib/extend":316,"../../plots/animation_attributes":356,"../../plots/font_attributes":380,"../../plots/pad_attributes":387,"./constants":293}],293:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -57162,7 +58946,7 @@ module.exports = {
     currentValueInset: 0,
 };
 
-},{}],283:[function(require,module,exports){
+},{}],294:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -57275,7 +59059,7 @@ function stepsDefaults(sliderIn, sliderOut) {
     return valuesOut;
 }
 
-},{"../../lib":311,"../../plots/array_container_defaults":346,"./attributes":281,"./constants":282}],284:[function(require,module,exports){
+},{"../../lib":322,"../../plots/array_container_defaults":357,"./attributes":292,"./constants":293}],295:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -57877,7 +59661,7 @@ function clearPushMargins(gd) {
     }
 }
 
-},{"../../lib/svg_text_utils":330,"../../plots/plots":377,"../color":210,"../drawing":233,"../legend/anchor_utils":247,"./constants":282,"d3":55}],285:[function(require,module,exports){
+},{"../../lib/svg_text_utils":341,"../../plots/plots":388,"../color":221,"../drawing":244,"../legend/anchor_utils":258,"./constants":293,"d3":60}],296:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -57900,7 +59684,7 @@ module.exports = {
     draw: require('./draw')
 };
 
-},{"./attributes":281,"./constants":282,"./defaults":283,"./draw":284}],286:[function(require,module,exports){
+},{"./attributes":292,"./constants":293,"./defaults":294,"./draw":295}],297:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -58133,7 +59917,7 @@ Titles.draw = function(gd, titleClass, options) {
     el.classed('js-placeholder', isplaceholder);
 };
 
-},{"../../constants/interactions":295,"../../lib":311,"../../lib/svg_text_utils":330,"../../plotly":344,"../../plots/plots":377,"../color":210,"../drawing":233,"d3":55,"fast-isnumeric":61}],287:[function(require,module,exports){
+},{"../../constants/interactions":306,"../../lib":322,"../../lib/svg_text_utils":341,"../../plotly":355,"../../plots/plots":388,"../color":221,"../drawing":244,"d3":60,"fast-isnumeric":66}],298:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -58280,7 +60064,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":305,"../../plots/font_attributes":369,"../../plots/pad_attributes":376,"../color/attributes":209}],288:[function(require,module,exports){
+},{"../../lib/extend":316,"../../plots/font_attributes":380,"../../plots/pad_attributes":387,"../color/attributes":220}],299:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -58356,7 +60140,7 @@ module.exports = {
     hoverColor: '#F4FAFF'
 };
 
-},{}],289:[function(require,module,exports){
+},{}],300:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -58450,7 +60234,7 @@ function buttonsDefaults(menuIn, menuOut) {
     return buttonsOut;
 }
 
-},{"../../lib":311,"../../plots/array_container_defaults":346,"./attributes":287,"./constants":288}],290:[function(require,module,exports){
+},{"../../lib":322,"../../plots/array_container_defaults":357,"./attributes":298,"./constants":299}],301:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -59130,9 +60914,9 @@ function clearPushMargins(gd) {
     }
 }
 
-},{"../../lib/svg_text_utils":330,"../../plots/plots":377,"../color":210,"../drawing":233,"../legend/anchor_utils":247,"./constants":288,"./scrollbox":292,"d3":55}],291:[function(require,module,exports){
-arguments[4][285][0].apply(exports,arguments)
-},{"./attributes":287,"./constants":288,"./defaults":289,"./draw":290,"dup":285}],292:[function(require,module,exports){
+},{"../../lib/svg_text_utils":341,"../../plots/plots":388,"../color":221,"../drawing":244,"../legend/anchor_utils":258,"./constants":299,"./scrollbox":303,"d3":60}],302:[function(require,module,exports){
+arguments[4][296][0].apply(exports,arguments)
+},{"./attributes":298,"./constants":299,"./defaults":300,"./draw":301,"dup":296}],303:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -59603,7 +61387,7 @@ ScrollBox.prototype.setTranslate = function setTranslate(translateX, translateY)
     }
 };
 
-},{"../../lib":311,"../color":210,"../drawing":233,"d3":55}],293:[function(require,module,exports){
+},{"../../lib":322,"../color":221,"../drawing":244,"d3":60}],304:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -59624,7 +61408,7 @@ module.exports = {
     longdashdot: [8, 1, 1, 1]
 };
 
-},{}],294:[function(require,module,exports){
+},{}],305:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -59647,7 +61431,7 @@ module.exports = {
     x: '❌'
 };
 
-},{}],295:[function(require,module,exports){
+},{}],306:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -59664,10 +61448,14 @@ module.exports = {
      * Timing information for interactive elements
      */
     SHOW_PLACEHOLDER: 100,
-    HIDE_PLACEHOLDER: 1000
+    HIDE_PLACEHOLDER: 1000,
+
+    // ms between first mousedown and 2nd mouseup to constitute dblclick...
+    // we don't seem to have access to the system setting
+    DBLCLICKDELAY: 300
 };
 
-},{}],296:[function(require,module,exports){
+},{}],307:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -59715,7 +61503,7 @@ module.exports = {
     EPOCHJD: 2440587.5
 };
 
-},{}],297:[function(require,module,exports){
+},{}],308:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -59753,7 +61541,7 @@ module.exports = {
 
 };
 
-},{}],298:[function(require,module,exports){
+},{}],309:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -59777,7 +61565,7 @@ exports.svgAttrs = {
     'xmlns:xlink': exports.xlink
 };
 
-},{}],299:[function(require,module,exports){
+},{}],310:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -59795,7 +61583,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.24.2';
+exports.version = '1.25.2';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -59856,7 +61644,7 @@ exports.Queue = require('./lib/queue');
 // export d3 used in the bundle
 exports.d3 = require('d3');
 
-},{"../build/plotcss":1,"../build/ploticon":2,"./components/annotations":208,"./components/images":246,"./components/legend":254,"./components/rangeselector":266,"./components/rangeslider":272,"./components/shapes":279,"./components/sliders":285,"./components/updatemenus":291,"./fonts/mathjax_config":300,"./lib/queue":323,"./plot_api/plot_schema":338,"./plot_api/register":339,"./plot_api/set_plot_config":340,"./plot_api/to_image":342,"./plot_api/validate":343,"./plotly":344,"./snapshot":389,"./snapshot/download":386,"./traces/scatter":448,"d3":55,"es6-promise":59}],300:[function(require,module,exports){
+},{"../build/plotcss":1,"../build/ploticon":2,"./components/annotations":219,"./components/images":257,"./components/legend":265,"./components/rangeselector":277,"./components/rangeslider":283,"./components/shapes":290,"./components/sliders":296,"./components/updatemenus":302,"./fonts/mathjax_config":311,"./lib/queue":334,"./plot_api/plot_schema":349,"./plot_api/register":350,"./plot_api/set_plot_config":351,"./plot_api/to_image":353,"./plot_api/validate":354,"./plotly":355,"./snapshot":400,"./snapshot/download":397,"./traces/scatter":460,"d3":60,"es6-promise":64}],311:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -59889,7 +61677,7 @@ if(typeof MathJax !== 'undefined') {
     exports.MathJax = false;
 }
 
-},{}],301:[function(require,module,exports){
+},{}],312:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -59922,7 +61710,7 @@ module.exports = function cleanNumber(v) {
     return BADNUM;
 };
 
-},{"../constants/numerical":296,"fast-isnumeric":61}],302:[function(require,module,exports){
+},{"../constants/numerical":307,"fast-isnumeric":66}],313:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -60233,7 +62021,7 @@ exports.validate = function(value, opts) {
     return out !== failed;
 };
 
-},{"../components/colorscale/get_scale":222,"../components/colorscale/scales":228,"./nested_property":317,"fast-isnumeric":61,"tinycolor2":183}],303:[function(require,module,exports){
+},{"../components/colorscale/get_scale":233,"../components/colorscale/scales":239,"./nested_property":328,"fast-isnumeric":66,"tinycolor2":194}],314:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -60861,7 +62649,7 @@ exports.findExactDates = function(data, calendar) {
     };
 };
 
-},{"../constants/numerical":296,"../registry":384,"./loggers":314,"./mod":316,"d3":55,"fast-isnumeric":61}],304:[function(require,module,exports){
+},{"../constants/numerical":307,"../registry":395,"./loggers":325,"./mod":327,"d3":60,"fast-isnumeric":66}],315:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -61027,7 +62815,7 @@ var Events = {
 
 module.exports = Events;
 
-},{"events":60}],305:[function(require,module,exports){
+},{"events":65}],316:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -61141,7 +62929,7 @@ function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
     return target;
 }
 
-},{"./is_plain_object.js":313}],306:[function(require,module,exports){
+},{"./is_plain_object.js":324}],317:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -61192,7 +62980,7 @@ module.exports = function filterUnique(array) {
     return out;
 };
 
-},{}],307:[function(require,module,exports){
+},{}],318:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -61223,7 +63011,7 @@ module.exports = function filterVisible(container) {
     return out;
 };
 
-},{}],308:[function(require,module,exports){
+},{}],319:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -61235,24 +63023,27 @@ module.exports = function filterVisible(container) {
 
 'use strict';
 
-var tinycolor = require('tinycolor2');
 var isNumeric = require('fast-isnumeric');
+var rgba = require('color-rgba');
 
 var Colorscale = require('../components/colorscale');
 var colorDflt = require('../components/color/attributes').defaultLine;
 
-var str2RgbaArray = require('./str2rgbarray');
-
+var colorDfltRgba = rgba(colorDflt);
 var opacityDflt = 1;
 
 function calculateColor(colorIn, opacityIn) {
-    var colorOut = str2RgbaArray(colorIn);
+    var colorOut = colorIn;
     colorOut[3] *= opacityIn;
     return colorOut;
 }
 
 function validateColor(colorIn) {
-    return tinycolor(colorIn).isValid() ? colorIn : colorDflt;
+    if(isNumeric(colorIn)) return colorDfltRgba;
+
+    var colorOut = rgba(colorIn);
+
+    return colorOut.length ? colorOut : colorDfltRgba;
 }
 
 function validateOpacity(opacityIn) {
@@ -61276,11 +63067,13 @@ function formatColor(containerIn, opacityIn, len) {
             )
         );
     }
-    else sclFunc = validateColor;
+    else {
+        sclFunc = validateColor;
+    }
 
     if(isArrayColorIn) {
         getColor = function(c, i) {
-            return c[i] === undefined ? colorDflt : sclFunc(c[i]);
+            return c[i] === undefined ? colorDfltRgba : rgba(sclFunc(c[i]));
         };
     }
     else getColor = validateColor;
@@ -61299,14 +63092,14 @@ function formatColor(containerIn, opacityIn, len) {
             colorOut[i] = calculateColor(colori, opacityi);
         }
     }
-    else colorOut = calculateColor(colorIn, opacityIn);
+    else colorOut = calculateColor(rgba(colorIn), opacityIn);
 
     return colorOut;
 }
 
 module.exports = formatColor;
 
-},{"../components/color/attributes":209,"../components/colorscale":224,"./str2rgbarray":329,"fast-isnumeric":61,"tinycolor2":183}],309:[function(require,module,exports){
+},{"../components/color/attributes":220,"../components/colorscale":235,"color-rgba":52,"fast-isnumeric":66}],320:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -61375,7 +63168,7 @@ function convertHTMLToUnicode(html) {
 
 module.exports = convertHTMLToUnicode;
 
-},{"../constants/string_mappings":297,"superscript-text":180}],310:[function(require,module,exports){
+},{"../constants/string_mappings":308,"superscript-text":190}],321:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -61391,7 +63184,7 @@ module.exports = convertHTMLToUnicode;
 
 module.exports = function identity(d) { return d; };
 
-},{}],311:[function(require,module,exports){
+},{}],322:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -62031,7 +63824,7 @@ lib.numSeparate = function(value, separators, separatethousands) {
     return x1 + x2;
 };
 
-},{"./clean_number":301,"./coerce":302,"./dates":303,"./extend":305,"./filter_unique":306,"./filter_visible":307,"./identity":310,"./is_array":312,"./is_plain_object":313,"./loggers":314,"./matrix":315,"./mod":316,"./nested_property":317,"./noop":318,"./notifier":319,"./push_unique":322,"./relink_private":324,"./search":325,"./stats":328,"./to_log_range":331,"d3":55}],312:[function(require,module,exports){
+},{"./clean_number":312,"./coerce":313,"./dates":314,"./extend":316,"./filter_unique":317,"./filter_visible":318,"./identity":321,"./is_array":323,"./is_plain_object":324,"./loggers":325,"./matrix":326,"./mod":327,"./nested_property":328,"./noop":329,"./notifier":330,"./push_unique":333,"./relink_private":335,"./search":336,"./stats":339,"./to_log_range":342,"d3":60}],323:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -62055,7 +63848,7 @@ module.exports = function isArray(a) {
     return Array.isArray(a) || ab.isView(a);
 };
 
-},{}],313:[function(require,module,exports){
+},{}],324:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -62084,7 +63877,7 @@ module.exports = function isPlainObject(obj) {
     );
 };
 
-},{}],314:[function(require,module,exports){
+},{}],325:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -62158,7 +63951,7 @@ function apply(f, args) {
     }
 }
 
-},{"../plot_api/plot_config":337}],315:[function(require,module,exports){
+},{"../plot_api/plot_config":348}],326:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -62268,7 +64061,7 @@ exports.apply2DTransform2 = function(transform) {
     };
 };
 
-},{}],316:[function(require,module,exports){
+},{}],327:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -62288,7 +64081,7 @@ module.exports = function mod(v, d) {
     return out < 0 ? out + d : out;
 };
 
-},{}],317:[function(require,module,exports){
+},{}],328:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -62592,7 +64385,7 @@ function badContainer(container, propStr, propParts) {
     };
 }
 
-},{"../plot_api/container_array_match":333,"./is_array":312,"./is_plain_object":313,"fast-isnumeric":61}],318:[function(require,module,exports){
+},{"../plot_api/container_array_match":344,"./is_array":323,"./is_plain_object":324,"fast-isnumeric":66}],329:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -62608,7 +64401,7 @@ function badContainer(container, propStr, propParts) {
 
 module.exports = function noop() {};
 
-},{}],319:[function(require,module,exports){
+},{}],330:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -62690,7 +64483,7 @@ module.exports = function(text, displayLength) {
         });
 };
 
-},{"d3":55,"fast-isnumeric":61}],320:[function(require,module,exports){
+},{"d3":60,"fast-isnumeric":66}],331:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -62739,7 +64532,7 @@ module.exports = function overrideCursor(el3, csr) {
     }
 };
 
-},{"./setcursor":326}],321:[function(require,module,exports){
+},{"./setcursor":337}],332:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -62979,7 +64772,7 @@ polygon.filter = function filter(pts, tolerance) {
     };
 };
 
-},{"./matrix":315}],322:[function(require,module,exports){
+},{"./matrix":326}],333:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -63017,7 +64810,7 @@ module.exports = function pushUnique(array, item) {
     return array;
 };
 
-},{}],323:[function(require,module,exports){
+},{}],334:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -63228,7 +65021,7 @@ queue.plotDo = function(gd, func, args) {
 
 module.exports = queue;
 
-},{"../lib":311,"../plot_api/plot_config":337}],324:[function(require,module,exports){
+},{"../lib":322,"../plot_api/plot_config":348}],335:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -63285,7 +65078,7 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
     }
 };
 
-},{"./is_array":312,"./is_plain_object":313}],325:[function(require,module,exports){
+},{"./is_array":323,"./is_plain_object":324}],336:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -63396,7 +65189,7 @@ exports.roundUp = function(val, arrayIn, reverse) {
     return arrayIn[low];
 };
 
-},{"./loggers":314,"fast-isnumeric":61}],326:[function(require,module,exports){
+},{"./loggers":325,"fast-isnumeric":66}],337:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -63419,7 +65212,7 @@ module.exports = function setCursor(el3, csr) {
     if(csr) el3.classed('cursor-' + csr, true);
 };
 
-},{}],327:[function(require,module,exports){
+},{}],338:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -63468,7 +65261,7 @@ module.exports = function showWebGlMsg(scene) {
     return false;
 };
 
-},{"../components/color":210}],328:[function(require,module,exports){
+},{"../components/color":221}],339:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -63564,7 +65357,7 @@ exports.interp = function(arr, n) {
     return frac * arr[Math.ceil(n)] + (1 - frac) * arr[Math.floor(n)];
 };
 
-},{"fast-isnumeric":61}],329:[function(require,module,exports){
+},{"fast-isnumeric":66}],340:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -63576,17 +65369,16 @@ exports.interp = function(arr, n) {
 
 'use strict';
 
-var tinycolor = require('tinycolor2');
-var arrtools = require('arraytools');
+var rgba = require('color-rgba');
 
 function str2RgbaArray(color) {
-    color = tinycolor(color);
-    return arrtools.str2RgbaArray(color.toRgbString());
+    var colorOut = rgba(color);
+    return colorOut.length ? colorOut : [0, 0, 0, 1];
 }
 
 module.exports = str2RgbaArray;
 
-},{"arraytools":11,"tinycolor2":183}],330:[function(require,module,exports){
+},{"color-rgba":52}],341:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -64056,7 +65848,8 @@ exports.makeEditable = function(context, _delegate, options) {
     }
 
     function appendEditable() {
-        var plotDiv = d3.select(Lib.getPlotDiv(that.node())),
+        var gd = Lib.getPlotDiv(that.node()),
+            plotDiv = d3.select(gd),
             container = plotDiv.select('.svg-container'),
             div = container.append('div');
         div.classed('plugin-editable editable', true)
@@ -64076,6 +65869,7 @@ exports.makeEditable = function(context, _delegate, options) {
             .text(options.text || that.attr('data-unformatted'))
             .call(alignHTMLWith(that, container, options))
             .on('blur', function() {
+                gd._editing = false;
                 that.text(this.textContent)
                     .style({opacity: 1});
                 var svgClass = d3.select(this).attr('class'),
@@ -64092,6 +65886,7 @@ exports.makeEditable = function(context, _delegate, options) {
             })
             .on('focus', function() {
                 var context = this;
+                gd._editing = true;
                 d3.select(document).on('mouseup', function() {
                     if(d3.event.target === context) return false;
                     if(document.activeElement === div.node()) div.node().blur();
@@ -64099,6 +65894,7 @@ exports.makeEditable = function(context, _delegate, options) {
             })
             .on('keyup', function() {
                 if(d3.event.which === 27) {
+                    gd._editing = false;
                     that.style({opacity: 1});
                     d3.select(this)
                         .style({opacity: 0})
@@ -64123,7 +65919,7 @@ exports.makeEditable = function(context, _delegate, options) {
     return d3.rebind(this, dispatch, 'on');
 };
 
-},{"../constants/string_mappings":297,"../constants/xmlns_namespaces":298,"../lib":311,"d3":55}],331:[function(require,module,exports){
+},{"../constants/string_mappings":308,"../constants/xmlns_namespaces":309,"../lib":322,"d3":60}],342:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -64151,7 +65947,7 @@ module.exports = function toLogRange(val, range) {
     return newVal;
 };
 
-},{"fast-isnumeric":61}],332:[function(require,module,exports){
+},{"fast-isnumeric":66}],343:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -64185,7 +65981,7 @@ module.exports = function truncate(arrayIn, len) {
     throw new Error('This array type is not yet supported by `truncate`.');
 };
 
-},{}],333:[function(require,module,exports){
+},{}],344:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -64243,7 +66039,7 @@ module.exports = function containerArrayMatch(astr) {
     return {array: arrayStr, index: Number(match[1]), property: match[3] || ''};
 };
 
-},{"../registry":384}],334:[function(require,module,exports){
+},{"../registry":395}],345:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -64764,7 +66560,7 @@ exports.hasParent = function(aobj, attr) {
     return false;
 };
 
-},{"../components/color":210,"../lib":311,"../plots/cartesian/axes":349,"../plots/plots":377,"../registry":384,"fast-isnumeric":61,"gl-mat4/fromQuat":80}],335:[function(require,module,exports){
+},{"../components/color":221,"../lib":322,"../plots/cartesian/axes":360,"../plots/plots":388,"../registry":395,"fast-isnumeric":66,"gl-mat4/fromQuat":86}],346:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -64977,7 +66773,7 @@ exports.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np,
     return true;
 };
 
-},{"../lib/is_plain_object":313,"../lib/loggers":314,"../lib/nested_property":317,"../lib/noop":318,"../registry":384,"./container_array_match":333}],336:[function(require,module,exports){
+},{"../lib/is_plain_object":324,"../lib/loggers":325,"../lib/nested_property":328,"../lib/noop":329,"../registry":395,"./container_array_match":344}],347:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -65268,11 +67064,19 @@ Plotly.plot = function(gd, data, layout, config) {
                 uid = trace.uid;
 
             if(!isVisible || !Registry.traceIs(trace, '2dMap')) {
-                fullLayout._paper.selectAll(
+                var query = (
                     '.hm' + uid +
                     ',.contour' + uid +
                     ',#clip' + uid
-                ).remove();
+                );
+
+                fullLayout._paper
+                    .selectAll(query)
+                    .remove();
+
+                fullLayout._infolayer.selectAll('g.rangeslider-container')
+                    .selectAll(query)
+                    .remove();
             }
 
             if(!isVisible || !trace._module.colorbar) {
@@ -66548,9 +68352,17 @@ function _restyle(gd, aobj, _traces) {
                 helpers.manageArrayContainers(param, newVal, undoit);
                 flags.docalc = true;
             }
-            // all the other ones, just modify that one attribute
-            else param.set(newVal);
+            else {
+                var moduleAttrs = (contFull._module || {}).attributes || {};
+                var valObject = Lib.nestedProperty(moduleAttrs, ai).get() || {};
 
+                if(valObject.arrayOk && (Array.isArray(newVal) || Array.isArray(oldVal))) {
+                    flags.docalc = true;
+                }
+
+                // all the other ones, just modify that one attribute
+                param.set(newVal);
+            }
         }
 
         // swap the data attributes of the relevant x and y axes?
@@ -67774,6 +69586,7 @@ Plotly.purge = function purge(gd) {
     delete gd._context;
     delete gd._replotPending;
     delete gd._mouseDownTime;
+    delete gd._legendMouseDownTime;
     delete gd._hmpixcount;
     delete gd._hmlumcount;
 
@@ -67889,7 +69702,7 @@ function makePlotFramework(gd) {
     gd.emit('plotly_framework');
 }
 
-},{"../components/drawing":233,"../components/errorbars":239,"../constants/xmlns_namespaces":298,"../lib":311,"../lib/events":304,"../lib/queue":323,"../lib/svg_text_utils":330,"../plotly":344,"../plots/cartesian/constants":354,"../plots/cartesian/graph_interact":356,"../plots/plots":377,"../plots/polar":380,"../registry":384,"./helpers":334,"./manage_arrays":335,"./subroutines":341,"d3":55,"fast-isnumeric":61}],337:[function(require,module,exports){
+},{"../components/drawing":244,"../components/errorbars":250,"../constants/xmlns_namespaces":309,"../lib":322,"../lib/events":315,"../lib/queue":334,"../lib/svg_text_utils":341,"../plotly":355,"../plots/cartesian/constants":365,"../plots/cartesian/graph_interact":367,"../plots/plots":388,"../plots/polar":391,"../registry":395,"./helpers":345,"./manage_arrays":346,"./subroutines":352,"d3":60,"fast-isnumeric":66}],348:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -68015,7 +69828,7 @@ function defaultSetBackground(gd, bgColor) {
     }
 }
 
-},{}],338:[function(require,module,exports){
+},{}],349:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -68421,7 +70234,7 @@ function insertAttrs(baseAttrs, newAttrs, astr) {
     np.set(extendDeep(np.get() || {}, newAttrs));
 }
 
-},{"../lib":311,"../plots/animation_attributes":345,"../plots/attributes":347,"../plots/frame_attributes":370,"../plots/layout_attributes":375,"../plots/polar/area_attributes":378,"../plots/polar/axis_attributes":379,"../registry":384}],339:[function(require,module,exports){
+},{"../lib":322,"../plots/animation_attributes":356,"../plots/attributes":358,"../plots/frame_attributes":381,"../plots/layout_attributes":386,"../plots/polar/area_attributes":389,"../plots/polar/axis_attributes":390,"../registry":395}],350:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -68520,7 +70333,7 @@ function registerComponentModule(newModule) {
     Registry.registerComponent(newModule);
 }
 
-},{"../lib":311,"../registry":384}],340:[function(require,module,exports){
+},{"../lib":322,"../registry":395}],351:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -68546,7 +70359,7 @@ module.exports = function setPlotConfig(configObj) {
     return Lib.extendFlat(Plotly.defaultConfig, configObj);
 };
 
-},{"../lib":311,"../plotly":344}],341:[function(require,module,exports){
+},{"../lib":322,"../plotly":355}],352:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -68953,7 +70766,7 @@ exports.doCamera = function(gd) {
     }
 };
 
-},{"../components/color":210,"../components/drawing":233,"../components/modebar":257,"../components/titles":286,"../lib":311,"../plotly":344,"../plots/plots":377,"../registry":384,"d3":55}],342:[function(require,module,exports){
+},{"../components/color":221,"../components/drawing":244,"../components/modebar":268,"../components/titles":297,"../lib":322,"../plotly":355,"../plots/plots":388,"../registry":395,"d3":60}],353:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -69063,7 +70876,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":311,"../plotly":344,"../snapshot/cloneplot":385,"../snapshot/helpers":388,"../snapshot/svgtoimg":390,"../snapshot/tosvg":392,"fast-isnumeric":61}],343:[function(require,module,exports){
+},{"../lib":322,"../plotly":355,"../snapshot/cloneplot":396,"../snapshot/helpers":399,"../snapshot/svgtoimg":401,"../snapshot/tosvg":403,"fast-isnumeric":66}],354:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -69434,7 +71247,7 @@ function convertPathToAttributeString(path) {
     return astr;
 }
 
-},{"../lib":311,"../plots/plots":377,"./plot_schema":338}],344:[function(require,module,exports){
+},{"../lib":322,"../plots/plots":388,"./plot_schema":349}],355:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -69467,7 +71280,7 @@ exports.ModeBar = require('./components/modebar');
 // plot api
 require('./plot_api/plot_api');
 
-},{"./components/modebar":257,"./plot_api/plot_api":336,"./plot_api/plot_config":337,"./plots/cartesian/axes":349,"./plots/cartesian/graph_interact":356,"./plots/plots":377}],345:[function(require,module,exports){
+},{"./components/modebar":268,"./plot_api/plot_api":347,"./plot_api/plot_config":348,"./plots/cartesian/axes":360,"./plots/cartesian/graph_interact":367,"./plots/plots":388}],356:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -69569,7 +71382,7 @@ module.exports = {
     }
 };
 
-},{}],346:[function(require,module,exports){
+},{}],357:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -69650,7 +71463,7 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
     }
 };
 
-},{"../lib":311}],347:[function(require,module,exports){
+},{"../lib":322}],358:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -69733,7 +71546,7 @@ module.exports = {
     }
 };
 
-},{}],348:[function(require,module,exports){
+},{}],359:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -69760,7 +71573,7 @@ module.exports = {
     }
 };
 
-},{}],349:[function(require,module,exports){
+},{}],360:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -71968,7 +73781,7 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes) {
     }
 }
 
-},{"../../components/color":210,"../../components/drawing":233,"../../components/titles":286,"../../constants/numerical":296,"../../lib":311,"../../lib/svg_text_utils":330,"../../registry":384,"./axis_ids":352,"./layout_attributes":358,"./layout_defaults":359,"./set_convert":363,"d3":55,"fast-isnumeric":61}],350:[function(require,module,exports){
+},{"../../components/color":221,"../../components/drawing":244,"../../components/titles":297,"../../constants/numerical":307,"../../lib":322,"../../lib/svg_text_utils":341,"../../registry":395,"./axis_ids":363,"./layout_attributes":369,"./layout_defaults":370,"./set_convert":374,"d3":60,"fast-isnumeric":66}],361:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -72043,7 +73856,7 @@ function category(a) {
     return curvecats > curvenums * 2;
 }
 
-},{"../../constants/numerical":296,"../../lib":311,"fast-isnumeric":61}],351:[function(require,module,exports){
+},{"../../constants/numerical":307,"../../lib":322,"fast-isnumeric":66}],362:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -72271,7 +74084,7 @@ function getFirstNonEmptyTrace(data, id, axLetter) {
     }
 }
 
-},{"../../components/color/attributes":209,"../../lib":311,"../../registry":384,"./axis_autotype":350,"./axis_ids":352,"./category_order_defaults":353,"./layout_attributes":358,"./ordered_categories":360,"./set_convert":363,"./tick_label_defaults":364,"./tick_mark_defaults":365,"./tick_value_defaults":366,"tinycolor2":183}],352:[function(require,module,exports){
+},{"../../components/color/attributes":220,"../../lib":322,"../../registry":395,"./axis_autotype":361,"./axis_ids":363,"./category_order_defaults":364,"./layout_attributes":369,"./ordered_categories":371,"./set_convert":374,"./tick_label_defaults":375,"./tick_mark_defaults":376,"./tick_value_defaults":377,"tinycolor2":194}],363:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -72393,7 +74206,7 @@ exports.getFromTrace = function(gd, fullTrace, type) {
     return ax;
 };
 
-},{"../../lib":311,"../../registry":384,"../plots":377,"./constants":354}],353:[function(require,module,exports){
+},{"../../lib":322,"../../registry":395,"../plots":388,"./constants":365}],364:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -72427,7 +74240,7 @@ module.exports = function handleCategoryOrderDefaults(containerIn, containerOut,
     }
 };
 
-},{}],354:[function(require,module,exports){
+},{}],365:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -72458,10 +74271,6 @@ module.exports = {
     // pattern matching axis ids and names
     AX_ID_PATTERN: /^[xyz][0-9]*$/,
     AX_NAME_PATTERN: /^[xyz]axis[0-9]*$/,
-
-    // ms between first mousedown and 2nd mouseup to constitute dblclick...
-    // we don't seem to have access to the system setting
-    DBLCLICKDELAY: 300,
 
     // pixels to move mouse before you stop clamping to starting point
     MINDRAG: 8,
@@ -72501,7 +74310,7 @@ module.exports = {
     DFLTRANGEY: [-1, 4]
 };
 
-},{}],355:[function(require,module,exports){
+},{}],366:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -73268,7 +75077,7 @@ function isSelectOrLasso(dragmode) {
     return modes.indexOf(dragmode) !== -1;
 }
 
-},{"../../components/color":210,"../../components/dragelement":231,"../../components/drawing":233,"../../lib":311,"../../lib/setcursor":326,"../../lib/svg_text_utils":330,"../../plotly":344,"../../registry":384,"./axes":349,"./constants":354,"./select":362,"d3":55,"tinycolor2":183}],356:[function(require,module,exports){
+},{"../../components/color":221,"../../components/dragelement":242,"../../components/drawing":244,"../../lib":322,"../../lib/setcursor":337,"../../lib/svg_text_utils":341,"../../plotly":355,"../../registry":395,"./axes":360,"./constants":365,"./select":373,"d3":60,"tinycolor2":194}],367:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -74650,7 +76459,7 @@ fx.inbox = function(v0, v1) {
     return Infinity;
 };
 
-},{"../../components/color":210,"../../components/dragelement":231,"../../components/drawing":233,"../../lib":311,"../../lib/events":304,"../../lib/override_cursor":320,"../../lib/svg_text_utils":330,"../../registry":384,"../layout_attributes":375,"./axes":349,"./constants":354,"./dragbox":355,"d3":55,"fast-isnumeric":61,"tinycolor2":183}],357:[function(require,module,exports){
+},{"../../components/color":221,"../../components/dragelement":242,"../../components/drawing":244,"../../lib":322,"../../lib/events":315,"../../lib/override_cursor":331,"../../lib/svg_text_utils":341,"../../registry":395,"../layout_attributes":386,"./axes":360,"./constants":365,"./dragbox":366,"d3":60,"fast-isnumeric":66,"tinycolor2":194}],368:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -74813,6 +76622,11 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
                     .remove();
             }
         }
+
+        oldFullLayout._infolayer.selectAll('g.rangeslider-container')
+            .select('g.scatterlayer')
+            .selectAll('g.trace')
+            .remove();
     }
 
     var hadCartesian = (oldFullLayout._has && oldFullLayout._has('cartesian'));
@@ -75030,7 +76844,7 @@ function joinLayer(parent, nodeType, className) {
     return layer;
 }
 
-},{"../../lib":311,"../plots":377,"./attributes":348,"./axis_ids":352,"./constants":354,"./layout_attributes":358,"./transition_axes":367,"d3":55}],358:[function(require,module,exports){
+},{"../../lib":322,"../plots":388,"./attributes":359,"./axis_ids":363,"./constants":365,"./layout_attributes":369,"./transition_axes":378,"d3":60}],369:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -75373,7 +77187,7 @@ module.exports = {
     }
 };
 
-},{"../../components/color/attributes":209,"../../lib/extend":305,"../font_attributes":369,"./constants":354}],359:[function(require,module,exports){
+},{"../../components/color/attributes":220,"../../lib/extend":316,"../font_attributes":380,"./constants":365}],370:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -75594,7 +77408,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 };
 
-},{"../../components/color":210,"../../lib":311,"../../registry":384,"../layout_attributes":375,"./axis_defaults":351,"./axis_ids":352,"./constants":354,"./layout_attributes":358,"./position_defaults":361}],360:[function(require,module,exports){
+},{"../../components/color":221,"../../lib":322,"../../registry":395,"../layout_attributes":386,"./axis_defaults":362,"./axis_ids":363,"./constants":365,"./layout_attributes":369,"./position_defaults":372}],371:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -75673,7 +77487,7 @@ module.exports = function orderedCategories(axisLetter, categoryorder, categorya
     }
 };
 
-},{"d3":55}],361:[function(require,module,exports){
+},{"d3":60}],372:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -75738,7 +77552,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     return containerOut;
 };
 
-},{"../../lib":311,"fast-isnumeric":61}],362:[function(require,module,exports){
+},{"../../lib":322,"fast-isnumeric":66}],373:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -75938,7 +77752,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     };
 };
 
-},{"../../components/color":210,"../../lib/polygon":321,"./axes":349,"./constants":354}],363:[function(require,module,exports){
+},{"../../components/color":221,"../../lib/polygon":332,"./axes":360,"./constants":365}],374:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -76368,7 +78182,7 @@ module.exports = function setConvert(ax, fullLayout) {
     delete ax._forceTick0;
 };
 
-},{"../../constants/numerical":296,"../../lib":311,"./axis_ids":352,"./constants":354,"d3":55,"fast-isnumeric":61}],364:[function(require,module,exports){
+},{"../../constants/numerical":307,"../../lib":322,"./axis_ids":363,"./constants":365,"d3":60,"fast-isnumeric":66}],375:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -76452,7 +78266,7 @@ function getShowAttrDflt(containerIn) {
     }
 }
 
-},{"../../lib":311}],365:[function(require,module,exports){
+},{"../../lib":322}],376:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -76485,7 +78299,7 @@ module.exports = function handleTickDefaults(containerIn, containerOut, coerce, 
     }
 };
 
-},{"../../lib":311,"./layout_attributes":358}],366:[function(require,module,exports){
+},{"../../lib":322,"./layout_attributes":369}],377:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -76569,7 +78383,7 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
     }
 };
 
-},{"../../constants/numerical":296,"../../lib":311,"fast-isnumeric":61}],367:[function(require,module,exports){
+},{"../../constants/numerical":307,"../../lib":322,"fast-isnumeric":66}],378:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -76881,7 +78695,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
     return Promise.resolve();
 };
 
-},{"../../components/drawing":233,"../../plotly":344,"../../registry":384,"./axes":349,"d3":55}],368:[function(require,module,exports){
+},{"../../components/drawing":244,"../../plotly":355,"../../registry":395,"./axes":360,"d3":60}],379:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -77306,7 +79120,7 @@ function crawl(attrs, callback, path, depth) {
     });
 }
 
-},{"../lib":311,"../plotly":344}],369:[function(require,module,exports){
+},{"../lib":322,"../plotly":355}],380:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -77337,7 +79151,7 @@ module.exports = {
     }
 };
 
-},{}],370:[function(require,module,exports){
+},{}],381:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -77383,7 +79197,7 @@ module.exports = {
     }
 };
 
-},{}],371:[function(require,module,exports){
+},{}],382:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -77556,7 +79370,7 @@ function createCamera(scene) {
     return result;
 }
 
-},{"mouse-change":143,"mouse-wheel":145}],372:[function(require,module,exports){
+},{"mouse-change":153,"mouse-wheel":155}],383:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -77802,7 +79616,7 @@ function createAxes2D(scene) {
 
 module.exports = createAxes2D;
 
-},{"../../lib/html2unicode":309,"../../lib/str2rgbarray":329,"../cartesian/axes":349,"../plots":377}],373:[function(require,module,exports){
+},{"../../lib/html2unicode":320,"../../lib/str2rgbarray":340,"../cartesian/axes":360,"../plots":388}],384:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -77914,7 +79728,7 @@ exports.toSVG = function(gd) {
     }
 };
 
-},{"../../constants/xmlns_namespaces":298,"../cartesian/attributes":348,"../plots":377,"./scene2d":374}],374:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":309,"../cartesian/attributes":359,"../plots":388,"./scene2d":385}],385:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -78411,6 +80225,12 @@ proto.updateTraces = function(fullData, calcData) {
             this.traces[fullTrace.uid] = traceObj;
         }
     }
+
+    // order object per traces
+    this.glplot.objects.sort(function(a, b) {
+        return a._trace.index - b._trace.index;
+    });
+
 };
 
 proto.emitPointAction = function(nextSelection, eventType) {
@@ -78558,7 +80378,7 @@ proto.hoverFormatter = function(axisName, val) {
     return Axes.tickText(axis, axis.c2l(val), 'hover').text;
 };
 
-},{"../../lib/html2unicode":309,"../../lib/show_no_webgl_msg":327,"../../plots/cartesian/axes":349,"../../plots/cartesian/graph_interact":356,"../../registry":384,"./camera":371,"./convert":372,"gl-plot2d":94,"gl-select-box":119,"gl-spikes2d":128,"webgl-context":196}],375:[function(require,module,exports){
+},{"../../lib/html2unicode":320,"../../lib/show_no_webgl_msg":338,"../../plots/cartesian/axes":360,"../../plots/cartesian/graph_interact":367,"../../registry":395,"./camera":382,"./convert":383,"gl-plot2d":100,"gl-select-box":128,"gl-spikes2d":137,"webgl-context":207}],386:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -78714,7 +80534,7 @@ module.exports = {
     }
 };
 
-},{"../components/color/attributes":209,"../lib":311,"./font_attributes":369}],376:[function(require,module,exports){
+},{"../components/color/attributes":220,"../lib":322,"./font_attributes":380}],387:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -78752,7 +80572,7 @@ module.exports = {
     }
 };
 
-},{}],377:[function(require,module,exports){
+},{}],388:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -79326,23 +81146,25 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
             if(oldUid === newTrace.uid) continue oldLoop;
         }
 
-        // clean old heatmap, contour, and scatter traces
-        //
-        // Note: This is also how scatter traces (cartesian and scatterternary) get
-        // removed since otherwise the scatter module is not called (and so the join
-        // doesn't register the removal) if scatter traces disappear entirely.
+        var query = (
+            '.hm' + oldUid +
+            ',.contour' + oldUid +
+            ',#clip' + oldUid +
+            ',.trace' + oldUid
+        );
+
+        // clean old heatmap, contour traces and clip paths
+        // that rely on uid identifiers
         if(hasPaper) {
-            oldFullLayout._paper.selectAll(
-                '.hm' + oldUid +
-                ',.contour' + oldUid +
-                ',#clip' + oldUid +
-                ',.trace' + oldUid
-            ).remove();
+            oldFullLayout._paper.selectAll(query).remove();
         }
 
-        // clean old colorbars
+        // clean old colorbars and range slider plot
         if(hasInfoLayer) {
             oldFullLayout._infolayer.selectAll('.cb' + oldUid).remove();
+
+            oldFullLayout._infolayer.selectAll('g.rangeslider-container')
+                .selectAll(query).remove();
         }
     }
 };
@@ -80864,7 +82686,7 @@ plots.generalUpdatePerTraceModule = function(subplot, subplotCalcData, subplotLa
     subplot.traceHash = traceHash;
 };
 
-},{"../components/color":210,"../components/errorbars":239,"../lib":311,"../plotly":344,"../registry":384,"./animation_attributes":345,"./attributes":347,"./command":368,"./font_attributes":369,"./frame_attributes":370,"./layout_attributes":375,"d3":55,"fast-isnumeric":61}],378:[function(require,module,exports){
+},{"../components/color":221,"../components/errorbars":250,"../lib":322,"../plotly":355,"../registry":395,"./animation_attributes":356,"./attributes":358,"./command":379,"./font_attributes":380,"./frame_attributes":381,"./layout_attributes":386,"d3":60,"fast-isnumeric":66}],389:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -80889,7 +82711,7 @@ module.exports = {
     }
 };
 
-},{"../../traces/scatter/attributes":438}],379:[function(require,module,exports){
+},{"../../traces/scatter/attributes":450}],390:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -81004,7 +82826,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":305,"../cartesian/layout_attributes":358}],380:[function(require,module,exports){
+},{"../../lib/extend":316,"../cartesian/layout_attributes":369}],391:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -81019,7 +82841,7 @@ var Polar = module.exports = require('./micropolar');
 
 Polar.manager = require('./micropolar_manager');
 
-},{"./micropolar":381,"./micropolar_manager":382}],381:[function(require,module,exports){
+},{"./micropolar":392,"./micropolar_manager":393}],392:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -82438,7 +84260,7 @@ var µ = module.exports = { version: '0.2.2' };
     return exports;
 };
 
-},{"../../lib":311,"d3":55}],382:[function(require,module,exports){
+},{"../../lib":322,"d3":60}],393:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -82524,7 +84346,7 @@ manager.fillLayout = function(_gd) {
     _gd._fullLayout = extendDeepAll(dflts, _gd.layout);
 };
 
-},{"../../components/color":210,"../../lib":311,"./micropolar":381,"./undo_manager":383,"d3":55}],383:[function(require,module,exports){
+},{"../../components/color":221,"../../lib":322,"./micropolar":392,"./undo_manager":394,"d3":60}],394:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -82590,7 +84412,7 @@ module.exports = function UndoManager() {
     };
 };
 
-},{}],384:[function(require,module,exports){
+},{}],395:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -82781,7 +84603,7 @@ function getTraceType(traceType) {
     return traceType;
 }
 
-},{"./lib/loggers":314,"./lib/noop":318,"./lib/push_unique":322,"./plots/attributes":347}],385:[function(require,module,exports){
+},{"./lib/loggers":325,"./lib/noop":329,"./lib/push_unique":333,"./plots/attributes":358}],396:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -82951,7 +84773,7 @@ module.exports = function clonePlot(graphObj, options) {
     return plotTile;
 };
 
-},{"../lib":311,"../plots/plots":377}],386:[function(require,module,exports){
+},{"../lib":322,"../plots/plots":388}],397:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -83017,7 +84839,7 @@ function downloadImage(gd, opts) {
 
 module.exports = downloadImage;
 
-},{"../lib":311,"../plot_api/to_image":342,"./filesaver":387}],387:[function(require,module,exports){
+},{"../lib":322,"../plot_api/to_image":353,"./filesaver":398}],398:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -83085,7 +84907,7 @@ var fileSaver = function(url, name) {
 
 module.exports = fileSaver;
 
-},{}],388:[function(require,module,exports){
+},{}],399:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -83118,7 +84940,7 @@ exports.getRedrawFunc = function(gd) {
     };
 };
 
-},{}],389:[function(require,module,exports){
+},{}],400:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -83144,7 +84966,7 @@ var Snapshot = {
 
 module.exports = Snapshot;
 
-},{"./cloneplot":385,"./download":386,"./helpers":388,"./svgtoimg":390,"./toimage":391,"./tosvg":392}],390:[function(require,module,exports){
+},{"./cloneplot":396,"./download":397,"./helpers":399,"./svgtoimg":401,"./toimage":402,"./tosvg":403}],401:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -83275,7 +85097,7 @@ function svgToImg(opts) {
 
 module.exports = svgToImg;
 
-},{"../lib":311,"events":60}],391:[function(require,module,exports){
+},{"../lib":322,"events":65}],402:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -83355,7 +85177,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":311,"../plotly":344,"./cloneplot":385,"./helpers":388,"./svgtoimg":390,"./tosvg":392,"events":60}],392:[function(require,module,exports){
+},{"../lib":322,"../plotly":355,"./cloneplot":396,"./helpers":399,"./svgtoimg":401,"./tosvg":403,"events":65}],403:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -83474,7 +85296,7 @@ module.exports = function toSVG(gd, format) {
     return s;
 };
 
-},{"../components/color":210,"../components/drawing":233,"../constants/xmlns_namespaces":298,"../lib/svg_text_utils":330,"d3":55}],393:[function(require,module,exports){
+},{"../components/color":221,"../components/drawing":244,"../constants/xmlns_namespaces":309,"../lib/svg_text_utils":341,"d3":60}],404:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -83573,7 +85395,7 @@ module.exports = extendFlat({}, {
     { colorbar: colorbarAttrs }
 );
 
-},{"../../components/colorbar/attributes":211,"../../components/colorscale/attributes":215,"../../lib/extend":305,"../heatmap/attributes":402,"../scatter/attributes":438}],394:[function(require,module,exports){
+},{"../../components/colorbar/attributes":222,"../../components/colorscale/attributes":226,"../../lib/extend":316,"../heatmap/attributes":414,"../scatter/attributes":450}],405:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -83677,7 +85499,7 @@ function autoContours(start, end, ncontours) {
     return dummyAx;
 }
 
-},{"../../lib":311,"../../plots/cartesian/axes":349,"../heatmap/calc":403}],395:[function(require,module,exports){
+},{"../../lib":322,"../../plots/cartesian/axes":360,"../heatmap/calc":415}],406:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -83739,7 +85561,39 @@ module.exports = function colorbar(gd, cd) {
         .options(trace.colorbar)();
 };
 
-},{"../../components/colorbar/draw":213,"../../plots/plots":377,"./end_plus":397,"./make_color_map":398}],396:[function(require,module,exports){
+},{"../../components/colorbar/draw":224,"../../plots/plots":388,"./end_plus":409,"./make_color_map":410}],407:[function(require,module,exports){
+/**
+* Copyright 2012-2017, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+'use strict';
+
+var Lib = require('../../lib');
+var attributes = require('./attributes');
+
+module.exports = function handleContourDefaults(traceIn, traceOut, coerce) {
+    var contourStart = Lib.coerce2(traceIn, traceOut, attributes, 'contours.start');
+    var contourEnd = Lib.coerce2(traceIn, traceOut, attributes, 'contours.end');
+    var missingEnd = (contourStart === false) || (contourEnd === false);
+
+    // normally we only need size if autocontour is off. But contour.calc
+    // pushes its calculated contour size back to the input trace, so for
+    // things like restyle that can call supplyDefaults without calc
+    // after the initial draw, we can just reuse the previous calculation
+    var contourSize = coerce('contours.size');
+    var autoContour;
+
+    if(missingEnd) autoContour = traceOut.autocontour = true;
+    else autoContour = coerce('autocontour', false);
+
+    if(autoContour || !contourSize) coerce('ncontours');
+};
+
+},{"../../lib":322,"./attributes":404}],408:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -83755,7 +85609,8 @@ var Lib = require('../../lib');
 
 var hasColumns = require('../heatmap/has_columns');
 var handleXYZDefaults = require('../heatmap/xyz_defaults');
-var handleStyleDefaults = require('../contour/style_defaults');
+var handleContoursDefaults = require('./contours_defaults');
+var handleStyleDefaults = require('./style_defaults');
 var attributes = require('./attributes');
 
 
@@ -83773,26 +85628,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('connectgaps', hasColumns(traceOut));
 
-    var contourStart = Lib.coerce2(traceIn, traceOut, attributes, 'contours.start'),
-        contourEnd = Lib.coerce2(traceIn, traceOut, attributes, 'contours.end'),
-        missingEnd = (contourStart === false) || (contourEnd === false),
-
-        // normally we only need size if autocontour is off. But contour.calc
-        // pushes its calculated contour size back to the input trace, so for
-        // things like restyle that can call supplyDefaults without calc
-        // after the initial draw, we can just reuse the previous calculation
-        contourSize = coerce('contours.size'),
-        autoContour;
-
-    if(missingEnd) autoContour = traceOut.autocontour = true;
-    else autoContour = coerce('autocontour', false);
-
-    if(autoContour || !contourSize) coerce('ncontours');
-
+    handleContoursDefaults(traceIn, traceOut, coerce);
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
 };
 
-},{"../../lib":311,"../contour/style_defaults":399,"../heatmap/has_columns":409,"../heatmap/xyz_defaults":413,"./attributes":393}],397:[function(require,module,exports){
+},{"../../lib":322,"../heatmap/has_columns":421,"../heatmap/xyz_defaults":425,"./attributes":404,"./contours_defaults":407,"./style_defaults":411}],409:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -83812,7 +85652,7 @@ module.exports = function endPlus(contours) {
     return contours.end + contours.size / 1e6;
 };
 
-},{}],398:[function(require,module,exports){
+},{}],410:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -83891,7 +85731,7 @@ module.exports = function makeColorMap(trace) {
     });
 };
 
-},{"../../components/colorscale":224,"./end_plus":397,"d3":55}],399:[function(require,module,exports){
+},{"../../components/colorscale":235,"./end_plus":409,"d3":60}],411:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -83927,7 +85767,7 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout)
     }
 };
 
-},{"../../components/colorscale/defaults":219}],400:[function(require,module,exports){
+},{"../../components/colorscale/defaults":230}],412:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -84114,7 +85954,7 @@ function createContour(scene, fullTrace, calcTrace) {
 
 module.exports = createContour;
 
-},{"../../lib/str2rgbarray":329,"../../plots/cartesian/axes":349,"../contour/make_color_map":398,"gl-contour2d":68,"gl-heatmap2d":75}],401:[function(require,module,exports){
+},{"../../lib/str2rgbarray":340,"../../plots/cartesian/axes":360,"../contour/make_color_map":410,"gl-contour2d":74,"gl-heatmap2d":81}],413:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -84145,7 +85985,7 @@ ContourGl.meta = {
 
 module.exports = ContourGl;
 
-},{"../../plots/gl2d":373,"../contour/attributes":393,"../contour/calc":394,"../contour/colorbar":395,"../contour/defaults":396,"./convert":400}],402:[function(require,module,exports){
+},{"../../plots/gl2d":384,"../contour/attributes":404,"../contour/calc":405,"../contour/colorbar":406,"../contour/defaults":408,"./convert":412}],414:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -84229,7 +86069,7 @@ module.exports = extendFlat({}, {
     { colorbar: colorbarAttrs }
 );
 
-},{"../../components/colorbar/attributes":211,"../../components/colorscale/attributes":215,"../../lib/extend":305,"../scatter/attributes":438}],403:[function(require,module,exports){
+},{"../../components/colorbar/attributes":222,"../../components/colorscale/attributes":226,"../../lib/extend":316,"../scatter/attributes":450}],415:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -84371,7 +86211,7 @@ module.exports = function calc(gd, trace) {
     return [cd0];
 };
 
-},{"../../components/colorscale/calc":216,"../../lib":311,"../../plots/cartesian/axes":349,"../../registry":384,"../histogram2d/calc":421,"./clean_2d_array":404,"./convert_column_xyz":406,"./find_empties":408,"./has_columns":409,"./interp2d":410,"./make_bound_array":411,"./max_row_length":412}],404:[function(require,module,exports){
+},{"../../components/colorscale/calc":227,"../../lib":322,"../../plots/cartesian/axes":360,"../../registry":395,"../histogram2d/calc":433,"./clean_2d_array":416,"./convert_column_xyz":418,"./find_empties":420,"./has_columns":421,"./interp2d":422,"./make_bound_array":423,"./max_row_length":424}],416:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -84416,7 +86256,7 @@ module.exports = function clean2dArray(zOld, transpose) {
     return zNew;
 };
 
-},{"fast-isnumeric":61}],405:[function(require,module,exports){
+},{"fast-isnumeric":66}],417:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -84467,7 +86307,7 @@ module.exports = function colorbar(gd, cd) {
         .options(trace.colorbar)();
 };
 
-},{"../../components/colorbar/draw":213,"../../components/colorscale":224,"../../lib":311,"../../plots/plots":377,"fast-isnumeric":61}],406:[function(require,module,exports){
+},{"../../components/colorbar/draw":224,"../../components/colorscale":235,"../../lib":322,"../../plots/plots":388,"fast-isnumeric":66}],418:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -84480,6 +86320,7 @@ module.exports = function colorbar(gd, cd) {
 'use strict';
 
 var Lib = require('../../lib');
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 
 module.exports = function convertColumnXYZ(trace, xa, ya) {
@@ -84508,16 +86349,18 @@ module.exports = function convertColumnXYZ(trace, xa, ya) {
         y = yColdv.vals,
         z = Lib.init2dArray(y.length, x.length);
 
-    var ix, iy, text;
+    var text;
 
     if(hasColumnText) text = Lib.init2dArray(y.length, x.length);
 
     for(i = 0; i < colLen; i++) {
-        ix = Lib.findBin(xCol[i] + xColdv.minDiff / 2, x);
-        iy = Lib.findBin(yCol[i] + yColdv.minDiff / 2, y);
+        if(xCol[i] !== BADNUM && yCol[i] !== BADNUM) {
+            var ix = Lib.findBin(xCol[i] + xColdv.minDiff / 2, x);
+            var iy = Lib.findBin(yCol[i] + yColdv.minDiff / 2, y);
 
-        z[iy][ix] = zCol[i];
-        if(hasColumnText) text[iy][ix] = textCol[i];
+            z[iy][ix] = zCol[i];
+            if(hasColumnText) text[iy][ix] = textCol[i];
+        }
     }
 
     trace.x = x;
@@ -84526,7 +86369,7 @@ module.exports = function convertColumnXYZ(trace, xa, ya) {
     if(hasColumnText) trace.text = text;
 };
 
-},{"../../lib":311}],407:[function(require,module,exports){
+},{"../../constants/numerical":307,"../../lib":322}],419:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -84571,7 +86414,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
 };
 
-},{"../../components/colorscale/defaults":219,"../../lib":311,"./attributes":402,"./has_columns":409,"./xyz_defaults":413}],408:[function(require,module,exports){
+},{"../../components/colorscale/defaults":230,"../../lib":322,"./attributes":414,"./has_columns":421,"./xyz_defaults":425}],420:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -84677,7 +86520,7 @@ module.exports = function findEmpties(z) {
     return empties.sort(function(a, b) { return b[2] - a[2]; });
 };
 
-},{"./max_row_length":412}],409:[function(require,module,exports){
+},{"./max_row_length":424}],421:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -84693,7 +86536,7 @@ module.exports = function(trace) {
     return !Array.isArray(trace.z[0]);
 };
 
-},{}],410:[function(require,module,exports){
+},{}],422:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -84825,7 +86668,7 @@ function iterateInterp2d(z, emptyPoints, overshoot) {
     return maxFractionalChange;
 }
 
-},{"../../lib":311}],411:[function(require,module,exports){
+},{"../../lib":322}],423:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -84907,7 +86750,7 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
     return arrayOut;
 };
 
-},{"../../registry":384}],412:[function(require,module,exports){
+},{"../../registry":395}],424:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -84929,7 +86772,7 @@ module.exports = function maxRowLength(z) {
     return len;
 };
 
-},{}],413:[function(require,module,exports){
+},{}],425:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -85022,7 +86865,7 @@ function isValidZ(z) {
     return (allRowsAreArrays && oneRowIsFilled && hasOneNumber);
 }
 
-},{"../../registry":384,"./has_columns":409,"fast-isnumeric":61}],414:[function(require,module,exports){
+},{"../../registry":395,"./has_columns":421,"fast-isnumeric":66}],426:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -85064,7 +86907,7 @@ extendFlat(
 
 module.exports = attrs;
 
-},{"../../components/colorbar/attributes":211,"../../components/colorscale/attributes":215,"../../lib/extend":305,"../heatmap/attributes":402}],415:[function(require,module,exports){
+},{"../../components/colorbar/attributes":222,"../../components/colorscale/attributes":226,"../../lib/extend":316,"../heatmap/attributes":414}],427:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -85203,7 +87046,7 @@ function createHeatmap(scene, fullTrace, calcTrace) {
 
 module.exports = createHeatmap;
 
-},{"../../lib/str2rgbarray":329,"../../plots/cartesian/axes":349,"gl-heatmap2d":75}],416:[function(require,module,exports){
+},{"../../lib/str2rgbarray":340,"../../plots/cartesian/axes":360,"gl-heatmap2d":81}],428:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -85234,7 +87077,7 @@ HeatmapGl.meta = {
 
 module.exports = HeatmapGl;
 
-},{"../../plots/gl2d":373,"../heatmap/calc":403,"../heatmap/colorbar":405,"../heatmap/defaults":407,"./attributes":414,"./convert":415}],417:[function(require,module,exports){
+},{"../../plots/gl2d":384,"../heatmap/calc":415,"../heatmap/colorbar":417,"../heatmap/defaults":419,"./attributes":426,"./convert":427}],429:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -85260,7 +87103,7 @@ module.exports = function doAvg(size, counts) {
     return total;
 };
 
-},{}],418:[function(require,module,exports){
+},{}],430:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -85336,7 +87179,7 @@ module.exports = {
     }
 };
 
-},{"fast-isnumeric":61}],419:[function(require,module,exports){
+},{"fast-isnumeric":66}],431:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -85413,7 +87256,7 @@ module.exports = function cleanBins(trace, ax, binDirection) {
     if(!trace[autoBinAttr]) delete trace['nbins' + binDirection];
 };
 
-},{"../../constants/numerical":296,"../../lib":311,"fast-isnumeric":61}],420:[function(require,module,exports){
+},{"../../constants/numerical":307,"../../lib":322,"fast-isnumeric":66}],432:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -85448,7 +87291,7 @@ module.exports = {
     }
 };
 
-},{}],421:[function(require,module,exports){
+},{}],433:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -85651,7 +87494,7 @@ module.exports = function calc(gd, trace) {
     };
 };
 
-},{"../../lib":311,"../../plots/cartesian/axes":349,"../histogram/average":417,"../histogram/bin_functions":418,"../histogram/clean_bins":419,"../histogram/norm_functions":420}],422:[function(require,module,exports){
+},{"../../lib":322,"../../plots/cartesian/axes":360,"../histogram/average":429,"../histogram/bin_functions":430,"../histogram/clean_bins":431,"../histogram/norm_functions":432}],434:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -85780,7 +87623,7 @@ module.exports = {
     )
 };
 
-},{"../../components/colorbar/attributes":211,"../../components/colorscale/color_attributes":217,"../../components/colorscale/scales":228,"../../lib/extend":305,"../../plots/cartesian/layout_attributes":358}],423:[function(require,module,exports){
+},{"../../components/colorbar/attributes":222,"../../components/colorscale/color_attributes":228,"../../components/colorscale/scales":239,"../../lib/extend":316,"../../plots/cartesian/layout_attributes":369}],435:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -85844,7 +87687,6 @@ exports.toSVG = function(gd) {
         });
     }
 
-    imageRoot.selectAll('*').remove();
     canvases.each(canvasToImage);
 
     // Chrome / Safari bug workaround - browser apparently loses connection to the defined pattern
@@ -85857,7 +87699,7 @@ exports.toSVG = function(gd) {
     }, 60);
 };
 
-},{"../../constants/xmlns_namespaces":298,"../../plots/plots":377,"./constants":426,"./plot":431,"d3":55}],424:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":309,"../../plots/plots":388,"./constants":438,"./plot":443,"d3":60}],436:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -85878,17 +87720,17 @@ module.exports = function calc(gd, trace) {
     var color = cs ? trace.line.color : Array.apply(0, Array(trace.dimensions.reduce(function(p, n) {return Math.max(p, n.values.length);}, 0))).map(function() {return 0.5;});
     var cscale = cs ? trace.line.colorscale : [[0, trace.line.color], [1, trace.line.color]];
 
-    trace.line.color = color;
-    trace.line.colorscale = cscale;
-
     if(hasColorscale(trace, 'line')) {
         calcColorscale(trace, trace.line.color, 'line', 'c');
     }
 
-    return [{}];
+    return [{
+        lineColor: color,
+        cscale: cscale
+    }];
 };
 
-},{"../../components/colorscale/calc":216,"../../components/colorscale/has_colorscale":223,"../../lib":311}],425:[function(require,module,exports){
+},{"../../components/colorscale/calc":227,"../../components/colorscale/has_colorscale":234,"../../lib":322}],437:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -85942,7 +87784,7 @@ module.exports = function colorbar(gd, cd) {
         .options(line.colorbar)();
 };
 
-},{"../../components/colorbar/draw":213,"../../components/colorscale":224,"../../lib":311,"../../plots/plots":377,"fast-isnumeric":61}],426:[function(require,module,exports){
+},{"../../components/colorbar/draw":224,"../../components/colorscale":235,"../../lib":322,"../../plots/plots":388,"fast-isnumeric":66}],438:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -85979,7 +87821,7 @@ module.exports = {
     }
 };
 
-},{}],427:[function(require,module,exports){
+},{}],439:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -85999,9 +87841,9 @@ var maxDimensionCount = require('./constants').maxDimensionCount;
 function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
 
     coerce('line.color', defaultColor);
-    coerce('line.colorscale');
 
-    if(hasColorscale(traceIn, 'line')) {
+    if(hasColorscale(traceIn, 'line') && Lib.isArray(traceIn.line.color)) {
+        coerce('line.colorscale');
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'});
     }
     else {
@@ -86081,7 +87923,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 };
 
-},{"../../components/colorscale/defaults":219,"../../components/colorscale/has_colorscale":223,"../../lib":311,"./attributes":422,"./constants":426}],428:[function(require,module,exports){
+},{"../../components/colorscale/defaults":230,"../../components/colorscale/has_colorscale":234,"../../lib":322,"./attributes":434,"./constants":438}],440:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -86103,14 +87945,14 @@ Parcoords.colorbar = require('./colorbar');
 Parcoords.moduleType = 'trace';
 Parcoords.name = 'parcoords';
 Parcoords.basePlotModule = require('./base_plot');
-Parcoords.categories = ['gl'];
+Parcoords.categories = ['gl', 'noOpacity'];
 Parcoords.meta = {
     
 };
 
 module.exports = Parcoords;
 
-},{"./attributes":422,"./base_plot":423,"./calc":424,"./colorbar":425,"./defaults":427,"./plot":431}],429:[function(require,module,exports){
+},{"./attributes":434,"./base_plot":435,"./calc":436,"./colorbar":437,"./defaults":439,"./plot":443}],441:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -86535,7 +88377,7 @@ module.exports = function(canvasGL, lines, canvasWidth, canvasHeight, initialDim
     };
 };
 
-},{"./constants":426,"regl":163}],430:[function(require,module,exports){
+},{"./constants":438,"regl":173}],442:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -86653,14 +88495,17 @@ function unwrap(d) {
 }
 
 function model(layout, d, i) {
-    var trace = unwrap(d).trace,
+    var cd0 = unwrap(d),
+        trace = cd0.trace,
+        lineColor = cd0.lineColor,
+        cscale = cd0.cscale,
         line = trace.line,
         domain = trace.domain,
         dimensions = trace.dimensions,
         width = layout.width;
 
     var lines = Lib.extendDeep({}, line, {
-        color: line.color.map(domainToUnitScale({values: line.color, range: [line.cmin, line.cmax]})),
+        color: lineColor.map(domainToUnitScale({values: lineColor, range: [line.cmin, line.cmax]})),
         blockLineCount: c.blockLineCount,
         canvasOverdrag: c.overdrag * c.canvasPixelRatio
     });
@@ -86677,7 +88522,7 @@ function model(layout, d, i) {
         colCount: dimensions.filter(visible).length,
         dimensions: dimensions,
         tickDistance: c.tickDistance,
-        unitToColor: unitToColorScale(line.colorscale),
+        unitToColor: unitToColorScale(cscale),
         lines: lines,
         translateX: domain.x[0] * width,
         translateY: layout.height - domain.y[1] * layout.height,
@@ -86816,10 +88661,10 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .map(model.bind(0, layout))
         .map(viewModel);
 
+    root.selectAll('.parcoords-line-layers').remove();
+
     var parcoordsLineLayers = root.selectAll('.parcoords-line-layers')
         .data(vm, keyFun);
-
-    parcoordsLineLayers.exit().remove();
 
     parcoordsLineLayers.enter()
         .insert('div', '.' + svg.attr('class').split(' ').join(' .')) // not hardcoding .main-svg
@@ -87306,7 +89151,7 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
     return tweakables;
 };
 
-},{"../../lib":311,"./constants":426,"./lines":429,"d3":55}],431:[function(require,module,exports){
+},{"../../lib":322,"./constants":438,"./lines":441,"d3":60}],443:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -87426,7 +89271,7 @@ module.exports = function plot(gd, cdparcoords) {
         });
 };
 
-},{"./parcoords":430}],432:[function(require,module,exports){
+},{"./parcoords":442}],444:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -87453,7 +89298,7 @@ module.exports = function styleOne(s, pt, trace) {
     .call(Color.stroke, lineColor);
 };
 
-},{"../../components/color":210}],433:[function(require,module,exports){
+},{"../../components/color":221}],445:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -87542,7 +89387,7 @@ module.exports = {
     }
 };
 
-},{"../scattergl/attributes":462}],434:[function(require,module,exports){
+},{"../scattergl/attributes":474}],446:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -87774,7 +89619,7 @@ function createPointcloud(scene, data) {
 
 module.exports = createPointcloud;
 
-},{"../../lib/str2rgbarray":329,"../scatter/get_trace_color":446,"gl-pointcloud2d":103}],435:[function(require,module,exports){
+},{"../../lib/str2rgbarray":340,"../scatter/get_trace_color":458,"gl-pointcloud2d":109}],447:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -87819,7 +89664,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
     coerce('marker.border.arearatio');
 };
 
-},{"../../lib":311,"./attributes":433}],436:[function(require,module,exports){
+},{"../../lib":322,"./attributes":445}],448:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -87849,7 +89694,7 @@ pointcloud.meta = {
 
 module.exports = pointcloud;
 
-},{"../../plots/gl2d":373,"../scatter3d/calc":461,"./attributes":433,"./convert":434,"./defaults":435}],437:[function(require,module,exports){
+},{"../../plots/gl2d":384,"../scatter3d/calc":473,"./attributes":445,"./convert":446,"./defaults":447}],449:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -87891,7 +89736,7 @@ module.exports = function arraysToCalcdata(cd, trace) {
     }
 };
 
-},{"../../lib":311}],438:[function(require,module,exports){
+},{"../../lib":322}],450:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -88157,7 +90002,7 @@ module.exports = {
     error_x: errorBarAttrs
 };
 
-},{"../../components/colorbar/attributes":211,"../../components/colorscale/color_attributes":217,"../../components/drawing":233,"../../components/errorbars/attributes":235,"../../lib/extend":305,"./constants":443}],439:[function(require,module,exports){
+},{"../../components/colorbar/attributes":222,"../../components/colorscale/color_attributes":228,"../../components/drawing":244,"../../components/errorbars/attributes":246,"../../lib/extend":316,"./constants":455}],451:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -88287,7 +90132,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../../plots/cartesian/axes":349,"./arrays_to_calcdata":437,"./colorscale_calc":442,"./subtypes":458,"fast-isnumeric":61}],440:[function(require,module,exports){
+},{"../../plots/cartesian/axes":360,"./arrays_to_calcdata":449,"./colorscale_calc":454,"./subtypes":470,"fast-isnumeric":66}],452:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -88326,7 +90171,7 @@ module.exports = function cleanData(fullData) {
     }
 };
 
-},{}],441:[function(require,module,exports){
+},{}],453:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -88382,7 +90227,7 @@ module.exports = function colorbar(gd, cd) {
         .options(marker.colorbar)();
 };
 
-},{"../../components/colorbar/draw":213,"../../components/colorscale":224,"../../lib":311,"../../plots/plots":377,"fast-isnumeric":61}],442:[function(require,module,exports){
+},{"../../components/colorbar/draw":224,"../../components/colorscale":235,"../../lib":322,"../../plots/plots":388,"fast-isnumeric":66}],454:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -88415,7 +90260,7 @@ module.exports = function calcMarkerColorscale(trace) {
     }
 };
 
-},{"../../components/colorscale/calc":216,"../../components/colorscale/has_colorscale":223,"./subtypes":458}],443:[function(require,module,exports){
+},{"../../components/colorscale/calc":227,"../../components/colorscale/has_colorscale":234,"./subtypes":470}],455:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -88431,7 +90276,7 @@ module.exports = {
     PTS_LINESONLY: 20
 };
 
-},{}],444:[function(require,module,exports){
+},{}],456:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -88512,7 +90357,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 };
 
-},{"../../components/errorbars/defaults":238,"../../lib":311,"./attributes":438,"./constants":443,"./fillcolor_defaults":445,"./line_defaults":449,"./line_shape_defaults":451,"./marker_defaults":454,"./subtypes":458,"./text_defaults":459,"./xy_defaults":460}],445:[function(require,module,exports){
+},{"../../components/errorbars/defaults":249,"../../lib":322,"./attributes":450,"./constants":455,"./fillcolor_defaults":457,"./line_defaults":461,"./line_shape_defaults":463,"./marker_defaults":466,"./subtypes":470,"./text_defaults":471,"./xy_defaults":472}],457:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -88550,7 +90395,7 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
     ));
 };
 
-},{"../../components/color":210}],446:[function(require,module,exports){
+},{"../../components/color":221}],458:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -88603,7 +90448,7 @@ module.exports = function getTraceColor(trace, di) {
     }
 };
 
-},{"../../components/color":210,"./subtypes":458}],447:[function(require,module,exports){
+},{"../../components/color":221,"./subtypes":470}],459:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -88772,7 +90617,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     }
 };
 
-},{"../../components/color":210,"../../components/errorbars":239,"../../lib":311,"../../plots/cartesian/constants":354,"../../plots/cartesian/graph_interact":356,"./get_trace_color":446}],448:[function(require,module,exports){
+},{"../../components/color":221,"../../components/errorbars":250,"../../lib":322,"../../plots/cartesian/constants":365,"../../plots/cartesian/graph_interact":367,"./get_trace_color":458}],460:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -88816,7 +90661,7 @@ Scatter.meta = {
 
 module.exports = Scatter;
 
-},{"../../plots/cartesian":357,"./arrays_to_calcdata":437,"./attributes":438,"./calc":439,"./clean_data":440,"./colorbar":441,"./defaults":444,"./hover":447,"./plot":455,"./select":456,"./style":457,"./subtypes":458}],449:[function(require,module,exports){
+},{"../../plots/cartesian":368,"./arrays_to_calcdata":449,"./attributes":450,"./calc":451,"./clean_data":452,"./colorbar":453,"./defaults":456,"./hover":459,"./plot":467,"./select":468,"./style":469,"./subtypes":470}],461:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -88849,7 +90694,7 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
     coerce('line.dash');
 };
 
-},{"../../components/colorscale/defaults":219,"../../components/colorscale/has_colorscale":223}],450:[function(require,module,exports){
+},{"../../components/colorscale/defaults":230,"../../components/colorscale/has_colorscale":234}],462:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -89022,7 +90867,7 @@ module.exports = function linePoints(d, opts) {
     return segments;
 };
 
-},{"../../constants/numerical":296}],451:[function(require,module,exports){
+},{"../../constants/numerical":307}],463:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -89041,7 +90886,7 @@ module.exports = function handleLineShapeDefaults(traceIn, traceOut, coerce) {
     if(shape === 'spline') coerce('line.smoothing');
 };
 
-},{}],452:[function(require,module,exports){
+},{}],464:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -89082,7 +90927,7 @@ module.exports = function linkTraces(gd, plotinfo, cdscatter) {
     }
 };
 
-},{}],453:[function(require,module,exports){
+},{}],465:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -89124,7 +90969,7 @@ module.exports = function makeBubbleSizeFn(trace) {
     };
 };
 
-},{"fast-isnumeric":61}],454:[function(require,module,exports){
+},{"fast-isnumeric":66}],466:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -89184,7 +91029,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
     }
 };
 
-},{"../../components/color":210,"../../components/colorscale/defaults":219,"../../components/colorscale/has_colorscale":223,"./subtypes":458}],455:[function(require,module,exports){
+},{"../../components/color":221,"../../components/colorscale/defaults":230,"../../components/colorscale/has_colorscale":234,"./subtypes":470}],467:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -89724,7 +91569,7 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
     });
 }
 
-},{"../../components/drawing":233,"../../components/errorbars":239,"../../lib":311,"../../lib/polygon":321,"./line_points":450,"./link_traces":452,"./subtypes":458,"d3":55}],456:[function(require,module,exports){
+},{"../../components/drawing":244,"../../components/errorbars":250,"../../lib":322,"../../lib/polygon":332,"./line_points":462,"./link_traces":464,"./subtypes":470,"d3":60}],468:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -89796,7 +91641,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
     return selection;
 };
 
-},{"./subtypes":458}],457:[function(require,module,exports){
+},{"./subtypes":470}],469:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -89842,7 +91687,7 @@ module.exports = function style(gd) {
     s.call(ErrorBars.style);
 };
 
-},{"../../components/drawing":233,"../../components/errorbars":239,"d3":55}],458:[function(require,module,exports){
+},{"../../components/drawing":244,"../../components/errorbars":250,"d3":60}],470:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -89878,7 +91723,7 @@ module.exports = {
     }
 };
 
-},{"../../lib":311}],459:[function(require,module,exports){
+},{"../../lib":322}],471:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -89899,7 +91744,7 @@ module.exports = function(traceIn, traceOut, layout, coerce) {
     Lib.coerceFont(coerce, 'textfont', layout.font);
 };
 
-},{"../../lib":311}],460:[function(require,module,exports){
+},{"../../lib":322}],472:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -89949,7 +91794,7 @@ module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
     return len;
 };
 
-},{"../../registry":384}],461:[function(require,module,exports){
+},{"../../registry":395}],473:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -89978,7 +91823,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../scatter/arrays_to_calcdata":437,"../scatter/colorscale_calc":442}],462:[function(require,module,exports){
+},{"../scatter/arrays_to_calcdata":449,"../scatter/colorscale_calc":454}],474:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -90060,7 +91905,7 @@ module.exports = {
     error_x: scatterAttrs.error_x
 };
 
-},{"../../components/colorscale/color_attributes":217,"../../constants/gl2d_dashes":293,"../../constants/gl_markers":294,"../../lib/extend":305,"../scatter/attributes":438}],463:[function(require,module,exports){
+},{"../../components/colorscale/color_attributes":228,"../../constants/gl2d_dashes":304,"../../constants/gl_markers":305,"../../lib/extend":316,"../scatter/attributes":450}],475:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -90073,7 +91918,7 @@ module.exports = {
 'use strict';
 
 var createScatter = require('gl-scatter2d');
-var createFancyScatter = require('gl-scatter2d-fancy');
+var createFancyScatter = require('gl-scatter2d-sdf');
 var createLine = require('gl-line2d');
 var createError = require('gl-error2d');
 var isNumeric = require('fast-isnumeric');
@@ -90109,11 +91954,17 @@ function LineWithMarkers(scene, uid) {
     this.hoverinfo = 'all';
     this.connectgaps = true;
 
+    this.index = null;
     this.idToIndex = [];
     this.bounds = [0, 0, 0, 0];
 
+    this.isVisible = false;
     this.hasLines = false;
-    this.lineOptions = {
+    this.hasErrorX = false;
+    this.hasErrorY = false;
+    this.hasMarkers = false;
+
+    this.line = this.initObject(createLine, {
         positions: new Float64Array(0),
         color: [0, 0, 0, 1],
         width: 1,
@@ -90123,35 +91974,26 @@ function LineWithMarkers(scene, uid) {
             [0, 0, 0, 1],
             [0, 0, 0, 1],
             [0, 0, 0, 1]],
-        dashes: [1]
-    };
-    this.line = createLine(scene.glplot, this.lineOptions);
-    this.line._trace = this;
+        dashes: [1],
+    }, 0);
 
-    this.hasErrorX = false;
-    this.errorXOptions = {
+    this.errorX = this.initObject(createError, {
         positions: new Float64Array(0),
         errors: new Float64Array(0),
         lineWidth: 1,
         capSize: 0,
         color: [0, 0, 0, 1]
-    };
-    this.errorX = createError(scene.glplot, this.errorXOptions);
-    this.errorX._trace = this;
+    }, 1);
 
-    this.hasErrorY = false;
-    this.errorYOptions = {
+    this.errorY = this.initObject(createError, {
         positions: new Float64Array(0),
         errors: new Float64Array(0),
         lineWidth: 1,
         capSize: 0,
         color: [0, 0, 0, 1]
-    };
-    this.errorY = createError(scene.glplot, this.errorYOptions);
-    this.errorY._trace = this;
+    }, 2);
 
-    this.hasMarkers = false;
-    this.scatterOptions = {
+    var scatterOptions0 = {
         positions: new Float64Array(0),
         sizes: [],
         colors: [],
@@ -90163,15 +92005,43 @@ function LineWithMarkers(scene, uid) {
         borderSize: 1,
         borderColor: [0, 0, 0, 1]
     };
-    this.scatter = createScatter(scene.glplot, this.scatterOptions);
-    this.scatter._trace = this;
-    this.fancyScatter = createFancyScatter(scene.glplot, this.scatterOptions);
-    this.fancyScatter._trace = this;
 
-    this.isVisible = false;
+    this.scatter = this.initObject(createScatter, scatterOptions0, 3);
+    this.fancyScatter = this.initObject(createFancyScatter, scatterOptions0, 4);
 }
 
 var proto = LineWithMarkers.prototype;
+
+proto.initObject = function(createFn, options, objIndex) {
+    var _this = this;
+    var glplot = _this.scene.glplot;
+    var options0 = Lib.extendFlat({}, options);
+    var obj = null;
+
+    function update() {
+        if(!obj) {
+            obj = createFn(glplot, options);
+            obj._trace = _this;
+            obj._index = objIndex;
+        }
+        obj.update(options);
+    }
+
+    function clear() {
+        if(obj) obj.update(options0);
+    }
+
+    function dispose() {
+        if(obj) obj.dispose();
+    }
+
+    return {
+        options: options,
+        update: update,
+        clear: clear,
+        dispose: dispose
+    };
+};
 
 proto.handlePick = function(pickResult) {
     var index = pickResult.pointId;
@@ -90289,13 +92159,8 @@ function _convertColor(colors, opacities, count) {
     return result;
 }
 
-/* Order is important here to get the correct laying:
- * - lines
- * - errorX
- * - errorY
- * - markers
- */
 proto.update = function(options) {
+
     if(options.visible !== true) {
         this.isVisible = false;
         this.hasLines = false;
@@ -90318,7 +92183,11 @@ proto.update = function(options) {
     this.connectgaps = !!options.connectgaps;
 
     if(!this.isVisible) {
-        this.clear();
+        this.line.clear();
+        this.errorX.clear();
+        this.errorY.clear();
+        this.scatter.clear();
+        this.fancyScatter.clear();
     }
     else if(this.isFancy(options)) {
         this.updateFancy(options);
@@ -90326,6 +92195,18 @@ proto.update = function(options) {
     else {
         this.updateFast(options);
     }
+
+    // sort objects so that order is preserve on updates:
+    // - lines
+    // - errorX
+    // - errorY
+    // - markers
+    this.scene.glplot.objects.sort(function(a, b) {
+        return a._index - b._index;
+    });
+
+    // set trace index so that scene2d can sort object per traces
+    this.index = options.index;
 
     // not quite on-par with 'scatter', but close enough for now
     // does not handle the colorscale case
@@ -90354,22 +92235,6 @@ function allFastTypesLikely(a) {
 
     return true;
 }
-
-proto.clear = function() {
-    this.lineOptions.positions = new Float64Array(0);
-    this.line.update(this.lineOptions);
-
-    this.errorXOptions.positions = new Float64Array(0);
-    this.errorX.update(this.errorXOptions);
-
-    this.errorYOptions.positions = new Float64Array(0);
-    this.errorY.update(this.errorYOptions);
-
-    this.scatterOptions.positions = new Float64Array(0);
-    this.scatterOptions.glyphs = [];
-    this.scatter.update(this.scatterOptions);
-    this.fancyScatter.update(this.scatterOptions);
-};
 
 proto.updateFast = function(options) {
     var x = this.xData = this.pickXData = options.x;
@@ -90426,34 +92291,30 @@ proto.updateFast = function(options) {
     var markerSize;
 
     if(this.hasMarkers) {
-        this.scatterOptions.positions = positions;
+        this.scatter.options.positions = positions;
 
         var markerColor = str2RGBArray(options.marker.color),
             borderColor = str2RGBArray(options.marker.line.color),
             opacity = (options.opacity) * (options.marker.opacity);
 
         markerColor[3] *= opacity;
-        this.scatterOptions.color = markerColor;
+        this.scatter.options.color = markerColor;
 
         borderColor[3] *= opacity;
-        this.scatterOptions.borderColor = borderColor;
+        this.scatter.options.borderColor = borderColor;
 
         markerSize = options.marker.size;
-        this.scatterOptions.size = markerSize;
-        this.scatterOptions.borderSize = options.marker.line.width;
+        this.scatter.options.size = markerSize;
+        this.scatter.options.borderSize = options.marker.line.width;
 
-        this.scatter.update(this.scatterOptions);
+        this.scatter.update();
     }
     else {
-        this.scatterOptions.positions = new Float64Array(0);
-        this.scatterOptions.glyphs = [];
-        this.scatter.update(this.scatterOptions);
+        this.scatter.clear();
     }
 
     // turn off fancy scatter plot
-    this.scatterOptions.positions = new Float64Array(0);
-    this.scatterOptions.glyphs = [];
-    this.fancyScatter.update(this.scatterOptions);
+    this.fancyScatter.clear();
 
     // add item for autorange routine
     this.expandAxesFast(bounds, markerSize);
@@ -90527,16 +92388,16 @@ proto.updateFancy = function(options) {
     var sizes;
 
     if(this.hasMarkers) {
-        this.scatterOptions.positions = positions;
+        this.scatter.options.positions = positions;
 
         // TODO rewrite convert function so that
         // we don't have to loop through the data another time
 
-        this.scatterOptions.sizes = new Array(pId);
-        this.scatterOptions.glyphs = new Array(pId);
-        this.scatterOptions.borderWidths = new Array(pId);
-        this.scatterOptions.colors = new Array(pId * 4);
-        this.scatterOptions.borderColors = new Array(pId * 4);
+        this.scatter.options.sizes = new Array(pId);
+        this.scatter.options.glyphs = new Array(pId);
+        this.scatter.options.borderWidths = new Array(pId);
+        this.scatter.options.colors = new Array(pId * 4);
+        this.scatter.options.borderColors = new Array(pId * 4);
 
         var markerSizeFunc = makeBubbleSizeFn(options),
             markerOpts = options.marker,
@@ -90553,28 +92414,24 @@ proto.updateFancy = function(options) {
         for(i = 0; i < pId; ++i) {
             index = idToIndex[i];
 
-            this.scatterOptions.sizes[i] = 4.0 * sizes[index];
-            this.scatterOptions.glyphs[i] = glyphs[index];
-            this.scatterOptions.borderWidths[i] = 0.5 * borderWidths[index];
+            this.scatter.options.sizes[i] = 4.0 * sizes[index];
+            this.scatter.options.glyphs[i] = glyphs[index];
+            this.scatter.options.borderWidths[i] = 0.5 * borderWidths[index];
 
             for(j = 0; j < 4; ++j) {
-                this.scatterOptions.colors[4 * i + j] = colors[4 * index + j];
-                this.scatterOptions.borderColors[4 * i + j] = borderColors[4 * index + j];
+                this.scatter.options.colors[4 * i + j] = colors[4 * index + j];
+                this.scatter.options.borderColors[4 * i + j] = borderColors[4 * index + j];
             }
         }
 
-        this.fancyScatter.update(this.scatterOptions);
+        this.fancyScatter.update();
     }
     else {
-        this.scatterOptions.positions = new Float64Array(0);
-        this.scatterOptions.glyphs = [];
-        this.fancyScatter.update(this.scatterOptions);
+        this.fancyScatter.clear();
     }
 
     // turn off fast scatter plot
-    this.scatterOptions.positions = new Float64Array(0);
-    this.scatterOptions.glyphs = [];
-    this.scatter.update(this.scatterOptions);
+    this.scatter.clear();
 
     // add item for autorange routine
     this.expandAxesFancy(x, y, sizes);
@@ -90598,61 +92455,60 @@ proto.updateLines = function(options, positions) {
             }
         }
 
-        this.lineOptions.positions = linePositions;
+        this.line.options.positions = linePositions;
 
         var lineColor = convertColor(options.line.color, options.opacity, 1),
-            lineWidth = Math.round(0.5 * this.lineOptions.width),
+            lineWidth = Math.round(0.5 * this.line.options.width),
             dashes = (DASHES[options.line.dash] || [1]).slice();
 
         for(i = 0; i < dashes.length; ++i) dashes[i] *= lineWidth;
 
         switch(options.fill) {
             case 'tozeroy':
-                this.lineOptions.fill = [false, true, false, false];
+                this.line.options.fill = [false, true, false, false];
                 break;
             case 'tozerox':
-                this.lineOptions.fill = [true, false, false, false];
+                this.line.options.fill = [true, false, false, false];
                 break;
             default:
-                this.lineOptions.fill = [false, false, false, false];
+                this.line.options.fill = [false, false, false, false];
                 break;
         }
 
         var fillColor = str2RGBArray(options.fillcolor);
 
-        this.lineOptions.color = lineColor;
-        this.lineOptions.width = 2.0 * options.line.width;
-        this.lineOptions.dashes = dashes;
-        this.lineOptions.fillColor = [fillColor, fillColor, fillColor, fillColor];
+        this.line.options.color = lineColor;
+        this.line.options.width = 2.0 * options.line.width;
+        this.line.options.dashes = dashes;
+        this.line.options.fillColor = [fillColor, fillColor, fillColor, fillColor];
+
+        this.line.update();
     }
     else {
-        this.lineOptions.positions = new Float64Array(0);
+        this.line.clear();
     }
-
-    this.line.update(this.lineOptions);
 };
 
 proto.updateError = function(axLetter, options, positions, errors) {
     var errorObj = this['error' + axLetter],
-        errorOptions = options['error_' + axLetter.toLowerCase()],
-        errorObjOptions = this['error' + axLetter + 'Options'];
+        errorOptions = options['error_' + axLetter.toLowerCase()];
 
     if(axLetter.toLowerCase() === 'x' && errorOptions.copy_ystyle) {
         errorOptions = options.error_y;
     }
 
     if(this['hasError' + axLetter]) {
-        errorObjOptions.positions = positions;
-        errorObjOptions.errors = errors;
-        errorObjOptions.capSize = errorOptions.width;
-        errorObjOptions.lineWidth = errorOptions.thickness / 2;  // ballpark rescaling
-        errorObjOptions.color = convertColor(errorOptions.color, 1, 1);
+        errorObj.options.positions = positions;
+        errorObj.options.errors = errors;
+        errorObj.options.capSize = errorOptions.width;
+        errorObj.options.lineWidth = errorOptions.thickness / 2;  // ballpark rescaling
+        errorObj.options.color = convertColor(errorOptions.color, 1, 1);
+
+        errorObj.update();
     }
     else {
-        errorObjOptions.positions = new Float64Array(0);
+        errorObj.clear();
     }
-
-    errorObj.update(errorObjOptions);
 };
 
 proto.expandAxesFast = function(bounds, markerSize) {
@@ -90698,7 +92554,7 @@ function createLineWithMarkers(scene, data) {
 
 module.exports = createLineWithMarkers;
 
-},{"../../components/errorbars":239,"../../constants/gl2d_dashes":293,"../../constants/gl_markers":294,"../../lib":311,"../../lib/gl_format_color":308,"../../lib/str2rgbarray":329,"../../lib/typed_array_truncate":332,"../../plots/cartesian/axes":349,"../../plots/cartesian/axis_autotype":350,"../scatter/get_trace_color":446,"../scatter/make_bubble_size_func":453,"../scatter/subtypes":458,"fast-isnumeric":61,"gl-error2d":71,"gl-line2d":79,"gl-scatter2d":117,"gl-scatter2d-fancy":112}],464:[function(require,module,exports){
+},{"../../components/errorbars":250,"../../constants/gl2d_dashes":304,"../../constants/gl_markers":305,"../../lib":322,"../../lib/gl_format_color":319,"../../lib/str2rgbarray":340,"../../lib/typed_array_truncate":343,"../../plots/cartesian/axes":360,"../../plots/cartesian/axis_autotype":361,"../scatter/get_trace_color":458,"../scatter/make_bubble_size_func":465,"../scatter/subtypes":470,"fast-isnumeric":66,"gl-error2d":77,"gl-line2d":85,"gl-scatter2d":126,"gl-scatter2d-sdf":121}],476:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -90755,7 +92611,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 };
 
-},{"../../components/errorbars/defaults":238,"../../lib":311,"../scatter/constants":443,"../scatter/fillcolor_defaults":445,"../scatter/line_defaults":449,"../scatter/marker_defaults":454,"../scatter/subtypes":458,"../scatter/xy_defaults":460,"./attributes":462}],465:[function(require,module,exports){
+},{"../../components/errorbars/defaults":249,"../../lib":322,"../scatter/constants":455,"../scatter/fillcolor_defaults":457,"../scatter/line_defaults":461,"../scatter/marker_defaults":466,"../scatter/subtypes":470,"../scatter/xy_defaults":472,"./attributes":474}],477:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -90786,5 +92642,5 @@ ScatterGl.meta = {
 
 module.exports = ScatterGl;
 
-},{"../../plots/gl2d":373,"../scatter/colorbar":441,"../scatter3d/calc":461,"./attributes":462,"./convert":463,"./defaults":464}]},{},[6])(6)
+},{"../../plots/gl2d":384,"../scatter/colorbar":453,"../scatter3d/calc":473,"./attributes":474,"./convert":475,"./defaults":476}]},{},[6])(6)
 });

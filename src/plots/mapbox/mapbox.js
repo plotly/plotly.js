@@ -166,8 +166,8 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         Fx.hover(gd, evt, self.id);
     });
 
-    map.on('click', function() {
-        Fx.click(gd, { target: true });
+    map.on('click', function(evt) {
+        Fx.click(gd, evt.originalEvent);
     });
 
     function unhover() {

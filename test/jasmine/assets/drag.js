@@ -1,4 +1,5 @@
-var mouseEvent = require('../assets/mouse_event');
+var mouseEvent = require('./mouse_event');
+var getNodeCoords = require('./get_node_coords');
 
 /*
  * drag: grab a node and drag it (dx, dy) pixels
@@ -7,21 +8,12 @@ var mouseEvent = require('../assets/mouse_event');
  */
 module.exports = function(node, dx, dy, edge) {
 
-    edge = edge || '';
-    var bbox = node.getBoundingClientRect(),
-        fromX, fromY;
+    var coords = getNodeCoords(node, edge);
+    var fromX = coords.x;
+    var fromY = coords.y;
 
-    if(edge.indexOf('n') !== -1) fromY = bbox.top;
-    else if(edge.indexOf('s') !== -1) fromY = bbox.bottom;
-    else fromY = (bbox.bottom + bbox.top) / 2;
-
-    if(edge.indexOf('w') !== -1) fromX = bbox.left;
-    else if(edge.indexOf('e') !== -1) fromX = bbox.right;
-    else fromX = (bbox.left + bbox.right) / 2;
-
-
-    var toX = fromX + dx,
-        toY = fromY + dy;
+    var toX = fromX + dx;
+    var toY = fromY + dy;
 
     mouseEvent('mousemove', fromX, fromY, {element: node});
     mouseEvent('mousedown', fromX, fromY, {element: node});

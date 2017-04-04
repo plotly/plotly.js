@@ -10,6 +10,7 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
@@ -37,8 +38,7 @@ module.exports = function setPositions(gd, plotinfo) {
             fullTrace.visible === true &&
             Registry.traceIs(fullTrace, 'bar') &&
             fullTrace.xaxis === xa._id &&
-            fullTrace.yaxis === ya._id &&
-            !calcTraces[i][0].placeholder
+            fullTrace.yaxis === ya._id
         ) {
             if(fullTrace.orientation === 'h') {
                 calcTracesHorizontal.push(calcTraces[i]);
@@ -188,7 +188,7 @@ function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces) {
         for(var j = 0; j < calcTrace.length; j++) {
             var bar = calcTrace[j];
 
-            if(!isNumeric(bar.s)) continue;
+            if(bar.s === BADNUM) continue;
 
             var isOutmostBar = ((bar.b + bar.s) === sieve.get(bar.p, bar.s));
             if(isOutmostBar) bar._outmost = true;
@@ -395,6 +395,8 @@ function setBarCenter(gd, pa, sieve) {
             calcBar[pLetter] = calcBar.p +
                 ((poffsetIsArray) ? poffset[j] : poffset) +
                 ((barwidthIsArray) ? barwidth[j] : barwidth) / 2;
+
+
         }
     }
 }
@@ -502,7 +504,7 @@ function stackBars(gd, sa, sieve) {
         for(j = 0; j < trace.length; j++) {
             bar = trace[j];
 
-            if(!isNumeric(bar.s)) continue;
+            if(bar.s === BADNUM) continue;
 
             // stack current bar and get previous sum
             var barBase = sieve.put(bar.p, bar.b + bar.s),
@@ -533,7 +535,7 @@ function sieveBars(gd, sa, sieve) {
         for(var j = 0; j < trace.length; j++) {
             var bar = trace[j];
 
-            if(isNumeric(bar.s)) sieve.put(bar.p, bar.b + bar.s);
+            if(bar.s !== BADNUM) sieve.put(bar.p, bar.b + bar.s);
         }
     }
 }
@@ -569,7 +571,7 @@ function normalizeBars(gd, sa, sieve) {
         for(var j = 0; j < trace.length; j++) {
             var bar = trace[j];
 
-            if(!isNumeric(bar.s)) continue;
+            if(bar.s === BADNUM) continue;
 
             var scale = Math.abs(sTop / sieve.get(bar.p, bar.s));
             bar.b *= scale;
