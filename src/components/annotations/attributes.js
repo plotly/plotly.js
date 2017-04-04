@@ -49,6 +49,27 @@ module.exports = {
     font: extendFlat({}, fontAttrs, {
         description: 'Sets the annotation text font.'
     }),
+    width: {
+        valType: 'number',
+        min: 0,
+        dflt: 0,
+        role: 'style',
+        description: [
+            'Sets an explicit width for the text box. 0 (default) lets the',
+            'text set the box width. Wider text will be clipped.',
+            'There is no automatic wrapping; use <br> to start a new line.'
+        ].join(' ')
+    },
+    height: {
+        valType: 'number',
+        min: 0,
+        dflt: 0,
+        role: 'style',
+        description: [
+            'Sets an explicit height for the text box. 0 (default) lets the',
+            'text set the box height. Taller text will be clipped.'
+        ].join(' ')
+    },
     opacity: {
         valType: 'number',
         min: 0,
@@ -63,10 +84,21 @@ module.exports = {
         dflt: 'center',
         role: 'style',
         description: [
-            'Sets the vertical alignment of the `text` with',
-            'respect to the set `x` and `y` position.',
-            'Has only an effect if `text` spans more two or more lines',
-            '(i.e. `text` contains one or more <br> HTML tags).'
+            'Sets the horizontal alignment of the `text` within the box.',
+            'Has an effect only if `text` spans more two or more lines',
+            '(i.e. `text` contains one or more <br> HTML tags) or if an',
+            'explicit width is set to override the text width.'
+        ].join(' ')
+    },
+    valign: {
+        valType: 'enumerated',
+        values: ['top', 'middle', 'bottom'],
+        dflt: 'middle',
+        role: 'style',
+        description: [
+            'Sets the vertical alignment of the `text` within the box.',
+            'Has an effect only if an explicit height is set to override',
+            'the text height.'
         ].join(' ')
     },
     bgcolor: {
