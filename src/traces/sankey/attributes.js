@@ -10,6 +10,7 @@
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var plotAttrs = require('../../plots/attributes');
+var shapeAttrs = require('../../components/shapes/attributes');
 
 
 module.exports = {
@@ -52,12 +53,8 @@ module.exports = {
             role: 'info',
             description: 'The shown name of the node.'
         },
-        visible: {
-            valType: 'boolean',
-            dflt: true,
-            role: 'info',
-            description: 'Shows the node when set to `true` (the default). Hides the node for `false`.'
-        },
+        visible: shapeAttrs.visible,
+        color: extendFlat({}, shapeAttrs.fillcolor, {dflt: 'rgb(0,0,0,0.25)'}),
         description: 'The nodes of the Sankey plot.'
     },
 
@@ -68,12 +65,8 @@ module.exports = {
             role: 'info',
             description: 'The shown name of the link.'
         },
-        visible: {
-            valType: 'boolean',
-            dflt: true,
-            role: 'info',
-            description: 'Shows the node when set to `true` (the default). Hides the node for `false`.'
-        },
+        visible: shapeAttrs.visible,
+        color: extendFlat({}, shapeAttrs.fillcolor, {dflt: 'rgba(0,0,0,0.25)'}),
         source: {
             valType: 'number',
             role: 'info',
@@ -90,6 +83,6 @@ module.exports = {
             role: 'info',
             description: 'A numeric value representing the flow volume value.'
         },
-        description: 'The nodes of the Sankey plot.'
+        description: 'The links of the Sankey plot.'
     }
 };

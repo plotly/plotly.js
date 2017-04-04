@@ -67,6 +67,7 @@ function linksDefaults(traceIn, traceOut) {
             coerce('value');
             coerce('source');
             coerce('target');
+            coerce('color');
         }
 
         linkOut._index = i;

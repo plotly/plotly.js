@@ -28,9 +28,7 @@ module.exports = function plot(gd, calcData) {
     };
 
     var linkHover = function(element, d) {
-        d3.select(element)
-            .style('stroke-opacity', 0.5)
-            //.style('stroke', 'magenta');
+        d3.select(element).style('stroke-opacity', 0.66);
         console.log('hover link', d.link);
 
         var hoverCenterX = d3.event.clientX;
@@ -58,9 +56,7 @@ module.exports = function plot(gd, calcData) {
     };
 
     var linkUnhover = function(element, d) {
-        d3.select(element)
-            .style('stroke-opacity', 0.25)
-            //.style('stroke', 'black');
+        d3.select(element).style('stroke-opacity', function(d) {return d.tinyColorAlpha;});
         console.log('unhover link', d.link);
         gd.emit('plotly_unhover', {
             points: [d.link]

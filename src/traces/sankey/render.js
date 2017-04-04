@@ -10,6 +10,7 @@
 
 var c = require('./constants');
 var d3 = require('d3');
+var tinycolor = require('tinycolor2');
 var Color = require('../../components/color');
 var d3sankey = require('./sankey');
 
@@ -122,14 +123,16 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .append('g')
         .classed('sankeyLinks', true)
         .style('transform', c.vertical ? 'matrix(0,1,1,0,0,0)' : 'matrix(1,0,0,1,0,0)')
-        .style('fill', 'none')
-        .call(Color.stroke, 'rgba(0, 0, 0, 0.25)');
+        .style('fill', 'none');
 
     var sankeyLink = sankeyLinks.selectAll('.sankeyPath')
         .data(function(d) {
             return d.sankey.links().map(function(l) {
+                var tc = tinycolor(l.color);
                 return {
                     link: l,
+                    tinyColorHue: Color.tinyRGB(tc),
+                    tinyColorAlpha: tc.getAlpha(),
                     sankey: d.sankey
                 };
             });
@@ -142,6 +145,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     sankeyLink
         .attr('d', linkPath)
+        .style('stroke', function(d) {return d.tinyColorHue;})
+        .style('stroke-opacity', function(d) {return d.tinyColorAlpha;})
         .style('stroke-width', function(d) {return Math.max(1, d.link.dy);});
 
     var sankeyNodes = sankey.selectAll('.sankeyNodes')
