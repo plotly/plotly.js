@@ -118,15 +118,18 @@ function drawOne(gd, index) {
         .call(Color.stroke, options.bordercolor)
         .call(Color.fill, options.bgcolor);
 
+    var isSizeConstrained = options.width || options.height;
+
     var annClipID = 'clip' + fullLayout._uid + '_ann' + index;
     var annTextClip = fullLayout._defs.select('.clips')
         .selectAll('#' + annClipID)
-        .data([0]);
+        .data(isSizeConstrained ? [0] : []);
 
     annTextClip.enter().append('clipPath')
         .classed('annclip', true)
         .attr('id', annClipID)
       .append('rect');
+    annTextClip.exit().remove();
 
     var font = options.font;
 
@@ -326,7 +329,7 @@ function drawOne(gd, index) {
                 x: borderfull + xShift - 1,
                 y: borderfull + yShift
             })
-            .call(Drawing.setClipUrl, annClipID);
+            .call(Drawing.setClipUrl, isSizeConstrained ? annClipID : null);
         }
         else {
             var texty = borderfull + yShift - anntextBB.top,
@@ -335,7 +338,7 @@ function drawOne(gd, index) {
                 x: textx,
                 y: texty
             })
-            .call(Drawing.setClipUrl, annClipID);
+            .call(Drawing.setClipUrl, isSizeConstrained ? annClipID : null);
             annText.selectAll('tspan.line').attr({y: texty, x: textx});
         }
 
