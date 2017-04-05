@@ -258,7 +258,7 @@ plots.previousPromises = function(gd) {
  */
 plots.addLinks = function(gd) {
     if(gd._context.showLink === false) return;
-    
+
     var fullLayout = gd._fullLayout;
 
     var linkContainer = fullLayout._paper
