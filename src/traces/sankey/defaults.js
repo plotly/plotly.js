@@ -10,12 +10,16 @@
 
 var Lib = require('../../lib');
 var attributes = require('./attributes');
+var d3 = require('d3');
+
 
 function nodesDefaults(traceIn, traceOut) {
     var nodesIn = traceIn.nodes || [],
         nodesOut = traceOut.nodes = [];
 
     var nodeIn, nodeOut, i;
+
+    var defaultPalette = d3.scale.category20();
 
     function coerce(attr, dflt) {
         return Lib.coerce(nodeIn, nodeOut, attributes.nodes, attr, dflt);
@@ -33,6 +37,11 @@ function nodesDefaults(traceIn, traceOut) {
 
         if(visible) {
             coerce('label');
+            if(nodeIn.color) {
+                coerce('color');
+            } else {
+                coerce('color', defaultPalette(i));
+            }
         }
 
         nodeOut._index = i;

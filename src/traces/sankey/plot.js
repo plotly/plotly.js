@@ -13,10 +13,10 @@ var Fx = require('../../plots/cartesian/graph_interact');
 var d3 = require('d3');
 var Color = require('../../components/color');
 
-function makeTranslucent(element) {
+function makeTranslucent(element, alpha) {
     d3.select(element)
         .select('path')
-        .style('fill-opacity', 0.67);
+        .style('fill-opacity', alpha);
 }
 
 module.exports = function plot(gd, calcData) {
@@ -44,7 +44,7 @@ module.exports = function plot(gd, calcData) {
         var tooltip = Fx.loneHover({
             x: hoverCenterX,
             y: hoverCenterY,
-            name: d.link.value + '',
+            name: d.link.label + '',
             text: [
                 d.link.label,
                 ['Source:', d.link.source.name].join(' '),
@@ -57,7 +57,7 @@ module.exports = function plot(gd, calcData) {
             outerContainer: fullLayout._paper.node()
         });
 
-        makeTranslucent(tooltip);
+        makeTranslucent(tooltip, 0.67);
 
         Fx.hover(gd, d.link, 'sankey');
 
@@ -95,22 +95,22 @@ module.exports = function plot(gd, calcData) {
         var hoverCenterY = d3.event.clientY;
 
         var tooltip = Fx.loneHover({
-            x: hoverCenterX,
+            x: d.node.x, //hoverCenterX,
             y: hoverCenterY,
             name: d.node.value + '',
             text: [
-                d.node.name,
+                d.node.label,
                 ['Source count:', d.node.sourceLinks.length].join(' '),
                 ['Target count:', d.node.targetLinks.length].join(' ')
             ].join('<br>'),
-            color: 'red',
+            color: d.tinyColorHue,
             idealAlign: 'left'
         }, {
             container: fullLayout._hoverlayer.node(),
             outerContainer: fullLayout._paper.node()
         });
 
-        makeTranslucent(tooltip);
+        makeTranslucent(tooltip, 0.85);
 
         Fx.hover(gd, d.node, 'sankey');
 

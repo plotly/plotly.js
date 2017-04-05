@@ -54,7 +54,7 @@ module.exports = {
             description: 'The shown name of the node.'
         },
         visible: shapeAttrs.visible,
-        color: extendFlat({}, shapeAttrs.fillcolor, {dflt: 'rgb(0,0,0,0.25)'}),
+        color: extendFlat({}, shapeAttrs.fillcolor, {dflt: 'rgb(0,255,0,0.5)'}),
         description: 'The nodes of the Sankey plot.'
     },
 

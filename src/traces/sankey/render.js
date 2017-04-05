@@ -38,7 +38,7 @@ function viewModel(layout, d, i) {
         .size(c.vertical ? [height, width]: [width, height])
         .nodeWidth(c.nodeWidth)
         .nodePadding(c.nodePadding)
-        .nodes(nodes.map(function(d) {return {name: d.label};}))
+        .nodes(nodes)
         .links(links)
         .layout(c.sankeyIterations);
 
@@ -86,8 +86,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
     function linkPath(d) {
         return d.sankey.link()(d.link);
     }
-
-    var colorer = d3.scale.category20();
 
     var sankey = svg.selectAll('.sankey')
         .data(
@@ -159,9 +157,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     var sankeyNode = sankeyNodes.selectAll('.sankeyPath')
         .data(function(d) {
-            return d.sankey.nodes().map(function(l) {
+            return d.sankey.nodes().map(function(n) {
+                var tc = tinycolor(n.color);
                 return {
-                    node: l,
+                    node: n,
+                    tinyColorHue: Color.tinyRGB(tc),
+                    tinyColorAlpha: tc.getAlpha(),
                     sankey: d.sankey,
                     model: d
                 };
@@ -211,12 +212,13 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .append('rect')
         .classed('nodeRect', true)
         .style('shape-rendering', 'crispEdges')
-        .style('fill', function(d) {return colorer(d.sankey.nodes().indexOf(d.node));})
         .style('stroke-width', 0.5)
         .call(Color.stroke, 'rgba(0, 0, 0, 1)')
         .call(attachPointerEvents, callbacks.nodeEvents);
 
     nodeRect // ceil, +/-0.5 and crispEdges is wizardry for consistent border width on all 4 sides
+        .style('fill', function(d) {return d.tinyColorHue;})
+        .style('fill-opacity', function(d) {return d.tinyColorAlpha;})
         .attr(c.vertical ? 'height' : 'width', function(d) {return Math.ceil(d.node.dx + 0.5);})
         .attr(c.vertical ? 'width' : 'height', function(d) {return Math.ceil(d.node.dy - 0.5);});
 
@@ -230,7 +232,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
     nodeLabel
         .attr('x', function(d) {return c.vertical ? d.node.dy / 2 : d.node.dx + c.nodeTextOffset;})
         .attr('y', function(d) {return c.vertical ? d.node.dx / 2 : d.node.dy / 2;})
-        .text(function(d) {return d.node.name;})
+        .text(function(d) {return d.node.label;})
         .attr('alignment-baseline', 'middle')
         .attr('text-anchor', c.vertical ? 'middle' : 'start')
         .style('font-family', 'sans-serif')
