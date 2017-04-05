@@ -95,7 +95,7 @@ module.exports = function plot(gd, calcData) {
         var hoverCenterY = d3.event.clientY;
 
         var tooltip = Fx.loneHover({
-            x: d.node.x, //hoverCenterX,
+            x: hoverCenterX,
             y: hoverCenterY,
             name: d.node.value + '',
             text: [
