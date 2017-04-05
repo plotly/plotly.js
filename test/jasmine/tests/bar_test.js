@@ -1375,7 +1375,7 @@ describe('bar hover', function() {
                 out = _hover(gd, 125, 0.8, 'x');
 
                 expect(out.style).toEqual([1, 'red', 200, 1]);
-                assertPos(out.pos, [201, 301, 168, 168]);
+                assertPos(out.pos, [203, 304, 168, 168]);
             })
             .catch(failTest)
             .then(done);
