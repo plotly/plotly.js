@@ -46,7 +46,8 @@ function viewModel(layout, d, i) {
         key: i,
         translateX: domain.x[0] * width + layout.margin.l,
         translateY: layout.height - domain.y[1] * layout.height + layout.margin.t,
-        dragLength: c.vertical ? width : height,
+        dragParallel: c.vertical ? width : height,
+        dragPerpendicular: c.vertical ? height : width,
         nodes: nodes,
         links: links,
         sankey: sankey
@@ -173,7 +174,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .append('g')
         .classed('sankeyNode', true)
         .call(d3.behavior.drag()
-            .origin(function(d) {return c.vertical ? {x: d.node.y} : d.node;})
+            .origin(function(d) {return c.vertical ? {x: d.node.y, y: d.node.x} : d.node;})
             .on('dragstart', function(d) {
                 this.parentNode.appendChild(this);
                 dragInProgress = true;
@@ -184,10 +185,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
             })
             .on('drag', function(d) {
                 if(c.vertical) {
-                    d.node.y = Math.max(0, Math.min(d.model.dragLength - d.node.dy, d3.event.x));
+                    d.node.y = Math.max(0, Math.min(d.model.dragParallel - d.node.dy, d3.event.x));
+                    d.node.x = Math.max(0, Math.min(d.model.dragPerpendicular - d.node.dx, d3.event.y));
                     d3.select(this).style('transform', 'translate(' + d.node.y + 'px,' + d.node.x + 'px)');
                 } else {
-                    d.node.y = Math.max(0, Math.min(d.model.dragLength - d.node.dy, d3.event.y));
+                    d.node.x = Math.max(0, Math.min(d.model.dragPerpendicular - d.node.dx, d3.event.x));
+                    d.node.y = Math.max(0, Math.min(d.model.dragParallel - d.node.dy, d3.event.y));
                     d3.select(this).style('transform', 'translate(' + d.node.x + 'px,' + d.node.y + 'px)');
                 }
 
