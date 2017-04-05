@@ -257,6 +257,8 @@ plots.previousPromises = function(gd) {
  * Add source links to your graph inside the 'showSources' config argument.
  */
 plots.addLinks = function(gd) {
+    if(gd._context.showLink === false) return;
+    
     var fullLayout = gd._fullLayout;
 
     var linkContainer = fullLayout._paper
