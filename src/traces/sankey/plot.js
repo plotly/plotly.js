@@ -11,6 +11,13 @@
 var render = require('./render');
 var Fx = require('../../plots/cartesian/graph_interact');
 var d3 = require('d3');
+var Color = require('../../components/color');
+
+function makeTranslucent(element) {
+    d3.select(element)
+        .select('path')
+        .style('fill-opacity', 0.67);
+}
 
 module.exports = function plot(gd, calcData) {
 
@@ -28,13 +35,13 @@ module.exports = function plot(gd, calcData) {
     };
 
     var linkHover = function(element, d) {
-        d3.select(element).style('stroke-opacity', 0.66);
+        d3.select(element).style('stroke-opacity', 0.5);
         console.log('hover link', d.link);
 
         var hoverCenterX = d3.event.clientX;
         var hoverCenterY = d3.event.clientY;
 
-        Fx.loneHover({
+        var tooltip = Fx.loneHover({
             x: hoverCenterX,
             y: hoverCenterY,
             name: d.link.value + '',
@@ -43,12 +50,14 @@ module.exports = function plot(gd, calcData) {
                 ['Source:', d.link.source.name].join(' '),
                 ['Target:', d.link.target.name].join(' ')
             ].join('<br>'),
-            color: 'blue',
+            color: Color.addOpacity(d.tinyColorHue, 1),
             idealAlign: 'left'
         }, {
             container: fullLayout._hoverlayer.node(),
             outerContainer: fullLayout._paper.node()
         });
+
+        makeTranslucent(tooltip);
 
         Fx.hover(gd, d.link, 'sankey');
 
@@ -85,7 +94,7 @@ module.exports = function plot(gd, calcData) {
         var hoverCenterX = d3.event.clientX;
         var hoverCenterY = d3.event.clientY;
 
-        Fx.loneHover({
+        var tooltip = Fx.loneHover({
             x: hoverCenterX,
             y: hoverCenterY,
             name: d.node.value + '',
@@ -94,13 +103,14 @@ module.exports = function plot(gd, calcData) {
                 ['Source count:', d.node.sourceLinks.length].join(' '),
                 ['Target count:', d.node.targetLinks.length].join(' ')
             ].join('<br>'),
-            color: 'blue',
+            color: 'red',
             idealAlign: 'left'
         }, {
             container: fullLayout._hoverlayer.node(),
             outerContainer: fullLayout._paper.node()
         });
 
+        makeTranslucent(tooltip);
 
         Fx.hover(gd, d.node, 'sankey');
 
