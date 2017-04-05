@@ -86,7 +86,20 @@ module.exports = function(svg, styledData, layout, callbacks) {
     }
 
     function linkPath(d) {
-        return d.sankey.link()(d.link);
+
+
+        var nodes = d.sankey.nodes();
+        for(var i = 0; i < nodes.length; i++) {
+            nodes[i].y = nodes[i].y - nodes[i].dy / 2;
+        }
+
+        var result = d.sankey.link()(d.link);
+
+        for(var i = 0; i < nodes.length; i++) {
+            nodes[i].y = nodes[i].y + nodes[i].dy / 2;
+        }
+
+        return result;
     }
 
     var sankey = svg.selectAll('.sankey')
@@ -206,10 +219,15 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('shape-rendering', 'crispEdges')
         .classed('sankeyNodes', true);
 
+    function positionSankeyNode(sankeyNode) {
+        sankeyNode
+            .style('transform', c.vertical ?
+                function(d) {return 'translate(' + (Math.floor(d.node.y) - 0.5) + 'px, ' + (Math.floor(d.node.x) + 0.5) + 'px)';} :
+                function(d) {return 'translate(' + (Math.floor(d.node.x) - 0.5) + 'px, ' + (Math.floor(d.node.y - d.node.dy / 2) + 0.5) + 'px)';})
+    }
+
     function updatePositionsOnTick() {
-        sankeyNode.style('transform', function(d) {
-            return 'translate(' + d.node.x + 'px, ' + d.node.y + 'px)';
-        });;
+        sankeyNode.call(positionSankeyNode);
     }
 
     var sankeyNode = sankeyNodes.selectAll('.sankeyPath')
@@ -252,16 +270,11 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
                 d.sankey.relayout();
                 sankeyLink.attr('d', linkPath);
-                }
-            )
+
+            })
             .on('dragend', function() {
                 dragInProgress = false;
             }));
-
-    sankeyNode
-        .style('transform', c.vertical ?
-            function(d) {return 'translate(' + (Math.floor(d.node.y) - 0.5) + 'px, ' + (Math.floor(d.node.x) + 0.5) + 'px)';} :
-            function(d) {return 'translate(' + (Math.floor(d.node.x) - 0.5) + 'px, ' + (Math.floor(d.node.y) + 0.5) + 'px)';});
 
     var nodeRect = sankeyNode.selectAll('.nodeRect')
         .data(repeat);
