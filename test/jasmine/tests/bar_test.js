@@ -10,6 +10,7 @@ var Axes = PlotlyInternal.Axes;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customMatchers = require('../assets/custom_matchers');
+var failTest = require('../assets/fail_test');
 
 describe('Bar.supplyDefaults', function() {
     'use strict';
@@ -1209,7 +1210,10 @@ describe('bar hover', function() {
 
     function _hover(gd, xval, yval, hovermode) {
         var pointData = getPointData(gd);
-        var pt = Bar.hoverPoints(pointData, xval, yval, hovermode)[0];
+        var pts = Bar.hoverPoints(pointData, xval, yval, hovermode);
+        if(!pts) return false;
+
+        var pt = pts[0];
 
         return {
             style: [pt.index, pt.color, pt.xLabelVal, pt.yLabelVal],
@@ -1296,7 +1300,7 @@ describe('bar hover', function() {
             gd = createGraphDiv();
         });
 
-        it('should return correct \'closest\' hover data (single bar, trace width)', function(done) {
+        it('should return correct hover data (single bar, trace width)', function(done) {
             Plotly.plot(gd, [{
                 type: 'bar',
                 x: [1],
@@ -1307,15 +1311,39 @@ describe('bar hover', function() {
                 xaxis: { range: [-200, 200] }
             })
             .then(function() {
-                var out = _hover(gd, 0, 0, 'closest');
+                // all these x, y, hovermode should give the same (the only!) hover label
+                [
+                    [0, 0, 'closest'],
+                    [-3.9, 1, 'closest'],
+                    [5.9, 1.9, 'closest'],
+                    [-3.9, -10, 'x'],
+                    [5.9, 19, 'x']
+                ].forEach(function(hoverSpec) {
+                    var out = _hover(gd, hoverSpec[0], hoverSpec[1], hoverSpec[2]);
 
-                expect(out.style).toEqual([0, 'red', 1, 2]);
-                assertPos(out.pos, [264, 278, 14, 14]);
+                    expect(out.style).toEqual([0, 'red', 1, 2], hoverSpec);
+                    assertPos(out.pos, [264, 278, 14, 14], hoverSpec);
+                });
+
+                // then a few that are off the edge so yield nothing
+                [
+                    [1, -0.1, 'closest'],
+                    [1, 2.1, 'closest'],
+                    [-4.1, 1, 'closest'],
+                    [6.1, 1, 'closest'],
+                    [-4.1, 1, 'x'],
+                    [6.1, 1, 'x']
+                ].forEach(function(hoverSpec) {
+                    var out = _hover(gd, hoverSpec[0], hoverSpec[1], hoverSpec[2]);
+
+                    expect(out).toBe(false, hoverSpec);
+                });
             })
+            .catch(failTest)
             .then(done);
         });
 
-        it('should return correct \'closest\' hover data (two bars, array width)', function(done) {
+        it('should return correct hover data (two bars, array width)', function(done) {
             Plotly.plot(gd, [{
                 type: 'bar',
                 x: [1, 200],
@@ -1338,13 +1366,18 @@ describe('bar hover', function() {
 
                 expect(out.style).toEqual([0, 'red', 1, 2]);
                 assertPos(out.pos, [99, 106, 13, 13]);
-            })
-            .then(function() {
-                var out = _hover(gd, 164, 0.8, 'closest');
+
+                out = _hover(gd, 164, 0.8, 'closest');
 
                 expect(out.style).toEqual([1, 'red', 200, 1]);
                 assertPos(out.pos, [222, 235, 168, 168]);
+
+                out = _hover(gd, 125, 0.8, 'x');
+
+                expect(out.style).toEqual([1, 'red', 200, 1]);
+                assertPos(out.pos, [201, 301, 168, 168]);
             })
+            .catch(failTest)
             .then(done);
         });
 

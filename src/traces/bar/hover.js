@@ -15,44 +15,56 @@ var Color = require('../../components/color');
 
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
-    var cd = pointData.cd,
-        trace = cd[0].trace,
-        t = cd[0].t,
-        xa = pointData.xa,
-        ya = pointData.ya;
+    var cd = pointData.cd;
+    var trace = cd[0].trace;
+    var t = cd[0].t;
+    var xa = pointData.xa;
+    var ya = pointData.ya;
 
-    var barPos;
-    if(hovermode !== 'closest') barPos = function(di) { return di.p; };
-    else if(trace.orientation === 'h') barPos = function(di) { return di.y; };
-    else barPos = function(di) { return di.x; };
+    var posVal, thisBarMinPos, thisBarMaxPos, minPos, maxPos, dx, dy;
 
-    var barDelta = (hovermode === 'closest') ?
-        function(i) { return (t.barwidth[i] || t.barwidth) / 2; } :
-        function() { return t.bargroupwidth / 2; };
+    var positionFn = function(di) {
+        return Fx.inbox(minPos(di) - posVal, maxPos(di) - posVal);
+    };
 
-    var dx, dy;
     if(trace.orientation === 'h') {
+        posVal = yval;
+        thisBarMinPos = function(di) { return di.y - di.w / 2; };
+        thisBarMaxPos = function(di) { return di.y + di.w / 2; };
         dx = function(di) {
             // add a gradient so hovering near the end of a
             // bar makes it a little closer match
             return Fx.inbox(di.b - xval, di.x - xval) + (di.x - xval) / (di.x - di.b);
         };
-        dy = function(di, i) {
-            var centerPos = barPos(di) - yval;
-            var delta = barDelta(i);
-            return Fx.inbox(centerPos - delta, centerPos + delta);
-        };
+        dy = positionFn;
     }
     else {
+        posVal = xval;
+        thisBarMinPos = function(di) { return di.x - di.w / 2; };
+        thisBarMaxPos = function(di) { return di.x + di.w / 2; };
         dy = function(di) {
             return Fx.inbox(di.b - yval, di.y - yval) + (di.y - yval) / (di.y - di.b);
         };
-        dx = function(di, i) {
-            var centerPos = barPos(di) - xval;
-            var delta = barDelta(i);
-            return Fx.inbox(centerPos - delta, centerPos + delta);
-        };
+        dx = positionFn;
     }
+
+    minPos = (hovermode === 'closest') ?
+        thisBarMinPos :
+        function(di) {
+            /*
+             * In compare mode, accept a bar if you're on it *or* its group.
+             * Nearly always it's the group that matters, but in case the bar
+             * was explicitly set wider than its group we'd better accept the
+             * whole bar.
+             */
+            return Math.min(thisBarMinPos(di), di.p - t.bargroupwidth / 2);
+        };
+
+    maxPos = (hovermode === 'closest') ?
+        thisBarMaxPos :
+        function(di) {
+            return Math.max(thisBarMaxPos(di), di.p + t.bargroupwidth / 2);
+        };
 
     var distfn = Fx.getDistanceFunction(hovermode, dx, dy);
     Fx.getClosest(cd, distfn, pointData);
@@ -74,16 +86,16 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         pointData.x0 = pointData.x1 = xa.c2p(di.x, true);
         pointData.xLabelVal = size;
 
-        pointData.y0 = ya.c2p(barPos(di) - barDelta(index), true);
-        pointData.y1 = ya.c2p(barPos(di) + barDelta(index), true);
+        pointData.y0 = ya.c2p(minPos(di), true);
+        pointData.y1 = ya.c2p(maxPos(di), true);
         pointData.yLabelVal = di.p;
     }
     else {
         pointData.y0 = pointData.y1 = ya.c2p(di.y, true);
         pointData.yLabelVal = size;
 
-        pointData.x0 = xa.c2p(barPos(di) - barDelta(index), true);
-        pointData.x1 = xa.c2p(barPos(di) + barDelta(index), true);
+        pointData.x0 = xa.c2p(minPos(di), true);
+        pointData.x1 = xa.c2p(maxPos(di), true);
         pointData.xLabelVal = di.p;
     }
 
