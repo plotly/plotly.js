@@ -40,8 +40,12 @@ function viewModel(layout, d, i) {
         .nodeWidth(c.nodeWidth)
         .nodePadding(c.nodePadding)
         .nodes(nodes)
-        .links(links)
+        .links(links);
+    sankey
         .layout(c.sankeyIterations);
+    for(var i = 0; i < nodes.length; i++) {
+        nodes[i].y = nodes[i].y + nodes[i].dy / 2;
+    }
 
     return {
         key: i,
@@ -92,12 +96,11 @@ module.exports = function(svg, styledData, layout, callbacks) {
         for(var i = 0; i < nodes.length; i++) {
             nodes[i].y = nodes[i].y - nodes[i].dy / 2;
         }
-
         var result = d.sankey.link()(d.link);
-
         for(var i = 0; i < nodes.length; i++) {
             nodes[i].y = nodes[i].y + nodes[i].dy / 2;
         }
+
 
         return result;
     }
@@ -140,7 +143,11 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     var sankeyLink = sankeyLinks.selectAll('.sankeyPath')
         .data(function(d) {
-            return d.sankey.links().map(function(l) {
+            var nodes = d.sankey.nodes();
+            /*for(var i = 0; i < nodes.length; i++) {
+                nodes[i].y = nodes[i].y + nodes[i].dy / 2;
+            }
+            */var result = d.sankey.links().map(function(l) {
                 var tc = tinycolor(l.color);
                 return {
                     link: l,
@@ -149,6 +156,10 @@ module.exports = function(svg, styledData, layout, callbacks) {
                     sankey: d.sankey
                 };
             });
+            /*for(var i = 0; i < nodes.length; i++) {
+                nodes[i].y = nodes[i].y - nodes[i].dy / 2;
+            }
+            */return result;
         });
 
     sankeyLink.enter()
@@ -199,8 +210,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
                         d.x = d.lastDraggedX;
                         d.y = d.lastDraggedY;
                     } else {
-                        d.y = Math.min(y(1) - d.r, Math.max(y(0) + d.r, d.y)); // constrain to extent
-                        d.vx = (med - d.x) / Math.max(1, (d.r * d.r / 1000)); // constrain to 1D
+                        //d.y = Math.min(y(1) - d.r, Math.max(y(0) + d.r, d.y)); // constrain to extent
+                        //d.vx = (med - d.x) / Math.max(1, (d.r * d.r / 1000)); // constrain to 1D
                     }
                 }
             }
@@ -208,7 +219,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
             var forceLayout = d3Force.forceSimulation(things)
                 .alphaDecay(0)
                 //.velocityDecay(0.3)
-                //.force('constrain', constrain)
+                .force('constrain', constrain)
                 .force('collide', d3Force.forceCollide()
                     .radius(function(d) {return d.dy / 2 + c.nodePadding / 2;})
                     .strength(0.3)
@@ -264,10 +275,9 @@ module.exports = function(svg, styledData, layout, callbacks) {
                     d3.select(this).style('transform', 'translate(' + d.node.y + 'px,' + d.node.x + 'px)');
                 } else {
                     d.node.x = Math.max(0, Math.min(d.model.dragPerpendicular - d.node.dx, d3.event.x));
-                    d.node.y = Math.max(0, Math.min(d.model.dragParallel - d.node.dy, d3.event.y));
+                    d.node.y = Math.max(d.node.dy / 2, Math.min(d.model.dragParallel - d.node.dy / 2, d3.event.y));
                     d3.select(this).style('transform', 'translate(' + d.node.x + 'px,' + d.node.y + 'px)');
                 }
-
                 d.sankey.relayout();
                 sankeyLink.attr('d', linkPath);
 
