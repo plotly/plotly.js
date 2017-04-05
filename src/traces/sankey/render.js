@@ -13,6 +13,7 @@ var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 var Color = require('../../components/color');
 var d3sankey = require('./sankey');
+var d3Force = require('d3-force');
 
 
 function keyFun(d) {return d.key;}
@@ -153,8 +154,63 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     sankeyNodes.enter()
         .append('g')
+        .each(function(d) {
+
+            var things = d.nodes;
+
+            var width = 800,
+                height = 500;
+
+            var margin = {
+                l: 20,
+                t: 20,
+                r: 20,
+                b: 20
+            };
+
+            var thingWidth = 20;
+            var rMin = 1;
+            var rMax = 100;
+            var msStopSimulation = 10000;
+
+            var x = d3.scale.linear().range([margin.l, width - margin.r]);
+            var y = d3.scale.linear().range([margin.b, height - margin.t]);
+            var r = d3.scale.linear().range([rMin, rMax]);
+            var med = x(0.5);
+
+            function constrain() {
+                for(var i = 0; i < things.length; i++) {
+                    var d = things[i];
+                    if(false /*d === currentDragged*/) { // constrain to dragging
+                        d.vx = 0;
+                        d.x = d.lastDraggedX;
+                        d.y = d.lastDraggedY;
+                    } else {
+                        d.y = Math.min(y(1) - d.r, Math.max(y(0) + d.r, d.y)); // constrain to extent
+                        d.vx = (med - d.x) / Math.max(1, (d.r * d.r / 1000)); // constrain to 1D
+                    }
+                }
+            }
+
+            var forceLayout = d3Force.forceSimulation(things)
+                .alphaDecay(0)
+                //.velocityDecay(0.3)
+                //.force('constrain', constrain)
+                .force('collide', d3Force.forceCollide()
+                    .radius(function(d) {return d.dy / 2 + c.nodePadding / 2;})
+                    .strength(0.3)
+                    .iterations(10))
+                .on('tick', updatePositionsOnTick);
+
+        })
         .style('shape-rendering', 'crispEdges')
         .classed('sankeyNodes', true);
+
+    function updatePositionsOnTick() {
+        sankeyNode.style('transform', function(d) {
+            return 'translate(' + d.node.x + 'px, ' + d.node.y + 'px)';
+        });;
+    }
 
     var sankeyNode = sankeyNodes.selectAll('.sankeyPath')
         .data(function(d) {
