@@ -175,7 +175,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .call(d3.behavior.drag()
             .origin(function(d) {return c.vertical ? {x: d.node.y} : d.node;})
             .on('dragstart', function(d) {
-                d.node.dragStartLocation = c.vertical ? d3.event.x : d3.event.y;
                 this.parentNode.appendChild(this);
                 dragInProgress = true;
                 if(hovered) {
