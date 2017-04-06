@@ -83,7 +83,6 @@ function constrainDraggedItem(d) {
 module.exports = function(svg, styledData, layout, callbacks) {
 
     var dragInProgress = false;
-    var simulationTimeout = null;
     var hovered = false;
 
     function attachPointerEvents(selection, eventSet) {
@@ -184,29 +183,24 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .data(function(d) {
 
             var nodes = d.nodes;
-            var y = d3.scale.linear().range([0, c.vertical ? d.width: d.height]);
+            var s = c.vertical ? d.width: d.height;
 
             function constrain() {
                 for(var i = 0; i < nodes.length; i++) {
                     var d = nodes[i];
-                    if(d === dragInProgress) { // constrain to dragging
+                    if(d === dragInProgress) { // constrain node position to the dragging pointer
                         d.x = d.lastDraggedX;
                         d.y = d.lastDraggedY;
                     } else {
-                        d.vy = Math.min(y(1) - d.dy / 2, Math.max(y(0) + d.dy / 2, d.y)) - d.y; // constrain to extent
-                        d.vx = (d.originalX - Math.round(d.x)) / Math.max(1, ((d.dy / 2)* (d.dy / 2) / 10000)); // constrain to 1D
+                        d.vy = Math.min(s - d.dy / 2, Math.max(d.dy / 2, d.y)) - d.y; // constrain to extent
+                        d.vx = d.originalX - Math.round(d.x);
                     }
                 }
             }
 
             var forceLayout = d3Force.forceSimulation(nodes)
-                .alphaDecay(0)
-                //.velocityDecay(0.3)
                 .force('constrain', constrain)
-                .force('collide', d3Force.forceCollide()
-                    .radius(function(d) {return d.dy / 2 + c.nodePadding / 2 - 1;})
-                    .strength(0.3)
-                    .iterations(10))
+                .force('collide', d3Force.forceCollide().radius(function(d) {return d.dy / 2 + c.nodePadding / 2;}))
                 .on('tick', updatePositionsOnTick);
 
             d.forceLayout = forceLayout;
@@ -262,8 +256,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                     callbacks.nodeEvents.unhover.apply(0, hovered);
                     hovered = false;
                 }
-                window.clearTimeout(simulationTimeout);
-                d.forceLayout.restart();
+                d.forceLayout.alphaDecay(0).alpha(1).restart();
             })
             .on('drag', function(d) {
                 d.node.x = c.vertical ? d3.event.y : d3.event.x;
@@ -273,9 +266,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
             })
             .on('dragend', function(d) {
                 dragInProgress = false;
-                simulationTimeout = window.setTimeout(function() {
-                    d.forceLayout.stop();
-                }, c.msStopSimulation)
+                d.forceLayout.alphaDecay(c.alphaDecay);
             }));
 
     var nodeRect = sankeyNode.selectAll('.nodeRect')

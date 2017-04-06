@@ -15,5 +15,5 @@ module.exports = {
     nodePadding: 15,
     sankeyIterations: 50,
     vertical: false,
-    msStopSimulation: 6000
+    alphaDecay: 0.0228 // standard alphaDecay of d3.forceLayout
 };
