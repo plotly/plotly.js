@@ -57,6 +57,8 @@ function viewModel(layout, d, i) {
     toForceFormat(nodes);
     return {
         key: i,
+        width: width,
+        height: height,
         translateX: domain.x[0] * width + layout.margin.l,
         translateY: layout.height - domain.y[1] * layout.height + layout.margin.t,
         dragParallel: c.vertical ? width : height,
@@ -180,34 +182,24 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
             var things = d.nodes;
 
-            var width = 800,
-                height = 500;
+            var width = d.width,
+                height = d.height;
 
-            var margin = {
-                l: 20,
-                t: 20,
-                r: 20,
-                b: 20
-            };
-
-            var rMin = 1;
-            var rMax = 100;
             var msStopSimulation = 10000;
 
-            var x = d3.scale.linear().range([margin.l, width - margin.r]);
-            var y = d3.scale.linear().range([margin.b, height - margin.t]);
-            var r = d3.scale.linear().range([rMin, rMax]);
+            var x = d3.scale.linear().range([0, width]);
+            var y = d3.scale.linear().range([0, height]);
             var med = x(0.5);
 
             function constrain() {
                 for(var i = 0; i < things.length; i++) {
                     var d = things[i];
                     if(d === dragInProgress) { // constrain to dragging
-                        d.vx = 0;
+                        //d.vx = 0;
                         d.x = d.lastDraggedX;
                         d.y = d.lastDraggedY;
                     } else {
-                        //d.y = Math.min(y(1) - d.r, Math.max(y(0) + d.r, d.y)); // constrain to extent
+                        d.vy = Math.min(y(1) - d.dy / 2, Math.max(y(0) + d.dy / 2, d.y)) - d.y; // constrain to extent
                         //d.vx = (med - d.x) / Math.max(1, (d.r * d.r / 1000)); // constrain to 1D
                     }
                 }
@@ -271,7 +263,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 var x = c.vertical ? d3.event.y : d3.event.x;
                 var y = c.vertical ? d3.event.x : d3.event.y;
                 d.node.x = Math.max(0, Math.min(d.model.dragPerpendicular - d.node.dx, x));
-                d.node.y = Math.max(d.node.dy / 2, Math.min(d.model.dragParallel - d.node.dy / 2, y));
+                d.node.y = y // Math.max(d.node.dy / 2, Math.min(d.model.dragParallel - d.node.dy / 2, y));
                 constrainDraggedItem(d.node);
                 d.sankey.relayout();
             })
