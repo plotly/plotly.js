@@ -72,9 +72,14 @@ function drawOne(gd, index) {
     var optionsIn = (layout.annotations || [])[index],
         options = fullLayout.annotations[index];
 
+    var annClipID = 'clip' + fullLayout._uid + '_ann' + index;
+
     // this annotation is gone - quit now after deleting it
     // TODO: use d3 idioms instead of deleting and redrawing every time
-    if(!optionsIn || options.visible === false) return;
+    if(!optionsIn || options.visible === false) {
+        d3.selectAll('#' + annClipID).remove();
+        return;
+    }
 
     var xa = Axes.getFromId(gd, options.xref),
         ya = Axes.getFromId(gd, options.yref),
@@ -120,7 +125,6 @@ function drawOne(gd, index) {
 
     var isSizeConstrained = options.width || options.height;
 
-    var annClipID = 'clip' + fullLayout._uid + '_ann' + index;
     var annTextClip = fullLayout._defs.select('.clips')
         .selectAll('#' + annClipID)
         .data(isSizeConstrained ? [0] : []);
