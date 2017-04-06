@@ -83,6 +83,7 @@ function constrainDraggedItem(d) {
 module.exports = function(svg, styledData, layout, callbacks) {
 
     var dragInProgress = false;
+    var simulationTimeout = null;
     var hovered = false;
 
     function attachPointerEvents(selection, eventSet) {
@@ -180,11 +181,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('stroke-width', function(d) {return Math.max(1, d.link.dy);});
 
     var sankeyNodes = sankey.selectAll('.sankeyNodes')
-        .data(repeat, keyFun);
-
-    sankeyNodes.enter()
-        .append('g')
-        .each(function(d) {
+        .data(function(d) {
 
             var nodes = d.nodes;
             var msStopSimulation = 10000;
@@ -213,7 +210,15 @@ module.exports = function(svg, styledData, layout, callbacks) {
                     .strength(0.3)
                     .iterations(10))
                 .on('tick', updatePositionsOnTick);
-        })
+
+            d.forceLayout = forceLayout;
+
+            return [d];
+
+        }, keyFun);
+
+    sankeyNodes.enter()
+        .append('g')
         .style('shape-rendering', 'crispEdges')
         .classed('sankeyNodes', true);
 
@@ -240,6 +245,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                     tinyColorHue: Color.tinyRGB(tc),
                     tinyColorAlpha: tc.getAlpha(),
                     sankey: d.sankey,
+                    forceLayout: d.forceLayout,
                     model: d
                 };
             });
@@ -258,17 +264,20 @@ module.exports = function(svg, styledData, layout, callbacks) {
                     callbacks.nodeEvents.unhover.apply(0, hovered);
                     hovered = false;
                 }
+                window.clearTimeout(simulationTimeout);
+                d.forceLayout.restart();
             })
             .on('drag', function(d) {
-                var x = c.vertical ? d3.event.y : d3.event.x;
-                var y = c.vertical ? d3.event.x : d3.event.y;
-                d.node.x = Math.max(0, Math.min(d.model.dragPerpendicular - d.node.dx, x));
-                d.node.y = y // Math.max(d.node.dy / 2, Math.min(d.model.dragParallel - d.node.dy / 2, y));
+                d.node.x = c.vertical ? d3.event.y : d3.event.x;
+                d.node.y = c.vertical ? d3.event.x : d3.event.y;
                 constrainDraggedItem(d.node);
                 d.sankey.relayout();
             })
-            .on('dragend', function() {
+            .on('dragend', function(d) {
                 dragInProgress = false;
+                simulationTimeout = window.setTimeout(function() {
+                    d.forceLayout.stop();
+                }, c.msStopSimulation)
             }));
 
     var nodeRect = sankeyNode.selectAll('.nodeRect')

@@ -14,5 +14,6 @@ module.exports = {
     nodeWidth: 20,
     nodePadding: 15,
     sankeyIterations: 50,
-    vertical: false
+    vertical: false,
+    msStopSimulation: 6000
 };
