@@ -184,8 +184,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .data(function(d) {
 
             var nodes = d.nodes;
-            var msStopSimulation = 10000;
-            var x = d3.scale.linear().range([0, c.vertical ? d.height: d.width]);
             var y = d3.scale.linear().range([0, c.vertical ? d.width: d.height]);
 
             function constrain() {
@@ -255,7 +253,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .append('g')
         .classed('sankeyNode', true)
         .call(d3.behavior.drag()
-            .origin(function(d) {return c.vertical ? {x: d.node.y, y: d.node.x} : d.node;})
+            .origin(function(d) {return c.vertical ? {x: d.node['y'], y: d.node['x']} : d.node;})
             .on('dragstart', function(d) {
                 this.parentNode.appendChild(this);
                 dragInProgress = d.node;
