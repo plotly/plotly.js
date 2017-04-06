@@ -67,6 +67,11 @@ function viewModel(layout, d, i) {
     };
 }
 
+function constrainDraggedItem(d) {
+    d.lastDraggedX = d.x
+    d.lastDraggedY = d.y
+}
+
 module.exports = function(svg, styledData, layout, callbacks) {
 
     var dragInProgress = false;
@@ -99,7 +104,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     function linkPath(d) {
 
-        var i;
         var nodes = d.sankey.nodes();
         toSankeyFormat(nodes);
         var result = d.sankey.link()(d.link);
@@ -186,7 +190,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 b: 20
             };
 
-            var thingWidth = 20;
             var rMin = 1;
             var rMax = 100;
             var msStopSimulation = 10000;
@@ -199,7 +202,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
             function constrain() {
                 for(var i = 0; i < things.length; i++) {
                     var d = things[i];
-                    if(false /*d === currentDragged*/) { // constrain to dragging
+                    if(d === dragInProgress) { // constrain to dragging
                         d.vx = 0;
                         d.x = d.lastDraggedX;
                         d.y = d.lastDraggedY;
@@ -257,7 +260,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
             .origin(function(d) {return c.vertical ? {x: d.node.y, y: d.node.x} : d.node;})
             .on('dragstart', function(d) {
                 this.parentNode.appendChild(this);
-                dragInProgress = true;
+                dragInProgress = d.node;
+                constrainDraggedItem(d.node);
                 if(hovered) {
                     callbacks.nodeEvents.unhover.apply(0, hovered);
                     hovered = false;
@@ -268,6 +272,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 var y = c.vertical ? d3.event.x : d3.event.y;
                 d.node.x = Math.max(0, Math.min(d.model.dragPerpendicular - d.node.dx, x));
                 d.node.y = Math.max(d.node.dy / 2, Math.min(d.model.dragParallel - d.node.dy / 2, y));
+                constrainDraggedItem(d.node);
                 d.sankey.relayout();
             })
             .on('dragend', function() {
