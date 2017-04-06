@@ -51,22 +51,22 @@ module.exports = {
     }),
     width: {
         valType: 'number',
-        min: 0,
-        dflt: 0,
+        min: 1,
+        dflt: null,
         role: 'style',
         description: [
-            'Sets an explicit width for the text box. 0 (default) lets the',
+            'Sets an explicit width for the text box. null (default) lets the',
             'text set the box width. Wider text will be clipped.',
             'There is no automatic wrapping; use <br> to start a new line.'
         ].join(' ')
     },
     height: {
         valType: 'number',
-        min: 0,
-        dflt: 0,
+        min: 1,
+        dflt: null,
         role: 'style',
         description: [
-            'Sets an explicit height for the text box. 0 (default) lets the',
+            'Sets an explicit height for the text box. null (default) lets the',
             'text set the box height. Taller text will be clipped.'
         ].join(' ')
     },
