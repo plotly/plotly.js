@@ -72,7 +72,9 @@ function plotOne(gd, plotinfo, cd) {
 
     // Extract the contour levels:
     makeCrossings(pathinfo);
-    findAllPaths(pathinfo);
+    var atol = (a[a.length - 1] - a[0]) * 1e-8;
+    var btol = (b[b.length - 1] - b[0]) * 1e-8;
+    findAllPaths(pathinfo, atol, btol);
 
     // Constraints might need to be draw inverted, which is not something contours
     // handle by default since they're assumed fully opaque so that they can be

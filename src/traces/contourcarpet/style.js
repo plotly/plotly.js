@@ -35,8 +35,6 @@ module.exports = function style(gd) {
             cs = 0;
         }
 
-        var colorMap = makeColorMap(trace);
-
         c.selectAll('g.contourlevel').each(function() {
             d3.select(this).selectAll('path')
                 .call(Drawing.lineGroupStyle,
@@ -46,7 +44,9 @@ module.exports = function style(gd) {
                     line.dash);
         });
 
-        if(trace.contours.type === 'levels') {
+        if(trace.contours.type === 'levels' && trace.contours.coloring !== 'none') {
+            var colorMap = makeColorMap(trace);
+
             c.selectAll('g.contourbg path')
                 .style('fill', colorMap(start - cs / 2));
 

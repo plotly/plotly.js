@@ -12,7 +12,7 @@ var ContourCarpet = {};
 
 ContourCarpet.attributes = require('./attributes');
 ContourCarpet.supplyDefaults = require('./defaults');
-// ContourCarpet.colorbar = require('../scatter/colorbar');
+ContourCarpet.colorbar = require('../contour/colorbar');
 ContourCarpet.calc = require('./calc');
 ContourCarpet.plot = require('./plot');
 ContourCarpet.style = require('./style');

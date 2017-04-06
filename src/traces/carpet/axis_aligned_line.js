@@ -27,7 +27,7 @@ module.exports = function(carpet, carpetcd, a, b) {
     var iso = axis === 'a' ? b : a;
     var n = axis === 'a' ? carpetcd.a.length : carpetcd.b.length;
     var m = axis === 'a' ? carpetcd.b.length : carpetcd.a.length;
-    var isoIdx = axis === 'a' ? carpet.b2j(iso) : carpet.a2i(iso);
+    var isoIdx = Math.floor(axis === 'a' ? carpet.b2j(iso) : carpet.a2i(iso));
 
     var xy = axis === 'a' ? function(value) {
         return carpet.evalxy([], value, isoIdx);

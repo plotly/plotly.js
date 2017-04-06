@@ -76,6 +76,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
                 // things like restyle that can call supplyDefaults without calc
                 // after the initial draw, we can just reuse the previous calculation
             contourSize = coerce('contours.size');
+            coerce('contours.coloring');
 
             traceOut.showlegend = false;
         }

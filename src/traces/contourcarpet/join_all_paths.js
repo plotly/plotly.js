@@ -11,25 +11,28 @@
 var Drawing = require('../../components/drawing');
 var axisAlignedLine = require('../carpet/axis_aligned_line');
 var Lib = require('../../lib');
-var map1dArray = require('../carpet/map_1d_array');
-var makepath = require('../carpet/makepath');
+// var map1dArray = require('../carpet/map_1d_array');
+// var makepath = require('../carpet/makepath');
 
 module.exports = function joinAllPaths(trace, pi, perimeter, ab2p, carpet, carpetcd, xa, ya) {
     var i;
     var fullpath = '';
 
-    if(!pi.edgepaths.length) { // ||
+    /*
+     * Nominating for deletion. I believe I've handled this in convert_to_constraints
+     */
+    /* if(!pi.edgepaths.length) { // ||
         var needsOutline = false;
 
         if(trace.contours.type === 'levels') {
             // If the lower-left point is in bounds, then it's the case that
             // the whole thing needs at least an outline:
             needsOutline = pi.z[0][0] < pi.level;
-        } /* else {
+        } else {
             // TODO: TODO!
             switch(trace.contours.operation) {
             }
-        }*/
+        }
 
         if(needsOutline) {
             var seg, xp, yp;
@@ -42,14 +45,14 @@ module.exports = function joinAllPaths(trace, pi, perimeter, ab2p, carpet, carpe
             }
             fullpath = 'M' + segs.join('L') + 'Z';
         }
-    }
+    }*/
 
     var startsleft = pi.edgepaths.map(function(v, i) { return i; });
     var newloop = true;
     var endpt, newendpt, cnt, nexti, possiblei, addpath;
 
-    var atol = Math.abs(perimeter[0][0] - perimeter[2][0]) * 1e-8;
-    var btol = Math.abs(perimeter[0][1] - perimeter[2][1]) * 1e-8;
+    var atol = Math.abs(perimeter[0][0] - perimeter[2][0]) * 1e-4;
+    var btol = Math.abs(perimeter[0][1] - perimeter[2][1]) * 1e-4;
 
     function istop(pt) { return Math.abs(pt[1] - perimeter[0][1]) < btol; }
     function isbottom(pt) { return Math.abs(pt[1] - perimeter[2][1]) < btol; }
@@ -75,6 +78,7 @@ module.exports = function joinAllPaths(trace, pi, perimeter, ab2p, carpet, carpe
                 path += [xa.c2p(pt[0]), ya.c2p(pt[1])] + ' ';
             }
         }
+
         return path;
     }
 
@@ -101,9 +105,9 @@ module.exports = function joinAllPaths(trace, pi, perimeter, ab2p, carpet, carpe
             }
 
             if(istop(endpt) && !isright(endpt)) {
-                newendpt = perimeter[1]; // right top
+                newendpt = perimeter[1]; // left top ---> right top
             } else if(isleft(endpt)) {
-                newendpt = perimeter[0]; // left top
+                newendpt = perimeter[0]; // left bottom ---> left top
             } else if(isbottom(endpt)) {
                 newendpt = perimeter[3]; // right bottom
             } else if(isright(endpt)) {
