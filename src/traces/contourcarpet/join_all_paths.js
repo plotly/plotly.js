@@ -18,35 +18,6 @@ module.exports = function joinAllPaths(trace, pi, perimeter, ab2p, carpet, carpe
     var i;
     var fullpath = '';
 
-    /*
-     * Nominating for deletion. I believe I've handled this in convert_to_constraints
-     */
-    /* if(!pi.edgepaths.length) { // ||
-        var needsOutline = false;
-
-        if(trace.contours.type === 'levels') {
-            // If the lower-left point is in bounds, then it's the case that
-            // the whole thing needs at least an outline:
-            needsOutline = pi.z[0][0] < pi.level;
-        } else {
-            // TODO: TODO!
-            switch(trace.contours.operation) {
-            }
-        }
-
-        if(needsOutline) {
-            var seg, xp, yp;
-            var segs = [];
-            for(i = 0; i < carpetcd.clipsegments.length; i++) {
-                seg = carpetcd.clipsegments[i];
-                xp = map1dArray([], seg.x, xa.c2p);
-                yp = map1dArray([], seg.y, ya.c2p);
-                segs.push(makepath(xp, yp, seg.bicubic));
-            }
-            fullpath = 'M' + segs.join('L') + 'Z';
-        }
-    }*/
-
     var startsleft = pi.edgepaths.map(function(v, i) { return i; });
     var newloop = true;
     var endpt, newendpt, cnt, nexti, possiblei, addpath;
