@@ -186,19 +186,14 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .append('g')
         .each(function(d) {
 
-            var things = d.nodes;
-
-            var width = d.width,
-                height = d.height;
-
+            var nodes = d.nodes;
             var msStopSimulation = 10000;
-
-            var x = d3.scale.linear().range([0, width]);
-            var y = d3.scale.linear().range([0, height]);
+            var x = d3.scale.linear().range([0, c.vertical ? d.height: d.width]);
+            var y = d3.scale.linear().range([0, c.vertical ? d.width: d.height]);
 
             function constrain() {
-                for(var i = 0; i < things.length; i++) {
-                    var d = things[i];
+                for(var i = 0; i < nodes.length; i++) {
+                    var d = nodes[i];
                     if(d === dragInProgress) { // constrain to dragging
                         d.x = d.lastDraggedX;
                         d.y = d.lastDraggedY;
@@ -209,7 +204,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 }
             }
 
-            var forceLayout = d3Force.forceSimulation(things)
+            var forceLayout = d3Force.forceSimulation(nodes)
                 .alphaDecay(0)
                 //.velocityDecay(0.3)
                 .force('constrain', constrain)
@@ -218,7 +213,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
                     .strength(0.3)
                     .iterations(10))
                 .on('tick', updatePositionsOnTick);
-
         })
         .style('shape-rendering', 'crispEdges')
         .classed('sankeyNodes', true);
