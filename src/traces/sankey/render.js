@@ -43,10 +43,9 @@ function viewModel(layout, d, i) {
         .links(links);
     sankey
         .layout(c.sankeyIterations);
-    for(var i = 0; i < nodes.length; i++) {
+    for (var i = 0; i < nodes.length; i++) {
         nodes[i].y = nodes[i].y + nodes[i].dy / 2;
     }
-
     return {
         key: i,
         translateX: domain.x[0] * width + layout.margin.l,
@@ -102,6 +101,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         }
 
 
+
         return result;
     }
 
@@ -143,11 +143,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     var sankeyLink = sankeyLinks.selectAll('.sankeyPath')
         .data(function(d) {
-            var nodes = d.sankey.nodes();
-            /*for(var i = 0; i < nodes.length; i++) {
-                nodes[i].y = nodes[i].y + nodes[i].dy / 2;
-            }
-            */var result = d.sankey.links().map(function(l) {
+            return d.sankey.links().map(function(l) {
                 var tc = tinycolor(l.color);
                 return {
                     link: l,
@@ -156,10 +152,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
                     sankey: d.sankey
                 };
             });
-            /*for(var i = 0; i < nodes.length; i++) {
-                nodes[i].y = nodes[i].y - nodes[i].dy / 2;
-            }
-            */return result;
         });
 
     sankeyLink.enter()
@@ -233,7 +225,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
     function positionSankeyNode(sankeyNode) {
         sankeyNode
             .style('transform', c.vertical ?
-                function(d) {return 'translate(' + (Math.floor(d.node.y) - 0.5) + 'px, ' + (Math.floor(d.node.x) + 0.5) + 'px)';} :
+                function(d) {return 'translate(' + (Math.floor(d.node.y - d.node.dy / 2) - 0.5) + 'px, ' + (Math.floor(d.node.x) + 0.5) + 'px)';} :
                 function(d) {return 'translate(' + (Math.floor(d.node.x) - 0.5) + 'px, ' + (Math.floor(d.node.y - d.node.dy / 2) + 0.5) + 'px)';})
     }
 
@@ -270,13 +262,10 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 }
             })
             .on('drag', function(d) {
-                if(c.vertical) {
-                    d.node.y = Math.max(0, Math.min(d.model.dragParallel - d.node.dy, d3.event.x));
-                    d.node.x = Math.max(0, Math.min(d.model.dragPerpendicular - d.node.dx, d3.event.y));
-                } else {
-                    d.node.x = Math.max(0, Math.min(d.model.dragPerpendicular - d.node.dx, d3.event.x));
-                    d.node.y = Math.max(d.node.dy / 2, Math.min(d.model.dragParallel - d.node.dy / 2, d3.event.y));
-                }
+                var x = c.vertical ? d3.event.y : d3.event.x;
+                var y = c.vertical ? d3.event.x : d3.event.y;
+                d.node.x = Math.max(0, Math.min(d.model.dragPerpendicular - d.node.dx, x));
+                d.node.y = Math.max(d.node.dy / 2, Math.min(d.model.dragParallel - d.node.dy / 2, y));
                 d.sankey.relayout();
             })
             .on('dragend', function() {
