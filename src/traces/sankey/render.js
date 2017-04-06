@@ -26,6 +26,18 @@ function unwrap(d) {
     return d[0]; // plotly data structure convention
 }
 
+function toForceFormat(nodes) {
+    for (var i = 0; i < nodes.length; i++) {
+        nodes[i].y = nodes[i].y + nodes[i].dy / 2;
+    }
+}
+
+function toSankeyFormat(nodes) {
+    for (var i = 0; i < nodes.length; i++) {
+        nodes[i].y = nodes[i].y - nodes[i].dy / 2;
+    }
+}
+
 function viewModel(layout, d, i) {
     var trace = unwrap(d).trace,
         domain = trace.domain,
@@ -40,12 +52,9 @@ function viewModel(layout, d, i) {
         .nodeWidth(c.nodeWidth)
         .nodePadding(c.nodePadding)
         .nodes(nodes)
-        .links(links);
-    sankey
+        .links(links)
         .layout(c.sankeyIterations);
-    for (var i = 0; i < nodes.length; i++) {
-        nodes[i].y = nodes[i].y + nodes[i].dy / 2;
-    }
+    toForceFormat(nodes);
     return {
         key: i,
         translateX: domain.x[0] * width + layout.margin.l,
@@ -90,18 +99,11 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     function linkPath(d) {
 
-
+        var i;
         var nodes = d.sankey.nodes();
-        for(var i = 0; i < nodes.length; i++) {
-            nodes[i].y = nodes[i].y - nodes[i].dy / 2;
-        }
+        toSankeyFormat(nodes);
         var result = d.sankey.link()(d.link);
-        for(var i = 0; i < nodes.length; i++) {
-            nodes[i].y = nodes[i].y + nodes[i].dy / 2;
-        }
-
-
-
+        toForceFormat(nodes);
         return result;
     }
 
