@@ -45,9 +45,10 @@ module.exports = function handleAnnotationDefaults(annIn, annOut, fullLayout, op
     Lib.coerceFont(coerce, 'font', fullLayout.font);
 
     coerce('width');
-    coerce('height');
     coerce('align');
-    coerce('valign');
+
+    var h = coerce('height');
+    if(h) coerce('valign');
 
     // positioning
     var axLetters = ['x', 'y'],
