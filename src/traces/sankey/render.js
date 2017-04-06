@@ -238,6 +238,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
     }
 
     function updatePositionsOnTick() {
+        sankeyLink.attr('d', linkPath);
         sankeyNode.call(positionSankeyNode);
     }
 
@@ -272,15 +273,11 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 if(c.vertical) {
                     d.node.y = Math.max(0, Math.min(d.model.dragParallel - d.node.dy, d3.event.x));
                     d.node.x = Math.max(0, Math.min(d.model.dragPerpendicular - d.node.dx, d3.event.y));
-                    d3.select(this).style('transform', 'translate(' + d.node.y + 'px,' + d.node.x + 'px)');
                 } else {
                     d.node.x = Math.max(0, Math.min(d.model.dragPerpendicular - d.node.dx, d3.event.x));
                     d.node.y = Math.max(d.node.dy / 2, Math.min(d.model.dragParallel - d.node.dy / 2, d3.event.y));
-                    d3.select(this).style('transform', 'translate(' + d.node.x + 'px,' + d.node.y + 'px)');
                 }
                 d.sankey.relayout();
-                sankeyLink.attr('d', linkPath);
-
             })
             .on('dragend', function() {
                 dragInProgress = false;
