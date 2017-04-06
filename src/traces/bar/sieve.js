@@ -11,6 +11,7 @@
 module.exports = Sieve;
 
 var Lib = require('../../lib');
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 /**
  * Helper class to sieve data from traces into bins
@@ -34,7 +35,7 @@ function Sieve(traces, separateNegativeValues, dontMergeOverlappingData) {
         var trace = traces[i];
         for(var j = 0; j < trace.length; j++) {
             var bar = trace[j];
-            positions.push(bar.p);
+            if(bar.p !== BADNUM) positions.push(bar.p);
         }
     }
     this.positions = positions;

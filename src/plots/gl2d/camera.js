@@ -11,6 +11,7 @@
 
 var mouseChange = require('mouse-change');
 var mouseWheel = require('mouse-wheel');
+var cartesianConstants = require('../cartesian/constants');
 
 module.exports = createCamera;
 
@@ -22,8 +23,10 @@ function Camera2D(element, plot) {
     this.lastInputTime = Date.now();
     this.lastPos = [0, 0];
     this.boxEnabled = false;
+    this.boxInited = false;
     this.boxStart = [0, 0];
     this.boxEnd = [0, 0];
+    this.dragStart = [0, 0];
 }
 
 
@@ -37,12 +40,32 @@ function createCamera(scene) {
         scene.yaxis.autorange = false;
     }
 
+    function getSubplotConstraint() {
+        // note: this assumes we only have one x and one y axis on this subplot
+        // when this constraint is lifted this block won't make sense
+        var constraints = scene.graphDiv._fullLayout._axisConstraintGroups;
+        var xaId = scene.xaxis._id;
+        var yaId = scene.yaxis._id;
+        for(var i = 0; i < constraints.length; i++) {
+            if(constraints[i][xaId] !== -1) {
+                if(constraints[i][yaId] !== -1) return true;
+                break;
+            }
+        }
+        return false;
+    }
+
     result.mouseListener = mouseChange(element, function(buttons, x, y) {
         var dataBox = scene.calcDataBox(),
             viewBox = plot.viewBox;
 
         var lastX = result.lastPos[0],
             lastY = result.lastPos[1];
+
+        var MINDRAG = cartesianConstants.MINDRAG * plot.pixelRatio;
+        var MINZOOM = cartesianConstants.MINZOOM * plot.pixelRatio;
+
+        var dx, dy;
 
         x *= plot.pixelRatio;
         y *= plot.pixelRatio;
@@ -76,32 +99,114 @@ function createCamera(scene) {
                             (viewBox[3] - viewBox[1]) * (dataBox[3] - dataBox[1]) +
                         dataBox[1];
 
-                    if(!result.boxEnabled) {
+                    if(!result.boxInited) {
                         result.boxStart[0] = dataX;
                         result.boxStart[1] = dataY;
+                        result.dragStart[0] = x;
+                        result.dragStart[1] = y;
                     }
 
                     result.boxEnd[0] = dataX;
                     result.boxEnd[1] = dataY;
 
-                    result.boxEnabled = true;
+                    // we need to mark the box as initialized right away
+                    // so that we can tell the start and end pionts apart
+                    result.boxInited = true;
+
+                    // but don't actually enable the box until the cursor moves
+                    if(!result.boxEnabled && (
+                        result.boxStart[0] !== result.boxEnd[0] ||
+                        result.boxStart[1] !== result.boxEnd[1])
+                    ) {
+                        result.boxEnabled = true;
+                    }
+
+                    // constrain aspect ratio if the axes require it
+                    var smallDx = Math.abs(result.dragStart[0] - x) < MINZOOM;
+                    var smallDy = Math.abs(result.dragStart[1] - y) < MINZOOM;
+                    if(getSubplotConstraint() && !(smallDx && smallDy)) {
+                        dx = result.boxEnd[0] - result.boxStart[0];
+                        dy = result.boxEnd[1] - result.boxStart[1];
+                        var dydx = (dataBox[3] - dataBox[1]) / (dataBox[2] - dataBox[0]);
+
+                        if(Math.abs(dx * dydx) > Math.abs(dy)) {
+                            result.boxEnd[1] = result.boxStart[1] +
+                                Math.abs(dx) * dydx * (Math.sign(dy) || 1);
+
+                            // gl-select-box clips to the plot area bounds,
+                            // which breaks the axis constraint, so don't allow
+                            // this box to go out of bounds
+                            if(result.boxEnd[1] < dataBox[1]) {
+                                result.boxEnd[1] = dataBox[1];
+                                result.boxEnd[0] = result.boxStart[0] +
+                                    (dataBox[1] - result.boxStart[1]) / Math.abs(dydx);
+                            }
+                            else if(result.boxEnd[1] > dataBox[3]) {
+                                result.boxEnd[1] = dataBox[3];
+                                result.boxEnd[0] = result.boxStart[0] +
+                                    (dataBox[3] - result.boxStart[1]) / Math.abs(dydx);
+                            }
+                        }
+                        else {
+                            result.boxEnd[0] = result.boxStart[0] +
+                                Math.abs(dy) / dydx * (Math.sign(dx) || 1);
+
+                            if(result.boxEnd[0] < dataBox[0]) {
+                                result.boxEnd[0] = dataBox[0];
+                                result.boxEnd[1] = result.boxStart[1] +
+                                    (dataBox[0] - result.boxStart[0]) * Math.abs(dydx);
+                            }
+                            else if(result.boxEnd[0] > dataBox[2]) {
+                                result.boxEnd[0] = dataBox[2];
+                                result.boxEnd[1] = result.boxStart[1] +
+                                    (dataBox[2] - result.boxStart[0]) * Math.abs(dydx);
+                            }
+                        }
+                    }
+                    // otherwise clamp small changes to the origin so we get 1D zoom
+                    else {
+                        if(smallDx) result.boxEnd[0] = result.boxStart[0];
+                        if(smallDy) result.boxEnd[1] = result.boxStart[1];
+                    }
                 }
                 else if(result.boxEnabled) {
-                    updateRange(0, result.boxStart[0], result.boxEnd[0]);
-                    updateRange(1, result.boxStart[1], result.boxEnd[1]);
-                    unSetAutoRange();
+                    dx = result.boxStart[0] !== result.boxEnd[0];
+                    dy = result.boxStart[1] !== result.boxEnd[1];
+                    if(dx || dy) {
+                        if(dx) {
+                            updateRange(0, result.boxStart[0], result.boxEnd[0]);
+                            scene.xaxis.autorange = false;
+                        }
+                        if(dy) {
+                            updateRange(1, result.boxStart[1], result.boxEnd[1]);
+                            scene.yaxis.autorange = false;
+                        }
+                        scene.relayoutCallback();
+                    }
+                    else {
+                        scene.glplot.setDirty();
+                    }
                     result.boxEnabled = false;
-                    scene.relayoutCallback();
+                    result.boxInited = false;
                 }
                 break;
 
             case 'pan':
                 result.boxEnabled = false;
+                result.boxInited = false;
 
                 if(buttons) {
-                    var dx = (lastX - x) * (dataBox[2] - dataBox[0]) /
+                    if(!result.panning) {
+                        result.dragStart[0] = x;
+                        result.dragStart[1] = y;
+                    }
+
+                    if(Math.abs(result.dragStart[0] - x) < MINDRAG) x = result.dragStart[0];
+                    if(Math.abs(result.dragStart[1] - y) < MINDRAG) y = result.dragStart[1];
+
+                    dx = (lastX - x) * (dataBox[2] - dataBox[0]) /
                         (plot.viewBox[2] - plot.viewBox[0]);
-                    var dy = (lastY - y) * (dataBox[3] - dataBox[1]) /
+                    dy = (lastY - y) * (dataBox[3] - dataBox[1]) /
                         (plot.viewBox[3] - plot.viewBox[1]);
 
                     dataBox[0] += dx;

@@ -107,7 +107,6 @@ module.exports = {
             'number from zero in the order it appears.'
         ].join(' ')
     },
-
     fixedrange: {
         valType: 'boolean',
         dflt: false,
@@ -115,6 +114,42 @@ module.exports = {
         description: [
             'Determines whether or not this axis is zoom-able.',
             'If true, then zoom is disabled.'
+        ].join(' ')
+    },
+    // scaleanchor: not used directly, just put here for reference
+    // values are any opposite-letter axis id
+    scaleanchor: {
+        valType: 'enumerated',
+        values: [
+            constants.idRegex.x.toString(),
+            constants.idRegex.y.toString()
+        ],
+        role: 'info',
+        description: [
+            'If set to an opposite-letter axis id (e.g. `x2`, `y`), the range of this axis',
+            'changes together with the range of the corresponding opposite-letter axis.',
+            'such that the scale of pixels per unit is in a constant ratio.',
+            'Both axes are still zoomable, but when you zoom one, the other will',
+            'zoom the same amount, keeping a fixed midpoint.',
+            'Autorange will also expand about the midpoints to satisfy the constraint.',
+            'You can chain these, ie `yaxis: {scaleanchor: *x*}, xaxis2: {scaleanchor: *y*}`',
+            'but you can only link axes of the same `type`.',
+            'Loops (`yaxis: {scaleanchor: *x*}, xaxis: {scaleanchor: *y*}` or longer) are redundant',
+            'and the last constraint encountered will be ignored to avoid possible',
+            'inconsistent constraints via `scaleratio`.'
+        ].join(' ')
+    },
+    scaleratio: {
+        valType: 'number',
+        min: 0,
+        dflt: 1,
+        role: 'info',
+        description: [
+            'If this axis is linked to another by `scaleanchor`, this determines the pixel',
+            'to unit scale ratio. For example, if this value is 10, then every unit on',
+            'this axis spans 10 times the number of pixels as a unit on the linked axis.',
+            'Use this for example to create an elevation profile where the vertical scale',
+            'is exaggerated a fixed amount with respect to the horizontal.'
         ].join(' ')
     },
     // ticks
@@ -439,7 +474,7 @@ module.exports = {
         ],
         role: 'info',
         description: [
-            'If set to an opposite-letter axis id (e.g. `xaxis2`, `yaxis`), this axis is bound to',
+            'If set to an opposite-letter axis id (e.g. `x2`, `y`), this axis is bound to',
             'the corresponding opposite-letter axis.',
             'If set to *free*, this axis\' position is determined by `position`.'
         ].join(' ')

@@ -330,6 +330,25 @@ describe('Test plot api', function() {
             expect(PlotlyInternal.plot).toHaveBeenCalled();
         });
 
+        it('should do full replot when attribute container are updated', function() {
+            var gd = {
+                data: [{x: [1, 2, 3], y: [1, 2, 3]}],
+                layout: {
+                    xaxis: { range: [0, 4] },
+                    yaxis: { range: [0, 4] }
+                }
+            };
+
+            mockDefaultsAndCalc(gd);
+            Plotly.restyle(gd, {
+                marker: {
+                    color: ['red', 'blue', 'green']
+                }
+            });
+            expect(gd.calcdata).toBeUndefined();
+            expect(PlotlyInternal.plot).toHaveBeenCalled();
+        });
+
         it('calls plot on xgap and ygap styling', function() {
             var gd = {
                 data: [{z: [[1, 2, 3], [4, 5, 6], [7, 8, 9]], showscale: false, type: 'heatmap'}],

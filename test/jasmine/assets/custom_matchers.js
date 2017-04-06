@@ -143,7 +143,10 @@ function isClose(actual, expected, precision) {
         return Math.abs(actual - expected) < precision;
     }
 
-    return actual === expected;
+    return (
+        actual === expected ||
+        (isNaN(actual) && isNaN(expected))
+    );
 }
 
 function coercePosition(precision) {

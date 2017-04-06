@@ -10,6 +10,24 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.25.2] -- 2017-03-31
+
+### Fixed
+- rm `const` token from dist bundles that depend on `big-rat`,
+  see https://github.com/rat-nest/big-rat/pull/4 for more details.
+
+
+## [1.25.1] -- 2017-03-28
+
+### Fixed
+- Fix `restyle` for `scattergl` traces with array `marker.size` (bug introduced
+  in `1.25.0`) [#1521]
+- Fix `relayout` for `histogram2dcontour` traces [#1520]
+- Do not unnecessary mutate `parcoords` full trace objects when computing
+  line color and colorscale [#1509, #1508]
+- Do not unnecessary coerce trace opacity in `parcoords` traces [#1506]
+
+
 ## [1.25.0] -- 2017-03-20
 
 ### Added

@@ -16,7 +16,9 @@ var basePlotLayoutAttributes = require('../layout_attributes');
 
 var constants = require('./constants');
 var layoutAttributes = require('./layout_attributes');
+var handleTypeDefaults = require('./type_defaults');
 var handleAxisDefaults = require('./axis_defaults');
+var handleConstraintDefaults = require('./constraint_defaults');
 var handlePositionDefaults = require('./position_defaults');
 var axisIds = require('./axis_ids');
 
@@ -128,7 +130,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     var bgColor = Color.combine(plot_bgcolor, layoutOut.paper_bgcolor);
 
-    var axName, axLayoutIn, axLayoutOut;
+    var axName, axLetter, axLayoutIn, axLayoutOut;
 
     function coerce(attr, dflt) {
         return Lib.coerce(axLayoutIn, axLayoutOut, layoutAttributes, attr, dflt);
@@ -138,6 +140,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         var list = {x: yaList, y: xaList}[axLetter];
         return Lib.simpleMap(list, axisIds.name2id);
     }
+
+    var counterAxes = {x: getCounterAxes('x'), y: getCounterAxes('y')};
 
     function getOverlayableAxes(axLetter, axName) {
         var list = {x: xaList, y: yaList}[axLetter];
@@ -154,6 +158,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         return out;
     }
 
+    // first pass creates the containers, determines types, and handles most of the settings
     for(i = 0; i < axesList.length; i++) {
         axName = axesList[i];
 
@@ -164,14 +169,16 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutIn = layoutIn[axName];
         axLayoutOut = layoutOut[axName] = {};
 
-        var axLetter = axName.charAt(0);
+        handleTypeDefaults(axLayoutIn, axLayoutOut, coerce, fullData, axName);
+
+        axLetter = axName.charAt(0);
+        var overlayableAxes = getOverlayableAxes(axLetter, axName);
 
         var defaultOptions = {
             letter: axLetter,
             font: layoutOut.font,
             outerTicks: outerTicks[axName],
             showGrid: !noGrids[axName],
-            name: axName,
             data: fullData,
             bgColor: bgColor,
             calendar: layoutOut.calendar,
@@ -182,8 +189,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
         var positioningOptions = {
             letter: axLetter,
-            counterAxes: getCounterAxes(axLetter),
-            overlayableAxes: getOverlayableAxes(axLetter, axName)
+            counterAxes: counterAxes[axLetter],
+            overlayableAxes: overlayableAxes
         };
 
         handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, positioningOptions);
@@ -229,5 +236,24 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         );
 
         coerce('fixedrange', fixedRangeDflt);
+    }
+
+    // Finally, handle scale constraints. We need to do this after all axes have
+    // coerced both `type` (so we link only axes of the same type) and
+    // `fixedrange` (so we can avoid linking from OR TO a fixed axis).
+
+    // sets of axes linked by `scaleanchor` along with the scaleratios compounded
+    // together, populated in handleConstraintDefaults
+    layoutOut._axisConstraintGroups = [];
+    var allAxisIds = counterAxes.x.concat(counterAxes.y);
+
+    for(i = 0; i < axesList.length; i++) {
+        axName = axesList[i];
+        axLetter = axName.charAt(0);
+
+        axLayoutIn = layoutIn[axName];
+        axLayoutOut = layoutOut[axName];
+
+        handleConstraintDefaults(axLayoutIn, axLayoutOut, coerce, allAxisIds, layoutOut);
     }
 };
