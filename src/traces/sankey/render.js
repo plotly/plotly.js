@@ -26,6 +26,12 @@ function unwrap(d) {
     return d[0]; // plotly data structure convention
 }
 
+function persistOriginalX(nodes) {
+    for (var i = 0; i < nodes.length; i++) {
+        nodes[i].originalX = nodes[i].x;
+    }
+}
+
 function toForceFormat(nodes) {
     for (var i = 0; i < nodes.length; i++) {
         nodes[i].y = nodes[i].y + nodes[i].dy / 2;
@@ -189,18 +195,16 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
             var x = d3.scale.linear().range([0, width]);
             var y = d3.scale.linear().range([0, height]);
-            var med = x(0.5);
 
             function constrain() {
                 for(var i = 0; i < things.length; i++) {
                     var d = things[i];
                     if(d === dragInProgress) { // constrain to dragging
-                        //d.vx = 0;
                         d.x = d.lastDraggedX;
                         d.y = d.lastDraggedY;
                     } else {
                         d.vy = Math.min(y(1) - d.dy / 2, Math.max(y(0) + d.dy / 2, d.y)) - d.y; // constrain to extent
-                        //d.vx = (med - d.x) / Math.max(1, (d.r * d.r / 1000)); // constrain to 1D
+                        d.vx = (d.originalX - Math.round(d.x)) / Math.max(1, ((d.dy / 2)* (d.dy / 2) / 10000)); // constrain to 1D
                     }
                 }
             }
@@ -210,7 +214,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 //.velocityDecay(0.3)
                 .force('constrain', constrain)
                 .force('collide', d3Force.forceCollide()
-                    .radius(function(d) {return d.dy / 2 + c.nodePadding / 2;})
+                    .radius(function(d) {return d.dy / 2 + c.nodePadding / 2 - 1;})
                     .strength(0.3)
                     .iterations(10))
                 .on('tick', updatePositionsOnTick);
@@ -233,6 +237,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     var sankeyNode = sankeyNodes.selectAll('.sankeyPath')
         .data(function(d) {
+            var nodes = d.sankey.nodes();
+            persistOriginalX(nodes);
             return d.sankey.nodes().map(function(n) {
                 var tc = tinycolor(n.color);
                 return {
