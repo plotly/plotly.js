@@ -54,7 +54,7 @@ module.exports = {
         // '-' means we haven't yet run autotype or couldn't find any data
         // it gets turned into linear in gd._fullLayout but not copied back
         // to gd.data like the others are.
-        values: ['-', 'linear', 'log', 'date', 'category'],
+        values: ['-', 'linear', 'date', 'category'],
         dflt: '-',
         role: 'info',
         description: [
@@ -160,17 +160,6 @@ module.exports = {
             'Used with `tickvals`.'
         ].join(' ')
     },
-    ticks: {
-        valType: 'enumerated',
-        values: ['outside', 'inside', ''],
-        role: 'style',
-        description: [
-            'Determines whether ticks are drawn or not.',
-            'If **, this axis\' ticks are not drawn.',
-            'If *outside* (*inside*), this axis\' are drawn outside (inside)',
-            'the axis lines.'
-        ].join(' ')
-    },
     mirror: {
         valType: 'enumerated',
         values: [true, 'ticks', false, 'all', 'allticks'],
@@ -186,26 +175,6 @@ module.exports = {
             'If *allticks*, axis lines and ticks are mirrored',
             'on all shared-axes subplots.'
         ].join(' ')
-    },
-    ticklen: {
-        valType: 'number',
-        min: 0,
-        dflt: 5,
-        role: 'style',
-        description: 'Sets the tick length (in px).'
-    },
-    tickwidth: {
-        valType: 'number',
-        min: 0,
-        dflt: 1,
-        role: 'style',
-        description: 'Sets the tick width (in px).'
-    },
-    tickcolor: {
-        valType: 'color',
-        dflt: colorAttrs.defaultLine,
-        role: 'style',
-        description: 'Sets the tick color.'
     },
     showticklabels: {
         valType: 'enumerated',
@@ -358,9 +327,6 @@ module.exports = {
         role: 'style',
         description: 'Sets a axis label suffix.'
     },
-    labelfont: extendFlat({}, fontAttrs, {
-        description: 'Sets the label font.'
-    }),
     // lines and grids
     showline: {
         valType: 'boolean',
@@ -491,20 +457,5 @@ module.exports = {
         dflt: 1,
         role: 'info',
         description: 'The stride between grid lines along the axis'
-    },
-    hoverformat: {
-        valType: 'string',
-        dflt: '',
-        role: 'style',
-        description: [
-            'Sets the hover text formatting rule using d3 formatting mini-languages',
-            'which are very similar to those in Python. For numbers, see:',
-            'https://github.com/d3/d3-format/blob/master/README.md#locale_format',
-            'And for dates see:',
-            'https://github.com/d3/d3-time-format/blob/master/README.md#locale_format',
-            'We add one item to d3\'s date formatter: *%{n}f* for fractional seconds',
-            'with n digits. For example, *2016-10-13 09:15:23.456* with tickformat',
-            '*%H~%M~%S.%2f* would display *09~15~23.46*'
-        ].join(' ')
     },
 };

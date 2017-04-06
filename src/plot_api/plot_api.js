@@ -1313,8 +1313,28 @@ function _restyle(gd, aobj, _traces) {
         'xcalendar', 'ycalendar',
         'cumulative', 'cumulative.enabled', 'cumulative.direction', 'cumulative.currentbin',
         'a0', 'da', 'b0', 'db', 'atype', 'btype',
-        'cheaterslope', 'carpetid', 'sum'
+        'cheaterslope', 'carpetid', 'sum',
     ];
+
+    var carpetAxisAttributes = [
+        'color', 'smoothing', 'title', 'titlefont', 'titlefont.size', 'titlefont.family',
+        'titlefont.color', 'titleoffset', 'type', 'autorange', 'rangemode', 'range',
+        'fixedrange', 'cheatertype', 'tickmode', 'nticks', 'tickvals', 'ticktext',
+        'ticks', 'mirror', 'ticklen', 'tickwidth', 'tickcolor', 'showticklabels',
+        'tickfont', 'tickfont.size', 'tickfont.family', 'tickfont.color', 'tickprefix',
+        'showtickprefix', 'ticksuffix', 'showticksuffix', 'showexponent', 'exponentformat',
+        'separatethousands', 'tickformat', 'categoryorder', 'categoryarray', 'labelpadding',
+        'labelprefix', 'labelsuffix', 'labelfont', 'labelfont.family', 'labelfont.size',
+        'labelfont.color', 'showline', 'linecolor', 'linewidth', 'gridcolor', 'gridwidth',
+        'showgrid', 'minorgridcount', 'minorgridwidth', 'minorgridcolor', 'startline',
+        'startlinecolor', 'startlinewidth', 'endline', 'endlinewidth', 'endlinecolor',
+        'tick0', 'dtick', 'arraytick0', 'arraydtick', 'hoverformat', 'tickangle'
+    ];
+
+    for(i = 0; i < carpetAxisAttributes.length; i++) {
+        recalcAttrs.push('aaxis.' + carpetAxisAttributes[i]);
+        recalcAttrs.push('baxis.' + carpetAxisAttributes[i]);
+    }
 
     for(i = 0; i < traces.length; i++) {
         if(Registry.traceIs(fullData[traces[i]], 'box')) {

@@ -15,7 +15,6 @@ var addOpacity = require('../../components/color').addOpacity;
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var handleTickValueDefaults = require('../../plots/cartesian/tick_value_defaults');
-var handleTickMarkDefaults = require('../../plots/cartesian/tick_mark_defaults');
 var handleTickLabelDefaults = require('../../plots/cartesian/tick_label_defaults');
 var handleCategoryOrderDefaults = require('../../plots/cartesian/category_order_defaults');
 var setConvert = require('../../plots/cartesian/set_convert');
@@ -39,6 +38,8 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     var letter = options.letter,
         font = options.font || {},
         attributes = carpetAttrs[letter + 'axis'];
+
+    options.noHover = true;
 
     function coerce(attr, dflt) {
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
@@ -120,13 +121,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
         size: Math.round(font.size * 1.2),
         color: dfltFontColor
     });
+
     coerce('titleoffset');
 
-    Lib.coerceFont(coerce, 'tickfont', {
-        family: font.family,
-        size: Math.round(font.size * 1.2),
-        color: dfltFontColor
-    });
+    coerce('tickangle');
 
     var validRange = (
         (containerIn.range || []).length === 2 &&
@@ -144,12 +142,16 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
     handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
-    handleTickMarkDefaults(containerIn, containerOut, coerce, options);
     handleCategoryOrderDefaults(containerIn, containerOut, coerce);
 
     var gridColor = coerce2('gridcolor', addOpacity(dfltColor, 0.3));
     var gridWidth = coerce2('gridwidth');
     var showGrid = coerce('showgrid');
+
+    if(!showGrid) {
+        delete containerOut.gridcolor;
+        delete containerOut.gridwidth;
+    }
 
     var startLineColor = coerce2('startlinecolor', dfltColor);
     var startLineWidth = coerce2('startlinewidth', gridWidth);
@@ -176,6 +178,11 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
         coerce('minorgridcount');
         coerce('minorgridwidth', gridWidth);
         coerce('minorgridcolor', addOpacity(gridColor, 0.06));
+
+        if(!containerOut.minorgridcount) {
+            delete containerOut.minorgridwidth;
+            delete containerOut.minorgridcolor;
+        }
     }
 
     containerOut._separators = options.fullLayout.separators;
@@ -185,16 +192,32 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
         orderedCategories(letter, containerOut.categoryorder, containerOut.categoryarray, options.data) :
         [];
 
+    if(containerOut.showticklabels === 'none') {
+        delete containerOut.tickfont;
+        delete containerOut.tickangle;
+        delete containerOut.showexponent;
+        delete containerOut.exponentformat;
+        delete containerOut.tickformat;
+        delete containerOut.showticksuffix;
+        delete containerOut.showtickprefix;
+    }
+
+    if(!containerOut.showticksuffix) {
+        delete containerOut.ticksuffix;
+    }
+
+    if(!containerOut.showtickprefix) {
+        delete containerOut.tickprefix;
+    }
+
     // It needs to be coerced, then something above overrides this deep in the axis code,
     // but no, we *actually* want to coerce this.
     coerce('tickmode');
 
-    // We'll never draw this. We just need a couple category management functions.
-    Lib.coerceFont(coerce, 'labelfont', {
-        family: font.family,
-        size: font.size,
-        color: containerOut.startlinecolor
-    });
+    if(!containerOut.title || (containerOut.title && containerOut.title.length === 0)) {
+        delete containerOut.titlefont;
+        delete containerOut.titleoffset;
+    }
 
     return containerOut;
 };

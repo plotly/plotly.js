@@ -2,6 +2,8 @@
   "data":[
     {
       "type":"carpet",
+      "name": "carpet axis",
+      "opacity": 0.2,
       "a":[
         0.1, 0.1, 0.1, 0.1,
         0.3, 0.3, 0.3, 0.3,

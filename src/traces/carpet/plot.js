@@ -47,6 +47,8 @@ function plotOne(gd, plotinfo, cd) {
     var boundaryLayer = makeg(gridLayer, 'g', 'boundarylayer');
     var labelLayer = makeg(gridLayer, 'g', 'labellayer');
 
+    gridLayer.style('opacity', trace.opacity);
+
     drawGridLines(xa, ya, majorLayer, aax, 'a', aax._gridlines, true);
     drawGridLines(xa, ya, majorLayer, bax, 'b', bax._gridlines, true);
     drawGridLines(xa, ya, minorLayer, aax, 'a', aax._minorgridlines, true);
@@ -142,7 +144,13 @@ function drawAxisLabels(tester, xaxis, yaxis, trace, t, layer, labels, labelClas
     labelJoin.each(function(label) {
         // Most of the positioning is done in calc_labels. Only the parts that depend upon
         // the screen space representation of the x and y axes are here:
-        var orientation = orientText(trace, xaxis, yaxis, label.xy, label.dxy);
+        var orientation;
+        if(label.axis.tickangle === 'auto') {
+            orientation = orientText(trace, xaxis, yaxis, label.xy, label.dxy);
+        } else {
+            var angle = (label.axis.tickangle + 180.0) * Math.PI / 180.0;
+            orientation = orientText(trace, xaxis, yaxis, label.xy, [Math.cos(angle), Math.sin(angle)]);
+        }
         var direction = (label.endAnchor ? -1 : 1) * orientation.flip;
         var bbox = measureText(tester, label.text, label.font);
 
@@ -184,21 +192,28 @@ function drawAxisTitles(layer, trace, t, xa, ya, maxAExtent, maxBExtent) {
 }
 
 function drawAxisTitle(layer, trace, t, xy, dxy, axis, xa, ya, offset, labelClass) {
-    var titleJoin = layer.selectAll('text.' + labelClass).data([0]);
+    var data = [];
+    if(axis.title) data.push(axis.title);
+    var titleJoin = layer.selectAll('text.' + labelClass).data(data);
 
     titleJoin.enter().append('text')
         .classed(labelClass, true);
 
-    var orientation = orientText(trace, xa, ya, xy, dxy);
-
-    // In addition to the size of the labels, add on some extra padding:
-    offset += axis.titlefont.size + axis.titleoffset;
-
     // There's only one, but we'll do it as a join so it's updated nicely:
     titleJoin.each(function() {
+        var orientation = orientText(trace, xa, ya, xy, dxy);
+
+        if(['start', 'both'].indexOf(axis.showticklabels) === -1) {
+            offset = 0;
+        }
+
+        // In addition to the size of the labels, add on some extra padding:
+        offset += axis.titlefont.size + axis.titleoffset;
+
+
         var el = d3.select(this);
 
-        el.text(axis.title)
+        el.text(axis.title || '')
             .attr('transform',
                 'translate(' + orientation.p[0] + ',' + orientation.p[1] + ') ' +
                 'rotate(' + orientation.angle + ') ' +
