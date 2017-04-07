@@ -160,11 +160,7 @@ describe('config argument', function() {
 
             var link = document.getElementsByClassName('js-plot-link-container')[0];
 
-            expect(link.textContent).toBe('');
-
-            var bBox = link.getBoundingClientRect();
-            expect(bBox.width).toBe(0);
-            expect(bBox.height).toBe(0);
+            expect(link).toBeUndefined();
         });
 
         it('should display a link when true', function() {

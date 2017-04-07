@@ -48,9 +48,7 @@ module.exports = function plot(gd, plotinfo, cdbar) {
             var t = d[0].t,
                 trace = d[0].trace,
                 poffset = t.poffset,
-                poffsetIsArray = Array.isArray(poffset),
-                barwidth = t.barwidth,
-                barwidthIsArray = Array.isArray(barwidth);
+                poffsetIsArray = Array.isArray(poffset);
 
             d3.select(this).selectAll('g.point')
                 .data(Lib.identity)
@@ -61,7 +59,7 @@ module.exports = function plot(gd, plotinfo, cdbar) {
                     // log values go off-screen by plotwidth
                     // so you see them continue if you drag the plot
                     var p0 = di.p + ((poffsetIsArray) ? poffset[i] : poffset),
-                        p1 = p0 + ((barwidthIsArray) ? barwidth[i] : barwidth),
+                        p1 = p0 + di.w,
                         s0 = di.b,
                         s1 = s0 + di.s;
 

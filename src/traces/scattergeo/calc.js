@@ -10,45 +10,32 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 var calcMarkerColorscale = require('../scatter/colorscale_calc');
-
+var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
 
 module.exports = function calc(gd, trace) {
-    var hasLocationData = Array.isArray(trace.locations),
-        len = hasLocationData ? trace.locations.length : trace.lon.length;
-
-    var calcTrace = [],
-        cnt = 0;
+    var hasLocationData = Array.isArray(trace.locations);
+    var len = hasLocationData ? trace.locations.length : trace.lon.length;
+    var calcTrace = new Array(len);
 
     for(var i = 0; i < len; i++) {
-        var calcPt = {},
-            skip;
+        var calcPt = calcTrace[i] = {};
 
         if(hasLocationData) {
             var loc = trace.locations[i];
+            calcPt.loc = typeof loc === 'string' ? loc : null;
+        } else {
+            var lon = trace.lon[i];
+            var lat = trace.lat[i];
 
-            calcPt.loc = loc;
-            skip = (typeof loc !== 'string');
+            if(isNumeric(lon) && isNumeric(lat)) calcPt.lonlat = [+lon, +lat];
+            else calcPt.lonlat = [BADNUM, BADNUM];
         }
-        else {
-            var lon = trace.lon[i],
-                lat = trace.lat[i];
-
-            calcPt.lonlat = [+lon, +lat];
-            skip = (!isNumeric(lon) || !isNumeric(lat));
-        }
-
-        if(skip) {
-            if(cnt > 0) calcTrace[cnt - 1].gapAfter = true;
-            continue;
-        }
-
-        cnt++;
-
-        calcTrace.push(calcPt);
     }
 
+    arraysToCalcdata(calcTrace, trace);
     calcMarkerColorscale(trace);
 
     return calcTrace;

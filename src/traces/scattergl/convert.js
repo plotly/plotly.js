@@ -310,7 +310,7 @@ proto.update = function(options) {
 //      representing the epoch milliseconds in a typed array;
 //      also, perhaps the Python / R interfaces take care of String->Date conversions
 //      such that there's no need to check for string dates in plotly.js)
-// Patterned from axis_defaults.js:moreDates
+// Patterned from axis_autotype.js:moreDates
 // Code DRYing is not done to preserve the most direct compilation possible for speed;
 // also, there are quite a few differences
 function allFastTypesLikely(a) {
