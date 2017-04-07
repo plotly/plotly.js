@@ -170,16 +170,18 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     var sankeyLink = sankeyLinks.selectAll('.sankeyPath')
         .data(function(d) {
-            return d.sankey.links().map(function(l) {
-                var tc = tinycolor(l.color);
-                return {
-                    traceId: d.key,
-                    link: l,
-                    tinyColorHue: Color.tinyRGB(tc),
-                    tinyColorAlpha: tc.getAlpha(),
-                    sankey: d.sankey
-                };
-            });
+            return d.sankey.links()
+                .filter(function(l) {return l.visible && l.value;})
+                .map(function(l) {
+                    var tc = tinycolor(l.color);
+                    return {
+                        traceId: d.key,
+                        link: l,
+                        tinyColorHue: Color.tinyRGB(tc),
+                        tinyColorAlpha: tc.getAlpha(),
+                        sankey: d.sankey
+                    };
+                });
         });
 
     sankeyLink.enter()
@@ -192,6 +194,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('stroke', function(d) {return d.tinyColorHue;})
         .style('stroke-opacity', function(d) {return d.tinyColorAlpha;})
         .style('stroke-width', function(d) {return Math.max(1, d.link.dy);});
+
+    sankeyLink.exit().remove();
 
     var sankeyNodes = sankey.selectAll('.sankeyNodes')
         .data(function(d) {
@@ -256,20 +260,22 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .data(function(d) {
             var nodes = d.sankey.nodes();
             persistOriginalX(nodes);
-            return d.sankey.nodes().map(function(n) {
-                var tc = tinycolor(n.color);
-                return {
-                    traceId: d.key,
-                    node: n,
-                    nodePad: d.nodePad,
-                    textFont: d.textFont,
-                    horizontal: d.horizontal,
-                    tinyColorHue: Color.tinyRGB(tc),
-                    tinyColorAlpha: tc.getAlpha(),
-                    sankey: d.sankey,
-                    forceLayout: d.forceLayout
-                };
-            });
+            return d.sankey.nodes()
+                .filter(function(n) {return n.visible && n.value;})
+                .map(function(n) {
+                    var tc = tinycolor(n.color);
+                    return {
+                        traceId: d.key,
+                        node: n,
+                        nodePad: d.nodePad,
+                        textFont: d.textFont,
+                        horizontal: d.horizontal,
+                        tinyColorHue: Color.tinyRGB(tc),
+                        tinyColorAlpha: tc.getAlpha(),
+                        sankey: d.sankey,
+                        forceLayout: d.forceLayout
+                    };
+                });
         });
 
     sankeyNode.enter()
@@ -298,6 +304,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 dragInProgress = false;
                 d.forceLayout.alphaDecay(c.alphaDecay);
             }));
+
+    sankeyLink.exit().remove();
 
     var nodeRect = sankeyNode.selectAll('.nodeRect')
         .data(repeat);
