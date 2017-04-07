@@ -187,7 +187,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
             var nodes = d.nodes;
             var s = d.horizontal ? d.height : d.width;
 
-            function constrain() {
+            function snap() {
                 for(var i = 0; i < nodes.length; i++) {
                     var d = nodes[i];
                     if(d === dragInProgress) { // constrain node position to the dragging pointer
@@ -201,12 +201,11 @@ module.exports = function(svg, styledData, layout, callbacks) {
             }
 
             d.forceLayout = d3Force.forceSimulation(nodes)
-                .velocityDecay(0.2)
                 .force('collide', d3Force.forceCollide()
+                    .radius(function(d) {return d.dy / 2 + c.nodePadding / 2;})
                     .strength(1)
-                    .iterations(5)
-                    .radius(function(d) {return d.dy / 2 + c.nodePadding / 2;}))
-                .force('constrain', constrain)
+                    .iterations(5))
+                .force('constrain', snap)
                 .on('tick', updatePositionsOnTick)
                 .on('end', crispLinesOnEnd);
 
@@ -223,7 +222,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         sankeyNodes.style('shape-rendering', 'optimizeSpeed');
         sankeyNode
             .style('transform', function(d) {
-                return d.model.horizontal
+                return d.horizontal
                     ? 'translate(' + (d.node.x - 0.5) + 'px, ' + (d.node.y - d.node.dy / 2 + 0.5) + 'px)'
                     : 'translate(' + (d.node.y - d.node.dy / 2 - 0.5) + 'px, ' + (d.node.x + 0.5) + 'px)'
             })
@@ -246,11 +245,11 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 var tc = tinycolor(n.color);
                 return {
                     node: n,
+                    horizontal: d.horizontal,
                     tinyColorHue: Color.tinyRGB(tc),
                     tinyColorAlpha: tc.getAlpha(),
                     sankey: d.sankey,
-                    forceLayout: d.forceLayout,
-                    model: d
+                    forceLayout: d.forceLayout
                 };
             });
         });
@@ -260,7 +259,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .classed('sankeyNode', true)
         .call(attachPointerEvents, callbacks.nodeEvents)
         .call(d3.behavior.drag()
-            .origin(function(d) {return d.model.horizontal ? d.node : {x: d.node['y'], y: d.node['x']};})
+            .origin(function(d) {return d.horizontal ? d.node : {x: d.node['y'], y: d.node['x']};})
             .on('dragstart', function(d) {
                 this.parentNode.appendChild(this);
                 dragInProgress = d.node;
@@ -272,8 +271,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 d.forceLayout.alphaDecay(0).alpha(1).restart();
             })
             .on('drag', function(d) {
-                d.node.x = d.model.horizontal ? d3.event.x : d3.event.y;
-                d.node.y = d.model.horizontal ? d3.event.y : d3.event.x;
+                d.node.x = d.horizontal ? d3.event.x : d3.event.y;
+                d.node.y = d.horizontal ? d3.event.y : d3.event.x;
                 constrainDraggedItem(d.node);
                 d.sankey.relayout();
             })
@@ -291,10 +290,10 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('fill-opacity', 0);
 
     nodeCapture
-        .attr('width', function(d) {return d.model.horizontal ? Math.ceil(d.node.dx + 0.5) : Math.ceil(d.node.dy - 0.5 + c.nodePadding);})
-        .attr('height', function(d) {return d.model.horizontal ? Math.ceil(d.node.dy - 0.5 + c.nodePadding) : Math.ceil(d.node.dx + 0.5);})
-        .attr('x', function(d) {return d.model.horizontal ? 0 : - c.nodePadding / 2;})
-        .attr('y', function(d) {return d.model.horizontal ? -c.nodePadding / 2: 0;});
+        .attr('width', function(d) {return Math.ceil(d.horizontal ? d.node.dx + 0.5 : d.node.dy - 0.5 + c.nodePadding);})
+        .attr('height', function(d) {return Math.ceil(d.horizontal ? d.node.dy - 0.5 + c.nodePadding : d.node.dx + 0.5);})
+        .attr('x', function(d) {return d.horizontal ? 0 : - c.nodePadding / 2;})
+        .attr('y', function(d) {return d.horizontal ? -c.nodePadding / 2: 0;});
 
     var nodeRect = sankeyNode.selectAll('.nodeRect')
         .data(repeat);
@@ -308,8 +307,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
     nodeRect // ceil, +/-0.5 and crispEdges is needed for consistent border width on all 4 sides
         .style('fill', function(d) {return d.tinyColorHue;})
         .style('fill-opacity', function(d) {return d.tinyColorAlpha;})
-        .attr('width', function(d) {return d.model.horizontal ? Math.ceil(d.node.dx + 0.5) : Math.ceil(d.node.dy - 0.5);})
-        .attr('height', function(d) {return d.model.horizontal ? Math.ceil(d.node.dy - 0.5) : Math.ceil(d.node.dx + 0.5);});
+        .attr('width', function(d) {return d.horizontal ? Math.ceil(d.node.dx + 0.5) : Math.ceil(d.node.dy - 0.5);})
+        .attr('height', function(d) {return d.horizontal ? Math.ceil(d.node.dy - 0.5) : Math.ceil(d.node.dx + 0.5);});
 
     var nodeLabel = sankeyNode.selectAll('.nodeLabel')
         .data(repeat);
@@ -325,8 +324,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('cursor', 'default');
 
     nodeLabel
-        .attr('x', function(d) {return d.model.horizontal ? d.node.dx + c.nodeTextOffset : d.node.dy / 2;})
-        .attr('y', function(d) {return d.model.horizontal ? d.node.dy / 2 : d.node.dx / 2;})
+        .attr('x', function(d) {return d.horizontal ? d.node.dx + c.nodeTextOffset : d.node.dy / 2;})
+        .attr('y', function(d) {return d.horizontal ? d.node.dy / 2 : d.node.dx / 2;})
         .text(function(d) {return d.node.label;})
-        .attr('text-anchor', function(d) {return d.model.horizontal ? 'start' : 'middle';});
+        .attr('text-anchor', function(d) {return d.horizontal ? 'start' : 'middle';});
 };
