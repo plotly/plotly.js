@@ -12,6 +12,7 @@ var c = require('./constants');
 var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 var Color = require('../../components/color');
+var Drawing = require('../../components/drawing');
 var d3sankey = require('./sankey');
 var d3Force = require('d3-force');
 
@@ -50,7 +51,8 @@ function viewModel(layout, d, i) {
         nodes = trace.nodes,
         links = trace.links,
         horizontal = trace.orientation === 'h',
-        nodePad = trace.nodepad;
+        nodePad = trace.nodepad,
+        textFont = trace.textfont;
 
     var width = layout.width * (domain.x[1] - domain.x[0]);
     var height = layout.height * (domain.y[1] - domain.y[0]);
@@ -69,6 +71,7 @@ function viewModel(layout, d, i) {
         width: width,
         height: height,
         nodePad: nodePad,
+        textFont: textFont,
         translateX: domain.x[0] * width + layout.margin.l,
         translateY: layout.height - domain.y[1] * layout.height + layout.margin.t,
         dragParallel: horizontal ? height : width,
@@ -220,6 +223,9 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('shape-rendering', 'geometricPrecision')
         .classed('sankeyNodes', true);
 
+    sankeyNodes
+        .each(function(d) {Drawing.font(sankeyNodes, d.textFont);});
+
     function positionSankeyNode(sankeyNode) {
         sankeyNodes.style('shape-rendering', 'optimizeSpeed');
         sankeyNode
@@ -248,6 +254,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 return {
                     node: n,
                     nodePad: d.nodePad,
+                    textFont: d.textFont,
                     horizontal: d.horizontal,
                     tinyColorHue: Color.tinyRGB(tc),
                     tinyColorAlpha: tc.getAlpha(),
@@ -320,8 +327,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .append('text')
         .classed('nodeLabel', true)
         .attr('alignment-baseline', 'middle')
-        .style('font-family', 'sans-serif')
-        .style('font-size', '10px')
         .style('user-select', 'none')
         .style('pointer-events', 'none')
         .style('cursor', 'default');

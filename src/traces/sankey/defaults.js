@@ -99,4 +99,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('domain.y');
     coerce('orientation');
     coerce('nodepad');
+
+    // Prefer Sankey-specific font spec e.g. with smaller default size
+    var sankeyFontSpec = Lib.coerceFont(coerce, 'textfont');
+    Lib.coerceFont(coerce, 'textfont', Lib.extendFlat({}, layout.font, sankeyFontSpec));
 };

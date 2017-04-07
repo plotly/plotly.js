@@ -8,9 +8,11 @@
 
 'use strict';
 
-var extendFlat = require('../../lib/extend').extendFlat;
-var plotAttrs = require('../../plots/attributes');
 var shapeAttrs = require('../../components/shapes/attributes');
+var fontAttrs = require('../../plots/font_attributes');
+var plotAttrs = require('../../plots/attributes');
+
+var extendFlat = require('../../lib/extend').extendFlat;
 
 
 module.exports = {
@@ -62,6 +64,12 @@ module.exports = {
         description: 'Sets the padding (in px) between the `nodes`.'
     },
 
+    textfont: extendFlat({}, fontAttrs, {
+        size: extendFlat({}, fontAttrs.size, {
+            dflt: 10
+        })
+    }),
+
     nodes: {
         _isLinkedToArray: 'node',
         label: {
@@ -70,7 +78,9 @@ module.exports = {
             description: 'The shown name of the node.'
         },
         visible: shapeAttrs.visible,
-        color: extendFlat({}, shapeAttrs.fillcolor, {dflt: 'rgb(0,255,0,0.5)'}),
+        color: extendFlat({}, shapeAttrs.fillcolor, {
+            dflt: 'rgb(0,255,0,0.5)'
+        }),
         description: 'The nodes of the Sankey plot.'
     },
 
