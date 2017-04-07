@@ -42,7 +42,7 @@ function plotOne(gd, plotinfo, cd) {
     var gridLayer = plotinfo.plot.selectAll('.carpetlayer');
     var clipLayer = makeg(fullLayout._defs, 'g', 'clips');
 
-    var axisLayer = makeg(gridLayer, 'g', 'carpet' + trace.uid);
+    var axisLayer = makeg(gridLayer, 'g', 'carpet' + trace.uid).classed('trace', true);
     var minorLayer = makeg(axisLayer, 'g', 'minorlayer');
     var majorLayer = makeg(axisLayer, 'g', 'majorlayer');
     var boundaryLayer = makeg(axisLayer, 'g', 'boundarylayer');

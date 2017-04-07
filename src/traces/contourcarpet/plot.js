@@ -137,6 +137,7 @@ function clipBoundary(plotGroup, carpet) {
 function makeContourGroup(plotinfo, cd, id) {
     var plotgroup = plotinfo.plot.select('.maplayer')
         .selectAll('g.contour.' + id)
+        .classed('trace', true)
         .data(cd);
 
     plotgroup.enter().append('g')
