@@ -244,9 +244,9 @@ module.exports = {
         role: 'style',
         description: 'Determines whether or not the tick labels are drawn.'
     },
-    showspikes: {
+    showspike: {
         valType: 'boolean',
-        dflt: true,
+        dflt: false,
         role: 'style',
         description: [
             'Determines whether or not spikes (aka droplines) are drawn for this axis.',

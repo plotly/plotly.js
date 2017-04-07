@@ -361,6 +361,35 @@ axes.saveRangeInitial = function(gd, overwrite) {
     return hasOneAxisChanged;
 };
 
+// save a copy of the initial spike visibility
+axes.saveShowSpikeInitial = function(gd, overwrite) {
+    var axList = axes.list(gd, '', true),
+        hasOneAxisChanged = false,
+        allEnabled = 'on';
+
+    for(var i = 0; i < axList.length; i++) {
+        var ax = axList[i];
+
+        var isNew = (ax._showSpikeInitial === undefined);
+        var hasChanged = (
+            isNew || !(
+                ax.showspike === ax._showspike
+            )
+        );
+
+        if((isNew) || (overwrite && hasChanged)) {
+            ax._showSpikeInitial = ax.showspike;
+            hasOneAxisChanged = true;
+        }
+
+        if(allEnabled === 'on' && !ax.showspike) {
+            allEnabled = 'off';
+        }
+    }
+    gd._fullLayout._cartesianSpikesEnabled = allEnabled;
+    return hasOneAxisChanged;
+};
+
 // axes.expand: if autoranging, include new data in the outer limits
 // for this axis
 // data is an array of numbers (ie already run through ax.d2c)

@@ -99,7 +99,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     coerce('range');
     containerOut.cleanRange();
 
-    coerce('showspikes');
+    coerce('showspike');
     coerce('spikecolor');
     coerce('spikethickness');
     coerce('spikedash');

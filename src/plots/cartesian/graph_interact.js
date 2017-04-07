@@ -879,7 +879,7 @@ function createDroplines(hoverData, opts) {
     container.selectAll('circle.dropline').remove();
 
 
-    if(c0.ya.showspikes) {
+    if(c0.ya.showspike) {
         if(ySpikeLine) {
             // Background horizontal Line (to y-axis)
             container.append('line')
@@ -913,7 +913,7 @@ function createDroplines(hoverData, opts) {
         }
     }
 
-    if(c0.xa.showspikes) {
+    if(c0.xa.showspike) {
         if(xSpikeLine) {
         // Background vertical line (to x-axis)
             container.append('line')

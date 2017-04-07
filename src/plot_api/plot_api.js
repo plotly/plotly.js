@@ -151,9 +151,12 @@ Plotly.plot = function(gd, data, layout, config) {
         makePlotFramework(gd);
     }
 
-    // save initial axis range once per graph
-    if(graphWasEmpty) Plotly.Axes.saveRangeInitial(gd);
-
+    if(graphWasEmpty) {
+        // save initial axis range once per graph
+        Plotly.Axes.saveRangeInitial(gd);
+        // save initial show spikes once per graph
+        Plotly.Axes.saveShowSpikeInitial(gd);
+    }
 
     // prepare the data and find the autorange
 

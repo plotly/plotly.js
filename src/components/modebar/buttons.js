@@ -183,7 +183,8 @@ function handleCartesian(gd, ev) {
         var mag = (val === 'in') ? 0.5 : 2,
             r0 = (1 + mag) / 2,
             r1 = (1 - mag) / 2,
-            axList = Axes.list(gd, null, true);
+            axList = Axes.list(gd, null, true),
+            allEnabled = 'on';
 
         var ax, axName;
 
@@ -202,6 +203,12 @@ function handleCartesian(gd, ev) {
                         aobj[axName + '.range[0]'] = rangeInitial[0];
                         aobj[axName + '.range[1]'] = rangeInitial[1];
                     }
+                    if(ax._showSpikeInitial !== undefined) {
+                        aobj[axName + '.showspike'] = ax._showSpikeInitial;
+                        if(allEnabled === 'on' && !ax._showSpikeInitial) {
+                            allEnabled = 'off';
+                        }
+                    }
                 }
                 else {
                     var rangeNow = [
@@ -219,12 +226,17 @@ function handleCartesian(gd, ev) {
                 }
             }
         }
+        fullLayout._cartesianSpikesEnabled = allEnabled;
     }
     else {
         // if ALL traces have orientation 'h', 'hovermode': 'x' otherwise: 'y'
         if(astr === 'hovermode' && (val === 'x' || val === 'y')) {
             val = fullLayout._isHoriz ? 'y' : 'x';
             button.setAttribute('data-val', val);
+            if(val !== 'closest') {
+                fullLayout._cartesianSpikesEnabled = 'off';
+                aobj = setSpikelineVisibility(gd);
+            }
         }
 
         aobj[astr] = val;
@@ -518,3 +530,38 @@ modeBarButtons.resetViews = {
         // geo subplots.
     }
 };
+
+modeBarButtons.toggleSpikelines = {
+    name: 'toggleSpikelines',
+    title: 'Toggle Spike Lines',
+    icon: Icons.home,
+    attr: '_cartesianSpikesEnabled',
+    val: 'on',
+    click: function(gd) {
+        var fullLayout = gd._fullLayout;
+
+        fullLayout._cartesianSpikesEnabled = fullLayout.hovermode === 'closest' ?
+            (fullLayout._cartesianSpikesEnabled === 'on' ? 'off' : 'on') : 'on';
+
+        var aobj = setSpikelineVisibility(gd);
+
+        aobj.hovermode = 'closest';
+        Plotly.relayout(gd, aobj);
+    }
+};
+
+function setSpikelineVisibility(gd) {
+    var fullLayout = gd._fullLayout,
+        axList = Axes.list(gd, null, true),
+        ax,
+        axName,
+        aobj = {};
+
+    for(var i = 0; i < axList.length; i++) {
+        ax = axList[i];
+        axName = ax._name;
+        aobj[axName + '.showspike'] = fullLayout._cartesianSpikesEnabled === 'on' ? true : false;
+    }
+
+    return aobj;
+}
