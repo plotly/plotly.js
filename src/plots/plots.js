@@ -709,6 +709,10 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
         fullTrace = dataOut[carpetDependents[i]];
         var carpetAxis = carpetIndex[fullTrace.carpetid];
         fullTrace._carpet = carpetAxis;
+        if(!carpetAxis || !carpetAxis.visible) {
+            fullTrace.visible = false;
+            continue;
+        }
         fullTrace.xaxis = carpetAxis.xaxis;
         fullTrace.yaxis = carpetAxis.yaxis;
     }

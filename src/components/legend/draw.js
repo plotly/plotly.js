@@ -510,7 +510,8 @@ function handleClick(g, gd, numClicks) {
 
         for(i = 0; i < fullData.length; i++) {
             allTraces.push(i);
-            traceVisibility.push('legendonly');
+            // For carpet traces in particular, push the current visibility. For others, legendonly:
+            traceVisibility.push(Registry.traceIs(fullData[i], 'notLegendIsolatable') ? fullData[i].visible : 'legendonly');
         }
 
         if(legendgroup === '') {
@@ -542,9 +543,7 @@ function handleClick(g, gd, numClicks) {
             }
             var visibilityUpdates = [];
             for(i = 0; i < fullData.length; i++) {
-                if(!Registry.traceIs(fullData[i], 'notLegendIsolatable')) {
-                    visibilityUpdates.push(allTraces[i]);
-                }
+                visibilityUpdates.push(allTraces[i]);
             }
             Plotly.restyle(gd, 'visible', traceVisibility, visibilityUpdates);
         }

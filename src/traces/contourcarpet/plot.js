@@ -40,7 +40,7 @@ function plotOne(gd, plotinfo, cd) {
     var carpet = trace.carpet = lookupCarpet(gd, trace);
     var carpetcd = gd.calcdata[carpet.index][0];
 
-    if(!carpet.visible) return;
+    if(!carpet.visible || carpet.visible === 'legendonly') return;
 
     var a = cd[0].a;
     var b = cd[0].b;

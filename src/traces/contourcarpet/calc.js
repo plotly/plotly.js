@@ -28,7 +28,7 @@ var lookupCarpet = require('../carpet/lookup_carpetid');
 // contour maps, because the makeBoundArray calls are too entangled
 module.exports = function calc(gd, trace) {
     var carpet = trace.carpet = lookupCarpet(gd, trace);
-    if(!carpet || !carpet.visible) return;
+    if(!carpet || !carpet.visible || carpet.visible === 'legendonly') return;
 
     if(!trace.a || !trace.b) {
         // Look up the original incoming carpet data:
