@@ -56,9 +56,23 @@ module.exports = {
             'If a single string, the same string appears over',
             'all the data points.',
             'If an array of string, the items are mapped in order to the',
-            'this trace\'s (lon,lat) or `locations` coordinates.'
+            'this trace\'s (lon,lat) or `locations` coordinates.',
+            'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
+            'these elements will be seen in the hover labels.'
         ].join(' ')
     }),
+    hovertext: extendFlat({}, scatterAttrs.hovertext, {
+        description: [
+            'Sets hover text elements associated with each (lon,lat) pair',
+            'or item in `locations`.',
+            'If a single string, the same string appears over',
+            'all the data points.',
+            'If an array of string, the items are mapped in order to the',
+            'this trace\'s (lon,lat) or `locations` coordinates.',
+            'To be seen, trace `hoverinfo` must contain a *text* flag.'
+        ].join(' ')
+    }),
+
     textfont: scatterAttrs.textfont,
     textposition: scatterAttrs.textposition,
 

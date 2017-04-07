@@ -468,7 +468,7 @@ describe('@noCI scattermapbox hover', function() {
         });
     });
 
-    it('should generate hover label info (hoverinfo: \'text\' case)', function(done) {
+    it('should generate hover label info (hoverinfo: \'text\' + \'text\' array case)', function(done) {
         Plotly.restyle(gd, 'hoverinfo', 'text').then(function() {
             var xval = 11,
                 yval = 11;
@@ -476,6 +476,18 @@ describe('@noCI scattermapbox hover', function() {
             var out = hoverPoints(getPointData(gd), xval, yval)[0];
 
             expect(out.extraText).toEqual('A');
+            done();
+        });
+    });
+
+    it('should generate hover label info (hoverinfo: \'text\' + \'hovertext\' array case)', function(done) {
+        Plotly.restyle(gd, 'hovertext', ['Apple', 'Banana', 'Orange']).then(function() {
+            var xval = 11,
+                yval = 11;
+
+            var out = hoverPoints(getPointData(gd), xval, yval)[0];
+
+            expect(out.extraText).toEqual('Apple');
             done();
         });
     });
