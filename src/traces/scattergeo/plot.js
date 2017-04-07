@@ -15,16 +15,26 @@ var Drawing = require('../../components/drawing');
 var Color = require('../../components/color');
 
 var Lib = require('../../lib');
+var BADNUM = require('../../constants/numerical').BADNUM;
 var getTopojsonFeatures = require('../../lib/topojson_utils').getTopojsonFeatures;
 var locationToFeature = require('../../lib/geo_location_utils').locationToFeature;
 var geoJsonUtils = require('../../lib/geojson_utils');
-var arrayToCalcItem = require('../../lib/array_to_calc_item');
 var subTypes = require('../scatter/subtypes');
 
 
 module.exports = function plot(geo, calcData) {
 
     function keyFunc(d) { return d[0].trace.uid; }
+
+    function removeBADNUM(d, node) {
+        if(d.lonlat[0] === BADNUM) {
+            d3.select(node).remove();
+        }
+    }
+
+    for(var i = 0; i < calcData.length; i++) {
+        fillLocationLonLat(calcData[i], geo.topojson);
+    }
 
     var gScatterGeoTraces = geo.framework.select('.scattergeolayer')
         .selectAll('g.trace.scattergeo')
@@ -39,27 +49,11 @@ module.exports = function plot(geo, calcData) {
     gScatterGeoTraces.selectAll('*').remove();
 
     gScatterGeoTraces.each(function(calcTrace) {
-        var s = d3.select(this),
-            trace = calcTrace[0].trace,
-            convertToLonLatFn = makeConvertToLonLatFn(trace, geo.topojson);
-
-        // skip over placeholder traces
-        if(calcTrace[0].placeholder) s.remove();
-
-        // just like calcTrace but w/o not-found location datum
-        var _calcTrace = [];
-
-        for(var i = 0; i < calcTrace.length; i++) {
-            var _calcPt = convertToLonLatFn(calcTrace[i]);
-
-            if(_calcPt) {
-                arrayItemToCalcdata(trace, calcTrace[i], i);
-                _calcTrace.push(_calcPt);
-            }
-        }
+        var s = d3.select(this);
+        var trace = calcTrace[0].trace;
 
         if(subTypes.hasLines(trace) || trace.fill !== 'none') {
-            var lineCoords = geoJsonUtils.calcTraceToLineCoords(_calcTrace);
+            var lineCoords = geoJsonUtils.calcTraceToLineCoords(calcTrace);
 
             var lineData = (trace.fill !== 'none') ?
                 geoJsonUtils.makePolygon(lineCoords, trace) :
@@ -72,15 +66,19 @@ module.exports = function plot(geo, calcData) {
         }
 
         if(subTypes.hasMarkers(trace)) {
-            s.selectAll('path.point').data(_calcTrace)
-              .enter().append('path')
-                .classed('point', true);
+            s.selectAll('path.point')
+                .data(Lib.identity)
+             .enter().append('path')
+                .classed('point', true)
+                .each(function(calcPt) { removeBADNUM(calcPt, this); });
         }
 
         if(subTypes.hasText(trace)) {
-            s.selectAll('g').data(_calcTrace)
+            s.selectAll('g')
+                .data(Lib.identity)
               .enter().append('g')
-              .append('text');
+                .append('text')
+                .each(function(calcPt) { removeBADNUM(calcPt, this); });
         }
     });
 
@@ -88,50 +86,19 @@ module.exports = function plot(geo, calcData) {
     style(geo);
 };
 
-function makeConvertToLonLatFn(trace, topojson) {
-    if(!Array.isArray(trace.locations)) return Lib.identity;
+function fillLocationLonLat(calcTrace, topojson) {
+    var trace = calcTrace[0].trace;
 
-    var features = getTopojsonFeatures(trace, topojson),
-        locationmode = trace.locationmode;
+    if(!Array.isArray(trace.locations)) return;
 
-    return function(calcPt) {
+    var features = getTopojsonFeatures(trace, topojson);
+    var locationmode = trace.locationmode;
+
+    for(var i = 0; i < calcTrace.length; i++) {
+        var calcPt = calcTrace[i];
         var feature = locationToFeature(locationmode, calcPt.loc, features);
 
-        if(feature) {
-            calcPt.lonlat = feature.properties.ct;
-            return calcPt;
-        }
-        else {
-            // mutate gd.calcdata so that hoverPoints knows to skip this datum
-            calcPt.lonlat = [null, null];
-            return false;
-        }
-    };
-}
-
-function arrayItemToCalcdata(trace, calcItem, i) {
-    var marker = trace.marker;
-
-    function merge(traceAttr, calcAttr) {
-        arrayToCalcItem(traceAttr, calcItem, calcAttr, i);
-    }
-
-    merge(trace.text, 'tx');
-    merge(trace.textposition, 'tp');
-    if(trace.textfont) {
-        merge(trace.textfont.size, 'ts');
-        merge(trace.textfont.color, 'tc');
-        merge(trace.textfont.family, 'tf');
-    }
-
-    if(marker && marker.line) {
-        var markerLine = marker.line;
-        merge(marker.opacity, 'mo');
-        merge(marker.symbol, 'mx');
-        merge(marker.color, 'mc');
-        merge(marker.size, 'ms');
-        merge(markerLine.color, 'mlc');
-        merge(markerLine.width, 'mlw');
+        calcPt.lonlat = feature ? feature.properties.ct : [BADNUM, BADNUM];
     }
 }
 
