@@ -192,7 +192,7 @@ describe('pie hovering', function() {
         function assertLabel(expected) {
             var labels = d3.selectAll('.hovertext .nums .line');
 
-            expect(labels[0].length).toBe(expected.length);
+            expect(labels.size()).toBe(expected.length);
 
             labels.each(function(_, i) {
                 expect(d3.select(this).text()).toBe(expected[i]);
