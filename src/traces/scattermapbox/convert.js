@@ -10,8 +10,11 @@
 'use strict';
 
 var Lib = require('../../lib');
+var BADNUM = require('../../constants/numerical').BADNUM;
 var geoJsonUtils = require('../../lib/geojson_utils');
 
+var Colorscale = require('../../components/colorscale');
+var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var subTypes = require('../scatter/subtypes');
 var convertTextOpts = require('../../plots/mapbox/convert_text_opts');
 
@@ -43,16 +46,16 @@ module.exports = function convert(calcTrace) {
     };
 
     // early return if not visible or placeholder
-    if(!isVisible || calcTrace[0].placeholder) return opts;
+    if(!isVisible) return opts;
 
     // fill layer and line layer use the same coords
-    var coords;
+    var lineCoords;
     if(hasFill || hasLines) {
-        coords = geoJsonUtils.calcTraceToLineCoords(calcTrace);
+        lineCoords = geoJsonUtils.calcTraceToLineCoords(calcTrace);
     }
 
     if(hasFill) {
-        fill.geojson = geoJsonUtils.makePolygon(coords);
+        fill.geojson = geoJsonUtils.makePolygon(lineCoords);
         fill.layout.visibility = 'visible';
 
         Lib.extendFlat(fill.paint, {
@@ -61,7 +64,7 @@ module.exports = function convert(calcTrace) {
     }
 
     if(hasLines) {
-        line.geojson = geoJsonUtils.makeLine(coords);
+        line.geojson = geoJsonUtils.makeLine(lineCoords);
         line.layout.visibility = 'visible';
 
         Lib.extendFlat(line.paint, {
@@ -155,12 +158,30 @@ function initContainer() {
 //
 // The solution prove to be more robust than trying to generate
 // `stops` arrays from scale functions.
+//
+// TODO axe this when we bump mapbox-gl and rewrite this using
+// "identity" property functions.
+// See https://github.com/plotly/plotly.js/pull/1543
+//
 function makeCircleGeoJSON(calcTrace, hash) {
     var trace = calcTrace[0].trace;
+    var marker = trace.marker;
 
-    var marker = trace.marker,
-        hasColorArray = Array.isArray(marker.color),
-        hasSizeArray = Array.isArray(marker.size);
+    var colorFn;
+    if(Colorscale.hasColorscale(trace, 'marker')) {
+        colorFn = Colorscale.makeColorScaleFunc(
+             Colorscale.extractScale(marker.colorscale, marker.cmin, marker.cmax)
+         );
+    } else if(Array.isArray(marker.color)) {
+        colorFn = Lib.identity;
+    }
+
+    var sizeFn;
+    if(subTypes.isBubble(trace)) {
+        sizeFn = makeBubbleSizeFn(trace);
+    } else if(Array.isArray(marker.size)) {
+        sizeFn = Lib.identity;
+    }
 
     // Translate vals in trace arrayOk containers
     // into a val-to-index hash object
@@ -174,16 +195,19 @@ function makeCircleGeoJSON(calcTrace, hash) {
 
     for(var i = 0; i < calcTrace.length; i++) {
         var calcPt = calcTrace[i];
+        var lonlat = calcPt.lonlat;
+
+        if(isBADNUM(lonlat)) continue;
 
         var props = {};
-        if(hasColorArray) translate(props, COLOR_PROP, calcPt.mcc, i);
-        if(hasSizeArray) translate(props, SIZE_PROP, calcPt.mrc, i);
+        if(colorFn) translate(props, COLOR_PROP, colorFn(calcPt.mc), i);
+        if(sizeFn) translate(props, SIZE_PROP, sizeFn(calcPt.ms), i);
 
         features.push({
             type: 'Feature',
             geometry: {
                 type: 'Point',
-                coordinates: calcPt.lonlat
+                coordinates: lonlat
             },
             properties: props
         });
@@ -214,6 +238,8 @@ function makeSymbolGeoJSON(calcTrace) {
 
     for(var i = 0; i < calcTrace.length; i++) {
         var calcPt = calcTrace[i];
+
+        if(isBADNUM(calcPt.lonlat)) continue;
 
         features.push({
             type: 'Feature',
@@ -305,3 +331,8 @@ function getFillFunc(attr) {
 }
 
 function blankFillFunc() { return ''; }
+
+// only need to check lon (OR lat)
+function isBADNUM(lonlat) {
+    return lonlat[0] === BADNUM;
+}

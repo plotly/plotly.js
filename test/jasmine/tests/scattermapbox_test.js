@@ -239,7 +239,7 @@ describe('scattermapbox convert', function() {
             return f.properties.text;
         });
 
-        expect(actualText).toEqual(['A', 'B', 'C', 'F', '']);
+        expect(actualText).toEqual(['A', 'B', 'C', 'F', undefined]);
     });
 
     it('should generate correct output for lines traces with trailing gaps', function() {
@@ -314,7 +314,9 @@ describe('scattermapbox convert', function() {
             fill: 'toself'
         }));
 
-        assertVisibility(opts, ['none', 'none', 'none', 'none']);
+        // not optimal, but doesn't break anything as mapbox-gl accepts empty
+        // coordinate arrays
+        assertVisibility(opts, ['visible', 'visible', 'none', 'none']);
 
         expect(opts.line.geojson.coordinates).toEqual([], 'line coords');
         expect(opts.fill.geojson.coordinates).toEqual([], 'fill coords');
