@@ -969,7 +969,7 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    it('should reversibly change plot type with incomplete data', function(done) {
+    it('should change plot type with incomplete data', function(done) {
         Plotly.plot(gd, [{}]);
 
         expect(function() {
