@@ -13,8 +13,6 @@ var Fx = require('../../plots/cartesian/graph_interact');
 var d3 = require('d3');
 var Color = require('../../components/color');
 
-var followMouse = true;
-
 function makeTranslucent(element, alpha) {
     d3.select(element)
         .select('path')
@@ -36,7 +34,20 @@ module.exports = function plot(gd, calcData) {
         Fx.click(gd, { target: true });
     };
 
-    var linkHover = function(element, d, justTooltipUpdate) {
+    var linkHover = function(element, d) {
+
+            d3.select(element).style('stroke-opacity', 0.5);
+            console.log('hover link', d.link);
+
+            Fx.hover(gd, d.link, 'sankey');
+
+            hasHoverData = true;
+    };
+
+    var linkHoverFollow = function(element, d) {
+
+
+        var followMouse = calcData[0][d.traceId].trace.followmouse;
 
         var boundingBox = !followMouse && element.getBoundingClientRect();
         var hoverCenterX = followMouse ? d3.event.x : boundingBox.left + boundingBox.width / 2;
@@ -59,17 +70,6 @@ module.exports = function plot(gd, calcData) {
         });
 
         makeTranslucent(tooltip, 0.67);
-
-        if(justTooltipUpdate) {
-            return;
-        }
-
-        d3.select(element).style('stroke-opacity', 0.5);
-        console.log('hover link', d.link);
-
-        Fx.hover(gd, d.link, 'sankey');
-
-        hasHoverData = true;
     };
 
     var linkUnhover = function(element, d) {
@@ -92,9 +92,28 @@ module.exports = function plot(gd, calcData) {
         Fx.click(gd, { target: true });
     };
 
-    var nodeHover = function(element, d, justTooltipUpdate) {
+    var nodeHover = function(element, d) {
 
         var nodeRect = d3.select(element).select('.nodeRect');
+
+        console.log('hover node', d.node);
+
+        nodeRect
+            .style('stroke-width', 1)
+            .style('stroke', 'black');
+
+        Fx.hover(gd, d.node, 'sankey');
+
+        hasHoverData = true;
+
+    };
+
+
+    var nodeHoverFollow = function(element, d) {
+
+        var nodeRect = d3.select(element).select('.nodeRect');
+
+        var followMouse = calcData[0][d.traceId].trace.followmouse;
 
         var boundingBox = nodeRect.node().getBoundingClientRect();
         var hoverCenterX0 = boundingBox.left - 2;
@@ -119,20 +138,6 @@ module.exports = function plot(gd, calcData) {
         });
 
         makeTranslucent(tooltip, 0.85);
-
-        if(justTooltipUpdate) {
-            return;
-        }
-
-        console.log('hover node', d.node);
-
-        nodeRect
-            .style('stroke-width', 1)
-            .style('stroke', 'black');
-
-        Fx.hover(gd, d.node, 'sankey');
-
-        hasHoverData = true;
     };
 
     var nodeUnhover = function(element, d) {
@@ -166,11 +171,13 @@ module.exports = function plot(gd, calcData) {
         {
             linkEvents: {
                 hover: linkHover,
+                follow: linkHoverFollow,
                 unhover: linkUnhover,
                 select: linkSelect
             },
             nodeEvents: {
                 hover: nodeHover,
+                follow: nodeHoverFollow,
                 unhover: nodeUnhover,
                 select: nodeSelect
             }

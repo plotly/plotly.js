@@ -102,7 +102,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
             })
             .on('mousemove', function (d) {
                 if (!dragInProgress) {
-                    eventSet.hover(this, d, true);
+                    eventSet.follow(this, d);
                     hovered = [this, d];
                 }
             })
@@ -173,6 +173,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
             return d.sankey.links().map(function(l) {
                 var tc = tinycolor(l.color);
                 return {
+                    traceId: d.key,
                     link: l,
                     tinyColorHue: Color.tinyRGB(tc),
                     tinyColorAlpha: tc.getAlpha(),
@@ -258,6 +259,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
             return d.sankey.nodes().map(function(n) {
                 var tc = tinycolor(n.color);
                 return {
+                    traceId: d.key,
                     node: n,
                     nodePad: d.nodePad,
                     textFont: d.textFont,
@@ -297,20 +299,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 d.forceLayout.alphaDecay(c.alphaDecay);
             }));
 
-    var nodeCapture = sankeyNode.selectAll('.nodeCapture')
-        .data(repeat);
-
-    nodeCapture.enter()
-        .append('rect')
-        .classed('nodeCapture', true)
-        .style('fill-opacity', 0);
-
-    nodeCapture
-        .attr('width', function(d) {return Math.ceil(d.horizontal ? d.node.dx + 0.5 : d.node.dy - 0.5 + d.nodePad);})
-        .attr('height', function(d) {return Math.ceil(d.horizontal ? d.node.dy - 0.5 + d.nodePad : d.node.dx + 0.5);})
-        .attr('x', function(d) {return d.horizontal ? 0 : - d.nodePad / 2;})
-        .attr('y', function(d) {return d.horizontal ? -d.nodePad / 2: 0;});
-
     var nodeRect = sankeyNode.selectAll('.nodeRect')
         .data(repeat);
 
@@ -325,6 +313,20 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('fill-opacity', function(d) {return d.tinyColorAlpha;})
         .attr('width', function(d) {return d.horizontal ? Math.ceil(d.node.dx + 0.5) : Math.ceil(d.node.dy - 0.5);})
         .attr('height', function(d) {return d.horizontal ? Math.ceil(d.node.dy - 0.5) : Math.ceil(d.node.dx + 0.5);});
+
+    var nodeCapture = sankeyNode.selectAll('.nodeCapture')
+        .data(repeat);
+
+    nodeCapture.enter()
+        .append('rect')
+        .classed('nodeCapture', true)
+        .style('fill-opacity', 0);
+
+    nodeCapture
+        .attr('width', function(d) {return Math.ceil(d.horizontal ? d.node.dx + 0.5 : d.node.dy - 0.5 + d.nodePad);})
+        .attr('height', function(d) {return Math.ceil(d.horizontal ? d.node.dy - 0.5 + d.nodePad : d.node.dx + 0.5);})
+        .attr('x', function(d) {return d.horizontal ? 0 : - d.nodePad / 2;})
+        .attr('y', function(d) {return d.horizontal ? -d.nodePad / 2: 0;});
 
     var nodeLabel = sankeyNode.selectAll('.nodeLabel')
         .data(repeat);

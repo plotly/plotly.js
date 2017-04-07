@@ -64,6 +64,14 @@ module.exports = {
         description: 'Sets the padding (in px) between the `nodes`.'
     },
 
+    // followmouse for UX testing
+    followmouse: {
+        valType: 'boolean',
+        dflt: true,
+        role: 'style',
+        description: 'Sets whether the hover tooltip follows the mouse.'
+    },
+
     textfont: extendFlat({}, fontAttrs, {
         size: extendFlat({}, fontAttrs.size, {
             dflt: 10
