@@ -13,6 +13,8 @@ var Fx = require('../../plots/cartesian/graph_interact');
 var d3 = require('d3');
 var Color = require('../../components/color');
 
+var followMouse = true;
+
 function makeTranslucent(element, alpha) {
     d3.select(element)
         .select('path')
@@ -34,13 +36,11 @@ module.exports = function plot(gd, calcData) {
         Fx.click(gd, { target: true });
     };
 
-    var linkHover = function(element, d) {
-        d3.select(element).style('stroke-opacity', 0.5);
-        console.log('hover link', d.link);
+    var linkHover = function(element, d, justTooltipUpdate) {
 
-        var boundingBox = element.getBoundingClientRect();
-        var hoverCenterX = boundingBox.left + boundingBox.width / 2;
-        var hoverCenterY = boundingBox.top + boundingBox.height / 2;
+        var boundingBox = !followMouse && element.getBoundingClientRect();
+        var hoverCenterX = followMouse ? d3.event.x : boundingBox.left + boundingBox.width / 2;
+        var hoverCenterY = followMouse ? d3.event.y : boundingBox.top + boundingBox.height / 2;
 
         var tooltip = Fx.loneHover({
             x: hoverCenterX,
@@ -52,13 +52,20 @@ module.exports = function plot(gd, calcData) {
                 ['Target:', d.link.target.name].join(' ')
             ].join('<br>'),
             color: Color.addOpacity(d.tinyColorHue, 1),
-            idealAlign: 'left'
+            idealAlign: d3.event.x < hoverCenterX ? 'right' : 'left'
         }, {
             container: fullLayout._hoverlayer.node(),
             outerContainer: fullLayout._paper.node()
         });
 
         makeTranslucent(tooltip, 0.67);
+
+        if(justTooltipUpdate) {
+            return;
+        }
+
+        d3.select(element).style('stroke-opacity', 0.5);
+        console.log('hover link', d.link);
 
         Fx.hover(gd, d.link, 'sankey');
 
@@ -85,17 +92,14 @@ module.exports = function plot(gd, calcData) {
         Fx.click(gd, { target: true });
     };
 
-    var nodeHover = function(element, d) {
+    var nodeHover = function(element, d, justTooltipUpdate) {
+
         var nodeRect = d3.select(element).select('.nodeRect');
-        nodeRect
-            .style('stroke-width', 1)
-            .style('stroke', 'black');
-        console.log('hover node', d.node);
 
         var boundingBox = nodeRect.node().getBoundingClientRect();
         var hoverCenterX0 = boundingBox.left - 2;
         var hoverCenterX1 = boundingBox.right + 2;
-        var hoverCenterY = boundingBox.top + boundingBox.height / 4;
+        var hoverCenterY = followMouse ? d3.event.y : boundingBox.top + boundingBox.height / 4;
 
         var tooltip = Fx.loneHover({
             x0: hoverCenterX0,
@@ -115,6 +119,16 @@ module.exports = function plot(gd, calcData) {
         });
 
         makeTranslucent(tooltip, 0.85);
+
+        if(justTooltipUpdate) {
+            return;
+        }
+
+        console.log('hover node', d.node);
+
+        nodeRect
+            .style('stroke-width', 1)
+            .style('stroke', 'black');
 
         Fx.hover(gd, d.node, 'sankey');
 

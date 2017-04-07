@@ -100,6 +100,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
                     hovered = [this, d];
                 }
             })
+            .on('mousemove', function (d) {
+                if (!dragInProgress) {
+                    eventSet.hover(this, d, true);
+                    hovered = [this, d];
+                }
+            })
             .on('mouseout', function (d) {
                 if (!dragInProgress) {
                     eventSet.unhover(this, d);
