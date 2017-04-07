@@ -1041,3 +1041,51 @@ describe('annotation dragging', function() {
         .then(done);
     });
 });
+
+describe('annotation clip paths', function() {
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+
+        // we've already tested autorange with relayout, so fix the geometry
+        // completely so we know exactly what we're dealing with
+        // plot area is 300x300, and covers data range 100x100
+        Plotly.plot(gd, [{x: [0, 100], y: [0, 100]}], {
+            annotations: [
+                {x: 50, y: 50, text: 'hi', width: 50},
+                {x: 20, y: 20, text: 'bye', height: 40},
+                {x: 80, y: 80, text: 'why?'}
+            ]
+        })
+        .then(done);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should only make the clippaths it needs and delete others', function(done) {
+        expect(d3.select(gd).selectAll('.annclip').size()).toBe(2);
+
+        Plotly.relayout(gd, {'annotations[0].visible': false})
+        .then(function() {
+            expect(d3.select(gd).selectAll('.annclip').size()).toBe(1);
+
+            return Plotly.relayout(gd, {'annotations[2].width': 20});
+        })
+        .then(function() {
+            expect(d3.select(gd).selectAll('.annclip').size()).toBe(2);
+
+            return Plotly.relayout(gd, {'annotations[1].height': null});
+        })
+        .then(function() {
+            expect(d3.select(gd).selectAll('.annclip').size()).toBe(1);
+
+            return Plotly.relayout(gd, {'annotations[2]': null});
+        })
+        .then(function() {
+            expect(d3.select(gd).selectAll('.annclip').size()).toBe(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});

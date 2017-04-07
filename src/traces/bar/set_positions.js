@@ -236,7 +236,7 @@ function setOffsetAndWidth(gd, pa, sieve) {
     applyAttributes(sieve);
 
     // store the bar center in each calcdata item
-    setBarCenter(gd, pa, sieve);
+    setBarCenterAndWidth(gd, pa, sieve);
 
     // update position axes
     updatePositionAxis(gd, pa, sieve);
@@ -286,7 +286,7 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
     applyAttributes(sieve);
 
     // store the bar center in each calcdata item
-    setBarCenter(gd, pa, sieve);
+    setBarCenterAndWidth(gd, pa, sieve);
 
     // update position axes
     updatePositionAxis(gd, pa, sieve, overlap);
@@ -377,7 +377,7 @@ function applyAttributes(sieve) {
 }
 
 
-function setBarCenter(gd, pa, sieve) {
+function setBarCenterAndWidth(gd, pa, sieve) {
     var calcTraces = sieve.traces,
         pLetter = getAxisLetter(pa);
 
@@ -392,9 +392,11 @@ function setBarCenter(gd, pa, sieve) {
         for(var j = 0; j < calcTrace.length; j++) {
             var calcBar = calcTrace[j];
 
+            // store the actual bar width and position, for use by hover
+            var width = calcBar.w = (barwidthIsArray) ? barwidth[j] : barwidth;
             calcBar[pLetter] = calcBar.p +
                 ((poffsetIsArray) ? poffset[j] : poffset) +
-                ((barwidthIsArray) ? barwidth[j] : barwidth) / 2;
+                width / 2;
 
 
         }
