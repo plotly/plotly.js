@@ -194,19 +194,17 @@ module.exports = function(svg, styledData, layout, callbacks) {
                         d.x = d.lastDraggedX;
                         d.y = d.lastDraggedY;
                     } else {
-                        d.vy = Math.min(s - d.dy / 2, Math.max(d.dy / 2, d.y)) - d.y; // constrain to extent
-                        d.vx = d.originalX - Math.round(d.x);
+                        d.vx = d.originalX - d.x; // snap to layer
+                        d.y = Math.min(s - d.dy / 2, Math.max(d.dy / 2, d.y)); // constrain to extent
                     }
                 }
             }
 
-            var forceLayout = d3Force.forceSimulation(nodes)
+            d.forceLayout = d3Force.forceSimulation(nodes)
+                .force('collide', d3Force.forceCollide().iterations(5).radius(function(d) {return d.dy / 2 + c.nodePadding / 2;}))
                 .force('constrain', constrain)
-                .force('collide', d3Force.forceCollide().radius(function(d) {return d.dy / 2 + c.nodePadding / 2;}))
                 .on('tick', updatePositionsOnTick)
-                .on('end', updatePositionsOnEnd);
-
-            d.forceLayout = forceLayout;
+                .on('end', crispLinesOnEnd);
 
             return [d];
 
@@ -218,23 +216,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .classed('sankeyNodes', true);
 
     function positionSankeyNode(sankeyNode) {
-        sankeyNodes.style('shape-rendering', 'geometricPrecision');
+        sankeyNodes.style('shape-rendering', 'optimizeSpeed');
         sankeyNode
             .style('transform', function(d) {
                 return d.model.horizontal
-                    ? 'translate(' + ((d.node.x) - 0.5) + 'px, ' + ((d.node.y - d.node.dy / 2) + 0.5) + 'px)'
-                    : 'translate(' + ((d.node.y - d.node.dy / 2) - 0.5) + 'px, ' + ((d.node.x) + 0.5) + 'px)'
-            })
-    }
-
-    function positionSankeyNodeFinal(sankeyNode) {
-        sankeyNodes.style('shape-rendering', 'crispEdges');
-        sankeyNode
-            .style('shape-rendering', 'crispEdges')
-            .style('transform', function(d) {
-                return d.model.horizontal
-                    ? 'translate(' + (Math.floor(d.node.x) - 0.5) + 'px, ' + (Math.floor(d.node.y - d.node.dy / 2) + 0.5) + 'px)'
-                    : 'translate(' + (Math.floor(d.node.y - d.node.dy / 2) - 0.5) + 'px, ' + (Math.floor(d.node.x) + 0.5) + 'px)'
+                    ? 'translate(' + (d.node.x - 0.5) + 'px, ' + (d.node.y - d.node.dy / 2 + 0.5) + 'px)'
+                    : 'translate(' + (d.node.y - d.node.dy / 2 - 0.5) + 'px, ' + (d.node.x + 0.5) + 'px)'
             })
     }
 
@@ -243,9 +230,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
         sankeyNode.call(positionSankeyNode);
     }
 
-    function updatePositionsOnEnd() {
-        sankeyLink.attr('d', linkPath);
-        sankeyNode.call(positionSankeyNodeFinal);
+    function crispLinesOnEnd() {
+        sankeyNode.style('shape-rendering', 'crispEdges');
     }
 
     var sankeyNode = sankeyNodes.selectAll('.sankeyNode')
@@ -297,7 +283,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
     nodeRect.enter()
         .append('rect')
         .classed('nodeRect', true)
-        //.style('shape-rendering', 'crispEdges')
         .style('stroke-width', 0.5)
         .call(Color.stroke, 'rgba(0, 0, 0, 1)')
         .call(attachPointerEvents, callbacks.nodeEvents);
