@@ -316,14 +316,17 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     nodeLabel.enter()
         .append('text')
-        .classed('nodeLabel', true);
+        .classed('nodeLabel', true)
+        .attr('alignment-baseline', 'middle')
+        .style('font-family', 'sans-serif')
+        .style('font-size', '10px')
+        .style('user-select', 'none')
+        .style('pointer-events', 'none')
+        .style('cursor', 'default');
 
     nodeLabel
         .attr('x', function(d) {return d.model.horizontal ? d.node.dx + c.nodeTextOffset : d.node.dy / 2;})
         .attr('y', function(d) {return d.model.horizontal ? d.node.dy / 2 : d.node.dx / 2;})
         .text(function(d) {return d.node.label;})
-        .attr('alignment-baseline', 'middle')
-        .attr('text-anchor', function(d) {return d.model.horizontal ? 'start' : 'middle';})
-        .style('font-family', 'sans-serif')
-        .style('font-size', '10px');
+        .attr('text-anchor', function(d) {return d.model.horizontal ? 'start' : 'middle';});
 };
