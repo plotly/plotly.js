@@ -258,6 +258,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
     sankeyNode.enter()
         .append('g')
         .classed('sankeyNode', true)
+        .call(attachPointerEvents, callbacks.nodeEvents)
         .call(d3.behavior.drag()
             .origin(function(d) {return d.model.horizontal ? d.node : {x: d.node['y'], y: d.node['x']};})
             .on('dragstart', function(d) {
@@ -281,6 +282,20 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 d.forceLayout.alphaDecay(c.alphaDecay);
             }));
 
+    var nodeCapture = sankeyNode.selectAll('.nodeCapture')
+        .data(repeat);
+
+    nodeCapture.enter()
+        .append('rect')
+        .classed('nodeCapture', true)
+        .style('fill-opacity', 0);
+
+    nodeCapture
+        .attr('width', function(d) {return d.model.horizontal ? Math.ceil(d.node.dx + 0.5) : Math.ceil(d.node.dy - 0.5 + c.nodePadding);})
+        .attr('height', function(d) {return d.model.horizontal ? Math.ceil(d.node.dy - 0.5 + c.nodePadding) : Math.ceil(d.node.dx + 0.5);})
+        .attr('x', function(d) {return d.model.horizontal ? 0 : - c.nodePadding / 2;})
+        .attr('y', function(d) {return d.model.horizontal ? -c.nodePadding / 2: 0;});
+
     var nodeRect = sankeyNode.selectAll('.nodeRect')
         .data(repeat);
 
@@ -288,8 +303,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .append('rect')
         .classed('nodeRect', true)
         .style('stroke-width', 0.5)
-        .call(Color.stroke, 'rgba(0, 0, 0, 1)')
-        .call(attachPointerEvents, callbacks.nodeEvents);
+        .call(Color.stroke, 'rgba(0, 0, 0, 1)');
 
     nodeRect // ceil, +/-0.5 and crispEdges is needed for consistent border width on all 4 sides
         .style('fill', function(d) {return d.tinyColorHue;})

@@ -85,7 +85,7 @@ module.exports = function plot(gd, calcData) {
     };
 
     var nodeHover = function(element, d) {
-        d3.select(element)
+        d3.select(element).select('.nodeRect')
             //.style('stroke-opacity', 1)
             .style('stroke-width', 2)
             .style('stroke', 'black');
@@ -118,7 +118,7 @@ module.exports = function plot(gd, calcData) {
     };
 
     var nodeUnhover = function(element, d) {
-        d3.select(element)
+        d3.select(element).select('.nodeRect')
             //.style('stroke-opacity', 0.25)
             .style('stroke-width', 0.5)
             .style('stroke', 'black');
