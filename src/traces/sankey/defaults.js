@@ -97,4 +97,5 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('domain.x');
     coerce('domain.y');
+    coerce('orientation');
 };

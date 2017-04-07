@@ -46,6 +46,14 @@ module.exports = {
         }
     },
 
+    orientation: {
+        valType: 'enumerated',
+        values: ['v', 'h'],
+        dflt: 'h',
+        role: 'style',
+        description: 'Sets the orientation of the Sankey diagram.'
+    },
+
     nodes: {
         _isLinkedToArray: 'node',
         label: {

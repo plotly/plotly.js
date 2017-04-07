@@ -48,13 +48,14 @@ function viewModel(layout, d, i) {
     var trace = unwrap(d).trace,
         domain = trace.domain,
         nodes = trace.nodes,
-        links = trace.links;
+        links = trace.links,
+        horizontal = trace.orientation === 'h';
 
     var width = layout.width * (domain.x[1] - domain.x[0]);
     var height = layout.height * (domain.y[1] - domain.y[0]);
 
     var sankey = d3sankey()
-        .size(c.vertical ? [height, width]: [width, height])
+        .size(horizontal ? [width, height] : [height, width])
         .nodeWidth(c.nodeWidth)
         .nodePadding(c.nodePadding)
         .nodes(nodes)
@@ -63,12 +64,13 @@ function viewModel(layout, d, i) {
     toForceFormat(nodes);
     return {
         key: i,
+        horizontal: horizontal,
         width: width,
         height: height,
         translateX: domain.x[0] * width + layout.margin.l,
         translateY: layout.height - domain.y[1] * layout.height + layout.margin.t,
-        dragParallel: c.vertical ? width : height,
-        dragPerpendicular: c.vertical ? height : width,
+        dragParallel: horizontal ? height : width,
+        dragPerpendicular: horizontal ? width : height,
         nodes: nodes,
         links: links,
         sankey: sankey
@@ -152,7 +154,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
     sankeyLinks.enter()
         .append('g')
         .classed('sankeyLinks', true)
-        .style('transform', c.vertical ? 'matrix(0,1,1,0,0,0)' : 'matrix(1,0,0,1,0,0)')
+        .style('transform', function(d) {return d.horizontal ? 'matrix(1,0,0,1,0,0)' : 'matrix(0,1,1,0,0,0)'})
         .style('fill', 'none');
 
     var sankeyLink = sankeyLinks.selectAll('.sankeyPath')
@@ -183,7 +185,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .data(function(d) {
 
             var nodes = d.nodes;
-            var s = c.vertical ? d.width: d.height;
+            var s = d.horizontal ? d.height : d.width;
 
             function constrain() {
                 for(var i = 0; i < nodes.length; i++) {
@@ -216,9 +218,11 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     function positionSankeyNode(sankeyNode) {
         sankeyNode
-            .style('transform', c.vertical ?
-                function(d) {return 'translate(' + (Math.floor(d.node.y - d.node.dy / 2) - 0.5) + 'px, ' + (Math.floor(d.node.x) + 0.5) + 'px)';} :
-                function(d) {return 'translate(' + (Math.floor(d.node.x) - 0.5) + 'px, ' + (Math.floor(d.node.y - d.node.dy / 2) + 0.5) + 'px)';})
+            .style('transform', function(d) {
+                return d.model.horizontal
+                    ? 'translate(' + (Math.floor(d.node.x) - 0.5) + 'px, ' + (Math.floor(d.node.y - d.node.dy / 2) + 0.5) + 'px)'
+                    : 'translate(' + (Math.floor(d.node.y - d.node.dy / 2) - 0.5) + 'px, ' + (Math.floor(d.node.x) + 0.5) + 'px)'
+            })
     }
 
     function updatePositionsOnTick() {
@@ -247,7 +251,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .append('g')
         .classed('sankeyNode', true)
         .call(d3.behavior.drag()
-            .origin(function(d) {return c.vertical ? {x: d.node['y'], y: d.node['x']} : d.node;})
+            .origin(function(d) {return d.model.horizontal ? d.node : {x: d.node['y'], y: d.node['x']};})
             .on('dragstart', function(d) {
                 this.parentNode.appendChild(this);
                 dragInProgress = d.node;
@@ -259,8 +263,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 d.forceLayout.alphaDecay(0).alpha(1).restart();
             })
             .on('drag', function(d) {
-                d.node.x = c.vertical ? d3.event.y : d3.event.x;
-                d.node.y = c.vertical ? d3.event.x : d3.event.y;
+                d.node.x = d.model.horizontal ? d3.event.x : d3.event.y;
+                d.node.y = d.model.horizontal ? d3.event.y : d3.event.x;
                 constrainDraggedItem(d.node);
                 d.sankey.relayout();
             })
@@ -283,8 +287,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
     nodeRect // ceil, +/-0.5 and crispEdges is wizardry for consistent border width on all 4 sides
         .style('fill', function(d) {return d.tinyColorHue;})
         .style('fill-opacity', function(d) {return d.tinyColorAlpha;})
-        .attr(c.vertical ? 'height' : 'width', function(d) {return Math.ceil(d.node.dx + 0.5);})
-        .attr(c.vertical ? 'width' : 'height', function(d) {return Math.ceil(d.node.dy - 0.5);});
+        .attr('width', function(d) {return d.model.horizontal ? Math.ceil(d.node.dx + 0.5) : Math.ceil(d.node.dy - 0.5);})
+        .attr('height', function(d) {return d.model.horizontal ? Math.ceil(d.node.dy - 0.5) : Math.ceil(d.node.dx + 0.5);});
 
     var nodeLabel = sankeyNode.selectAll('.nodeLabel')
         .data(repeat);
@@ -294,11 +298,11 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .classed('nodeLabel', true);
 
     nodeLabel
-        .attr('x', function(d) {return c.vertical ? d.node.dy / 2 : d.node.dx + c.nodeTextOffset;})
-        .attr('y', function(d) {return c.vertical ? d.node.dx / 2 : d.node.dy / 2;})
+        .attr('x', function(d) {return d.model.horizontal ? d.node.dx + c.nodeTextOffset : d.node.dy / 2;})
+        .attr('y', function(d) {return d.model.horizontal ? d.node.dy / 2 : d.node.dx / 2;})
         .text(function(d) {return d.node.label;})
         .attr('alignment-baseline', 'middle')
-        .attr('text-anchor', c.vertical ? 'middle' : 'start')
+        .attr('text-anchor', function(d) {return d.model.horizontal ? 'start' : 'middle';})
         .style('font-family', 'sans-serif')
         .style('font-size', '10px');
 };

@@ -14,6 +14,5 @@ module.exports = {
     nodeWidth: 20,
     nodePadding: 15,
     sankeyIterations: 50,
-    vertical: false,
     alphaDecay: 0.0228 // standard alphaDecay of d3.forceLayout
 };
