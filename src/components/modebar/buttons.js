@@ -543,7 +543,7 @@ modeBarButtons.resetViews = {
 modeBarButtons.toggleSpikelines = {
     name: 'toggleSpikelines',
     title: 'Toggle Spike Lines',
-    icon: Icons.home,
+    icon: Icons.spikeline,
     attr: '_cartesianSpikesEnabled',
     val: 'on',
     click: function(gd) {
