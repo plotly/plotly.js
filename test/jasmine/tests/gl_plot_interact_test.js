@@ -968,6 +968,20 @@ describe('Test gl2d plots', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('should reversibly change plot type with incomplete data', function(done) {
+        Plotly.plot(gd, [{}]);
+
+        expect(function() {
+            Plotly.restyle(gd, {type: 'scattergl', x: [[1]]}, 0);
+        }).not.toThrow();
+
+        expect(function() {
+            Plotly.restyle(gd, {y: [[1]]}, 0);
+        }).not.toThrow();
+
+        done();
+    });
 });
 
 describe('Test removal of gl contexts', function() {
