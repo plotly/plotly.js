@@ -191,7 +191,7 @@ proto.updateMap = function(calcData, fullLayout, resolve, reject) {
         self.styleObj = styleObj;
         map.setStyle(styleObj.style);
 
-        map.style.once('load', function() {
+        map.once('style.load', function() {
 
             // need to rebuild trace layers on reload
             // to avoid 'lost event' errors
