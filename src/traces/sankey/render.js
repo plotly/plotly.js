@@ -49,7 +49,8 @@ function viewModel(layout, d, i) {
         domain = trace.domain,
         nodes = trace.nodes,
         links = trace.links,
-        horizontal = trace.orientation === 'h';
+        horizontal = trace.orientation === 'h',
+        nodePad = trace.nodepad;
 
     var width = layout.width * (domain.x[1] - domain.x[0]);
     var height = layout.height * (domain.y[1] - domain.y[0]);
@@ -57,7 +58,7 @@ function viewModel(layout, d, i) {
     var sankey = d3sankey()
         .size(horizontal ? [width, height] : [height, width])
         .nodeWidth(c.nodeWidth)
-        .nodePadding(c.nodePadding)
+        .nodePadding(nodePad)
         .nodes(nodes)
         .links(links)
         .layout(c.sankeyIterations);
@@ -67,6 +68,7 @@ function viewModel(layout, d, i) {
         horizontal: horizontal,
         width: width,
         height: height,
+        nodePad: nodePad,
         translateX: domain.x[0] * width + layout.margin.l,
         translateY: layout.height - domain.y[1] * layout.height + layout.margin.t,
         dragParallel: horizontal ? height : width,
@@ -202,7 +204,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
             d.forceLayout = d3Force.forceSimulation(nodes)
                 .force('collide', d3Force.forceCollide()
-                    .radius(function(d) {return d.dy / 2 + c.nodePadding / 2;})
+                    .radius(function(n) {return n.dy / 2 + d.nodePad / 2;})
                     .strength(1)
                     .iterations(5))
                 .force('constrain', snap)
@@ -245,6 +247,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 var tc = tinycolor(n.color);
                 return {
                     node: n,
+                    nodePad: d.nodePad,
                     horizontal: d.horizontal,
                     tinyColorHue: Color.tinyRGB(tc),
                     tinyColorAlpha: tc.getAlpha(),
@@ -290,10 +293,10 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('fill-opacity', 0);
 
     nodeCapture
-        .attr('width', function(d) {return Math.ceil(d.horizontal ? d.node.dx + 0.5 : d.node.dy - 0.5 + c.nodePadding);})
-        .attr('height', function(d) {return Math.ceil(d.horizontal ? d.node.dy - 0.5 + c.nodePadding : d.node.dx + 0.5);})
-        .attr('x', function(d) {return d.horizontal ? 0 : - c.nodePadding / 2;})
-        .attr('y', function(d) {return d.horizontal ? -c.nodePadding / 2: 0;});
+        .attr('width', function(d) {return Math.ceil(d.horizontal ? d.node.dx + 0.5 : d.node.dy - 0.5 + d.nodePad);})
+        .attr('height', function(d) {return Math.ceil(d.horizontal ? d.node.dy - 0.5 + d.nodePad : d.node.dx + 0.5);})
+        .attr('x', function(d) {return d.horizontal ? 0 : - d.nodePad / 2;})
+        .attr('y', function(d) {return d.horizontal ? -d.nodePad / 2: 0;});
 
     var nodeRect = sankeyNode.selectAll('.nodeRect')
         .data(repeat);

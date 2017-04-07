@@ -54,6 +54,14 @@ module.exports = {
         description: 'Sets the orientation of the Sankey diagram.'
     },
 
+    nodepad: {
+        valType: 'number',
+        min: 0,
+        dflt: 15,
+        role: 'style',
+        description: 'Sets the padding (in px) between the `nodes`.'
+    },
+
     nodes: {
         _isLinkedToArray: 'node',
         label: {
