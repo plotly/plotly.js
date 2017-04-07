@@ -246,11 +246,55 @@ module.exports = {
     },
     showspikes: {
         valType: 'boolean',
-        dflt: false,
+        dflt: true,
         role: 'style',
         description: [
             'Determines whether or not spikes (aka droplines) are drawn for this axis.',
             'Note: This only takes affect when hovermode = closest'
+        ].join(' ')
+    },
+    spikecolor: {
+        valType: 'color',
+        dflt: null,
+        role: 'style',
+        description: 'Sets the spike color. If undefined, will use the series color'
+    },
+    spikethickness: {
+        valType: 'number',
+        dflt: 3,
+        role: 'style',
+        description: 'Sets the width (in px) of the zero line.'
+    },
+    spikedash: {
+        valType: 'string',
+        // string type usually doesn't take values... this one should really be
+        // a special type or at least a special coercion function, from the GUI
+        // you only get these values but elsewhere the user can supply a list of
+        // dash lengths in px, and it will be honored
+        values: ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'],
+        dflt: 'dash',
+        role: 'style',
+        description: [
+            'Sets the style of the lines. Set to a dash string type',
+            'or a dash length in px.'
+        ].join(' ')
+    },
+    spikemode: {
+        valType: 'flaglist',
+        flags: ['toaxis', 'across', 'marker'],
+        extras: ['none'],
+        role: 'style',
+        dflt: 'toaxis',
+        description: [
+            'Determines the drawing mode for the spike line',
+            'If *toaxis*, the line is drawn from the data point to the axis the ',
+            'series is plotted on.',
+
+            'If *across*, the line is drawn across the entire plot area, and',
+            'supercedes *toaxis*.',
+
+            'If *marker*, then a marker dot is drawn on the axis the series is',
+            'plotted on'
         ].join(' ')
     },
     tickfont: extendFlat({}, fontAttrs, {

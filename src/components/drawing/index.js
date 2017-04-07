@@ -113,19 +113,8 @@ drawing.lineGroupStyle = function(s, lw, lc, ld) {
 
 drawing.dashLine = function(s, dash, lineWidth) {
     lineWidth = +lineWidth || 0;
-    var dlw = Math.max(lineWidth, 3);
 
-    if(dash === 'solid') dash = '';
-    else if(dash === 'dot') dash = dlw + 'px,' + dlw + 'px';
-    else if(dash === 'dash') dash = (3 * dlw) + 'px,' + (3 * dlw) + 'px';
-    else if(dash === 'longdash') dash = (5 * dlw) + 'px,' + (5 * dlw) + 'px';
-    else if(dash === 'dashdot') {
-        dash = (3 * dlw) + 'px,' + dlw + 'px,' + dlw + 'px,' + dlw + 'px';
-    }
-    else if(dash === 'longdashdot') {
-        dash = (5 * dlw) + 'px,' + (2 * dlw) + 'px,' + dlw + 'px,' + (2 * dlw) + 'px';
-    }
-    // otherwise user wrote the dasharray themselves - leave it be
+    dash = Lib.dash(dash, lineWidth);
 
     s.style({
         'stroke-dasharray': dash,
