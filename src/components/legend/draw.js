@@ -510,8 +510,9 @@ function handleClick(g, gd, numClicks) {
 
         for(i = 0; i < fullData.length; i++) {
             allTraces.push(i);
-            // For carpet traces in particular, push the current visibility. For others, legendonly:
-            traceVisibility.push(Registry.traceIs(fullData[i], 'notLegendIsolatable') ? fullData[i].visible : 'legendonly');
+            // Allow the legendonly state through for *all* trace types (including
+            // carpet for which it's overridden with true/false in supplyDefaults)
+            traceVisibility.push('legendonly');
         }
 
         if(legendgroup === '') {
