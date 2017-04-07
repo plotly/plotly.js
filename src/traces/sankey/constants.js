@@ -13,5 +13,7 @@ module.exports = {
     nodeTextOffset: 5,
     nodeWidth: 20,
     sankeyIterations: 50,
-    alphaDecay: 0.0228 // standard alphaDecay of d3.forceLayout
+    forceIterations: 0,
+    alphaDecay: 0.0228, // standard alphaDecay of d3.forceLayout
+    duration: 500
 };
