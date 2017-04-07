@@ -85,17 +85,20 @@ module.exports = function plot(gd, calcData) {
     };
 
     var nodeHover = function(element, d) {
-        d3.select(element).select('.nodeRect')
-            //.style('stroke-opacity', 1)
+        var nodeRect = d3.select(element).select('.nodeRect');
+        nodeRect
             .style('stroke-width', 2)
             .style('stroke', 'black');
         console.log('hover node', d.node);
 
-        var hoverCenterX = d3.event.clientX;
-        var hoverCenterY = d3.event.clientY;
+        var nodeBox = nodeRect.node().getBoundingClientRect();
+        var hoverCenterX0 = nodeBox.left - 2;
+        var hoverCenterX1 = nodeBox.right + 2;
+        var hoverCenterY = (3 * nodeBox.top + nodeBox.bottom) / 4;
 
         var tooltip = Fx.loneHover({
-            x: hoverCenterX,
+            x0: hoverCenterX0,
+            x1: hoverCenterX1,
             y: hoverCenterY,
             name: d.node.value + '',
             text: [
