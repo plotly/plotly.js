@@ -206,7 +206,7 @@ function handleCartesian(gd, ev) {
                         aobj[axName + '.range[1]'] = rangeInitial[1];
                     }
                     if(ax._showSpikeInitial !== undefined) {
-                        aobj[axName + '.showspike'] = ax._showSpikeInitial;
+                        aobj[axName + '.showspikes'] = ax._showSpikeInitial;
                         if(allEnabled === 'on' && !ax._showSpikeInitial) {
                             allEnabled = 'off';
                         }
@@ -241,7 +241,7 @@ function handleCartesian(gd, ev) {
         } else if(astr === 'hovermode' && val === 'closest') {
             for(i = 0; i < axList.length; i++) {
                 ax = axList[i];
-                if(allEnabled === 'on' && !ax.showspike) {
+                if(allEnabled === 'on' && !ax.showspikes) {
                     allEnabled = 'off';
                 }
             }
@@ -569,7 +569,7 @@ function setSpikelineVisibility(gd) {
     for(var i = 0; i < axList.length; i++) {
         ax = axList[i];
         axName = ax._name;
-        aobj[axName + '.showspike'] = fullLayout._cartesianSpikesEnabled === 'on' ? true : false;
+        aobj[axName + '.showspikes'] = fullLayout._cartesianSpikesEnabled === 'on' ? true : false;
     }
 
     return aobj;

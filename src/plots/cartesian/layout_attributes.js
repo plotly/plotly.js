@@ -279,7 +279,7 @@ module.exports = {
         role: 'style',
         description: 'Determines whether or not the tick labels are drawn.'
     },
-    showspike: {
+    showspikes: {
         valType: 'boolean',
         dflt: false,
         role: 'style',

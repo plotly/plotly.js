@@ -860,12 +860,15 @@ function createDroplines(hoverData, opts) {
         yAnchoredBase = yEdge - outerBBox.top,
         xBase = c0.ya.anchor === 'free' ? xFreeBase : xAnchoredBase,
         yBase = c0.xa.anchor === 'free' ? yFreeBase : yAnchoredBase,
-        xColor = c0.xa.spikecolor ? c0.xa.spikecolor : c0.color,
-        yColor = c0.ya.spikecolor ? c0.ya.spikecolor : c0.color,
-        xContrastColor = tinycolor(xColor).getBrightness() > 128 ?
-                '#000' : Color.background,
-        yContrastColor = tinycolor(yColor).getBrightness() > 128 ?
-                '#000' : Color.background,
+        contrastColor = Color.combine(fullLayout.plot_bgcolor, fullLayout.paper_bgcolor),
+        xColor = c0.xa.spikecolor ? c0.xa.spikecolor : (
+            tinycolor.readability(c0.color,contrastColor) < 1.5 ? (
+                tinycolor(c0.color).getBrightness() > 128 ? '#000' : Color.background)
+                : c0.color),
+        yColor = c0.ya.spikecolor ? c0.ya.spikecolor : (
+            tinycolor.readability(c0.color,contrastColor) < 1.5 ? (
+                tinycolor(c0.color).getBrightness() > 128 ? '#000' : Color.background)
+                : c0.color),
         xThickness = c0.xa.spikethickness,
         yThickness = c0.ya.spikethickness,
         xDash = Drawing.dashStyle(c0.xa.spikedash, xThickness),
@@ -882,7 +885,7 @@ function createDroplines(hoverData, opts) {
     container.selectAll('circle.dropline').remove();
 
 
-    if(c0.ya.showspike) {
+    if(c0.ya.showspikes) {
         if(ySpikeLine) {
             // Background horizontal Line (to y-axis)
             container.append('line')
@@ -892,7 +895,7 @@ function createDroplines(hoverData, opts) {
                     'y1': yPoint,
                     'y2': yPoint,
                     'stroke-width': yThickness + 2,
-                    'stroke': yContrastColor
+                    'stroke': contrastColor
                 })
                 .classed('dropline', true)
                 .classed('crisp', true);
@@ -925,17 +928,17 @@ function createDroplines(hoverData, opts) {
         }
     }
 
-    if(c0.xa.showspike) {
+    if(c0.xa.showspikes) {
         if(xSpikeLine) {
         // Background vertical line (to x-axis)
             container.append('line')
                 .attr({
                     'x1': xPoint,
                     'x2': xPoint,
-                    'y1': yEndSpike,
-                    'y2': yBase,
+                    'y1': yBase,
+                    'y2': yEndSpike,
                     'stroke-width': xThickness + 2,
-                    'stroke': xContrastColor
+                    'stroke': contrastColor
                 })
                 .classed('dropline', true)
                 .classed('crisp', true);
@@ -945,8 +948,8 @@ function createDroplines(hoverData, opts) {
                 .attr({
                     'x1': xPoint,
                     'x2': xPoint,
-                    'y1': yEndSpike,
-                    'y2': yBase,
+                    'y1': yBase,
+                    'y2': yEndSpike,
                     'stroke-width': xThickness,
                     'stroke': xColor,
                     'stroke-dasharray': xDash

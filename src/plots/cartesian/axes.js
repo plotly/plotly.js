@@ -373,16 +373,16 @@ axes.saveShowSpikeInitial = function(gd, overwrite) {
         var isNew = (ax._showSpikeInitial === undefined);
         var hasChanged = (
             isNew || !(
-                ax.showspike === ax._showspike
+                ax.showspikes === ax._showspikes
             )
         );
 
         if((isNew) || (overwrite && hasChanged)) {
-            ax._showSpikeInitial = ax.showspike;
+            ax._showSpikeInitial = ax.showspikes;
             hasOneAxisChanged = true;
         }
 
-        if(allEnabled === 'on' && !ax.showspike) {
+        if(allEnabled === 'on' && !ax.showspikes) {
             allEnabled = 'off';
         }
     }
