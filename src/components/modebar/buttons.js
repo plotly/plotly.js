@@ -177,18 +177,20 @@ function handleCartesian(gd, ev) {
         astr = button.getAttribute('data-attr'),
         val = button.getAttribute('data-val') || true,
         fullLayout = gd._fullLayout,
-        aobj = {};
+        aobj = {},
+        axList = Axes.list(gd, null, true),
+        ax,
+        allEnabled = 'on',
+        i;
 
     if(astr === 'zoom') {
         var mag = (val === 'in') ? 0.5 : 2,
             r0 = (1 + mag) / 2,
-            r1 = (1 - mag) / 2,
-            axList = Axes.list(gd, null, true),
-            allEnabled = 'on';
+            r1 = (1 - mag) / 2;
 
-        var ax, axName;
+        var axName;
 
-        for(var i = 0; i < axList.length; i++) {
+        for(i = 0; i < axList.length; i++) {
             ax = axList[i];
 
             if(!ax.fixedrange) {
@@ -235,8 +237,15 @@ function handleCartesian(gd, ev) {
             button.setAttribute('data-val', val);
             if(val !== 'closest') {
                 fullLayout._cartesianSpikesEnabled = 'off';
-                aobj = setSpikelineVisibility(gd);
             }
+        } else if(astr === 'hovermode' && val === 'closest') {
+            for(i = 0; i < axList.length; i++) {
+                ax = axList[i];
+                if(allEnabled === 'on' && !ax.showspike) {
+                    allEnabled = 'off';
+                }
+            }
+            fullLayout._cartesianSpikesEnabled = allEnabled;
         }
 
         aobj[astr] = val;

@@ -636,31 +636,3 @@ lib.numSeparate = function(value, separators, separatethousands) {
 
     return x1 + x2;
 };
-
-/**
- * Accepts a named dash style or stroke-dasharray string
- * and returns a dasharray representing the named type.
- *
- * @param   {string} dash named dash format, or dasharray
- * @param   {number} lineWidth width of the line, used to scale the dashes
- *
- * @returns {string} SVG stroke-dasharray formatted string
- */
-lib.dash = function(dash, lineWidth) {
-    lineWidth = +lineWidth || 1;
-    var dlw = Math.max(lineWidth, 3);
-
-    if(dash === 'solid') dash = '';
-    else if(dash === 'dot') dash = dlw + 'px,' + dlw + 'px';
-    else if(dash === 'dash') dash = (3 * dlw) + 'px,' + (3 * dlw) + 'px';
-    else if(dash === 'longdash') dash = (5 * dlw) + 'px,' + (5 * dlw) + 'px';
-    else if(dash === 'dashdot') {
-        dash = (3 * dlw) + 'px,' + dlw + 'px,' + dlw + 'px,' + dlw + 'px';
-    }
-    else if(dash === 'longdashdot') {
-        dash = (5 * dlw) + 'px,' + (2 * dlw) + 'px,' + dlw + 'px,' + (2 * dlw) + 'px';
-    }
-    // otherwise user wrote the dasharray themselves - leave it be
-
-    return dash;
-};

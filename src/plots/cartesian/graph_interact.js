@@ -868,8 +868,8 @@ function createDroplines(hoverData, opts) {
                 '#000' : Color.background,
         xThickness = c0.xa.spikethickness,
         yThickness = c0.ya.spikethickness,
-        xDash = Lib.dash(c0.xa.spikedash, xThickness),
-        yDash = Lib.dash(c0.xa.spikedash, yThickness),
+        xDash = Drawing.dashStyle(c0.xa.spikedash, xThickness),
+        yDash = Drawing.dashStyle(c0.xa.spikedash, yThickness),
         xMarker = c0.xa.spikemode.indexOf('marker') !== -1,
         yMarker = c0.ya.spikemode.indexOf('marker') !== -1,
         xSpikeLine = c0.xa.spikemode.indexOf('toaxis') !== -1 || c0.xa.spikemode.indexOf('across') !== -1,
@@ -886,33 +886,42 @@ function createDroplines(hoverData, opts) {
         if(ySpikeLine) {
             // Background horizontal Line (to y-axis)
             container.append('line')
-                .attr('x1', xBase)
-                .attr('x2', xEndSpike)
-                .attr('y1', yPoint)
-                .attr('y2', yPoint)
-                .attr('stroke-width', yThickness + 2)
-                .attr('stroke', yContrastColor)
-                .attr('class', 'dropline');
+                .attr({
+                    'x1': xBase,
+                    'x2': xEndSpike,
+                    'y1': yPoint,
+                    'y2': yPoint,
+                    'stroke-width': yThickness + 2,
+                    'stroke': yContrastColor
+                })
+                .classed('dropline', true)
+                .classed('crisp', true);
 
             // Foreground horizontal line (to y-axis)
             container.append('line')
-                .attr('x1', xBase)
-                .attr('x2', xEndSpike)
-                .attr('y1', yPoint)
-                .attr('y2', yPoint)
-                .attr('stroke-width', yThickness)
-                .attr('stroke', yColor)
-                .attr('stroke-dasharray', yDash)
-                .attr('class', 'dropline');
+                .attr({
+                    'x1': xBase,
+                    'x2': xEndSpike,
+                    'y1': yPoint,
+                    'y2': yPoint,
+                    'stroke-width': yThickness,
+                    'stroke': yColor,
+                    'stroke-dasharray': yDash
+                })
+                .classed('dropline', true)
+                .classed('crisp', true);
         }
         // Y axis marker
         if(yMarker) {
             container.append('circle')
-                .attr('cx', xAnchoredBase)
-                .attr('cy', yPoint)
-                .attr('r', yThickness)
-                .attr('fill', yColor)
-                .attr('class', 'dropline');
+                .attr({
+                    'cx': xAnchoredBase,
+                    'cy': yPoint,
+                    'r': yThickness,
+                    'fill': yColor
+                })
+                .classed('dropline', true)
+                .classed('crisp', true);
         }
     }
 
@@ -920,34 +929,43 @@ function createDroplines(hoverData, opts) {
         if(xSpikeLine) {
         // Background vertical line (to x-axis)
             container.append('line')
-                .attr('x1', xPoint)
-                .attr('x2', xPoint)
-                .attr('y1', yEndSpike)
-                .attr('y2', yBase)
-                .attr('stroke-width', xThickness + 2)
-                .attr('stroke', xContrastColor)
-                .attr('class', 'dropline');
+                .attr({
+                    'x1': xPoint,
+                    'x2': xPoint,
+                    'y1': yEndSpike,
+                    'y2': yBase,
+                    'stroke-width': xThickness + 2,
+                    'stroke': xContrastColor
+                })
+                .classed('dropline', true)
+                .classed('crisp', true);
 
             // Foreground vertical line (to x-axis)
             container.append('line')
-                .attr('x1', xPoint)
-                .attr('x2', xPoint)
-                .attr('y1', yEndSpike)
-                .attr('y2', yBase)
-                .attr('stroke-width', xThickness)
-                .attr('stroke', xColor)
-                .attr('stroke-dasharray', xDash)
-                .attr('class', 'dropline');
+                .attr({
+                    'x1': xPoint,
+                    'x2': xPoint,
+                    'y1': yEndSpike,
+                    'y2': yBase,
+                    'stroke-width': xThickness,
+                    'stroke': xColor,
+                    'stroke-dasharray': xDash
+                })
+                .classed('dropline', true)
+                .classed('crisp', true);
         }
 
         // X axis marker
         if(xMarker) {
             container.append('circle')
-                .attr('cx', xPoint)
-                .attr('cy', yAnchoredBase)
-                .attr('r', xThickness)
-                .attr('fill', xColor)
-                .attr('class', 'dropline');
+                .attr({
+                    'cx': xPoint,
+                    'cy': yAnchoredBase,
+                    'r': xThickness,
+                    'fill': xColor
+                })
+                .classed('dropline', true)
+                .classed('crisp', true);
         }
     }
 }
