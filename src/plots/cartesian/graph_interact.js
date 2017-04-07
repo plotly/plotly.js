@@ -591,9 +591,10 @@ function hover(gd, evt, subplot) {
 
     gd._hoverdata = newhoverdata;
 
-    if(hoverChanged(gd, evt, oldhoverdata)) {
+    if(hoverChanged(gd, evt, oldhoverdata) && gd._hasCartesian) {
         var droplineOpts = {
             hovermode: hovermode,
+            fullLayout: fullLayout,
             container: fullLayout._hoverlayer,
             outerContainer: fullLayout._paperdiv
         };
@@ -860,15 +861,15 @@ function createDroplines(hoverData, opts) {
         yAnchoredBase = yEdge - outerBBox.top,
         xBase = c0.ya.anchor === 'free' ? xFreeBase : xAnchoredBase,
         yBase = c0.xa.anchor === 'free' ? yFreeBase : yAnchoredBase,
-        contrastColor = Color.combine(fullLayout.plot_bgcolor, fullLayout.paper_bgcolor),
+        contrastColor = Color.combine(opts.fullLayout.plot_bgcolor, opts.fullLayout.paper_bgcolor),
         xColor = c0.xa.spikecolor ? c0.xa.spikecolor : (
-            tinycolor.readability(c0.color,contrastColor) < 1.5 ? (
-                tinycolor(c0.color).getBrightness() > 128 ? '#000' : Color.background)
-                : c0.color),
+            tinycolor.readability(c0.color, contrastColor) < 1.5 ? (
+                tinycolor(c0.color).getBrightness() > 128 ? '#000' : Color.background) :
+                c0.color),
         yColor = c0.ya.spikecolor ? c0.ya.spikecolor : (
-            tinycolor.readability(c0.color,contrastColor) < 1.5 ? (
-                tinycolor(c0.color).getBrightness() > 128 ? '#000' : Color.background)
-                : c0.color),
+            tinycolor.readability(c0.color, contrastColor) < 1.5 ? (
+                tinycolor(c0.color).getBrightness() > 128 ? '#000' : Color.background) :
+                c0.color),
         xThickness = c0.xa.spikethickness,
         yThickness = c0.ya.spikethickness,
         xDash = Drawing.dashStyle(c0.xa.spikedash, xThickness),

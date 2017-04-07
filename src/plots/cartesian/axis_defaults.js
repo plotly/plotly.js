@@ -75,11 +75,12 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     coerce('range');
     containerOut.cleanRange();
 
-    coerce('showspikes');
-    coerce('spikecolor');
-    coerce('spikethickness');
-    coerce('spikedash');
-    coerce('spikemode');
+    if(coerce2('showspikes')) {
+        coerce2('spikecolor');
+        coerce2('spikethickness');
+        coerce2('spikedash');
+        coerce2('spikemode');
+    }
 
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
     handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
