@@ -120,7 +120,7 @@ module.exports = function plot(gd, calcData) {
     var nodeUnhover = function(element, d) {
         d3.select(element)
             //.style('stroke-opacity', 0.25)
-            .style('stroke-width', 1)
+            .style('stroke-width', 0.5)
             .style('stroke', 'black');
         console.log('unhover node', d.node);
         gd.emit('plotly_unhover', {

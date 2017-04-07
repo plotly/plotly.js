@@ -203,7 +203,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
             var forceLayout = d3Force.forceSimulation(nodes)
                 .force('constrain', constrain)
                 .force('collide', d3Force.forceCollide().radius(function(d) {return d.dy / 2 + c.nodePadding / 2;}))
-                .on('tick', updatePositionsOnTick);
+                .on('tick', updatePositionsOnTick)
+                .on('end', updatePositionsOnEnd);
 
             d.forceLayout = forceLayout;
 
@@ -213,11 +214,23 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     sankeyNodes.enter()
         .append('g')
-        .style('shape-rendering', 'crispEdges')
+        .style('shape-rendering', 'geometricPrecision')
         .classed('sankeyNodes', true);
 
     function positionSankeyNode(sankeyNode) {
+        sankeyNodes.style('shape-rendering', 'geometricPrecision');
         sankeyNode
+            .style('transform', function(d) {
+                return d.model.horizontal
+                    ? 'translate(' + ((d.node.x) - 0.5) + 'px, ' + ((d.node.y - d.node.dy / 2) + 0.5) + 'px)'
+                    : 'translate(' + ((d.node.y - d.node.dy / 2) - 0.5) + 'px, ' + ((d.node.x) + 0.5) + 'px)'
+            })
+    }
+
+    function positionSankeyNodeFinal(sankeyNode) {
+        sankeyNodes.style('shape-rendering', 'crispEdges');
+        sankeyNode
+            .style('shape-rendering', 'crispEdges')
             .style('transform', function(d) {
                 return d.model.horizontal
                     ? 'translate(' + (Math.floor(d.node.x) - 0.5) + 'px, ' + (Math.floor(d.node.y - d.node.dy / 2) + 0.5) + 'px)'
@@ -230,7 +243,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
         sankeyNode.call(positionSankeyNode);
     }
 
-    var sankeyNode = sankeyNodes.selectAll('.sankeyPath')
+    function updatePositionsOnEnd() {
+        sankeyLink.attr('d', linkPath);
+        sankeyNode.call(positionSankeyNodeFinal);
+    }
+
+    var sankeyNode = sankeyNodes.selectAll('.sankeyNode')
         .data(function(d) {
             var nodes = d.sankey.nodes();
             persistOriginalX(nodes);
@@ -279,12 +297,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
     nodeRect.enter()
         .append('rect')
         .classed('nodeRect', true)
-        .style('shape-rendering', 'crispEdges')
+        //.style('shape-rendering', 'crispEdges')
         .style('stroke-width', 0.5)
         .call(Color.stroke, 'rgba(0, 0, 0, 1)')
         .call(attachPointerEvents, callbacks.nodeEvents);
 
-    nodeRect // ceil, +/-0.5 and crispEdges is wizardry for consistent border width on all 4 sides
+    nodeRect // ceil, +/-0.5 and crispEdges is needed for consistent border width on all 4 sides
         .style('fill', function(d) {return d.tinyColorHue;})
         .style('fill-opacity', function(d) {return d.tinyColorAlpha;})
         .attr('width', function(d) {return d.model.horizontal ? Math.ceil(d.node.dx + 0.5) : Math.ceil(d.node.dy - 0.5);})
