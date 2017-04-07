@@ -118,6 +118,109 @@ describe('carpet supplyDefaults', function() {
     });*/
 });
 
+describe('supplyDefaults visibility check', function() {
+    it('does not hide empty subplots', function() {
+        var gd = {data: [], layout: {xaxis: {}}};
+        Plots.supplyDefaults(gd);
+        expect(gd._fullLayout.xaxis.visible).toBe(true);
+    });
+
+    it('does not hide axes with non-carpet traces', function() {
+        var gd = {data: [{x: []}]};
+        Plots.supplyDefaults(gd);
+        expect(gd._fullLayout.xaxis.visible).toBe(true);
+    });
+
+    it('does not hide axes with non-cheater carpet', function() {
+        var gd = {data: [{
+            type: 'carpet',
+            a: [1, 2, 3],
+            b: [1, 2],
+            x: [[1, 2, 3], [4, 5, 6]],
+            y: [[1, 2, 3], [4, 5, 6]],
+        }, {
+            type: 'contourcarpet',
+            z: [[1, 2, 3], [4, 5, 6]],
+        }]};
+        Plots.supplyDefaults(gd);
+        expect(gd._fullLayout.xaxis.visible).toBe(true);
+    });
+
+    it('hides axes with cheater', function() {
+        var gd = {data: [{
+            type: 'carpet',
+            a: [1, 2, 3],
+            b: [1, 2],
+            y: [[1, 2, 3], [4, 5, 6]],
+        }, {
+            type: 'contourcarpet',
+            z: [[1, 2, 3], [4, 5, 6]],
+        }]};
+        Plots.supplyDefaults(gd);
+        expect(gd._fullLayout.xaxis.visible).toBe(false);
+    });
+
+    it('does not hide an axis with cheater and non-cheater carpet', function() {
+        var gd = {
+            data: [{
+                carpetid: 'c1',
+                type: 'carpet',
+                a: [1, 2, 3],
+                b: [1, 2],
+                x: [[1, 2, 3], [4, 5, 6]],
+                y: [[1, 2, 3], [4, 5, 6]],
+            }, {
+                carpetid: 'c2',
+                type: 'carpet',
+                a: [1, 2, 3],
+                b: [1, 2],
+                y: [[1, 2, 3], [4, 5, 6]],
+            }, {
+                carpetid: 'c1',
+                type: 'contourcarpet',
+                z: [[1, 2, 3], [4, 5, 6]],
+            }, {
+                carpetid: 'c2',
+                type: 'contourcarpet',
+                z: [[1, 2, 3], [4, 5, 6]],
+            }]
+        };
+
+        Plots.supplyDefaults(gd);
+        expect(gd._fullLayout.xaxis.visible).toBe(true);
+    });
+
+    it('does not hide an axis with cheater and non-cheater carpet', function() {
+        var gd = {
+            data: [{
+                carpetid: 'c1',
+                type: 'carpet',
+                a: [1, 2, 3],
+                b: [1, 2],
+                x: [[1, 2, 3], [4, 5, 6]],
+                y: [[1, 2, 3], [4, 5, 6]],
+            }, {
+                carpetid: 'c2',
+                type: 'carpet',
+                a: [1, 2, 3],
+                b: [1, 2],
+                y: [[1, 2, 3], [4, 5, 6]],
+            }, {
+                carpetid: 'c1',
+                type: 'contourcarpet',
+                z: [[1, 2, 3], [4, 5, 6]],
+            }, {
+                carpetid: 'c2',
+                type: 'contourcarpet',
+                z: [[1, 2, 3], [4, 5, 6]],
+            }]
+        };
+
+        Plots.supplyDefaults(gd);
+        expect(gd._fullLayout.xaxis.visible).toBe(true);
+    });
+});
+
 describe('carpet smooth_fill_2d_array', function() {
     if(!test.smoothFill2D) return;
     var _;
