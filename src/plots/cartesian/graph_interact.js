@@ -591,7 +591,7 @@ function hover(gd, evt, subplot) {
 
     gd._hoverdata = newhoverdata;
 
-    if(hoverChanged(gd, evt, oldhoverdata) && gd._hasCartesian) {
+    if(hoverChanged(gd, evt, oldhoverdata) && fullLayout._hasCartesian) {
         var droplineOpts = {
             hovermode: hovermode,
             fullLayout: fullLayout,
@@ -919,7 +919,7 @@ function createDroplines(hoverData, opts) {
         if(yMarker) {
             container.append('circle')
                 .attr({
-                    'cx': xAnchoredBase,
+                    'cx': xAnchoredBase + yThickness,
                     'cy': yPoint,
                     'r': yThickness,
                     'fill': yColor
@@ -964,7 +964,7 @@ function createDroplines(hoverData, opts) {
             container.append('circle')
                 .attr({
                     'cx': xPoint,
-                    'cy': yAnchoredBase,
+                    'cy': yAnchoredBase - xThickness,
                     'r': xThickness,
                     'fill': xColor
                 })
