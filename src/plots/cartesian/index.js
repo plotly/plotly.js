@@ -160,6 +160,11 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
                     .remove();
             }
         }
+
+        oldFullLayout._infolayer.selectAll('g.rangeslider-container')
+            .select('g.scatterlayer')
+            .selectAll('g.trace')
+            .remove();
     }
 
     var hadCartesian = (oldFullLayout._has && oldFullLayout._has('cartesian'));

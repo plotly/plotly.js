@@ -28,6 +28,18 @@ describe('parcoords initialization tests', function() {
 
     'use strict';
 
+    describe('parcoords global defaults', function() {
+
+        it('should not coerce trace opacity', function() {
+            var gd = Lib.extendDeep({}, mock1);
+
+            Plots.supplyDefaults(gd);
+
+            expect(gd._fullData[0].opacity).toBeUndefined();
+        });
+
+    });
+
     describe('parcoords defaults', function() {
 
         function _supply(traceIn) {
@@ -185,14 +197,11 @@ describe('parcoords initialization tests', function() {
             }));
 
             expect(fullTrace.line).toEqual({
-                color: [0.5, 0.5, 0.5, 0.5],
-                colorscale: [[0, '#444'], [1, '#444']],
-                cmin: 0,
-                cmax: 1
+                color: '#444'
             });
         });
 
-        it('use a singular \'color\' even if a \'colorscale\' is supplied', function() {
+        it('use a singular \'color\' even if a \'colorscale\' is supplied as \'color\' is not an array', function() {
 
             var fullTrace = _calc(Lib.extendDeep({}, base, {
                 line: {
@@ -206,14 +215,7 @@ describe('parcoords initialization tests', function() {
             }));
 
             expect(fullTrace.line).toEqual({
-                color: [0.5, 0.5, 0.5, 0.5],
-                colorscale: [[0, '#444'], [1, '#444']],
-                autocolorscale: false,
-                showscale: false,
-                reversescale: false,
-                cauto: true,
-                cmin: 0,
-                cmax: 1
+                color: '#444'
             });
         });
     });

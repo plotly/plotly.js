@@ -61,7 +61,6 @@ exports.toSVG = function(gd) {
         });
     }
 
-    imageRoot.selectAll('*').remove();
     canvases.each(canvasToImage);
 
     // Chrome / Safari bug workaround - browser apparently loses connection to the defined pattern

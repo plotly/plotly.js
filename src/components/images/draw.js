@@ -30,6 +30,15 @@ module.exports = function draw(gd) {
                 subplot = img.xref + img.yref;
 
                 var plotinfo = fullLayout._plots[subplot];
+
+                if(!plotinfo) {
+                    // Fall back to _imageLowerLayer in case the requested subplot doesn't exist.
+                    // This can happen if you reference the image to an x / y axis combination
+                    // that doesn't have any data on it (and layer is below)
+                    imageDataBelow.push(img);
+                    continue;
+                }
+
                 if(plotinfo.mainplot) {
                     subplot = plotinfo.mainplot.id;
                 }

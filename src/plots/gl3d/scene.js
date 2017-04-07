@@ -419,6 +419,11 @@ proto.plot = function(sceneData, fullLayout, layout) {
         delete this.traces[traceIds[i]];
     }
 
+    // order object per trace index
+    this.glplot.objects.sort(function(a, b) {
+        return a._trace.data.index - b._trace.data.index;
+    });
+
     // Update ranges (needs to be called *after* objects are added due to updates)
     var sceneBounds = [[0, 0, 0], [0, 0, 0]],
         axisDataRange = [],
@@ -709,6 +714,7 @@ proto.setConvert = function() {
     for(var i = 0; i < 3; ++i) {
         var ax = this.fullSceneLayout[axisProperties[i]];
         Axes.setConvert(ax, this.fullLayout);
+        ax.setScale = Lib.noop;
     }
 };
 

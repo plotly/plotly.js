@@ -246,12 +246,20 @@ describe('Test hover and click interactions', function() {
             pointNumber: 0
         });
 
+        // after the restyle, autorange changes the y range
+        var run2 = makeRunner([435, 106], {
+            x: 8,
+            y: 18,
+            curveNumber: 2,
+            pointNumber: 0
+        });
+
         Plotly.plot(gd, _mock)
         .then(run)
         .then(function() {
             return Plotly.restyle(gd, 'visible', false, [1]);
         })
-        .then(run)
+        .then(run2)
         .catch(fail)
         .then(done);
     });
@@ -269,12 +277,23 @@ describe('Test hover and click interactions', function() {
             pointNumber: 0
         });
 
+        // after the restyle, autorange changes the x AND y ranges
+        // I don't get why the x range changes, nor why the y changes in
+        // a different way than in the previous test, but they do look
+        // correct on the screen during the test.
+        var run2 = makeRunner([426, 116], {
+            x: 8,
+            y: 18,
+            curveNumber: 2,
+            pointNumber: 0
+        });
+
         Plotly.plot(gd, _mock)
         .then(run)
         .then(function() {
             return Plotly.restyle(gd, 'visible', false, [1]);
         })
-        .then(run)
+        .then(run2)
         .catch(fail)
         .then(done);
     });

@@ -4,8 +4,14 @@
 [![circle ci](https://circleci.com/gh/plotly/plotly.js.png?&style=shield&circle-token=1f42a03b242bd969756fc3e53ede204af9b507c0)](https://circleci.com/gh/plotly/plotly.js)
 
 Built on top of [d3.js](http://d3js.org/) and [stack.gl](http://stack.gl/),
-plotly.js is a high-level, declarative charting library. plotly.js ships with 20
-chart types, including 3D charts, statistical graphs, and SVG maps.
+plotly.js is a high-level, declarative charting library. plotly.js ships with over 20
+chart types, including scientific charts, 3D graphs, statistical charts, SVG maps, financial charts,
+and more.
+
+<p align="center">
+    <a href="https://www.plot.ly/javascript" target="_blank">
+    <img src="https://raw.githubusercontent.com/cldougl/plot_images/add_r_img/plotly_2017.png">
+</a></p>
 
 [Contact us](https://plot.ly/products/consulting-and-oem/) for Plotly.js consulting, dashboard development, application integration, and feature additions.
 

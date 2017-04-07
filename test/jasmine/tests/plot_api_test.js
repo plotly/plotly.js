@@ -237,6 +237,21 @@ describe('Test plot api', function() {
                 })
                 .then(done);
         });
+
+        it('should skip empty axis objects', function(done) {
+            Plotly.plot(gd, [{
+                x: [1, 2, 3],
+                y: [1, 2, 1]
+            }], {
+                xaxis: { title: 'x title' },
+                yaxis: { title: 'y title' }
+            })
+            .then(function() {
+                return Plotly.relayout(gd, { zaxis: {} });
+            })
+            .catch(fail)
+            .then(done);
+        });
     });
 
     describe('Plotly.restyle', function() {
@@ -283,6 +298,55 @@ describe('Test plot api', function() {
             expect(Plots.style).toHaveBeenCalled();
             expect(PlotlyInternal.plot).not.toHaveBeenCalled();
             expect(gd.calcdata).toBeDefined();
+        });
+
+        it('should do full replot when arrayOk attributes are updated', function() {
+            var gd = {
+                data: [{x: [1, 2, 3], y: [1, 2, 3]}],
+                layout: {}
+            };
+
+            mockDefaultsAndCalc(gd);
+            Plotly.restyle(gd, 'marker.color', [['red', 'green', 'blue']]);
+            expect(gd.calcdata).toBeUndefined();
+            expect(PlotlyInternal.plot).toHaveBeenCalled();
+
+            mockDefaultsAndCalc(gd);
+            PlotlyInternal.plot.calls.reset();
+            Plotly.restyle(gd, 'marker.color', 'yellow');
+            expect(gd.calcdata).toBeUndefined();
+            expect(PlotlyInternal.plot).toHaveBeenCalled();
+
+            mockDefaultsAndCalc(gd);
+            PlotlyInternal.plot.calls.reset();
+            Plotly.restyle(gd, 'marker.color', 'blue');
+            expect(gd.calcdata).toBeDefined();
+            expect(PlotlyInternal.plot).not.toHaveBeenCalled();
+
+            mockDefaultsAndCalc(gd);
+            PlotlyInternal.plot.calls.reset();
+            Plotly.restyle(gd, 'marker.color', [['red', 'blue', 'green']]);
+            expect(gd.calcdata).toBeUndefined();
+            expect(PlotlyInternal.plot).toHaveBeenCalled();
+        });
+
+        it('should do full replot when attribute container are updated', function() {
+            var gd = {
+                data: [{x: [1, 2, 3], y: [1, 2, 3]}],
+                layout: {
+                    xaxis: { range: [0, 4] },
+                    yaxis: { range: [0, 4] }
+                }
+            };
+
+            mockDefaultsAndCalc(gd);
+            Plotly.restyle(gd, {
+                marker: {
+                    color: ['red', 'blue', 'green']
+                }
+            });
+            expect(gd.calcdata).toBeUndefined();
+            expect(PlotlyInternal.plot).toHaveBeenCalled();
         });
 
         it('calls plot on xgap and ygap styling', function() {

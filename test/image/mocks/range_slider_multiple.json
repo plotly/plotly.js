@@ -2,7 +2,7 @@
   "data": [
     {
       "x": [ 1, 2, 3 ],
-      "y": [ 4, 5, 6 ],
+      "y": [ 4, 5e5, 6e8 ],
       "type": "bar"
     },
     {
@@ -31,7 +31,7 @@
     },
     "yaxis": {
       "domain": [ 0.3, 0.8 ],
-      "type": "linear"
+      "type": "log"
     },
     "yaxis2": {
       "anchor": "x2",
