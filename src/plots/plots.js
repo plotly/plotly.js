@@ -574,6 +574,7 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
         var query = (
             '.hm' + oldUid +
             ',.contour' + oldUid +
+            ',.carpet' + oldUid +
             ',#clip' + oldUid +
             ',.trace' + oldUid
         );

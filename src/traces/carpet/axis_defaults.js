@@ -93,10 +93,11 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     coerce('ticktext');
     coerce('tick0');
     coerce('dtick');
-    coerce('arraytick0');
-    coerce('arraydtick');
-    // coerce('gridoffset');
-    // coerce('gridstep');
+
+    if(containerOut.tickmode === 'array') {
+        coerce('arraytick0');
+        coerce('arraydtick');
+    }
 
     coerce('labelpadding');
 

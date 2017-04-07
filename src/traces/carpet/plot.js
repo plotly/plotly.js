@@ -42,12 +42,13 @@ function plotOne(gd, plotinfo, cd) {
     var gridLayer = plotinfo.plot.selectAll('.carpetlayer');
     var clipLayer = makeg(fullLayout._defs, 'g', 'clips');
 
-    var minorLayer = makeg(gridLayer, 'g', 'minorlayer');
-    var majorLayer = makeg(gridLayer, 'g', 'majorlayer');
-    var boundaryLayer = makeg(gridLayer, 'g', 'boundarylayer');
-    var labelLayer = makeg(gridLayer, 'g', 'labellayer');
+    var axisLayer = makeg(gridLayer, 'g', 'carpet' + trace.uid);
+    var minorLayer = makeg(axisLayer, 'g', 'minorlayer');
+    var majorLayer = makeg(axisLayer, 'g', 'majorlayer');
+    var boundaryLayer = makeg(axisLayer, 'g', 'boundarylayer');
+    var labelLayer = makeg(axisLayer, 'g', 'labellayer');
 
-    gridLayer.style('opacity', trace.opacity);
+    axisLayer.style('opacity', trace.opacity);
 
     drawGridLines(xa, ya, majorLayer, aax, 'a', aax._gridlines, true);
     drawGridLines(xa, ya, majorLayer, bax, 'b', bax._gridlines, true);
@@ -65,7 +66,7 @@ function plotOne(gd, plotinfo, cd) {
     drawAxisTitles(labelLayer, trace, t, xa, ya, maxAExtent, maxBExtent);
 
     // Swap for debugging in order to draw directly:
-    // drawClipPath(trace, gridLayer, xa, ya);
+    // drawClipPath(trace, axisLayer, xa, ya);
     drawClipPath(trace, t, clipLayer, xa, ya);
 }
 

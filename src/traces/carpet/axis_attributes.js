@@ -160,22 +160,6 @@ module.exports = {
             'Used with `tickvals`.'
         ].join(' ')
     },
-    mirror: {
-        valType: 'enumerated',
-        values: [true, 'ticks', false, 'all', 'allticks'],
-        dflt: false,
-        role: 'style',
-        description: [
-            'Determines if the axis lines or/and ticks are mirrored to',
-            'the opposite side of the plotting area.',
-            'If *true*, the axis lines are mirrored.',
-            'If *ticks*, the axis lines and ticks are mirrored.',
-            'If *false*, mirroring is disable.',
-            'If *all*, axis lines are mirrored on all shared-axes subplots.',
-            'If *allticks*, axis lines and ticks are mirrored',
-            'on all shared-axes subplots.'
-        ].join(' ')
-    },
     showticklabels: {
         valType: 'enumerated',
         values: ['start', 'end', 'both', 'none'],
