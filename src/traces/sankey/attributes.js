@@ -59,7 +59,7 @@ module.exports = {
     nodepad: {
         valType: 'number',
         min: 0,
-        dflt: 15,
+        dflt: 20,
         role: 'style',
         description: 'Sets the padding (in px) between the `nodes`.'
     },

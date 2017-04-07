@@ -88,7 +88,7 @@ module.exports = function plot(gd, calcData) {
     var nodeHover = function(element, d) {
         var nodeRect = d3.select(element).select('.nodeRect');
         nodeRect
-            .style('stroke-width', 2)
+            .style('stroke-width', 1)
             .style('stroke', 'black');
         console.log('hover node', d.node);
 
@@ -123,7 +123,6 @@ module.exports = function plot(gd, calcData) {
 
     var nodeUnhover = function(element, d) {
         d3.select(element).select('.nodeRect')
-            //.style('stroke-opacity', 0.25)
             .style('stroke-width', 0.5)
             .style('stroke', 'black');
         console.log('unhover node', d.node);
@@ -136,7 +135,6 @@ module.exports = function plot(gd, calcData) {
             hasHoverData = false;
         }
     };
-
 
     render(
         svg,
@@ -163,5 +161,5 @@ module.exports = function plot(gd, calcData) {
                 select: nodeSelect
             }
         }
-);
+    );
 };
