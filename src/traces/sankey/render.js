@@ -194,14 +194,18 @@ module.exports = function(svg, styledData, layout, callbacks) {
                         d.x = d.lastDraggedX;
                         d.y = d.lastDraggedY;
                     } else {
-                        d.vx = d.originalX - d.x; // snap to layer
+                        d.vx = (d.vx + 4 * (d.originalX - d.x)) / 5; // snap to layer
                         d.y = Math.min(s - d.dy / 2, Math.max(d.dy / 2, d.y)); // constrain to extent
                     }
                 }
             }
 
             d.forceLayout = d3Force.forceSimulation(nodes)
-                .force('collide', d3Force.forceCollide().iterations(5).radius(function(d) {return d.dy / 2 + c.nodePadding / 2;}))
+                .velocityDecay(0.2)
+                .force('collide', d3Force.forceCollide()
+                    .strength(1)
+                    .iterations(5)
+                    .radius(function(d) {return d.dy / 2 + c.nodePadding / 2;}))
                 .force('constrain', constrain)
                 .on('tick', updatePositionsOnTick)
                 .on('end', crispLinesOnEnd);
