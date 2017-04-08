@@ -149,7 +149,7 @@ module.exports = function setConvert(ax, fullLayout) {
         // allow numbers to be mapped to the linearized axis positions
         var index;
         if(ax._categoriesMap) {
-            index = ax._categoriesMap[v] ? ax._categoriesMap : undefined;
+            index = ax._categoriesMap[v];
             if(index !== undefined) return index;
         } else {
             index = ax._categories.indexOf(v);
