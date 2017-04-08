@@ -290,15 +290,16 @@ module.exports = function(svg, styledData, layout, callbacks) {
                     callbacks.nodeEvents.unhover.apply(0, hovered);
                     hovered = false;
                 }
-                if(true) {
+                if(c.useForceSnap) {
                     if (d.forceLayouts[d.traceId]) { // make a forceLayout only if needed
 
-                        d.forceLayouts[d.traceId].alphaDecay(0).alpha(1).restart();
+                        d.forceLayouts[d.traceId].restart();
 
                     } else {
 
                         var nodes = d.sankey.nodes();
                         var snap = function () {
+                            var maxVelocity = 0;
                             for (var i = 0; i < nodes.length; i++) {
                                 var n = nodes[i];
                                 if (n === dragInProgress) { // constrain node position to the dragging pointer
@@ -308,20 +309,21 @@ module.exports = function(svg, styledData, layout, callbacks) {
                                     n.vx = (n.vx + 4 * (n.originalX - n.x)) / 5; // snap to layer
                                     n.y = Math.min(d.size - n.dy / 2, Math.max(n.dy / 2, n.y)); // constrain to extent
                                 }
+                                maxVelocity = Math.max(maxVelocity, Math.abs(n.vx), Math.abs(n.vy));
+                            }
+                            if(!dragInProgress && maxVelocity < 1) {
+                                d.forceLayouts[d.traceId].stop();
                             }
                         }
                         d.forceLayouts[d.traceId] = d3Force.forceSimulation(nodes)
+                            .alphaDecay(0)
                             .force('collide', d3Force.forceCollide()
                                 .radius(function (n) {return n.dy / 2 + d.nodePad / 2;})
                                 .strength(1)
                                 .iterations(c.forceIterations))
                             .force('constrain', snap)
-                            .alphaDecay(0)
                             .on('tick', updateShapes)
-                            .on('end', function () {
-                                d.forceLayouts[d.traceId] = false; // let the force be garbage collected
-                                crispLinesOnEnd();
-                            });
+                            .on('end', function() {console.log('stopped.'); crispLinesOnEnd()});
                     }
                 }
             })
@@ -333,9 +335,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
             })
             .on('dragend', function(d) {
                 dragInProgress = false;
-                if (d.forceLayouts[d.traceId]) {
-                    d.forceLayouts[d.traceId].alphaDecay(c.alphaDecay);
-                }
             }));
 
     sankeyNode
