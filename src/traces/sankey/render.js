@@ -291,7 +291,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
                     hovered = false;
                 }
                 if(true) {
-                    if (!d.forceLayouts[d.traceId]) { // make a forceLayout only if needed
+                    if (d.forceLayouts[d.traceId]) { // make a forceLayout only if needed
+
+                        d.forceLayouts[d.traceId].alphaDecay(0).alpha(1).restart();
+
+                    } else {
+
                         var nodes = d.sankey.nodes();
                         var snap = function () {
                             for (var i = 0; i < nodes.length; i++) {
@@ -311,13 +316,13 @@ module.exports = function(svg, styledData, layout, callbacks) {
                                 .strength(1)
                                 .iterations(c.forceIterations))
                             .force('constrain', snap)
+                            .alphaDecay(0)
                             .on('tick', updateShapes)
                             .on('end', function () {
                                 d.forceLayouts[d.traceId] = false; // let the force be garbage collected
                                 crispLinesOnEnd();
-                            })
+                            });
                     }
-                    d.forceLayouts[d.traceId].alphaDecay(0).alpha(1).restart();
                 }
             })
             .on('drag', function(d) {
