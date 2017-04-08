@@ -126,10 +126,11 @@ module.exports = function setConvert(ax, fullLayout) {
      */
     function setCategoryIndex(v) {
         if(v !== null && v !== undefined) {
-            if (ax._categoriesMap === undefined) 
+            if(ax._categoriesMap === undefined) {
                 ax._categoriesMap = {};
+            }
 
-            if (ax._categoriesMap[v] !== undefined) {
+            if(ax._categoriesMap[v] !== undefined) {
                 return ax._categoriesMap[v];
             } else {
                 ax._categories.push(v);
@@ -146,11 +147,10 @@ module.exports = function setConvert(ax, fullLayout) {
     function getCategoryIndex(v) {
         // d2l/d2c variant that that won't add categories but will also
         // allow numbers to be mapped to the linearized axis positions
-        if(ax._categoriesMap)
-            var index = ax._categoriesMap[v]?ax._categoriesMap:undefined;
-        
-        if(index !== undefined) return index;
-        if(typeof v === 'number') return v;
+        var index;
+        if(ax._categoriesMap) { index = ax._categoriesMap[v] ? ax._categoriesMap : undefined; }
+        if(index !== undefined) { return index; }
+        if(typeof v === 'number') { return v; }
     }
 
     function l2p(v) {
