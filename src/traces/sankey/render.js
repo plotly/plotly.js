@@ -262,6 +262,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                         nodePad: d.nodePad,
                         textFont: d.textFont,
                         size: d.horizontal ? d.height : d.width,
+                        sizeAcross: d.horizontal ? d.width : d.height,
                         forceLayouts: forceLayouts,
                         horizontal: d.horizontal,
                         tinyColorHue: Color.tinyRGB(tc),
@@ -281,6 +282,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .call(d3.behavior.drag()
             .origin(function(d) {return d.horizontal ? d.node : {x: d.node['y'], y: d.node['x']};})
             .on('dragstart', function(d) {
+                if(!c.movable) return;
                 this.parentNode.appendChild(this);
                 dragInProgress = d.node;
                 constrainDraggedItem(d.node);
@@ -326,13 +328,18 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 }
             })
             .on('drag', function(d) {
+                if(!c.movable) return;
                 var x = d.horizontal ? d3.event.x : d3.event.y;
                 var y = d.horizontal ? d3.event.y : d3.event.x;
                 if(c.useForceSnap) {
                     d.node.x = x;
                     d.node.y = y;
                 } else {
+                    if(c.sideways) {
+                        d.node.x = x;
+                    }
                     d.node.y = Math.max(d.node.dy / 2, Math.min(d.size - d.node.dy / 2, y));
+
                 }
                 constrainDraggedItem(d.node);
                 d.sankey.relayout();
@@ -342,6 +349,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 }
             })
             .on('dragend', function() {
+                if(!c.movable) return;
                 dragInProgress = false;
             }));
 

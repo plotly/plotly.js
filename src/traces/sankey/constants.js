@@ -13,6 +13,8 @@ module.exports = {
     nodeTextOffset: 5,
     nodeWidth: 20,
     sankeyIterations: 50,
+    movable: true,
+    sideways: true,
     useForceSnap: true,
     forceIterations: 5,
     alphaDecay: 0.0228, // standard alphaDecay of d3.forceLayout
