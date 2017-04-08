@@ -311,7 +311,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                                 }
                                 maxVelocity = Math.max(maxVelocity, Math.abs(n.vx), Math.abs(n.vy));
                             }
-                            if(!dragInProgress && maxVelocity < 1) {
+                            if(!dragInProgress && maxVelocity < 0.5) {
                                 d.forceLayouts[d.traceId].stop();
                             }
                         }
