@@ -198,43 +198,18 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('stroke-opacity', function(d) {return d.tinyColorAlpha;});
 
     sankeyLink
-        .transition().duration(c.duration)
+        .transition().ease(c.ease).duration(c.duration)
         .style('opacity', 1)
         .attr('d', linkPath)
         .style('stroke-width', function(d) {return Math.max(1, d.link.dy);});
 
     sankeyLink.exit()
-        .transition().duration(c.duration)
+        .transition().ease(c.ease).duration(c.duration)
         .style('opacity', 0)
         .remove();
 
     var sankeyNodes = sankey.selectAll('.sankeyNodes')
         .data(function(d) {
-
-            var nodes = d.nodes;
-            var s = d.horizontal ? d.height : d.width;
-
-            function snap() {
-                for(var i = 0; i < nodes.length; i++) {
-                    var d = nodes[i];
-                    if(d === dragInProgress) { // constrain node position to the dragging pointer
-                        d.x = d.lastDraggedX;
-                        d.y = d.lastDraggedY;
-                    } else {
-                        d.vx = (d.vx + 4 * (d.originalX - d.x)) / 5; // snap to layer
-                        d.y = Math.min(s - d.dy / 2, Math.max(d.dy / 2, d.y)); // constrain to extent
-                    }
-                }
-            }
-
-            d.forceLayout = d3Force.forceSimulation(nodes)
-                .force('collide', d3Force.forceCollide()
-                    .radius(function(n) {return n.dy / 2 + d.nodePad / 2;})
-                    .strength(1)
-                    .iterations(c.forceIterations))
-                .force('constrain', snap)
-                .on('tick', updatePositionsOnTick)
-                .on('end', crispLinesOnEnd);
 
             return [d];
 
@@ -258,12 +233,11 @@ module.exports = function(svg, styledData, layout, callbacks) {
     }
 
     function positionSankeyNode(sankeyNode) {
-        debugger
         sankeyNodes.style('shape-rendering', 'optimizeSpeed');
         sankeyNode.call(posi);
     }
 
-    function updatePositionsOnTick() {
+    function updateShapes() {
         if(c.forceIterations) {
             sankeyLink.attr('d', linkPath);
             sankeyNode.call(positionSankeyNode);
@@ -277,6 +251,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
     var sankeyNode = sankeyNodes.selectAll('.sankeyNode')
         .data(function(d) {
             var nodes = d.sankey.nodes();
+            var forceLayouts = {};
             persistOriginalX(nodes);
             return d.sankey.nodes()
                 .filter(function(n) {return n.visible && n.value;})
@@ -288,6 +263,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
                         node: n,
                         nodePad: d.nodePad,
                         textFont: d.textFont,
+                        size: d.horizontal ? d.height : d.width,
+                        forceLayouts: forceLayouts,
                         horizontal: d.horizontal,
                         tinyColorHue: Color.tinyRGB(tc),
                         tinyColorAlpha: tc.getAlpha(),
@@ -313,7 +290,35 @@ module.exports = function(svg, styledData, layout, callbacks) {
                     callbacks.nodeEvents.unhover.apply(0, hovered);
                     hovered = false;
                 }
-                d.forceLayout.alphaDecay(0).alpha(1).restart();
+                if(true) {
+                    if (!d.forceLayouts[d.traceId]) { // make a forceLayout only if needed
+                        var nodes = d.sankey.nodes();
+                        var snap = function () {
+                            for (var i = 0; i < nodes.length; i++) {
+                                var n = nodes[i];
+                                if (n === dragInProgress) { // constrain node position to the dragging pointer
+                                    n.x = n.lastDraggedX;
+                                    n.y = n.lastDraggedY;
+                                } else {
+                                    n.vx = (n.vx + 4 * (n.originalX - n.x)) / 5; // snap to layer
+                                    n.y = Math.min(d.size - n.dy / 2, Math.max(n.dy / 2, n.y)); // constrain to extent
+                                }
+                            }
+                        }
+                        d.forceLayouts[d.traceId] = d3Force.forceSimulation(nodes)
+                            .force('collide', d3Force.forceCollide()
+                                .radius(function (n) {return n.dy / 2 + d.nodePad / 2;})
+                                .strength(1)
+                                .iterations(c.forceIterations))
+                            .force('constrain', snap)
+                            .on('tick', updateShapes)
+                            .on('end', function () {
+                                d.forceLayouts[d.traceId] = false; // let the force be garbage collected
+                                crispLinesOnEnd();
+                            })
+                    }
+                    d.forceLayouts[d.traceId].alphaDecay(0).alpha(1).restart();
+                }
             })
             .on('drag', function(d) {
                 d.node.x = d.horizontal ? d3.event.x : d3.event.y;
@@ -323,16 +328,18 @@ module.exports = function(svg, styledData, layout, callbacks) {
             })
             .on('dragend', function(d) {
                 dragInProgress = false;
-                d.forceLayout.alphaDecay(c.alphaDecay);
+                if (d.forceLayouts[d.traceId]) {
+                    d.forceLayouts[d.traceId].alphaDecay(c.alphaDecay);
+                }
             }));
 
     sankeyNode
-        .transition().duration(c.duration)
+        .transition().ease(c.ease).duration(c.duration)
         .style('opacity', 1)
         .call(posi);
 
     sankeyNode.exit()
-        .transition().duration(c.duration)
+        .transition().ease(c.ease).duration(c.duration)
         .style('opacity', 0)
         .remove();
 
@@ -354,7 +361,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('fill', function(d) {return d.tinyColorHue;})
         .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
 
-    nodeRect.transition().duration(c.duration)
+    nodeRect.transition().ease(c.ease).duration(c.duration)
         .attr('width', rectWidth)
         .attr('height', rectHeight);
 
@@ -392,7 +399,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .text(function(d) {return d.node.label;})
         .attr('text-anchor', function(d) {return d.horizontal ? 'start' : 'middle';});
 
-    nodeLabel.transition().duration(c.duration)
+    nodeLabel.transition().ease(c.ease).duration(c.duration)
         .attr('x', labelX)
         .attr('y', labelY);
 };
