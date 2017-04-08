@@ -7,6 +7,7 @@
   "data": [
       {
           "type": "sankey",
+          "orientation": "h",
           "line": {
               "color": [
                   2001,

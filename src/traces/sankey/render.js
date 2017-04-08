@@ -238,10 +238,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
     }
 
     function updateShapes() {
-        if(c.forceIterations) {
-            sankeyLink.attr('d', linkPath);
-            sankeyNode.call(positionSankeyNode);
-        }
+        sankeyLink.attr('d', linkPath);
+        sankeyNode.call(positionSankeyNode);
     }
 
     function crispLinesOnEnd() {
@@ -323,17 +321,27 @@ module.exports = function(svg, styledData, layout, callbacks) {
                                 .iterations(c.forceIterations))
                             .force('constrain', snap)
                             .on('tick', updateShapes)
-                            .on('end', function() {console.log('stopped.'); crispLinesOnEnd()});
+                            .on('end', crispLinesOnEnd);
                     }
                 }
             })
             .on('drag', function(d) {
-                d.node.x = d.horizontal ? d3.event.x : d3.event.y;
-                d.node.y = d.horizontal ? d3.event.y : d3.event.x;
+                var x = d.horizontal ? d3.event.x : d3.event.y;
+                var y = d.horizontal ? d3.event.y : d3.event.x;
+                if(c.useForceSnap) {
+                    d.node.x = x;
+                    d.node.y = y;
+                } else {
+                    d.node.y = Math.max(d.node.dy / 2, Math.min(d.size - d.node.dy / 2, y));
+                }
                 constrainDraggedItem(d.node);
                 d.sankey.relayout();
+                if(!c.useForceSnap) {
+                    updateShapes();
+                    crispLinesOnEnd();
+                }
             })
-            .on('dragend', function(d) {
+            .on('dragend', function() {
                 dragInProgress = false;
             }));
 
