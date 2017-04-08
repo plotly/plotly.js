@@ -291,9 +291,10 @@ module.exports = function(svg, styledData, layout, callbacks) {
                     hovered = false;
                 }
                 if(c.useForceSnap) {
-                    if (d.forceLayouts[d.traceId]) { // make a forceLayout only if needed
+                    var forceKey = d.traceId;
+                    if (d.forceLayouts[forceKey]) { // make a forceLayout iff needed
 
-                        d.forceLayouts[d.traceId].restart();
+                        d.forceLayouts[forceKey].restart();
 
                     } else {
 
@@ -312,10 +313,10 @@ module.exports = function(svg, styledData, layout, callbacks) {
                                 maxVelocity = Math.max(maxVelocity, Math.abs(n.vx), Math.abs(n.vy));
                             }
                             if(!dragInProgress && maxVelocity < 0.5) {
-                                d.forceLayouts[d.traceId].stop();
+                                d.forceLayouts[forceKey].stop();
                             }
                         }
-                        d.forceLayouts[d.traceId] = d3Force.forceSimulation(nodes)
+                        d.forceLayouts[forceKey] = d3Force.forceSimulation(nodes)
                             .alphaDecay(0)
                             .force('collide', d3Force.forceCollide()
                                 .radius(function (n) {return n.dy / 2 + d.nodePad / 2;})
@@ -323,7 +324,10 @@ module.exports = function(svg, styledData, layout, callbacks) {
                                 .iterations(c.forceIterations))
                             .force('constrain', snap)
                             .on('tick', updateShapes)
-                            .on('end', crispLinesOnEnd);
+                            .on('end', function(d) {
+                                d.forceLayouts[forceKey] = false;
+                                crispLinesOnEnd();
+                            })
                     }
                 }
             })

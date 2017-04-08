@@ -8,6 +8,7 @@
       {
           "type": "sankey",
           "orientation": "h",
+          "nodepad": 20,
           "line": {
               "color": [
                   2001,
