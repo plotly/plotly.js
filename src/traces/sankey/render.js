@@ -267,8 +267,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                         horizontal: d.horizontal,
                         tinyColorHue: Color.tinyRGB(tc),
                         tinyColorAlpha: tc.getAlpha(),
-                        sankey: d.sankey,
-                        forceLayout: d.forceLayout
+                        sankey: d.sankey
                     };
                 });
         }, keyFun);
@@ -291,14 +290,14 @@ module.exports = function(svg, styledData, layout, callbacks) {
                     hovered = false;
                 }
                 if(c.useForceSnap) {
-                    var forceKey = d.traceId;
+                    var forceKey = d.traceId + '|' + Math.floor(d.node.originalX);
                     if (d.forceLayouts[forceKey]) { // make a forceLayout iff needed
 
                         d.forceLayouts[forceKey].restart();
 
                     } else {
 
-                        var nodes = d.sankey.nodes();
+                        var nodes = d.sankey.nodes().filter(function(n) {return n.originalX === d.node.originalX;});
                         var snap = function () {
                             var maxVelocity = 0;
                             for (var i = 0; i < nodes.length; i++) {
@@ -314,6 +313,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                             }
                             if(!dragInProgress && maxVelocity < 0.5) {
                                 d.forceLayouts[forceKey].stop();
+                                crispLinesOnEnd();
                             }
                         }
                         d.forceLayouts[forceKey] = d3Force.forceSimulation(nodes)
@@ -323,11 +323,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                                 .strength(1)
                                 .iterations(c.forceIterations))
                             .force('constrain', snap)
-                            .on('tick', updateShapes)
-                            .on('end', function(d) {
-                                d.forceLayouts[forceKey] = false;
-                                crispLinesOnEnd();
-                            })
+                            .on('tick', updateShapes);
                     }
                 }
             })
