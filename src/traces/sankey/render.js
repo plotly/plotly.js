@@ -42,6 +42,7 @@ function switchToSankeyFormat(nodes) {
 }
 
 function sankeyModel(layout, d, i) {
+
     var trace = unwrap(d).trace,
         domain = trace.domain,
         nodes = trace.nodes,
@@ -60,7 +61,9 @@ function sankeyModel(layout, d, i) {
         .nodes(nodes)
         .links(links)
         .layout(c.sankeyIterations);
+
     switchToForceFormat(nodes);
+
     return {
         key: i,
         horizontal: horizontal,
@@ -83,7 +86,9 @@ function sankeyModel(layout, d, i) {
 }
 
 function linkModel(d, l) {
+
     var tc = tinycolor(l.color);
+
     return {
         key: l.source.label + '|' + l.target.label,
         traceId: d.key,
