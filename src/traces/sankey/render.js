@@ -227,6 +227,88 @@ function attachPointerEvents(selection, sankey, eventSet) {
         });
 }
 
+function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
+
+    var dragBehavior = d3.behavior.drag()
+
+        .origin(function(d) {return d.horizontal ? d.node : {x: d.node['y'], y: d.node['x']};})
+
+        .on('dragstart', function(d) {
+            if(!c.movable) return;
+            this.parentNode.appendChild(this);
+            d.interactionState.dragInProgress = d.node;
+            constrainDraggedItem(d.node);
+            if(d.interactionState.hovered) {
+                callbacks.nodeEvents.unhover.apply(0, d.interactionState.hovered);
+                d.interactionState.hovered = false;
+            }
+            if(c.useForceSnap) {
+                var forceKey = d.traceId + '|' + Math.floor(d.node.originalX);
+                if (d.forceLayouts[forceKey]) { // make a forceLayout iff needed
+
+                    d.forceLayouts[forceKey].restart();
+
+                } else {
+
+                    var nodes = d.sankey.nodes().filter(function(n) {return n.originalX === d.node.originalX;});
+                    var snap = function () {
+                        var maxVelocity = 0;
+                        for (var i = 0; i < nodes.length; i++) {
+                            var n = nodes[i];
+                            if (n === d.interactionState.dragInProgress) { // constrain node position to the dragging pointer
+                                n.x = n.lastDraggedX;
+                                n.y = n.lastDraggedY;
+                            } else {
+                                n.vx = (n.vx + 4 * (n.originalX - n.x)) / 5; // snap to layer
+                                n.y = Math.min(d.size - n.dy / 2, Math.max(n.dy / 2, n.y)); // constrain to extent
+                            }
+                            maxVelocity = Math.max(maxVelocity, Math.abs(n.vx), Math.abs(n.vy));
+                        }
+                        if(!d.interactionState.dragInProgress && maxVelocity < 0.1) {
+                            d.forceLayouts[forceKey].stop();
+                            window.setTimeout(function() {sankeyNode.call(crispLinesOnEnd);}, 30);
+                        }
+                    }
+
+                    d.forceLayouts[forceKey] = d3Force.forceSimulation(nodes)
+                        .alphaDecay(0)
+                        .velocityDecay(0.3)
+                        .force('collide', d3Force.forceCollide()
+                            .radius(function (n) {return n.dy / 2 + d.nodePad / 2;})
+                            .strength(1)
+                            .iterations(c.forceIterations))
+                        .force('constrain', snap)
+                        .on('tick', updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink.filter(layerLink(d))));
+                }
+            }
+        })
+
+        .on('drag', function(d) {
+            if(!c.movable) return;
+            var x = d.horizontal ? d3.event.x : d3.event.y;
+            var y = d.horizontal ? d3.event.y : d3.event.x;
+            if(c.useForceSnap) {
+                d.node.x = x;
+                d.node.y = y;
+            } else {
+                if(c.sideways) {
+                    d.node.x = x;
+                }
+                d.node.y = Math.max(d.node.dy / 2, Math.min(d.size - d.node.dy / 2, y));
+            }
+            constrainDraggedItem(d.node);
+            d.sankey.relayout();
+            if(!c.useForceSnap) {
+                updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink.filter(layerLink(d)))();
+                sankeyNode.call(crispLinesOnEnd);
+            }
+        })
+
+        .on('dragend', function(d) {d.interactionState.dragInProgress = false;});
+
+    return sankeyNode.call(dragBehavior);
+}
+
 module.exports = function(svg, styledData, layout, callbacks) {
 
     var sankey = svg.selectAll('.sankey')
@@ -322,83 +404,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('opacity', 0)
         .call(updateNodePositions)
         .call(attachPointerEvents, sankey, callbacks.nodeEvents)
-        .call(d3.behavior.drag()
-
-            .origin(function(d) {return d.horizontal ? d.node : {x: d.node['y'], y: d.node['x']};})
-
-            .on('dragstart', function(d) {
-                if(!c.movable) return;
-                this.parentNode.appendChild(this);
-                d.interactionState.dragInProgress = d.node;
-                constrainDraggedItem(d.node);
-                if(d.interactionState.hovered) {
-                    callbacks.nodeEvents.unhover.apply(0, d.interactionState.hovered);
-                    d.interactionState.hovered = false;
-                }
-                if(c.useForceSnap) {
-                    var forceKey = d.traceId + '|' + Math.floor(d.node.originalX);
-                    if (d.forceLayouts[forceKey]) { // make a forceLayout iff needed
-
-                        d.forceLayouts[forceKey].restart();
-
-                    } else {
-
-                        var nodes = d.sankey.nodes().filter(function(n) {return n.originalX === d.node.originalX;});
-                        var snap = function () {
-                            var maxVelocity = 0;
-                            for (var i = 0; i < nodes.length; i++) {
-                                var n = nodes[i];
-                                if (n === d.interactionState.dragInProgress) { // constrain node position to the dragging pointer
-                                    n.x = n.lastDraggedX;
-                                    n.y = n.lastDraggedY;
-                                } else {
-                                    n.vx = (n.vx + 4 * (n.originalX - n.x)) / 5; // snap to layer
-                                    n.y = Math.min(d.size - n.dy / 2, Math.max(n.dy / 2, n.y)); // constrain to extent
-                                }
-                                maxVelocity = Math.max(maxVelocity, Math.abs(n.vx), Math.abs(n.vy));
-                            }
-                            if(!d.interactionState.dragInProgress && maxVelocity < 0.1) {
-                                d.forceLayouts[forceKey].stop();
-                                window.setTimeout(function() {sankeyNode.call(crispLinesOnEnd);}, 30);
-                            }
-                        }
-
-                        d.forceLayouts[forceKey] = d3Force.forceSimulation(nodes)
-                            .alphaDecay(0)
-                            .velocityDecay(0.3)
-                            .force('collide', d3Force.forceCollide()
-                                .radius(function (n) {return n.dy / 2 + d.nodePad / 2;})
-                                .strength(1)
-                                .iterations(c.forceIterations))
-                            .force('constrain', snap)
-                            .on('tick', updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink.filter(layerLink(d))));
-                    }
-                }
-            })
-
-            .on('drag', function(d) {
-                if(!c.movable) return;
-                var x = d.horizontal ? d3.event.x : d3.event.y;
-                var y = d.horizontal ? d3.event.y : d3.event.x;
-                if(c.useForceSnap) {
-                    d.node.x = x;
-                    d.node.y = y;
-                } else {
-                    if(c.sideways) {
-                        d.node.x = x;
-                    }
-                    d.node.y = Math.max(d.node.dy / 2, Math.min(d.size - d.node.dy / 2, y));
-                }
-                constrainDraggedItem(d.node);
-                d.sankey.relayout();
-                if(!c.useForceSnap) {
-                    updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink.filter(layerLink(d)))();
-                    sankeyNode.call(crispLinesOnEnd);
-                }
-            })
-
-            .on('dragend', function(d) {d.interactionState.dragInProgress = false;})
-        );
+        .call(attachDragHandler, sankeyLink, callbacks);
 
     sankeyNode
         .transition().ease(c.ease).duration(c.duration)
