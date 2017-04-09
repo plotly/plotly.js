@@ -18,9 +18,9 @@ var d3Force = require('d3-force');
 
 
 function keyFun(d) {return d.key;}
-function repeat(d) {return [d];}
+function repeat(d) {return [d];} // d3 data binding convention
 function unwrap(d) {return d[0];} // plotly data structure convention
-function visible(dimension) {return !('visible' in dimension) || dimension.visible;}
+function visible(nodeOrLink) {return !('visible' in nodeOrLink) || nodeOrLink.visible;}
 
 function persistOriginalPlace(nodes) {
     for (var i = 0; i < nodes.length; i++) {
@@ -46,12 +46,14 @@ function layerLink(d) {
 }
 
 function switchToForceFormat(nodes) {
+    // force uses x, y as centers
     for (var i = 0; i < nodes.length; i++) {
         nodes[i].y = nodes[i].y + nodes[i].dy / 2;
     }
 }
 
 function switchToSankeyFormat(nodes) {
+    // sankey uses x, y as top left
     for (var i = 0; i < nodes.length; i++) {
         nodes[i].y = nodes[i].y - nodes[i].dy / 2;
     }
