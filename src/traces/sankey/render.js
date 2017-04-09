@@ -18,14 +18,9 @@ var d3Force = require('d3-force');
 
 
 function keyFun(d) {return d.key;}
-
 function repeat(d) {return [d];}
-
+function unwrap(d) {return d[0];} // plotly data structure convention
 function visible(dimension) {return !('visible' in dimension) || dimension.visible;}
-
-function unwrap(d) {
-    return d[0]; // plotly data structure convention
-}
 
 function persistOriginalX(nodes) {
     for (var i = 0; i < nodes.length; i++) {
@@ -101,7 +96,7 @@ function layerLink(d) {
 }
 
 function crispLinesOnEnd(sankeyNode) {
-    sankeyNode.style('shape-rendering', 'crispEdges');
+    d3.select(sankeyNode.node().parentElement).style('shape-rendering', 'crispEdges');
 }
 
 function updateNodePositions(sankeyNode) {
@@ -121,8 +116,23 @@ function linkPath(d) {
     return result;
 }
 
+function rectWidth(d) {return d.horizontal ? Math.ceil(d.node.dx + 0.5) : Math.ceil(d.node.dy - 0.5);}
+function rectHeight(d) {return d.horizontal ? Math.ceil(d.node.dy - 0.5) : Math.ceil(d.node.dx + 0.5);}
+
 function labelX(d) {return d.horizontal ? d.node.dx + c.nodeTextOffset : d.node.dy / 2;}
 function labelY(d) {return d.horizontal ? d.node.dy / 2 : d.node.dx / 2;}
+
+function updateNodeShapes(sankeyNode) {
+    d3.select(sankeyNode.node().parentElement).style('shape-rendering', 'optimizeSpeed');
+    sankeyNode.call(updateNodePositions);
+}
+
+function updateShapes(sankeyNode, sankeyLink) {
+    return function() {
+        sankeyNode.call(updateNodeShapes);
+        sankeyLink.attr('d', linkPath);
+    }
+}
 
 module.exports = function(svg, styledData, layout, callbacks) {
 
@@ -247,18 +257,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
     sankeyNodes
         .each(function(d) {Drawing.font(sankeyNodes, d.textFont);});
 
-    function updateNodeShapes(sankeyNode) {
-        sankeyNodes.style('shape-rendering', 'optimizeSpeed');
-        sankeyNode.call(updateNodePositions);
-    }
-
-    function updateShapes(sankeyNode, sankeyLink) {
-        return function() {
-            sankeyNode.call(updateNodeShapes);
-            sankeyLink.attr('d', linkPath);
-        }
-    }
-
     var sankeyNode = sankeyNodes.selectAll('.sankeyNode')
         .data(function(d) {
             var nodes = d.sankey.nodes();
@@ -328,7 +326,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                             }
                             if(!dragInProgress && maxVelocity < 0.1) {
                                 d.forceLayouts[forceKey].stop();
-                                sankeyNode.call(crispLinesOnEnd);
+                                window.setTimeout(function() {sankeyNode.call(crispLinesOnEnd);}, 30);
                             }
                         }
 
@@ -381,9 +379,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     var nodeRect = sankeyNode.selectAll('.nodeRect')
         .data(repeat);
-
-    function rectWidth(d) {return d.horizontal ? Math.ceil(d.node.dx + 0.5) : Math.ceil(d.node.dy - 0.5);}
-    function rectHeight(d) {return d.horizontal ? Math.ceil(d.node.dy - 0.5) : Math.ceil(d.node.dx + 0.5);}
 
     nodeRect.enter()
         .append('rect')
