@@ -141,9 +141,7 @@ function constrainDraggedItem(d) {
 }
 
 function sameLayer(d) {
-    return function(n) {
-        return n.node.originalX === d.node.originalX;
-    };
+    return function(n) {return n.node.originalX === d.node.originalX;};
 }
 
 function layerLink(d) {
