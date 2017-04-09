@@ -87,6 +87,19 @@ function constrainDraggedItem(d) {
     d.lastDraggedY = d.y
 }
 
+function layerNode(d) {
+    return function(n) {
+        return n.node.originalX === d.node.originalX;
+    };
+}
+
+function layerLink(d) {
+    return function(l) {
+        return l.link.source.originalX === d.node.originalX
+            || l.link.target.originalX === d.node.originalX;
+    };
+}
+
 module.exports = function(svg, styledData, layout, callbacks) {
 
     var dragInProgress = false;
@@ -315,13 +328,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
                             }
                         }
 
-                        var layerNodeSelection = sankeyNode.filter(function(n) {
-                            return n.node.originalX === d.node.originalX;
-                        });
-                        var layerLinkSelection = sankeyLink.filter(function(l) {
-                            return l.link.source.originalX === d.node.originalX
-                                || l.link.target.originalX === d.node.originalX;
-                        });
                         d.forceLayouts[forceKey] = d3Force.forceSimulation(nodes)
                             .alphaDecay(0)
                             .velocityDecay(0.3)
@@ -330,7 +336,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                                 .strength(1)
                                 .iterations(c.forceIterations))
                             .force('constrain', snap)
-                            .on('tick', updateShapes(layerNodeSelection, layerLinkSelection));
+                            .on('tick', updateShapes(sankeyNode.filter(layerNode(d)), sankeyLink.filter(layerLink(d))));
                     }
                 }
             })
@@ -351,7 +357,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 constrainDraggedItem(d.node);
                 d.sankey.relayout();
                 if(!c.useForceSnap) {
-                    updateShapes();
+                    updateShapes(sankeyNode.filter(layerNode(d)), sankeyLink.filter(layerLink(d)))();
                     crispLinesOnEnd();
                 }
             })
