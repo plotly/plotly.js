@@ -40,7 +40,7 @@ function toSankeyFormat(nodes) {
     }
 }
 
-function viewModel(layout, d, i) {
+function sankeyModel(layout, d, i) {
     var trace = unwrap(d).trace,
         domain = trace.domain,
         nodes = trace.nodes,
@@ -74,6 +74,40 @@ function viewModel(layout, d, i) {
         nodes: nodes,
         links: links,
         sankey: sankey
+    };
+}
+
+function nodeModel(forceLayouts, d, n) {
+
+    var tc = tinycolor(n.color),
+        zoneThicknessPad = c.nodePadAcross,
+        zoneLengthPad = d.nodePad / 2,
+        visibleThickness = n.dx + 0.5,
+        visibleLength = n.dy - 0.5,
+        zoneThickness = visibleThickness + 2 * zoneThicknessPad,
+        zoneLength = visibleLength + 2 * zoneLengthPad;
+
+    return {
+        key: n.label,
+        traceId: d.key,
+        node: n,
+        nodePad: d.nodePad,
+        textFont: d.textFont,
+        size: d.horizontal ? d.height : d.width,
+        visibleWidth: Math.ceil(d.horizontal ? visibleThickness : visibleLength),
+        visibleHeight: Math.ceil(d.horizontal ? visibleLength : visibleThickness),
+        zoneX: d.horizontal ? zoneThicknessPad : zoneLengthPad,
+        zoneY: d.horizontal ? zoneLengthPad : zoneThicknessPad,
+        zoneWidth: d.horizontal ? zoneThickness : zoneLength,
+        zoneHeight: d.horizontal ? zoneLength : zoneThickness,
+        labelX: d.horizontal ? n.dx + c.nodeTextOffset : n.dy / 2,
+        labelY: d.horizontal ? n.dy / 2 : n.dx / 2,
+        sizeAcross: d.horizontal ? d.width : d.height,
+        forceLayouts: forceLayouts,
+        horizontal: d.horizontal,
+        tinyColorHue: Color.tinyRGB(tc),
+        tinyColorAlpha: tc.getAlpha(),
+        sankey: d.sankey
     };
 }
 
@@ -178,7 +212,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .data(
             styledData
                 .filter(function(d) {return unwrap(d).trace.visible;})
-                .map(viewModel.bind(0, layout)),
+                .map(sankeyModel.bind(null, layout)),
             keyFun
         );
 
@@ -266,41 +300,9 @@ module.exports = function(svg, styledData, layout, callbacks) {
             var nodes = d.sankey.nodes();
             var forceLayouts = {};
             persistOriginalX(nodes);
-            return d.sankey.nodes()
+            return nodes
                 .filter(function(n) {return n.visible && n.value;})
-                .map(function(n) {
-
-                    var tc = tinycolor(n.color),
-                        zoneThicknessPad = c.nodePadAcross,
-                        zoneLengthPad = d.nodePad / 2,
-                        visibleThickness = n.dx + 0.5,
-                        visibleLength = n.dy - 0.5,
-                        zoneThickness = visibleThickness + 2 * zoneThicknessPad,
-                        zoneLength = visibleLength + 2 * zoneLengthPad;
-
-                    return {
-                        key: n.label,
-                        traceId: d.key,
-                        node: n,
-                        nodePad: d.nodePad,
-                        textFont: d.textFont,
-                        size: d.horizontal ? d.height : d.width,
-                        visibleWidth: Math.ceil(d.horizontal ? visibleThickness : visibleLength),
-                        visibleHeight: Math.ceil(d.horizontal ? visibleLength : visibleThickness),
-                        zoneX: d.horizontal ? zoneThicknessPad : zoneLengthPad,
-                        zoneY: d.horizontal ? zoneLengthPad : zoneThicknessPad,
-                        zoneWidth: d.horizontal ? zoneThickness : zoneLength,
-                        zoneHeight: d.horizontal ? zoneLength : zoneThickness,
-                        labelX: d.horizontal ? n.dx + c.nodeTextOffset : n.dy / 2,
-                        labelY: d.horizontal ? n.dy / 2 : n.dx / 2,
-                        sizeAcross: d.horizontal ? d.width : d.height,
-                        forceLayouts: forceLayouts,
-                        horizontal: d.horizontal,
-                        tinyColorHue: Color.tinyRGB(tc),
-                        tinyColorAlpha: tc.getAlpha(),
-                        sankey: d.sankey
-                    };
-                });
+                .map(nodeModel.bind(null, forceLayouts, d));
         }, keyFun);
 
     sankeyNode.enter()
