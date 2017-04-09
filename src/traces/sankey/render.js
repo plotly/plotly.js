@@ -116,9 +116,6 @@ function linkPath(d) {
     return result;
 }
 
-function labelX(d) {return d.horizontal ? d.node.dx + c.nodeTextOffset : d.node.dy / 2;}
-function labelY(d) {return d.horizontal ? d.node.dy / 2 : d.node.dx / 2;}
-
 function updateNodeShapes(sankeyNode) {
     d3.select(sankeyNode.node().parentElement).style('shape-rendering', 'optimizeSpeed');
     sankeyNode.call(updateNodePositions);
@@ -284,6 +281,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
                         zoneY: d.horizontal ? zoneLengthPad : zoneThicknessPad,
                         zoneWidth: d.horizontal ? zoneThickness : zoneLength,
                         zoneHeight: d.horizontal ? zoneLength : zoneThickness,
+                        labelX: d.horizontal ? n.dx + c.nodeTextOffset : n.dy / 2,
+                        labelY: d.horizontal ? n.dy / 2 : n.dx / 2,
                         sizeAcross: d.horizontal ? d.width : d.height,
                         forceLayouts: forceLayouts,
                         horizontal: d.horizontal,
@@ -427,8 +426,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
     nodeLabel.enter()
         .append('text')
         .classed('nodeLabel', true)
-        .attr('x', labelX)
-        .attr('y', labelY)
+        .attr('x', function(d) {return d.labelX;})
+        .attr('y', function(d) {return d.labelY;})
         .attr('alignment-baseline', 'middle')
         .style('user-select', 'none')
         .style('cursor', 'default')
@@ -440,6 +439,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .attr('text-anchor', function(d) {return d.horizontal ? 'start' : 'middle';});
 
     nodeLabel.transition().ease(c.ease).duration(c.duration)
-        .attr('x', labelX)
-        .attr('y', labelY);
+        .attr('x', function(d) {return d.labelX;})
+        .attr('y', function(d) {return d.labelY;});
 };
