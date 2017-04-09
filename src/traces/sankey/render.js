@@ -209,11 +209,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .remove();
 
     var sankeyNodes = sankey.selectAll('.sankeyNodes')
-        .data(function(d) {
-
-            return [d];
-
-        }, keyFun);
+        .data(repeat, keyFun);
 
     sankeyNodes.enter()
         .append('g')
