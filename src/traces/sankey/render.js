@@ -233,9 +233,11 @@ module.exports = function(svg, styledData, layout, callbacks) {
         sankeyNode.call(posi);
     }
 
-    function updateShapes() {
-        sankeyLink.attr('d', linkPath);
-        sankeyNode.call(positionSankeyNode);
+    function updateShapes(sankeyNode, sankeyLink) {
+        return function() {
+            sankeyNode.call(positionSankeyNode);
+            sankeyLink.attr('d', linkPath);
+        }
     }
 
     function crispLinesOnEnd() {
@@ -312,14 +314,23 @@ module.exports = function(svg, styledData, layout, callbacks) {
                                 crispLinesOnEnd();
                             }
                         }
+
+                        var layerNodeSelection = sankeyNode.filter(function(n) {
+                            return n.node.originalX === d.node.originalX;
+                        });
+                        var layerLinkSelection = sankeyLink.filter(function(l) {
+                            return l.link.source.originalX === d.node.originalX
+                                || l.link.target.originalX === d.node.originalX;
+                        });
                         d.forceLayouts[forceKey] = d3Force.forceSimulation(nodes)
                             .alphaDecay(0)
+                            .velocityDecay(0.21)
                             .force('collide', d3Force.forceCollide()
                                 .radius(function (n) {return n.dy / 2 + d.nodePad / 2;})
                                 .strength(1)
                                 .iterations(c.forceIterations))
                             .force('constrain', snap)
-                            .on('tick', updateShapes);
+                            .on('tick', updateShapes(layerNodeSelection, layerLinkSelection));
                     }
                 }
             })
