@@ -74,7 +74,7 @@ module.exports = {
 
     textfont: extendFlat({}, fontAttrs, {
         size: extendFlat({}, fontAttrs.size, {
-            dflt: 10
+            dflt: 12
         })
     }),
 
