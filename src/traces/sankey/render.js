@@ -100,6 +100,10 @@ function layerLink(d) {
     };
 }
 
+function crispLinesOnEnd(sankeyNode) {
+    sankeyNode.style('shape-rendering', 'crispEdges');
+}
+
 function updateNodePositions(sankeyNode) {
     sankeyNode
         .attr('transform', function(d) {
@@ -252,10 +256,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
         }
     }
 
-    function crispLinesOnEnd() {
-        sankeyNode.style('shape-rendering', 'crispEdges');
-    }
-
     var sankeyNode = sankeyNodes.selectAll('.sankeyNode')
         .data(function(d) {
             var nodes = d.sankey.nodes();
@@ -325,7 +325,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                             }
                             if(!dragInProgress && maxVelocity < 0.1) {
                                 d.forceLayouts[forceKey].stop();
-                                crispLinesOnEnd();
+                                sankeyNode.call(crispLinesOnEnd);
                             }
                         }
 
@@ -359,7 +359,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 d.sankey.relayout();
                 if(!c.useForceSnap) {
                     updateShapes(sankeyNode.filter(layerNode(d)), sankeyLink.filter(layerLink(d)))();
-                    crispLinesOnEnd();
+                    sankeyNode.call(crispLinesOnEnd);
                 }
             })
 
