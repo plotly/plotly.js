@@ -29,7 +29,7 @@ function persistOriginalPlace(nodes) {
     }
 }
 
-function constrainDraggedItem(d) {
+function saveCurrentDragPosition(d) {
     d.lastDraggedX = d.x
     d.lastDraggedY = d.y
 }
@@ -235,20 +235,20 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 
         .on('dragstart', function(d) {
             if(!c.movable) return;
-            this.parentNode.appendChild(this);
+            this.parentNode.appendChild(this); // bring element to top (painter's algo)
             d.interactionState.dragInProgress = d.node;
-            constrainDraggedItem(d.node);
+            saveCurrentDragPosition(d.node);
             if(d.interactionState.hovered) {
                 callbacks.nodeEvents.unhover.apply(0, d.interactionState.hovered);
                 d.interactionState.hovered = false;
             }
             if(c.useForceSnap) {
                 var forceKey = d.traceId + '|' + Math.floor(d.node.originalX);
-                if (d.forceLayouts[forceKey]) { // make a forceLayout iff needed
+                if (d.forceLayouts[forceKey]) {
 
                     d.forceLayouts[forceKey].restart();
 
-                } else {
+                } else { // make a forceLayout iff needed
 
                     var nodes = d.sankey.nodes().filter(function(n) {return n.originalX === d.node.originalX;});
                     var snap = function () {
@@ -296,7 +296,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
                 }
                 d.node.y = Math.max(d.node.dy / 2, Math.min(d.size - d.node.dy / 2, y));
             }
-            constrainDraggedItem(d.node);
+            saveCurrentDragPosition(d.node);
             d.sankey.relayout();
             if(!c.useForceSnap) {
                 updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink.filter(layerLink(d)))();
@@ -312,12 +312,10 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 module.exports = function(svg, styledData, layout, callbacks) {
 
     var sankey = svg.selectAll('.sankey')
-        .data(
-            styledData
+        .data(styledData
                 .filter(function(d) {return unwrap(d).trace.visible;})
                 .map(sankeyModel.bind(null, layout)),
-            keyFun
-        );
+            keyFun);
 
     sankey.exit().remove();
 
@@ -338,6 +336,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
             return 'translate(' + d.translateX + ',' + d.translateY + ')';
         });
 
+
     var sankeyLinks = sankey.selectAll('.sankeyLinks')
         .data(repeat, keyFun);
 
@@ -346,6 +345,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .classed('sankeyLinks', true)
         .style('transform', function(d) {return d.horizontal ? 'matrix(1,0,0,1,0,0)' : 'matrix(0,1,1,0,0,0)'})
         .style('fill', 'none');
+
 
     var sankeyLink = sankeyLinks.selectAll('.sankeyLink')
         .data(function(d) {
@@ -377,6 +377,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('opacity', 0)
         .remove();
 
+
     var sankeyNodes = sankey.selectAll('.sankeyNodes')
         .data(repeat, keyFun);
 
@@ -387,6 +388,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     sankeyNodes
         .each(function(d) {Drawing.font(sankeyNodes, d.textFont);});
+
 
     var sankeyNode = sankeyNodes.selectAll('.sankeyNode')
         .data(function(d) {
@@ -416,6 +418,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('opacity', 0)
         .remove();
 
+
     var nodeRect = sankeyNode.selectAll('.nodeRect')
         .data(repeat);
 
@@ -433,6 +436,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
     nodeRect.transition().ease(c.ease).duration(c.duration)
         .call(sizeNode);
 
+
     var nodeCapture = sankeyNode.selectAll('.nodeCapture')
         .data(repeat);
 
@@ -446,6 +450,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .attr('y', function(d) {return d.zoneY;})
         .attr('width', function(d) {return d.zoneWidth;})
         .attr('height', function(d) {return d.zoneHeight;});
+
 
     var nodeLabel = sankeyNode.selectAll('.nodeLabel')
         .data(repeat);
