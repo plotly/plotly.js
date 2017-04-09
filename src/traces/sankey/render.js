@@ -121,6 +121,9 @@ function linkPath(d) {
     return result;
 }
 
+function labelX(d) {return d.horizontal ? d.node.dx + c.nodeTextOffset : d.node.dy / 2;}
+function labelY(d) {return d.horizontal ? d.node.dy / 2 : d.node.dx / 2;}
+
 module.exports = function(svg, styledData, layout, callbacks) {
 
     var dragInProgress = false;
@@ -414,9 +417,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     var nodeLabel = sankeyNode.selectAll('.nodeLabel')
         .data(repeat);
-
-    function labelX(d) {return d.horizontal ? d.node.dx + c.nodeTextOffset : d.node.dy / 2;}
-    function labelY(d) {return d.horizontal ? d.node.dy / 2 : d.node.dx / 2;}
 
     nodeLabel.enter()
         .append('text')
