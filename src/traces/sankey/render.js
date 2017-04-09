@@ -29,13 +29,13 @@ function persistOriginalPlace(nodes) {
     }
 }
 
-function toForceFormat(nodes) {
+function switchToForceFormat(nodes) {
     for (var i = 0; i < nodes.length; i++) {
         nodes[i].y = nodes[i].y + nodes[i].dy / 2;
     }
 }
 
-function toSankeyFormat(nodes) {
+function switchToSankeyFormat(nodes) {
     for (var i = 0; i < nodes.length; i++) {
         nodes[i].y = nodes[i].y - nodes[i].dy / 2;
     }
@@ -60,7 +60,7 @@ function sankeyModel(layout, d, i) {
         .nodes(nodes)
         .links(links)
         .layout(c.sankeyIterations);
-    toForceFormat(nodes);
+    switchToForceFormat(nodes);
     return {
         key: i,
         horizontal: horizontal,
@@ -163,9 +163,9 @@ function updateNodePositions(sankeyNode) {
 
 function linkPath(d) {
     var nodes = d.sankey.nodes();
-    toSankeyFormat(nodes);
+    switchToSankeyFormat(nodes);
     var result = d.sankey.link()(d.link);
-    toForceFormat(nodes);
+    switchToForceFormat(nodes);
     return result;
 }
 
