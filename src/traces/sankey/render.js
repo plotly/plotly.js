@@ -232,7 +232,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
     sankeyNodes
         .each(function(d) {Drawing.font(sankeyNodes, d.textFont);});
 
-    function posi(sankeyNode) {
+    function updateNodePositions(sankeyNode) {
         sankeyNode
             .attr('transform', function(d) {
                 return d.horizontal
@@ -241,14 +241,14 @@ module.exports = function(svg, styledData, layout, callbacks) {
             })
     }
 
-    function positionSankeyNode(sankeyNode) {
+    function updateNodeShapes(sankeyNode) {
         sankeyNodes.style('shape-rendering', 'optimizeSpeed');
-        sankeyNode.call(posi);
+        sankeyNode.call(updateNodePositions);
     }
 
     function updateShapes(sankeyNode, sankeyLink) {
         return function() {
-            sankeyNode.call(positionSankeyNode);
+            sankeyNode.call(updateNodeShapes);
             sankeyLink.attr('d', linkPath);
         }
     }
@@ -287,10 +287,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .append('g')
         .classed('sankeyNode', true)
         .style('opacity', 0)
-        .call(posi)
+        .call(updateNodePositions)
         .call(attachPointerEvents, callbacks.nodeEvents)
         .call(d3.behavior.drag()
+
             .origin(function(d) {return d.horizontal ? d.node : {x: d.node['y'], y: d.node['x']};})
+
             .on('dragstart', function(d) {
                 if(!c.movable) return;
                 this.parentNode.appendChild(this);
@@ -340,6 +342,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                     }
                 }
             })
+
             .on('drag', function(d) {
                 if(!c.movable) return;
                 var x = d.horizontal ? d3.event.x : d3.event.y;
@@ -352,7 +355,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
                         d.node.x = x;
                     }
                     d.node.y = Math.max(d.node.dy / 2, Math.min(d.size - d.node.dy / 2, y));
-
                 }
                 constrainDraggedItem(d.node);
                 d.sankey.relayout();
@@ -361,15 +363,14 @@ module.exports = function(svg, styledData, layout, callbacks) {
                     crispLinesOnEnd();
                 }
             })
-            .on('dragend', function() {
-                if(!c.movable) return;
-                dragInProgress = false;
-            }));
+
+            .on('dragend', function() {dragInProgress = false;})
+        );
 
     sankeyNode
         .transition().ease(c.ease).duration(c.duration)
         .style('opacity', 1)
-        .call(posi);
+        .call(updateNodePositions);
 
     sankeyNode.exit()
         .transition().ease(c.ease).duration(c.duration)
