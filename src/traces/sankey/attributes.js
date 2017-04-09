@@ -72,11 +72,7 @@ module.exports = {
         description: 'Sets whether the hover tooltip follows the mouse.'
     },
 
-    textfont: extendFlat({}, fontAttrs, {
-        size: extendFlat({}, fontAttrs.size, {
-            dflt: 12
-        })
-    }),
+    textfont: fontAttrs,
 
     nodes: {
         _isLinkedToArray: 'node',
