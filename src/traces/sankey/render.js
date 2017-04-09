@@ -100,6 +100,15 @@ function layerLink(d) {
     };
 }
 
+function updateNodePositions(sankeyNode) {
+    sankeyNode
+        .attr('transform', function(d) {
+            return d.horizontal
+                ? 'translate(' + (d.node.x - 0.5) + ', ' + (d.node.y - d.node.dy / 2 + 0.5) + ')'
+                : 'translate(' + (d.node.y - d.node.dy / 2 - 0.5) + ', ' + (d.node.x + 0.5) + ')'
+        })
+}
+
 module.exports = function(svg, styledData, layout, callbacks) {
 
     var dragInProgress = false;
@@ -231,15 +240,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     sankeyNodes
         .each(function(d) {Drawing.font(sankeyNodes, d.textFont);});
-
-    function updateNodePositions(sankeyNode) {
-        sankeyNode
-            .attr('transform', function(d) {
-                return d.horizontal
-                    ? 'translate(' + (d.node.x - 0.5) + ', ' + (d.node.y - d.node.dy / 2 + 0.5) + ')'
-                    : 'translate(' + (d.node.y - d.node.dy / 2 - 0.5) + ', ' + (d.node.x + 0.5) + ')'
-            })
-    }
 
     function updateNodeShapes(sankeyNode) {
         sankeyNodes.style('shape-rendering', 'optimizeSpeed');
