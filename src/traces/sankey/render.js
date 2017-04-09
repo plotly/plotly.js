@@ -29,6 +29,22 @@ function persistOriginalPlace(nodes) {
     }
 }
 
+function constrainDraggedItem(d) {
+    d.lastDraggedX = d.x
+    d.lastDraggedY = d.y
+}
+
+function sameLayer(d) {
+    return function(n) {return n.node.originalX === d.node.originalX;};
+}
+
+function layerLink(d) {
+    return function(l) {
+        return l.link.source.originalX === d.node.originalX
+            || l.link.target.originalX === d.node.originalX;
+    };
+}
+
 function switchToForceFormat(nodes) {
     for (var i = 0; i < nodes.length; i++) {
         nodes[i].y = nodes[i].y + nodes[i].dy / 2;
@@ -132,22 +148,6 @@ function nodeModel(forceLayouts, d, n) {
         tinyColorAlpha: tc.getAlpha(),
         sankey: d.sankey,
         interactionState: d.interactionState
-    };
-}
-
-function constrainDraggedItem(d) {
-    d.lastDraggedX = d.x
-    d.lastDraggedY = d.y
-}
-
-function sameLayer(d) {
-    return function(n) {return n.node.originalX === d.node.originalX;};
-}
-
-function layerLink(d) {
-    return function(l) {
-        return l.link.source.originalX === d.node.originalX
-            || l.link.target.originalX === d.node.originalX;
     };
 }
 
