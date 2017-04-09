@@ -190,38 +190,38 @@ function positionLabel(nLab) {
         .attr('y', function(d) {return d.labelY;});
 }
 
-module.exports = function(svg, styledData, layout, callbacks) {
+function attachPointerEvents(selection, sankey, eventSet) {
+    selection
+        .on('mouseover', function (d) {
+            if (!d.interactionState.dragInProgress) {
+                eventSet.hover(this, d, sankey);
+                d.interactionState.hovered = [this, d];
+            }
+        })
+        .on('mousemove', function (d) {
+            if (!d.interactionState.dragInProgress) {
+                eventSet.follow(this, d, sankey);
+                d.interactionState.hovered = [this, d];
+            }
+        })
+        .on('mouseout', function (d) {
+            if (!d.interactionState.dragInProgress) {
+                eventSet.unhover(this, d, sankey);
+                d.interactionState.hovered = false;
+            }
+        })
+        .on('click', function (d) {
+            if (d.interactionState.hovered) {
+                eventSet.unhover(this, d, sankey);
+                d.interactionState.hovered = false;
+            }
+            if (!d.interactionState.dragInProgress) {
+                eventSet.select(this, d, sankey);
+            }
+        });
+}
 
-    function attachPointerEvents(selection, sankey, eventSet) {
-        selection
-            .on('mouseover', function (d) {
-                if (!d.interactionState.dragInProgress) {
-                    eventSet.hover(this, d, sankey);
-                    d.interactionState.hovered = [this, d];
-                }
-            })
-            .on('mousemove', function (d) {
-                if (!d.interactionState.dragInProgress) {
-                    eventSet.follow(this, d, sankey);
-                    d.interactionState.hovered = [this, d];
-                }
-            })
-            .on('mouseout', function (d) {
-                if (!d.interactionState.dragInProgress) {
-                    eventSet.unhover(this, d, sankey);
-                    d.interactionState.hovered = false;
-                }
-            })
-            .on('click', function (d) {
-                if (d.interactionState.hovered) {
-                    eventSet.unhover(this, d, sankey);
-                    d.interactionState.hovered = false;
-                }
-                if (!d.interactionState.dragInProgress) {
-                    eventSet.select(this, d, sankey);
-                }
-            });
-    }
+module.exports = function(svg, styledData, layout, callbacks) {
 
     var sankey = svg.selectAll('.sankey')
         .data(
