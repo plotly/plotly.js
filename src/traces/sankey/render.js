@@ -118,6 +118,10 @@ function linkPath(d) {
 
 function rectWidth(d) {return d.horizontal ? Math.ceil(d.node.dx + 0.5) : Math.ceil(d.node.dy - 0.5);}
 function rectHeight(d) {return d.horizontal ? Math.ceil(d.node.dy - 0.5) : Math.ceil(d.node.dx + 0.5);}
+function nodeThickness(d) {return d.node.dx + 0.5;}
+function nodeLength(d) {return d.node.dy - 0.5;}
+function nodeZoneThickness(d) {return d.node.dx + 2 * c.nodePadAcross + 0.5;}
+function nodeZoneLength(d) {return d.node.dy - 0.5 + d.nodePad;}
 
 function labelX(d) {return d.horizontal ? d.node.dx + c.nodeTextOffset : d.node.dy / 2;}
 function labelY(d) {return d.horizontal ? d.node.dy / 2 : d.node.dx / 2;}
@@ -393,8 +397,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
 
     nodeRect.transition().ease(c.ease).duration(c.duration)
-        .attr('width', rectWidth)
-        .attr('height', rectHeight);
+        .attr('width', function(d) {return Math.ceil(d.horizontal ? nodeThickness(d): nodeLength(d));})
+        .attr('height', function(d) {return Math.ceil(d.horizontal ? nodeLength(d) : nodeThickness(d));});
 
     var nodeCapture = sankeyNode.selectAll('.nodeCapture')
         .data(repeat);
@@ -405,8 +409,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('fill-opacity', 0);
 
     nodeCapture
-        .attr('width', function(d) {return Math.ceil(d.horizontal ? d.node.dx + 2 * c.nodePadAcross + 0.5: d.node.dy - 0.5 + d.nodePad);})
-        .attr('height', function(d) {return Math.ceil(d.horizontal ? d.node.dy - 0.5 + d.nodePad : d.node.dx + 2 * c.nodePadAcross + 0.5);})
+        .attr('width', function(d) {return Math.ceil(d.horizontal ? nodeZoneThickness(d): nodeZoneLength(d));})
+        .attr('height', function(d) {return Math.ceil(d.horizontal ? nodeZoneLength(d) : nodeZoneThickness(d));})
         .attr('x', function(d) {return d.horizontal ? -c.nodePadAcross : - d.nodePad / 2;})
         .attr('y', function(d) {return d.horizontal ? -d.nodePad / 2: -c.nodePadAcross;});
 
