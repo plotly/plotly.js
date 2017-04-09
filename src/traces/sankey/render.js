@@ -396,6 +396,20 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .attr('width', rectWidth)
         .attr('height', rectHeight);
 
+    var nodeCapture = sankeyNode.selectAll('.nodeCapture')
+        .data(repeat);
+
+    nodeCapture.enter()
+        .append('rect')
+        .classed('nodeCapture', true)
+        .style('fill-opacity', 0);
+
+    nodeCapture
+        .attr('width', function(d) {return Math.ceil(d.horizontal ? d.node.dx + 2 * c.nodePadAcross + 0.5: d.node.dy - 0.5 + d.nodePad);})
+        .attr('height', function(d) {return Math.ceil(d.horizontal ? d.node.dy - 0.5 + d.nodePad : d.node.dx + 2 * c.nodePadAcross + 0.5);})
+        .attr('x', function(d) {return d.horizontal ? -c.nodePadAcross : - d.nodePad / 2;})
+        .attr('y', function(d) {return d.horizontal ? -d.nodePad / 2: -c.nodePadAcross;});
+
     var nodeLabel = sankeyNode.selectAll('.nodeLabel')
         .data(repeat);
 
@@ -406,7 +420,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .attr('y', labelY)
         .attr('alignment-baseline', 'middle')
         .style('user-select', 'none')
-        .style('pointer-events', 'none')
         .style('cursor', 'default')
         .style('text-shadow', '-1px -1px 1px #fff, -1px 1px 1px #fff, 1px -1px 1px #fff, 1px 1px 1px #fff')
         .style('fill', 'black');
