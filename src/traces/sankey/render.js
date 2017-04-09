@@ -111,6 +111,18 @@ function nodeModel(forceLayouts, d, n) {
     };
 }
 
+function linkModel(d, l) {
+    var tc = tinycolor(l.color);
+    return {
+        key: l.source.label + '|' + l.target.label,
+        traceId: d.key,
+        link: l,
+        tinyColorHue: Color.tinyRGB(tc),
+        tinyColorAlpha: tc.getAlpha(),
+        sankey: d.sankey
+    };
+}
+
 function constrainDraggedItem(d) {
     d.lastDraggedX = d.x
     d.lastDraggedY = d.y
@@ -248,17 +260,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .data(function(d) {
             return d.sankey.links()
                 .filter(function(l) {return l.visible && l.value;})
-                .map(function(l) {
-                    var tc = tinycolor(l.color);
-                    return {
-                        key: l.source.label + '|' + l.target.label,
-                        traceId: d.key,
-                        link: l,
-                        tinyColorHue: Color.tinyRGB(tc),
-                        tinyColorAlpha: tc.getAlpha(),
-                        sankey: d.sankey
-                    };
-                });
+                .map(linkModel.bind(null, d));
         }, keyFun);
 
     sankeyLink.enter()
