@@ -140,7 +140,7 @@ function constrainDraggedItem(d) {
     d.lastDraggedY = d.y
 }
 
-function layerNode(d) {
+function sameLayer(d) {
     return function(n) {
         return n.node.originalX === d.node.originalX;
     };
@@ -371,7 +371,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                                 .strength(1)
                                 .iterations(c.forceIterations))
                             .force('constrain', snap)
-                            .on('tick', updateShapes(sankeyNode.filter(layerNode(d)), sankeyLink.filter(layerLink(d))));
+                            .on('tick', updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink.filter(layerLink(d))));
                     }
                 }
             })
@@ -392,7 +392,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 constrainDraggedItem(d.node);
                 d.sankey.relayout();
                 if(!c.useForceSnap) {
-                    updateShapes(sankeyNode.filter(layerNode(d)), sankeyLink.filter(layerLink(d)))();
+                    updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink.filter(layerLink(d)))();
                     sankeyNode.call(crispLinesOnEnd);
                 }
             })
