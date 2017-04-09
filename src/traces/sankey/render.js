@@ -324,7 +324,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                         });
                         d.forceLayouts[forceKey] = d3Force.forceSimulation(nodes)
                             .alphaDecay(0)
-                            .velocityDecay(0.21)
+                            .velocityDecay(0.3)
                             .force('collide', d3Force.forceCollide()
                                 .radius(function (n) {return n.dy / 2 + d.nodePad / 2;})
                                 .strength(1)
