@@ -81,6 +81,19 @@ function sankeyModel(layout, d, i) {
     };
 }
 
+function linkModel(d, l) {
+    var tc = tinycolor(l.color);
+    return {
+        key: l.source.label + '|' + l.target.label,
+        traceId: d.key,
+        link: l,
+        tinyColorHue: Color.tinyRGB(tc),
+        tinyColorAlpha: tc.getAlpha(),
+        sankey: d.sankey,
+        interactionState: d.interactionState
+    };
+}
+
 function nodeModel(forceLayouts, d, n) {
 
     var tc = tinycolor(n.color),
@@ -109,19 +122,6 @@ function nodeModel(forceLayouts, d, n) {
         sizeAcross: d.horizontal ? d.width : d.height,
         forceLayouts: forceLayouts,
         horizontal: d.horizontal,
-        tinyColorHue: Color.tinyRGB(tc),
-        tinyColorAlpha: tc.getAlpha(),
-        sankey: d.sankey,
-        interactionState: d.interactionState
-    };
-}
-
-function linkModel(d, l) {
-    var tc = tinycolor(l.color);
-    return {
-        key: l.source.label + '|' + l.target.label,
-        traceId: d.key,
-        link: l,
         tinyColorHue: Color.tinyRGB(tc),
         tinyColorAlpha: tc.getAlpha(),
         sankey: d.sankey,
