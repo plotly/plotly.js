@@ -22,9 +22,10 @@ function repeat(d) {return [d];}
 function unwrap(d) {return d[0];} // plotly data structure convention
 function visible(dimension) {return !('visible' in dimension) || dimension.visible;}
 
-function persistOriginalX(nodes) {
+function persistOriginalPlace(nodes) {
     for (var i = 0; i < nodes.length; i++) {
         nodes[i].originalX = nodes[i].x;
+        nodes[i].originalY = nodes[i].y;
     }
 }
 
@@ -304,7 +305,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .data(function(d) {
             var nodes = d.sankey.nodes();
             var forceLayouts = {};
-            persistOriginalX(nodes);
+            persistOriginalPlace(nodes);
             return nodes
                 .filter(function(n) {return n.visible && n.value;})
                 .map(nodeModel.bind(null, forceLayouts, d));
