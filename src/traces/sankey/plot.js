@@ -13,10 +13,74 @@ var Fx = require('../../plots/cartesian/graph_interact');
 var d3 = require('d3');
 var Color = require('../../components/color');
 
+function ownTrace(selection, d) {
+    return selection.filter(function(s) {return s.key === d.traceId;});
+}
+
 function makeTranslucent(element, alpha) {
     d3.select(element)
         .select('path')
         .style('fill-opacity', alpha);
+}
+
+function relatedLinks(d) {
+    return function(l) {
+        return d.node.sourceLinks.indexOf(l.link) !== -1 ||  d.node.targetLinks.indexOf(l.link) !== -1;
+    };
+}
+
+function relatedNodes(l) {
+    return function(d) {
+        return d.node.sourceLinks.indexOf(l.link) !== -1 ||  d.node.targetLinks.indexOf(l.link) !== -1;
+    };
+}
+
+function nodeHoveredStyle(sankeyNode, d, sankey) {
+
+    sankeyNode.select('.nodeRect').style('stroke-width', 1);
+
+    if(d && sankey) {
+        ownTrace(sankey, d)
+            .selectAll('.sankeyLink')
+            .filter(relatedLinks(d))
+            .call(linkHoveredStyle);
+    }
+}
+
+function nodeNonHoveredStyle(sankeyNode, d, sankey) {
+
+    sankeyNode.select('.nodeRect').style('stroke-width', 0.5);
+
+    if(d && sankey) {
+        ownTrace(sankey, d)
+            .selectAll('.sankeyLink')
+            .filter(relatedLinks(d))
+            .call(linkNonHoveredStyle);
+    }
+}
+
+function linkHoveredStyle(sankeyLink, d, sankey) {
+
+    sankeyLink.style('stroke-opacity', 0.5);
+
+    if(d && sankey) {
+        ownTrace(sankey, d)
+            .selectAll('.sankeyNode')
+            .filter(relatedNodes(d))
+            .call(nodeHoveredStyle);
+    }
+}
+
+function linkNonHoveredStyle(sankeyLink, d, sankey) {
+
+    sankeyLink.style('stroke-opacity', function(d) {return d.tinyColorAlpha;});
+
+    if(d && sankey) {
+        ownTrace(sankey, d)
+            .selectAll('.sankeyNode')
+            .filter(relatedNodes(d))
+            .call(nodeNonHoveredStyle);
+    }
 }
 
 module.exports = function plot(gd, calcData) {
@@ -34,9 +98,9 @@ module.exports = function plot(gd, calcData) {
         Fx.click(gd, { target: true });
     };
 
-    var linkHover = function(element, d) {
+    var linkHover = function(element, d, sankey) {
 
-            d3.select(element).style('stroke-opacity', 0.5);
+            d3.select(element).call(linkHoveredStyle, d, sankey);
             console.log('hover link', d.link);
 
             Fx.hover(gd, d.link, 'sankey');
@@ -44,7 +108,7 @@ module.exports = function plot(gd, calcData) {
             hasHoverData = true;
     };
 
-    var linkHoverFollow = function(element, d) {
+    var linkHoverFollow = function(element, d, sankey) {
 
 
         var followMouse = calcData[0][d.traceId].trace.followmouse;
@@ -72,8 +136,8 @@ module.exports = function plot(gd, calcData) {
         makeTranslucent(tooltip, 0.67);
     };
 
-    var linkUnhover = function(element, d) {
-        d3.select(element).style('stroke-opacity', function(d) {return d.tinyColorAlpha;});
+    var linkUnhover = function(element, d, sankey) {
+        d3.select(element).call(linkNonHoveredStyle, d, sankey);
         console.log('unhover link', d.link);
         gd.emit('plotly_unhover', {
             points: [d.link]
@@ -85,22 +149,18 @@ module.exports = function plot(gd, calcData) {
         }
     };
 
-    var nodeSelect = function(element, d) {
+    var nodeSelect = function(element, d, sankey) {
         console.log('select node', d.node);
         gd._hoverdata = [d.node];
         gd._hoverdata.trace = calcData.trace;
         Fx.click(gd, { target: true });
     };
 
-    var nodeHover = function(element, d) {
-
-        var nodeRect = d3.select(element).select('.nodeRect');
+    var nodeHover = function(element, d, sankey) {
 
         console.log('hover node', d.node);
 
-        nodeRect
-            .style('stroke-width', 1)
-            .style('stroke', 'black');
+        d3.select(element).call(nodeHoveredStyle, d, sankey);
 
         Fx.hover(gd, d.node, 'sankey');
 
@@ -109,7 +169,7 @@ module.exports = function plot(gd, calcData) {
     };
 
 
-    var nodeHoverFollow = function(element, d) {
+    var nodeHoverFollow = function(element, d, sankey) {
 
         var nodeRect = d3.select(element).select('.nodeRect');
 
@@ -140,10 +200,9 @@ module.exports = function plot(gd, calcData) {
         makeTranslucent(tooltip, 0.85);
     };
 
-    var nodeUnhover = function(element, d) {
-        d3.select(element).select('.nodeRect')
-            .style('stroke-width', 0.5)
-            .style('stroke', 'black');
+    var nodeUnhover = function(element, d, sankey) {
+
+        d3.select(element).call(nodeNonHoveredStyle, d, sankey);
         console.log('unhover node', d.node);
         gd.emit('plotly_unhover', {
             points: [d.node]

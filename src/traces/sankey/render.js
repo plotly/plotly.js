@@ -96,29 +96,29 @@ module.exports = function(svg, styledData, layout, callbacks) {
         selection
             .on('mouseover', function (d) {
                 if (!dragInProgress) {
-                    eventSet.hover(this, d);
+                    eventSet.hover(this, d, sankey);
                     hovered = [this, d];
                 }
             })
             .on('mousemove', function (d) {
                 if (!dragInProgress) {
-                    eventSet.follow(this, d);
+                    eventSet.follow(this, d, sankey);
                     hovered = [this, d];
                 }
             })
             .on('mouseout', function (d) {
                 if (!dragInProgress) {
-                    eventSet.unhover(this, d);
+                    eventSet.unhover(this, d, sankey);
                     hovered = false;
                 }
             })
             .on('click', function (d) {
                 if (hovered) {
-                    eventSet.unhover(this, d);
+                    eventSet.unhover(this, d, sankey);
                     hovered = false;
                 }
                 if (!dragInProgress) {
-                    eventSet.select(this, d);
+                    eventSet.select(this, d, sankey);
                 }
             });
     }
@@ -168,7 +168,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('transform', function(d) {return d.horizontal ? 'matrix(1,0,0,1,0,0)' : 'matrix(0,1,1,0,0,0)'})
         .style('fill', 'none');
 
-    var sankeyLink = sankeyLinks.selectAll('.sankeyPath')
+    var sankeyLink = sankeyLinks.selectAll('.sankeyLink')
         .data(function(d) {
             return d.sankey.links()
                 .filter(function(l) {return l.visible && l.value;})
@@ -187,7 +187,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     sankeyLink.enter()
         .append('path')
-        .classed('sankeyPath', true)
+        .classed('sankeyLink', true)
         .attr('d', linkPath)
         .style('stroke-width', function(d) {return Math.max(1, d.link.dy);})
         .style('opacity', 0)
