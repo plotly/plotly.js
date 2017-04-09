@@ -116,13 +116,6 @@ function linkPath(d) {
     return result;
 }
 
-function rectWidth(d) {return d.horizontal ? Math.ceil(d.node.dx + 0.5) : Math.ceil(d.node.dy - 0.5);}
-function rectHeight(d) {return d.horizontal ? Math.ceil(d.node.dy - 0.5) : Math.ceil(d.node.dx + 0.5);}
-function nodeThickness(d) {return d.node.dx + 0.5;}
-function nodeLength(d) {return d.node.dy - 0.5;}
-function nodeZoneThickness(d) {return d.node.dx + 2 * c.nodePadAcross + 0.5;}
-function nodeZoneLength(d) {return d.node.dy - 0.5 + d.nodePad;}
-
 function labelX(d) {return d.horizontal ? d.node.dx + c.nodeTextOffset : d.node.dy / 2;}
 function labelY(d) {return d.horizontal ? d.node.dy / 2 : d.node.dx / 2;}
 
@@ -269,7 +262,15 @@ module.exports = function(svg, styledData, layout, callbacks) {
             return d.sankey.nodes()
                 .filter(function(n) {return n.visible && n.value;})
                 .map(function(n) {
-                    var tc = tinycolor(n.color);
+
+                    var tc = tinycolor(n.color),
+                        zoneThicknessPad = c.nodePadAcross,
+                        zoneLengthPad = d.nodePad / 2,
+                        visibleThickness = n.dx + 0.5,
+                        visibleLength = n.dy - 0.5,
+                        zoneThickness = visibleThickness + 2 * zoneThicknessPad,
+                        zoneLength = visibleLength + 2 * zoneLengthPad;
+
                     return {
                         key: n.label,
                         traceId: d.key,
@@ -277,6 +278,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
                         nodePad: d.nodePad,
                         textFont: d.textFont,
                         size: d.horizontal ? d.height : d.width,
+                        visibleWidth: Math.ceil(d.horizontal ? visibleThickness : visibleLength),
+                        visibleHeight: Math.ceil(d.horizontal ? visibleLength : visibleThickness),
+                        zoneX: d.horizontal ? zoneThicknessPad : zoneLengthPad,
+                        zoneY: d.horizontal ? zoneLengthPad : zoneThicknessPad,
+                        zoneWidth: d.horizontal ? zoneThickness : zoneLength,
+                        zoneHeight: d.horizontal ? zoneLength : zoneThickness,
                         sizeAcross: d.horizontal ? d.width : d.height,
                         forceLayouts: forceLayouts,
                         horizontal: d.horizontal,
@@ -388,17 +395,17 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .append('rect')
         .classed('nodeRect', true)
         .style('stroke-width', 0.5)
-        .attr('width', rectWidth)
-        .attr('height', rectHeight)
+        .attr('width', function(d) {return d.visibleWidth;})
+        .attr('height', function(d) {return d.visibleHeight;})
         .call(Color.stroke, 'rgba(0, 0, 0, 1)');
 
-    nodeRect // ceil, +/-0.5 and crispEdges is needed for consistent border width on all 4 sides
+    nodeRect
         .style('fill', function(d) {return d.tinyColorHue;})
         .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
 
     nodeRect.transition().ease(c.ease).duration(c.duration)
-        .attr('width', function(d) {return Math.ceil(d.horizontal ? nodeThickness(d): nodeLength(d));})
-        .attr('height', function(d) {return Math.ceil(d.horizontal ? nodeLength(d) : nodeThickness(d));});
+        .attr('width', function(d) {return d.visibleWidth;})
+        .attr('height', function(d) {return d.visibleHeight;});
 
     var nodeCapture = sankeyNode.selectAll('.nodeCapture')
         .data(repeat);
@@ -409,10 +416,10 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('fill-opacity', 0);
 
     nodeCapture
-        .attr('width', function(d) {return Math.ceil(d.horizontal ? nodeZoneThickness(d): nodeZoneLength(d));})
-        .attr('height', function(d) {return Math.ceil(d.horizontal ? nodeZoneLength(d) : nodeZoneThickness(d));})
-        .attr('x', function(d) {return d.horizontal ? -c.nodePadAcross : - d.nodePad / 2;})
-        .attr('y', function(d) {return d.horizontal ? -d.nodePad / 2: -c.nodePadAcross;});
+        .attr('x', function(d) {return d.zoneX;})
+        .attr('y', function(d) {return d.zoneY;})
+        .attr('width', function(d) {return d.zoneWidth;})
+        .attr('height', function(d) {return d.zoneHeight;});
 
     var nodeLabel = sankeyNode.selectAll('.nodeLabel')
         .data(repeat);
