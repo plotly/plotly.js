@@ -109,6 +109,14 @@ function updateNodePositions(sankeyNode) {
         })
 }
 
+function linkPath(d) {
+    var nodes = d.sankey.nodes();
+    toSankeyFormat(nodes);
+    var result = d.sankey.link()(d.link);
+    toForceFormat(nodes);
+    return result;
+}
+
 module.exports = function(svg, styledData, layout, callbacks) {
 
     var dragInProgress = false;
@@ -143,15 +151,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
                     eventSet.select(this, d, sankey);
                 }
             });
-    }
-
-    function linkPath(d) {
-
-        var nodes = d.sankey.nodes();
-        toSankeyFormat(nodes);
-        var result = d.sankey.link()(d.link);
-        toForceFormat(nodes);
-        return result;
     }
 
     var sankey = svg.selectAll('.sankey')
