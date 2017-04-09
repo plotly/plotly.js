@@ -73,7 +73,11 @@ function sankeyModel(layout, d, i) {
         dragPerpendicular: horizontal ? width : height,
         nodes: nodes,
         links: links,
-        sankey: sankey
+        sankey: sankey,
+        interactionState: {
+            dragInProgress: false,
+            hovered: false
+        }
     };
 }
 
@@ -107,7 +111,8 @@ function nodeModel(forceLayouts, d, n) {
         horizontal: d.horizontal,
         tinyColorHue: Color.tinyRGB(tc),
         tinyColorAlpha: tc.getAlpha(),
-        sankey: d.sankey
+        sankey: d.sankey,
+        interactionState: d.interactionState
     };
 }
 
@@ -119,7 +124,8 @@ function linkModel(d, l) {
         link: l,
         tinyColorHue: Color.tinyRGB(tc),
         tinyColorAlpha: tc.getAlpha(),
-        sankey: d.sankey
+        sankey: d.sankey,
+        interactionState: d.interactionState
     };
 }
 
@@ -186,35 +192,32 @@ function positionLabel(nLab) {
 
 module.exports = function(svg, styledData, layout, callbacks) {
 
-    var dragInProgress = false;
-    var hovered = false;
-
-    function attachPointerEvents(selection, eventSet) {
+    function attachPointerEvents(selection, sankey, eventSet) {
         selection
             .on('mouseover', function (d) {
-                if (!dragInProgress) {
+                if (!d.interactionState.dragInProgress) {
                     eventSet.hover(this, d, sankey);
-                    hovered = [this, d];
+                    d.interactionState.hovered = [this, d];
                 }
             })
             .on('mousemove', function (d) {
-                if (!dragInProgress) {
+                if (!d.interactionState.dragInProgress) {
                     eventSet.follow(this, d, sankey);
-                    hovered = [this, d];
+                    d.interactionState.hovered = [this, d];
                 }
             })
             .on('mouseout', function (d) {
-                if (!dragInProgress) {
+                if (!d.interactionState.dragInProgress) {
                     eventSet.unhover(this, d, sankey);
-                    hovered = false;
+                    d.interactionState.hovered = false;
                 }
             })
             .on('click', function (d) {
-                if (hovered) {
+                if (d.interactionState.hovered) {
                     eventSet.unhover(this, d, sankey);
-                    hovered = false;
+                    d.interactionState.hovered = false;
                 }
-                if (!dragInProgress) {
+                if (!d.interactionState.dragInProgress) {
                     eventSet.select(this, d, sankey);
                 }
             });
@@ -269,7 +272,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .attr('d', linkPath)
         .style('stroke-width', function(d) {return Math.max(1, d.link.dy);})
         .style('opacity', 0)
-        .call(attachPointerEvents, callbacks.linkEvents);
+        .call(attachPointerEvents, sankey, callbacks.linkEvents);
 
     sankeyLink
         .style('stroke', function(d) {return d.tinyColorHue;})
@@ -312,7 +315,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .classed('sankeyNode', true)
         .style('opacity', 0)
         .call(updateNodePositions)
-        .call(attachPointerEvents, callbacks.nodeEvents)
+        .call(attachPointerEvents, sankey, callbacks.nodeEvents)
         .call(d3.behavior.drag()
 
             .origin(function(d) {return d.horizontal ? d.node : {x: d.node['y'], y: d.node['x']};})
@@ -320,11 +323,11 @@ module.exports = function(svg, styledData, layout, callbacks) {
             .on('dragstart', function(d) {
                 if(!c.movable) return;
                 this.parentNode.appendChild(this);
-                dragInProgress = d.node;
+                d.interactionState.dragInProgress = d.node;
                 constrainDraggedItem(d.node);
-                if(hovered) {
-                    callbacks.nodeEvents.unhover.apply(0, hovered);
-                    hovered = false;
+                if(d.interactionState.hovered) {
+                    callbacks.nodeEvents.unhover.apply(0, d.interactionState.hovered);
+                    d.interactionState.hovered = false;
                 }
                 if(c.useForceSnap) {
                     var forceKey = d.traceId + '|' + Math.floor(d.node.originalX);
@@ -339,7 +342,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                             var maxVelocity = 0;
                             for (var i = 0; i < nodes.length; i++) {
                                 var n = nodes[i];
-                                if (n === dragInProgress) { // constrain node position to the dragging pointer
+                                if (n === d.interactionState.dragInProgress) { // constrain node position to the dragging pointer
                                     n.x = n.lastDraggedX;
                                     n.y = n.lastDraggedY;
                                 } else {
@@ -348,7 +351,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                                 }
                                 maxVelocity = Math.max(maxVelocity, Math.abs(n.vx), Math.abs(n.vy));
                             }
-                            if(!dragInProgress && maxVelocity < 0.1) {
+                            if(!d.interactionState.dragInProgress && maxVelocity < 0.1) {
                                 d.forceLayouts[forceKey].stop();
                                 window.setTimeout(function() {sankeyNode.call(crispLinesOnEnd);}, 30);
                             }
@@ -388,7 +391,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 }
             })
 
-            .on('dragend', function() {dragInProgress = false;})
+            .on('dragend', function(d) {d.interactionState.dragInProgress = false;})
         );
 
     sankeyNode
