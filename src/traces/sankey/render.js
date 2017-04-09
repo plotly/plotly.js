@@ -128,6 +128,16 @@ function updateShapes(sankeyNode, sankeyLink) {
     }
 }
 
+function sizeNode(rect) {
+    rect.attr('width', function(d) {return d.visibleWidth;})
+        .attr('height', function(d) {return d.visibleHeight;});
+}
+
+function positionLabel(nLab) {
+    nLab.attr('x', function(d) {return d.labelX;})
+        .attr('y', function(d) {return d.labelY;});
+}
+
 module.exports = function(svg, styledData, layout, callbacks) {
 
     var dragInProgress = false;
@@ -394,17 +404,15 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .append('rect')
         .classed('nodeRect', true)
         .style('stroke-width', 0.5)
-        .attr('width', function(d) {return d.visibleWidth;})
-        .attr('height', function(d) {return d.visibleHeight;})
-        .call(Color.stroke, 'rgba(0, 0, 0, 1)');
+        .call(Color.stroke, 'rgba(0, 0, 0, 1)')
+        .call(sizeNode);
 
     nodeRect
         .style('fill', function(d) {return d.tinyColorHue;})
         .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
 
     nodeRect.transition().ease(c.ease).duration(c.duration)
-        .attr('width', function(d) {return d.visibleWidth;})
-        .attr('height', function(d) {return d.visibleHeight;});
+        .call(sizeNode);
 
     var nodeCapture = sankeyNode.selectAll('.nodeCapture')
         .data(repeat);
@@ -426,19 +434,17 @@ module.exports = function(svg, styledData, layout, callbacks) {
     nodeLabel.enter()
         .append('text')
         .classed('nodeLabel', true)
-        .attr('x', function(d) {return d.labelX;})
-        .attr('y', function(d) {return d.labelY;})
         .attr('alignment-baseline', 'middle')
         .style('user-select', 'none')
         .style('cursor', 'default')
         .style('text-shadow', '-1px -1px 1px #fff, -1px 1px 1px #fff, 1px -1px 1px #fff, 1px 1px 1px #fff')
-        .style('fill', 'black');
+        .style('fill', 'black')
+        .call(positionLabel);
 
     nodeLabel
         .text(function(d) {return d.node.label;})
         .attr('text-anchor', function(d) {return d.horizontal ? 'start' : 'middle';});
 
     nodeLabel.transition().ease(c.ease).duration(c.duration)
-        .attr('x', function(d) {return d.labelX;})
-        .attr('y', function(d) {return d.labelY;});
+        .call(positionLabel);
 };
