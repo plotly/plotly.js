@@ -62,6 +62,17 @@ function switchToSankeyFormat(nodes) {
 }
 
 
+function uniqueNodeLabelPathId(sankey) {
+    return function(d) {
+        return JSON.stringify({
+            sankeyGuid: sankey.filter(function(s) {return s.key === 0;}).datum().guid,
+            traceId: d.traceId,
+            nodeKey: d.key
+        });
+    };
+}
+
+
 // view models
 
 function sankeyModel(layout, d, i) {
@@ -89,6 +100,7 @@ function sankeyModel(layout, d, i) {
 
     return {
         key: i,
+        guid: Math.floor(1e12 * (1 + Math.random())),
         horizontal: horizontal,
         width: width,
         height: height,
@@ -468,6 +480,22 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .attr('y', function(d) {return d.zoneY;})
         .attr('width', function(d) {return d.zoneWidth;})
         .attr('height', function(d) {return d.zoneHeight;});
+
+
+    var nodeLabelPath = sankeyNode.selectAll('.nodeLabelPath')
+        .data(repeat);
+
+    nodeLabelPath.enter()
+        .append('path')
+        .classed('nodeLabelPath', true)
+        .attr('id', uniqueNodeLabelPathId(sankey))
+        .style('stroke', 'black');
+
+    nodeLabelPath
+        .attr('d', function(d) {return d3.svg.line()([
+            [0, d.labelY],
+            [d.visibleWidth, d.labelY]
+        ]);});
 
 
     var nodeLabel = sankeyNode.selectAll('.nodeLabel')
