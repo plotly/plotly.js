@@ -67,7 +67,7 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
                 // axis has actually changed:
                 //
                 // If this trace is specifically requested, add it to the list:
-                if(traces.indexOf(trace.index) !== -1 || trace.carpetid) {
+                if(traces.indexOf(trace.index) !== -1 || trace.carpet) {
                     // Okay, so example: traces 0, 1, and 2 have fill = tonext. You animate
                     // traces 0 and 2. Trace 1 also needs to be updated, otherwise its fill
                     // is outdated. So this retroactively adds the previous trace if the

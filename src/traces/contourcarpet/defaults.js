@@ -24,7 +24,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    coerce('carpetid');
+    coerce('carpet');
 
     // If either a or b is not present, then it's not a valid trace *unless* the carpet
     // axis has the a or b values we're looking for. So if these are not found, just defer

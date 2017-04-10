@@ -27,7 +27,7 @@ var lookupCarpet = require('../carpet/lookup_carpetid');
 // though a few things inside heatmap calc still look for
 // contour maps, because the makeBoundArray calls are too entangled
 module.exports = function calc(gd, trace) {
-    var carpet = trace.carpet = lookupCarpet(gd, trace);
+    var carpet = trace.carpetTrace = lookupCarpet(gd, trace);
     if(!carpet || !carpet.visible || carpet.visible === 'legendonly') return;
 
     if(!trace.a || !trace.b) {
@@ -125,7 +125,7 @@ function autoContours(start, end, ncontours) {
 function heatmappishCalc(gd, trace) {
     // prepare the raw data
     // run makeCalcdata on x and y even for heatmaps, in case of category mappings
-    var carpet = trace.carpet;
+    var carpet = trace.carpetTrace;
     var aax = carpet.aaxis,
         bax = carpet.baxis,
         isContour = Registry.traceIs(trace, 'contour'),

@@ -14,7 +14,7 @@ module.exports = function emptyPathinfo(contours, plotinfo, cd0) {
     var cs = contours.size;
     var pathinfo = [];
 
-    var carpet = cd0.trace.carpet;
+    var carpet = cd0.trace.carpetTrace;
 
     for(var ci = contours.start; ci < contours.end + cs / 10; ci += cs) {
         pathinfo.push({

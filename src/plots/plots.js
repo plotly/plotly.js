@@ -696,7 +696,7 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
         }
 
         if(Registry.traceIs(fullTrace, 'carpetAxis')) {
-            carpetIndex[fullTrace.carpetid] = fullTrace;
+            carpetIndex[fullTrace.carpet] = fullTrace;
         }
 
         if(Registry.traceIs(fullTrace, 'carpetDependent')) {
@@ -709,7 +709,7 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
 
         if(!fullTrace.visible) continue;
 
-        var carpetAxis = carpetIndex[fullTrace.carpetid];
+        var carpetAxis = carpetIndex[fullTrace.carpet];
         fullTrace._carpet = carpetAxis;
 
         if(!carpetAxis || !carpetAxis.visible) {

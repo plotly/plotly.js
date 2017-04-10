@@ -10,7 +10,7 @@
 'use strict';
 
 /*
- * Given a trace, look up the carpet axis by carpetid.
+ * Given a trace, look up the carpet axis by carpet.
  */
 module.exports = function(gd, trace) {
     var n = gd._fullData.length;
@@ -25,7 +25,7 @@ module.exports = function(gd, trace) {
                 firstAxis = maybeCarpet;
             }
 
-            if(maybeCarpet.carpetid === trace.carpetid) {
+            if(maybeCarpet.carpet === trace.carpet) {
                 return maybeCarpet;
             }
         }

@@ -21,7 +21,7 @@ module.exports = function calc(gd, trace) {
     var i, carpet;
 
     for(i = 0; i < gd._fullData.length; i++) {
-        if(gd._fullData[i].carpetid === trace.carpetid && gd._fullData[i].type === 'carpet') {
+        if(gd._fullData[i].carpet === trace.carpet && gd._fullData[i].type === 'carpet') {
             carpet = gd._fullData[i];
             break;
         }

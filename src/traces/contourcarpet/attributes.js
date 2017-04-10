@@ -19,11 +19,11 @@ var scatterLineAttrs = scatterAttrs.line;
 var constants = require('./constants');
 
 module.exports = extendFlat({}, {
-    carpetid: {
+    carpet: {
         valType: 'string',
         role: 'info',
         description: [
-            'The `carpetid` of the carpet axes on which this contour trace lies'
+            'The `carpet` of the carpet axes on which this contour trace lies'
         ].join(' ')
     },
     z: heatmapAttrs.z,

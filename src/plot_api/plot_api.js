@@ -1314,7 +1314,7 @@ function _restyle(gd, aobj, _traces) {
         'xcalendar', 'ycalendar',
         'cumulative', 'cumulative.enabled', 'cumulative.direction', 'cumulative.currentbin',
         'a0', 'da', 'b0', 'db', 'atype', 'btype',
-        'cheaterslope', 'carpetid', 'sum',
+        'cheaterslope', 'carpet', 'sum',
     ];
 
     var carpetAxisAttributes = [

@@ -2,7 +2,7 @@
   "data": [
     {
       "type": "contourcarpet",
-      "carpetid": "c7",
+      "carpet": "c7",
       "z": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
       "showlegend": false,
       "contours": {
@@ -14,7 +14,7 @@
     },
     {
       "type": "contourcarpet",
-      "carpetid": "c8",
+      "carpet": "c8",
       "z": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
       "showlegend": false,
       "contours": {
@@ -25,7 +25,7 @@
     },
     {
       "type": "contourcarpet",
-      "carpetid": "c5",
+      "carpet": "c5",
       "z": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
       "showlegend": false,
       "contours": {
@@ -37,7 +37,7 @@
     },
     {
       "type": "contourcarpet",
-      "carpetid": "c6",
+      "carpet": "c6",
       "z": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
       "showlegend": false,
       "contours": {
@@ -48,7 +48,7 @@
     },
     {
       "type": "contourcarpet",
-      "carpetid": "c3",
+      "carpet": "c3",
       "z": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
       "showlegend": false,
       "contours": {
@@ -60,7 +60,7 @@
     },
     {
       "type": "contourcarpet",
-      "carpetid": "c4",
+      "carpet": "c4",
       "showlegend": false,
       "z": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
       "contours": {
@@ -71,7 +71,7 @@
     },
     {
       "type": "contourcarpet",
-      "carpetid": "c1",
+      "carpet": "c1",
       "z": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
       "showlegend": false,
       "contours": {
@@ -83,7 +83,7 @@
     },
     {
       "type": "contourcarpet",
-      "carpetid": "c2",
+      "carpet": "c2",
       "showlegend": false,
       "z": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
       "contours": {
@@ -94,7 +94,7 @@
     },
     {
       "type": "carpet",
-      "carpetid": "c1",
+      "carpet": "c1",
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
@@ -105,7 +105,7 @@
     },
     {
       "type": "carpet",
-      "carpetid": "c2",
+      "carpet": "c2",
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
@@ -116,7 +116,7 @@
     },
     {
       "type": "carpet",
-      "carpetid": "c3",
+      "carpet": "c3",
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
@@ -127,7 +127,7 @@
     },
     {
       "type": "carpet",
-      "carpetid": "c4",
+      "carpet": "c4",
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
@@ -138,7 +138,7 @@
     },
     {
       "type": "carpet",
-      "carpetid": "c5",
+      "carpet": "c5",
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
@@ -149,7 +149,7 @@
     },
     {
       "type": "carpet",
-      "carpetid": "c6",
+      "carpet": "c6",
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
@@ -160,7 +160,7 @@
     },
     {
       "type": "carpet",
-      "carpetid": "c7",
+      "carpet": "c7",
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
@@ -171,7 +171,7 @@
     },
     {
       "type": "carpet",
-      "carpetid": "c8",
+      "carpet": "c8",
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],

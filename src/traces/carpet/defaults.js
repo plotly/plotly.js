@@ -24,7 +24,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, dfltColor, fullLayou
     var defaultColor = coerce('color', colorAttrs.defaultLine);
     Lib.coerceFont(coerce, 'font');
 
-    coerce('carpetid');
+    coerce('carpet');
 
     handleABDefaults(traceIn, traceOut, fullLayout, coerce, defaultColor);
 

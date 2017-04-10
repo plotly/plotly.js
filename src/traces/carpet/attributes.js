@@ -14,7 +14,7 @@ var axisAttrs = require('./axis_attributes');
 var colorAttrs = require('../../components/color/attributes');
 
 module.exports = {
-    carpetid: {
+    carpet: {
         valType: 'string',
         role: 'info',
         description: [

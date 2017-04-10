@@ -163,24 +163,24 @@ describe('supplyDefaults visibility check', function() {
     it('does not hide an axis with cheater and non-cheater carpet', function() {
         var gd = {
             data: [{
-                carpetid: 'c1',
+                carpet: 'c1',
                 type: 'carpet',
                 a: [1, 2, 3],
                 b: [1, 2],
                 x: [[1, 2, 3], [4, 5, 6]],
                 y: [[1, 2, 3], [4, 5, 6]],
             }, {
-                carpetid: 'c2',
+                carpet: 'c2',
                 type: 'carpet',
                 a: [1, 2, 3],
                 b: [1, 2],
                 y: [[1, 2, 3], [4, 5, 6]],
             }, {
-                carpetid: 'c1',
+                carpet: 'c1',
                 type: 'contourcarpet',
                 z: [[1, 2, 3], [4, 5, 6]],
             }, {
-                carpetid: 'c2',
+                carpet: 'c2',
                 type: 'contourcarpet',
                 z: [[1, 2, 3], [4, 5, 6]],
             }]
@@ -193,24 +193,24 @@ describe('supplyDefaults visibility check', function() {
     it('does not hide an axis with cheater and non-cheater carpet', function() {
         var gd = {
             data: [{
-                carpetid: 'c1',
+                carpet: 'c1',
                 type: 'carpet',
                 a: [1, 2, 3],
                 b: [1, 2],
                 x: [[1, 2, 3], [4, 5, 6]],
                 y: [[1, 2, 3], [4, 5, 6]],
             }, {
-                carpetid: 'c2',
+                carpet: 'c2',
                 type: 'carpet',
                 a: [1, 2, 3],
                 b: [1, 2],
                 y: [[1, 2, 3], [4, 5, 6]],
             }, {
-                carpetid: 'c1',
+                carpet: 'c1',
                 type: 'contourcarpet',
                 z: [[1, 2, 3], [4, 5, 6]],
             }, {
-                carpetid: 'c2',
+                carpet: 'c2',
                 type: 'contourcarpet',
                 z: [[1, 2, 3], [4, 5, 6]],
             }]

@@ -20,7 +20,7 @@ var scatterMarkerAttrs = scatterAttrs.marker,
     scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
 module.exports = {
-    carpetid: {
+    carpet: {
         valType: 'string',
         role: 'info',
         description: [

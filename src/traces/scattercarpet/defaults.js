@@ -27,7 +27,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    coerce('carpetid');
+    coerce('carpet');
 
     // XXX: Don't hard code this
     traceOut.xaxis = 'x';

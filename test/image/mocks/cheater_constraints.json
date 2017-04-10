@@ -1,7 +1,7 @@
 {
   "data":[
     {
-      "carpetid":"c1",
+      "carpet":"c1",
       "type":"carpet",
       "a":[1, 2, 3],
       "b":[1, 2, 3],
@@ -20,7 +20,7 @@
       }
     },
     {
-      "carpetid":"c2",
+      "carpet":"c2",
       "type":"carpet",
       "a":[1, 2, 3],
       "b":[1, 2, 3],
@@ -39,7 +39,7 @@
       }
     },
     {
-      "carpetid":"c3",
+      "carpet":"c3",
       "type":"carpet",
       "a":[1, 2, 3],
       "b":[1, 2, 3],
@@ -58,7 +58,7 @@
       }
     },
     {
-      "carpetid":"c4",
+      "carpet":"c4",
       "type":"carpet",
       "a":[1, 2, 3],
       "b":[1, 2, 3],
@@ -77,7 +77,7 @@
       }
     },
     {
-      "carpetid":"c1",
+      "carpet":"c1",
       "type":"contourcarpet",
       "name": "1A",
       "z":[[1, 2.3, 3], [2.3, 3, 3.7], [3, 3.7, 5]],
@@ -93,7 +93,7 @@
       }
     },
     {
-      "carpetid":"c1",
+      "carpet":"c1",
       "type":"contourcarpet",
       "name": "1B",
       "z":[[1, 2.3, 3], [2.3, 3, 3.7], [3, 3.7, 5]],
@@ -109,7 +109,7 @@
       }
     },
     {
-      "carpetid":"c1",
+      "carpet":"c1",
       "type":"contourcarpet",
       "name": "1C",
       "z":[[0, 0.5, 1], [-0.5, 0, 0.5], [-1, -0.5, 0]],
@@ -124,7 +124,7 @@
       }
     },
     {
-      "carpetid":"c1",
+      "carpet":"c1",
       "type":"contourcarpet",
       "name": "1D",
       "z":[[0, 0.5, 1], [-0.5, 0, 0.5], [-1, -0.5, 0]],
@@ -140,7 +140,7 @@
       }
     },
     {
-      "carpetid":"c2",
+      "carpet":"c2",
       "xaxis":"x2",
       "yaxis":"y",
       "type":"contourcarpet",
@@ -158,7 +158,7 @@
       }
     },
     {
-      "carpetid":"c2",
+      "carpet":"c2",
       "xaxis":"x2",
       "yaxis":"y",
       "type":"contourcarpet",
@@ -179,7 +179,7 @@
       }
     },
     {
-      "carpetid":"c2",
+      "carpet":"c2",
       "xaxis":"x2",
       "yaxis":"y",
       "type":"contourcarpet",
@@ -196,7 +196,7 @@
       }
     },
     {
-      "carpetid":"c2",
+      "carpet":"c2",
       "xaxis":"x2",
       "yaxis":"y",
       "type":"contourcarpet",
@@ -214,7 +214,7 @@
       }
     },
     {
-      "carpetid":"c3",
+      "carpet":"c3",
       "xaxis":"x",
       "yaxis":"y2",
       "type":"contourcarpet",
@@ -232,7 +232,7 @@
       }
     },
     {
-      "carpetid":"c3",
+      "carpet":"c3",
       "xaxis":"x",
       "yaxis":"y2",
       "type":"contourcarpet",
@@ -250,7 +250,7 @@
       }
     },
     {
-      "carpetid":"c3",
+      "carpet":"c3",
       "xaxis":"x",
       "yaxis":"y2",
       "type":"contourcarpet",
@@ -267,7 +267,7 @@
       }
     },
     {
-      "carpetid":"c3",
+      "carpet":"c3",
       "xaxis":"x",
       "yaxis":"y2",
       "type":"contourcarpet",
@@ -285,7 +285,7 @@
       }
     },
     {
-      "carpetid":"c4",
+      "carpet":"c4",
       "xaxis":"x2",
       "yaxis":"y2",
       "type":"contourcarpet",
@@ -303,7 +303,7 @@
       }
     },
     {
-      "carpetid":"c4",
+      "carpet":"c4",
       "xaxis":"x2",
       "yaxis":"y2",
       "type":"contourcarpet",
@@ -321,7 +321,7 @@
       }
     },
     {
-      "carpetid":"c4",
+      "carpet":"c4",
       "xaxis":"x2",
       "yaxis":"y2",
       "type":"contourcarpet",
@@ -338,7 +338,7 @@
       }
     },
     {
-      "carpetid":"c4",
+      "carpet":"c4",
       "xaxis":"x2",
       "yaxis":"y2",
       "type":"contourcarpet",
