@@ -173,6 +173,12 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
 
+        coerce('showspikes');
+        coerce('spikecolor');
+        coerce('spikethickness');
+        coerce('spikedash');
+        coerce('spikemode');
+
         var positioningOptions = {
             letter: axLetter,
             counterAxes: counterAxes[axLetter],

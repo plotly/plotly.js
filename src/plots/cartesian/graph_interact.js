@@ -878,7 +878,9 @@ function createSpikelines(hoverData, opts) {
         yMarker = c0.ya.spikemode.indexOf('marker') !== -1,
         xSpikeLine = c0.xa.spikemode.indexOf('toaxis') !== -1 || c0.xa.spikemode.indexOf('across') !== -1,
         ySpikeLine = c0.ya.spikemode.indexOf('toaxis') !== -1 || c0.ya.spikemode.indexOf('across') !== -1,
-        xEndSpike = c0.xa.spikemode.indexOf('across') !== -1 ? xBase + xLength : xPoint,
+        xEndSpike = c0.xa.spikemode.indexOf('across') !== -1 ?
+                (ySide === 'left' ? xBase + xLength : xBase - xLength) :
+                 xPoint,
         yEndSpike = c0.ya.spikemode.indexOf('across') !== -1 ? yBase - yLength : yPoint;
 
     // Remove old spikeline items
