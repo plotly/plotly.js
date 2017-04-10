@@ -52,10 +52,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
 
         coerce('text');
-        coerce('connectgaps', hasColumns(traceOut));
         coerce('contours.type');
 
         var contours = traceOut.contours;
+
+        // Unimplemented:
+        // coerce('connectgaps', hasColumns(traceOut));
 
         if(contours.type === 'constraint') {
             coerce('contours.operation');
@@ -67,22 +69,40 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             Lib.coerce(traceIn, traceOut, plotAttributes, 'showlegend', true);
 
             // Override the above defaults with constraint-aware tweaks:
-            coerce('contours.coloring', contours.operation === '=' ? 'none' : 'fill');
+            coerce('contours.coloring', contours.operation === '=' ? 'lines' : 'fill');
+            coerce('contours.showlines', true);
 
+            if(contours.operation === '=') {
+                contours.coloring = 'lines';
+            }
             handleStyleDefaults(traceIn, traceOut, coerce, layout, defaultColor, 2);
             handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
 
             if(contours.operation === '=') {
+                coerce('line.color', defaultColor);
+
                 if(contours.coloring === 'fill') {
                     contours.coloring = 'lines';
                 }
+
+                if(contours.coloring === 'lines') {
+                    delete traceOut.fillcolor;
+                }
             }
 
-            coerce('showscale', false);
-
+            delete traceOut.showscale;
             delete traceOut.autocontour;
+            delete traceOut.autocolorscale;
+            delete traceOut.colorscale;
             delete traceOut.ncontours;
-            // delete traceOut.colorbar;
+            delete traceOut.colorbar;
+
+            if(traceOut.line) {
+                delete traceOut.line.autocolorscale;
+                delete traceOut.line.colorscale;
+                delete traceOut.line.mincolor;
+                delete traceOut.line.maxcolor;
+            }
 
             // TODO: These shouldb e deleted in accordance with toolpanel convention, but
             // we can't becuase we require them so that it magically makes the contour
