@@ -592,13 +592,13 @@ function hover(gd, evt, subplot) {
     gd._hoverdata = newhoverdata;
 
     if(hoverChanged(gd, evt, oldhoverdata) && fullLayout._hasCartesian) {
-        var droplineOpts = {
+        var spikelineOpts = {
             hovermode: hovermode,
             fullLayout: fullLayout,
             container: fullLayout._hoverlayer,
             outerContainer: fullLayout._paperdiv
         };
-        createDroplines(hoverData, droplineOpts);
+        createSpikelines(hoverData, spikelineOpts);
     }
 
     // if there's more than one horz bar trace,
@@ -631,7 +631,8 @@ function hover(gd, evt, subplot) {
         overrideCursor(d3.select(evt.target), hasClickToShow ? 'pointer' : '');
     }
 
-    if(!hoverChanged(gd, evt, oldhoverdata)) return;
+    // don't emit events if called manually
+    if(evt.target && !hoverChanged(gd, evt, oldhoverdata)) return;
 
     if(oldhoverdata) {
         gd.emit('plotly_unhover', {
@@ -832,11 +833,11 @@ fx.loneUnhover = function(containerOrSelection) {
             d3.select(containerOrSelection);
 
     selection.selectAll('g.hovertext').remove();
-    selection.selectAll('line.dropline').remove();
-    selection.selectAll('circle.dropline').remove();
+    selection.selectAll('line.spikeline').remove();
+    selection.selectAll('circle.spikeline').remove();
 };
 
-function createDroplines(hoverData, opts) {
+function createSpikelines(hoverData, opts) {
     var hovermode = opts.hovermode,
         container = opts.container,
         outerContainer = opts.outerContainer;
@@ -881,9 +882,9 @@ function createDroplines(hoverData, opts) {
         xEndSpike = c0.xa.spikemode.indexOf('across') !== -1 ? xBase + xLength : xPoint,
         yEndSpike = c0.ya.spikemode.indexOf('across') !== -1 ? yBase - yLength : yPoint;
 
-    // Remove old dropline items
-    container.selectAll('line.dropline').remove();
-    container.selectAll('circle.dropline').remove();
+    // Remove old spikeline items
+    container.selectAll('line.spikeline').remove();
+    container.selectAll('circle.spikeline').remove();
 
 
     if(c0.ya.showspikes) {
@@ -898,7 +899,7 @@ function createDroplines(hoverData, opts) {
                     'stroke-width': yThickness + 2,
                     'stroke': contrastColor
                 })
-                .classed('dropline', true)
+                .classed('spikeline', true)
                 .classed('crisp', true);
 
             // Foreground horizontal line (to y-axis)
@@ -912,19 +913,19 @@ function createDroplines(hoverData, opts) {
                     'stroke': yColor,
                     'stroke-dasharray': yDash
                 })
-                .classed('dropline', true)
+                .classed('spikeline', true)
                 .classed('crisp', true);
         }
         // Y axis marker
         if(yMarker) {
             container.append('circle')
                 .attr({
-                    'cx': xAnchoredBase + yThickness,
+                    'cx': xAnchoredBase + (ySide !== 'right' ? yThickness : -yThickness),
                     'cy': yPoint,
                     'r': yThickness,
                     'fill': yColor
                 })
-                .classed('dropline', true)
+                .classed('spikeline', true)
                 .classed('crisp', true);
         }
     }
@@ -941,7 +942,7 @@ function createDroplines(hoverData, opts) {
                     'stroke-width': xThickness + 2,
                     'stroke': contrastColor
                 })
-                .classed('dropline', true)
+                .classed('spikeline', true)
                 .classed('crisp', true);
 
             // Foreground vertical line (to x-axis)
@@ -955,7 +956,7 @@ function createDroplines(hoverData, opts) {
                     'stroke': xColor,
                     'stroke-dasharray': xDash
                 })
-                .classed('dropline', true)
+                .classed('spikeline', true)
                 .classed('crisp', true);
         }
 
@@ -968,7 +969,7 @@ function createDroplines(hoverData, opts) {
                     'r': xThickness,
                     'fill': xColor
                 })
-                .classed('dropline', true)
+                .classed('spikeline', true)
                 .classed('crisp', true);
         }
     }
@@ -1484,9 +1485,7 @@ function alignHoverText(hoverLabels, rotateLabels) {
 }
 
 function hoverChanged(gd, evt, oldhoverdata) {
-    // don't emit any events if nothing changed or
-    // if fx.hover was called manually
-    if(!evt.target) return false;
+    // don't emit any events if nothing changed
     if(!oldhoverdata || oldhoverdata.length !== gd._hoverdata.length) return true;
 
     for(var i = oldhoverdata.length - 1; i >= 0; i--) {
