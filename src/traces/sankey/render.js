@@ -146,8 +146,8 @@ function nodeModel(forceLayouts, d, n) {
         zoneY: d.horizontal ? -zoneLengthPad : -zoneThicknessPad,
         zoneWidth: d.horizontal ? zoneThickness : zoneLength,
         zoneHeight: d.horizontal ? zoneLength : zoneThickness,
-        labelX: d.horizontal ? n.dx + c.nodeTextOffset : n.dy / 2,
-        labelY: d.horizontal ? n.dy / 2 : n.dx / 2,
+        labelX: d.horizontal ? n.dx + c.nodeTextOffsetHorizontal : c.nodeTextOffsetVertical,
+        labelY: d.horizontal ? n.dy / 2 : n.dx / 2 + 1,
         sizeAcross: d.horizontal ? d.width : d.height,
         forceLayouts: forceLayouts,
         horizontal: d.horizontal,
@@ -484,8 +484,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .call(positionLabel);
 
     nodeLabel
-        .text(function(d) {return d.node.label;})
-        .attr('text-anchor', function(d) {return d.horizontal ? 'start' : 'middle';});
+        .text(function(d) {return d.node.label;});
 
     nodeLabel.transition().ease(c.ease).duration(c.duration)
         .call(positionLabel);
