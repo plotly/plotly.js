@@ -24,6 +24,8 @@ var makeBubbleSizeFn = require('../../traces/scatter/make_bubble_size_func');
 
 var drawing = module.exports = {};
 
+drawing.measureText = require('./measure_text');
+
 // -----------------------------------------------------
 // styling functions for plot elements
 // -----------------------------------------------------

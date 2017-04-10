@@ -40,7 +40,6 @@ module.exports = function style(gd) {
                 .call(Drawing.lineGroupStyle,
                     line.width,
                     line.color,
-                    // contours.coloring === 'lines' ? colorMap(start + i * cs) : line.color,
                     line.dash);
         });
 

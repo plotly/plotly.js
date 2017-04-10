@@ -45,7 +45,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
     }
 
-    // I don't know what this does:
     function coerce2(attr, dflt) {
         return Lib.coerce2(containerIn, containerOut, attributes, attr, dflt);
     }

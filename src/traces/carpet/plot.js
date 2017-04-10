@@ -14,7 +14,6 @@ var Drawing = require('../../components/drawing');
 var map1dArray = require('./map_1d_array');
 var makepath = require('./makepath');
 var orientText = require('./orient_text');
-var measureText = require('./measure_text');
 
 module.exports = function plot(gd, plotinfo, cdcarpet) {
     for(var i = 0; i < cdcarpet.length; i++) {
@@ -153,7 +152,7 @@ function drawAxisLabels(tester, xaxis, yaxis, trace, t, layer, labels, labelClas
             orientation = orientText(trace, xaxis, yaxis, label.xy, [Math.cos(angle), Math.sin(angle)]);
         }
         var direction = (label.endAnchor ? -1 : 1) * orientation.flip;
-        var bbox = measureText(tester, label.text, label.font);
+        var bbox = Drawing.measureText(tester, label.text, label.font);
 
         d3.select(this)
             .attr('text-anchor', direction > 0 ? 'start' : 'end')
