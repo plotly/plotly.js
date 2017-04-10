@@ -69,8 +69,8 @@ function sankeyModel(layout, d, i) {
         nodePad = trace.nodepad,
         textFont = trace.textfont;
 
-    var width = layout.width * (domain.x[1] - domain.x[0]);
-    var height = layout.height * (domain.y[1] - domain.y[0]);
+    var width = layout.width * (domain.x[1] - domain.x[0]),
+        height = layout.height * (domain.y[1] - domain.y[0]);
 
     var sankey = d3sankey()
         .size(horizontal ? [width, height] : [height, width])
