@@ -11,6 +11,7 @@
 
 var Fx = require('../../plots/cartesian/graph_interact');
 var Axes = require('../../plots/cartesian/axes');
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 var getTraceColor = require('../scatter/get_trace_color');
 var attributes = require('./attributes');
@@ -23,8 +24,6 @@ module.exports = function hoverPoints(pointData) {
         ya = pointData.ya,
         geo = pointData.subplot;
 
-    if(cd[0].placeholder) return;
-
     function c2p(lonlat) {
         return geo.projection(lonlat);
     }
@@ -32,8 +31,7 @@ module.exports = function hoverPoints(pointData) {
     function distFn(d) {
         var lonlat = d.lonlat;
 
-        // this handles the not-found location feature case
-        if(lonlat[0] === null || lonlat[1] === null) return Infinity;
+        if(lonlat[0] === BADNUM) return Infinity;
 
         if(geo.isLonLatOverEdges(lonlat)) return Infinity;
 
@@ -103,7 +101,13 @@ function getExtraText(trace, pt, axis) {
     else if(hasLat) text.push('lat: ' + format(pt.lonlat[1]));
 
     if(hasText) {
-        var tx = pt.tx || trace.text;
+        var tx;
+
+        if(pt.htx) tx = pt.htx;
+        else if(trace.hovertext) tx = trace.hovertext;
+        else if(pt.tx) tx = pt.tx;
+        else if(trace.text) tx = trace.text;
+
         if(!Array.isArray(tx)) text.push(tx);
     }
 

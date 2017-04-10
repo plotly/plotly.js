@@ -29,7 +29,7 @@ containerCommands.dockerRun = [
     '--name', constants.testContainerName,
     '-v', constants.pathToRoot + ':' + constants.testContainerHome,
     '-p', constants.testContainerPort + ':' + constants.testContainerPort,
-    'plotly/testbed:latest'
+    constants.testContainerImage
 ].join(' ');
 
 containerCommands.getRunCmd = function(isCI, commands) {

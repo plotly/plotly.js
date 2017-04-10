@@ -40,6 +40,11 @@
                 "top left",
                 "top left"
             ],
+            "hovertext": [
+                "Hover text\nA",
+                "Hover text\rB",
+                "Hover text\r\nC"
+            ],
             "type": "scatter",
             "uid": "459c77"
         },
@@ -83,6 +88,11 @@
                 "bottom left",
                 "bottom left"
             ],
+            "hovertext": [
+                "Hover text G",
+                "Hover text H",
+                "Hover text I"
+            ],
             "type": "scatter",
             "uid": "f8361c"
         },
@@ -103,6 +113,11 @@
                 "a",
                 "",
                 "b"
+            ],
+            "hovertext": [
+                "a (hover)",
+                "",
+                "b (hover)"
             ]
         }
     ],

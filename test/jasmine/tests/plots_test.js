@@ -240,6 +240,20 @@ describe('Test Plots', function() {
         });
     });
 
+    describe('Plots.supplyTransformDefaults', function() {
+        it('should accept an empty layout when transforms present', function() {
+            var traceOut = {};
+            Plots.supplyTransformDefaults({}, traceOut, {
+                _globalTransforms: [{ type: 'filter'}]
+            });
+
+            // This isn't particularly interseting. More relevant is that
+            // the above supplyTransformDefaults call didn't fail due to
+            // missing transformModules data.
+            expect(traceOut.transforms.length).toEqual(1);
+        });
+    });
+
     describe('Plots.getSubplotIds', function() {
         var getSubplotIds = Plots.getSubplotIds;
 

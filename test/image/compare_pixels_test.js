@@ -212,6 +212,10 @@ function comparePixels(mockName, cb) {
         imagePaths = getImagePaths(mockName),
         saveImageStream = fs.createWriteStream(imagePaths.test);
 
+    function log(msg) {
+        process.stdout.write('Error for', mockName + ':', msg);
+    }
+
     function checkImage() {
 
         // baseline image must be generated first
@@ -253,8 +257,8 @@ function comparePixels(mockName, cb) {
     function onEqualityCheck(err, isEqual) {
         if(err) {
             common.touch(imagePaths.diff);
-            console.error(err);
-            return;
+            log(err);
+            return cb(false, mockName);
         }
         if(isEqual) {
             fs.unlinkSync(imagePaths.diff);
@@ -266,12 +270,20 @@ function comparePixels(mockName, cb) {
     // 525 means a plotly.js error
     function onResponse(response) {
         if(+response.statusCode === 525) {
-            console.error('plotly.js error while generating', mockName);
-            cb(false, mockName);
+            log('plotly.js error');
+            return cb(false, mockName);
         }
     }
 
+    // this catches connection errors
+    // e.g. when the image server blows up
+    function onError(err) {
+        log(err);
+        return cb(false, mockName);
+    }
+
     request(requestOpts)
+        .on('error', onError)
         .on('response', onResponse)
         .pipe(saveImageStream)
         .on('close', checkImage);

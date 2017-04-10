@@ -49,6 +49,7 @@ module.exports = {
     dy: scatterAttrs.dy,
 
     text: scatterAttrs.text,
+    hovertext: scatterAttrs.hovertext,
 
     textposition: {
         valType: 'enumerated',
