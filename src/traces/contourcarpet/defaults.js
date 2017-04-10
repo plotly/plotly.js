@@ -77,8 +77,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
                 // after the initial draw, we can just reuse the previous calculation
             contourSize = coerce('contours.size');
             coerce('contours.coloring');
-
-            traceOut.showlegend = false;
         }
 
         // Override the trace-level showlegend default with a default that takes
@@ -86,7 +84,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         Lib.coerce(traceIn, traceOut, plotAttributes, 'showlegend', traceOut.contours.type === 'constraint');
 
         missingEnd = (contourStart === false) || (contourEnd === false);
-        autoContour;
 
         if(missingEnd) {
             autoContour = traceOut.autocontour = true;
