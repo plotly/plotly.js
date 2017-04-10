@@ -23,21 +23,25 @@
     },
     {
       "type": "scattercarpet",
+      "name": "b = 1.5",
       "a": [0.05, 0.15, 0.25, 0.35],
       "b": [1.5, 1.5, 1.5, 1.5]
     },
     {
       "type": "scattercarpet",
+      "name": "b = 2",
       "a": [0.05, 0.15, 0.25, 0.35],
       "b": [2, 2, 2, 2]
     },
     {
       "type": "scattercarpet",
+      "name": "b = 2.5",
       "a": [0.05, 0.15, 0.25, 0.35],
       "b": [2.5, 2.5, 2.5, 2.5]
     },
     {
       "type": "scattercarpet",
+      "name": "a = 0.15",
       "a": [0.15, 0.15, 0.15, 0.15],
       "b": [0.5, 1.5, 2.5, 3.5],
       "line": {
@@ -47,6 +51,7 @@
     },
     {
       "type": "scattercarpet",
+      "name": "a = 0.2",
       "a": [0.2, 0.2, 0.2, 0.2],
       "b": [0.5, 1.5, 2.5, 3.5],
       "line": {
@@ -56,6 +61,7 @@
     },
     {
       "type": "scattercarpet",
+      "name": "a = 0.25",
       "a": [0.25, 0.25, 0.25, 0.25],
       "b": [0.5, 1.5, 2.5, 3.5],
       "line": {
@@ -66,12 +72,6 @@
   ],
   "layout": {
     "title": "scattercarpet extrapolation, clipping, and smoothing",
-    "margin": {
-      "t": 80,
-      "r": 30,
-      "b": 30,
-      "l": 30
-    },
     "hovermode": "closest"
   }
 }
