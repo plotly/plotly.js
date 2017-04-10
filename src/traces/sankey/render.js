@@ -62,17 +62,6 @@ function switchToSankeyFormat(nodes) {
 }
 
 
-function uniqueNodeLabelPathId(sankey) {
-    return function(d) {
-        return JSON.stringify({
-            sankeyGuid: sankey.filter(function(s) {return s.key === 0;}).datum().guid,
-            traceId: d.traceId,
-            nodeKey: d.key
-        });
-    };
-}
-
-
 // view models
 
 function sankeyModel(layout, d, i) {
@@ -158,14 +147,14 @@ function nodeModel(forceLayouts, d, n) {
         zoneY: d.horizontal ? -zoneLengthPad : -zoneThicknessPad,
         zoneWidth: d.horizontal ? zoneThickness : zoneLength,
         zoneHeight: d.horizontal ? zoneLength : zoneThickness,
-        labelX: d.horizontal ? n.dx + c.nodeTextOffsetHorizontal : c.nodeTextOffsetVertical,
-        labelY: d.horizontal ? n.dy / 2 : n.dx / 2 + 1,
+        labelY: d.horizontal ? n.dy / 2 + 1 : n.dx / 2 + 1,
         sizeAcross: d.horizontal ? d.width : d.height,
         forceLayouts: forceLayouts,
         horizontal: d.horizontal,
         tinyColorHue: Color.tinyRGB(tc),
         tinyColorAlpha: tc.getAlpha(),
         sankey: d.sankey,
+        uniqueNodeLabelPathId: JSON.stringify({sankeyGuid: d.guid, traceId: d.key, nodeKey: n.label}),
         interactionState: d.interactionState
     };
 }
@@ -209,11 +198,6 @@ function updateShapes(sankeyNode, sankeyLink) {
 function sizeNode(rect) {
     rect.attr('width', function(d) {return d.visibleWidth;})
         .attr('height', function(d) {return d.visibleHeight;});
-}
-
-function positionLabel(nLab) {
-    nLab.attr('x', function(d) {return d.labelX;})
-        .attr('y', function(d) {return d.labelY;});
 }
 
 
@@ -482,20 +466,20 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .attr('height', function(d) {return d.zoneHeight;});
 
 
-    var nodeLabelPath = sankeyNode.selectAll('.nodeLabelPath')
+    var nodeLabelGuide = sankeyNode.selectAll('.nodeLabelGuide')
         .data(repeat);
 
-    nodeLabelPath.enter()
+    nodeLabelGuide.enter()
         .append('path')
-        .classed('nodeLabelPath', true)
-        .attr('id', uniqueNodeLabelPathId(sankey))
-        .style('stroke', 'black');
+        .classed('nodeLabelGuide', true)
+        .attr('id', function(d) {return d.uniqueNodeLabelPathId;});
 
-    nodeLabelPath
-        .attr('d', function(d) {return d3.svg.line()([
-            [0, d.labelY],
-            [d.visibleWidth, d.labelY]
-        ]);});
+    nodeLabelGuide
+        .attr('d', function(d) {
+            return d3.svg.line()([
+                [d.horizontal ? d.visibleWidth + c.nodeTextOffsetHorizontal : c.nodeTextOffsetHorizontal, d.labelY],
+                [d.horizontal ? d.sizeAcross : d.visibleWidth - c.nodeTextOffsetHorizontal, d.labelY]
+            ]);});
 
 
     var nodeLabel = sankeyNode.selectAll('.nodeLabel')
@@ -504,16 +488,20 @@ module.exports = function(svg, styledData, layout, callbacks) {
     nodeLabel.enter()
         .append('text')
         .classed('nodeLabel', true)
-        .attr('alignment-baseline', 'middle')
         .style('user-select', 'none')
         .style('cursor', 'default')
         .style('text-shadow', '-1px -1px 1px #fff, -1px 1px 1px #fff, 1px -1px 1px #fff, 1px 1px 1px #fff')
-        .style('fill', 'black')
-        .call(positionLabel);
+        .style('fill', 'black');
 
-    nodeLabel
+    var nodeLabelTextPath = nodeLabel.selectAll('.nodeLabelTextPath')
+        .data(repeat);
+
+    nodeLabelTextPath.enter()
+        .append('textPath')
+        .classed('nodeLabelTextPath', true)
+        .attr('alignment-baseline', 'middle')
+        .attr('xlink:href', function(d) {return '#' + d.uniqueNodeLabelPathId;});
+
+    nodeLabelTextPath
         .text(function(d) {return d.node.label;});
-
-    nodeLabel.transition().ease(c.ease).duration(c.duration)
-        .call(positionLabel);
 };
