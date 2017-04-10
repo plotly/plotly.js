@@ -382,19 +382,19 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .remove();
 
 
-    var sankeyNodes = sankey.selectAll('.sankeyNodes')
+    var sankeyNodeSet = sankey.selectAll('.sankeyNodeSet')
         .data(repeat, keyFun);
 
-    sankeyNodes.enter()
+    sankeyNodeSet.enter()
         .append('g')
         .style('shape-rendering', 'geometricPrecision')
-        .classed('sankeyNodes', true);
+        .classed('sankeyNodeSet', true);
 
-    sankeyNodes
-        .each(function(d) {Drawing.font(sankeyNodes, d.textFont);});
+    sankeyNodeSet
+        .each(function(d) {Drawing.font(sankeyNodeSet, d.textFont);});
 
 
-    var sankeyNode = sankeyNodes.selectAll('.sankeyNode')
+    var sankeyNode = sankeyNodeSet.selectAll('.sankeyNode')
         .data(function(d) {
             var nodes = d.sankey.nodes();
             var forceLayouts = {};
