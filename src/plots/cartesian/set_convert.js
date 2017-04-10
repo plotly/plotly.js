@@ -147,10 +147,8 @@ module.exports = function setConvert(ax, fullLayout) {
     function getCategoryIndex(v) {
         // d2l/d2c variant that that won't add categories but will also
         // allow numbers to be mapped to the linearized axis positions
-        var index;
-        // Get the index from the aux map if it was built, otherwise search the _categories array
         if(ax._categoriesMap) {
-            index = ax._categoriesMap[v];
+            var index = ax._categoriesMap[v];
             if(index !== undefined) return index;
         }
 
