@@ -13,11 +13,11 @@ var Lib = require('../../lib');
 
 var handleXYZDefaults = require('../heatmap/xyz_defaults');
 var attributes = require('./attributes');
-var hasColumns = require('../heatmap/has_columns');
 var handleStyleDefaults = require('../contour/style_defaults');
 var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
 var plotAttributes = require('../../plots/attributes');
 var supplyConstraintDefaults = require('./constraint_value_defaults');
+var addOpacity = require('../../components/color').addOpacity;
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -75,8 +75,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             if(contours.operation === '=') {
                 contours.coloring = 'lines';
             }
-            handleStyleDefaults(traceIn, traceOut, coerce, layout, defaultColor, 2);
             handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
+
+            // If there's a fill color, use it at full opacity for the line color
+            var lineDfltColor = traceOut.fillcolor ? addOpacity(traceOut.fillcolor, 1) : defaultColor;
+
+            handleStyleDefaults(traceIn, traceOut, coerce, layout, lineDfltColor, 2);
 
             if(contours.operation === '=') {
                 coerce('line.color', defaultColor);
