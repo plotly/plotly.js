@@ -16,9 +16,9 @@ var color = module.exports = {};
 
 var colorAttrs = require('./attributes');
 color.defaults = colorAttrs.defaults;
-color.defaultLine = colorAttrs.defaultLine;
+var defaultLine = color.defaultLine = colorAttrs.defaultLine;
 color.lightLine = colorAttrs.lightLine;
-color.background = colorAttrs.background;
+var background = color.background = colorAttrs.background;
 
 /*
  * tinyRGB: turn a tinycolor into an rgb string, but
@@ -47,7 +47,7 @@ color.combine = function(front, back) {
     var fc = tinycolor(front).toRgb();
     if(fc.a === 1) return tinycolor(front).toRgbString();
 
-    var bc = tinycolor(back || color.background).toRgb(),
+    var bc = tinycolor(back || background).toRgb(),
         bcflat = bc.a === 1 ? bc : {
             r: 255 * (1 - bc.a) + bc.r * bc.a,
             g: 255 * (1 - bc.a) + bc.g * bc.a,
@@ -68,16 +68,15 @@ color.combine = function(front, back) {
  *
  * If lightAmount / darkAmount are used, we adjust by these percentages,
  * otherwise we go all the way to white or black.
- * TODO: black is what we've always done for hover, but should it be #444 instead?
  */
 color.contrast = function(cstr, lightAmount, darkAmount) {
     var tc = tinycolor(cstr);
 
-    if(tc.getAlpha() !== 1) tc = tinycolor(color.combine(cstr, '#fff'));
+    if(tc.getAlpha() !== 1) tc = tinycolor(color.combine(cstr, background));
 
     var newColor = tc.isDark() ?
-        (lightAmount ? tc.lighten(lightAmount) : '#fff') :
-        (darkAmount ? tc.darken(darkAmount) : '#000');
+        (lightAmount ? tc.lighten(lightAmount) : background) :
+        (darkAmount ? tc.darken(darkAmount) : defaultLine);
 
     return newColor.toString();
 };
