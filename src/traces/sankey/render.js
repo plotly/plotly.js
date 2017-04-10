@@ -17,6 +17,8 @@ var d3sankey = require('./sankey');
 var d3Force = require('d3-force');
 
 
+// basic data utilities
+
 function keyFun(d) {return d.key;}
 function repeat(d) {return [d];} // d3 data binding convention
 function unwrap(d) {return d[0];} // plotly data structure convention
@@ -58,6 +60,9 @@ function switchToSankeyFormat(nodes) {
         nodes[i].y = nodes[i].y - nodes[i].dy / 2;
     }
 }
+
+
+// view models
 
 function sankeyModel(layout, d, i) {
 
@@ -153,6 +158,9 @@ function nodeModel(forceLayouts, d, n) {
     };
 }
 
+
+// rendering snippets
+
 function crispLinesOnEnd(sankeyNode) {
     d3.select(sankeyNode.node().parentElement).style('shape-rendering', 'crispEdges');
 }
@@ -195,6 +203,9 @@ function positionLabel(nLab) {
     nLab.attr('x', function(d) {return d.labelX;})
         .attr('y', function(d) {return d.labelY;});
 }
+
+
+// event handling
 
 function attachPointerEvents(selection, sankey, eventSet) {
     selection
@@ -297,8 +308,8 @@ function attachForce(sankeyNode, sankeyLink, forceKey, d) {
             maxVelocity = Math.max(maxVelocity, Math.abs(n.vx), Math.abs(n.vy));
         }
         if(!d.interactionState.dragInProgress && maxVelocity < 0.1) {
-            d.forceLayouts[forceKey].stop();
-            window.setTimeout(function() {sankeyNode.call(crispLinesOnEnd);}, 30);
+            d.forceLayouts[forceKey].stop(); // it doesn't cancel the pending iteration (ultimately d3-timer/rAF), so...
+            window.setTimeout(function() {sankeyNode.call(crispLinesOnEnd);}, 30); // geome on move, crisp when static
         }
     }
 
@@ -312,6 +323,9 @@ function attachForce(sankeyNode, sankeyLink, forceKey, d) {
         .force('constrain', snap)
         .on('tick', updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink.filter(layerLink(d))));
 }
+
+
+// scene graph
 
 module.exports = function(svg, styledData, layout, callbacks) {
 
