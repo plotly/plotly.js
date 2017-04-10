@@ -254,14 +254,13 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
                 if (d.forceLayouts[forceKey]) {
 
                     d.forceLayouts[forceKey].alpha(1);
-                    d.forceLayouts[forceKey].restart();
 
                 } else { // make a forceLayout iff needed
 
                     attachForce(sankeyNode, sankeyLink, forceKey, d);
                 }
                 window.requestAnimationFrame(function faster() {
-                    for(var i = 0; i < 10; i++) d.forceLayouts[forceKey].tick();
+                    for(var i = 0; i < c.forceTicksPerFrame; i++) d.forceLayouts[forceKey].tick();
                     updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink.filter(layerLink(d)))();
                     if(d.forceLayouts[forceKey].alpha() > 0) {
                         window.requestAnimationFrame(faster);
@@ -306,7 +305,7 @@ function attachForce(sankeyNode, sankeyLink, forceKey, d) {
                 n.x = n.lastDraggedX;
                 n.y = n.lastDraggedY;
             } else {
-                n.vx = (n.vx + 9 * (n.originalX - n.x)) / 10; // snap to layer
+                n.vx = (n.originalX - n.x) / c.forceTicksPerFrame; // snap to layer
                 n.y = Math.min(d.size - n.dy / 2, Math.max(n.dy / 2, n.y)); // constrain to extent
             }
             maxVelocity = Math.max(maxVelocity, Math.abs(n.vx), Math.abs(n.vy));
@@ -324,7 +323,8 @@ function attachForce(sankeyNode, sankeyLink, forceKey, d) {
             .radius(function (n) {return n.dy / 2 + d.nodePad / 2;})
             .strength(1)
             .iterations(c.forceIterations))
-        .force('constrain', snap);
+        .force('constrain', snap)
+        .stop();
 }
 
 
