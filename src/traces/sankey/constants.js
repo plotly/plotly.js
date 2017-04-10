@@ -19,7 +19,6 @@ module.exports = {
     sideways: true,
     useForceSnap: true,
     forceIterations: 5,
-    alphaDecay: 0.0228, // standard alphaDecay of d3.forceLayout
     duration: 500,
     ease: 'linear'
 };

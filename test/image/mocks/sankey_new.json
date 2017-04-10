@@ -7,7 +7,7 @@
   "data": [
       {
           "type": "sankey",
-          "orientation": "v",
+          "orientation": "h",
           "nodepad": 20,
           "line": {
               "color": [

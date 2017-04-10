@@ -253,12 +253,20 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
                 var forceKey = d.traceId + '|' + Math.floor(d.node.originalX);
                 if (d.forceLayouts[forceKey]) {
 
+                    d.forceLayouts[forceKey].alpha(1);
                     d.forceLayouts[forceKey].restart();
 
                 } else { // make a forceLayout iff needed
 
                     attachForce(sankeyNode, sankeyLink, forceKey, d);
                 }
+                window.requestAnimationFrame(function faster() {
+                    for(var i = 0; i < 10; i++) d.forceLayouts[forceKey].tick();
+                    updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink.filter(layerLink(d)))();
+                    if(d.forceLayouts[forceKey].alpha() > 0) {
+                        window.requestAnimationFrame(faster);
+                    }
+                })
             }
         })
 
@@ -298,26 +306,25 @@ function attachForce(sankeyNode, sankeyLink, forceKey, d) {
                 n.x = n.lastDraggedX;
                 n.y = n.lastDraggedY;
             } else {
-                n.vx = (n.vx + 4 * (n.originalX - n.x)) / 5; // snap to layer
+                n.vx = (n.vx + 9 * (n.originalX - n.x)) / 10; // snap to layer
                 n.y = Math.min(d.size - n.dy / 2, Math.max(n.dy / 2, n.y)); // constrain to extent
             }
             maxVelocity = Math.max(maxVelocity, Math.abs(n.vx), Math.abs(n.vy));
         }
         if(!d.interactionState.dragInProgress && maxVelocity < 0.1) {
             d.forceLayouts[forceKey].stop(); // it doesn't cancel the pending iteration (ultimately d3-timer/rAF), so...
+            d.forceLayouts[forceKey].alpha(0);
             window.setTimeout(function() {sankeyNode.call(crispLinesOnEnd);}, 30); // geome on move, crisp when static
         }
     }
 
     d.forceLayouts[forceKey] = d3Force.forceSimulation(nodes)
         .alphaDecay(0)
-        .velocityDecay(0.3)
         .force('collide', d3Force.forceCollide()
             .radius(function (n) {return n.dy / 2 + d.nodePad / 2;})
             .strength(1)
             .iterations(c.forceIterations))
-        .force('constrain', snap)
-        .on('tick', updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink.filter(layerLink(d))));
+        .force('constrain', snap);
 }
 
 
