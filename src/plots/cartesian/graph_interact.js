@@ -776,10 +776,10 @@ function cleanPoint(d, hovermode) {
  *      the background color this is against, used if the trace is
  *      non-opaque, and for the name, which goes outside the box
  *    - container:
- *      a dom <svg> element - must be big enough to contain the whole
- *      hover label
+ *      a <svg> or <g> element to add the hover label to
  *    - outerContainer:
- *      TODO: what exactly is container vs outerContainer?
+ *      normally a parent of `container`, sets the bounding box to use to
+ *      constrain the hover label and determine whether to show it on the left or right
  */
 fx.loneHover = function(hoverItem, opts) {
     var pointData = {
