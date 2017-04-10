@@ -826,26 +826,6 @@ describe('annotation effects', function() {
         jasmine.addMatchers(customMatchers);
     });
 
-    // beforeEach(function(done) {
-    //     gd = createGraphDiv();
-
-    //     // we've already tested autorange with relayout, so fix the geometry
-    //     // completely so we know exactly what we're dealing with
-    //     // plot area is 300x300, and covers data range 100x100
-    //     Plotly.plot(gd,
-    //         [{x: [0, 100], y: [0, 100], mode: 'markers'}],
-    //         {
-    //             xaxis: {range: [0, 100]},
-    //             yaxis: {range: [0, 100]},
-    //             width: 500,
-    //             height: 500,
-    //             margin: {l: 100, r: 100, t: 100, b: 100, pad: 0}
-    //         },
-    //         {editable: true}
-    //     )
-    //     .then(done);
-    // });
-
     function makePlot(annotations, config) {
         gd = createGraphDiv();
 
@@ -869,13 +849,6 @@ describe('annotation effects', function() {
     }
 
     afterEach(destroyGraphDiv);
-
-    function initAnnotation(annotation) {
-        return Plotly.relayout(gd, {annotations: [annotation]})
-        .then(function() {
-            return Plots.previousPromises(gd);
-        });
-    }
 
     function dragAndReplot(node, dx, dy, edge) {
         return drag(node, dx, dy, edge).then(function() {
