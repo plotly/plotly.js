@@ -152,10 +152,8 @@ module.exports = function setConvert(ax, fullLayout) {
         if(ax._categoriesMap) {
             index = ax._categoriesMap[v];
             if(index !== undefined) return index;
-        } else {
-            index = ax._categories.indexOf(v);
-            if(index !== -1) return index;
         }
+
         if(typeof v === 'number') { return v; }
     }
 
