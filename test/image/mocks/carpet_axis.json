@@ -219,7 +219,7 @@
         "xref": "x",
         "yref": "y",
         "showarrow": false,
-        "x": 0,
+        "x": 0.5,
         "y": 2.3,
         "text": "coarse/smooth grid + cheater"
       },
@@ -227,7 +227,7 @@
         "xref": "x",
         "yref": "y2",
         "showarrow": false,
-        "x": 0,
+        "x": 0.5,
         "y": 2.3,
         "text": "fine/unsmoothed grid + cheater"
       },
