@@ -25,9 +25,6 @@ module.exports = function colorbar(gd, cd) {
         cs = contours.size || 1,
         coloring = contours.coloring;
 
-    if(trace.type === 'contourcarpet' && contours.type === 'constraint') return;
-    if(trace.contours.coloring === 'none') return;
-
     gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
 
     if(trace.showscale === false) {

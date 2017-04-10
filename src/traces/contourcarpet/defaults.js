@@ -78,9 +78,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
                 }
             }
 
+            coerce('showscale', false);
+
             delete traceOut.autocontour;
             delete traceOut.ncontours;
-            delete traceOut.showscale;
             // delete traceOut.colorbar;
 
             // TODO: These shouldb e deleted in accordance with toolpanel convention, but
