@@ -111,9 +111,13 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     });
 
     // clear navigation container
-    var className = constants.controlContainerClassName,
-        controlContainer = self.div.getElementsByClassName(className)[0];
+    var className = constants.controlContainerClassName;
+    var controlContainer = self.div.getElementsByClassName(className)[0];
     self.div.removeChild(controlContainer);
+
+    // make sure canvas does not inherit left and top css
+    map._canvas.canvas.style.left = '0px';
+    map._canvas.canvas.style.top = '0px';
 
     self.rejectOnError(reject);
 
@@ -176,7 +180,6 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
 
     map.on('dragstart', unhover);
     map.on('zoomstart', unhover);
-
 };
 
 proto.updateMap = function(calcData, fullLayout, resolve, reject) {

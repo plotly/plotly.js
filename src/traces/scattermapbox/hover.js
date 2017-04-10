@@ -11,15 +11,13 @@
 
 var Fx = require('../../plots/cartesian/graph_interact');
 var getTraceColor = require('../scatter/get_trace_color');
-
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd,
         trace = cd[0].trace,
         xa = pointData.xa,
         ya = pointData.ya;
-
-    if(cd[0].placeholder) return;
 
     // compute winding number about [-180, 180] globe
     var winding = (xval >= 0) ?
@@ -31,10 +29,13 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var xval2 = xval - lonShift;
 
     function distFn(d) {
-        var lonlat = d.lonlat,
-            dx = Math.abs(xa.c2p(lonlat) - xa.c2p([xval2, lonlat[1]])),
-            dy = Math.abs(ya.c2p(lonlat) - ya.c2p([lonlat[0], yval])),
-            rad = Math.max(3, d.mrc || 0);
+        var lonlat = d.lonlat;
+
+        if(lonlat[0] === BADNUM) return Infinity;
+
+        var dx = Math.abs(xa.c2p(lonlat) - xa.c2p([xval2, lonlat[1]]));
+        var dy = Math.abs(ya.c2p(lonlat) - ya.c2p([lonlat[0], yval]));
+        var rad = Math.max(3, d.mrc || 0);
 
         return Math.max(Math.sqrt(dx * dx + dy * dy) - rad, 1 - 3 / rad);
     }
@@ -86,7 +87,13 @@ function getExtraText(trace, di) {
     else if(hasLat) text.push('lat: ' + format(lonlat[1]));
 
     if(isAll || hoverinfo.indexOf('text') !== -1) {
-        var tx = di.tx || trace.text;
+        var tx;
+
+        if(di.htx) tx = di.htx;
+        else if(trace.hovertext) tx = trace.hovertext;
+        else if(di.tx) tx = di.tx;
+        else if(trace.text) tx = trace.text;
+
         if(!Array.isArray(tx)) text.push(tx);
     }
 
