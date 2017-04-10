@@ -149,6 +149,7 @@ module.exports = extendFlat({}, {
             valType: 'enumerated',
             values: [].concat(constants.INEQUALITY_OPS).concat(constants.INTERVAL_OPS).concat(constants.SET_OPS),
             role: 'info',
+            dflt: '=',
             description: [
                 'Sets the filter operation.',
 
@@ -168,14 +169,12 @@ module.exports = extendFlat({}, {
                 '*][* keeps items outside `value[0]` to value[1]` and equal to both bounds`',
                 '*)(* keeps items outside `value[0]` to value[1]`',
                 '*](* keeps items outside `value[0]` to value[1]` and equal to `value[0]`',
-                '*)[* keeps items outside `value[0]` to value[1]` and equal to `value[1]`',
-
-                '*{}* keeps items present in a set of values',
-                '*}{* keeps items not present in a set of values'
+                '*)[* keeps items outside `value[0]` to value[1]` and equal to `value[1]`'
             ].join(' ')
         },
         value: {
             valType: 'any',
+            arrayOk: true,
             dflt: 0,
             role: 'info',
             description: [

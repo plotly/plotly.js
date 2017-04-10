@@ -50,8 +50,8 @@ module.exports = function calc(gd, trace) {
     var cd = heatmappishCalc(gd, trace),
         contours = trace.contours;
 
-    // check if we need to auto-choose contour levels
-    if(trace.autocontour !== false) {
+    // Autocontour is unset for constraint plots so also autocontour if undefind:
+    if(trace.autocontour === true) {
         var dummyAx = autoContours(trace.zmin, trace.zmax, trace.ncontours);
 
         contours.size = dummyAx.dtick;

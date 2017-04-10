@@ -15,9 +15,9 @@ var handleXYZDefaults = require('../heatmap/xyz_defaults');
 var attributes = require('./attributes');
 var hasColumns = require('../heatmap/has_columns');
 var handleStyleDefaults = require('../contour/style_defaults');
-var constraintMapping = require('./constraint_mapping');
 var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
 var plotAttributes = require('../../plots/attributes');
+var supplyConstraintDefaults = require('./constraint_value_defaults');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -42,7 +42,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // attribute name to match the property name -- except '_a' !== 'a' so that is not
     // straightforward.
     if(traceIn.a && traceIn.b) {
-        var contourSize, contourStart, contourEnd, missingEnd, autoContour, map;
+        var contourSize, contourStart, contourEnd, missingEnd, autoContour;
 
         var len = handleXYZDefaults(traceIn, traceOut, coerce, layout, 'a', 'b');
 
@@ -53,21 +53,47 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
         coerce('text');
         coerce('connectgaps', hasColumns(traceOut));
-
         coerce('contours.type');
 
-        if(traceOut.contours.type === 'constraint') {
+        var contours = traceOut.contours;
+
+        if(contours.type === 'constraint') {
             coerce('contours.operation');
-            coerce('contours.value');
 
-            map = constraintMapping[traceOut.contours.operation](traceOut.contours.value);
+            supplyConstraintDefaults(coerce, contours);
 
-            traceOut.contours.start = map.start;
-            traceOut.contours.end = map.end;
-            traceOut.contours.size = map.size;
+            // Override the trace-level showlegend default with a default that takes
+            // into account whether this is a constraint or level contours:
+            Lib.coerce(traceIn, traceOut, plotAttributes, 'showlegend', true);
 
-            coerce('fillcolor', defaultColor);
+            // Override the above defaults with constraint-aware tweaks:
+            coerce('contours.coloring', contours.operation === '=' ? 'none' : 'fill');
+
+            handleStyleDefaults(traceIn, traceOut, coerce, layout, defaultColor, 2);
+            handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
+
+            if(contours.operation === '=') {
+                if(contours.coloring === 'fill') {
+                    contours.coloring = 'lines';
+                }
+            }
+
+            delete traceOut.autocontour;
+            delete traceOut.ncontours;
+            delete traceOut.showscale;
+            // delete traceOut.colorbar;
+
+            // TODO: These shouldb e deleted in accordance with toolpanel convention, but
+            // we can't becuase we require them so that it magically makes the contour
+            // parts of the code happy:
+            // delete traceOut.contours.start;
+            // delete traceOut.contours.end;
+            // delete traceOut.contours.size;
         } else {
+            // Override the trace-level showlegend default with a default that takes
+            // into account whether this is a constraint or level contours:
+            Lib.coerce(traceIn, traceOut, plotAttributes, 'showlegend', false);
+
             contourStart = Lib.coerce2(traceIn, traceOut, attributes, 'contours.start');
             contourEnd = Lib.coerce2(traceIn, traceOut, attributes, 'contours.end');
 
@@ -77,33 +103,23 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
                 // after the initial draw, we can just reuse the previous calculation
             contourSize = coerce('contours.size');
             coerce('contours.coloring');
-        }
 
-        // Override the trace-level showlegend default with a default that takes
-        // into account whether this is a constraint or level contours:
-        Lib.coerce(traceIn, traceOut, plotAttributes, 'showlegend', traceOut.contours.type === 'constraint');
+            missingEnd = (contourStart === false) || (contourEnd === false);
 
-        missingEnd = (contourStart === false) || (contourEnd === false);
+            if(missingEnd) {
+                autoContour = traceOut.autocontour = true;
+            } else {
+                autoContour = coerce('autocontour', false);
+            }
 
-        if(missingEnd) {
-            autoContour = traceOut.autocontour = true;
-        } else {
-            autoContour = coerce('autocontour', false);
-        }
+            if(autoContour || !contourSize) {
+                coerce('ncontours');
+            }
 
-        if(autoContour || !contourSize) {
-            coerce('ncontours');
-        }
-
-        if(traceOut.contours.type === 'constraint') {
-            handleStyleDefaults(traceIn, traceOut, coerce, layout, defaultColor, 2);
-            handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
-        } else {
             handleStyleDefaults(traceIn, traceOut, coerce, layout);
-        }
 
-        if(traceOut.contours.type === 'constraint' && traceOut.contours.operation === '=') {
-            traceOut.contours.coloring = 'none';
+            delete traceOut.value;
+            delete traceOut.operation;
         }
     } else {
         traceOut._defaultColor = defaultColor;
