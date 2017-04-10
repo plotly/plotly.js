@@ -17,6 +17,9 @@ module.exports = function(gd, trace) {
     var firstAxis;
     for(var i = 0; i < n; i++) {
         var maybeCarpet = gd._fullData[i];
+
+        if(maybeCarpet.index === trace.index) continue;
+
         if(maybeCarpet.type === 'carpet') {
             if(!firstAxis) {
                 firstAxis = maybeCarpet;

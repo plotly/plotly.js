@@ -700,19 +700,23 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
         }
 
         if(Registry.traceIs(fullTrace, 'carpetDependent')) {
-            carpetDependents.push(fullTrace._expandedIndex);
+            carpetDependents.push(i);
         }
     }
 
-
     for(i = 0; i < carpetDependents.length; i++) {
         fullTrace = dataOut[carpetDependents[i]];
+
+        if(!fullTrace.visible) continue;
+
         var carpetAxis = carpetIndex[fullTrace.carpetid];
         fullTrace._carpet = carpetAxis;
+
         if(!carpetAxis || !carpetAxis.visible) {
             fullTrace.visible = false;
             continue;
         }
+
         fullTrace.xaxis = carpetAxis.xaxis;
         fullTrace.yaxis = carpetAxis.yaxis;
     }
