@@ -413,6 +413,18 @@ module.exports = {
             ].join(' ')
         })
     },
+    captureevents: {
+        valType: 'boolean',
+        role: 'info',
+        description: [
+            'Determines whether the annotation text box captures mouse move',
+            'and click events, or allows those events to pass through to data',
+            'points in the plot that may be behind the annotation. By default',
+            '`captureevents` is *false* unless `hovertext` is provided.',
+            'If you use the event `plotly_clickannotation` without `hovertext`',
+            'you must explicitly enable `captureevents`.'
+        ].join(' ')
+    },
 
     _deprecated: {
         ref: {

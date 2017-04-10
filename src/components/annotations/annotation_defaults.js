@@ -120,6 +120,7 @@ module.exports = function handleAnnotationDefaults(annIn, annOut, fullLayout, op
             color: hoverBorder
         });
     }
+    coerce('captureevents', !!hoverText);
 
     return annOut;
 };

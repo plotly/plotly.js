@@ -1127,9 +1127,9 @@ describe('annotation effects', function() {
         }
 
         makePlot([
-            {x: 50, y: 50, text: 'hi', width: 50, ax: 0, ay: -20},
+            {x: 50, y: 50, text: 'hi', width: 50, ax: 0, ay: -40},
             {x: 20, y: 20, text: 'bye', height: 40, showarrow: false},
-            {x: 80, y: 80, text: 'why?', ax: 0, ay: -20}
+            {x: 80, y: 80, text: 'why?', ax: 0, ay: -40}
         ], {}) // turn off the default editable: true
         .then(function() {
             clickData = [];
@@ -1137,13 +1137,26 @@ describe('annotation effects', function() {
 
             gdBB = gd.getBoundingClientRect();
             pos0Head = [gdBB.left + 250, gdBB.top + 250];
-            pos0 = [pos0Head[0], pos0Head[1] - 20];
+            pos0 = [pos0Head[0], pos0Head[1] - 40];
             pos1 = [gdBB.left + 160, gdBB.top + 340];
             pos2Head = [gdBB.left + 340, gdBB.top + 160];
-            pos2 = [pos2Head[0], pos2Head[1] - 20];
+            pos2 = [pos2Head[0], pos2Head[1] - 40];
 
             return assertHoverLabels([[pos0, ''], [pos1, ''], [pos2, '']]);
         })
+        // not going to register either of these because captureevents is off
+        .then(function() { return _click(pos1); })
+        .then(function() { return _click(pos2Head); })
+        .then(function() {
+            assertClickData([]);
+
+            return Plotly.relayout(gd, {
+                'annotations[1].captureevents': true,
+                'annotations[2].captureevents': true
+            });
+        })
+        // now we'll register the click on #1, but still not on #2
+        // because we're clicking the head, not the text box
         .then(function() { return _click(pos1); })
         .then(function() { return _click(pos2Head); })
         .then(function() {
@@ -1168,6 +1181,7 @@ describe('annotation effects', function() {
                 '0 only');
         })
         // click and hover work together?
+        // this also tests that hover turns on annotation.captureevents
         .then(function() { return _click(pos0); })
         .then(function() {
             assertClickData([{

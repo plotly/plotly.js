@@ -105,7 +105,7 @@ function drawOne(gd, index) {
         .attr('data-index', String(index));
 
     var annTextGroupInner = annTextGroup.append('g')
-        .style('pointer-events', 'all')
+        .style('pointer-events', options.captureevents ? 'all' : null)
         .call(setCursor, 'default')
         .on('click', function() {
             gd._dragging = false;
