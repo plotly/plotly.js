@@ -504,6 +504,7 @@ drawing.makeTester = function(gd) {
 // always returns a copy of the bbox, so the caller can modify it safely
 var savedBBoxes = [],
     maxSavedBBoxes = 10000;
+
 drawing.bBox = function(node) {
     // cache elements we've already measured so we don't have to
     // remeasure the same thing many times
@@ -512,12 +513,14 @@ drawing.bBox = function(node) {
         return Lib.extendFlat({}, savedBBoxes[saveNum.value]);
     }
 
-    var test3 = d3.select('#js-plotly-tester'),
-        tester = test3.node();
+    if(!drawing.test3) {
+        drawing.test3 = d3.select('#js-plotly-tester');
+        drawing.tester = drawing.test3.node();
+    }
 
     // copy the node to test into the tester
     var testNode = node.cloneNode(true);
-    tester.appendChild(testNode);
+    drawing.tester.appendChild(testNode);
     // standardize its position... do we really want to do this?
     d3.select(testNode).attr({
         x: 0,
@@ -525,19 +528,21 @@ drawing.bBox = function(node) {
         transform: ''
     });
 
-    var testRect = testNode.getBoundingClientRect(),
-        refRect = test3.select('.js-reference-point')
+    var testRect = testNode.getBoundingClientRect();
+    if(!drawing.refRect) {
+        drawing.refRect = drawing.test3.select('.js-reference-point')
             .node().getBoundingClientRect();
+    }
 
-    tester.removeChild(testNode);
+    drawing.tester.removeChild(testNode);
 
     var bb = {
         height: testRect.height,
         width: testRect.width,
-        left: testRect.left - refRect.left,
-        top: testRect.top - refRect.top,
-        right: testRect.right - refRect.left,
-        bottom: testRect.bottom - refRect.top
+        left: testRect.left - drawing.refRect.left,
+        top: testRect.top - drawing.refRect.top,
+        right: testRect.right - drawing.refRect.left,
+        bottom: testRect.bottom - drawing.refRect.top
     };
 
     // make sure we don't have too many saved boxes,
