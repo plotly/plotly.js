@@ -17,7 +17,7 @@ module.exports = {
     sankeyIterations: 50,
     movable: true,
     sideways: true,
-    useForceSnap: false,
+    useForceSnap: true,
     forceIterations: 5,
     forceTicksPerFrame: 10,
     duration: 500,

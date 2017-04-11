@@ -1,14 +1,14 @@
 {
   "layout": {
     "title": "Fallen from the skies: drone crashes database - Washington Post",
-    "width": 1600,
-    "height": 1000
+    "width": 800,
+    "height": 500
   },
   "data": [
       {
           "type": "sankey",
           "orientation": "h",
-          "nodepad": 20,
+          "nodepad": 8,
           "line": {
               "color": [
                   2001,

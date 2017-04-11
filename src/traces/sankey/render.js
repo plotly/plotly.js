@@ -195,10 +195,8 @@ function updateNodeShapes(sankeyNode) {
 }
 
 function updateShapes(sankeyNode, sankeyLink) {
-    return function() {
         sankeyNode.call(updateNodeShapes);
         sankeyLink.attr('d', linkPath);
-    }
 }
 
 function sizeNode(rect) {
@@ -211,25 +209,26 @@ function sizeNode(rect) {
 
 function attachPointerEvents(selection, sankey, eventSet) {
     selection
-        .on('mouseover', function (d) {
+        .on('.basic', null) // remove any preexisting handlers
+        .on('mouseover.basic', function (d) {
             if (!d.interactionState.dragInProgress) {
                 eventSet.hover(this, d, sankey);
                 d.interactionState.hovered = [this, d];
             }
         })
-        .on('mousemove', function (d) {
+        .on('mousemove.basic', function (d) {
             if (!d.interactionState.dragInProgress) {
-                eventSet.follow(this, d, sankey);
+                eventSet.follow(this, d);
                 d.interactionState.hovered = [this, d];
             }
         })
-        .on('mouseout', function (d) {
+        .on('mouseout.basic', function (d) {
             if (!d.interactionState.dragInProgress) {
                 eventSet.unhover(this, d, sankey);
                 d.interactionState.hovered = false;
             }
         })
-        .on('click', function (d) {
+        .on('click.basic', function (d) {
             if (d.interactionState.hovered) {
                 eventSet.unhover(this, d, sankey);
                 d.interactionState.hovered = false;
@@ -267,7 +266,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
                 }
                 window.requestAnimationFrame(function faster() {
                     for(var i = 0; i < c.forceTicksPerFrame; i++) d.forceLayouts[forceKey].tick();
-                    updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink.filter(layerLink(d)))();
+                    updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink.filter(layerLink(d)));
                     if(d.forceLayouts[forceKey].alpha() > 0) {
                         window.requestAnimationFrame(faster);
                     }
@@ -291,14 +290,17 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
             saveCurrentDragPosition(d.node);
             d.sankey.relayout();
             if(!c.useForceSnap) {
-                updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink.filter(layerLink(d)))();
+                updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink.filter(layerLink(d)));
                 sankeyNode.call(crispLinesOnEnd);
             }
         })
 
         .on('dragend', function(d) {d.interactionState.dragInProgress = false;});
 
-    return sankeyNode.call(dragBehavior);
+
+    sankeyNode
+        .on('.drag', null) // remove possible previous handlers
+        .call(dragBehavior);
 }
 
 function attachForce(sankeyNode, forceKey, d) {
