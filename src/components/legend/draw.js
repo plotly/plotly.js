@@ -579,7 +579,7 @@ function computeTextDimensions(g, gd) {
             width = text.node() && Drawing.bBox(text.node()).width;
         } else {
             // "7" is empirical number based on some case studies in Sketch
-            width = legendItem.trace.name.length * 7 * opts.font.size / 11
+            width = legendItem.trace.name.length * 7 * opts.font.size / 11;
         }
 
 
