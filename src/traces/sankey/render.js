@@ -431,16 +431,18 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('opacity', 0)
         .style('cursor', 'move')
         .call(updateNodePositions)
-        .call(attachPointerEvents, sankey, callbacks.nodeEvents)
-        .call(attachDragHandler, sankeyLink, callbacks);
+        .call(attachPointerEvents, sankey, callbacks.nodeEvents);
 
     sankeyNode
-        .transition().ease(c.ease).duration(c.duration)
+        .call(attachDragHandler, sankeyLink, callbacks); // has to be here as it binds sankeyLink
+
+    sankeyNode.transition()
+        .ease(c.ease).duration(c.duration)
         .style('opacity', 1)
         .call(updateNodePositions);
 
-    sankeyNode.exit()
-        .transition().ease(c.ease).duration(c.duration)
+    sankeyNode.exit().transition()
+        .ease(c.ease).duration(c.duration)
         .style('opacity', 0)
         .remove();
 
