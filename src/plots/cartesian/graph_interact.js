@@ -881,12 +881,13 @@ function createSpikelines(hoverData, opts) {
         xEndSpike = c0.xa.spikemode.indexOf('across') !== -1 ?
                 (ySide === 'left' ? xBase + xLength : xBase - xLength) :
                  xPoint,
-        yEndSpike = c0.ya.spikemode.indexOf('across') !== -1 ? yBase - yLength : yPoint;
+        yEndSpike = c0.ya.spikemode.indexOf('across') !== -1 ?
+                (xSide === 'bottom' ? yBase - yLength : yBase + yLength) :
+                yPoint;
 
     // Remove old spikeline items
     container.selectAll('line.spikeline').remove();
     container.selectAll('circle.spikeline').remove();
-
 
     if(c0.ya.showspikes) {
         if(ySpikeLine) {
@@ -966,7 +967,7 @@ function createSpikelines(hoverData, opts) {
             container.append('circle')
                 .attr({
                     'cx': xPoint,
-                    'cy': yAnchoredBase - xThickness,
+                    'cy': yAnchoredBase - (xSide !== 'top' ? xThickness : -xThickness),
                     'r': xThickness,
                     'fill': xColor
                 })
