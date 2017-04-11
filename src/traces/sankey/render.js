@@ -425,6 +425,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .append('g')
         .classed('sankeyNode', true)
         .style('opacity', 0)
+        .style('cursor', 'ns-resize')
         .call(updateNodePositions)
         .call(attachPointerEvents, sankey, callbacks.nodeEvents)
         .call(attachDragHandler, sankeyLink, callbacks);
@@ -500,7 +501,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('fill', 'black');
 
     nodeLabel.style('text-shadow', function(d) {
-        return d.horizontal ? '-1px -1px 1px #fff, -1px 1px 1px #fff, 1px -1px 1px #fff, 1px 1px 1px #fff' : 'none';
+        return d.horizontal ? '1px -1px 1px #fff' : 'none';
     });
 
     var nodeLabelTextPath = nodeLabel.selectAll('.nodeLabelTextPath')
