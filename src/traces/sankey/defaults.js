@@ -13,6 +13,39 @@ var attributes = require('./attributes');
 var d3 = require('d3');
 
 
+function linksDefaults(traceIn, traceOut) {
+    var linksIn = traceIn.links || [],
+        linksOut = traceOut.links = [];
+
+    var linkIn, linkOut, i;
+
+    function coerce(attr, dflt) {
+        return Lib.coerce(linkIn, linkOut, attributes.links, attr, dflt);
+    }
+
+    for(i = 0; i < linksIn.length; i++) {
+        linkIn = linksIn[i];
+        linkOut = {};
+
+        if(!Lib.isPlainObject(linkIn)) {
+            continue;
+        }
+
+        var visible = coerce('visible');
+
+        if(visible) {
+            coerce('label');
+            coerce('value');
+            coerce('source');
+            coerce('target');
+            coerce('color');
+        }
+
+        linkOut._index = i;
+        linksOut.push(linkOut);
+    }
+}
+
 function nodesDefaults(traceIn, traceOut) {
     var nodesIn = traceIn.nodes || [],
         nodesOut = traceOut.nodes = [];
@@ -51,38 +84,7 @@ function nodesDefaults(traceIn, traceOut) {
     return nodesOut;
 }
 
-function linksDefaults(traceIn, traceOut) {
-    var linksIn = traceIn.links || [],
-        linksOut = traceOut.links = [];
 
-    var linkIn, linkOut, i;
-
-    function coerce(attr, dflt) {
-        return Lib.coerce(linkIn, linkOut, attributes.links, attr, dflt);
-    }
-
-    for(i = 0; i < linksIn.length; i++) {
-        linkIn = linksIn[i];
-        linkOut = {};
-
-        if(!Lib.isPlainObject(linkIn)) {
-            continue;
-        }
-
-        var visible = coerce('visible');
-
-        if(visible) {
-            coerce('label');
-            coerce('value');
-            coerce('source');
-            coerce('target');
-            coerce('color');
-        }
-
-        linkOut._index = i;
-        linksOut.push(linkOut);
-    }
-}
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -90,8 +92,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    nodesDefaults(traceIn, traceOut);
     linksDefaults(traceIn, traceOut);
+    nodesDefaults(traceIn, traceOut);
 
     coerce('hoverinfo', layout._dataLength === 1 ? 'label+text+value+percent' : undefined);
 
