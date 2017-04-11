@@ -672,6 +672,9 @@ fx.getClosest = function(cd, distfn, pointData) {
 };
 
 function cleanPoint(d, hovermode) {
+    var trace = d.trace || {};
+    var cd = d.cd[d.index] || {};
+
     d.posref = hovermode === 'y' ? (d.x0 + d.x1) / 2 : (d.y0 + d.y1) / 2;
 
     // then constrain all the positions to be on the plot
@@ -748,6 +751,19 @@ function cleanPoint(d, hovermode) {
         if(infomode.indexOf('text') === -1) d.text = undefined;
         if(infomode.indexOf('name') === -1) d.name = undefined;
     }
+
+    function fill(key, calcKey, traceKey) {
+        if(cd[calcKey]) return d[key] = cd[calcKey];
+
+        var traceVal = Lib.nestedProperty(trace, traceKey).get();
+        if(traceVal) return d[key] = traceVal;
+    }
+
+    fill('color', 'hbg', 'hoverlabel.bgcolor');
+    fill('borderColor', 'hbc', 'hoverlabel.bordercolor');
+    fill('fontFamily', 'htf', 'hoverlabel.font.family');
+    fill('fontSize', 'hts', 'hoverlabel.font.size');
+    fill('fontColor', 'htc', 'hoverlabel.font.color');
 
     return d;
 }
