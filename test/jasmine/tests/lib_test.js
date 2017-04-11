@@ -434,6 +434,24 @@ describe('Test lib.js:', function() {
                 expect(badProp(i)).toThrow('bad property string');
             }
         });
+
+        it('wraps values when cannot set an array property', function() {
+            var obj = {x: 4, y: 5, foo: {bar: 6, baz: 7}};
+
+            np(obj, 'x[0]').set(10);
+            np(obj, 'y[2]').set(11);
+            np(obj, 'foo.bar[0]').set(12);
+            np(obj, 'foo.baz[2]').set(13);
+
+            expect(obj).toEqual({
+                x: [10],
+                y: [5, undefined, 11],
+                foo: {
+                    bar: [12],
+                    baz: [7, undefined, 13]
+                }
+            });
+        });
     });
 
     describe('objectFromPath', function() {

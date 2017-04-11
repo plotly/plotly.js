@@ -243,8 +243,13 @@ function checkNewContainer(container, part, nextPart, toDelete) {
     if(container[part] === undefined) {
         if(toDelete) return false;
 
-        if(typeof nextPart === 'number') container[part] = [];
-        else container[part] = {};
+        if(typeof nextPart === 'number') {
+            container[part] = [];
+        } else {
+            container[part] = {};
+        }
+    } else if(!isPlainObject(container[part]) && !isArray(container[part]) && typeof nextPart === 'number') {
+        container[part] = [container[part]];
     }
     return true;
 }
