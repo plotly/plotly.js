@@ -151,6 +151,7 @@ function nodeModel(forceLayouts, d, n) {
         sizeAcross: d.horizontal ? d.width : d.height,
         forceLayouts: forceLayouts,
         horizontal: d.horizontal,
+        darkBackground: tc.getBrightness() <= 128,
         tinyColorHue: Color.tinyRGB(tc),
         tinyColorAlpha: tc.getAlpha(),
         sankey: d.sankey,
@@ -311,7 +312,6 @@ function attachForce(sankeyNode, sankeyLink, forceKey, d) {
             maxVelocity = Math.max(maxVelocity, Math.abs(n.vx), Math.abs(n.vy));
         }
         if(!d.interactionState.dragInProgress && maxVelocity < 0.1) {
-            d.forceLayouts[forceKey].stop(); // it doesn't cancel the pending iteration (ultimately d3-timer/rAF), so...
             d.forceLayouts[forceKey].alpha(0);
             window.setTimeout(function() {sankeyNode.call(crispLinesOnEnd);}, 30); // geome on move, crisp when static
         }
@@ -497,8 +497,11 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .classed('nodeLabel', true)
         .style('user-select', 'none')
         .style('cursor', 'default')
-        .style('text-shadow', '-1px -1px 1px #fff, -1px 1px 1px #fff, 1px -1px 1px #fff, 1px 1px 1px #fff')
         .style('fill', 'black');
+
+    nodeLabel.style('text-shadow', function(d) {
+        return d.horizontal ? '-1px -1px 1px #fff, -1px 1px 1px #fff, 1px -1px 1px #fff, 1px 1px 1px #fff' : 'none';
+    });
 
     var nodeLabelTextPath = nodeLabel.selectAll('.nodeLabelTextPath')
         .data(repeat);
@@ -510,5 +513,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .attr('xlink:href', function(d) {return '#' + d.uniqueNodeLabelPathId;});
 
     nodeLabelTextPath
-        .text(function(d) {return d.node.label;});
+        .text(function(d) {return d.node.label;})
+        .style('fill', function(d) {return d.darkBackground && !d.horizontal ? 'white' : 'black';});
 };
