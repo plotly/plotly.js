@@ -343,7 +343,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 .map(sankeyModel.bind(null, layout)),
             keyFun);
 
-    sankey.exit().remove();
+    sankey.exit()
+        .remove();
 
     sankey.enter()
         .append('g')
@@ -391,14 +392,14 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('stroke', function(d) {return d.tinyColorHue;})
         .style('stroke-opacity', function(d) {return d.tinyColorAlpha;});
 
-    sankeyLink
-        .transition().ease(c.ease).duration(c.duration)
+    sankeyLink.transition()
+        .ease(c.ease).duration(c.duration)
         .style('opacity', 1)
         .attr('d', linkPath)
         .style('stroke-width', function(d) {return Math.max(1, d.link.dy);});
 
-    sankeyLink.exit()
-        .transition().ease(c.ease).duration(c.duration)
+    sankeyLink.exit().transition()
+        .ease(c.ease).duration(c.duration)
         .style('opacity', 0)
         .remove();
 
@@ -461,7 +462,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('fill', function(d) {return d.tinyColorHue;})
         .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
 
-    nodeRect.transition().ease(c.ease).duration(c.duration)
+    nodeRect.transition()
+        .ease(c.ease).duration(c.duration)
         .call(sizeNode);
 
 
@@ -506,9 +508,10 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('cursor', 'default')
         .style('fill', 'black');
 
-    nodeLabel.style('text-shadow', function(d) {
-        return d.horizontal ? '1px -1px 1px #fff' : 'none';
-    });
+    nodeLabel
+        .style('text-shadow', function(d) {
+            return d.horizontal ? '1px -1px 1px #fff' : 'none';
+        });
 
     var nodeLabelTextPath = nodeLabel.selectAll('.nodeLabelTextPath')
         .data(repeat);
