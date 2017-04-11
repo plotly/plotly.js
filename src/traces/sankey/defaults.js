@@ -50,7 +50,7 @@ function nodesDefaults(traceIn, traceOut) {
     var nodesIn = traceIn.nodes || [],
         nodesOut = traceOut.nodes = [];
 
-    var nodeIn, nodeOut, i;
+    var nodeIn, nodeOut, i, j, link, foundUse, visible;
 
     var defaultPalette = d3.scale.category20();
 
@@ -60,13 +60,23 @@ function nodesDefaults(traceIn, traceOut) {
 
     for(i = 0; i < nodesIn.length; i++) {
         nodeIn = nodesIn[i];
-        nodeOut = {};
+
+        foundUse = false;
+        for(j = 0; j < traceOut.links.length && !foundUse; j++) {
+            link = traceOut.links[j];
+            foundUse = link.source === i || link.target === i;
+        }
+
+        if(!foundUse)
+            continue;
 
         if(!Lib.isPlainObject(nodeIn)) {
             continue;
         }
 
-        var visible = coerce('visible');
+        nodeOut = {};
+
+        visible = coerce('visible');
 
         if(visible) {
             coerce('label');
