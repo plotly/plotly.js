@@ -91,7 +91,7 @@ module.exports = function plot(gd, calcData) {
 
     var size = fullLayout._size;
 
-    var linkSelect = function(d) {
+    var linkSelect = function(element, d) {
         console.log('select link', d.link);
         gd._hoverdata = [d.link];
         gd._hoverdata.trace = calcData.trace;
@@ -149,7 +149,7 @@ module.exports = function plot(gd, calcData) {
         }
     };
 
-    var nodeSelect = function(element, d, sankey) {
+    var nodeSelect = function(element, d) {
         console.log('select node', d.node);
         gd._hoverdata = [d.node];
         gd._hoverdata.trace = calcData.trace;

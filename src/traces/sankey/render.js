@@ -235,7 +235,7 @@ function attachPointerEvents(selection, sankey, eventSet) {
                 d.interactionState.hovered = false;
             }
             if (!d.interactionState.dragInProgress) {
-                eventSet.select(this, d, sankey);
+                eventSet.select(this, d);
             }
         });
 }
