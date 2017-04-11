@@ -811,6 +811,10 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
         // gets overwritten in pie, geo and ternary modules
         coerce('hoverinfo', (layout._dataLength === 1) ? 'x+y+z+text' : undefined);
 
+        coerce('hoverlabel.bgcolor');
+        coerce('hoverlabel.bordercolor');
+        Lib.coerceFont(coerce, 'hoverlabel.font');
+
         // TODO add per-base-plot-module trace defaults step
 
         if(_module) _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);

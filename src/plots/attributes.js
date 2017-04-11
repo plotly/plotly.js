@@ -8,6 +8,9 @@
 
 'use strict';
 
+var constants = require('./cartesian/constants');
+var fontAttrs = require('./font_attributes');
+var extendFlat = require('../lib/extend').extendFlat;
 
 module.exports = {
     type: {
@@ -79,6 +82,37 @@ module.exports = {
             'If `none` or `skip` are set, no information is displayed upon hovering.',
             'But, if `none` is set, click and hover events are still fired.'
         ].join(' ')
+    },
+    hoverlabel: {
+        bgcolor: {
+            valType: 'color',
+            role: 'style',
+            arrayOk: true,
+            description: [
+                'Sets the background color of the hover label.'
+            ].join(' ')
+        },
+        bordercolor: {
+            valType: 'color',
+            role: 'style',
+            arrayOk: true,
+            description: [
+                'Sets the border color of the hover label.'
+            ].join(' ')
+        },
+        font: {
+            family: extendFlat({}, fontAttrs.family, {
+                arrayOk: true,
+                dflt: constants.HOVERFONT
+            }),
+            size: extendFlat({}, fontAttrs.size, {
+                arrayOk: true,
+                dflt: constants.HOVERFONTSIZE
+            }),
+            color: extendFlat({}, fontAttrs.color, {
+                arrayOk: true
+            })
+        }
     },
     stream: {
         token: {
