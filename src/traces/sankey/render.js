@@ -102,6 +102,7 @@ function sankeyModel(layout, d, i) {
         nodes: nodes,
         links: links,
         sankey: sankey,
+        forceLayouts: {},
         interactionState: {
             dragInProgress: false,
             hovered: false
@@ -124,7 +125,7 @@ function linkModel(d, l) {
     };
 }
 
-function nodeModel(forceLayouts, d, n) {
+function nodeModel(d, n) {
 
     var tc = tinycolor(n.color),
         zoneThicknessPad = c.nodePadAcross,
@@ -149,7 +150,7 @@ function nodeModel(forceLayouts, d, n) {
         zoneHeight: d.horizontal ? zoneLength : zoneThickness,
         labelY: d.horizontal ? n.dy / 2 + 1 : n.dx / 2 + 1,
         sizeAcross: d.horizontal ? d.width : d.height,
-        forceLayouts: forceLayouts,
+        forceLayouts: d.forceLayouts,
         horizontal: d.horizontal,
         darkBackground: tc.getBrightness() <= 128,
         tinyColorHue: Color.tinyRGB(tc),
@@ -414,11 +415,10 @@ module.exports = function(svg, styledData, layout, callbacks) {
     var sankeyNode = sankeyNodeSet.selectAll('.sankeyNode')
         .data(function(d) {
             var nodes = d.sankey.nodes();
-            var forceLayouts = {};
             persistOriginalPlace(nodes);
             return nodes
                 .filter(function(n) {return n.visible && n.value;})
-                .map(nodeModel.bind(null, forceLayouts, d));
+                .map(nodeModel.bind(null, d));
         }, keyFun);
 
     sankeyNode.enter()
