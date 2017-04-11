@@ -5,7 +5,6 @@ var browserify = require('browserify');
 var UglifyJS = require('uglify-js');
 
 var constants = require('./constants');
-var compressAttributes = require('./compress_attributes');
 var patchMinified = require('./patch_minified');
 
 /** Convenience browserify wrapper
@@ -38,7 +37,10 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts) {
     var browserifyOpts = {};
     browserifyOpts.standalone = opts.standalone;
     browserifyOpts.debug = opts.debug;
-    browserifyOpts.transform = outputMinified ? [compressAttributes] : [];
+
+    if(opts.noCompress) {
+        browserifyOpts.ignoreTransform = './tasks/compress_attributes.js';
+    }
 
     var b = browserify(pathToIndex, browserifyOpts),
         bundleWriteStream = fs.createWriteStream(pathToBundle);

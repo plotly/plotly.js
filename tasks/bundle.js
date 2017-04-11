@@ -41,7 +41,8 @@ _bundle(constants.pathToPlotlyGeoAssetsSrc, constants.pathToPlotlyGeoAssetsDist,
 // Browserify the plotly.js with meta
 _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDistWithMeta, {
     standalone: 'Plotly',
-    debug: DEV
+    debug: DEV,
+    noCompress: true
 });
 
 // Browserify the plotly.js partial bundles
