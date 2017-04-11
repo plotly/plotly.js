@@ -125,7 +125,7 @@ function linkModel(d, l) {
     };
 }
 
-function nodeModel(d, n) {
+function nodeModel(uniqueKeys, d, n) {
 
     var tc = tinycolor(n.color),
         zoneThicknessPad = c.nodePadAcross,
@@ -135,8 +135,12 @@ function nodeModel(d, n) {
         zoneThickness = visibleThickness + 2 * zoneThicknessPad,
         zoneLength = visibleLength + 2 * zoneLengthPad;
 
+    var foundKey = uniqueKeys[n.label];
+    uniqueKeys[n.label] = (foundKey === void(0) ? foundKey : 0) + 1;
+    var key = n.label + (foundKey === void(0) ? '' : '__' + foundKey);
+
     return {
-        key: n.label,
+        key: key,
         traceId: d.key,
         node: n,
         nodePad: d.nodePad,
@@ -354,9 +358,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('box-sizing', 'content-box');
 
     sankey
-        .attr('transform', function(d) {
-            return 'translate(' + d.translateX + ',' + d.translateY + ')';
-        });
+        .attr('transform', function(d) {return 'translate(' + d.translateX + ',' + d.translateY + ')';});
 
 
     var sankeyLinks = sankey.selectAll('.sankeyLinks')
@@ -365,8 +367,10 @@ module.exports = function(svg, styledData, layout, callbacks) {
     sankeyLinks.enter()
         .append('g')
         .classed('sankeyLinks', true)
-        .style('transform', function(d) {return d.horizontal ? 'matrix(1,0,0,1,0,0)' : 'matrix(0,1,1,0,0,0)'})
         .style('fill', 'none');
+
+    sankeyLinks
+        .style('transform', function(d) {return d.horizontal ? 'matrix(1,0,0,1,0,0)' : 'matrix(0,1,1,0,0,0)'});
 
 
     var sankeyLink = sankeyLinks.selectAll('.sankeyLink')
@@ -379,7 +383,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
     sankeyLink.enter()
         .append('path')
         .classed('sankeyLink', true)
-        .attr('d', linkPath)
         .style('stroke-width', function(d) {return Math.max(1, d.link.dy);})
         .style('opacity', 0)
         .call(attachPointerEvents, sankey, callbacks.linkEvents);
@@ -415,17 +418,18 @@ module.exports = function(svg, styledData, layout, callbacks) {
     var sankeyNode = sankeyNodeSet.selectAll('.sankeyNode')
         .data(function(d) {
             var nodes = d.sankey.nodes();
+            var uniqueKeys = {};
             persistOriginalPlace(nodes);
             return nodes
                 .filter(function(n) {return n.visible && n.value;})
-                .map(nodeModel.bind(null, d));
+                .map(nodeModel.bind(null, uniqueKeys, d));
         }, keyFun);
 
     sankeyNode.enter()
         .append('g')
         .classed('sankeyNode', true)
         .style('opacity', 0)
-        .style('cursor', 'ns-resize')
+        .style('cursor', 'move')
         .call(updateNodePositions)
         .call(attachPointerEvents, sankey, callbacks.nodeEvents)
         .call(attachDragHandler, sankeyLink, callbacks);

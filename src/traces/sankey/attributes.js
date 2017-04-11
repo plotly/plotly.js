@@ -78,6 +78,7 @@ module.exports = {
         _isLinkedToArray: 'node',
         label: {
             valType: 'string',
+            dflt: '',
             role: 'info',
             description: 'The shown name of the node.'
         },
@@ -92,6 +93,7 @@ module.exports = {
         _isLinkedToArray: 'link',
         label: {
             valType: 'string',
+            dflt: '',
             role: 'info',
             description: 'The shown name of the link.'
         },

@@ -120,11 +120,11 @@ module.exports = function plot(gd, calcData) {
         var tooltip = Fx.loneHover({
             x: hoverCenterX,
             y: hoverCenterY,
-            name: d.link.label + '',
+            name: d.link.source.value + '',
             text: [
                 d.link.label,
-                ['Source:', d.link.source.name].join(' '),
-                ['Target:', d.link.target.name].join(' ')
+                ['Source:', d.link.source.label].join(' '),
+                ['Target:', d.link.target.label].join(' ')
             ].join('<br>'),
             color: Color.addOpacity(d.tinyColorHue, 1),
             idealAlign: d3.event.x < hoverCenterX ? 'right' : 'left'
@@ -187,8 +187,8 @@ module.exports = function plot(gd, calcData) {
             name: d.node.value + '',
             text: [
                 d.node.label,
-                ['Source count:', d.node.sourceLinks.length].join(' '),
-                ['Target count:', d.node.targetLinks.length].join(' ')
+                ['Incoming flow count:', d.node.targetLinks.length].join(' '),
+                ['Outgoing flow count:', d.node.sourceLinks.length].join(' ')
             ].join('<br>'),
             color: d.tinyColorHue,
             idealAlign: 'left'
