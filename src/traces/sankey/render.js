@@ -263,7 +263,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 
                 } else { // make a forceLayout iff needed
 
-                    attachForce(sankeyNode, sankeyLink, forceKey, d);
+                    attachForce(sankeyNode, forceKey, d);
                 }
                 window.requestAnimationFrame(function faster() {
                     for(var i = 0; i < c.forceTicksPerFrame; i++) d.forceLayouts[forceKey].tick();
@@ -301,7 +301,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
     return sankeyNode.call(dragBehavior);
 }
 
-function attachForce(sankeyNode, sankeyLink, forceKey, d) {
+function attachForce(sankeyNode, forceKey, d) {
     var nodes = d.sankey.nodes().filter(function(n) {return n.originalX === d.node.originalX;});
     var snap = function () {
         var maxVelocity = 0;
