@@ -50,7 +50,9 @@ function nodesDefaults(traceIn, traceOut) {
     var nodesIn = traceIn.nodes || [],
         nodesOut = traceOut.nodes = [];
 
-    var nodeIn, nodeOut, i, j, link, foundUse, visible;
+    var nodeIn, nodeOut, i, j, link, foundUse, visible,
+        usedNodeCount = 0,
+        indexMap = [];
 
     var defaultPalette = d3.scale.category20();
 
@@ -61,11 +63,15 @@ function nodesDefaults(traceIn, traceOut) {
     for(i = 0; i < nodesIn.length; i++) {
         nodeIn = nodesIn[i];
 
+
+
         foundUse = false;
         for(j = 0; j < traceOut.links.length && !foundUse; j++) {
             link = traceOut.links[j];
             foundUse = link.source === i || link.target === i;
         }
+
+        indexMap.push(foundUse ? usedNodeCount : null);
 
         if(!foundUse)
             continue;
@@ -87,8 +93,16 @@ function nodesDefaults(traceIn, traceOut) {
             }
         }
 
-        nodeOut._index = i;
+        nodeOut._index = usedNodeCount;
         nodesOut.push(nodeOut);
+        usedNodeCount++;
+    }
+
+    // since nodes were removed, update indices to nodes in links to reflect new reality
+    for(j = 0; j < traceOut.links.length; j++) {
+        link = traceOut.links[j];
+        link.source = indexMap[link.source];
+        link.target = indexMap[link.target];
     }
 
     return nodesOut;
