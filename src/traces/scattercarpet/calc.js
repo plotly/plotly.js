@@ -16,20 +16,12 @@ var Lib = require('../../lib');
 
 var subTypes = require('../scatter/subtypes');
 var calcColorscale = require('../scatter/colorscale_calc');
+var lookupCarpet = require('../carpet/lookup_carpetid');
 
 module.exports = function calc(gd, trace) {
-    var i, carpet;
-
-    for(i = 0; i < gd._fullData.length; i++) {
-        if(gd._fullData[i].carpet === trace.carpet && gd._fullData[i].type === 'carpet') {
-            carpet = gd._fullData[i];
-            break;
-        }
-    }
-
-    if(!carpet) return;
-
-    trace._carpet = carpet;
+    var carpet = trace.carpetTrace = lookupCarpet(gd, trace);
+    if(!carpet || !carpet.visible || carpet.visible === 'legendonly') return;
+    var i;
 
     // Transfer this over from carpet before plotting since this is a necessary
     // condition in order for cartesian to actually plot this trace:
