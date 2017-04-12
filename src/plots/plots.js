@@ -1962,34 +1962,7 @@ plots.doCalcdata = function(gd, traces) {
         fullData = gd._fullData,
         fullLayout = gd._fullLayout;
 
-    var trace, _module, i, j, index;
-
-    // Look up priorities. The carpet trace is currently
-    var priority;
-    var prioritizedFullDataLookup = [];
-    var hasPriorities = false;
-    for(i = 0; i < fullData.length; i++) {
-        trace = fullData[i];
-        _module = trace._module;
-
-        // Get the priority from the module definition, otherwise default to zero:
-        priority = (_module && _module.calcPriority) ? _module.calcPriority : 0;
-
-        // Note if a non-zero priority was found so that we only need to sort if
-        // there's anything to sort:
-        hasPriorities = hasPriorities || priority;
-
-        prioritizedFullDataLookup.push({index: i, priority: priority});
-    }
-
-    // Sort by priority descending so that higher priority is computed first. If they share the same priority
-    // (which has already been default to zero), then they will be compared by trace index so that the original
-    // order is preserved within priority groups:
-    if(hasPriorities) {
-        prioritizedFullDataLookup.sort(function(a, b) {
-            return (b.priority - a.priority) || (a.index - b.index);
-        });
-    }
+    var trace, _module, i, j;
 
     var hasCategoryAxis = false;
 
@@ -2018,6 +1991,13 @@ plots.doCalcdata = function(gd, traces) {
     // to be filled in later by ax.d2c
     for(i = 0; i < axList.length; i++) {
         axList[i]._categories = axList[i]._initialCategories.slice();
+
+        // Build the lookup map for initialized categories
+        axList[i]._categoriesMap = {};
+        for(j = 0; j < axList[i]._categories.length; j++) {
+            axList[i]._categoriesMap[axList[i]._categories[j]] = j;
+        }
+
         if(axList[i].type === 'category') hasCategoryAxis = true;
     }
 
@@ -2034,9 +2014,7 @@ plots.doCalcdata = function(gd, traces) {
 
     // transform loop
     for(i = 0; i < fullData.length; i++) {
-        index = prioritizedFullDataLookup[i].index;
-
-        trace = fullData[index];
+        trace = fullData[i];
 
         if(trace.visible === true && trace.transforms) {
             _module = trace._module;
@@ -2064,15 +2042,16 @@ plots.doCalcdata = function(gd, traces) {
             axList[i]._min = [];
             axList[i]._max = [];
             axList[i]._categories = [];
+            // Reset the look up map
+            axList[i]._categoriesMap = {};
         }
     }
 
     // 'regular' loop
-    for(i = 0; i < prioritizedFullDataLookup.length; i++) {
-        index = prioritizedFullDataLookup[i].index;
+    for(i = 0; i < fullData.length; i++) {
         var cd = [];
 
-        trace = fullData[index];
+        trace = fullData[i];
 
         if(trace.visible === true) {
             _module = trace._module;
@@ -2093,7 +2072,7 @@ plots.doCalcdata = function(gd, traces) {
         if(!cd[0].t) cd[0].t = {};
         cd[0].trace = trace;
 
-        calcdata[index] = cd;
+        calcdata[i] = cd;
     }
 
     // To handle the case of components using category names as coordinates, we
