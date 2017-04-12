@@ -64,6 +64,25 @@ module.exports = {
         description: 'Sets the padding (in px) between the `nodes`.'
     },
 
+    nodethickness: {
+        valType: 'number',
+        min: 1,
+        dflt: 20,
+        role: 'style',
+        description: 'Sets the thickness of the `nodes`.'
+    },
+
+    valueformat: {
+        valType: 'string',
+        dflt: '.3s',
+        role: 'style',
+        description: [
+            'Sets the value formatting rule using d3 formatting mini-language',
+            'which is similar to those of Python. See',
+            'https://github.com/d3/d3-format/blob/master/README.md#locale_format'
+        ].join(' ')
+    },
+
     // followmouse for UX testing
     followmouse: {
         valType: 'boolean',
@@ -98,7 +117,7 @@ module.exports = {
             description: 'The shown name of the link.'
         },
         visible: shapeAttrs.visible,
-        color: extendFlat({}, shapeAttrs.fillcolor, {dflt: 'rgba(0,0,0,0.25)'}),
+        color: extendFlat({}, shapeAttrs.fillcolor, {dflt: 'rgba(0,0,0,0.2)'}),
         source: {
             valType: 'number',
             role: 'info',

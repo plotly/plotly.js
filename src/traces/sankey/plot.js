@@ -61,7 +61,7 @@ function nodeNonHoveredStyle(sankeyNode, d, sankey) {
 
 function linkHoveredStyle(sankeyLink, d, sankey) {
 
-    sankeyLink.style('stroke-opacity', 0.5);
+    sankeyLink.style('stroke-opacity', 0.4);
 
     if(d && sankey) {
         ownTrace(sankey, d)
@@ -122,7 +122,7 @@ module.exports = function plot(gd, calcData) {
         var tooltip = Fx.loneHover({
             x: hoverCenterX,
             y: hoverCenterY,
-            name: d.link.source.value + '',
+            name: d3.format(d.valueFormat)(d.link.source.value) + '',
             text: [
                 d.link.label,
                 ['Source:', d.link.source.label].join(' '),
@@ -186,7 +186,7 @@ module.exports = function plot(gd, calcData) {
             x0: hoverCenterX0,
             x1: hoverCenterX1,
             y: hoverCenterY,
-            name: d.node.value + '',
+            name: d3.format(d.valueFormat)(d.node.value) + '',
             text: [
                 d.node.label,
                 ['Incoming flow count:', d.node.targetLinks.length].join(' '),

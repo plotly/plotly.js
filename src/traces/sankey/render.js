@@ -72,6 +72,8 @@ function sankeyModel(layout, d, i) {
         links = trace.links,
         horizontal = trace.orientation === 'h',
         nodePad = trace.nodepad,
+        nodeThickness = trace.nodethickness,
+        valueFormat = trace.valueformat,
         textFont = trace.textfont;
 
     var width = layout.width * (domain.x[1] - domain.x[0]),
@@ -79,7 +81,7 @@ function sankeyModel(layout, d, i) {
 
     var sankey = d3sankey()
         .size(horizontal ? [width, height] : [height, width])
-        .nodeWidth(c.nodeWidth)
+        .nodeWidth(nodeThickness)
         .nodePadding(nodePad)
         .nodes(nodes)
         .links(links)
@@ -94,6 +96,7 @@ function sankeyModel(layout, d, i) {
         width: width,
         height: height,
         nodePad: nodePad,
+        valueFormat: valueFormat,
         textFont: textFont,
         translateX: domain.x[0] * width + layout.margin.l,
         translateY: layout.height - domain.y[1] * layout.height + layout.margin.t,
@@ -120,6 +123,7 @@ function linkModel(d, l) {
         link: l,
         tinyColorHue: Color.tinyRGB(tc),
         tinyColorAlpha: tc.getAlpha(),
+        valueFormat: d.valueFormat,
         sankey: d.sankey,
         interactionState: d.interactionState
     };
@@ -159,6 +163,7 @@ function nodeModel(uniqueKeys, d, n) {
         darkBackground: tc.getBrightness() <= 128,
         tinyColorHue: Color.tinyRGB(tc),
         tinyColorAlpha: tc.getAlpha(),
+        valueFormat: d.valueFormat,
         sankey: d.sankey,
         uniqueNodeLabelPathId: JSON.stringify({sankeyGuid: d.guid, traceId: d.key, nodeKey: n.label}),
         interactionState: d.interactionState
@@ -339,6 +344,9 @@ function attachForce(sankeyNode, forceKey, d) {
 
 module.exports = function(svg, styledData, layout, callbacks) {
 
+    svg
+        .style('overflow', 'visible');
+
     var sankey = svg.selectAll('.sankey')
         .data(styledData
                 .filter(function(d) {return unwrap(d).trace.visible;})
@@ -512,7 +520,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     nodeLabel
         .style('text-shadow', function(d) {
-            return d.horizontal ? '1px -1px 1px #fff' : 'none';
+            return d.horizontal ? '0 1px 1px #fff' : 'none';
         });
 
     var nodeLabelTextPath = nodeLabel.selectAll('.nodeLabelTextPath')

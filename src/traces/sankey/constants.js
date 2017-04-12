@@ -13,7 +13,6 @@ module.exports = {
     nodeTextOffsetHorizontal: 4,
     nodeTextOffsetVertical: 3,
     nodePadAcross: 10,
-    nodeWidth: 20,
     sankeyIterations: 50,
     movable: true,
     sideways: true,
