@@ -27,7 +27,7 @@ module.exports = {
         valType: 'number',
         dflt: 1,
         min: 0,
-        max: 1,
+        max: 1.3,
         role: 'info'
     },
     title: {

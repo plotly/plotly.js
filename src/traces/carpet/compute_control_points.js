@@ -9,7 +9,7 @@
 'use strict';
 
 var makeControlPoints = require('./catmull_rom');
-var ensureArray = require('./ensure_array');
+var ensureArray = require('../../lib').ensureArray;
 
 /*
  * Turns a coarse grid into a fine grid with control points.
