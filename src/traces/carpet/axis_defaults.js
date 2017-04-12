@@ -10,7 +10,6 @@
 
 var carpetAttrs = require('./attributes');
 
-var isNumeric = require('fast-isnumeric');
 var addOpacity = require('../../components/color').addOpacity;
 var Registry = require('../../registry');
 var Lib = require('../../lib');
