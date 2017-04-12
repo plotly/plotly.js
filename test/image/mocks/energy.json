@@ -1,6 +1,6 @@
 {
     "layout": {
-        "title": "Energy - UK Department of Energy & Climate Change<br>Forecast for 2050<br>Unit: TWh",
+        "title": "Energy forecast for 2050, UK — Department of Energy & Climate Change<br>Near-identical remake of <a href='https://bost.ocks.org/mike/sankey/'>Mike Bostock's example</a><br>with numerous <a href='https://plot.ly/javascript/'>Plotly</a> features",
         "width": 1080,
         "height": 700,
         "font": {
