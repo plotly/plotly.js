@@ -20,11 +20,6 @@ module.exports = function colorbar(gd, cd) {
     var trace = cd[0].trace,
         cbId = 'cb' + trace.uid;
 
-    var contours = trace.contours,
-        line = trace.line,
-        cs = contours.size || 1,
-        coloring = contours.coloring;
-
     gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
 
     if(!trace.showscale) {
@@ -34,6 +29,11 @@ module.exports = function colorbar(gd, cd) {
 
     var cb = drawColorbar(gd, cbId);
     cd[0].t.cb = cb;
+
+    var contours = trace.contours,
+        line = trace.line,
+        cs = contours.size || 1,
+        coloring = contours.coloring;
 
     var colorMap = makeColorMap(trace, {isColorbar: true});
 

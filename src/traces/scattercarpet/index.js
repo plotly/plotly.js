@@ -12,12 +12,12 @@ var ScatterCarpet = {};
 
 ScatterCarpet.attributes = require('./attributes');
 ScatterCarpet.supplyDefaults = require('./defaults');
-// ScatterCarpet.colorbar = require('../scatter/colorbar');
+ScatterCarpet.colorbar = require('../scatter/colorbar');
 ScatterCarpet.calc = require('./calc');
 ScatterCarpet.plot = require('./plot');
-// ScatterCarpet.style = require('./style');
+ScatterCarpet.style = require('./style');
 ScatterCarpet.hoverPoints = require('./hover');
-// ScatterCarpet.selectPoints = require('./select');
+ScatterCarpet.selectPoints = require('./select');
 
 ScatterCarpet.moduleType = 'trace';
 ScatterCarpet.name = 'scattercarpet';

@@ -125,9 +125,6 @@ function plotOne(gd, plotinfo, cd) {
 
     // Clip the boundary of the plot:
     clipBoundary(plotGroup, carpet);
-
-    // Clip the space around null/undefined/missing data points:
-    // clipGaps(plotGroup, plotinfo, cd[0], perimeter);
 }
 
 function clipBoundary(plotGroup, carpet) {
@@ -235,71 +232,3 @@ function makeFills(trace, plotgroup, xa, ya, pathinfo, perimeter, ab2p, carpet, 
         }
     });
 }
-
-/* function clipGaps(plotGroup, plotinfo, cd0, perimeter) {
-    var clipId = 'clip' + cd0.trace.uid;
-
-    var defs = plotinfo.plot.selectAll('defs')
-        .data([0]);
-    defs.enter().append('defs');
-
-    var clipPath = defs.selectAll('#' + clipId)
-        .data(cd0.trace.connectgaps ? [] : [0]);
-    clipPath.enter().append('clipPath').attr('id', clipId);
-    clipPath.exit().remove();
-
-    if(cd0.trace.connectgaps === false) {
-        var clipPathInfo = {
-            // fraction of the way from missing to present point
-            // to draw the boundary.
-            // if you make this 1 (or 1-epsilon) then a point in
-            // a sea of missing data will disappear entirely.
-            level: 0.9,
-            crossings: {},
-            starts: [],
-            edgepaths: [],
-            paths: [],
-            xaxis: plotinfo.xaxis,
-            yaxis: plotinfo.yaxis,
-            x: cd0.x,
-            y: cd0.y,
-            // 0 = no data, 1 = data
-            z: makeClipMask(cd0),
-            smoothing: 0
-        };
-
-        makeCrossings([clipPathInfo]);
-        findAllPaths([clipPathInfo]);
-        var fullpath = joinAllPaths(clipPathInfo, perimeter);
-
-        var path = clipPath.selectAll('path')
-            .data([0]);
-        path.enter().append('path');
-        path.attr('d', fullpath);
-    }
-    else clipId = null;
-
-    plotGroup.call(Drawing.setClipUrl, clipId);
-    plotinfo.plot.selectAll('.hm' + cd0.trace.uid)
-        .call(Drawing.setClipUrl, clipId);
-}*/
-
-/* function makeClipMask(cd0) {
-    var empties = cd0.trace._emptypoints,
-        z = [],
-        m = cd0.z.length,
-        n = cd0.z[0].length,
-        i,
-        row = [],
-        emptyPoint;
-
-    for(i = 0; i < n; i++) row.push(1);
-    for(i = 0; i < m; i++) z.push(row.slice());
-    for(i = 0; i < empties.length; i++) {
-        emptyPoint = empties[i];
-        z[emptyPoint[0]][emptyPoint[1]] = 0;
-    }
-    // save this mask to determine whether to show this data in hover
-    cd0.zmask = z;
-    return z;
-}*/
