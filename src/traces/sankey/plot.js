@@ -25,6 +25,12 @@ function makeTranslucent(element, alpha) {
         .style('fill-opacity', alpha);
 }
 
+function makeTextContrasty(element, hue) {
+    d3.select(element)
+        .select('text.name')
+        .style('fill', Color.contrast(hue, 0, 40));
+}
+
 function relatedLinks(d) {
     return function(l) {
         return d.node.sourceLinks.indexOf(l.link) !== -1 ||  d.node.targetLinks.indexOf(l.link) !== -1;
@@ -194,7 +200,7 @@ module.exports = function plot(gd, calcData) {
                 ['Incoming flow count:', d.node.targetLinks.length].join(' '),
                 ['Outgoing flow count:', d.node.sourceLinks.length].join(' ')
             ].filter(renderableValuePresent).join('<br>'),
-            color: Color.addOpacity(d.tinyColorHue, 1),
+            color: d.tinyColorHue,
             idealAlign: 'left'
         }, {
             container: fullLayout._hoverlayer.node(),
@@ -202,6 +208,7 @@ module.exports = function plot(gd, calcData) {
         });
 
         makeTranslucent(tooltip, 0.85);
+        makeTextContrasty(tooltip, d.tinyColorHue);
     };
 
     var nodeUnhover = function(element, d, sankey) {
