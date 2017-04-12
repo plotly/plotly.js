@@ -421,7 +421,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .classed('sankeyNodeSet', true);
 
     sankeyNodeSet
-        .each(function(d) {Drawing.font(sankeyNodeSet, d.textFont);});
+        .each(function(d) {Drawing.font(sankeyNodeSet, d.textFont);});  // fixme causes scerenshot trouble
 
 
     var sankeyNode = sankeyNodeSet.selectAll('.sankeyNode')
@@ -496,7 +496,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
     nodeLabelGuide.enter()
         .append('path')
         .classed('nodeLabelGuide', true)
-        .attr('id', function(d) {return d.uniqueNodeLabelPathId;});
+        .attr('id', function(d) {return d.uniqueNodeLabelPathId;}); // fixme causes scerenshot trouble
 
     nodeLabelGuide
         .transition()
