@@ -180,7 +180,9 @@ module.exports = {
         description: [
             'Sets a distance, in pixels, to move the arrowhead away from the',
             'position it is pointing at, for example to point at the edge of',
-            'a marker independent of zoom.'
+            'a marker independent of zoom. Note that this shortens the arrow',
+            'from the `ax` / `ay` vector, in contrast to `xshift` / `yshift`',
+            'which moves everything by this amount.'
         ].join(' ')
     },
     ax: {
@@ -292,6 +294,15 @@ module.exports = {
             'corresponds to the closest side.'
         ].join(' ')
     },
+    xshift: {
+        valType: 'number',
+        dflt: 0,
+        role: 'style',
+        description: [
+            'Shifts the position of the whole annotation and arrow to the',
+            'right (positive) or left (negative) by this many pixels.'
+        ].join(' ')
+    },
     yref: {
         valType: 'enumerated',
         values: [
@@ -340,6 +351,15 @@ module.exports = {
             'data-referenced annotations or if there is an arrow,',
             'whereas for paper-referenced with no arrow, the anchor picked',
             'corresponds to the closest side.'
+        ].join(' ')
+    },
+    yshift: {
+        valType: 'number',
+        dflt: 0,
+        role: 'style',
+        description: [
+            'Shifts the position of the whole annotation and arrow up',
+            '(positive) or down (negative) by this many pixels.'
         ].join(' ')
     },
     clicktoshow: {

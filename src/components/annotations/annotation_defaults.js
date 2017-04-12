@@ -83,6 +83,9 @@ module.exports = function handleAnnotationDefaults(annIn, annOut, fullLayout, op
 
         // xanchor, yanchor
         coerce(axLetter + 'anchor');
+
+        // xshift, yshift
+        coerce(axLetter + 'shift');
     }
 
     // if you have one coordinate you should have both

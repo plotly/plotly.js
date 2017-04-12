@@ -554,9 +554,9 @@ describe('annotations autorange', function() {
     it('should adapt to relayout calls', function(done) {
         Plotly.plot(gd, mock).then(function() {
             assertRanges(
-                [0.97, 2.03], [0.97, 2.03],
-                ['2000-10-01 08:23:18.0583', '2001-06-05 19:20:23.301'], [-0.245, 4.245],
-                [0.9, 2.1], [0.86, 2.14]
+                [0.91, 2.09], [0.91, 2.09],
+                ['2000-11-13', '2001-04-21'], [-0.069, 3.917],
+                [0.88, 2.05], [0.92, 2.08]
             );
 
             return Plotly.relayout(gd, {
@@ -567,9 +567,9 @@ describe('annotations autorange', function() {
         })
         .then(function() {
             assertRanges(
-                [1.44, 2.02], [0.97, 2.03],
-                ['2001-01-18 15:06:04.0449', '2001-03-27 14:01:20.8989'], [-0.245, 4.245],
-                [1.44, 2.1], [0.86, 2.14]
+                [1.44, 2.02], [0.91, 2.09],
+                ['2001-01-18', '2001-03-27'], [-0.069, 3.917],
+                [1.44, 2.1], [0.92, 2.08]
             );
 
             return Plotly.relayout(gd, {
@@ -581,8 +581,8 @@ describe('annotations autorange', function() {
         .then(function() {
             assertRanges(
                 [1.44, 2.02], [0.99, 1.52],
-                ['2001-01-31 23:59:59.999', '2001-02-01 00:00:00.001'], [-0.245, 4.245],
-                [0.5, 2.5], [0.86, 2.14]
+                ['2001-01-31 23:59:59.999', '2001-02-01 00:00:00.001'], [-0.069, 3.917],
+                [0.5, 2.5], [0.92, 2.08]
             );
 
             return Plotly.relayout(gd, {
@@ -596,9 +596,9 @@ describe('annotations autorange', function() {
         })
         .then(function() {
             assertRanges(
-                [0.97, 2.03], [0.97, 2.03],
-                ['2000-10-01 08:23:18.0583', '2001-06-05 19:20:23.301'], [-0.245, 4.245],
-                [0.9, 2.1], [0.86, 2.14]
+                [0.91, 2.09], [0.91, 2.09],
+                ['2000-11-13', '2001-04-21'], [-0.069, 3.917],
+                [0.88, 2.05], [0.92, 2.08]
             );
         })
         .catch(failTest)
@@ -619,10 +619,10 @@ describe('annotations autorange', function() {
         })
         .then(function() {
             assertRanges(
-                [-1.09, 2.09], [0.94, 3.06],
+                [-1.09, 2.25], [0.84, 3.06],
                 // the other axes shouldn't change
-                ['2000-10-01 08:23:18.0583', '2001-06-05 19:20:23.301'], [-0.245, 4.245],
-                [0.9, 2.1], [0.86, 2.14]
+                ['2000-11-13', '2001-04-21'], [-0.069, 3.917],
+                [0.88, 2.05], [0.92, 2.08]
             );
         })
         .catch(failTest)
@@ -961,7 +961,8 @@ describe('annotation effects', function() {
             showarrow: false,
             text: 'blah<br>blah blah',
             xref: 'paper',
-            yref: 'paper'
+            yref: 'paper',
+            xshift: 5, yshift: 5
         }])
         .then(function() {
             var bbox = textBox().getBoundingClientRect();
@@ -981,7 +982,8 @@ describe('annotation effects', function() {
             xref: 'paper',
             yref: 'paper',
             xanchor: 'left',
-            yanchor: 'top'
+            yanchor: 'top',
+            xshift: 5, yshift: 5
         }])
         .then(function() {
             // with offsets 0, 0 because the anchor doesn't change now
@@ -999,7 +1001,8 @@ describe('annotation effects', function() {
             xref: 'paper',
             yref: 'paper',
             ax: 30,
-            ay: 30
+            ay: 30,
+            xshift: 5, yshift: 5
         }])
         .then(function() {
             return checkDragging(arrowDrag, 0, 0, 1);
@@ -1014,7 +1017,8 @@ describe('annotation effects', function() {
             x: 0,
             y: 0,
             showarrow: false,
-            text: 'blah<br>blah blah'
+            text: 'blah<br>blah blah',
+            xshift: 5, yshift: 5
         }])
         .then(function() {
             return checkDragging(textDrag, 0, 0, 100);
@@ -1029,7 +1033,8 @@ describe('annotation effects', function() {
             y: 0,
             text: 'blah<br>blah blah',
             ax: 30,
-            ay: -30
+            ay: -30,
+            xshift: 5, yshift: 5
         }])
         .then(function() {
             return checkDragging(arrowDrag, 0, 0, 100);
@@ -1127,7 +1132,7 @@ describe('annotation effects', function() {
         }
 
         makePlot([
-            {x: 50, y: 50, text: 'hi', width: 50, ax: 0, ay: -40},
+            {x: 50, y: 50, text: 'hi', width: 50, ax: 0, ay: -40, xshift: -50, yshift: 50},
             {x: 20, y: 20, text: 'bye', height: 40, showarrow: false},
             {x: 80, y: 80, text: 'why?', ax: 0, ay: -40}
         ], {}) // turn off the default editable: true
@@ -1136,7 +1141,7 @@ describe('annotation effects', function() {
             gd.on('plotly_clickannotation', function(evt) { clickData.push(evt); });
 
             gdBB = gd.getBoundingClientRect();
-            pos0Head = [gdBB.left + 250, gdBB.top + 250];
+            pos0Head = [gdBB.left + 200, gdBB.top + 200];
             pos0 = [pos0Head[0], pos0Head[1] - 40];
             pos1 = [gdBB.left + 160, gdBB.top + 340];
             pos2Head = [gdBB.left + 340, gdBB.top + 160];
