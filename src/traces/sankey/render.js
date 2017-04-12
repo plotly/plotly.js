@@ -259,11 +259,8 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
             if(c.useForceSnap) {
                 var forceKey = d.traceId + '|' + Math.floor(d.node.originalX);
                 if (d.forceLayouts[forceKey]) {
-
                     d.forceLayouts[forceKey].alpha(1);
-
                 } else { // make a forceLayout iff needed
-
                     attachForce(sankeyNode, forceKey, d);
                 }
                 window.requestAnimationFrame(function faster() {
@@ -307,7 +304,18 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 
 function attachForce(sankeyNode, forceKey, d) {
     var nodes = d.sankey.nodes().filter(function(n) {return n.originalX === d.node.originalX;});
-    var snap = function () {
+    d.forceLayouts[forceKey] = d3Force.forceSimulation(nodes)
+        .alphaDecay(0)
+        .force('collide', d3Force.forceCollide()
+            .radius(function (n) {return n.dy / 2 + d.nodePad / 2;})
+            .strength(1)
+            .iterations(c.forceIterations))
+        .force('constrain', snappingForce(sankeyNode, forceKey, nodes, d))
+        .stop();
+}
+
+function snappingForce(sankeyNode, forceKey, nodes, d) {
+    return function _snappingForce() {
         var maxVelocity = 0;
         for (var i = 0; i < nodes.length; i++) {
             var n = nodes[i];
@@ -320,20 +328,13 @@ function attachForce(sankeyNode, forceKey, d) {
             }
             maxVelocity = Math.max(maxVelocity, Math.abs(n.vx), Math.abs(n.vy));
         }
-        if(!d.interactionState.dragInProgress && maxVelocity < 0.1) {
+        if (!d.interactionState.dragInProgress && maxVelocity < 0.1) {
             d.forceLayouts[forceKey].alpha(0);
-            window.setTimeout(function() {sankeyNode.call(crispLinesOnEnd);}, 30); // geome on move, crisp when static
+            window.setTimeout(function () {
+                sankeyNode.call(crispLinesOnEnd);
+            }, 30); // geome on move, crisp when static
         }
     }
-
-    d.forceLayouts[forceKey] = d3Force.forceSimulation(nodes)
-        .alphaDecay(0)
-        .force('collide', d3Force.forceCollide()
-            .radius(function (n) {return n.dy / 2 + d.nodePad / 2;})
-            .strength(1)
-            .iterations(c.forceIterations))
-        .force('constrain', snap)
-        .stop();
 }
 
 
