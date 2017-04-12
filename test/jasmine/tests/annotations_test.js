@@ -5,7 +5,8 @@ var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var Loggers = require('@src/lib/loggers');
 var Axes = require('@src/plots/cartesian/axes');
-var constants = require('@src/plots/cartesian/constants');
+var HOVERMINTIME = require('@src/plots/cartesian/constants').HOVERMINTIME;
+var DBLCLICKDELAY = require('@src/constants/interactions').DBLCLICKDELAY;
 
 var d3 = require('d3');
 var customMatchers = require('../assets/custom_matchers');
@@ -1095,8 +1096,8 @@ describe('annotation effects', function() {
                     mouseEvent('mouseout', pos[0], pos[1]);
                     mouseEvent('mousemove', 0, 0);
 
-                    setTimeout(resolve, constants.HOVERMINTIME * 1.5);
-                }, constants.HOVERMINTIME * 1.5);
+                    setTimeout(resolve, HOVERMINTIME * 1.1);
+                }, HOVERMINTIME * 1.1);
             });
         }
 
@@ -1106,7 +1107,9 @@ describe('annotation effects', function() {
             // so we only have to explicitly include pos0-2
             spec.push([pos0Head, '']);
             spec.push([pos2Head, '']);
-            var p = Promise.resolve();
+            var p = new Promise(function(resolve) {
+                setTimeout(resolve, HOVERMINTIME);
+            });
             spec.forEach(function(speci) {
                 p = p.then(function() {
                     return assertHoverLabel(speci[0], speci[1],
@@ -1122,7 +1125,7 @@ describe('annotation effects', function() {
 
                 setTimeout(function() {
                     resolve();
-                }, constants.HOVERMINTIME);
+                }, DBLCLICKDELAY * 1.1);
             });
         }
 
