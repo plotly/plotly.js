@@ -1095,8 +1095,8 @@ describe('annotation effects', function() {
                     mouseEvent('mouseout', pos[0], pos[1]);
                     mouseEvent('mousemove', 0, 0);
 
-                    setTimeout(resolve, constants.HOVERMINTIME);
-                }, constants.HOVERMINTIME);
+                    setTimeout(resolve, constants.HOVERMINTIME * 1.5);
+                }, constants.HOVERMINTIME * 1.5);
             });
         }
 
@@ -1107,10 +1107,10 @@ describe('annotation effects', function() {
             spec.push([pos0Head, '']);
             spec.push([pos2Head, '']);
             var p = Promise.resolve();
-            spec.forEach(function(speci, i) {
+            spec.forEach(function(speci) {
                 p = p.then(function() {
                     return assertHoverLabel(speci[0], speci[1],
-                        msg ? msg + ' (' + i + ')' : i);
+                        msg ? msg + ' (' + speci + ')' : speci);
                 });
             });
             return p;
@@ -1132,7 +1132,7 @@ describe('annotation effects', function() {
         }
 
         makePlot([
-            {x: 50, y: 50, text: 'hi', width: 50, ax: 0, ay: -40, xshift: -50, yshift: 50},
+            {x: 50, y: 50, text: 'hi', width: 50, height: 40, ax: 0, ay: -40, xshift: -50, yshift: 50},
             {x: 20, y: 20, text: 'bye', height: 40, showarrow: false},
             {x: 80, y: 80, text: 'why?', ax: 0, ay: -40}
         ], {}) // turn off the default editable: true
