@@ -121,7 +121,7 @@ module.exports = function plot(gd, calcData) {
     var linkHoverFollow = function(element, d) {
 
 
-        var followMouse = calcData[0][d.traceId].trace.followmouse;
+        var followMouse = gd.data[0].followmouse;
 
         var boundingBox = !followMouse && element.getBoundingClientRect();
         var hoverCenterX = followMouse ? d3.event.x : boundingBox.left + boundingBox.width / 2;
@@ -159,10 +159,12 @@ module.exports = function plot(gd, calcData) {
         }
     };
 
-    var nodeSelect = function(element, d) {
+    var nodeSelect = function(element, d, sankey) {
         if(log) console.log('select node', d.node);
         gd._hoverdata = [d.node];
         gd._hoverdata.trace = calcData.trace;
+        d3.select(element).call(linkNonHoveredStyle, d, sankey);
+        d3.select(element).call(nodeNonHoveredStyle, d, sankey);
         Fx.click(gd, { target: true });
     };
 
@@ -183,7 +185,7 @@ module.exports = function plot(gd, calcData) {
 
         var nodeRect = d3.select(element).select('.nodeRect');
 
-        var followMouse = calcData[0][d.traceId].trace.followmouse;
+        var followMouse = gd.data[0].followmouse;
 
         var boundingBox = nodeRect.node().getBoundingClientRect();
         var hoverCenterX0 = boundingBox.left - 2;

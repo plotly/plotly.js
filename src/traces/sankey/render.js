@@ -236,7 +236,7 @@ function attachPointerEvents(selection, sankey, eventSet) {
                 d.interactionState.hovered = false;
             }
             if (!d.interactionState.dragInProgress) {
-                eventSet.select(this, d);
+                eventSet.select(this, d, sankey);
             }
         });
 }
@@ -342,8 +342,7 @@ function snappingForce(sankeyNode, forceKey, nodes, d) {
 
 module.exports = function(svg, styledData, layout, callbacks) {
 
-    svg
-        .style('overflow', 'visible');
+    svg.style('overflow', 'visible');
 
     var sankey = svg.selectAll('.sankey')
         .data(styledData
@@ -378,7 +377,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .classed('sankeyLinks', true)
         .style('fill', 'none');
 
-    sankeyLinks
+    sankeyLinks.transition()
+        .ease(c.ease).duration(c.duration)
         .style('transform', function(d) {return d.horizontal ? 'matrix(1,0,0,1,0,0)' : 'matrix(0,1,1,0,0,0)'});
 
 
@@ -499,6 +499,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .attr('id', function(d) {return d.uniqueNodeLabelPathId;});
 
     nodeLabelGuide
+        .transition()
+        .ease(c.ease).duration(c.duration)
         .attr('d', function(d) {
             return d3.svg.line()([
                 [d.horizontal ? d.visibleWidth + c.nodeTextOffsetHorizontal : c.nodeTextOffsetHorizontal, d.labelY],

@@ -5,7 +5,70 @@
         "height": 1.2 * 493 + 180,
         "font": {
             "size": 10
-        }
+        },
+        updatemenus: [
+            {
+                y: 1,
+                buttons: [
+                    {
+                        label: 'Horizontal',
+                        method: 'restyle',
+                        args: [ 'orientation', 'h' ]
+                    },
+                    {
+                        label: 'Vertical',
+                        method: 'restyle',
+                        args: [ 'orientation', 'v']
+                    }
+                ]
+            },
+            {
+                y: 0.9,
+                buttons: [
+                    {
+                        label: 'Follow mouse',
+                        method: 'restyle',
+                        args: [ 'followmouse', true ]
+                    },
+                    {
+                        label: 'Stick tooltip',
+                        method: 'restyle',
+                        args: [ 'followmouse', false]
+                    }
+                ]
+            },
+            {
+                y: 0.8,
+                buttons: [
+                    {
+                        label: 'Thick',
+                        method: 'restyle',
+                        args: [ 'nodethickness', 15 ]
+                    },
+                    {
+                        label: 'Thin',
+                        method: 'restyle',
+                        args: [ 'nodethickness', 8]
+                    }
+                ]
+            },
+            {
+                y: 0.7,
+                buttons: [
+                    {
+                        label: 'Small gap',
+                        method: 'restyle',
+                        args: [ 'nodepad', 15 ]
+                    },
+                    {
+                        label: 'Large gap',
+                        method: 'restyle',
+                        args: [ 'nodepad', 20]
+                    }
+                ]
+            }
+
+        ]
     },
     "data": [
         {
