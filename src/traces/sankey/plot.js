@@ -194,7 +194,7 @@ module.exports = function plot(gd, calcData) {
                 ['Incoming flow count:', d.node.targetLinks.length].join(' '),
                 ['Outgoing flow count:', d.node.sourceLinks.length].join(' ')
             ].filter(renderableValuePresent).join('<br>'),
-            color: d.tinyColorHue,
+            color: Color.addOpacity(d.tinyColorHue, 1),
             idealAlign: 'left'
         }, {
             container: fullLayout._hoverlayer.node(),
