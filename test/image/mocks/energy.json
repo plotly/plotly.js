@@ -1,10 +1,10 @@
 {
     "layout": {
-        "title": "Energy forecast for 2050, UK — Department of Energy & Climate Change<br>Near-identical remake of <a href='https://bost.ocks.org/mike/sankey/'>Mike Bostock's example</a><br>with numerous <a href='https://plot.ly/javascript/'>Plotly</a> features",
-        "width": 1080,
-        "height": 700,
+        "title": "Energy forecast for 2050, UK — Department of Energy & Climate Change<br>Imperfect copy of <a href='https://bost.ocks.org/mike/sankey/'>Mike Bostock's example</a><br>with numerous <a href='https://plot.ly/javascript/'>Plotly</a> features",
+        "width": 1120,
+        "height": 680,
         "font": {
-            "size": 10
+            "size": 9
         }
     },
     "data": [
@@ -21,8 +21,8 @@
                 ]
             },
             "orientation": "h",
-            "nodepad": 10,
-            "nodethickness": 10,
+            "nodepad": 12,
+            "nodethickness": 15,
             "valueformat": ".0f",
             "valueunit": "TWh",
             "followmouse": true,

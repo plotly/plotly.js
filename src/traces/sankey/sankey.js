@@ -64,6 +64,7 @@ module.exports = function() {
     };
 
     sankey.layout = function(iterations) {
+        console.log(958 - sankey.size()[0], 493 - sankey.size()[1])
         computeNodeLinks();
         computeNodeValues();
         computeNodeBreadths();
