@@ -533,6 +533,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .attr('xlink:href', function(d) {return '#' + d.uniqueNodeLabelPathId;});
 
     nodeLabelTextPath
-        .text(function(d) {return d.node.label;})
+        .text(function(d) {return d.horizontal || d.node.dy > 5 ? d.node.label : '';})
         .style('fill', function(d) {return d.darkBackground && !d.horizontal ? 'white' : 'black';});
 };
