@@ -40,13 +40,6 @@ function sameLayer(d) {
     return function(n) {return n.node.originalX === d.node.originalX;};
 }
 
-function layerLink(d) {
-    return function(l) {
-        return l.link.source.originalX === d.node.originalX
-            || l.link.target.originalX === d.node.originalX;
-    };
-}
-
 function switchToForceFormat(nodes) {
     // force uses x, y as centers
     for (var i = 0; i < nodes.length; i++) {
@@ -271,7 +264,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
                 }
                 window.requestAnimationFrame(function faster() {
                     for(var i = 0; i < c.forceTicksPerFrame; i++) d.forceLayouts[forceKey].tick();
-                    updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink.filter(layerLink(d)));
+                    updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink);
                     if(d.forceLayouts[forceKey].alpha() > 0) {
                         window.requestAnimationFrame(faster);
                     }
@@ -295,7 +288,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
             saveCurrentDragPosition(d.node);
             d.sankey.relayout();
             if(!c.useForceSnap) {
-                updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink.filter(layerLink(d)));
+                updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink);
                 sankeyNode.call(crispLinesOnEnd);
             }
         })

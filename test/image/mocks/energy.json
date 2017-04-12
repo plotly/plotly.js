@@ -1,6 +1,6 @@
 {
     "layout": {
-        "title": "Energy - UK Department of Energy & Climate Change",
+        "title": "Energy - UK Department of Energy & Climate Change<br>Forecast for 2050<br>Unit: TWh",
         "width": 1080,
         "height": 700,
         "font": {
@@ -23,6 +23,7 @@
             "orientation": "h",
             "nodepad": 10,
             "nodethickness": 10,
+            "valueformat": ".0f",
             "followmouse": true,
             "nodes": [
                 {"label":"Agricultural 'waste'"},
