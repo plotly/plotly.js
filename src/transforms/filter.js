@@ -15,7 +15,7 @@ var axisIds = require('../plots/cartesian/axis_ids');
 var autoType = require('../plots/cartesian/axis_autotype');
 var setConvert = require('../plots/cartesian/set_convert');
 
-var INEQUALITY_OPS = ['=', '<', '>=', '>', '<='];
+var INEQUALITY_OPS = ['=', '!=', '<', '>=', '>', '<='];
 var INTERVAL_OPS = ['[]', '()', '[)', '(]', '][', ')(', '](', ')['];
 var SET_OPS = ['{}', '}{'];
 
@@ -57,6 +57,7 @@ exports.attributes = {
             'Sets the filter operation.',
 
             '*=* keeps items equal to `value`',
+            '*!=* keeps items not equal to `value`',
 
             '*<* keeps items less than `value`',
             '*<=* keeps items less than or equal to `value`',
@@ -261,6 +262,9 @@ function getFilterFunc(opts, d2c, targetCalendar) {
 
         case '=':
             return function(v) { return d2cTarget(v) === coercedValue; };
+
+        case '!=':
+            return function(v) { return d2cTarget(v) !== coercedValue; };
 
         case '<':
             return function(v) { return d2cTarget(v) < coercedValue; };

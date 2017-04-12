@@ -595,6 +595,23 @@ describe('filter transforms calc:', function() {
             _assert(out, ['2015-07-20'], [1], [0.1]);
         });
 
+        it('with operation *!=*', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    operation: '!=',
+                    value: '2015-07-20',
+                    target: 'x'
+                }]
+            })]);
+
+            _assert(
+                out,
+                ['2016-08-01', '2016-09-01', '2016-10-21', '2016-12-02'],
+                [2, 3, 1, 5],
+                [0.2, 0.3, 0.1, 0.2]
+            );
+        });
+
         it('with operation *<*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
