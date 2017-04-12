@@ -378,6 +378,53 @@ module.exports = {
             'is `yclick` rather than the annotation\'s `y` value.'
         ].join(' ')
     },
+    hovertext: {
+        valType: 'string',
+        role: 'info',
+        description: [
+            'Sets text to appear when hovering over this annotation.',
+            'If omitted or blank, no hover label will appear.'
+        ].join(' ')
+    },
+    hoverlabel: {
+        bgcolor: {
+            valType: 'color',
+            role: 'style',
+            description: [
+                'Sets the background color of the hover label.',
+                'By default uses the annotation\'s `bgcolor` made opaque,',
+                'or white if it was transparent.'
+            ].join(' ')
+        },
+        bordercolor: {
+            valType: 'color',
+            role: 'style',
+            description: [
+                'Sets the border color of the hover label.',
+                'By default uses either dark grey or white, for maximum',
+                'contrast with `hoverlabel.bgcolor`.'
+            ].join(' ')
+        },
+        font: extendFlat({}, fontAttrs, {
+            description: [
+                'Sets the hover label text font.',
+                'By default uses the global hover font and size,',
+                'with color from `hoverlabel.bordercolor`.'
+            ].join(' ')
+        })
+    },
+    captureevents: {
+        valType: 'boolean',
+        role: 'info',
+        description: [
+            'Determines whether the annotation text box captures mouse move',
+            'and click events, or allows those events to pass through to data',
+            'points in the plot that may be behind the annotation. By default',
+            '`captureevents` is *false* unless `hovertext` is provided.',
+            'If you use the event `plotly_clickannotation` without `hovertext`',
+            'you must explicitly enable `captureevents`.'
+        ].join(' ')
+    },
 
     _deprecated: {
         ref: {
