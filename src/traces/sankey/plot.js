@@ -13,6 +13,8 @@ var Fx = require('../../plots/cartesian/graph_interact');
 var d3 = require('d3');
 var Color = require('../../components/color');
 
+function renderableValuePresent(d) {return d !== '';}
+
 function ownTrace(selection, d) {
     return selection.filter(function(s) {return s.key === d.traceId;});
 }
@@ -127,7 +129,7 @@ module.exports = function plot(gd, calcData) {
                 d.link.label,
                 ['Source:', d.link.source.label].join(' '),
                 ['Target:', d.link.target.label].join(' ')
-            ].join('<br>'),
+            ].filter(renderableValuePresent).join('<br>'),
             color: Color.addOpacity(d.tinyColorHue, 1),
             idealAlign: d3.event.x < hoverCenterX ? 'right' : 'left'
         }, {
@@ -191,7 +193,7 @@ module.exports = function plot(gd, calcData) {
                 d.node.label,
                 ['Incoming flow count:', d.node.targetLinks.length].join(' '),
                 ['Outgoing flow count:', d.node.sourceLinks.length].join(' ')
-            ].join('<br>'),
+            ].filter(renderableValuePresent).join('<br>'),
             color: d.tinyColorHue,
             idealAlign: 'left'
         }, {
