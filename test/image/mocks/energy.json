@@ -2,7 +2,7 @@
     "layout": {
         "title": "Energy forecast for 2050, UK — Department of Energy & Climate Change<br>Imperfect copy of <a href='https://bost.ocks.org/mike/sankey/'>Mike Bostock's example</a><br>with numerous <a href='https://plot.ly/javascript/'>Plotly</a> features",
         "width": 1.0 * 958 + 160,
-        "height": 1.2 * 493 + 180,
+        "height": Math.round(1.2 * 493) + 180,
         "font": {
             "size": 10
         },
