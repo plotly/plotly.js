@@ -25,7 +25,10 @@ ScatterCarpet.basePlotModule = require('../../plots/cartesian');
 ScatterCarpet.categories = ['carpet', 'symbols', 'markerColorscale', 'showLegend', 'carpetDependent'];
 ScatterCarpet.meta = {
     hrName: 'scatter_carpet',
-    description: [].join(' ')
+    description: [
+        'Plots a scatter trace on either the first carpet axis or the',
+        'carpet axis with a matching `carpet` attribute.'
+    ].join(' ')
 };
 
 module.exports = ScatterCarpet;

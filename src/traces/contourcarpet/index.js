@@ -23,7 +23,12 @@ ContourCarpet.basePlotModule = require('../../plots/cartesian');
 ContourCarpet.categories = ['cartesian', 'carpet', 'contour', 'symbols', 'showLegend', 'hasLines', 'carpetDependent'];
 ContourCarpet.meta = {
     hrName: 'contour_carpet',
-    description: [].join(' ')
+    description: [
+        'Plots contours on either the first carpet axis or the',
+        'carpet axis with a matching `carpet` attribute. Data `z`',
+        'is interpreted as matching that of the corresponding carpet',
+        'axis.'
+    ].join(' ')
 };
 
 module.exports = ContourCarpet;
