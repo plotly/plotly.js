@@ -102,7 +102,17 @@ exports.attributes = {
             '*value* is expected to be an array with as many items as',
             'the desired set elements.'
         ].join(' ')
-    }
+    },
+    preservegaps: {
+        valType: 'boolean',
+        dflt: false,
+        description: [
+            'Determines whether or not gaps in data arrays produced by the filter operation',
+            'are preserved or not.',
+            'Setting this to *true* might be useful when plotting a line chart',
+            'with `connectgaps` set to *true*.'
+        ].join(' ')
+    },
 };
 
 exports.supplyDefaults = function(transformIn) {
@@ -115,6 +125,7 @@ exports.supplyDefaults = function(transformIn) {
     var enabled = coerce('enabled');
 
     if(enabled) {
+        coerce('preservegaps');
         coerce('operation');
         coerce('value');
         coerce('target');
@@ -150,36 +161,47 @@ exports.calcTransform = function(gd, trace, opts) {
     var d2cTarget = (target === 'x' || target === 'y' || target === 'z') ?
         target : filterArray;
 
-    var dataToCoord = getDataToCoordFunc(gd, trace, d2cTarget),
-        filterFunc = getFilterFunc(opts, dataToCoord, targetCalendar),
-        arrayAttrs = PlotSchema.findArrayAttributes(trace),
-        originalArrays = {};
+    var dataToCoord = getDataToCoordFunc(gd, trace, d2cTarget);
+    var filterFunc = getFilterFunc(opts, dataToCoord, targetCalendar);
+    var arrayAttrs = PlotSchema.findArrayAttributes(trace);
+    var originalArrays = {};
 
-    // copy all original array attribute values,
-    // and clear arrays in trace
-    for(var k = 0; k < arrayAttrs.length; k++) {
-        var attr = arrayAttrs[k],
-            np = Lib.nestedProperty(trace, attr);
-
-        originalArrays[attr] = Lib.extendDeep([], np.get());
-        np.set([]);
-    }
-
-    function fill(attr, i) {
-        var oldArr = originalArrays[attr],
-            newArr = Lib.nestedProperty(trace, attr).get();
-
-        newArr.push(oldArr[i]);
-    }
-
-    for(var i = 0; i < len; i++) {
-        var v = filterArray[i];
-
-        if(!filterFunc(v)) continue;
-
+    function forAllAttrs(fn, index) {
         for(var j = 0; j < arrayAttrs.length; j++) {
-            fill(arrayAttrs[j], i);
+            var np = Lib.nestedProperty(trace, arrayAttrs[j]);
+            fn(np, index);
         }
+    }
+
+    var initFn;
+    var fillFn;
+    if(opts.preservegaps) {
+        initFn = function(np) {
+            originalArrays[np.astr] = Lib.extendDeep([], np.get());
+            np.set(new Array(len));
+        };
+        fillFn = function(np, index) {
+            var val = originalArrays[np.astr][index];
+            np.get()[index] = val;
+        };
+    } else {
+        initFn = function(np) {
+            originalArrays[np.astr] = Lib.extendDeep([], np.get());
+            np.set([]);
+        };
+        fillFn = function(np, index) {
+            var val = originalArrays[np.astr][index];
+            np.get().push(val);
+        };
+    }
+
+    // copy all original array attribute values, and clear arrays in trace
+    forAllAttrs(initFn);
+
+    // loop through filter array, fill trace arrays if passed
+    for(var i = 0; i < len; i++) {
+        var passed = filterFunc(filterArray[i]);
+        if(passed) forAllAttrs(fillFn, i);
     }
 };
 

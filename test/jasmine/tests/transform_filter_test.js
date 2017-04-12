@@ -30,6 +30,7 @@ describe('filter transforms defaults:', function() {
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
             enabled: true,
+            preservegaps: false,
             operation: '=',
             value: 0,
             target: 'x',
@@ -318,6 +319,22 @@ describe('filter transforms calc:', function() {
 
         expect(out[0].x).toEqual([3]);
         expect(out[0].y).toEqual([1]);
+    });
+
+    it('should preserve gaps in data when `preservegaps` is turned on', function() {
+        var out = _transform([Lib.extendDeep({}, base, {
+            transforms: [{
+                type: 'filter',
+                preservegaps: true,
+                operation: '>',
+                value: 0,
+                target: 'x'
+            }]
+        })]);
+
+        expect(out[0].x).toEqual([undefined, undefined, undefined, undefined, 1, 2, 3]);
+        expect(out[0].y).toEqual([undefined, undefined, undefined, undefined, 2, 3, 1]);
+        expect(out[0].marker.color).toEqual([undefined, undefined, undefined, undefined, 0.2, 0.3, 0.4]);
     });
 
     describe('filters should handle numeric values', function() {
