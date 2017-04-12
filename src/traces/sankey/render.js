@@ -67,6 +67,7 @@ function sankeyModel(layout, d, i) {
         nodePad = trace.nodepad,
         nodeThickness = trace.nodethickness,
         valueFormat = trace.valueformat,
+        valueUnit = trace.valueunit,
         textFont = trace.textfont;
 
     var width = layout.width * (domain.x[1] - domain.x[0]),
@@ -90,6 +91,7 @@ function sankeyModel(layout, d, i) {
         height: height,
         nodePad: nodePad,
         valueFormat: valueFormat,
+        valueUnit: valueUnit,
         textFont: textFont,
         translateX: domain.x[0] * width + layout.margin.l,
         translateY: layout.height - domain.y[1] * layout.height + layout.margin.t,
@@ -117,6 +119,7 @@ function linkModel(d, l) {
         tinyColorHue: Color.tinyRGB(tc),
         tinyColorAlpha: tc.getAlpha(),
         valueFormat: d.valueFormat,
+        valueUnit: d.valueUnit,
         sankey: d.sankey,
         interactionState: d.interactionState
     };
@@ -157,6 +160,7 @@ function nodeModel(uniqueKeys, d, n) {
         tinyColorHue: Color.tinyRGB(tc),
         tinyColorAlpha: tc.getAlpha(),
         valueFormat: d.valueFormat,
+        valueUnit: d.valueUnit,
         sankey: d.sankey,
         uniqueNodeLabelPathId: JSON.stringify({sankeyGuid: d.guid, traceId: d.key, nodeKey: n.label}),
         interactionState: d.interactionState

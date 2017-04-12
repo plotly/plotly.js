@@ -83,6 +83,16 @@ module.exports = {
         ].join(' ')
     },
 
+    valueunit: {
+        valType: 'string',
+        dflt: '',
+        role: 'style',
+        description: [
+            'Adds a unit to follow the value in the hover tooltip. Add a space if a separation',
+            'is necessary from the value.'
+        ].join(' ')
+    },
+
     // followmouse for UX testing
     followmouse: {
         valType: 'boolean',

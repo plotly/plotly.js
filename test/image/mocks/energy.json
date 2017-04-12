@@ -24,6 +24,7 @@
             "nodepad": 10,
             "nodethickness": 10,
             "valueformat": ".0f",
+            "valueunit": "TWh",
             "followmouse": true,
             "nodes": [
                 {"label":"Agricultural 'waste'"},
