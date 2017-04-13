@@ -1854,6 +1854,7 @@ describe('Test axes', function() {
             var ax = {
                 type: 'category',
                 _categories: ['a', 'b', 'c', 'd'],
+                _categoriesMap: {'a': 0, 'b': 1, 'c': 2, 'd': 3},
                 tickmode: 'array',
                 tickvals: ['a', 1, 1.5, 'c', 2.7, 3, 'e', 4, 5, -2],
                 ticktext: ['A!', 'B?', 'B->C'],
@@ -1973,6 +1974,7 @@ describe('Test axes', function() {
 
         function _autoBin(x, ax, nbins) {
             ax._categories = [];
+            ax._categoriesMap = {};
             Axes.setConvert(ax);
 
             var d = ax.makeCalcdata({ x: x }, 'x');

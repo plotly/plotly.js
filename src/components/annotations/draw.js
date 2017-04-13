@@ -15,6 +15,7 @@ var Plotly = require('../../plotly');
 var Plots = require('../../plots/plots');
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
+var Fx = require('../../plots/cartesian/graph_interact');
 var Color = require('../color');
 var Drawing = require('../drawing');
 var svgTextUtils = require('../../lib/svg_text_utils');
@@ -96,7 +97,16 @@ function drawOne(gd, index) {
     var annGroup = fullLayout._infolayer.append('g')
         .classed('annotation', true)
         .attr('data-index', String(index))
-        .style('opacity', options.opacity)
+        .style('opacity', options.opacity);
+
+    // another group for text+background so that they can rotate together
+    var annTextGroup = annGroup.append('g')
+        .classed('annotation-text-g', true)
+        .attr('data-index', String(index));
+
+    var annTextGroupInner = annTextGroup.append('g')
+        .style('pointer-events', options.captureevents ? 'all' : null)
+        .call(setCursor, 'default')
         .on('click', function() {
             gd._dragging = false;
             gd.emit('plotly_clickannotation', {
@@ -106,12 +116,33 @@ function drawOne(gd, index) {
             });
         });
 
-    // another group for text+background so that they can rotate together
-    var annTextGroup = annGroup.append('g')
-        .classed('annotation-text-g', true)
-        .attr('data-index', String(index));
+    if(options.hovertext) {
+        annTextGroupInner
+        .on('mouseover', function() {
+            var hoverOptions = options.hoverlabel;
+            var hoverFont = hoverOptions.font;
+            var bBox = this.getBoundingClientRect();
+            var bBoxRef = gd.getBoundingClientRect();
 
-    var annTextGroupInner = annTextGroup.append('g');
+            Fx.loneHover({
+                x0: bBox.left - bBoxRef.left,
+                x1: bBox.right - bBoxRef.left,
+                y: (bBox.top + bBox.bottom) / 2 - bBoxRef.top,
+                text: options.hovertext,
+                color: hoverOptions.bgcolor,
+                borderColor: hoverOptions.bordercolor,
+                fontFamily: hoverFont.family,
+                fontSize: hoverFont.size,
+                fontColor: hoverFont.color
+            }, {
+                container: fullLayout._hoverlayer.node(),
+                outerContainer: fullLayout._paper.node()
+            });
+        })
+        .on('mouseout', function() {
+            Fx.loneUnhover(fullLayout._hoverlayer.node());
+        });
+    }
 
     var borderwidth = options.borderwidth,
         borderpad = options.borderpad,
@@ -205,6 +236,7 @@ function drawOne(gd, index) {
                 // but this one is the positive total size
                 annSize = Math.abs(annSizeFromWidth) + Math.abs(annSizeFromHeight),
                 anchor = options[axLetter + 'anchor'],
+                overallShift = options[axLetter + 'shift'] * (axLetter === 'x' ? 1 : -1),
                 posPx = annPosPx[axLetter],
                 basePx,
                 textPadShift,
@@ -295,6 +327,9 @@ function drawOne(gd, index) {
                         posPx.text -= shiftMinus;
                     }
                 }
+
+                posPx.tail += overallShift;
+                posPx.head += overallShift;
             }
             else {
                 // with no arrow, the text rotates and *then* we put the anchor
@@ -303,6 +338,10 @@ function drawOne(gd, index) {
                 textPadShift = textShift;
                 posPx.text = basePx + textShift;
             }
+
+            posPx.text += overallShift;
+            textShift += overallShift;
+            textPadShift += overallShift;
 
             // padplus/minus are used by autorange
             options['_' + axLetter + 'padplus'] = (annSize / 2) + textPadShift;
@@ -493,21 +532,17 @@ function drawOne(gd, index) {
 
                         update[annbase + '.x'] = xa ?
                             xa.p2r(xa.r2p(options.x) + dx) :
-                            ((headX + dx - gs.l) / gs.w);
+                            (options.x + (dx / gs.w));
                         update[annbase + '.y'] = ya ?
                             ya.p2r(ya.r2p(options.y) + dy) :
-                            (1 - ((headY + dy - gs.t) / gs.h));
+                            (options.y - (dy / gs.h));
 
                         if(options.axref === options.xref) {
-                            update[annbase + '.ax'] = xa ?
-                                xa.p2r(xa.r2p(options.ax) + dx) :
-                                ((headX + dx - gs.l) / gs.w);
+                            update[annbase + '.ax'] = xa.p2r(xa.r2p(options.ax) + dx);
                         }
 
                         if(options.ayref === options.yref) {
-                            update[annbase + '.ay'] = ya ?
-                                ya.p2r(ya.r2p(options.ay) + dy) :
-                                (1 - ((headY + dy - gs.t) / gs.h));
+                            update[annbase + '.ay'] = ya.p2r(ya.r2p(options.ay) + dy);
                         }
 
                         arrowGroup.attr('transform', 'translate(' + dx + ',' + dy + ')');
@@ -563,7 +598,8 @@ function drawOne(gd, index) {
                         if(xa) update[annbase + '.x'] = options.x + dx / xa._m;
                         else {
                             var widthFraction = options._xsize / gs.w,
-                                xLeft = options.x + options._xshift / gs.w - widthFraction / 2;
+                                xLeft = options.x + (options._xshift - options.xshift) / gs.w -
+                                    widthFraction / 2;
 
                             update[annbase + '.x'] = dragElement.align(xLeft + dx / gs.w,
                                 widthFraction, 0, 1, options.xanchor);
@@ -572,7 +608,8 @@ function drawOne(gd, index) {
                         if(ya) update[annbase + '.y'] = options.y + dy / ya._m;
                         else {
                             var heightFraction = options._ysize / gs.h,
-                                yBottom = options.y - options._yshift / gs.h - heightFraction / 2;
+                                yBottom = options.y - (options._yshift + options.yshift) / gs.h -
+                                    heightFraction / 2;
 
                             update[annbase + '.y'] = dragElement.align(yBottom - dy / gs.h,
                                 heightFraction, 0, 1, options.yanchor);

@@ -269,7 +269,9 @@ module.exports = function draw(gd) {
             scrollBarY = constants.scrollBarMargin -
                 scrollBoxY / scrollBoxYMax * scrollBarYMax;
             scrollHandler(scrollBarY, scrollBoxY);
-            d3.event.preventDefault();
+            if(scrollBoxY !== 0 && scrollBoxY !== -scrollBoxYMax) {
+                d3.event.preventDefault();
+            }
         });
 
         // to be safe, remove previous listeners

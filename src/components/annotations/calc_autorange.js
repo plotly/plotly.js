@@ -50,12 +50,17 @@ function annAutorange(gd) {
             ya = Axes.getFromId(gd, ann.yref),
             headSize = 3 * ann.arrowsize * ann.arrowwidth || 0;
 
+        var headPlus, headMinus;
+
         if(xa && xa.autorange) {
+            headPlus = headSize + ann.xshift;
+            headMinus = headSize - ann.xshift;
+
             if(ann.axref === ann.xref) {
                 // expand for the arrowhead (padded by arrowhead)
                 Axes.expand(xa, [xa.r2c(ann.x)], {
-                    ppadplus: headSize,
-                    ppadminus: headSize
+                    ppadplus: headPlus,
+                    ppadminus: headMinus
                 });
                 // again for the textbox (padded by textbox)
                 Axes.expand(xa, [xa.r2c(ann.ax)], {
@@ -65,17 +70,20 @@ function annAutorange(gd) {
             }
             else {
                 Axes.expand(xa, [xa.r2c(ann.x)], {
-                    ppadplus: Math.max(ann._xpadplus, headSize),
-                    ppadminus: Math.max(ann._xpadminus, headSize)
+                    ppadplus: Math.max(ann._xpadplus, headPlus),
+                    ppadminus: Math.max(ann._xpadminus, headMinus)
                 });
             }
         }
 
         if(ya && ya.autorange) {
+            headPlus = headSize - ann.yshift;
+            headMinus = headSize + ann.yshift;
+
             if(ann.ayref === ann.yref) {
                 Axes.expand(ya, [ya.r2c(ann.y)], {
-                    ppadplus: headSize,
-                    ppadminus: headSize
+                    ppadplus: headPlus,
+                    ppadminus: headMinus
                 });
                 Axes.expand(ya, [ya.r2c(ann.ay)], {
                     ppadplus: ann._ypadplus,
@@ -84,8 +92,8 @@ function annAutorange(gd) {
             }
             else {
                 Axes.expand(ya, [ya.r2c(ann.y)], {
-                    ppadplus: Math.max(ann._ypadplus, headSize),
-                    ppadminus: Math.max(ann._ypadminus, headSize)
+                    ppadplus: Math.max(ann._ypadplus, headPlus),
+                    ppadminus: Math.max(ann._ypadminus, headMinus)
                 });
             }
         }
