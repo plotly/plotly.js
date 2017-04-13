@@ -10,6 +10,7 @@
 
 var Lib = require('../../lib');
 var attributes = require('./attributes');
+var colors = require('../../components/color/attributes').defaults;
 var d3 = require('d3');
 
 
@@ -54,7 +55,8 @@ function nodesDefaults(traceIn, traceOut) {
         usedNodeCount = 0,
         indexMap = [];
 
-    var defaultPalette = d3.scale.category20();
+    //var defaultPalette = d3.scale.category20();
+    var defaultPalette = function(i) {return colors[i % colors.length];};
 
     function coerce(attr, dflt) {
         return Lib.coerce(nodeIn, nodeOut, attributes.nodes, attr, dflt);
@@ -62,8 +64,6 @@ function nodesDefaults(traceIn, traceOut) {
 
     for(i = 0; i < nodesIn.length; i++) {
         nodeIn = nodesIn[i];
-
-
 
         foundUse = false;
         for(j = 0; j < traceOut.links.length && !foundUse; j++) {
