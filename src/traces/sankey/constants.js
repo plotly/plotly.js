@@ -8,15 +8,11 @@
 
 'use strict';
 
-
 module.exports = {
     nodeTextOffsetHorizontal: 4,
     nodeTextOffsetVertical: 3,
     nodePadAcross: 10,
     sankeyIterations: 50,
-    movable: true,
-    sideways: true,
-    useForceSnap: true,
     forceIterations: 5,
     forceTicksPerFrame: 10,
     duration: 500,

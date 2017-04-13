@@ -10,10 +10,11 @@
 
 var Lib = require('../../lib');
 var attributes = require('./attributes');
-var d3 = require('d3');
+var colors = require('../../components/color/attributes').defaults;
+var Color = require('../../components/color');
+var tinycolor = require('tinycolor2');
 
-
-function linksDefaults(traceIn, traceOut) {
+function linksDefaults(traceIn, traceOut, layout) {
     var linksIn = traceIn.links || [],
         linksOut = traceOut.links = [];
 
@@ -38,7 +39,11 @@ function linksDefaults(traceIn, traceOut) {
             coerce('value');
             coerce('source');
             coerce('target');
-            coerce('color');
+            if(tinycolor(layout.paper_bgcolor).getLuminance() < 0.333) {
+                coerce('color', 'rgba(255, 255, 255, 0.6)');
+            } else {
+                coerce('color', 'rgba(0, 0, 0, 0.2)');
+            }
         }
 
         linkOut._index = i;
@@ -54,7 +59,7 @@ function nodesDefaults(traceIn, traceOut) {
         usedNodeCount = 0,
         indexMap = [];
 
-    var defaultPalette = d3.scale.category20();
+    var defaultPalette = function(i) {return colors[i % colors.length];};
 
     function coerce(attr, dflt) {
         return Lib.coerce(nodeIn, nodeOut, attributes.nodes, attr, dflt);
@@ -62,8 +67,6 @@ function nodesDefaults(traceIn, traceOut) {
 
     for(i = 0; i < nodesIn.length; i++) {
         nodeIn = nodesIn[i];
-
-
 
         foundUse = false;
         for(j = 0; j < traceOut.links.length && !foundUse; j++) {
@@ -73,8 +76,9 @@ function nodesDefaults(traceIn, traceOut) {
 
         indexMap.push(foundUse ? usedNodeCount : null);
 
-        if(!foundUse)
+        if(!foundUse) {
             continue;
+        }
 
         if(!Lib.isPlainObject(nodeIn)) {
             continue;
@@ -86,10 +90,12 @@ function nodesDefaults(traceIn, traceOut) {
 
         if(visible) {
             coerce('label');
+            coerce('parallel');
+            coerce('perpendicular');
             if(nodeIn.color) {
                 coerce('color');
             } else {
-                coerce('color', defaultPalette(i));
+                coerce('color', Color.addOpacity(defaultPalette(i), 0.8));
             }
         }
 
@@ -108,15 +114,12 @@ function nodesDefaults(traceIn, traceOut) {
     return nodesOut;
 }
 
-
-
-
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    linksDefaults(traceIn, traceOut);
+    linksDefaults(traceIn, traceOut, layout);
     nodesDefaults(traceIn, traceOut);
 
     coerce('hoverinfo', layout._dataLength === 1 ? 'label+text+value+percent' : undefined);
@@ -127,8 +130,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('nodepad');
     coerce('nodethickness');
     coerce('valueformat');
-    coerce('valueunit');
-    coerce('followmouse');
+    coerce('valuesuffix');
+    coerce('arrangement');
 
     // Prefer Sankey-specific font spec e.g. with smaller default size
     var sankeyFontSpec = Lib.coerceFont(coerce, 'textfont');

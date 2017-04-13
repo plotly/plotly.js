@@ -23,23 +23,26 @@ function makeTranslucent(element, alpha) {
     d3.select(element)
         .select('path')
         .style('fill-opacity', alpha);
+    d3.select(element)
+        .select('rect')
+        .style('fill-opacity', alpha);
 }
 
-function makeTextContrasty(element, hue) {
+function makeTextContrasty(element) {
     d3.select(element)
         .select('text.name')
-        .style('fill', Color.contrast(hue, 0, 40));
+        .style('fill', 'black');
 }
 
 function relatedLinks(d) {
     return function(l) {
-        return d.node.sourceLinks.indexOf(l.link) !== -1 ||  d.node.targetLinks.indexOf(l.link) !== -1;
+        return d.node.sourceLinks.indexOf(l.link) !== -1 || d.node.targetLinks.indexOf(l.link) !== -1;
     };
 }
 
 function relatedNodes(l) {
     return function(d) {
-        return d.node.sourceLinks.indexOf(l.link) !== -1 ||  d.node.targetLinks.indexOf(l.link) !== -1;
+        return d.node.sourceLinks.indexOf(l.link) !== -1 || d.node.targetLinks.indexOf(l.link) !== -1;
     };
 }
 
@@ -51,7 +54,7 @@ function nodeHoveredStyle(sankeyNode, d, sankey) {
         ownTrace(sankey, d)
             .selectAll('.sankeyLink')
             .filter(relatedLinks(d))
-            .call(linkHoveredStyle);
+            .call(linkHoveredStyle.bind(0, d, sankey, false));
     }
 }
 
@@ -63,15 +66,24 @@ function nodeNonHoveredStyle(sankeyNode, d, sankey) {
         ownTrace(sankey, d)
             .selectAll('.sankeyLink')
             .filter(relatedLinks(d))
-            .call(linkNonHoveredStyle);
+            .call(linkNonHoveredStyle.bind(0, d, sankey, false));
     }
 }
 
-function linkHoveredStyle(sankeyLink, d, sankey) {
+function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
 
-    sankeyLink.style('stroke-opacity', 0.4);
+    var label = sankeyLink.datum().link.label;
 
-    if(d && sankey) {
+    sankeyLink.style('fill-opacity', 0.4);
+
+    if(label) {
+        ownTrace(sankey, d)
+            .selectAll('.sankeyLink')
+            .filter(function(l) {return l.link.label === label;})
+            .style('fill-opacity', 0.4);
+    }
+
+    if(visitNodes) {
         ownTrace(sankey, d)
             .selectAll('.sankeyNode')
             .filter(relatedNodes(d))
@@ -79,11 +91,20 @@ function linkHoveredStyle(sankeyLink, d, sankey) {
     }
 }
 
-function linkNonHoveredStyle(sankeyLink, d, sankey) {
+function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
 
-    sankeyLink.style('stroke-opacity', function(d) {return d.tinyColorAlpha;});
+    var label = sankeyLink.datum().link.label;
 
-    if(d && sankey) {
+    sankeyLink.style('fill-opacity', function(d) {return d.tinyColorAlpha;});
+
+    if(label) {
+        ownTrace(sankey, d)
+            .selectAll('.sankeyLink')
+            .filter(function(l) {return l.link.label === label;})
+            .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
+    }
+
+    if(visitNodes) {
         ownTrace(sankey, d)
             .selectAll('.sankeyNode')
             .filter(relatedNodes(d))
@@ -91,46 +112,33 @@ function linkNonHoveredStyle(sankeyLink, d, sankey) {
     }
 }
 
-var log = false
-
 module.exports = function plot(gd, calcData) {
 
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._paper;
-    var hasHoverData = false;
-
     var size = fullLayout._size;
 
     var linkSelect = function(element, d) {
-        if(log) console.log('select link', d.link);
         gd._hoverdata = [d.link];
         gd._hoverdata.trace = calcData.trace;
         Fx.click(gd, { target: true });
     };
 
     var linkHover = function(element, d, sankey) {
-
-            d3.select(element).call(linkHoveredStyle, d, sankey);
-            if(log) console.log('hover link', d.link);
-
-            Fx.hover(gd, d.link, 'sankey');
-
-            hasHoverData = true;
+        d3.select(element).call(linkHoveredStyle.bind(0, d, sankey, true));
+        Fx.hover(gd, d.link, 'sankey');
     };
 
     var linkHoverFollow = function(element, d) {
 
-
-        var followMouse = gd.data[0].followmouse;
-
-        var boundingBox = !followMouse && element.getBoundingClientRect();
-        var hoverCenterX = followMouse ? d3.event.x : boundingBox.left + boundingBox.width / 2;
-        var hoverCenterY = followMouse ? d3.event.y : boundingBox.top + boundingBox.height / 2;
+        var boundingBox = element.getBoundingClientRect();
+        var hoverCenterX = boundingBox.left + boundingBox.width / 2;
+        var hoverCenterY = boundingBox.top + boundingBox.height / 2;
 
         var tooltip = Fx.loneHover({
-            x: hoverCenterX,
-            y: hoverCenterY,
-            name: d3.format(d.valueFormat)(d.link.value) + d.valueUnit,
+            x: hoverCenterX + window.scrollX,
+            y: hoverCenterY + window.scrollY,
+            name: d3.format(d.valueFormat)(d.link.value) + d.valueSuffix,
             text: [
                 d.link.label,
                 ['Source:', d.link.source.label].join(' '),
@@ -143,41 +151,40 @@ module.exports = function plot(gd, calcData) {
             outerContainer: fullLayout._paper.node()
         });
 
-        makeTranslucent(tooltip, 0.67);
+        makeTranslucent(tooltip, 0.65);
+        makeTextContrasty(tooltip);
     };
 
     var linkUnhover = function(element, d, sankey) {
-        d3.select(element).call(linkNonHoveredStyle, d, sankey);
-        if(log) console.log('unhover link', d.link);
+        d3.select(element).call(linkNonHoveredStyle.bind(0, d, sankey, true));
         gd.emit('plotly_unhover', {
             points: [d.link]
         });
 
-        if(hasHoverData) {
-            Fx.loneUnhover(fullLayout._hoverlayer.node());
-            hasHoverData = false;
-        }
+        Fx.loneUnhover(fullLayout._hoverlayer.node());
     };
 
     var nodeSelect = function(element, d, sankey) {
-        if(log) console.log('select node', d.node);
         gd._hoverdata = [d.node];
         gd._hoverdata.trace = calcData.trace;
-        d3.select(element).call(linkNonHoveredStyle, d, sankey);
         d3.select(element).call(nodeNonHoveredStyle, d, sankey);
         Fx.click(gd, { target: true });
     };
 
+    var repositioned = function(d, nodes) {
+        var n, nOrig;
+        var names = gd.data[0].nodes.map(function(nn) {return nn.label;});
+        for(var i = 0; i < nodes.length; i++) {
+            n = nodes[i];
+            nOrig = gd.data[d.traceId].nodes[names.indexOf(n.label)];
+            nOrig.parallel = (n.x - n.dx / 2) / n.width;
+            nOrig.perpendicular = (n.y - n.dy / 2) / n.height;
+        }
+    };
+
     var nodeHover = function(element, d, sankey) {
-
-        if(log) console.log('hover node', d.node);
-
         d3.select(element).call(nodeHoveredStyle, d, sankey);
-
         Fx.hover(gd, d.node, 'sankey');
-
-        hasHoverData = true;
-
     };
 
 
@@ -185,18 +192,16 @@ module.exports = function plot(gd, calcData) {
 
         var nodeRect = d3.select(element).select('.nodeRect');
 
-        var followMouse = gd.data[0].followmouse;
-
         var boundingBox = nodeRect.node().getBoundingClientRect();
         var hoverCenterX0 = boundingBox.left - 2;
         var hoverCenterX1 = boundingBox.right + 2;
-        var hoverCenterY = followMouse ? d3.event.y : boundingBox.top + boundingBox.height / 4;
+        var hoverCenterY = boundingBox.top + boundingBox.height / 4;
 
         var tooltip = Fx.loneHover({
-            x0: hoverCenterX0,
-            x1: hoverCenterX1,
-            y: hoverCenterY,
-            name: d3.format(d.valueFormat)(d.node.value) + d.valueUnit,
+            x0: hoverCenterX0 + window.scrollX,
+            x1: hoverCenterX1 + window.scrollX,
+            y: hoverCenterY + window.scrollY,
+            name: d3.format(d.valueFormat)(d.node.value) + d.valueSuffix,
             text: [
                 d.node.label,
                 ['Incoming flow count:', d.node.targetLinks.length].join(' '),
@@ -210,21 +215,17 @@ module.exports = function plot(gd, calcData) {
         });
 
         makeTranslucent(tooltip, 0.85);
-        makeTextContrasty(tooltip, d.tinyColorHue);
+        makeTextContrasty(tooltip);
     };
 
     var nodeUnhover = function(element, d, sankey) {
 
         d3.select(element).call(nodeNonHoveredStyle, d, sankey);
-        if(log) console.log('unhover node', d.node);
         gd.emit('plotly_unhover', {
             points: [d.node]
         });
 
-        if(hasHoverData) {
-            Fx.loneUnhover(fullLayout._hoverlayer.node());
-            hasHoverData = false;
-        }
+        Fx.loneUnhover(fullLayout._hoverlayer.node());
     };
 
     render(
@@ -251,7 +252,8 @@ module.exports = function plot(gd, calcData) {
                 hover: nodeHover,
                 follow: nodeHoverFollow,
                 unhover: nodeUnhover,
-                select: nodeSelect
+                select: nodeSelect,
+                repositioned: repositioned
             }
         }
     );

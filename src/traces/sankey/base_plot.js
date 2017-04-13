@@ -26,7 +26,6 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 
     if(hadPlot && !hasPlot) {
         oldFullLayout._paperdiv.selectAll('.sankey').remove();
-        oldFullLayout._paperdiv.selectAll('.sankey').remove();
     }
 };
 

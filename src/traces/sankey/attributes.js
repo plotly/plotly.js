@@ -14,7 +14,6 @@ var plotAttrs = require('../../plots/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
-
 module.exports = {
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['label', 'text', 'value', 'percent', 'name']
@@ -83,7 +82,7 @@ module.exports = {
         ].join(' ')
     },
 
-    valueunit: {
+    valuesuffix: {
         valType: 'string',
         dflt: '',
         role: 'style',
@@ -93,12 +92,18 @@ module.exports = {
         ].join(' ')
     },
 
-    // followmouse for UX testing
-    followmouse: {
-        valType: 'boolean',
-        dflt: true,
+    arrangement: {
+        valType: 'enumerated',
+        values: ['snap', 'perpendicular', 'freeform', 'fixed'],
+        dflt: 'snap',
         role: 'style',
-        description: 'Sets whether the hover tooltip follows the mouse.'
+        description: [
+            'If value is `snap` (the default), the node arrangement is assisted by automatic snapping of elements to',
+            'preserve space between nodes specified via `nodepad`.',
+            'If value is `perpendicular`, the nodes can only move along a line perpendicular to the flow.',
+            'If value is `freeform`, the nodes can freely move on the plane.',
+            'If value is `fixed`, the nodes are stationary.'
+        ].join(' ')
     },
 
     textfont: fontAttrs,
@@ -110,6 +115,20 @@ module.exports = {
             dflt: '',
             role: 'info',
             description: 'The shown name of the node.'
+        },
+        parallel: {
+            valType: 'number',
+            role: 'style',
+            min: 0,
+            max: 1,
+            description: 'Node position parallel to the flow, e.g. left/right if `orientation` is `horizontal`.'
+        },
+        perpendicular: {
+            valType: 'number',
+            role: 'style',
+            min: 0,
+            max: 1,
+            description: 'Node position perpendicular to the flow, e.g. up/down if `orientation` is `horizontal`.'
         },
         visible: shapeAttrs.visible,
         color: extendFlat({}, shapeAttrs.fillcolor, {
