@@ -19,7 +19,7 @@ Plot.colorbar = require('./colorbar');
 Plot.moduleType = 'trace';
 Plot.name = 'sankey';
 Plot.basePlotModule = require('./base_plot');
-Plot.categories = ['gl'];
+Plot.categories = [];
 Plot.meta = {
     description: [
         'Sankey plots for network flow data analysis.',
