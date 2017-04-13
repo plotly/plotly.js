@@ -47,6 +47,8 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         return Lib.coerce2(containerIn, containerOut, layoutAttributes, attr, dflt);
     }
 
+    coerce('visible', !options.cheateronly);
+
     var axType = containerOut.type;
 
     if(axType === 'date') {
