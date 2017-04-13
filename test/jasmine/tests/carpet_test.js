@@ -1,26 +1,13 @@
-// var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
-// var Lib = require('@src/lib');
 
 var Carpet = require('@src/traces/carpet');
 var smoothFill2D = require('@src/traces/carpet/smooth_fill_2d_array');
 var smoothFill = require('@src/traces/carpet/smooth_fill_array');
-// var calc = require('@src/traces/carpet/calc');
 
 var customMatchers = require('../assets/custom_matchers');
 
-// var d3 = require('d3');
-// var createGraphDiv = require('../assets/create_graph_div');
-// var destroyGraphDiv = require('../assets/destroy_graph_div');
-// var customMatchers = require('../assets/custom_matchers');
-
-var test = {
-    supplyDefaults: false,
-    smoothFill2D: true
-};
 
 describe('carpet supplyDefaults', function() {
-    if(!test.supplyDefaults) return;
     'use strict';
 
     var traceIn,
@@ -55,7 +42,6 @@ describe('carpet supplyDefaults', function() {
         expect(traceOut.db).toBeUndefined();
         expect(traceOut.a0).toBeUndefined();
         expect(traceOut.b0).toBeUndefined();
-        expect(traceOut.visible).toBe(true);
     });
 
     it('sets a0/da when a not provided', function() {
@@ -222,7 +208,6 @@ describe('supplyDefaults visibility check', function() {
 });
 
 describe('carpet smooth_fill_2d_array', function() {
-    if(!test.smoothFill2D) return;
     var _;
 
     beforeAll(function() { jasmine.addMatchers(customMatchers); });
@@ -389,7 +374,6 @@ describe('carpet smooth_fill_2d_array', function() {
 });
 
 describe('smooth_fill_array', function() {
-    if(!test.smoothFill2D) return;
     var _;
 
     beforeAll(function() { jasmine.addMatchers(customMatchers); });
