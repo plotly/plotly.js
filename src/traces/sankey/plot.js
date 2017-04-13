@@ -130,7 +130,7 @@ module.exports = function plot(gd, calcData) {
         var tooltip = Fx.loneHover({
             x: hoverCenterX,
             y: hoverCenterY,
-            name: d3.format(d.valueFormat)(d.link.value) + d.valueUnit,
+            name: d3.format(d.valueFormat)(d.link.value) + d.valueSuffix,
             text: [
                 d.link.label,
                 ['Source:', d.link.source.label].join(' '),
@@ -196,7 +196,7 @@ module.exports = function plot(gd, calcData) {
             x0: hoverCenterX0,
             x1: hoverCenterX1,
             y: hoverCenterY,
-            name: d3.format(d.valueFormat)(d.node.value) + d.valueUnit,
+            name: d3.format(d.valueFormat)(d.node.value) + d.valueSuffix,
             text: [
                 d.node.label,
                 ['Incoming flow count:', d.node.targetLinks.length].join(' '),

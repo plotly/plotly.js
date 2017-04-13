@@ -127,7 +127,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('nodepad');
     coerce('nodethickness');
     coerce('valueformat');
-    coerce('valueunit');
+    coerce('valuesuffix');
     coerce('followmouse');
 
     // Prefer Sankey-specific font spec e.g. with smaller default size

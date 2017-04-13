@@ -83,7 +83,7 @@ module.exports = {
         ].join(' ')
     },
 
-    valueunit: {
+    valuesuffix: {
         valType: 'string',
         dflt: '',
         role: 'style',
