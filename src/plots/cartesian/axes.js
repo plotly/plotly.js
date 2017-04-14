@@ -1904,7 +1904,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
              * if gd is scrollable, and may have been scrolled between the time
              * we calculate this and the time we use it
              */
-            var bbFinal = ax._boundingBox = {
+            ax._boundingBox = {
                 width: bBox.width,
                 height: bBox.height,
                 left: bBox.left - gdBB.left,
