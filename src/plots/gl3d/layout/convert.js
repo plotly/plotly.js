@@ -74,6 +74,17 @@ proto.merge = function(sceneLayout) {
     for(var i = 0; i < 3; ++i) {
         var axes = sceneLayout[AXES_NAMES[i]];
 
+        if(!axes.visible) {
+            opts.tickEnable[i] = false;
+            opts.labelEnable[i] = false;
+            opts.lineEnable[i] = false;
+            opts.lineTickEnable[i] = false;
+            opts.gridEnable[i] = false;
+            opts.zeroEnable[i] = false;
+            opts.backgroundEnable[i] = false;
+            continue;
+        }
+
         // Axes labels
         opts.labels[i] = convertHTMLToUnicode(axes.title);
         if('titlefont' in axes) {
