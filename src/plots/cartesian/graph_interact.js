@@ -11,6 +11,7 @@
 
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
+var tinycolor = require('tinycolor2');
 
 var Lib = require('../../lib');
 var Events = require('../../lib/events');
@@ -849,64 +850,45 @@ fx.loneUnhover = function(containerOrSelection) {
             d3.select(containerOrSelection);
 
     selection.selectAll('g.hovertext').remove();
-    selection.selectAll('line.spikeline').remove();
-    selection.selectAll('circle.spikeline').remove();
+    selection.selectAll('.spikeline').remove();
 };
 
 function createSpikelines(hoverData, opts) {
-    var hovermode = opts.hovermode,
-        container = opts.container,
-        outerContainer = opts.outerContainer;
-    if(hovermode !== 'closest') return;
-    var c0 = hoverData[0],
-        x = (c0.x0 + c0.x1) / 2,
-        y = (c0.y0 + c0.y1) / 2,
-        xOffset = c0.xa._offset,
-        yOffset = c0.ya._offset,
-        xPoint = xOffset + x,
-        yPoint = yOffset + y,
-        xSide = c0.xa.side,
-        ySide = c0.ya.side,
-        xLength = c0.xa._length,
-        yLength = c0.ya._length,
-        xEdge = c0.ya._boundingBox.left + (ySide === 'left' ? c0.ya._boundingBox.width : 0),
-        yEdge = c0.xa._boundingBox.top + (xSide === 'top' ? c0.xa._boundingBox.height : 0),
-        xFreeBase = xOffset + (ySide === 'right' ? xLength : 0),
-        yFreeBase = yOffset + (xSide === 'top' ? yLength : 0),
-        xAnchoredBase = xEdge - outerContainer.node().offsetLeft,
-        yAnchoredBase = yEdge - outerContainer.node().offsetTop,
-        xBase = c0.ya.anchor === 'free' ? xFreeBase : xAnchoredBase,
-        yBase = c0.xa.anchor === 'free' ? yFreeBase : yAnchoredBase,
-        contrastColor = Color.combine(opts.fullLayout.plot_bgcolor, opts.fullLayout.paper_bgcolor),
-        xColor = c0.xa.spikecolor ? c0.xa.spikecolor : (
-            tinycolor.readability(c0.color, contrastColor) < 1.5 ? (
-                tinycolor(c0.color).getBrightness() > 128 ? '#000' : Color.background) :
-                c0.color),
-        yColor = c0.ya.spikecolor ? c0.ya.spikecolor : (
-            tinycolor.readability(c0.color, contrastColor) < 1.5 ? (
-                tinycolor(c0.color).getBrightness() > 128 ? '#000' : Color.background) :
-                c0.color),
-        xThickness = c0.xa.spikethickness,
-        yThickness = c0.ya.spikethickness,
-        xDash = Drawing.dashStyle(c0.xa.spikedash, xThickness),
-        yDash = Drawing.dashStyle(c0.xa.spikedash, yThickness),
-        xMarker = c0.xa.spikemode.indexOf('marker') !== -1,
-        yMarker = c0.ya.spikemode.indexOf('marker') !== -1,
-        xSpikeLine = c0.xa.spikemode.indexOf('toaxis') !== -1 || c0.xa.spikemode.indexOf('across') !== -1,
-        ySpikeLine = c0.ya.spikemode.indexOf('toaxis') !== -1 || c0.ya.spikemode.indexOf('across') !== -1,
-        xEndSpike = c0.xa.spikemode.indexOf('across') !== -1 ?
-                (ySide === 'left' ? xBase + xLength : xBase - xLength) :
-                 xPoint,
-        yEndSpike = c0.ya.spikemode.indexOf('across') !== -1 ?
-                (xSide === 'bottom' ? yBase - yLength : yBase + yLength) :
-                yPoint;
+    var hovermode = opts.hovermode;
+    var container = opts.container;
+    var c0 = hoverData[0];
+    var xa = c0.xa;
+    var ya = c0.ya;
+    var showX = xa.showspikes;
+    var showY = ya.showspikes;
 
     // Remove old spikeline items
-    container.selectAll('line.spikeline').remove();
-    container.selectAll('circle.spikeline').remove();
+    container.selectAll('.spikeline').remove();
 
-    if(c0.ya.showspikes) {
-        if(ySpikeLine) {
+    if(hovermode !== 'closest' || !(showX || showY)) return;
+
+    var fullLayout = opts.fullLayout;
+    var xPoint = xa._offset + (c0.x0 + c0.x1) / 2;
+    var yPoint = ya._offset + (c0.y0 + c0.y1) / 2;
+    var contrastColor = Color.combine(fullLayout.plot_bgcolor, fullLayout.paper_bgcolor);
+    var dfltDashColor = tinycolor.readability(c0.color, contrastColor) < 1.5 ?
+            Color.contrast(contrastColor) : c0.color;
+
+    if(showY) {
+        var yMode = ya.spikemode;
+        var yThickness = ya.spikethickness;
+        var yColor = ya.spikecolor || dfltDashColor;
+        var yBB = ya._boundingBox;
+        var xEdge = ((yBB.left + yBB.right) / 2) < xPoint ? yBB.right : yBB.left;
+
+        if(yMode.indexOf('toaxis') !== -1 || yMode.indexOf('across') !== -1) {
+            var xBase = xEdge;
+            var xEndSpike = xPoint;
+            if(yMode.indexOf('across') !== -1) {
+                xBase = ya._counterSpan[0];
+                xEndSpike = ya._counterSpan[1];
+            }
+
             // Background horizontal Line (to y-axis)
             container.append('line')
                 .attr({
@@ -929,16 +911,16 @@ function createSpikelines(hoverData, opts) {
                     'y2': yPoint,
                     'stroke-width': yThickness,
                     'stroke': yColor,
-                    'stroke-dasharray': yDash
+                    'stroke-dasharray': Drawing.dashStyle(ya.spikedash, yThickness)
                 })
                 .classed('spikeline', true)
                 .classed('crisp', true);
         }
         // Y axis marker
-        if(yMarker) {
+        if(yMode.indexOf('marker') !== -1) {
             container.append('circle')
                 .attr({
-                    'cx': xAnchoredBase + (ySide !== 'right' ? yThickness : -yThickness),
+                    'cx': xEdge + (ya.side !== 'right' ? yThickness : -yThickness),
                     'cy': yPoint,
                     'r': yThickness,
                     'fill': yColor
@@ -947,9 +929,22 @@ function createSpikelines(hoverData, opts) {
         }
     }
 
-    if(c0.xa.showspikes) {
-        if(xSpikeLine) {
-        // Background vertical line (to x-axis)
+    if(showX) {
+        var xMode = xa.spikemode;
+        var xThickness = xa.spikethickness;
+        var xColor = xa.spikecolor || dfltDashColor;
+        var xBB = xa._boundingBox;
+        var yEdge = ((xBB.top + xBB.bottom) / 2) < yPoint ? xBB.bottom : xBB.top;
+
+        if(xMode.indexOf('toaxis') !== -1 || xMode.indexOf('across') !== -1) {
+            var yBase = yEdge;
+            var yEndSpike = yPoint;
+            if(xMode.indexOf('across') !== -1) {
+                yBase = xa._counterSpan[0];
+                yEndSpike = xa._counterSpan[1];
+            }
+
+            // Background vertical line (to x-axis)
             container.append('line')
                 .attr({
                     'x1': xPoint,
@@ -971,18 +966,18 @@ function createSpikelines(hoverData, opts) {
                     'y2': yEndSpike,
                     'stroke-width': xThickness,
                     'stroke': xColor,
-                    'stroke-dasharray': xDash
+                    'stroke-dasharray': Drawing.dashStyle(xa.spikedash, xThickness)
                 })
                 .classed('spikeline', true)
                 .classed('crisp', true);
         }
 
         // X axis marker
-        if(xMarker) {
+        if(xMode.indexOf('marker') !== -1) {
             container.append('circle')
                 .attr({
                     'cx': xPoint,
-                    'cy': yAnchoredBase - (xSide !== 'top' ? xThickness : -xThickness),
+                    'cy': yEdge - (xa.side !== 'top' ? xThickness : -xThickness),
                     'r': xThickness,
                     'fill': xColor
                 })
