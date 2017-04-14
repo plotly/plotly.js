@@ -629,7 +629,7 @@ function hover(gd, evt, subplot) {
     }
 
     // don't emit events if called manually
-    if(evt.target && !hoverChanged(gd, evt, oldhoverdata)) return;
+    if(!evt.target || !hoverChanged(gd, evt, oldhoverdata)) return;
 
     if(oldhoverdata) {
         gd.emit('plotly_unhover', {
