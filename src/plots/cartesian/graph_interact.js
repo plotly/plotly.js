@@ -943,8 +943,7 @@ function createSpikelines(hoverData, opts) {
                     'r': yThickness,
                     'fill': yColor
                 })
-                .classed('spikeline', true)
-                .classed('crisp', true);
+                .classed('spikeline', true);
         }
     }
 
@@ -987,8 +986,7 @@ function createSpikelines(hoverData, opts) {
                     'r': xThickness,
                     'fill': xColor
                 })
-                .classed('spikeline', true)
-                .classed('crisp', true);
+                .classed('spikeline', true);
         }
     }
 }
