@@ -9,11 +9,9 @@
 
 'use strict';
 
-var arrtools = require('arraytools');
+var Lib = require('../../../lib');
 var convertHTMLToUnicode = require('../../../lib/html2unicode');
 var str2RgbaArray = require('../../../lib/str2rgbarray');
-
-var arrayCopy1D = arrtools.copy1D;
 
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
 
@@ -64,9 +62,9 @@ function AxesOptions() {
                               [0.8, 0.8, 0.8, 0.5] ];
 
     // some default values are stored for applying model transforms
-    this._defaultTickPad = arrayCopy1D(this.tickPad);
-    this._defaultLabelPad = arrayCopy1D(this.labelPad);
-    this._defaultLineTickLength = arrayCopy1D(this.lineTickLength);
+    this._defaultTickPad = Lib.extendFlat([], this.tickPad);
+    this._defaultLabelPad = Lib.extendFlat([], this.labelPad);
+    this._defaultLineTickLength = Lib.extendFlat([], this.lineTickLength);
 }
 
 var proto = AxesOptions.prototype;
