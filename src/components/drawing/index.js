@@ -678,3 +678,13 @@ drawing.setPointGroupScale = function(selection, x, y) {
 
     return scale;
 };
+
+drawing.measureText = function(tester, text, font) {
+    var dummyText = tester.append('text')
+        .text(text)
+        .call(drawing.font, font);
+
+    var bbox = drawing.bBox(dummyText.node());
+    dummyText.remove();
+    return bbox;
+};

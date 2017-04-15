@@ -200,6 +200,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     // fictitious angles and domain, but then rotate and translate
     // it into place at the end
     var aaxis = _this.aaxis = extendFlat({}, ternaryLayout.aaxis, {
+        visible: true,
         range: [amin, sum - bmin - cmin],
         side: 'left',
         _counterangle: 30,
@@ -220,6 +221,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     // baxis goes across the bottom (backward). We can set it up as an x axis
     // without any enclosing transformation.
     var baxis = _this.baxis = extendFlat({}, ternaryLayout.baxis, {
+        visible: true,
         range: [sum - amin - cmin, bmin],
         side: 'bottom',
         _counterangle: 30,
@@ -239,6 +241,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     // caxis goes down the right side. Set it up as a y axis, with
     // post-transformation similar to aaxis
     var caxis = _this.caxis = extendFlat({}, ternaryLayout.caxis, {
+        visible: true,
         range: [sum - amin - bmin, cmin],
         side: 'right',
         _counterangle: 30,

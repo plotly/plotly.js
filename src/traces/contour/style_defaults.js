@@ -12,15 +12,15 @@
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 
 
-module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout) {
+module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout, defaultColor, defaultWidth) {
     var coloring = coerce('contours.coloring');
 
     var showLines;
     if(coloring === 'fill') showLines = coerce('contours.showlines');
 
     if(showLines !== false) {
-        if(coloring !== 'lines') coerce('line.color', '#000');
-        coerce('line.width', 0.5);
+        if(coloring !== 'lines') coerce('line.color', defaultColor || '#000');
+        coerce('line.width', defaultWidth === undefined ? 0.5 : defaultWidth);
         coerce('line.dash');
     }
 
