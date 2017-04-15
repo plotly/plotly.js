@@ -197,19 +197,24 @@
                 "y": 0.7,
                 "buttons": [
                     {
-                        "label": "Force snap",
+                        "label": "Snap",
                         "method": "restyle",
-                        "args": [ "freeform", false ]
+                        "args": [ "arrangement", "snap" ]
                     },
                     {
                         "label": "Parallel",
                         "method": "restyle",
-                        "args": [ "freeform", "parallel"]
+                        "args": [ "arrangement", "parallel"]
                     },
                     {
                         "label": "Freeform",
                         "method": "restyle",
-                        "args": [ "freeform", true]
+                        "args": [ "arrangement", "freeform"]
+                    },
+                    {
+                        "label": "Fixed",
+                        "method": "restyle",
+                        "args": [ "arrangement", "fixed"]
                     }
                 ]
             },

@@ -129,7 +129,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('valueformat');
     coerce('valuesuffix');
     coerce('followmouse');
-    coerce('freeform');
+    coerce('arrangement');
 
     // Prefer Sankey-specific font spec e.g. with smaller default size
     var sankeyFontSpec = Lib.coerceFont(coerce, 'textfont');

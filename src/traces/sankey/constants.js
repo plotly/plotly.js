@@ -14,7 +14,6 @@ module.exports = {
     nodeTextOffsetVertical: 3,
     nodePadAcross: 10,
     sankeyIterations: 50,
-    movable: true,
     forceIterations: 5,
     forceTicksPerFrame: 10,
     duration: 500,

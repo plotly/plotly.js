@@ -101,14 +101,17 @@ module.exports = {
         description: 'Sets whether the hover tooltip follows the mouse.'
     },
 
-    freeform: {
+    arrangement: {
         valType: 'enumerated',
-        values: [false, true, 'parallel'],
-        dflt: false,
+        values: ['snap', 'parallel', 'freeform', 'fixed'],
+        dflt: 'snap',
         role: 'style',
         description: [
-            'Allow freeform node arrangement if value is `true`. If value is `parallel`,',
-            'then the nodes can only move in parallel to their length, along a line.'
+            'If value is `snap` (the default), the node arrangement is assisted by automatic snapping of elements to',
+            'preserve space between nodes specified via `nodepad`.',
+            'If value is `parallel`, the nodes can only move in parallel to their length, along a line.',
+            'If value is `freeform`, the nodes can freely move on the plane.',
+            'If value is `fixed`, the nodes are stationary.'
         ].join(' ')
     },
 

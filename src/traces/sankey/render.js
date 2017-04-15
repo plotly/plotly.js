@@ -63,7 +63,7 @@ function sankeyModel(layout, d, i) {
         domain = trace.domain,
         nodes = trace.nodes,
         links = trace.links,
-        freeform = trace.freeform,
+        arrangement = trace.arrangement,
         horizontal = trace.orientation === 'h',
         nodePad = trace.nodepad,
         nodeThickness = trace.nodethickness,
@@ -100,7 +100,7 @@ function sankeyModel(layout, d, i) {
         dragPerpendicular: horizontal ? width : height,
         nodes: nodes,
         links: links,
-        freeform: freeform,
+        arrangement: arrangement,
         sankey: sankey,
         forceLayouts: {},
         interactionState: {
@@ -164,7 +164,7 @@ function nodeModel(uniqueKeys, d, n) {
         valueFormat: d.valueFormat,
         valueSuffix: d.valueSuffix,
         sankey: d.sankey,
-        freeform: d.freeform,
+        arrangement: d.arrangement,
         uniqueNodeLabelPathId: JSON.stringify({sankeyGuid: d.guid, traceId: d.key, nodeKey: n.label}),
         interactionState: d.interactionState
     };
@@ -251,7 +251,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
         .origin(function(d) {return d.horizontal ? d.node : {x: d.node['y'], y: d.node['x']};})
 
         .on('dragstart', function(d) {
-            if(!c.movable) return;
+            if(d.arrangement === 'fixed') return;
             this.parentNode.appendChild(this); // bring element to top (painter's algo)
             d.interactionState.dragInProgress = d.node;
             saveCurrentDragPosition(d.node);
@@ -259,7 +259,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
                 callbacks.nodeEvents.unhover.apply(0, d.interactionState.hovered);
                 d.interactionState.hovered = false;
             }
-            if(!d.freeform) {
+            if(d.arrangement === 'snap') {
                 var forceKey = d.traceId + '|' + Math.floor(d.node.originalX);
                 if (d.forceLayouts[forceKey]) {
                     d.forceLayouts[forceKey].alpha(1);
@@ -280,11 +280,11 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
         })
 
         .on('drag', function(d) {
-            if(!c.movable) return;
+            if(d.arrangement === 'fixed') return;
             var x = d.horizontal ? d3.event.x : d3.event.y;
             var y = d.horizontal ? d3.event.y : d3.event.x;
-            if(d.freeform) {
-                if(d.freeform !== 'parallel') {
+            if(d.arrangement !== 'snap') {
+                if(d.arrangement === 'freeform') {
                     d.node.x = x;
                 }
                 d.node.y = Math.max(d.node.dy / 2, Math.min(d.size - d.node.dy / 2, y));
@@ -293,7 +293,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
                 d.node.y = y;
             }
             saveCurrentDragPosition(d.node);
-            if(d.freeform) {
+            if(d.arrangement !== 'snap') {
                 d.sankey.relayout();
                 updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink);
                 sankeyNode.call(crispLinesOnEnd);
@@ -427,6 +427,13 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .classed('sankeyNodeSet', true);
 
     sankeyNodeSet
+        .style('cursor', function(d) {
+            switch(d.arrangement) {
+                case 'fixed': return 'default';
+                case 'parallel': return 'ns-resize';
+                default: return 'move';
+            }
+        })
         .each(function(d) {Drawing.font(sankeyNodeSet, d.textFont);});  // fixme causes scerenshot trouble
 
 
@@ -444,7 +451,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .append('g')
         .classed('sankeyNode', true)
         .style('opacity', 0)
-        .style('cursor', 'move')
         .call(updateNodePositions)
         .call(attachPointerEvents, sankey, callbacks.nodeEvents);
 
