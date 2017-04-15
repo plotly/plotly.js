@@ -202,6 +202,11 @@
                         "args": [ "freeform", false ]
                     },
                     {
+                        "label": "Parallel",
+                        "method": "restyle",
+                        "args": [ "freeform", "parallel"]
+                    },
+                    {
                         "label": "Freeform",
                         "method": "restyle",
                         "args": [ "freeform", true]

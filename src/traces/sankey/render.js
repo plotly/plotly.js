@@ -284,7 +284,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
             var x = d.horizontal ? d3.event.x : d3.event.y;
             var y = d.horizontal ? d3.event.y : d3.event.x;
             if(d.freeform) {
-                if(c.sideways) {
+                if(d.freeform !== 'parallel') {
                     d.node.x = x;
                 }
                 d.node.y = Math.max(d.node.dy / 2, Math.min(d.size - d.node.dy / 2, y));

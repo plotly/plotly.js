@@ -102,10 +102,14 @@ module.exports = {
     },
 
     freeform: {
-        valType: 'boolean',
+        valType: 'enumerated',
+        values: [false, true, 'parallel'],
         dflt: false,
         role: 'style',
-        description: 'Allow freeform node arrangement.'
+        description: [
+            'Allow freeform node arrangement if value is `true`. If value is `parallel`,',
+            'then the nodes can only move in parallel to their length, along a line.'
+        ].join(' ')
     },
 
     textfont: fontAttrs,
