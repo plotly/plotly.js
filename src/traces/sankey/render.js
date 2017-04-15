@@ -63,6 +63,7 @@ function sankeyModel(layout, d, i) {
         domain = trace.domain,
         nodes = trace.nodes,
         links = trace.links,
+        freeform = trace.freeform,
         horizontal = trace.orientation === 'h',
         nodePad = trace.nodepad,
         nodeThickness = trace.nodethickness,
@@ -99,6 +100,7 @@ function sankeyModel(layout, d, i) {
         dragPerpendicular: horizontal ? width : height,
         nodes: nodes,
         links: links,
+        freeform: freeform,
         sankey: sankey,
         forceLayouts: {},
         interactionState: {
@@ -162,6 +164,7 @@ function nodeModel(uniqueKeys, d, n) {
         valueFormat: d.valueFormat,
         valueSuffix: d.valueSuffix,
         sankey: d.sankey,
+        freeform: d.freeform,
         uniqueNodeLabelPathId: JSON.stringify({sankeyGuid: d.guid, traceId: d.key, nodeKey: n.label}),
         interactionState: d.interactionState
     };
@@ -256,7 +259,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
                 callbacks.nodeEvents.unhover.apply(0, d.interactionState.hovered);
                 d.interactionState.hovered = false;
             }
-            if(c.useForceSnap) {
+            if(!d.freeform) {
                 var forceKey = d.traceId + '|' + Math.floor(d.node.originalX);
                 if (d.forceLayouts[forceKey]) {
                     d.forceLayouts[forceKey].alpha(1);
@@ -280,17 +283,17 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
             if(!c.movable) return;
             var x = d.horizontal ? d3.event.x : d3.event.y;
             var y = d.horizontal ? d3.event.y : d3.event.x;
-            if(c.useForceSnap) {
-                d.node.x = x;
-                d.node.y = y;
-            } else {
+            if(d.freeform) {
                 if(c.sideways) {
                     d.node.x = x;
                 }
                 d.node.y = Math.max(d.node.dy / 2, Math.min(d.size - d.node.dy / 2, y));
+            } else {
+                d.node.x = x;
+                d.node.y = y;
             }
             saveCurrentDragPosition(d.node);
-            if(!c.useForceSnap) {
+            if(d.freeform) {
                 d.sankey.relayout();
                 updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink);
                 sankeyNode.call(crispLinesOnEnd);

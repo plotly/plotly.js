@@ -149,36 +149,6 @@
         },
         "updatemenus": [
             {
-                "y": 0.7,
-                "buttons": [
-                    {
-                        "label": "Horizontal",
-                        "method": "restyle",
-                        "args": [ "orientation", "h" ]
-                    },
-                    {
-                        "label": "Vertical",
-                        "method": "restyle",
-                        "args": [ "orientation", "v"]
-                    }
-                ]
-            },
-            {
-                "y": 0.8,
-                "buttons": [
-                    {
-                        "label": "Follow mouse",
-                        "method": "restyle",
-                        "args": [ "followmouse", true ]
-                    },
-                    {
-                        "label": "Stick tooltip",
-                        "method": "restyle",
-                        "args": [ "followmouse", false]
-                    }
-                ]
-            },
-            {
                 "y": 1,
                 "buttons": [
                     {
@@ -207,8 +177,52 @@
                         "args": [ "nodepad", 20]
                     }
                 ]
+            },
+            {
+                "y": 0.8,
+                "buttons": [
+                    {
+                        "label": "Follow mouse",
+                        "method": "restyle",
+                        "args": [ "followmouse", true ]
+                    },
+                    {
+                        "label": "Stick tooltip",
+                        "method": "restyle",
+                        "args": [ "followmouse", false]
+                    }
+                ]
+            },
+            {
+                "y": 0.7,
+                "buttons": [
+                    {
+                        "label": "Force snap",
+                        "method": "restyle",
+                        "args": [ "freeform", false ]
+                    },
+                    {
+                        "label": "Freeform",
+                        "method": "restyle",
+                        "args": [ "freeform", true]
+                    }
+                ]
+            },
+            {
+                "y": 0.6,
+                "buttons": [
+                    {
+                        "label": "Horizontal",
+                        "method": "restyle",
+                        "args": [ "orientation", "h" ]
+                    },
+                    {
+                        "label": "Vertical",
+                        "method": "restyle",
+                        "args": [ "orientation", "v"]
+                    }
+                ]
             }
-
         ]
     }
 }

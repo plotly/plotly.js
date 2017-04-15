@@ -101,6 +101,13 @@ module.exports = {
         description: 'Sets whether the hover tooltip follows the mouse.'
     },
 
+    freeform: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'style',
+        description: 'Allow freeform node arrangement.'
+    },
+
     textfont: fontAttrs,
 
     nodes: {
