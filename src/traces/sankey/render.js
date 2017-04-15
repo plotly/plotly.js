@@ -264,7 +264,10 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
                     attachForce(sankeyNode, forceKey, d);
                 }
                 window.requestAnimationFrame(function faster() {
-                    for(var i = 0; i < c.forceTicksPerFrame; i++) d.forceLayouts[forceKey].tick();
+                    for(var i = 0; i < c.forceTicksPerFrame; i++) {
+                        d.forceLayouts[forceKey].tick();
+                    }
+                    d.sankey.relayout();
                     updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink);
                     if(d.forceLayouts[forceKey].alpha() > 0) {
                         window.requestAnimationFrame(faster);
@@ -287,8 +290,8 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
                 d.node.y = Math.max(d.node.dy / 2, Math.min(d.size - d.node.dy / 2, y));
             }
             saveCurrentDragPosition(d.node);
-            d.sankey.relayout();
             if(!c.useForceSnap) {
+                d.sankey.relayout();
                 updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink);
                 sankeyNode.call(crispLinesOnEnd);
             }

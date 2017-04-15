@@ -97,7 +97,6 @@ module.exports = function plot(gd, calcData) {
 
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._paper;
-    var hasHoverData = false;
 
     var size = fullLayout._size;
 
@@ -114,8 +113,6 @@ module.exports = function plot(gd, calcData) {
             if(log) console.log('hover link', d.link);
 
             Fx.hover(gd, d.link, 'sankey');
-
-            hasHoverData = true;
     };
 
     var linkHoverFollow = function(element, d) {
@@ -153,10 +150,7 @@ module.exports = function plot(gd, calcData) {
             points: [d.link]
         });
 
-        if(hasHoverData) {
-            Fx.loneUnhover(fullLayout._hoverlayer.node());
-            hasHoverData = false;
-        }
+        Fx.loneUnhover(fullLayout._hoverlayer.node());
     };
 
     var nodeSelect = function(element, d, sankey) {
@@ -175,9 +169,6 @@ module.exports = function plot(gd, calcData) {
         d3.select(element).call(nodeHoveredStyle, d, sankey);
 
         Fx.hover(gd, d.node, 'sankey');
-
-        hasHoverData = true;
-
     };
 
 
@@ -221,10 +212,7 @@ module.exports = function plot(gd, calcData) {
             points: [d.node]
         });
 
-        if(hasHoverData) {
-            Fx.loneUnhover(fullLayout._hoverlayer.node());
-            hasHoverData = false;
-        }
+        Fx.loneUnhover(fullLayout._hoverlayer.node());
     };
 
     render(
