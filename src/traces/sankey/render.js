@@ -82,6 +82,13 @@ function sankeyModel(layout, d, i) {
         .links(links)
         .layout(c.sankeyIterations);
 
+    var node, sankeyNodes  = sankey.nodes();
+    for(var n = 0; i < sankeyNodes.length; i++) {
+        node = sankeyNodes[i];
+        if(node.parallel) node.x = (horizontal ? width : height)  * node.parallel;
+        if(node.perpendicular) node.y = (horizontal ? height : width) * node.perpendicular;
+    }
+
     switchToForceFormat(nodes);
 
     return {
@@ -430,7 +437,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('cursor', function(d) {
             switch(d.arrangement) {
                 case 'fixed': return 'default';
-                case 'parallel': return 'ns-resize';
+                case 'perpendicular': return 'ns-resize';
                 default: return 'move';
             }
         })

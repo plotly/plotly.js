@@ -103,13 +103,13 @@ module.exports = {
 
     arrangement: {
         valType: 'enumerated',
-        values: ['snap', 'parallel', 'freeform', 'fixed'],
+        values: ['snap', 'perpendicular', 'freeform', 'fixed'],
         dflt: 'snap',
         role: 'style',
         description: [
             'If value is `snap` (the default), the node arrangement is assisted by automatic snapping of elements to',
             'preserve space between nodes specified via `nodepad`.',
-            'If value is `parallel`, the nodes can only move in parallel to their length, along a line.',
+            'If value is `perpendicular`, the nodes can only move along a line perpendicular to the flow.',
             'If value is `freeform`, the nodes can freely move on the plane.',
             'If value is `fixed`, the nodes are stationary.'
         ].join(' ')
@@ -124,6 +124,20 @@ module.exports = {
             dflt: '',
             role: 'info',
             description: 'The shown name of the node.'
+        },
+        parallel: {
+            valType: 'number',
+            role: 'style',
+            min: 0,
+            max: 1,
+            description: "Node position parallel to the flow, e.g. left/right if `orientation` is `horizontal`."
+        },
+        perpendicular: {
+            valType: 'number',
+            role: 'style',
+            min: 0,
+            max: 1,
+            description: "Node position perpendicular to the flow, e.g. up/down if `orientation` is `horizontal`."
         },
         visible: shapeAttrs.visible,
         color: extendFlat({}, shapeAttrs.fillcolor, {
