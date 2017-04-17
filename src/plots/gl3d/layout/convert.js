@@ -9,7 +9,6 @@
 
 'use strict';
 
-var Lib = require('../../../lib');
 var convertHTMLToUnicode = require('../../../lib/html2unicode');
 var str2RgbaArray = require('../../../lib/str2rgbarray');
 
@@ -62,9 +61,9 @@ function AxesOptions() {
                               [0.8, 0.8, 0.8, 0.5] ];
 
     // some default values are stored for applying model transforms
-    this._defaultTickPad = Lib.extendFlat([], this.tickPad);
-    this._defaultLabelPad = Lib.extendFlat([], this.labelPad);
-    this._defaultLineTickLength = Lib.extendFlat([], this.lineTickLength);
+    this._defaultTickPad = this.tickPad.slice();
+    this._defaultLabelPad = this.labelPad.slice();
+    this._defaultLineTickLength = this.lineTickLength.slice();
 }
 
 var proto = AxesOptions.prototype;
