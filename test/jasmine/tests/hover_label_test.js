@@ -544,7 +544,7 @@ describe('hover info', function() {
             Plotly.plot(gd, data, layout).then(done);
         });
 
-        fit('should emit events only if the event looks user-driven', function(done) {
+        it('should emit events only if the event looks user-driven', function(done) {
             var hoverHandler = jasmine.createSpy();
             gd.on('plotly_hover', hoverHandler);
 
