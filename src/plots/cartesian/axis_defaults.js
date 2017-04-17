@@ -47,6 +47,8 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         return Lib.coerce2(containerIn, containerOut, layoutAttributes, attr, dflt);
     }
 
+    var visible = coerce('visible', !options.cheateronly);
+
     var axType = containerOut.type;
 
     if(axType === 'date') {
@@ -55,6 +57,20 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     }
 
     setConvert(containerOut, layoutOut);
+
+    var autoRange = coerce('autorange', !containerOut.isValidRange(containerIn.range));
+
+    if(autoRange) coerce('rangemode');
+
+    coerce('range');
+    containerOut.cleanRange();
+
+    handleCategoryOrderDefaults(containerIn, containerOut, coerce);
+    containerOut._initialCategories = axType === 'category' ?
+        orderedCategories(letter, containerOut.categoryorder, containerOut.categoryarray, options.data) :
+        [];
+
+    if(!visible) return containerOut;
 
     var dfltColor = coerce('color');
     // if axis.color was provided, use it for fonts too; otherwise,
@@ -68,17 +84,9 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         color: dfltFontColor
     });
 
-    var autoRange = coerce('autorange', !containerOut.isValidRange(containerIn.range));
-
-    if(autoRange) coerce('rangemode');
-
-    coerce('range');
-    containerOut.cleanRange();
-
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
     handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
     handleTickMarkDefaults(containerIn, containerOut, coerce, options);
-    handleCategoryOrderDefaults(containerIn, containerOut, coerce);
 
     var lineColor = coerce2('linecolor', dfltColor),
         lineWidth = coerce2('linewidth'),
@@ -108,11 +116,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         delete containerOut.zerolinecolor;
         delete containerOut.zerolinewidth;
     }
-
-    // fill in categories
-    containerOut._initialCategories = axType === 'category' ?
-        orderedCategories(letter, containerOut.categoryorder, containerOut.categoryarray, options.data) :
-        [];
 
     return containerOut;
 };
