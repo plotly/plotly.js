@@ -1,26 +1,18 @@
-// var Plotly = require('@lib/index');
+var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
-// var Lib = require('@src/lib');
+var Lib = require('@src/lib');
 
 var Carpet = require('@src/traces/carpet');
 var smoothFill2D = require('@src/traces/carpet/smooth_fill_2d_array');
 var smoothFill = require('@src/traces/carpet/smooth_fill_array');
-// var calc = require('@src/traces/carpet/calc');
 
+var d3 = require('d3');
 var customMatchers = require('../assets/custom_matchers');
-
-// var d3 = require('d3');
-// var createGraphDiv = require('../assets/create_graph_div');
-// var destroyGraphDiv = require('../assets/destroy_graph_div');
-// var customMatchers = require('../assets/custom_matchers');
-
-var test = {
-    supplyDefaults: false,
-    smoothFill2D: true
-};
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
 
 describe('carpet supplyDefaults', function() {
-    if(!test.supplyDefaults) return;
     'use strict';
 
     var traceIn,
@@ -55,7 +47,6 @@ describe('carpet supplyDefaults', function() {
         expect(traceOut.db).toBeUndefined();
         expect(traceOut.a0).toBeUndefined();
         expect(traceOut.b0).toBeUndefined();
-        expect(traceOut.visible).toBe(true);
     });
 
     it('sets a0/da when a not provided', function() {
@@ -222,7 +213,6 @@ describe('supplyDefaults visibility check', function() {
 });
 
 describe('carpet smooth_fill_2d_array', function() {
-    if(!test.smoothFill2D) return;
     var _;
 
     beforeAll(function() { jasmine.addMatchers(customMatchers); });
@@ -389,7 +379,6 @@ describe('carpet smooth_fill_2d_array', function() {
 });
 
 describe('smooth_fill_array', function() {
-    if(!test.smoothFill2D) return;
     var _;
 
     beforeAll(function() { jasmine.addMatchers(customMatchers); });
@@ -428,5 +417,98 @@ describe('smooth_fill_array', function() {
     it('fills in two trailing points', function() {
         expect(smoothFill([0, 1, _, _]))
         .toBeCloseToArray([0, 1, 2, 3]);
+    });
+});
+
+describe('Test carpet interactions:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function countCarpets() {
+        return d3.select(gd).selectAll('.carpetlayer').selectAll('.trace').size();
+    }
+
+    function countContourTraces() {
+        return d3.select(gd).selectAll('.contour').size();
+    }
+
+    it('should restyle visible attribute properly', function(done) {
+        var mock = Lib.extendDeep({}, require('@mocks/cheater.json'));
+
+        Plotly.plot(gd, mock)
+        .then(function() {
+            expect(countCarpets()).toEqual(1);
+            expect(countContourTraces()).toEqual(3);
+
+            return Plotly.restyle(gd, 'visible', false, [2, 3]);
+        })
+        .then(function() {
+            expect(countCarpets()).toEqual(1);
+            expect(countContourTraces()).toEqual(1);
+
+            return Plotly.restyle(gd, 'visible', true);
+        })
+        .then(function() {
+            expect(countCarpets()).toEqual(1);
+            expect(countContourTraces()).toEqual(3);
+
+            return Plotly.restyle(gd, 'visible', false);
+        })
+        .then(function() {
+            expect(countCarpets()).toEqual(0);
+            expect(countContourTraces()).toEqual(0);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should add/delete trace properly', function(done) {
+        var mock = Lib.extendDeep({}, require('@mocks/cheater.json'));
+        var trace1 = Lib.extendDeep({}, mock.data[1]);
+
+        Plotly.plot(gd, mock)
+        .then(function() {
+            expect(countCarpets()).toEqual(1);
+            expect(countContourTraces()).toEqual(3);
+
+            return Plotly.deleteTraces(gd, [1]);
+        })
+        .then(function() {
+            expect(countCarpets()).toEqual(1);
+            expect(countContourTraces()).toEqual(2);
+
+            return Plotly.addTraces(gd, trace1);
+        })
+        .then(function() {
+            expect(countCarpets()).toEqual(1);
+            expect(countContourTraces()).toEqual(3);
+
+            return Plotly.deleteTraces(gd, [0, 1, 2, 3]);
+        })
+        .then(function() {
+            expect(countCarpets()).toEqual(0);
+            expect(countContourTraces()).toEqual(0);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should respond to relayout properly', function(done) {
+        var mock = Lib.extendDeep({}, require('@mocks/cheater.json'));
+
+        Plotly.plot(gd, mock)
+        .then(function() {
+            return Plotly.relayout(gd, 'xaxis.range', [0, 1]);
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'yaxis.range', [7, 8]);
+        })
+        .catch(fail)
+        .then(done);
     });
 });
