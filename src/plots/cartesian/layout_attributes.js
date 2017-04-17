@@ -10,6 +10,7 @@
 
 var fontAttrs = require('../font_attributes');
 var colorAttrs = require('../../components/color/attributes');
+var dash = require('../../components/drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var constants = require('./constants');
@@ -300,20 +301,7 @@ module.exports = {
         role: 'style',
         description: 'Sets the width (in px) of the zero line.'
     },
-    spikedash: {
-        valType: 'string',
-        // string type usually doesn't take values... this one should really be
-        // a special type or at least a special coercion function, from the GUI
-        // you only get these values but elsewhere the user can supply a list of
-        // dash lengths in px, and it will be honored
-        values: ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'],
-        dflt: 'dash',
-        role: 'style',
-        description: [
-            'Sets the style of the lines. Set to a dash string type',
-            'or a dash length in px.'
-        ].join(' ')
-    },
+    spikedash: extendFlat({}, dash, {dflt: 'dash'}),
     spikemode: {
         valType: 'flaglist',
         flags: ['toaxis', 'across', 'marker'],
