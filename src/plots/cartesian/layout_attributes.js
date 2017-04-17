@@ -317,7 +317,6 @@ module.exports = {
     spikemode: {
         valType: 'flaglist',
         flags: ['toaxis', 'across', 'marker'],
-        extras: ['none'],
         role: 'style',
         dflt: 'toaxis',
         description: [
