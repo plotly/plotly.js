@@ -11,6 +11,7 @@
 var scatterAttrs = require('../scatter/attributes');
 var colorAttributes = require('../../components/colorscale/color_attributes');
 var errorBarAttrs = require('../../components/errorbars/attributes');
+var DASHES = require('../../constants/gl3d_dashes');
 
 var MARKER_SYMBOLS = require('../../constants/gl_markers');
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -72,9 +73,22 @@ module.exports = {
             'If a single string, the same string appears over',
             'all the data points.',
             'If an array of string, the items are mapped in order to the',
-            'this trace\'s (x,y,z) coordinates.'
+            'this trace\'s (x,y,z) coordinates.',
+            'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
+            'these elements will be seen in the hover labels.'
         ].join(' ')
     }),
+    hovertext: extendFlat({}, scatterAttrs.hovertext, {
+        description: [
+            'Sets text elements associated with each (x,y,z) triplet.',
+            'If a single string, the same string appears over',
+            'all the data points.',
+            'If an array of string, the items are mapped in order to the',
+            'this trace\'s (x,y,z) coordinates.',
+            'To be seen, trace `hoverinfo` must contain a *text* flag.'
+        ].join(' ')
+    }),
+
     mode: extendFlat({}, scatterAttrs.mode,  // shouldn't this be on-par with 2D?
         {dflt: 'lines+markers'}),
     surfaceaxis: {
@@ -101,7 +115,13 @@ module.exports = {
     connectgaps: scatterAttrs.connectgaps,
     line: extendFlat({}, {
         width: scatterLineAttrs.width,
-        dash: scatterLineAttrs.dash,
+        dash: {
+            valType: 'enumerated',
+            values: Object.keys(DASHES),
+            dflt: 'solid',
+            role: 'style',
+            description: 'Sets the dash style of the lines.'
+        },
         showscale: {
             valType: 'boolean',
             role: 'info',

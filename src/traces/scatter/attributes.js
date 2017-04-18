@@ -11,6 +11,7 @@
 var colorAttributes = require('../../components/colorscale/color_attributes');
 var errorBarAttrs = require('../../components/errorbars/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
+var dash = require('../../components/drawing/attributes').dash;
 
 var Drawing = require('../../components/drawing');
 var constants = require('./constants');
@@ -83,7 +84,23 @@ module.exports = {
             'If a single string, the same string appears over',
             'all the data points.',
             'If an array of string, the items are mapped in order to the',
-            'this trace\'s (x,y) coordinates.'
+            'this trace\'s (x,y) coordinates.',
+            'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
+            'these elements will be seen in the hover labels.'
+        ].join(' ')
+    },
+    hovertext: {
+        valType: 'string',
+        role: 'info',
+        dflt: '',
+        arrayOk: true,
+        description: [
+            'Sets hover text elements associated with each (x,y) pair.',
+            'If a single string, the same string appears over',
+            'all the data points.',
+            'If an array of string, the items are mapped in order to the',
+            'this trace\'s (x,y) coordinates.',
+            'To be seen, trace `hoverinfo` must contain a *text* flag.'
         ].join(' ')
     },
     mode: {
@@ -147,20 +164,7 @@ module.exports = {
                 '*0* corresponds to no smoothing (equivalent to a *linear* shape).'
             ].join(' ')
         },
-        dash: {
-            valType: 'string',
-            // string type usually doesn't take values... this one should really be
-            // a special type or at least a special coercion function, from the GUI
-            // you only get these values but elsewhere the user can supply a list of
-            // dash lengths in px, and it will be honored
-            values: ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'],
-            dflt: 'solid',
-            role: 'style',
-            description: [
-                'Sets the style of the lines. Set to a dash string type',
-                'or a dash length in px.'
-            ].join(' ')
-        },
+        dash: dash,
         simplify: {
             valType: 'boolean',
             dflt: true,

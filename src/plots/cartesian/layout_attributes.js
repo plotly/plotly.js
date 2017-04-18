@@ -10,12 +10,22 @@
 
 var fontAttrs = require('../font_attributes');
 var colorAttrs = require('../../components/color/attributes');
+var dash = require('../../components/drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var constants = require('./constants');
 
 
 module.exports = {
+    visible: {
+        valType: 'boolean',
+        role: 'info',
+        description: [
+            'A single toggle to hide the axis while preserving interaction like dragging.',
+            'Default is true when a cheater plot is present on the axis, otherwise',
+            'false'
+        ].join(' ')
+    },
     color: {
         valType: 'color',
         dflt: colorAttrs.defaultLine,
@@ -278,6 +288,45 @@ module.exports = {
         dflt: true,
         role: 'style',
         description: 'Determines whether or not the tick labels are drawn.'
+    },
+    showspikes: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'style',
+        description: [
+            'Determines whether or not spikes (aka droplines) are drawn for this axis.',
+            'Note: This only takes affect when hovermode = closest'
+        ].join(' ')
+    },
+    spikecolor: {
+        valType: 'color',
+        dflt: null,
+        role: 'style',
+        description: 'Sets the spike color. If undefined, will use the series color'
+    },
+    spikethickness: {
+        valType: 'number',
+        dflt: 3,
+        role: 'style',
+        description: 'Sets the width (in px) of the zero line.'
+    },
+    spikedash: extendFlat({}, dash, {dflt: 'dash'}),
+    spikemode: {
+        valType: 'flaglist',
+        flags: ['toaxis', 'across', 'marker'],
+        role: 'style',
+        dflt: 'toaxis',
+        description: [
+            'Determines the drawing mode for the spike line',
+            'If *toaxis*, the line is drawn from the data point to the axis the ',
+            'series is plotted on.',
+
+            'If *across*, the line is drawn across the entire plot area, and',
+            'supercedes *toaxis*.',
+
+            'If *marker*, then a marker dot is drawn on the axis the series is',
+            'plotted on'
+        ].join(' ')
     },
     tickfont: extendFlat({}, fontAttrs, {
         description: 'Sets the tick font.'

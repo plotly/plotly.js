@@ -22,7 +22,7 @@ module.exports = function colorbar(gd, cd) {
 
     gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
 
-    if(trace.showscale === false) {
+    if(!trace.showscale) {
         Plots.autoMargin(gd, cbId);
         return;
     }

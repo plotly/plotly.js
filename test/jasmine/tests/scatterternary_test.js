@@ -299,9 +299,7 @@ describe('scatterternary plot and hover', function() {
 describe('scatterternary hover', function() {
     'use strict';
 
-    var hoverPoints = ScatterTernary.hoverPoints;
-
-    var gd, pointData;
+    var gd;
 
     beforeAll(function(done) {
         gd = createGraphDiv();
@@ -310,17 +308,20 @@ describe('scatterternary hover', function() {
             type: 'scatterternary',
             a: [0.1, 0.2, 0.3],
             b: [0.3, 0.2, 0.1],
-            c: [0.1, 0.4, 0.5]
+            c: [0.1, 0.4, 0.5],
+            text: ['A', 'B', 'C']
         }];
 
         Plotly.plot(gd, data).then(done);
     });
 
-    beforeEach(function() {
-        var cd = gd.calcdata,
-            ternary = gd._fullLayout.ternary._subplot;
+    afterAll(destroyGraphDiv);
 
-        pointData = {
+    function _hover(gd, xval, yval, hovermode) {
+        var cd = gd.calcdata;
+        var ternary = gd._fullLayout.ternary._subplot;
+
+        var pointData = {
             index: false,
             distance: 20,
             cd: cd[0],
@@ -329,16 +330,16 @@ describe('scatterternary hover', function() {
             ya: ternary.yaxis
         };
 
-    });
+        return ScatterTernary.hoverPoints(pointData, xval, yval, hovermode);
+    }
 
-    afterAll(destroyGraphDiv);
+    it('should generate extra text field on hover', function(done) {
+        var xval = 0.42;
+        var yval = 0.37;
+        var hovermode = 'closest';
+        var scatterPointData;
 
-    it('should generate extra text field on hover', function() {
-        var xval = 0.42,
-            yval = 0.37,
-            hovermode = 'closest';
-
-        var scatterPointData = hoverPoints(pointData, xval, yval, hovermode);
+        scatterPointData = _hover(gd, xval, yval, hovermode);
 
         expect(scatterPointData[0].extraText).toEqual(
             'Component A: 0.3333333<br>Component B: 0.1111111<br>Component C: 0.5555556'
@@ -346,6 +347,24 @@ describe('scatterternary hover', function() {
 
         expect(scatterPointData[0].xLabelVal).toBeUndefined();
         expect(scatterPointData[0].yLabelVal).toBeUndefined();
+        expect(scatterPointData[0].text).toEqual('C');
+
+        Plotly.restyle(gd, {
+            text: null,
+            hovertext: [['apple', 'banana', 'orange']]
+        })
+        .then(function() {
+            scatterPointData = _hover(gd, xval, yval, hovermode);
+
+            expect(scatterPointData[0].extraText).toEqual(
+                'Component A: 0.3333333<br>Component B: 0.1111111<br>Component C: 0.5555556'
+            );
+
+            expect(scatterPointData[0].xLabelVal).toBeUndefined();
+            expect(scatterPointData[0].yLabelVal).toBeUndefined();
+            expect(scatterPointData[0].text).toEqual('orange');
+        })
+        .then(done);
     });
 
 });

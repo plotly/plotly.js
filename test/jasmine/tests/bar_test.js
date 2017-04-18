@@ -9,6 +9,7 @@ var Axes = PlotlyInternal.Axes;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
 var customMatchers = require('../assets/custom_matchers');
 var failTest = require('../assets/fail_test');
 
@@ -1217,7 +1218,8 @@ describe('bar hover', function() {
 
         return {
             style: [pt.index, pt.color, pt.xLabelVal, pt.yLabelVal],
-            pos: [pt.x0, pt.x1, pt.y0, pt.y1]
+            pos: [pt.x0, pt.x1, pt.y0, pt.y1],
+            text: pt.text
         };
     }
 
@@ -1291,6 +1293,41 @@ describe('bar hover', function() {
 
             expect(out.style).toEqual([0, '#1f77b4', 0.5, 0]);
             assertPos(out.pos, [x0, x1, y0, y1]);
+        });
+    });
+
+    describe('text labels', function() {
+
+        it('should show \'hovertext\' items when present, \'text\' if not', function(done) {
+            gd = createGraphDiv();
+
+            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            mock.data.forEach(function(t) { t.type = 'bar'; });
+
+            Plotly.plot(gd, mock).then(function() {
+                var out = _hover(gd, -0.25, 0.5, 'closest');
+                expect(out.text).toEqual('Hover text\nA', 'hover text');
+
+                return Plotly.restyle(gd, 'hovertext', null);
+            })
+            .then(function() {
+                var out = _hover(gd, -0.25, 0.5, 'closest');
+                expect(out.text).toEqual('Text\nA', 'hover text');
+
+                return Plotly.restyle(gd, 'text', ['APPLE', 'BANANA', 'ORANGE']);
+            })
+            .then(function() {
+                var out = _hover(gd, -0.25, 0.5, 'closest');
+                expect(out.text).toEqual('APPLE', 'hover text');
+
+                return Plotly.restyle(gd, 'hovertext', ['apple', 'banana', 'orange']);
+            })
+            .then(function() {
+                var out = _hover(gd, -0.25, 0.5, 'closest');
+                expect(out.text).toEqual('apple', 'hover text');
+            })
+            .catch(fail)
+            .then(done);
         });
     });
 
@@ -1380,9 +1417,7 @@ describe('bar hover', function() {
             .catch(failTest)
             .then(done);
         });
-
     });
-
 });
 
 function mockBarPlot(dataWithoutTraceType, layout) {

@@ -65,6 +65,11 @@ function styleLines(d) {
         showFill = trace.visible && trace.fill && trace.fill !== 'none',
         showLine = subTypes.hasLines(trace);
 
+    if(trace && trace._module && trace._module.name === 'contourcarpet') {
+        showLine = trace.contours.showlines;
+        showFill = trace.contours.coloring === 'fill';
+    }
+
     var fill = d3.select(this).select('.legendfill').selectAll('path')
         .data(showFill ? [d] : []);
     fill.enter().append('path').classed('js-fill', true);

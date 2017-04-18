@@ -21,6 +21,11 @@ module.exports = function makeColorMap(trace) {
         nc = Math.floor((end - start) / cs) + 1,
         extra = contours.coloring === 'lines' ? 0 : 1;
 
+    if(!isFinite(cs)) {
+        cs = 1;
+        nc = 1;
+    }
+
     var scl = trace.colorscale,
         len = scl.length;
 

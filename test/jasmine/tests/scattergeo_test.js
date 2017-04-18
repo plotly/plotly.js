@@ -1,9 +1,15 @@
+var Plotly = require('@lib');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var BADNUM = require('@src/constants/numerical').BADNUM;
 
 var ScatterGeo = require('@src/traces/scattergeo');
 
+var d3 = require('d3');
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var customMatchers = require('../assets/custom_matchers');
+var mouseEvent = require('../assets/mouse_event');
 
 describe('Test scattergeo defaults', function() {
     var traceIn,
@@ -219,5 +225,68 @@ describe('Test scattergeo calc', function() {
             { lonlat: [BADNUM, BADNUM], mx: 'diamond' },
             { lonlat: [30, 10], mx: null }
         ]);
+    });
+});
+
+describe('Test scattergeo hover', function() {
+    var gd;
+
+    // we can't mock ScatterGeo.hoverPoints
+    // because geo hover relies on mouse event
+    // to set the c2p conversion functions
+
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+
+        Plotly.plot(gd, [{
+            type: 'scattergeo',
+            lon: [10, 20, 30],
+            lat: [10, 20, 30],
+            text: ['A', 'B', 'C']
+        }])
+        .then(done);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function assertHoverLabels(expected) {
+        var hoverText = d3.selectAll('g.hovertext').selectAll('tspan');
+
+        hoverText.each(function(_, i) {
+            expect(this.innerHTML).toEqual(expected[i]);
+        });
+    }
+
+    it('should generate hover label info (base case)', function() {
+        mouseEvent('mousemove', 381, 221);
+        assertHoverLabels(['(10°, 10°)', 'A']);
+    });
+
+    it('should generate hover label info (\'text\' single value case)', function(done) {
+        Plotly.restyle(gd, 'text', 'text').then(function() {
+            mouseEvent('mousemove', 381, 221);
+            assertHoverLabels(['(10°, 10°)', 'text']);
+        })
+        .then(done);
+    });
+
+    it('should generate hover label info (\'hovertext\' single value case)', function(done) {
+        Plotly.restyle(gd, 'hovertext', 'hovertext').then(function() {
+            mouseEvent('mousemove', 381, 221);
+            assertHoverLabels(['(10°, 10°)', 'hovertext']);
+        })
+        .then(done);
+    });
+
+    it('should generate hover label info (\'hovertext\' array case)', function(done) {
+        Plotly.restyle(gd, 'hovertext', ['Apple', 'Banana', 'Orange']).then(function() {
+            mouseEvent('mousemove', 381, 221);
+            assertHoverLabels(['(10°, 10°)', 'Apple']);
+        })
+        .then(done);
     });
 });
