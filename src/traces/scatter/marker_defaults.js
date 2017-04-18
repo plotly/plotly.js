@@ -16,7 +16,7 @@ var colorscaleDefaults = require('../../components/colorscale/defaults');
 var subTypes = require('./subtypes');
 
 
-module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
+module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout, coerce, opts) {
     var isBubble = subTypes.isBubble(traceIn),
         lineColor = (traceIn.line || {}).color,
         defaultMLC;
@@ -33,22 +33,24 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
     }
 
-    // if there's a line with a different color than the marker, use
-    // that line color as the default marker line color
-    // (except when it's an array)
-    // mostly this is for transparent markers to behave nicely
-    if(lineColor && !Array.isArray(lineColor) && (traceOut.marker.color !== lineColor)) {
-        defaultMLC = lineColor;
-    }
-    else if(isBubble) defaultMLC = Color.background;
-    else defaultMLC = Color.defaultLine;
+    if(!(opts || {}).noLine) {
+        // if there's a line with a different color than the marker, use
+        // that line color as the default marker line color
+        // (except when it's an array)
+        // mostly this is for transparent markers to behave nicely
+        if(lineColor && !Array.isArray(lineColor) && (traceOut.marker.color !== lineColor)) {
+            defaultMLC = lineColor;
+        }
+        else if(isBubble) defaultMLC = Color.background;
+        else defaultMLC = Color.defaultLine;
 
-    coerce('marker.line.color', defaultMLC);
-    if(hasColorscale(traceIn, 'marker.line')) {
-        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.line.', cLetter: 'c'});
-    }
+        coerce('marker.line.color', defaultMLC);
+        if(hasColorscale(traceIn, 'marker.line')) {
+            colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.line.', cLetter: 'c'});
+        }
 
-    coerce('marker.line.width', isBubble ? 1 : 0);
+        coerce('marker.line.width', isBubble ? 1 : 0);
+    }
 
     if(isBubble) {
         coerce('marker.sizeref');
