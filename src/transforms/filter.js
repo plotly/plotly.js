@@ -15,7 +15,8 @@ var axisIds = require('../plots/cartesian/axis_ids');
 var autoType = require('../plots/cartesian/axis_autotype');
 var setConvert = require('../plots/cartesian/set_convert');
 
-var INEQUALITY_OPS = ['=', '!=', '<', '>=', '>', '<='];
+var COMPARISON_OPS = ['=', '!='];
+var INEQUALITY_OPS = ['<', '>=', '>', '<='];
 var INTERVAL_OPS = ['[]', '()', '[)', '(]', '][', ')(', '](', ')['];
 var SET_OPS = ['{}', '}{'];
 
@@ -51,7 +52,11 @@ exports.attributes = {
     },
     operation: {
         valType: 'enumerated',
-        values: [].concat(INEQUALITY_OPS).concat(INTERVAL_OPS).concat(SET_OPS),
+        values: []
+            .concat(COMPARISON_OPS)
+            .concat(INEQUALITY_OPS)
+            .concat(INTERVAL_OPS)
+            .concat(SET_OPS),
         dflt: '=',
         description: [
             'Sets the filter operation.',
@@ -88,8 +93,9 @@ exports.attributes = {
             'Values are expected to be in the same type as the data linked',
             'to *target*.',
 
-            'When `operation` is set to one of the inequality values',
-            '(' + INEQUALITY_OPS + ')',
+            'When `operation` is set to one of',
+            'the comparison or (' + COMPARISON_OPS + ')',
+            'inequality values (' + INEQUALITY_OPS + ')',
             '*value* is expected to be a number or a string.',
 
             'When `operation` is set to one of the interval value',
@@ -108,9 +114,9 @@ exports.attributes = {
         dflt: false,
         description: [
             'Determines whether or not gaps in data arrays produced by the filter operation',
-            'are preserved or not.',
+            'are preserved.',
             'Setting this to *true* might be useful when plotting a line chart',
-            'with `connectgaps` set to *true*.'
+            'with `connectgaps` set to *false*.'
         ].join(' ')
     },
 };
@@ -268,7 +274,7 @@ function getFilterFunc(opts, d2c, targetCalendar) {
 
     var coercedValue;
 
-    if(isOperationIn(INEQUALITY_OPS)) {
+    if(isOperationIn(COMPARISON_OPS) || isOperationIn(INEQUALITY_OPS)) {
         coercedValue = hasArrayValue ? d2cValue(value[0]) : d2cValue(value);
     }
     else if(isOperationIn(INTERVAL_OPS)) {
