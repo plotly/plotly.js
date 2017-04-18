@@ -162,6 +162,18 @@ module.exports = function plot(gd, calcData) {
         Fx.click(gd, { target: true });
     };
 
+    var repositioned = function(d, nodes) {
+        if(log) console.log('repositioned node', nodes);
+        var n, nOrig;
+        var names = gd.data[0].nodes.map(function(nn) {return nn.label;});
+        for(var i = 0; i < nodes.length; i++) {
+            n = nodes[i];
+            nOrig = gd.data[d.traceId].nodes[names.indexOf(n.label)];
+            nOrig.parallel = (n.x - n.dx / 2) / n.width;
+            nOrig.perpendicular = (n.y - n.dy / 2) / n.height;
+        }
+    };
+
     var nodeHover = function(element, d, sankey) {
 
         if(log) console.log('hover node', d.node);
@@ -239,7 +251,8 @@ module.exports = function plot(gd, calcData) {
                 hover: nodeHover,
                 follow: nodeHoverFollow,
                 unhover: nodeUnhover,
-                select: nodeSelect
+                select: nodeSelect,
+                repositioned: repositioned
             }
         }
     );

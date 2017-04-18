@@ -83,8 +83,10 @@ function sankeyModel(layout, d, i) {
         .layout(c.sankeyIterations);
 
     var node, sankeyNodes  = sankey.nodes();
-    for(var n = 0; i < sankeyNodes.length; i++) {
-        node = sankeyNodes[i];
+    for(var n = 0; n < sankeyNodes.length; n++) {
+        node = sankeyNodes[n];
+        node.width = width;
+        node.height = height;
         if(node.parallel) node.x = (horizontal ? width : height)  * node.parallel;
         if(node.perpendicular) node.y = (horizontal ? height : width) * node.perpendicular;
     }
@@ -253,6 +255,8 @@ function attachPointerEvents(selection, sankey, eventSet) {
 
 function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 
+    var repositionedCallback = callbacks.nodeEvents.repositioned;
+
     var dragBehavior = d3.behavior.drag()
 
         .origin(function(d) {return d.horizontal ? d.node : {x: d.node['y'], y: d.node['x']};})
@@ -271,7 +275,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
                 if (d.forceLayouts[forceKey]) {
                     d.forceLayouts[forceKey].alpha(1);
                 } else { // make a forceLayout iff needed
-                    attachForce(sankeyNode, forceKey, d);
+                    attachForce(sankeyNode, forceKey, repositionedCallback, d);
                 }
                 window.requestAnimationFrame(function faster() {
                     for(var i = 0; i < c.forceTicksPerFrame; i++) {
@@ -290,14 +294,14 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
             if(d.arrangement === 'fixed') return;
             var x = d.horizontal ? d3.event.x : d3.event.y;
             var y = d.horizontal ? d3.event.y : d3.event.x;
-            if(d.arrangement !== 'snap') {
+            if(d.arrangement === 'snap') {
+                d.node.x = x;
+                d.node.y = y;
+            } else {
                 if(d.arrangement === 'freeform') {
                     d.node.x = x;
                 }
                 d.node.y = Math.max(d.node.dy / 2, Math.min(d.size - d.node.dy / 2, y));
-            } else {
-                d.node.x = x;
-                d.node.y = y;
             }
             saveCurrentDragPosition(d.node);
             if(d.arrangement !== 'snap') {
@@ -307,7 +311,12 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
             }
         })
 
-        .on('dragend', function(d) {d.interactionState.dragInProgress = false;});
+        .on('dragend', function(d) {
+            if(d.arrangement !== 'snap') {
+                repositionedCallback([d.node]);
+            }
+            d.interactionState.dragInProgress = false;
+        });
 
 
     sankeyNode
@@ -315,7 +324,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
         .call(dragBehavior);
 }
 
-function attachForce(sankeyNode, forceKey, d) {
+function attachForce(sankeyNode, forceKey, repositionedCallback, d) {
     var nodes = d.sankey.nodes().filter(function(n) {return n.originalX === d.node.originalX;});
     d.forceLayouts[forceKey] = d3Force.forceSimulation(nodes)
         .alphaDecay(0)
@@ -323,11 +332,11 @@ function attachForce(sankeyNode, forceKey, d) {
             .radius(function (n) {return n.dy / 2 + d.nodePad / 2;})
             .strength(1)
             .iterations(c.forceIterations))
-        .force('constrain', snappingForce(sankeyNode, forceKey, nodes, d))
+        .force('constrain', snappingForce(sankeyNode, forceKey, nodes, repositionedCallback, d))
         .stop();
 }
 
-function snappingForce(sankeyNode, forceKey, nodes, d) {
+function snappingForce(sankeyNode, forceKey, nodes, repositionedCallback, d) {
     return function _snappingForce() {
         var maxVelocity = 0;
         for (var i = 0; i < nodes.length; i++) {
@@ -341,10 +350,11 @@ function snappingForce(sankeyNode, forceKey, nodes, d) {
             }
             maxVelocity = Math.max(maxVelocity, Math.abs(n.vx), Math.abs(n.vy));
         }
-        if (!d.interactionState.dragInProgress && maxVelocity < 0.1) {
+        if (!d.interactionState.dragInProgress && maxVelocity < 0.1 && d.forceLayouts[forceKey].alpha() > 0) {
             d.forceLayouts[forceKey].alpha(0);
             window.setTimeout(function () {
                 sankeyNode.call(crispLinesOnEnd);
+                repositionedCallback(d, nodes);
             }, 30); // geome on move, crisp when static
         }
     }
