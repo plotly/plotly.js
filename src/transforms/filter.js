@@ -15,8 +15,7 @@ var axisIds = require('../plots/cartesian/axis_ids');
 var autoType = require('../plots/cartesian/axis_autotype');
 var setConvert = require('../plots/cartesian/set_convert');
 
-var COMPARISON_OPS = ['=', '!='];
-var INEQUALITY_OPS = ['<', '>=', '>', '<='];
+var COMPARISON_OPS = ['=', '!=', '<', '>=', '>', '<='];
 var INTERVAL_OPS = ['[]', '()', '[)', '(]', '][', ')(', '](', ')['];
 var SET_OPS = ['{}', '}{'];
 
@@ -54,7 +53,6 @@ exports.attributes = {
         valType: 'enumerated',
         values: []
             .concat(COMPARISON_OPS)
-            .concat(INEQUALITY_OPS)
             .concat(INTERVAL_OPS)
             .concat(SET_OPS),
         dflt: '=',
@@ -94,16 +92,15 @@ exports.attributes = {
             'to *target*.',
 
             'When `operation` is set to one of',
-            'the comparison or (' + COMPARISON_OPS + ')',
-            'inequality values (' + INEQUALITY_OPS + ')',
+            'the comparison values (' + COMPARISON_OPS + ')',
             '*value* is expected to be a number or a string.',
 
-            'When `operation` is set to one of the interval value',
+            'When `operation` is set to one of the interval values',
             '(' + INTERVAL_OPS + ')',
             '*value* is expected to be 2-item array where the first item',
             'is the lower bound and the second item is the upper bound.',
 
-            'When `operation`, is set to one of the set value',
+            'When `operation`, is set to one of the set values',
             '(' + SET_OPS + ')',
             '*value* is expected to be an array with as many items as',
             'the desired set elements.'
@@ -274,7 +271,7 @@ function getFilterFunc(opts, d2c, targetCalendar) {
 
     var coercedValue;
 
-    if(isOperationIn(COMPARISON_OPS) || isOperationIn(INEQUALITY_OPS)) {
+    if(isOperationIn(COMPARISON_OPS)) {
         coercedValue = hasArrayValue ? d2cValue(value[0]) : d2cValue(value);
     }
     else if(isOperationIn(INTERVAL_OPS)) {
