@@ -17,6 +17,7 @@ ScatterGl.colorbar = require('../scatter/colorbar');
 // reuse the Scatter3D 'dummy' calc step so that legends know what to do
 ScatterGl.calc = require('../scatter3d/calc');
 ScatterGl.plot = require('./convert');
+ScatterGl.selectPoints = require('./select');
 
 ScatterGl.moduleType = 'trace';
 ScatterGl.name = 'scattergl';
