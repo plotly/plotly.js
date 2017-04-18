@@ -11,6 +11,7 @@
 var colorAttributes = require('../../components/colorscale/color_attributes');
 var errorBarAttrs = require('../../components/errorbars/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
+var dash = require('../../components/drawing/attributes').dash;
 
 var Drawing = require('../../components/drawing');
 var constants = require('./constants');
@@ -163,20 +164,7 @@ module.exports = {
                 '*0* corresponds to no smoothing (equivalent to a *linear* shape).'
             ].join(' ')
         },
-        dash: {
-            valType: 'string',
-            // string type usually doesn't take values... this one should really be
-            // a special type or at least a special coercion function, from the GUI
-            // you only get these values but elsewhere the user can supply a list of
-            // dash lengths in px, and it will be honored
-            values: ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'],
-            dflt: 'solid',
-            role: 'style',
-            description: [
-                'Sets the style of the lines. Set to a dash string type',
-                'or a dash length in px.'
-            ].join(' ')
-        },
+        dash: dash,
         simplify: {
             valType: 'boolean',
             dflt: true,

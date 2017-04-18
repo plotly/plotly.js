@@ -61,10 +61,10 @@ module.exports = {
 
     line: {
         color: lineAttrs.color,
-        width: lineAttrs.width,
+        width: lineAttrs.width
 
         // TODO
-        dash: lineAttrs.dash
+        // dash: dash
     },
 
     connectgaps: scatterAttrs.connectgaps,
