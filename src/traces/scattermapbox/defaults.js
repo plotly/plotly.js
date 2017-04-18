@@ -25,15 +25,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    // function coerceMarker(attr, dflt) {
-    //     var attrs = (attr.indexOf('.line') === -1) ? attributes : scatterAttrs;
-
-    //     // use 'scatter' attributes for 'marker.line.' attr,
-    //     // so that we can reuse the scatter marker defaults
-
-    //     return Lib.coerce(traceIn, traceOut, attrs, attr, dflt);
-    // }
-
     var len = handleLonLatDefaults(traceIn, traceOut, coerce);
     if(!len) {
         traceOut.visible = false;
