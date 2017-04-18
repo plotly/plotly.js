@@ -313,7 +313,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 
         .on('dragend', function(d) {
             if(d.arrangement !== 'snap') {
-                repositionedCallback([d.node]);
+                repositionedCallback(d, [d.node]);
             }
             d.interactionState.dragInProgress = false;
         });

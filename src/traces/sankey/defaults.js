@@ -11,6 +11,7 @@
 var Lib = require('../../lib');
 var attributes = require('./attributes');
 var colors = require('../../components/color/attributes').defaults;
+var Color = require('../../components/color');
 var d3 = require('d3');
 
 
@@ -91,7 +92,7 @@ function nodesDefaults(traceIn, traceOut) {
             if(nodeIn.color) {
                 coerce('color');
             } else {
-                coerce('color', defaultPalette(i));
+                coerce('color', Color.addOpacity(defaultPalette(i), 0.8));
             }
         }
 
