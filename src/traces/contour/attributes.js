@@ -12,6 +12,7 @@ var heatmapAttrs = require('../heatmap/attributes');
 var scatterAttrs = require('../scatter/attributes');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
+var dash = require('../../components/drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterLineAttrs = scatterAttrs.line;
@@ -118,7 +119,7 @@ module.exports = extendFlat({}, {
             ].join(' ')
         }),
         width: scatterLineAttrs.width,
-        dash: scatterLineAttrs.dash,
+        dash: dash,
         smoothing: extendFlat({}, scatterLineAttrs.smoothing, {
             description: [
                 'Sets the amount of smoothing for the contour lines,',

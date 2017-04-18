@@ -185,7 +185,7 @@ describe('ModeBar', function() {
                 ['toImage', 'sendDataToCloud'],
                 ['zoom2d', 'pan2d'],
                 ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
-                ['hoverClosestCartesian', 'hoverCompareCartesian']
+                ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
             ]);
 
             var gd = getMockGraphInfo();
@@ -203,7 +203,7 @@ describe('ModeBar', function() {
                 ['toImage', 'sendDataToCloud'],
                 ['zoom2d', 'pan2d', 'select2d', 'lasso2d'],
                 ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
-                ['hoverClosestCartesian', 'hoverCompareCartesian']
+                ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
             ]);
 
             var gd = getMockGraphInfo();
@@ -225,7 +225,7 @@ describe('ModeBar', function() {
         it('creates mode bar (cartesian fixed-axes version)', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
-                ['hoverClosestCartesian', 'hoverCompareCartesian']
+                ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
             ]);
 
             var gd = getMockGraphInfo();
@@ -412,7 +412,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
                 ['zoom2d', 'pan2d'],
-                ['hoverClosestCartesian', 'hoverCompareCartesian']
+                ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
             ]);
 
             var gd = getMockGraphInfo();
@@ -544,7 +544,7 @@ describe('ModeBar', function() {
 
             var modeBar = gd._fullLayout._modeBar;
             expect(countGroups(modeBar)).toEqual(6);
-            expect(countButtons(modeBar)).toEqual(10);
+            expect(countButtons(modeBar)).toEqual(11);
         });
 
         it('sets up buttons with modeBarButtonsToAdd and modeBarButtonToRemove (2)', function() {
@@ -564,7 +564,7 @@ describe('ModeBar', function() {
 
             var modeBar = gd._fullLayout._modeBar;
             expect(countGroups(modeBar)).toEqual(7);
-            expect(countButtons(modeBar)).toEqual(12);
+            expect(countButtons(modeBar)).toEqual(13);
         });
 
         it('sets up buttons with fully custom modeBarButtons', function() {
@@ -612,7 +612,7 @@ describe('ModeBar', function() {
     });
 
     describe('modebar on clicks', function() {
-        var gd, modeBar;
+        var gd, modeBar, buttonClosest, buttonCompare, buttonToggle, hovermodeButtons;
 
         beforeAll(function() {
             jasmine.addMatchers(customMatchers);
@@ -685,6 +685,10 @@ describe('ModeBar', function() {
                 gd = createGraphDiv();
                 Plotly.plot(gd, mockData, mockLayout).then(function() {
                     modeBar = gd._fullLayout._modeBar;
+                    buttonToggle = selectButton(modeBar, 'toggleSpikelines');
+                    buttonCompare = selectButton(modeBar, 'hoverCompareCartesian');
+                    buttonClosest = selectButton(modeBar, 'hoverClosestCartesian');
+                    hovermodeButtons = [buttonCompare, buttonClosest];
                     done();
                 });
             });
@@ -758,21 +762,53 @@ describe('ModeBar', function() {
             });
 
             describe('buttons hoverCompareCartesian and hoverClosestCartesian ', function() {
-                it('should update layout hovermode', function() {
-                    var buttonCompare = selectButton(modeBar, 'hoverCompareCartesian'),
-                        buttonClosest = selectButton(modeBar, 'hoverClosestCartesian'),
-                        buttons = [buttonCompare, buttonClosest];
 
+                it('should update layout hovermode', function() {
                     expect(gd._fullLayout.hovermode).toBe('x');
-                    assertActive(buttons, buttonCompare);
+                    assertActive(hovermodeButtons, buttonCompare);
 
                     buttonClosest.click();
                     expect(gd._fullLayout.hovermode).toBe('closest');
-                    assertActive(buttons, buttonClosest);
+                    assertActive(hovermodeButtons, buttonClosest);
 
                     buttonCompare.click();
                     expect(gd._fullLayout.hovermode).toBe('x');
-                    assertActive(buttons, buttonCompare);
+                    assertActive(hovermodeButtons, buttonCompare);
+                });
+            });
+
+            describe('button toggleSpikelines', function() {
+                it('should update layout hovermode', function() {
+                    expect(gd._fullLayout.hovermode).toBe('x');
+                    assertActive(hovermodeButtons, buttonCompare);
+
+                    buttonToggle.click();
+                    expect(gd._fullLayout.hovermode).toBe('closest');
+                    assertActive(hovermodeButtons, buttonClosest);
+                });
+                it('should makes spikelines visible', function() {
+                    buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
+
+                    buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+                });
+                it('should become disabled when hovermode is switched off closest', function() {
+                    buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
+
+                    buttonCompare.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+                });
+                it('should be re-enabled when hovermode is set to closest if it was previously on', function() {
+                    buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
+
+                    buttonCompare.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+
+                    buttonClosest.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
                 });
             });
         });
