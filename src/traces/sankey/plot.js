@@ -28,7 +28,7 @@ function makeTranslucent(element, alpha) {
 function makeTextContrasty(element, hue) {
     d3.select(element)
         .select('text.name')
-        .style('fill', Color.contrast(hue, 0, 40));
+        .style('fill', Color.contrast(hue, -20, 20));
 }
 
 function relatedLinks(d) {
