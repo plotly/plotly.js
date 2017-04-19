@@ -140,7 +140,7 @@ module.exports = function plot(gd, calcData) {
             outerContainer: fullLayout._paper.node()
         });
 
-        makeTranslucent(tooltip, 0.67);
+        makeTranslucent(tooltip, 0.85);
     };
 
     var linkUnhover = function(element, d, sankey) {

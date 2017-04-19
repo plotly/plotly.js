@@ -119,12 +119,16 @@ function sankeyModel(layout, d, i) {
     };
 }
 
-function linkModel(d, l) {
+function linkModel(uniqueKeys, d, l) {
 
     var tc = tinycolor(l.color);
+    var basicKey = l.source.label + '|' + l.target.label;
+    var foundKey = uniqueKeys[basicKey];
+    uniqueKeys[basicKey] = (foundKey === void(0) ? foundKey : 0) + 1;
+    var key = basicKey + (foundKey === void(0) ? '' : '__' + foundKey);
 
     return {
-        key: l.source.label + '|' + l.target.label,
+        key: key,
         traceId: d.key,
         link: l,
         tinyColorHue: Color.tinyRGB(tc),
@@ -146,9 +150,10 @@ function nodeModel(uniqueKeys, d, n) {
         zoneThickness = visibleThickness + 2 * zoneThicknessPad,
         zoneLength = visibleLength + 2 * zoneLengthPad;
 
-    var foundKey = uniqueKeys[n.label];
-    uniqueKeys[n.label] = (foundKey === void(0) ? foundKey : 0) + 1;
-    var key = n.label + (foundKey === void(0) ? '' : '__' + foundKey);
+    var basicKey = n.label;
+    var foundKey = uniqueKeys[basicKey];
+    uniqueKeys[basicKey] = (foundKey === void(0) ? foundKey : 0) + 1;
+    var key = basicKey + (foundKey === void(0) ? '' : '__' + foundKey);
 
     return {
         key: key,
@@ -407,9 +412,10 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     var sankeyLink = sankeyLinks.selectAll('.sankeyLink')
         .data(function(d) {
+            var uniqueKeys = {};
             return d.sankey.links()
                 .filter(function(l) {return l.visible && l.value;})
-                .map(linkModel.bind(null, d));
+                .map(linkModel.bind(null, uniqueKeys, d));
         }, keyFun);
 
     sankeyLink.enter()
