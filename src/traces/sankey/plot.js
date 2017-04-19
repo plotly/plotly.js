@@ -141,6 +141,7 @@ module.exports = function plot(gd, calcData) {
         });
 
         makeTranslucent(tooltip, 0.85);
+        makeTextContrasty(tooltip, d.tinyColorHue);
     };
 
     var linkUnhover = function(element, d, sankey) {
