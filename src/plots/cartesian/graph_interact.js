@@ -864,8 +864,8 @@ function createSpikelines(hoverData, opts) {
     var c0 = hoverData[0];
     var xa = c0.xa;
     var ya = c0.ya;
-    var showX = xa.showspikes;
-    var showY = ya.showspikes;
+    var showX = xa.showspikes && xa.visible && (xa.showline || xa.showticklabels);
+    var showY = ya.showspikes && ya.visible && (ya.showline || ya.showticklabels);
 
     // Remove old spikeline items
     container.selectAll('.spikeline').remove();
