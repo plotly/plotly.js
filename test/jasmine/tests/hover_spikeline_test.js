@@ -39,5 +39,19 @@ describe('spikeline', function() {
             expect(d3.selectAll('line.spikeline').size()).toEqual(2);
             expect(d3.selectAll('circle.spikeline').size()).toEqual(0);
         });
+
+        it('doesn\t draw a line when the axis isn\'t visible', function() {
+            Plotly.relayout('graph', 'yaxis.visible', false);
+            Fx.hover('graph', {xval: 2, yval: 3}, 'xy');
+            expect(d3.selectAll('line.spikeline').size()).toEqual(2);
+            expect(d3.selectAll('circle.spikeline').size()).toEqual(0);
+        });
+
+        it('doesn\t draw a line when the axis has no line or labels', function() {
+            Plotly.relayout('graph', ['yaxis.showticklabels', 'yaxis.showline'], [false, false]);
+            Fx.hover('graph', {xval: 2, yval: 3}, 'xy');
+            expect(d3.selectAll('line.spikeline').size()).toEqual(2);
+            expect(d3.selectAll('circle.spikeline').size()).toEqual(0);
+        });
     });
 });
