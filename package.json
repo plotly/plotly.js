@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "1.25.2",
+  "version": "1.26.0",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
@@ -55,7 +55,6 @@
   "dependencies": {
     "3d-view": "^2.0.0",
     "alpha-shape": "^1.0.0",
-    "arraytools": "^1.0.0",
     "color-rgba": "^1.0.4",
     "convex-hull": "^1.0.3",
     "country-regex": "^1.1.0",

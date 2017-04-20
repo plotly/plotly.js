@@ -11,6 +11,7 @@
 
 var Lib = require('../../lib');
 var scatterAttrs = require('../scatter/attributes');
+var dash = require('../../components/drawing/attributes').dash;
 
 var INCREASING_COLOR = '#3D9970';
 var DECREASING_COLOR = '#FF4136';
@@ -38,9 +39,9 @@ var directionAttrs = {
     },
 
     line: {
-        color: Lib.extendFlat({}, lineAttrs.color),
-        width: Lib.extendFlat({}, lineAttrs.width),
-        dash: Lib.extendFlat({}, lineAttrs.dash),
+        color: lineAttrs.color,
+        width: lineAttrs.width,
+        dash: dash,
     }
 };
 
@@ -87,9 +88,9 @@ module.exports = {
                 '`decreasing.line.width`.'
             ].join(' ')
         }),
-        dash: Lib.extendFlat({}, lineAttrs.dash, {
+        dash: Lib.extendFlat({}, dash, {
             description: [
-                lineAttrs.dash,
+                dash.description,
                 'Note that this style setting can also be set per',
                 'direction via `increasing.line.dash` and',
                 '`decreasing.line.dash`.'

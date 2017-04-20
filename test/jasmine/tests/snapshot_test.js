@@ -80,7 +80,8 @@ describe('Plotly.Snapshot', function() {
                 displaylogo: false,
                 showLink: false,
                 showTips: false,
-                setBackground: 'opaque'
+                setBackground: 'opaque',
+                mapboxAccessToken: undefined
             };
 
             var themeTile = Plotly.Snapshot.clone(dummyGraphObj, themeOptions);

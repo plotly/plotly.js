@@ -28,6 +28,12 @@ proto.merge = function(sceneLayout) {
     for(var i = 0; i < 3; ++i) {
         var axes = sceneLayout[AXES_NAMES[i]];
 
+        if(!axes.visible) {
+            this.enabled[i] = false;
+            this.drawSides[i] = false;
+            continue;
+        }
+
         this.enabled[i] = axes.showspikes;
         this.colors[i] = str2RGBArray(axes.spikecolor);
         this.drawSides[i] = axes.spikesides;

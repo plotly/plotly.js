@@ -14,6 +14,7 @@ var extendFlat = require('../../../lib/extend').extendFlat;
 
 
 module.exports = {
+    visible: axesAttrs.visible,
     showspikes: {
         valType: 'boolean',
         role: 'info',

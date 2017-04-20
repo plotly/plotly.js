@@ -277,7 +277,8 @@ function makeLines(plotgroup, pathinfo, contours) {
         .attr('d', function(d) {
             return Drawing.smoothopen(d, smoothing);
         })
-        .style('stroke-miterlimit', 1);
+        .style('stroke-miterlimit', 1)
+        .style('vector-effect', 'non-scaling-stroke');
 
     var closedcontourlines = linegroup.selectAll('path.closedline')
         .data(function(d) { return d.paths; });
@@ -288,7 +289,8 @@ function makeLines(plotgroup, pathinfo, contours) {
         .attr('d', function(d) {
             return Drawing.smoothclosed(d, smoothing);
         })
-        .style('stroke-miterlimit', 1);
+        .style('stroke-miterlimit', 1)
+        .style('vector-effect', 'non-scaling-stroke');
 }
 
 function clipGaps(plotGroup, plotinfo, cd0, perimeter) {

@@ -10,6 +10,51 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.26.0] -- 2017-04-18
+
+### Added
+- Carpets plots with new trace types: `carpet`, `scattercarpet` and
+  `contourcarpet` [#1595, #1596]
+- Axis constraints with new cartesian and gl2d axis attributes `scaleanchor` and
+  `scaleratio` [#1522]
+- Annotations `width`, `height`, `valign` and `xshift` and `yshift` attributes
+  [#1551, #1590]
+- Hover text over annotations with `hovertext` and `hoverlabel` attributes
+  [#1573, #1590]
+- Add `hovertext` attribute to trace types that can show `text` values on graph
+  to allow setting hover text independently [#1523]
+- Add `spikes` interactions functionality to cartesian subplots [#1461]
+- Pass mouse DOM mouse event during `plotly_click`, `plotly_hover` and
+  `plotly_unhover` [#1505]
+- Add `visible` attribute to cartesian and gl3d axes to easily make them
+  disappear [#1595, #1599]
+- Make `deleteFrames(gd)` delete all frames [#1531]
+
+### Changed
+- Lock down `gl-plot3d` and `matrix-camera-controller` dependencies to include
+  latest memory management improvements [#1570]
+- Performance improvements for `category` axes [#1544]
+- Skip overhead for `showLink` config option is false [#1557]
+- Optimize scatter trace sorting on updates [#1555]
+- Lock down `gl-scatter2d-sdf` dependency to `1.3.4` while waiting for bug fix
+  there [#1572]
+
+### Fixed
+- Fix bar sizes of traces with (x,y) `NaN` items [#1519]
+- Fix handling of `NaN` items in array-ok attributes for `scattergeo` and
+  `scattermapbox` traces [#1538, #1564]
+- Fix hover label position for `bar` traces with set `width` [#1527]
+- Fix `restyle` for attribute containers [#1536]
+- Fix `restyle` exception for `scattergl` traces with no `y` data [#1567]
+- Fix animation of text nodes that contain `<br>`s [#1602]
+- Fix `toImage` for mapbox subplots when access token is set in the config
+  options [#1598]
+- Emit `plotly_hover` on `pie` traces when `hoverinfo: 'none'` [#1505]
+- Pass trace info during `plotly_click` on `pie` traces [#1505]
+- Pass through the wheel event if the scrollbar is at the very top or bottom
+  [#1588]
+
+
 ## [1.25.2] -- 2017-03-31
 
 ### Fixed

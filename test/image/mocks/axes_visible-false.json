@@ -1,0 +1,9 @@
+{
+  "data": [{
+    "y": [1, 2, 3]
+  }],
+  "layout": {
+    "xaxis": { "visible": false },
+    "yaxis": { "visible": false }
+  }
+}

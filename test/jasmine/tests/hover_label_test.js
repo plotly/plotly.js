@@ -9,6 +9,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
+var delay = require('../assets/delay');
 var doubleClick = require('../assets/double_click');
 var fail = require('../assets/fail_test');
 
@@ -530,6 +531,44 @@ describe('hover info', function() {
             mouseEvent('mousemove', 493, 108);
             var hovers = d3.selectAll('g.hovertext');
             expect(hovers.size()).toEqual(0);
+        });
+    });
+
+    describe('hover events', function() {
+        var data = [{x: [1, 2, 3], y: [1, 3, 2], type: 'bar'}];
+        var layout = {width: 600, height: 400};
+        var gd;
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            Plotly.plot(gd, data, layout).then(done);
+        });
+
+        it('should emit events only if the event looks user-driven', function(done) {
+            var hoverHandler = jasmine.createSpy();
+            gd.on('plotly_hover', hoverHandler);
+
+            var gdBB = gd.getBoundingClientRect();
+            var event = {clientX: gdBB.left + 300, clientY: gdBB.top + 200};
+
+            Promise.resolve().then(function() {
+                Fx.hover(gd, event, 'xy');
+            })
+            .then(delay(constants.HOVERMINTIME * 1.1))
+            .then(function() {
+                Fx.unhover(gd);
+            })
+            .then(function() {
+                expect(hoverHandler).not.toHaveBeenCalled();
+                var dragger = gd.querySelector('.nsewdrag');
+
+                Fx.hover(gd, Lib.extendFlat({target: dragger}, event), 'xy');
+            })
+            .then(function() {
+                expect(hoverHandler).toHaveBeenCalledTimes(1);
+            })
+            .catch(fail)
+            .then(done);
         });
     });
 });

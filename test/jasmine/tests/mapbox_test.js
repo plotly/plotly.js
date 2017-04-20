@@ -964,5 +964,78 @@ describe('@noCI, mapbox plots', function() {
             }, MOUSE_DELAY);
         });
     }
+});
 
+describe('@noCI, mapbox toImage', function() {
+    var MINIMUM_LENGTH = 1e5;
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        Plotly.setPlotConfig({ mapboxAccessToken: null });
+        destroyGraphDiv();
+    });
+
+    it('should generate image data with global credentials', function(done) {
+        Plotly.setPlotConfig({
+            mapboxAccessToken: MAPBOX_ACCESS_TOKEN
+        });
+
+        Plotly.newPlot(gd, [{
+            type: 'scattermapbox',
+            lon: [0, 10, 20],
+            lat: [-10, 10, -10]
+        }])
+        .then(function() {
+            return Plotly.toImage(gd);
+        })
+        .then(function(imgData) {
+            expect(imgData.length).toBeGreaterThan(MINIMUM_LENGTH);
+        })
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('should generate image data with config credentials', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'scattermapbox',
+            lon: [0, 10, 20],
+            lat: [-10, 10, -10]
+        }], {}, {
+            mapboxAccessToken: MAPBOX_ACCESS_TOKEN
+        })
+        .then(function() {
+            return Plotly.toImage(gd);
+        })
+        .then(function(imgData) {
+            expect(imgData.length).toBeGreaterThan(MINIMUM_LENGTH);
+        })
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('should generate image data with layout credentials', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'scattermapbox',
+            lon: [0, 10, 20],
+            lat: [-10, 10, -10]
+        }], {
+            mapbox: {
+                accesstoken: MAPBOX_ACCESS_TOKEN
+            }
+        })
+        .then(function() {
+            return Plotly.toImage(gd);
+        })
+        .then(function(imgData) {
+            expect(imgData.length).toBeGreaterThan(MINIMUM_LENGTH);
+        })
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
 });

@@ -11,34 +11,38 @@
 var Lib = require('../../lib');
 var constants = require('./constants');
 
-module.exports = function findAllPaths(pathinfo) {
+module.exports = function findAllPaths(pathinfo, xtol, ytol) {
     var cnt,
         startLoc,
         i,
         pi,
         j;
 
+    // Default just passes these values through as they were before:
+    xtol = xtol || 0.01;
+    ytol = ytol || 0.01;
+
     for(i = 0; i < pathinfo.length; i++) {
         pi = pathinfo[i];
 
         for(j = 0; j < pi.starts.length; j++) {
             startLoc = pi.starts[j];
-            makePath(pi, startLoc, 'edge');
+            makePath(pi, startLoc, 'edge', xtol, ytol);
         }
 
         cnt = 0;
         while(Object.keys(pi.crossings).length && cnt < 10000) {
             cnt++;
             startLoc = Object.keys(pi.crossings)[0].split(',').map(Number);
-            makePath(pi, startLoc);
+            makePath(pi, startLoc, undefined, xtol, ytol);
         }
         if(cnt === 10000) Lib.log('Infinite loop in contour?');
     }
 };
 
-function equalPts(pt1, pt2) {
-    return Math.abs(pt1[0] - pt2[0]) < 0.01 &&
-           Math.abs(pt1[1] - pt2[1]) < 0.01;
+function equalPts(pt1, pt2, xtol, ytol) {
+    return Math.abs(pt1[0] - pt2[0]) < xtol &&
+           Math.abs(pt1[1] - pt2[1]) < ytol;
 }
 
 function ptDist(pt1, pt2) {
@@ -47,17 +51,17 @@ function ptDist(pt1, pt2) {
     return Math.sqrt(dx * dx + dy * dy);
 }
 
-function makePath(pi, loc, edgeflag) {
-    var startLocStr = loc.join(','),
-        locStr = startLocStr,
-        mi = pi.crossings[locStr],
-        marchStep = startStep(mi, edgeflag, loc),
-        // start by going backward a half step and finding the crossing point
-        pts = [getInterpPx(pi, loc, [-marchStep[0], -marchStep[1]])],
-        startStepStr = marchStep.join(','),
-        m = pi.z.length,
-        n = pi.z[0].length,
-        cnt;
+function makePath(pi, loc, edgeflag, xtol, ytol) {
+    var startLocStr = loc.join(',');
+    var locStr = startLocStr;
+    var mi = pi.crossings[locStr];
+    var marchStep = startStep(mi, edgeflag, loc);
+    // start by going backward a half step and finding the crossing point
+    var pts = [getInterpPx(pi, loc, [-marchStep[0], -marchStep[1]])];
+    var startStepStr = marchStep.join(',');
+    var m = pi.z.length;
+    var n = pi.z[0].length;
+    var cnt;
 
     // now follow the path
     for(cnt = 0; cnt < 10000; cnt++) { // just to avoid infinite loops
@@ -81,7 +85,7 @@ function makePath(pi, loc, edgeflag) {
         loc[1] += marchStep[1];
 
         // don't include the same point multiple times
-        if(equalPts(pts[pts.length - 1], pts[pts.length - 2])) pts.pop();
+        if(equalPts(pts[pts.length - 1], pts[pts.length - 2], xtol, ytol)) pts.pop();
         locStr = loc.join(',');
 
         var atEdge = (marchStep[0] && (loc[0] < 0 || loc[0] > n - 2)) ||
@@ -97,7 +101,7 @@ function makePath(pi, loc, edgeflag) {
     if(cnt === 10000) {
         Lib.log('Infinite loop in contour?');
     }
-    var closedpath = equalPts(pts[0], pts[pts.length - 1]),
+    var closedpath = equalPts(pts[0], pts[pts.length - 1], xtol, ytol),
         totaldist = 0,
         distThresholdFactor = 0.2 * pi.smoothing,
         alldists = [],
@@ -186,7 +190,7 @@ function makePath(pi, loc, edgeflag) {
         // edge path - does it start where an existing edge path ends, or vice versa?
         var merged = false;
         pi.edgepaths.forEach(function(edgepath, edgei) {
-            if(!merged && equalPts(edgepath[0], pts[pts.length - 1])) {
+            if(!merged && equalPts(edgepath[0], pts[pts.length - 1], xtol, ytol)) {
                 pts.pop();
                 merged = true;
 
@@ -194,7 +198,7 @@ function makePath(pi, loc, edgeflag) {
                 var doublemerged = false;
                 pi.edgepaths.forEach(function(edgepath2, edgei2) {
                     if(!doublemerged && equalPts(
-                            edgepath2[edgepath2.length - 1], pts[0])) {
+                            edgepath2[edgepath2.length - 1], pts[0], xtol, ytol)) {
                         doublemerged = true;
                         pts.splice(0, 1);
                         pi.edgepaths.splice(edgei, 1);
@@ -214,7 +218,7 @@ function makePath(pi, loc, edgeflag) {
             }
         });
         pi.edgepaths.forEach(function(edgepath, edgei) {
-            if(!merged && equalPts(edgepath[edgepath.length - 1], pts[0])) {
+            if(!merged && equalPts(edgepath[edgepath.length - 1], pts[0], xtol, ytol)) {
                 pts.splice(0, 1);
                 pi.edgepaths[edgei] = edgepath.concat(pts);
                 merged = true;
@@ -257,6 +261,7 @@ function getInterpPx(pi, loc, step) {
 
     if(step[1]) {
         var dx = (pi.level - zxy) / (pi.z[locy][locx + 1] - zxy);
+
         return [xa.c2p((1 - dx) * pi.x[locx] + dx * pi.x[locx + 1], true),
             ya.c2p(pi.y[locy], true)];
     }

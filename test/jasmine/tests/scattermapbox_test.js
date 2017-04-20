@@ -24,11 +24,6 @@ function move(fromX, fromY, toX, toY, delay) {
     });
 }
 
-Plotly.setPlotConfig({
-    mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
-});
-
-
 describe('scattermapbox defaults', function() {
     'use strict';
 
@@ -341,6 +336,10 @@ describe('@noCI scattermapbox hover', function() {
     beforeAll(function(done) {
         jasmine.addMatchers(customMatchers);
 
+        Plotly.setPlotConfig({
+            mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+        });
+
         gd = createGraphDiv();
 
         var data = [{
@@ -519,6 +518,10 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
 
     beforeAll(function(done) {
         jasmine.addMatchers(customMatchers);
+
+        Plotly.setPlotConfig({
+            mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+        });
 
         gd = createGraphDiv();
         mockCopy = Lib.extendDeep({}, mock);

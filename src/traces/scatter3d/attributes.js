@@ -11,6 +11,7 @@
 var scatterAttrs = require('../scatter/attributes');
 var colorAttributes = require('../../components/colorscale/color_attributes');
 var errorBarAttrs = require('../../components/errorbars/attributes');
+var DASHES = require('../../constants/gl3d_dashes');
 
 var MARKER_SYMBOLS = require('../../constants/gl_markers');
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -114,7 +115,13 @@ module.exports = {
     connectgaps: scatterAttrs.connectgaps,
     line: extendFlat({}, {
         width: scatterLineAttrs.width,
-        dash: scatterLineAttrs.dash,
+        dash: {
+            valType: 'enumerated',
+            values: Object.keys(DASHES),
+            dflt: 'solid',
+            role: 'style',
+            description: 'Sets the dash style of the lines.'
+        },
         showscale: {
             valType: 'boolean',
             role: 'info',

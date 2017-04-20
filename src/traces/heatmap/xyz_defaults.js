@@ -15,22 +15,24 @@ var Registry = require('../../registry');
 var hasColumns = require('./has_columns');
 
 
-module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout) {
+module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout, xName, yName) {
     var z = coerce('z');
+    xName = xName || 'x';
+    yName = yName || 'y';
     var x, y;
 
     if(z === undefined || !z.length) return 0;
 
     if(hasColumns(traceIn)) {
-        x = coerce('x');
-        y = coerce('y');
+        x = coerce(xName);
+        y = coerce(yName);
 
-        // column z must be accompanied by 'x' and 'y' arrays
+        // column z must be accompanied by xName and yName arrays
         if(!x || !y) return 0;
     }
     else {
-        x = coordDefaults('x', coerce);
-        y = coordDefaults('y', coerce);
+        x = coordDefaults(xName, coerce);
+        y = coordDefaults(yName, coerce);
 
         // TODO put z validation elsewhere
         if(!isValidZ(z)) return 0;
@@ -39,7 +41,7 @@ module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout) {
     }
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
-    handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
+    handleCalendarDefaults(traceIn, traceOut, [xName, yName], layout);
 
     return traceOut.z.length;
 };
