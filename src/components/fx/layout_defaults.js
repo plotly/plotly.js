@@ -9,7 +9,7 @@
 'use strict';
 
 var Lib = require('../../lib');
-var layoutAttributes = require('../../plots/layout_attributes');
+var layoutAttributes = require('./layout_attributes');
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     function coerce(attr, dflt) {

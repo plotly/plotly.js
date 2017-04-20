@@ -12,13 +12,18 @@ var d3 = require('d3');
 var Lib = require('../../lib');
 var dragElement = require('../dragelement');
 var helpers = require('./helpers');
+var layoutAttributes = require('./layout_attributes');
 
 module.exports = {
     moduleType: 'component',
     name: 'fx',
 
     constants: require('./constants'),
+    schema: {
+        layout: layoutAttributes
+    },
 
+    layoutAttributes: layoutAttributes,
     supplyLayoutDefaults: require('./layout_defaults'),
 
     getDistanceFunction: helpers.getDistanceFunction,
