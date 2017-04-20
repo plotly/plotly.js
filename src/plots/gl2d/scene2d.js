@@ -11,7 +11,7 @@
 
 var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
-var Fx = require('../../plots/cartesian/graph_interact');
+var Fx = require('../../components/fx');
 
 var createPlot2D = require('gl-plot2d');
 var createSpikes = require('gl-spikes2d');

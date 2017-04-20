@@ -8,7 +8,7 @@
 
 'use strict';
 
-var constants = require('./cartesian/constants');
+var constants = require('../components/fx/constants');
 var fontAttrs = require('./font_attributes');
 var extendFlat = require('../lib/extend').extendFlat;
 

@@ -20,8 +20,8 @@ var Queue = require('../lib/queue');
 
 var Registry = require('../registry');
 var Plots = require('../plots/plots');
-var Fx = require('../plots/cartesian/graph_interact');
 var Polar = require('../plots/polar');
+var initInteractions = require('../plots/cartesian/graph_interact');
 
 var Drawing = require('../components/drawing');
 var ErrorBars = require('../components/errorbars');
@@ -188,7 +188,7 @@ Plotly.plot = function(gd, data, layout, config) {
         return Lib.syncOrAsync([
             subroutines.layoutStyles,
             drawAxes,
-            Fx.init
+            initInteractions
         ], gd);
     }
 
@@ -223,7 +223,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
         // re-initialize cartesian interaction,
         // which are sometimes cleared during marginPushers
-        seq = seq.concat(Fx.init);
+        seq = seq.concat(initInteractions);
 
         return Lib.syncOrAsync(seq, gd);
     }

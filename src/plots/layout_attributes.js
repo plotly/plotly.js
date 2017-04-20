@@ -169,23 +169,5 @@ module.exports = {
         valType: 'boolean',
         role: 'info',
         description: 'Determines whether or not a legend is drawn.'
-    },
-    dragmode: {
-        valType: 'enumerated',
-        role: 'info',
-        values: ['zoom', 'pan', 'select', 'lasso', 'orbit', 'turntable'],
-        dflt: 'zoom',
-        description: [
-            'Determines the mode of drag interactions.',
-            '*select* and *lasso* apply only to scatter traces with',
-            'markers or text. *orbit* and *turntable* apply only to',
-            '3D scenes.'
-        ].join(' ')
-    },
-    hovermode: {
-        valType: 'enumerated',
-        role: 'info',
-        values: ['x', 'y', 'closest', false],
-        description: 'Determines the mode of hover interactions.'
     }
 };
