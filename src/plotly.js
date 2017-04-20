@@ -27,7 +27,6 @@ exports.Axes = require('./plots/cartesian/axes');
 
 // components
 exports.ModeBar = require('./components/modebar');
-exports.Fx = require('./components/fx');
 
 // plot api
 require('./plot_api/plot_api');
