@@ -15,9 +15,9 @@ var d3 = require('d3');
 
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
+var Fx = require('../../components/fx');
 var Plots = require('../plots');
 var Axes = require('../cartesian/axes');
-var Fx = require('../cartesian/graph_interact');
 
 var addProjectionsToD3 = require('./projections');
 var createGeoScale = require('./set_scale');

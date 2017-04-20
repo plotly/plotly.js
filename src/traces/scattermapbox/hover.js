@@ -9,7 +9,7 @@
 
 'use strict';
 
-var Fx = require('../../plots/cartesian/graph_interact');
+var Fx = require('../../components/fx');
 var getTraceColor = require('../scatter/get_trace_color');
 var BADNUM = require('../../constants/numerical').BADNUM;
 

@@ -9,7 +9,7 @@
 
 'use strict';
 
-var Fx = require('../../plots/cartesian/graph_interact');
+var Fx = require('../../components/fx');
 var Lib = require('../../lib');
 
 var MAXDIST = require('../../plots/cartesian/constants').MAXDIST;

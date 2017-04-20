@@ -10,7 +10,7 @@
 'use strict';
 
 var Lib = require('../../lib');
-var Fx = require('../../plots/cartesian/graph_interact');
+var Fx = require('../../components/fx');
 var constants = require('../../plots/cartesian/constants');
 var ErrorBars = require('../../components/errorbars');
 var getTraceColor = require('./get_trace_color');
