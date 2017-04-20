@@ -12,8 +12,7 @@
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
 
-var MAXDIST = require('../../plots/cartesian/constants').MAXDIST;
-
+var MAXDIST = Fx.constants.MAXDIST;
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour) {
     // never let a heatmap override another type as closest point

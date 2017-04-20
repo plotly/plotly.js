@@ -5,7 +5,7 @@ var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var Loggers = require('@src/lib/loggers');
 var Axes = require('@src/plots/cartesian/axes');
-var HOVERMINTIME = require('@src/plots/cartesian/constants').HOVERMINTIME;
+var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
 var DBLCLICKDELAY = require('@src/constants/interactions').DBLCLICKDELAY;
 
 var d3 = require('d3');

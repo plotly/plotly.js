@@ -2,8 +2,8 @@ var d3 = require('d3');
 
 var Plotly = require('@lib/index');
 var Fx = require('@src/components/fx');
-var constants = require('@src/plots/cartesian/constants');
 var Lib = require('@src/lib');
+var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -554,7 +554,7 @@ describe('hover info', function() {
             Promise.resolve().then(function() {
                 Fx.hover(gd, event, 'xy');
             })
-            .then(delay(constants.HOVERMINTIME * 1.1))
+            .then(delay(HOVERMINTIME * 1.1))
             .then(function() {
                 Fx.unhover(gd);
             })
@@ -719,7 +719,7 @@ describe('hover after resizing', function() {
 
             setTimeout(function() {
                 resolve();
-            }, constants.HOVERMINTIME);
+            }, HOVERMINTIME);
         });
     }
 
@@ -732,7 +732,7 @@ describe('hover after resizing', function() {
                 expect(hoverText.size()).toEqual(cnt, msg);
 
                 resolve();
-            }, constants.HOVERMINTIME);
+            }, HOVERMINTIME);
         });
     }
 
@@ -799,7 +799,7 @@ describe('hover on fill', function() {
                 expect(+transformCoords[1]).toBeCloseTo(labelPos[1], -1.2, labelText + ':y');
 
                 resolve();
-            }, constants.HOVERMINTIME);
+            }, HOVERMINTIME);
         });
     }
 
@@ -879,7 +879,7 @@ describe('hover updates', function() {
                 }
 
                 resolve();
-            }, constants.HOVERMINTIME);
+            }, HOVERMINTIME);
         });
     }
 
@@ -935,7 +935,7 @@ describe('hover updates', function() {
                 mouseEvent('mousemove', 394, 285);
                 setTimeout(function() {
                     resolve();
-                }, constants.HOVERMINTIME);
+                }, HOVERMINTIME);
             });
         }
 
