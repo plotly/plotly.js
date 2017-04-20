@@ -2076,6 +2076,8 @@ plots.doCalcdata = function(gd, traces) {
         calcdata[i] = cd;
     }
 
+    Registry.getComponentMethod('fx', 'calc')(gd);
+
     // To handle the case of components using category names as coordinates, we
     // need to re-supply defaults for these objects now, after calc has
     // finished populating the category mappings

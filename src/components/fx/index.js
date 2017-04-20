@@ -26,6 +26,8 @@ module.exports = {
     layoutAttributes: layoutAttributes,
     supplyLayoutDefaults: require('./layout_defaults'),
 
+    calc: require('./calc'),
+
     getDistanceFunction: helpers.getDistanceFunction,
     getClosest: helpers.getClosest,
     inbox: helpers.inbox,

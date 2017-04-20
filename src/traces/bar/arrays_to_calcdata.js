@@ -28,12 +28,4 @@ module.exports = function arraysToCalcdata(cd, trace) {
             mergeArray(markerLine.width, cd, 'mlw');
         }
     }
-
-    if(trace.hoverlabel) {
-        mergeArray(trace.hoverlabel.bgcolor, cd, 'hbg');
-        mergeArray(trace.hoverlabel.bordercolor, cd, 'hbc');
-        mergeArray(trace.hoverlabel.font.size, cd, 'hts');
-        mergeArray(trace.hoverlabel.font.color, cd, 'htc');
-        mergeArray(trace.hoverlabel.font.family, cd, 'htf');
-    }
 };

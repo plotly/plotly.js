@@ -17,10 +17,8 @@ module.exports = function arraysToCalcdata(cd, trace) {
 
     Lib.mergeArray(trace.text, cd, 'tx');
     Lib.mergeArray(trace.hovertext, cd, 'htx');
-
     Lib.mergeArray(trace.customdata, cd, 'data');
     Lib.mergeArray(trace.textposition, cd, 'tp');
-
     if(trace.textfont) {
         Lib.mergeArray(trace.textfont.size, cd, 'ts');
         Lib.mergeArray(trace.textfont.color, cd, 'tc');
@@ -39,13 +37,5 @@ module.exports = function arraysToCalcdata(cd, trace) {
             Lib.mergeArray(markerLine.color, cd, 'mlc');
             Lib.mergeArray(markerLine.width, cd, 'mlw');
         }
-    }
-
-    if(trace.hoverlabel) {
-        Lib.mergeArray(trace.hoverlabel.bgcolor, cd, 'hbg');
-        Lib.mergeArray(trace.hoverlabel.bordercolor, cd, 'hbc');
-        Lib.mergeArray(trace.hoverlabel.font.size, cd, 'hts');
-        Lib.mergeArray(trace.hoverlabel.font.color, cd, 'htc');
-        Lib.mergeArray(trace.hoverlabel.font.family, cd, 'htf');
     }
 };
