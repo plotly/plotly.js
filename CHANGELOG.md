@@ -10,6 +10,13 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.26.1] -- 2017-04-21
+
+### Fixed
+- Fix `pie` fill opacity [#1615]
+- Fix `contour.value` declaration for `contourcarpet` trace [#1612]
+
+
 ## [1.26.0] -- 2017-04-18
 
 ### Added
