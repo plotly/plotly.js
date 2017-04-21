@@ -17,6 +17,8 @@ var Drawing = require('../../components/drawing');
 var Axes = require('./axes');
 var axisRegex = /((x|y)([2-9]|[1-9][0-9]+)?)axis$/;
 
+var LAST_TRANSLATION_RE = /translate\([^)]*\)\s*$/;
+
 module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
     var axes = [];
@@ -149,7 +151,15 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
             // scale to individual points to counteract the scale of the trace
             // as a whole:
             .selectAll('.points').selectAll('.point')
-                .call(Drawing.setPointGroupScale, 1, 1);
+                .call(Drawing.setPointGroupScale, 1, 1)
+
+        subplot.plot.selectAll('.points').selectAll('g')
+            .each(function () {
+                var el = d3.select(this);
+                var existingTransform = el.attr('transform').match(LAST_TRANSLATION_RE);
+                el.attr('transform', existingTransform || '');
+            });
+
 
     }
 
@@ -229,6 +239,27 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
             .selectAll('.points').selectAll('.point')
                 .call(Drawing.setPointGroupScale, 1 / xScaleFactor, 1 / yScaleFactor);
 
+        subplot.plot.selectAll('.points').selectAll('g')
+            .each(function () {
+                var el = d3.select(this);
+                var text = el.select('text');
+                var x = parseFloat(text.attr('x'));
+                var y = parseFloat(text.attr('y'));
+
+                var existingTransform = el.attr('transform').match(LAST_TRANSLATION_RE);
+
+                var transforms = [
+                    'translate(' + x + ',' + y + ')',
+                    'scale(' + (1 / xScaleFactor) + ',' + (1 / yScaleFactor) + ')',
+                    'translate(' + (-x) + ',' + (-y) + ')',
+                ];
+
+                if (existingTransform) {
+                    transforms.push(existingTransform);
+                }
+
+                el.attr('transform', transforms.join(' '));
+            });
     }
 
     var onComplete;
