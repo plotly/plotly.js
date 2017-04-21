@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v1.26.0
+* plotly.js (cartesian) v1.26.1
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -26697,7 +26697,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.26.0';
+exports.version = '1.26.1';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -59351,10 +59351,8 @@ module.exports = function styleOne(s, pt, trace) {
     var lineWidth = trace.marker.line.width || 0;
     if(Array.isArray(lineWidth)) lineWidth = lineWidth[pt.i] || 0;
 
-    s.style({
-        'stroke-width': lineWidth,
-        fill: pt.color
-    })
+    s.style({'stroke-width': lineWidth})
+    .call(Color.fill, pt.color)
     .call(Color.stroke, lineColor);
 };
 
