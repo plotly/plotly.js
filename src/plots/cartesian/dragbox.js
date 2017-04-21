@@ -80,7 +80,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         var yIDs = [ya0._id];
 
         // if we're dragging two axes at once, also drag overlays
-        subplots = [plotinfo].concat((ns && ew) ? plotinfo.overlays : []);
+        subplots = [plotinfo].concat((ns && ew && plotinfo.overlays) ? plotinfo.overlays : []);
 
         for(var i = 1; i < subplots.length; i++) {
             var subplotXa = subplots[i].xaxis,
@@ -171,7 +171,6 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             }
         }
     };
-
     dragElement.init(dragOptions);
 
     var x0,

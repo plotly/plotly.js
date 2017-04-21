@@ -184,11 +184,10 @@ Plotly.plot = function(gd, data, layout, config) {
                 basePlotModules[i].drawFramework(gd);
             }
         }
-
         return Lib.syncOrAsync([
             subroutines.layoutStyles,
             drawAxes,
-            Fx.init
+            Fx.init,
         ], gd);
     }
 

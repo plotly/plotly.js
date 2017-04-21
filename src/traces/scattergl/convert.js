@@ -252,7 +252,6 @@ function _convertColor(colors, opacities, count) {
 }
 
 proto.update = function(options) {
-
     if(options.visible !== true) {
         this.isVisible = false;
         this.hasLines = false;
@@ -638,9 +637,13 @@ proto.dispose = function() {
     this.fancyScatter.dispose();
 };
 
-function createLineWithMarkers(scene, data) {
+function createLineWithMarkers(scene, data, cdscatter) {
     var plot = new LineWithMarkers(scene, data.uid);
     plot.update(data);
+
+    //save for selecting points
+    cdscatter[0].plot = plot
+
     return plot;
 }
 

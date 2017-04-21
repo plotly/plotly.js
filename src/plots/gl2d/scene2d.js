@@ -152,7 +152,9 @@ proto.makeFramework = function() {
     var container = this.container;
     container.appendChild(canvas);
     container.appendChild(svgContainer);
-    container.appendChild(mouseContainer);
+
+    //FIXME: since we're going to replace interactions with cartesian plot ones
+    // container.appendChild(mouseContainer);
 };
 
 proto.toImage = function(format) {
@@ -439,6 +441,7 @@ proto.plot = function(fullData, calcData, fullLayout) {
     options.dataBox = this.calcDataBox();
 
     options.merge(fullLayout);
+
     glplot.update(options);
 
     // force redraw so that promise is returned when rendering is completed

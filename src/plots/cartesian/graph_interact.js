@@ -72,7 +72,7 @@ fx.isHoriz = function(fullData) {
 fx.init = function(gd) {
     var fullLayout = gd._fullLayout;
 
-    if(!fullLayout._has('cartesian') || gd._context.staticPlot) return;
+    if((!fullLayout._has('cartesian') && !fullLayout._has('gl2d')) || gd._context.staticPlot) return;
 
     var subplots = Object.keys(fullLayout._plots || {}).sort(function(a, b) {
         // sort overlays last, then by x axis number, then y axis number
@@ -90,7 +90,7 @@ fx.init = function(gd) {
     subplots.forEach(function(subplot) {
         var plotinfo = fullLayout._plots[subplot];
 
-        if(!fullLayout._has('cartesian')) return;
+        // if(!fullLayout._has('cartesian')) return;
 
         var xa = plotinfo.xaxis,
             ya = plotinfo.yaxis,
@@ -113,6 +113,8 @@ fx.init = function(gd) {
             var maindrag = dragBox(gd, plotinfo, 0, 0,
                 xa._length, ya._length, 'ns', 'ew');
 
+            //FIXME: code below adds corners or somehing
+            return
             maindrag.onmousemove = function(evt) {
                 // This is on `gd._fullLayout`, *not* fullLayout because the reference
                 // changes by the time this is called again.

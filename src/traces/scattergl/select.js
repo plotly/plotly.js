@@ -9,7 +9,7 @@
 
 'use strict';
 
-// var subtypes = require('./subtypes');
+var subtypes = require('../scatter/subtypes');
 
 var DESELECTDIM = 0.2;
 
@@ -25,9 +25,6 @@ module.exports = function selectPoints(searchInfo, polygon) {
         di,
         x,
         y;
-
-    console.log('selectPoints', searchInfo, polygon)
-    return selection;
 
     // TODO: include lines? that would require per-segment line properties
     var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
@@ -60,14 +57,19 @@ module.exports = function selectPoints(searchInfo, polygon) {
     // do the dimming here, as well as returning the selection
     // The logic here duplicates Drawing.pointStyle, but I don't want
     // d.dim in pointStyle in case something goes wrong with selection.
-    cd[0].node3.selectAll('path.point')
-        .style('opacity', function(d) {
-            return ((d.mo + 1 || opacity + 1) - 1) * (d.dim ? DESELECTDIM : 1);
-        });
-    cd[0].node3.selectAll('text')
-        .style('opacity', function(d) {
-            return d.dim ? DESELECTDIM : 1;
-        });
+    // cd[0].node3.selectAll('path.point')
+    //     .style('opacity', function(d) {
+    //         return ((d.mo + 1 || opacity + 1) - 1) * (d.dim ? DESELECTDIM : 1);
+    //     });
+    // cd[0].node3.selectAll('text')
+    //     .style('opacity', function(d) {
+    //         return d.dim ? DESELECTDIM : 1;
+    //     });
+
+    //TODO: highlight selected points here
+    var plot = cd[0].plot
+    cd[0].trace.marker.color = '#000000'
+    plot.update(cd[0].trace)
 
     return selection;
 };
