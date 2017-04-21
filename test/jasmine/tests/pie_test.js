@@ -4,17 +4,12 @@ var Plotly = require('@lib/index');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 var failTest = require('../assets/fail_test');
 
 describe('Pies', function() {
     'use strict';
 
     var gd;
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     beforeEach(function() { gd = createGraphDiv(); });
 
@@ -37,19 +32,20 @@ describe('Pies', function() {
             }
         }], {height: 300, width: 400}).then(function() {
             var colors = [
-                'rgb(0, 0, 0)',
-                'rgb(255, 0, 0)',
-                'rgb(0, 255, 0)',
-                'rgb(0, 0, 255)',
-                'rgb(255, 255, 0)'
+                'rgb(0,0,0)',
+                'rgb(255,0,0)',
+                'rgb(0,255,0)',
+                'rgb(0,0,255)',
+                'rgb(255,255,0)'
             ];
             var opacities = [0.2, 0.3, 0.4, 0.5, 0.6];
 
             function checkPath(d, i) {
                 var path = d3.select(this);
-                expect(path.style('fill')).toBe(colors[i]);
+                // strip spaces (ie 'rgb(0, 0, 0)') so we're not dependent on browser specifics
+                expect(path.style('fill').replace(/\s/g, '')).toBe(colors[i]);
                 expect(path.style('fill-opacity')).toBe(String(opacities[i]));
-                expect(path.style('stroke')).toBe('rgb(100, 100, 100)');
+                expect(path.style('stroke').replace(/\s/g, '')).toBe('rgb(100,100,100)');
                 expect(path.style('stroke-opacity')).toBe('0.7');
             }
             var slices = d3.selectAll('.slice path');
