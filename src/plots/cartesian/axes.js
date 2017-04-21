@@ -324,7 +324,11 @@ axes.doAutoRange = function(ax) {
     var hasDeps = (ax._min && ax._max && ax._min.length && ax._max.length);
 
     if(ax.autorange && hasDeps) {
-        ax.range = axes.getAutoRange(ax);
+        //FIXME: scattergl call it in async fashion, hence there is .range and _._rl mess
+        ax.range = ax._rl = axes.getAutoRange(ax);
+
+        ax._r = ax.range.slice();
+        ax._rl = Lib.simpleMap(ax._r, ax.r2l);
 
         // doAutoRange will get called on fullLayout,
         // but we want to report its results back to layout
