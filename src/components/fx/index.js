@@ -23,7 +23,9 @@ module.exports = {
         layout: layoutAttributes
     },
 
+    attributes: require('./attributes'),
     layoutAttributes: layoutAttributes,
+    supplyDefaults: require('./defaults'),
     supplyLayoutDefaults: require('./layout_defaults'),
 
     calc: require('./calc'),

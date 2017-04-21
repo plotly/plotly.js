@@ -846,9 +846,10 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
             coerce('legendgroup');
         }
 
-        coerce('hoverlabel.bgcolor');
-        coerce('hoverlabel.bordercolor');
-        Lib.coerceFont(coerce, 'hoverlabel.font');
+        Registry.getComponentMethod(
+            'fx',
+            'supplyDefaults'
+        )(traceIn, traceOut, defaultColor, layout);
 
         // TODO add per-base-plot-module trace defaults step
 
