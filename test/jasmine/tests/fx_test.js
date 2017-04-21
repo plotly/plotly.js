@@ -1,71 +1,96 @@
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 
-var Fx = require('@src/components/fx');
-
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
-
 describe('Fx defaults', function() {
     'use strict';
 
-    var layoutIn, layoutOut, fullData;
-
-    beforeEach(function() {
-        layoutIn = {};
-        layoutOut = {
-            _has: Plots._hasPlotType
+    function _supply(data, layout) {
+        var gd = {
+            data: data || [],
+            layout: layout || {}
         };
-        fullData = [{}];
-    });
+
+        Plots.supplyDefaults(gd);
+
+        return {
+            data: gd._fullData,
+            layout: gd._fullLayout
+        };
+    }
 
     it('should default (blank version)', function() {
-        Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        var layoutOut = _supply().layout;
         expect(layoutOut.hovermode).toBe('closest', 'hovermode to closest');
         expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
     });
 
     it('should default (cartesian version)', function() {
-        layoutOut._basePlotModules = [{ name: 'cartesian' }];
+        var layoutOut = _supply([{
+            type: 'bar',
+            y: [1, 2, 1]
+        }])
+        .layout;
 
-        Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         expect(layoutOut.hovermode).toBe('x', 'hovermode to x');
         expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
         expect(layoutOut._isHoriz).toBe(false, 'isHoriz to false');
     });
 
     it('should default (cartesian horizontal version)', function() {
-        layoutOut._basePlotModules = [{ name: 'cartesian' }];
-        fullData[0] = { orientation: 'h' };
+        var layoutOut = _supply([{
+            type: 'bar',
+            orientation: 'h',
+            x: [1, 2, 3],
+            y: [1, 2, 1]
+        }])
+        .layout;
 
-        Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         expect(layoutOut.hovermode).toBe('y', 'hovermode to y');
         expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
         expect(layoutOut._isHoriz).toBe(true, 'isHoriz to true');
     });
 
     it('should default (gl3d version)', function() {
-        layoutOut._basePlotModules = [{ name: 'gl3d' }];
+        var layoutOut = _supply([{
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            z: [1, 2, 1]
+        }])
+        .layout;
 
-        Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         expect(layoutOut.hovermode).toBe('closest', 'hovermode to closest');
         expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
     });
 
     it('should default (geo version)', function() {
-        layoutOut._basePlotModules = [{ name: 'geo' }];
+        var layoutOut = _supply([{
+            type: 'scattergeo',
+            lon: [1, 2, 3],
+            lat: [1, 2, 3]
+        }])
+        .layout;
 
-        Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         expect(layoutOut.hovermode).toBe('closest', 'hovermode to closest');
         expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
     });
 
     it('should default (multi plot type version)', function() {
-        layoutOut._basePlotModules = [{ name: 'cartesian' }, { name: 'gl3d' }];
+        var layoutOut = _supply([{
+            type: 'bar',
+            y: [1, 2, 1]
+        }, {
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            z: [1, 2, 1]
+        }])
+        .layout;
 
-        Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         expect(layoutOut.hovermode).toBe('x', 'hovermode to x');
         expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
     });
