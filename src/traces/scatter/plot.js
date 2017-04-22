@@ -427,11 +427,14 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                 .style('opacity', 1);
         }
 
+        var markerScale = showMarkers && Drawing.tryColorscale(trace.marker, '');
+        var lineScale = showMarkers && Drawing.tryColorscale(trace.marker, 'line');
+
         join.each(function(d) {
             var el = d3.select(this);
             var sel = transition(el);
             Drawing.translatePoint(d, sel, xa, ya);
-            Drawing.singlePointStyle(d, sel, trace);
+            Drawing.singlePointStyle(d, sel, trace, markerScale, lineScale, gd);
 
             if(trace.customdata) {
                 el.classed('plotly-customdata', d.data !== null && d.data !== undefined);

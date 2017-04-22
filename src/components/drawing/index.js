@@ -11,6 +11,7 @@
 
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
+var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
 var Color = require('../color');
@@ -202,7 +203,7 @@ drawing.symbolNumber = function(v) {
     return Math.floor(Math.max(v, 0));
 };
 
-function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerLine) {
+function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerLine, gd) {
     // only scatter & box plots get marker path and opacity
     // bars, histograms don't
     if(Registry.traceIs(trace, 'symbols')) {
@@ -271,24 +272,83 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
             });
     }
     else {
-        sel.style('stroke-width', lineWidth + 'px')
-            .call(Color.fill, fillColor);
+        sel.style('stroke-width', lineWidth + 'px');
+
+        var markerGradient = marker.gradient;
+        var gradientColor = markerGradient && (d.mgc || markerGradient.color);
+        var gradientType = d.mgt || markerGradient.type;
+        if(gradientType && gradientType !== 'none') {
+            sel.call(drawing.gradient, gd, gradientType, fillColor, gradientColor);
+        }
+        else {
+            sel.call(Color.fill, fillColor);
+        }
+
         if(lineWidth) {
             sel.call(Color.stroke, lineColor);
         }
     }
 }
 
-drawing.singlePointStyle = function(d, sel, trace) {
-    var marker = trace.marker,
-        markerLine = marker.line;
+var HORZGRADIENT = {x1: 1, x2: 0, y1: 0, y2: 0};
+var VERTGRADIENT = {x1: 0, x2: 0, y1: 1, y2: 0};
 
-    // allow array marker and marker line colors to be
-    // scaled by given max and min to colorscales
-    var markerScale = drawing.tryColorscale(marker, ''),
-        lineScale = drawing.tryColorscale(marker, 'line');
+drawing.gradient = function(sel, gd, type, color1, color2) {
+    var fullLayout = gd._fullLayout;
+    var gradientID = (
+        type + fullLayout._uid + '-' + color1 + '-' + color2
+    ).replace(/[^\w\-]+/g, '_');
+    var gradient = fullLayout._defs.select('.gradients').selectAll('#' + gradientID).data([0]);
 
-    singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerLine);
+    gradient.enter()
+        .append(type === 'radial' ? 'radialGradient' : 'linearGradient')
+        .each(function() {
+            var el = d3.select(this);
+            if(type === 'horizontal') el.attr(HORZGRADIENT);
+            else if(type === 'vertical') el.attr(VERTGRADIENT);
+
+            el.attr('id', gradientID);
+
+            var tc1 = tinycolor(color1);
+            var tc2 = tinycolor(color2);
+
+            el.append('stop').attr({
+                offset: '0%',
+                'stop-color': Color.tinyRGB(tc2),
+                'stop-opacity': tc2.getAlpha()
+            });
+
+            el.append('stop').attr({
+                offset: '100%',
+                'stop-color': Color.tinyRGB(tc1),
+                'stop-opacity': tc1.getAlpha()
+            });
+        });
+
+    sel.style({
+        fill: 'url(#' + gradientID + ')',
+        'fill-opacity': null
+    });
+};
+
+/*
+ * Make the gradients container and clear out any previous gradients.
+ * We never collect all the gradients we need in one place,
+ * so we can't ever remove gradients that have stopped being useful,
+ * except all at once before a full redraw.
+ * The upside of this is arbitrary points can share gradient defs
+ */
+drawing.initGradients = function(gd) {
+    var gradientsGroup = gd._fullLayout._defs.selectAll('.gradients').data([0]);
+    gradientsGroup.enter().append('g').classed('gradients', true);
+
+    gradientsGroup.selectAll('linearGradient,radialGradient').remove();
+};
+
+drawing.singlePointStyle = function(d, sel, trace, markerScale, lineScale, gd) {
+    var marker = trace.marker;
+
+    singlePointStyle(d, sel, trace, markerScale, lineScale, marker, marker.line, gd);
 
 };
 
@@ -298,11 +358,12 @@ drawing.pointStyle = function(s, trace) {
     // allow array marker and marker line colors to be
     // scaled by given max and min to colorscales
     var marker = trace.marker;
-    var markerScale = drawing.tryColorscale(marker, ''),
-        lineScale = drawing.tryColorscale(marker, 'line');
+    var markerScale = drawing.tryColorscale(marker, '');
+    var lineScale = drawing.tryColorscale(marker, 'line');
+    var gd = Lib.getPlotDiv(s.node());
 
     s.each(function(d) {
-        drawing.singlePointStyle(d, d3.select(this), trace, markerScale, lineScale);
+        drawing.singlePointStyle(d, d3.select(this), trace, markerScale, lineScale, gd);
     });
 };
 

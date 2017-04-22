@@ -37,5 +37,11 @@ module.exports = function arraysToCalcdata(cd, trace) {
             Lib.mergeArray(markerLine.color, cd, 'mlc');
             Lib.mergeArray(markerLine.width, cd, 'mlw');
         }
+
+        var markerGradient = marker.gradient;
+        if(markerGradient && markerGradient.type !== 'none') {
+            Lib.mergeArray(markerGradient.type, cd, 'mgt');
+            Lib.mergeArray(markerGradient.color, cd, 'mgc');
+        }
     }
 };
