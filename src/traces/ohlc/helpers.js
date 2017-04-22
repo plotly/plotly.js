@@ -97,13 +97,46 @@ exports.makeTransform = function(traceIn, state, direction) {
 exports.getFilterFn = function(direction) {
     switch(direction) {
         case 'increasing':
-            return function(o, c) { return o <= c; };
+            return function(o, c, isPrevThisDirection, oprev, cprev) {
+                if (o == c) { 
+                    if (c > cprev) {
+                        return true // increasing
+                    } else if (c < cprev) {
+                        return false // decreasing
+                    } else {
+                        if (isPrevThisDirection === true) {
+                            return true // determine by last candle
+                        } else if (isPrevThisDirection == false) {
+                            return false // determine by last candle
+                        } else {
+                            return true // If we don't have previous data, assume it was increasing
+                        }
+                    }
+                }
+                return o < c; 
+            };
 
         case 'decreasing':
-            return function(o, c) { return o > c; };
+            return function(o, c, isPrevThisDirection, oprev, cprev) { 
+                if (o == c) { 
+                    if (c > cprev) {
+                        return false // increasing
+                    } else if (c < cprev) {
+                        return true // decreasing
+                    } else {
+                        if (isPrevThisDirection === true) {
+                            return true // determine by last candle
+                        } else if (isPrevThisDirection == false) {
+                            return false // determine by last candle
+                        } else {
+                            return false // If we don't have previous data, assume it was increasing
+                        }
+                    }
+                }
+                return o > c; 
+            };
     }
 };
-
 exports.addRangeSlider = function(data, layout) {
     var hasOneVisibleTrace = false;
 

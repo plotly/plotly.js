@@ -194,11 +194,16 @@ exports.calcTransform = function calcTransform(gd, trace, opts) {
         textOut.push(_t, _t, _t, _t, _t, _t, null);
     };
 
+    var isPrevThisDirection = null;
     for(var i = 0; i < len; i++) {
-        if(filterFn(open[i], close[i])) {
+        if(filterFn(open[i], close[i], isPrevThisDirection, open[i - 1], close[i - 1])) {
             appendX(i);
             appendY(open[i], high[i], low[i], close[i]);
             appendText(i, open[i], high[i], low[i], close[i]);
+            isPrevThisDirection = true;
+        } else {
+            isPrevThisDirection = false;
+            // not adding this candle to this direction bunch
         }
     }
 
