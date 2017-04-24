@@ -502,6 +502,21 @@ describe('Test geo interactions', function() {
                 })
                 .then(done);
             });
+
+            it('should show custom \`hoverlabel\' settings', function(done) {
+                Plotly.restyle(gd, {
+                    'hoverlabel.bgcolor': 'red',
+                    'hoverlabel.bordercolor': [['blue', 'black', 'green']]
+                })
+                .then(function() {
+                    mouseEventScatterGeo('mousemove');
+
+                    var path = d3.selectAll('g.hovertext').select('path');
+                    expect(path.style('fill')).toEqual('rgb(255, 0, 0)', 'bgcolor');
+                    expect(path.style('stroke')).toEqual('rgb(0, 0, 255)', 'bordecolor[0]');
+                })
+                .then(done);
+            });
         });
 
         describe('scattergeo hover events', function() {

@@ -984,3 +984,89 @@ describe('hover updates', function() {
 
     });
 });
+
+describe('Test hover label custom styling:', function() {
+    afterEach(destroyGraphDiv);
+
+    function assertLabel(className, expectation) {
+        var g = d3.select('g.' + className);
+
+        var path = g.select('path');
+        expect(path.style('fill')).toEqual(expectation.path[0], 'bgcolor');
+        expect(path.style('stroke')).toEqual(expectation.path[1], 'bordercolor');
+
+        var text = g.select('text');
+        expect(parseInt(text.style('font-size'))).toEqual(expectation.text[0], 'font.size');
+        expect(text.style('font-family').split(',')[0]).toEqual(expectation.text[1], 'font.family');
+        expect(text.style('fill')).toEqual(expectation.text[2], 'font.color');
+    }
+
+    function assertPtLabel(expectation) {
+        assertLabel('hovertext', expectation);
+    }
+
+    function assertCommonLabel(expectation) {
+        assertLabel('axistext', expectation);
+    }
+
+    function _hover(gd, opts) {
+        Fx.hover(gd, opts);
+        delete gd._lastHoverTime;
+    }
+
+    it('should work for x/y cartesian traces', function(done) {
+        var gd = createGraphDiv();
+
+        Plotly.plot(gd, [{
+            x: [1, 2, 3],
+            y: [1, 2, 1],
+            hoverlabel: {
+                font: {
+                    color: ['red', 'green', 'blue'],
+                    size: 20
+                }
+            }
+        }], {
+            hovermode: 'x',
+            hoverlabel: { bgcolor: 'white' }
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[0] });
+
+            assertPtLabel({
+                path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
+                text: [20, 'Arial', 'rgb(255, 0, 0)']
+            });
+            assertCommonLabel({
+                path: ['rgb(255, 255, 255)', 'rgb(255, 255, 255)'],
+                text: [13, 'Arial', 'rgb(255, 255, 255)']
+            });
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[1] });
+
+            assertPtLabel({
+                path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
+                text: [20, 'Arial', 'rgb(0, 128, 0)']
+            });
+            assertCommonLabel({
+                path: ['rgb(255, 255, 255)', 'rgb(255, 255, 255)'],
+                text: [13, 'Arial', 'rgb(255, 255, 255)']
+            });
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[2] });
+
+            assertPtLabel({
+                path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
+                text: [20, 'Arial', 'rgb(0, 0, 255)']
+            });
+            assertCommonLabel({
+                path: ['rgb(255, 255, 255)', 'rgb(255, 255, 255)'],
+                text: [13, 'Arial', 'rgb(255, 255, 255)']
+            });
+        })
+        .catch(fail)
+        .then(done);
+    });
+});
