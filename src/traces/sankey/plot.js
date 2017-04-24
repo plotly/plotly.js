@@ -69,7 +69,7 @@ function nodeNonHoveredStyle(sankeyNode, d, sankey) {
 
 function linkHoveredStyle(sankeyLink, d, sankey) {
 
-    sankeyLink.style('stroke-opacity', 0.4);
+    sankeyLink.style('fill-opacity', 0.4);
 
     if(d && sankey) {
         ownTrace(sankey, d)
@@ -81,7 +81,7 @@ function linkHoveredStyle(sankeyLink, d, sankey) {
 
 function linkNonHoveredStyle(sankeyLink, d, sankey) {
 
-    sankeyLink.style('stroke-opacity', function(d) {return d.tinyColorAlpha;});
+    sankeyLink.style('fill-opacity', function(d) {return d.tinyColorAlpha;});
 
     if(d && sankey) {
         ownTrace(sankey, d)
