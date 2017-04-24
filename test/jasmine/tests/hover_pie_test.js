@@ -187,23 +187,39 @@ describe('pie hovering', function() {
 
         function _hover() {
             mouseEvent('mouseover', 223, 143);
+            delete gd._lastHoverTime;
         }
 
-        function assertLabel(expected) {
-            var labels = d3.selectAll('.hovertext .nums .line');
+        function assertLabel(content, style) {
+            var g = d3.selectAll('.hovertext');
+            var lines = g.selectAll('.nums .line');
 
-            expect(labels.size()).toBe(expected.length);
+            expect(lines.size()).toBe(content.length);
 
-            labels.each(function(_, i) {
-                expect(d3.select(this).text()).toBe(expected[i]);
+            lines.each(function(_, i) {
+                expect(d3.select(this).text()).toBe(content[i]);
             });
+
+            if(style) {
+                var path = g.select('path');
+                expect(path.style('fill')).toEqual(style[0], 'bgcolor');
+                expect(path.style('stroke')).toEqual(style[1], 'bordercolor');
+
+                var text = g.select('text');
+                expect(parseInt(text.style('font-size'))).toEqual(style[2], 'font.size');
+                expect(text.style('font-family').split(',')[0]).toEqual(style[3], 'font.family');
+                expect(text.style('fill')).toEqual(style[4], 'font.color');
+            }
         }
 
         it('should show the default selected values', function(done) {
             Plotly.plot(gd, mockCopy.data, mockCopy.layout)
             .then(_hover)
             .then(function() {
-                assertLabel(['4', '5', '33.3%']);
+                assertLabel(
+                    ['4', '5', '33.3%'],
+                    ['rgb(31, 119, 180)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
+                );
 
                 return Plotly.restyle(gd, 'text', [['A', 'B', 'C', 'D', 'E']]);
             })
@@ -224,7 +240,23 @@ describe('pie hovering', function() {
             .then(_hover)
             .then(function() {
                 assertLabel(['4', 'SUP', '5', '33.3%']);
+
+                return Plotly.restyle(gd, {
+                    'hoverlabel.bgcolor': [['red', 'green', 'blue']],
+                    'hoverlabel.bordercolor': 'yellow',
+                    'hoverlabel.font.size': [[15, 20, 30]],
+                    'hoverlabel.font.family': 'Roboto',
+                    'hoverlabel.font.color': 'blue'
+                });
             })
+            .then(_hover)
+            .then(function() {
+                assertLabel(
+                    ['4', 'SUP', '5', '33.3%'],
+                    ['rgb(255, 0, 0)', 'rgb(255, 255, 0)', 15, 'Roboto', 'rgb(0, 0, 255)']
+                );
+            })
+            .catch(fail)
             .then(done);
         });
 
