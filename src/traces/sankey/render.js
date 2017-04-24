@@ -282,16 +282,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
                 } else { // make a forceLayout iff needed
                     attachForce(sankeyNode, forceKey, repositionedCallback, d);
                 }
-                window.requestAnimationFrame(function faster() {
-                    for(var i = 0; i < c.forceTicksPerFrame; i++) {
-                        d.forceLayouts[forceKey].tick();
-                    }
-                    d.sankey.relayout();
-                    updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink);
-                    if(d.forceLayouts[forceKey].alpha() > 0) {
-                        window.requestAnimationFrame(faster);
-                    }
-                })
+                startForce(sankeyNode, sankeyLink, d, forceKey);
             }
         })
 
@@ -339,6 +330,19 @@ function attachForce(sankeyNode, forceKey, repositionedCallback, d) {
             .iterations(c.forceIterations))
         .force('constrain', snappingForce(sankeyNode, forceKey, nodes, repositionedCallback, d))
         .stop();
+}
+
+function startForce(sankeyNode, sankeyLink, d, forceKey) {
+    window.requestAnimationFrame(function faster() {
+        for(var i = 0; i < c.forceTicksPerFrame; i++) {
+            d.forceLayouts[forceKey].tick();
+        }
+        d.sankey.relayout();
+        updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink);
+        if(d.forceLayouts[forceKey].alpha() > 0) {
+            window.requestAnimationFrame(faster);
+        }
+    })
 }
 
 function snappingForce(sankeyNode, forceKey, nodes, repositionedCallback, d) {
