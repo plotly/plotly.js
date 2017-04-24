@@ -8,6 +8,10 @@
 
 'use strict';
 
+var extendFlat = require('../../lib/extend').extendFlat;
+var fontAttrs = require('../../plots/font_attributes');
+var constants = require('./constants');
+
 module.exports = {
     dragmode: {
         valType: 'enumerated',
@@ -26,5 +30,31 @@ module.exports = {
         role: 'info',
         values: ['x', 'y', 'closest', false],
         description: 'Determines the mode of hover interactions.'
+    },
+
+    hoverlabel: {
+        bgcolor: {
+            valType: 'color',
+            role: 'style',
+            description: [
+                'Sets the background color of all hover labels on graph'
+            ].join(' ')
+        },
+        bordercolor: {
+            valType: 'color',
+            role: 'style',
+            description: [
+                'Sets the border color of all hover labels on graph.'
+            ].join(' ')
+        },
+        font: {
+            family: extendFlat({}, fontAttrs.family, {
+                dflt: constants.HOVERFONT
+            }),
+            size: extendFlat({}, fontAttrs.size, {
+                dflt: constants.HOVERFONTSIZE
+            }),
+            color: extendFlat({}, fontAttrs.color)
+        }
     }
 };

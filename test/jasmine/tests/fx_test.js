@@ -94,6 +94,93 @@ describe('Fx defaults', function() {
         expect(layoutOut.hovermode).toBe('x', 'hovermode to x');
         expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
     });
+
+    it('should coerce trace and annotations hoverlabel using global as defaults', function() {
+        var out = _supply([{
+            type: 'bar',
+            y: [1, 2, 1],
+            hoverlabel: {
+                bgcolor: ['red', 'blue', 'black'],
+                font: { size: 40 }
+            }
+        }, {
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            z: [1, 2, 1],
+            hoverlabel: {
+                bordercolor: 'yellow',
+                font: { color: 'red' }
+            }
+        }], {
+            annotations: [{
+                x: 0,
+                y: 1,
+                text: '1',
+                hovertext: '1'
+            }, {
+                x: 2,
+                y: 1,
+                text: '2',
+                hovertext: '2',
+                hoverlabel: {
+                    bgcolor: 'red',
+                    font: {
+                        family: 'Gravitas'
+                    }
+                }
+            }],
+            hoverlabel: {
+                bgcolor: 'white',
+                bordercolor: 'black',
+                font: {
+                    family: 'Roboto',
+                    size: 20,
+                    color: 'pink'
+                }
+            }
+        });
+
+        expect(out.data[0].hoverlabel).toEqual({
+            bgcolor: ['red', 'blue', 'black'],
+            bordercolor: 'black',
+            font: {
+                family: 'Roboto',
+                size: 40,
+                color: 'pink'
+            }
+        });
+
+        expect(out.data[1].hoverlabel).toEqual({
+            bgcolor: 'white',
+            bordercolor: 'yellow',
+            font: {
+                family: 'Roboto',
+                size: 20,
+                color: 'red'
+            }
+        });
+
+        expect(out.layout.annotations[0].hoverlabel).toEqual({
+            bgcolor: 'white',
+            bordercolor: 'black',
+            font: {
+                family: 'Roboto',
+                size: 20,
+                color: 'pink'
+            }
+        });
+
+        expect(out.layout.annotations[1].hoverlabel).toEqual({
+            bgcolor: 'red',
+            bordercolor: 'black',
+            font: {
+                family: 'Gravitas',
+                size: 20,
+                color: 'pink'
+            }
+        });
+    });
 });
 
 describe('relayout', function() {

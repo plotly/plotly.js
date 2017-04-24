@@ -25,6 +25,8 @@ module.exports = {
 
     attributes: require('./attributes'),
     layoutAttributes: layoutAttributes,
+
+    supplyLayoutGlobalDefaults: require('./layout_global_defaults'),
     supplyDefaults: require('./defaults'),
     supplyLayoutDefaults: require('./layout_defaults'),
 

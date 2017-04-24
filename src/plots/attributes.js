@@ -8,9 +8,7 @@
 
 'use strict';
 
-var constants = require('../components/fx/constants');
-var fontAttrs = require('./font_attributes');
-var extendFlat = require('../lib/extend').extendFlat;
+var fxAttrs = require('../components/fx/attributes');
 
 module.exports = {
     type: {
@@ -83,37 +81,7 @@ module.exports = {
             'But, if `none` is set, click and hover events are still fired.'
         ].join(' ')
     },
-    hoverlabel: {
-        bgcolor: {
-            valType: 'color',
-            role: 'style',
-            arrayOk: true,
-            description: [
-                'Sets the background color of the hover label.'
-            ].join(' ')
-        },
-        bordercolor: {
-            valType: 'color',
-            role: 'style',
-            arrayOk: true,
-            description: [
-                'Sets the border color of the hover label.'
-            ].join(' ')
-        },
-        font: {
-            family: extendFlat({}, fontAttrs.family, {
-                arrayOk: true,
-                dflt: constants.HOVERFONT
-            }),
-            size: extendFlat({}, fontAttrs.size, {
-                arrayOk: true,
-                dflt: constants.HOVERFONTSIZE
-            }),
-            color: extendFlat({}, fontAttrs.color, {
-                arrayOk: true
-            })
-        }
-    },
+    hoverlabel: fxAttrs.hoverlabel,
     stream: {
         token: {
             valType: 'string',

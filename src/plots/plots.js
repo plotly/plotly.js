@@ -979,6 +979,10 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
         'handleDefaults'
     )(layoutIn, layoutOut, 'calendar');
 
+    Registry.getComponentMethod(
+        'fx',
+        'supplyLayoutGlobalDefaults'
+    )(layoutIn, layoutOut, coerce);
 };
 
 plots.plotAutoSize = function plotAutoSize(gd, layout, fullLayout) {
