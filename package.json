@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "3d-view": "^2.0.0",
-    "@monfera/d3-sankey": "^0.4.2",
+    "@monfera/d3-sankey": "^0.5.0",
     "alpha-shape": "^1.0.0",
     "color-rgba": "^1.0.4",
     "convex-hull": "^1.0.3",
