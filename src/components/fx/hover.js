@@ -486,7 +486,8 @@ function _hover(gd, evt, subplot) {
         rotateLabels: rotateLabels,
         bgColor: bgColor,
         container: fullLayout._hoverlayer,
-        outerContainer: fullLayout._paperdiv
+        outerContainer: fullLayout._paperdiv,
+        commonLabelOpts: fullLayout.hoverlabel
     };
 
     var hoverLabels = createHoverText(hoverData, labelOpts);
@@ -528,6 +529,7 @@ function createHoverText(hoverData, opts) {
     var bgColor = opts.bgColor;
     var container = opts.container;
     var outerContainer = opts.outerContainer;
+    var commonLabelOpts = opts.commonLabelOpts || {};
 
     // opts.fontFamily/Size are used for the common label
     // and as defaults for each hover label, though the individual labels
@@ -577,9 +579,17 @@ function createHoverText(hoverData, opts) {
             ltext = label.selectAll('text').data([0]);
 
         lpath.enter().append('path')
-            .style({fill: Color.defaultLine, 'stroke-width': '1px', stroke: Color.background});
+            .style({
+                fill: commonLabelOpts.bgcolor || Color.defaultLine,
+                stroke: commonLabelOpts.bordercolor || Color.background,
+                'stroke-width': '1px'
+            });
         ltext.enter().append('text')
-            .call(Drawing.font, fontFamily, fontSize, Color.background)
+            .call(Drawing.font,
+                commonLabelOpts.font.family || fontFamily,
+                commonLabelOpts.font.size || fontSize,
+                commonLabelOpts.font.color || Color.background
+             )
             // prohibit tex interpretation until we can handle
             // tex and regular text together
             .attr('data-notex', 1);
