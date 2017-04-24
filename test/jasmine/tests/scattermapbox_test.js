@@ -490,6 +490,24 @@ describe('@noCI scattermapbox hover', function() {
             done();
         });
     });
+
+    it('should generate hover label (\'marker.color\' array case)', function(done) {
+        Plotly.restyle(gd, 'marker.color', [['red', 'blue', 'green']]).then(function() {
+            var out = hoverPoints(getPointData(gd), 11, 11)[0];
+
+            expect(out.color).toEqual('red');
+        })
+        .then(done);
+    });
+
+    it('should generate hover label (\'marker.color\' w/ colorscale case)', function(done) {
+        Plotly.restyle(gd, 'marker.color', [[10, 5, 30]]).then(function() {
+            var out = hoverPoints(getPointData(gd), 11, 11)[0];
+
+            expect(out.color).toEqual('rgb(245, 195, 157)');
+        })
+        .then(done);
+    });
 });
 
 
