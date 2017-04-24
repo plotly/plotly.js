@@ -125,8 +125,8 @@ module.exports = function plot(gd, calcData) {
         var hoverCenterY = followMouse ? d3.event.y : boundingBox.top + boundingBox.height / 2;
 
         var tooltip = Fx.loneHover({
-            x: hoverCenterX,
-            y: hoverCenterY,
+            x: hoverCenterX + window.scrollX,
+            y: hoverCenterY + window.scrollY,
             name: d3.format(d.valueFormat)(d.link.value) + d.valueSuffix,
             text: [
                 d.link.label,
@@ -197,9 +197,9 @@ module.exports = function plot(gd, calcData) {
         var hoverCenterY = followMouse ? d3.event.y : boundingBox.top + boundingBox.height / 4;
 
         var tooltip = Fx.loneHover({
-            x0: hoverCenterX0,
-            x1: hoverCenterX1,
-            y: hoverCenterY,
+            x0: hoverCenterX0 + window.scrollX,
+            x1: hoverCenterX1 + window.scrollX,
+            y: hoverCenterY + window.scrollY,
             name: d3.format(d.valueFormat)(d.node.value) + d.valueSuffix,
             text: [
                 d.node.label,
