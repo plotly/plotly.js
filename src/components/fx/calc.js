@@ -9,6 +9,7 @@
 'use strict';
 
 var Lib = require('../../lib');
+var Registry = require('../../registry');
 
 module.exports = function calc(gd) {
     var calcdata = gd.calcdata;
@@ -17,12 +18,20 @@ module.exports = function calc(gd) {
         var cd = calcdata[i];
         var trace = cd[0].trace;
 
-        if(trace.hoverlabel) {
-            Lib.mergeArray(trace.hoverlabel.bgcolor, cd, 'hbg');
-            Lib.mergeArray(trace.hoverlabel.bordercolor, cd, 'hbc');
-            Lib.mergeArray(trace.hoverlabel.font.size, cd, 'hts');
-            Lib.mergeArray(trace.hoverlabel.font.color, cd, 'htc');
-            Lib.mergeArray(trace.hoverlabel.font.family, cd, 'htf');
-        }
+        if(!trace.hoverlabel) continue;
+
+        var mergeFn = Registry.traceIs(trace, '2dMap') ? paste : Lib.mergeArray;
+
+        mergeFn(trace.hoverlabel.bgcolor, cd, 'hbg');
+        mergeFn(trace.hoverlabel.bordercolor, cd, 'hbc');
+        mergeFn(trace.hoverlabel.font.size, cd, 'hts');
+        mergeFn(trace.hoverlabel.font.color, cd, 'htc');
+        mergeFn(trace.hoverlabel.font.family, cd, 'htf');
     }
 };
+
+function paste(traceAttr, cd, cdAttr) {
+    if(Array.isArray(traceAttr)) {
+        cd[0][cdAttr] = traceAttr;
+    }
+}

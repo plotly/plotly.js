@@ -1053,6 +1053,7 @@ function alignHoverText(hoverLabels, rotateLabels) {
 
 function cleanPoint(d, hovermode) {
     var trace = d.trace || {};
+    var cd0 = d.cd[0];
     var cd = d.cd[d.index] || {};
 
     d.posref = hovermode === 'y' ? (d.x0 + d.x1) / 2 : (d.y0 + d.y1) / 2;
@@ -1133,10 +1134,20 @@ function cleanPoint(d, hovermode) {
     }
 
     function fill(key, calcKey, traceKey) {
-        if(cd[calcKey]) return d[key] = cd[calcKey];
+        var val;
 
-        var traceVal = Lib.nestedProperty(trace, traceKey).get();
-        if(traceVal) return d[key] = traceVal;
+        if(cd[calcKey]) {
+            val = cd[calcKey];
+        } else if(cd0[calcKey]) {
+            var arr = cd0[calcKey];
+            if(Array.isArray(arr) && Array.isArray(arr[d.index[0]])) {
+                val = arr[d.index[0]][d.index[1]];
+            }
+        } else {
+            val = Lib.nestedProperty(trace, traceKey).get();
+        }
+
+        d[key] = val;
     }
 
     fill('color', 'hbg', 'hoverlabel.bgcolor');

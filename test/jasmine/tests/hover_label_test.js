@@ -1069,4 +1069,60 @@ describe('Test hover label custom styling:', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('should work for 2d z cartesian traces', function(done) {
+        var gd = createGraphDiv();
+
+        Plotly.plot(gd, [{
+            type: 'heatmap',
+            x: [1, 2],
+            y: [1, 2],
+            z: [[1, 2], [2, 3]],
+            hoverlabel: {
+                font: {
+                    color: 'red',
+                    size: [[10, 20], [21, 11]]
+                }
+            }
+        }], {
+            hoverlabel: {
+                bordercolor: 'blue',
+                font: { family: 'Gravitas'}
+            }
+        })
+        .then(function() {
+            _hover(gd, { xval: 1, yval: 1 });
+
+            assertPtLabel({
+                path: ['rgb(68, 68, 68)', 'rgb(0, 0, 255)'],
+                text: [10, 'Gravitas', 'rgb(255, 0, 0)']
+            });
+        })
+        .then(function() {
+            _hover(gd, { xval: 2, yval: 1 });
+
+            assertPtLabel({
+                path: ['rgb(68, 68, 68)', 'rgb(0, 0, 255)'],
+                text: [20, 'Gravitas', 'rgb(255, 0, 0)']
+            });
+        })
+        .then(function() {
+            _hover(gd, { xval: 1, yval: 2 });
+
+            assertPtLabel({
+                path: ['rgb(68, 68, 68)', 'rgb(0, 0, 255)'],
+                text: [21, 'Gravitas', 'rgb(255, 0, 0)']
+            });
+        })
+        .then(function() {
+            _hover(gd, { xval: 2, yval: 2 });
+
+            assertPtLabel({
+                path: ['rgb(68, 68, 68)', 'rgb(0, 0, 255)'],
+                text: [11, 'Gravitas', 'rgb(255, 0, 0)']
+            });
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
