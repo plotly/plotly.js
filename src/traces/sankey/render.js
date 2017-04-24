@@ -421,19 +421,18 @@ module.exports = function(svg, styledData, layout, callbacks) {
     sankeyLink.enter()
         .append('path')
         .classed('sankeyLink', true)
-        .style('stroke-width', function(d) {return Math.max(1, d.link.dy);})
+        .style('stroke', 'none')
         .style('opacity', 0)
         .call(attachPointerEvents, sankey, callbacks.linkEvents);
 
     sankeyLink
-        .style('stroke', function(d) {return d.tinyColorHue;})
-        .style('stroke-opacity', function(d) {return d.tinyColorAlpha;});
+        .style('fill', function(d) {return d.tinyColorHue;})
+        .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
 
     sankeyLink.transition()
         .ease(c.ease).duration(c.duration)
         .style('opacity', 1)
-        .attr('d', linkPath)
-        .style('stroke-width', function(d) {return Math.max(1, d.link.dy);});
+        .attr('d', linkPath);
 
     sankeyLink.exit().transition()
         .ease(c.ease).duration(c.duration)
