@@ -720,7 +720,7 @@ describe('@noCI, mapbox plots', function() {
         })
         .then(function() {
             var path = d3.select('g.hovertext').select('path');
-            var text = d3.select('g.hovertext').select('text');
+            var text = d3.select('g.hovertext').select('text.nums');
 
             expect(path.style('fill')).toEqual('rgb(255, 255, 0)', 'bgcolor');
             expect(text.style('font-size')).toEqual('20px', 'font.size[0]');

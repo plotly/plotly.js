@@ -65,7 +65,7 @@ describe('Test gl3d plots', function() {
         expect(path.style('fill')).toEqual(bgColor, 'bgcolor');
         expect(path.style('stroke')).toEqual(borderColor, 'bordercolor');
 
-        var text = node.select('text');
+        var text = node.select('text.nums');
         expect(parseInt(text.style('font-size'))).toEqual(fontSize, 'font.size');
         expect(text.style('font-family').split(',')[0]).toEqual(fontFamily, 'font.family');
         expect(text.style('fill')).toEqual(fontColor, 'font.color');

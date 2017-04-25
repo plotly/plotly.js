@@ -205,7 +205,7 @@ describe('pie hovering', function() {
                 expect(path.style('fill')).toEqual(style[0], 'bgcolor');
                 expect(path.style('stroke')).toEqual(style[1], 'bordercolor');
 
-                var text = g.select('text');
+                var text = g.select('text.nums');
                 expect(parseInt(text.style('font-size'))).toEqual(style[2], 'font.size');
                 expect(text.style('font-family').split(',')[0]).toEqual(style[3], 'font.family');
                 expect(text.style('fill')).toEqual(style[4], 'font.color');

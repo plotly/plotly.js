@@ -131,7 +131,7 @@ describe('ternary plots', function() {
                 mouseEvent('mousemove', pointPos[0], pointPos[1]);
 
                 var path = d3.select('g.hovertext').select('path');
-                var text = d3.select('g.hovertext').select('text');
+                var text = d3.select('g.hovertext').select('text.nums');
 
                 expect(path.style('stroke')).toEqual('rgb(0, 0, 255)', 'bordercolor');
                 expect(text.style('font-family')).toEqual('Gravitas', 'font.family[0]');
