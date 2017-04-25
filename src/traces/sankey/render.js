@@ -431,11 +431,13 @@ module.exports = function(svg, styledData, layout, callbacks) {
     sankeyLink.enter()
         .append('path')
         .classed('sankeyLink', true)
-        .style('stroke', 'none')
         .style('opacity', 0)
         .call(attachPointerEvents, sankey, callbacks.linkEvents);
 
     sankeyLink
+        .style('stroke', function(d) {return d.link.dy > 1 ? 'rgba(0,0,0,0)' : d.tinyColorHue;})
+        .style('stroke-width', function(d) {return d.link.dy > 1 ? 2 : 1;})
+        .style('stroke-opacity', function(d) {return d.tinyColorAlpha;})
         .style('fill', function(d) {return d.tinyColorHue;})
         .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
 
