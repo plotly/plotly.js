@@ -23,12 +23,15 @@ function makeTranslucent(element, alpha) {
     d3.select(element)
         .select('path')
         .style('fill-opacity', alpha);
+    d3.select(element)
+        .select('rect')
+        .style('fill-opacity', alpha);
 }
 
 function makeTextContrasty(element, hue) {
     d3.select(element)
         .select('text.name')
-        .style('fill', Color.contrast(hue, -20, 20));
+        .style('fill', /*Color.contrast(hue, -20, 20)*/'black');
 }
 
 function relatedLinks(d) {
@@ -140,7 +143,7 @@ module.exports = function plot(gd, calcData) {
             outerContainer: fullLayout._paper.node()
         });
 
-        makeTranslucent(tooltip, 0.85);
+        makeTranslucent(tooltip, 0.65);
         makeTextContrasty(tooltip, d.tinyColorHue);
     };
 
