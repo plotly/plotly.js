@@ -32,7 +32,7 @@ var proto = Mesh3DTrace.prototype;
 
 proto.handlePick = function(selection) {
     if(selection.object === this.mesh) {
-        var selectIndex = selection.data.index;
+        var selectIndex = selection.index = selection.data.index;
 
         selection.traceCoordinate = [
             this.data.x[selectIndex],

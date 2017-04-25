@@ -68,6 +68,7 @@ function render(scene) {
         var pdata = project(scene.glplot.cameraParams, selection.dataCoordinate);
         trace = lastPicked.data;
         var hoverinfo = trace.hoverinfo;
+        var ptNumber = selection.index;
 
         var xVal = formatter('xaxis', selection.traceCoordinate[0]),
             yVal = formatter('yaxis', selection.traceCoordinate[1]),
@@ -105,7 +106,7 @@ function render(scene) {
                 data: trace._input,
                 fullData: trace,
                 curveNumber: trace.index,
-                pointNumber: selection.data.index
+                pointNumber: ptNumber
             }]
         };
 

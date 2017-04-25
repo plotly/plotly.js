@@ -42,9 +42,7 @@ describe('Test gl3d plots', function() {
     mock2.data[0].surfaceaxis = 2;
     mock2.layout.showlegend = true;
 
-    function mouseEventScatter3d(type, opts) {
-        mouseEvent(type, 605, 271, opts);
-    }
+    var mock3 = require('@mocks/gl3d_autocolorscale');
 
     function assertHoverText(xLabel, yLabel, zLabel, textLabel) {
         var node = d3.selectAll('g.hovertext');
@@ -83,11 +81,11 @@ describe('Test gl3d plots', function() {
         destroyGraphDiv();
     });
 
-    it('@noCI should display correct hover labels and emit correct event data', function(done) {
+    it('@noCI should display correct hover labels and emit correct event data (scatter3d case)', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
         function _hover() {
-            mouseEventScatter3d('mouseover');
+            mouseEvent('mouseover', 605, 271);
             return delay();
         }
 
@@ -150,16 +148,39 @@ describe('Test gl3d plots', function() {
             assertHoverText('x: 二 6, 2017', 'y: c', 'z: 100k', 'Clementine');
         })
         .then(done);
-
     });
 
-    it('@noCI should emit correct event data on click', function(done) {
+    it('@noCI should display correct hover labels and emit correct event data (surface case)', function(done) {
+        var _mock = Lib.extendDeep({}, mock3);
+
+        function _hover() {
+            mouseEvent('mouseover', 605, 271);
+            return delay();
+        }
+
+        Plotly.plot(gd, _mock)
+        .then(delay)
+        .then(function() {
+            gd.on('plotly_hover', function(eventData) {
+                ptData = eventData.points[0];
+            });
+        })
+        .then(_hover)
+        .then(delay)
+        .then(function() {
+            assertHoverText('x: 1', 'y: 2', 'z: 43', 'one two');
+            assertEventData(1, 2, 43, 0, [1, 2]);
+        })
+        .then(done);
+    });
+
+    it('@noCI should emit correct event data on click (scatter3d case)', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
         // N.B. gl3d click events are 'mouseover' events
         // with button 1 pressed
         function _click() {
-            mouseEventScatter3d('mouseover', {buttons: 1});
+            mouseEvent('mouseover', 605, 271, {buttons: 1});
             return delay();
         }
 
