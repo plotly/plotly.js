@@ -99,9 +99,9 @@ function render(scene) {
 
         var eventData = {
             points: [{
-                x: xVal,
-                y: yVal,
-                z: zVal,
+                x: selection.traceCoordinate[0],
+                y: selection.traceCoordinate[1],
+                z: selection.traceCoordinate[2],
                 data: trace._input,
                 fullData: trace,
                 curveNumber: trace.index,

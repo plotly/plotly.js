@@ -102,7 +102,7 @@ describe('Test gl3d plots', function() {
         .then(delay)
         .then(function() {
             assertHoverText('x: 140.72', 'y: −96.97', 'z: −96.97');
-            assertEventData('140.72', '−96.97', '−96.97', 0, 2);
+            assertEventData(140.72, -96.97, -96.97, 0, 2);
 
             return Plotly.restyle(gd, {
                 x: [['2016-01-11', '2016-01-12', '2017-01-01', '2017-02']]
@@ -173,7 +173,7 @@ describe('Test gl3d plots', function() {
         .then(_click)
         .then(delay)
         .then(function() {
-            assertEventData('140.72', '−96.97', '−96.97', 0, 2);
+            assertEventData(140.72, -96.97, -96.97, 0, 2);
         })
         .then(done);
     });
