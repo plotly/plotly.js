@@ -153,6 +153,21 @@
                 "y": 1,
                 "buttons": [
                     {
+                        "label": "Light",
+                        "method": "relayout",
+                        "args": [ "paper_bgcolor", "white" ]
+                    },
+                    {
+                        "label": "Dark",
+                        "method": "relayout",
+                        "args": [ "paper_bgcolor", "black"]
+                    }
+                ]
+            },
+            {
+                "y": 0.9,
+                "buttons": [
+                    {
                         "label": "Thick",
                         "method": "restyle",
                         "args": [ "nodethickness", 15 ]
@@ -165,7 +180,7 @@
                 ]
             },
             {
-                "y": 0.9,
+                "y": 0.8,
                 "buttons": [
                     {
                         "label": "Small gap",
@@ -180,7 +195,7 @@
                 ]
             },
             {
-                "y": 0.8,
+                "y": 0.7,
                 "buttons": [
                     {
                         "label": "Follow mouse",
@@ -195,7 +210,7 @@
                 ]
             },
             {
-                "y": 0.7,
+                "y": 0.6,
                 "buttons": [
                     {
                         "label": "Snap",
@@ -220,7 +235,7 @@
                 ]
             },
             {
-                "y": 0.6,
+                "y": 0.5,
                 "buttons": [
                     {
                         "label": "Horizontal",
