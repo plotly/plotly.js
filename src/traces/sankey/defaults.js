@@ -15,7 +15,7 @@ var Color = require('../../components/color');
 var d3 = require('d3');
 
 
-function linksDefaults(traceIn, traceOut) {
+function linksDefaults(traceIn, traceOut, layout) {
     var linksIn = traceIn.links || [],
         linksOut = traceOut.links = [];
 
@@ -40,7 +40,11 @@ function linksDefaults(traceIn, traceOut) {
             coerce('value');
             coerce('source');
             coerce('target');
-            coerce('color');
+            if(layout.paper_bgcolor) {
+                coerce('color', 'rgba(255, 255, 255, 0.5)');
+            } else {
+                coerce('color');
+            }
         }
 
         linkOut._index = i;
@@ -56,7 +60,6 @@ function nodesDefaults(traceIn, traceOut) {
         usedNodeCount = 0,
         indexMap = [];
 
-    //var defaultPalette = d3.scale.category20();
     var defaultPalette = function(i) {return colors[i % colors.length];};
 
     function coerce(attr, dflt) {
@@ -119,7 +122,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    linksDefaults(traceIn, traceOut);
+    linksDefaults(traceIn, traceOut, layout);
     nodesDefaults(traceIn, traceOut);
 
     coerce('hoverinfo', layout._dataLength === 1 ? 'label+text+value+percent' : undefined);
