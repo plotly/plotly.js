@@ -13,6 +13,7 @@ var attributes = require('./attributes');
 var colors = require('../../components/color/attributes').defaults;
 var Color = require('../../components/color');
 var d3 = require('d3');
+var tinycolor = require('tinycolor2');
 
 
 function linksDefaults(traceIn, traceOut, layout) {
@@ -40,10 +41,10 @@ function linksDefaults(traceIn, traceOut, layout) {
             coerce('value');
             coerce('source');
             coerce('target');
-            if(layout.paper_bgcolor) {
-                coerce('color', 'rgba(255, 255, 255, 0.5)');
+            if(tinycolor(layout.paper_bgcolor).getLuminance() < 0.333) {
+                coerce('color', 'rgba(255, 255, 255, 0.6)');
             } else {
-                coerce('color');
+                coerce('color', 'rgba(0, 0, 0, 0.2)');
             }
         }
 
