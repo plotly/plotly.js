@@ -565,7 +565,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     nodeLabel
         .style('text-shadow', function(d) {
-            return d.horizontal ? '0 1px 1px #fff' : 'none';
+            return d.horizontal ? '-1px 1px 1px #fff, 1px 1px 1px #fff, 1px -1px 1px #fff, -1px -1px 1px #fff' : 'none';
         });
 
     var nodeLabelTextPath = nodeLabel.selectAll('.nodeLabelTextPath')
