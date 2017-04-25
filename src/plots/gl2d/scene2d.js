@@ -9,6 +9,7 @@
 
 'use strict';
 
+var Lib = require('../../lib');
 var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
 var Fx = require('../../components/fx');
@@ -633,6 +634,9 @@ proto.draw = function() {
                     if(parts.indexOf('name') === -1) selection.name = undefined;
                 }
 
+                var trace = this.fullData[selection.trace.index] || {};
+                var ptNumber = selection.pointIndex;
+
                 Fx.loneHover({
                     x: selection.screenCoord[0],
                     y: selection.screenCoord[1],
@@ -641,7 +645,11 @@ proto.draw = function() {
                     zLabel: selection.traceCoord[2],
                     text: selection.textLabel,
                     name: selection.name,
-                    color: selection.color
+                    color: this.castHoverOption(trace, ptNumber, 'bgcolor') || selection.color,
+                    borderColor: this.castHoverOption(trace, ptNumber, 'bordercolor'),
+                    fontFamily: this.castHoverOption(trace, ptNumber, 'font.family'),
+                    fontSize: this.castHoverOption(trace, ptNumber, 'font.size'),
+                    fontColor: this.castHoverOption(trace, ptNumber, 'font.color')
                 }, {
                     container: this.svgContainer
                 });
@@ -666,4 +674,19 @@ proto.hoverFormatter = function(axisName, val) {
 
     var axis = this[axisName];
     return Axes.tickText(axis, axis.c2l(val), 'hover').text;
+};
+
+proto.castHoverOption = function(trace, ptNumber, attr) {
+    var labelOpts = trace.hoverlabel || {};
+    var val = Lib.nestedProperty(labelOpts, attr).get();
+
+    if(Array.isArray(val)) {
+        if(Array.isArray(ptNumber) && Array.isArray(val[ptNumber[0]])) {
+            return val[ptNumber[0]][ptNumber[1]];
+        } else {
+            return val[ptNumber];
+        }
+    } else {
+        return val;
+    }
 };
