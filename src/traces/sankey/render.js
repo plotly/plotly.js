@@ -25,9 +25,18 @@ function unwrap(d) {return d[0];} // plotly data structure convention
 function visible(nodeOrLink) {return !('visible' in nodeOrLink) || nodeOrLink.visible;}
 
 function persistOriginalPlace(nodes) {
-    for (var i = 0; i < nodes.length; i++) {
+    var i, distinctLayerPositions = []
+    for (i = 0; i < nodes.length; i++) {
         nodes[i].originalX = nodes[i].x;
         nodes[i].originalY = nodes[i].y;
+        if(distinctLayerPositions.indexOf(nodes[i].x) === -1) {
+            distinctLayerPositions.push(nodes[i].x);
+        }
+    }
+    distinctLayerPositions.sort(function(a, b) {return a - b;});
+    for (i = 0; i < nodes.length; i++) {
+        nodes[i].originalLayerIndex = distinctLayerPositions.indexOf(nodes[i].originalX);
+        nodes[i].originalLayer = nodes[i].originalLayerIndex / (distinctLayerPositions.length -1)
     }
 }
 
@@ -169,6 +178,7 @@ function nodeModel(uniqueKeys, d, n) {
         zoneWidth: d.horizontal ? zoneThickness : zoneLength,
         zoneHeight: d.horizontal ? zoneLength : zoneThickness,
         labelY: d.horizontal ? n.dy / 2 + 1 : n.dx / 2 + 1,
+        left: n.originalLayer === 1,
         sizeAcross: d.horizontal ? d.width : d.height,
         forceLayouts: d.forceLayouts,
         horizontal: d.horizontal,
@@ -374,8 +384,6 @@ function snappingForce(sankeyNode, forceKey, nodes, repositionedCallback, d) {
 
 module.exports = function(svg, styledData, layout, callbacks) {
 
-    svg.style('overflow', 'visible');
-
     var sankey = svg.selectAll('.sankey')
         .data(styledData
                 .filter(function(d) {return unwrap(d).trace.visible;})
@@ -388,11 +396,9 @@ module.exports = function(svg, styledData, layout, callbacks) {
     sankey.enter()
         .append('g')
         .classed('sankey', true)
-        .attr('overflow', 'visible')
         .style('box-sizing', 'content-box')
         .style('position', 'absolute')
         .style('left', 0)
-        .style('overflow', 'visible')
         .style('shape-rendering', 'geometricPrecision')
         .style('pointer-events', 'auto')
         .style('box-sizing', 'content-box');
@@ -539,12 +545,11 @@ module.exports = function(svg, styledData, layout, callbacks) {
     nodeLabelGuide
         .transition()
         .ease(c.ease).duration(c.duration)
-        .attr('d', function(d) {
+        .attr('d', function (d) {
             return d3.svg.line()([
-                [d.horizontal ? d.visibleWidth + c.nodeTextOffsetHorizontal : c.nodeTextOffsetHorizontal, d.labelY],
-                [d.horizontal ? d.sizeAcross : d.visibleWidth - c.nodeTextOffsetHorizontal, d.labelY]
+                [d.horizontal ? (d.left ? -d.sizeAcross : d.visibleWidth + c.nodeTextOffsetHorizontal) : c.nodeTextOffsetHorizontal, d.labelY],
+                [d.horizontal ? (d.left ? - c.nodeTextOffsetHorizontal: d.sizeAcross) : d.visibleWidth - c.nodeTextOffsetHorizontal, d.labelY]
             ]);});
-
 
     var nodeLabel = sankeyNode.selectAll('.nodeLabel')
         .data(repeat);
@@ -572,5 +577,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     nodeLabelTextPath
         .text(function(d) {return d.horizontal || d.node.dy > 5 ? d.node.label : '';})
+        .attr('startOffset', function(d) {return d.horizontal && d.left ? '100%' : '0%'})
+        .style('text-anchor', function(d) {return d.horizontal && d.left ? 'end' : 'start'})
         .style('fill', function(d) {return d.darkBackground && !d.horizontal ? 'white' : 'black';});
 };
