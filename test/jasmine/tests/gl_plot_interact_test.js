@@ -58,6 +58,19 @@ describe('Test gl3d plots', function() {
         }
     }
 
+    function assertHoverLabelStyle(bgColor, borderColor, fontSize, fontFamily, fontColor) {
+        var node = d3.selectAll('g.hovertext');
+
+        var path = node.select('path');
+        expect(path.style('fill')).toEqual(bgColor, 'bgcolor');
+        expect(path.style('stroke')).toEqual(borderColor, 'bordercolor');
+
+        var text = node.select('text');
+        expect(parseInt(text.style('font-size'))).toEqual(fontSize, 'font.size');
+        expect(text.style('font-family').split(',')[0]).toEqual(fontFamily, 'font.family');
+        expect(text.style('fill')).toEqual(fontColor, 'font.color');
+    }
+
     function assertEventData(x, y, z, curveNumber, pointNumber) {
         expect(Object.keys(ptData)).toEqual([
             'x', 'y', 'z',
@@ -101,9 +114,10 @@ describe('Test gl3d plots', function() {
         .then(function() {
             assertHoverText('x: 140.72', 'y: −96.97', 'z: −96.97');
             assertEventData(140.72, -96.97, -96.97, 0, 2);
+            assertHoverLabelStyle('rgb(0, 0, 255)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)');
 
             return Plotly.restyle(gd, {
-                x: [['2016-01-11', '2016-01-12', '2017-01-01', '2017-02']]
+                x: [['2016-01-11', '2016-01-12', '2017-01-01', '2017-02-01']]
             });
         })
         .then(_hover)
@@ -146,6 +160,25 @@ describe('Test gl3d plots', function() {
         .then(_hover)
         .then(function() {
             assertHoverText('x: 二 6, 2017', 'y: c', 'z: 100k', 'Clementine');
+
+            return Plotly.restyle(gd, {
+                'hoverlabel.bgcolor': [['red', 'blue', 'green', 'yellow']],
+                'hoverlabel.font.size': 20
+            });
+        })
+        .then(_hover)
+        .then(function() {
+            assertHoverLabelStyle('rgb(0, 128, 0)', 'rgb(255, 255, 255)', 20, 'Arial', 'rgb(255, 255, 255)');
+
+            return Plotly.relayout(gd, {
+                'hoverlabel.bordercolor': 'yellow',
+                'hoverlabel.font.color': 'cyan',
+                'hoverlabel.font.family': 'Roboto'
+            });
+        })
+        .then(_hover)
+        .then(function() {
+            assertHoverLabelStyle('rgb(0, 128, 0)', 'rgb(255, 255, 0)', 20, 'Roboto', 'rgb(0, 255, 255)');
         })
         .then(done);
     });
@@ -170,6 +203,21 @@ describe('Test gl3d plots', function() {
         .then(function() {
             assertHoverText('x: 1', 'y: 2', 'z: 43', 'one two');
             assertEventData(1, 2, 43, 0, [1, 2]);
+            assertHoverLabelStyle('rgb(68, 68, 68)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)');
+
+            Plotly.restyle(gd, {
+                'hoverlabel.bgcolor': 'white',
+                'hoverlabel.font.size': 9,
+                'hoverlabel.font.color': [[
+                    ['red', 'blue', 'green'],
+                    ['pink', 'purple', 'cyan'],
+                    ['black', 'orange', 'yellow']
+                ]]
+            });
+        })
+        .then(_hover)
+        .then(function() {
+            assertHoverLabelStyle('rgb(255, 255, 255)', 'rgb(68, 68, 68)', 9, 'Arial', 'rgb(0, 255, 255)');
         })
         .then(done);
     });
