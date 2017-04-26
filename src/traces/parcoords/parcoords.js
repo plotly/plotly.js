@@ -550,7 +550,6 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
             var scale = d.domainScale;
             var sdom = scale.domain();
             var texts = d.ticktext;
-            Drawing.font(axis, d.model.tickFont)
             d3.select(this)
                 .call(d3.svg.axis()
                     .orient('left')
@@ -562,10 +561,11 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
                         null)
                     .tickFormat(d.ordinal ? function(d) {return d;} : null)
                     .scale(scale));
+            Drawing.font(axis.selectAll('text'), d.model.tickFont);
         });
 
     axis
-        .selectAll('.domain, .tick')
+        .selectAll('.domain, .tick>line')
         .attr('fill', 'none')
         .attr('stroke', 'black')
         .attr('stroke-opacity', 0.25)
@@ -573,9 +573,6 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
 
     axis
         .selectAll('text')
-        .style('fill', 'black')
-        .style('fill-opacity', 1)
-        .style('stroke', 'none')
         .style('text-shadow', '1px 1px 1px #fff, -1px -1px 1px #fff, 1px -1px 1px #fff, -1px 1px 1px #fff')
         .style('cursor', 'default')
         .style('user-select', 'none');

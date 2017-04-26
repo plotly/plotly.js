@@ -49,9 +49,9 @@ module.exports = {
         }
     },
 
-    labelfont: extendFlat({}, fontAttrs, {description: 'Sets the font for the `dimension` labels.'}),
-    tickfont: extendFlat({}, fontAttrs, {description: 'Sets the font for the `dimension` tick values.'}),
-    rangefont: extendFlat({}, fontAttrs, {description: 'Sets the font for the `dimension` range values.'}),
+    labelfont: extendFlat({}, fontAttrs, {dflt: {size: 10}, description: 'Sets the font for the `dimension` labels.'}),
+    tickfont: extendFlat({}, fontAttrs, {dflt: {size: 10}, description: 'Sets the font for the `dimension` tick values.'}),
+    rangefont: extendFlat({}, fontAttrs, {dflt: {size: 10}, description: 'Sets the font for the `dimension` range values.'}),
 
     dimensions: {
         _isLinkedToArray: 'dimension',
