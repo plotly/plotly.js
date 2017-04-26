@@ -373,13 +373,13 @@ describe('end-to-end scatter tests', function() {
         }).catch(fail).then(done);
     });
 
-    it('adds "textpoint" class to scatter text points', function (done) {
+    it('adds "textpoint" class to scatter text points', function(done) {
         Plotly.plot(gd, [{
             mode: 'text',
             x: [1, 2, 3],
             y: [2, 3, 4],
             text: ['a', 'b', 'c']
-        }]).then(function () {
+        }]).then(function() {
             expect(Plotly.d3.selectAll('.textpoint').size()).toBe(3);
         }).catch(fail).then(done);
     });
