@@ -82,8 +82,7 @@ function dimensionsDefaults(traceIn, traceOut) {
 }
 
 function coerceFont(fontAttr, coerce, layoutFont, defaultFont) {
-    var fontSpec = Lib.coerceFont(coerce, fontAttr);
-    Lib.coerceFont(coerce, fontAttr, Lib.extendFlat({}, layoutFont, defaultFont, fontSpec));
+    Lib.coerceFont(coerce, fontAttr, Lib.extendFlat({}, layoutFont, defaultFont, fontAttr));
 }
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
