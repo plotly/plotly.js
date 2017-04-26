@@ -13,6 +13,6 @@
  * rather than (-d, 0] if v is negative
  */
 module.exports = function mod(v, d) {
-    var out = v % d;
-    return out < 0 ? out + d : out;
+  var out = v % d;
+  return out < 0 ? out + d : out;
 };

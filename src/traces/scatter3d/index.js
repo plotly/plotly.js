@@ -22,15 +22,15 @@ Scatter3D.name = 'scatter3d';
 Scatter3D.basePlotModule = require('../../plots/gl3d');
 Scatter3D.categories = ['gl3d', 'symbols', 'markerColorscale', 'showLegend'];
 Scatter3D.meta = {
-    hrName: 'scatter_3d',
-    description: [
-        'The data visualized as scatter point or lines in 3D dimension',
-        'is set in `x`, `y`, `z`.',
-        'Text (appearing either on the chart or on hover only) is via `text`.',
-        'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
-        'Projections are achieved via `projection`.',
-        'Surface fills are achieved via `surfaceaxis`.'
-    ].join(' ')
+  hrName: 'scatter_3d',
+  description: [
+    'The data visualized as scatter point or lines in 3D dimension',
+    'is set in `x`, `y`, `z`.',
+    'Text (appearing either on the chart or on hover only) is via `text`.',
+    'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
+    'Projections are achieved via `projection`.',
+    'Surface fills are achieved via `surfaceaxis`.',
+  ].join(' '),
 };
 
 module.exports = Scatter3D;

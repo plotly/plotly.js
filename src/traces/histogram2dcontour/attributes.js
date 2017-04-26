@@ -15,7 +15,9 @@ var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
-module.exports = extendFlat({}, {
+module.exports = extendFlat(
+  {},
+  {
     x: histogram2dAttrs.x,
     y: histogram2dAttrs.y,
     z: histogram2dAttrs.z,
@@ -33,8 +35,8 @@ module.exports = extendFlat({}, {
     autocontour: contourAttrs.autocontour,
     ncontours: contourAttrs.ncontours,
     contours: contourAttrs.contours,
-    line: contourAttrs.line
-},
-    colorscaleAttrs,
-    { colorbar: colorbarAttrs }
+    line: contourAttrs.line,
+  },
+  colorscaleAttrs,
+  { colorbar: colorbarAttrs }
 );

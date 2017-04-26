@@ -22,10 +22,10 @@ pointcloud.name = 'pointcloud';
 pointcloud.basePlotModule = require('../../plots/gl2d');
 pointcloud.categories = ['gl2d', 'showLegend'];
 pointcloud.meta = {
-    description: [
-        'The data visualized as a point cloud set in `x` and `y`',
-        'using the WebGl plotting engine.'
-    ].join(' ')
+  description: [
+    'The data visualized as a point cloud set in `x` and `y`',
+    'using the WebGl plotting engine.',
+  ].join(' '),
 };
 
 module.exports = pointcloud;

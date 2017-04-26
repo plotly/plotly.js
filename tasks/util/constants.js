@@ -9,106 +9,121 @@ var pathToDist = path.join(pathToRoot, 'dist/');
 var pathToBuild = path.join(pathToRoot, 'build/');
 
 var pathToTopojsonSrc = path.join(
-    path.dirname(require.resolve('sane-topojson')), 'dist/'
+  path.dirname(require.resolve('sane-topojson')),
+  'dist/'
 );
 
 var partialBundleNames = [
-    'basic', 'cartesian', 'geo', 'gl3d', 'gl2d', 'mapbox', 'finance'
+  'basic',
+  'cartesian',
+  'geo',
+  'gl3d',
+  'gl2d',
+  'mapbox',
+  'finance',
 ];
 
 var partialBundlePaths = partialBundleNames.map(function(name) {
-    return {
-        name: name,
-        index: path.join(pathToLib, 'index-' + name + '.js'),
-        dist: path.join(pathToDist, 'plotly-' + name + '.js'),
-        distMin: path.join(pathToDist, 'plotly-' + name + '.min.js')
-    };
+  return {
+    name: name,
+    index: path.join(pathToLib, 'index-' + name + '.js'),
+    dist: path.join(pathToDist, 'plotly-' + name + '.js'),
+    distMin: path.join(pathToDist, 'plotly-' + name + '.min.js'),
+  };
 });
 
-var year = (new Date()).getFullYear();
+var year = new Date().getFullYear();
 
 module.exports = {
-    pathToRoot: pathToRoot,
-    pathToSrc: pathToSrc,
-    pathToLib: pathToLib,
-    pathToBuild: pathToBuild,
-    pathToDist: pathToDist,
+  pathToRoot: pathToRoot,
+  pathToSrc: pathToSrc,
+  pathToLib: pathToLib,
+  pathToBuild: pathToBuild,
+  pathToDist: pathToDist,
 
-    pathToPlotlyIndex: path.join(pathToLib, 'index.js'),
-    pathToPlotlyCore: path.join(pathToSrc, 'core.js'),
-    pathToPlotlyBuild: path.join(pathToBuild, 'plotly.js'),
-    pathToPlotlyDist: path.join(pathToDist, 'plotly.js'),
-    pathToPlotlyDistMin: path.join(pathToDist, 'plotly.min.js'),
-    pathToPlotlyDistWithMeta: path.join(pathToDist, 'plotly-with-meta.js'),
+  pathToPlotlyIndex: path.join(pathToLib, 'index.js'),
+  pathToPlotlyCore: path.join(pathToSrc, 'core.js'),
+  pathToPlotlyBuild: path.join(pathToBuild, 'plotly.js'),
+  pathToPlotlyDist: path.join(pathToDist, 'plotly.js'),
+  pathToPlotlyDistMin: path.join(pathToDist, 'plotly.min.js'),
+  pathToPlotlyDistWithMeta: path.join(pathToDist, 'plotly-with-meta.js'),
 
-    partialBundleNames: partialBundleNames,
-    partialBundlePaths: partialBundlePaths,
+  partialBundleNames: partialBundleNames,
+  partialBundlePaths: partialBundlePaths,
 
-    pathToTopojsonSrc: pathToTopojsonSrc,
-    pathToTopojsonDist: path.join(pathToDist, 'topojson/'),
-    pathToPlotlyGeoAssetsSrc: path.join(pathToSrc, 'assets/geo_assets.js'),
-    pathToPlotlyGeoAssetsDist: path.join(pathToDist, 'plotly-geo-assets.js'),
+  pathToTopojsonSrc: pathToTopojsonSrc,
+  pathToTopojsonDist: path.join(pathToDist, 'topojson/'),
+  pathToPlotlyGeoAssetsSrc: path.join(pathToSrc, 'assets/geo_assets.js'),
+  pathToPlotlyGeoAssetsDist: path.join(pathToDist, 'plotly-geo-assets.js'),
 
-    pathToFontSVG: path.join(pathToSrc, 'fonts/ploticon/ploticon.svg'),
-    pathToFontSVGBuild: path.join(pathToBuild, 'ploticon.js'),
+  pathToFontSVG: path.join(pathToSrc, 'fonts/ploticon/ploticon.svg'),
+  pathToFontSVGBuild: path.join(pathToBuild, 'ploticon.js'),
 
-    pathToSCSS: path.join(pathToSrc, 'css/style.scss'),
-    pathToCSSBuild: path.join(pathToBuild, 'plotcss.js'),
+  pathToSCSS: path.join(pathToSrc, 'css/style.scss'),
+  pathToCSSBuild: path.join(pathToBuild, 'plotcss.js'),
 
-    pathToTestDashboardBundle: path.join(pathToBuild, 'test_dashboard-bundle.js'),
-    pathToImageViewerBundle: path.join(pathToBuild, 'image_viewer-bundle.js'),
+  pathToTestDashboardBundle: path.join(pathToBuild, 'test_dashboard-bundle.js'),
+  pathToImageViewerBundle: path.join(pathToBuild, 'image_viewer-bundle.js'),
 
-    pathToTestImageMocks: path.join(pathToImageTest, 'mocks/'),
-    pathToTestImageBaselines: path.join(pathToImageTest, 'baselines/'),
-    pathToTestImages: path.join(pathToBuild, 'test_images/'),
-    pathToTestImagesDiff: path.join(pathToBuild, 'test_images_diff/'),
-    pathToTestImagesDiffList: path.join(pathToBuild, 'list_of_incorrect_images.txt'),
+  pathToTestImageMocks: path.join(pathToImageTest, 'mocks/'),
+  pathToTestImageBaselines: path.join(pathToImageTest, 'baselines/'),
+  pathToTestImages: path.join(pathToBuild, 'test_images/'),
+  pathToTestImagesDiff: path.join(pathToBuild, 'test_images_diff/'),
+  pathToTestImagesDiffList: path.join(
+    pathToBuild,
+    'list_of_incorrect_images.txt'
+  ),
 
-    pathToJasmineTests: path.join(pathToRoot, 'test/jasmine/tests'),
-    pathToJasmineBundleTests: path.join(pathToRoot, 'test/jasmine/bundle_tests'),
-    pathToRequireJS: path.join(pathToRoot, 'node_modules', 'requirejs', 'require.js'),
-    pathToRequireJSFixture: path.join(pathToBuild, 'requirejs_fixture.js'),
+  pathToJasmineTests: path.join(pathToRoot, 'test/jasmine/tests'),
+  pathToJasmineBundleTests: path.join(pathToRoot, 'test/jasmine/bundle_tests'),
+  pathToRequireJS: path.join(
+    pathToRoot,
+    'node_modules',
+    'requirejs',
+    'require.js'
+  ),
+  pathToRequireJSFixture: path.join(pathToBuild, 'requirejs_fixture.js'),
 
-    // this mapbox access token is 'public', no need to hide it
-    // more info: https://www.mapbox.com/help/define-access-token/
-    mapboxAccessToken: 'pk.eyJ1IjoiZXRwaW5hcmQiLCJhIjoiY2luMHIzdHE0MGFxNXVubTRxczZ2YmUxaCJ9.hwWZful0U2CQxit4ItNsiQ',
-    pathToCredentials: path.join(pathToBuild, 'credentials.json'),
+  // this mapbox access token is 'public', no need to hide it
+  // more info: https://www.mapbox.com/help/define-access-token/
+  mapboxAccessToken: 'pk.eyJ1IjoiZXRwaW5hcmQiLCJhIjoiY2luMHIzdHE0MGFxNXVubTRxczZ2YmUxaCJ9.hwWZful0U2CQxit4ItNsiQ',
+  pathToCredentials: path.join(pathToBuild, 'credentials.json'),
 
-    testContainerImage: 'plotly/testbed:latest',
-    testContainerName: process.env.PLOTLYJS_TEST_CONTAINER_NAME || 'imagetest',
-    testContainerPort: '9010',
-    testContainerUrl: 'http://localhost:9010/',
-    testContainerHome: '/var/www/streambed/image_server/plotly.js',
+  testContainerImage: 'plotly/testbed:latest',
+  testContainerName: process.env.PLOTLYJS_TEST_CONTAINER_NAME || 'imagetest',
+  testContainerPort: '9010',
+  testContainerUrl: 'http://localhost:9010/',
+  testContainerHome: '/var/www/streambed/image_server/plotly.js',
 
-    uglifyOptions: {
-        fromString: true,
-        mangle: true,
-        compress: {
-            warnings: false,
-            screw_ie8: true
-        },
-        output: {
-            beautify: false,
-            ascii_only: true
-        }
+  uglifyOptions: {
+    fromString: true,
+    mangle: true,
+    compress: {
+      warnings: false,
+      screw_ie8: true,
     },
+    output: {
+      beautify: false,
+      ascii_only: true,
+    },
+  },
 
-    licenseDist: [
-        '/**',
-        '* plotly.js v' + pkg.version,
-        '* Copyright 2012-' + year + ', Plotly, Inc.',
-        '* All rights reserved.',
-        '* Licensed under the MIT license',
-        '*/'
-    ].join('\n'),
+  licenseDist: [
+    '/**',
+    '* plotly.js v' + pkg.version,
+    '* Copyright 2012-' + year + ', Plotly, Inc.',
+    '* All rights reserved.',
+    '* Licensed under the MIT license',
+    '*/',
+  ].join('\n'),
 
-    licenseSrc: [
-        '/**',
-        '* Copyright 2012-' + year + ', Plotly, Inc.',
-        '* All rights reserved.',
-        '*',
-        '* This source code is licensed under the MIT license found in the',
-        '* LICENSE file in the root directory of this source tree.',
-        '*/'
-    ].join('\n')
+  licenseSrc: [
+    '/**',
+    '* Copyright 2012-' + year + ', Plotly, Inc.',
+    '* All rights reserved.',
+    '*',
+    '* This source code is licensed under the MIT license found in the',
+    '* LICENSE file in the root directory of this source tree.',
+    '*/',
+  ].join('\n'),
 };

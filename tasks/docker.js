@@ -7,43 +7,45 @@ var arg = process.argv[2];
 
 var msg, cmd, cb, errorCb;
 
-switch(arg) {
+switch (arg) {
+  case 'pull':
+    msg = 'Pulling latest docker image';
+    cmd = 'docker pull ' + constants.testContainerImage;
+    break;
 
-    case 'pull':
-        msg = 'Pulling latest docker image';
-        cmd = 'docker pull ' + constants.testContainerImage;
-        break;
+  case 'run':
+    msg = 'Booting up ' + constants.testContainerName + ' docker container';
+    cmd = containerCommands.dockerRun;
 
-    case 'run':
-        msg = 'Booting up ' + constants.testContainerName + ' docker container';
-        cmd = containerCommands.dockerRun;
+    // if docker-run fails, try docker-start.
+    errorCb = function(err) {
+      if (err) common.execCmd('docker start ' + constants.testContainerName);
+    };
 
-        // if docker-run fails, try docker-start.
-        errorCb = function(err) {
-            if(err) common.execCmd('docker start ' + constants.testContainerName);
-        };
+    break;
 
-        break;
+  case 'setup':
+    msg =
+      'Setting up ' +
+      constants.testContainerName +
+      ' docker container for testing';
+    cmd = containerCommands.getRunCmd(isCI, containerCommands.setup);
+    break;
 
-    case 'setup':
-        msg = 'Setting up ' + constants.testContainerName + ' docker container for testing';
-        cmd = containerCommands.getRunCmd(isCI, containerCommands.setup);
-        break;
+  case 'stop':
+    msg = 'Stopping ' + constants.testContainerName + ' docker container';
+    cmd = 'docker stop ' + constants.testContainerName;
+    break;
 
-    case 'stop':
-        msg = 'Stopping ' + constants.testContainerName + ' docker container';
-        cmd = 'docker stop ' + constants.testContainerName;
-        break;
+  case 'remove':
+    msg = 'Removing ' + constants.testContainerName + ' docker container';
+    cmd = 'docker rm ' + constants.testContainerName;
+    break;
 
-    case 'remove':
-        msg = 'Removing ' + constants.testContainerName + ' docker container';
-        cmd = 'docker rm ' + constants.testContainerName;
-        break;
-
-    default:
-        console.log('Usage: pull, run, setup, stop, remove');
-        process.exit(0);
-        break;
+  default:
+    console.log('Usage: pull, run, setup, stop, remove');
+    process.exit(0);
+    break;
 }
 
 console.log(msg);

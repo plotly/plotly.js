@@ -6,12 +6,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../lib');
 var config = require('../plot_api/plot_config');
-
 
 /**
  * Copy arg array *without* removing `undefined` values from objects.
@@ -21,29 +19,26 @@ var config = require('../plot_api/plot_config');
  * @returns {Array}
  */
 function copyArgArray(gd, args) {
-    var copy = [];
-    var arg;
+  var copy = [];
+  var arg;
 
-    for(var i = 0; i < args.length; i++) {
-        arg = args[i];
+  for (var i = 0; i < args.length; i++) {
+    arg = args[i];
 
-        if(arg === gd) copy[i] = arg;
-        else if(typeof arg === 'object') {
-            copy[i] = Array.isArray(arg) ?
-                Lib.extendDeep([], arg) :
-                Lib.extendDeepAll({}, arg);
-        }
-        else copy[i] = arg;
-    }
+    if (arg === gd) copy[i] = arg;
+    else if (typeof arg === 'object') {
+      copy[i] = Array.isArray(arg)
+        ? Lib.extendDeep([], arg)
+        : Lib.extendDeepAll({}, arg);
+    } else copy[i] = arg;
+  }
 
-    return copy;
+  return copy;
 }
-
 
 // -----------------------------------------------------
 // Undo/Redo queue for plots
 // -----------------------------------------------------
-
 
 var queue = {};
 
@@ -59,42 +54,45 @@ var queue = {};
  * @param redoArgs Args to supply redoFunc with
  */
 queue.add = function(gd, undoFunc, undoArgs, redoFunc, redoArgs) {
-    var queueObj,
-        queueIndex;
+  var queueObj, queueIndex;
 
-    // make sure we have the queue and our position in it
-    gd.undoQueue = gd.undoQueue || {index: 0, queue: [], sequence: false};
-    queueIndex = gd.undoQueue.index;
+  // make sure we have the queue and our position in it
+  gd.undoQueue = gd.undoQueue || { index: 0, queue: [], sequence: false };
+  queueIndex = gd.undoQueue.index;
 
-    // if we're already playing an undo or redo, or if this is an auto operation
-    // (like pane resize... any others?) then we don't save this to the undo queue
-    if(gd.autoplay) {
-        if(!gd.undoQueue.inSequence) gd.autoplay = false;
-        return;
-    }
+  // if we're already playing an undo or redo, or if this is an auto operation
+  // (like pane resize... any others?) then we don't save this to the undo queue
+  if (gd.autoplay) {
+    if (!gd.undoQueue.inSequence) gd.autoplay = false;
+    return;
+  }
 
-    // if we're not in a sequence or are just starting, we need a new queue item
-    if(!gd.undoQueue.sequence || gd.undoQueue.beginSequence) {
-        queueObj = {undo: {calls: [], args: []}, redo: {calls: [], args: []}};
-        gd.undoQueue.queue.splice(queueIndex, gd.undoQueue.queue.length - queueIndex, queueObj);
-        gd.undoQueue.index += 1;
-    } else {
-        queueObj = gd.undoQueue.queue[queueIndex - 1];
-    }
-    gd.undoQueue.beginSequence = false;
+  // if we're not in a sequence or are just starting, we need a new queue item
+  if (!gd.undoQueue.sequence || gd.undoQueue.beginSequence) {
+    queueObj = { undo: { calls: [], args: [] }, redo: { calls: [], args: [] } };
+    gd.undoQueue.queue.splice(
+      queueIndex,
+      gd.undoQueue.queue.length - queueIndex,
+      queueObj
+    );
+    gd.undoQueue.index += 1;
+  } else {
+    queueObj = gd.undoQueue.queue[queueIndex - 1];
+  }
+  gd.undoQueue.beginSequence = false;
 
-    // we unshift to handle calls for undo in a forward for loop later
-    if(queueObj) {
-        queueObj.undo.calls.unshift(undoFunc);
-        queueObj.undo.args.unshift(undoArgs);
-        queueObj.redo.calls.push(redoFunc);
-        queueObj.redo.args.push(redoArgs);
-    }
+  // we unshift to handle calls for undo in a forward for loop later
+  if (queueObj) {
+    queueObj.undo.calls.unshift(undoFunc);
+    queueObj.undo.args.unshift(undoArgs);
+    queueObj.redo.calls.push(redoFunc);
+    queueObj.redo.args.push(redoArgs);
+  }
 
-    if(gd.undoQueue.queue.length > config.queueLength) {
-        gd.undoQueue.queue.shift();
-        gd.undoQueue.index--;
-    }
+  if (gd.undoQueue.queue.length > config.queueLength) {
+    gd.undoQueue.queue.shift();
+    gd.undoQueue.index--;
+  }
 };
 
 /**
@@ -103,9 +101,9 @@ queue.add = function(gd, undoFunc, undoArgs, redoFunc, redoArgs) {
  * @param gd
  */
 queue.startSequence = function(gd) {
-    gd.undoQueue = gd.undoQueue || {index: 0, queue: [], sequence: false};
-    gd.undoQueue.sequence = true;
-    gd.undoQueue.beginSequence = true;
+  gd.undoQueue = gd.undoQueue || { index: 0, queue: [], sequence: false };
+  gd.undoQueue.sequence = true;
+  gd.undoQueue.beginSequence = true;
 };
 
 /**
@@ -116,9 +114,9 @@ queue.startSequence = function(gd) {
  * @param gd
  */
 queue.stopSequence = function(gd) {
-    gd.undoQueue = gd.undoQueue || {index: 0, queue: [], sequence: false};
-    gd.undoQueue.sequence = false;
-    gd.undoQueue.beginSequence = false;
+  gd.undoQueue = gd.undoQueue || { index: 0, queue: [], sequence: false };
+  gd.undoQueue.sequence = false;
+  gd.undoQueue.beginSequence = false;
 };
 
 /**
@@ -127,31 +125,33 @@ queue.stopSequence = function(gd) {
  * @param gd
  */
 queue.undo = function undo(gd) {
-    var queueObj, i;
+  var queueObj, i;
 
-    if(gd.framework && gd.framework.isPolar) {
-        gd.framework.undo();
-        return;
-    }
-    if(gd.undoQueue === undefined ||
-            isNaN(gd.undoQueue.index) ||
-            gd.undoQueue.index <= 0) {
-        return;
-    }
+  if (gd.framework && gd.framework.isPolar) {
+    gd.framework.undo();
+    return;
+  }
+  if (
+    gd.undoQueue === undefined ||
+    isNaN(gd.undoQueue.index) ||
+    gd.undoQueue.index <= 0
+  ) {
+    return;
+  }
 
-    // index is pointing to next *forward* queueObj, point to the one we're undoing
-    gd.undoQueue.index--;
+  // index is pointing to next *forward* queueObj, point to the one we're undoing
+  gd.undoQueue.index--;
 
-    // get the queueObj for instructions on how to undo
-    queueObj = gd.undoQueue.queue[gd.undoQueue.index];
+  // get the queueObj for instructions on how to undo
+  queueObj = gd.undoQueue.queue[gd.undoQueue.index];
 
-    // this sequence keeps things from adding to the queue during undo/redo
-    gd.undoQueue.inSequence = true;
-    for(i = 0; i < queueObj.undo.calls.length; i++) {
-        queue.plotDo(gd, queueObj.undo.calls[i], queueObj.undo.args[i]);
-    }
-    gd.undoQueue.inSequence = false;
-    gd.autoplay = false;
+  // this sequence keeps things from adding to the queue during undo/redo
+  gd.undoQueue.inSequence = true;
+  for (i = 0; i < queueObj.undo.calls.length; i++) {
+    queue.plotDo(gd, queueObj.undo.calls[i], queueObj.undo.args[i]);
+  }
+  gd.undoQueue.inSequence = false;
+  gd.autoplay = false;
 };
 
 /**
@@ -160,31 +160,33 @@ queue.undo = function undo(gd) {
  * @param gd
  */
 queue.redo = function redo(gd) {
-    var queueObj, i;
+  var queueObj, i;
 
-    if(gd.framework && gd.framework.isPolar) {
-        gd.framework.redo();
-        return;
-    }
-    if(gd.undoQueue === undefined ||
-            isNaN(gd.undoQueue.index) ||
-            gd.undoQueue.index >= gd.undoQueue.queue.length) {
-        return;
-    }
+  if (gd.framework && gd.framework.isPolar) {
+    gd.framework.redo();
+    return;
+  }
+  if (
+    gd.undoQueue === undefined ||
+    isNaN(gd.undoQueue.index) ||
+    gd.undoQueue.index >= gd.undoQueue.queue.length
+  ) {
+    return;
+  }
 
-    // get the queueObj for instructions on how to undo
-    queueObj = gd.undoQueue.queue[gd.undoQueue.index];
+  // get the queueObj for instructions on how to undo
+  queueObj = gd.undoQueue.queue[gd.undoQueue.index];
 
-    // this sequence keeps things from adding to the queue during undo/redo
-    gd.undoQueue.inSequence = true;
-    for(i = 0; i < queueObj.redo.calls.length; i++) {
-        queue.plotDo(gd, queueObj.redo.calls[i], queueObj.redo.args[i]);
-    }
-    gd.undoQueue.inSequence = false;
-    gd.autoplay = false;
+  // this sequence keeps things from adding to the queue during undo/redo
+  gd.undoQueue.inSequence = true;
+  for (i = 0; i < queueObj.redo.calls.length; i++) {
+    queue.plotDo(gd, queueObj.redo.calls[i], queueObj.redo.args[i]);
+  }
+  gd.undoQueue.inSequence = false;
+  gd.autoplay = false;
 
-    // index is pointing to the thing we just redid, move it
-    gd.undoQueue.index++;
+  // index is pointing to the thing we just redid, move it
+  gd.undoQueue.index++;
 };
 
 /**
@@ -197,13 +199,13 @@ queue.redo = function redo(gd) {
  * @param args
  */
 queue.plotDo = function(gd, func, args) {
-    gd.autoplay = true;
+  gd.autoplay = true;
 
-    // this *won't* copy gd and it preserves `undefined` properties!
-    args = copyArgArray(gd, args);
+  // this *won't* copy gd and it preserves `undefined` properties!
+  args = copyArgArray(gd, args);
 
-    // call the supplied function
-    func.apply(null, args);
+  // call the supplied function
+  func.apply(null, args);
 };
 
 module.exports = queue;

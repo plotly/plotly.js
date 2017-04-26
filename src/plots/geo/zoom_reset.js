@@ -6,22 +6,20 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 module.exports = function createGeoZoomReset(geo, geoLayout) {
-    var projection = geo.projection,
-        zoom = geo.zoom;
+  var projection = geo.projection, zoom = geo.zoom;
 
-    var zoomReset = function() {
-        geo.makeProjection(geoLayout);
-        geo.makePath();
+  var zoomReset = function() {
+    geo.makeProjection(geoLayout);
+    geo.makePath();
 
-        zoom.scale(projection.scale());
-        zoom.translate(projection.translate());
+    zoom.scale(projection.scale());
+    zoom.translate(projection.translate());
 
-        geo.render();
-    };
+    geo.render();
+  };
 
-    return zoomReset;
+  return zoomReset;
 };

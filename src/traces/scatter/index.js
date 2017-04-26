@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Scatter = {};
@@ -34,15 +33,21 @@ Scatter.animatable = true;
 Scatter.moduleType = 'trace';
 Scatter.name = 'scatter';
 Scatter.basePlotModule = require('../../plots/cartesian');
-Scatter.categories = ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend'];
+Scatter.categories = [
+  'cartesian',
+  'symbols',
+  'markerColorscale',
+  'errorBarsOK',
+  'showLegend',
+];
 Scatter.meta = {
-    description: [
-        'The scatter trace type encompasses line charts, scatter charts, text charts, and bubble charts.',
-        'The data visualized as scatter point or lines is set in `x` and `y`.',
-        'Text (appearing either on the chart or on hover only) is via `text`.',
-        'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
-        'to numerical arrays.'
-    ].join(' ')
+  description: [
+    'The scatter trace type encompasses line charts, scatter charts, text charts, and bubble charts.',
+    'The data visualized as scatter point or lines is set in `x` and `y`.',
+    'Text (appearing either on the chart or on hover only) is via `text`.',
+    'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
+    'to numerical arrays.',
+  ].join(' '),
 };
 
 module.exports = Scatter;

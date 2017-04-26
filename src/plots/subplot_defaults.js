@@ -6,12 +6,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../lib');
 var Plots = require('./plots');
-
 
 /**
  * Find and supply defaults to all subplots of a given type
@@ -40,34 +38,44 @@ var Plots = require('./plots');
  *      additional items needed by this function here as well
  * }
  */
-module.exports = function handleSubplotDefaults(layoutIn, layoutOut, fullData, opts) {
-    var subplotType = opts.type,
-        subplotAttributes = opts.attributes,
-        handleDefaults = opts.handleDefaults,
-        partition = opts.partition || 'x';
+module.exports = function handleSubplotDefaults(
+  layoutIn,
+  layoutOut,
+  fullData,
+  opts
+) {
+  var subplotType = opts.type,
+    subplotAttributes = opts.attributes,
+    handleDefaults = opts.handleDefaults,
+    partition = opts.partition || 'x';
 
-    var ids = Plots.findSubplotIds(fullData, subplotType),
-        idsLength = ids.length;
+  var ids = Plots.findSubplotIds(fullData, subplotType), idsLength = ids.length;
 
-    var subplotLayoutIn, subplotLayoutOut;
+  var subplotLayoutIn, subplotLayoutOut;
 
-    function coerce(attr, dflt) {
-        return Lib.coerce(subplotLayoutIn, subplotLayoutOut, subplotAttributes, attr, dflt);
-    }
+  function coerce(attr, dflt) {
+    return Lib.coerce(
+      subplotLayoutIn,
+      subplotLayoutOut,
+      subplotAttributes,
+      attr,
+      dflt
+    );
+  }
 
-    for(var i = 0; i < idsLength; i++) {
-        var id = ids[i];
+  for (var i = 0; i < idsLength; i++) {
+    var id = ids[i];
 
-        // ternary traces get a layout ternary for free!
-        if(layoutIn[id]) subplotLayoutIn = layoutIn[id];
-        else subplotLayoutIn = layoutIn[id] = {};
+    // ternary traces get a layout ternary for free!
+    if (layoutIn[id]) subplotLayoutIn = layoutIn[id];
+    else subplotLayoutIn = layoutIn[id] = {};
 
-        layoutOut[id] = subplotLayoutOut = {};
+    layoutOut[id] = subplotLayoutOut = {};
 
-        coerce('domain.' + partition, [i / idsLength, (i + 1) / idsLength]);
-        coerce('domain.' + {x: 'y', y: 'x'}[partition]);
+    coerce('domain.' + partition, [i / idsLength, (i + 1) / idsLength]);
+    coerce('domain.' + { x: 'y', y: 'x' }[partition]);
 
-        opts.id = id;
-        handleDefaults(subplotLayoutIn, subplotLayoutOut, coerce, opts);
-    }
+    opts.id = id;
+    handleDefaults(subplotLayoutIn, subplotLayoutOut, coerce, opts);
+  }
 };

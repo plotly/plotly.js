@@ -10,57 +10,63 @@
 
 var handleAxisDefaults = require('./axis_defaults');
 
-module.exports = function handleABDefaults(traceIn, traceOut, fullLayout, coerce, dfltColor) {
-    var a = coerce('a');
+module.exports = function handleABDefaults(
+  traceIn,
+  traceOut,
+  fullLayout,
+  coerce,
+  dfltColor
+) {
+  var a = coerce('a');
 
-    if(!a) {
-        coerce('da');
-        coerce('a0');
-    }
+  if (!a) {
+    coerce('da');
+    coerce('a0');
+  }
 
-    var b = coerce('b');
+  var b = coerce('b');
 
-    if(!b) {
-        coerce('db');
-        coerce('b0');
-    }
+  if (!b) {
+    coerce('db');
+    coerce('b0');
+  }
 
-    mimickAxisDefaults(traceIn, traceOut, fullLayout, dfltColor);
+  mimickAxisDefaults(traceIn, traceOut, fullLayout, dfltColor);
 
-    return;
+  return;
 };
 
 function mimickAxisDefaults(traceIn, traceOut, fullLayout, dfltColor) {
-    var axesList = ['aaxis', 'baxis'];
+  var axesList = ['aaxis', 'baxis'];
 
-    axesList.forEach(function(axName) {
-        var axLetter = axName.charAt(0);
-        var axIn = traceIn[axName] || {};
-        var axOut = {};
+  axesList.forEach(function(axName) {
+    var axLetter = axName.charAt(0);
+    var axIn = traceIn[axName] || {};
+    var axOut = {};
 
-        var defaultOptions = {
-            tickfont: 'x',
-            id: axLetter + 'axis',
-            letter: axLetter,
-            font: traceOut.font,
-            name: axName,
-            data: traceIn[axLetter],
-            calendar: traceOut.calendar,
-            dfltColor: dfltColor,
-            bgColor: fullLayout.paper_bgcolor,
-            fullLayout: fullLayout
-        };
+    var defaultOptions = {
+      tickfont: 'x',
+      id: axLetter + 'axis',
+      letter: axLetter,
+      font: traceOut.font,
+      name: axName,
+      data: traceIn[axLetter],
+      calendar: traceOut.calendar,
+      dfltColor: dfltColor,
+      bgColor: fullLayout.paper_bgcolor,
+      fullLayout: fullLayout,
+    };
 
-        handleAxisDefaults(axIn, axOut, defaultOptions);
+    handleAxisDefaults(axIn, axOut, defaultOptions);
 
-        axOut._categories = axOut._categories || [];
+    axOut._categories = axOut._categories || [];
 
-        traceOut[axName] = axOut;
+    traceOut[axName] = axOut;
 
-        // so we don't have to repeat autotype unnecessarily,
-        // copy an autotype back to traceIn
-        if(!traceIn[axName] && axIn.type !== '-') {
-            traceIn[axName] = {type: axIn.type};
-        }
-    });
+    // so we don't have to repeat autotype unnecessarily,
+    // copy an autotype back to traceIn
+    if (!traceIn[axName] && axIn.type !== '-') {
+      traceIn[axName] = { type: axIn.type };
+    }
+  });
 }

@@ -37,45 +37,43 @@ var QUEUE_WAIT = 10;
 var pattern = process.argv[2];
 var mockList = getMockList(pattern);
 
-if(mockList.length === 0) {
-    throw new Error('No mocks found with pattern ' + pattern);
+if (mockList.length === 0) {
+  throw new Error('No mocks found with pattern ' + pattern);
 }
 
 // main
 runInQueue(mockList);
 
 function runInQueue(mockList) {
-    var index = 0;
+  var index = 0;
 
-    run(mockList[index]);
+  run(mockList[index]);
 
-    function run(mockName) {
-        makeBaseline(mockName, function() {
-            console.log('generated ' + mockName + ' successfully');
+  function run(mockName) {
+    makeBaseline(mockName, function() {
+      console.log('generated ' + mockName + ' successfully');
 
-            index++;
-            if(index < mockList.length) {
-                setTimeout(function() {
-                    run(mockList[index]);
-                }, QUEUE_WAIT);
-            }
-        });
-    }
+      index++;
+      if (index < mockList.length) {
+        setTimeout(function() {
+          run(mockList[index]);
+        }, QUEUE_WAIT);
+      }
+    });
+  }
 }
 
 function makeBaseline(mockName, cb) {
-    var requestOpts = getRequestOpts({ mockName: mockName }),
-        imagePaths = getImagePaths(mockName),
-        saveImageStream = fs.createWriteStream(imagePaths.baseline);
+  var requestOpts = getRequestOpts({ mockName: mockName }),
+    imagePaths = getImagePaths(mockName),
+    saveImageStream = fs.createWriteStream(imagePaths.baseline);
 
-    function checkFormat(err, res) {
-        if(err) throw err;
-        if(res.headers['content-type'] !== 'image/png') {
-            throw new Error('Generated image is not a valid png');
-        }
+  function checkFormat(err, res) {
+    if (err) throw err;
+    if (res.headers['content-type'] !== 'image/png') {
+      throw new Error('Generated image is not a valid png');
     }
+  }
 
-    request(requestOpts, checkFormat)
-        .pipe(saveImageStream)
-        .on('close', cb);
+  request(requestOpts, checkFormat).pipe(saveImageStream).on('close', cb);
 }

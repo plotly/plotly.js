@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Choropleth = {};
@@ -24,12 +23,12 @@ Choropleth.name = 'choropleth';
 Choropleth.basePlotModule = require('../../plots/geo');
 Choropleth.categories = ['geo', 'noOpacity'];
 Choropleth.meta = {
-    description: [
-        'The data that describes the choropleth value-to-color mapping',
-        'is set in `z`.',
-        'The geographic locations corresponding to each value in `z`',
-        'are set in `locations`.'
-    ].join(' ')
+  description: [
+    'The data that describes the choropleth value-to-color mapping',
+    'is set in `z`.',
+    'The geographic locations corresponding to each value in `z`',
+    'are set in `locations`.',
+  ].join(' '),
 };
 
 module.exports = Choropleth;

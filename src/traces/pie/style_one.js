@@ -11,13 +11,15 @@
 var Color = require('../../components/color');
 
 module.exports = function styleOne(s, pt, trace) {
-    var lineColor = trace.marker.line.color;
-    if(Array.isArray(lineColor)) lineColor = lineColor[pt.i] || Color.defaultLine;
+  var lineColor = trace.marker.line.color;
+  if (Array.isArray(lineColor))
+    lineColor = lineColor[pt.i] || Color.defaultLine;
 
-    var lineWidth = trace.marker.line.width || 0;
-    if(Array.isArray(lineWidth)) lineWidth = lineWidth[pt.i] || 0;
+  var lineWidth = trace.marker.line.width || 0;
+  if (Array.isArray(lineWidth)) lineWidth = lineWidth[pt.i] || 0;
 
-    s.style({'stroke-width': lineWidth})
+  s
+    .style({ 'stroke-width': lineWidth })
     .call(Color.fill, pt.color)
     .call(Color.stroke, lineColor);
 };

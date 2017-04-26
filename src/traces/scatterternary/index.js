@@ -22,13 +22,18 @@ ScatterTernary.selectPoints = require('./select');
 ScatterTernary.moduleType = 'trace';
 ScatterTernary.name = 'scatterternary';
 ScatterTernary.basePlotModule = require('../../plots/ternary');
-ScatterTernary.categories = ['ternary', 'symbols', 'markerColorscale', 'showLegend'];
+ScatterTernary.categories = [
+  'ternary',
+  'symbols',
+  'markerColorscale',
+  'showLegend',
+];
 ScatterTernary.meta = {
-    hrName: 'scatter_ternary',
-    description: [
-        'Provides similar functionality to the *scatter* type but on a ternary phase diagram.',
-        'The data is provided by at least two arrays out of `a`, `b`, `c` triplets.'
-    ].join(' ')
+  hrName: 'scatter_ternary',
+  description: [
+    'Provides similar functionality to the *scatter* type but on a ternary phase diagram.',
+    'The data is provided by at least two arrays out of `a`, `b`, `c` triplets.',
+  ].join(' '),
 };
 
 module.exports = ScatterTernary;

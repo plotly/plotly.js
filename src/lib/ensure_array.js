@@ -17,11 +17,11 @@
  * collection.
  */
 module.exports = function ensureArray(out, n) {
-    if(!Array.isArray(out)) out = [];
+  if (!Array.isArray(out)) out = [];
 
-    // If too long, truncate. (If too short, it will grow
-    // automatically so we don't care about that case)
-    out.length = n;
+  // If too long, truncate. (If too short, it will grow
+  // automatically so we don't care about that case)
+  out.length = n;
 
-    return out;
+  return out;
 };

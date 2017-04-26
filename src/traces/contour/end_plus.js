@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 /*
@@ -14,5 +13,5 @@
  * losing the last contour to rounding errors
  */
 module.exports = function endPlus(contours) {
-    return contours.end + contours.size / 1e6;
+  return contours.end + contours.size / 1e6;
 };

@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var HeatmapGl = {};
@@ -23,9 +22,7 @@ HeatmapGl.name = 'heatmapgl';
 HeatmapGl.basePlotModule = require('../../plots/gl2d');
 HeatmapGl.categories = ['gl2d', '2dMap'];
 HeatmapGl.meta = {
-    description: [
-        'WebGL version of the heatmap trace type.'
-    ].join(' ')
+  description: ['WebGL version of the heatmap trace type.'].join(' '),
 };
 
 module.exports = HeatmapGl;

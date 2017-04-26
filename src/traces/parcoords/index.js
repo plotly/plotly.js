@@ -21,11 +21,11 @@ Parcoords.name = 'parcoords';
 Parcoords.basePlotModule = require('./base_plot');
 Parcoords.categories = ['gl', 'noOpacity'];
 Parcoords.meta = {
-    description: [
-        'Parallel coordinates for multidimensional exploratory data analysis.',
-        'The samples are specified in `dimensions`.',
-        'The colors are set in `line.color`.'
-    ].join(' ')
+  description: [
+    'Parallel coordinates for multidimensional exploratory data analysis.',
+    'The samples are specified in `dimensions`.',
+    'The colors are set in `line.color`.',
+  ].join(' '),
 };
 
 module.exports = Parcoords;

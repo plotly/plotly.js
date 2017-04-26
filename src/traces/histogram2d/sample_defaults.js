@@ -6,33 +6,38 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Registry = require('../../registry');
 var handleBinDefaults = require('../histogram/bin_defaults');
 
+module.exports = function handleSampleDefaults(
+  traceIn,
+  traceOut,
+  coerce,
+  layout
+) {
+  var x = coerce('x'), y = coerce('y');
 
-module.exports = function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
-    var x = coerce('x'),
-        y = coerce('y');
+  // we could try to accept x0 and dx, etc...
+  // but that's a pretty weird use case.
+  // for now require both x and y explicitly specified.
+  if (!(x && x.length && y && y.length)) {
+    traceOut.visible = false;
+    return;
+  }
 
-    // we could try to accept x0 and dx, etc...
-    // but that's a pretty weird use case.
-    // for now require both x and y explicitly specified.
-    if(!(x && x.length && y && y.length)) {
-        traceOut.visible = false;
-        return;
-    }
+  var handleCalendarDefaults = Registry.getComponentMethod(
+    'calendars',
+    'handleTraceDefaults'
+  );
+  handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
 
-    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
-    handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
+  // if marker.color is an array, we can use it in aggregation instead of z
+  var hasAggregationData = coerce('z') || coerce('marker.color');
 
-    // if marker.color is an array, we can use it in aggregation instead of z
-    var hasAggregationData = coerce('z') || coerce('marker.color');
+  if (hasAggregationData) coerce('histfunc');
 
-    if(hasAggregationData) coerce('histfunc');
-
-    var binDirections = ['x', 'y'];
-    handleBinDefaults(traceIn, traceOut, coerce, binDirections);
+  var binDirections = ['x', 'y'];
+  handleBinDefaults(traceIn, traceOut, coerce, binDirections);
 };

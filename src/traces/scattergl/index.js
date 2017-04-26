@@ -21,14 +21,20 @@ ScatterGl.plot = require('./convert');
 ScatterGl.moduleType = 'trace';
 ScatterGl.name = 'scattergl';
 ScatterGl.basePlotModule = require('../../plots/gl2d');
-ScatterGl.categories = ['gl2d', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend'];
+ScatterGl.categories = [
+  'gl2d',
+  'symbols',
+  'errorBarsOK',
+  'markerColorscale',
+  'showLegend',
+];
 ScatterGl.meta = {
-    description: [
-        'The data visualized as scatter point or lines is set in `x` and `y`',
-        'using the WebGl plotting engine.',
-        'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
-        'to a numerical arrays.'
-    ].join(' ')
+  description: [
+    'The data visualized as scatter point or lines is set in `x` and `y`',
+    'using the WebGl plotting engine.',
+    'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
+    'to a numerical arrays.',
+  ].join(' '),
 };
 
 module.exports = ScatterGl;

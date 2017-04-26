@@ -9,17 +9,17 @@
 'use strict';
 
 module.exports = {
-    moduleType: 'component',
-    name: 'rangeselector',
+  moduleType: 'component',
+  name: 'rangeselector',
 
-    schema: {
-        layout: {
-            'xaxis.rangeselector': require('./attributes')
-        }
+  schema: {
+    layout: {
+      'xaxis.rangeselector': require('./attributes'),
     },
+  },
 
-    layoutAttributes: require('./attributes'),
-    handleDefaults: require('./defaults'),
+  layoutAttributes: require('./attributes'),
+  handleDefaults: require('./defaults'),
 
-    draw: require('./draw')
+  draw: require('./draw'),
 };

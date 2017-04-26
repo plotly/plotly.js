@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -16,50 +15,59 @@ var handleTickLabelDefaults = require('../../plots/cartesian/tick_label_defaults
 
 var attributes = require('./attributes');
 
-
 module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
-    var colorbarOut = containerOut.colorbar = {},
-        colorbarIn = containerIn.colorbar || {};
+  var colorbarOut = (containerOut.colorbar = {}),
+    colorbarIn = containerIn.colorbar || {};
 
-    function coerce(attr, dflt) {
-        return Lib.coerce(colorbarIn, colorbarOut, attributes, attr, dflt);
-    }
+  function coerce(attr, dflt) {
+    return Lib.coerce(colorbarIn, colorbarOut, attributes, attr, dflt);
+  }
 
-    var thicknessmode = coerce('thicknessmode');
-    coerce('thickness', (thicknessmode === 'fraction') ?
-        30 / (layout.width - layout.margin.l - layout.margin.r) :
-        30
-    );
+  var thicknessmode = coerce('thicknessmode');
+  coerce(
+    'thickness',
+    thicknessmode === 'fraction'
+      ? 30 / (layout.width - layout.margin.l - layout.margin.r)
+      : 30
+  );
 
-    var lenmode = coerce('lenmode');
-    coerce('len', (lenmode === 'fraction') ?
-        1 :
-        layout.height - layout.margin.t - layout.margin.b
-    );
+  var lenmode = coerce('lenmode');
+  coerce(
+    'len',
+    lenmode === 'fraction'
+      ? 1
+      : layout.height - layout.margin.t - layout.margin.b
+  );
 
-    coerce('x');
-    coerce('xanchor');
-    coerce('xpad');
-    coerce('y');
-    coerce('yanchor');
-    coerce('ypad');
-    Lib.noneOrAll(colorbarIn, colorbarOut, ['x', 'y']);
+  coerce('x');
+  coerce('xanchor');
+  coerce('xpad');
+  coerce('y');
+  coerce('yanchor');
+  coerce('ypad');
+  Lib.noneOrAll(colorbarIn, colorbarOut, ['x', 'y']);
 
-    coerce('outlinecolor');
-    coerce('outlinewidth');
-    coerce('bordercolor');
-    coerce('borderwidth');
-    coerce('bgcolor');
+  coerce('outlinecolor');
+  coerce('outlinewidth');
+  coerce('bordercolor');
+  coerce('borderwidth');
+  coerce('bgcolor');
 
-    handleTickValueDefaults(colorbarIn, colorbarOut, coerce, 'linear');
+  handleTickValueDefaults(colorbarIn, colorbarOut, coerce, 'linear');
 
-    handleTickLabelDefaults(colorbarIn, colorbarOut, coerce, 'linear',
-        {outerTicks: false, font: layout.font, noHover: true});
+  handleTickLabelDefaults(colorbarIn, colorbarOut, coerce, 'linear', {
+    outerTicks: false,
+    font: layout.font,
+    noHover: true,
+  });
 
-    handleTickMarkDefaults(colorbarIn, colorbarOut, coerce, 'linear',
-        {outerTicks: false, font: layout.font, noHover: true});
+  handleTickMarkDefaults(colorbarIn, colorbarOut, coerce, 'linear', {
+    outerTicks: false,
+    font: layout.font,
+    noHover: true,
+  });
 
-    coerce('title');
-    Lib.coerceFont(coerce, 'titlefont', layout.font);
-    coerce('titleside');
+  coerce('title');
+  Lib.coerceFont(coerce, 'titlefont', layout.font);
+  coerce('titleside');
 };

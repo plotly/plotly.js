@@ -20,17 +20,15 @@
  *
  */
 module.exports = function pushUnique(array, item) {
-    if(item instanceof RegExp) {
-        var itemStr = item.toString(),
-            i;
-        for(i = 0; i < array.length; i++) {
-            if(array[i] instanceof RegExp && array[i].toString() === itemStr) {
-                return array;
-            }
-        }
-        array.push(item);
+  if (item instanceof RegExp) {
+    var itemStr = item.toString(), i;
+    for (i = 0; i < array.length; i++) {
+      if (array[i] instanceof RegExp && array[i].toString() === itemStr) {
+        return array;
+      }
     }
-    else if(item && array.indexOf(item) === -1) array.push(item);
+    array.push(item);
+  } else if (item && array.indexOf(item) === -1) array.push(item);
 
-    return array;
+  return array;
 };

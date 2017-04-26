@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
@@ -21,11 +20,11 @@ var JUNK = /^['"%,$#\s']+|[, ]|['"%,$#\s']+$/g;
  * Always returns either a number or BADNUM.
  */
 module.exports = function cleanNumber(v) {
-    if(typeof v === 'string') {
-        v = v.replace(JUNK, '');
-    }
+  if (typeof v === 'string') {
+    v = v.replace(JUNK, '');
+  }
 
-    if(isNumeric(v)) return Number(v);
+  if (isNumeric(v)) return Number(v);
 
-    return BADNUM;
+  return BADNUM;
 };

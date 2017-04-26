@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
@@ -14,59 +13,62 @@ var isNumeric = require('fast-isnumeric');
 var Registry = require('../../registry');
 var hasColumns = require('./has_columns');
 
+module.exports = function handleXYZDefaults(
+  traceIn,
+  traceOut,
+  coerce,
+  layout,
+  xName,
+  yName
+) {
+  var z = coerce('z');
+  xName = xName || 'x';
+  yName = yName || 'y';
+  var x, y;
 
-module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout, xName, yName) {
-    var z = coerce('z');
-    xName = xName || 'x';
-    yName = yName || 'y';
-    var x, y;
+  if (z === undefined || !z.length) return 0;
 
-    if(z === undefined || !z.length) return 0;
+  if (hasColumns(traceIn)) {
+    x = coerce(xName);
+    y = coerce(yName);
 
-    if(hasColumns(traceIn)) {
-        x = coerce(xName);
-        y = coerce(yName);
+    // column z must be accompanied by xName and yName arrays
+    if (!x || !y) return 0;
+  } else {
+    x = coordDefaults(xName, coerce);
+    y = coordDefaults(yName, coerce);
 
-        // column z must be accompanied by xName and yName arrays
-        if(!x || !y) return 0;
-    }
-    else {
-        x = coordDefaults(xName, coerce);
-        y = coordDefaults(yName, coerce);
+    // TODO put z validation elsewhere
+    if (!isValidZ(z)) return 0;
 
-        // TODO put z validation elsewhere
-        if(!isValidZ(z)) return 0;
+    coerce('transpose');
+  }
 
-        coerce('transpose');
-    }
+  var handleCalendarDefaults = Registry.getComponentMethod(
+    'calendars',
+    'handleTraceDefaults'
+  );
+  handleCalendarDefaults(traceIn, traceOut, [xName, yName], layout);
 
-    var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
-    handleCalendarDefaults(traceIn, traceOut, [xName, yName], layout);
-
-    return traceOut.z.length;
+  return traceOut.z.length;
 };
 
 function coordDefaults(coordStr, coerce) {
-    var coord = coerce(coordStr),
-        coordType = coord ?
-            coerce(coordStr + 'type', 'array') :
-            'scaled';
+  var coord = coerce(coordStr),
+    coordType = coord ? coerce(coordStr + 'type', 'array') : 'scaled';
 
-    if(coordType === 'scaled') {
-        coerce(coordStr + '0');
-        coerce('d' + coordStr);
-    }
+  if (coordType === 'scaled') {
+    coerce(coordStr + '0');
+    coerce('d' + coordStr);
+  }
 
-    return coord;
+  return coord;
 }
 
 function isValidZ(z) {
-    var allRowsAreArrays = true,
-        oneRowIsFilled = false,
-        hasOneNumber = false,
-        zi;
+  var allRowsAreArrays = true, oneRowIsFilled = false, hasOneNumber = false, zi;
 
-    /*
+  /*
      * Without this step:
      *
      * hasOneNumber = false breaks contour but not heatmap
@@ -74,20 +76,20 @@ function isValidZ(z) {
      * oneRowIsFilled = false breaks both
      */
 
-    for(var i = 0; i < z.length; i++) {
-        zi = z[i];
-        if(!Array.isArray(zi)) {
-            allRowsAreArrays = false;
-            break;
-        }
-        if(zi.length > 0) oneRowIsFilled = true;
-        for(var j = 0; j < zi.length; j++) {
-            if(isNumeric(zi[j])) {
-                hasOneNumber = true;
-                break;
-            }
-        }
+  for (var i = 0; i < z.length; i++) {
+    zi = z[i];
+    if (!Array.isArray(zi)) {
+      allRowsAreArrays = false;
+      break;
     }
+    if (zi.length > 0) oneRowIsFilled = true;
+    for (var j = 0; j < zi.length; j++) {
+      if (isNumeric(zi[j])) {
+        hasOneNumber = true;
+        break;
+      }
+    }
+  }
 
-    return (allRowsAreArrays && oneRowIsFilled && hasOneNumber);
+  return allRowsAreArrays && oneRowIsFilled && hasOneNumber;
 }

@@ -29,43 +29,47 @@ var patchMinified = require('./patch_minified');
  * Logs basename of bundle when completed.
  */
 module.exports = function _bundle(pathToIndex, pathToBundle, opts) {
-    opts = opts || {};
+  opts = opts || {};
 
-    // do we output a minified file?
-    var pathToMinBundle = opts.pathToMinBundle,
-        outputMinified = !!pathToMinBundle && !opts.debug;
+  // do we output a minified file?
+  var pathToMinBundle = opts.pathToMinBundle,
+    outputMinified = !!pathToMinBundle && !opts.debug;
 
-    var browserifyOpts = {};
-    browserifyOpts.standalone = opts.standalone;
-    browserifyOpts.debug = opts.debug;
-    browserifyOpts.transform = outputMinified ? [compressAttributes] : [];
+  var browserifyOpts = {};
+  browserifyOpts.standalone = opts.standalone;
+  browserifyOpts.debug = opts.debug;
+  browserifyOpts.transform = outputMinified ? [compressAttributes] : [];
 
-    var b = browserify(pathToIndex, browserifyOpts),
-        bundleWriteStream = fs.createWriteStream(pathToBundle);
+  var b = browserify(pathToIndex, browserifyOpts),
+    bundleWriteStream = fs.createWriteStream(pathToBundle);
 
-    bundleWriteStream.on('finish', function() {
-        logger(pathToBundle);
-    });
+  bundleWriteStream.on('finish', function() {
+    logger(pathToBundle);
+  });
 
-    b.bundle(function(err, buf) {
-        if(err) throw err;
+  b
+    .bundle(function(err, buf) {
+      if (err) throw err;
 
-        if(outputMinified) {
-            var minifiedCode = UglifyJS.minify(buf.toString(), constants.uglifyOptions).code;
-            minifiedCode = patchMinified(minifiedCode);
+      if (outputMinified) {
+        var minifiedCode = UglifyJS.minify(
+          buf.toString(),
+          constants.uglifyOptions
+        ).code;
+        minifiedCode = patchMinified(minifiedCode);
 
-            fs.writeFile(pathToMinBundle, minifiedCode, function(err) {
-                if(err) throw err;
+        fs.writeFile(pathToMinBundle, minifiedCode, function(err) {
+          if (err) throw err;
 
-                logger(pathToMinBundle);
-            });
-        }
+          logger(pathToMinBundle);
+        });
+      }
     })
     .pipe(bundleWriteStream);
 };
 
 function logger(pathToOutput) {
-    var log = 'ok ' + path.basename(pathToOutput);
+  var log = 'ok ' + path.basename(pathToOutput);
 
-    console.log(log);
+  console.log(log);
 }

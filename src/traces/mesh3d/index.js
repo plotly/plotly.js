@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Mesh3D = {};
@@ -17,18 +16,17 @@ Mesh3D.colorbar = require('../heatmap/colorbar');
 Mesh3D.plot = require('./convert');
 
 Mesh3D.moduleType = 'trace';
-Mesh3D.name = 'mesh3d',
-Mesh3D.basePlotModule = require('../../plots/gl3d');
+(Mesh3D.name = 'mesh3d'), (Mesh3D.basePlotModule = require('../../plots/gl3d'));
 Mesh3D.categories = ['gl3d'];
 Mesh3D.meta = {
-    description: [
-        'Draws sets of triangles with coordinates given by',
-        'three 1-dimensional arrays in `x`, `y`, `z` and',
-        '(1) a sets of `i`, `j`, `k` indices',
-        '(2) Delaunay triangulation or',
-        '(3) the Alpha-shape algorithm or',
-        '(4) the Convex-hull algorithm'
-    ].join(' ')
+  description: [
+    'Draws sets of triangles with coordinates given by',
+    'three 1-dimensional arrays in `x`, `y`, `z` and',
+    '(1) a sets of `i`, `j`, `k` indices',
+    '(2) Delaunay triangulation or',
+    '(3) the Alpha-shape algorithm or',
+    '(4) the Convex-hull algorithm',
+  ].join(' '),
 };
 
 module.exports = Mesh3D;

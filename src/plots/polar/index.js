@@ -8,6 +8,6 @@
 
 'use strict';
 
-var Polar = module.exports = require('./micropolar');
+var Polar = (module.exports = require('./micropolar'));
 
 Polar.manager = require('./micropolar_manager');

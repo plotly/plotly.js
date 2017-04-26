@@ -14,41 +14,49 @@ var _bundle = require('./util/browserify_wrapper');
  */
 
 var arg = process.argv[2];
-var DEV = (arg === 'dev') || (arg === '--dev');
-
+var DEV = arg === 'dev' || arg === '--dev';
 
 // Check if style and font build files are there
 var doesFileExist = common.doesFileExist;
-if(!doesFileExist(constants.pathToCSSBuild) || !doesFileExist(constants.pathToFontSVG)) {
-    throw new Error([
-        'build/ is missing one or more files',
-        'Please run `npm run preprocess` first'
-    ].join('\n'));
+if (
+  !doesFileExist(constants.pathToCSSBuild) ||
+  !doesFileExist(constants.pathToFontSVG)
+) {
+  throw new Error(
+    [
+      'build/ is missing one or more files',
+      'Please run `npm run preprocess` first',
+    ].join('\n')
+  );
 }
 
 // Browserify plotly.js
 _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDist, {
-    standalone: 'Plotly',
-    debug: DEV,
-    pathToMinBundle: constants.pathToPlotlyDistMin
+  standalone: 'Plotly',
+  debug: DEV,
+  pathToMinBundle: constants.pathToPlotlyDistMin,
 });
 
 // Browserify the geo assets
-_bundle(constants.pathToPlotlyGeoAssetsSrc, constants.pathToPlotlyGeoAssetsDist, {
-    standalone: 'PlotlyGeoAssets'
-});
+_bundle(
+  constants.pathToPlotlyGeoAssetsSrc,
+  constants.pathToPlotlyGeoAssetsDist,
+  {
+    standalone: 'PlotlyGeoAssets',
+  }
+);
 
 // Browserify the plotly.js with meta
 _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDistWithMeta, {
-    standalone: 'Plotly',
-    debug: DEV
+  standalone: 'Plotly',
+  debug: DEV,
 });
 
 // Browserify the plotly.js partial bundles
 constants.partialBundlePaths.forEach(function(pathObj) {
-    _bundle(pathObj.index, pathObj.dist, {
-        standalone: 'Plotly',
-        debug: DEV,
-        pathToMinBundle: pathObj.distMin
-    });
+  _bundle(pathObj.index, pathObj.dist, {
+    standalone: 'Plotly',
+    debug: DEV,
+    pathToMinBundle: pathObj.distMin,
+  });
 });
