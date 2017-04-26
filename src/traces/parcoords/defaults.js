@@ -81,6 +81,10 @@ function dimensionsDefaults(traceIn, traceOut) {
     return dimensionsOut;
 }
 
+function coerceFont(fontAttr, coerce, defaultFont) {
+    var fontSpec = Lib.coerceFont(coerce, fontAttr);
+    Lib.coerceFont(coerce, fontAttr, Lib.extendFlat({}, defaultFont, fontSpec));
+}
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -97,4 +101,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(!Array.isArray(dimensions) || !dimensions.length) {
         traceOut.visible = false;
     }
+
+    coerceFont('labelfont', coerce, layout.font);
+    coerceFont('tickfont', coerce, layout.font);
+    coerceFont('rangefont', coerce, layout.font);
 };

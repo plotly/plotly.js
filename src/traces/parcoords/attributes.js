@@ -12,9 +12,11 @@ var colorAttributes = require('../../components/colorscale/color_attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 var colorscales = require('../../components/colorscale/scales');
 var axesAttrs = require('../../plots/cartesian/layout_attributes');
+var fontAttrs = require('../../plots/font_attributes');
 
 var extendDeep = require('../../lib/extend').extendDeep;
 var extendFlat = require('../../lib/extend').extendFlat;
+
 
 module.exports = {
 
@@ -46,6 +48,10 @@ module.exports = {
             ].join(' ')
         }
     },
+
+    labelfont: extendFlat({}, fontAttrs, {description: 'Sets the font for the `dimension` labels.'}),
+    tickfont: extendFlat({}, fontAttrs, {description: 'Sets the font for the `dimension` tick values.'}),
+    rangefont: extendFlat({}, fontAttrs, {description: 'Sets the font for the `dimension` range values.'}),
 
     dimensions: {
         _isLinkedToArray: 'dimension',
