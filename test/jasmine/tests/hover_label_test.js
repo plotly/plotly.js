@@ -16,11 +16,8 @@ var fail = require('../assets/fail_test');
 describe('hover info', function() {
     'use strict';
 
-    var mock = require('@mocks/14.json'),
-        evt = {
-            clientX: mock.layout.width / 2,
-            clientY: mock.layout.height / 2
-        };
+    var mock = require('@mocks/14.json');
+    var evt = { xpx: 355, ypx: 150 };
 
     afterEach(destroyGraphDiv);
 
