@@ -8,7 +8,6 @@
 
 'use strict';
 
-
 var ScatterMapbox = {};
 
 ScatterMapbox.attributes = require('./attributes');
@@ -22,14 +21,20 @@ ScatterMapbox.plot = require('./plot');
 ScatterMapbox.moduleType = 'trace';
 ScatterMapbox.name = 'scattermapbox';
 ScatterMapbox.basePlotModule = require('../../plots/mapbox');
-ScatterMapbox.categories = ['mapbox', 'gl', 'symbols', 'markerColorscale', 'showLegend'];
+ScatterMapbox.categories = [
+  'mapbox',
+  'gl',
+  'symbols',
+  'markerColorscale',
+  'showLegend',
+];
 ScatterMapbox.meta = {
-    hrName: 'scatter_mapbox',
-    description: [
-        'The data visualized as scatter point, lines or marker symbols',
-        'on a Mapbox GL geographic map',
-        'is provided by longitude/latitude pairs in `lon` and `lat`.'
-    ].join(' ')
+  hrName: 'scatter_mapbox',
+  description: [
+    'The data visualized as scatter point, lines or marker symbols',
+    'on a Mapbox GL geographic map',
+    'is provided by longitude/latitude pairs in `lon` and `lat`.',
+  ].join(' '),
 };
 
 module.exports = ScatterMapbox;

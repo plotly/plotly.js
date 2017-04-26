@@ -15,36 +15,41 @@ var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
-module.exports = extendFlat({},
-    {
-        x: histogramAttrs.x,
-        y: histogramAttrs.y,
+module.exports = extendFlat(
+  {},
+  {
+    x: histogramAttrs.x,
+    y: histogramAttrs.y,
 
-        z: {
-            valType: 'data_array',
-            description: 'Sets the aggregation data.'
-        },
-        marker: {
-            color: {
-                valType: 'data_array',
-                description: 'Sets the aggregation data.'
-            }
-        },
-
-        histnorm: histogramAttrs.histnorm,
-        histfunc: histogramAttrs.histfunc,
-        autobinx: histogramAttrs.autobinx,
-        nbinsx: histogramAttrs.nbinsx,
-        xbins: histogramAttrs.xbins,
-        autobiny: histogramAttrs.autobiny,
-        nbinsy: histogramAttrs.nbinsy,
-        ybins: histogramAttrs.ybins,
-
-        xgap: heatmapAttrs.xgap,
-        ygap: heatmapAttrs.ygap,
-        zsmooth: heatmapAttrs.zsmooth
+    z: {
+      valType: 'data_array',
+      description: 'Sets the aggregation data.',
     },
-    colorscaleAttrs,
-    { autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}) },
-    { colorbar: colorbarAttrs }
+    marker: {
+      color: {
+        valType: 'data_array',
+        description: 'Sets the aggregation data.',
+      },
+    },
+
+    histnorm: histogramAttrs.histnorm,
+    histfunc: histogramAttrs.histfunc,
+    autobinx: histogramAttrs.autobinx,
+    nbinsx: histogramAttrs.nbinsx,
+    xbins: histogramAttrs.xbins,
+    autobiny: histogramAttrs.autobiny,
+    nbinsy: histogramAttrs.nbinsy,
+    ybins: histogramAttrs.ybins,
+
+    xgap: heatmapAttrs.xgap,
+    ygap: heatmapAttrs.ygap,
+    zsmooth: heatmapAttrs.zsmooth,
+  },
+  colorscaleAttrs,
+  {
+    autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {
+      dflt: false,
+    }),
+  },
+  { colorbar: colorbarAttrs }
 );

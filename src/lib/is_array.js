@@ -13,10 +13,14 @@
  */
 
 // IE9 fallback
-var ab = (typeof ArrayBuffer === 'undefined' || !ArrayBuffer.isView) ?
-    {isView: function() { return false; }} :
-    ArrayBuffer;
+var ab = typeof ArrayBuffer === 'undefined' || !ArrayBuffer.isView
+  ? {
+      isView: function() {
+        return false;
+      },
+    }
+  : ArrayBuffer;
 
 module.exports = function isArray(a) {
-    return Array.isArray(a) || ab.isView(a);
+  return Array.isArray(a) || ab.isView(a);
 };

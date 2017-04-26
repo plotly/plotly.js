@@ -6,15 +6,14 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 module.exports = function maxRowLength(z) {
-    var len = 0;
+  var len = 0;
 
-    for(var i = 0; i < z.length; i++) {
-        len = Math.max(len, z[i].length);
-    }
+  for (var i = 0; i < z.length; i++) {
+    len = Math.max(len, z[i].length);
+  }
 
-    return len;
+  return len;
 };

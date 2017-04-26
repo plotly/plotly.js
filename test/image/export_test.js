@@ -19,8 +19,13 @@ var FORMATS = ['svg', 'pdf', 'eps'];
 
 // non-exhaustive list of mocks to test
 var DEFAULT_LIST = [
-    '0', 'geo_first', 'gl3d_z-range', 'text_export', 'layout_image', 'gl2d_12',
-    'range_slider_initial_valid'
+  '0',
+  'geo_first',
+  'gl3d_z-range',
+  'text_export',
+  'layout_image',
+  'gl2d_12',
+  'range_slider_initial_valid',
 ];
 
 // return dimensions [in px]
@@ -63,76 +68,73 @@ var BATCH_SIZE = 5;
 var pattern = process.argv[2];
 var mockList = pattern ? getMockList(pattern) : DEFAULT_LIST;
 
-if(mockList.length === 0) {
-    throw new Error('No mocks found with pattern ' + pattern);
+if (mockList.length === 0) {
+  throw new Error('No mocks found with pattern ' + pattern);
 }
 
 // main
 runInBatch(mockList);
 
 function runInBatch(mockList) {
-    var running = 0;
+  var running = 0;
 
-    test('testing image export formats', function(t) {
-        t.plan(mockList.length * FORMATS.length);
+  test('testing image export formats', function(t) {
+    t.plan(mockList.length * FORMATS.length);
 
-        for(var i = 0; i < mockList.length; i++) {
-            for(var j = 0; j < FORMATS.length; j++) {
-                run(mockList[i], FORMATS[j], t);
-            }
-        }
-    });
-
-    function run(mockName, format, t) {
-        if(running >= BATCH_SIZE) {
-            setTimeout(function() {
-                run(mockName, format, t);
-            }, BATCH_WAIT);
-            return;
-        }
-        running++;
-
-        // throttle the number of tests running concurrently
-
-        testExport(mockName, format, function(didExport, mockName, format) {
-            running--;
-            t.ok(didExport, mockName + ' should be properly exported as a ' + format);
-        });
+    for (var i = 0; i < mockList.length; i++) {
+      for (var j = 0; j < FORMATS.length; j++) {
+        run(mockList[i], FORMATS[j], t);
+      }
     }
+  });
+
+  function run(mockName, format, t) {
+    if (running >= BATCH_SIZE) {
+      setTimeout(function() {
+        run(mockName, format, t);
+      }, BATCH_WAIT);
+      return;
+    }
+    running++;
+
+    // throttle the number of tests running concurrently
+
+    testExport(mockName, format, function(didExport, mockName, format) {
+      running--;
+      t.ok(didExport, mockName + ' should be properly exported as a ' + format);
+    });
+  }
 }
 
 // The tests below determine whether the images are properly
 // exported by (only) checking the file size of the generated images.
 function testExport(mockName, format, cb) {
-    var specs = {
-        mockName: mockName,
-        format: format,
-        width: WIDTH,
-        height: HEIGHT
-    };
+  var specs = {
+    mockName: mockName,
+    format: format,
+    width: WIDTH,
+    height: HEIGHT,
+  };
 
-    var requestOpts = getRequestOpts(specs),
-        imagePaths = getImagePaths(mockName, format),
-        saveImageStream = fs.createWriteStream(imagePaths.test);
+  var requestOpts = getRequestOpts(specs),
+    imagePaths = getImagePaths(mockName, format),
+    saveImageStream = fs.createWriteStream(imagePaths.test);
 
-    function checkExport(err) {
-        if(err) throw err;
+  function checkExport(err) {
+    if (err) throw err;
 
-        var didExport;
+    var didExport;
 
-        if(format === 'svg') {
-            var dims = sizeOf(imagePaths.test);
-            didExport = (dims.width === WIDTH) && (dims.height === HEIGHT);
-        }
-        else {
-            var stats = fs.statSync(imagePaths.test);
-            didExport = stats.size > MIN_SIZE;
-        }
-
-        cb(didExport, mockName, format);
+    if (format === 'svg') {
+      var dims = sizeOf(imagePaths.test);
+      didExport = dims.width === WIDTH && dims.height === HEIGHT;
+    } else {
+      var stats = fs.statSync(imagePaths.test);
+      didExport = stats.size > MIN_SIZE;
     }
 
-    request(requestOpts)
-        .pipe(saveImageStream)
-        .on('close', checkExport);
+    cb(didExport, mockName, format);
+  }
+
+  request(requestOpts).pipe(saveImageStream).on('close', checkExport);
 }

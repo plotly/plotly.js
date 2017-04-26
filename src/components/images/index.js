@@ -9,13 +9,13 @@
 'use strict';
 
 module.exports = {
-    moduleType: 'component',
-    name: 'images',
+  moduleType: 'component',
+  name: 'images',
 
-    layoutAttributes: require('./attributes'),
-    supplyLayoutDefaults: require('./defaults'),
+  layoutAttributes: require('./attributes'),
+  supplyLayoutDefaults: require('./defaults'),
 
-    draw: require('./draw'),
+  draw: require('./draw'),
 
-    convertCoords: require('./convert_coords')
+  convertCoords: require('./convert_coords'),
 };

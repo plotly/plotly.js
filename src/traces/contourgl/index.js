@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var ContourGl = {};
@@ -23,9 +22,7 @@ ContourGl.name = 'contourgl';
 ContourGl.basePlotModule = require('../../plots/gl2d');
 ContourGl.categories = ['gl2d', '2dMap'];
 ContourGl.meta = {
-    description: [
-        'WebGL contour (beta)'
-    ].join(' ')
+  description: ['WebGL contour (beta)'].join(' '),
 };
 
 module.exports = ContourGl;

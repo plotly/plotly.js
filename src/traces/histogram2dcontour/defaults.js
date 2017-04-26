@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -16,13 +15,17 @@ var handleContoursDefaults = require('../contour/contours_defaults');
 var handleStyleDefaults = require('../contour/style_defaults');
 var attributes = require('./attributes');
 
+module.exports = function supplyDefaults(
+  traceIn,
+  traceOut,
+  defaultColor,
+  layout
+) {
+  function coerce(attr, dflt) {
+    return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
+  }
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    function coerce(attr, dflt) {
-        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
-    }
-
-    handleSampleDefaults(traceIn, traceOut, coerce, layout);
-    handleContoursDefaults(traceIn, traceOut, coerce);
-    handleStyleDefaults(traceIn, traceOut, coerce, layout);
+  handleSampleDefaults(traceIn, traceOut, coerce, layout);
+  handleContoursDefaults(traceIn, traceOut, coerce);
+  handleStyleDefaults(traceIn, traceOut, coerce, layout);
 };

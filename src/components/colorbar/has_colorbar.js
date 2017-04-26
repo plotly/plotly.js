@@ -6,12 +6,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
 
-
 module.exports = function hasColorbar(container) {
-    return Lib.isPlainObject(container.colorbar);
+  return Lib.isPlainObject(container.colorbar);
 };

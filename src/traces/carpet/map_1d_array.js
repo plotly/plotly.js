@@ -14,20 +14,20 @@
  * reallocation to the extent possible.
  */
 module.exports = function mapArray(out, data, func) {
-    var i;
+  var i;
 
-    if(!Array.isArray(out)) {
-        // If not an array, make it an array:
-        out = [];
-    } else if(out.length > data.length) {
-        // If too long, truncate. (If too short, it will grow
-        // automatically so we don't care about that case)
-        out = out.slice(0, data.length);
-    }
+  if (!Array.isArray(out)) {
+    // If not an array, make it an array:
+    out = [];
+  } else if (out.length > data.length) {
+    // If too long, truncate. (If too short, it will grow
+    // automatically so we don't care about that case)
+    out = out.slice(0, data.length);
+  }
 
-    for(i = 0; i < data.length; i++) {
-        out[i] = func(data[i]);
-    }
+  for (i = 0; i < data.length; i++) {
+    out[i] = func(data[i]);
+  }
 
-    return out;
+  return out;
 };

@@ -6,31 +6,30 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var hasColumns = require('./has_columns');
 var convertColumnData = require('../heatmap/convert_column_xyz');
 
 module.exports = function handleXYDefaults(traceIn, traceOut, coerce) {
-    var cols = [];
-    var x = coerce('x');
+  var cols = [];
+  var x = coerce('x');
 
-    var needsXTransform = x && !hasColumns(x);
-    if(needsXTransform) cols.push('x');
+  var needsXTransform = x && !hasColumns(x);
+  if (needsXTransform) cols.push('x');
 
-    traceOut._cheater = !x;
+  traceOut._cheater = !x;
 
-    var y = coerce('y');
+  var y = coerce('y');
 
-    var needsYTransform = y && !hasColumns(y);
-    if(needsYTransform) cols.push('y');
+  var needsYTransform = y && !hasColumns(y);
+  if (needsYTransform) cols.push('y');
 
-    if(!x && !y) return;
+  if (!x && !y) return;
 
-    if(cols.length) {
-        convertColumnData(traceOut, traceOut.aaxis, traceOut.baxis, 'a', 'b', cols);
-    }
+  if (cols.length) {
+    convertColumnData(traceOut, traceOut.aaxis, traceOut.baxis, 'a', 'b', cols);
+  }
 
-    return true;
+  return true;
 };

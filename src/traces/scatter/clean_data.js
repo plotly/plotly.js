@@ -6,32 +6,32 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
-
 
 // remove opacity for any trace that has a fill or is filled to
 module.exports = function cleanData(fullData) {
-    for(var i = 0; i < fullData.length; i++) {
-        var tracei = fullData[i];
-        if(tracei.type !== 'scatter') continue;
+  for (var i = 0; i < fullData.length; i++) {
+    var tracei = fullData[i];
+    if (tracei.type !== 'scatter') continue;
 
-        var filli = tracei.fill;
-        if(filli === 'none' || filli === 'toself') continue;
+    var filli = tracei.fill;
+    if (filli === 'none' || filli === 'toself') continue;
 
-        tracei.opacity = undefined;
+    tracei.opacity = undefined;
 
-        if(filli === 'tonexty' || filli === 'tonextx') {
-            for(var j = i - 1; j >= 0; j--) {
-                var tracej = fullData[j];
+    if (filli === 'tonexty' || filli === 'tonextx') {
+      for (var j = i - 1; j >= 0; j--) {
+        var tracej = fullData[j];
 
-                if((tracej.type === 'scatter') &&
-                        (tracej.xaxis === tracei.xaxis) &&
-                        (tracej.yaxis === tracei.yaxis)) {
-                    tracej.opacity = undefined;
-                    break;
-                }
-            }
+        if (
+          tracej.type === 'scatter' &&
+          tracej.xaxis === tracei.xaxis &&
+          tracej.yaxis === tracei.yaxis
+        ) {
+          tracej.opacity = undefined;
+          break;
         }
+      }
     }
+  }
 };

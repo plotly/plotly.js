@@ -10,36 +10,40 @@
 
 var Registry = require('../../registry');
 
-
 exports.name = 'pie';
 
 exports.plot = function(gd) {
-    var Pie = Registry.getModule('pie');
-    var cdPie = getCdModule(gd.calcdata, Pie);
+  var Pie = Registry.getModule('pie');
+  var cdPie = getCdModule(gd.calcdata, Pie);
 
-    if(cdPie.length) Pie.plot(gd, cdPie);
+  if (cdPie.length) Pie.plot(gd, cdPie);
 };
 
-exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    var hadPie = (oldFullLayout._has && oldFullLayout._has('pie'));
-    var hasPie = (newFullLayout._has && newFullLayout._has('pie'));
+exports.clean = function(
+  newFullData,
+  newFullLayout,
+  oldFullData,
+  oldFullLayout
+) {
+  var hadPie = oldFullLayout._has && oldFullLayout._has('pie');
+  var hasPie = newFullLayout._has && newFullLayout._has('pie');
 
-    if(hadPie && !hasPie) {
-        oldFullLayout._pielayer.selectAll('g.trace').remove();
-    }
+  if (hadPie && !hasPie) {
+    oldFullLayout._pielayer.selectAll('g.trace').remove();
+  }
 };
 
 function getCdModule(calcdata, _module) {
-    var cdModule = [];
+  var cdModule = [];
 
-    for(var i = 0; i < calcdata.length; i++) {
-        var cd = calcdata[i];
-        var trace = cd[0].trace;
+  for (var i = 0; i < calcdata.length; i++) {
+    var cd = calcdata[i];
+    var trace = cd[0].trace;
 
-        if((trace._module === _module) && (trace.visible === true)) {
-            cdModule.push(cd);
-        }
+    if (trace._module === _module && trace.visible === true) {
+      cdModule.push(cd);
     }
+  }
 
-    return cdModule;
+  return cdModule;
 }

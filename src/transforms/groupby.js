@@ -16,34 +16,34 @@ exports.moduleType = 'transform';
 exports.name = 'groupby';
 
 exports.attributes = {
-    enabled: {
-        valType: 'boolean',
-        dflt: true,
-        description: [
-            'Determines whether this group-by transform is enabled or disabled.'
-        ].join(' ')
-    },
-    groups: {
-        valType: 'data_array',
-        dflt: [],
-        description: [
-            'Sets the groups in which the trace data will be split.',
-            'For example, with `x` set to *[1, 2, 3, 4]* and',
-            '`groups` set to *[\'a\', \'b\', \'a\', \'b\']*,',
-            'the groupby transform with split in one trace',
-            'with `x` [1, 3] and one trace with `x` [2, 4].'
-        ].join(' ')
-    },
-    style: {
-        valType: 'any',
-        dflt: {},
-        description: [
-            'Sets each group style.',
-            'For example, with `groups` set to *[\'a\', \'b\', \'a\', \'b\']*',
-            'and `style` set to *{ a: { marker: { color: \'red\' } }}',
-            'marker points in group *\'a\'* will be drawn in red.'
-        ].join(' ')
-    }
+  enabled: {
+    valType: 'boolean',
+    dflt: true,
+    description: [
+      'Determines whether this group-by transform is enabled or disabled.',
+    ].join(' '),
+  },
+  groups: {
+    valType: 'data_array',
+    dflt: [],
+    description: [
+      'Sets the groups in which the trace data will be split.',
+      'For example, with `x` set to *[1, 2, 3, 4]* and',
+      "`groups` set to *['a', 'b', 'a', 'b']*,",
+      'the groupby transform with split in one trace',
+      'with `x` [1, 3] and one trace with `x` [2, 4].',
+    ].join(' '),
+  },
+  style: {
+    valType: 'any',
+    dflt: {},
+    description: [
+      'Sets each group style.',
+      "For example, with `groups` set to *['a', 'b', 'a', 'b']*",
+      "and `style` set to *{ a: { marker: { color: 'red' } }}",
+      "marker points in group *'a'* will be drawn in red.",
+    ].join(' '),
+  },
 };
 
 /**
@@ -60,20 +60,26 @@ exports.attributes = {
  *  copy of transformIn that contains attribute defaults
  */
 exports.supplyDefaults = function(transformIn) {
-    var transformOut = {};
+  var transformOut = {};
 
-    function coerce(attr, dflt) {
-        return Lib.coerce(transformIn, transformOut, exports.attributes, attr, dflt);
-    }
+  function coerce(attr, dflt) {
+    return Lib.coerce(
+      transformIn,
+      transformOut,
+      exports.attributes,
+      attr,
+      dflt
+    );
+  }
 
-    var enabled = coerce('enabled');
+  var enabled = coerce('enabled');
 
-    if(!enabled) return transformOut;
+  if (!enabled) return transformOut;
 
-    coerce('groups');
-    coerce('style');
+  coerce('groups');
+  coerce('style');
 
-    return transformOut;
+  return transformOut;
 };
 
 /**
@@ -93,62 +99,62 @@ exports.supplyDefaults = function(transformIn) {
  *  array of transformed traces
  */
 exports.transform = function(data, state) {
-    var newData = [];
+  var newData = [];
 
-    for(var i = 0; i < data.length; i++) {
-        newData = newData.concat(transformOne(data[i], state));
-    }
+  for (var i = 0; i < data.length; i++) {
+    newData = newData.concat(transformOne(data[i], state));
+  }
 
-    return newData;
+  return newData;
 };
 
 function initializeArray(newTrace, a) {
-    Lib.nestedProperty(newTrace, a).set([]);
+  Lib.nestedProperty(newTrace, a).set([]);
 }
 
 function pasteArray(newTrace, trace, j, a) {
-    Lib.nestedProperty(newTrace, a).set(
-        Lib.nestedProperty(newTrace, a).get().concat([
-            Lib.nestedProperty(trace, a).get()[j]
-        ])
-    );
+  Lib.nestedProperty(newTrace, a).set(
+    Lib.nestedProperty(newTrace, a)
+      .get()
+      .concat([Lib.nestedProperty(trace, a).get()[j]])
+  );
 }
 
 function transformOne(trace, state) {
-    var opts = state.transform;
-    var groups = trace.transforms[state.transformIndex].groups;
+  var opts = state.transform;
+  var groups = trace.transforms[state.transformIndex].groups;
 
-    if(!(Array.isArray(groups)) || groups.length === 0) {
-        return trace;
+  if (!Array.isArray(groups) || groups.length === 0) {
+    return trace;
+  }
+
+  var groupNames = Lib.filterUnique(groups),
+    newData = new Array(groupNames.length),
+    len = groups.length;
+
+  var arrayAttrs = PlotSchema.findArrayAttributes(trace);
+
+  var style = opts.style || {};
+
+  for (var i = 0; i < groupNames.length; i++) {
+    var groupName = groupNames[i];
+
+    var newTrace = (newData[i] = Lib.extendDeepNoArrays({}, trace));
+
+    arrayAttrs.forEach(initializeArray.bind(null, newTrace));
+
+    for (var j = 0; j < len; j++) {
+      if (groups[j] !== groupName) continue;
+
+      arrayAttrs.forEach(pasteArray.bind(0, newTrace, trace, j));
     }
 
-    var groupNames = Lib.filterUnique(groups),
-        newData = new Array(groupNames.length),
-        len = groups.length;
+    newTrace.name = groupName;
 
-    var arrayAttrs = PlotSchema.findArrayAttributes(trace);
+    // there's no need to coerce style[groupName] here
+    // as another round of supplyDefaults is done on the transformed traces
+    newTrace = Lib.extendDeepNoArrays(newTrace, style[groupName] || {});
+  }
 
-    var style = opts.style || {};
-
-    for(var i = 0; i < groupNames.length; i++) {
-        var groupName = groupNames[i];
-
-        var newTrace = newData[i] = Lib.extendDeepNoArrays({}, trace);
-
-        arrayAttrs.forEach(initializeArray.bind(null, newTrace));
-
-        for(var j = 0; j < len; j++) {
-            if(groups[j] !== groupName) continue;
-
-            arrayAttrs.forEach(pasteArray.bind(0, newTrace, trace, j));
-        }
-
-        newTrace.name = groupName;
-
-        // there's no need to coerce style[groupName] here
-        // as another round of supplyDefaults is done on the transformed traces
-        newTrace = Lib.extendDeepNoArrays(newTrace, style[groupName] || {});
-    }
-
-    return newData;
+  return newData;
 }

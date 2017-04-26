@@ -18,5 +18,5 @@ var NEW_SUBSTR = 'require("+ $1($2) +")';
  *
  */
 module.exports = function patchMinified(minifiedCode) {
-    return minifiedCode.replace(PATTERN, NEW_SUBSTR);
+  return minifiedCode.replace(PATTERN, NEW_SUBSTR);
 };

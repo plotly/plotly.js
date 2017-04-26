@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var ScatterGeo = {};
@@ -24,12 +23,12 @@ ScatterGeo.name = 'scattergeo';
 ScatterGeo.basePlotModule = require('../../plots/geo');
 ScatterGeo.categories = ['geo', 'symbols', 'markerColorscale', 'showLegend'];
 ScatterGeo.meta = {
-    hrName: 'scatter_geo',
-    description: [
-        'The data visualized as scatter point or lines on a geographic map',
-        'is provided either by longitude/latitude pairs in `lon` and `lat`',
-        'respectively or by geographic location IDs or names in `locations`.'
-    ].join(' ')
+  hrName: 'scatter_geo',
+  description: [
+    'The data visualized as scatter point or lines on a geographic map',
+    'is provided either by longitude/latitude pairs in `lon` and `lat`',
+    'respectively or by geographic location IDs or names in `locations`.',
+  ].join(' '),
 };
 
 module.exports = ScatterGeo;

@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var nestedProperty = require('../lib/nested_property');
@@ -15,16 +14,15 @@ var noop = require('../lib/noop');
 var Loggers = require('../lib/loggers');
 var Registry = require('../registry');
 
-
 exports.containerArrayMatch = require('./container_array_match');
 
-var isAddVal = exports.isAddVal = function isAddVal(val) {
-    return val === 'add' || isPlainObject(val);
-};
+var isAddVal = (exports.isAddVal = function isAddVal(val) {
+  return val === 'add' || isPlainObject(val);
+});
 
-var isRemoveVal = exports.isRemoveVal = function isRemoveVal(val) {
-    return val === null || val === 'remove';
-};
+var isRemoveVal = (exports.isRemoveVal = function isRemoveVal(val) {
+  return val === null || val === 'remove';
+});
 
 /*
  * applyContainerArrayChanges: for managing arrays of layout components in relayout
@@ -69,143 +67,165 @@ var isRemoveVal = exports.isRemoveVal = function isRemoveVal(val) {
  * @returns {bool} `true` if it managed to complete drawing of the changes
  *  `false` would mean the parent should replot.
  */
-exports.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np, edits, flags) {
-    var componentType = np.astr,
-        supplyComponentDefaults = Registry.getComponentMethod(componentType, 'supplyLayoutDefaults'),
-        draw = Registry.getComponentMethod(componentType, 'draw'),
-        drawOne = Registry.getComponentMethod(componentType, 'drawOne'),
-        replotLater = flags.replot || flags.recalc || (supplyComponentDefaults === noop) ||
-            (draw === noop),
-        layout = gd.layout,
-        fullLayout = gd._fullLayout;
+exports.applyContainerArrayChanges = function applyContainerArrayChanges(
+  gd,
+  np,
+  edits,
+  flags
+) {
+  var componentType = np.astr,
+    supplyComponentDefaults = Registry.getComponentMethod(
+      componentType,
+      'supplyLayoutDefaults'
+    ),
+    draw = Registry.getComponentMethod(componentType, 'draw'),
+    drawOne = Registry.getComponentMethod(componentType, 'drawOne'),
+    replotLater =
+      flags.replot ||
+      flags.recalc ||
+      supplyComponentDefaults === noop ||
+      draw === noop,
+    layout = gd.layout,
+    fullLayout = gd._fullLayout;
 
-    if(edits['']) {
-        if(Object.keys(edits).length > 1) {
-            Loggers.warn('Full array edits are incompatible with other edits',
-                componentType);
-        }
-
-        var fullVal = edits[''][''];
-
-        if(isRemoveVal(fullVal)) np.set(null);
-        else if(Array.isArray(fullVal)) np.set(fullVal);
-        else {
-            Loggers.warn('Unrecognized full array edit value', componentType, fullVal);
-            return true;
-        }
-
-        if(replotLater) return false;
-
-        supplyComponentDefaults(layout, fullLayout);
-        draw(gd);
-        return true;
+  if (edits['']) {
+    if (Object.keys(edits).length > 1) {
+      Loggers.warn(
+        'Full array edits are incompatible with other edits',
+        componentType
+      );
     }
 
-    var componentNums = Object.keys(edits).map(Number).sort(),
-        componentArrayIn = np.get(),
-        componentArray = componentArrayIn || [],
-        // componentArrayFull is used just to keep splices in line between
-        // full and input arrays, so private keys can be copied over after
-        // redoing supplyDefaults
-        // TODO: this assumes componentArray is in gd.layout - which will not be
-        // true after we extend this to restyle
-        componentArrayFull = nestedProperty(fullLayout, componentType).get();
+    var fullVal = edits[''][''];
 
-    var deletes = [],
-        firstIndexChange = -1,
-        maxIndex = componentArray.length,
-        i,
-        j,
-        componentNum,
-        objEdits,
-        objKeys,
-        objVal,
-        adding;
-
-    // first make the add and edit changes
-    for(i = 0; i < componentNums.length; i++) {
-        componentNum = componentNums[i];
-        objEdits = edits[componentNum];
-        objKeys = Object.keys(objEdits);
-        objVal = objEdits[''],
-        adding = isAddVal(objVal);
-
-        if(componentNum < 0 || componentNum > componentArray.length - (adding ? 0 : 1)) {
-            Loggers.warn('index out of range', componentType, componentNum);
-            continue;
-        }
-
-        if(objVal !== undefined) {
-            if(objKeys.length > 1) {
-                Loggers.warn(
-                    'Insertion & removal are incompatible with edits to the same index.',
-                    componentType, componentNum);
-            }
-
-            if(isRemoveVal(objVal)) {
-                deletes.push(componentNum);
-            }
-            else if(adding) {
-                if(objVal === 'add') objVal = {};
-                componentArray.splice(componentNum, 0, objVal);
-                if(componentArrayFull) componentArrayFull.splice(componentNum, 0, {});
-            }
-            else {
-                Loggers.warn('Unrecognized full object edit value',
-                    componentType, componentNum, objVal);
-            }
-
-            if(firstIndexChange === -1) firstIndexChange = componentNum;
-        }
-        else {
-            for(j = 0; j < objKeys.length; j++) {
-                nestedProperty(componentArray[componentNum], objKeys[j]).set(objEdits[objKeys[j]]);
-            }
-        }
+    if (isRemoveVal(fullVal)) np.set(null);
+    else if (Array.isArray(fullVal)) np.set(fullVal);
+    else {
+      Loggers.warn(
+        'Unrecognized full array edit value',
+        componentType,
+        fullVal
+      );
+      return true;
     }
 
-    // now do deletes
-    for(i = deletes.length - 1; i >= 0; i--) {
-        componentArray.splice(deletes[i], 1);
-        // TODO: this drops private keys that had been stored in componentArrayFull
-        // does this have any ill effects?
-        if(componentArrayFull) componentArrayFull.splice(deletes[i], 1);
-    }
-
-    if(!componentArray.length) np.set(null);
-    else if(!componentArrayIn) np.set(componentArray);
-
-    if(replotLater) return false;
+    if (replotLater) return false;
 
     supplyComponentDefaults(layout, fullLayout);
-
-    // finally draw all the components we need to
-    // if we added or removed any, redraw all after it
-    if(drawOne !== noop) {
-        var indicesToDraw;
-        if(firstIndexChange === -1) {
-            // there's no re-indexing to do, so only redraw components that changed
-            indicesToDraw = componentNums;
-        }
-        else {
-            // in case the component array was shortened, we still need do call
-            // drawOne on the latter items so they get properly removed
-            maxIndex = Math.max(componentArray.length, maxIndex);
-            indicesToDraw = [];
-            for(i = 0; i < componentNums.length; i++) {
-                componentNum = componentNums[i];
-                if(componentNum >= firstIndexChange) break;
-                indicesToDraw.push(componentNum);
-            }
-            for(i = firstIndexChange; i < maxIndex; i++) {
-                indicesToDraw.push(i);
-            }
-        }
-        for(i = 0; i < indicesToDraw.length; i++) {
-            drawOne(gd, indicesToDraw[i]);
-        }
-    }
-    else draw(gd);
-
+    draw(gd);
     return true;
+  }
+
+  var componentNums = Object.keys(edits).map(Number).sort(),
+    componentArrayIn = np.get(),
+    componentArray = componentArrayIn || [],
+    // componentArrayFull is used just to keep splices in line between
+    // full and input arrays, so private keys can be copied over after
+    // redoing supplyDefaults
+    // TODO: this assumes componentArray is in gd.layout - which will not be
+    // true after we extend this to restyle
+    componentArrayFull = nestedProperty(fullLayout, componentType).get();
+
+  var deletes = [],
+    firstIndexChange = -1,
+    maxIndex = componentArray.length,
+    i,
+    j,
+    componentNum,
+    objEdits,
+    objKeys,
+    objVal,
+    adding;
+
+  // first make the add and edit changes
+  for (i = 0; i < componentNums.length; i++) {
+    componentNum = componentNums[i];
+    objEdits = edits[componentNum];
+    objKeys = Object.keys(objEdits);
+    (objVal = objEdits['']), (adding = isAddVal(objVal));
+
+    if (
+      componentNum < 0 ||
+      componentNum > componentArray.length - (adding ? 0 : 1)
+    ) {
+      Loggers.warn('index out of range', componentType, componentNum);
+      continue;
+    }
+
+    if (objVal !== undefined) {
+      if (objKeys.length > 1) {
+        Loggers.warn(
+          'Insertion & removal are incompatible with edits to the same index.',
+          componentType,
+          componentNum
+        );
+      }
+
+      if (isRemoveVal(objVal)) {
+        deletes.push(componentNum);
+      } else if (adding) {
+        if (objVal === 'add') objVal = {};
+        componentArray.splice(componentNum, 0, objVal);
+        if (componentArrayFull) componentArrayFull.splice(componentNum, 0, {});
+      } else {
+        Loggers.warn(
+          'Unrecognized full object edit value',
+          componentType,
+          componentNum,
+          objVal
+        );
+      }
+
+      if (firstIndexChange === -1) firstIndexChange = componentNum;
+    } else {
+      for (j = 0; j < objKeys.length; j++) {
+        nestedProperty(componentArray[componentNum], objKeys[j]).set(
+          objEdits[objKeys[j]]
+        );
+      }
+    }
+  }
+
+  // now do deletes
+  for (i = deletes.length - 1; i >= 0; i--) {
+    componentArray.splice(deletes[i], 1);
+    // TODO: this drops private keys that had been stored in componentArrayFull
+    // does this have any ill effects?
+    if (componentArrayFull) componentArrayFull.splice(deletes[i], 1);
+  }
+
+  if (!componentArray.length) np.set(null);
+  else if (!componentArrayIn) np.set(componentArray);
+
+  if (replotLater) return false;
+
+  supplyComponentDefaults(layout, fullLayout);
+
+  // finally draw all the components we need to
+  // if we added or removed any, redraw all after it
+  if (drawOne !== noop) {
+    var indicesToDraw;
+    if (firstIndexChange === -1) {
+      // there's no re-indexing to do, so only redraw components that changed
+      indicesToDraw = componentNums;
+    } else {
+      // in case the component array was shortened, we still need do call
+      // drawOne on the latter items so they get properly removed
+      maxIndex = Math.max(componentArray.length, maxIndex);
+      indicesToDraw = [];
+      for (i = 0; i < componentNums.length; i++) {
+        componentNum = componentNums[i];
+        if (componentNum >= firstIndexChange) break;
+        indicesToDraw.push(componentNum);
+      }
+      for (i = firstIndexChange; i < maxIndex; i++) {
+        indicesToDraw.push(i);
+      }
+    }
+    for (i = 0; i < indicesToDraw.length; i++) {
+      drawOne(gd, indicesToDraw[i]);
+    }
+  } else draw(gd);
+
+  return true;
 };

@@ -10,5 +10,4 @@
 
 var scales = require('./scales');
 
-
 module.exports = scales.RdBu;

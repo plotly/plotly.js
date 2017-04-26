@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Bar = {};
@@ -26,14 +25,21 @@ Bar.hoverPoints = require('./hover');
 Bar.moduleType = 'trace';
 Bar.name = 'bar';
 Bar.basePlotModule = require('../../plots/cartesian');
-Bar.categories = ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend'];
+Bar.categories = [
+  'cartesian',
+  'bar',
+  'oriented',
+  'markerColorscale',
+  'errorBarsOK',
+  'showLegend',
+];
 Bar.meta = {
-    description: [
-        'The data visualized by the span of the bars is set in `y`',
-        'if `orientation` is set th *v* (the default)',
-        'and the labels are set in `x`.',
-        'By setting `orientation` to *h*, the roles are interchanged.'
-    ].join(' ')
+  description: [
+    'The data visualized by the span of the bars is set in `y`',
+    'if `orientation` is set th *v* (the default)',
+    'and the labels are set in `x`.',
+    'By setting `orientation` to *h*, the roles are interchanged.',
+  ].join(' '),
 };
 
 module.exports = Bar;

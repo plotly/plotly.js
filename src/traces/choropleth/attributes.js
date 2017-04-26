@@ -17,33 +17,35 @@ var extendFlat = require('../../lib/extend').extendFlat;
 
 var ScatterGeoMarkerLineAttrs = ScatterGeoAttrs.marker.line;
 
-module.exports = extendFlat({}, {
+module.exports = extendFlat(
+  {},
+  {
     locations: {
-        valType: 'data_array',
-        description: [
-            'Sets the coordinates via location IDs or names.',
-            'See `locationmode` for more info.'
-        ].join(' ')
+      valType: 'data_array',
+      description: [
+        'Sets the coordinates via location IDs or names.',
+        'See `locationmode` for more info.',
+      ].join(' '),
     },
     locationmode: ScatterGeoAttrs.locationmode,
     z: {
-        valType: 'data_array',
-        description: 'Sets the color values.'
+      valType: 'data_array',
+      description: 'Sets the color values.',
     },
     text: {
-        valType: 'data_array',
-        description: 'Sets the text elements associated with each location.'
+      valType: 'data_array',
+      description: 'Sets the text elements associated with each location.',
     },
     marker: {
-        line: {
-            color: ScatterGeoMarkerLineAttrs.color,
-            width: extendFlat({}, ScatterGeoMarkerLineAttrs.width, {dflt: 1})
-        }
+      line: {
+        color: ScatterGeoMarkerLineAttrs.color,
+        width: extendFlat({}, ScatterGeoMarkerLineAttrs.width, { dflt: 1 }),
+      },
     },
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
-        flags: ['location', 'z', 'text', 'name']
+      flags: ['location', 'z', 'text', 'name'],
     }),
-},
-    colorscaleAttrs,
-    { colorbar: colorbarAttrs }
+  },
+  colorscaleAttrs,
+  { colorbar: colorbarAttrs }
 );

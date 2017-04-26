@@ -6,166 +6,165 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var BADNUM = require('../../constants/numerical').BADNUM;
 
-
 module.exports = function linePoints(d, opts) {
-    var xa = opts.xaxis,
-        ya = opts.yaxis,
-        simplify = opts.simplify,
-        connectGaps = opts.connectGaps,
-        baseTolerance = opts.baseTolerance,
-        linear = opts.linear,
-        segments = [],
-        minTolerance = 0.2, // fraction of tolerance "so close we don't even consider it a new point"
-        pts = new Array(d.length),
-        pti = 0,
-        i,
+  var xa = opts.xaxis,
+    ya = opts.yaxis,
+    simplify = opts.simplify,
+    connectGaps = opts.connectGaps,
+    baseTolerance = opts.baseTolerance,
+    linear = opts.linear,
+    segments = [],
+    minTolerance = 0.2, // fraction of tolerance "so close we don't even consider it a new point"
+    pts = new Array(d.length),
+    pti = 0,
+    i,
+    // pt variables are pixel coordinates [x,y] of one point
+    clusterStartPt, // these four are the outputs of clustering on a line
+    clusterEndPt,
+    clusterHighPt,
+    clusterLowPt,
+    thisPt, // "this" is the next point we're considering adding to the cluster
+    clusterRefDist,
+    clusterHighFirst, // did we encounter the high point first, then a low point, or vice versa?
+    clusterUnitVector, // the first two points in the cluster determine its unit vector
+    // so the second is always in the "High" direction
+    thisVector, // the pixel delta from clusterStartPt
+    // val variables are (signed) pixel distances along the cluster vector
+    clusterHighVal,
+    clusterLowVal,
+    thisVal,
+    // deviation variables are (signed) pixel distances normal to the cluster vector
+    clusterMinDeviation,
+    clusterMaxDeviation,
+    thisDeviation;
 
-        // pt variables are pixel coordinates [x,y] of one point
-        clusterStartPt, // these four are the outputs of clustering on a line
-        clusterEndPt,
-        clusterHighPt,
-        clusterLowPt,
-        thisPt, // "this" is the next point we're considering adding to the cluster
+  if (!simplify) {
+    baseTolerance = minTolerance = -1;
+  }
 
-        clusterRefDist,
-        clusterHighFirst, // did we encounter the high point first, then a low point, or vice versa?
-        clusterUnitVector, // the first two points in the cluster determine its unit vector
-                           // so the second is always in the "High" direction
-        thisVector, // the pixel delta from clusterStartPt
+  // turn one calcdata point into pixel coordinates
+  function getPt(index) {
+    var x = xa.c2p(d[index].x), y = ya.c2p(d[index].y);
+    if (x === BADNUM || y === BADNUM) return false;
+    return [x, y];
+  }
 
-        // val variables are (signed) pixel distances along the cluster vector
-        clusterHighVal,
-        clusterLowVal,
-        thisVal,
+  // if we're off-screen, increase tolerance over baseTolerance
+  function getTolerance(pt) {
+    var xFrac = pt[0] / xa._length, yFrac = pt[1] / ya._length;
+    return (
+      (1 + 10 * Math.max(0, -xFrac, xFrac - 1, -yFrac, yFrac - 1)) *
+      baseTolerance
+    );
+  }
 
-        // deviation variables are (signed) pixel distances normal to the cluster vector
-        clusterMinDeviation,
-        clusterMaxDeviation,
-        thisDeviation;
+  function ptDist(pt1, pt2) {
+    var dx = pt1[0] - pt2[0], dy = pt1[1] - pt2[1];
+    return Math.sqrt(dx * dx + dy * dy);
+  }
 
-    if(!simplify) {
-        baseTolerance = minTolerance = -1;
-    }
+  // loop over ALL points in this trace
+  for (i = 0; i < d.length; i++) {
+    clusterStartPt = getPt(i);
+    if (!clusterStartPt) continue;
 
-    // turn one calcdata point into pixel coordinates
-    function getPt(index) {
-        var x = xa.c2p(d[index].x),
-            y = ya.c2p(d[index].y);
-        if(x === BADNUM || y === BADNUM) return false;
-        return [x, y];
-    }
+    pti = 0;
+    pts[pti++] = clusterStartPt;
 
-    // if we're off-screen, increase tolerance over baseTolerance
-    function getTolerance(pt) {
-        var xFrac = pt[0] / xa._length,
-            yFrac = pt[1] / ya._length;
-        return (1 + 10 * Math.max(0, -xFrac, xFrac - 1, -yFrac, yFrac - 1)) * baseTolerance;
-    }
+    // loop over one segment of the trace
+    for (i++; i < d.length; i++) {
+      clusterHighPt = getPt(i);
+      if (!clusterHighPt) {
+        if (connectGaps) continue;
+        else break;
+      }
 
-    function ptDist(pt1, pt2) {
-        var dx = pt1[0] - pt2[0],
-            dy = pt1[1] - pt2[1];
-        return Math.sqrt(dx * dx + dy * dy);
-    }
+      // can't decimate if nonlinear line shape
+      // TODO: we *could* decimate [hv]{2,3} shapes if we restricted clusters to horz or vert again
+      // but spline would be verrry awkward to decimate
+      if (!linear) {
+        pts[pti++] = clusterHighPt;
+        continue;
+      }
 
-    // loop over ALL points in this trace
-    for(i = 0; i < d.length; i++) {
-        clusterStartPt = getPt(i);
-        if(!clusterStartPt) continue;
+      clusterRefDist = ptDist(clusterHighPt, clusterStartPt);
 
-        pti = 0;
-        pts[pti++] = clusterStartPt;
+      if (clusterRefDist < getTolerance(clusterHighPt) * minTolerance) continue;
 
-        // loop over one segment of the trace
-        for(i++; i < d.length; i++) {
-            clusterHighPt = getPt(i);
-            if(!clusterHighPt) {
-                if(connectGaps) continue;
-                else break;
-            }
+      clusterUnitVector = [
+        (clusterHighPt[0] - clusterStartPt[0]) / clusterRefDist,
+        (clusterHighPt[1] - clusterStartPt[1]) / clusterRefDist,
+      ];
 
-            // can't decimate if nonlinear line shape
-            // TODO: we *could* decimate [hv]{2,3} shapes if we restricted clusters to horz or vert again
-            // but spline would be verrry awkward to decimate
-            if(!linear) {
-                pts[pti++] = clusterHighPt;
-                continue;
-            }
+      clusterLowPt = clusterStartPt;
+      clusterHighVal = clusterRefDist;
+      clusterLowVal = clusterMinDeviation = clusterMaxDeviation = 0;
+      clusterHighFirst = false;
+      clusterEndPt = clusterHighPt;
 
-            clusterRefDist = ptDist(clusterHighPt, clusterStartPt);
-
-            if(clusterRefDist < getTolerance(clusterHighPt) * minTolerance) continue;
-
-            clusterUnitVector = [
-                (clusterHighPt[0] - clusterStartPt[0]) / clusterRefDist,
-                (clusterHighPt[1] - clusterStartPt[1]) / clusterRefDist
-            ];
-
-            clusterLowPt = clusterStartPt;
-            clusterHighVal = clusterRefDist;
-            clusterLowVal = clusterMinDeviation = clusterMaxDeviation = 0;
-            clusterHighFirst = false;
-            clusterEndPt = clusterHighPt;
-
-            // loop over one cluster of points that collapse onto one line
-            for(i++; i < d.length; i++) {
-                thisPt = getPt(i);
-                if(!thisPt) {
-                    if(connectGaps) continue;
-                    else break;
-                }
-                thisVector = [
-                    thisPt[0] - clusterStartPt[0],
-                    thisPt[1] - clusterStartPt[1]
-                ];
-                // cross product (or dot with normal to the cluster vector)
-                thisDeviation = thisVector[0] * clusterUnitVector[1] - thisVector[1] * clusterUnitVector[0];
-                clusterMinDeviation = Math.min(clusterMinDeviation, thisDeviation);
-                clusterMaxDeviation = Math.max(clusterMaxDeviation, thisDeviation);
-
-                if(clusterMaxDeviation - clusterMinDeviation > getTolerance(thisPt)) break;
-
-                clusterEndPt = thisPt;
-                thisVal = thisVector[0] * clusterUnitVector[0] + thisVector[1] * clusterUnitVector[1];
-
-                if(thisVal > clusterHighVal) {
-                    clusterHighVal = thisVal;
-                    clusterHighPt = thisPt;
-                    clusterHighFirst = false;
-                } else if(thisVal < clusterLowVal) {
-                    clusterLowVal = thisVal;
-                    clusterLowPt = thisPt;
-                    clusterHighFirst = true;
-                }
-            }
-
-            // insert this cluster into pts
-            // we've already inserted the start pt, now check if we have high and low pts
-            if(clusterHighFirst) {
-                pts[pti++] = clusterHighPt;
-                if(clusterEndPt !== clusterLowPt) pts[pti++] = clusterLowPt;
-            } else {
-                if(clusterLowPt !== clusterStartPt) pts[pti++] = clusterLowPt;
-                if(clusterEndPt !== clusterHighPt) pts[pti++] = clusterHighPt;
-            }
-            // and finally insert the end pt
-            pts[pti++] = clusterEndPt;
-
-            // have we reached the end of this segment?
-            if(i >= d.length || !thisPt) break;
-
-            // otherwise we have an out-of-cluster point to insert as next clusterStartPt
-            pts[pti++] = thisPt;
-            clusterStartPt = thisPt;
+      // loop over one cluster of points that collapse onto one line
+      for (i++; i < d.length; i++) {
+        thisPt = getPt(i);
+        if (!thisPt) {
+          if (connectGaps) continue;
+          else break;
         }
+        thisVector = [
+          thisPt[0] - clusterStartPt[0],
+          thisPt[1] - clusterStartPt[1],
+        ];
+        // cross product (or dot with normal to the cluster vector)
+        thisDeviation =
+          thisVector[0] * clusterUnitVector[1] -
+          thisVector[1] * clusterUnitVector[0];
+        clusterMinDeviation = Math.min(clusterMinDeviation, thisDeviation);
+        clusterMaxDeviation = Math.max(clusterMaxDeviation, thisDeviation);
 
-        segments.push(pts.slice(0, pti));
+        if (clusterMaxDeviation - clusterMinDeviation > getTolerance(thisPt))
+          break;
+
+        clusterEndPt = thisPt;
+        thisVal =
+          thisVector[0] * clusterUnitVector[0] +
+          thisVector[1] * clusterUnitVector[1];
+
+        if (thisVal > clusterHighVal) {
+          clusterHighVal = thisVal;
+          clusterHighPt = thisPt;
+          clusterHighFirst = false;
+        } else if (thisVal < clusterLowVal) {
+          clusterLowVal = thisVal;
+          clusterLowPt = thisPt;
+          clusterHighFirst = true;
+        }
+      }
+
+      // insert this cluster into pts
+      // we've already inserted the start pt, now check if we have high and low pts
+      if (clusterHighFirst) {
+        pts[pti++] = clusterHighPt;
+        if (clusterEndPt !== clusterLowPt) pts[pti++] = clusterLowPt;
+      } else {
+        if (clusterLowPt !== clusterStartPt) pts[pti++] = clusterLowPt;
+        if (clusterEndPt !== clusterHighPt) pts[pti++] = clusterHighPt;
+      }
+      // and finally insert the end pt
+      pts[pti++] = clusterEndPt;
+
+      // have we reached the end of this segment?
+      if (i >= d.length || !thisPt) break;
+
+      // otherwise we have an out-of-cluster point to insert as next clusterStartPt
+      pts[pti++] = thisPt;
+      clusterStartPt = thisPt;
     }
 
-    return segments;
+    segments.push(pts.slice(0, pti));
+  }
+
+  return segments;
 };

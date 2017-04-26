@@ -14,10 +14,12 @@ var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
-module.exports = extendFlat({}, {
+module.exports = extendFlat(
+  {},
+  {
     z: {
-        valType: 'data_array',
-        description: 'Sets the z data.'
+      valType: 'data_array',
+      description: 'Sets the z data.',
     },
     x: scatterAttrs.x,
     x0: scatterAttrs.x0,
@@ -27,72 +29,76 @@ module.exports = extendFlat({}, {
     dy: scatterAttrs.dy,
 
     text: {
-        valType: 'data_array',
-        description: 'Sets the text elements associated with each z value.'
+      valType: 'data_array',
+      description: 'Sets the text elements associated with each z value.',
     },
     transpose: {
-        valType: 'boolean',
-        dflt: false,
-        role: 'info',
-        description: 'Transposes the z data.'
+      valType: 'boolean',
+      dflt: false,
+      role: 'info',
+      description: 'Transposes the z data.',
     },
     xtype: {
-        valType: 'enumerated',
-        values: ['array', 'scaled'],
-        role: 'info',
-        description: [
-            'If *array*, the heatmap\'s x coordinates are given by *x*',
-            '(the default behavior when `x` is provided).',
-            'If *scaled*, the heatmap\'s x coordinates are given by *x0* and *dx*',
-            '(the default behavior when `x` is not provided).'
-        ].join(' ')
+      valType: 'enumerated',
+      values: ['array', 'scaled'],
+      role: 'info',
+      description: [
+        "If *array*, the heatmap's x coordinates are given by *x*",
+        '(the default behavior when `x` is provided).',
+        "If *scaled*, the heatmap's x coordinates are given by *x0* and *dx*",
+        '(the default behavior when `x` is not provided).',
+      ].join(' '),
     },
     ytype: {
-        valType: 'enumerated',
-        values: ['array', 'scaled'],
-        role: 'info',
-        description: [
-            'If *array*, the heatmap\'s y coordinates are given by *y*',
-            '(the default behavior when `y` is provided)',
-            'If *scaled*, the heatmap\'s y coordinates are given by *y0* and *dy*',
-            '(the default behavior when `y` is not provided)'
-        ].join(' ')
+      valType: 'enumerated',
+      values: ['array', 'scaled'],
+      role: 'info',
+      description: [
+        "If *array*, the heatmap's y coordinates are given by *y*",
+        '(the default behavior when `y` is provided)',
+        "If *scaled*, the heatmap's y coordinates are given by *y0* and *dy*",
+        '(the default behavior when `y` is not provided)',
+      ].join(' '),
     },
     zsmooth: {
-        valType: 'enumerated',
-        values: ['fast', 'best', false],
-        dflt: false,
-        role: 'style',
-        description: [
-            'Picks a smoothing algorithm use to smooth `z` data.'
-        ].join(' ')
+      valType: 'enumerated',
+      values: ['fast', 'best', false],
+      dflt: false,
+      role: 'style',
+      description: ['Picks a smoothing algorithm use to smooth `z` data.'].join(
+        ' '
+      ),
     },
     connectgaps: {
-        valType: 'boolean',
-        dflt: false,
-        role: 'info',
-        description: [
-            'Determines whether or not gaps',
-            '(i.e. {nan} or missing values)',
-            'in the `z` data are filled in.'
-        ].join(' ')
+      valType: 'boolean',
+      dflt: false,
+      role: 'info',
+      description: [
+        'Determines whether or not gaps',
+        '(i.e. {nan} or missing values)',
+        'in the `z` data are filled in.',
+      ].join(' '),
     },
     xgap: {
-        valType: 'number',
-        dflt: 0,
-        min: 0,
-        role: 'style',
-        description: 'Sets the horizontal gap (in pixels) between bricks.'
+      valType: 'number',
+      dflt: 0,
+      min: 0,
+      role: 'style',
+      description: 'Sets the horizontal gap (in pixels) between bricks.',
     },
     ygap: {
-        valType: 'number',
-        dflt: 0,
-        min: 0,
-        role: 'style',
-        description: 'Sets the vertical gap (in pixels) between bricks.'
+      valType: 'number',
+      dflt: 0,
+      min: 0,
+      role: 'style',
+      description: 'Sets the vertical gap (in pixels) between bricks.',
     },
-},
-    colorscaleAttrs,
-    { autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}) },
-    { colorbar: colorbarAttrs }
+  },
+  colorscaleAttrs,
+  {
+    autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {
+      dflt: false,
+    }),
+  },
+  { colorbar: colorbarAttrs }
 );

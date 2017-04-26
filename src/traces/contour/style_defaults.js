@@ -6,29 +6,35 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 
+module.exports = function handleStyleDefaults(
+  traceIn,
+  traceOut,
+  coerce,
+  layout,
+  defaultColor,
+  defaultWidth
+) {
+  var coloring = coerce('contours.coloring');
 
-module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout, defaultColor, defaultWidth) {
-    var coloring = coerce('contours.coloring');
+  var showLines;
+  if (coloring === 'fill') showLines = coerce('contours.showlines');
 
-    var showLines;
-    if(coloring === 'fill') showLines = coerce('contours.showlines');
+  if (showLines !== false) {
+    if (coloring !== 'lines') coerce('line.color', defaultColor || '#000');
+    coerce('line.width', defaultWidth === undefined ? 0.5 : defaultWidth);
+    coerce('line.dash');
+  }
 
-    if(showLines !== false) {
-        if(coloring !== 'lines') coerce('line.color', defaultColor || '#000');
-        coerce('line.width', defaultWidth === undefined ? 0.5 : defaultWidth);
-        coerce('line.dash');
-    }
+  coerce('line.smoothing');
 
-    coerce('line.smoothing');
-
-    if((traceOut.contours || {}).coloring !== 'none') {
-        colorscaleDefaults(
-            traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
-        );
-    }
+  if ((traceOut.contours || {}).coloring !== 'none') {
+    colorscaleDefaults(traceIn, traceOut, layout, coerce, {
+      prefix: '',
+      cLetter: 'z',
+    });
+  }
 };

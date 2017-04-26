@@ -24,11 +24,11 @@ Pie.name = 'pie';
 Pie.basePlotModule = require('./base_plot');
 Pie.categories = ['pie', 'showLegend'];
 Pie.meta = {
-    description: [
-        'A data visualized by the sectors of the pie is set in `values`.',
-        'The sector labels are set in `labels`.',
-        'The sector colors are set in `marker.colors`'
-    ].join(' ')
+  description: [
+    'A data visualized by the sectors of the pie is set in `values`.',
+    'The sector labels are set in `labels`.',
+    'The sector colors are set in `marker.colors`',
+  ].join(' '),
 };
 
 module.exports = Pie;

@@ -10,7 +10,6 @@
 
 var Lib = require('../lib');
 
-
 /** Convenience wrapper for making array container logic DRY and consistent
  *
  * @param {object} parentObjIn
@@ -41,39 +40,41 @@ var Lib = require('../lib');
  *    links to supplementary data (e.g. fullData for layout components)
  *
  */
-module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut, opts) {
-    var name = opts.name;
+module.exports = function handleArrayContainerDefaults(
+  parentObjIn,
+  parentObjOut,
+  opts
+) {
+  var name = opts.name;
 
-    var previousContOut = parentObjOut[name];
+  var previousContOut = parentObjOut[name];
 
-    var contIn = Lib.isArray(parentObjIn[name]) ? parentObjIn[name] : [],
-        contOut = parentObjOut[name] = [],
-        i;
+  var contIn = Lib.isArray(parentObjIn[name]) ? parentObjIn[name] : [],
+    contOut = (parentObjOut[name] = []),
+    i;
 
-    for(i = 0; i < contIn.length; i++) {
-        var itemIn = contIn[i],
-            itemOut = {},
-            itemOpts = {};
+  for (i = 0; i < contIn.length; i++) {
+    var itemIn = contIn[i], itemOut = {}, itemOpts = {};
 
-        if(!Lib.isPlainObject(itemIn)) {
-            itemOpts.itemIsNotPlainObject = true;
-            itemIn = {};
-        }
-
-        opts.handleItemDefaults(itemIn, itemOut, parentObjOut, opts, itemOpts);
-
-        itemOut._input = itemIn;
-        itemOut._index = i;
-
-        contOut.push(itemOut);
+    if (!Lib.isPlainObject(itemIn)) {
+      itemOpts.itemIsNotPlainObject = true;
+      itemIn = {};
     }
 
-    // in case this array gets its defaults rebuilt independent of the whole layout,
-    // relink the private keys just for this array.
-    if(Lib.isArray(previousContOut)) {
-        var len = Math.min(previousContOut.length, contOut.length);
-        for(i = 0; i < len; i++) {
-            Lib.relinkPrivateKeys(contOut[i], previousContOut[i]);
-        }
+    opts.handleItemDefaults(itemIn, itemOut, parentObjOut, opts, itemOpts);
+
+    itemOut._input = itemIn;
+    itemOut._index = i;
+
+    contOut.push(itemOut);
+  }
+
+  // in case this array gets its defaults rebuilt independent of the whole layout,
+  // relink the private keys just for this array.
+  if (Lib.isArray(previousContOut)) {
+    var len = Math.min(previousContOut.length, contOut.length);
+    for (i = 0; i < len; i++) {
+      Lib.relinkPrivateKeys(contOut[i], previousContOut[i]);
     }
+  }
 };

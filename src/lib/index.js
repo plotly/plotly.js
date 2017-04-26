@@ -6,12 +6,11 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var d3 = require('d3');
 
-var lib = module.exports = {};
+var lib = (module.exports = {});
 
 lib.nestedProperty = require('./nested_property');
 lib.isPlainObject = require('./is_plain_object');
@@ -96,16 +95,16 @@ lib.identity = require('./identity');
  * you can also swap other things than x/y by providing part1 and part2
  */
 lib.swapAttrs = function(cont, attrList, part1, part2) {
-    if(!part1) part1 = 'x';
-    if(!part2) part2 = 'y';
-    for(var i = 0; i < attrList.length; i++) {
-        var attr = attrList[i],
-            xp = lib.nestedProperty(cont, attr.replace('?', part1)),
-            yp = lib.nestedProperty(cont, attr.replace('?', part2)),
-            temp = xp.get();
-        xp.set(yp.get());
-        yp.set(temp);
-    }
+  if (!part1) part1 = 'x';
+  if (!part2) part2 = 'y';
+  for (var i = 0; i < attrList.length; i++) {
+    var attr = attrList[i],
+      xp = lib.nestedProperty(cont, attr.replace('?', part1)),
+      yp = lib.nestedProperty(cont, attr.replace('?', part2)),
+      temp = xp.get();
+    xp.set(yp.get());
+    yp.set(temp);
+  }
 };
 
 /**
@@ -116,16 +115,16 @@ lib.swapAttrs = function(cont, attrList, part1, part2) {
  *      return pauseEvent(e);
  */
 lib.pauseEvent = function(e) {
-    if(e.stopPropagation) e.stopPropagation();
-    if(e.preventDefault) e.preventDefault();
-    e.cancelBubble = true;
-    return false;
+  if (e.stopPropagation) e.stopPropagation();
+  if (e.preventDefault) e.preventDefault();
+  e.cancelBubble = true;
+  return false;
 };
 
 // constrain - restrict a number v to be between v0 and v1
 lib.constrain = function(v, v0, v1) {
-    if(v0 > v1) return Math.max(v1, Math.min(v0, v));
-    return Math.max(v0, Math.min(v1, v));
+  if (v0 > v1) return Math.max(v1, Math.min(v0, v));
+  return Math.max(v0, Math.min(v1, v));
 };
 
 /**
@@ -134,11 +133,13 @@ lib.constrain = function(v, v0, v1) {
  * takes optional padding pixels
  */
 lib.bBoxIntersect = function(a, b, pad) {
-    pad = pad || 0;
-    return (a.left <= b.right + pad &&
-            b.left <= a.right + pad &&
-            a.top <= b.bottom + pad &&
-            b.top <= a.bottom + pad);
+  pad = pad || 0;
+  return (
+    a.left <= b.right + pad &&
+    b.left <= a.right + pad &&
+    a.top <= b.bottom + pad &&
+    b.top <= a.bottom + pad
+  );
 };
 
 /*
@@ -151,55 +152,52 @@ lib.bBoxIntersect = function(a, b, pad) {
  * x1, x2: optional extra args
  */
 lib.simpleMap = function(array, func, x1, x2) {
-    var len = array.length,
-        out = new Array(len);
-    for(var i = 0; i < len; i++) out[i] = func(array[i], x1, x2);
-    return out;
+  var len = array.length, out = new Array(len);
+  for (var i = 0; i < len; i++)
+    out[i] = func(array[i], x1, x2);
+  return out;
 };
 
 // random string generator
 lib.randstr = function randstr(existing, bits, base) {
-    /*
+  /*
      * Include number of bits, the base of the string you want
      * and an optional array of existing strings to avoid.
      */
-    if(!base) base = 16;
-    if(bits === undefined) bits = 24;
-    if(bits <= 0) return '0';
+  if (!base) base = 16;
+  if (bits === undefined) bits = 24;
+  if (bits <= 0) return '0';
 
-    var digits = Math.log(Math.pow(2, bits)) / Math.log(base),
-        res = '',
-        i,
-        b,
-        x;
+  var digits = Math.log(Math.pow(2, bits)) / Math.log(base), res = '', i, b, x;
 
-    for(i = 2; digits === Infinity; i *= 2) {
-        digits = Math.log(Math.pow(2, bits / i)) / Math.log(base) * i;
-    }
+  for (i = 2; digits === Infinity; i *= 2) {
+    digits = Math.log(Math.pow(2, bits / i)) / Math.log(base) * i;
+  }
 
-    var rem = digits - Math.floor(digits);
+  var rem = digits - Math.floor(digits);
 
-    for(i = 0; i < Math.floor(digits); i++) {
-        x = Math.floor(Math.random() * base).toString(base);
-        res = x + res;
-    }
+  for (i = 0; i < Math.floor(digits); i++) {
+    x = Math.floor(Math.random() * base).toString(base);
+    res = x + res;
+  }
 
-    if(rem) {
-        b = Math.pow(base, rem);
-        x = Math.floor(Math.random() * b).toString(base);
-        res = x + res;
-    }
+  if (rem) {
+    b = Math.pow(base, rem);
+    x = Math.floor(Math.random() * b).toString(base);
+    res = x + res;
+  }
 
-    var parsed = parseInt(res, base);
-    if((existing && (existing.indexOf(res) > -1)) ||
-         (parsed !== Infinity && parsed >= Math.pow(2, bits))) {
-        return randstr(existing, bits, base);
-    }
-    else return res;
+  var parsed = parseInt(res, base);
+  if (
+    (existing && existing.indexOf(res) > -1) ||
+    (parsed !== Infinity && parsed >= Math.pow(2, bits))
+  ) {
+    return randstr(existing, bits, base);
+  } else return res;
 };
 
 lib.OptionControl = function(opt, optname) {
-    /*
+  /*
      * An environment to contain all option setters and
      * getters that collectively modify opts.
      *
@@ -208,20 +206,20 @@ lib.OptionControl = function(opt, optname) {
      *
      * See FitOpts for example of usage
      */
-    if(!opt) opt = {};
-    if(!optname) optname = 'opt';
+  if (!opt) opt = {};
+  if (!optname) optname = 'opt';
 
-    var self = {};
-    self.optionList = [];
+  var self = {};
+  self.optionList = [];
 
-    self._newoption = function(optObj) {
-        optObj[optname] = opt;
-        self[optObj.name] = optObj;
-        self.optionList.push(optObj);
-    };
+  self._newoption = function(optObj) {
+    optObj[optname] = opt;
+    self[optObj.name] = optObj;
+    self.optionList.push(optObj);
+  };
 
-    self['_' + optname] = opt;
-    return self;
+  self['_' + optname] = opt;
+  return self;
 };
 
 /**
@@ -230,44 +228,44 @@ lib.OptionControl = function(opt, optname) {
  * bounce the ends in, so the output has the same length as the input
  */
 lib.smooth = function(arrayIn, FWHM) {
-    FWHM = Math.round(FWHM) || 0; // only makes sense for integers
-    if(FWHM < 2) return arrayIn;
+  FWHM = Math.round(FWHM) || 0; // only makes sense for integers
+  if (FWHM < 2) return arrayIn;
 
-    var alen = arrayIn.length,
-        alen2 = 2 * alen,
-        wlen = 2 * FWHM - 1,
-        w = new Array(wlen),
-        arrayOut = new Array(alen),
-        i,
-        j,
-        k,
-        v;
+  var alen = arrayIn.length,
+    alen2 = 2 * alen,
+    wlen = 2 * FWHM - 1,
+    w = new Array(wlen),
+    arrayOut = new Array(alen),
+    i,
+    j,
+    k,
+    v;
 
-    // first make the window array
-    for(i = 0; i < wlen; i++) {
-        w[i] = (1 - Math.cos(Math.PI * (i + 1) / FWHM)) / (2 * FWHM);
+  // first make the window array
+  for (i = 0; i < wlen; i++) {
+    w[i] = (1 - Math.cos(Math.PI * (i + 1) / FWHM)) / (2 * FWHM);
+  }
+
+  // now do the convolution
+  for (i = 0; i < alen; i++) {
+    v = 0;
+    for (j = 0; j < wlen; j++) {
+      k = i + j + 1 - FWHM;
+
+      // multibounce
+      if (k < -alen) k -= alen2 * Math.round(k / alen2);
+      else if (k >= alen2) k -= alen2 * Math.floor(k / alen2);
+
+      // single bounce
+      if (k < 0) k = -1 - k;
+      else if (k >= alen) k = alen2 - 1 - k;
+
+      v += arrayIn[k] * w[j];
     }
+    arrayOut[i] = v;
+  }
 
-    // now do the convolution
-    for(i = 0; i < alen; i++) {
-        v = 0;
-        for(j = 0; j < wlen; j++) {
-            k = i + j + 1 - FWHM;
-
-            // multibounce
-            if(k < -alen) k -= alen2 * Math.round(k / alen2);
-            else if(k >= alen2) k -= alen2 * Math.floor(k / alen2);
-
-            // single bounce
-            if(k < 0) k = - 1 - k;
-            else if(k >= alen) k = alen2 - 1 - k;
-
-            v += arrayIn[k] * w[j];
-        }
-        arrayOut[i] = v;
-    }
-
-    return arrayOut;
+  return arrayOut;
 };
 
 /**
@@ -282,66 +280,62 @@ lib.smooth = function(arrayIn, FWHM) {
  * that it gets reported
  */
 lib.syncOrAsync = function(sequence, arg, finalStep) {
-    var ret, fni;
+  var ret, fni;
 
-    function continueAsync() {
-        return lib.syncOrAsync(sequence, arg, finalStep);
+  function continueAsync() {
+    return lib.syncOrAsync(sequence, arg, finalStep);
+  }
+
+  while (sequence.length) {
+    fni = sequence.splice(0, 1)[0];
+    ret = fni(arg);
+
+    if (ret && ret.then) {
+      return ret.then(continueAsync).then(undefined, lib.promiseError);
     }
+  }
 
-    while(sequence.length) {
-        fni = sequence.splice(0, 1)[0];
-        ret = fni(arg);
-
-        if(ret && ret.then) {
-            return ret.then(continueAsync)
-                .then(undefined, lib.promiseError);
-        }
-    }
-
-    return finalStep && finalStep(arg);
+  return finalStep && finalStep(arg);
 };
-
 
 /**
  * Helper to strip trailing slash, from
  * http://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
  */
 lib.stripTrailingSlash = function(str) {
-    if(str.substr(-1) === '/') return str.substr(0, str.length - 1);
-    return str;
+  if (str.substr(-1) === '/') return str.substr(0, str.length - 1);
+  return str;
 };
 
 lib.noneOrAll = function(containerIn, containerOut, attrList) {
-    /**
+  /**
      * some attributes come together, so if you have one of them
      * in the input, you should copy the default values of the others
      * to the input as well.
      */
-    if(!containerIn) return;
+  if (!containerIn) return;
 
-    var hasAny = false,
-        hasAll = true,
-        i,
-        val;
+  var hasAny = false, hasAll = true, i, val;
 
-    for(i = 0; i < attrList.length; i++) {
-        val = containerIn[attrList[i]];
-        if(val !== undefined && val !== null) hasAny = true;
-        else hasAll = false;
+  for (i = 0; i < attrList.length; i++) {
+    val = containerIn[attrList[i]];
+    if (val !== undefined && val !== null) hasAny = true;
+    else hasAll = false;
+  }
+
+  if (hasAny && !hasAll) {
+    for (i = 0; i < attrList.length; i++) {
+      containerIn[attrList[i]] = containerOut[attrList[i]];
     }
-
-    if(hasAny && !hasAll) {
-        for(i = 0; i < attrList.length; i++) {
-            containerIn[attrList[i]] = containerOut[attrList[i]];
-        }
-    }
+  }
 };
 
 lib.mergeArray = function(traceAttr, cd, cdAttr) {
-    if(Array.isArray(traceAttr)) {
-        var imax = Math.min(traceAttr.length, cd.length);
-        for(var i = 0; i < imax; i++) cd[i][cdAttr] = traceAttr[i];
-    }
+  if (Array.isArray(traceAttr)) {
+    var imax = Math.min(traceAttr.length, cd.length);
+    for (var i = 0; i < imax; i++)
+      cd[i][cdAttr] = traceAttr[i];
+  }
 };
 
 /**
@@ -351,63 +345,66 @@ lib.mergeArray = function(traceAttr, cd, cdAttr) {
  * obj2 is assumed to already be clean of these things (including no arrays)
  */
 lib.minExtend = function(obj1, obj2) {
-    var objOut = {};
-    if(typeof obj2 !== 'object') obj2 = {};
-    var arrayLen = 3,
-        keys = Object.keys(obj1),
-        i,
-        k,
-        v;
-    for(i = 0; i < keys.length; i++) {
-        k = keys[i];
-        v = obj1[k];
-        if(k.charAt(0) === '_' || typeof v === 'function') continue;
-        else if(k === 'module') objOut[k] = v;
-        else if(Array.isArray(v)) objOut[k] = v.slice(0, arrayLen);
-        else if(v && (typeof v === 'object')) objOut[k] = lib.minExtend(obj1[k], obj2[k]);
-        else objOut[k] = v;
-    }
+  var objOut = {};
+  if (typeof obj2 !== 'object') obj2 = {};
+  var arrayLen = 3, keys = Object.keys(obj1), i, k, v;
+  for (i = 0; i < keys.length; i++) {
+    k = keys[i];
+    v = obj1[k];
+    if (k.charAt(0) === '_' || typeof v === 'function') continue;
+    else if (k === 'module') objOut[k] = v;
+    else if (Array.isArray(v)) objOut[k] = v.slice(0, arrayLen);
+    else if (v && typeof v === 'object')
+      objOut[k] = lib.minExtend(obj1[k], obj2[k]);
+    else objOut[k] = v;
+  }
 
-    keys = Object.keys(obj2);
-    for(i = 0; i < keys.length; i++) {
-        k = keys[i];
-        v = obj2[k];
-        if(typeof v !== 'object' || !(k in objOut) || typeof objOut[k] !== 'object') {
-            objOut[k] = v;
-        }
+  keys = Object.keys(obj2);
+  for (i = 0; i < keys.length; i++) {
+    k = keys[i];
+    v = obj2[k];
+    if (
+      typeof v !== 'object' ||
+      !(k in objOut) ||
+      typeof objOut[k] !== 'object'
+    ) {
+      objOut[k] = v;
     }
+  }
 
-    return objOut;
+  return objOut;
 };
 
 lib.titleCase = function(s) {
-    return s.charAt(0).toUpperCase() + s.substr(1);
+  return s.charAt(0).toUpperCase() + s.substr(1);
 };
 
 lib.containsAny = function(s, fragments) {
-    for(var i = 0; i < fragments.length; i++) {
-        if(s.indexOf(fragments[i]) !== -1) return true;
-    }
-    return false;
+  for (var i = 0; i < fragments.length; i++) {
+    if (s.indexOf(fragments[i]) !== -1) return true;
+  }
+  return false;
 };
 
 // get the parent Plotly plot of any element. Whoo jquery-free tree climbing!
 lib.getPlotDiv = function(el) {
-    for(; el && el.removeAttribute; el = el.parentNode) {
-        if(lib.isPlotDiv(el)) return el;
-    }
+  for (; el && el.removeAttribute; el = el.parentNode) {
+    if (lib.isPlotDiv(el)) return el;
+  }
 };
 
 lib.isPlotDiv = function(el) {
-    var el3 = d3.select(el);
-    return el3.node() instanceof HTMLElement &&
-        el3.size() &&
-        el3.classed('js-plotly-plot');
+  var el3 = d3.select(el);
+  return (
+    el3.node() instanceof HTMLElement &&
+    el3.size() &&
+    el3.classed('js-plotly-plot')
+  );
 };
 
 lib.removeElement = function(el) {
-    var elParent = el && el.parentNode;
-    if(elParent) elParent.removeChild(el);
+  var elParent = el && el.parentNode;
+  if (elParent) elParent.removeChild(el);
 };
 
 /**
@@ -416,26 +413,24 @@ lib.removeElement = function(el) {
  * by all calls to this function
  */
 lib.addStyleRule = function(selector, styleString) {
-    if(!lib.styleSheet) {
-        var style = document.createElement('style');
-        // WebKit hack :(
-        style.appendChild(document.createTextNode(''));
-        document.head.appendChild(style);
-        lib.styleSheet = style.sheet;
-    }
-    var styleSheet = lib.styleSheet;
+  if (!lib.styleSheet) {
+    var style = document.createElement('style');
+    // WebKit hack :(
+    style.appendChild(document.createTextNode(''));
+    document.head.appendChild(style);
+    lib.styleSheet = style.sheet;
+  }
+  var styleSheet = lib.styleSheet;
 
-    if(styleSheet.insertRule) {
-        styleSheet.insertRule(selector + '{' + styleString + '}', 0);
-    }
-    else if(styleSheet.addRule) {
-        styleSheet.addRule(selector, styleString, 0);
-    }
-    else lib.warn('addStyleRule failed');
+  if (styleSheet.insertRule) {
+    styleSheet.insertRule(selector + '{' + styleString + '}', 0);
+  } else if (styleSheet.addRule) {
+    styleSheet.addRule(selector, styleString, 0);
+  } else lib.warn('addStyleRule failed');
 };
 
 lib.isIE = function() {
-    return typeof window.navigator.msSaveBlob !== 'undefined';
+  return typeof window.navigator.msSaveBlob !== 'undefined';
 };
 
 /**
@@ -443,9 +438,8 @@ lib.isIE = function() {
  * because it doesn't handle instanceof like modern browsers
  */
 lib.isD3Selection = function(obj) {
-    return obj && (typeof obj.classed === 'function');
+  return obj && typeof obj.classed === 'function';
 };
-
 
 /**
  * Converts a string path to an object.
@@ -463,42 +457,39 @@ lib.isD3Selection = function(obj) {
  * @return {Object} the constructed object with a full nested path
  */
 lib.objectFromPath = function(path, value) {
-    var keys = path.split('.'),
-        tmpObj,
-        obj = tmpObj = {};
+  var keys = path.split('.'), tmpObj, obj = (tmpObj = {});
 
-    for(var i = 0; i < keys.length; i++) {
-        var key = keys[i];
-        var el = null;
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i];
+    var el = null;
 
-        var parts = keys[i].match(/(.*)\[([0-9]+)\]/);
+    var parts = keys[i].match(/(.*)\[([0-9]+)\]/);
 
-        if(parts) {
-            key = parts[1];
-            el = parts[2];
+    if (parts) {
+      key = parts[1];
+      el = parts[2];
 
-            tmpObj = tmpObj[key] = [];
+      tmpObj = tmpObj[key] = [];
 
-            if(i === keys.length - 1) {
-                tmpObj[el] = value;
-            } else {
-                tmpObj[el] = {};
-            }
+      if (i === keys.length - 1) {
+        tmpObj[el] = value;
+      } else {
+        tmpObj[el] = {};
+      }
 
-            tmpObj = tmpObj[el];
-        } else {
+      tmpObj = tmpObj[el];
+    } else {
+      if (i === keys.length - 1) {
+        tmpObj[key] = value;
+      } else {
+        tmpObj[key] = {};
+      }
 
-            if(i === keys.length - 1) {
-                tmpObj[key] = value;
-            } else {
-                tmpObj[key] = {};
-            }
-
-            tmpObj = tmpObj[key];
-        }
+      tmpObj = tmpObj[key];
     }
+  }
 
-    return obj;
+  return obj;
 };
 
 /**
@@ -533,59 +524,65 @@ var dottedPropertyRegex = /^([^\[\.]+)\.(.+)?/;
 var indexedPropertyRegex = /^([^\.]+)\[([0-9]+)\](\.)?(.+)?/;
 
 lib.expandObjectPaths = function(data) {
-    var match, key, prop, datum, idx, dest, trailingPath;
-    if(typeof data === 'object' && !Array.isArray(data)) {
-        for(key in data) {
-            if(data.hasOwnProperty(key)) {
-                if((match = key.match(dottedPropertyRegex))) {
-                    datum = data[key];
-                    prop = match[1];
+  var match, key, prop, datum, idx, dest, trailingPath;
+  if (typeof data === 'object' && !Array.isArray(data)) {
+    for (key in data) {
+      if (data.hasOwnProperty(key)) {
+        if ((match = key.match(dottedPropertyRegex))) {
+          datum = data[key];
+          prop = match[1];
 
-                    delete data[key];
+          delete data[key];
 
-                    data[prop] = lib.extendDeepNoArrays(data[prop] || {}, lib.objectFromPath(key, lib.expandObjectPaths(datum))[prop]);
-                } else if((match = key.match(indexedPropertyRegex))) {
-                    datum = data[key];
+          data[prop] = lib.extendDeepNoArrays(
+            data[prop] || {},
+            lib.objectFromPath(key, lib.expandObjectPaths(datum))[prop]
+          );
+        } else if ((match = key.match(indexedPropertyRegex))) {
+          datum = data[key];
 
-                    prop = match[1];
-                    idx = parseInt(match[2]);
+          prop = match[1];
+          idx = parseInt(match[2]);
 
-                    delete data[key];
+          delete data[key];
 
-                    data[prop] = data[prop] || [];
+          data[prop] = data[prop] || [];
 
-                    if(match[3] === '.') {
-                        // This is the case where theere are subsequent properties into which
-                        // we must recurse, e.g. transforms[0].value
-                        trailingPath = match[4];
-                        dest = data[prop][idx] = data[prop][idx] || {};
+          if (match[3] === '.') {
+            // This is the case where theere are subsequent properties into which
+            // we must recurse, e.g. transforms[0].value
+            trailingPath = match[4];
+            dest = data[prop][idx] = data[prop][idx] || {};
 
-                        // NB: Extend deep no arrays prevents this from working on multiple
-                        // nested properties in the same object, e.g.
-                        //
-                        // {
-                        //   foo[0].bar[1].range
-                        //   foo[0].bar[0].range
-                        // }
-                        //
-                        // In this case, the extendDeepNoArrays will overwrite one array with
-                        // the other, so that both properties *will not* be present in the
-                        // result. Fixing this would require a more intelligent tracking
-                        // of changes and merging than extendDeepNoArrays currently accomplishes.
-                        lib.extendDeepNoArrays(dest, lib.objectFromPath(trailingPath, lib.expandObjectPaths(datum)));
-                    } else {
-                        // This is the case where this property is the end of the line,
-                        // e.g. xaxis.range[0]
-                        data[prop][idx] = lib.expandObjectPaths(datum);
-                    }
-                } else {
-                    data[key] = lib.expandObjectPaths(data[key]);
-                }
-            }
+            // NB: Extend deep no arrays prevents this from working on multiple
+            // nested properties in the same object, e.g.
+            //
+            // {
+            //   foo[0].bar[1].range
+            //   foo[0].bar[0].range
+            // }
+            //
+            // In this case, the extendDeepNoArrays will overwrite one array with
+            // the other, so that both properties *will not* be present in the
+            // result. Fixing this would require a more intelligent tracking
+            // of changes and merging than extendDeepNoArrays currently accomplishes.
+            lib.extendDeepNoArrays(
+              dest,
+              lib.objectFromPath(trailingPath, lib.expandObjectPaths(datum))
+            );
+          } else {
+            // This is the case where this property is the end of the line,
+            // e.g. xaxis.range[0]
+            data[prop][idx] = lib.expandObjectPaths(datum);
+          }
+        } else {
+          data[key] = lib.expandObjectPaths(data[key]);
         }
+      }
     }
+  }
 
-    return data;
+  return data;
 };
 
 /**
@@ -610,30 +607,30 @@ lib.expandObjectPaths = function(data) {
  * @return  {string}    the value that has been separated
  */
 lib.numSeparate = function(value, separators, separatethousands) {
-    if(!separatethousands) separatethousands = false;
+  if (!separatethousands) separatethousands = false;
 
-    if(typeof separators !== 'string' || separators.length === 0) {
-        throw new Error('Separator string required for formatting!');
+  if (typeof separators !== 'string' || separators.length === 0) {
+    throw new Error('Separator string required for formatting!');
+  }
+
+  if (typeof value === 'number') {
+    value = String(value);
+  }
+
+  var thousandsRe = /(\d+)(\d{3})/,
+    decimalSep = separators.charAt(0),
+    thouSep = separators.charAt(1);
+
+  var x = value.split('.'),
+    x1 = x[0],
+    x2 = x.length > 1 ? decimalSep + x[1] : '';
+
+  // Years are ignored for thousands separators
+  if (thouSep && (x.length > 1 || x1.length > 4 || separatethousands)) {
+    while (thousandsRe.test(x1)) {
+      x1 = x1.replace(thousandsRe, '$1' + thouSep + '$2');
     }
+  }
 
-    if(typeof value === 'number') {
-        value = String(value);
-    }
-
-    var thousandsRe = /(\d+)(\d{3})/,
-        decimalSep = separators.charAt(0),
-        thouSep = separators.charAt(1);
-
-    var x = value.split('.'),
-        x1 = x[0],
-        x2 = x.length > 1 ? decimalSep + x[1] : '';
-
-    // Years are ignored for thousands separators
-    if(thouSep && (x.length > 1 || x1.length > 4 || separatethousands)) {
-        while(thousandsRe.test(x1)) {
-            x1 = x1.replace(thousandsRe, '$1' + thouSep + '$2');
-        }
-    }
-
-    return x1 + x2;
+  return x1 + x2;
 };

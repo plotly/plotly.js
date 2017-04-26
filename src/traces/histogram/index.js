@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 /**
@@ -21,7 +20,6 @@
  * constant and % work but they're not so meaningful. I guess it could be cool
  * to allow quadrature combination of errors in summed histograms...
  */
-
 
 var Histogram = {};
 
@@ -39,15 +37,22 @@ Histogram.hoverPoints = require('../bar/hover');
 Histogram.moduleType = 'trace';
 Histogram.name = 'histogram';
 Histogram.basePlotModule = require('../../plots/cartesian');
-Histogram.categories = ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'];
+Histogram.categories = [
+  'cartesian',
+  'bar',
+  'histogram',
+  'oriented',
+  'errorBarsOK',
+  'showLegend',
+];
 Histogram.meta = {
-    description: [
-        'The sample data from which statistics are computed is set in `x`',
-        'for vertically spanning histograms and',
-        'in `y` for horizontally spanning histograms.',
-        'Binning options are set `xbins` and `ybins` respectively',
-        'if no aggregation data is provided.'
-    ].join(' ')
+  description: [
+    'The sample data from which statistics are computed is set in `x`',
+    'for vertically spanning histograms and',
+    'in `y` for horizontally spanning histograms.',
+    'Binning options are set `xbins` and `ybins` respectively',
+    'if no aggregation data is provided.',
+  ].join(' '),
 };
 
 module.exports = Histogram;

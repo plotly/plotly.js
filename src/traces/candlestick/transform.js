@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -19,108 +18,104 @@ exports.name = 'candlestick';
 exports.attributes = {};
 
 exports.supplyDefaults = function(transformIn, traceOut, layout, traceIn) {
-    helpers.clearEphemeralTransformOpts(traceIn);
-    helpers.copyOHLC(transformIn, traceOut);
+  helpers.clearEphemeralTransformOpts(traceIn);
+  helpers.copyOHLC(transformIn, traceOut);
 
-    return transformIn;
+  return transformIn;
 };
 
 exports.transform = function transform(dataIn, state) {
-    var dataOut = [];
+  var dataOut = [];
 
-    for(var i = 0; i < dataIn.length; i++) {
-        var traceIn = dataIn[i];
+  for (var i = 0; i < dataIn.length; i++) {
+    var traceIn = dataIn[i];
 
-        if(traceIn.type !== 'candlestick') {
-            dataOut.push(traceIn);
-            continue;
-        }
-
-        dataOut.push(
-            makeTrace(traceIn, state, 'increasing'),
-            makeTrace(traceIn, state, 'decreasing')
-        );
+    if (traceIn.type !== 'candlestick') {
+      dataOut.push(traceIn);
+      continue;
     }
 
-    helpers.addRangeSlider(dataOut, state.layout);
+    dataOut.push(
+      makeTrace(traceIn, state, 'increasing'),
+      makeTrace(traceIn, state, 'decreasing')
+    );
+  }
 
-    return dataOut;
+  helpers.addRangeSlider(dataOut, state.layout);
+
+  return dataOut;
 };
 
 function makeTrace(traceIn, state, direction) {
-    var traceOut = {
-        type: 'box',
-        boxpoints: false,
+  var traceOut = {
+    type: 'box',
+    boxpoints: false,
 
-        visible: traceIn.visible,
-        hoverinfo: traceIn.hoverinfo,
-        opacity: traceIn.opacity,
-        xaxis: traceIn.xaxis,
-        yaxis: traceIn.yaxis,
+    visible: traceIn.visible,
+    hoverinfo: traceIn.hoverinfo,
+    opacity: traceIn.opacity,
+    xaxis: traceIn.xaxis,
+    yaxis: traceIn.yaxis,
 
-        transforms: helpers.makeTransform(traceIn, state, direction)
-    };
+    transforms: helpers.makeTransform(traceIn, state, direction),
+  };
 
-    // the rest of below may not have been coerced
+  // the rest of below may not have been coerced
 
-    var directionOpts = traceIn[direction];
+  var directionOpts = traceIn[direction];
 
-    if(directionOpts) {
-        Lib.extendFlat(traceOut, {
+  if (directionOpts) {
+    Lib.extendFlat(traceOut, {
+      // to make autotype catch date axes soon!!
+      x: traceIn.x || [0],
+      xcalendar: traceIn.xcalendar,
 
-            // to make autotype catch date axes soon!!
-            x: traceIn.x || [0],
-            xcalendar: traceIn.xcalendar,
+      // concat low and high to get correct autorange
+      y: [].concat(traceIn.low).concat(traceIn.high),
 
-            // concat low and high to get correct autorange
-            y: [].concat(traceIn.low).concat(traceIn.high),
+      whiskerwidth: traceIn.whiskerwidth,
+      text: traceIn.text,
 
-            whiskerwidth: traceIn.whiskerwidth,
-            text: traceIn.text,
+      name: directionOpts.name,
+      showlegend: directionOpts.showlegend,
+      line: directionOpts.line,
+      fillcolor: directionOpts.fillcolor,
+    });
+  }
 
-            name: directionOpts.name,
-            showlegend: directionOpts.showlegend,
-            line: directionOpts.line,
-            fillcolor: directionOpts.fillcolor
-        });
-    }
-
-    return traceOut;
+  return traceOut;
 }
 
 exports.calcTransform = function calcTransform(gd, trace, opts) {
-    var direction = opts.direction,
-        filterFn = helpers.getFilterFn(direction);
+  var direction = opts.direction, filterFn = helpers.getFilterFn(direction);
 
-    var open = trace.open,
-        high = trace.high,
-        low = trace.low,
-        close = trace.close;
+  var open = trace.open,
+    high = trace.high,
+    low = trace.low,
+    close = trace.close;
 
-    var len = open.length,
-        x = [],
-        y = [];
+  var len = open.length, x = [], y = [];
 
-    var appendX = trace._fullInput.x ?
-        function(i) {
-            var v = trace.x[i];
-            x.push(v, v, v, v, v, v);
-        } :
-        function(i) {
-            x.push(i, i, i, i, i, i);
-        };
+  var appendX = trace._fullInput.x
+    ? function(i) {
+        var v = trace.x[i];
+        x.push(v, v, v, v, v, v);
+      }
+    : function(i) {
+        x.push(i, i, i, i, i, i);
+      };
 
-    var appendY = function(o, h, l, c) {
-        y.push(l, o, c, c, c, h);
-    };
+  var appendY = function(o, h, l, c) {
+    y.push(l, o, c, c, c, h);
+  };
 
-    for(var i = 0; i < len; i++) {
-        if(filterFn(open[i], close[i])) {
-            appendX(i);
-            appendY(open[i], high[i], low[i], close[i]);
-        }
+  for (var i = 0; i < len; i++) {
+    if (filterFn(open[i], close[i])) {
+      appendX(i);
+      appendY(open[i], high[i], low[i], close[i]);
     }
+  }
 
-    trace.x = x;
-    trace.y = y;
+  trace.x = x;
+  trace.y = y;
 };

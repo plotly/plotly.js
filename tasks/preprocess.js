@@ -16,32 +16,35 @@ updateVersion(constants.pathToPlotlyGeoAssetsSrc);
 
 // convert scss to css to js
 function makeBuildCSS() {
-    sass.render({
-        file: constants.pathToSCSS,
-        outputStyle: 'compressed'
-    }, function(err, result) {
-        if(err) throw err;
+  sass.render(
+    {
+      file: constants.pathToSCSS,
+      outputStyle: 'compressed',
+    },
+    function(err, result) {
+      if (err) throw err;
 
-        // css to js
-        pullCSS(String(result.css), constants.pathToCSSBuild);
-    });
+      // css to js
+      pullCSS(String(result.css), constants.pathToCSSBuild);
+    }
+  );
 }
 
 // convert font svg into js
 function makeBuildFontSVG() {
-    fs.readFile(constants.pathToFontSVG, function(err, data) {
-        if(err) throw err;
+  fs.readFile(constants.pathToFontSVG, function(err, data) {
+    if (err) throw err;
 
-        pullFontSVG(data.toString(), constants.pathToFontSVGBuild);
-    });
+    pullFontSVG(data.toString(), constants.pathToFontSVGBuild);
+  });
 }
 
 // copy topojson files from sane-topojson to dist/
 function copyTopojsonFiles() {
-    fs.copy(
-        constants.pathToTopojsonSrc,
-        constants.pathToTopojsonDist,
-        { clobber: true },
-        common.throwOnError
-    );
+  fs.copy(
+    constants.pathToTopojsonSrc,
+    constants.pathToTopojsonDist,
+    { clobber: true },
+    common.throwOnError
+  );
 }

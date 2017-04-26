@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../../lib');
@@ -16,33 +15,32 @@ var handleSubplotDefaults = require('../../subplot_defaults');
 var layoutAttributes = require('./layout_attributes');
 var supplyGl3dAxisLayoutDefaults = require('./axis_defaults');
 
-
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    var hasNon3D = layoutOut._basePlotModules.length > 1;
+  var hasNon3D = layoutOut._basePlotModules.length > 1;
 
-    // some layout-wide attribute are used in all scenes
-    // if 3D is the only visible plot type
-    function getDfltFromLayout(attr) {
-        if(hasNon3D) return;
+  // some layout-wide attribute are used in all scenes
+  // if 3D is the only visible plot type
+  function getDfltFromLayout(attr) {
+    if (hasNon3D) return;
 
-        var isValid = Lib.validate(layoutIn[attr], layoutAttributes[attr]);
-        if(isValid) return layoutIn[attr];
-    }
+    var isValid = Lib.validate(layoutIn[attr], layoutAttributes[attr]);
+    if (isValid) return layoutIn[attr];
+  }
 
-    handleSubplotDefaults(layoutIn, layoutOut, fullData, {
-        type: 'gl3d',
-        attributes: layoutAttributes,
-        handleDefaults: handleGl3dDefaults,
-        font: layoutOut.font,
-        fullData: fullData,
-        getDfltFromLayout: getDfltFromLayout,
-        paper_bgcolor: layoutOut.paper_bgcolor,
-        calendar: layoutOut.calendar
-    });
+  handleSubplotDefaults(layoutIn, layoutOut, fullData, {
+    type: 'gl3d',
+    attributes: layoutAttributes,
+    handleDefaults: handleGl3dDefaults,
+    font: layoutOut.font,
+    fullData: fullData,
+    getDfltFromLayout: getDfltFromLayout,
+    paper_bgcolor: layoutOut.paper_bgcolor,
+    calendar: layoutOut.calendar,
+  });
 };
 
 function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
-    /*
+  /*
      * Scene numbering proceeds as follows
      * scene
      * scene2
@@ -54,49 +52,54 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
      * attributes like aspectratio can be written back dynamically.
      */
 
-    var bgcolor = coerce('bgcolor'),
-        bgColorCombined = Color.combine(bgcolor, opts.paper_bgcolor);
+  var bgcolor = coerce('bgcolor'),
+    bgColorCombined = Color.combine(bgcolor, opts.paper_bgcolor);
 
-    var cameraKeys = Object.keys(layoutAttributes.camera);
+  var cameraKeys = Object.keys(layoutAttributes.camera);
 
-    for(var j = 0; j < cameraKeys.length; j++) {
-        coerce('camera.' + cameraKeys[j] + '.x');
-        coerce('camera.' + cameraKeys[j] + '.y');
-        coerce('camera.' + cameraKeys[j] + '.z');
-    }
+  for (var j = 0; j < cameraKeys.length; j++) {
+    coerce('camera.' + cameraKeys[j] + '.x');
+    coerce('camera.' + cameraKeys[j] + '.y');
+    coerce('camera.' + cameraKeys[j] + '.z');
+  }
 
-    /*
+  /*
      * coerce to positive number (min 0) but also do not accept 0 (>0 not >=0)
      * note that 0's go false with the !! call
      */
-    var hasAspect = !!coerce('aspectratio.x') &&
-                    !!coerce('aspectratio.y') &&
-                    !!coerce('aspectratio.z');
+  var hasAspect =
+    !!coerce('aspectratio.x') &&
+    !!coerce('aspectratio.y') &&
+    !!coerce('aspectratio.z');
 
-    var defaultAspectMode = hasAspect ? 'manual' : 'auto';
-    var aspectMode = coerce('aspectmode', defaultAspectMode);
+  var defaultAspectMode = hasAspect ? 'manual' : 'auto';
+  var aspectMode = coerce('aspectmode', defaultAspectMode);
 
-    /*
+  /*
      * We need aspectratio object in all the Layouts as it is dynamically set
      * in the calculation steps, ie, we cant set the correct data now, it happens later.
      * We must also account for the case the user sends bad ratio data with 'manual' set
      * for the mode. In this case we must force change it here as the default coerce
      * misses it above.
      */
-    if(!hasAspect) {
-        sceneLayoutIn.aspectratio = sceneLayoutOut.aspectratio = {x: 1, y: 1, z: 1};
+  if (!hasAspect) {
+    sceneLayoutIn.aspectratio = sceneLayoutOut.aspectratio = {
+      x: 1,
+      y: 1,
+      z: 1,
+    };
 
-        if(aspectMode === 'manual') sceneLayoutOut.aspectmode = 'auto';
-    }
+    if (aspectMode === 'manual') sceneLayoutOut.aspectmode = 'auto';
+  }
 
-    supplyGl3dAxisLayoutDefaults(sceneLayoutIn, sceneLayoutOut, {
-        font: opts.font,
-        scene: opts.id,
-        data: opts.fullData,
-        bgColor: bgColorCombined,
-        calendar: opts.calendar
-    });
+  supplyGl3dAxisLayoutDefaults(sceneLayoutIn, sceneLayoutOut, {
+    font: opts.font,
+    scene: opts.id,
+    data: opts.fullData,
+    bgColor: bgColorCombined,
+    calendar: opts.calendar,
+  });
 
-    coerce('dragmode', opts.getDfltFromLayout('dragmode'));
-    coerce('hovermode', opts.getDfltFromLayout('hovermode'));
+  coerce('dragmode', opts.getDfltFromLayout('dragmode'));
+  coerce('hovermode', opts.getDfltFromLayout('hovermode'));
 }

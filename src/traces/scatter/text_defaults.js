@@ -6,14 +6,12 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
 
-
 // common to 'scatter', 'scatter3d' and 'scattergeo'
 module.exports = function(traceIn, traceOut, layout, coerce) {
-    coerce('textposition');
-    Lib.coerceFont(coerce, 'textfont', layout.font);
+  coerce('textposition');
+  Lib.coerceFont(coerce, 'textfont', layout.font);
 };

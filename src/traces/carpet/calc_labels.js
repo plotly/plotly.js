@@ -12,48 +12,48 @@ var Axes = require('../../plots/cartesian/axes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = function calcLabels(trace, axis) {
-    var i, tobj, prefix, suffix, gridline;
+  var i, tobj, prefix, suffix, gridline;
 
-    var labels = axis._labels = [];
-    var gridlines = axis._gridlines;
+  var labels = (axis._labels = []);
+  var gridlines = axis._gridlines;
 
-    for(i = 0; i < gridlines.length; i++) {
-        gridline = gridlines[i];
+  for (i = 0; i < gridlines.length; i++) {
+    gridline = gridlines[i];
 
-        if(['start', 'both'].indexOf(axis.showticklabels) !== -1) {
-            tobj = Axes.tickText(axis, gridline.value);
+    if (['start', 'both'].indexOf(axis.showticklabels) !== -1) {
+      tobj = Axes.tickText(axis, gridline.value);
 
-            extendFlat(tobj, {
-                prefix: prefix,
-                suffix: suffix,
-                endAnchor: true,
-                xy: gridline.xy(0),
-                dxy: gridline.dxy(0, 0),
-                axis: gridline.axis,
-                length: gridline.crossAxis.length,
-                font: gridline.axis.tickfont,
-                isFirst: i === 0,
-                isLast: i === gridlines.length - 1
-            });
+      extendFlat(tobj, {
+        prefix: prefix,
+        suffix: suffix,
+        endAnchor: true,
+        xy: gridline.xy(0),
+        dxy: gridline.dxy(0, 0),
+        axis: gridline.axis,
+        length: gridline.crossAxis.length,
+        font: gridline.axis.tickfont,
+        isFirst: i === 0,
+        isLast: i === gridlines.length - 1,
+      });
 
-            labels.push(tobj);
-        }
-
-        if(['end', 'both'].indexOf(axis.showticklabels) !== -1) {
-            tobj = Axes.tickText(axis, gridline.value);
-
-            extendFlat(tobj, {
-                endAnchor: false,
-                xy: gridline.xy(gridline.crossLength - 1),
-                dxy: gridline.dxy(gridline.crossLength - 2, 1),
-                axis: gridline.axis,
-                length: gridline.crossAxis.length,
-                font: gridline.axis.tickfont,
-                isFirst: i === 0,
-                isLast: i === gridlines.length - 1
-            });
-
-            labels.push(tobj);
-        }
+      labels.push(tobj);
     }
+
+    if (['end', 'both'].indexOf(axis.showticklabels) !== -1) {
+      tobj = Axes.tickText(axis, gridline.value);
+
+      extendFlat(tobj, {
+        endAnchor: false,
+        xy: gridline.xy(gridline.crossLength - 1),
+        dxy: gridline.dxy(gridline.crossLength - 2, 1),
+        axis: gridline.axis,
+        length: gridline.crossAxis.length,
+        font: gridline.axis.tickfont,
+        isFirst: i === 0,
+        isLast: i === gridlines.length - 1,
+      });
+
+      labels.push(tobj);
+    }
+  }
 };

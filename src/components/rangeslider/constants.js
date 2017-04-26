@@ -9,42 +9,41 @@
 'use strict';
 
 module.exports = {
+  // attribute container name
+  name: 'rangeslider',
 
-    // attribute container name
-    name: 'rangeslider',
+  // class names
 
-    // class names
+  containerClassName: 'rangeslider-container',
+  bgClassName: 'rangeslider-bg',
+  rangePlotClassName: 'rangeslider-rangeplot',
 
-    containerClassName: 'rangeslider-container',
-    bgClassName: 'rangeslider-bg',
-    rangePlotClassName: 'rangeslider-rangeplot',
+  maskMinClassName: 'rangeslider-mask-min',
+  maskMaxClassName: 'rangeslider-mask-max',
+  slideBoxClassName: 'rangeslider-slidebox',
 
-    maskMinClassName: 'rangeslider-mask-min',
-    maskMaxClassName: 'rangeslider-mask-max',
-    slideBoxClassName: 'rangeslider-slidebox',
+  grabberMinClassName: 'rangeslider-grabber-min',
+  grabAreaMinClassName: 'rangeslider-grabarea-min',
+  handleMinClassName: 'rangeslider-handle-min',
 
-    grabberMinClassName: 'rangeslider-grabber-min',
-    grabAreaMinClassName: 'rangeslider-grabarea-min',
-    handleMinClassName: 'rangeslider-handle-min',
+  grabberMaxClassName: 'rangeslider-grabber-max',
+  grabAreaMaxClassName: 'rangeslider-grabarea-max',
+  handleMaxClassName: 'rangeslider-handle-max',
 
-    grabberMaxClassName: 'rangeslider-grabber-max',
-    grabAreaMaxClassName: 'rangeslider-grabarea-max',
-    handleMaxClassName: 'rangeslider-handle-max',
+  // style constants
 
-    // style constants
+  maskColor: 'rgba(0,0,0,0.4)',
 
-    maskColor: 'rgba(0,0,0,0.4)',
+  slideBoxFill: 'transparent',
+  slideBoxCursor: 'ew-resize',
 
-    slideBoxFill: 'transparent',
-    slideBoxCursor: 'ew-resize',
+  grabAreaFill: 'transparent',
+  grabAreaCursor: 'col-resize',
+  grabAreaWidth: 10,
 
-    grabAreaFill: 'transparent',
-    grabAreaCursor: 'col-resize',
-    grabAreaWidth: 10,
+  handleWidth: 4,
+  handleRadius: 1,
+  handleStrokeWidth: 1,
 
-    handleWidth: 4,
-    handleRadius: 1,
-    handleStrokeWidth: 1,
-
-    extraPad: 15
+  extraPad: 15,
 };

@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -21,35 +20,42 @@ var errorBarsSupplyDefaults = require('../../components/errorbars/defaults');
 
 var attributes = require('./attributes');
 
+module.exports = function supplyDefaults(
+  traceIn,
+  traceOut,
+  defaultColor,
+  layout
+) {
+  function coerce(attr, dflt) {
+    return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
+  }
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    function coerce(attr, dflt) {
-        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
-    }
+  var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
+  if (!len) {
+    traceOut.visible = false;
+    return;
+  }
 
-    var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
-    if(!len) {
-        traceOut.visible = false;
-        return;
-    }
+  coerce('text');
+  coerce('mode', len < constants.PTS_LINESONLY ? 'lines+markers' : 'lines');
 
-    coerce('text');
-    coerce('mode', len < constants.PTS_LINESONLY ? 'lines+markers' : 'lines');
+  if (subTypes.hasLines(traceOut)) {
+    coerce('connectgaps');
+    handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+  }
 
-    if(subTypes.hasLines(traceOut)) {
-        coerce('connectgaps');
-        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
-    }
+  if (subTypes.hasMarkers(traceOut)) {
+    handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+  }
 
-    if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
-    }
+  coerce('fill');
+  if (traceOut.fill !== 'none') {
+    handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
+  }
 
-    coerce('fill');
-    if(traceOut.fill !== 'none') {
-        handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
-    }
-
-    errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
-    errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
+  errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, { axis: 'y' });
+  errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {
+    axis: 'x',
+    inherit: 'y',
+  });
 };

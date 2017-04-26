@@ -9,17 +9,17 @@
 'use strict';
 
 module.exports = {
-    moduleType: 'component',
-    name: 'rangeslider',
+  moduleType: 'component',
+  name: 'rangeslider',
 
-    schema: {
-        layout: {
-            'xaxis.rangeslider': require('./attributes')
-        }
+  schema: {
+    layout: {
+      'xaxis.rangeslider': require('./attributes'),
     },
+  },
 
-    layoutAttributes: require('./attributes'),
-    handleDefaults: require('./defaults'),
-    calcAutorange: require('./calc_autorange'),
-    draw: require('./draw')
+  layoutAttributes: require('./attributes'),
+  handleDefaults: require('./defaults'),
+  calcAutorange: require('./calc_autorange'),
+  draw: require('./draw'),
 };

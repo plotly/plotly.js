@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Histogram2dContour = {};
@@ -24,15 +23,15 @@ Histogram2dContour.name = 'histogram2dcontour';
 Histogram2dContour.basePlotModule = require('../../plots/cartesian');
 Histogram2dContour.categories = ['cartesian', '2dMap', 'contour', 'histogram'];
 Histogram2dContour.meta = {
-    hrName: 'histogram_2d_contour',
-    description: [
-        'The sample data from which statistics are computed is set in `x`',
-        'and `y` (where `x` and `y` represent marginal distributions,',
-        'binning is set in `xbins` and `ybins` in this case)',
-        'or `z` (where `z` represent the 2D distribution and binning set,',
-        'binning is set by `x` and `y` in this case).',
-        'The resulting distribution is visualized as a contour plot.'
-    ].join(' ')
+  hrName: 'histogram_2d_contour',
+  description: [
+    'The sample data from which statistics are computed is set in `x`',
+    'and `y` (where `x` and `y` represent marginal distributions,',
+    'binning is set in `xbins` and `ybins` in this case)',
+    'or `z` (where `z` represent the 2D distribution and binning set,',
+    'binning is set by `x` and `y` in this case).',
+    'The resulting distribution is visualized as a contour plot.',
+  ].join(' '),
 };
 
 module.exports = Histogram2dContour;

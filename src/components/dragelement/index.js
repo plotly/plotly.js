@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Plotly = require('../../plotly');
@@ -15,7 +14,7 @@ var Lib = require('../../lib');
 var constants = require('../../plots/cartesian/constants');
 var interactConstants = require('../../constants/interactions');
 
-var dragElement = module.exports = {};
+var dragElement = (module.exports = {});
 
 dragElement.align = require('./align');
 dragElement.getCursor = require('./cursor');
@@ -50,151 +49,159 @@ dragElement.unhoverRaw = unhover.raw;
  *          the click & drag interaction has been initiated
  */
 dragElement.init = function init(options) {
-    var gd = Lib.getPlotDiv(options.element) || {},
-        numClicks = 1,
-        DBLCLICKDELAY = interactConstants.DBLCLICKDELAY,
-        startX,
-        startY,
-        newMouseDownTime,
-        dragCover,
-        initialTarget,
-        initialOnMouseMove;
+  var gd = Lib.getPlotDiv(options.element) || {},
+    numClicks = 1,
+    DBLCLICKDELAY = interactConstants.DBLCLICKDELAY,
+    startX,
+    startY,
+    newMouseDownTime,
+    dragCover,
+    initialTarget,
+    initialOnMouseMove;
 
-    if(!gd._mouseDownTime) gd._mouseDownTime = 0;
+  if (!gd._mouseDownTime) gd._mouseDownTime = 0;
 
-    function onStart(e) {
-        // disable call to options.setCursor(evt)
-        options.element.onmousemove = initialOnMouseMove;
+  function onStart(e) {
+    // disable call to options.setCursor(evt)
+    options.element.onmousemove = initialOnMouseMove;
 
-        // make dragging and dragged into properties of gd
-        // so that others can look at and modify them
-        gd._dragged = false;
-        gd._dragging = true;
-        startX = e.clientX;
-        startY = e.clientY;
-        initialTarget = e.target;
+    // make dragging and dragged into properties of gd
+    // so that others can look at and modify them
+    gd._dragged = false;
+    gd._dragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    initialTarget = e.target;
 
-        newMouseDownTime = (new Date()).getTime();
-        if(newMouseDownTime - gd._mouseDownTime < DBLCLICKDELAY) {
-            // in a click train
-            numClicks += 1;
-        }
-        else {
-            // new click train
-            numClicks = 1;
-            gd._mouseDownTime = newMouseDownTime;
-        }
-
-        if(options.prepFn) options.prepFn(e, startX, startY);
-
-        dragCover = coverSlip();
-
-        dragCover.onmousemove = onMove;
-        dragCover.onmouseup = onDone;
-        dragCover.onmouseout = onDone;
-
-        dragCover.style.cursor = window.getComputedStyle(options.element).cursor;
-
-        return Lib.pauseEvent(e);
+    newMouseDownTime = new Date().getTime();
+    if (newMouseDownTime - gd._mouseDownTime < DBLCLICKDELAY) {
+      // in a click train
+      numClicks += 1;
+    } else {
+      // new click train
+      numClicks = 1;
+      gd._mouseDownTime = newMouseDownTime;
     }
 
-    function onMove(e) {
-        var dx = e.clientX - startX,
-            dy = e.clientY - startY,
-            minDrag = options.minDrag || constants.MINDRAG;
+    if (options.prepFn) options.prepFn(e, startX, startY);
 
-        if(Math.abs(dx) < minDrag) dx = 0;
-        if(Math.abs(dy) < minDrag) dy = 0;
-        if(dx || dy) {
-            gd._dragged = true;
-            dragElement.unhover(gd);
-        }
+    dragCover = coverSlip();
 
-        if(options.moveFn) options.moveFn(dx, dy, gd._dragged);
+    dragCover.onmousemove = onMove;
+    dragCover.onmouseup = onDone;
+    dragCover.onmouseout = onDone;
 
-        return Lib.pauseEvent(e);
+    dragCover.style.cursor = window.getComputedStyle(options.element).cursor;
+
+    return Lib.pauseEvent(e);
+  }
+
+  function onMove(e) {
+    var dx = e.clientX - startX,
+      dy = e.clientY - startY,
+      minDrag = options.minDrag || constants.MINDRAG;
+
+    if (Math.abs(dx) < minDrag) dx = 0;
+    if (Math.abs(dy) < minDrag) dy = 0;
+    if (dx || dy) {
+      gd._dragged = true;
+      dragElement.unhover(gd);
     }
 
-    function onDone(e) {
-        // re-enable call to options.setCursor(evt)
-        initialOnMouseMove = options.element.onmousemove;
-        if(options.setCursor) options.element.onmousemove = options.setCursor;
+    if (options.moveFn) options.moveFn(dx, dy, gd._dragged);
 
-        dragCover.onmousemove = null;
-        dragCover.onmouseup = null;
-        dragCover.onmouseout = null;
-        Lib.removeElement(dragCover);
+    return Lib.pauseEvent(e);
+  }
 
-        if(!gd._dragging) {
-            gd._dragged = false;
-            return;
-        }
-        gd._dragging = false;
-
-        // don't count as a dblClick unless the mouseUp is also within
-        // the dblclick delay
-        if((new Date()).getTime() - gd._mouseDownTime > DBLCLICKDELAY) {
-            numClicks = Math.max(numClicks - 1, 1);
-        }
-
-        if(options.doneFn) options.doneFn(gd._dragged, numClicks, e);
-
-        if(!gd._dragged) {
-            var e2;
-
-            try {
-                e2 = new MouseEvent('click', e);
-            }
-            catch(err) {
-                e2 = document.createEvent('MouseEvents');
-                e2.initMouseEvent('click',
-                    e.bubbles, e.cancelable,
-                    e.view, e.detail,
-                    e.screenX, e.screenY,
-                    e.clientX, e.clientY,
-                    e.ctrlKey, e.altKey, e.shiftKey, e.metaKey,
-                    e.button, e.relatedTarget);
-            }
-
-            initialTarget.dispatchEvent(e2);
-        }
-
-        finishDrag(gd);
-
-        gd._dragged = false;
-
-        return Lib.pauseEvent(e);
-    }
-
-    // enable call to options.setCursor(evt)
+  function onDone(e) {
+    // re-enable call to options.setCursor(evt)
     initialOnMouseMove = options.element.onmousemove;
-    if(options.setCursor) options.element.onmousemove = options.setCursor;
+    if (options.setCursor) options.element.onmousemove = options.setCursor;
 
-    options.element.onmousedown = onStart;
-    options.element.style.pointerEvents = 'all';
+    dragCover.onmousemove = null;
+    dragCover.onmouseup = null;
+    dragCover.onmouseout = null;
+    Lib.removeElement(dragCover);
+
+    if (!gd._dragging) {
+      gd._dragged = false;
+      return;
+    }
+    gd._dragging = false;
+
+    // don't count as a dblClick unless the mouseUp is also within
+    // the dblclick delay
+    if (new Date().getTime() - gd._mouseDownTime > DBLCLICKDELAY) {
+      numClicks = Math.max(numClicks - 1, 1);
+    }
+
+    if (options.doneFn) options.doneFn(gd._dragged, numClicks, e);
+
+    if (!gd._dragged) {
+      var e2;
+
+      try {
+        e2 = new MouseEvent('click', e);
+      } catch (err) {
+        e2 = document.createEvent('MouseEvents');
+        e2.initMouseEvent(
+          'click',
+          e.bubbles,
+          e.cancelable,
+          e.view,
+          e.detail,
+          e.screenX,
+          e.screenY,
+          e.clientX,
+          e.clientY,
+          e.ctrlKey,
+          e.altKey,
+          e.shiftKey,
+          e.metaKey,
+          e.button,
+          e.relatedTarget
+        );
+      }
+
+      initialTarget.dispatchEvent(e2);
+    }
+
+    finishDrag(gd);
+
+    gd._dragged = false;
+
+    return Lib.pauseEvent(e);
+  }
+
+  // enable call to options.setCursor(evt)
+  initialOnMouseMove = options.element.onmousemove;
+  if (options.setCursor) options.element.onmousemove = options.setCursor;
+
+  options.element.onmousedown = onStart;
+  options.element.style.pointerEvents = 'all';
 };
 
 function coverSlip() {
-    var cover = document.createElement('div');
+  var cover = document.createElement('div');
 
-    cover.className = 'dragcover';
-    var cStyle = cover.style;
-    cStyle.position = 'fixed';
-    cStyle.left = 0;
-    cStyle.right = 0;
-    cStyle.top = 0;
-    cStyle.bottom = 0;
-    cStyle.zIndex = 999999999;
-    cStyle.background = 'none';
+  cover.className = 'dragcover';
+  var cStyle = cover.style;
+  cStyle.position = 'fixed';
+  cStyle.left = 0;
+  cStyle.right = 0;
+  cStyle.top = 0;
+  cStyle.bottom = 0;
+  cStyle.zIndex = 999999999;
+  cStyle.background = 'none';
 
-    document.body.appendChild(cover);
+  document.body.appendChild(cover);
 
-    return cover;
+  return cover;
 }
 
 dragElement.coverSlip = coverSlip;
 
 function finishDrag(gd) {
-    gd._dragging = false;
-    if(gd._replotPending) Plotly.plot(gd);
+  gd._dragging = false;
+  if (gd._replotPending) Plotly.plot(gd);
 }

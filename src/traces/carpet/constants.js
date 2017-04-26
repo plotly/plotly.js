@@ -6,9 +6,8 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 module.exports = {
-    RELATIVE_CULL_TOLERANCE: 1e-6
+  RELATIVE_CULL_TOLERANCE: 1e-6,
 };

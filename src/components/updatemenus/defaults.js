@@ -17,76 +17,73 @@ var constants = require('./constants');
 var name = constants.name;
 var buttonAttrs = attributes.buttons;
 
-
 module.exports = function updateMenusDefaults(layoutIn, layoutOut) {
-    var opts = {
-        name: name,
-        handleItemDefaults: menuDefaults
-    };
+  var opts = {
+    name: name,
+    handleItemDefaults: menuDefaults,
+  };
 
-    handleArrayContainerDefaults(layoutIn, layoutOut, opts);
+  handleArrayContainerDefaults(layoutIn, layoutOut, opts);
 };
 
 function menuDefaults(menuIn, menuOut, layoutOut) {
+  function coerce(attr, dflt) {
+    return Lib.coerce(menuIn, menuOut, attributes, attr, dflt);
+  }
 
-    function coerce(attr, dflt) {
-        return Lib.coerce(menuIn, menuOut, attributes, attr, dflt);
-    }
+  var buttons = buttonsDefaults(menuIn, menuOut);
 
-    var buttons = buttonsDefaults(menuIn, menuOut);
+  var visible = coerce('visible', buttons.length > 0);
+  if (!visible) return;
 
-    var visible = coerce('visible', buttons.length > 0);
-    if(!visible) return;
+  coerce('active');
+  coerce('direction');
+  coerce('type');
+  coerce('showactive');
 
-    coerce('active');
-    coerce('direction');
-    coerce('type');
-    coerce('showactive');
+  coerce('x');
+  coerce('y');
+  Lib.noneOrAll(menuIn, menuOut, ['x', 'y']);
 
-    coerce('x');
-    coerce('y');
-    Lib.noneOrAll(menuIn, menuOut, ['x', 'y']);
+  coerce('xanchor');
+  coerce('yanchor');
 
-    coerce('xanchor');
-    coerce('yanchor');
+  coerce('pad.t');
+  coerce('pad.r');
+  coerce('pad.b');
+  coerce('pad.l');
 
-    coerce('pad.t');
-    coerce('pad.r');
-    coerce('pad.b');
-    coerce('pad.l');
+  Lib.coerceFont(coerce, 'font', layoutOut.font);
 
-    Lib.coerceFont(coerce, 'font', layoutOut.font);
-
-    coerce('bgcolor', layoutOut.paper_bgcolor);
-    coerce('bordercolor');
-    coerce('borderwidth');
+  coerce('bgcolor', layoutOut.paper_bgcolor);
+  coerce('bordercolor');
+  coerce('borderwidth');
 }
 
 function buttonsDefaults(menuIn, menuOut) {
-    var buttonsIn = menuIn.buttons || [],
-        buttonsOut = menuOut.buttons = [];
+  var buttonsIn = menuIn.buttons || [], buttonsOut = (menuOut.buttons = []);
 
-    var buttonIn, buttonOut;
+  var buttonIn, buttonOut;
 
-    function coerce(attr, dflt) {
-        return Lib.coerce(buttonIn, buttonOut, buttonAttrs, attr, dflt);
+  function coerce(attr, dflt) {
+    return Lib.coerce(buttonIn, buttonOut, buttonAttrs, attr, dflt);
+  }
+
+  for (var i = 0; i < buttonsIn.length; i++) {
+    buttonIn = buttonsIn[i];
+    buttonOut = {};
+
+    if (!Lib.isPlainObject(buttonIn) || !Array.isArray(buttonIn.args)) {
+      continue;
     }
 
-    for(var i = 0; i < buttonsIn.length; i++) {
-        buttonIn = buttonsIn[i];
-        buttonOut = {};
+    coerce('method');
+    coerce('args');
+    coerce('label');
 
-        if(!Lib.isPlainObject(buttonIn) || !Array.isArray(buttonIn.args)) {
-            continue;
-        }
+    buttonOut._index = i;
+    buttonsOut.push(buttonOut);
+  }
 
-        coerce('method');
-        coerce('args');
-        coerce('label');
-
-        buttonOut._index = i;
-        buttonsOut.push(buttonOut);
-    }
-
-    return buttonsOut;
+  return buttonsOut;
 }

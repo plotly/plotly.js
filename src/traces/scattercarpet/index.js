@@ -22,13 +22,19 @@ ScatterCarpet.selectPoints = require('./select');
 ScatterCarpet.moduleType = 'trace';
 ScatterCarpet.name = 'scattercarpet';
 ScatterCarpet.basePlotModule = require('../../plots/cartesian');
-ScatterCarpet.categories = ['carpet', 'symbols', 'markerColorscale', 'showLegend', 'carpetDependent'];
+ScatterCarpet.categories = [
+  'carpet',
+  'symbols',
+  'markerColorscale',
+  'showLegend',
+  'carpetDependent',
+];
 ScatterCarpet.meta = {
-    hrName: 'scatter_carpet',
-    description: [
-        'Plots a scatter trace on either the first carpet axis or the',
-        'carpet axis with a matching `carpet` attribute.'
-    ].join(' ')
+  hrName: 'scatter_carpet',
+  description: [
+    'Plots a scatter trace on either the first carpet axis or the',
+    'carpet axis with a matching `carpet` attribute.',
+  ].join(' '),
 };
 
 module.exports = ScatterCarpet;

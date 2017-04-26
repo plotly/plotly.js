@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -16,28 +15,35 @@ var handleXYZDefaults = require('./xyz_defaults');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 var attributes = require('./attributes');
 
+module.exports = function supplyDefaults(
+  traceIn,
+  traceOut,
+  defaultColor,
+  layout
+) {
+  function coerce(attr, dflt) {
+    return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
+  }
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    function coerce(attr, dflt) {
-        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
-    }
+  var len = handleXYZDefaults(traceIn, traceOut, coerce, layout);
+  if (!len) {
+    traceOut.visible = false;
+    return;
+  }
 
-    var len = handleXYZDefaults(traceIn, traceOut, coerce, layout);
-    if(!len) {
-        traceOut.visible = false;
-        return;
-    }
+  coerce('text');
 
-    coerce('text');
+  var zsmooth = coerce('zsmooth');
+  if (zsmooth === false) {
+    // ensure that xgap and ygap are coerced only when zsmooth allows them to have an effect.
+    coerce('xgap');
+    coerce('ygap');
+  }
 
-    var zsmooth = coerce('zsmooth');
-    if(zsmooth === false) {
-        // ensure that xgap and ygap are coerced only when zsmooth allows them to have an effect.
-        coerce('xgap');
-        coerce('ygap');
-    }
+  coerce('connectgaps', hasColumns(traceOut) && traceOut.zsmooth !== false);
 
-    coerce('connectgaps', hasColumns(traceOut) && (traceOut.zsmooth !== false));
-
-    colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
+  colorscaleDefaults(traceIn, traceOut, layout, coerce, {
+    prefix: '',
+    cLetter: 'z',
+  });
 };

@@ -53,14 +53,14 @@ exports.register(require('./traces/scatter'));
 
 // register all registrable components modules
 exports.register([
-    require('./components/legend'),
-    require('./components/annotations'),
-    require('./components/shapes'),
-    require('./components/images'),
-    require('./components/updatemenus'),
-    require('./components/sliders'),
-    require('./components/rangeslider'),
-    require('./components/rangeselector')
+  require('./components/legend'),
+  require('./components/annotations'),
+  require('./components/shapes'),
+  require('./components/images'),
+  require('./components/updatemenus'),
+  require('./components/sliders'),
+  require('./components/rangeslider'),
+  require('./components/rangeselector'),
 ]);
 
 // plot icons

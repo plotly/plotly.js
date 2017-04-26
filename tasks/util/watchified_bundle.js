@@ -19,65 +19,73 @@ var compressAttributes = require('./compress_attributes');
  *
  */
 module.exports = function makeWatchifiedBundle(onFirstBundleCallback) {
-    var b = browserify(constants.pathToPlotlyIndex, {
-        debug: true,
-        standalone: 'Plotly',
-        transform: [compressAttributes],
-        cache: {},
-        packageCache: {},
-        plugin: [watchify]
-    });
+  var b = browserify(constants.pathToPlotlyIndex, {
+    debug: true,
+    standalone: 'Plotly',
+    transform: [compressAttributes],
+    cache: {},
+    packageCache: {},
+    plugin: [watchify],
+  });
 
-    var firstBundle = true;
+  var firstBundle = true;
 
-    if(firstBundle) {
-        console.log([
-            '***',
-            'Building the first bundle, this should take ~10 seconds',
-            '***\n'
-        ].join(' '));
-    }
+  if (firstBundle) {
+    console.log(
+      [
+        '***',
+        'Building the first bundle, this should take ~10 seconds',
+        '***\n',
+      ].join(' ')
+    );
+  }
 
-    b.on('update', bundle);
-    formatBundleMsg(b, 'plotly.js');
+  b.on('update', bundle);
+  formatBundleMsg(b, 'plotly.js');
 
-    function bundle() {
-        b.bundle(function(err) {
-            if(err) console.error(JSON.stringify(String(err)));
+  function bundle() {
+    b
+      .bundle(function(err) {
+        if (err) console.error(JSON.stringify(String(err)));
 
-            if(firstBundle) {
-                onFirstBundleCallback();
-                firstBundle = false;
-            }
-        })
-        .pipe(
-            fs.createWriteStream(constants.pathToPlotlyBuild)
-        );
-    }
+        if (firstBundle) {
+          onFirstBundleCallback();
+          firstBundle = false;
+        }
+      })
+      .pipe(fs.createWriteStream(constants.pathToPlotlyBuild));
+  }
 
-    return bundle;
+  return bundle;
 };
 
 function formatBundleMsg(b, bundleName) {
-    var msgParts = [
-        bundleName, ':', '',
-        'written', 'in', '', 'sec',
-        '[', '', ']'
-    ];
+  var msgParts = [
+    bundleName,
+    ':',
+    '',
+    'written',
+    'in',
+    '',
+    'sec',
+    '[',
+    '',
+    ']',
+  ];
 
-    b.on('bytes', function(bytes) {
-        msgParts[2] = prettySize(bytes, true);
-    });
+  b.on('bytes', function(bytes) {
+    msgParts[2] = prettySize(bytes, true);
+  });
 
-    b.on('time', function(time) {
-        msgParts[5] = (time / 1000).toFixed(2);
-    });
+  b.on('time', function(time) {
+    msgParts[5] = (time / 1000).toFixed(2);
+  });
 
-    b.on('log', function() {
-        var formattedTime = common.formatTime(new Date());
+  b.on('log', function() {
+    var formattedTime = common.formatTime(new Date());
 
-        msgParts[msgParts.length - 2] = formattedTime;
+    msgParts[msgParts.length - 2] = formattedTime;
 
-        console.log(msgParts.join(' '));
-    });
+    console.log(msgParts.join(' '));
+  });
 }

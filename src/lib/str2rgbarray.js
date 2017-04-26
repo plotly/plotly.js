@@ -6,14 +6,13 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var rgba = require('color-rgba');
 
 function str2RgbaArray(color) {
-    var colorOut = rgba(color);
-    return colorOut.length ? colorOut : [0, 0, 0, 1];
+  var colorOut = rgba(color);
+  return colorOut.length ? colorOut : [0, 0, 0, 1];
 }
 
 module.exports = str2RgbaArray;

@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -17,21 +16,25 @@ var handleContoursDefaults = require('./contours_defaults');
 var handleStyleDefaults = require('./style_defaults');
 var attributes = require('./attributes');
 
+module.exports = function supplyDefaults(
+  traceIn,
+  traceOut,
+  defaultColor,
+  layout
+) {
+  function coerce(attr, dflt) {
+    return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
+  }
 
-module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    function coerce(attr, dflt) {
-        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
-    }
+  var len = handleXYZDefaults(traceIn, traceOut, coerce, layout);
+  if (!len) {
+    traceOut.visible = false;
+    return;
+  }
 
-    var len = handleXYZDefaults(traceIn, traceOut, coerce, layout);
-    if(!len) {
-        traceOut.visible = false;
-        return;
-    }
+  coerce('text');
+  coerce('connectgaps', hasColumns(traceOut));
 
-    coerce('text');
-    coerce('connectgaps', hasColumns(traceOut));
-
-    handleContoursDefaults(traceIn, traceOut, coerce);
-    handleStyleDefaults(traceIn, traceOut, coerce, layout);
+  handleContoursDefaults(traceIn, traceOut, coerce);
+  handleStyleDefaults(traceIn, traceOut, coerce, layout);
 };

@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
@@ -26,36 +25,35 @@ var toLogRange = require('../../lib/to_log_range');
  *     same relayout call should override this conversion.
  */
 module.exports = function convertCoords(gd, ax, newType, doExtra) {
-    ax = ax || {};
+  ax = ax || {};
 
-    var toLog = (newType === 'log') && (ax.type === 'linear'),
-        fromLog = (newType === 'linear') && (ax.type === 'log');
+  var toLog = newType === 'log' && ax.type === 'linear',
+    fromLog = newType === 'linear' && ax.type === 'log';
 
-    if(!(toLog || fromLog)) return;
+  if (!(toLog || fromLog)) return;
 
-    var annotations = gd._fullLayout.annotations,
-        axLetter = ax._id.charAt(0),
-        ann,
-        attrPrefix;
+  var annotations = gd._fullLayout.annotations,
+    axLetter = ax._id.charAt(0),
+    ann,
+    attrPrefix;
 
-    function convert(attr) {
-        var currentVal = ann[attr],
-            newVal = null;
+  function convert(attr) {
+    var currentVal = ann[attr], newVal = null;
 
-        if(toLog) newVal = toLogRange(currentVal, ax.range);
-        else newVal = Math.pow(10, currentVal);
+    if (toLog) newVal = toLogRange(currentVal, ax.range);
+    else newVal = Math.pow(10, currentVal);
 
-        // if conversion failed, delete the value so it gets a default value
-        if(!isNumeric(newVal)) newVal = null;
+    // if conversion failed, delete the value so it gets a default value
+    if (!isNumeric(newVal)) newVal = null;
 
-        doExtra(attrPrefix + attr, newVal);
-    }
+    doExtra(attrPrefix + attr, newVal);
+  }
 
-    for(var i = 0; i < annotations.length; i++) {
-        ann = annotations[i];
-        attrPrefix = 'annotations[' + i + '].';
+  for (var i = 0; i < annotations.length; i++) {
+    ann = annotations[i];
+    attrPrefix = 'annotations[' + i + '].';
 
-        if(ann[axLetter + 'ref'] === ax._id) convert(axLetter);
-        if(ann['a' + axLetter + 'ref'] === ax._id) convert('a' + axLetter);
-    }
+    if (ann[axLetter + 'ref'] === ax._id) convert(axLetter);
+    if (ann['a' + axLetter + 'ref'] === ax._id) convert('a' + axLetter);
+  }
 };
