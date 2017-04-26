@@ -1020,6 +1020,9 @@ describe('Test hover label custom styling:', function() {
         Plotly.plot(gd, [{
             x: [1, 2, 3],
             y: [1, 2, 1],
+            marker: {
+                color: ['yellow', 'black', 'cyan']
+            },
             hoverlabel: {
                 font: {
                     color: ['red', 'green', 'blue'],
@@ -1063,6 +1066,45 @@ describe('Test hover label custom styling:', function() {
             });
             assertCommonLabel({
                 path: ['rgb(255, 255, 255)', 'rgb(255, 255, 255)'],
+                text: [13, 'Arial', 'rgb(255, 255, 255)']
+            });
+
+            // test base case
+            return Plotly.update(gd, { hoverlabel: null }, { hoverlabel: null });
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[0] });
+
+            assertPtLabel({
+                path: ['rgb(255, 255, 0)', 'rgb(68, 68, 68)'],
+                text: [13, 'Arial', 'rgb(68, 68, 68)']
+            });
+            assertCommonLabel({
+                path: ['rgb(68, 68, 68)', 'rgb(255, 255, 255)'],
+                text: [13, 'Arial', 'rgb(255, 255, 255)']
+            });
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[1] });
+
+            assertPtLabel({
+                path: ['rgb(0, 0, 0)', 'rgb(255, 255, 255)'],
+                text: [13, 'Arial', 'rgb(255, 255, 255)']
+            });
+            assertCommonLabel({
+                path: ['rgb(68, 68, 68)', 'rgb(255, 255, 255)'],
+                text: [13, 'Arial', 'rgb(255, 255, 255)']
+            });
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[2] });
+
+            assertPtLabel({
+                path: ['rgb(0, 255, 255)', 'rgb(68, 68, 68)'],
+                text: [13, 'Arial', 'rgb(68, 68, 68)']
+            });
+            assertCommonLabel({
+                path: ['rgb(68, 68, 68)', 'rgb(255, 255, 255)'],
                 text: [13, 'Arial', 'rgb(255, 255, 255)']
             });
         })

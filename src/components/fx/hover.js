@@ -1147,7 +1147,7 @@ function cleanPoint(d, hovermode) {
             val = Lib.nestedProperty(trace, traceKey).get();
         }
 
-        d[key] = val;
+        if(val) d[key] = val;
     }
 
     fill('color', 'hbg', 'hoverlabel.bgcolor');
