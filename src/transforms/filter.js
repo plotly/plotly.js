@@ -144,9 +144,9 @@ exports.supplyDefaults = function(transformIn) {
 exports.calcTransform = function(gd, trace, opts) {
     if(!opts.enabled) return;
 
-    var target = opts.target,
-        filterArray = getFilterArray(trace, target),
-        len = filterArray.length;
+    var target = opts.target;
+    var targetArray = Lib.getTargetArray(trace, target);
+    var len = targetArray.length;
 
     if(!len) return;
 

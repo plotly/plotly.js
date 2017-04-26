@@ -344,6 +344,17 @@ lib.mergeArray = function(traceAttr, cd, cdAttr) {
     }
 };
 
+lib.getTargetArray = function(trace, target) {
+    if(typeof target === 'string' && target) {
+        var array = lib.nestedProperty(trace, target).get();
+
+        return Array.isArray(array) ? array : [];
+    }
+    else if(Array.isArray(target)) return target.slice();
+
+    return false;
+};
+
 /**
  * modified version of jQuery's extend to strip out private objs and functions,
  * and cut arrays down to first <arraylen> or 1 elements

@@ -76,7 +76,7 @@ exports.calcTransform = function(gd, trace, opts) {
     if(!opts.enabled) return;
 
     var target = opts.target;
-    var targetArray = getTargetArray(trace, target);
+    var targetArray = Lib.getTargetArray(trace, target);
     var len = targetArray.length;
 
     if(!len) return;
@@ -97,18 +97,6 @@ exports.calcTransform = function(gd, trace, opts) {
         np.set(arrayNew);
     }
 };
-
-// TODO reuse for filter.js
-function getTargetArray(trace, target) {
-    if(typeof target === 'string' && target) {
-        var array = Lib.nestedProperty(trace, target).get();
-
-        return Array.isArray(array) ? array : [];
-    }
-    else if(Array.isArray(target)) return target.slice();
-
-    return false;
-}
 
 // TODO reuse for filter.js
 function getDataToCoordFunc(gd, trace, target, targetArray) {
