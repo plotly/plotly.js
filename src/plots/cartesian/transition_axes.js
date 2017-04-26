@@ -151,10 +151,10 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
             // scale to individual points to counteract the scale of the trace
             // as a whole:
             .selectAll('.points').selectAll('.point')
-                .call(Drawing.setPointGroupScale, 1, 1)
+                .call(Drawing.setPointGroupScale, 1, 1);
 
         subplot.plot.selectAll('.points').selectAll('g')
-            .each(function () {
+            .each(function() {
                 var el = d3.select(this);
                 var existingTransform = el.attr('transform').match(LAST_TRANSLATION_RE);
                 el.attr('transform', existingTransform || '');
@@ -240,7 +240,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
                 .call(Drawing.setPointGroupScale, 1 / xScaleFactor, 1 / yScaleFactor);
 
         subplot.plot.selectAll('.points').selectAll('g')
-            .each(function () {
+            .each(function() {
                 var el = d3.select(this);
                 var text = el.select('text');
                 var x = parseFloat(text.attr('x'));
@@ -254,7 +254,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
                     'translate(' + (-x) + ',' + (-y) + ')',
                 ];
 
-                if (existingTransform) {
+                if(existingTransform) {
                     transforms.push(existingTransform);
                 }
 
