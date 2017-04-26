@@ -10,9 +10,7 @@
 
 var Lib = require('../lib');
 var PlotSchema = require('../plot_api/plot_schema');
-var axisIds = require('../plots/cartesian/axis_ids');
-var autoType = require('../plots/cartesian/axis_autotype');
-var setConvert = require('../plots/cartesian/set_convert');
+var Axes = require('../plots/cartesian/axes');
 
 exports.moduleType = 'transform';
 
@@ -82,7 +80,7 @@ exports.calcTransform = function(gd, trace, opts) {
     if(!len) return;
 
     var arrayAttrs = PlotSchema.findArrayAttributes(trace);
-    var d2c = getDataToCoordFunc(gd, trace, target, targetArray);
+    var d2c = Axes.getDataToCoordFunc(gd, trace, target, targetArray);
     var indices = getIndices(opts, targetArray, d2c);
 
     for(var i = 0; i < arrayAttrs.length; i++) {
@@ -97,47 +95,6 @@ exports.calcTransform = function(gd, trace, opts) {
         np.set(arrayNew);
     }
 };
-
-// TODO reuse for filter.js
-function getDataToCoordFunc(gd, trace, target, targetArray) {
-    var ax;
-
-    // If target points to an axis, use the type we already have for that
-    // axis to find the data type. Otherwise use the values to autotype.
-    if(target === 'x' || target === 'y' || target === 'z') {
-        ax = axisIds.getFromTrace(gd, trace, target);
-    }
-    // In the case of an array target, make a mock data array
-    // and call supplyDefaults to the data type and
-    // setup the data-to-calc method.
-    else if(Array.isArray(target)) {
-        ax = {
-            type: autoType(targetArray),
-            // TODO does this still work with the new hash object
-            _categories: []
-        };
-        setConvert(ax);
-
-        // build up ax._categories (usually done during ax.makeCalcdata()
-        if(ax.type === 'category') {
-            for(var i = 0; i < targetArray.length; i++) {
-                ax.d2c(targetArray[i]);
-            }
-        }
-    }
-
-    // if 'target' has corresponding axis
-    // -> use setConvert method
-    if(ax) return ax.d2c;
-
-    // special case for 'ids'
-    // -> cast to String
-    if(target === 'ids') return function(v) { return String(v); };
-
-    // otherwise (e.g. numeric-array of 'marker.color' or 'marker.size')
-    // -> cast to Number
-    return function(v) { return +v; };
-}
 
 function getIndices(opts, targetArray, d2c) {
     var len = targetArray.length;

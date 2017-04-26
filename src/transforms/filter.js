@@ -11,9 +11,7 @@
 var Lib = require('../lib');
 var Registry = require('../registry');
 var PlotSchema = require('../plot_api/plot_schema');
-var axisIds = require('../plots/cartesian/axis_ids');
-var autoType = require('../plots/cartesian/axis_autotype');
-var setConvert = require('../plots/cartesian/set_convert');
+var Axes = require('../plots/cartesian/axes');
 
 var COMPARISON_OPS = ['=', '!=', '<', '>=', '>', '<='];
 var INTERVAL_OPS = ['[]', '()', '[)', '(]', '][', ')(', '](', ')['];
@@ -159,13 +157,8 @@ exports.calcTransform = function(gd, trace, opts) {
         if(attrTargetCalendar) targetCalendar = attrTargetCalendar;
     }
 
-    // if target points to an axis, use the type we already have for that
-    // axis to find the data type. Otherwise use the values to autotype.
-    var d2cTarget = (target === 'x' || target === 'y' || target === 'z') ?
-        target : filterArray;
-
-    var dataToCoord = getDataToCoordFunc(gd, trace, d2cTarget);
-    var filterFunc = getFilterFunc(opts, dataToCoord, targetCalendar);
+    var d2c = Axes.getDataToCoordFunc(gd, trace, target, targetArray);
+    var filterFunc = getFilterFunc(opts, d2c, targetCalendar);
     var arrayAttrs = PlotSchema.findArrayAttributes(trace);
     var originalArrays = {};
 
@@ -203,59 +196,10 @@ exports.calcTransform = function(gd, trace, opts) {
 
     // loop through filter array, fill trace arrays if passed
     for(var i = 0; i < len; i++) {
-        var passed = filterFunc(filterArray[i]);
+        var passed = filterFunc(targetArray[i]);
         if(passed) forAllAttrs(fillFn, i);
     }
 };
-
-function getFilterArray(trace, target) {
-    if(typeof target === 'string' && target) {
-        var array = Lib.nestedProperty(trace, target).get();
-
-        return Array.isArray(array) ? array : [];
-    }
-    else if(Array.isArray(target)) return target.slice();
-
-    return false;
-}
-
-function getDataToCoordFunc(gd, trace, target) {
-    var ax;
-
-    // In the case of an array target, make a mock data array
-    // and call supplyDefaults to the data type and
-    // setup the data-to-calc method.
-    if(Array.isArray(target)) {
-        ax = {
-            type: autoType(target),
-            _categories: []
-        };
-
-        setConvert(ax);
-
-        if(ax.type === 'category') {
-            // build up ax._categories (usually done during ax.makeCalcdata()
-            for(var i = 0; i < target.length; i++) {
-                ax.d2c(target[i]);
-            }
-        }
-    }
-    else {
-        ax = axisIds.getFromTrace(gd, trace, target);
-    }
-
-    // if 'target' has corresponding axis
-    // -> use setConvert method
-    if(ax) return ax.d2c;
-
-    // special case for 'ids'
-    // -> cast to String
-    if(target === 'ids') return function(v) { return String(v); };
-
-    // otherwise (e.g. numeric-array of 'marker.color' or 'marker.size')
-    // -> cast to Number
-    return function(v) { return +v; };
-}
 
 function getFilterFunc(opts, d2c, targetCalendar) {
     var operation = opts.operation,
