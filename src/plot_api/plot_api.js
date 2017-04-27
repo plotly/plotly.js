@@ -1608,7 +1608,9 @@ function _restyle(gd, aobj, _traces) {
             }
             else {
                 var moduleAttrs = (contFull._module || {}).attributes || {};
-                var valObject = Lib.nestedProperty(moduleAttrs, ai).get() || {};
+                var valObject = Lib.nestedProperty(moduleAttrs, ai).get() ||
+                    Lib.nestedProperty(Plots.attributes, ai).get() ||
+                    {};
 
                 // if restyling entire attribute container, assume worse case
                 if(!valObject.valType) {
