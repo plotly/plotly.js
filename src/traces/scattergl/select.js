@@ -67,10 +67,9 @@ module.exports = function selectPoints(searchInfo, polygon) {
     //     });
 
     //TODO: highlight selected points here
-    // var plot = cd[0].plot
+    var plot = cd[0].plot
     // cd[0].trace.marker.color = '#000000'
-    // plot.update(cd[0].trace)
-    console.log(cd[0].plot)
+    // plot.update()
 
     return selection;
 };

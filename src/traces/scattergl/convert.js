@@ -100,7 +100,7 @@ function LineWithMarkers(scene, uid) {
 
     this.scatter = this.initObject(createScatter, scatterOptions0, 3);
     this.fancyScatter = this.initObject(createFancyScatter, scatterOptions0, 4);
-    this.selectedScatter = this.initObject(createScatter, scatterOptions0, 5)
+    this.selectScatter = this.initObject(createScatter, scatterOptions0, 5)
 }
 
 var proto = LineWithMarkers.prototype;
@@ -383,23 +383,45 @@ proto.updateFast = function(options) {
     var markerSize;
 
     if(this.hasMarkers) {
-        this.scatter.options.positions = positions;
+        // split positions into selected/non-selected ones
+        // this.scatter.options.positions = positions;
+
+        // var markerColor = str2RGBArray(options.marker.color),
+        //     borderColor = str2RGBArray(options.marker.line.color),
+        //     opacity = (options.opacity) * (options.marker.opacity);
+
+        // markerColor[3] *= opacity;
+        // this.scatter.options.color = markerColor;
+
+        // borderColor[3] *= opacity;
+        // this.scatter.options.borderColor = borderColor;
+
+        // markerSize = options.marker.size;
+        // this.scatter.options.size = markerSize;
+        // this.scatter.options.borderSize = options.marker.line.width;
+
+        // this.scatter.update();
+
+
+
+
+        this.selectScatter.options.positions = positions;
 
         var markerColor = str2RGBArray(options.marker.color),
             borderColor = str2RGBArray(options.marker.line.color),
             opacity = (options.opacity) * (options.marker.opacity);
 
         markerColor[3] *= opacity;
-        this.scatter.options.color = markerColor;
+        this.selectScatter.options.color = markerColor;
 
         borderColor[3] *= opacity;
-        this.scatter.options.borderColor = borderColor;
+        this.selectScatter.options.borderColor = borderColor;
 
         markerSize = options.marker.size;
-        this.scatter.options.size = markerSize;
-        this.scatter.options.borderSize = options.marker.line.width;
+        this.selectScatter.options.size = markerSize;
+        this.selectScatter.options.borderSize = options.marker.line.width;
 
-        this.scatter.update();
+        this.selectScatter.update();
     }
     else {
         this.scatter.clear();
