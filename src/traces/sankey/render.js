@@ -21,11 +21,11 @@ var d3Force = require('d3-force');
 function keyFun(d) {return d.key;}
 function repeat(d) {return [d];} // d3 data binding convention
 function unwrap(d) {return d[0];} // plotly data structure convention
-function visible(nodeOrLink) {return !('visible' in nodeOrLink) || nodeOrLink.visible;}
+// function visible(nodeOrLink) {return !('visible' in nodeOrLink) || nodeOrLink.visible;}
 
 function persistOriginalPlace(nodes) {
-    var i, distinctLayerPositions = []
-    for (i = 0; i < nodes.length; i++) {
+    var i, distinctLayerPositions = [];
+    for(i = 0; i < nodes.length; i++) {
         nodes[i].originalX = nodes[i].x;
         nodes[i].originalY = nodes[i].y;
         if(distinctLayerPositions.indexOf(nodes[i].x) === -1) {
@@ -33,15 +33,15 @@ function persistOriginalPlace(nodes) {
         }
     }
     distinctLayerPositions.sort(function(a, b) {return a - b;});
-    for (i = 0; i < nodes.length; i++) {
+    for(i = 0; i < nodes.length; i++) {
         nodes[i].originalLayerIndex = distinctLayerPositions.indexOf(nodes[i].originalX);
-        nodes[i].originalLayer = nodes[i].originalLayerIndex / (distinctLayerPositions.length -1)
+        nodes[i].originalLayer = nodes[i].originalLayerIndex / (distinctLayerPositions.length - 1);
     }
 }
 
 function saveCurrentDragPosition(d) {
-    d.lastDraggedX = d.x
-    d.lastDraggedY = d.y
+    d.lastDraggedX = d.x;
+    d.lastDraggedY = d.y;
 }
 
 function sameLayer(d) {
@@ -50,14 +50,14 @@ function sameLayer(d) {
 
 function switchToForceFormat(nodes) {
     // force uses x, y as centers
-    for (var i = 0; i < nodes.length; i++) {
+    for(var i = 0; i < nodes.length; i++) {
         nodes[i].y = nodes[i].y + nodes[i].dy / 2;
     }
 }
 
 function switchToSankeyFormat(nodes) {
     // sankey uses x, y as top left
-    for (var i = 0; i < nodes.length; i++) {
+    for(var i = 0; i < nodes.length; i++) {
         nodes[i].y = nodes[i].y - nodes[i].dy / 2;
     }
 }
@@ -89,12 +89,12 @@ function sankeyModel(layout, d, i) {
         .links(links)
         .layout(c.sankeyIterations);
 
-    var node, sankeyNodes  = sankey.nodes();
+    var node, sankeyNodes = sankey.nodes();
     for(var n = 0; n < sankeyNodes.length; n++) {
         node = sankeyNodes[n];
         node.width = width;
         node.height = height;
-        if(node.parallel) node.x = (horizontal ? width : height)  * node.parallel;
+        if(node.parallel) node.x = (horizontal ? width : height) * node.parallel;
         if(node.perpendicular) node.y = (horizontal ? height : width) * node.perpendicular;
     }
 
@@ -187,7 +187,7 @@ function nodeModel(uniqueKeys, d, n) {
         valueSuffix: d.valueSuffix,
         sankey: d.sankey,
         arrangement: d.arrangement,
-        uniqueNodeLabelPathId: JSON.stringify({sankeyGuid: d.guid, traceId: d.key, nodeKey: n.label}).replace(/"/g, "'"),
+        uniqueNodeLabelPathId: JSON.stringify({sankeyGuid: d.guid, traceId: d.key, nodeKey: n.label}).replace(/"/g, '\''),
         interactionState: d.interactionState
     };
 }
@@ -201,10 +201,10 @@ function crispLinesOnEnd(sankeyNode) {
 function updateNodePositions(sankeyNode) {
     sankeyNode
         .attr('transform', function(d) {
-            return d.horizontal
-                ? 'translate(' + (d.node.x - 0.5) + ', ' + (d.node.y - d.node.dy / 2 + 0.5) + ')'
-                : 'translate(' + (d.node.y - d.node.dy / 2 - 0.5) + ', ' + (d.node.x + 0.5) + ')'
-        })
+            return d.horizontal ?
+                'translate(' + (d.node.x - 0.5) + ', ' + (d.node.y - d.node.dy / 2 + 0.5) + ')' :
+                'translate(' + (d.node.y - d.node.dy / 2 - 0.5) + ', ' + (d.node.x + 0.5) + ')';
+        });
 }
 
 function linkPath(d) {
@@ -221,8 +221,8 @@ function updateNodeShapes(sankeyNode) {
 }
 
 function updateShapes(sankeyNode, sankeyLink) {
-        sankeyNode.call(updateNodeShapes);
-        sankeyLink.attr('d', linkPath);
+    sankeyNode.call(updateNodeShapes);
+    sankeyLink.attr('d', linkPath);
 }
 
 function sizeNode(rect) {
@@ -235,30 +235,30 @@ function sizeNode(rect) {
 function attachPointerEvents(selection, sankey, eventSet) {
     selection
         .on('.basic', null) // remove any preexisting handlers
-        .on('mouseover.basic', function (d) {
-            if (!d.interactionState.dragInProgress) {
+        .on('mouseover.basic', function(d) {
+            if(!d.interactionState.dragInProgress) {
                 eventSet.hover(this, d, sankey);
                 d.interactionState.hovered = [this, d];
             }
         })
-        .on('mousemove.basic', function (d) {
-            if (!d.interactionState.dragInProgress) {
+        .on('mousemove.basic', function(d) {
+            if(!d.interactionState.dragInProgress) {
                 eventSet.follow(this, d);
                 d.interactionState.hovered = [this, d];
             }
         })
-        .on('mouseout.basic', function (d) {
-            if (!d.interactionState.dragInProgress) {
+        .on('mouseout.basic', function(d) {
+            if(!d.interactionState.dragInProgress) {
                 eventSet.unhover(this, d, sankey);
                 d.interactionState.hovered = false;
             }
         })
-        .on('click.basic', function (d) {
-            if (d.interactionState.hovered) {
+        .on('click.basic', function(d) {
+            if(d.interactionState.hovered) {
                 eventSet.unhover(this, d, sankey);
                 d.interactionState.hovered = false;
             }
-            if (!d.interactionState.dragInProgress) {
+            if(!d.interactionState.dragInProgress) {
                 eventSet.select(this, d, sankey);
             }
         });
@@ -270,7 +270,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 
     var dragBehavior = d3.behavior.drag()
 
-        .origin(function(d) {return d.horizontal ? d.node : {x: d.node['y'], y: d.node['x']};})
+        .origin(function(d) {return d.horizontal ? d.node : {x: d.node.y, y: d.node.x};})
 
         .on('dragstart', function(d) {
             if(d.arrangement === 'fixed') return;
@@ -283,7 +283,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
             }
             if(d.arrangement === 'snap') {
                 var forceKey = d.traceId + '|' + Math.floor(d.node.originalX);
-                if (d.forceLayouts[forceKey]) {
+                if(d.forceLayouts[forceKey]) {
                     d.forceLayouts[forceKey].alpha(1);
                 } else { // make a forceLayout iff needed
                     attachForce(sankeyNode, forceKey, repositionedCallback, d);
@@ -330,7 +330,7 @@ function attachForce(sankeyNode, forceKey, repositionedCallback, d) {
     d.forceLayouts[forceKey] = d3Force.forceSimulation(nodes)
         .alphaDecay(0)
         .force('collide', d3Force.forceCollide()
-            .radius(function (n) {return n.dy / 2 + d.nodePad / 2;})
+            .radius(function(n) {return n.dy / 2 + d.nodePad / 2;})
             .strength(1)
             .iterations(c.forceIterations))
         .force('constrain', snappingForce(sankeyNode, forceKey, nodes, repositionedCallback, d))
@@ -347,15 +347,15 @@ function startForce(sankeyNode, sankeyLink, d, forceKey) {
         if(d.forceLayouts[forceKey].alpha() > 0) {
             window.requestAnimationFrame(faster);
         }
-    })
+    });
 }
 
 function snappingForce(sankeyNode, forceKey, nodes, repositionedCallback, d) {
     return function _snappingForce() {
         var maxVelocity = 0;
-        for (var i = 0; i < nodes.length; i++) {
+        for(var i = 0; i < nodes.length; i++) {
             var n = nodes[i];
-            if (n === d.interactionState.dragInProgress) { // constrain node position to the dragging pointer
+            if(n === d.interactionState.dragInProgress) { // constrain node position to the dragging pointer
                 n.x = n.lastDraggedX;
                 n.y = n.lastDraggedY;
             } else {
@@ -364,14 +364,14 @@ function snappingForce(sankeyNode, forceKey, nodes, repositionedCallback, d) {
             }
             maxVelocity = Math.max(maxVelocity, Math.abs(n.vx), Math.abs(n.vy));
         }
-        if (!d.interactionState.dragInProgress && maxVelocity < 0.1 && d.forceLayouts[forceKey].alpha() > 0) {
+        if(!d.interactionState.dragInProgress && maxVelocity < 0.1 && d.forceLayouts[forceKey].alpha() > 0) {
             d.forceLayouts[forceKey].alpha(0);
-            window.setTimeout(function () {
+            window.setTimeout(function() {
                 sankeyNode.call(crispLinesOnEnd);
                 repositionedCallback(d, nodes);
             }, 30); // geome on move, crisp when static
         }
-    }
+    };
 }
 
 // scene graph
@@ -410,7 +410,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     sankeyLinks.transition()
         .ease(c.ease).duration(c.duration)
-        .style('transform', function(d) {return d.horizontal ? 'matrix(1,0,0,1,0,0)' : 'matrix(0,1,1,0,0,0)'});
+        .style('transform', function(d) {return d.horizontal ? 'matrix(1,0,0,1,0,0)' : 'matrix(0,1,1,0,0,0)';});
 
     var sankeyLink = sankeyLinks.selectAll('.sankeyLink')
         .data(function(d) {
@@ -529,10 +529,10 @@ module.exports = function(svg, styledData, layout, callbacks) {
     nodeLabelGuide
         .transition()
         .ease(c.ease).duration(c.duration)
-        .attr('d', function (d) {
+        .attr('d', function(d) {
             return d3.svg.line()([
                 [d.horizontal ? (d.left ? -d.sizeAcross : d.visibleWidth + c.nodeTextOffsetHorizontal) : c.nodeTextOffsetHorizontal, d.labelY],
-                [d.horizontal ? (d.left ? - c.nodeTextOffsetHorizontal: d.sizeAcross) : d.visibleWidth - c.nodeTextOffsetHorizontal, d.labelY]
+                [d.horizontal ? (d.left ? - c.nodeTextOffsetHorizontal : d.sizeAcross) : d.visibleWidth - c.nodeTextOffsetHorizontal, d.labelY]
             ]);});
 
     var nodeLabel = sankeyNode.selectAll('.nodeLabel')
@@ -562,7 +562,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     nodeLabelTextPath
         .text(function(d) {return d.horizontal || d.node.dy > 5 ? d.node.label : '';})
-        .attr('startOffset', function(d) {return d.horizontal && d.left ? '100%' : '0%'})
-        .style('text-anchor', function(d) {return d.horizontal && d.left ? 'end' : 'start'})
+        .attr('startOffset', function(d) {return d.horizontal && d.left ? '100%' : '0%';})
+        .style('text-anchor', function(d) {return d.horizontal && d.left ? 'end' : 'start';})
         .style('fill', function(d) {return d.darkBackground && !d.horizontal ? 'white' : 'black';});
 };

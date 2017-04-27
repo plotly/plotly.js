@@ -122,14 +122,14 @@ module.exports = {
             role: 'style',
             min: 0,
             max: 1,
-            description: "Node position parallel to the flow, e.g. left/right if `orientation` is `horizontal`."
+            description: 'Node position parallel to the flow, e.g. left/right if `orientation` is `horizontal`.'
         },
         perpendicular: {
             valType: 'number',
             role: 'style',
             min: 0,
             max: 1,
-            description: "Node position perpendicular to the flow, e.g. up/down if `orientation` is `horizontal`."
+            description: 'Node position perpendicular to the flow, e.g. up/down if `orientation` is `horizontal`.'
         },
         visible: shapeAttrs.visible,
         color: extendFlat({}, shapeAttrs.fillcolor, {

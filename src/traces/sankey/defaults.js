@@ -12,7 +12,6 @@ var Lib = require('../../lib');
 var attributes = require('./attributes');
 var colors = require('../../components/color/attributes').defaults;
 var Color = require('../../components/color');
-var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 
 function linksDefaults(traceIn, traceOut, layout) {
@@ -77,8 +76,9 @@ function nodesDefaults(traceIn, traceOut) {
 
         indexMap.push(foundUse ? usedNodeCount : null);
 
-        if(!foundUse)
+        if(!foundUse) {
             continue;
+        }
 
         if(!Lib.isPlainObject(nodeIn)) {
             continue;
@@ -113,9 +113,6 @@ function nodesDefaults(traceIn, traceOut) {
 
     return nodesOut;
 }
-
-
-
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {

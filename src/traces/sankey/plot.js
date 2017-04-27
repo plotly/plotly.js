@@ -28,21 +28,21 @@ function makeTranslucent(element, alpha) {
         .style('fill-opacity', alpha);
 }
 
-function makeTextContrasty(element, hue) {
+function makeTextContrasty(element) {
     d3.select(element)
         .select('text.name')
-        .style('fill', /*Color.contrast(hue, -20, 20)*/'black');
+        .style('fill', 'black');
 }
 
 function relatedLinks(d) {
     return function(l) {
-        return d.node.sourceLinks.indexOf(l.link) !== -1 ||  d.node.targetLinks.indexOf(l.link) !== -1;
+        return d.node.sourceLinks.indexOf(l.link) !== -1 || d.node.targetLinks.indexOf(l.link) !== -1;
     };
 }
 
 function relatedNodes(l) {
     return function(d) {
-        return d.node.sourceLinks.indexOf(l.link) !== -1 ||  d.node.targetLinks.indexOf(l.link) !== -1;
+        return d.node.sourceLinks.indexOf(l.link) !== -1 || d.node.targetLinks.indexOf(l.link) !== -1;
     };
 }
 
@@ -125,8 +125,8 @@ module.exports = function plot(gd, calcData) {
     };
 
     var linkHover = function(element, d, sankey) {
-         d3.select(element).call(linkHoveredStyle.bind(0, d, sankey, true));
-            Fx.hover(gd, d.link, 'sankey');
+        d3.select(element).call(linkHoveredStyle.bind(0, d, sankey, true));
+        Fx.hover(gd, d.link, 'sankey');
     };
 
     var linkHoverFollow = function(element, d) {
@@ -152,7 +152,7 @@ module.exports = function plot(gd, calcData) {
         });
 
         makeTranslucent(tooltip, 0.65);
-        makeTextContrasty(tooltip, d.tinyColorHue);
+        makeTextContrasty(tooltip);
     };
 
     var linkUnhover = function(element, d, sankey) {
@@ -215,7 +215,7 @@ module.exports = function plot(gd, calcData) {
         });
 
         makeTranslucent(tooltip, 0.85);
-        makeTextContrasty(tooltip, d.tinyColorHue);
+        makeTextContrasty(tooltip);
     };
 
     var nodeUnhover = function(element, d, sankey) {
