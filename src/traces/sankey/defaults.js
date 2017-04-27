@@ -15,7 +15,6 @@ var Color = require('../../components/color');
 var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 
-
 function linksDefaults(traceIn, traceOut, layout) {
     var linksIn = traceIn.links || [],
         linksOut = traceOut.links = [];
@@ -135,7 +134,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('nodethickness');
     coerce('valueformat');
     coerce('valuesuffix');
-    coerce('followmouse');
     coerce('arrangement');
 
     // Prefer Sankey-specific font spec e.g. with smaller default size

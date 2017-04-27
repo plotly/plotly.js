@@ -17,7 +17,6 @@
             "nodethickness": 15,
             "valueformat": ".0f",
             "valuesuffix": "TWh",
-            "followmouse": true,
             "nodes": [
                 {"label":"Agricultural 'waste'"},
                 {"label":"Bio-conversion"},
@@ -198,21 +197,6 @@
                 "y": 0.7,
                 "buttons": [
                     {
-                        "label": "Follow mouse",
-                        "method": "restyle",
-                        "args": [ "followmouse", true ]
-                    },
-                    {
-                        "label": "Stick tooltip",
-                        "method": "restyle",
-                        "args": [ "followmouse", false]
-                    }
-                ]
-            },
-            {
-                "y": 0.6,
-                "buttons": [
-                    {
                         "label": "Snap",
                         "method": "restyle",
                         "args": [ "arrangement", "snap" ]
@@ -235,7 +219,7 @@
                 ]
             },
             {
-                "y": 0.5,
+                "y": 0.6,
                 "buttons": [
                     {
                         "label": "Horizontal",

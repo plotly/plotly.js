@@ -93,14 +93,6 @@ module.exports = {
         ].join(' ')
     },
 
-    // followmouse for UX testing
-    followmouse: {
-        valType: 'boolean',
-        dflt: true,
-        role: 'style',
-        description: 'Sets whether the hover tooltip follows the mouse.'
-    },
-
     arrangement: {
         valType: 'enumerated',
         values: ['snap', 'perpendicular', 'freeform', 'fixed'],
