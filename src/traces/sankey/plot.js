@@ -112,7 +112,7 @@ function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
     }
 }
 
-var log = false
+var log = true
 
 module.exports = function plot(gd, calcData) {
 
@@ -176,7 +176,6 @@ module.exports = function plot(gd, calcData) {
         if(log) console.log('select node', d.node);
         gd._hoverdata = [d.node];
         gd._hoverdata.trace = calcData.trace;
-        d3.select(element).call(linkNonHoveredStyle.bind(0, d, sankey, true));
         d3.select(element).call(nodeNonHoveredStyle, d, sankey);
         Fx.click(gd, { target: true });
     };
