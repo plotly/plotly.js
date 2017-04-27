@@ -69,11 +69,11 @@
                 {"label":"Wind"}
             ],
             "links": [
-                {"source":0,"target":1,"value":124.729},
+                {"source":0,"target":1,"value":124.729, "label": "stream 1"},
                 {"source":1,"target":2,"value":0.597},
                 {"source":1,"target":3,"value":26.862},
                 {"source":1,"target":4,"value":280.322},
-                {"source":1,"target":5,"value":81.144},
+                {"source":1,"target":5,"value":81.144, "label": "stream 1"},
                 {"source":6,"target":2,"value":35},
                 {"source":7,"target":4,"value":35},
                 {"source":8,"target":9,"value":11.606},
@@ -99,7 +99,7 @@
                 {"source":5,"target":3,"value":1.401},
                 {"source":5,"target":26,"value":151.891},
                 {"source":5,"target":19,"value":2.096},
-                {"source":5,"target":12,"value":48.58},
+                {"source":5,"target":12,"value":48.58, "label": "stream 1"},
                 {"source":27,"target":15,"value":7.013},
                 {"source":17,"target":28,"value":20.897},
                 {"source":17,"target":3,"value":6.242},

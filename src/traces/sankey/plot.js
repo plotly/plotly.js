@@ -54,7 +54,7 @@ function nodeHoveredStyle(sankeyNode, d, sankey) {
         ownTrace(sankey, d)
             .selectAll('.sankeyLink')
             .filter(relatedLinks(d))
-            .call(linkHoveredStyle);
+            .call(linkHoveredStyle.bind(0, d, sankey, false));
     }
 }
 
@@ -66,15 +66,24 @@ function nodeNonHoveredStyle(sankeyNode, d, sankey) {
         ownTrace(sankey, d)
             .selectAll('.sankeyLink')
             .filter(relatedLinks(d))
-            .call(linkNonHoveredStyle);
+            .call(linkNonHoveredStyle.bind(0, d, sankey, false));
     }
 }
 
-function linkHoveredStyle(sankeyLink, d, sankey) {
+function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
+
+    var label = sankeyLink.datum().link.label;
 
     sankeyLink.style('fill-opacity', 0.4);
 
-    if(d && sankey) {
+    if(label) {
+        ownTrace(sankey, d)
+            .selectAll('.sankeyLink')
+            .filter(function(l) {return l.link.label === label;})
+            .style('fill-opacity', 0.4);
+    }
+
+    if(visitNodes) {
         ownTrace(sankey, d)
             .selectAll('.sankeyNode')
             .filter(relatedNodes(d))
@@ -82,11 +91,20 @@ function linkHoveredStyle(sankeyLink, d, sankey) {
     }
 }
 
-function linkNonHoveredStyle(sankeyLink, d, sankey) {
+function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
+
+    var label = sankeyLink.datum().link.label;
 
     sankeyLink.style('fill-opacity', function(d) {return d.tinyColorAlpha;});
 
-    if(d && sankey) {
+    if(label) {
+        ownTrace(sankey, d)
+            .selectAll('.sankeyLink')
+            .filter(function(l) {return l.link.label === label;})
+            .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
+    }
+
+    if(visitNodes) {
         ownTrace(sankey, d)
             .selectAll('.sankeyNode')
             .filter(relatedNodes(d))
@@ -112,7 +130,7 @@ module.exports = function plot(gd, calcData) {
 
     var linkHover = function(element, d, sankey) {
 
-            d3.select(element).call(linkHoveredStyle, d, sankey);
+            d3.select(element).call(linkHoveredStyle.bind(0, d, sankey, true));
             if(log) console.log('hover link', d.link);
 
             Fx.hover(gd, d.link, 'sankey');
@@ -148,7 +166,7 @@ module.exports = function plot(gd, calcData) {
     };
 
     var linkUnhover = function(element, d, sankey) {
-        d3.select(element).call(linkNonHoveredStyle, d, sankey);
+        d3.select(element).call(linkNonHoveredStyle.bind(0, d, sankey, true));
         if(log) console.log('unhover link', d.link);
         gd.emit('plotly_unhover', {
             points: [d.link]
@@ -161,7 +179,7 @@ module.exports = function plot(gd, calcData) {
         if(log) console.log('select node', d.node);
         gd._hoverdata = [d.node];
         gd._hoverdata.trace = calcData.trace;
-        d3.select(element).call(linkNonHoveredStyle, d, sankey);
+        d3.select(element).call(linkNonHoveredStyle.bind(0, d, sankey, true));
         d3.select(element).call(nodeNonHoveredStyle, d, sankey);
         Fx.click(gd, { target: true });
     };
