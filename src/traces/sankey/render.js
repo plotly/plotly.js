@@ -16,7 +16,6 @@ var Drawing = require('../../components/drawing');
 var d3sankey = require('@monfera/d3-sankey').sankey;
 var d3Force = require('d3-force');
 
-
 // basic data utilities
 
 function keyFun(d) {return d.key;}
@@ -62,7 +61,6 @@ function switchToSankeyFormat(nodes) {
         nodes[i].y = nodes[i].y - nodes[i].dy / 2;
     }
 }
-
 
 // view models
 
@@ -189,11 +187,10 @@ function nodeModel(uniqueKeys, d, n) {
         valueSuffix: d.valueSuffix,
         sankey: d.sankey,
         arrangement: d.arrangement,
-        uniqueNodeLabelPathId: JSON.stringify({sankeyGuid: d.guid, traceId: d.key, nodeKey: n.label}),
+        uniqueNodeLabelPathId: JSON.stringify({sankeyGuid: d.guid, traceId: d.key, nodeKey: n.label}).replace(/"/g, "'"),
         interactionState: d.interactionState
     };
 }
-
 
 // rendering snippets
 
@@ -232,7 +229,6 @@ function sizeNode(rect) {
     rect.attr('width', function(d) {return d.visibleWidth;})
         .attr('height', function(d) {return d.visibleHeight;});
 }
-
 
 // event handling
 
@@ -324,7 +320,6 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
             d.interactionState.dragInProgress = false;
         });
 
-
     sankeyNode
         .on('.drag', null) // remove possible previous handlers
         .call(dragBehavior);
@@ -379,7 +374,6 @@ function snappingForce(sankeyNode, forceKey, nodes, repositionedCallback, d) {
     }
 }
 
-
 // scene graph
 
 module.exports = function(svg, styledData, layout, callbacks) {
@@ -406,7 +400,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
     sankey
         .attr('transform', function(d) {return 'translate(' + d.translateX + ',' + d.translateY + ')';});
 
-
     var sankeyLinks = sankey.selectAll('.sankeyLinks')
         .data(repeat, keyFun);
 
@@ -419,7 +412,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .ease(c.ease).duration(c.duration)
         .style('transform', function(d) {return d.horizontal ? 'matrix(1,0,0,1,0,0)' : 'matrix(0,1,1,0,0,0)'});
 
-
     var sankeyLink = sankeyLinks.selectAll('.sankeyLink')
         .data(function(d) {
             var uniqueKeys = {};
@@ -431,7 +423,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
     sankeyLink.enter()
         .append('path')
         .classed('sankeyLink', true)
-        .style('opacity', 0)
         .call(attachPointerEvents, sankey, callbacks.linkEvents);
 
     sankeyLink
@@ -443,14 +434,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     sankeyLink.transition()
         .ease(c.ease).duration(c.duration)
-        .style('opacity', 1)
         .attr('d', linkPath);
 
     sankeyLink.exit().transition()
         .ease(c.ease).duration(c.duration)
         .style('opacity', 0)
         .remove();
-
 
     var sankeyNodeSet = sankey.selectAll('.sankeyNodeSet')
         .data(repeat, keyFun);
@@ -467,9 +456,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
                 case 'perpendicular': return 'ns-resize';
                 default: return 'move';
             }
-        })
-        .each(function(d) {Drawing.font(sankeyNodeSet, d.textFont);});  // fixme causes scerenshot trouble
-
+        });
 
     var sankeyNode = sankeyNodeSet.selectAll('.sankeyNode')
         .data(function(d) {
@@ -484,7 +471,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
     sankeyNode.enter()
         .append('g')
         .classed('sankeyNode', true)
-        .style('opacity', 0)
         .call(updateNodePositions)
         .call(attachPointerEvents, sankey, callbacks.nodeEvents);
 
@@ -493,14 +479,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     sankeyNode.transition()
         .ease(c.ease).duration(c.duration)
-        .style('opacity', 1)
         .call(updateNodePositions);
 
     sankeyNode.exit().transition()
         .ease(c.ease).duration(c.duration)
         .style('opacity', 0)
         .remove();
-
 
     var nodeRect = sankeyNode.selectAll('.nodeRect')
         .data(repeat);
@@ -520,7 +504,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .ease(c.ease).duration(c.duration)
         .call(sizeNode);
 
-
     var nodeCapture = sankeyNode.selectAll('.nodeCapture')
         .data(repeat);
 
@@ -535,14 +518,13 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .attr('width', function(d) {return d.zoneWidth;})
         .attr('height', function(d) {return d.zoneHeight;});
 
-
     var nodeLabelGuide = sankeyNode.selectAll('.nodeLabelGuide')
         .data(repeat);
 
     nodeLabelGuide.enter()
         .append('path')
         .classed('nodeLabelGuide', true)
-        .attr('id', function(d) {return d.uniqueNodeLabelPathId;}); // fixme causes scerenshot trouble
+        .attr('id', function(d) {return d.uniqueNodeLabelPathId;});
 
     nodeLabelGuide
         .transition()
@@ -566,7 +548,8 @@ module.exports = function(svg, styledData, layout, callbacks) {
     nodeLabel
         .style('text-shadow', function(d) {
             return d.horizontal ? '-1px 1px 1px #fff, 1px 1px 1px #fff, 1px -1px 1px #fff, -1px -1px 1px #fff' : 'none';
-        });
+        })
+        .each(function(d) {Drawing.font(nodeLabel, d.textFont);});
 
     var nodeLabelTextPath = nodeLabel.selectAll('.nodeLabelTextPath')
         .data(repeat);
