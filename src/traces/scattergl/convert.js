@@ -100,6 +100,7 @@ function LineWithMarkers(scene, uid) {
 
     this.scatter = this.initObject(createScatter, scatterOptions0, 3);
     this.fancyScatter = this.initObject(createFancyScatter, scatterOptions0, 4);
+    this.selectedScatter = this.initObject(createScatter, scatterOptions0, 5)
 }
 
 var proto = LineWithMarkers.prototype;
