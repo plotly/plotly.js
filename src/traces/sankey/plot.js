@@ -112,27 +112,20 @@ function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
     }
 }
 
-var log = true
-
 module.exports = function plot(gd, calcData) {
 
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._paper;
-
     var size = fullLayout._size;
 
     var linkSelect = function(element, d) {
-        if(log) console.log('select link', d.link);
         gd._hoverdata = [d.link];
         gd._hoverdata.trace = calcData.trace;
         Fx.click(gd, { target: true });
     };
 
     var linkHover = function(element, d, sankey) {
-
-            d3.select(element).call(linkHoveredStyle.bind(0, d, sankey, true));
-            if(log) console.log('hover link', d.link);
-
+         d3.select(element).call(linkHoveredStyle.bind(0, d, sankey, true));
             Fx.hover(gd, d.link, 'sankey');
     };
 
@@ -164,7 +157,6 @@ module.exports = function plot(gd, calcData) {
 
     var linkUnhover = function(element, d, sankey) {
         d3.select(element).call(linkNonHoveredStyle.bind(0, d, sankey, true));
-        if(log) console.log('unhover link', d.link);
         gd.emit('plotly_unhover', {
             points: [d.link]
         });
@@ -173,7 +165,6 @@ module.exports = function plot(gd, calcData) {
     };
 
     var nodeSelect = function(element, d, sankey) {
-        if(log) console.log('select node', d.node);
         gd._hoverdata = [d.node];
         gd._hoverdata.trace = calcData.trace;
         d3.select(element).call(nodeNonHoveredStyle, d, sankey);
@@ -181,7 +172,6 @@ module.exports = function plot(gd, calcData) {
     };
 
     var repositioned = function(d, nodes) {
-        if(log) console.log('repositioned node', nodes);
         var n, nOrig;
         var names = gd.data[0].nodes.map(function(nn) {return nn.label;});
         for(var i = 0; i < nodes.length; i++) {
@@ -193,11 +183,7 @@ module.exports = function plot(gd, calcData) {
     };
 
     var nodeHover = function(element, d, sankey) {
-
-        if(log) console.log('hover node', d.node);
-
         d3.select(element).call(nodeHoveredStyle, d, sankey);
-
         Fx.hover(gd, d.node, 'sankey');
     };
 
@@ -235,7 +221,6 @@ module.exports = function plot(gd, calcData) {
     var nodeUnhover = function(element, d, sankey) {
 
         d3.select(element).call(nodeNonHoveredStyle, d, sankey);
-        if(log) console.log('unhover node', d.node);
         gd.emit('plotly_unhover', {
             points: [d.node]
         });
