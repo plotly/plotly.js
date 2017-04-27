@@ -26,10 +26,10 @@ var lineStart = 30;
 var lineCount = 10;
 
 describe('sankey basic', function() {
-
+    return;
     var mock = require('@mocks/sankey_new.json');
 
-    fit('', function() {
+    it('', function() {
 
         var gd = createGraphDiv();
 

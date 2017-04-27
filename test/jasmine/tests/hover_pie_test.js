@@ -82,9 +82,9 @@ describe('pie hovering', function() {
                 .then(done);
         });
 
-        //afterEach(destroyGraphDiv);
+        afterEach(destroyGraphDiv);
 
-        fit('should contain the correct fields', function() {
+        it('should contain the correct fields', function() {
 
             /*
              * expected = [{
