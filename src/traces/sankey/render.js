@@ -187,7 +187,7 @@ function nodeModel(uniqueKeys, d, n) {
         valueSuffix: d.valueSuffix,
         sankey: d.sankey,
         arrangement: d.arrangement,
-        uniqueNodeLabelPathId: JSON.stringify({sankeyGuid: d.guid, traceId: d.key, nodeKey: n.label}).replace(/"/g, '\''),
+        uniqueNodeLabelPathId: [d.guid, d.key, key].join(' '),
         interactionState: d.interactionState
     };
 }
