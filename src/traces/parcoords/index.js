@@ -14,7 +14,6 @@ Parcoords.attributes = require('./attributes');
 Parcoords.supplyDefaults = require('./defaults');
 Parcoords.calc = require('./calc');
 Parcoords.plot = require('./plot');
-Parcoords.colorbar = require('./colorbar');
 
 Parcoords.moduleType = 'trace';
 Parcoords.name = 'parcoords';
