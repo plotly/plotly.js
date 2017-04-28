@@ -68,7 +68,7 @@ module.exports = {
         min: 1,
         dflt: 20,
         role: 'style',
-        description: 'Sets the thickness of the `nodes`.'
+        description: 'Sets the thickness (in px) of the `nodes`.'
     },
 
     valueformat: {
