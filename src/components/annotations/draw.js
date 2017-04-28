@@ -414,8 +414,8 @@ function drawOne(gd, index) {
          * while the head stays put, dx and dy are the pixel offsets
          */
         var drawArrow = function(dx, dy) {
-            d3.select(gd)
-                .selectAll('.annotation-arrow-g[data-index="' + index + '"]')
+            annGroup
+                .selectAll('.annotation-arrow-g')
                 .remove();
 
             var headX = annPosPx.x.head,
