@@ -95,9 +95,15 @@ exports.makeTransform = function(traceIn, state, direction) {
 };
 
 exports.getFilterFn = function(direction) {
+
+    var fn;
+    var isPrevThisDirection = null;
+    var oprev = null;
+    var cprev = null;
+
     switch(direction) {
         case 'increasing':
-            return function(o, c, isPrevThisDirection, oprev, cprev) {
+            var fn = function(o, c) {
                 if(o === c) {
                     if(c > cprev) {
                         return true; // increasing
@@ -115,9 +121,10 @@ exports.getFilterFn = function(direction) {
                 }
                 return o < c;
             };
+            break;
 
         case 'decreasing':
-            return function(o, c, isPrevThisDirection, oprev, cprev) {
+            var fn = function(o, c) {
                 if(o === c) {
                     if(c > cprev) {
                         return false; // increasing
@@ -135,7 +142,17 @@ exports.getFilterFn = function(direction) {
                 }
                 return o > c;
             };
+            break
     }
+    
+    return function(o, c) {
+        var out = fn(o, c);
+        isPrevThisDirection = !!out;
+        oprev = o;
+        cprev = c;
+        return out;
+    };
+
 };
 exports.addRangeSlider = function(data, layout) {
     var hasOneVisibleTrace = false;
