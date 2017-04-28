@@ -8,7 +8,6 @@
 
 'use strict';
 
-
 module.exports = {
     nodeTextOffsetHorizontal: 4,
     nodeTextOffsetVertical: 3,

@@ -17,7 +17,6 @@
             "nodethickness": 15,
             "valueformat": ".0f",
             "valuesuffix": "TWh",
-            "followmouse": true,
             "nodes": [
                 {"label":"Agricultural 'waste'"},
                 {"label":"Bio-conversion"},
