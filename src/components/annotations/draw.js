@@ -501,7 +501,7 @@ function drawRaw(gd, options, index, xa, ya) {
 
             // the arrow dragger is a small square right at the head, then a line to the tail,
             // all expanded by a stroke width of 6px plus the arrow line width
-            if(gd._context.editable && arrow.node().parentNode) {
+            if(gd._context.editable && arrow.node().parentNode && !options._scene) {
                 var arrowDragHeadX = headX;
                 var arrowDragHeadY = headY;
                 if(options.standoff) {
@@ -610,7 +610,7 @@ function drawRaw(gd, options, index, xa, ya) {
 
                         drawArrow(dx, dy);
                     }
-                    else {
+                    else if(!options._scene) {
                         if(xa) update[annbase + '.x'] = options.x + dx / xa._m;
                         else {
                             var widthFraction = options._xsize / gs.w,
@@ -638,6 +638,7 @@ function drawRaw(gd, options, index, xa, ya) {
                             );
                         }
                     }
+                    else return;
 
                     annTextGroup.attr({
                         transform: 'translate(' + dx + ',' + dy + ')' + baseTextTransform
