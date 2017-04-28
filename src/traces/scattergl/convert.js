@@ -404,7 +404,6 @@ proto.updateFast = function(options) {
 
 
 
-
         this.selectScatter.options.positions = positions;
 
         var markerColor = str2RGBArray(options.marker.color),
@@ -420,7 +419,6 @@ proto.updateFast = function(options) {
         markerSize = options.marker.size;
         this.selectScatter.options.size = markerSize;
         this.selectScatter.options.borderSize = options.marker.line.width;
-
         this.selectScatter.update();
     }
     else {
