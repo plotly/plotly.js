@@ -57,28 +57,29 @@ module.exports = function selectPoints(searchInfo, polygon) {
     // do the dimming here, as well as returning the selection
     // The logic here duplicates Drawing.pointStyle, but I don't want
     // d.dim in pointStyle in case something goes wrong with selection.
-    cd[0].node3.selectAll('path.point')
-        .style('opacity', function(d) {
-            return ((d.mo + 1 || opacity + 1) - 1) * (d.dim ? DESELECTDIM : 1);
-        });
-    cd[0].node3.selectAll('text')
-        .style('opacity', function(d) {
-            return d.dim ? DESELECTDIM : 1;
-        });
+//     cd[0].node3.selectAll('path.point')
+//         .style('opacity', function(d) {
+//             return ((d.mo + 1 || opacity + 1) - 1) * (d.dim ? DESELECTDIM : 1);
+//         });
+//     cd[0].node3.selectAll('text')
+//         .style('opacity', function(d) {
+//             return d.dim ? DESELECTDIM : 1;
+//         });
 
     //TODO: highlight selected points here
-    var plot = cd[0].plot
-    var scene = plot.scene
-    var options = scene.fullData[0]
+    var scene = cd[0].plot.scene;
+    var fullTrace = cd[0].trace;
 
     //modify the full data
     //FIXME: remove
-    options.x = options.x.slice(1)
-    options.y = options.y.slice(1)
-
+    fullTrace.x = fullTrace.x.slice(1)
+    fullTrace.y = fullTrace.y.slice(1)
+    
     // cd[0].trace.marker.color = '#000000'
-    plot.update(options)
-    // scene.draw()
+    scene.plot([fullTrace], [cd], scene.fullLayout);
+
+    /// maybe this will work too?
+    // scene.plot(scene.fullData, scene.calcdata, scene.fullLayout);    
 
     return selection;
 };
