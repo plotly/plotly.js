@@ -12,6 +12,7 @@
 var createPlot = require('gl-plot3d');
 var getContext = require('webgl-context');
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 
 var Axes = require('../../plots/cartesian/axes');
@@ -122,6 +123,8 @@ function render(scene) {
         Fx.loneUnhover(svgContainer);
         scene.graphDiv.emit('plotly_unhover', oldEventData);
     }
+
+    scene.handleAnnotations();
 }
 
 function initializeGLPlot(scene, fullLayout, canvas, gl) {
@@ -711,11 +714,94 @@ proto.toImage = function(format) {
 };
 
 proto.setConvert = function() {
-    for(var i = 0; i < 3; ++i) {
+    var i;
+
+    for(i = 0; i < 3; i++) {
         var ax = this.fullSceneLayout[axisProperties[i]];
         Axes.setConvert(ax, this.fullLayout);
         ax.setScale = Lib.noop;
     }
+
+    var anns = this.fullSceneLayout.annotations;
+    for(i = 0; i < anns.length; i++) {
+        mockAnnAxes(anns[i], this);
+    }
+
+    this.fullLayout._infolayer
+        .selectAll('.annotation-' + this.id)
+        .remove();
 };
+
+proto.handleAnnotations = function() {
+    var drawAnnotation = Registry.getComponentMethod('annotations', 'drawRaw');
+    var fullSceneLayout = this.fullSceneLayout;
+    var dataScale = this.dataScale;
+    var anns = fullSceneLayout.annotations;
+    var axLetters = ['x', 'y', 'z'];
+
+    for(var i = 0; i < anns.length; i++) {
+        var ann = anns[i];
+        var annotationIsOffscreen = false;
+
+        for(var j = 0; j < 3; j++) {
+            var axLetter = axLetters[j];
+            var posFraction = fullSceneLayout[axLetter + 'axis'].r2fraction(ann[axLetter]);
+
+            if(posFraction < 0 || posFraction > 1) {
+                annotationIsOffscreen = true;
+                break;
+            }
+        }
+
+        if(annotationIsOffscreen) {
+            this.fullLayout._infolayer
+                .select('.annotation-' + this.id + '[data-index="' + i + '"]')
+                .remove();
+        } else {
+            ann.pdata = project(this.glplot.cameraParams, [
+                fullSceneLayout.xaxis.d2l(ann.x) * dataScale[0],
+                fullSceneLayout.yaxis.d2l(ann.y) * dataScale[1],
+                fullSceneLayout.zaxis.d2l(ann.z) * dataScale[2]
+            ]);
+
+            drawAnnotation(this.graphDiv, ann, i, ann._xa, ann._ya);
+        }
+    }
+};
+
+function mockAnnAxes(ann, scene) {
+    var fullSceneLayout = scene.fullSceneLayout;
+    var domain = fullSceneLayout.domain;
+    var size = scene.fullLayout._size;
+
+    var base = {
+        // this gets fill in on render
+        pdata: null,
+
+        // to get setConvert to not execute cleanly
+        type: 'linear',
+
+        // set infinite range so that annotation draw routine
+        // does not try to remove 'outside-range' annotations,
+        // this case is handled in the render loop
+        range: [-Infinity, Infinity]
+    };
+
+    ann._xa = {};
+    Lib.extendFlat(ann._xa, base);
+    Axes.setConvert(ann._xa);
+    ann._xa._offset = size.l + domain.x[0] * size.w;
+    ann._xa.l2p = function() {
+        return 0.5 * (1 + ann.pdata[0] / ann.pdata[3]) * size.w * (domain.x[1] - domain.x[0]);
+    };
+
+    ann._ya = {};
+    Lib.extendFlat(ann._ya, base);
+    Axes.setConvert(ann._ya);
+    ann._ya._offset = size.t + (1 - domain.y[1]) * size.h;
+    ann._ya.l2p = function() {
+        return 0.5 * (1 - ann.pdata[1] / ann.pdata[3]) * size.h * (domain.y[1] - domain.y[0]);
+    };
+}
 
 module.exports = Scene;
