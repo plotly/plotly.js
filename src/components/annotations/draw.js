@@ -36,7 +36,8 @@ var drawArrowHead = require('./draw_arrow_head');
 
 module.exports = {
     draw: draw,
-    drawOne: drawOne
+    drawOne: drawOne,
+    drawRaw: drawRaw
 };
 
 /*
@@ -62,32 +63,51 @@ function draw(gd) {
  * index (int): the annotation to draw
  */
 function drawOne(gd, index) {
-    var layout = gd.layout,
-        fullLayout = gd._fullLayout,
-        gs = gd._fullLayout._size;
+    var fullLayout = gd._fullLayout;
+    var options = fullLayout.annotations[index] || {};
+    var xa = Axes.getFromId(gd, options.xref);
+    var ya = Axes.getFromId(gd, options.yref);
+
+    drawRaw(gd, options, index, xa, ya);
+}
+
+/*
+ * drawRaw: draw a single annotation, potentially with modifications
+ *
+ * options (object): this annotation's options
+ * index (int): the annotation to draw
+ * xa (object | undefined): full x-axis object to compute subplot pos-to-px
+ * ya (object | undefined): ... y-axis
+ */
+function drawRaw(gd, options, index, xa, ya) {
+    var fullLayout = gd._fullLayout;
+    var gs = gd._fullLayout._size;
+
+    var className = options._scene ?
+        'annotation-' + options._scene :
+        'annotation';
+
+    var annbase = options._scene ?
+        options._scene + '.annotations[' + index + ']' :
+        'annotations[' + index + ']';
 
     // remove the existing annotation if there is one
-    fullLayout._infolayer.selectAll('.annotation[data-index="' + index + '"]').remove();
-
-    // remember a few things about what was already there,
-    var optionsIn = (layout.annotations || [])[index],
-        options = fullLayout.annotations[index];
+    fullLayout._infolayer
+        .selectAll('.' + className + '[data-index="' + index + '"]')
+        .remove();
 
     var annClipID = 'clip' + fullLayout._uid + '_ann' + index;
 
     // this annotation is gone - quit now after deleting it
     // TODO: use d3 idioms instead of deleting and redrawing every time
-    if(!optionsIn || options.visible === false) {
+    if(!options._input || options.visible === false) {
         d3.selectAll('#' + annClipID).remove();
         return;
     }
 
-    var xa = Axes.getFromId(gd, options.xref),
-        ya = Axes.getFromId(gd, options.yref),
-
-        // calculated pixel positions
-        // x & y each will get text, head, and tail as appropriate
-        annPosPx = {x: {}, y: {}},
+    // calculated pixel positions
+    // x & y each will get text, head, and tail as appropriate
+    var annPosPx = {x: {}, y: {}},
         textangle = +options.textangle || 0;
 
     // create the components
@@ -95,7 +115,7 @@ function drawOne(gd, index) {
     // with border/arrow together this could handle a whole bunch of
     // cleanup at this point, but works for now
     var annGroup = fullLayout._infolayer.append('g')
-        .classed('annotation', true)
+        .classed(className, true)
         .attr('data-index', String(index))
         .style('opacity', options.opacity);
 
@@ -110,7 +130,7 @@ function drawOne(gd, index) {
             gd._dragging = false;
             gd.emit('plotly_clickannotation', {
                 index: index,
-                annotation: optionsIn,
+                annotation: options._input,
                 fullAnnotation: options
             });
         });
@@ -405,8 +425,6 @@ function drawOne(gd, index) {
         annTextGroup.attr({transform: 'rotate(' + textangle + ',' +
                             annPosPx.x.text + ',' + annPosPx.y.text + ')'});
 
-        var annbase = 'annotations[' + index + ']';
-
         /*
          * add the arrow
          * uses options[arrowwidth,arrowcolor,arrowhead] for styling
@@ -646,14 +664,18 @@ function drawOne(gd, index) {
                 options.text = _text;
                 this.attr({'data-unformatted': options.text});
                 this.call(textLayout);
+
                 var update = {};
-                update['annotations[' + index + '].text'] = options.text;
+                update[annbase + '.text'] = options.text;
+
+                // TODO
                 if(xa && xa.autorange) {
                     update[xa._name + '.autorange'] = true;
                 }
                 if(ya && ya.autorange) {
                     update[ya._name + '.autorange'] = true;
                 }
+
                 Plotly.relayout(gd, update);
             });
     }
