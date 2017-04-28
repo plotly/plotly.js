@@ -650,9 +650,9 @@ describe('legend interaction', function() {
                 done();
             });
         });
-        afterAll(function() {
-            destroyGraphDiv();
-        });
+
+        afterAll(destroyGraphDiv);
+
         describe('single click', function() {
             it('should hide slice', function(done) {
                 legendItem.dispatchEvent(new MouseEvent('mousedown'));
@@ -663,9 +663,11 @@ describe('legend interaction', function() {
                     done();
                 }, DBLCLICKDELAY + 20);
             });
+
             it('should fade legend item', function() {
                 expect(+legendItem.parentNode.style.opacity).toBeLessThan(1);
             });
+
             it('should unhide slice', function(done) {
                 legendItem.dispatchEvent(new MouseEvent('mousedown'));
                 legendItem.dispatchEvent(new MouseEvent('mouseup'));
@@ -674,6 +676,7 @@ describe('legend interaction', function() {
                     done();
                 }, DBLCLICKDELAY + 20);
             });
+
             it('should unfade legend item', function() {
                 expect(+legendItem.parentNode.style.opacity).toBe(1);
             });
@@ -691,6 +694,7 @@ describe('legend interaction', function() {
                     done();
                 }, 20);
             });
+
             it('should fade other legend items', function() {
                 var legendItemi;
                 for(var i = 0; i < legendItems.length; i++) {
@@ -702,6 +706,7 @@ describe('legend interaction', function() {
                     }
                 }
             });
+
             it('should unhide all slices', function(done) {
                 legendItem.dispatchEvent(new MouseEvent('mousedown'));
                 legendItem.dispatchEvent(new MouseEvent('mouseup'));
@@ -712,6 +717,7 @@ describe('legend interaction', function() {
                     done();
                 }, 20);
             });
+
             it('should unfade legend items', function() {
                 var legendItemi;
                 for(var i = 0; i < legendItems.length; i++) {
@@ -721,6 +727,7 @@ describe('legend interaction', function() {
             });
         });
     });
+
     describe('non-pie chart', function() {
         var mockCopy, gd, legendItems, legendItem;
         var testEntry = 2;
@@ -736,9 +743,8 @@ describe('legend interaction', function() {
                 done();
             });
         });
-        afterAll(function() {
-            destroyGraphDiv();
-        });
+
+        afterAll(destroyGraphDiv);
 
         describe('single click', function() {
             it('should hide series', function(done) {
@@ -749,9 +755,11 @@ describe('legend interaction', function() {
                     done();
                 }, DBLCLICKDELAY + 20);
             });
+
             it('should fade legend item', function() {
                 expect(+legendItem.parentNode.style.opacity).toBeLessThan(1);
             });
+
             it('should unhide series', function(done) {
                 legendItem.dispatchEvent(new MouseEvent('mousedown'));
                 legendItem.dispatchEvent(new MouseEvent('mouseup'));
@@ -760,10 +768,12 @@ describe('legend interaction', function() {
                     done();
                 }, DBLCLICKDELAY + 20);
             });
+
             it('should unfade legend item', function() {
                 expect(+legendItem.parentNode.style.opacity).toBe(1);
             });
         });
+
         describe('double click', function() {
             it('should hide series', function(done) {
                 legendItem.dispatchEvent(new MouseEvent('mousedown'));
@@ -781,6 +791,7 @@ describe('legend interaction', function() {
                     done();
                 }, 20);
             });
+
             it('should fade legend item', function() {
                 var legendItemi;
                 for(var i = 0; i < legendItems.length; i++) {
@@ -792,6 +803,7 @@ describe('legend interaction', function() {
                     }
                 }
             });
+
             it('should unhide series', function(done) {
                 legendItem.dispatchEvent(new MouseEvent('mousedown'));
                 legendItem.dispatchEvent(new MouseEvent('mouseup'));
@@ -804,6 +816,7 @@ describe('legend interaction', function() {
                     done();
                 }, 20);
             });
+
             it('should unfade legend items', function() {
                 var legendItemi;
                 for(var i = 0; i < legendItems.length; i++) {
