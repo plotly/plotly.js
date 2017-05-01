@@ -247,6 +247,16 @@ function sizeNode(rect) {
         .attr('height', function(d) {return d.visibleHeight;});
 }
 
+function linksTransform(d) {
+    return d.horizontal ? 'matrix(1,0,0,1,0,0)' : 'matrix(0,1,1,0,0,0)';
+}
+
+function textGuidePath(d) {
+    return d3.svg.line()([
+        [d.horizontal ? (d.left ? -d.sizeAcross : d.visibleWidth + c.nodeTextOffsetHorizontal) : c.nodeTextOffsetHorizontal, d.labelY],
+        [d.horizontal ? (d.left ? - c.nodeTextOffsetHorizontal : d.sizeAcross) : d.visibleWidth - c.nodeTextOffsetHorizontal, d.labelY]
+    ]);}
+
 // event handling
 
 function attachPointerEvents(selection, sankey, eventSet) {
@@ -417,11 +427,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
     sankeyLinks.enter()
         .append('g')
         .classed('sankeyLinks', true)
-        .style('fill', 'none');
+        .style('fill', 'none')
+        .style('transform', linksTransform);
 
     sankeyLinks.transition()
         .ease(c.ease).duration(c.duration)
-        .style('transform', function(d) {return d.horizontal ? 'matrix(1,0,0,1,0,0)' : 'matrix(0,1,1,0,0,0)';});
+        .style('transform', linksTransform);
 
     var sankeyLink = sankeyLinks.selectAll('.sankeyLink')
         .data(function(d) {
@@ -441,16 +452,10 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('stroke-width', function(d) {return d.link.dy > 1 ? 2 : 1;})
         .style('stroke-opacity', function(d) {return d.tinyColorAlpha;})
         .style('fill', function(d) {return d.tinyColorHue;})
-        .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
-
-    sankeyLink.transition()
-        .ease(c.ease).duration(c.duration)
+        .style('fill-opacity', function(d) {return d.tinyColorAlpha;})
         .attr('d', linkPath);
 
-    sankeyLink.exit().transition()
-        .ease(c.ease).duration(c.duration)
-        .style('opacity', 0)
-        .remove();
+    sankeyLink.exit().remove();
 
     var sankeyNodeSet = sankey.selectAll('.sankeyNodeSet')
         .data(repeat, keyFun);
@@ -535,16 +540,13 @@ module.exports = function(svg, styledData, layout, callbacks) {
     nodeLabelGuide.enter()
         .append('path')
         .classed('nodeLabelGuide', true)
-        .attr('id', function(d) {return d.uniqueNodeLabelPathId;});
+        .attr('id', function(d) {return d.uniqueNodeLabelPathId;})
+        .attr('d', textGuidePath);
 
     nodeLabelGuide
         .transition()
         .ease(c.ease).duration(c.duration)
-        .attr('d', function(d) {
-            return d3.svg.line()([
-                [d.horizontal ? (d.left ? -d.sizeAcross : d.visibleWidth + c.nodeTextOffsetHorizontal) : c.nodeTextOffsetHorizontal, d.labelY],
-                [d.horizontal ? (d.left ? - c.nodeTextOffsetHorizontal : d.sizeAcross) : d.visibleWidth - c.nodeTextOffsetHorizontal, d.labelY]
-            ]);});
+        .attr('d', textGuidePath);
 
     var nodeLabel = sankeyNode.selectAll('.nodeLabel')
         .data(repeat);
