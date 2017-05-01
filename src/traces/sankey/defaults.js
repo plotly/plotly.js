@@ -13,9 +13,23 @@ var attributes = require('./attributes');
 var colors = require('../../components/color/attributes').defaults;
 var Color = require('../../components/color');
 var tinycolor = require('tinycolor2');
+var tarjan = require('strongly-connected-components');
 
-function circularityPresent() {
-    return false;
+function circularityPresent(nodeList, sources, targets) {
+
+    var nodes = nodeList.map(function() {return [];});
+
+    for(var i = 0; i < Math.min(sources.length, targets.length); i++) {
+        nodes[sources[i]].push(targets[i]);
+    }
+
+    var scc = tarjan(nodes);
+
+    // Tarján's strongly connected components algorithm coded by Mikola Lysenko
+    // returns at least one non-singular component if there's circularity in the graph
+    return scc.components.some(function(c) {
+        return c.length > 1;
+    });
 }
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -64,7 +78,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         Lib.log('Some of the nodes are neither sources nor targets, please remove them.');
     }
 
-    if(circularityPresent(traceIn.link.source, traceIn.link.target)) {
+    if(circularityPresent(traceOut.node.label, traceOut.link.source, traceOut.link.target)) {
         Lib.log('Circularity is present in the Sankey data. Removing all nodes and links.');
         traceOut.link.label = [];
         traceOut.link.source = [];
