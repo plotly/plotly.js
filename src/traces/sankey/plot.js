@@ -171,22 +171,10 @@ module.exports = function plot(gd, calcData) {
         Fx.click(gd, { target: true });
     };
 
-    var repositioned = function(d, nodes) {
-        var n, nOrig;
-        var names = gd.data[0].nodes.map(function(nn) {return nn.label;});
-        for(var i = 0; i < nodes.length; i++) {
-            n = nodes[i];
-            nOrig = gd.data[d.traceId].nodes[names.indexOf(n.label)];
-            nOrig.parallel = (n.x - n.dx / 2) / n.width;
-            nOrig.perpendicular = (n.y - n.dy / 2) / n.height;
-        }
-    };
-
     var nodeHover = function(element, d, sankey) {
         d3.select(element).call(nodeHoveredStyle, d, sankey);
         Fx.hover(gd, d.node, 'sankey');
     };
-
 
     var nodeHoverFollow = function(element, d) {
 
@@ -252,8 +240,7 @@ module.exports = function plot(gd, calcData) {
                 hover: nodeHover,
                 follow: nodeHoverFollow,
                 unhover: nodeUnhover,
-                select: nodeSelect,
-                repositioned: repositioned
+                select: nodeSelect
             }
         }
     );

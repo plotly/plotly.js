@@ -108,43 +108,40 @@ module.exports = {
 
     textfont: fontAttrs,
 
-    nodes: {
-        _isLinkedToArray: 'node',
+    node: {
         label: {
-            valType: 'string',
+            valType: 'data_array',
             dflt: '',
             role: 'info',
             description: 'The shown name of the node.'
         },
-        visible: shapeAttrs.visible,
         color: extendFlat({}, shapeAttrs.fillcolor, {
+            arrayOk: true,
             dflt: 'rgb(0,255,0,0.5)'
         }),
         description: 'The nodes of the Sankey plot.'
     },
 
-    links: {
-        _isLinkedToArray: 'link',
+    link: {
         label: {
-            valType: 'string',
+            valType: 'data_array',
             dflt: '',
             role: 'info',
             description: 'The shown name of the link.'
         },
-        visible: shapeAttrs.visible,
-        color: extendFlat({}, shapeAttrs.fillcolor, {dflt: 'rgba(0,0,0,0.2)'}),
+        color: extendFlat({}, shapeAttrs.fillcolor, {arrayOk: true, dflt: 'rgba(0,0,0,0.2)'}),
         source: {
-            valType: 'number',
+            valType: 'data_array',
             role: 'info',
             description: 'An integer number `[0..nodes.length - 1]` that represents the source node.'
         },
         target: {
-            valType: 'number',
+            valType: 'data_array',
             role: 'info',
             description: 'An integer number `[0..nodes.length - 1]` that represents the target node.'
         },
         value: {
-            valType: 'number',
+            valType: 'data_array',
             dflt: 1,
             role: 'info',
             description: 'A numeric value representing the flow volume value.'

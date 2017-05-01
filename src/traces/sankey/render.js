@@ -15,13 +15,13 @@ var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var d3sankey = require('@monfera/d3-sankey').sankey;
 var d3Force = require('d3-force');
+var Lib = require('../../lib');
 
 // basic data utilities
 
 function keyFun(d) {return d.key;}
 function repeat(d) {return [d];} // d3 data binding convention
 function unwrap(d) {return d[0];} // plotly data structure convention
-// function visible(nodeOrLink) {return !('visible' in nodeOrLink) || nodeOrLink.visible;}
 
 function persistOriginalPlace(nodes) {
     var i, distinctLayerPositions = [];
@@ -68,8 +68,8 @@ function sankeyModel(layout, d, i) {
 
     var trace = unwrap(d).trace,
         domain = trace.domain,
-        nodes = trace.nodes,
-        links = trace.links,
+        nodeSpec = trace.node,
+        linkSpec = trace.link,
         arrangement = trace.arrangement,
         horizontal = trace.orientation === 'h',
         nodePad = trace.nodepad,
@@ -80,6 +80,23 @@ function sankeyModel(layout, d, i) {
 
     var width = layout.width * (domain.x[1] - domain.x[0]),
         height = layout.height * (domain.y[1] - domain.y[0]);
+
+    var nodes = nodeSpec.label.map(function(l, i) {
+        return {
+            label: l,
+            color: Lib.isArray(nodeSpec.color) ? nodeSpec.color[i] : nodeSpec.color
+        };
+    });
+
+    var links = linkSpec.value.map(function(d, i) {
+        return {
+            label: linkSpec.label[i],
+            color: Lib.isArray(linkSpec.color) ? linkSpec.color[i] : linkSpec.color,
+            source: linkSpec.source[i],
+            target: linkSpec.target[i],
+            value: d
+        };
+    });
 
     var sankey = d3sankey()
         .size(horizontal ? [width, height] : [height, width])
@@ -266,8 +283,6 @@ function attachPointerEvents(selection, sankey, eventSet) {
 
 function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 
-    var repositionedCallback = callbacks.nodeEvents.repositioned;
-
     var dragBehavior = d3.behavior.drag()
 
         .origin(function(d) {return d.horizontal ? d.node : {x: d.node.y, y: d.node.x};})
@@ -286,7 +301,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
                 if(d.forceLayouts[forceKey]) {
                     d.forceLayouts[forceKey].alpha(1);
                 } else { // make a forceLayout iff needed
-                    attachForce(sankeyNode, forceKey, repositionedCallback, d);
+                    attachForce(sankeyNode, forceKey, d);
                 }
                 startForce(sankeyNode, sankeyLink, d, forceKey);
             }
@@ -314,9 +329,6 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
         })
 
         .on('dragend', function(d) {
-            if(d.arrangement !== 'snap') {
-                repositionedCallback(d, [d.node]);
-            }
             d.interactionState.dragInProgress = false;
         });
 
@@ -325,7 +337,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
         .call(dragBehavior);
 }
 
-function attachForce(sankeyNode, forceKey, repositionedCallback, d) {
+function attachForce(sankeyNode, forceKey, d) {
     var nodes = d.sankey.nodes().filter(function(n) {return n.originalX === d.node.originalX;});
     d.forceLayouts[forceKey] = d3Force.forceSimulation(nodes)
         .alphaDecay(0)
@@ -333,7 +345,7 @@ function attachForce(sankeyNode, forceKey, repositionedCallback, d) {
             .radius(function(n) {return n.dy / 2 + d.nodePad / 2;})
             .strength(1)
             .iterations(c.forceIterations))
-        .force('constrain', snappingForce(sankeyNode, forceKey, nodes, repositionedCallback, d))
+        .force('constrain', snappingForce(sankeyNode, forceKey, nodes, d))
         .stop();
 }
 
@@ -350,7 +362,7 @@ function startForce(sankeyNode, sankeyLink, d, forceKey) {
     });
 }
 
-function snappingForce(sankeyNode, forceKey, nodes, repositionedCallback, d) {
+function snappingForce(sankeyNode, forceKey, nodes, d) {
     return function _snappingForce() {
         var maxVelocity = 0;
         for(var i = 0; i < nodes.length; i++) {
@@ -368,7 +380,6 @@ function snappingForce(sankeyNode, forceKey, nodes, repositionedCallback, d) {
             d.forceLayouts[forceKey].alpha(0);
             window.setTimeout(function() {
                 sankeyNode.call(crispLinesOnEnd);
-                repositionedCallback(d, nodes);
             }, 30); // geome on move, crisp when static
         }
     };
@@ -416,7 +427,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .data(function(d) {
             var uniqueKeys = {};
             return d.sankey.links()
-                .filter(function(l) {return l.visible && l.value;})
+                .filter(function(l) {return l.value;})
                 .map(linkModel.bind(null, uniqueKeys, d));
         }, keyFun);
 
@@ -464,7 +475,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
             var uniqueKeys = {};
             persistOriginalPlace(nodes);
             return nodes
-                .filter(function(n) {return n.visible && n.value;})
+                .filter(function(n) {return n.value;})
                 .map(nodeModel.bind(null, uniqueKeys, d));
         }, keyFun);
 
