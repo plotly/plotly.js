@@ -13,11 +13,15 @@
                 ]
             },
             "orientation": "h",
-            "nodepad": 15,
-            "nodethickness": 15,
             "valueformat": ".0f",
             "valuesuffix": "TWh",
             "node": {
+                "pad": 15,
+                "thickness": 15,
+                "line": {
+                    "color": "black",
+                    "width": 0.5
+                },
                 "label": [
                     "Agricultural 'waste'",
                     "Bio-conversion",
@@ -505,12 +509,12 @@
                     {
                         "label": "Thick",
                         "method": "restyle",
-                        "args": [ "nodethickness", 15 ]
+                        "args": [ "node.thickness", 15 ]
                     },
                     {
                         "label": "Thin",
                         "method": "restyle",
-                        "args": [ "nodethickness", 8]
+                        "args": [ "node.thickness", 8]
                     }
                 ]
             },
@@ -520,12 +524,12 @@
                     {
                         "label": "Small gap",
                         "method": "restyle",
-                        "args": [ "nodepad", 15 ]
+                        "args": [ "node.pad", 15 ]
                     },
                     {
                         "label": "Large gap",
                         "method": "restyle",
-                        "args": [ "nodepad", 20]
+                        "args": [ "node.pad", 20]
                     }
                 ]
             },

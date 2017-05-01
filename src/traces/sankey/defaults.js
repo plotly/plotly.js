@@ -42,6 +42,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     coerce('node.label');
+    coerce('node.pad');
+    coerce('node.thickness');
+    coerce('node.line.color');
+    coerce('node.line.width');
 
     var defaultNodePalette = function(i) {return colors[i % colors.length];};
 
@@ -65,8 +69,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('domain.x');
     coerce('domain.y');
     coerce('orientation');
-    coerce('nodepad');
-    coerce('nodethickness');
     coerce('valueformat');
     coerce('valuesuffix');
     coerce('arrangement');

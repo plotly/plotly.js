@@ -72,8 +72,10 @@ function sankeyModel(layout, d, i) {
         linkSpec = trace.link,
         arrangement = trace.arrangement,
         horizontal = trace.orientation === 'h',
-        nodePad = trace.nodepad,
-        nodeThickness = trace.nodethickness,
+        nodePad = trace.node.pad,
+        nodeThickness = trace.node.thickness,
+        nodelineColor = trace.node.line.color,
+        nodelineWidth = trace.node.line.width,
         valueFormat = trace.valueformat,
         valueSuffix = trace.valuesuffix,
         textFont = trace.textfont;
@@ -124,6 +126,8 @@ function sankeyModel(layout, d, i) {
         width: width,
         height: height,
         nodePad: nodePad,
+        nodelineColor: nodelineColor,
+        nodelineWidth: nodelineWidth,
         valueFormat: valueFormat,
         valueSuffix: valueSuffix,
         textFont: textFont,
@@ -184,6 +188,8 @@ function nodeModel(uniqueKeys, d, n) {
         traceId: d.key,
         node: n,
         nodePad: d.nodePad,
+        nodelineColor: d.nodelineColor,
+        nodelineWidth: d.nodelineWidth,
         textFont: d.textFont,
         size: d.horizontal ? d.height : d.width,
         visibleWidth: Math.ceil(d.horizontal ? visibleThickness : visibleLength),
@@ -445,6 +451,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
     sankeyLink.enter()
         .append('path')
         .classed('sankeyLink', true)
+        .attr('d', linkPath)
         .call(attachPointerEvents, sankey, callbacks.linkEvents);
 
     sankeyLink
@@ -452,10 +459,16 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('stroke-width', function(d) {return d.link.dy > 1 ? 2 : 1;})
         .style('stroke-opacity', function(d) {return d.tinyColorAlpha;})
         .style('fill', function(d) {return d.tinyColorHue;})
-        .style('fill-opacity', function(d) {return d.tinyColorAlpha;})
+        .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
+
+    sankeyLink.transition()
+        .ease(c.ease).duration(c.duration)
         .attr('d', linkPath);
 
-    sankeyLink.exit().remove();
+    sankeyLink.exit().transition()
+        .ease(c.ease).duration(c.duration)
+        .style('opacity', 0)
+        .remove();
 
     var sankeyNodeSet = sankey.selectAll('.sankeyNodeSet')
         .data(repeat, keyFun);
@@ -508,11 +521,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
     nodeRect.enter()
         .append('rect')
         .classed('nodeRect', true)
-        .style('stroke-width', 0.5)
-        .call(Color.stroke, 'rgba(0, 0, 0, 1)')
         .call(sizeNode);
 
     nodeRect
+        .style('stroke-width', function(d) {return d.nodelineWidth;})
+        .style('stroke', function(d) {return Color.tinyRGB(tinycolor(d.nodelineColor));})
+        .style('stroke-opacity', function(d) {return Color.opacity(d.nodelineColor);})
         .style('fill', function(d) {return d.tinyColorHue;})
         .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
 

@@ -11,6 +11,7 @@
 var shapeAttrs = require('../../components/shapes/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var plotAttrs = require('../../plots/attributes');
+var colorAttrs = require('../../components/color/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -53,22 +54,6 @@ module.exports = {
         dflt: 'h',
         role: 'style',
         description: 'Sets the orientation of the Sankey diagram.'
-    },
-
-    nodepad: {
-        valType: 'number',
-        min: 0,
-        dflt: 20,
-        role: 'style',
-        description: 'Sets the padding (in px) between the `nodes`.'
-    },
-
-    nodethickness: {
-        valType: 'number',
-        min: 1,
-        dflt: 20,
-        role: 'style',
-        description: 'Sets the thickness (in px) of the `nodes`.'
     },
 
     valueformat: {
@@ -119,6 +104,43 @@ module.exports = {
             arrayOk: true,
             dflt: 'rgb(0,255,0,0.5)'
         }),
+        line: {
+            color: {
+                valType: 'color',
+                role: 'style',
+                dflt: colorAttrs.defaultLine,
+                arrayOk: true,
+                description: [
+                    'Sets the color of the line enclosing each sector.'
+                ].join(' ')
+            },
+            width: {
+                valType: 'number',
+                role: 'style',
+                min: 0,
+                dflt: 0.5,
+                arrayOk: true,
+                description: [
+                    'Sets the width (in px) of the line enclosing each sector.'
+                ].join(' ')
+            }
+        },
+        pad: {
+            valType: 'number',
+            arrayOk: false,
+            min: 0,
+            dflt: 20,
+            role: 'style',
+            description: 'Sets the padding (in px) between the `nodes`.'
+        },
+        thickness: {
+            valType: 'number',
+            arrayOk: false,
+            min: 1,
+            dflt: 20,
+            role: 'style',
+            description: 'Sets the thickness (in px) of the `nodes`.'
+        },
         description: 'The nodes of the Sankey plot.'
     },
 

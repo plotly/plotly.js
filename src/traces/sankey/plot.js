@@ -48,8 +48,6 @@ function relatedNodes(l) {
 
 function nodeHoveredStyle(sankeyNode, d, sankey) {
 
-    sankeyNode.select('.nodeRect').style('stroke-width', 1);
-
     if(d && sankey) {
         ownTrace(sankey, d)
             .selectAll('.sankeyLink')
@@ -59,8 +57,6 @@ function nodeHoveredStyle(sankeyNode, d, sankey) {
 }
 
 function nodeNonHoveredStyle(sankeyNode, d, sankey) {
-
-    sankeyNode.select('.nodeRect').style('stroke-width', 0.5);
 
     if(d && sankey) {
         ownTrace(sankey, d)
