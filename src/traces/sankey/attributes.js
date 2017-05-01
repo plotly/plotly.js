@@ -102,7 +102,12 @@ module.exports = {
         },
         color: extendFlat({}, shapeAttrs.fillcolor, {
             arrayOk: true,
-            dflt: 'rgb(0,255,0,0.5)'
+            description: [
+                'Sets the `node` color. It can be a single value, or an array for specifying color for each `node`.',
+                'If `node.color` is omitted, then the default `Plotly` color palette will be cycled through',
+                'to have a variety of colors. These defaults are not fully opaque, to allow some visibility of',
+                'what is beneath the node.'
+            ].join(' ')
         }),
         line: {
             color: {
@@ -111,7 +116,7 @@ module.exports = {
                 dflt: colorAttrs.defaultLine,
                 arrayOk: true,
                 description: [
-                    'Sets the color of the line enclosing each sector.'
+                    'Sets the color of the `line` around each `node`.'
                 ].join(' ')
             },
             width: {
@@ -121,7 +126,7 @@ module.exports = {
                 dflt: 0.5,
                 arrayOk: true,
                 description: [
-                    'Sets the width (in px) of the line enclosing each sector.'
+                    'Sets the width (in px) of the `line` around each `node`.'
                 ].join(' ')
             }
         },
@@ -151,7 +156,34 @@ module.exports = {
             role: 'info',
             description: 'The shown name of the link.'
         },
-        color: extendFlat({}, shapeAttrs.fillcolor, {arrayOk: true, dflt: 'rgba(0,0,0,0.2)'}),
+        color: extendFlat({}, shapeAttrs.fillcolor, {
+            arrayOk: true,
+            description: [
+                'Sets the `link` color. It can be a single value, or an array for specifying color for each `link`.',
+                'If `link.color` is omitted, then by default, a translucent grey link will be used.'
+            ].join(' ')
+        }),
+        line: {
+            color: {
+                valType: 'color',
+                role: 'style',
+                dflt: colorAttrs.defaultLine,
+                arrayOk: true,
+                description: [
+                    'Sets the color of the `line` around each `link`.'
+                ].join(' ')
+            },
+            width: {
+                valType: 'number',
+                role: 'style',
+                min: 0,
+                dflt: 0,
+                arrayOk: true,
+                description: [
+                    'Sets the width (in px) of the `line` around each `link`.'
+                ].join(' ')
+            }
+        },
         source: {
             valType: 'data_array',
             role: 'info',

@@ -74,8 +74,10 @@ function sankeyModel(layout, d, i) {
         horizontal = trace.orientation === 'h',
         nodePad = trace.node.pad,
         nodeThickness = trace.node.thickness,
-        nodelineColor = trace.node.line.color,
-        nodelineWidth = trace.node.line.width,
+        nodeLineColor = trace.node.line.color,
+        nodeLineWidth = trace.node.line.width,
+        linkLineColor = trace.link.line.color,
+        linkLineWidth = trace.link.line.width,
         valueFormat = trace.valueformat,
         valueSuffix = trace.valuesuffix,
         textFont = trace.textfont;
@@ -126,8 +128,10 @@ function sankeyModel(layout, d, i) {
         width: width,
         height: height,
         nodePad: nodePad,
-        nodelineColor: nodelineColor,
-        nodelineWidth: nodelineWidth,
+        nodeLineColor: nodeLineColor,
+        nodeLineWidth: nodeLineWidth,
+        linkLineColor: linkLineColor,
+        linkLineWidth: linkLineWidth,
         valueFormat: valueFormat,
         valueSuffix: valueSuffix,
         textFont: textFont,
@@ -161,6 +165,8 @@ function linkModel(uniqueKeys, d, l) {
         link: l,
         tinyColorHue: Color.tinyRGB(tc),
         tinyColorAlpha: tc.getAlpha(),
+        linkLineColor: d.linkLineColor,
+        linkLineWidth: d.linkLineWidth,
         valueFormat: d.valueFormat,
         valueSuffix: d.valueSuffix,
         sankey: d.sankey,
@@ -188,8 +194,8 @@ function nodeModel(uniqueKeys, d, n) {
         traceId: d.key,
         node: n,
         nodePad: d.nodePad,
-        nodelineColor: d.nodelineColor,
-        nodelineWidth: d.nodelineWidth,
+        nodeLineColor: d.nodeLineColor,
+        nodeLineWidth: d.nodeLineWidth,
         textFont: d.textFont,
         size: d.horizontal ? d.height : d.width,
         visibleWidth: Math.ceil(d.horizontal ? visibleThickness : visibleLength),
@@ -251,6 +257,10 @@ function updateShapes(sankeyNode, sankeyLink) {
 function sizeNode(rect) {
     rect.attr('width', function(d) {return d.visibleWidth;})
         .attr('height', function(d) {return d.visibleHeight;});
+}
+
+function salientEnough(d) {
+    return d.link.dy > 1 || d.linkLineWidth > 0;
 }
 
 function linksTransform(d) {
@@ -455,9 +465,13 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .call(attachPointerEvents, sankey, callbacks.linkEvents);
 
     sankeyLink
-        .style('stroke', function(d) {return d.link.dy > 1 ? 'rgba(0,0,0,0)' : d.tinyColorHue;})
-        .style('stroke-width', function(d) {return d.link.dy > 1 ? 2 : 1;})
-        .style('stroke-opacity', function(d) {return d.tinyColorAlpha;})
+        .style('stroke', function(d) {
+            return salientEnough(d) ? Color.tinyRGB(tinycolor(d.linkLineColor)) : d.tinyColorHue;
+        })
+        .style('stroke-opacity', function(d) {
+            return salientEnough(d) ? Color.opacity(d.linkLineColor) : d.tinyColorAlpha;
+        })
+        .style('stroke-width', function(d) {return salientEnough(d) ? d.linkLineWidth : 1;})
         .style('fill', function(d) {return d.tinyColorHue;})
         .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
 
@@ -524,9 +538,9 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .call(sizeNode);
 
     nodeRect
-        .style('stroke-width', function(d) {return d.nodelineWidth;})
-        .style('stroke', function(d) {return Color.tinyRGB(tinycolor(d.nodelineColor));})
-        .style('stroke-opacity', function(d) {return Color.opacity(d.nodelineColor);})
+        .style('stroke-width', function(d) {return d.nodeLineWidth;})
+        .style('stroke', function(d) {return Color.tinyRGB(tinycolor(d.nodeLineColor));})
+        .style('stroke-opacity', function(d) {return Color.opacity(d.nodeLineColor);})
         .style('fill', function(d) {return d.tinyColorHue;})
         .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
 

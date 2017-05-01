@@ -57,6 +57,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('link.source');
     coerce('link.target');
     coerce('link.value');
+    coerce('link.line.color');
+    coerce('link.line.width');
 
     coerce('link.color', traceIn.link.value.map(function() {
         return tinycolor(layout.paper_bgcolor).getLuminance() < 0.333 ?
