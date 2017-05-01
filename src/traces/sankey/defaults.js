@@ -20,6 +20,9 @@ function circularityPresent(nodeList, sources, targets) {
     var nodes = nodeList.map(function() {return [];});
 
     for(var i = 0; i < Math.min(sources.length, targets.length); i++) {
+        if(sources[i] === targets[i]) {
+            return true; // self-link which is also a scc of one
+        }
         nodes[sources[i]].push(targets[i]);
     }
 
