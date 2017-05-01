@@ -116,20 +116,6 @@ module.exports = {
             role: 'info',
             description: 'The shown name of the node.'
         },
-        parallel: {
-            valType: 'number',
-            role: 'style',
-            min: 0,
-            max: 1,
-            description: 'Node position parallel to the flow, e.g. left/right if `orientation` is `horizontal`.'
-        },
-        perpendicular: {
-            valType: 'number',
-            role: 'style',
-            min: 0,
-            max: 1,
-            description: 'Node position perpendicular to the flow, e.g. up/down if `orientation` is `horizontal`.'
-        },
         visible: shapeAttrs.visible,
         color: extendFlat({}, shapeAttrs.fillcolor, {
             dflt: 'rgb(0,255,0,0.5)'

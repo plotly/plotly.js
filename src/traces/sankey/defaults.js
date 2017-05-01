@@ -90,8 +90,6 @@ function nodesDefaults(traceIn, traceOut) {
 
         if(visible) {
             coerce('label');
-            coerce('parallel');
-            coerce('perpendicular');
             if(nodeIn.color) {
                 coerce('color');
             } else {
