@@ -512,3 +512,61 @@ describe('Test carpet interactions:', function() {
         .then(done);
     });
 });
+
+describe('scattercarpet array attributes', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('works in both initial draws and restyles', function(done) {
+        var mock = Lib.extendDeep({}, require('@mocks/scattercarpet.json'));
+
+        var mc = ['#000', '#00f', '#0ff', '#ff0'];
+        var ms = [10, 20, 30, 40];
+        var ms2 = [5, 6, 7, 8];
+        var mlw = [1, 2, 3, 4];
+        var mlc = ['#00e', '#0ee', '#ee0', '#eee'];
+
+        // add some arrayOk array attributes
+        mock.data[5].marker = {
+            color: mc,
+            size: ms,
+            line: {
+                width: mlw,
+                color: mlc
+            }
+        };
+
+        Plotly.plot(gd, mock)
+        .then(function() {
+            for(var i = 0; i < 4; i++) {
+                var pt = gd.calcdata[5][i];
+                expect(pt.mc).toBe(mc[i]);
+                expect(pt.ms).toBe(ms[i]);
+                expect(pt.mlw).toBe(mlw[i]);
+                expect(pt.mlc).toBe(mlc[i]);
+            }
+
+            // turn one array into a constant, another into a new array,
+            return Plotly.restyle(gd, {'marker.color': '#f00', 'marker.size': [ms2]},
+                null, [5]);
+        })
+        .then(function() {
+            expect(gd._fullData[5].marker.color).toBe('#f00');
+
+            for(var i = 0; i < 4; i++) {
+                var pt = gd.calcdata[5][i];
+                expect(pt.mc).toBeUndefined();
+                expect(pt.ms).toBe(ms2[i]);
+                expect(pt.mlw).toBe(mlw[i]);
+                expect(pt.mlc).toBe(mlc[i]);
+            }
+        })
+        .catch(fail)
+        .then(done);
+    });
+});
