@@ -2,6 +2,12 @@ var Drawing = require('@src/components/drawing');
 
 var d3 = require('d3');
 
+var Plotly = require('@lib/index');
+
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
+
 describe('Drawing', function() {
     'use strict';
 
@@ -307,5 +313,85 @@ describe('Drawing', function() {
             Drawing.setPointGroupScale(sel, 1, 1);
             expect(el.getAttribute('transform')).toBe('translate(1,2)');
         });
+    });
+});
+
+describe('gradients', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function checkGradientIds(uid, specs) {
+        var sortedExpected = specs.map(function(spec) {
+            return (spec[0] + uid + '-' + spec[1] + '-' + spec[2]).replace(/[^\w\-]+/g, '_');
+        }).sort();
+
+        var gids = [];
+        var gradients = d3.select(gd).selectAll('radialGradient,linearGradient');
+        gradients.each(function() { gids.push(this.id); });
+        gids.sort();
+
+        expect(gids.length).toBe(sortedExpected.length);
+
+        for(var i = 0; i < Math.min(gids.length, sortedExpected.length); i++) {
+            expect(gids[i]).toBe(sortedExpected[i]);
+        }
+    }
+
+    it('clears unused gradients after a replot', function(done) {
+        Plotly.plot(gd, [{
+            y: [0, 1, 2],
+            mode: 'markers',
+            marker: {
+                color: '#123',
+                gradient: {
+                    type: 'radial',
+                    color: ['#fff', '#eee', '#ddd']
+                }
+            }
+        }])
+        .then(function() {
+            checkGradientIds(gd._fullLayout._uid, [
+                ['radial', '#123', '#fff'],
+                ['radial', '#123', '#eee'],
+                ['radial', '#123', '#ddd']
+            ]);
+
+            return Plotly.restyle(gd, {'marker.color': '#456'});
+        })
+        .then(function() {
+            // simple scalar restyle doesn't trigger a full replot, so
+            // doesn't clear the old gradients
+            checkGradientIds(gd._fullLayout._uid, [
+                ['radial', '#123', '#fff'],
+                ['radial', '#123', '#eee'],
+                ['radial', '#123', '#ddd'],
+                ['radial', '#456', '#fff'],
+                ['radial', '#456', '#eee'],
+                ['radial', '#456', '#ddd']
+            ]);
+
+            return Plotly.restyle(gd, {'marker.gradient.type': [['horizontal', 'vertical', 'radial']]});
+        })
+        .then(function() {
+            // array restyle does replot
+            checkGradientIds(gd._fullLayout._uid, [
+                ['horizontal', '#456', '#fff'],
+                ['vertical', '#456', '#eee'],
+                ['radial', '#456', '#ddd']
+            ]);
+
+            return Plotly.restyle(gd, {'mode': 'lines'});
+        })
+        .then(function() {
+            // full replot and no resulting markers at all -> no gradients
+            checkGradientIds(gd._fullLayout._uid, []);
+        })
+        .catch(fail)
+        .then(done);
     });
 });
