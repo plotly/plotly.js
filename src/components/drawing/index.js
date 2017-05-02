@@ -276,7 +276,7 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
 
         var markerGradient = marker.gradient;
         var gradientColor = markerGradient && (d.mgc || markerGradient.color);
-        var gradientType = d.mgt || markerGradient.type;
+        var gradientType = markerGradient && (d.mgt || markerGradient.type);
         if(gradientType && gradientType !== 'none') {
             sel.call(drawing.gradient, gd, gradientType, fillColor, gradientColor);
         }
