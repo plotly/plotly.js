@@ -83,7 +83,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     };
 
     if(traceOut.node.label.some(missing)) {
-        Lib.warn('Some of the nodes are neither sources nor targets, please remove them.');
+        Lib.warn('Some of the nodes are neither sources nor targets, they will not be displayed.');
     }
 
     if(circularityPresent(traceOut.node.label, traceOut.link.source, traceOut.link.target)) {
