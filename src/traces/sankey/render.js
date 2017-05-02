@@ -13,7 +13,7 @@ var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
-var d3sankey = require('@monfera/d3-sankey').sankey;
+var d3sankey = require('@plotly/d3-sankey').sankey;
 var d3Force = require('d3-force');
 var Lib = require('../../lib');
 

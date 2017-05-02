@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "3d-view": "^2.0.0",
-    "@monfera/d3-sankey": "^0.5.0",
+    "@plotly/d3-sankey": "^0.5.0",
     "alpha-shape": "^1.0.0",
     "arraytools": "^1.0.0",
     "color-rgba": "^1.0.4",
