@@ -2,7 +2,7 @@ var Lib = require('@src/lib');
 var Sankey = require('@src/traces/sankey');
 var attributes = require('@src/traces/sankey/attributes');
 
-describe('sankey initialization tests', function() {
+describe('sankey tests', function() {
 
     'use strict';
 
@@ -87,6 +87,54 @@ describe('sankey initialization tests', function() {
         });
 
     });
+
+    describe('log warning if issue is encountered with graph structure',
+        function() {
+
+            it('some nodes are not linked', function() {
+
+                var warnings = [];
+                spyOn(Lib, 'warn').and.callFake(function(msg) {
+                    warnings.push(msg);
+                });
+
+                _supply({
+                    node: {
+                        label: ['a', 'b', 'c']
+                    },
+                    link: {
+                        value: [1],
+                        source: [0],
+                        target: [1]
+                    }
+                });
+
+                expect(warnings.length).toEqual(1);
+            });
+
+            it('circularity is detected', function() {
+
+                var errors = [];
+                spyOn(Lib, 'error').and.callFake(function(msg) {
+                    errors.push(msg);
+                });
+
+                _supply({
+                    node: {
+                        label: ['a', 'b', 'c']
+                    },
+                    link: {
+                        value: [1, 1, 1],
+                        source: [0, 1, 2],
+                        target: [1, 2, 0]
+                    }
+                });
+
+                expect(errors.length).toEqual(1);
+            });
+
+
+        });
 
     describe('sankey defaults', function() {
 

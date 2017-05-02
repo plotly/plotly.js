@@ -83,11 +83,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     };
 
     if(traceOut.node.label.some(missing)) {
-        Lib.log('Some of the nodes are neither sources nor targets, please remove them.');
+        Lib.warn('Some of the nodes are neither sources nor targets, please remove them.');
     }
 
     if(circularityPresent(traceOut.node.label, traceOut.link.source, traceOut.link.target)) {
-        Lib.log('Circularity is present in the Sankey data. Removing all nodes and links.');
+        Lib.error('Circularity is present in the Sankey data. Removing all nodes and links.');
         traceOut.link.label = [];
         traceOut.link.source = [];
         traceOut.link.target = [];
