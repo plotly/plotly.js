@@ -15,8 +15,7 @@
       ],
       "marker": {
         "size": 20
-      },
-      "uid": "d4580a"
+      }
     },
     {
       "type": "scattermapbox",
@@ -33,8 +32,7 @@
       ],
       "marker": {
         "size": 20
-      },
-      "uid": "f5a4c5"
+      }
     }
   ],
   "layout": {

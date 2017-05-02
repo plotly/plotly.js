@@ -494,8 +494,7 @@
                 "24",
                 "14"
             ],
-            "name": "raw",
-            "uid": "3154a7"
+            "name": "raw"
         },
         {
             "mode": "lines",
@@ -996,8 +995,7 @@
             ],
             "xaxis": "x2",
             "yaxis": "y2",
-            "name": "dev from mean",
-            "uid": "d16487"
+            "name": "dev from mean"
         }
     ],
     "layout": {

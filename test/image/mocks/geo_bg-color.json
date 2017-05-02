@@ -20,8 +20,7 @@
                     "type": "radial",
                     "color": "rgba(31,119,180,0.5)"
                 }
-            },
-            "uid": "7e4393"
+            }
         },
         {
             "type": "scattergeo",
@@ -42,8 +41,7 @@
                     "type": "vertical",
                     "color": ["#000", "#fff", "#888"]
                 }
-            },
-            "uid": "9d01ba"
+            }
         }
     ],
     "layout": {
