@@ -14,7 +14,6 @@ Plot.attributes = require('./attributes');
 Plot.supplyDefaults = require('./defaults');
 Plot.calc = require('./calc');
 Plot.plot = require('./plot');
-Plot.colorbar = require('./colorbar');
 
 Plot.moduleType = 'trace';
 Plot.name = 'sankey';
