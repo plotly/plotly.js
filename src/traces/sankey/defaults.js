@@ -41,7 +41,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    coerce('node.label');
+    coerce('node.label', []);
     coerce('node.pad');
     coerce('node.thickness');
     coerce('node.line.color');
@@ -49,18 +49,18 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var defaultNodePalette = function(i) {return colors[i % colors.length];};
 
-    coerce('node.color', traceIn.node.label.map(function(d, i) {
+    coerce('node.color', traceOut.node.label.map(function(d, i) {
         return Color.addOpacity(defaultNodePalette(i), 0.8);
     }));
 
     coerce('link.label');
-    coerce('link.source');
-    coerce('link.target');
-    coerce('link.value');
+    coerce('link.source', []);
+    coerce('link.target', []);
+    coerce('link.value', []);
     coerce('link.line.color');
     coerce('link.line.width');
 
-    coerce('link.color', traceIn.link.value.map(function() {
+    coerce('link.color', traceOut.link.value.map(function() {
         return tinycolor(layout.paper_bgcolor).getLuminance() < 0.333 ?
             'rgba(255, 255, 255, 0.6)' :
             'rgba(0, 0, 0, 0.2)';
@@ -78,10 +78,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     Lib.coerceFont(coerce, 'textfont', Lib.extendFlat({}, layout.font));
 
     var missing = function(n, i) {
-        return traceIn.link.source.indexOf(i) === -1 &&
-            traceIn.link.target.indexOf(i) === -1;
+        return traceOut.link.source.indexOf(i) === -1 &&
+            traceOut.link.target.indexOf(i) === -1;
     };
-    if(traceIn.node.label.some(missing)) {
+
+    if(traceOut.node.label.some(missing)) {
         Lib.log('Some of the nodes are neither sources nor targets, please remove them.');
     }
 
