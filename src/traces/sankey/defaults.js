@@ -41,7 +41,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    coerce('node.label', []);
+    coerce('node.label');
     coerce('node.pad');
     coerce('node.thickness');
     coerce('node.line.color');
@@ -54,9 +54,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }));
 
     coerce('link.label');
-    coerce('link.source', []);
-    coerce('link.target', []);
-    coerce('link.value', []);
+    coerce('link.source');
+    coerce('link.target');
+    coerce('link.value');
     coerce('link.line.color');
     coerce('link.line.width');
 

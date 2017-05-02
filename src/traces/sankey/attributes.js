@@ -96,7 +96,7 @@ module.exports = {
     node: {
         label: {
             valType: 'data_array',
-            dflt: '',
+            dflt: [],
             role: 'info',
             description: 'The shown name of the node.'
         },
@@ -152,7 +152,7 @@ module.exports = {
     link: {
         label: {
             valType: 'data_array',
-            dflt: '',
+            dflt: [],
             role: 'info',
             description: 'The shown name of the link.'
         },
@@ -187,16 +187,18 @@ module.exports = {
         source: {
             valType: 'data_array',
             role: 'info',
+            dflt: [],
             description: 'An integer number `[0..nodes.length - 1]` that represents the source node.'
         },
         target: {
             valType: 'data_array',
             role: 'info',
+            dflt: [],
             description: 'An integer number `[0..nodes.length - 1]` that represents the target node.'
         },
         value: {
             valType: 'data_array',
-            dflt: 1,
+            dflt: [],
             role: 'info',
             description: 'A numeric value representing the flow volume value.'
         },
