@@ -153,7 +153,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
             .selectAll('.points').selectAll('.point')
                 .call(Drawing.setPointGroupScale, 1, 1);
 
-        subplot.plot.selectAll('.points').selectAll('g')
+        subplot.plot.selectAll('.points').selectAll('.textpoint')
             .each(function() {
                 var el = d3.select(this);
                 var existingTransform = el.attr('transform').match(LAST_TRANSLATION_RE);
@@ -239,7 +239,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
             .selectAll('.points').selectAll('.point')
                 .call(Drawing.setPointGroupScale, 1 / xScaleFactor, 1 / yScaleFactor);
 
-        subplot.plot.selectAll('.points').selectAll('g')
+        subplot.plot.selectAll('.points').selectAll('.textpoint')
             .each(function() {
                 var el = d3.select(this);
                 var text = el.select('text');
