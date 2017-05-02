@@ -31,6 +31,7 @@ describe('general transforms:', function() {
             operation: '=',
             value: 0,
             target: 'x',
+            preservegaps: false,
             _module: Filter
         }]);
     });
@@ -66,23 +67,23 @@ describe('general transforms:', function() {
 
         traceOut = Plots.supplyTraceDefaults(traceIn, 0, layout);
 
-        expect(traceOut.transforms[0]).toEqual({
+        expect(traceOut.transforms[0]).toEqual(jasmine.objectContaining({
             type: 'filter',
             enabled: true,
             operation: '=',
             value: 0,
             target: 'x',
             _module: Filter
-        }, '- global first');
+        }), '- global first');
 
-        expect(traceOut.transforms[1]).toEqual({
+        expect(traceOut.transforms[1]).toEqual(jasmine.objectContaining({
             type: 'filter',
             enabled: true,
             operation: '>',
             value: 0,
             target: 'x',
             _module: Filter
-        }, '- trace second');
+        }), '- trace second');
 
         expect(layout._transformModules).toEqual([Filter]);
     });
@@ -118,14 +119,14 @@ describe('general transforms:', function() {
         }], msg);
 
         msg = 'supplying the transform defaults';
-        expect(dataOut[1].transforms[0]).toEqual({
+        expect(dataOut[1].transforms[0]).toEqual(jasmine.objectContaining({
             type: 'filter',
             enabled: true,
             operation: '>',
             value: 0,
             target: 'x',
             _module: Filter
-        }, msg);
+        }), msg);
 
         msg = 'keeping refs to user data';
         expect(dataOut[1]._input.x).toEqual([-2, -1, -2, 0, 1, 2, 3], msg);
@@ -144,6 +145,7 @@ describe('general transforms:', function() {
             operation: '>',
             value: 0,
             target: 'x',
+            preservegaps: false,
             _module: Filter
         }], msg);
 

@@ -463,6 +463,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         });
 
         join.selectAll('text')
+            .classed('textpoint', true)
             .call(Drawing.textPointStyle, trace)
             .each(function(d) {
 
