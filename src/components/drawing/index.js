@@ -203,7 +203,7 @@ drawing.symbolNumber = function(v) {
     return Math.floor(Math.max(v, 0));
 };
 
-function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerLine, gd) {
+function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerLine, gd, i) {
     // only scatter & box plots get marker path and opacity
     // bars, histograms don't
     if(Registry.traceIs(trace, 'symbols')) {
@@ -238,6 +238,8 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
         });
     }
 
+    var perPointGradient = false;
+
     // 'so' is suspected outliers, for box plots
     var fillColor,
         lineColor,
@@ -257,8 +259,12 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
         else if(Array.isArray(markerLine.color)) lineColor = Color.defaultLine;
         else lineColor = markerLine.color;
 
+        if(Array.isArray(marker.color)) {
+            fillColor = Color.defaultLine;
+            perPointGradient = true;
+        }
+
         if('mc' in d) fillColor = d.mcc = markerScale(d.mc);
-        else if(Array.isArray(marker.color)) fillColor = Color.defaultLine;
         else fillColor = marker.color || 'rgba(0,0,0,0)';
     }
 
@@ -275,10 +281,20 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
         sel.style('stroke-width', lineWidth + 'px');
 
         var markerGradient = marker.gradient;
-        var gradientColor = markerGradient && (d.mgc || markerGradient.color);
-        var gradientType = markerGradient && (d.mgt || markerGradient.type);
+
+        var gradientType = d.mgt;
+        if(gradientType) perPointGradient = true;
+        else gradientType = markerGradient && markerGradient.type;
+
         if(gradientType && gradientType !== 'none') {
-            sel.call(drawing.gradient, gd, gradientType, fillColor, gradientColor);
+            var gradientColor = d.mgc;
+            if(gradientColor) perPointGradient = true;
+            else gradientColor = markerGradient.color;
+
+            var gradientID = 'g' + gd._fullLayout._uid + '-' + trace.uid;
+            if(perPointGradient) gradientID += '-' + i;
+
+            sel.call(drawing.gradient, gd, gradientID, gradientType, fillColor, gradientColor);
         }
         else {
             sel.call(Color.fill, fillColor);
@@ -293,12 +309,12 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
 var HORZGRADIENT = {x1: 1, x2: 0, y1: 0, y2: 0};
 var VERTGRADIENT = {x1: 0, x2: 0, y1: 1, y2: 0};
 
-drawing.gradient = function(sel, gd, type, color1, color2) {
-    var fullLayout = gd._fullLayout;
-    var gradientID = (
-        type + fullLayout._uid + '-' + color1 + '-' + color2
-    ).replace(/[^\w\-]+/g, '_');
-    var gradient = fullLayout._defs.select('.gradients').selectAll('#' + gradientID).data([0]);
+drawing.gradient = function(sel, gd, gradientID, type, color1, color2) {
+    var gradient = gd._fullLayout._defs.select('.gradients')
+        .selectAll('#' + gradientID)
+        .data([type + color1 + color2], Lib.identity);
+
+    gradient.exit().remove();
 
     gradient.enter()
         .append(type === 'radial' ? 'radialGradient' : 'linearGradient')
@@ -345,10 +361,10 @@ drawing.initGradients = function(gd) {
     gradientsGroup.selectAll('linearGradient,radialGradient').remove();
 };
 
-drawing.singlePointStyle = function(d, sel, trace, markerScale, lineScale, gd) {
+drawing.singlePointStyle = function(d, sel, trace, markerScale, lineScale, gd, i) {
     var marker = trace.marker;
 
-    singlePointStyle(d, sel, trace, markerScale, lineScale, marker, marker.line, gd);
+    singlePointStyle(d, sel, trace, markerScale, lineScale, marker, marker.line, gd, i);
 
 };
 
@@ -362,8 +378,8 @@ drawing.pointStyle = function(s, trace) {
     var lineScale = drawing.tryColorscale(marker, 'line');
     var gd = Lib.getPlotDiv(s.node());
 
-    s.each(function(d) {
-        drawing.singlePointStyle(d, d3.select(this), trace, markerScale, lineScale, gd);
+    s.each(function(d, i) {
+        drawing.singlePointStyle(d, d3.select(this), trace, markerScale, lineScale, gd, i);
     });
 };
 

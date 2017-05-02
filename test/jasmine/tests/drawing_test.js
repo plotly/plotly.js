@@ -325,20 +325,31 @@ describe('gradients', function() {
 
     afterEach(destroyGraphDiv);
 
-    function checkGradientIds(uid, specs) {
-        var sortedExpected = specs.map(function(spec) {
-            return (spec[0] + uid + '-' + spec[1] + '-' + spec[2]).replace(/[^\w\-]+/g, '_');
-        }).sort();
+    function checkGradientIds(ids, types, c1, c2) {
+        var expected = ids.map(function(id) {
+            return 'g' + gd._fullLayout._uid + '-' + gd._fullData[0].uid + id;
+        });
 
         var gids = [];
+        var typesOut = [];
+        var c1Out = [];
+        var c2Out = [];
         var gradients = d3.select(gd).selectAll('radialGradient,linearGradient');
-        gradients.each(function() { gids.push(this.id); });
+        gradients.each(function() {
+            gids.push(this.id);
+            typesOut.push(this.nodeName.replace('Gradient', ''));
+            c1Out.push(d3.select(this).select('stop[offset="100%"]').attr('stop-color'));
+            c2Out.push(d3.select(this).select('stop[offset="0%"]').attr('stop-color'));
+        });
         gids.sort();
 
-        expect(gids.length).toBe(sortedExpected.length);
+        expect(gids.length).toBe(expected.length);
 
-        for(var i = 0; i < Math.min(gids.length, sortedExpected.length); i++) {
-            expect(gids[i]).toBe(sortedExpected[i]);
+        for(var i = 0; i < Math.min(gids.length, expected.length); i++) {
+            expect(gids[i]).toBe(expected[i]);
+            expect(typesOut[i]).toBe(types[i]);
+            expect(c1Out[i]).toBe(c1[i]);
+            expect(c2Out[i]).toBe(c2[i]);
         }
     }
 
@@ -355,41 +366,51 @@ describe('gradients', function() {
             }
         }])
         .then(function() {
-            checkGradientIds(gd._fullLayout._uid, [
-                ['radial', '#123', '#fff'],
-                ['radial', '#123', '#eee'],
-                ['radial', '#123', '#ddd']
-            ]);
+            checkGradientIds(
+                ['-0', '-1', '-2'],
+                ['radial', 'radial', 'radial'],
+                ['rgb(17, 34, 51)', 'rgb(17, 34, 51)', 'rgb(17, 34, 51)'],
+                ['rgb(255, 255, 255)', 'rgb(238, 238, 238)', 'rgb(221, 221, 221)']);
 
             return Plotly.restyle(gd, {'marker.color': '#456'});
         })
         .then(function() {
             // simple scalar restyle doesn't trigger a full replot, so
             // doesn't clear the old gradients
-            checkGradientIds(gd._fullLayout._uid, [
-                ['radial', '#123', '#fff'],
-                ['radial', '#123', '#eee'],
-                ['radial', '#123', '#ddd'],
-                ['radial', '#456', '#fff'],
-                ['radial', '#456', '#eee'],
-                ['radial', '#456', '#ddd']
-            ]);
+            checkGradientIds(
+                ['-0', '-1', '-2'],
+                ['radial', 'radial', 'radial'],
+                ['rgb(68, 85, 102)', 'rgb(68, 85, 102)', 'rgb(68, 85, 102)'],
+                ['rgb(255, 255, 255)', 'rgb(238, 238, 238)', 'rgb(221, 221, 221)']);
 
             return Plotly.restyle(gd, {'marker.gradient.type': [['horizontal', 'vertical', 'radial']]});
         })
         .then(function() {
             // array restyle does replot
-            checkGradientIds(gd._fullLayout._uid, [
-                ['horizontal', '#456', '#fff'],
-                ['vertical', '#456', '#eee'],
-                ['radial', '#456', '#ddd']
-            ]);
+            checkGradientIds(
+                ['-0', '-1', '-2'],
+                ['linear', 'linear', 'radial'],
+                ['rgb(68, 85, 102)', 'rgb(68, 85, 102)', 'rgb(68, 85, 102)'],
+                ['rgb(255, 255, 255)', 'rgb(238, 238, 238)', 'rgb(221, 221, 221)']);
+
+            return Plotly.restyle(gd, {
+                'marker.gradient.type': 'vertical',
+                'marker.gradient.color': '#abc'
+            });
+        })
+        .then(function() {
+            // down to a single gradient because they're all the same
+            checkGradientIds(
+                [''],
+                ['linear'],
+                ['rgb(68, 85, 102)'],
+                ['rgb(170, 187, 204)']);
 
             return Plotly.restyle(gd, {'mode': 'lines'});
         })
         .then(function() {
             // full replot and no resulting markers at all -> no gradients
-            checkGradientIds(gd._fullLayout._uid, []);
+            checkGradientIds([], [], [], []);
         })
         .catch(fail)
         .then(done);
