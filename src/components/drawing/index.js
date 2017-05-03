@@ -699,10 +699,10 @@ drawing.setTextPointsScale = function(selection, xScale, yScale) {
         var transforms;
         var el = d3.select(this);
         var text = el.select('text');
-        var x = parseFloat(text.attr('x'));
-        var y = parseFloat(text.attr('y'));
+        var x = parseFloat(text.attr('x') || 0);
+        var y = parseFloat(text.attr('y') || 0);
 
-        var existingTransform = el.attr('transform').match(TEXT_POINT_LAST_TRANSLATION_RE);
+        var existingTransform = (el.attr('transform') || '').match(TEXT_POINT_LAST_TRANSLATION_RE);
 
         if(xScale === 1 && yScale === 1) {
             transforms = [];
