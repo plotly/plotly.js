@@ -203,7 +203,7 @@ drawing.symbolNumber = function(v) {
     return Math.floor(Math.max(v, 0));
 };
 
-function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerLine, gd, i) {
+function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerLine, gd) {
     // only scatter & box plots get marker path and opacity
     // bars, histograms don't
     if(Registry.traceIs(trace, 'symbols')) {
@@ -292,7 +292,7 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
             else gradientColor = markerGradient.color;
 
             var gradientID = 'g' + gd._fullLayout._uid + '-' + trace.uid;
-            if(perPointGradient) gradientID += '-' + i;
+            if(perPointGradient) gradientID += '-' + d.i;
 
             sel.call(drawing.gradient, gd, gradientID, gradientType, fillColor, gradientColor);
         }
@@ -361,10 +361,10 @@ drawing.initGradients = function(gd) {
     gradientsGroup.selectAll('linearGradient,radialGradient').remove();
 };
 
-drawing.singlePointStyle = function(d, sel, trace, markerScale, lineScale, gd, i) {
+drawing.singlePointStyle = function(d, sel, trace, markerScale, lineScale, gd) {
     var marker = trace.marker;
 
-    singlePointStyle(d, sel, trace, markerScale, lineScale, marker, marker.line, gd, i);
+    singlePointStyle(d, sel, trace, markerScale, lineScale, marker, marker.line, gd);
 
 };
 
@@ -378,8 +378,8 @@ drawing.pointStyle = function(s, trace) {
     var lineScale = drawing.tryColorscale(marker, 'line');
     var gd = Lib.getPlotDiv(s.node());
 
-    s.each(function(d, i) {
-        drawing.singlePointStyle(d, d3.select(this), trace, markerScale, lineScale, gd, i);
+    s.each(function(d) {
+        drawing.singlePointStyle(d, d3.select(this), trace, markerScale, lineScale, gd);
     });
 };
 
