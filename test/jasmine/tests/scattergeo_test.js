@@ -89,7 +89,10 @@ describe('Test scattergeo calc', function() {
         Plots.supplyDefaults(gd);
 
         var fullTrace = gd._fullData[0];
-        return ScatterGeo.calc(gd, fullTrace);
+        return ScatterGeo.calc(gd, fullTrace).map(function(obj) {
+            delete obj.i;
+            return obj;
+        });
     }
 
     it('should place lon/lat data in lonlat pairs', function() {

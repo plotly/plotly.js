@@ -24,7 +24,7 @@ module.exports = function plot(gd, plotinfoproxy, data) {
         plot: plotinfoproxy.plot
     };
 
-    scatterPlot(plotinfo.graphDiv, plotinfo, data);
+    scatterPlot(gd, plotinfo, data);
 
     for(i = 0; i < data.length; i++) {
         trace = data[i][0].trace;

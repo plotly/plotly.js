@@ -311,7 +311,29 @@ module.exports = {
             }
         },
             colorAttributes('marker.line')
-        )
+        ),
+        gradient: {
+            type: {
+                valType: 'enumerated',
+                values: ['radial', 'horizontal', 'vertical', 'none'],
+                arrayOk: true,
+                dflt: 'none',
+                role: 'style',
+                description: [
+                    'Sets the type of gradient used to fill the markers'
+                ].join(' ')
+            },
+            color: {
+                valType: 'color',
+                arrayOk: true,
+                role: 'style',
+                description: [
+                    'Sets the final color of the gradient fill:',
+                    'the center color for radial, the right for horizontal,',
+                    'or the bottom for vertical.',
+                ].join(' ')
+            }
+        }
     },
         colorAttributes('marker')
     ),

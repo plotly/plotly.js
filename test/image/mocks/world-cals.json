@@ -13,8 +13,7 @@
                 -3
             ],
             "xcalendar": "coptic",
-            "name": "coptic bars",
-            "uid": "74ab24"
+            "name": "coptic bars"
         },
         {
             "type": "box",
@@ -30,8 +29,7 @@
             "orientation": "h",
             "xcalendar": "discworld",
             "y0": -3,
-            "name": "discworld box",
-            "uid": "8c8a7d"
+            "name": "discworld box"
         },
         {
             "type": "contour",
@@ -65,7 +63,6 @@
             "xcalendar": "ethiopian",
             "name": "ethiopian contour",
             "showscale": false,
-            "uid": "506ec8",
             "zmin": 1,
             "zmax": 4,
             "contours": {
@@ -101,7 +98,6 @@
             "xcalendar": "hebrew",
             "name": "hebrew heatmap",
             "showscale": false,
-            "uid": "2f8d3f",
             "zmin": 1,
             "zmax": 4
         },
@@ -128,7 +124,6 @@
             "nbinsx": 3,
             "nbinsy": 2,
             "showscale": false,
-            "uid": "beb4e5",
             "xbins": {
                 "start": "1388-12-14 12:00",
                 "end": "1389-06-14 12:00",
@@ -165,7 +160,6 @@
             "nbinsx": 3,
             "nbinsy": 2,
             "showscale": false,
-            "uid": "d01089",
             "xbins": {
                 "start": "1969-10-16 12:00",
                 "end": "1970-08-16 12:00",
@@ -219,8 +213,7 @@
                 1
             ],
             "xcalendar": "mayan",
-            "name": "mayan",
-            "uid": "af70cc"
+            "name": "mayan"
         },
         {
             "type": "scatter",
@@ -237,8 +230,7 @@
                 1
             ],
             "xcalendar": "nanakshahi",
-            "name": "nanakshahi",
-            "uid": "de4e9d"
+            "name": "nanakshahi"
         },
         {
             "type": "scatter",
@@ -255,8 +247,7 @@
                 1
             ],
             "xcalendar": "nepali",
-            "name": "nepali",
-            "uid": "5d4950"
+            "name": "nepali"
         },
         {
             "type": "scatter",
@@ -273,8 +264,7 @@
                 1
             ],
             "xcalendar": "persian",
-            "name": "persian",
-            "uid": "d13636"
+            "name": "persian"
         },
         {
             "type": "scatter",
@@ -291,8 +281,7 @@
                 1
             ],
             "xcalendar": "jalali",
-            "name": "jalali",
-            "uid": "612738"
+            "name": "jalali"
         },
         {
             "type": "scatter",
@@ -309,8 +298,7 @@
                 1
             ],
             "xcalendar": "taiwan",
-            "name": "taiwan",
-            "uid": "24ac23"
+            "name": "taiwan"
         },
         {
             "type": "scatter",
@@ -327,8 +315,7 @@
                 1
             ],
             "xcalendar": "thai",
-            "name": "thai",
-            "uid": "830f65"
+            "name": "thai"
         },
         {
             "type": "histogram",
@@ -358,7 +345,6 @@
                     "target": "y"
                 }
             ],
-            "uid": "cf8dad",
             "ybins": {
                 "start": "5200-12-29 12:00",
                 "end": "5200-01-03 12:00",

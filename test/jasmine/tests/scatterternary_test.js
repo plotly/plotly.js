@@ -246,7 +246,7 @@ describe('scatterternary calc', function() {
         trace.b = [0.1, 0.3, null];
         trace.c = [8, 0.4, 0.1];
 
-        cd = calc(gd, trace);
+        cd = calc(gd, trace).map(function(obj) { delete obj.i; return obj; });
 
         expect(objectToArray(cd[0])).toBeCloseToArray([
             0.963414634, 0.012195121, 0.012195121, 0.012195121, 0.975609756

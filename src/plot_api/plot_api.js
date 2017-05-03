@@ -153,6 +153,9 @@ Plotly.plot = function(gd, data, layout, config) {
         makePlotFramework(gd);
     }
 
+    // clear gradient defs on each .plot call, because we know we'll loop through all traces
+    Drawing.initGradients(gd);
+
     // save initial show spikes once per graph
     if(graphWasEmpty) Plotly.Axes.saveShowSpikeInitial(gd);
 
