@@ -74,9 +74,10 @@ module.exports = function selectPoints(searchInfo, polygon) {
     var fullTrace = cd[0].trace;
 
     //FIXME: remove
-    fullTrace.x = fullTrace.x.slice(1)
-    fullTrace.y = fullTrace.y.slice(1)
+    // fullTrace.x = fullTrace.x.slice(1)
+    // fullTrace.y = fullTrace.y.slice(1)
 
+    fullTrace.selection = selection
 
     // scene.plot([fullTrace], [cd], scene.fullLayout);
 

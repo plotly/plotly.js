@@ -29,6 +29,7 @@ var MARKER_SYMBOLS = require('../../constants/gl_markers');
 var DASHES = require('../../constants/gl2d_dashes');
 
 var AXES = ['xaxis', 'yaxis'];
+var DESELECTDIM = 0.2;
 
 
 function LineWithMarkers(scene, uid) {
@@ -252,7 +253,7 @@ function _convertColor(colors, opacities, count) {
     return result;
 }
 
-proto.update = function(options) {
+proto.update = function(options, cd) {
     if(options.visible !== true) {
         this.isVisible = false;
         this.hasLines = false;
@@ -376,50 +377,89 @@ proto.updateFast = function(options) {
     positions = truncate(positions, ptr);
     this.idToIndex = idToIndex;
 
+    //form selected set
+    var selPositions
+    if (options.selection) {
+        let selection = options.selection
+        selPositions = new Float64Array(2 * options.selection.length)
+
+        for (var i = 0, l = selection.length; i < l; i++) {
+            selPositions[i * 2 + 0] = selection[i].x
+            selPositions[i * 2 + 1] = selection[i].y
+        }
+    }
+
     this.updateLines(options, positions);
     this.updateError('X', options);
     this.updateError('Y', options);
 
     var markerSize;
 
-    if(this.hasMarkers) {
-        // split positions into selected/non-selected ones
-        // this.scatter.options.positions = positions;
+    if (this.hasMarkers) {
+        //if we have selPositions array - means we have to render all as transparent, and selection as opaque
+        //FIXME: optimize this code part
+        if (selPositions) {
 
-        // var markerColor = str2RGBArray(options.marker.color),
-        //     borderColor = str2RGBArray(options.marker.line.color),
-        //     opacity = (options.opacity) * (options.marker.opacity);
+            this.selectScatter.options.positions = positions;
 
-        // markerColor[3] *= opacity;
-        // this.scatter.options.color = markerColor;
+            var markerColor = str2RGBArray(options.marker.color),
+                borderColor = str2RGBArray(options.marker.line.color),
+                opacity = (options.opacity) * (options.marker.opacity) * DESELECTDIM;
 
-        // borderColor[3] *= opacity;
-        // this.scatter.options.borderColor = borderColor;
+            markerColor[3] *= opacity;
+            this.selectScatter.options.color = markerColor;
 
-        // markerSize = options.marker.size;
-        // this.scatter.options.size = markerSize;
-        // this.scatter.options.borderSize = options.marker.line.width;
+            borderColor[3] *= opacity;
+            this.selectScatter.options.borderColor = borderColor;
 
-        // this.scatter.update();
+            markerSize = options.marker.size;
+            this.selectScatter.options.size = markerSize;
+            this.selectScatter.options.borderSize = options.marker.line.width;
+            this.selectScatter.update();
+
+
+            // split positions into selected/non-selected ones
+            this.scatter.options.positions = selPositions;
+
+            var markerColor = str2RGBArray(options.marker.color),
+                borderColor = str2RGBArray(options.marker.line.color),
+                opacity = (options.opacity) * (options.marker.opacity);
+
+            markerColor[3] *= opacity;
+            this.scatter.options.color = markerColor;
+
+            borderColor[3] *= opacity;
+            this.scatter.options.borderColor = borderColor;
+
+            markerSize = options.marker.size;
+            this.scatter.options.size = markerSize;
+            this.scatter.options.borderSize = options.marker.line.width;
+
+            this.scatter.update();
+        }
+
+        else {
+            this.scatter.options.positions = positions;
+
+            var markerColor = str2RGBArray(options.marker.color),
+                borderColor = str2RGBArray(options.marker.line.color),
+                opacity = (options.opacity) * (options.marker.opacity);
+
+            markerColor[3] *= opacity;
+            this.scatter.options.color = markerColor;
+
+            borderColor[3] *= opacity;
+            this.scatter.options.borderColor = borderColor;
+
+            markerSize = options.marker.size;
+            this.scatter.options.size = markerSize;
+            this.scatter.options.borderSize = options.marker.line.width;
+
+            this.scatter.update();
+        }
 
 
 
-        this.selectScatter.options.positions = positions;
-
-        var markerColor = str2RGBArray(options.marker.color),
-            borderColor = str2RGBArray(options.marker.line.color),
-            opacity = (options.opacity) * (options.marker.opacity);
-
-        markerColor[3] *= opacity;
-        this.selectScatter.options.color = markerColor;
-
-        borderColor[3] *= opacity;
-        this.selectScatter.options.borderColor = borderColor;
-
-        markerSize = options.marker.size;
-        this.selectScatter.options.size = markerSize;
-        this.selectScatter.options.borderSize = options.marker.line.width;
-        this.selectScatter.update();
     }
     else {
         this.scatter.clear();
