@@ -29,7 +29,7 @@ var MARKER_SYMBOLS = require('../../constants/gl_markers');
 var DASHES = require('../../constants/gl2d_dashes');
 
 var AXES = ['xaxis', 'yaxis'];
-var DESELECTDIM = 0.2;
+var DESELECTDIM = 0.002;
 
 
 function LineWithMarkers(scene, uid) {
