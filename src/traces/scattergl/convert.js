@@ -29,7 +29,7 @@ var MARKER_SYMBOLS = require('../../constants/gl_markers');
 var DASHES = require('../../constants/gl2d_dashes');
 
 var AXES = ['xaxis', 'yaxis'];
-var DESELECTDIM = 0.002;
+var DESELECTDIM = 0.2;
 
 
 function LineWithMarkers(scene, uid) {
@@ -338,7 +338,18 @@ proto.updateFast = function(options) {
         positions = new Float64Array(2 * len),
         bounds = this.bounds,
         pId = 0,
-        ptr = 0;
+        ptr = 0,
+        selection = options.selection,
+        sel;
+
+    //form selection cache
+    if (selection) {
+        sel = {}
+        for (var i = 0, l = selection.length; i < l; i++) {
+            var pt = selection[i]
+            sel[pt.id] = pt
+        }
+    }
 
     var xx, yy;
 
@@ -361,10 +372,14 @@ proto.updateFast = function(options) {
                     xx = Lib.dateTime2ms(xx, xcalendar);
                 }
 
+                // ignore selected points from positions
+                if (!sel || !sel[i]) {
+                    positions[ptr++] = xx;
+                    positions[ptr++] = yy;
+                }
+
                 idToIndex[pId++] = i;
 
-                positions[ptr++] = xx;
-                positions[ptr++] = yy;
 
                 bounds[0] = Math.min(bounds[0], xx);
                 bounds[1] = Math.min(bounds[1], yy);
@@ -379,9 +394,8 @@ proto.updateFast = function(options) {
 
     //form selected set
     var selPositions
-    if (options.selection) {
-        let selection = options.selection
-        selPositions = new Float64Array(2 * options.selection.length)
+    if (selection) {
+        selPositions = new Float64Array(2 * selection.length)
 
         for (var i = 0, l = selection.length; i < l; i++) {
             selPositions[i * 2 + 0] = selection[i].x
@@ -396,10 +410,8 @@ proto.updateFast = function(options) {
     var markerSize;
 
     if (this.hasMarkers) {
-        //if we have selPositions array - means we have to render all as transparent, and selection as opaque
-        //FIXME: optimize this code part
+        // if we have selPositions array - means we have to render all points transparent, and selected points opaque
         if (selPositions) {
-
             this.selectScatter.options.positions = positions;
 
             var markerColor = str2RGBArray(options.marker.color),
@@ -418,7 +430,6 @@ proto.updateFast = function(options) {
             this.selectScatter.update();
 
 
-            // split positions into selected/non-selected ones
             this.scatter.options.positions = selPositions;
 
             var markerColor = str2RGBArray(options.marker.color),
