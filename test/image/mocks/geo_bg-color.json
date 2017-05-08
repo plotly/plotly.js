@@ -15,9 +15,12 @@
                 -30
             ],
             "marker": {
-                "size": 20
-            },
-            "uid": "7e4393"
+                "size": 20,
+                "gradient": {
+                    "type": "radial",
+                    "color": "rgba(31,119,180,0.5)"
+                }
+            }
         },
         {
             "type": "scattergeo",
@@ -33,9 +36,12 @@
             ],
             "geo": "geo2",
             "marker": {
-                "size": 20
-            },
-            "uid": "9d01ba"
+                "size": 20,
+                "gradient": {
+                    "type": "vertical",
+                    "color": ["#000", "#fff", "#888"]
+                }
+            }
         }
     ],
     "layout": {

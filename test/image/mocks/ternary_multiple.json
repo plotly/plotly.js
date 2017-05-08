@@ -14,7 +14,13 @@
                 0.1
             ],
             "name": "c missing",
-            "uid": "757d30"
+            "marker": {
+                "size": 15,
+                "gradient": {
+                    "type": "radial",
+                    "color": "#fff"
+                }
+            }
         },
         {
             "type": "scatterternary",
@@ -31,7 +37,13 @@
             ],
             "subplot": "ternary2",
             "name": "b missing",
-            "uid": "6c0753"
+            "marker": {
+                "size": 15,
+                "gradient": {
+                    "type": "horizontal",
+                    "color": "#000"
+                }
+            }
         },
         {
             "type": "scatterternary",
@@ -48,7 +60,13 @@
             ],
             "subplot": "ternary3",
             "name": "a missing",
-            "uid": "12520d"
+            "marker": {
+                "size": 15,
+                "gradient": {
+                    "type": "vertical",
+                    "color": ["#f00", "#00f", "#ff0"]
+                }
+            }
         }
     ],
     "layout": {

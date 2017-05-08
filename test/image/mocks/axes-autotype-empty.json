@@ -4,50 +4,43 @@
             "y": [],
             "x": [],
             "type": "bar",
-            "name": "Automotive",
-            "uid": "54cc31"
+            "name": "Automotive"
         },
         {
             "y": [],
             "x": [],
             "type": "bar",
-            "name": "Collectibles",
-            "uid": "c50614"
+            "name": "Collectibles"
         },
         {
             "y": [],
             "x": [],
             "type": "bar",
-            "name": "Health",
-            "uid": "e902bc"
+            "name": "Health"
         },
         {
             "y": [],
             "x": [],
             "type": "bar",
-            "name": "HomeImprovement",
-            "uid": "2a80ac"
+            "name": "HomeImprovement"
         },
         {
             "y": [],
             "x": [],
             "type": "bar",
-            "name": "Outdoors",
-            "uid": "074cb0"
+            "name": "Outdoors"
         },
         {
             "y": [],
             "x": [],
             "type": "bar",
-            "name": "Pets",
-            "uid": "085a56"
+            "name": "Pets"
         },
         {
             "y": [],
             "x": [],
             "type": "bar",
-            "name": "Powersports",
-            "uid": "6f0a0f"
+            "name": "Powersports"
         },
         {
             "y": [
@@ -79,15 +72,13 @@
                 "2014-12-01"
             ],
             "type": "bar",
-            "name": "Sports",
-            "uid": "d22591"
+            "name": "Sports"
         },
         {
             "y": [],
             "x": [],
             "type": "bar",
-            "name": "Technology",
-            "uid": "a41218"
+            "name": "Technology"
         },
         {
             "y": [
@@ -107,8 +98,7 @@
                 "2014-12-01"
             ],
             "type": "bar",
-            "name": "Unknown",
-            "uid": "54969b"
+            "name": "Unknown"
         }
     ],
     "layout": {

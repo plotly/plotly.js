@@ -17,8 +17,7 @@
             ],
             "mode": "lines",
             "fill": "tozerox",
-            "fillcolor": "black",
-            "uid": "116a4f"
+            "fillcolor": "black"
         },
         {
             "x": [
@@ -40,8 +39,7 @@
             "marker": {
                 "size": 20,
                 "color": "red"
-            },
-            "uid": "0f7846"
+            }
         }
     ],
     "layout": {

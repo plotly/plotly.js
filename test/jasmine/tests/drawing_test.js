@@ -2,6 +2,12 @@ var Drawing = require('@src/components/drawing');
 
 var d3 = require('d3');
 
+var Plotly = require('@lib/index');
+
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
+
 describe('Drawing', function() {
     'use strict';
 
@@ -307,5 +313,106 @@ describe('Drawing', function() {
             Drawing.setPointGroupScale(sel, 1, 1);
             expect(el.getAttribute('transform')).toBe('translate(1,2)');
         });
+    });
+});
+
+describe('gradients', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function checkGradientIds(ids, types, c1, c2) {
+        var expected = ids.map(function(id) {
+            return 'g' + gd._fullLayout._uid + '-' + gd._fullData[0].uid + id;
+        });
+
+        var gids = [];
+        var typesOut = [];
+        var c1Out = [];
+        var c2Out = [];
+        var gradients = d3.select(gd).selectAll('radialGradient,linearGradient');
+        gradients.each(function() {
+            gids.push(this.id);
+            typesOut.push(this.nodeName.replace('Gradient', ''));
+            c1Out.push(d3.select(this).select('stop[offset="100%"]').attr('stop-color'));
+            c2Out.push(d3.select(this).select('stop[offset="0%"]').attr('stop-color'));
+        });
+        gids.sort();
+
+        expect(gids.length).toBe(expected.length);
+
+        for(var i = 0; i < Math.min(gids.length, expected.length); i++) {
+            expect(gids[i]).toBe(expected[i]);
+            expect(typesOut[i]).toBe(types[i]);
+            expect(c1Out[i]).toBe(c1[i]);
+            expect(c2Out[i]).toBe(c2[i]);
+        }
+    }
+
+    it('clears unused gradients after a replot', function(done) {
+        Plotly.plot(gd, [{
+            y: [0, 1, 2],
+            mode: 'markers',
+            marker: {
+                color: '#123',
+                gradient: {
+                    type: 'radial',
+                    color: ['#fff', '#eee', '#ddd']
+                }
+            }
+        }])
+        .then(function() {
+            checkGradientIds(
+                ['-0', '-1', '-2'],
+                ['radial', 'radial', 'radial'],
+                ['rgb(17, 34, 51)', 'rgb(17, 34, 51)', 'rgb(17, 34, 51)'],
+                ['rgb(255, 255, 255)', 'rgb(238, 238, 238)', 'rgb(221, 221, 221)']);
+
+            return Plotly.restyle(gd, {'marker.color': '#456'});
+        })
+        .then(function() {
+            // simple scalar restyle doesn't trigger a full replot, so
+            // doesn't clear the old gradients
+            checkGradientIds(
+                ['-0', '-1', '-2'],
+                ['radial', 'radial', 'radial'],
+                ['rgb(68, 85, 102)', 'rgb(68, 85, 102)', 'rgb(68, 85, 102)'],
+                ['rgb(255, 255, 255)', 'rgb(238, 238, 238)', 'rgb(221, 221, 221)']);
+
+            return Plotly.restyle(gd, {'marker.gradient.type': [['horizontal', 'vertical', 'radial']]});
+        })
+        .then(function() {
+            // array restyle does replot
+            checkGradientIds(
+                ['-0', '-1', '-2'],
+                ['linear', 'linear', 'radial'],
+                ['rgb(68, 85, 102)', 'rgb(68, 85, 102)', 'rgb(68, 85, 102)'],
+                ['rgb(255, 255, 255)', 'rgb(238, 238, 238)', 'rgb(221, 221, 221)']);
+
+            return Plotly.restyle(gd, {
+                'marker.gradient.type': 'vertical',
+                'marker.gradient.color': '#abc'
+            });
+        })
+        .then(function() {
+            // down to a single gradient because they're all the same
+            checkGradientIds(
+                [''],
+                ['linear'],
+                ['rgb(68, 85, 102)'],
+                ['rgb(170, 187, 204)']);
+
+            return Plotly.restyle(gd, {'mode': 'lines'});
+        })
+        .then(function() {
+            // full replot and no resulting markers at all -> no gradients
+            checkGradientIds([], [], [], []);
+        })
+        .catch(fail)
+        .then(done);
     });
 });

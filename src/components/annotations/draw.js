@@ -112,7 +112,8 @@ function drawOne(gd, index) {
             gd.emit('plotly_clickannotation', {
                 index: index,
                 annotation: optionsIn,
-                fullAnnotation: options
+                fullAnnotation: options,
+                event: d3.event
             });
         });
 

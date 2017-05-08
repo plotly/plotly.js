@@ -121,7 +121,8 @@ module.exports = {
         line: extendFlat({},
             {width: scatterMarkerLineAttrs.width},
             colorAttributes('marker'.line)
-        )
+        ),
+        gradient: scatterMarkerAttrs.gradient
     }, colorAttributes('marker'), {
         showscale: scatterMarkerAttrs.showscale,
         colorbar: colorbarAttrs

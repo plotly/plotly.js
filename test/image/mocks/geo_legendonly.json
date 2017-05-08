@@ -34,8 +34,7 @@
             "textfont": {
                 "size": 20
             },
-            "textposition": "top right",
-            "uid": "27d635"
+            "textposition": "top right"
         },
         {
             "type": "scattergeo",
@@ -55,8 +54,7 @@
                 "color": "green",
                 "width": 5,
                 "dash": "dot"
-            },
-            "uid": "bda980"
+            }
         },
         {
             "type": "scattergeo",
@@ -81,8 +79,7 @@
                 "color": "red",
                 "width": 3,
                 "dash": "longdashdot"
-            },
-            "uid": "9175b9"
+            }
         }
     ],
     "layout": {
