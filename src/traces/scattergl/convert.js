@@ -586,7 +586,7 @@ proto.updateFancy = function(options) {
 
             for(j = 0; j < 4; ++j) {
                 var color = colors[4 * index + j];
-                if (sel && sel[index] && j === 3) {
+                if (sel && !sel[index] && j === 3) {
                     color *= DESELECTDIM
                 }
                 this.scatter.options.colors[4 * i + j] = color;
