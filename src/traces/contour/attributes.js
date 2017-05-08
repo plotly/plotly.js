@@ -130,8 +130,8 @@ module.exports = extendFlat({}, {
 },
     colorscaleAttrs, {
         autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}),
-        zmin: extendFlat({}, colorscaleAttrs.zmin, {recalc: true}),
-        zmax: extendFlat({}, colorscaleAttrs.zmax, {recalc: true})
+        zmin: extendFlat({}, colorscaleAttrs.zmin, {editType: 'docalc'}),
+        zmax: extendFlat({}, colorscaleAttrs.zmax, {editType: 'docalc'})
     },
     { colorbar: colorbarAttrs }
 );

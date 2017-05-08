@@ -76,7 +76,7 @@ describe('plot schema', function() {
                     var valObject = valObjects[attr.valType],
                         opts = valObject.requiredOpts
                             .concat(valObject.otherOpts)
-                            .concat(['valType', 'description', 'role', 'recalc']);
+                            .concat(['valType', 'description', 'role', 'editType']);
 
                     Object.keys(attr).forEach(function(key) {
                         expect(opts.indexOf(key) !== -1).toBe(true, key, attr);

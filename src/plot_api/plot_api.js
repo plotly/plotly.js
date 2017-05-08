@@ -1624,8 +1624,8 @@ function _restyle(gd, aobj, _traces) {
                     flags.docalc = true;
                 }
 
-                // some attributes declare a 'recalc' flag
-                if(valObject.recalc) {
+                // some attributes declare an 'editType' flaglist
+                if(valObject.editType === 'docalc') {
                     flags.docalc = true;
                 }
 
