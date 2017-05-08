@@ -1624,6 +1624,11 @@ function _restyle(gd, aobj, _traces) {
                     flags.docalc = true;
                 }
 
+                // some attributes declare a 'recalc' flag
+                if(valObject.recalc) {
+                    flags.docalc = true;
+                }
+
                 // all the other ones, just modify that one attribute
                 param.set(newVal);
             }
