@@ -1168,7 +1168,11 @@ describe('annotation effects', function() {
         ], {}) // turn off the default editable: true
         .then(function() {
             clickData = [];
-            gd.on('plotly_clickannotation', function(evt) { clickData.push(evt); });
+            gd.on('plotly_clickannotation', function(evt) {
+                expect(evt.event).toEqual(jasmine.objectContaining({type: 'click'}));
+                delete evt.event;
+                clickData.push(evt);
+            });
 
             gdBB = gd.getBoundingClientRect();
             pos0Head = [gdBB.left + 200, gdBB.top + 200];
