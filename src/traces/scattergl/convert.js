@@ -275,6 +275,17 @@ proto.update = function(options, cd) {
     this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
     this.connectgaps = !!options.connectgaps;
 
+    //form selection cache
+    var sel, selection = options.selection
+    if (selection) {
+        sel = {}
+        for (var i = 0, l = selection.length; i < l; i++) {
+            var pt = selection[i]
+            sel[pt.pointNumber] = pt
+        }
+        this.selectedIds = sel
+    }
+
     if(!this.isVisible) {
         this.line.clear();
         this.errorX.clear();
@@ -340,16 +351,7 @@ proto.updateFast = function(options) {
         pId = 0,
         ptr = 0,
         selection = options.selection,
-        sel;
-
-    //form selection cache
-    if (selection) {
-        sel = {}
-        for (var i = 0, l = selection.length; i < l; i++) {
-            var pt = selection[i]
-            sel[pt.id] = pt
-        }
-    }
+        sel = this.selectedIds;
 
     var xx, yy;
 
@@ -487,7 +489,8 @@ proto.updateFancy = function(options) {
     var scene = this.scene,
         xaxis = scene.xaxis,
         yaxis = scene.yaxis,
-        bounds = this.bounds;
+        bounds = this.bounds,
+        sel = this.selectedIds
 
     // makeCalcdata runs d2c (data-to-coordinate) on every point
     var x = this.pickXData = xaxis.makeCalcdata(options, 'x').slice();
@@ -582,7 +585,11 @@ proto.updateFancy = function(options) {
             this.scatter.options.borderWidths[i] = 0.5 * borderWidths[index];
 
             for(j = 0; j < 4; ++j) {
-                this.scatter.options.colors[4 * i + j] = colors[4 * index + j];
+                var color = colors[4 * index + j];
+                if (sel && sel[index] && j === 3) {
+                    color *= DESELECTDIM
+                }
+                this.scatter.options.colors[4 * i + j] = color;
                 this.scatter.options.borderColors[4 * i + j] = borderColors[4 * index + j];
             }
         }
