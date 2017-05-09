@@ -696,7 +696,7 @@ function createHoverText(hoverData, opts) {
         // to get custom 'name' labels pass cleanPoint
         if(d.nameOverride !== undefined) d.name = d.nameOverride;
 
-        if(d.name && d.zLabelVal === undefined) {
+        if(d.name) {
             // strip out our pseudo-html elements from d.name (if it exists at all)
             name = svgTextUtils.plainText(d.name || '');
 

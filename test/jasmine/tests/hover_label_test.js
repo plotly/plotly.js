@@ -16,11 +16,8 @@ var fail = require('../assets/fail_test');
 describe('hover info', function() {
     'use strict';
 
-    var mock = require('@mocks/14.json'),
-        evt = {
-            clientX: mock.layout.width / 2,
-            clientY: mock.layout.height / 2
-        };
+    var mock = require('@mocks/14.json');
+    var evt = { xpx: 355, ypx: 150 };
 
     afterEach(destroyGraphDiv);
 
@@ -447,7 +444,53 @@ describe('hover info', function() {
 
                 done();
             });
+        });
+    });
 
+    describe('\'hover info for x/y/z traces', function() {
+        function _hover(gd, xpx, ypx) {
+            Fx.hover(gd, { xpx: xpx, ypx: ypx }, 'xy');
+            delete gd._lastHoverTime;
+        }
+
+        function _assert(nameLabel, lines) {
+            expect(d3.select('g.axistext').size()).toEqual(0, 'no common label');
+
+            var sel = d3.select('g.hovertext');
+            expect(sel.select('text.name').html()).toEqual(nameLabel, 'name label');
+            sel.select('text.nums').selectAll('tspan').each(function(_, i) {
+                expect(d3.select(this).html()).toEqual(lines[i], 'lines ' + i);
+            });
+        }
+
+        it('should display correct label content', function(done) {
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                type: 'heatmap',
+                y: [0, 1],
+                z: [[1, 2, 3], [2, 2, 1]],
+                name: 'one',
+            }, {
+                type: 'heatmap',
+                y: [2, 3],
+                z: [[1, 2, 3], [2, 2, 1]],
+                name: 'two'
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 100);
+                _assert('two', ['x: 1', 'y: 3', 'z: 2']);
+            })
+            .then(function() {
+                _hover(gd, 250, 300);
+                _assert('one', ['x: 1', 'y: 1', 'z: 2']);
+            })
+            .catch(fail)
+            .then(done);
         });
     });
 
