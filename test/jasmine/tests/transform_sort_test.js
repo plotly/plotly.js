@@ -146,6 +146,58 @@ describe('Test sort transform calc:', function() {
         expect(out[0].marker.color).toEqual([0.4, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3]);
         expect(out[0].marker.size).toEqual([10, 10, 1, 20, 6, 5, 0]);
     });
+
+    it('should truncate transformed arrays to target array length (short target case)', function() {
+        var out = _transform([
+            extend({
+                transforms: [{
+                    order: 'descending',
+                    target: [0, 1]
+                }]
+            }
+        ), extend({
+            text: ['A', 'B'],
+            transforms: [{ target: 'text' }]
+        })]);
+
+        expect(out[0].x).toEqual([-1, -2]);
+        expect(out[0].y).toEqual([2, 1]);
+        expect(out[0].ids).toEqual(['n1', 'n0']);
+        expect(out[0].marker.color).toEqual([0.2, 0.1]);
+        expect(out[0].marker.size).toEqual([20, 10]);
+
+        expect(out[1].x).toEqual([-2, -1]);
+        expect(out[1].y).toEqual([1, 2]);
+        expect(out[1].ids).toEqual(['n0', 'n1']);
+        expect(out[1].marker.color).toEqual([0.1, 0.2]);
+        expect(out[1].marker.size).toEqual([10, 20]);
+    });
+
+    it('should truncate transformed arrays to target array length (long target case)', function() {
+        var out = _transform([
+            extend({
+                transforms: [{
+                    order: 'descending',
+                    target: [0, 1, 2, 0, 1, 2, 3, 0, 1, 2, 3]
+                }]
+            }
+        ), extend({
+            text: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'],
+            transforms: [{ target: 'text' }]
+        })]);
+
+        expect(out[0].x).toEqual([1, undefined, -2, 3, undefined, -1, 1, undefined, -2, 0, undefined]);
+        expect(out[0].y).toEqual([1, undefined, 3, 3, undefined, 2, 2, undefined, 1, 1, undefined]);
+        expect(out[0].ids).toEqual(['p3', undefined, 'n2', 'p2', undefined, 'n1', 'p1', undefined, 'n0', 'z', undefined]);
+        expect(out[0].marker.color).toEqual([0.4, undefined, 0.3, 0.3, undefined, 0.2, 0.2, undefined, 0.1, 0.1, undefined]);
+        expect(out[0].marker.size).toEqual([10, undefined, 5, 0, undefined, 20, 6, undefined, 10, 1, undefined]);
+
+        expect(out[1].x).toEqual([-2, -1, -2, 0, 1, 3, 1, undefined, undefined]);
+        expect(out[1].y).toEqual([1, 2, 3, 1, 2, 3, 1, undefined, undefined]);
+        expect(out[1].ids).toEqual(['n0', 'n1', 'n2', 'z', 'p1', 'p2', 'p3', undefined, undefined]);
+        expect(out[1].marker.color).toEqual([0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.4, undefined, undefined]);
+        expect(out[1].marker.size).toEqual([10, 20, 5, 1, 6, 0, 10, undefined, undefined]);
+    });
 });
 
 describe('Test sort transform interactions:', function() {
