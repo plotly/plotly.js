@@ -1,8 +1,14 @@
+var Plotly = require('@lib/index');
 var attributes = require('@src/traces/sankey/attributes');
 var Lib = require('@src/lib');
-var mock = require('@mocks/energy.json');
+var d3 = require('d3');
+var mock = require('@mocks/sankey_energy.json');
+var mockDark = require('@mocks/sankey_energy_dark.json');
 var Plots = require('@src/plots/plots');
 var Sankey = require('@src/traces/sankey');
+
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 describe('sankey tests', function() {
 
@@ -246,6 +252,63 @@ describe('sankey tests', function() {
                 expect(fullTrace.link.target).toEqual([], 'link target(s) removed');
 
             });
+        });
+    });
+
+    describe('lifecycle methods', function() {
+
+        afterEach(destroyGraphDiv);
+
+        it('Plotly.deleteTraces with two traces removes the deleted plot', function(done) {
+
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+            var mockCopy2 = Lib.extendDeep({}, mockDark);
+
+            Plotly.plot(gd, mockCopy)
+                .then(function() {
+                    expect(gd.data.length).toEqual(1);
+                    expect(d3.selectAll('.sankey').size()).toEqual(1);
+                    return Plotly.plot(gd, mockCopy2);
+                })
+                .then(function() {
+                    expect(gd.data.length).toEqual(2);
+                    expect(d3.selectAll('.sankey').size()).toEqual(2);
+                    return Plotly.deleteTraces(gd, [0]);
+                })
+                .then(function() {
+                    expect(gd.data.length).toEqual(1);
+                    expect(d3.selectAll('.sankey').size()).toEqual(1);
+                    return Plotly.deleteTraces(gd, 0);
+                })
+                .then(function() {
+                    expect(gd.data.length).toEqual(0);
+                    expect(d3.selectAll('.sankey').size()).toEqual(0);
+                    done();
+                });
+        });
+
+        it('Plotly.plot does not show Sankey if \'visible\' is false', function(done) {
+
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy)
+                .then(function() {
+                    expect(gd.data.length).toEqual(1);
+                    expect(d3.selectAll('.sankey').size()).toEqual(1);
+                    return Plotly.restyle(gd, 'visible', false);
+                })
+                .then(function() {
+                    expect(gd.data.length).toEqual(1);
+                    expect(d3.selectAll('.sankey').size()).toEqual(0);
+                    return Plotly.restyle(gd, 'visible', true);
+                })
+                .then(function() {
+                    expect(gd.data.length).toEqual(1);
+                    expect(d3.selectAll('.sankey').size()).toEqual(1);
+                    done();
+                });
         });
     });
 });
