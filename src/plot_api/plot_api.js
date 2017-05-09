@@ -1624,6 +1624,11 @@ function _restyle(gd, aobj, _traces) {
                     flags.docalc = true;
                 }
 
+                // some attributes declare an 'editType' flaglist
+                if(valObject.editType === 'docalc') {
+                    flags.docalc = true;
+                }
+
                 // all the other ones, just modify that one attribute
                 param.set(newVal);
             }
