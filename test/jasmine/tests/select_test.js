@@ -346,6 +346,14 @@ describe('select box and lasso', function() {
             expect(pts.length).toEqual(1);
             expect(pts[0].x).toEqual(0);
             expect(pts[0].y).toEqual(0);
+
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        })
+        .then(function() {
+            drag([[100, 100], [100, 300], [300, 300], [300, 100], [100, 100]]);
+            expect(pts.length).toEqual(1);
+            expect(pts[0].x).toEqual(0);
+            expect(pts[0].y).toEqual(0);
         })
         .then(done);
     });

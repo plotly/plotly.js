@@ -10,7 +10,6 @@
 'use strict';
 
 var subtypes = require('./subtypes');
-var BADNUM = require('../../constants/numerical').BADNUM;
 
 var DESELECTDIM = 0.2;
 
@@ -41,10 +40,6 @@ module.exports = function selectPoints(searchInfo, polygon) {
             di = cd[i];
             x = xa.c2p(di.x);
             y = ya.c2p(di.y);
-
-            if(x === BADNUM || y === BADNUM) {
-                continue;
-            }
 
             if(polygon.contains([x, y])) {
                 selection.push({
