@@ -13,7 +13,6 @@
                 2
             ],
             "legendgroup": "group",
-            "uid": "481c07",
             "visible": true
         },
         {
@@ -30,7 +29,6 @@
             ],
             "legendgroup": "group",
             "showlegend": false,
-            "uid": "e2b9ee",
             "visible": true
         },
         {
@@ -46,7 +44,6 @@
                 2
             ],
             "legendgroup": "group 2",
-            "uid": "f9e22c",
             "visible": true
         },
         {
@@ -62,7 +59,6 @@
                 2
             ],
             "legendgroup": "group",
-            "uid": "e08ed1",
             "visible": true
         },
         {
@@ -77,7 +73,6 @@
                 2,
                 1
             ],
-            "uid": "c61b60",
             "visible": true
         },
         {
@@ -94,7 +89,6 @@
             ],
             "legendgroup": "group 2",
             "showlegend": false,
-            "uid": "4d660d",
             "visible": true
         }
     ],

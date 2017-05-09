@@ -131,7 +131,8 @@ function drawRaw(gd, options, index, xa, ya) {
             gd.emit('plotly_clickannotation', {
                 index: index,
                 annotation: options._input,
-                fullAnnotation: options
+                fullAnnotation: options,
+                event: d3.event
             });
         });
 

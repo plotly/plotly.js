@@ -20,8 +20,7 @@
             ],
             "line": {
                 "color": "#c00"
-            },
-            "uid": "4a9e8d"
+            }
         },
         {
             "type": "scatterternary",
@@ -46,8 +45,7 @@
             ],
             "line": {
                 "color": "#c00"
-            },
-            "uid": "6b700b"
+            }
         },
         {
             "type": "scatterternary",
@@ -81,8 +79,7 @@
             ],
             "line": {
                 "color": "#c00"
-            },
-            "uid": "0e280c"
+            }
         },
         {
             "type": "scatterternary",
@@ -110,8 +107,7 @@
             ],
             "line": {
                 "color": "#c00"
-            },
-            "uid": "40fccc"
+            }
         },
         {
             "type": "scatterternary",
@@ -133,8 +129,7 @@
             ],
             "line": {
                 "color": "#c00"
-            },
-            "uid": "d990f2"
+            }
         },
         {
             "type": "scatterternary",
@@ -162,8 +157,7 @@
             ],
             "line": {
                 "color": "#c00"
-            },
-            "uid": "b6c367"
+            }
         },
         {
             "type": "scatterternary",
@@ -188,8 +182,7 @@
             ],
             "line": {
                 "color": "#c00"
-            },
-            "uid": "90d4e2"
+            }
         },
         {
             "type": "scatterternary",
@@ -211,8 +204,7 @@
             ],
             "line": {
                 "color": "#c00"
-            },
-            "uid": "c483e4"
+            }
         },
         {
             "type": "scatterternary",
@@ -237,8 +229,7 @@
             ],
             "line": {
                 "color": "#c00"
-            },
-            "uid": "9b3fa9"
+            }
         },
         {
             "type": "scatterternary",
@@ -269,8 +260,7 @@
             ],
             "line": {
                 "color": "#c00"
-            },
-            "uid": "5c8c5a"
+            }
         },
         {
             "type": "scatterternary",
@@ -295,8 +285,7 @@
             ],
             "line": {
                 "color": "#c00"
-            },
-            "uid": "845650"
+            }
         },
         {
             "type": "scatterternary",
@@ -324,8 +313,7 @@
             ],
             "line": {
                 "color": "#c00"
-            },
-            "uid": "ca74b0"
+            }
         }
     ],
     "layout": {

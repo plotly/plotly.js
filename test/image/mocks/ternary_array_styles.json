@@ -83,8 +83,7 @@
                 "shape": "spline",
                 "width": 3
             },
-            "connectgaps": true,
-            "uid": "35ff50"
+            "connectgaps": true
         }
     ],
     "layout": {
