@@ -35,6 +35,7 @@ module.exports = {
     getDistanceFunction: helpers.getDistanceFunction,
     getClosest: helpers.getClosest,
     inbox: helpers.inbox,
+    castHoverOption: castHoverOption,
 
     hover: require('./hover').hover,
     unhover: dragElement.unhover,
@@ -54,4 +55,20 @@ function loneUnhover(containerOrSelection) {
 
     selection.selectAll('g.hovertext').remove();
     selection.selectAll('.spikeline').remove();
+}
+
+// Handler for trace-wide vs per-point hover label options
+function castHoverOption(trace, ptNumber, attr) {
+    var labelOpts = trace.hoverlabel || {};
+    var val = Lib.nestedProperty(labelOpts, attr).get();
+
+    if(Array.isArray(val)) {
+        if(Array.isArray(ptNumber) && Array.isArray(val[ptNumber[0]])) {
+            return val[ptNumber[0]][ptNumber[1]];
+        } else {
+            return val[ptNumber];
+        }
+    } else {
+        return val;
+    }
 }

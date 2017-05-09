@@ -62,21 +62,6 @@ function render(scene) {
         return Axes.tickText(axis, axis.d2l(val), 'hover').text;
     }
 
-    function castHoverOption(attr, ptNumber) {
-        var labelOpts = trace.hoverlabel || {};
-        var val = Lib.nestedProperty(labelOpts, attr).get();
-
-        if(Array.isArray(val)) {
-            if(Array.isArray(ptNumber) && Array.isArray(val[ptNumber[0]])) {
-                return val[ptNumber[0]][ptNumber[1]];
-            } else {
-                return val[ptNumber];
-            }
-        } else {
-            return val;
-        }
-    }
-
     var oldEventData;
 
     if(lastPicked !== null) {
@@ -107,11 +92,11 @@ function render(scene) {
                 zLabel: zVal,
                 text: selection.textLabel,
                 name: lastPicked.name,
-                color: castHoverOption('bgcolor', ptNumber) || lastPicked.color,
-                borderColor: castHoverOption('bordercolor', ptNumber),
-                fontFamily: castHoverOption('font.family', ptNumber),
-                fontSize: castHoverOption('font.size', ptNumber),
-                fontColor: castHoverOption('font.color', ptNumber)
+                color: Fx.castHoverOption(trace, ptNumber, 'bgcolor') || lastPicked.color,
+                borderColor: Fx.castHoverOption(trace, ptNumber, 'bordercolor'),
+                fontFamily: Fx.castHoverOption(trace, ptNumber, 'font.family'),
+                fontSize: Fx.castHoverOption(trace, ptNumber, 'font.size'),
+                fontColor: Fx.castHoverOption(trace, ptNumber, 'font.color')
             }, {
                 container: svgContainer
             });
