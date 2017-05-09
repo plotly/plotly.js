@@ -344,13 +344,25 @@ lib.mergeArray = function(traceAttr, cd, cdAttr) {
     }
 };
 
-lib.getTargetArray = function(trace, target) {
+/** Returns target as set by 'target' transform attribute
+ *
+ * @param {object} trace : full trace object
+ * @param {object} transformOpts : transform option object
+ *  - target (string} :
+ *      either an attribute string referencing an array in the trace object, or
+ *      a set array.
+ *
+ * @return {array or false} : the target array (NOT a copy!!) or false if invalid
+ */
+lib.getTargetArray = function(trace, transformOpts) {
+    var target = transformOpts.target;
+
     if(typeof target === 'string' && target) {
         var array = lib.nestedProperty(trace, target).get();
-
-        return Array.isArray(array) ? array : [];
+        return Array.isArray(array) ? array : false;
+    } else if(Array.isArray(target)) {
+        return target;
     }
-    else if(Array.isArray(target)) return target.slice();
 
     return false;
 };

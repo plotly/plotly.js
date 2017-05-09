@@ -73,11 +73,11 @@ exports.supplyDefaults = function(transformIn) {
 exports.calcTransform = function(gd, trace, opts) {
     if(!opts.enabled) return;
 
-    var target = opts.target;
-    var targetArray = Lib.getTargetArray(trace, target);
-    var len = targetArray.length;
+    var targetArray = Lib.getTargetArray(trace, opts);
+    if(!targetArray) return;
 
-    if(!len) return;
+    var target = opts.target;
+    var len = targetArray.length;
 
     var arrayAttrs = PlotSchema.findArrayAttributes(trace);
     var d2c = Axes.getDataToCoordFunc(gd, trace, target, targetArray);

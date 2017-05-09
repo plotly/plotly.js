@@ -142,12 +142,11 @@ exports.supplyDefaults = function(transformIn) {
 exports.calcTransform = function(gd, trace, opts) {
     if(!opts.enabled) return;
 
+    var targetArray = Lib.getTargetArray(trace, opts);
+    if(!targetArray) return;
+
     var target = opts.target;
-    var targetArray = Lib.getTargetArray(trace, target);
     var len = targetArray.length;
-
-    if(!len) return;
-
     var targetCalendar = opts.targetcalendar;
 
     // even if you provide targetcalendar, if target is a string and there
