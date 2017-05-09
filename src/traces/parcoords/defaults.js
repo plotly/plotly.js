@@ -81,7 +81,6 @@ function dimensionsDefaults(traceIn, traceOut) {
     return dimensionsOut;
 }
 
-
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
@@ -97,4 +96,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(!Array.isArray(dimensions) || !dimensions.length) {
         traceOut.visible = false;
     }
+
+    // make default font size 10px,
+    // scale linearly with global font size
+    var fontDflt = {
+        family: layout.font.family,
+        size: Math.round(layout.font.size * (10 / 12)),
+        color: layout.font.color
+    };
+
+    Lib.coerceFont(coerce, 'labelfont', fontDflt);
+    Lib.coerceFont(coerce, 'tickfont', fontDflt);
+    Lib.coerceFont(coerce, 'rangefont', fontDflt);
 };

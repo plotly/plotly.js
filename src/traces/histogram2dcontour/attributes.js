@@ -35,6 +35,9 @@ module.exports = extendFlat({}, {
     contours: contourAttrs.contours,
     line: contourAttrs.line
 },
-    colorscaleAttrs,
+    colorscaleAttrs, {
+        zmin: extendFlat({}, colorscaleAttrs.zmin, {editType: 'docalc'}),
+        zmax: extendFlat({}, colorscaleAttrs.zmax, {editType: 'docalc'})
+    },
     { colorbar: colorbarAttrs }
 );

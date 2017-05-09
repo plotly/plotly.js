@@ -57,6 +57,14 @@
       "line": {
         "smoothing": 1,
         "shape": "spline"
+      },
+      "marker": {
+        "size": [10, 20, 30, 40],
+        "color": ["#000", "#f00", "#ff0", "#fff"],
+        "gradient": {
+          "type": ["horizontal", "radial", "horizontal", "vertical"],
+          "color": ["#0ff", "#fff", "#88f", "#00f"]
+        }
       }
     },
     {

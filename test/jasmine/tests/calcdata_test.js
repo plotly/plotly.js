@@ -1,5 +1,6 @@
 var Plotly = require('@lib/index');
 
+var BADNUM = require('@src/constants/numerical').BADNUM;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -18,15 +19,15 @@ describe('calculated data and points', function() {
         it('should exclude null and undefined points when false', function() {
             Plotly.plot(gd, [{ x: [1, 2, 3, undefined, 5], y: [1, null, 3, 4, 5]}], {});
 
-            expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({ x: false, y: false}));
-            expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: false, y: false}));
+            expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
+            expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
         });
 
         it('should exclude null and undefined points as categories when false', function() {
             Plotly.plot(gd, [{ x: [1, 2, 3, undefined, 5], y: [1, null, 3, 4, 5] }], { xaxis: { type: 'category' }});
 
-            expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({ x: false, y: false}));
-            expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: false, y: false}));
+            expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
+            expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
         });
     });
 
@@ -192,9 +193,9 @@ describe('calculated data and points', function() {
                 }});
 
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 4, y: 15}));
-                expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({ x: false, y: false}));
+                expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
                 expect(gd.calcdata[0][2]).toEqual(jasmine.objectContaining({x: 3, y: 12}));
-                expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: false, y: false}));
+                expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({ x: BADNUM, y: BADNUM}));
                 expect(gd.calcdata[0][4]).toEqual(jasmine.objectContaining({x: 2, y: 14}));
             });
 
@@ -269,7 +270,7 @@ describe('calculated data and points', function() {
                 }});
 
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 6, y: 15}));
-                expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({x: false, y: false}));
+                expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({x: BADNUM, y: BADNUM}));
                 expect(gd.calcdata[0][2]).toEqual(jasmine.objectContaining({x: 5, y: 12}));
                 expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({x: 0, y: 13}));
                 expect(gd.calcdata[0][4]).toEqual(jasmine.objectContaining({x: 3, y: 14}));

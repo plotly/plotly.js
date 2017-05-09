@@ -13,7 +13,6 @@
                 2
             ],
             "legendgroup": "group",
-            "uid": "3e132c",
             "visible": true
         },
         {
@@ -29,7 +28,6 @@
                 1
             ],
             "legendgroup": "group",
-            "uid": "177f2d",
             "visible": true
         },
         {
@@ -46,7 +44,6 @@
             ],
             "legendgroup": "group",
             "showlegend": false,
-            "uid": "8185a6",
             "visible": true
         }
     ],

@@ -40,6 +40,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
             di = cd[i];
             x = xa.c2p(di.x);
             y = ya.c2p(di.y);
+
             if(polygon.contains([x, y])) {
                 selection.push({
                     curveNumber: curveNumber,

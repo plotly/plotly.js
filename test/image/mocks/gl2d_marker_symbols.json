@@ -1,0 +1,53 @@
+{
+  "data": [
+    {
+      "type": "scattergl",
+      "x": [1, 2, 3, 4, 5, 6, 7],
+      "y": [1, 1, 1, 1, 1, 1, 1],
+      "mode": "markers",
+      "text": [
+        "marker symbol: 'circle'",
+        "marker symbol: 'circle-open'",
+        "marker symbol: 'square'",
+        "marker symbol: 'square-open'",
+        "marker symbol: 'diamond'",
+        "marker symbol: 'diamond-open'",
+        "marker symbol: 'cross'"
+      ],
+      "marker": {
+        "color": "blue",
+        "size": 20,
+        "symbol": [
+          "circle",
+          "circle-open",
+          "square",
+          "square-open",
+          "diamond",
+          "diamond-open",
+          "cross"
+        ],
+        "line": {
+          "color": "orange",
+          "width": 1.5
+        }
+      }
+    }
+  ],
+  "layout": {
+    "width": 500,
+    "height": 500,
+    "xaxis": {
+      "zeroline": false,
+      "showline": false,
+      "showticklabels": false,
+      "range": [0, 10]
+    },
+    "yaxis": {
+      "zeroline": false,
+      "showline": false,
+      "showticklabels": false,
+      "range": [0, 6]
+    },
+    "hovermode": "closest"
+  }
+}

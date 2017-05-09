@@ -30,6 +30,7 @@ describe('filter transforms defaults:', function() {
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
             enabled: true,
+            preservegaps: false,
             operation: '=',
             value: 0,
             target: 'x',
@@ -320,6 +321,120 @@ describe('filter transforms calc:', function() {
         expect(out[0].y).toEqual([1]);
     });
 
+    it('should preserve gaps in data when `preservegaps` is turned on', function() {
+        var out = _transform([Lib.extendDeep({}, base, {
+            transforms: [{
+                type: 'filter',
+                preservegaps: true,
+                operation: '>',
+                value: 0,
+                target: 'x'
+            }]
+        })]);
+
+        expect(out[0].x).toEqual([undefined, undefined, undefined, undefined, 1, 2, 3]);
+        expect(out[0].y).toEqual([undefined, undefined, undefined, undefined, 2, 3, 1]);
+        expect(out[0].marker.color).toEqual([undefined, undefined, undefined, undefined, 0.2, 0.3, 0.4]);
+    });
+
+    it('two filter transforms with `preservegaps: true` should commute', function() {
+        var transform0 = {
+            type: 'filter',
+            preservegaps: true,
+            operation: '>',
+            value: -1,
+            target: 'x'
+        };
+
+        var transform1 = {
+            type: 'filter',
+            preservegaps: true,
+            operation: '<',
+            value: 2,
+            target: 'x'
+        };
+
+        var out0 = _transform([Lib.extendDeep({}, base, {
+            transforms: [transform0, transform1]
+        })]);
+
+        var out1 = _transform([Lib.extendDeep({}, base, {
+            transforms: [transform1, transform0]
+        })]);
+
+        ['x', 'y', 'ids', 'marker.color', 'marker.size'].forEach(function(k) {
+            var v0 = Lib.nestedProperty(out0[0], k).get();
+            var v1 = Lib.nestedProperty(out1[0], k).get();
+            expect(v0).toEqual(v1);
+        });
+    });
+
+    it('two filter transforms with `preservegaps: false` should commute', function() {
+        var transform0 = {
+            type: 'filter',
+            preservegaps: false,
+            operation: '>',
+            value: -1,
+            target: 'x'
+        };
+
+        var transform1 = {
+            type: 'filter',
+            preservegaps: false,
+            operation: '<',
+            value: 2,
+            target: 'x'
+        };
+
+        var out0 = _transform([Lib.extendDeep({}, base, {
+            transforms: [transform0, transform1]
+        })]);
+
+        var out1 = _transform([Lib.extendDeep({}, base, {
+            transforms: [transform1, transform0]
+        })]);
+
+        ['x', 'y', 'ids', 'marker.color', 'marker.size'].forEach(function(k) {
+            var v0 = Lib.nestedProperty(out0[0], k).get();
+            var v1 = Lib.nestedProperty(out1[0], k).get();
+            expect(v0).toEqual(v1);
+        });
+    });
+
+    it('two filter transforms with different `preservegaps` values should not necessary commute', function() {
+        var transform0 = {
+            type: 'filter',
+            preservegaps: true,
+            operation: '>',
+            value: -1,
+            target: 'x'
+        };
+
+        var transform1 = {
+            type: 'filter',
+            preservegaps: false,
+            operation: '<',
+            value: 2,
+            target: 'x'
+        };
+
+        var out0 = _transform([Lib.extendDeep({}, base, {
+            transforms: [transform0, transform1]
+        })]);
+
+        expect(out0[0].x).toEqual([0, 1]);
+        expect(out0[0].y).toEqual([1, 2]);
+        expect(out0[0].marker.color).toEqual([0.1, 0.2]);
+
+        var out1 = _transform([Lib.extendDeep({}, base, {
+            transforms: [transform1, transform0]
+        })]);
+
+        expect(out1[0].x).toEqual([undefined, undefined, undefined, 0, 1]);
+        expect(out1[0].y).toEqual([undefined, undefined, undefined, 1, 2]);
+        expect(out1[0].marker.color).toEqual([undefined, undefined, undefined, 0.1, 0.2]);
+    });
+
     describe('filters should handle numeric values', function() {
         var _base = Lib.extendDeep({}, base);
 
@@ -593,6 +708,23 @@ describe('filter transforms calc:', function() {
             })]);
 
             _assert(out, ['2015-07-20'], [1], [0.1]);
+        });
+
+        it('with operation *!=*', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    operation: '!=',
+                    value: '2015-07-20',
+                    target: 'x'
+                }]
+            })]);
+
+            _assert(
+                out,
+                ['2016-08-01', '2016-09-01', '2016-10-21', '2016-12-02'],
+                [2, 3, 1, 5],
+                [0.2, 0.3, 0.1, 0.2]
+            );
         });
 
         it('with operation *<*', function() {

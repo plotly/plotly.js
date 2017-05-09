@@ -393,6 +393,72 @@ describe('Test plot api', function() {
             expect(PlotlyInternal.plot.calls.count()).toEqual(2);
         });
 
+        it('should clear calcdata when restyling \'zmin\' and \'zmax\' on contour traces', function() {
+            var contour = {
+                data: [{
+                    type: 'contour',
+                    z: [[1, 2, 3], [1, 2, 1]]
+                }]
+            };
+
+            var histogram2dcontour = {
+                data: [{
+                    type: 'histogram2dcontour',
+                    x: [1, 1, 2, 2, 2, 3],
+                    y: [0, 0, 0, 0, 1, 3]
+                }]
+            };
+
+            var mocks = [contour, histogram2dcontour];
+
+            mocks.forEach(function(gd) {
+                mockDefaultsAndCalc(gd);
+                PlotlyInternal.plot.calls.reset();
+                Plotly.restyle(gd, 'zmin', 0);
+                expect(gd.calcdata).toBeUndefined();
+                expect(PlotlyInternal.plot).toHaveBeenCalled();
+
+                mockDefaultsAndCalc(gd);
+                PlotlyInternal.plot.calls.reset();
+                Plotly.restyle(gd, 'zmax', 10);
+                expect(gd.calcdata).toBeUndefined();
+                expect(PlotlyInternal.plot).toHaveBeenCalled();
+            });
+        });
+
+        it('should not clear calcdata when restyling \'zmin\' and \'zmax\' on heatmap traces', function() {
+            var heatmap = {
+                data: [{
+                    type: 'heatmap',
+                    z: [[1, 2, 3], [1, 2, 1]]
+                }]
+            };
+
+            var histogram2d = {
+                data: [{
+                    type: 'histogram2d',
+                    x: [1, 1, 2, 2, 2, 3],
+                    y: [0, 0, 0, 0, 1, 3]
+                }]
+            };
+
+            var mocks = [heatmap, histogram2d];
+
+            mocks.forEach(function(gd) {
+                mockDefaultsAndCalc(gd);
+                PlotlyInternal.plot.calls.reset();
+                Plotly.restyle(gd, 'zmin', 0);
+                expect(gd.calcdata).toBeDefined();
+                expect(PlotlyInternal.plot).toHaveBeenCalled();
+
+                mockDefaultsAndCalc(gd);
+                PlotlyInternal.plot.calls.reset();
+                Plotly.restyle(gd, 'zmax', 10);
+                expect(gd.calcdata).toBeDefined();
+                expect(PlotlyInternal.plot).toHaveBeenCalled();
+            });
+        });
+
         it('ignores undefined values', function() {
             var gd = {
                 data: [{x: [1, 2, 3], y: [1, 2, 3], type: 'scatter'}],

@@ -223,6 +223,33 @@ describe('annotations relayout', function() {
         .then(done);
     });
 
+    it('should sort correctly when index>10', function(done) {
+        var addall = {};
+        var delall = {};
+
+        // leave the first one alone, but delete and re-add all the others
+        for(var i = 1; i < gd.layout.annotations.length; i++) {
+            addall['annotations[' + i + ']'] = {text: i, x: i / 10, y: 0};
+            delall['annotations[' + i + ']'] = null;
+        }
+
+        Plotly.relayout(gd, delall)
+        .then(function() {
+            expect(gd.layout.annotations).toEqual([mock.layout.annotations[0]]);
+
+            return Plotly.relayout(gd, addall);
+        })
+        .then(function() {
+            var annotations = gd.layout.annotations;
+            expect(annotations.length).toBe(mock.layout.annotations.length);
+            for(var i = 1; i < annotations.length; i++) {
+                expect(annotations[i].text).toBe(i);
+            }
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should be able update annotations', function(done) {
         var updateObj = { 'annotations[0].text': 'hello' };
 
@@ -1141,7 +1168,11 @@ describe('annotation effects', function() {
         ], {}) // turn off the default editable: true
         .then(function() {
             clickData = [];
-            gd.on('plotly_clickannotation', function(evt) { clickData.push(evt); });
+            gd.on('plotly_clickannotation', function(evt) {
+                expect(evt.event).toEqual(jasmine.objectContaining({type: 'click'}));
+                delete evt.event;
+                clickData.push(evt);
+            });
 
             gdBB = gd.getBoundingClientRect();
             pos0Head = [gdBB.left + 200, gdBB.top + 200];

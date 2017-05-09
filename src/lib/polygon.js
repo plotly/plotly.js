@@ -10,6 +10,7 @@
 'use strict';
 
 var dot = require('./matrix').dot;
+var BADNUM = require('../constants/numerical').BADNUM;
 
 var polygon = module.exports = {};
 
@@ -73,7 +74,7 @@ polygon.tester = function tester(ptsIn) {
         var x = pt[0],
             y = pt[1];
 
-        if(x < xmin || x > xmax || y < ymin || y > ymax) {
+        if(x === BADNUM || x < xmin || x > xmax || y === BADNUM || y < ymin || y > ymax) {
             // pt is outside the bounding box of polygon
             return false;
         }
@@ -86,7 +87,7 @@ polygon.tester = function tester(ptsIn) {
         var x = pt[0],
             y = pt[1];
 
-        if(x < xmin || x > xmax || y < ymin || y > ymax) {
+        if(x === BADNUM || x < xmin || x > xmax || y === BADNUM || y < ymin || y > ymax) {
             // pt is outside the bounding box of polygon
             return false;
         }

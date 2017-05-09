@@ -17,11 +17,7 @@
         "2"
       ],
       "name": "Col3",
-      "type": "scatter3d",
-      "xsrc": ":d354e6",
-      "ysrc": ":36e26a",
-      "zsrc": ":3f1571",
-      "uid": "a94e2c"
+      "type": "scatter3d"
     }
   ],
   "layout": {
