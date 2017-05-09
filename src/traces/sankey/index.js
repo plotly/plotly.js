@@ -18,7 +18,7 @@ Plot.plot = require('./plot');
 Plot.moduleType = 'trace';
 Plot.name = 'sankey';
 Plot.basePlotModule = require('./base_plot');
-Plot.categories = [];
+Plot.categories = ['noOpacity'];
 Plot.meta = {
     description: [
         'Sankey plots for network flow data analysis.',

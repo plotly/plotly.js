@@ -47,7 +47,6 @@ function relatedNodes(l) {
 }
 
 function nodeHoveredStyle(sankeyNode, d, sankey) {
-
     if(d && sankey) {
         ownTrace(sankey, d)
             .selectAll('.sankeyLink')
@@ -57,7 +56,6 @@ function nodeHoveredStyle(sankeyNode, d, sankey) {
 }
 
 function nodeNonHoveredStyle(sankeyNode, d, sankey) {
-
     if(d && sankey) {
         ownTrace(sankey, d)
             .selectAll('.sankeyLink')
@@ -175,7 +173,6 @@ module.exports = function plot(gd, calcData) {
     var nodeHoverFollow = function(element, d) {
 
         var nodeRect = d3.select(element).select('.nodeRect');
-
         var boundingBox = nodeRect.node().getBoundingClientRect();
         var hoverCenterX0 = boundingBox.left - 2;
         var hoverCenterX1 = boundingBox.right + 2;

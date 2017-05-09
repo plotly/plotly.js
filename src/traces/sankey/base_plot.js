@@ -28,5 +28,3 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         oldFullLayout._paperdiv.selectAll('.sankey').remove();
     }
 };
-
-exports.toSVG = function() {};
