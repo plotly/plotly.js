@@ -78,18 +78,17 @@ exports.calcTransform = function(gd, trace, opts) {
 
     var target = opts.target;
     var len = targetArray.length;
-
     var arrayAttrs = PlotSchema.findArrayAttributes(trace);
     var d2c = Axes.getDataToCoordFunc(gd, trace, target, targetArray);
     var indices = getIndices(opts, targetArray, d2c);
 
     for(var i = 0; i < arrayAttrs.length; i++) {
         var np = Lib.nestedProperty(trace, arrayAttrs[i]);
-        var arrayCopy = np.get().slice();
+        var arrayOld = np.get();
         var arrayNew = new Array(len);
 
         for(var j = 0; j < len; j++) {
-            arrayNew[j] = arrayCopy[indices[j]];
+            arrayNew[j] = arrayOld[indices[j]];
         }
 
         np.set(arrayNew);
