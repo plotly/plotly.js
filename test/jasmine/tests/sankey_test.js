@@ -9,6 +9,7 @@ var Sankey = require('@src/traces/sankey');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var mouseEvent = require('../assets/mouse_event');
 
 describe('sankey tests', function() {
 
@@ -269,7 +270,7 @@ describe('sankey tests', function() {
                 .then(function() {
                     expect(gd.data.length).toEqual(1);
                     expect(d3.selectAll('.sankey').size()).toEqual(1);
-                    return Plotly.plot(gd, mockCopy2);
+                    return Plotly.addTraces(gd, mockCopy2.data[0]);
                 })
                 .then(function() {
                     expect(gd.data.length).toEqual(2);
@@ -308,6 +309,33 @@ describe('sankey tests', function() {
                     expect(gd.data.length).toEqual(1);
                     expect(d3.selectAll('.sankey').size()).toEqual(1);
                     done();
+                });
+        });
+
+        it('Plotly.plot shows and removes tooltip on node, link', function(done) {
+
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy)
+                .then(function() {
+
+                    mouseEvent('mousemove', 400, 300);
+                    mouseEvent('mouseover', 400, 300);
+
+                    window.setTimeout(function() {
+                        expect(d3.select('.hoverlayer>.hovertext>text').node().innerHTML)
+                            .toEqual('447TWh', 'tooltip present');
+
+                        mouseEvent('mousemove', 450, 300);
+                        mouseEvent('mouseover', 450, 300);
+
+                        window.setTimeout(function() {
+                            expect(d3.select('.hoverlayer>.hovertext>text').node().innerHTML)
+                                .toEqual('46TWh', 'tooltip jumped to link');
+                            done();
+                        }, 60);
+                    }, 60);
                 });
         });
     });
