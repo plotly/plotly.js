@@ -314,6 +314,40 @@ describe('Drawing', function() {
             expect(el.getAttribute('transform')).toBe('translate(1,2)');
         });
     });
+
+    describe('setTextPointsScale', function() {
+        var svg, g, text;
+
+        beforeEach(function() {
+            svg = d3.select(document.createElement('svg'));
+            g = svg.append('g');
+            text = g.append('text');
+        });
+
+        it('sets the transform on an empty element', function() {
+            Drawing.setTextPointsScale(g, 2, 3);
+            expect(g.attr('transform')).toEqual('translate(0,0) scale(2,3) translate(0,0)');
+        });
+
+        it('unsets the transform', function() {
+            Drawing.setTextPointsScale(g, 1, 1);
+            expect(g.attr('transform')).toEqual('');
+        });
+
+        it('preserves a leading translate', function() {
+            Drawing.setTextPointsScale(g, 1, 1);
+            g.attr('transform', 'translate(1, 2)');
+            expect(g.attr('transform')).toEqual('translate(1, 2)');
+        });
+
+        it('preserves transforms', function() {
+            text.attr('x', 8);
+            text.attr('y', 9);
+            g.attr('transform', 'translate(1, 2)');
+            Drawing.setTextPointsScale(g, 4, 5);
+            expect(g.attr('transform')).toEqual('translate(8,9) scale(4,5) translate(-8,-9) translate(1, 2)');
+        });
+    });
 });
 
 describe('gradients', function() {
