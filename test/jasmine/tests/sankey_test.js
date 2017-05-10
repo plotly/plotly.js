@@ -260,6 +260,12 @@ describe('sankey tests', function() {
 
         afterEach(destroyGraphDiv);
 
+        function wait() {
+            return new Promise(function(resolve) {
+                setTimeout(resolve, 60);
+            });
+        }
+
         it('Plotly.deleteTraces with two traces removes the deleted plot', function(done) {
 
             var gd = createGraphDiv();
@@ -313,30 +319,23 @@ describe('sankey tests', function() {
         });
 
         it('Plotly.plot shows and removes tooltip on node, link', function(done) {
-
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy)
-                .then(function() {
-
-                    mouseEvent('mousemove', 400, 300);
-                    mouseEvent('mouseover', 400, 300);
-
-                    window.setTimeout(function() {
-                        expect(d3.select('.hoverlayer>.hovertext>text').node().innerHTML)
-                            .toEqual('447TWh', 'tooltip present');
-
-                        mouseEvent('mousemove', 450, 300);
-                        mouseEvent('mouseover', 450, 300);
-
-                        window.setTimeout(function() {
-                            expect(d3.select('.hoverlayer>.hovertext>text').node().innerHTML)
-                                .toEqual('46TWh', 'tooltip jumped to link');
-                            done();
-                        }, 60);
-                    }, 60);
-                });
+            Plotly.plot(gd, mockCopy).then(function() {
+                mouseEvent('mousemove', 400, 300);
+                mouseEvent('mouseover', 400, 300);
+            })
+            .then(wait)
+            .then(function() {
+                expect(d3.select('.hoverlayer>.hovertext>text').node().innerHTML)
+                    .toEqual('447TWh', 'tooltip present');
+            })
+            .then(function() {
+                mouseEvent('mousemove', 450, 300);
+                mouseEvent('mouseover', 450, 300);
+            })
+            .then(done);
         });
     });
 });
