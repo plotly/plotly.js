@@ -124,7 +124,8 @@ module.exports = function plot(gd, calcData) {
     };
 
     var linkHoverFollow = function(element, d) {
-
+        var trace = gd._fullData[d.traceId];
+        var ptNumber = d.originalIndex;
         var boundingBox = element.getBoundingClientRect();
         var hoverCenterX = boundingBox.left + boundingBox.width / 2;
         var hoverCenterY = boundingBox.top + boundingBox.height / 2;
@@ -138,7 +139,11 @@ module.exports = function plot(gd, calcData) {
                 ['Source:', d.link.source.label].join(' '),
                 ['Target:', d.link.target.label].join(' ')
             ].filter(renderableValuePresent).join('<br>'),
-            color: Color.addOpacity(d.tinyColorHue, 1),
+            color: Fx.castHoverOption(trace, ptNumber, 'bgcolor') || Color.addOpacity(d.tinyColorHue, 1),
+            borderColor: Fx.castHoverOption(trace, ptNumber, 'bordercolor'),
+            fontFamily: Fx.castHoverOption(trace, ptNumber, 'font.family'),
+            fontSize: Fx.castHoverOption(trace, ptNumber, 'font.size'),
+            fontColor: Fx.castHoverOption(trace, ptNumber, 'font.color'),
             idealAlign: d3.event.x < hoverCenterX ? 'right' : 'left'
         }, {
             container: fullLayout._hoverlayer.node(),
@@ -171,7 +176,8 @@ module.exports = function plot(gd, calcData) {
     };
 
     var nodeHoverFollow = function(element, d) {
-
+        var trace = gd._fullData[d.traceId];
+        var ptNumber = d.originalIndex;
         var nodeRect = d3.select(element).select('.nodeRect');
         var boundingBox = nodeRect.node().getBoundingClientRect();
         var hoverCenterX0 = boundingBox.left - 2;
@@ -188,7 +194,11 @@ module.exports = function plot(gd, calcData) {
                 ['Incoming flow count:', d.node.targetLinks.length].join(' '),
                 ['Outgoing flow count:', d.node.sourceLinks.length].join(' ')
             ].filter(renderableValuePresent).join('<br>'),
-            color: d.tinyColorHue,
+            color: Fx.castHoverOption(trace, ptNumber, 'bgcolor') || d.tinyColorHue,
+            borderColor: Fx.castHoverOption(trace, ptNumber, 'bordercolor'),
+            fontFamily: Fx.castHoverOption(trace, ptNumber, 'font.family'),
+            fontSize: Fx.castHoverOption(trace, ptNumber, 'font.size'),
+            fontColor: Fx.castHoverOption(trace, ptNumber, 'font.color'),
             idealAlign: 'left'
         }, {
             container: fullLayout._hoverlayer.node(),
