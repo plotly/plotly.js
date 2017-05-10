@@ -133,13 +133,14 @@ module.exports = function plot(gd, calcData) {
 
     var linkHoverFollow = function(element, d) {
         var trace = gd._fullData[d.traceId];
+        var rootBBox = gd.getBoundingClientRect();
         var boundingBox = element.getBoundingClientRect();
         var hoverCenterX = boundingBox.left + boundingBox.width / 2;
         var hoverCenterY = boundingBox.top + boundingBox.height / 2;
 
         var tooltip = Fx.loneHover({
-            x: hoverCenterX + window.scrollX,
-            y: hoverCenterY + window.scrollY,
+            x: hoverCenterX - rootBBox.left,
+            y: hoverCenterY - rootBBox.top,
             name: d3.format(d.valueFormat)(d.link.value) + d.valueSuffix,
             text: [
                 d.link.label,
@@ -185,15 +186,16 @@ module.exports = function plot(gd, calcData) {
     var nodeHoverFollow = function(element, d) {
         var trace = gd._fullData[d.traceId];
         var nodeRect = d3.select(element).select('.nodeRect');
+        var rootBBox = gd.getBoundingClientRect();
         var boundingBox = nodeRect.node().getBoundingClientRect();
-        var hoverCenterX0 = boundingBox.left - 2;
-        var hoverCenterX1 = boundingBox.right + 2;
-        var hoverCenterY = boundingBox.top + boundingBox.height / 4;
+        var hoverCenterX0 = boundingBox.left - 2 - rootBBox.left;
+        var hoverCenterX1 = boundingBox.right + 2 - rootBBox.left;
+        var hoverCenterY = boundingBox.top + boundingBox.height / 4 - rootBBox.top;
 
         var tooltip = Fx.loneHover({
-            x0: hoverCenterX0 + window.scrollX,
-            x1: hoverCenterX1 + window.scrollX,
-            y: hoverCenterY + window.scrollY,
+            x0: hoverCenterX0,
+            x1: hoverCenterX1,
+            y: hoverCenterY,
             name: d3.format(d.valueFormat)(d.node.value) + d.valueSuffix,
             text: [
                 d.node.label,
