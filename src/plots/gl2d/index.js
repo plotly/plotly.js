@@ -12,7 +12,7 @@
 var Scene2D = require('./scene2d');
 var Plots = require('../plots');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
-var constants = require('../cartesian/constants')
+var constants = require('../cartesian/constants');
 
 exports.name = 'gl2d';
 
@@ -26,7 +26,6 @@ exports.attrRegex = constants.attrRegex;
 
 var axisIds = require('../cartesian/axis_ids');
 var Lib = require('../../lib');
-var Plots = require('../plots');
 var d3 = require('d3');
 
 exports.attributes = require('../cartesian/attributes');
@@ -83,7 +82,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     }
 };
 
-exports.drawFramework = function (gd) {
+exports.drawFramework = function(gd) {
     var fullLayout = gd._fullLayout,
         subplotData = makeSubplotData(gd);
 
@@ -119,7 +118,7 @@ exports.drawFramework = function (gd) {
         // so they end up on top of the rest
         plotinfo.draglayer = joinLayer(fullLayout._draggers, 'g', name);
     });
-}
+};
 
 exports.toSVG = function(gd) {
     var fullLayout = gd._fullLayout,
@@ -145,8 +144,6 @@ exports.toSVG = function(gd) {
         scene.destroy();
     }
 };
-
-
 
 
 function makeSubplotData(gd) {

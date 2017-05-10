@@ -11,8 +11,6 @@
 
 var subtypes = require('../scatter/subtypes');
 
-var DESELECTDIM = 0.2;
-
 module.exports = function selectPoints(searchInfo, polygon) {
     var cd = searchInfo.cd,
         xa = searchInfo.xaxis,
@@ -20,7 +18,6 @@ module.exports = function selectPoints(searchInfo, polygon) {
         selection = [],
         trace = cd[0].trace,
         curveNumber = trace.index,
-        marker = trace.marker,
         i,
         di,
         x,
@@ -29,8 +26,6 @@ module.exports = function selectPoints(searchInfo, polygon) {
     // TODO: include lines? that would require per-segment line properties
     var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
     if(trace.visible !== true || hasOnlyLines) return;
-
-    var opacity = Array.isArray(marker.opacity) ? 1 : marker.opacity;
 
     if(polygon === false) { // clear selection
         for(i = 0; i < cd.length; i++) cd[i].dim = 0;
@@ -46,7 +41,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
                     pointNumber: i,
                     x: di.x,
                     y: di.y,
-                    //FIXME: di.id is undefined for scattergls
+                    // FIXME: di.id is undefined for scattergls
                     id: di.id
                 });
                 di.dim = 0;
@@ -55,36 +50,18 @@ module.exports = function selectPoints(searchInfo, polygon) {
         }
     }
 
-    // do the dimming here, as well as returning the selection
-    // The logic here duplicates Drawing.pointStyle, but I don't want
-    // d.dim in pointStyle in case something goes wrong with selection.
-//     cd[0].node3.selectAll('path.point')
-//         .style('opacity', function(d) {
-//             return ((d.mo + 1 || opacity + 1) - 1) * (d.dim ? DESELECTDIM : 1);
-//         });
-//     cd[0].node3.selectAll('text')
-//         .style('opacity', function(d) {
-//             return d.dim ? DESELECTDIM : 1;
-//         });
-
-
-
-    //TODO: highlight selected points here
+    // highlight selected points here
     var traceObj = cd[0].plot;
     var scene = cd[0].plot.scene;
     var fullTrace = cd[0].trace;
 
-    //FIXME: remove
-    // fullTrace.x = fullTrace.x.slice(1)
-    // fullTrace.y = fullTrace.y.slice(1)
-
-    fullTrace.selection = selection
+    fullTrace.selection = selection;
 
     // scene.plot([fullTrace], [cd], scene.fullLayout);
 
     // excerpt from ↑
-    traceObj.update(fullTrace, cd)
-    scene.glplot.setDirty()
+    traceObj.update(fullTrace, cd);
+    scene.glplot.setDirty();
 
     return selection;
 };
