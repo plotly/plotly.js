@@ -9,8 +9,8 @@
 'use strict';
 
 var Axes = require('../../plots/cartesian/axes');
-var Fx = require('../../plots/cartesian/graph_interact');
 var Lib = require('../../lib');
+var Fx = require('../../components/fx');
 var Color = require('../../components/color');
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {

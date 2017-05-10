@@ -67,7 +67,7 @@ proto.handlePick = function(selection) {
         }
         else selection.textLabel = '';
 
-        var selectIndex = selection.data.index;
+        var selectIndex = selection.index = selection.data.index;
         selection.traceCoordinate = [
             this.data.x[selectIndex],
             this.data.y[selectIndex],

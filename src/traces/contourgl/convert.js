@@ -85,6 +85,7 @@ proto.handlePick = function(pickResult) {
 proto.update = function(fullTrace, calcTrace) {
     var calcPt = calcTrace[0];
 
+    this.index = fullTrace.index;
     this.name = fullTrace.name;
     this.hoverinfo = fullTrace.hoverinfo;
 

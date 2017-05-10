@@ -106,7 +106,7 @@ describe('ternary plots', function() {
             }).then(done);
         });
 
-        it('should display to hover labels', function() {
+        it('should display to hover labels', function(done) {
             var hoverLabels;
 
             mouseEvent('mousemove', blankPos[0], blankPos[1]);
@@ -121,6 +121,22 @@ describe('ternary plots', function() {
             expect(rows[0][0].innerHTML).toEqual('Component A: 0.5', 'with correct text');
             expect(rows[0][1].innerHTML).toEqual('B: 0.25', 'with correct text');
             expect(rows[0][2].innerHTML).toEqual('Component C: 0.25', 'with correct text');
+
+            Plotly.restyle(gd, {
+                'hoverlabel.bordercolor': 'blue',
+                'hoverlabel.font.family': [['Gravitas', 'Arial', 'Roboto']]
+            })
+            .then(function() {
+                delete gd._lastHoverTime;
+                mouseEvent('mousemove', pointPos[0], pointPos[1]);
+
+                var path = d3.select('g.hovertext').select('path');
+                var text = d3.select('g.hovertext').select('text.nums');
+
+                expect(path.style('stroke')).toEqual('rgb(0, 0, 255)', 'bordercolor');
+                expect(text.style('font-family')).toEqual('Gravitas', 'font.family[0]');
+            })
+            .then(done);
         });
 
         it('should respond to hover interactions by', function() {

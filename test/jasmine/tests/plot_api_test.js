@@ -254,7 +254,7 @@ describe('Test plot api', function() {
         });
     });
 
-    describe('Plotly.restyle', function() {
+    describe('Plotly.restyle subroutines switchboard', function() {
         beforeEach(function() {
             spyOn(PlotlyInternal, 'plot');
             spyOn(Plots, 'previousPromises');
@@ -326,6 +326,36 @@ describe('Test plot api', function() {
             mockDefaultsAndCalc(gd);
             PlotlyInternal.plot.calls.reset();
             Plotly.restyle(gd, 'marker.color', [['red', 'blue', 'green']]);
+            expect(gd.calcdata).toBeUndefined();
+            expect(PlotlyInternal.plot).toHaveBeenCalled();
+        });
+
+        it('should do full replot when arrayOk base attributes are updated', function() {
+            var gd = {
+                data: [{x: [1, 2, 3], y: [1, 2, 3]}],
+                layout: {}
+            };
+
+            mockDefaultsAndCalc(gd);
+            Plotly.restyle(gd, 'hoverlabel.bgcolor', [['red', 'green', 'blue']]);
+            expect(gd.calcdata).toBeUndefined();
+            expect(PlotlyInternal.plot).toHaveBeenCalled();
+
+            mockDefaultsAndCalc(gd);
+            PlotlyInternal.plot.calls.reset();
+            Plotly.restyle(gd, 'hoverlabel.bgcolor', 'yellow');
+            expect(gd.calcdata).toBeUndefined();
+            expect(PlotlyInternal.plot).toHaveBeenCalled();
+
+            mockDefaultsAndCalc(gd);
+            PlotlyInternal.plot.calls.reset();
+            Plotly.restyle(gd, 'hoverlabel.bgcolor', 'blue');
+            expect(gd.calcdata).toBeDefined();
+            expect(PlotlyInternal.plot).not.toHaveBeenCalled();
+
+            mockDefaultsAndCalc(gd);
+            PlotlyInternal.plot.calls.reset();
+            Plotly.restyle(gd, 'hoverlabel.bgcolor', [['red', 'blue', 'green']]);
             expect(gd.calcdata).toBeUndefined();
             expect(PlotlyInternal.plot).toHaveBeenCalled();
         });

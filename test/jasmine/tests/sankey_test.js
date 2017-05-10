@@ -9,6 +9,7 @@ var Sankey = require('@src/traces/sankey');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 
 describe('sankey tests', function() {
@@ -257,7 +258,6 @@ describe('sankey tests', function() {
     });
 
     describe('lifecycle methods', function() {
-
         afterEach(destroyGraphDiv);
 
         it('Plotly.deleteTraces with two traces removes the deleted plot', function(done) {
@@ -311,32 +311,103 @@ describe('sankey tests', function() {
                     done();
                 });
         });
+    });
 
-        it('Plotly.plot shows and removes tooltip on node, link', function(done) {
+    describe('Test hover/click interactions:', function() {
+        afterEach(destroyGraphDiv);
 
+        function assertLabel(content, style) {
+            var g = d3.selectAll('.hovertext');
+            var lines = g.selectAll('.nums .line');
+            var name = g.selectAll('.name');
+
+            expect(lines.size()).toBe(content.length - 1);
+
+            lines.each(function(_, i) {
+                expect(d3.select(this).text()).toBe(content[i]);
+            });
+
+            expect(name.text()).toBe(content[content.length - 1]);
+
+            var path = g.select('path');
+            expect(path.style('fill')).toEqual(style[0], 'bgcolor');
+            expect(path.style('stroke')).toEqual(style[1], 'bordercolor');
+
+            var text = g.select('text.nums');
+            expect(parseInt(text.style('font-size'))).toEqual(style[2], 'font.size');
+            expect(text.style('font-family').split(',')[0]).toEqual(style[3], 'font.family');
+            expect(text.style('fill')).toEqual(style[4], 'font.color');
+        }
+
+        it('should shows the correct hover labels', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy)
-                .then(function() {
+            function _hover(px, py) {
+                mouseEvent('mousemove', px, py);
+                mouseEvent('mouseover', px, py);
+                delete gd._lastHoverTime;
+            }
 
-                    mouseEvent('mousemove', 400, 300);
-                    mouseEvent('mouseover', 400, 300);
+            Plotly.plot(gd, mockCopy).then(function() {
+                _hover(400, 300);
 
-                    window.setTimeout(function() {
-                        expect(d3.select('.hoverlayer>.hovertext>text').node().innerHTML)
-                            .toEqual('447TWh', 'tooltip present');
+                assertLabel(
+                    ['Solid', 'Incoming flow count: 4', 'Outgoing flow count: 3', '447TWh'],
+                    ['rgb(148, 103, 189)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
+                );
+            })
+            .then(function() {
+                _hover(450, 300);
 
-                        mouseEvent('mousemove', 450, 300);
-                        mouseEvent('mouseover', 450, 300);
+                assertLabel(
+                    ['Source: Solid', 'Target: Industry', '46TWh'],
+                    ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
+                );
 
-                        window.setTimeout(function() {
-                            expect(d3.select('.hoverlayer>.hovertext>text').node().innerHTML)
-                                .toEqual('46TWh', 'tooltip jumped to link');
-                            done();
-                        }, 60);
-                    }, 60);
+                return Plotly.relayout(gd, 'hoverlabel.font.family', 'Roboto');
+            })
+            .then(function() {
+                _hover(400, 300);
+
+                assertLabel(
+                    ['Solid', 'Incoming flow count: 4', 'Outgoing flow count: 3', '447TWh'],
+                    ['rgb(148, 103, 189)', 'rgb(255, 255, 255)', 13, 'Roboto', 'rgb(255, 255, 255)']
+                );
+            })
+            .then(function() {
+                _hover(450, 300);
+
+                assertLabel(
+                    ['Source: Solid', 'Target: Industry', '46TWh'],
+                    ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Roboto', 'rgb(255, 255, 255)']
+                );
+
+                return Plotly.restyle(gd, {
+                    'hoverlabel.bgcolor': 'red',
+                    'hoverlabel.bordercolor': 'blue',
+                    'hoverlabel.font.size': 20,
+                    'hoverlabel.font.color': 'black'
                 });
+            })
+            .then(function() {
+                _hover(400, 300);
+
+                assertLabel(
+                    ['Solid', 'Incoming flow count: 4', 'Outgoing flow count: 3', '447TWh'],
+                    ['rgb(255, 0, 0)', 'rgb(0, 0, 255)', 20, 'Roboto', 'rgb(0, 0, 0)']
+                );
+            })
+            .then(function() {
+                _hover(450, 300);
+
+                assertLabel(
+                    ['Source: Solid', 'Target: Industry', '46TWh'],
+                    ['rgb(255, 0, 0)', 'rgb(0, 0, 255)', 20, 'Roboto', 'rgb(0, 0, 0)']
+                );
+            })
+            .catch(fail)
+            .then(done);
         });
     });
 });

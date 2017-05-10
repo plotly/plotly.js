@@ -33,7 +33,7 @@ var proto = SurfaceTrace.prototype;
 
 proto.handlePick = function(selection) {
     if(selection.object === this.surface) {
-        var selectIndex = [
+        var selectIndex = selection.index = [
             Math.min(
                 Math.round(selection.data.index[0] / this.dataScale - 1)|0,
                 this.data.z[0].length - 1

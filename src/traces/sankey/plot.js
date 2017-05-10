@@ -8,10 +8,11 @@
 
 'use strict';
 
-var render = require('./render');
-var Fx = require('../../plots/cartesian/graph_interact');
 var d3 = require('d3');
+var render = require('./render');
+var Fx = require('../../components/fx');
 var Color = require('../../components/color');
+var Lib = require('../../lib');
 
 function renderableValuePresent(d) {return d !== '';}
 
@@ -106,6 +107,13 @@ function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
     }
 }
 
+// does not support array values for now
+function castHoverOption(trace, attr) {
+    var labelOpts = trace.hoverlabel || {};
+    var val = Lib.nestedProperty(labelOpts, attr).get();
+    return Array.isArray(val) ? false : val;
+}
+
 module.exports = function plot(gd, calcData) {
 
     var fullLayout = gd._fullLayout;
@@ -124,7 +132,7 @@ module.exports = function plot(gd, calcData) {
     };
 
     var linkHoverFollow = function(element, d) {
-
+        var trace = gd._fullData[d.traceId];
         var rootBBox = gd.getBoundingClientRect();
         var boundingBox = element.getBoundingClientRect();
         var hoverCenterX = boundingBox.left + boundingBox.width / 2;
@@ -139,7 +147,11 @@ module.exports = function plot(gd, calcData) {
                 ['Source:', d.link.source.label].join(' '),
                 ['Target:', d.link.target.label].join(' ')
             ].filter(renderableValuePresent).join('<br>'),
-            color: Color.addOpacity(d.tinyColorHue, 1),
+            color: castHoverOption(trace, 'bgcolor') || Color.addOpacity(d.tinyColorHue, 1),
+            borderColor: castHoverOption(trace, 'bordercolor'),
+            fontFamily: castHoverOption(trace, 'font.family'),
+            fontSize: castHoverOption(trace, 'font.size'),
+            fontColor: castHoverOption(trace, 'font.color'),
             idealAlign: d3.event.x < hoverCenterX ? 'right' : 'left'
         }, {
             container: fullLayout._hoverlayer.node(),
@@ -172,7 +184,7 @@ module.exports = function plot(gd, calcData) {
     };
 
     var nodeHoverFollow = function(element, d) {
-
+        var trace = gd._fullData[d.traceId];
         var nodeRect = d3.select(element).select('.nodeRect');
         var rootBBox = gd.getBoundingClientRect();
         var boundingBox = nodeRect.node().getBoundingClientRect();
@@ -190,7 +202,11 @@ module.exports = function plot(gd, calcData) {
                 ['Incoming flow count:', d.node.targetLinks.length].join(' '),
                 ['Outgoing flow count:', d.node.sourceLinks.length].join(' ')
             ].filter(renderableValuePresent).join('<br>'),
-            color: d.tinyColorHue,
+            color: castHoverOption(trace, 'bgcolor') || d.tinyColorHue,
+            borderColor: castHoverOption(trace, 'bordercolor'),
+            fontFamily: castHoverOption(trace, 'font.family'),
+            fontSize: castHoverOption(trace, 'font.size'),
+            fontColor: castHoverOption(trace, 'font.color'),
             idealAlign: 'left'
         }, {
             container: fullLayout._hoverlayer.node(),

@@ -9,7 +9,7 @@
 
 'use strict';
 
-var Fx = require('../../plots/cartesian/graph_interact');
+var Fx = require('../../components/fx');
 var ErrorBars = require('../../components/errorbars');
 var Color = require('../../components/color');
 

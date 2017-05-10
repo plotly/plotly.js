@@ -42,9 +42,7 @@ describe('Test gl3d plots', function() {
     mock2.data[0].surfaceaxis = 2;
     mock2.layout.showlegend = true;
 
-    function mouseEventScatter3d(type, opts) {
-        mouseEvent(type, 605, 271, opts);
-    }
+    var mock3 = require('@mocks/gl3d_autocolorscale');
 
     function assertHoverText(xLabel, yLabel, zLabel, textLabel) {
         var node = d3.selectAll('g.hovertext');
@@ -58,6 +56,19 @@ describe('Test gl3d plots', function() {
         if(textLabel) {
             expect(tspan[3].innerHTML).toEqual(textLabel, 'text label');
         }
+    }
+
+    function assertHoverLabelStyle(bgColor, borderColor, fontSize, fontFamily, fontColor) {
+        var node = d3.selectAll('g.hovertext');
+
+        var path = node.select('path');
+        expect(path.style('fill')).toEqual(bgColor, 'bgcolor');
+        expect(path.style('stroke')).toEqual(borderColor, 'bordercolor');
+
+        var text = node.select('text.nums');
+        expect(parseInt(text.style('font-size'))).toEqual(fontSize, 'font.size');
+        expect(text.style('font-family').split(',')[0]).toEqual(fontFamily, 'font.family');
+        expect(text.style('fill')).toEqual(fontColor, 'font.color');
     }
 
     function assertEventData(x, y, z, curveNumber, pointNumber) {
@@ -83,11 +94,11 @@ describe('Test gl3d plots', function() {
         destroyGraphDiv();
     });
 
-    it('@noCI should display correct hover labels and emit correct event data', function(done) {
+    it('@noCI should display correct hover labels and emit correct event data (scatter3d case)', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
         function _hover() {
-            mouseEventScatter3d('mouseover');
+            mouseEvent('mouseover', 605, 271);
             return delay();
         }
 
@@ -102,10 +113,11 @@ describe('Test gl3d plots', function() {
         .then(delay)
         .then(function() {
             assertHoverText('x: 140.72', 'y: −96.97', 'z: −96.97');
-            assertEventData('140.72', '−96.97', '−96.97', 0, 2);
+            assertEventData(140.72, -96.97, -96.97, 0, 2);
+            assertHoverLabelStyle('rgb(0, 0, 255)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)');
 
             return Plotly.restyle(gd, {
-                x: [['2016-01-11', '2016-01-12', '2017-01-01', '2017-02']]
+                x: [['2016-01-11', '2016-01-12', '2017-01-01', '2017-02-01']]
             });
         })
         .then(_hover)
@@ -148,18 +160,75 @@ describe('Test gl3d plots', function() {
         .then(_hover)
         .then(function() {
             assertHoverText('x: 二 6, 2017', 'y: c', 'z: 100k', 'Clementine');
+
+            return Plotly.restyle(gd, {
+                'hoverlabel.bgcolor': [['red', 'blue', 'green', 'yellow']],
+                'hoverlabel.font.size': 20
+            });
+        })
+        .then(_hover)
+        .then(function() {
+            assertHoverLabelStyle('rgb(0, 128, 0)', 'rgb(255, 255, 255)', 20, 'Arial', 'rgb(255, 255, 255)');
+
+            return Plotly.relayout(gd, {
+                'hoverlabel.bordercolor': 'yellow',
+                'hoverlabel.font.color': 'cyan',
+                'hoverlabel.font.family': 'Roboto'
+            });
+        })
+        .then(_hover)
+        .then(function() {
+            assertHoverLabelStyle('rgb(0, 128, 0)', 'rgb(255, 255, 0)', 20, 'Roboto', 'rgb(0, 255, 255)');
         })
         .then(done);
-
     });
 
-    it('@noCI should emit correct event data on click', function(done) {
+    it('@noCI should display correct hover labels and emit correct event data (surface case)', function(done) {
+        var _mock = Lib.extendDeep({}, mock3);
+
+        function _hover() {
+            mouseEvent('mouseover', 605, 271);
+            return delay();
+        }
+
+        Plotly.plot(gd, _mock)
+        .then(delay)
+        .then(function() {
+            gd.on('plotly_hover', function(eventData) {
+                ptData = eventData.points[0];
+            });
+        })
+        .then(_hover)
+        .then(delay)
+        .then(function() {
+            assertHoverText('x: 1', 'y: 2', 'z: 43', 'one two');
+            assertEventData(1, 2, 43, 0, [1, 2]);
+            assertHoverLabelStyle('rgb(68, 68, 68)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)');
+
+            Plotly.restyle(gd, {
+                'hoverlabel.bgcolor': 'white',
+                'hoverlabel.font.size': 9,
+                'hoverlabel.font.color': [[
+                    ['red', 'blue', 'green'],
+                    ['pink', 'purple', 'cyan'],
+                    ['black', 'orange', 'yellow']
+                ]]
+            });
+        })
+        .then(_hover)
+        .then(function() {
+            assertHoverLabelStyle('rgb(255, 255, 255)', 'rgb(68, 68, 68)', 9, 'Arial', 'rgb(0, 255, 255)');
+        })
+        .then(done);
+    });
+
+    it('@noCI should emit correct event data on click (scatter3d case)', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
         // N.B. gl3d click events are 'mouseover' events
         // with button 1 pressed
         function _click() {
-            mouseEventScatter3d('mouseover', {buttons: 1});
+            mouseEvent('mouseover', 605, 271, {buttons: 1});
             return delay();
         }
 
@@ -173,7 +242,7 @@ describe('Test gl3d plots', function() {
         .then(_click)
         .then(delay)
         .then(function() {
-            assertEventData('140.72', '−96.97', '−96.97', 0, 2);
+            assertEventData(140.72, -96.97, -96.97, 0, 2);
         })
         .then(done);
     });

@@ -11,7 +11,7 @@
 
 var mapboxgl = require('mapbox-gl');
 
-var Fx = require('../cartesian/graph_interact');
+var Fx = require('../../components/fx');
 var Lib = require('../../lib');
 var constants = require('./constants');
 var layoutAttributes = require('./layout_attributes');
