@@ -6,6 +6,7 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
+var mouseEvent = require('../assets/mouse_event');
 
 describe('Test sort transform defaults:', function() {
     function _supply(trace, layout) {
@@ -237,6 +238,104 @@ describe('Test sort transform interactions:', function() {
         })
         .then(function() {
             _assertFirst('M10,0A10,10 0 1');
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('does not preserve hover/click `pointNumber` value', function(done) {
+        var gd = createGraphDiv();
+
+        function getPxPos(gd, id) {
+            var trace = gd.data[0];
+            var fullLayout = gd._fullLayout;
+            var index = trace.ids.indexOf(id);
+
+            return [
+                fullLayout.xaxis.d2p(trace.x[index]),
+                fullLayout.yaxis.d2p(trace.y[index])
+            ];
+        }
+
+        function hover(gd, id) {
+            return new Promise(function(resolve) {
+                gd.once('plotly_hover', function(eventData) {
+                    resolve(eventData);
+                });
+
+                var pos = getPxPos(gd, id);
+                mouseEvent('mousemove', pos[0], pos[1]);
+            });
+        }
+
+        function click(gd, id) {
+            return new Promise(function(resolve) {
+                gd.once('plotly_click', function(eventData) {
+                    resolve(eventData);
+                });
+
+                var pos = getPxPos(gd, id);
+                mouseEvent('mousemove', pos[0], pos[1]);
+                mouseEvent('mousedown', pos[0], pos[1]);
+                mouseEvent('mouseup', pos[0], pos[1]);
+            });
+        }
+
+        function wait() {
+            return new Promise(function(resolve) {
+                setTimeout(resolve, 60);
+            });
+        }
+
+        function assertPt(eventData, x, y, pointNumber, id) {
+            var pt = eventData.points[0];
+
+            expect(pt.x).toEqual(x, 'x');
+            expect(pt.y).toEqual(y, 'y');
+            expect(pt.pointNumber).toEqual(pointNumber, 'pointNumber');
+            expect(pt.fullData.ids[pt.pointNumber]).toEqual(id, 'id');
+        }
+
+        Plotly.plot(gd, [{
+            mode: 'markers',
+            x: [-2, -1, -2, 0, 1, 3, 1],
+            y: [1, 2, 3, 1, 2, 3, 1],
+            ids: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
+            marker: {
+                size: [10, 20, 5, 1, 6, 0, 10]
+            },
+            transforms: [{
+                enabled: false,
+                type: 'sort',
+                target: 'marker.size',
+            }]
+        }], {
+            width: 500,
+            height: 500,
+            margin: {l: 0, t: 0, r: 0, b: 0},
+            hovermode: 'closest'
+        })
+        .then(function() { return hover(gd, 'D'); })
+        .then(function(eventData) {
+            assertPt(eventData, 0, 1, 3, 'D');
+        })
+        .then(wait)
+        .then(function() { return click(gd, 'G'); })
+        .then(function(eventData) {
+            assertPt(eventData, 1, 1, 6, 'G');
+        })
+        .then(wait)
+        .then(function() {
+            return Plotly.restyle(gd, 'transforms[0].enabled', true);
+        })
+        .then(function() { return hover(gd, 'D'); })
+        .then(function(eventData) {
+            assertPt(eventData, 0, 1, 1, 'D');
+        })
+        .then(wait)
+        .then(function() { return click(gd, 'G'); })
+        .then(function(eventData) {
+            assertPt(eventData, 1, 1, 5, 'G');
         })
         .catch(fail)
         .then(done);
