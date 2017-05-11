@@ -740,7 +740,7 @@ function computeLegendDimensions(gd, groups, traces) {
                 (borderwidth + offsetX),
                 (5 + borderwidth + legendItem.height / 2) + rowHeight);
 
-            opts.width += traceGap + traceWidth;
+            opts.width = Math.max(opts.width, borderwidth + offsetX + traceWidth)
             opts.height = Math.max(opts.height, legendItem.height);
 
             // keep track of tallest trace in group
