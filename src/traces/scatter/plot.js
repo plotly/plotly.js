@@ -458,8 +458,10 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         join.enter().append('g').classed('textpoint', true).append('text');
 
         join.each(function(d) {
-            var sel = transition(d3.select(this).select('text'));
-            Drawing.translatePoint(d, sel, xa, ya);
+            var g = d3.select(this);
+            var sel = transition(g.select('text'));
+            var hasTextPt = Drawing.translatePoint(d, sel, xa, ya);
+            if(!hasTextPt) g.remove();
         });
 
         join.selectAll('text')
