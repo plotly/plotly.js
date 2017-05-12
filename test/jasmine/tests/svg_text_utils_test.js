@@ -30,7 +30,7 @@ describe('svg+text utils', function() {
             expect(tspan.attr('style')).toBe(style);
         }
 
-        function assertAnchorAttrs(node) {
+        function assertAnchorAttrs(node, style) {
             var a = node.select('a');
 
             var WHITE_LIST = ['xlink:href', 'xlink:show', 'style'],
@@ -44,6 +44,8 @@ describe('svg+text utils', function() {
             });
 
             expect(hasWrongAttr).toBe(false);
+
+            expect(a.attr('style')).toBe('cursor:pointer;' + (style || ''));
         }
 
         function listAttributes(node) {
@@ -120,7 +122,8 @@ describe('svg+text utils', function() {
             assertAnchorLink(node, 'mailto:support@plot.ly');
         });
 
-        it('wraps XSS attacks in href', function() {
+        it('drops XSS attacks in href', function() {
+            // "XSS" gets interpreted as a relative link (http)
             var textCases = [
                 '<a href="XSS\" onmouseover="alert(1)\" style="font-size:300px">Subtitle</a>',
                 '<a href="XSS" onmouseover="alert(1)" style="font-size:300px">Subtitle</a>'
@@ -130,8 +133,28 @@ describe('svg+text utils', function() {
                 var node = mockTextSVGElement(textCase);
 
                 expect(node.text()).toEqual('Subtitle');
-                assertAnchorAttrs(node);
-                assertAnchorLink(node, 'XSS onmouseover=alert(1) style=font-size:300px');
+                assertAnchorAttrs(node, 'font-size:300px');
+                assertAnchorLink(node, 'XSS');
+            });
+        });
+
+        it('accepts href and style in <a> in any order and tosses other stuff', function() {
+            var textCases = [
+                '<a href="x" style="y">z</a>',
+                '<a href=\'x\' style="y">z</a>',
+                '<A HREF="x"StYlE=\'y\'>z</a>',
+                '<a style=\'y\'href=\'x\'>z</A>',
+                '<a \t\r\n href="x" \n\r\t style="y"  \n  \t  \r>z</a>',
+                '<a magic="true" href="x" weather="cloudy" style="y" speed="42">z</a>',
+                '<a href="x" style="y">z</a href="nope" style="for real?">',
+            ];
+
+            textCases.forEach(function(textCase) {
+                var node = mockTextSVGElement(textCase);
+
+                expect(node.text()).toEqual('z');
+                assertAnchorAttrs(node, 'y');
+                assertAnchorLink(node, 'x');
             });
         });
 

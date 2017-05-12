@@ -221,17 +221,23 @@ function texToSVG(_texString, _config, _callback) {
 }
 
 var TAG_STYLES = {
-    // would like to use baseline-shift but FF doesn't support it yet
+    // would like to use baseline-shift for sub/sup but FF doesn't support it
     // so we need to use dy along with the uber hacky shift-back-to
     // baseline below
     sup: 'font-size:70%" dy="-0.6em',
     sub: 'font-size:70%" dy="0.3em',
     b: 'font-weight:bold',
     i: 'font-style:italic',
-    a: '',
+    a: 'cursor:pointer',
     span: '',
     br: '',
     em: 'font-style:italic;font-weight:bold'
+};
+
+// sub/sup: extra tspan with zero-width space to get back to the right baseline
+var TAG_CLOSE = {
+    sup: '<tspan dy="0.42em">&#x200b;</tspan>',
+    sub: '<tspan dy="-0.21em">&#x200b;</tspan>'
 };
 
 var PROTOCOLS = ['http:', 'https:', 'mailto:'];
@@ -253,6 +259,16 @@ var UNICODE_TO_ENTITY = Object.keys(stringMappings.unicodeToEntity).map(function
 });
 
 var NEWLINES = /(\r\n?|\n)/g;
+
+var SPLIT_TAGS = /(<[^<>]*>)/;
+
+var ONE_TAG = /<(\/?)([^ >]*)(\s+(.*))?>/i;
+
+var QUOTEDATTR = '\\s*=\\s*("([^"]*)"|\'([^\']*)\')';
+var STYLEMATCH = new RegExp('(^|[\\s"\'])style' + QUOTEDATTR, 'i');
+var HREFMATCH = new RegExp('(^|[\\s"\'])href' + QUOTEDATTR, 'i');
+
+var COLORMATCH = /(^|;)\s*color:/;
 
 exports.plainText = function(_str) {
     // strip out our pseudo-html so we have a readable
@@ -280,84 +296,86 @@ function encodeForHTML(_str) {
 }
 
 function convertToSVG(_str) {
-    _str = convertEntities(_str);
-
-    // normalize behavior between IE and others wrt newlines and whitespace:pre
-    // this combination makes IE barf https://github.com/plotly/plotly.js/issues/746
-    // Chrome and FF display \n, \r, or \r\n as a space in this mode.
-    // I feel like at some point we turned these into <br> but currently we don't so
-    // I'm just going to cement what we do now in Chrome and FF
-    _str = _str.replace(NEWLINES, ' ');
+    _str = convertEntities(_str)
+        /*
+         * Normalize behavior between IE and others wrt newlines and whitespace:pre
+         * this combination makes IE barf https://github.com/plotly/plotly.js/issues/746
+         * Chrome and FF display \n, \r, or \r\n as a space in this mode.
+         * I feel like at some point we turned these into <br> but currently we don't so
+         * I'm just going to cement what we do now in Chrome and FF
+         */
+        .replace(NEWLINES, ' ');
 
     var result = _str
-        .split(/(<[^<>]*>)/).map(function(d) {
-            var match = d.match(/<(\/?)([^ >]*)\s*(.*)>/i),
-                tag = match && match[2].toLowerCase(),
-                style = TAG_STYLES[tag];
+        .split(SPLIT_TAGS).map(function(d) {
+            var match = d.match(ONE_TAG);
+            var tag = match && match[2].toLowerCase();
+            var tagStyle = TAG_STYLES[tag];
 
-            if(style !== undefined) {
-                var close = match[1],
-                    extra = match[3],
-                    /**
-                     * extraStyle: any random extra css (that's supported by svg)
-                     * use this like <span style="font-family:Arial"> to change font in the middle
-                     *
-                     * at one point we supported <font family="..." size="..."> but as this isn't even
-                     * valid HTML anymore and we dropped it accidentally for many months, we will not
-                     * resurrect it.
-                     */
-                    extraStyle = extra.match(/^style\s*=\s*"([^"]+)"\s*/i);
+            if(tagStyle !== undefined) {
+                var isClose = match[1];
+                if(isClose) return (tag === 'a' ? '</a>' : '</tspan>') + (TAG_CLOSE[tag] || '');
 
-                // anchor and br are the only ones that don't turn into a tspan
+                // break: later we'll turn these into newline <tspan>s
+                // but we need to know about all the other tags first
+                if(tag === 'br') return '<br>';
+
+                /**
+                 * extra includes href and any random extra css (that's supported by svg)
+                 * use this like <span style="font-family:Arial"> to change font in the middle
+                 *
+                 * at one point we supported <font family="..." size="..."> but as this isn't even
+                 * valid HTML anymore and we dropped it accidentally for many months, we will not
+                 * resurrect it.
+                 */
+                var extra = match[4];
+
+                var out;
+
+                // anchor is the only tag that doesn't turn into a tspan
                 if(tag === 'a') {
-                    if(close) return '</a>';
-                    else if(extra.substr(0, 4).toLowerCase() !== 'href') return '<a>';
-                    else {
-                        // remove quotes, leading '=', replace '&' with '&amp;'
-                        var href = extra.substr(4)
-                            .replace(/["']/g, '')
-                            .replace(/=/, '');
+                    var hrefMatch = extra && extra.match(HREFMATCH);
+                    var href = hrefMatch && (hrefMatch[3] || hrefMatch[4]);
 
-                        // check protocol
+                    out = '<a';
+
+                    if(href) {
+                        // check safe protocols
                         var dummyAnchor = document.createElement('a');
                         dummyAnchor.href = href;
-                        if(PROTOCOLS.indexOf(dummyAnchor.protocol) === -1) return '<a>';
-
-                        return '<a xlink:show="new" xlink:href="' + encodeForHTML(href) + '">';
+                        if(PROTOCOLS.indexOf(dummyAnchor.protocol) !== -1) {
+                            out += ' xlink:show="new" xlink:href="' + encodeForHTML(href) + '"';
+                        }
                     }
                 }
-                else if(tag === 'br') return '<br>';
-                else if(close) {
-                    // closing tag
-
-                    // sub/sup: extra tspan with zero-width space to get back to the right baseline
-                    if(tag === 'sup') return '</tspan><tspan dy="0.42em">&#x200b;</tspan>';
-                    if(tag === 'sub') return '</tspan><tspan dy="-0.21em">&#x200b;</tspan>';
-                    else return '</tspan>';
-                }
                 else {
-                    var tspanStart = '<tspan';
+                    out = '<tspan';
 
                     if(tag === 'sup' || tag === 'sub') {
                         // sub/sup: extra zero-width space, fixes problem if new line starts with sub/sup
-                        tspanStart = '&#x200b;' + tspanStart;
+                        out = '&#x200b;' + out;
                     }
-
-                    if(extraStyle) {
-                        // most of the svg css users will care about is just like html,
-                        // but font color is different. Let our users ignore this.
-                        extraStyle = extraStyle[1].replace(/(^|;)\s*color:/, '$1 fill:');
-                        style = encodeForHTML(extraStyle) + (style ? ';' + style : '');
-                    }
-
-                    return tspanStart + (style ? ' style="' + style + '"' : '') + '>';
                 }
+
+                // now add style, from both the tag name and any extra css
+                // Most of the svg css that users will care about is just like html,
+                // but font color is different (uses fill). Let our users ignore this.
+                var cssMatch = extra && extra.match(STYLEMATCH);
+                var css = cssMatch && (cssMatch[3] || cssMatch[4]);
+                if(css) css = encodeForHTML(css.replace(COLORMATCH, '$1 fill:'));
+
+                if(tagStyle) css = tagStyle + ';' + (css || '');
+
+                if(css) return out + ' style="' + css + '">';
+
+                return out + '>';
             }
             else {
                 return exports.xml_entity_encode(d).replace(/</g, '&lt;');
             }
         });
 
+    // now deal with line breaks
     var indices = [];
     for(var index = result.indexOf('<br>'); index > 0; index = result.indexOf('<br>', index + 1)) {
         indices.push(index);
