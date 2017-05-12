@@ -283,7 +283,7 @@ describe('Test sort transform interactions:', function() {
 
         function wait() {
             return new Promise(function(resolve) {
-                setTimeout(resolve, 60);
+                setTimeout(resolve, 100);
             });
         }
 
