@@ -19,8 +19,6 @@ var stringMappings = require('../constants/string_mappings');
 
 // Append SVG
 
-var parser = new DOMParser();
-
 d3.selection.prototype.appendSVG = function(_svgString) {
     var skeleton = [
         '<svg xmlns="', xmlnsNamespaces.svg, '" ',
@@ -29,7 +27,7 @@ d3.selection.prototype.appendSVG = function(_svgString) {
         '</svg>'
     ].join('');
 
-    var dom = parser.parseFromString(skeleton, 'application/xml'),
+    var dom = new DOMParser().parseFromString(skeleton, 'application/xml'),
         childNode = dom.documentElement.firstChild;
 
     while(childNode) {
