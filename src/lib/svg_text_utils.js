@@ -264,9 +264,11 @@ var SPLIT_TAGS = /(<[^<>]*>)/;
 
 var ONE_TAG = /<(\/?)([^ >]*)(\s+(.*))?>/i;
 
-var QUOTEDATTR = '\\s*=\\s*("([^"]*)"|\'([^\']*)\')';
-var STYLEMATCH = new RegExp('(^|[\\s"\'])style' + QUOTEDATTR, 'i');
-var HREFMATCH = new RegExp('(^|[\\s"\'])href' + QUOTEDATTR, 'i');
+// Style and href: pull them out of either single or double quotes.
+// Because we hack in other attributes with style (sub & sup), drop any trailing
+// semicolon in user-supplied styles so we can consistently append the tag-dependent style
+var STYLEMATCH = /(^|[\s"'])style\s*=\s*("([^"]*);?"|'([^']*);?')/i;
+var HREFMATCH = /(^|[\s"'])href\s*=\s*("([^"]*)"|'([^']*)')/i;
 
 var COLORMATCH = /(^|;)\s*color:/;
 
@@ -362,9 +364,11 @@ function convertToSVG(_str) {
                 // but font color is different (uses fill). Let our users ignore this.
                 var cssMatch = extra && extra.match(STYLEMATCH);
                 var css = cssMatch && (cssMatch[3] || cssMatch[4]);
-                if(css) css = encodeForHTML(css.replace(COLORMATCH, '$1 fill:'));
-
-                if(tagStyle) css = tagStyle + ';' + (css || '');
+                if(css) {
+                    css = encodeForHTML(css.replace(COLORMATCH, '$1 fill:'));
+                    if(tagStyle) css += ';' + tagStyle;
+                }
+                else if(tagStyle) css = tagStyle;
 
                 if(css) return out + ' style="' + css + '">';
 
@@ -376,6 +380,11 @@ function convertToSVG(_str) {
         });
 
     // now deal with line breaks
+    // TODO: this next section attempts to close and reopen tags that
+    // span a line break. But
+    // a) it only closes and reopens one tag, and
+    // b) all tags are treated like equivalent tspans (even <a> which isn't a tspan even now!)
+    // we should really do this in a type-aware way *before* converting to tspans.
     var indices = [];
     for(var index = result.indexOf('<br>'); index > 0; index = result.indexOf('<br>', index + 1)) {
         indices.push(index);

@@ -45,7 +45,11 @@ describe('svg+text utils', function() {
 
             expect(hasWrongAttr).toBe(false);
 
-            expect(a.attr('style')).toBe('cursor:pointer;' + (style || ''));
+            var fullStyle = style || '';
+            if(style) fullStyle += ';';
+            fullStyle += 'cursor:pointer';
+
+            expect(a.attr('style')).toBe(fullStyle);
         }
 
         function listAttributes(node) {
@@ -225,6 +229,51 @@ describe('svg+text utils', function() {
             );
 
             expect(node.text()).toEqual('100μ & < 10 > 0  100 × 20 ± 0.5 °');
+        });
+
+        it('supports superscript by itself', function() {
+            var node = mockTextSVGElement('<sup>123</sup>');
+            expect(node.html()).toBe(
+                '​<tspan style="font-size:70%" dy="-0.6em">123</tspan>' +
+                '<tspan dy="0.42em">​</tspan>');
+        });
+
+        it('supports subscript by itself', function() {
+            var node = mockTextSVGElement('<sub>123</sub>');
+            expect(node.html()).toBe(
+                '​<tspan style="font-size:70%" dy="0.3em">123</tspan>' +
+                '<tspan dy="-0.21em">​</tspan>');
+        });
+
+        it('supports superscript and subscript together with normal text', function() {
+            var node = mockTextSVGElement('SO<sub>4</sub><sup>2-</sup>');
+            expect(node.html()).toBe(
+                'SO​<tspan style="font-size:70%" dy="0.3em">4</tspan>' +
+                '<tspan dy="-0.21em">​</tspan>​' +
+                '<tspan style="font-size:70%" dy="-0.6em">2-</tspan>' +
+                '<tspan dy="0.42em">​</tspan>');
+        });
+
+        it('allows one <b> to span <br>s', function() {
+            var node = mockTextSVGElement('be <b>Bold<br>and<br><i>Strong</i></b>');
+            expect(node.html()).toBe(
+                '<tspan class="line" dy="0em">be ' +
+                    '<tspan style="font-weight:bold">Bold</tspan></tspan>' +
+                '<tspan class="line" dy="1.3em">' +
+                    '<tspan style="font-weight:bold">and</tspan></tspan>' +
+                '<tspan class="line" dy="2.6em">' +
+                    '<tspan style="font-weight:bold">' +
+                        '<tspan style="font-style:italic">Strong</tspan></tspan></tspan>');
+        });
+
+        it('allows one <sub> to span <br>s', function() {
+            var node = mockTextSVGElement('SO<sub>4<br>44</sub>');
+            expect(node.html()).toBe(
+                '<tspan class="line" dy="0em">SO​' +
+                    '<tspan style="font-size:70%" dy="0.3em">4</tspan></tspan>' +
+                '<tspan class="line" dy="1.3em">​' +
+                    '<tspan style="font-size:70%" dy="0.3em">44</tspan>' +
+                    '<tspan dy="-0.21em">​</tspan></tspan>');
         });
     });
 });
