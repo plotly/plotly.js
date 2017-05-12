@@ -1,9 +1,6 @@
-var Drawing = require('@src/components/drawing');
-
 var d3 = require('d3');
-
 var Plotly = require('@lib/index');
-
+var Drawing = require('@src/components/drawing');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
@@ -346,6 +343,54 @@ describe('Drawing', function() {
             g.attr('transform', 'translate(1, 2)');
             Drawing.setTextPointsScale(g, 4, 5);
             expect(g.attr('transform')).toEqual('translate(8,9) scale(4,5) translate(-8,-9) translate(1, 2)');
+        });
+    });
+
+    describe('bBox', function() {
+        afterEach(destroyGraphDiv);
+
+        it('should update bounding box dimension on window scroll', function(done) {
+            var gd = createGraphDiv();
+
+            // allow page to scroll
+            gd.style.position = 'static';
+
+            Plotly.plot(gd, [{
+                y: [1, 2, 1]
+            }], {
+                annotations: [{
+                    text: 'hello'
+                }],
+                height: window.innerHeight * 2,
+                width: 500
+            })
+            .then(function() {
+                var node = d3.select('text.annotation').node();
+                expect(Drawing.bBox(node)).toEqual({
+                    height: 14,
+                    width: 27.671875,
+                    left: -13.671875,
+                    top: -11,
+                    right: 14,
+                    bottom: 3
+                });
+
+                window.scroll(0, 200);
+                return Plotly.relayout(gd, 'annotations[0].text', 'HELLO');
+            })
+            .then(function() {
+                var node = d3.select('text.annotation').node();
+                expect(Drawing.bBox(node)).toEqual({
+                    height: 14,
+                    width: 41.015625,
+                    left: -20.671875,
+                    top: -11,
+                    right: 20.34375,
+                    bottom: 3
+                });
+            })
+            .catch(fail)
+            .then(done);
         });
     });
 });
