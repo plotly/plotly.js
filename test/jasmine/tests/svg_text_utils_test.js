@@ -6,7 +6,7 @@ var util = require('@src/lib/svg_text_utils');
 describe('svg+text utils', function() {
     'use strict';
 
-    describe('convertToTspans should', function() {
+    describe('convertToTspans', function() {
 
         function mockTextSVGElement(txt) {
             return d3.select('body')
@@ -60,7 +60,7 @@ describe('svg+text utils', function() {
             d3.select('#text').remove();
         });
 
-        it('check for XSS attack in href', function() {
+        it('checks for XSS attack in href', function() {
             var node = mockTextSVGElement(
                 '<a href="javascript:alert(\'attack\')">XSS</a>'
             );
@@ -70,7 +70,7 @@ describe('svg+text utils', function() {
             assertAnchorLink(node, null);
         });
 
-        it('check for XSS attack in href (with plenty of white spaces)', function() {
+        it('checks for XSS attack in href (with plenty of white spaces)', function() {
             var node = mockTextSVGElement(
                 '<a href =    "     javascript:alert(\'attack\')">XSS</a>'
             );
@@ -80,7 +80,7 @@ describe('svg+text utils', function() {
             assertAnchorLink(node, null);
         });
 
-        it('whitelist relative hrefs (interpreted as http)', function() {
+        it('whitelists relative hrefs (interpreted as http)', function() {
             var node = mockTextSVGElement(
                 '<a href="/mylink">mylink</a>'
             );
@@ -90,7 +90,7 @@ describe('svg+text utils', function() {
             assertAnchorLink(node, '/mylink');
         });
 
-        it('whitelist http hrefs', function() {
+        it('whitelists http hrefs', function() {
             var node = mockTextSVGElement(
                 '<a href="http://bl.ocks.org/">bl.ocks.org</a>'
             );
@@ -100,7 +100,7 @@ describe('svg+text utils', function() {
             assertAnchorLink(node, 'http://bl.ocks.org/');
         });
 
-        it('whitelist https hrefs', function() {
+        it('whitelists https hrefs', function() {
             var node = mockTextSVGElement(
                 '<a href="https://plot.ly">plot.ly</a>'
             );
@@ -110,7 +110,7 @@ describe('svg+text utils', function() {
             assertAnchorLink(node, 'https://plot.ly');
         });
 
-        it('whitelist mailto hrefs', function() {
+        it('whitelists mailto hrefs', function() {
             var node = mockTextSVGElement(
                 '<a href="mailto:support@plot.ly">support</a>'
             );
@@ -120,7 +120,7 @@ describe('svg+text utils', function() {
             assertAnchorLink(node, 'mailto:support@plot.ly');
         });
 
-        it('wrap XSS attacks in href', function() {
+        it('wraps XSS attacks in href', function() {
             var textCases = [
                 '<a href="XSS\" onmouseover="alert(1)\" style="font-size:300px">Subtitle</a>',
                 '<a href="XSS" onmouseover="alert(1)" style="font-size:300px">Subtitle</a>'
@@ -135,7 +135,7 @@ describe('svg+text utils', function() {
             });
         });
 
-        it('should keep query parameters in href', function() {
+        it('keeps query parameters in href', function() {
             var textCases = [
                 '<a href="https://abc.com/myFeature.jsp?name=abc&pwd=def">abc.com?shared-key</a>',
                 '<a href="https://abc.com/myFeature.jsp?name=abc&amp;pwd=def">abc.com?shared-key</a>'
@@ -150,7 +150,7 @@ describe('svg+text utils', function() {
             });
         });
 
-        it('allow basic spans', function() {
+        it('allows basic spans', function() {
             var node = mockTextSVGElement(
                 '<span>text</span>'
             );
@@ -159,7 +159,7 @@ describe('svg+text utils', function() {
             assertTspanStyle(node, null);
         });
 
-        it('ignore unquoted styles in spans', function() {
+        it('ignores unquoted styles in spans', function() {
             var node = mockTextSVGElement(
                 '<span style=unquoted>text</span>'
             );
@@ -168,7 +168,7 @@ describe('svg+text utils', function() {
             assertTspanStyle(node, null);
         });
 
-        it('allow quoted styles in spans', function() {
+        it('allows quoted styles in spans', function() {
             var node = mockTextSVGElement(
                 '<span style="quoted: yeah;">text</span>'
             );
@@ -177,7 +177,7 @@ describe('svg+text utils', function() {
             assertTspanStyle(node, 'quoted: yeah;');
         });
 
-        it('ignore extra stuff after span styles', function() {
+        it('ignores extra stuff after span styles', function() {
             var node = mockTextSVGElement(
                 '<span style="quoted: yeah;"disallowed: indeed;">text</span>'
             );
@@ -195,7 +195,7 @@ describe('svg+text utils', function() {
             assertTspanStyle(node, 'quoted: yeah&\';;');
         });
 
-        it('decode some HTML entities in text', function() {
+        it('decodes some HTML entities in text', function() {
             var node = mockTextSVGElement(
                 '100&mu; &amp; &lt; 10 &gt; 0 &nbsp;' +
                 '100 &times; 20 &plusmn; 0.5 &deg;'
