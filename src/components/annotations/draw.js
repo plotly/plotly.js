@@ -188,6 +188,18 @@ function drawOne(gd, index) {
     }
 
     function drawGraphicalElements() {
+        // if the text has *only* a link, make the whole box into a link
+        var anchor = annText.selectAll('a');
+        if(anchor.size() === 1 && anchor.text() === annText.text()) {
+            var wholeLink = annTextGroupInner.insert('a', ':first-child').attr({
+                'xlink:xlink:href': anchor.attr('xlink:href'),
+                'xlink:xlink:show': anchor.attr('xlink:show')
+            })
+            .style({cursor: 'pointer'});
+
+            wholeLink.node().appendChild(annTextBG.node());
+        }
+
 
         // make sure lines are aligned the way they will be
         // at the end, even if their position changes
