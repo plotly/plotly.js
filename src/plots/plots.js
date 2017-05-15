@@ -2003,7 +2003,7 @@ plots.doCalcdata = function(gd, traces) {
         }
     }
 
-    var hasCategoryAxis = plots.initCategories(axList);
+    var hasCategoryAxis = initCategories(axList);
 
     var hasCalcTransform = false;
 
@@ -2039,7 +2039,7 @@ plots.doCalcdata = function(gd, traces) {
             axList[i]._categories = [];
             axList[i]._categoriesMap = {};
         }
-        plots.initCategories(axList);
+        initCategories(axList);
     }
 
     // 'regular' loop
@@ -2085,7 +2085,7 @@ plots.doCalcdata = function(gd, traces) {
     }
 };
 
-plots.initCategories = function(axList) {
+function initCategories(axList) {
     var hasCategoryAxis = false;
 
     // initialize the category list, if there is one, so we start over
@@ -2103,7 +2103,7 @@ plots.initCategories = function(axList) {
     }
 
     return hasCategoryAxis;
-};
+}
 
 plots.rehover = function(gd) {
     if(gd._fullLayout._rehover) {
