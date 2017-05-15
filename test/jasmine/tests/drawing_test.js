@@ -4,9 +4,14 @@ var Drawing = require('@src/components/drawing');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
+var customMatchers = require('../assets/custom_matchers');
 
 describe('Drawing', function() {
     'use strict';
+
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
 
     describe('setClipUrl', function() {
 
@@ -349,6 +354,17 @@ describe('Drawing', function() {
     describe('bBox', function() {
         afterEach(destroyGraphDiv);
 
+        function assertBBox(actual, expected) {
+            expect(actual.height).toEqual(expected.height, 'height');
+            expect(actual.top).toEqual(expected.top, 'top');
+            expect(actual.bottom).toEqual(expected.bottom, 'bottom');
+
+            var TOL = 3;
+            expect(actual.width).toBeWithin(expected.width, TOL, 'width');
+            expect(actual.left).toBeWithin(expected.left, TOL, 'left');
+            expect(actual.right).toBeWithin(expected.right, TOL, 'right');
+        }
+
         it('should update bounding box dimension on window scroll', function(done) {
             var gd = createGraphDiv();
 
@@ -366,7 +382,7 @@ describe('Drawing', function() {
             })
             .then(function() {
                 var node = d3.select('text.annotation').node();
-                expect(Drawing.bBox(node)).toEqual({
+                assertBBox(Drawing.bBox(node), {
                     height: 14,
                     width: 27.671875,
                     left: -13.671875,
@@ -380,13 +396,27 @@ describe('Drawing', function() {
             })
             .then(function() {
                 var node = d3.select('text.annotation').node();
-                expect(Drawing.bBox(node)).toEqual({
+                assertBBox(Drawing.bBox(node), {
                     height: 14,
                     width: 41.015625,
                     left: -20.671875,
                     top: -11,
                     right: 20.34375,
                     bottom: 3
+                });
+
+                window.scroll(200, 0);
+                return Plotly.relayout(gd, 'annotations[0].font.size', 20);
+            })
+            .then(function() {
+                var node = d3.select('text.annotation').node();
+                assertBBox(Drawing.bBox(node), {
+                    height: 22,
+                    width: 66.015625,
+                    left: -32.78125,
+                    top: -18,
+                    right: 33.234375,
+                    bottom: 4
                 });
             })
             .catch(fail)
