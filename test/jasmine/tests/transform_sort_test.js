@@ -134,6 +134,21 @@ describe('Test sort transform calc:', function() {
         expect(out[0].y).toEqual([0, 2, 4, 3, 1]);
     });
 
+    it('should sort via categorical targets', function() {
+        var trace = extend({
+            transforms: [{ target: 'marker.size' }]
+        });
+        trace.x = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
+
+        var out = _transform([trace]);
+
+        expect(out[0].x).toEqual(['F', 'D', 'C', 'E', 'A', 'G', 'B']);
+        expect(out[0].y).toEqual([3, 1, 3, 2, 1, 1, 2]);
+        expect(out[0].ids).toEqual(['p2', 'z', 'n2', 'p1', 'n0', 'p3', 'n1']);
+        expect(out[0].marker.size).toEqual([0, 1, 5, 6, 10, 10, 20]);
+        expect(out[0].marker.color).toEqual([0.3, 0.1, 0.3, 0.2, 0.1, 0.4, 0.2]);
+    });
+
     it('should sort via custom targets', function() {
         var out = _transform([extend({
             transforms: [{
