@@ -355,4 +355,41 @@ describe('Test sort transform interactions:', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('should honor *categoryarray* when set', function(done) {
+        var gd = createGraphDiv();
+
+        Plotly.plot(gd, [{
+            x: ['C', 'B', 'A'],
+            y: [3, 1, 2],
+            marker: {
+                size: [10, 20, 5]
+            },
+            transforms: [{
+                enabled: false,
+                type: 'sort',
+                target: [0, 2, 1],
+            }]
+        }], {
+            xaxis: {
+                categoryorder: 'trace',
+                categoryarray: ['A', 'B', 'C']
+            }
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis._categories).toEqual(['C', 'B', 'A']);
+
+            return Plotly.restyle(gd, 'transforms[0].enabled', true);
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis._categories).toEqual(['C', 'A', 'B']);
+
+            return Plotly.relayout(gd, 'xaxis.categoryorder', 'array');
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis._categories).toEqual(['A', 'B', 'C']);
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
