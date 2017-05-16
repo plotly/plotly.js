@@ -117,7 +117,7 @@ function keyFunction(opts) {
 
 // Compute the dimensions (mutates sliderOpts):
 function findDimensions(gd, sliderOpts) {
-    var sliderLabels = gd._tester.selectAll('g.' + constants.labelGroupClass)
+    var sliderLabels = Drawing.tester.selectAll('g.' + constants.labelGroupClass)
         .data(sliderOpts.steps);
 
     sliderLabels.enter().append('g')
@@ -154,7 +154,7 @@ function findDimensions(gd, sliderOpts) {
 
     if(sliderOpts.currentvalue.visible) {
         // Get the dimensions of the current value label:
-        var dummyGroup = gd._tester.append('g');
+        var dummyGroup = Drawing.tester.append('g');
 
         sliderLabels.each(function(stepOpts) {
             var curValPrefix = drawCurrentValue(dummyGroup, sliderOpts, stepOpts.label);

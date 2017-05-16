@@ -542,11 +542,11 @@ drawing.steps = function(shape) {
 };
 
 // off-screen svg render testing element, shared by the whole page
-// uses the id 'js-plotly-tester' and stores it in gd._tester
+// uses the id 'js-plotly-tester' and stores it in drawing.tester
 // makes a hash of cached text items in tester.node()._cache
 // so we can add references to rendered text (including all info
 // needed to fully determine its bounding rect)
-drawing.makeTester = function(gd) {
+drawing.makeTester = function() {
     var tester = d3.select('body')
         .selectAll('#js-plotly-tester')
         .data([0]);
@@ -579,16 +579,17 @@ drawing.makeTester = function(gd) {
         tester.node()._cache = {};
     }
 
-    gd._tester = tester;
-    gd._testref = testref;
+    drawing.tester = tester;
+    drawing.testref = testref;
 };
 
 // use our offscreen tester to get a clientRect for an element,
 // in a reference frame where it isn't translated and its anchor
 // point is at (0,0)
 // always returns a copy of the bbox, so the caller can modify it safely
-var savedBBoxes = [],
-    maxSavedBBoxes = 10000;
+var savedBBoxes = [];
+var maxSavedBBoxes = 10000;
+
 drawing.bBox = function(node) {
     // cache elements we've already measured so we don't have to
     // remeasure the same thing many times
@@ -597,12 +598,13 @@ drawing.bBox = function(node) {
         return Lib.extendFlat({}, savedBBoxes[saveNum.value]);
     }
 
-    var test3 = d3.select('#js-plotly-tester'),
-        tester = test3.node();
+    var tester3 = drawing.tester;
+    var tester = tester3.node();
 
     // copy the node to test into the tester
     var testNode = node.cloneNode(true);
     tester.appendChild(testNode);
+
     // standardize its position... do we really want to do this?
     d3.select(testNode).attr({
         x: 0,
@@ -610,9 +612,10 @@ drawing.bBox = function(node) {
         transform: ''
     });
 
-    var testRect = testNode.getBoundingClientRect(),
-        refRect = test3.select('.js-reference-point')
-            .node().getBoundingClientRect();
+    var testRect = testNode.getBoundingClientRect();
+    var refRect = drawing.testref
+        .node()
+        .getBoundingClientRect();
 
     tester.removeChild(testNode);
 
