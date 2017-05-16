@@ -1973,8 +1973,6 @@ plots.doCalcdata = function(gd, traces) {
 
     var trace, _module, i, j;
 
-    var hasCategoryAxis = false;
-
     // XXX: Is this correct? Needs a closer look so that *some* traces can be recomputed without
     // *all* needing doCalcdata:
     var calcdata = new Array(fullData.length);
@@ -1996,20 +1994,6 @@ plots.doCalcdata = function(gd, traces) {
     fullLayout._piecolormap = {};
     fullLayout._piedefaultcolorcount = 0;
 
-    // initialize the category list, if there is one, so we start over
-    // to be filled in later by ax.d2c
-    for(i = 0; i < axList.length; i++) {
-        axList[i]._categories = axList[i]._initialCategories.slice();
-
-        // Build the lookup map for initialized categories
-        axList[i]._categoriesMap = {};
-        for(j = 0; j < axList[i]._categories.length; j++) {
-            axList[i]._categoriesMap[axList[i]._categories[j]] = j;
-        }
-
-        if(axList[i].type === 'category') hasCategoryAxis = true;
-    }
-
     // If traces were specified and this trace was not included,
     // then transfer it over from the old calcdata:
     for(i = 0; i < fullData.length; i++) {
@@ -2018,6 +2002,8 @@ plots.doCalcdata = function(gd, traces) {
             continue;
         }
     }
+
+    var hasCategoryAxis = initCategories(axList);
 
     var hasCalcTransform = false;
 
@@ -2051,9 +2037,9 @@ plots.doCalcdata = function(gd, traces) {
             axList[i]._min = [];
             axList[i]._max = [];
             axList[i]._categories = [];
-            // Reset the look up map
             axList[i]._categoriesMap = {};
         }
+        initCategories(axList);
     }
 
     // 'regular' loop
@@ -2098,6 +2084,26 @@ plots.doCalcdata = function(gd, traces) {
         }
     }
 };
+
+function initCategories(axList) {
+    var hasCategoryAxis = false;
+
+    // initialize the category list, if there is one, so we start over
+    // to be filled in later by ax.d2c
+    for(var i = 0; i < axList.length; i++) {
+        axList[i]._categories = axList[i]._initialCategories.slice();
+
+        // Build the lookup map for initialized categories
+        axList[i]._categoriesMap = {};
+        for(var j = 0; j < axList[i]._categories.length; j++) {
+            axList[i]._categoriesMap[axList[i]._categories[j]] = j;
+        }
+
+        if(axList[i].type === 'category') hasCategoryAxis = true;
+    }
+
+    return hasCategoryAxis;
+}
 
 plots.rehover = function(gd) {
     if(gd._fullLayout._rehover) {
