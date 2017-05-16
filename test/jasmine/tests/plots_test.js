@@ -428,7 +428,6 @@ describe('Test Plots', function() {
             expect(gd.undonum).toBeUndefined();
             expect(gd.autoplay).toBeUndefined();
             expect(gd.changed).toBeUndefined();
-            expect(gd._tester).toBeUndefined();
             expect(gd._promises).toBeUndefined();
             expect(gd._redrawTimer).toBeUndefined();
             expect(gd.firstscatter).toBeUndefined();

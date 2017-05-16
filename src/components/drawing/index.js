@@ -542,11 +542,11 @@ drawing.steps = function(shape) {
 };
 
 // off-screen svg render testing element, shared by the whole page
-// uses the id 'js-plotly-tester' and stores it in gd._tester
+// uses the id 'js-plotly-tester' and stores it in drawing.tester
 // makes a hash of cached text items in tester.node()._cache
 // so we can add references to rendered text (including all info
 // needed to fully determine its bounding rect)
-drawing.makeTester = function(gd) {
+drawing.makeTester = function() {
     var tester = d3.select('body')
         .selectAll('#js-plotly-tester')
         .data([0]);
@@ -579,7 +579,7 @@ drawing.makeTester = function(gd) {
         tester.node()._cache = {};
     }
 
-    drawing.tester = gd._tester = tester;
+    drawing.tester = tester;
     drawing.testref = testref;
 };
 
