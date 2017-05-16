@@ -17,8 +17,7 @@ var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 
 var DBLCLICKDELAY = require('@src/constants/interactions').DBLCLICKDELAY;
-var HOVERMINTIME = require('@src/plots/cartesian/constants').HOVERMINTIME;
-
+var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
 
 function move(fromX, fromY, toX, toY, delay) {
     return new Promise(function(resolve) {
@@ -500,6 +499,21 @@ describe('Test geo interactions', function() {
 
                     var node = d3.selectAll('g.hovertext').selectAll('tspan')[0][1];
                     expect(node).toBeUndefined();
+                })
+                .then(done);
+            });
+
+            it('should show custom \`hoverlabel\' settings', function(done) {
+                Plotly.restyle(gd, {
+                    'hoverlabel.bgcolor': 'red',
+                    'hoverlabel.bordercolor': [['blue', 'black', 'green']]
+                })
+                .then(function() {
+                    mouseEventScatterGeo('mousemove');
+
+                    var path = d3.selectAll('g.hovertext').select('path');
+                    expect(path.style('fill')).toEqual('rgb(255, 0, 0)', 'bgcolor');
+                    expect(path.style('stroke')).toEqual('rgb(0, 0, 255)', 'bordecolor[0]');
                 })
                 .then(done);
             });

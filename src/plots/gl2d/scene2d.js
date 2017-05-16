@@ -11,7 +11,7 @@
 
 var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
-var Fx = require('../../plots/cartesian/graph_interact');
+var Fx = require('../../components/fx');
 
 var createPlot2D = require('gl-plot2d');
 var createSpikes = require('gl-spikes2d');
@@ -633,6 +633,9 @@ proto.draw = function() {
                     if(parts.indexOf('name') === -1) selection.name = undefined;
                 }
 
+                var trace = this.fullData[selection.trace.index] || {};
+                var ptNumber = selection.pointIndex;
+
                 Fx.loneHover({
                     x: selection.screenCoord[0],
                     y: selection.screenCoord[1],
@@ -641,7 +644,11 @@ proto.draw = function() {
                     zLabel: selection.traceCoord[2],
                     text: selection.textLabel,
                     name: selection.name,
-                    color: selection.color
+                    color: Fx.castHoverOption(trace, ptNumber, 'bgcolor') || selection.color,
+                    borderColor: Fx.castHoverOption(trace, ptNumber, 'bordercolor'),
+                    fontFamily: Fx.castHoverOption(trace, ptNumber, 'font.family'),
+                    fontSize: Fx.castHoverOption(trace, ptNumber, 'font.size'),
+                    fontColor: Fx.castHoverOption(trace, ptNumber, 'font.color')
                 }, {
                     container: this.svgContainer
                 });

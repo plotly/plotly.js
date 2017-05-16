@@ -200,7 +200,10 @@ function makeCircleGeoJSON(calcTrace, hash) {
         if(isBADNUM(lonlat)) continue;
 
         var props = {};
-        if(colorFn) translate(props, COLOR_PROP, colorFn(calcPt.mc), i);
+        if(colorFn) {
+            var mcc = calcPt.mcc = colorFn(calcPt.mc);
+            translate(props, COLOR_PROP, mcc, i);
+        }
         if(sizeFn) translate(props, SIZE_PROP, sizeFn(calcPt.ms), i);
 
         features.push({

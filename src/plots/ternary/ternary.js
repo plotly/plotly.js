@@ -21,10 +21,10 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var Plots = require('../plots');
 var Axes = require('../cartesian/axes');
 var dragElement = require('../../components/dragelement');
+var Fx = require('../../components/fx');
 var Titles = require('../../components/titles');
 var prepSelect = require('../cartesian/select');
 var constants = require('../cartesian/constants');
-var fx = require('../cartesian/graph_interact');
 
 
 function Ternary(options, fullLayout) {
@@ -619,7 +619,7 @@ proto.initInteractions = function() {
     // these event handlers must already be set before dragElement.init
     // so it can stash them and override them.
     dragger.onmousemove = function(evt) {
-        fx.hover(gd, evt, _this.id);
+        Fx.hover(gd, evt, _this.id);
         gd._fullLayout._lasthover = dragger;
         gd._fullLayout._hoversubplot = _this.id;
     };
@@ -631,7 +631,7 @@ proto.initInteractions = function() {
     };
 
     dragger.onclick = function(evt) {
-        fx.click(gd, evt);
+        Fx.click(gd, evt);
     };
 
     dragElement.init(dragOptions);

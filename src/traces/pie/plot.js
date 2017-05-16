@@ -10,7 +10,7 @@
 
 var d3 = require('d3');
 
-var Fx = require('../../plots/cartesian/graph_interact');
+var Fx = require('../../components/fx');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var svgTextUtils = require('../../lib/svg_text_utils');
@@ -124,14 +124,20 @@ module.exports = function plot(gd, cdpie) {
                     if(hoverinfo.indexOf('value') !== -1) thisText.push(helpers.formatPieValue(pt.v, separators));
                     if(hoverinfo.indexOf('percent') !== -1) thisText.push(helpers.formatPiePercent(pt.v / cd0.vTotal, separators));
 
+                    var hoverLabelOpts = trace2.hoverlabel;
+
                     Fx.loneHover({
                         x0: hoverCenterX - rInscribed * cd0.r,
                         x1: hoverCenterX + rInscribed * cd0.r,
                         y: hoverCenterY,
                         text: thisText.join('<br>'),
                         name: hoverinfo.indexOf('name') !== -1 ? trace2.name : undefined,
-                        color: pt.color,
-                        idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right'
+                        idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
+                        color: pt.hbg || hoverLabelOpts.bgcolor || pt.color,
+                        borderColor: pt.hbc || hoverLabelOpts.bordercolor,
+                        fontFamily: pt.htf || hoverLabelOpts.font.family,
+                        fontSize: pt.hts || hoverLabelOpts.font.size,
+                        fontColor: pt.htc || hoverLabelOpts.font.color
                     }, {
                         container: fullLayout2._hoverlayer.node(),
                         outerContainer: fullLayout2._paper.node()

@@ -176,9 +176,7 @@ function assertCircularDeps() {
         var circularDeps = res.circular();
         var logs = [];
 
-        // as of v1.17.0 - 2016/09/08
         // see https://github.com/plotly/plotly.js/milestone/9
-        // for more details
         var MAX_ALLOWED_CIRCULAR_DEPS = 17;
 
         if(circularDeps.length > MAX_ALLOWED_CIRCULAR_DEPS) {

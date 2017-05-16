@@ -11,7 +11,7 @@ var customMatchers = require('../assets/custom_matchers');
 
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
-var HOVERMINTIME = require('@src/plots/cartesian/constants').HOVERMINTIME;
+var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
 
 function move(fromX, fromY, toX, toY, delay) {
     return new Promise(function(resolve) {
@@ -489,6 +489,24 @@ describe('@noCI scattermapbox hover', function() {
             expect(out.extraText).toEqual('Apple');
             done();
         });
+    });
+
+    it('should generate hover label (\'marker.color\' array case)', function(done) {
+        Plotly.restyle(gd, 'marker.color', [['red', 'blue', 'green']]).then(function() {
+            var out = hoverPoints(getPointData(gd), 11, 11)[0];
+
+            expect(out.color).toEqual('red');
+        })
+        .then(done);
+    });
+
+    it('should generate hover label (\'marker.color\' w/ colorscale case)', function(done) {
+        Plotly.restyle(gd, 'marker.color', [[10, 5, 30]]).then(function() {
+            var out = hoverPoints(getPointData(gd), 11, 11)[0];
+
+            expect(out.color).toEqual('rgb(245, 195, 157)');
+        })
+        .then(done);
     });
 });
 

@@ -322,4 +322,39 @@ describe('select box and lasso', function() {
             done();
         });
     });
+
+    it('should skip over BADNUM items', function(done) {
+        var data = [{
+            mode: 'markers',
+            x: [null, undefined, NaN, 0, 'NA'],
+            y: [NaN, null, undefined, 0, 'NA']
+        }];
+        var layout = {
+            dragmode: 'select',
+            width: 400,
+            heigth: 400,
+        };
+        var gd = createGraphDiv();
+        var pts;
+
+        Plotly.plot(gd, data, layout).then(function() {
+            gd.on('plotly_selected', function(data) {
+                pts = data.points;
+            });
+
+            drag([[100, 100], [300, 300]]);
+            expect(pts.length).toEqual(1);
+            expect(pts[0].x).toEqual(0);
+            expect(pts[0].y).toEqual(0);
+
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        })
+        .then(function() {
+            drag([[100, 100], [100, 300], [300, 300], [300, 100], [100, 100]]);
+            expect(pts.length).toEqual(1);
+            expect(pts[0].x).toEqual(0);
+            expect(pts[0].y).toEqual(0);
+        })
+        .then(done);
+    });
 });

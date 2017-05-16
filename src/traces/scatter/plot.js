@@ -455,7 +455,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
         // each text needs to go in its own 'g' in case
         // it gets converted to mathjax
-        join.enter().append('g').append('text');
+        join.enter().append('g').classed('textpoint', true).append('text');
 
         join.each(function(d) {
             var sel = transition(d3.select(this).select('text'));
@@ -463,7 +463,6 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         });
 
         join.selectAll('text')
-            .classed('textpoint', true)
             .call(Drawing.textPointStyle, trace)
             .each(function(d) {
 

@@ -5,7 +5,7 @@ var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var Loggers = require('@src/lib/loggers');
 var Axes = require('@src/plots/cartesian/axes');
-var HOVERMINTIME = require('@src/plots/cartesian/constants').HOVERMINTIME;
+var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
 var DBLCLICKDELAY = require('@src/constants/interactions').DBLCLICKDELAY;
 
 var d3 = require('d3');
@@ -1247,6 +1247,40 @@ describe('annotation effects', function() {
 
             return assertHoverLabels([[pos0, 'bananas'], [pos1, 'chicken'], [pos2, '']],
                 '0 and 1');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('makes the whole text box a link if the link is the whole text', function(done) {
+        makePlot([
+            {x: 20, y: 20, text: '<a href="https://plot.ly">Plot</a>', showarrow: false},
+            {x: 50, y: 50, text: '<a href="https://plot.ly">or</a> not', showarrow: false},
+            {x: 80, y: 80, text: '<a href="https://plot.ly">arrow</a>'},
+            {x: 20, y: 80, text: 'nor <a href="https://plot.ly">this</a>'}
+        ])
+        .then(function() {
+            function checkBoxLink(index, isLink) {
+                var boxLink = d3.selectAll('.annotation[data-index="' + index + '"] g>a');
+                expect(boxLink.size()).toBe(isLink ? 1 : 0);
+
+                var textLink = d3.selectAll('.annotation[data-index="' + index + '"] text a');
+                expect(textLink.size()).toBe(1);
+                checkLink(textLink);
+
+                if(isLink) checkLink(boxLink);
+            }
+
+            function checkLink(link) {
+                expect(link.style('cursor')).toBe('pointer');
+                expect(link.attr('xlink:href')).toBe('https://plot.ly');
+                expect(link.attr('xlink:show')).toBe('new');
+            }
+
+            checkBoxLink(0, true);
+            checkBoxLink(1, false);
+            checkBoxLink(2, true);
+            checkBoxLink(3, false);
         })
         .catch(failTest)
         .then(done);

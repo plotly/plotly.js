@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "1.26.1",
+  "version": "1.27.0",
   "dependencies": {
     "3d-view": {
       "version": "2.0.0",
@@ -30,6 +30,35 @@
           "version": "3.0.1",
           "from": "turntable-camera-controller@>=3.0.0 <4.0.0",
           "resolved": "https://registry.npmjs.org/turntable-camera-controller/-/turntable-camera-controller-3.0.1.tgz"
+        }
+      }
+    },
+    "@plotly/d3-sankey": {
+      "version": "0.5.0",
+      "from": "@plotly/d3-sankey@>=0.5.0 <0.6.0",
+      "resolved": "https://registry.npmjs.org/@plotly/d3-sankey/-/d3-sankey-0.5.0.tgz",
+      "dependencies": {
+        "d3-array": {
+          "version": "1.2.0",
+          "from": "d3-array@>=1.0.0 <2.0.0",
+          "resolved": "https://registry.npmjs.org/d3-array/-/d3-array-1.2.0.tgz"
+        },
+        "d3-collection": {
+          "version": "1.0.3",
+          "from": "d3-collection@>=1.0.0 <2.0.0",
+          "resolved": "https://registry.npmjs.org/d3-collection/-/d3-collection-1.0.3.tgz"
+        },
+        "d3-interpolate": {
+          "version": "1.1.4",
+          "from": "d3-interpolate@>=1.0.0 <2.0.0",
+          "resolved": "https://registry.npmjs.org/d3-interpolate/-/d3-interpolate-1.1.4.tgz",
+          "dependencies": {
+            "d3-color": {
+              "version": "1.0.3",
+              "from": "d3-color@>=1.0.0 <2.0.0",
+              "resolved": "https://registry.npmjs.org/d3-color/-/d3-color-1.0.3.tgz"
+            }
+          }
         }
       }
     },
@@ -329,6 +358,28 @@
       "version": "3.5.17",
       "from": "d3@>=3.5.12 <4.0.0",
       "resolved": "https://registry.npmjs.org/d3/-/d3-3.5.17.tgz"
+    },
+    "d3-force": {
+      "version": "1.0.6",
+      "from": "d3-force@>=1.0.6 <2.0.0",
+      "resolved": "https://registry.npmjs.org/d3-force/-/d3-force-1.0.6.tgz",
+      "dependencies": {
+        "d3-dispatch": {
+          "version": "1.0.3",
+          "from": "d3-dispatch@>=1.0.0 <2.0.0",
+          "resolved": "https://registry.npmjs.org/d3-dispatch/-/d3-dispatch-1.0.3.tgz"
+        },
+        "d3-quadtree": {
+          "version": "1.0.3",
+          "from": "d3-quadtree@>=1.0.0 <2.0.0",
+          "resolved": "https://registry.npmjs.org/d3-quadtree/-/d3-quadtree-1.0.3.tgz"
+        },
+        "d3-timer": {
+          "version": "1.0.5",
+          "from": "d3-timer@>=1.0.0 <2.0.0",
+          "resolved": "https://registry.npmjs.org/d3-timer/-/d3-timer-1.0.5.tgz"
+        }
+      }
     },
     "delaunay-triangulate": {
       "version": "1.1.6",
@@ -1433,9 +1484,9 @@
       }
     },
     "gl-scatter2d-sdf": {
-      "version": "1.3.4",
-      "from": "gl-scatter2d-sdf@1.3.4",
-      "resolved": "https://registry.npmjs.org/gl-scatter2d-sdf/-/gl-scatter2d-sdf-1.3.4.tgz",
+      "version": "1.3.9",
+      "from": "gl-scatter2d-sdf@>=1.3.9 <2.0.0",
+      "resolved": "https://registry.npmjs.org/gl-scatter2d-sdf/-/gl-scatter2d-sdf-1.3.9.tgz",
       "dependencies": {
         "color-id": {
           "version": "1.0.3",
@@ -1443,9 +1494,9 @@
           "resolved": "https://registry.npmjs.org/color-id/-/color-id-1.0.3.tgz"
         },
         "font-atlas-sdf": {
-          "version": "1.1.3",
+          "version": "1.2.0",
           "from": "font-atlas-sdf@>=1.0.0 <2.0.0",
-          "resolved": "https://registry.npmjs.org/font-atlas-sdf/-/font-atlas-sdf-1.1.3.tgz",
+          "resolved": "https://registry.npmjs.org/font-atlas-sdf/-/font-atlas-sdf-1.2.0.tgz",
           "dependencies": {
             "tiny-sdf": {
               "version": "1.0.2",
@@ -2866,6 +2917,11 @@
       "version": "2.0.0",
       "from": "sane-topojson@>=2.0.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/sane-topojson/-/sane-topojson-2.0.0.tgz"
+    },
+    "strongly-connected-components": {
+      "version": "1.0.1",
+      "from": "strongly-connected-components@>=1.0.1 <2.0.0",
+      "resolved": "https://registry.npmjs.org/strongly-connected-components/-/strongly-connected-components-1.0.1.tgz"
     },
     "superscript-text": {
       "version": "1.0.0",
