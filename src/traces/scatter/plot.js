@@ -391,7 +391,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     }
 
     function makePoints(d) {
-        var join, selection;
+        var join, selection, hasNode;
 
         var trace = d[0].trace,
             s = d3.select(this),
@@ -433,11 +433,14 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         join.each(function(d) {
             var el = d3.select(this);
             var sel = transition(el);
-            Drawing.translatePoint(d, sel, xa, ya);
-            Drawing.singlePointStyle(d, sel, trace, markerScale, lineScale, gd);
+            hasNode = Drawing.translatePoint(d, sel, xa, ya);
 
-            if(trace.customdata) {
-                el.classed('plotly-customdata', d.data !== null && d.data !== undefined);
+            if(hasNode) {
+                Drawing.singlePointStyle(d, sel, trace, markerScale, lineScale, gd);
+
+                if(trace.customdata) {
+                    el.classed('plotly-customdata', d.data !== null && d.data !== undefined);
+                }
             }
         });
 
@@ -460,8 +463,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         join.each(function(d) {
             var g = d3.select(this);
             var sel = transition(g.select('text'));
-            var hasTextPt = Drawing.translatePoint(d, sel, xa, ya);
-            if(!hasTextPt) g.remove();
+            hasNode = Drawing.translatePoint(d, sel, xa, ya);
+            if(!hasNode) g.remove();
         });
 
         join.selectAll('text')
