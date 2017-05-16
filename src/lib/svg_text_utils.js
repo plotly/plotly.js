@@ -17,9 +17,20 @@ var Lib = require('../lib');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var stringMappings = require('../constants/string_mappings');
 
-// Append SVG
+var DOM_PARSER;
 
-var parser = new DOMParser();
+exports.getDOMParser = function() {
+    if(DOM_PARSER) {
+        return DOM_PARSER;
+    } else if(window.DOMParser) {
+        DOM_PARSER = new window.DOMParser();
+        return DOM_PARSER;
+    } else {
+        throw new Error('Cannot initialize DOMParser');
+    }
+};
+
+// Append SVG
 
 d3.selection.prototype.appendSVG = function(_svgString) {
     var skeleton = [
@@ -29,8 +40,9 @@ d3.selection.prototype.appendSVG = function(_svgString) {
         '</svg>'
     ].join('');
 
-    var dom = parser.parseFromString(skeleton, 'application/xml'),
-        childNode = dom.documentElement.firstChild;
+    var domParser = exports.getDOMParser();
+    var dom = domParser.parseFromString(skeleton, 'application/xml');
+    var childNode = dom.documentElement.firstChild;
 
     while(childNode) {
         this.node().appendChild(this.node().ownerDocument.importNode(childNode, true));

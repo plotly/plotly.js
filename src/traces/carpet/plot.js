@@ -59,8 +59,8 @@ function plotOne(gd, plotinfo, cd) {
     drawGridLines(xa, ya, boundaryLayer, aax, 'a-boundary', aax._boundarylines);
     drawGridLines(xa, ya, boundaryLayer, bax, 'b-boundary', bax._boundarylines);
 
-    var maxAExtent = drawAxisLabels(gd._tester, xa, ya, trace, t, labelLayer, aax._labels, 'a-label');
-    var maxBExtent = drawAxisLabels(gd._tester, xa, ya, trace, t, labelLayer, bax._labels, 'b-label');
+    var maxAExtent = drawAxisLabels(Drawing.tester, xa, ya, trace, t, labelLayer, aax._labels, 'a-label');
+    var maxBExtent = drawAxisLabels(Drawing.tester, xa, ya, trace, t, labelLayer, bax._labels, 'b-label');
 
     drawAxisTitles(labelLayer, trace, t, xa, ya, maxAExtent, maxBExtent);
 
