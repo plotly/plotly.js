@@ -17,12 +17,14 @@ var Lib = require('../lib');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var stringMappings = require('../constants/string_mappings');
 
+var DOM_PARSER;
+
 exports.getDOMParser = function() {
-    if(exports.domParser) {
-        return exports.domParser;
+    if(DOM_PARSER) {
+        return DOM_PARSER;
     } else if(window.DOMParser) {
-        exports.domParser = new window.DOMParser();
-        return exports.domParser;
+        DOM_PARSER = new window.DOMParser();
+        return DOM_PARSER;
     } else {
         throw new Error('Cannot initialize DOMParser');
     }
