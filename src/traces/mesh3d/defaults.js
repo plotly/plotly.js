@@ -82,8 +82,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     else {
         traceOut.showscale = false;
 
-        if('vertexcolor' in traceIn) coerce('vertexcolor');
-        else if('facecolor' in traceIn) coerce('facecolor');
+        if('facecolor' in traceIn) coerce('facecolor');
+        else if('vertexcolor' in traceIn) coerce('vertexcolor');
         else coerce('color', defaultColor);
     }
 
