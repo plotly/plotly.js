@@ -580,7 +580,7 @@ drawing.makeTester = function(gd) {
     }
 
     drawing.tester = gd._tester = tester;
-    drawing.testref = gd._testref = testref;
+    drawing.testref = testref;
 };
 
 // use our offscreen tester to get a clientRect for an element,

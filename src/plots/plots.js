@@ -1174,7 +1174,6 @@ plots.purge = function(gd) {
     // these get recreated on Plotly.plot anyway, but just to be safe
     // (and to have a record of them...)
     delete gd._tester;
-    delete gd._testref;
     delete gd._promises;
     delete gd._redrawTimer;
     delete gd.firstscatter;
