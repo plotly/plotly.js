@@ -47,6 +47,17 @@ drawing.setRect = function(s, x, y, w, h) {
     s.call(drawing.setPosition, x, y).call(drawing.setSize, w, h);
 };
 
+/** Translate / remove node
+ *
+ * @param {object} d : calcdata point item
+ * @param {sel} sel : d3 selction of node to translate
+ * @param {object} xa : corresponding full xaxis object
+ * @param {object} ya : corresponding full yaxis object
+ *
+ * @return {boolean} :
+ *  true if selection got translated
+ *  false if selection got removed
+ */
 drawing.translatePoint = function(d, sel, xa, ya) {
     // put xp and yp into d if pixel scaling is already done
     var x = d.xp || xa.c2p(d.x),
@@ -59,8 +70,12 @@ drawing.translatePoint = function(d, sel, xa, ya) {
         } else {
             sel.attr('transform', 'translate(' + x + ',' + y + ')');
         }
+    } else {
+        sel.remove();
+        return false;
     }
-    else sel.remove();
+
+    return true;
 };
 
 drawing.translatePoints = function(s, xa, ya, trace) {

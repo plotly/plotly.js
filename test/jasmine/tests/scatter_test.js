@@ -383,6 +383,60 @@ describe('end-to-end scatter tests', function() {
             expect(Plotly.d3.selectAll('.textpoint').size()).toBe(3);
         }).catch(fail).then(done);
     });
+
+    it('should remove all point and text nodes on blank data', function(done) {
+        function assertNodeCnt(ptCnt, txCnt) {
+            expect(d3.selectAll('.point').size()).toEqual(ptCnt);
+            expect(d3.selectAll('.textpoint').size()).toEqual(txCnt);
+        }
+
+        function assertText(content) {
+            d3.selectAll('.textpoint').each(function(_, i) {
+                var tx = d3.select(this).select('text');
+                expect(tx.text()).toEqual(content[i]);
+            });
+        }
+
+        Plotly.plot(gd, [{
+            x: [150, 350, 650],
+            y: [100, 300, 600],
+            text: ['A', 'B', 'C'],
+            mode: 'markers+text',
+            marker: {
+                size: [100, 200, 300],
+                line: { width: [10, 20, 30] },
+                color: 'yellow',
+                sizeref: 3,
+                gradient: {
+                    type: 'radial',
+                    color: 'white'
+                }
+            }
+        }])
+        .then(function() {
+            assertNodeCnt(3, 3);
+            assertText(['A', 'B', 'C']);
+
+            return Plotly.restyle(gd, {
+                x: [[null, undefined, NaN]],
+                y: [[NaN, null, undefined]]
+            });
+        })
+        .then(function() {
+            assertNodeCnt(0, 0);
+
+            return Plotly.restyle(gd, {
+                x: [[150, 350, 650]],
+                y: [[100, 300, 600]]
+            });
+        })
+        .then(function() {
+            assertNodeCnt(3, 3);
+            assertText(['A', 'B', 'C']);
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
 
 describe('scatter hoverPoints', function() {
