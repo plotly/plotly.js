@@ -2423,280 +2423,284 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
         };
     }
 
-    return new Promise(function(resolve, reject) {
-        function discardExistingFrames() {
-            if(trans._frameQueue.length === 0) {
-                return;
-            }
-
-            while(trans._frameQueue.length) {
-                var next = trans._frameQueue.pop();
-                if(next.onInterrupt) {
-                    next.onInterrupt();
-                }
-            }
-
-            gd.emit('plotly_animationinterrupted', []);
-        }
-
-        function queueFrames(frameList) {
-            if(frameList.length === 0) return;
-
-            for(var i = 0; i < frameList.length; i++) {
-                var computedFrame;
-
-                if(frameList[i].type === 'byname') {
-                    // If it's a named frame, compute it:
-                    computedFrame = Plots.computeFrame(gd, frameList[i].name);
-                } else {
-                    // Otherwise we must have been given a simple object, so treat
-                    // the input itself as the computed frame.
-                    computedFrame = frameList[i].data;
-                }
-
-                var frameOpts = getFrameOpts(i);
-                var transitionOpts = getTransitionOpts(i);
-
-                // It doesn't make much sense for the transition duration to be greater than
-                // the frame duration, so limit it:
-                transitionOpts.duration = Math.min(transitionOpts.duration, frameOpts.duration);
-
-                var nextFrame = {
-                    frame: computedFrame,
-                    name: frameList[i].name,
-                    frameOpts: frameOpts,
-                    transitionOpts: transitionOpts,
-                };
-                if(i === frameList.length - 1) {
-                    // The last frame in this .animate call stores the promise resolve
-                    // and reject callbacks. This is how we ensure that the animation
-                    // loop (which may exist as a result of a *different* .animate call)
-                    // still resolves or rejecdts this .animate call's promise. once it's
-                    // complete.
-                    nextFrame.onComplete = callbackOnNthTime(resolve, 2);
-                    nextFrame.onInterrupt = reject;
-                }
-
-                trans._frameQueue.push(nextFrame);
-            }
-
-            // Set it as never having transitioned to a frame. This will cause the animation
-            // loop to immediately transition to the next frame (which, for immediate mode,
-            // is the first frame in the list since all others would have been discarded
-            // below)
-            if(animationOpts.mode === 'immediate') {
-                trans._lastFrameAt = -Infinity;
-            }
-
-            // Only it's not already running, start a RAF loop. This could be avoided in the
-            // case that there's only one frame, but it significantly complicated the logic
-            // and only sped things up by about 5% or so for a lorenz attractor simulation.
-            // It would be a fine thing to implement, but the benefit of that optimization
-            // doesn't seem worth the extra complexity.
-            if(!trans._animationRaf) {
-                beginAnimationLoop();
-            }
-        }
-
-        function stopAnimationLoop() {
-            gd.emit('plotly_animated');
-
-            // Be sure to unset also since it's how we know whether a loop is already running:
-            window.cancelAnimationFrame(trans._animationRaf);
-            trans._animationRaf = null;
-        }
-
-        function nextFrame() {
-            if(trans._currentFrame && trans._currentFrame.onComplete) {
-                // Execute the callback and unset it to ensure it doesn't
-                // accidentally get called twice
-                trans._currentFrame.onComplete();
-            }
-
-            var newFrame = trans._currentFrame = trans._frameQueue.shift();
-
-            if(newFrame) {
-                // Since it's sometimes necessary to do deep digging into frame data,
-                // we'll consider it not 100% impossible for nulls or numbers to sneak through,
-                // so check when casting the name, just to be absolutely certain:
-                var stringName = newFrame.name ? newFrame.name.toString() : null;
-                gd._fullLayout._currentFrame = stringName;
-
-                trans._lastFrameAt = Date.now();
-                trans._timeToNext = newFrame.frameOpts.duration;
-
-                // This is simply called and it's left to .transition to decide how to manage
-                // interrupting current transitions. That means we don't need to worry about
-                // how it resolves or what happens after this:
-                Plots.transition(gd,
-                    newFrame.frame.data,
-                    newFrame.frame.layout,
-                    helpers.coerceTraceIndices(gd, newFrame.frame.traces),
-                    newFrame.frameOpts,
-                    newFrame.transitionOpts
-                ).then(function() {
-                    if(newFrame.onComplete) {
-                        newFrame.onComplete();
+    return Lib.syncOrAsync([
+        function() {
+            return new Promise(function(resolve, reject) {
+                function discardExistingFrames() {
+                    if(trans._frameQueue.length === 0) {
+                        return;
                     }
 
-                });
-
-                gd.emit('plotly_animatingframe', {
-                    name: stringName,
-                    frame: newFrame.frame,
-                    animation: {
-                        frame: newFrame.frameOpts,
-                        transition: newFrame.transitionOpts,
+                    while(trans._frameQueue.length) {
+                        var next = trans._frameQueue.pop();
+                        if(next.onInterrupt) {
+                            next.onInterrupt();
+                        }
                     }
-                });
-            } else {
-                // If there are no more frames, then stop the RAF loop:
-                stopAnimationLoop();
-            }
-        }
 
-        function beginAnimationLoop() {
-            gd.emit('plotly_animating');
-
-            // If no timer is running, then set last frame = long ago so that the next
-            // frame is immediately transitioned:
-            trans._lastFrameAt = -Infinity;
-            trans._timeToNext = 0;
-            trans._runningTransitions = 0;
-            trans._currentFrame = null;
-
-            var doFrame = function() {
-                // This *must* be requested before nextFrame since nextFrame may decide
-                // to cancel it if there's nothing more to animated:
-                trans._animationRaf = window.requestAnimationFrame(doFrame);
-
-                // Check if we're ready for a new frame:
-                if(Date.now() - trans._lastFrameAt > trans._timeToNext) {
-                    nextFrame();
+                    gd.emit('plotly_animationinterrupted', []);
                 }
-            };
 
-            doFrame();
-        }
+                function queueFrames(frameList) {
+                    if(frameList.length === 0) return;
 
-        // This is an animate-local counter that helps match up option input list
-        // items with the particular frame.
-        var configCounter = 0;
-        function setTransitionConfig(frame) {
-            if(Array.isArray(transitionOpts)) {
-                if(configCounter >= transitionOpts.length) {
-                    frame.transitionOpts = transitionOpts[configCounter];
-                } else {
-                    frame.transitionOpts = transitionOpts[0];
+                    for(var i = 0; i < frameList.length; i++) {
+                        var computedFrame;
+
+                        if(frameList[i].type === 'byname') {
+                            // If it's a named frame, compute it:
+                            computedFrame = Plots.computeFrame(gd, frameList[i].name);
+                        } else {
+                            // Otherwise we must have been given a simple object, so treat
+                            // the input itself as the computed frame.
+                            computedFrame = frameList[i].data;
+                        }
+
+                        var frameOpts = getFrameOpts(i);
+                        var transitionOpts = getTransitionOpts(i);
+
+                        // It doesn't make much sense for the transition duration to be greater than
+                        // the frame duration, so limit it:
+                        transitionOpts.duration = Math.min(transitionOpts.duration, frameOpts.duration);
+
+                        var nextFrame = {
+                            frame: computedFrame,
+                            name: frameList[i].name,
+                            frameOpts: frameOpts,
+                            transitionOpts: transitionOpts,
+                        };
+                        if(i === frameList.length - 1) {
+                            // The last frame in this .animate call stores the promise resolve
+                            // and reject callbacks. This is how we ensure that the animation
+                            // loop (which may exist as a result of a *different* .animate call)
+                            // still resolves or rejecdts this .animate call's promise. once it's
+                            // complete.
+                            nextFrame.onComplete = callbackOnNthTime(resolve, 2);
+                            nextFrame.onInterrupt = reject;
+                        }
+
+                        trans._frameQueue.push(nextFrame);
+                    }
+
+                    // Set it as never having transitioned to a frame. This will cause the animation
+                    // loop to immediately transition to the next frame (which, for immediate mode,
+                    // is the first frame in the list since all others would have been discarded
+                    // below)
+                    if(animationOpts.mode === 'immediate') {
+                        trans._lastFrameAt = -Infinity;
+                    }
+
+                    // Only it's not already running, start a RAF loop. This could be avoided in the
+                    // case that there's only one frame, but it significantly complicated the logic
+                    // and only sped things up by about 5% or so for a lorenz attractor simulation.
+                    // It would be a fine thing to implement, but the benefit of that optimization
+                    // doesn't seem worth the extra complexity.
+                    if(!trans._animationRaf) {
+                        beginAnimationLoop();
+                    }
                 }
-            } else {
-                frame.transitionOpts = transitionOpts;
-            }
-            configCounter++;
-            return frame;
-        }
 
-        // Disambiguate what's sort of frames have been received
-        var i, frame;
-        var frameList = [];
-        var allFrames = frameOrGroupNameOrFrameList === undefined || frameOrGroupNameOrFrameList === null;
-        var isFrameArray = Array.isArray(frameOrGroupNameOrFrameList);
-        var isSingleFrame = !allFrames && !isFrameArray && Lib.isPlainObject(frameOrGroupNameOrFrameList);
+                function stopAnimationLoop() {
+                    gd.emit('plotly_animated');
 
-        if(isSingleFrame) {
-            // In this case, a simple object has been passed to animate.
-            frameList.push({
-                type: 'object',
-                data: setTransitionConfig(Lib.extendFlat({}, frameOrGroupNameOrFrameList))
-            });
-        } else if(allFrames || ['string', 'number'].indexOf(typeof frameOrGroupNameOrFrameList) !== -1) {
-            // In this case, null or undefined has been passed so that we want to
-            // animate *all* currently defined frames
-            for(i = 0; i < trans._frames.length; i++) {
-                frame = trans._frames[i];
-
-                if(!frame) continue;
-
-                if(allFrames || String(frame.group) === String(frameOrGroupNameOrFrameList)) {
-                    frameList.push({
-                        type: 'byname',
-                        name: String(frame.name),
-                        data: setTransitionConfig({name: frame.name})
-                    });
+                    // Be sure to unset also since it's how we know whether a loop is already running:
+                    window.cancelAnimationFrame(trans._animationRaf);
+                    trans._animationRaf = null;
                 }
-            }
-        } else if(isFrameArray) {
-            for(i = 0; i < frameOrGroupNameOrFrameList.length; i++) {
-                var frameOrName = frameOrGroupNameOrFrameList[i];
-                if(['number', 'string'].indexOf(typeof frameOrName) !== -1) {
-                    frameOrName = String(frameOrName);
-                    // In this case, there's an array and this frame is a string name:
-                    frameList.push({
-                        type: 'byname',
-                        name: frameOrName,
-                        data: setTransitionConfig({name: frameOrName})
-                    });
-                } else if(Lib.isPlainObject(frameOrName)) {
+
+                function nextFrame() {
+                    if(trans._currentFrame && trans._currentFrame.onComplete) {
+                        // Execute the callback and unset it to ensure it doesn't
+                        // accidentally get called twice
+                        trans._currentFrame.onComplete();
+                    }
+
+                    var newFrame = trans._currentFrame = trans._frameQueue.shift();
+
+                    if(newFrame) {
+                        // Since it's sometimes necessary to do deep digging into frame data,
+                        // we'll consider it not 100% impossible for nulls or numbers to sneak through,
+                        // so check when casting the name, just to be absolutely certain:
+                        var stringName = newFrame.name ? newFrame.name.toString() : null;
+                        gd._fullLayout._currentFrame = stringName;
+
+                        trans._lastFrameAt = Date.now();
+                        trans._timeToNext = newFrame.frameOpts.duration;
+
+                        // This is simply called and it's left to .transition to decide how to manage
+                        // interrupting current transitions. That means we don't need to worry about
+                        // how it resolves or what happens after this:
+                        Plots.transition(gd,
+                            newFrame.frame.data,
+                            newFrame.frame.layout,
+                            helpers.coerceTraceIndices(gd, newFrame.frame.traces),
+                            newFrame.frameOpts,
+                            newFrame.transitionOpts
+                        ).then(function() {
+                            if(newFrame.onComplete) {
+                                newFrame.onComplete();
+                            }
+
+                        });
+
+                        gd.emit('plotly_animatingframe', {
+                            name: stringName,
+                            frame: newFrame.frame,
+                            animation: {
+                                frame: newFrame.frameOpts,
+                                transition: newFrame.transitionOpts,
+                            }
+                        });
+                    } else {
+                        // If there are no more frames, then stop the RAF loop:
+                        stopAnimationLoop();
+                    }
+                }
+
+                function beginAnimationLoop() {
+                    gd.emit('plotly_animating');
+
+                    // If no timer is running, then set last frame = long ago so that the next
+                    // frame is immediately transitioned:
+                    trans._lastFrameAt = -Infinity;
+                    trans._timeToNext = 0;
+                    trans._runningTransitions = 0;
+                    trans._currentFrame = null;
+
+                    var doFrame = function() {
+                        // This *must* be requested before nextFrame since nextFrame may decide
+                        // to cancel it if there's nothing more to animated:
+                        trans._animationRaf = window.requestAnimationFrame(doFrame);
+
+                        // Check if we're ready for a new frame:
+                        if(Date.now() - trans._lastFrameAt > trans._timeToNext) {
+                            nextFrame();
+                        }
+                    };
+
+                    doFrame();
+                }
+
+                // This is an animate-local counter that helps match up option input list
+                // items with the particular frame.
+                var configCounter = 0;
+                function setTransitionConfig(frame) {
+                    if(Array.isArray(transitionOpts)) {
+                        if(configCounter >= transitionOpts.length) {
+                            frame.transitionOpts = transitionOpts[configCounter];
+                        } else {
+                            frame.transitionOpts = transitionOpts[0];
+                        }
+                    } else {
+                        frame.transitionOpts = transitionOpts;
+                    }
+                    configCounter++;
+                    return frame;
+                }
+
+                // Disambiguate what's sort of frames have been received
+                var i, frame;
+                var frameList = [];
+                var allFrames = frameOrGroupNameOrFrameList === undefined || frameOrGroupNameOrFrameList === null;
+                var isFrameArray = Array.isArray(frameOrGroupNameOrFrameList);
+                var isSingleFrame = !allFrames && !isFrameArray && Lib.isPlainObject(frameOrGroupNameOrFrameList);
+
+                if(isSingleFrame) {
+                    // In this case, a simple object has been passed to animate.
                     frameList.push({
                         type: 'object',
-                        data: setTransitionConfig(Lib.extendFlat({}, frameOrName))
+                        data: setTransitionConfig(Lib.extendFlat({}, frameOrGroupNameOrFrameList))
                     });
-                }
-            }
-        }
+                } else if(allFrames || ['string', 'number'].indexOf(typeof frameOrGroupNameOrFrameList) !== -1) {
+                    // In this case, null or undefined has been passed so that we want to
+                    // animate *all* currently defined frames
+                    for(i = 0; i < trans._frames.length; i++) {
+                        frame = trans._frames[i];
 
-        // Verify that all of these frames actually exist; return and reject if not:
-        for(i = 0; i < frameList.length; i++) {
-            frame = frameList[i];
-            if(frame.type === 'byname' && !trans._frameHash[frame.data.name]) {
-                Lib.warn('animate failure: frame not found: "' + frame.data.name + '"');
-                reject();
-                return;
-            }
-        }
+                        if(!frame) continue;
 
-        // If the mode is either next or immediate, then all currently queued frames must
-        // be dumped and the corresponding .animate promises rejected.
-        if(['next', 'immediate'].indexOf(animationOpts.mode) !== -1) {
-            discardExistingFrames();
-        }
-
-        if(animationOpts.direction === 'reverse') {
-            frameList.reverse();
-        }
-
-        var currentFrame = gd._fullLayout._currentFrame;
-        if(currentFrame && animationOpts.fromcurrent) {
-            var idx = -1;
-            for(i = 0; i < frameList.length; i++) {
-                frame = frameList[i];
-                if(frame.type === 'byname' && frame.name === currentFrame) {
-                    idx = i;
-                    break;
-                }
-            }
-
-            if(idx > 0 && idx < frameList.length - 1) {
-                var filteredFrameList = [];
-                for(i = 0; i < frameList.length; i++) {
-                    frame = frameList[i];
-                    if(frameList[i].type !== 'byname' || i > idx) {
-                        filteredFrameList.push(frame);
+                        if(allFrames || String(frame.group) === String(frameOrGroupNameOrFrameList)) {
+                            frameList.push({
+                                type: 'byname',
+                                name: String(frame.name),
+                                data: setTransitionConfig({name: frame.name})
+                            });
+                        }
+                    }
+                } else if(isFrameArray) {
+                    for(i = 0; i < frameOrGroupNameOrFrameList.length; i++) {
+                        var frameOrName = frameOrGroupNameOrFrameList[i];
+                        if(['number', 'string'].indexOf(typeof frameOrName) !== -1) {
+                            frameOrName = String(frameOrName);
+                            // In this case, there's an array and this frame is a string name:
+                            frameList.push({
+                                type: 'byname',
+                                name: frameOrName,
+                                data: setTransitionConfig({name: frameOrName})
+                            });
+                        } else if(Lib.isPlainObject(frameOrName)) {
+                            frameList.push({
+                                type: 'object',
+                                data: setTransitionConfig(Lib.extendFlat({}, frameOrName))
+                            });
+                        }
                     }
                 }
-                frameList = filteredFrameList;
-            }
-        }
 
-        if(frameList.length > 0) {
-            queueFrames(frameList);
-        } else {
-            // This is the case where there were simply no frames. It's a little strange
-            // since there's not much to do:
-            gd.emit('plotly_animated');
-            resolve();
+                // Verify that all of these frames actually exist; return and reject if not:
+                for(i = 0; i < frameList.length; i++) {
+                    frame = frameList[i];
+                    if(frame.type === 'byname' && !trans._frameHash[frame.data.name]) {
+                        Lib.warn('animate failure: frame not found: "' + frame.data.name + '"');
+                        reject();
+                        return;
+                    }
+                }
+
+                // If the mode is either next or immediate, then all currently queued frames must
+                // be dumped and the corresponding .animate promises rejected.
+                if(['next', 'immediate'].indexOf(animationOpts.mode) !== -1) {
+                    discardExistingFrames();
+                }
+
+                if(animationOpts.direction === 'reverse') {
+                    frameList.reverse();
+                }
+
+                var currentFrame = gd._fullLayout._currentFrame;
+                if(currentFrame && animationOpts.fromcurrent) {
+                    var idx = -1;
+                    for(i = 0; i < frameList.length; i++) {
+                        frame = frameList[i];
+                        if(frame.type === 'byname' && frame.name === currentFrame) {
+                            idx = i;
+                            break;
+                        }
+                    }
+
+                    if(idx > 0 && idx < frameList.length - 1) {
+                        var filteredFrameList = [];
+                        for(i = 0; i < frameList.length; i++) {
+                            frame = frameList[i];
+                            if(frameList[i].type !== 'byname' || i > idx) {
+                                filteredFrameList.push(frame);
+                            }
+                        }
+                        frameList = filteredFrameList;
+                    }
+                }
+
+                if(frameList.length > 0) {
+                    queueFrames(frameList);
+                } else {
+                    // This is the case where there were simply no frames. It's a little strange
+                    // since there's not much to do:
+                    gd.emit('plotly_animated');
+                    resolve();
+                }
+            });
         }
-    });
+    ]);
 };
 
 /**
