@@ -2700,7 +2700,7 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
                 }
             });
         }
-    ]);
+    ], gd);
 };
 
 /**
