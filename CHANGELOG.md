@@ -10,6 +10,16 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.27.1] -- 2017-05-17
+
+### Fixed
+- Fix text box positioning on scrolled windows (bug introduced in 1.27.0) [#1683, #1690]
+- Fix styling over links in annotation text [#1681]
+- Fix `mesh3d` with `vertexcolor` coloring [#1686]
+- Fix `sort` transform with set `categoryarray` [#1689]
+- Fix `scatter` text node data join [#1672]
+- Fix `plot` promise resolution in graphs with layout images in IE11 [#1691]
+
 ## [1.27.0] -- 2017-05-10
 
 ### Added
