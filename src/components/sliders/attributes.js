@@ -24,7 +24,11 @@ var stepsAttrs = {
         dflt: 'restyle',
         role: 'info',
         description: [
-            'Sets the Plotly method to be called when the slider value is changed.'
+            'Sets the Plotly method to be called when the slider value is changed.',
+            'If the `skip` method is used, the API slider will function as normal',
+            'but will perform no API calls and will not bind automatically to state',
+            'updates. This may be used to creating a component interface and attach to',
+            'slider events manually via JavaScript.'
         ].join(' ')
     },
     args: {
