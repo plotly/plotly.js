@@ -44,6 +44,17 @@ var buttonsAttrs = {
         role: 'info',
         dflt: '',
         description: 'Sets the text label to appear on the button.'
+    },
+    execute: {
+        valType: 'boolean',
+        dflt: true,
+        description: [
+            'When true, the API method is executed. When false, all other behaviors are the same',
+            'and command execution is skipped. This may be useful when hooking into, for example,',
+            'the `plotly_buttonclicked` method and executing the API command manually without losing',
+            'the benefit of the updatemenu automatically binding to the state of the plot through the',
+            'specification of `method` and `args`.'
+        ].join(' ')
     }
 };
 

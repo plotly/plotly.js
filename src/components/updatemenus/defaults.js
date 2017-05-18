@@ -84,6 +84,7 @@ function buttonsDefaults(menuIn, menuOut) {
 
         coerce('args');
         coerce('label');
+        coerce('execute');
 
         buttonOut._index = i;
         buttonsOut.push(buttonOut);

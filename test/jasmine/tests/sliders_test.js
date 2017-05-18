@@ -99,15 +99,18 @@ describe('sliders defaults', function() {
         expect(layoutOut.sliders[0].steps).toEqual([{
             method: 'relayout',
             label: 'Label #1',
-            value: 'label-1'
+            value: 'label-1',
+            execute: true
         }, {
             method: 'update',
             label: 'Label #2',
-            value: 'Label #2'
+            value: 'Label #2',
+            execute: true
         }, {
             method: 'animate',
             label: 'step-2',
-            value: 'lacks-label'
+            value: 'lacks-label',
+            execute: true
         }]);
     });
 
@@ -131,6 +134,7 @@ describe('sliders defaults', function() {
             args: ['title', 'Hello World'],
             label: 'step-1',
             value: 'step-1',
+            execute: true
         });
     });
 
@@ -155,6 +159,7 @@ describe('sliders defaults', function() {
             args: ['title', 'Hello World'],
             label: 'step-1',
             value: 'step-1',
+            execute: true
         });
     });
 
