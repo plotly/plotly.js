@@ -158,11 +158,13 @@ describe('update menus defaults', function() {
         expect(layoutOut.updatemenus[0].buttons[0]).toEqual({
             method: 'skip',
             label: '',
+            execute: true,
             _index: 0
         }, {
             method: 'skip',
             args: ['title', 'Hello World'],
             label: '',
+            execute: true,
             _index: 1
         });
     });

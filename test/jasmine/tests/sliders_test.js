@@ -180,11 +180,13 @@ describe('sliders defaults', function() {
             method: 'skip',
             label: 'step-0',
             value: 'step-0',
+            execute: true,
         }, {
             method: 'skip',
             args: ['title', 'Hello World'],
             label: 'step-1',
             value: 'step-1',
+            execute: true,
         });
     });
 
