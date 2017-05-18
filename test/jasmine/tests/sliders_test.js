@@ -158,6 +158,32 @@ describe('sliders defaults', function() {
         });
     });
 
+    it('allow the `skip` method', function() {
+        layoutIn.sliders = [{
+            steps: [{
+                method: 'skip',
+            }, {
+                method: 'skip',
+                args: ['title', 'Hello World']
+            }]
+        }];
+
+        supply(layoutIn, layoutOut);
+
+        expect(layoutOut.sliders[0].steps.length).toEqual(2);
+        expect(layoutOut.sliders[0].steps[0]).toEqual({
+            method: 'skip',
+            label: 'step-0',
+            value: 'step-0',
+        }, {
+            method: 'skip',
+            args: ['title', 'Hello World'],
+            label: 'step-1',
+            value: 'step-1',
+        });
+    });
+
+
     it('should keep ref to input update menu container', function() {
         layoutIn.sliders = [{
             steps: [{

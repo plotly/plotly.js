@@ -140,6 +140,31 @@ describe('update menus defaults', function() {
         });
     });
 
+    it('allow the `skip` method', function() {
+        layoutIn.updatemenus = [{
+            buttons: [{
+                method: 'skip',
+            }, {
+                method: 'skip',
+                args: ['title', 'Hello World']
+            }]
+        }];
+
+        supply(layoutIn, layoutOut);
+
+        expect(layoutOut.updatemenus[0].buttons.length).toEqual(2);
+        expect(layoutOut.updatemenus[0].buttons[0]).toEqual({
+            method: 'skip',
+            label: '',
+            _index: 0
+        }, {
+            method: 'skip',
+            args: ['title', 'Hello World'],
+            label: '',
+            _index: 1
+        });
+    });
+
     it('should keep ref to input update menu container', function() {
         layoutIn.updatemenus = [{
             buttons: [{
