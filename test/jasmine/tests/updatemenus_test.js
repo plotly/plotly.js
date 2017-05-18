@@ -469,6 +469,33 @@ describe('update menus interactions', function() {
         }).catch(fail).then(done);
     });
 
+    it('should still emit the event if method = skip', function(done) {
+        var clickCnt = 0;
+        var data = [];
+        gd.on('plotly_buttonclicked', function(datum) {
+            data.push(datum);
+            clickCnt++;
+        });
+
+        Plotly.relayout(gd, {
+            'updatemenus[0].buttons[0].method': 'skip',
+            'updatemenus[0].buttons[1].method': 'skip',
+            'updatemenus[0].buttons[2].method': 'skip',
+            'updatemenus[1].buttons[0].method': 'skip',
+            'updatemenus[1].buttons[1].method': 'skip',
+            'updatemenus[1].buttons[2].method': 'skip',
+            'updatemenus[1].buttons[3].method': 'skip',
+        }).then(function() {
+            click(selectHeader(0)).then(function() {
+                expect(clickCnt).toEqual(0);
+
+                return click(selectButton(2));
+            }).then(function() {
+                expect(clickCnt).toEqual(1);
+            }).catch(fail).then(done);
+        });
+    });
+
     it('should apply update on button click', function(done) {
         var header0 = selectHeader(0),
             header1 = selectHeader(1);
