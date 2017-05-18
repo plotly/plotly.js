@@ -58,6 +58,13 @@ describe('Plots.executeAPICommand', function() {
         });
 
     });
+
+    describe('with the skip command', function() {
+        it('resolves immediately', function(done) {
+            Plots.executeAPICommand(gd, 'skip')
+                .catch(fail).then(done);
+        });
+    });
 });
 
 describe('Plots.hasSimpleAPICommandBindings', function() {
@@ -91,6 +98,14 @@ describe('Plots.hasSimpleAPICommandBindings', function() {
             traces: null,
             value: 10
         });
+    });
+
+    it('the skip method returns false', function() {
+        var isSimple = Plots.hasSimpleAPICommandBindings(gd, [{
+            method: 'skip',
+        }]);
+
+        expect(isSimple).toEqual(false);
     });
 
     it('return false when properties are not the same', function() {
@@ -185,6 +200,11 @@ describe('Plots.computeAPICommandBindings', function() {
 
     afterEach(function() {
         destroyGraphDiv(gd);
+    });
+
+    it('the skip method returns no bindings', function() {
+        var result = Plots.computeAPICommandBindings(gd, 'skip', ['marker.size', 7]);
+        expect(result).toEqual([]);
     });
 
     describe('restyle', function() {
