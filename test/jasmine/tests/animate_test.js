@@ -768,4 +768,30 @@ describe('animating scatter traces', function() {
             expect(trace.style('opacity')).toEqual('0.1');
         }).catch(fail).then(done);
     });
+
+    it('places animate on the main plotly.js queue', function(done) {
+        Plotly.plot(gd, [{
+            x: [1, 2, 3],
+            y: [4, 5, 6],
+            opacity: 1
+        }]).then(function() {
+            gd._promises.push(delay(100)());
+            var checked = false;
+
+            Plotly.animate(gd, [{
+                data: [{'line.color': 'red'}]
+            }], {
+                frame: {duration: 0, redraw: false},
+                mode: 'immediate'
+            }).then(function() {
+                expect(gd._fullData[0].line.color).toBe('red');
+                expect(checked).toBe(true);
+            }).catch(fail).then(done);
+
+            setTimeout(function() {
+                expect(gd._fullData[0].line.color).not.toBe('red');
+                checked = true;
+            }, 50);
+        }).catch(fail);
+    });
 });
