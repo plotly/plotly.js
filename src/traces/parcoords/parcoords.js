@@ -598,7 +598,20 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
     axisTitle
         .attr('transform', 'translate(0,' + -c.axisTitleOffset + ')')
         .text(function(d) {return d.label;})
-        .each(function(d) {Drawing.font(axisTitle, d.model.labelFont);});
+        .each(function(d) {Drawing.font(axisTitle, d.model.labelFont);})
+        .each(function(d) {
+            // Ellipsize long labels
+            var maxWidth = d.xScale(1) - 5;
+            while(this.textContent.length > 2 &&
+                  this.getComputedTextLength() > maxWidth) {
+                this.textContent = this.textContent.slice(0, -2) + '…';
+            }
+        });
+
+    // Tooltip
+    axisTitle.enter()
+        .append('title')
+        .text(function(d) {return d.label;});
 
     var axisExtent = axisOverlays.selectAll('.axisExtent')
         .data(repeat, keyFun);
