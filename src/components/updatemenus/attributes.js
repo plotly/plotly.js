@@ -25,7 +25,7 @@ var buttonsAttrs = {
             'Sets the Plotly method to be called on click.',
             'If the `skip` method is used, the API updatemenu will function as normal',
             'but will perform no API calls and will not bind automatically to state',
-            'updates. This may be used to creating a component interface and attach to',
+            'updates. This may be used to create a component interface and attach to',
             'updatemenu events manually via JavaScript.'
         ].join(' ')
     },
