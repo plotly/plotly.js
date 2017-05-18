@@ -111,6 +111,7 @@ describe('update menus defaults', function() {
         expect(layoutOut.updatemenus[0].buttons[0]).toEqual({
             method: 'relayout',
             args: ['title', 'Hello World'],
+            execute: true,
             label: '',
             _index: 1
         });
@@ -135,6 +136,7 @@ describe('update menus defaults', function() {
         expect(layoutOut.updatemenus[0].buttons[0]).toEqual({
             method: 'relayout',
             args: ['title', 'Hello World'],
+            execute: true,
             label: '',
             _index: 1
         });
@@ -156,11 +158,13 @@ describe('update menus defaults', function() {
         expect(layoutOut.updatemenus[0].buttons[0]).toEqual({
             method: 'skip',
             label: '',
+            execute: true,
             _index: 0
         }, {
             method: 'skip',
             args: ['title', 'Hello World'],
             label: '',
+            execute: true,
             _index: 1
         });
     });
@@ -442,6 +446,32 @@ describe('update menus interactions', function() {
             assertMenus([3, 0]);
             done();
         });
+    });
+
+    it('should execute the API command when execute = true', function(done) {
+        expect(gd.data[0].line.color).toEqual('blue');
+
+        click(selectHeader(0)).then(function() {
+            return click(selectButton(2));
+        }).then(function() {
+            // Has been changed:
+            expect(gd.data[0].line.color).toEqual('green');
+        }).catch(fail).then(done);
+    });
+
+    it('should not execute the API command when execute = false', function(done) {
+        // This test is identical to the one above, except that it disables
+        // the command by setting execute = false first:
+        expect(gd.data[0].line.color).toEqual('blue');
+
+        Plotly.relayout(gd, 'updatemenus[0].buttons[2].execute', false).then(function() {
+            return click(selectHeader(0));
+        }).then(function() {
+            return click(selectButton(2));
+        }).then(function() {
+            // Is unchanged:
+            expect(gd.data[0].line.color).toEqual('blue');
+        }).catch(fail).then(done);
     });
 
     it('should emit an event on button click', function(done) {
