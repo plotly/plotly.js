@@ -47,6 +47,7 @@ var buttonsAttrs = {
     },
     execute: {
         valType: 'boolean',
+        role: 'info',
         dflt: true,
         description: [
             'When true, the API method is executed. When false, all other behaviors are the same',
