@@ -1,9 +1,7 @@
 'use strict';
 
 var d3 = require('d3');
-
-var modeBarButtons = require('@src/components/modebar/buttons');
-
+var modeBarButtons = require('../../../src/components/modebar/buttons');
 
 module.exports = function selectButton(modeBar, name) {
     var button = {};
