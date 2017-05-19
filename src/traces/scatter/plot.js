@@ -444,6 +444,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             }
         });
 
+        join.order();
+
         if(hasTransition) {
             join.exit().transition()
                 .style('opacity', 0)
@@ -482,6 +484,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     transition(d3.select(this)).attr({x: x, y: y});
                 });
             });
+
+        join.order();
 
         join.exit().remove();
     }
