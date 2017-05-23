@@ -13,6 +13,7 @@ var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
 var Plotly = require('../plotly');
+var PlotSchema = require('../plot_api/plot_schema');
 var Registry = require('../registry');
 var Lib = require('../lib');
 var Color = require('../components/color');
@@ -505,11 +506,37 @@ plots.supplyDefaults = function(gd) {
     // update object references in calcdata
     if((gd.calcdata || []).length === newFullData.length) {
         for(i = 0; i < newFullData.length; i++) {
-            var trace = newFullData[i];
-            (gd.calcdata[i][0] || {}).trace = trace;
+            var newTrace = newFullData[i];
+            var cd0 = gd.calcdata[i][0];
+            if(cd0 && cd0.trace) {
+                if(cd0.trace._hasCalcTransform) {
+                    remapTransformedArrays(cd0, newTrace);
+                } else {
+                    cd0.trace = newTrace;
+                }
+            }
         }
     }
 };
+
+function remapTransformedArrays(cd0, newTrace) {
+    var oldTrace = cd0.trace;
+    var arrayAttrs = PlotSchema.findArrayAttributes(oldTrace);
+    var transformedArrayHash = {};
+    var i, astr;
+
+    for(i = 0; i < arrayAttrs.length; i++) {
+        astr = arrayAttrs[i];
+        transformedArrayHash[astr] = Lib.nestedProperty(oldTrace, astr).get().slice();
+    }
+
+    cd0.trace = newTrace;
+
+    for(i = 0; i < arrayAttrs.length; i++) {
+        astr = arrayAttrs[i];
+        Lib.nestedProperty(cd0.trace, astr).set(transformedArrayHash[astr]);
+    }
+}
 
 // Create storage for all of the data related to frames and transitions:
 plots.createTransitionData = function(gd) {
@@ -2022,6 +2049,7 @@ plots.doCalcdata = function(gd, traces) {
 
                 _module = transformsRegistry[transform.type];
                 if(_module && _module.calcTransform) {
+                    trace._hasCalcTransform = true;
                     hasCalcTransform = true;
                     _module.calcTransform(gd, trace, transform);
                 }
