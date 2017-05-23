@@ -165,8 +165,12 @@ module.exports = {
         width: extendFlat({}, surfaceAtts.contours.x.width)
     },
 
+    cauto: colorscaleAttrs.zauto,
+    cmin: colorscaleAttrs.zmin,
+    cmax: colorscaleAttrs.zmax,
     colorscale: colorscaleAttrs.colorscale,
     reversescale: colorscaleAttrs.reversescale,
+    autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}),
     showscale: colorscaleAttrs.showscale,
     colorbar: colorbarAttrs,
 

@@ -122,7 +122,6 @@ module.exports = {
         ].join(' ')
     },
 
-    // Todo this block has a structure of colorscale/attributes.js but with colorscale/color_attributes.js names
     cauto: colorscaleAttrs.zauto,
     cmin: colorscaleAttrs.zmin,
     cmax: colorscaleAttrs.zmax,

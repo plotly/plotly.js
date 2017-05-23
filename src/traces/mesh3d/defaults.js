@@ -11,9 +11,8 @@
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
-var colorbarDefaults = require('../../components/colorbar/defaults');
+var colorscaleDefaults = require('../../components/colorscale/defaults');
 var attributes = require('./attributes');
-
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -77,23 +76,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     if('intensity' in traceIn) {
         coerce('intensity');
-        coerce('showscale', true);
-    }
-    else {
+        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
+    } else {
         traceOut.showscale = false;
 
         if('facecolor' in traceIn) coerce('facecolor');
         else if('vertexcolor' in traceIn) coerce('vertexcolor');
         else coerce('color', defaultColor);
-    }
-
-    if(traceOut.reversescale) {
-        traceOut.colorscale = traceOut.colorscale.map(function(si) {
-            return [1 - si[0], si[1]];
-        }).reverse();
-    }
-
-    if(traceOut.showscale) {
-        colorbarDefaults(traceIn, traceOut, layout);
     }
 };
