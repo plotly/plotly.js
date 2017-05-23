@@ -252,7 +252,13 @@ var TAG_CLOSE = {
     sub: '<tspan dy="-0.21em">&#x200b;</tspan>'
 };
 
-var PROTOCOLS = ['http:', 'https:', 'mailto:'];
+/*
+ * Whitelist of protocols in user-supplied urls. Mostly we want to avoid javascript
+ * and related attack vectors. The empty items are there for IE, that in various
+ * versions treats relative paths as having different flavors of no protocol, while
+ * other browsers have these explicitly inherit the protocol of the page they're in.
+ */
+var PROTOCOLS = ['http:', 'https:', 'mailto:', '', undefined, ':'];
 
 var STRIP_TAGS = new RegExp('</?(' + Object.keys(TAG_STYLES).join('|') + ')( [^>]*)?/?>', 'g');
 
