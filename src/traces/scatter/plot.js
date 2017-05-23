@@ -419,9 +419,6 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         var enter = join.enter().append('path')
             .classed('point', true);
 
-        enter.call(Drawing.pointStyle, trace)
-            .call(Drawing.translatePoints, xa, ya, trace);
-
         if(hasTransition) {
             enter.style('opacity', 0).transition()
                 .style('opacity', 1);
@@ -429,6 +426,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
         var markerScale = showMarkers && Drawing.tryColorscale(trace.marker, '');
         var lineScale = showMarkers && Drawing.tryColorscale(trace.marker, 'line');
+
+        join.order();
 
         join.each(function(d) {
             var el = d3.select(this);
@@ -443,8 +442,6 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                 }
             }
         });
-
-        join.order();
 
         if(hasTransition) {
             join.exit().transition()
@@ -461,6 +458,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         // each text needs to go in its own 'g' in case
         // it gets converted to mathjax
         join.enter().append('g').classed('textpoint', true).append('text');
+
+        join.order();
 
         join.each(function(d) {
             var g = d3.select(this);
@@ -484,8 +483,6 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     transition(d3.select(this)).attr({x: x, y: y});
                 });
             });
-
-        join.order();
 
         join.exit().remove();
     }
