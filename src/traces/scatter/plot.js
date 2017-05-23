@@ -419,16 +419,19 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         var enter = join.enter().append('path')
             .classed('point', true);
 
-        enter.call(Drawing.pointStyle, trace)
-            .call(Drawing.translatePoints, xa, ya, trace);
-
         if(hasTransition) {
-            enter.style('opacity', 0).transition()
+            enter
+                .call(Drawing.pointStyle, trace)
+                .call(Drawing.translatePoints, xa, ya, trace)
+                .style('opacity', 0)
+                .transition()
                 .style('opacity', 1);
         }
 
         var markerScale = showMarkers && Drawing.tryColorscale(trace.marker, '');
         var lineScale = showMarkers && Drawing.tryColorscale(trace.marker, 'line');
+
+        join.order();
 
         join.each(function(d) {
             var el = d3.select(this);
@@ -441,6 +444,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                 if(trace.customdata) {
                     el.classed('plotly-customdata', d.data !== null && d.data !== undefined);
                 }
+            } else {
+                sel.remove();
             }
         });
 
@@ -459,6 +464,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         // each text needs to go in its own 'g' in case
         // it gets converted to mathjax
         join.enter().append('g').classed('textpoint', true).append('text');
+
+        join.order();
 
         join.each(function(d) {
             var g = d3.select(this);
