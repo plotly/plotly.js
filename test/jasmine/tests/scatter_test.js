@@ -539,6 +539,42 @@ describe('end-to-end scatter tests', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('should smoothly add/remove nodes tags with *ids* during animations', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                mode: 'markers+text',
+                y: [1, 2, 1],
+                text: ['apple', 'banana', 'clementine'],
+                ids: ['A', 'B', 'C'],
+                marker: { color: ['red', 'green', 'blue'] }
+            }],
+            frames: [{
+                data: [{
+                    y: [2, 1, 2],
+                    text: ['apple', 'banana', 'dragon fruit'],
+                    ids: ['A', 'C', 'D'],
+                    marker: { color: ['red', 'blue', 'yellow'] }
+                }]
+            }]
+        })
+        .then(function() {
+            _assertNodes(
+                ['rgb(255, 0, 0)', 'rgb(0, 128, 0)', 'rgb(0, 0, 255)'],
+                ['apple', 'banana', 'clementine']
+            );
+
+            return Plotly.animate(gd, null, {frame: {redraw: false}});
+        })
+        .then(function() {
+            _assertNodes(
+                ['rgb(255, 0, 0)', 'rgb(0, 0, 255)', 'rgb(255, 255, 0)'],
+                ['apple', 'banana', 'dragon fruit']
+            );
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
 
 describe('scatter hoverPoints', function() {
