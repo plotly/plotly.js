@@ -523,18 +523,18 @@ function remapTransformedArrays(cd0, newTrace) {
     var oldTrace = cd0.trace;
     var arrayAttrs = PlotSchema.findArrayAttributes(oldTrace);
     var transformedArrayHash = {};
-    var i, ast;
+    var i, astr;
 
     for(i = 0; i < arrayAttrs.length; i++) {
-        ast = arrayAttrs[i];
-        transformedArrayHash[ast] = Lib.nestedProperty(oldTrace, ast).get().slice();
+        astr = arrayAttrs[i];
+        transformedArrayHash[astr] = Lib.nestedProperty(oldTrace, astr).get().slice();
     }
 
     cd0.trace = newTrace;
 
     for(i = 0; i < arrayAttrs.length; i++) {
-        ast = arrayAttrs[i];
-        Lib.nestedProperty(cd0.trace, ast).set(transformedArrayHash[ast]);
+        astr = arrayAttrs[i];
+        Lib.nestedProperty(cd0.trace, astr).set(transformedArrayHash[astr]);
     }
 }
 
