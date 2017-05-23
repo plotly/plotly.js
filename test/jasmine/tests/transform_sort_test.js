@@ -352,6 +352,18 @@ describe('Test sort transform interactions:', function() {
         .then(function(eventData) {
             assertPt(eventData, 1, 1, 5, 'G');
         })
+        .then(function() {
+            return Plotly.relayout(gd, 'xaxis.range', [-5, 5]);
+        })
+        .then(function() { return hover(gd, 'D'); })
+        .then(function(eventData) {
+            assertPt(eventData, 0, 1, 1, 'D');
+        })
+        .then(wait)
+        .then(function() { return click(gd, 'G'); })
+        .then(function(eventData) {
+            assertPt(eventData, 1, 1, 5, 'G');
+        })
         .catch(fail)
         .then(done);
     });
