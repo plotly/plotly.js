@@ -125,7 +125,7 @@ module.exports = {
         description: 'Sets the color of the whole mesh'
     },
     vertexcolor: {
-        valType: 'data_array',  // FIXME: this should be a color array
+        valType: 'data_array',
         role: 'style',
         description: [
             'Sets the color of each vertex',

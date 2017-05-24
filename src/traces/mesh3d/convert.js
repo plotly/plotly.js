@@ -127,7 +127,7 @@ proto.update = function(data) {
         config.colormap = parseColorScale(data.colorscale);
     }
     else if(data.vertexcolor) {
-        this.color = data.vertexcolors[0];
+        this.color = data.vertexcolor[0];
         config.vertexColors = parseColorArray(data.vertexcolor);
     }
     else if(data.facecolor) {

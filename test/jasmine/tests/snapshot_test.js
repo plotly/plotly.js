@@ -3,6 +3,7 @@ var Plotly = require('@lib/index');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
 
 var subplotMock = require('../../image/mocks/multiple_subplots.json');
 var annotationMock = require('../../image/mocks/annotations.json');
@@ -191,15 +192,14 @@ describe('Plotly.Snapshot', function() {
     });
 
     describe('toSVG', function() {
-        var parser = new DOMParser(),
-            gd;
+        var parser = new DOMParser();
+        var gd;
 
         beforeEach(function() {
             gd = createGraphDiv();
         });
 
         afterEach(destroyGraphDiv);
-
 
         it('should not return any nested svg tags of plots', function(done) {
             Plotly.plot(gd, subplotMock.data, subplotMock.layout).then(function() {
@@ -244,6 +244,54 @@ describe('Plotly.Snapshot', function() {
 
                 done();
             });
+        });
+
+        it('should handle quoted style properties', function(done) {
+            Plotly.plot(gd, [{
+                y: [1, 2, 1],
+                marker: {
+                    gradient: {
+                        type: 'radial',
+                        color: '#fff'
+                    },
+                    color: ['red', 'blue', 'green']
+                }
+            }], {
+                font: { family: 'Times New Roman' }
+            })
+            .then(function() {
+                d3.selectAll('text').each(function() {
+                    var tx = d3.select(this);
+                    expect(tx.style('font-family')).toEqual('\"Times New Roman\"');
+                });
+
+                d3.selectAll('.point').each(function() {
+                    var pt = d3.select(this);
+                    expect(pt.style('fill').substr(0, 6)).toEqual('url(\"#');
+                });
+
+                return Plotly.Snapshot.toSVG(gd);
+            })
+            .then(function(svg) {
+                var svgDOM = parser.parseFromString(svg, 'image/svg+xml');
+                var i;
+
+                var textElements = svgDOM.getElementsByTagName('text');
+                expect(textElements.length).toEqual(11);
+
+                for(i = 0; i < textElements.length; i++) {
+                    expect(textElements[i].style['font-family']).toEqual('\"Times New Roman\"');
+                }
+
+                var pointElements = svgDOM.getElementsByClassName('point');
+                expect(pointElements.length).toEqual(3);
+
+                for(i = 0; i < pointElements.length; i++) {
+                    expect(pointElements[i].style.fill.substr(0, 6)).toEqual('url(\"#');
+                }
+            })
+            .catch(fail)
+            .then(done);
         });
     });
 });

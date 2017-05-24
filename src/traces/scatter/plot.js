@@ -391,7 +391,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     }
 
     function makePoints(d) {
-        var join, selection;
+        var join, selection, hasNode;
 
         var trace = d[0].trace,
             s = d3.select(this),
@@ -419,25 +419,33 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         var enter = join.enter().append('path')
             .classed('point', true);
 
-        enter.call(Drawing.pointStyle, trace)
-            .call(Drawing.translatePoints, xa, ya, trace);
-
         if(hasTransition) {
-            enter.style('opacity', 0).transition()
+            enter
+                .call(Drawing.pointStyle, trace)
+                .call(Drawing.translatePoints, xa, ya, trace)
+                .style('opacity', 0)
+                .transition()
                 .style('opacity', 1);
         }
 
         var markerScale = showMarkers && Drawing.tryColorscale(trace.marker, '');
         var lineScale = showMarkers && Drawing.tryColorscale(trace.marker, 'line');
 
+        join.order();
+
         join.each(function(d) {
             var el = d3.select(this);
             var sel = transition(el);
-            Drawing.translatePoint(d, sel, xa, ya);
-            Drawing.singlePointStyle(d, sel, trace, markerScale, lineScale, gd);
+            hasNode = Drawing.translatePoint(d, sel, xa, ya);
 
-            if(trace.customdata) {
-                el.classed('plotly-customdata', d.data !== null && d.data !== undefined);
+            if(hasNode) {
+                Drawing.singlePointStyle(d, sel, trace, markerScale, lineScale, gd);
+
+                if(trace.customdata) {
+                    el.classed('plotly-customdata', d.data !== null && d.data !== undefined);
+                }
+            } else {
+                sel.remove();
             }
         });
 
@@ -457,9 +465,13 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         // it gets converted to mathjax
         join.enter().append('g').classed('textpoint', true).append('text');
 
+        join.order();
+
         join.each(function(d) {
-            var sel = transition(d3.select(this).select('text'));
-            Drawing.translatePoint(d, sel, xa, ya);
+            var g = d3.select(this);
+            var sel = transition(g.select('text'));
+            hasNode = Drawing.translatePoint(d, sel, xa, ya);
+            if(!hasNode) g.remove();
         });
 
         join.selectAll('text')

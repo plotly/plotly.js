@@ -1,7 +1,7 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var Lib = require('@src/lib');
+var Lib = require('../../../src/lib');
 var deepEqual = require('deep-equal');
 
 module.exports = {

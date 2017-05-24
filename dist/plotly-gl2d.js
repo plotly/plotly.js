@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v1.27.0
+* plotly.js (gl2d) v1.27.1
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -49045,6 +49045,18 @@ function drawOne(gd, index) {
     }
 
     function drawGraphicalElements() {
+        // if the text has *only* a link, make the whole box into a link
+        var anchor = annText.selectAll('a');
+        if(anchor.size() === 1 && anchor.text() === annText.text()) {
+            var wholeLink = annTextGroupInner.insert('a', ':first-child').attr({
+                'xlink:xlink:href': anchor.attr('xlink:href'),
+                'xlink:xlink:show': anchor.attr('xlink:show')
+            })
+            .style({cursor: 'pointer'});
+
+            wholeLink.node().appendChild(annTextBG.node());
+        }
+
 
         // make sure lines are aligned the way they will be
         // at the end, even if their position changes
@@ -51921,6 +51933,17 @@ drawing.setRect = function(s, x, y, w, h) {
     s.call(drawing.setPosition, x, y).call(drawing.setSize, w, h);
 };
 
+/** Translate / remove node
+ *
+ * @param {object} d : calcdata point item
+ * @param {sel} sel : d3 selction of node to translate
+ * @param {object} xa : corresponding full xaxis object
+ * @param {object} ya : corresponding full yaxis object
+ *
+ * @return {boolean} :
+ *  true if selection got translated
+ *  false if selection got removed
+ */
 drawing.translatePoint = function(d, sel, xa, ya) {
     // put xp and yp into d if pixel scaling is already done
     var x = d.xp || xa.c2p(d.x),
@@ -51933,8 +51956,12 @@ drawing.translatePoint = function(d, sel, xa, ya) {
         } else {
             sel.attr('transform', 'translate(' + x + ',' + y + ')');
         }
+    } else {
+        sel.remove();
+        return false;
     }
-    else sel.remove();
+
+    return true;
 };
 
 drawing.translatePoints = function(s, xa, ya, trace) {
@@ -52416,11 +52443,11 @@ drawing.steps = function(shape) {
 };
 
 // off-screen svg render testing element, shared by the whole page
-// uses the id 'js-plotly-tester' and stores it in gd._tester
+// uses the id 'js-plotly-tester' and stores it in drawing.tester
 // makes a hash of cached text items in tester.node()._cache
 // so we can add references to rendered text (including all info
 // needed to fully determine its bounding rect)
-drawing.makeTester = function(gd) {
+drawing.makeTester = function() {
     var tester = d3.select('body')
         .selectAll('#js-plotly-tester')
         .data([0]);
@@ -52453,16 +52480,16 @@ drawing.makeTester = function(gd) {
         tester.node()._cache = {};
     }
 
-    gd._tester = tester;
-    gd._testref = testref;
+    drawing.tester = tester;
+    drawing.testref = testref;
 };
 
 // use our offscreen tester to get a clientRect for an element,
 // in a reference frame where it isn't translated and its anchor
 // point is at (0,0)
 // always returns a copy of the bbox, so the caller can modify it safely
-var savedBBoxes = [],
-    maxSavedBBoxes = 10000;
+var savedBBoxes = [];
+var maxSavedBBoxes = 10000;
 
 drawing.bBox = function(node) {
     // cache elements we've already measured so we don't have to
@@ -52472,14 +52499,13 @@ drawing.bBox = function(node) {
         return Lib.extendFlat({}, savedBBoxes[saveNum.value]);
     }
 
-    if(!drawing.test3) {
-        drawing.test3 = d3.select('#js-plotly-tester');
-        drawing.tester = drawing.test3.node();
-    }
+    var tester3 = drawing.tester;
+    var tester = tester3.node();
 
     // copy the node to test into the tester
     var testNode = node.cloneNode(true);
-    drawing.tester.appendChild(testNode);
+    tester.appendChild(testNode);
+
     // standardize its position... do we really want to do this?
     d3.select(testNode).attr({
         x: 0,
@@ -52488,20 +52514,19 @@ drawing.bBox = function(node) {
     });
 
     var testRect = testNode.getBoundingClientRect();
-    if(!drawing.refRect) {
-        drawing.refRect = drawing.test3.select('.js-reference-point')
-            .node().getBoundingClientRect();
-    }
+    var refRect = drawing.testref
+        .node()
+        .getBoundingClientRect();
 
-    drawing.tester.removeChild(testNode);
+    tester.removeChild(testNode);
 
     var bb = {
         height: testRect.height,
         width: testRect.width,
-        left: testRect.left - drawing.refRect.left,
-        top: testRect.top - drawing.refRect.top,
-        right: testRect.right - drawing.refRect.left,
-        bottom: testRect.bottom - drawing.refRect.top
+        left: testRect.left - refRect.left,
+        top: testRect.top - refRect.top,
+        right: testRect.right - refRect.left,
+        bottom: testRect.bottom - refRect.top
     };
 
     // make sure we don't have too many saved boxes,
@@ -55899,11 +55924,15 @@ module.exports = function draw(gd) {
                 var dataURL = canvas.toDataURL('image/png');
 
                 thisImage.attr('xlink:href', dataURL);
+
+                // resolve promise in onload handler instead of on 'load' to support IE11
+                // see https://github.com/plotly/plotly.js/issues/1685
+                // for more details
+                resolve();
             };
 
 
             thisImage.on('error', errorHandler);
-            thisImage.on('load', resolve);
 
             img.src = d.source;
 
@@ -61434,7 +61463,7 @@ function keyFunction(opts) {
 
 // Compute the dimensions (mutates sliderOpts):
 function findDimensions(gd, sliderOpts) {
-    var sliderLabels = gd._tester.selectAll('g.' + constants.labelGroupClass)
+    var sliderLabels = Drawing.tester.selectAll('g.' + constants.labelGroupClass)
         .data(sliderOpts.steps);
 
     sliderLabels.enter().append('g')
@@ -61471,7 +61500,7 @@ function findDimensions(gd, sliderOpts) {
 
     if(sliderOpts.currentvalue.visible) {
         // Get the dimensions of the current value label:
-        var dummyGroup = gd._tester.append('g');
+        var dummyGroup = Drawing.tester.append('g');
 
         sliderLabels.each(function(stepOpts) {
             var curValPrefix = drawCurrentValue(dummyGroup, sliderOpts, stepOpts.label);
@@ -62996,7 +63025,7 @@ function findDimensions(gd, menuOpts) {
     menuOpts.lx = 0;
     menuOpts.ly = 0;
 
-    var fakeButtons = gd._tester.selectAll('g.' + constants.dropdownButtonClassName)
+    var fakeButtons = Drawing.tester.selectAll('g.' + constants.dropdownButtonClassName)
         .data(menuOpts.buttons);
 
     fakeButtons.enter().append('g')
@@ -63843,7 +63872,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.27.0';
+exports.version = '1.27.1';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -67713,9 +67742,20 @@ var Lib = require('../lib');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var stringMappings = require('../constants/string_mappings');
 
-// Append SVG
+var DOM_PARSER;
 
-var parser = new DOMParser();
+exports.getDOMParser = function() {
+    if(DOM_PARSER) {
+        return DOM_PARSER;
+    } else if(window.DOMParser) {
+        DOM_PARSER = new window.DOMParser();
+        return DOM_PARSER;
+    } else {
+        throw new Error('Cannot initialize DOMParser');
+    }
+};
+
+// Append SVG
 
 d3.selection.prototype.appendSVG = function(_svgString) {
     var skeleton = [
@@ -67725,8 +67765,9 @@ d3.selection.prototype.appendSVG = function(_svgString) {
         '</svg>'
     ].join('');
 
-    var dom = parser.parseFromString(skeleton, 'application/xml'),
-        childNode = dom.documentElement.firstChild;
+    var domParser = exports.getDOMParser();
+    var dom = domParser.parseFromString(skeleton, 'application/xml');
+    var childNode = dom.documentElement.firstChild;
 
     while(childNode) {
         this.node().appendChild(this.node().ownerDocument.importNode(childNode, true));
@@ -67917,17 +67958,23 @@ function texToSVG(_texString, _config, _callback) {
 }
 
 var TAG_STYLES = {
-    // would like to use baseline-shift but FF doesn't support it yet
+    // would like to use baseline-shift for sub/sup but FF doesn't support it
     // so we need to use dy along with the uber hacky shift-back-to
     // baseline below
     sup: 'font-size:70%" dy="-0.6em',
     sub: 'font-size:70%" dy="0.3em',
     b: 'font-weight:bold',
     i: 'font-style:italic',
-    a: '',
+    a: 'cursor:pointer',
     span: '',
     br: '',
     em: 'font-style:italic;font-weight:bold'
+};
+
+// sub/sup: extra tspan with zero-width space to get back to the right baseline
+var TAG_CLOSE = {
+    sup: '<tspan dy="0.42em">&#x200b;</tspan>',
+    sub: '<tspan dy="-0.21em">&#x200b;</tspan>'
 };
 
 var PROTOCOLS = ['http:', 'https:', 'mailto:'];
@@ -67949,6 +67996,18 @@ var UNICODE_TO_ENTITY = Object.keys(stringMappings.unicodeToEntity).map(function
 });
 
 var NEWLINES = /(\r\n?|\n)/g;
+
+var SPLIT_TAGS = /(<[^<>]*>)/;
+
+var ONE_TAG = /<(\/?)([^ >]*)(\s+(.*))?>/i;
+
+// Style and href: pull them out of either single or double quotes.
+// Because we hack in other attributes with style (sub & sup), drop any trailing
+// semicolon in user-supplied styles so we can consistently append the tag-dependent style
+var STYLEMATCH = /(^|[\s"'])style\s*=\s*("([^"]*);?"|'([^']*);?')/i;
+var HREFMATCH = /(^|[\s"'])href\s*=\s*("([^"]*)"|'([^']*)')/i;
+
+var COLORMATCH = /(^|;)\s*color:/;
 
 exports.plainText = function(_str) {
     // strip out our pseudo-html so we have a readable
@@ -67976,84 +68035,93 @@ function encodeForHTML(_str) {
 }
 
 function convertToSVG(_str) {
-    _str = convertEntities(_str);
-
-    // normalize behavior between IE and others wrt newlines and whitespace:pre
-    // this combination makes IE barf https://github.com/plotly/plotly.js/issues/746
-    // Chrome and FF display \n, \r, or \r\n as a space in this mode.
-    // I feel like at some point we turned these into <br> but currently we don't so
-    // I'm just going to cement what we do now in Chrome and FF
-    _str = _str.replace(NEWLINES, ' ');
+    _str = convertEntities(_str)
+        /*
+         * Normalize behavior between IE and others wrt newlines and whitespace:pre
+         * this combination makes IE barf https://github.com/plotly/plotly.js/issues/746
+         * Chrome and FF display \n, \r, or \r\n as a space in this mode.
+         * I feel like at some point we turned these into <br> but currently we don't so
+         * I'm just going to cement what we do now in Chrome and FF
+         */
+        .replace(NEWLINES, ' ');
 
     var result = _str
-        .split(/(<[^<>]*>)/).map(function(d) {
-            var match = d.match(/<(\/?)([^ >]*)\s*(.*)>/i),
-                tag = match && match[2].toLowerCase(),
-                style = TAG_STYLES[tag];
+        .split(SPLIT_TAGS).map(function(d) {
+            var match = d.match(ONE_TAG);
+            var tag = match && match[2].toLowerCase();
+            var tagStyle = TAG_STYLES[tag];
 
-            if(style !== undefined) {
-                var close = match[1],
-                    extra = match[3],
-                    /**
-                     * extraStyle: any random extra css (that's supported by svg)
-                     * use this like <span style="font-family:Arial"> to change font in the middle
-                     *
-                     * at one point we supported <font family="..." size="..."> but as this isn't even
-                     * valid HTML anymore and we dropped it accidentally for many months, we will not
-                     * resurrect it.
-                     */
-                    extraStyle = extra.match(/^style\s*=\s*"([^"]+)"\s*/i);
+            if(tagStyle !== undefined) {
+                var isClose = match[1];
+                if(isClose) return (tag === 'a' ? '</a>' : '</tspan>') + (TAG_CLOSE[tag] || '');
 
-                // anchor and br are the only ones that don't turn into a tspan
+                // break: later we'll turn these into newline <tspan>s
+                // but we need to know about all the other tags first
+                if(tag === 'br') return '<br>';
+
+                /**
+                 * extra includes href and any random extra css (that's supported by svg)
+                 * use this like <span style="font-family:Arial"> to change font in the middle
+                 *
+                 * at one point we supported <font family="..." size="..."> but as this isn't even
+                 * valid HTML anymore and we dropped it accidentally for many months, we will not
+                 * resurrect it.
+                 */
+                var extra = match[4];
+
+                var out;
+
+                // anchor is the only tag that doesn't turn into a tspan
                 if(tag === 'a') {
-                    if(close) return '</a>';
-                    else if(extra.substr(0, 4).toLowerCase() !== 'href') return '<a>';
-                    else {
-                        // remove quotes, leading '=', replace '&' with '&amp;'
-                        var href = extra.substr(4)
-                            .replace(/["']/g, '')
-                            .replace(/=/, '');
+                    var hrefMatch = extra && extra.match(HREFMATCH);
+                    var href = hrefMatch && (hrefMatch[3] || hrefMatch[4]);
 
-                        // check protocol
+                    out = '<a';
+
+                    if(href) {
+                        // check safe protocols
                         var dummyAnchor = document.createElement('a');
                         dummyAnchor.href = href;
-                        if(PROTOCOLS.indexOf(dummyAnchor.protocol) === -1) return '<a>';
-
-                        return '<a xlink:show="new" xlink:href="' + encodeForHTML(href) + '">';
+                        if(PROTOCOLS.indexOf(dummyAnchor.protocol) !== -1) {
+                            out += ' xlink:show="new" xlink:href="' + encodeForHTML(href) + '"';
+                        }
                     }
                 }
-                else if(tag === 'br') return '<br>';
-                else if(close) {
-                    // closing tag
-
-                    // sub/sup: extra tspan with zero-width space to get back to the right baseline
-                    if(tag === 'sup') return '</tspan><tspan dy="0.42em">&#x200b;</tspan>';
-                    if(tag === 'sub') return '</tspan><tspan dy="-0.21em">&#x200b;</tspan>';
-                    else return '</tspan>';
-                }
                 else {
-                    var tspanStart = '<tspan';
+                    out = '<tspan';
 
                     if(tag === 'sup' || tag === 'sub') {
                         // sub/sup: extra zero-width space, fixes problem if new line starts with sub/sup
-                        tspanStart = '&#x200b;' + tspanStart;
+                        out = '&#x200b;' + out;
                     }
-
-                    if(extraStyle) {
-                        // most of the svg css users will care about is just like html,
-                        // but font color is different. Let our users ignore this.
-                        extraStyle = extraStyle[1].replace(/(^|;)\s*color:/, '$1 fill:');
-                        style = encodeForHTML(extraStyle) + (style ? ';' + style : '');
-                    }
-
-                    return tspanStart + (style ? ' style="' + style + '"' : '') + '>';
                 }
+
+                // now add style, from both the tag name and any extra css
+                // Most of the svg css that users will care about is just like html,
+                // but font color is different (uses fill). Let our users ignore this.
+                var cssMatch = extra && extra.match(STYLEMATCH);
+                var css = cssMatch && (cssMatch[3] || cssMatch[4]);
+                if(css) {
+                    css = encodeForHTML(css.replace(COLORMATCH, '$1 fill:'));
+                    if(tagStyle) css += ';' + tagStyle;
+                }
+                else if(tagStyle) css = tagStyle;
+
+                if(css) return out + ' style="' + css + '">';
+
+                return out + '>';
             }
             else {
                 return exports.xml_entity_encode(d).replace(/</g, '&lt;');
             }
         });
 
+    // now deal with line breaks
+    // TODO: this next section attempts to close and reopen tags that
+    // span a line break. But
+    // a) it only closes and reopens one tag, and
+    // b) all tags are treated like equivalent tspans (even <a> which isn't a tspan even now!)
+    // we should really do this in a type-aware way *before* converting to tspans.
     var indices = [];
     for(var index = result.indexOf('<br>'); index > 0; index = result.indexOf('<br>', index + 1)) {
         indices.push(index);
@@ -69187,9 +69255,9 @@ Plotly.plot = function(gd, data, layout, config) {
     d3.select(gd).classed('js-plotly-plot', true);
 
     // off-screen getBoundingClientRect testing space,
-    // in #js-plotly-tester (and stored as gd._tester)
+    // in #js-plotly-tester (and stored as Drawing.tester)
     // so we can share cached text across tabs
-    Drawing.makeTester(gd);
+    Drawing.makeTester();
 
     // collect promises for any async actions during plotting
     // any part of the plotting code can push to gd._promises, then
@@ -83793,8 +83861,6 @@ plots.purge = function(gd) {
 
     // these get recreated on Plotly.plot anyway, but just to be safe
     // (and to have a record of them...)
-    delete gd._tester;
-    delete gd._testref;
     delete gd._promises;
     delete gd._redrawTimer;
     delete gd.firstscatter;
@@ -84593,8 +84659,6 @@ plots.doCalcdata = function(gd, traces) {
 
     var trace, _module, i, j;
 
-    var hasCategoryAxis = false;
-
     // XXX: Is this correct? Needs a closer look so that *some* traces can be recomputed without
     // *all* needing doCalcdata:
     var calcdata = new Array(fullData.length);
@@ -84616,20 +84680,6 @@ plots.doCalcdata = function(gd, traces) {
     fullLayout._piecolormap = {};
     fullLayout._piedefaultcolorcount = 0;
 
-    // initialize the category list, if there is one, so we start over
-    // to be filled in later by ax.d2c
-    for(i = 0; i < axList.length; i++) {
-        axList[i]._categories = axList[i]._initialCategories.slice();
-
-        // Build the lookup map for initialized categories
-        axList[i]._categoriesMap = {};
-        for(j = 0; j < axList[i]._categories.length; j++) {
-            axList[i]._categoriesMap[axList[i]._categories[j]] = j;
-        }
-
-        if(axList[i].type === 'category') hasCategoryAxis = true;
-    }
-
     // If traces were specified and this trace was not included,
     // then transfer it over from the old calcdata:
     for(i = 0; i < fullData.length; i++) {
@@ -84638,6 +84688,8 @@ plots.doCalcdata = function(gd, traces) {
             continue;
         }
     }
+
+    var hasCategoryAxis = initCategories(axList);
 
     var hasCalcTransform = false;
 
@@ -84671,9 +84723,9 @@ plots.doCalcdata = function(gd, traces) {
             axList[i]._min = [];
             axList[i]._max = [];
             axList[i]._categories = [];
-            // Reset the look up map
             axList[i]._categoriesMap = {};
         }
+        initCategories(axList);
     }
 
     // 'regular' loop
@@ -84718,6 +84770,26 @@ plots.doCalcdata = function(gd, traces) {
         }
     }
 };
+
+function initCategories(axList) {
+    var hasCategoryAxis = false;
+
+    // initialize the category list, if there is one, so we start over
+    // to be filled in later by ax.d2c
+    for(var i = 0; i < axList.length; i++) {
+        axList[i]._categories = axList[i]._initialCategories.slice();
+
+        // Build the lookup map for initialized categories
+        axList[i]._categoriesMap = {};
+        for(var j = 0; j < axList[i]._categories.length; j++) {
+            axList[i]._categoriesMap[axList[i]._categories[j]] = j;
+        }
+
+        if(axList[i].type === 'category') hasCategoryAxis = true;
+    }
+
+    return hasCategoryAxis;
+}
 
 plots.rehover = function(gd) {
     if(gd._fullLayout._rehover) {
@@ -93624,7 +93696,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     }
 
     function makePoints(d) {
-        var join, selection;
+        var join, selection, hasNode;
 
         var trace = d[0].trace,
             s = d3.select(this),
@@ -93666,11 +93738,14 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         join.each(function(d) {
             var el = d3.select(this);
             var sel = transition(el);
-            Drawing.translatePoint(d, sel, xa, ya);
-            Drawing.singlePointStyle(d, sel, trace, markerScale, lineScale, gd);
+            hasNode = Drawing.translatePoint(d, sel, xa, ya);
 
-            if(trace.customdata) {
-                el.classed('plotly-customdata', d.data !== null && d.data !== undefined);
+            if(hasNode) {
+                Drawing.singlePointStyle(d, sel, trace, markerScale, lineScale, gd);
+
+                if(trace.customdata) {
+                    el.classed('plotly-customdata', d.data !== null && d.data !== undefined);
+                }
             }
         });
 
@@ -93691,8 +93766,10 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         join.enter().append('g').classed('textpoint', true).append('text');
 
         join.each(function(d) {
-            var sel = transition(d3.select(this).select('text'));
-            Drawing.translatePoint(d, sel, xa, ya);
+            var g = d3.select(this);
+            var sel = transition(g.select('text'));
+            hasNode = Drawing.translatePoint(d, sel, xa, ya);
+            if(!hasNode) g.remove();
         });
 
         join.selectAll('text')

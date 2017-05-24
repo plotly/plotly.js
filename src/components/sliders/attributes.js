@@ -20,11 +20,15 @@ var stepsAttrs = {
 
     method: {
         valType: 'enumerated',
-        values: ['restyle', 'relayout', 'animate', 'update'],
+        values: ['restyle', 'relayout', 'animate', 'update', 'skip'],
         dflt: 'restyle',
         role: 'info',
         description: [
-            'Sets the Plotly method to be called when the slider value is changed.'
+            'Sets the Plotly method to be called when the slider value is changed.',
+            'If the `skip` method is used, the API slider will function as normal',
+            'but will perform no API calls and will not bind automatically to state',
+            'updates. This may be used to create a component interface and attach to',
+            'slider events manually via JavaScript.'
         ].join(' ')
     },
     args: {
@@ -52,6 +56,18 @@ var stepsAttrs = {
         description: [
             'Sets the value of the slider step, used to refer to the step programatically.',
             'Defaults to the slider label if not provided.'
+        ].join(' ')
+    },
+    execute: {
+        valType: 'boolean',
+        role: 'info',
+        dflt: true,
+        description: [
+            'When true, the API method is executed. When false, all other behaviors are the same',
+            'and command execution is skipped. This may be useful when hooking into, for example,',
+            'the `plotly_sliderchange` method and executing the API command manually without losing',
+            'the benefit of the slider automatically binding to the state of the plot through the',
+            'specification of `method` and `args`.'
         ].join(' ')
     }
 };

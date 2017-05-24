@@ -115,7 +115,8 @@
       }, {
         "label": "purple",
         "method": "restyle",
-        "args": [{"marker.color": "purple"}]
+        "args": [{"marker.color": "purple"}],
+        "execute": false
       }],
       "visible": true,
       "x": 0.5,
