@@ -459,13 +459,28 @@ proto.plot = function(sceneData, fullLayout, layout) {
         if(axis.autorange) {
             sceneBounds[0][i] = Infinity;
             sceneBounds[1][i] = -Infinity;
-            for(j = 0; j < this.glplot.objects.length; ++j) {
-                var objBounds = this.glplot.objects[j].bounds;
-                sceneBounds[0][i] = Math.min(sceneBounds[0][i],
-                  objBounds[0][i] / dataScale[i]);
-                sceneBounds[1][i] = Math.max(sceneBounds[1][i],
-                  objBounds[1][i] / dataScale[i]);
+
+            var objects = this.glplot.objects;
+            var annotations = this.fullSceneLayout.annotations || [];
+            var axLetter = axis._name.charAt(0);
+
+            for(j = 0; j < objects.length; j++) {
+                var objBounds = objects[j].bounds;
+                sceneBounds[0][i] = Math.min(sceneBounds[0][i], objBounds[0][i] / dataScale[i]);
+                sceneBounds[1][i] = Math.max(sceneBounds[1][i], objBounds[1][i] / dataScale[i]);
             }
+
+            for(j = 0; j < annotations.length; j++) {
+                var ann = annotations[j];
+
+                // N.B. not taking into consideration the arrowhead
+                if(ann.visible) {
+                    var pos = axis.r2l(ann[axLetter]);
+                    sceneBounds[0][i] = Math.min(sceneBounds[0][i], pos);
+                    sceneBounds[1][i] = Math.max(sceneBounds[1][i], pos);
+                }
+            }
+
             if('rangemode' in axis && axis.rangemode === 'tozero') {
                 sceneBounds[0][i] = Math.min(sceneBounds[0][i], 0);
                 sceneBounds[1][i] = Math.max(sceneBounds[1][i], 0);
@@ -792,6 +807,9 @@ function mockAnnAxes(ann, scene) {
 
         // to get setConvert to not execute cleanly
         type: 'linear',
+
+        // don't try to update them on `editable: true`
+        autorange: false,
 
         // set infinite range so that annotation draw routine
         // does not try to remove 'outside-range' annotations,

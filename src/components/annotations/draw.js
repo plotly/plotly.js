@@ -684,7 +684,6 @@ function drawRaw(gd, options, index, xa, ya) {
                 var update = {};
                 update[annbase + '.text'] = options.text;
 
-                // TODO
                 if(xa && xa.autorange) {
                     update[xa._name + '.autorange'] = true;
                 }
