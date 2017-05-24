@@ -156,6 +156,16 @@ drawing.dashStyle = function(dash, lineWidth) {
     return dash;
 };
 
+// Same as fillGroupStyle, except in this case the selection may be a transition
+drawing.singleFillStyle = function(sel) {
+    var node = d3.select(sel.node());
+    var data = node.data();
+    var fillcolor = (((data[0] || [])[0] || {}).trace || {}).fillcolor;
+    if(fillcolor) {
+        sel.call(Color.fill, fillcolor);
+    }
+};
+
 drawing.fillGroupStyle = function(s) {
     s.style('stroke-width', 0)
     .each(function(d) {
