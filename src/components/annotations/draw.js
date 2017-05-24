@@ -189,6 +189,7 @@ function drawRaw(gd, options, index, xa, ya) {
     var font = options.font;
 
     var annText = annTextGroupInner.append('text')
+        .classed('annotation', true)
         .attr('data-unformatted', options.text)
         .text(options.text);
 
@@ -523,6 +524,7 @@ function drawRaw(gd, options, index, xa, ya) {
                     arrowDragHeadY += options.standoff * (tailY - headY) / arrowLength;
                 }
                 var arrowDrag = arrowGroup.append('path')
+                    .classed('annotation', true)
                     .classed('anndrag', true)
                     .attr({
                         d: 'M3,3H-3V-3H3ZM0,0L' + (tailX - arrowDragHeadX) + ',' + (tailY - arrowDragHeadY),
