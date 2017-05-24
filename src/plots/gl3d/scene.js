@@ -26,6 +26,7 @@ var project = require('./project');
 var createAxesOptions = require('./layout/convert');
 var createSpikeOptions = require('./layout/spikes');
 var computeTickMarks = require('./layout/tick_marks');
+var layoutAttributes = require('./layout/layout_attributes');
 
 var STATIC_CANVAS, STATIC_CONTEXT;
 
@@ -396,6 +397,9 @@ proto.plot = function(sceneData, fullLayout, layout) {
     // Save scale
     this.dataScale = dataScale;
 
+    // after computeTraceBounds where ax._categories are filled in
+    this.updateAnnotations();
+
     // Update traces
     for(i = 0; i < sceneData.length; ++i) {
         data = sceneData[i];
@@ -719,16 +723,17 @@ proto.toImage = function(format) {
 };
 
 proto.setConvert = function() {
-    var i;
-
-    for(i = 0; i < 3; i++) {
+    for(var i = 0; i < 3; i++) {
         var ax = this.fullSceneLayout[axisProperties[i]];
         Axes.setConvert(ax, this.fullLayout);
         ax.setScale = Lib.noop;
     }
+};
 
+proto.updateAnnotations = function() {
     var anns = this.fullSceneLayout.annotations;
-    for(i = 0; i < anns.length; i++) {
+
+    for(var i = 0; i < anns.length; i++) {
         mockAnnAxes(anns[i], this);
     }
 
@@ -750,7 +755,9 @@ proto.handleAnnotations = function() {
 
         for(var j = 0; j < 3; j++) {
             var axLetter = axLetters[j];
-            var posFraction = fullSceneLayout[axLetter + 'axis'].r2fraction(ann[axLetter]);
+            var pos = ann[axLetter];
+            var ax = fullSceneLayout[axLetter + 'axis'];
+            var posFraction = ax.r2fraction(pos);
 
             if(posFraction < 0 || posFraction > 1) {
                 annotationIsOffscreen = true;
@@ -764,9 +771,9 @@ proto.handleAnnotations = function() {
                 .remove();
         } else {
             ann.pdata = project(this.glplot.cameraParams, [
-                fullSceneLayout.xaxis.d2l(ann.x) * dataScale[0],
-                fullSceneLayout.yaxis.d2l(ann.y) * dataScale[1],
-                fullSceneLayout.zaxis.d2l(ann.z) * dataScale[2]
+                fullSceneLayout.xaxis.r2l(ann.x) * dataScale[0],
+                fullSceneLayout.yaxis.r2l(ann.y) * dataScale[1],
+                fullSceneLayout.zaxis.r2l(ann.z) * dataScale[2]
             ]);
 
             drawAnnotation(this.graphDiv, ann, i, ann._xa, ann._ya);
@@ -807,6 +814,27 @@ function mockAnnAxes(ann, scene) {
     ann._ya.l2p = function() {
         return 0.5 * (1 - ann.pdata[1] / ann.pdata[3]) * size.h * (domain.y[1] - domain.y[0]);
     };
+
+    // or do something more similar to 2d
+    // where Annotations.supplyLayoutDefaults is called after in Plots.doCalcdata
+    // if category axes are found.
+    function coerce(attr, dflt) {
+        return Lib.coerce(ann, ann, layoutAttributes.annotations, attr, dflt);
+    }
+
+    function coercePosition(axLetter) {
+        var axName = axLetter + 'axis';
+
+        // mock in such way that getFromId grabs correct 3D axis
+        var gdMock = { _fullLayout: {} };
+        gdMock._fullLayout[axName] = fullSceneLayout[axName];
+
+        return Axes.coercePosition(ann, gdMock, coerce, axLetter, axLetter, 0.5);
+    }
+
+    coercePosition('x');
+    coercePosition('y');
+    coercePosition('z');
 }
 
 module.exports = Scene;

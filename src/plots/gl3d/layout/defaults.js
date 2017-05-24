@@ -11,7 +11,6 @@
 
 var Lib = require('../../../lib');
 var Color = require('../../../components/color');
-var Axes = require('../../cartesian/axes');
 
 var handleSubplotDefaults = require('../../subplot_defaults');
 var handleArrayContainerDefaults = require('../../array_container_defaults');
@@ -111,22 +110,8 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
 }
 
 function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts, itemOpts) {
-
     function coerce(attr, dflt) {
         return Lib.coerce(annIn, annOut, layoutAttributes.annotations, attr, dflt);
-    }
-
-    function coercePosition(axLetter) {
-        var axName = axLetter + 'axis';
-        var gdMock = { _fullLayout: {} };
-
-        // mock in such way that getFromId grabs correct 3D axis
-        gdMock._fullLayout[axName] = sceneLayout[axName];
-
-        // hard-set here for completeness
-        annOut[axLetter + 'ref'] = axLetter;
-
-        return Axes.coercePosition(annOut, gdMock, coerce, axLetter, axLetter, 0.5);
     }
 
     var visible = coerce('visible', !itemOpts.itemIsNotPlainObject);
@@ -136,8 +121,8 @@ function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts, itemOpts) {
     coerce('align');
     coerce('bgcolor');
 
-    var borderColor = coerce('bordercolor'),
-        borderOpacity = Color.opacity(borderColor);
+    var borderColor = coerce('bordercolor');
+    var borderOpacity = Color.opacity(borderColor);
 
     coerce('borderpad');
 
@@ -154,12 +139,20 @@ function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts, itemOpts) {
     var h = coerce('height');
     if(h) coerce('valign');
 
-    coercePosition('x');
-    coercePosition('y');
-    coercePosition('z');
+    // Do not use Axes.coercePosition here
+    // as ax._categories aren't filled in at this stage,
+    // Axes.coercePosition is called during scene.setConvert instead
+    coerce('x');
+    coerce('y');
+    coerce('z');
 
     // if you have one coordinate you should all three
     Lib.noneOrAll(annIn, annOut, ['x', 'y', 'z']);
+
+    // hard-set here for completeness
+    annOut.xref = 'x';
+    annOut.yref = 'y';
+    annOut.zref = 'z';
 
     coerce('xanchor');
     coerce('yanchor');
