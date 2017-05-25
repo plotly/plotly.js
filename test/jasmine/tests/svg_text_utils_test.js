@@ -18,38 +18,49 @@ describe('svg+text utils', function() {
                 .attr('transform', 'translate(50,50)');
         }
 
-        function assertAnchorLink(node, href) {
+        function assertAnchorLink(node, href, target, show, msg) {
             var a = node.select('a');
 
-            expect(a.attr('xlink:href')).toBe(href);
-            expect(a.attr('xlink:show')).toBe(href === null ? null : 'new');
+            if(target === undefined) target = href === null ? null : '_blank';
+            if(show === undefined) show = href === null ? null : 'new';
+
+            expect(a.attr('xlink:href')).toBe(href, msg);
+            expect(a.attr('target')).toBe(target, msg);
+            expect(a.attr('xlink:show')).toBe(show, msg);
         }
 
-        function assertTspanStyle(node, style) {
+        function assertTspanStyle(node, style, msg) {
             var tspan = node.select('tspan');
-            expect(tspan.attr('style')).toBe(style);
+            expect(tspan.attr('style')).toBe(style, msg);
         }
 
-        function assertAnchorAttrs(node, style) {
+        function assertAnchorAttrs(node, expectedAttrs, msg) {
             var a = node.select('a');
 
-            var WHITE_LIST = ['xlink:href', 'xlink:show', 'style'],
+            if(!expectedAttrs) expectedAttrs = {};
+
+            var WHITE_LIST = ['xlink:href', 'xlink:show', 'style', 'target', 'onclick'],
                 attrs = listAttributes(a.node());
 
             // check that no other attribute are found in anchor,
             // which can be lead to XSS attacks.
 
-            var hasWrongAttr = attrs.some(function(attr) {
-                return WHITE_LIST.indexOf(attr) === -1;
+            var wrongAttrs = [];
+            attrs.forEach(function(attr) {
+                if(WHITE_LIST.indexOf(attr) === -1) wrongAttrs.push(attr);
             });
 
-            expect(hasWrongAttr).toBe(false);
+            expect(wrongAttrs).toEqual([], msg);
 
+            var style = expectedAttrs.style || '';
             var fullStyle = style || '';
             if(style) fullStyle += ';';
             fullStyle += 'cursor:pointer';
 
-            expect(a.attr('style')).toBe(fullStyle);
+            expect(a.attr('style')).toBe(fullStyle, msg);
+
+            expect(a.attr('onclick')).toBe(expectedAttrs.onclick || null, msg);
+
         }
 
         function listAttributes(node) {
@@ -137,7 +148,7 @@ describe('svg+text utils', function() {
                 var node = mockTextSVGElement(textCase);
 
                 expect(node.text()).toEqual('Subtitle');
-                assertAnchorAttrs(node, 'font-size:300px');
+                assertAnchorAttrs(node, {style: 'font-size:300px'});
                 assertAnchorLink(node, 'XSS');
             });
         });
@@ -157,9 +168,29 @@ describe('svg+text utils', function() {
                 var node = mockTextSVGElement(textCase);
 
                 expect(node.text()).toEqual('z');
-                assertAnchorAttrs(node, 'y');
+                assertAnchorAttrs(node, {style: 'y'});
                 assertAnchorLink(node, 'x');
             });
+        });
+
+        it('accepts `target` with links and tries to translate it to `xlink:show`', function() {
+            var specs = [
+                {target: '_blank', show: 'new'},
+                {target: '_self', show: 'replace'},
+                {target: '_parent', show: 'replace'},
+                {target: '_top', show: 'replace'},
+                {target: 'some_frame_name', show: 'new'}
+            ];
+            specs.forEach(function(spec) {
+                var node = mockTextSVGElement('<a href="x" target="' + spec.target + '">link</a>');
+                assertAnchorLink(node, 'x', spec.target, spec.show, spec.target);
+            });
+        });
+
+        it('attaches onclick if popup is specified', function() {
+            var node = mockTextSVGElement('<a href="x" target="fred" popup="width=500,height=400">link</a>');
+            assertAnchorLink(node, 'x', 'fred', 'new');
+            assertAnchorAttrs(node, {onclick: 'window.open(\'x\',\'fred\',\'width=500,height=400\');return false;'});
         });
 
         it('keeps query parameters in href', function() {
@@ -171,9 +202,9 @@ describe('svg+text utils', function() {
             textCases.forEach(function(textCase) {
                 var node = mockTextSVGElement(textCase);
 
-                assertAnchorAttrs(node);
-                expect(node.text()).toEqual('abc.com?shared-key');
-                assertAnchorLink(node, 'https://abc.com/myFeature.jsp?name=abc&pwd=def');
+                assertAnchorAttrs(node, {}, textCase);
+                expect(node.text()).toEqual('abc.com?shared-key', textCase);
+                assertAnchorLink(node, 'https://abc.com/myFeature.jsp?name=abc&pwd=def', undefined, undefined, textCase);
             });
         });
 
