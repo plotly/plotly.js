@@ -1778,7 +1778,9 @@ Plotly.relayout = function relayout(gd, astr, val) {
         flags = specs.flags;
 
     // clear calcdata if required
-    if(flags.docalc) gd.calcdata = undefined;
+    if(flags.docalc) {
+        gd.calcdata = undefined;
+    }
 
     // fill in redraw sequence
 

@@ -253,7 +253,7 @@ function _convertColor(colors, opacities, count) {
     return result;
 }
 
-proto.update = function(options) {
+proto.update = function(options, cdscatter) {
     if(options.visible !== true) {
         this.isVisible = false;
         this.hasLines = false;
@@ -318,6 +318,11 @@ proto.update = function(options) {
     // not quite on-par with 'scatter', but close enough for now
     // does not handle the colorscale case
     this.color = getTraceColor(options, {});
+
+    //provide reference for selecting points
+    if (cdscatter && cdscatter[0] && !cdscatter[0].plot) {
+        cdscatter[0].plot = this;
+    }
 };
 
 // We'd ideally know that all values are of fast types; sampling gives no certainty but faster
@@ -721,10 +726,7 @@ proto.dispose = function() {
 
 function createLineWithMarkers(scene, data, cdscatter) {
     var plot = new LineWithMarkers(scene, data.uid);
-    plot.update(data);
-
-    // save for selecting points
-    cdscatter[0].plot = plot;
+    plot.update(data, cdscatter);
 
     return plot;
 }

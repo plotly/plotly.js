@@ -634,7 +634,6 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 }
             }
         }
-
         gd.emit('plotly_doubleclick', null);
         Plotly.relayout(gd, attrs);
     }
