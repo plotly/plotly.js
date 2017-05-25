@@ -19,7 +19,8 @@ function delay() {
     });
 }
 
-function waitForModeBar() {
+// updating the camera requires some waiting
+function waitForCamera() {
     return new Promise(function(resolve) {
         setTimeout(resolve, 200);
     });
@@ -836,7 +837,7 @@ describe('Test gl2d plots', function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
             expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
         })
-        .then(waitForModeBar)
+        .then(waitForCamera)
         .then(function() {
             gd.on('plotly_relayout', relayoutCallback);
 
@@ -879,7 +880,7 @@ describe('Test gl2d plots', function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
             expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
         })
-        .then(waitForModeBar)
+        .then(waitForCamera)
         .then(function() {
             // callback count expectation: X and back; Y and back; XY and back
             expect(relayoutCallback).toHaveBeenCalledTimes(6);
@@ -1373,15 +1374,11 @@ describe('Test gl3d annotations', function() {
 
     // more robust (especially on CI) than update camera via mouse events
     function updateCamera(x, y, z) {
-        return new Promise(function(resolve) {
-            var scene = gd._fullLayout.scene._scene;
-            var camera = scene.getCamera();
+        var scene = gd._fullLayout.scene._scene;
+        var camera = scene.getCamera();
 
-            camera.eye = {x: x, y: y, z: z};
-            scene.setCamera(camera);
-
-            setTimeout(resolve, 100);
-        });
+        camera.eye = {x: x, y: y, z: z};
+        scene.setCamera(camera);
     }
 
     it('should move with camera', function(done) {
@@ -1410,11 +1407,13 @@ describe('Test gl3d annotations', function() {
 
             return updateCamera(1.5, 2.5, 1.5);
         })
+        .then(waitForCamera)
         .then(function() {
             assertAnnotationsXY([[340, 187], [341, 142], [325, 221]], 'after camera update');
 
             return updateCamera(2.1, 0.1, 0.9);
         })
+        .then(waitForCamera)
         .then(function() {
             assertAnnotationsXY([[262, 199], [257, 135], [325, 233]], 'base 0');
         })
