@@ -83,12 +83,12 @@ function drawRaw(gd, options, index, xa, ya) {
     var fullLayout = gd._fullLayout;
     var gs = gd._fullLayout._size;
 
-    var className = options._scene ?
-        'annotation-' + options._scene :
+    var className = options._sceneId ?
+        'annotation-' + options._sceneId :
         'annotation';
 
-    var annbase = options._scene ?
-        options._scene + '.annotations[' + index + ']' :
+    var annbase = options._sceneId ?
+        options._sceneId + '.annotations[' + index + ']' :
         'annotations[' + index + ']';
 
     // remove the existing annotation if there is one
@@ -515,7 +515,7 @@ function drawRaw(gd, options, index, xa, ya) {
 
             // the arrow dragger is a small square right at the head, then a line to the tail,
             // all expanded by a stroke width of 6px plus the arrow line width
-            if(gd._context.editable && arrow.node().parentNode && !options._scene) {
+            if(gd._context.editable && arrow.node().parentNode && !options._sceneId) {
                 var arrowDragHeadX = headX;
                 var arrowDragHeadY = headY;
                 if(options.standoff) {
@@ -625,7 +625,7 @@ function drawRaw(gd, options, index, xa, ya) {
 
                         drawArrow(dx, dy);
                     }
-                    else if(!options._scene) {
+                    else if(!options._sceneId) {
                         if(xa) update[annbase + '.x'] = options.x + dx / xa._m;
                         else {
                             var widthFraction = options._xsize / gs.w,

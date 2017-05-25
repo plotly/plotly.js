@@ -18,7 +18,7 @@ module.exports = function handleDefaults(sceneLayoutIn, sceneLayoutOut, opts) {
         name: 'annotations',
         handleItemDefaults: handleAnnotationDefaults,
         fullLayout: opts.fullLayout,
-        scene: opts.id
+        sceneId: opts.id
     });
 };
 
@@ -64,7 +64,7 @@ function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts, itemOpts) {
         Lib.noneOrAll(annIn, annOut, ['ax', 'ay']);
     }
 
-    annOut._scene = opts.scene;
+    annOut._sceneId = opts.sceneId;
 
     return annOut;
 }
