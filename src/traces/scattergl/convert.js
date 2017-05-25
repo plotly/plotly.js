@@ -285,6 +285,9 @@ proto.update = function(options) {
         }
         this.selectedIds = sel;
     }
+    else {
+        this.selectedIds = {}
+    }
 
     if(!this.isVisible) {
         this.line.clear();
