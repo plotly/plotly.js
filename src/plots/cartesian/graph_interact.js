@@ -620,7 +620,6 @@ function hover(gd, evt, subplot) {
         container: fullLayout._hoverlayer,
         outerContainer: fullLayout._paperdiv
     };
-
     var hoverLabels = createHoverText(hoverData, labelOpts);
 
     hoverAvoidOverlaps(hoverData, rotateLabels ? 'xa' : 'ya');

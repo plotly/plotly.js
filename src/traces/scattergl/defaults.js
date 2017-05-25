@@ -50,6 +50,17 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 
+    var dfltHoverOn = [];
+
+    if(subTypes.hasMarkers(traceOut) || subTypes.hasText(traceOut)) {
+        dfltHoverOn.push('points');
+    }
+    if(traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
+        dfltHoverOn.push('fills');
+    }
+
+    coerce('hoveron', dfltHoverOn.join('+') || 'points');
+
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 };
