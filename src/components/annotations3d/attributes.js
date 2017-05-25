@@ -37,17 +37,17 @@ module.exports = {
         ].join(' ')
     },
     ax: {
-        valType: 'any',
+        valType: 'number',
         role: 'info',
         description: [
-            'Sets the x component of the arrow tail about the arrow head.'
+            'Sets the x component of the arrow tail about the arrow head (in pixels).'
         ].join(' ')
     },
     ay: {
-        valType: 'any',
+        valType: 'number',
         role: 'info',
         description: [
-            'Sets the y component of the arrow tail about the arrow head.'
+            'Sets the y component of the arrow tail about the arrow head (in pixels).'
         ].join(' ')
     },
 
