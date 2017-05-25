@@ -472,7 +472,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
                 sceneBounds[1][i] += d / 32.0;
             }
         } else {
-            var range = axis.range
+            var range = axis.range;
             sceneBounds[0][i] = axis.r2l(range[0]);
             sceneBounds[1][i] = axis.r2l(range[1]);
         }
