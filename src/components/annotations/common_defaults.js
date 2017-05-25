@@ -61,4 +61,6 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
             color: globalHoverLabel.font.color || hoverBorder
         });
     }
+
+    coerce('captureevents', !!hoverText);
 };

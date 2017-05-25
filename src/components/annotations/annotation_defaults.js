@@ -87,7 +87,5 @@ module.exports = function handleAnnotationDefaults(annIn, annOut, fullLayout, op
         annOut._yclick = (yClick === undefined) ? annOut.y : yClick;
     }
 
-    coerce('captureevents', !!annOut.hovertext);
-
     return annOut;
 };
