@@ -26,12 +26,10 @@ var project = require('./project');
 var createAxesOptions = require('./layout/convert');
 var createSpikeOptions = require('./layout/spikes');
 var computeTickMarks = require('./layout/tick_marks');
-var layoutAttributes = require('./layout/layout_attributes');
 
 var STATIC_CANVAS, STATIC_CONTEXT;
 
 function render(scene) {
-
     var trace;
 
     // update size of svg container
@@ -130,7 +128,7 @@ function render(scene) {
         scene.graphDiv.emit('plotly_unhover', oldEventData);
     }
 
-    scene.handleAnnotations();
+    scene.drawAnnotations(scene);
 }
 
 function initializeGLPlot(scene, fullLayout, canvas, gl) {
@@ -273,6 +271,9 @@ function Scene(options, fullLayout) {
 
     this.contourLevels = [ [], [], [] ];
 
+    this.convertAnnotations = Registry.getComponentMethod('annotations3d', 'convert');
+    this.drawAnnotations = Registry.getComponentMethod('annotations3d', 'draw');
+
     if(!initializeGLPlot(this, fullLayout)) return; // todo check the necessity for this line
 }
 
@@ -398,7 +399,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     this.dataScale = dataScale;
 
     // after computeTraceBounds where ax._categories are filled in
-    this.updateAnnotations();
+    this.convertAnnotations(this);
 
     // Update traces
     for(i = 0; i < sceneData.length; ++i) {
@@ -744,115 +745,5 @@ proto.setConvert = function() {
         ax.setScale = Lib.noop;
     }
 };
-
-proto.updateAnnotations = function() {
-    var anns = this.fullSceneLayout.annotations;
-
-    for(var i = 0; i < anns.length; i++) {
-        mockAnnAxes(anns[i], this);
-    }
-
-    this.fullLayout._infolayer
-        .selectAll('.annotation-' + this.id)
-        .remove();
-};
-
-proto.handleAnnotations = function() {
-    var drawAnnotation = Registry.getComponentMethod('annotations', 'drawRaw');
-    var fullSceneLayout = this.fullSceneLayout;
-    var dataScale = this.dataScale;
-    var anns = fullSceneLayout.annotations;
-    var axLetters = ['x', 'y', 'z'];
-
-    for(var i = 0; i < anns.length; i++) {
-        var ann = anns[i];
-        var annotationIsOffscreen = false;
-
-        for(var j = 0; j < 3; j++) {
-            var axLetter = axLetters[j];
-            var pos = ann[axLetter];
-            var ax = fullSceneLayout[axLetter + 'axis'];
-            var posFraction = ax.r2fraction(pos);
-
-            if(posFraction < 0 || posFraction > 1) {
-                annotationIsOffscreen = true;
-                break;
-            }
-        }
-
-        if(annotationIsOffscreen) {
-            this.fullLayout._infolayer
-                .select('.annotation-' + this.id + '[data-index="' + i + '"]')
-                .remove();
-        } else {
-            ann.pdata = project(this.glplot.cameraParams, [
-                fullSceneLayout.xaxis.r2l(ann.x) * dataScale[0],
-                fullSceneLayout.yaxis.r2l(ann.y) * dataScale[1],
-                fullSceneLayout.zaxis.r2l(ann.z) * dataScale[2]
-            ]);
-
-            drawAnnotation(this.graphDiv, ann, i, ann._xa, ann._ya);
-        }
-    }
-};
-
-function mockAnnAxes(ann, scene) {
-    var fullSceneLayout = scene.fullSceneLayout;
-    var domain = fullSceneLayout.domain;
-    var size = scene.fullLayout._size;
-
-    var base = {
-        // this gets fill in on render
-        pdata: null,
-
-        // to get setConvert to not execute cleanly
-        type: 'linear',
-
-        // don't try to update them on `editable: true`
-        autorange: false,
-
-        // set infinite range so that annotation draw routine
-        // does not try to remove 'outside-range' annotations,
-        // this case is handled in the render loop
-        range: [-Infinity, Infinity]
-    };
-
-    ann._xa = {};
-    Lib.extendFlat(ann._xa, base);
-    Axes.setConvert(ann._xa);
-    ann._xa._offset = size.l + domain.x[0] * size.w;
-    ann._xa.l2p = function() {
-        return 0.5 * (1 + ann.pdata[0] / ann.pdata[3]) * size.w * (domain.x[1] - domain.x[0]);
-    };
-
-    ann._ya = {};
-    Lib.extendFlat(ann._ya, base);
-    Axes.setConvert(ann._ya);
-    ann._ya._offset = size.t + (1 - domain.y[1]) * size.h;
-    ann._ya.l2p = function() {
-        return 0.5 * (1 - ann.pdata[1] / ann.pdata[3]) * size.h * (domain.y[1] - domain.y[0]);
-    };
-
-    // or do something more similar to 2d
-    // where Annotations.supplyLayoutDefaults is called after in Plots.doCalcdata
-    // if category axes are found.
-    function coerce(attr, dflt) {
-        return Lib.coerce(ann, ann, layoutAttributes.annotations, attr, dflt);
-    }
-
-    function coercePosition(axLetter) {
-        var axName = axLetter + 'axis';
-
-        // mock in such way that getFromId grabs correct 3D axis
-        var gdMock = { _fullLayout: {} };
-        gdMock._fullLayout[axName] = fullSceneLayout[axName];
-
-        return Axes.coercePosition(ann, gdMock, coerce, axLetter, axLetter, 0.5);
-    }
-
-    coercePosition('x');
-    coercePosition('y');
-    coercePosition('z');
-}
 
 module.exports = Scene;

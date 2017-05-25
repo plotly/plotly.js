@@ -10,7 +10,6 @@
 'use strict';
 
 var gl3dAxisAttrs = require('./axis_attributes');
-var annAtts = require('../../../components/annotations/attributes');
 var extendFlat = require('../../../lib/extend').extendFlat;
 
 function makeVector(x, y, z) {
@@ -141,83 +140,6 @@ module.exports = {
     xaxis: gl3dAxisAttrs,
     yaxis: gl3dAxisAttrs,
     zaxis: gl3dAxisAttrs,
-
-    annotations: {
-        _isLinkedToArray: 'annotation',
-
-        visible: annAtts.visible,
-        x: {
-            valType: 'any',
-            role: 'info',
-            description: [
-                'Sets the annotation\'s x position.'
-            ].join(' ')
-        },
-        y: {
-            valType: 'any',
-            role: 'info',
-            description: [
-                'Sets the annotation\'s y position.'
-            ].join(' ')
-        },
-        z: {
-            valType: 'any',
-            role: 'info',
-            description: [
-                'Sets the annotation\'s z position.'
-            ].join(' ')
-        },
-        ax: {
-            valType: 'any',
-            role: 'info',
-            description: [
-                'Sets the x component of the arrow tail about the arrow head.'
-            ].join(' ')
-        },
-        ay: {
-            valType: 'any',
-            role: 'info',
-            description: [
-                'Sets the y component of the arrow tail about the arrow head.'
-            ].join(' ')
-        },
-
-        xanchor: annAtts.xanchor,
-        xshift: annAtts.xshift,
-        yanchor: annAtts.yanchor,
-        yshift: annAtts.yshift,
-
-        text: annAtts.text,
-        textangle: annAtts.textangle,
-        font: annAtts.font,
-        width: annAtts.width,
-        height: annAtts.height,
-        opacity: annAtts.opacity,
-        align: annAtts.align,
-        valign: annAtts.valign,
-        bgcolor: annAtts.bgcolor,
-        bordercolor: annAtts.bordercolor,
-        borderpad: annAtts.borderpad,
-        borderwidth: annAtts.borderwidth,
-        showarrow: annAtts.showarrow,
-        arrowcolor: annAtts.arrowcolor,
-        arrowhead: annAtts.arrowhead,
-        arrowsize: annAtts.arrowsize,
-        arrowwidth: annAtts.arrowwidth,
-        standoff: annAtts.standoff,
-
-        // maybes later
-        // clicktoshow: annAtts.clicktoshow,
-        // xclick: annAtts.xclick,
-        // yclick: annAtts.yclick,
-
-        // not needed!
-        // axref: 'pixel'
-        // ayref: 'pixel'
-        // xref: 'x'
-        // yref: 'y
-        // zref: 'z'
-    },
 
     dragmode: {
         valType: 'enumerated',
