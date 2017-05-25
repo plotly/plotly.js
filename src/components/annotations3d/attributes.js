@@ -74,11 +74,14 @@ module.exports = {
     arrowsize: annAtts.arrowsize,
     arrowwidth: annAtts.arrowwidth,
     standoff: annAtts.standoff,
+    hovertext: annAtts.hovertext,
+    hoverlabel: annAtts.hoverlabel
 
-    // maybes later
+    // maybes later?
     // clicktoshow: annAtts.clicktoshow,
     // xclick: annAtts.xclick,
     // yclick: annAtts.yclick,
+    // captureevent: annAtts.captureevent
 
     // not needed!
     // axref: 'pixel'

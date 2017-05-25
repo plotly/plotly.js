@@ -9,15 +9,15 @@
 'use strict';
 
 var Lib = require('../../lib');
-var Color = require('../color');
 var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
+var handleAnnotationCommonDefaults = require('../annotations/common_defaults');
 var attributes = require('./attributes');
 
-module.exports = function(sceneLayoutIn, sceneLayoutOut, opts) {
+module.exports = function handleDefaults(sceneLayoutIn, sceneLayoutOut, opts) {
     handleArrayContainerDefaults(sceneLayoutIn, sceneLayoutOut, {
         name: 'annotations',
         handleItemDefaults: handleAnnotationDefaults,
-        font: opts.font,
+        fullLayout: opts.fullLayout,
         scene: opts.id
     });
 };
@@ -30,27 +30,7 @@ function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts, itemOpts) {
     var visible = coerce('visible', !itemOpts.itemIsNotPlainObject);
     if(!visible) return annOut;
 
-    coerce('opacity');
-    coerce('align');
-    coerce('bgcolor');
-
-    var borderColor = coerce('bordercolor');
-    var borderOpacity = Color.opacity(borderColor);
-
-    coerce('borderpad');
-
-    var borderWidth = coerce('borderwidth');
-    var showArrow = coerce('showarrow');
-
-    coerce('text', showArrow ? ' ' : 'new text');
-    coerce('textangle');
-    Lib.coerceFont(coerce, 'font', opts.font);
-
-    coerce('width');
-    coerce('align');
-
-    var h = coerce('height');
-    if(h) coerce('valign');
+    handleAnnotationCommonDefaults(annIn, annOut, opts.fullLayout, coerce);
 
     // Do not use Axes.coercePosition here
     // as ax._categories aren't filled in at this stage,
@@ -72,7 +52,7 @@ function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts, itemOpts) {
     coerce('xshift');
     coerce('yshift');
 
-    if(showArrow) {
+    if(annOut.showarrow) {
         annOut.axref = 'pixel';
         annOut.ayref = 'pixel';
 
@@ -82,12 +62,6 @@ function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts, itemOpts) {
 
         // if you have one part of arrow length you should have both
         Lib.noneOrAll(annIn, annOut, ['ax', 'ay']);
-
-        coerce('arrowcolor', borderOpacity ? annOut.bordercolor : Color.defaultLine);
-        coerce('arrowhead');
-        coerce('arrowsize');
-        coerce('arrowwidth', ((borderOpacity && borderWidth) || 1) * 2);
-        coerce('standoff');
     }
 
     annOut._scene = opts.scene;

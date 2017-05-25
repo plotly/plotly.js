@@ -34,6 +34,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         type: 'gl3d',
         attributes: layoutAttributes,
         handleDefaults: handleGl3dDefaults,
+        fullLayout: layoutOut,
         font: layoutOut.font,
         fullData: fullData,
         getDfltFromLayout: getDfltFromLayout,
