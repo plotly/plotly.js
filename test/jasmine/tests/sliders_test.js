@@ -99,15 +99,18 @@ describe('sliders defaults', function() {
         expect(layoutOut.sliders[0].steps).toEqual([{
             method: 'relayout',
             label: 'Label #1',
-            value: 'label-1'
+            value: 'label-1',
+            execute: true
         }, {
             method: 'update',
             label: 'Label #2',
-            value: 'Label #2'
+            value: 'Label #2',
+            execute: true
         }, {
             method: 'animate',
             label: 'step-2',
-            value: 'lacks-label'
+            value: 'lacks-label',
+            execute: true
         }]);
     });
 
@@ -131,6 +134,7 @@ describe('sliders defaults', function() {
             args: ['title', 'Hello World'],
             label: 'step-1',
             value: 'step-1',
+            execute: true
         });
     });
 
@@ -155,8 +159,37 @@ describe('sliders defaults', function() {
             args: ['title', 'Hello World'],
             label: 'step-1',
             value: 'step-1',
+            execute: true
         });
     });
+
+    it('allow the `skip` method', function() {
+        layoutIn.sliders = [{
+            steps: [{
+                method: 'skip',
+            }, {
+                method: 'skip',
+                args: ['title', 'Hello World']
+            }]
+        }];
+
+        supply(layoutIn, layoutOut);
+
+        expect(layoutOut.sliders[0].steps.length).toEqual(2);
+        expect(layoutOut.sliders[0].steps[0]).toEqual({
+            method: 'skip',
+            label: 'step-0',
+            value: 'step-0',
+            execute: true,
+        }, {
+            method: 'skip',
+            args: ['title', 'Hello World'],
+            label: 'step-1',
+            value: 'step-1',
+            execute: true,
+        });
+    });
+
 
     it('should keep ref to input update menu container', function() {
         layoutIn.sliders = [{

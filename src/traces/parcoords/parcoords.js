@@ -12,6 +12,7 @@ var lineLayerMaker = require('./lines');
 var c = require('./constants');
 var Lib = require('../../lib');
 var d3 = require('d3');
+var Drawing = require('../../components/drawing');
 
 
 function keyFun(d) {return d.key;}
@@ -122,7 +123,10 @@ function model(layout, d, i) {
         line = trace.line,
         domain = trace.domain,
         dimensions = trace.dimensions,
-        width = layout.width;
+        width = layout.width,
+        labelFont = trace.labelfont,
+        tickFont = trace.tickfont,
+        rangeFont = trace.rangefont;
 
     var lines = Lib.extendDeep({}, line, {
         color: lineColor.map(domainToUnitScale({values: lineColor, range: [line.cmin, line.cmax]})),
@@ -144,6 +148,9 @@ function model(layout, d, i) {
         tickDistance: c.tickDistance,
         unitToColor: unitToColorScale(cscale),
         lines: lines,
+        labelFont: labelFont,
+        tickFont: tickFont,
+        rangeFont: rangeFont,
         translateX: domain.x[0] * width,
         translateY: layout.height - domain.y[1] * layout.height,
         pad: pad,
@@ -227,8 +234,6 @@ function styleExtentTexts(selection) {
     selection
         .classed('axisExtentText', true)
         .attr('text-anchor', 'middle')
-        .style('font-weight', 100)
-        .style('font-size', '10px')
         .style('cursor', 'default')
         .style('user-select', 'none');
 }
@@ -556,10 +561,11 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
                         null)
                     .tickFormat(d.ordinal ? function(d) {return d;} : null)
                     .scale(scale));
+            Drawing.font(axis.selectAll('text'), d.model.tickFont);
         });
 
     axis
-        .selectAll('.domain, .tick')
+        .selectAll('.domain, .tick>line')
         .attr('fill', 'none')
         .attr('stroke', 'black')
         .attr('stroke-opacity', 0.25)
@@ -567,11 +573,6 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
 
     axis
         .selectAll('text')
-        .style('font-weight', 100)
-        .style('font-size', '10px')
-        .style('fill', 'black')
-        .style('fill-opacity', 1)
-        .style('stroke', 'none')
         .style('text-shadow', '1px 1px 1px #fff, -1px -1px 1px #fff, 1px -1px 1px #fff, -1px 1px 1px #fff')
         .style('cursor', 'default')
         .style('user-select', 'none');
@@ -590,15 +591,14 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .append('text')
         .classed('axisTitle', true)
         .attr('text-anchor', 'middle')
-        .style('font-family', 'sans-serif')
-        .style('font-size', '10px')
         .style('cursor', 'ew-resize')
         .style('user-select', 'none')
         .style('pointer-events', 'auto');
 
     axisTitle
         .attr('transform', 'translate(0,' + -c.axisTitleOffset + ')')
-        .text(function(d) {return d.label;});
+        .text(function(d) {return d.label;})
+        .each(function(d) {Drawing.font(axisTitle, d.model.labelFont);});
 
     var axisExtent = axisOverlays.selectAll('.axisExtent')
         .data(repeat, keyFun);
@@ -631,7 +631,8 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .call(styleExtentTexts);
 
     axisExtentTopText
-        .text(function(d) {return formatExtreme(d)(d.domainScale.domain().slice(-1)[0]);});
+        .text(function(d) {return formatExtreme(d)(d.domainScale.domain().slice(-1)[0]);})
+        .each(function(d) {Drawing.font(axisExtentTopText, d.model.rangeFont);});
 
     var axisExtentBottom = axisExtent.selectAll('.axisExtentBottom')
         .data(repeat, keyFun);
@@ -653,7 +654,8 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .call(styleExtentTexts);
 
     axisExtentBottomText
-        .text(function(d) {return formatExtreme(d)(d.domainScale.domain()[0]);});
+        .text(function(d) {return formatExtreme(d)(d.domainScale.domain()[0]);})
+        .each(function(d) {Drawing.font(axisExtentBottomText, d.model.rangeFont);});
 
     var axisBrush = axisOverlays.selectAll('.axisBrush')
         .data(repeat, keyFun);

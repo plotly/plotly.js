@@ -15,7 +15,7 @@ var getContext = require('webgl-context');
 var Lib = require('../../lib');
 
 var Axes = require('../../plots/cartesian/axes');
-var Fx = require('../../plots/cartesian/graph_interact');
+var Fx = require('../../components/fx');
 
 var str2RGBAarray = require('../../lib/str2rgbarray');
 var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
@@ -68,6 +68,7 @@ function render(scene) {
         var pdata = project(scene.glplot.cameraParams, selection.dataCoordinate);
         trace = lastPicked.data;
         var hoverinfo = trace.hoverinfo;
+        var ptNumber = selection.index;
 
         var xVal = formatter('xaxis', selection.traceCoordinate[0]),
             yVal = formatter('yaxis', selection.traceCoordinate[1]),
@@ -91,7 +92,11 @@ function render(scene) {
                 zLabel: zVal,
                 text: selection.textLabel,
                 name: lastPicked.name,
-                color: lastPicked.color
+                color: Fx.castHoverOption(trace, ptNumber, 'bgcolor') || lastPicked.color,
+                borderColor: Fx.castHoverOption(trace, ptNumber, 'bordercolor'),
+                fontFamily: Fx.castHoverOption(trace, ptNumber, 'font.family'),
+                fontSize: Fx.castHoverOption(trace, ptNumber, 'font.size'),
+                fontColor: Fx.castHoverOption(trace, ptNumber, 'font.color')
             }, {
                 container: svgContainer
             });
@@ -99,13 +104,13 @@ function render(scene) {
 
         var eventData = {
             points: [{
-                x: xVal,
-                y: yVal,
-                z: zVal,
+                x: selection.traceCoordinate[0],
+                y: selection.traceCoordinate[1],
+                z: selection.traceCoordinate[2],
                 data: trace._input,
                 fullData: trace,
                 curveNumber: trace.index,
-                pointNumber: selection.data.index
+                pointNumber: ptNumber
             }]
         };
 

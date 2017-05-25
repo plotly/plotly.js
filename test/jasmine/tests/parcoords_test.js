@@ -38,6 +38,26 @@ describe('parcoords initialization tests', function() {
             expect(gd._fullData[0].opacity).toBeUndefined();
         });
 
+        it('should use global font as label, tick and range font defaults', function() {
+            var gd = Lib.extendDeep({}, mock1);
+            gd.layout.font = {
+                family: 'Gravitas',
+                size: 20,
+                color: 'blue'
+            };
+
+            Plots.supplyDefaults(gd);
+
+            var expected = {
+                family: 'Gravitas',
+                size: 17,
+                color: 'blue'
+            };
+
+            expect(gd._fullData[0].labelfont).toEqual(expected);
+            expect(gd._fullData[0].tickfont).toEqual(expected);
+            expect(gd._fullData[0].rangefont).toEqual(expected);
+        });
     });
 
     describe('parcoords defaults', function() {
@@ -45,7 +65,7 @@ describe('parcoords initialization tests', function() {
         function _supply(traceIn) {
             var traceOut = { visible: true },
                 defaultColor = '#444',
-                layout = { };
+                layout = { font: Plots.layoutAttributes.font };
 
             Parcoords.supplyDefaults(traceIn, traceOut, defaultColor, layout);
 

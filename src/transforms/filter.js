@@ -11,11 +11,9 @@
 var Lib = require('../lib');
 var Registry = require('../registry');
 var PlotSchema = require('../plot_api/plot_schema');
-var axisIds = require('../plots/cartesian/axis_ids');
-var autoType = require('../plots/cartesian/axis_autotype');
-var setConvert = require('../plots/cartesian/set_convert');
+var Axes = require('../plots/cartesian/axes');
 
-var INEQUALITY_OPS = ['=', '<', '>=', '>', '<='];
+var COMPARISON_OPS = ['=', '!=', '<', '>=', '>', '<='];
 var INTERVAL_OPS = ['[]', '()', '[)', '(]', '][', ')(', '](', ')['];
 var SET_OPS = ['{}', '}{'];
 
@@ -51,12 +49,16 @@ exports.attributes = {
     },
     operation: {
         valType: 'enumerated',
-        values: [].concat(INEQUALITY_OPS).concat(INTERVAL_OPS).concat(SET_OPS),
+        values: []
+            .concat(COMPARISON_OPS)
+            .concat(INTERVAL_OPS)
+            .concat(SET_OPS),
         dflt: '=',
         description: [
             'Sets the filter operation.',
 
             '*=* keeps items equal to `value`',
+            '*!=* keeps items not equal to `value`',
 
             '*<* keeps items less than `value`',
             '*<=* keeps items less than or equal to `value`',
@@ -87,21 +89,31 @@ exports.attributes = {
             'Values are expected to be in the same type as the data linked',
             'to *target*.',
 
-            'When `operation` is set to one of the inequality values',
-            '(' + INEQUALITY_OPS + ')',
+            'When `operation` is set to one of',
+            'the comparison values (' + COMPARISON_OPS + ')',
             '*value* is expected to be a number or a string.',
 
-            'When `operation` is set to one of the interval value',
+            'When `operation` is set to one of the interval values',
             '(' + INTERVAL_OPS + ')',
             '*value* is expected to be 2-item array where the first item',
             'is the lower bound and the second item is the upper bound.',
 
-            'When `operation`, is set to one of the set value',
+            'When `operation`, is set to one of the set values',
             '(' + SET_OPS + ')',
             '*value* is expected to be an array with as many items as',
             'the desired set elements.'
         ].join(' ')
-    }
+    },
+    preservegaps: {
+        valType: 'boolean',
+        dflt: false,
+        description: [
+            'Determines whether or not gaps in data arrays produced by the filter operation',
+            'are preserved.',
+            'Setting this to *true* might be useful when plotting a line chart',
+            'with `connectgaps` set to *false*.'
+        ].join(' ')
+    },
 };
 
 exports.supplyDefaults = function(transformIn) {
@@ -114,6 +126,7 @@ exports.supplyDefaults = function(transformIn) {
     var enabled = coerce('enabled');
 
     if(enabled) {
+        coerce('preservegaps');
         coerce('operation');
         coerce('value');
         coerce('target');
@@ -129,12 +142,11 @@ exports.supplyDefaults = function(transformIn) {
 exports.calcTransform = function(gd, trace, opts) {
     if(!opts.enabled) return;
 
-    var target = opts.target,
-        filterArray = getFilterArray(trace, target),
-        len = filterArray.length;
+    var targetArray = Lib.getTargetArray(trace, opts);
+    if(!targetArray) return;
 
-    if(!len) return;
-
+    var target = opts.target;
+    var len = targetArray.length;
     var targetCalendar = opts.targetcalendar;
 
     // even if you provide targetcalendar, if target is a string and there
@@ -144,92 +156,49 @@ exports.calcTransform = function(gd, trace, opts) {
         if(attrTargetCalendar) targetCalendar = attrTargetCalendar;
     }
 
-    // if target points to an axis, use the type we already have for that
-    // axis to find the data type. Otherwise use the values to autotype.
-    var d2cTarget = (target === 'x' || target === 'y' || target === 'z') ?
-        target : filterArray;
+    var d2c = Axes.getDataToCoordFunc(gd, trace, target, targetArray);
+    var filterFunc = getFilterFunc(opts, d2c, targetCalendar);
+    var arrayAttrs = PlotSchema.findArrayAttributes(trace);
+    var originalArrays = {};
 
-    var dataToCoord = getDataToCoordFunc(gd, trace, d2cTarget),
-        filterFunc = getFilterFunc(opts, dataToCoord, targetCalendar),
-        arrayAttrs = PlotSchema.findArrayAttributes(trace),
-        originalArrays = {};
-
-    // copy all original array attribute values,
-    // and clear arrays in trace
-    for(var k = 0; k < arrayAttrs.length; k++) {
-        var attr = arrayAttrs[k],
-            np = Lib.nestedProperty(trace, attr);
-
-        originalArrays[attr] = Lib.extendDeep([], np.get());
-        np.set([]);
-    }
-
-    function fill(attr, i) {
-        var oldArr = originalArrays[attr],
-            newArr = Lib.nestedProperty(trace, attr).get();
-
-        newArr.push(oldArr[i]);
-    }
-
-    for(var i = 0; i < len; i++) {
-        var v = filterArray[i];
-
-        if(!filterFunc(v)) continue;
-
+    function forAllAttrs(fn, index) {
         for(var j = 0; j < arrayAttrs.length; j++) {
-            fill(arrayAttrs[j], i);
+            var np = Lib.nestedProperty(trace, arrayAttrs[j]);
+            fn(np, index);
         }
+    }
+
+    var initFn;
+    var fillFn;
+    if(opts.preservegaps) {
+        initFn = function(np) {
+            originalArrays[np.astr] = Lib.extendDeep([], np.get());
+            np.set(new Array(len));
+        };
+        fillFn = function(np, index) {
+            var val = originalArrays[np.astr][index];
+            np.get()[index] = val;
+        };
+    } else {
+        initFn = function(np) {
+            originalArrays[np.astr] = Lib.extendDeep([], np.get());
+            np.set([]);
+        };
+        fillFn = function(np, index) {
+            var val = originalArrays[np.astr][index];
+            np.get().push(val);
+        };
+    }
+
+    // copy all original array attribute values, and clear arrays in trace
+    forAllAttrs(initFn);
+
+    // loop through filter array, fill trace arrays if passed
+    for(var i = 0; i < len; i++) {
+        var passed = filterFunc(targetArray[i]);
+        if(passed) forAllAttrs(fillFn, i);
     }
 };
-
-function getFilterArray(trace, target) {
-    if(typeof target === 'string' && target) {
-        var array = Lib.nestedProperty(trace, target).get();
-
-        return Array.isArray(array) ? array : [];
-    }
-    else if(Array.isArray(target)) return target.slice();
-
-    return false;
-}
-
-function getDataToCoordFunc(gd, trace, target) {
-    var ax;
-
-    // In the case of an array target, make a mock data array
-    // and call supplyDefaults to the data type and
-    // setup the data-to-calc method.
-    if(Array.isArray(target)) {
-        ax = {
-            type: autoType(target),
-            _categories: []
-        };
-
-        setConvert(ax);
-
-        if(ax.type === 'category') {
-            // build up ax._categories (usually done during ax.makeCalcdata()
-            for(var i = 0; i < target.length; i++) {
-                ax.d2c(target[i]);
-            }
-        }
-    }
-    else {
-        ax = axisIds.getFromTrace(gd, trace, target);
-    }
-
-    // if 'target' has corresponding axis
-    // -> use setConvert method
-    if(ax) return ax.d2c;
-
-    // special case for 'ids'
-    // -> cast to String
-    if(target === 'ids') return function(v) { return String(v); };
-
-    // otherwise (e.g. numeric-array of 'marker.color' or 'marker.size')
-    // -> cast to Number
-    return function(v) { return +v; };
-}
 
 function getFilterFunc(opts, d2c, targetCalendar) {
     var operation = opts.operation,
@@ -245,7 +214,7 @@ function getFilterFunc(opts, d2c, targetCalendar) {
 
     var coercedValue;
 
-    if(isOperationIn(INEQUALITY_OPS)) {
+    if(isOperationIn(COMPARISON_OPS)) {
         coercedValue = hasArrayValue ? d2cValue(value[0]) : d2cValue(value);
     }
     else if(isOperationIn(INTERVAL_OPS)) {
@@ -261,6 +230,9 @@ function getFilterFunc(opts, d2c, targetCalendar) {
 
         case '=':
             return function(v) { return d2cTarget(v) === coercedValue; };
+
+        case '!=':
+            return function(v) { return d2cTarget(v) !== coercedValue; };
 
         case '<':
             return function(v) { return d2cTarget(v) < coercedValue; };

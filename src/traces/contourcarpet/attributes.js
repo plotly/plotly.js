@@ -174,7 +174,6 @@ module.exports = extendFlat({}, {
         },
         value: {
             valType: 'any',
-            arrayOk: true,
             dflt: 0,
             role: 'info',
             description: [

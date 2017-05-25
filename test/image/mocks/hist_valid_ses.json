@@ -38,8 +38,7 @@
                 "end": 7,
                 "size": 2
             },
-            "type": "histogram",
-            "uid": "1ce93e"
+            "type": "histogram"
         }
     ],
     "layout": {

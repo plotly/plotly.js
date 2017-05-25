@@ -110,7 +110,7 @@ function createCamera(scene) {
                     result.boxEnd[1] = dataY;
 
                     // we need to mark the box as initialized right away
-                    // so that we can tell the start and end pionts apart
+                    // so that we can tell the start and end points apart
                     result.boxInited = true;
 
                     // but don't actually enable the box until the cursor moves
@@ -187,6 +187,10 @@ function createCamera(scene) {
                         scene.glplot.setDirty();
                     }
                     result.boxEnabled = false;
+                    result.boxInited = false;
+                }
+                // if box was inited but button released then - reset the box
+                else if(result.boxInited) {
                     result.boxInited = false;
                 }
                 break;

@@ -8,6 +8,7 @@
 
 'use strict';
 
+var fxAttrs = require('../components/fx/attributes');
 
 module.exports = {
     type: {
@@ -80,6 +81,7 @@ module.exports = {
             'But, if `none` is set, click and hover events are still fired.'
         ].join(' ')
     },
+    hoverlabel: fxAttrs.hoverlabel,
     stream: {
         token: {
             valType: 'string',

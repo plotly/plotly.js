@@ -16,7 +16,8 @@
     "Uint8Array": true,
     "Int16Array": true,
     "Int32Array": true,
-    "ArrayBuffer": true
+    "ArrayBuffer": true,
+    "SVGElement": false
   },
   "rules": {
     "no-trailing-spaces": [2],

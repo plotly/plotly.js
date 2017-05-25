@@ -16,6 +16,9 @@ var Drawing = require('../components/drawing');
 var Color = require('../components/color');
 
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
+var DOUBLEQUOTE_REGEX = /"/g;
+var DUMMY_SUB = 'TOBESTRIPPED';
+var DUMMY_REGEX = new RegExp('("' + DUMMY_SUB + ')|(' + DUMMY_SUB + '")', 'g');
 
 
 module.exports = function toSVG(gd, format) {
@@ -90,9 +93,20 @@ module.exports = function toSVG(gd, format) {
             // to a string (browsers convert singles back)
             var ff = txt.style('font-family');
             if(ff && ff.indexOf('"') !== -1) {
-                txt.style('font-family', ff.replace(/"/g, 'TOBESTRIPPED'));
+                txt.style('font-family', ff.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
             }
         });
+
+    svg.selectAll('.point').each(function() {
+        var pt = d3.select(this);
+        var fill = pt.style('fill');
+
+        // similar to font family styles above,
+        // we must remove " after the SVG DOM has been serialized
+        if(fill && fill.indexOf('url(') !== -1) {
+            pt.style('fill', fill.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
+        }
+    });
 
     if(format === 'pdf' || format === 'eps') {
         // these formats make the extra line MathJax adds around symbols look super thick in some cases
@@ -110,8 +124,8 @@ module.exports = function toSVG(gd, format) {
     s = svgTextUtils.html_entity_decode(s);
     s = svgTextUtils.xml_entity_encode(s);
 
-    // Fix quotations around font strings
-    s = s.replace(/("TOBESTRIPPED)|(TOBESTRIPPED")/g, '\'');
+    // Fix quotations around font strings and gradient URLs
+    s = s.replace(DUMMY_REGEX, '\'');
 
     return s;
 };

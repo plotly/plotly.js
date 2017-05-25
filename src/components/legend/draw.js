@@ -514,7 +514,9 @@ function handleClick(g, gd, numClicks) {
             allTraces.push(i);
             // Allow the legendonly state through for *all* trace types (including
             // carpet for which it's overridden with true/false in supplyDefaults)
-            traceVisibility.push('legendonly');
+            traceVisibility.push(
+                Registry.traceIs(fullData[i], 'notLegendIsolatable') ? true : 'legendonly'
+            );
         }
 
         if(legendgroup === '') {

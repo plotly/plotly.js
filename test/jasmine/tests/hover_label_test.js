@@ -1,9 +1,9 @@
 var d3 = require('d3');
 
 var Plotly = require('@lib/index');
-var Fx = require('@src/plots/cartesian/graph_interact');
-var constants = require('@src/plots/cartesian/constants');
+var Fx = require('@src/components/fx');
 var Lib = require('@src/lib');
+var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -16,11 +16,8 @@ var fail = require('../assets/fail_test');
 describe('hover info', function() {
     'use strict';
 
-    var mock = require('@mocks/14.json'),
-        evt = {
-            clientX: mock.layout.width / 2,
-            clientY: mock.layout.height / 2
-        };
+    var mock = require('@mocks/14.json');
+    var evt = { xpx: 355, ypx: 150 };
 
     afterEach(destroyGraphDiv);
 
@@ -447,7 +444,53 @@ describe('hover info', function() {
 
                 done();
             });
+        });
+    });
 
+    describe('\'hover info for x/y/z traces', function() {
+        function _hover(gd, xpx, ypx) {
+            Fx.hover(gd, { xpx: xpx, ypx: ypx }, 'xy');
+            delete gd._lastHoverTime;
+        }
+
+        function _assert(nameLabel, lines) {
+            expect(d3.select('g.axistext').size()).toEqual(0, 'no common label');
+
+            var sel = d3.select('g.hovertext');
+            expect(sel.select('text.name').html()).toEqual(nameLabel, 'name label');
+            sel.select('text.nums').selectAll('tspan').each(function(_, i) {
+                expect(d3.select(this).html()).toEqual(lines[i], 'lines ' + i);
+            });
+        }
+
+        it('should display correct label content', function(done) {
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                type: 'heatmap',
+                y: [0, 1],
+                z: [[1, 2, 3], [2, 2, 1]],
+                name: 'one',
+            }, {
+                type: 'heatmap',
+                y: [2, 3],
+                z: [[1, 2, 3], [2, 2, 1]],
+                name: 'two'
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 100);
+                _assert('two', ['x: 1', 'y: 3', 'z: 2']);
+            })
+            .then(function() {
+                _hover(gd, 250, 300);
+                _assert('one', ['x: 1', 'y: 1', 'z: 2']);
+            })
+            .catch(fail)
+            .then(done);
         });
     });
 
@@ -554,7 +597,7 @@ describe('hover info', function() {
             Promise.resolve().then(function() {
                 Fx.hover(gd, event, 'xy');
             })
-            .then(delay(constants.HOVERMINTIME * 1.1))
+            .then(delay(HOVERMINTIME * 1.1))
             .then(function() {
                 Fx.unhover(gd);
             })
@@ -719,7 +762,7 @@ describe('hover after resizing', function() {
 
             setTimeout(function() {
                 resolve();
-            }, constants.HOVERMINTIME);
+            }, HOVERMINTIME);
         });
     }
 
@@ -732,7 +775,7 @@ describe('hover after resizing', function() {
                 expect(hoverText.size()).toEqual(cnt, msg);
 
                 resolve();
-            }, constants.HOVERMINTIME);
+            }, HOVERMINTIME);
         });
     }
 
@@ -799,7 +842,7 @@ describe('hover on fill', function() {
                 expect(+transformCoords[1]).toBeCloseTo(labelPos[1], -1.2, labelText + ':y');
 
                 resolve();
-            }, constants.HOVERMINTIME);
+            }, HOVERMINTIME);
         });
     }
 
@@ -879,7 +922,7 @@ describe('hover updates', function() {
                 }
 
                 resolve();
-            }, constants.HOVERMINTIME);
+            }, HOVERMINTIME);
         });
     }
 
@@ -935,7 +978,7 @@ describe('hover updates', function() {
                 mouseEvent('mousemove', 394, 285);
                 setTimeout(function() {
                     resolve();
-                }, constants.HOVERMINTIME);
+                }, HOVERMINTIME);
             });
         }
 
@@ -982,5 +1025,189 @@ describe('hover updates', function() {
         })
         .then(done);
 
+    });
+});
+
+describe('Test hover label custom styling:', function() {
+    afterEach(destroyGraphDiv);
+
+    function assertLabel(className, expectation) {
+        var g = d3.select('g.' + className);
+
+        var path = g.select('path');
+        expect(path.style('fill')).toEqual(expectation.path[0], 'bgcolor');
+        expect(path.style('stroke')).toEqual(expectation.path[1], 'bordercolor');
+
+        var text = g.select({hovertext: 'text.nums', axistext: 'text'}[className]);
+        expect(parseInt(text.style('font-size'))).toEqual(expectation.text[0], 'font.size');
+        expect(text.style('font-family').split(',')[0]).toEqual(expectation.text[1], 'font.family');
+        expect(text.style('fill')).toEqual(expectation.text[2], 'font.color');
+    }
+
+    function assertPtLabel(expectation) {
+        assertLabel('hovertext', expectation);
+    }
+
+    function assertCommonLabel(expectation) {
+        assertLabel('axistext', expectation);
+    }
+
+    function _hover(gd, opts) {
+        Fx.hover(gd, opts);
+        delete gd._lastHoverTime;
+    }
+
+    it('should work for x/y cartesian traces', function(done) {
+        var gd = createGraphDiv();
+
+        Plotly.plot(gd, [{
+            x: [1, 2, 3],
+            y: [1, 2, 1],
+            marker: {
+                color: ['yellow', 'black', 'cyan']
+            },
+            hoverlabel: {
+                font: {
+                    color: ['red', 'green', 'blue'],
+                    size: 20
+                }
+            }
+        }], {
+            hovermode: 'x',
+            hoverlabel: { bgcolor: 'white' }
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[0] });
+
+            assertPtLabel({
+                path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
+                text: [20, 'Arial', 'rgb(255, 0, 0)']
+            });
+            assertCommonLabel({
+                path: ['rgb(255, 255, 255)', 'rgb(255, 255, 255)'],
+                text: [13, 'Arial', 'rgb(255, 255, 255)']
+            });
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[1] });
+
+            assertPtLabel({
+                path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
+                text: [20, 'Arial', 'rgb(0, 128, 0)']
+            });
+            assertCommonLabel({
+                path: ['rgb(255, 255, 255)', 'rgb(255, 255, 255)'],
+                text: [13, 'Arial', 'rgb(255, 255, 255)']
+            });
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[2] });
+
+            assertPtLabel({
+                path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
+                text: [20, 'Arial', 'rgb(0, 0, 255)']
+            });
+            assertCommonLabel({
+                path: ['rgb(255, 255, 255)', 'rgb(255, 255, 255)'],
+                text: [13, 'Arial', 'rgb(255, 255, 255)']
+            });
+
+            // test base case
+            return Plotly.update(gd, { hoverlabel: null }, { hoverlabel: null });
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[0] });
+
+            assertPtLabel({
+                path: ['rgb(255, 255, 0)', 'rgb(68, 68, 68)'],
+                text: [13, 'Arial', 'rgb(68, 68, 68)']
+            });
+            assertCommonLabel({
+                path: ['rgb(68, 68, 68)', 'rgb(255, 255, 255)'],
+                text: [13, 'Arial', 'rgb(255, 255, 255)']
+            });
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[1] });
+
+            assertPtLabel({
+                path: ['rgb(0, 0, 0)', 'rgb(255, 255, 255)'],
+                text: [13, 'Arial', 'rgb(255, 255, 255)']
+            });
+            assertCommonLabel({
+                path: ['rgb(68, 68, 68)', 'rgb(255, 255, 255)'],
+                text: [13, 'Arial', 'rgb(255, 255, 255)']
+            });
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[2] });
+
+            assertPtLabel({
+                path: ['rgb(0, 255, 255)', 'rgb(68, 68, 68)'],
+                text: [13, 'Arial', 'rgb(68, 68, 68)']
+            });
+            assertCommonLabel({
+                path: ['rgb(68, 68, 68)', 'rgb(255, 255, 255)'],
+                text: [13, 'Arial', 'rgb(255, 255, 255)']
+            });
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should work for 2d z cartesian traces', function(done) {
+        var gd = createGraphDiv();
+
+        Plotly.plot(gd, [{
+            type: 'heatmap',
+            x: [1, 2],
+            y: [1, 2],
+            z: [[1, 2], [2, 3]],
+            hoverlabel: {
+                font: {
+                    color: 'red',
+                    size: [[10, 20], [21, 11]]
+                }
+            }
+        }], {
+            hoverlabel: {
+                bordercolor: 'blue',
+                font: { family: 'Gravitas'}
+            }
+        })
+        .then(function() {
+            _hover(gd, { xval: 1, yval: 1 });
+
+            assertPtLabel({
+                path: ['rgb(68, 68, 68)', 'rgb(0, 0, 255)'],
+                text: [10, 'Gravitas', 'rgb(255, 0, 0)']
+            });
+        })
+        .then(function() {
+            _hover(gd, { xval: 2, yval: 1 });
+
+            assertPtLabel({
+                path: ['rgb(68, 68, 68)', 'rgb(0, 0, 255)'],
+                text: [20, 'Gravitas', 'rgb(255, 0, 0)']
+            });
+        })
+        .then(function() {
+            _hover(gd, { xval: 1, yval: 2 });
+
+            assertPtLabel({
+                path: ['rgb(68, 68, 68)', 'rgb(0, 0, 255)'],
+                text: [21, 'Gravitas', 'rgb(255, 0, 0)']
+            });
+        })
+        .then(function() {
+            _hover(gd, { xval: 2, yval: 2 });
+
+            assertPtLabel({
+                path: ['rgb(68, 68, 68)', 'rgb(0, 0, 255)'],
+                text: [11, 'Gravitas', 'rgb(255, 0, 0)']
+            });
+        })
+        .catch(fail)
+        .then(done);
     });
 });

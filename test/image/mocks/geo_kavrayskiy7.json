@@ -15,8 +15,7 @@
                 10,
                 6,
                 4
-            ],
-            "uid": "96be8e"
+            ]
         },
         {
             "type": "scattergeo",
@@ -33,8 +32,7 @@
             "line": {
                 "color": "rgb(0, 255, 255)",
                 "width": 5
-            },
-            "uid": "493d58"
+            }
         },
         {
             "type": "scattergeo",
@@ -50,8 +48,7 @@
             "line": {
                 "color": "rgb(255, 0, 255)",
                 "width": 5
-            },
-            "uid": "cc38eb"
+            }
         }
     ],
     "layout": {

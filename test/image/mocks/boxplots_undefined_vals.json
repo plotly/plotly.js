@@ -75,8 +75,7 @@
             "color":"#1c9099"
          },
          "type":"box",
-         "name":"Homeworks",
-         "uid":"192c31"
+         "name":"Homeworks"
       },
       {
          "y":[
@@ -153,8 +152,7 @@
             "color":"#1c9099"
          },
          "type":"box",
-         "name":"Midterm Exam",
-         "uid":"14eb49"
+         "name":"Midterm Exam"
       },
       {
          "y":[
@@ -231,8 +229,7 @@
             "color":"#1c9099"
          },
          "type":"box",
-         "name":"Final Exam",
-         "uid":"5ca80c"
+         "name":"Final Exam"
       },
       {
          "y":[
@@ -309,8 +306,7 @@
             "color":"#1c9099"
          },
          "type":"box",
-         "name":"Course Grade",
-         "uid":"bd1c02"
+         "name":"Course Grade"
       }
    ],
    "layout":{

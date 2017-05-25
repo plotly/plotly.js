@@ -17,6 +17,19 @@ var Lib = require('../lib');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var stringMappings = require('../constants/string_mappings');
 
+var DOM_PARSER;
+
+exports.getDOMParser = function() {
+    if(DOM_PARSER) {
+        return DOM_PARSER;
+    } else if(window.DOMParser) {
+        DOM_PARSER = new window.DOMParser();
+        return DOM_PARSER;
+    } else {
+        throw new Error('Cannot initialize DOMParser');
+    }
+};
+
 // Append SVG
 
 d3.selection.prototype.appendSVG = function(_svgString) {
@@ -27,8 +40,9 @@ d3.selection.prototype.appendSVG = function(_svgString) {
         '</svg>'
     ].join('');
 
-    var dom = new DOMParser().parseFromString(skeleton, 'application/xml'),
-        childNode = dom.documentElement.firstChild;
+    var domParser = exports.getDOMParser();
+    var dom = domParser.parseFromString(skeleton, 'application/xml');
+    var childNode = dom.documentElement.firstChild;
 
     while(childNode) {
         this.node().appendChild(this.node().ownerDocument.importNode(childNode, true));
@@ -219,20 +233,32 @@ function texToSVG(_texString, _config, _callback) {
 }
 
 var TAG_STYLES = {
-    // would like to use baseline-shift but FF doesn't support it yet
+    // would like to use baseline-shift for sub/sup but FF doesn't support it
     // so we need to use dy along with the uber hacky shift-back-to
     // baseline below
     sup: 'font-size:70%" dy="-0.6em',
     sub: 'font-size:70%" dy="0.3em',
     b: 'font-weight:bold',
     i: 'font-style:italic',
-    a: '',
+    a: 'cursor:pointer',
     span: '',
     br: '',
     em: 'font-style:italic;font-weight:bold'
 };
 
-var PROTOCOLS = ['http:', 'https:', 'mailto:'];
+// sub/sup: extra tspan with zero-width space to get back to the right baseline
+var TAG_CLOSE = {
+    sup: '<tspan dy="0.42em">&#x200b;</tspan>',
+    sub: '<tspan dy="-0.21em">&#x200b;</tspan>'
+};
+
+/*
+ * Whitelist of protocols in user-supplied urls. Mostly we want to avoid javascript
+ * and related attack vectors. The empty items are there for IE, that in various
+ * versions treats relative paths as having different flavors of no protocol, while
+ * other browsers have these explicitly inherit the protocol of the page they're in.
+ */
+var PROTOCOLS = ['http:', 'https:', 'mailto:', '', undefined, ':'];
 
 var STRIP_TAGS = new RegExp('</?(' + Object.keys(TAG_STYLES).join('|') + ')( [^>]*)?/?>', 'g');
 
@@ -252,6 +278,43 @@ var UNICODE_TO_ENTITY = Object.keys(stringMappings.unicodeToEntity).map(function
 
 var NEWLINES = /(\r\n?|\n)/g;
 
+var SPLIT_TAGS = /(<[^<>]*>)/;
+
+var ONE_TAG = /<(\/?)([^ >]*)(\s+(.*))?>/i;
+
+/*
+ * style and href: pull them out of either single or double quotes. Also
+ * - target: (_blank|_self|_parent|_top|framename)
+ *     note that you can't use target to get a popup but if you use popup,
+ *     a `framename` will be passed along as the name of the popup window.
+ *     per the spec, cannot contain whitespace.
+ *     for backward compatibility we default to '_blank'
+ * - popup: a custom one for us to enable popup (new window) links. String
+ *     for window.open -> strWindowFeatures, like 'menubar=yes,width=500,height=550'
+ *     note that at least in Chrome, you need to give at least one property
+ *     in this string or the page will open in a new tab anyway. We follow this
+ *     convention and will not make a popup if this string is empty.
+ *     per the spec, cannot contain whitespace.
+ *
+ * Because we hack in other attributes with style (sub & sup), drop any trailing
+ * semicolon in user-supplied styles so we can consistently append the tag-dependent style
+ */
+var STYLEMATCH = /(^|[\s"'])style\s*=\s*("([^"]*);?"|'([^']*);?')/i;
+var HREFMATCH = /(^|[\s"'])href\s*=\s*("([^"]*)"|'([^']*)')/i;
+var TARGETMATCH = /(^|[\s"'])target\s*=\s*("([^"\s]*)"|'([^'\s]*)')/i;
+var POPUPMATCH = /(^|[\s"'])popup\s*=\s*("([^"\s]*)"|'([^'\s]*)')/i;
+
+// dedicated matcher for these quoted regexes, that can return their results
+// in two different places
+function getQuotedMatch(_str, re) {
+    if(!_str) return null;
+    var match = _str.match(re);
+    return match && (match[3] || match[4]);
+}
+
+
+var COLORMATCH = /(^|;)\s*color:/;
+
 exports.plainText = function(_str) {
     // strip out our pseudo-html so we have a readable
     // version to put into text fields
@@ -259,14 +322,14 @@ exports.plainText = function(_str) {
 };
 
 function replaceFromMapObject(_str, list) {
-    var out = _str || '';
+    if(!_str) return '';
 
     for(var i = 0; i < list.length; i++) {
         var item = list[i];
-        out = out.replace(item.regExp, item.sub);
+        _str = _str.replace(item.regExp, item.sub);
     }
 
-    return out;
+    return _str;
 }
 
 function convertEntities(_str) {
@@ -278,84 +341,118 @@ function encodeForHTML(_str) {
 }
 
 function convertToSVG(_str) {
-    _str = convertEntities(_str);
-
-    // normalize behavior between IE and others wrt newlines and whitespace:pre
-    // this combination makes IE barf https://github.com/plotly/plotly.js/issues/746
-    // Chrome and FF display \n, \r, or \r\n as a space in this mode.
-    // I feel like at some point we turned these into <br> but currently we don't so
-    // I'm just going to cement what we do now in Chrome and FF
-    _str = _str.replace(NEWLINES, ' ');
+    _str = convertEntities(_str)
+        /*
+         * Normalize behavior between IE and others wrt newlines and whitespace:pre
+         * this combination makes IE barf https://github.com/plotly/plotly.js/issues/746
+         * Chrome and FF display \n, \r, or \r\n as a space in this mode.
+         * I feel like at some point we turned these into <br> but currently we don't so
+         * I'm just going to cement what we do now in Chrome and FF
+         */
+        .replace(NEWLINES, ' ');
 
     var result = _str
-        .split(/(<[^<>]*>)/).map(function(d) {
-            var match = d.match(/<(\/?)([^ >]*)\s*(.*)>/i),
-                tag = match && match[2].toLowerCase(),
-                style = TAG_STYLES[tag];
+        .split(SPLIT_TAGS).map(function(d) {
+            var match = d.match(ONE_TAG);
+            var tag = match && match[2].toLowerCase();
+            var tagStyle = TAG_STYLES[tag];
 
-            if(style !== undefined) {
-                var close = match[1],
-                    extra = match[3],
-                    /**
-                     * extraStyle: any random extra css (that's supported by svg)
-                     * use this like <span style="font-family:Arial"> to change font in the middle
-                     *
-                     * at one point we supported <font family="..." size="..."> but as this isn't even
-                     * valid HTML anymore and we dropped it accidentally for many months, we will not
-                     * resurrect it.
-                     */
-                    extraStyle = extra.match(/^style\s*=\s*"([^"]+)"\s*/i);
+            if(tagStyle !== undefined) {
+                var isClose = match[1];
+                if(isClose) return (tag === 'a' ? '</a>' : '</tspan>') + (TAG_CLOSE[tag] || '');
 
-                // anchor and br are the only ones that don't turn into a tspan
+                // break: later we'll turn these into newline <tspan>s
+                // but we need to know about all the other tags first
+                if(tag === 'br') return '<br>';
+
+                /**
+                 * extra includes href and any random extra css (that's supported by svg)
+                 * use this like <span style="font-family:Arial"> to change font in the middle
+                 *
+                 * at one point we supported <font family="..." size="..."> but as this isn't even
+                 * valid HTML anymore and we dropped it accidentally for many months, we will not
+                 * resurrect it.
+                 */
+                var extra = match[4];
+
+                var out;
+
+                // anchor is the only tag that doesn't turn into a tspan
                 if(tag === 'a') {
-                    if(close) return '</a>';
-                    else if(extra.substr(0, 4).toLowerCase() !== 'href') return '<a>';
-                    else {
-                        // remove quotes, leading '=', replace '&' with '&amp;'
-                        var href = extra.substr(4)
-                            .replace(/["']/g, '')
-                            .replace(/=/, '');
+                    var href = getQuotedMatch(extra, HREFMATCH);
 
-                        // check protocol
+                    out = '<a';
+
+                    if(href) {
+                        // check safe protocols
                         var dummyAnchor = document.createElement('a');
                         dummyAnchor.href = href;
-                        if(PROTOCOLS.indexOf(dummyAnchor.protocol) === -1) return '<a>';
+                        if(PROTOCOLS.indexOf(dummyAnchor.protocol) !== -1) {
+                            href = encodeForHTML(href);
 
-                        return '<a xlink:show="new" xlink:href="' + encodeForHTML(href) + '">';
+                            // look for target and popup specs
+                            var target = encodeForHTML(getQuotedMatch(extra, TARGETMATCH)) || '_blank';
+                            var popup = encodeForHTML(getQuotedMatch(extra, POPUPMATCH));
+
+                            /*
+                             * xlink:show is for backward compatibility only,
+                             * newer browsers allow target just like html links.
+                             */
+                            var xlinkShow = (target === '_blank' || target.charAt(0) !== '_') ?
+                                'new' : 'replace';
+
+                            out += ' xlink:show="' + xlinkShow + '" target="' + target +
+                                '" xlink:href="' + href + '"';
+
+                            if(popup) {
+                                /*
+                                 * Add the window.open call to create a popup
+                                 * Even when popup is specified, we leave the original
+                                 * href and target in place in case javascript is
+                                 * unavailable in this context (like downloaded svg)
+                                 * and for accessibility and so users can see where
+                                 * the link will lead.
+                                 */
+                                out += ' onclick="window.open(\'' + href + '\',\'' + target +
+                                    '\',\'' + popup + '\');return false;"';
+                            }
+                        }
                     }
                 }
-                else if(tag === 'br') return '<br>';
-                else if(close) {
-                    // closing tag
-
-                    // sub/sup: extra tspan with zero-width space to get back to the right baseline
-                    if(tag === 'sup') return '</tspan><tspan dy="0.42em">&#x200b;</tspan>';
-                    if(tag === 'sub') return '</tspan><tspan dy="-0.21em">&#x200b;</tspan>';
-                    else return '</tspan>';
-                }
                 else {
-                    var tspanStart = '<tspan';
+                    out = '<tspan';
 
                     if(tag === 'sup' || tag === 'sub') {
                         // sub/sup: extra zero-width space, fixes problem if new line starts with sub/sup
-                        tspanStart = '&#x200b;' + tspanStart;
+                        out = '&#x200b;' + out;
                     }
-
-                    if(extraStyle) {
-                        // most of the svg css users will care about is just like html,
-                        // but font color is different. Let our users ignore this.
-                        extraStyle = extraStyle[1].replace(/(^|;)\s*color:/, '$1 fill:');
-                        style = encodeForHTML(extraStyle) + (style ? ';' + style : '');
-                    }
-
-                    return tspanStart + (style ? ' style="' + style + '"' : '') + '>';
                 }
+
+                // now add style, from both the tag name and any extra css
+                // Most of the svg css that users will care about is just like html,
+                // but font color is different (uses fill). Let our users ignore this.
+                var css = getQuotedMatch(extra, STYLEMATCH);
+                if(css) {
+                    css = encodeForHTML(css.replace(COLORMATCH, '$1 fill:'));
+                    if(tagStyle) css += ';' + tagStyle;
+                }
+                else if(tagStyle) css = tagStyle;
+
+                if(css) return out + ' style="' + css + '">';
+
+                return out + '>';
             }
             else {
                 return exports.xml_entity_encode(d).replace(/</g, '&lt;');
             }
         });
 
+    // now deal with line breaks
+    // TODO: this next section attempts to close and reopen tags that
+    // span a line break. But
+    // a) it only closes and reopens one tag, and
+    // b) all tags are treated like equivalent tspans (even <a> which isn't a tspan even now!)
+    // we should really do this in a type-aware way *before* converting to tspans.
     var indices = [];
     for(var index = result.indexOf('<br>'); index > 0; index = result.indexOf('<br>', index + 1)) {
         indices.push(index);

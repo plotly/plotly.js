@@ -10,6 +10,54 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.27.1] -- 2017-05-17
+
+### Fixed
+- Fix text box positioning on scrolled windows (bug introduced in 1.27.0) [#1683, #1690]
+- Fix styling over links in annotation text [#1681]
+- Fix `mesh3d` with `vertexcolor` coloring [#1686]
+- Fix `sort` transform with set `categoryarray` [#1689]
+- Fix `scatter` text node data join [#1672]
+- Fix `plot` promise resolution in graphs with layout images in IE11 [#1691]
+
+## [1.27.0] -- 2017-05-10
+
+### Added
+- Sankey diagram with new trace type `sankey` [#1591, #1664]
+- Add `hoverlabel` trace and layout attributes to customize hover label colors
+  and fonts [#1582]
+- Add `marker.gradient` attributes for `scatter`, `scattergeo`, `scatterternary`
+  and `scattercarpet` traces [#1620]
+- Add `sort` transform [#1609]
+- Add `preservegaps` `filter` transform attribute [#1589]
+- Add `!=` (not equal) `filter` transform operation [#1589]
+- Add `labelfont`, `tickfont` and `rangefont` attributes for `parcoords` traces
+  [#1624]
+- Pass DOM mouse event on `plotly_clickannotations` events [#1652]
+
+### Changed
+- Performance optimization for range sliders and Drawing cache [#1585]
+
+### Fixed
+- Fix `scattergl` marker symbol positioning (bug introduced in 1.25.0) [#1633]
+- Fix gl2d zoom where two clicks would trigger a zoom box (bug introduced 1.26.0) [#1632]
+- Fix legend double click handler for `carpet` traces [#1636]
+- Fix `restyle` for `scattercarpet` for style attributes with array support [#1641]
+- Fix `restyle` for array layout components when more than 10 items are present
+  [#1639]
+- Fix select-box and lasso selections so that they don't include bad-data items
+  [#1656]
+- Fix `restyle` for contour `zmin` and `zmax` [#1653]
+- Fix `scatter` text node transitions [#1616, #1626]
+
+
+## [1.26.1] -- 2017-04-21
+
+### Fixed
+- Fix `pie` fill opacity [#1615]
+- Fix `contour.value` declaration for `contourcarpet` trace [#1612]
+
+
 ## [1.26.0] -- 2017-04-18
 
 ### Added

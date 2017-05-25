@@ -12,7 +12,6 @@
 var Lib = require('../../lib');
 var Color = require('../color');
 var Axes = require('../../plots/cartesian/axes');
-var constants = require('../../plots/cartesian/constants');
 
 var attributes = require('./attributes');
 
@@ -113,14 +112,21 @@ module.exports = function handleAnnotationDefaults(annIn, annOut, fullLayout, op
     }
 
     var hoverText = coerce('hovertext');
+    var globalHoverLabel = fullLayout.hoverlabel || {};
+
     if(hoverText) {
-        var hoverBG = coerce('hoverlabel.bgcolor',
-            Color.opacity(bgColor) ? Color.rgb(bgColor) : Color.defaultLine);
-        var hoverBorder = coerce('hoverlabel.bordercolor', Color.contrast(hoverBG));
+        var hoverBG = coerce('hoverlabel.bgcolor', globalHoverLabel.bgcolor ||
+            (Color.opacity(bgColor) ? Color.rgb(bgColor) : Color.defaultLine)
+        );
+
+        var hoverBorder = coerce('hoverlabel.bordercolor', globalHoverLabel.bordercolor ||
+            Color.contrast(hoverBG)
+        );
+
         Lib.coerceFont(coerce, 'hoverlabel.font', {
-            family: constants.HOVERFONT,
-            size: constants.HOVERFONTSIZE,
-            color: hoverBorder
+            family: globalHoverLabel.font.family,
+            size: globalHoverLabel.font.size,
+            color: globalHoverLabel.font.color || hoverBorder
         });
     }
     coerce('captureevents', !!hoverText);

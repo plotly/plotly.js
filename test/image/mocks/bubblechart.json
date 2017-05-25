@@ -32,7 +32,11 @@
                0.3,
                0.2,
                0.1
-            ]
+            ],
+            "gradient":{
+               "type": "radial",
+               "color": "#fff"
+            }
          },
          "type":"scatter"
       },
@@ -58,7 +62,11 @@
                "square",
                "diamond",
                "cross"
-            ]
+            ],
+            "gradient": {
+               "type": "horizontal",
+               "color": ["rgba(31, 119, 180, 0)", "rgba(0, 0, 0, 0)", "red", "#000"]
+            }
          },
          "type":"scatter"
       },
@@ -91,6 +99,10 @@
                   6,
                   2
                ]
+            },
+            "gradient": {
+                "type": ["vertical", "horizontal", "none", "radial"],
+                "color": ["#ff0", "#0ff", "", "#f0f"]
             }
          },
          "type":"scatter"

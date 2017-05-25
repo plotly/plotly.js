@@ -29,13 +29,13 @@ var ONEMIN = constants.ONEMIN;
 var ONESEC = constants.ONESEC;
 var BADNUM = constants.BADNUM;
 
-
 var axes = module.exports = {};
 
 axes.layoutAttributes = require('./layout_attributes');
 axes.supplyLayoutDefaults = require('./layout_defaults');
 
 axes.setConvert = require('./set_convert');
+var autoType = require('./axis_autotype');
 
 var axisIds = require('./axis_ids');
 axes.id2name = axisIds.id2name;
@@ -44,7 +44,6 @@ axes.list = axisIds.list;
 axes.listIds = axisIds.listIds;
 axes.getFromId = axisIds.getFromId;
 axes.getFromTrace = axisIds.getFromTrace;
-
 
 /*
  * find the list of possible axes to reference with an xref or yref attribute
@@ -128,6 +127,48 @@ axes.coercePosition = function(containerOut, gd, coerce, axRef, attr, dflt) {
     }
     // finally make sure we have a number (unless date type already returned a string)
     containerOut[attr] = isNumeric(pos) ? Number(pos) : dflt;
+};
+
+axes.getDataToCoordFunc = function(gd, trace, target, targetArray) {
+    var ax;
+
+    // If target points to an axis, use the type we already have for that
+    // axis to find the data type. Otherwise use the values to autotype.
+    var d2cTarget = (target === 'x' || target === 'y' || target === 'z') ?
+        target :
+        targetArray;
+
+    // In the case of an array target, make a mock data array
+    // and call supplyDefaults to the data type and
+    // setup the data-to-calc method.
+    if(Array.isArray(d2cTarget)) {
+        ax = {
+            type: autoType(targetArray),
+            _categories: []
+        };
+        axes.setConvert(ax);
+
+        // build up ax._categories (usually done during ax.makeCalcdata()
+        if(ax.type === 'category') {
+            for(var i = 0; i < targetArray.length; i++) {
+                ax.d2c(targetArray[i]);
+            }
+        }
+    } else {
+        ax = axes.getFromTrace(gd, trace, d2cTarget);
+    }
+
+    // if 'target' has corresponding axis
+    // -> use setConvert method
+    if(ax) return ax.d2c;
+
+    // special case for 'ids'
+    // -> cast to String
+    if(d2cTarget === 'ids') return function(v) { return String(v); };
+
+    // otherwise (e.g. numeric-array of 'marker.color' or 'marker.size')
+    // -> cast to Number
+    return function(v) { return +v; };
 };
 
 // empty out types for all axes containing these traces

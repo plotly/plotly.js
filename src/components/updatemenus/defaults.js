@@ -76,13 +76,15 @@ function buttonsDefaults(menuIn, menuOut) {
         buttonIn = buttonsIn[i];
         buttonOut = {};
 
-        if(!Lib.isPlainObject(buttonIn) || !Array.isArray(buttonIn.args)) {
+        coerce('method');
+
+        if(!Lib.isPlainObject(buttonIn) || (buttonOut.method !== 'skip' && !Array.isArray(buttonIn.args))) {
             continue;
         }
 
-        coerce('method');
         coerce('args');
         coerce('label');
+        coerce('execute');
 
         buttonOut._index = i;
         buttonsOut.push(buttonOut);
