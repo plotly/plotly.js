@@ -575,6 +575,27 @@ describe('end-to-end scatter tests', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('animates fillcolor', function(done) {
+        function fill() {
+            return d3.selectAll('.js-fill').node().style.fill;
+        }
+
+        Plotly.plot(gd, [{
+            x: [1, 2, 3, 4, 5, 6, 7],
+            y: [2, 3, 4, 5, 6, 7, 8],
+            fill: 'tozeroy',
+            fillcolor: 'rgb(255, 0, 0)',
+        }]).then(function() {
+            expect(fill()).toEqual('rgb(255, 0, 0)');
+            return Plotly.animate(gd,
+                [{data: [{fillcolor: 'rgb(0, 0, 255)'}]}],
+                {frame: {duration: 0, redraw: false}}
+            );
+        }).then(function() {
+            expect(fill()).toEqual('rgb(0, 0, 255)');
+        }).catch(fail).then(done);
+    });
 });
 
 describe('scatter hoverPoints', function() {
