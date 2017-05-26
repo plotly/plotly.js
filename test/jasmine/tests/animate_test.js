@@ -769,9 +769,7 @@ describe('animating scatter traces', function() {
         }).catch(fail).then(done);
     });
 
-    it('computes calcdata correctly when transforms are present', function (done) {
-        var isChecked = false;
-
+    it('computes calcdata correctly when transforms are present', function(done) {
         Plotly.plot(gd, {
             data: [{
                 x: [1, 2, 3],
@@ -786,18 +784,10 @@ describe('animating scatter traces', function() {
                 {name: 'frame1', data: [{y: [1, 2, 3]}]},
                 {name: 'frame2', data: [{y: [3, 1, 2]}]}
             ]
-        }).then(function () {;
+        }).then(function() {
             return Plotly.animate(gd, ['frame2'], {frame: {duration: 200, redraw: false}});
-        }).then(function () {
-            expect(isChecked).toBe(true);
+        }).then(function() {
+            expect(gd.calcdata[0][0].y).toEqual(3);
         }).catch(fail).then(done);
-
-        gd.on('plotly_animating', function () {
-            setTimeout(function () {
-                isChecked = true;
-                console.log('gd.calcdata[0][0].y:', gd.calcdata[0][0].y);
-                expect(gd.calcdata[0][0].y).toEqual(3);
-            }, 100);
-        })
     });
 });
