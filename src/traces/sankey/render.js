@@ -261,7 +261,7 @@ function sankeyTransform(d) {
 }
 
 function nodeCentering(d) {
-    return 'translate(' + (d.horizontal ? 0 : d.labelY) + ' ' + (d.horizontal ? d.labelY : 0) + ')';
+    return 'translate(' + (d.horizontal ? 0 : d.labelY) + 'px, ' + (d.horizontal ? d.labelY : 0) + 'px)';
 }
 
 function textGuidePath(d) {
@@ -567,12 +567,14 @@ module.exports = function(svg, styledData, layout, callbacks) {
     nodeCentered.enter()
         .append('g')
         .classed('nodeCentered', true)
-        .attr('transform', nodeCentering);
+        .style('transform', nodeCentering);
 
+/*
     nodeCentered
         .transition()
         .ease(c.ease).duration(c.duration)
-        .attr('transform', nodeCentering);
+        .style('transform', nodeCentering);
+*/
 
     var nodeLabelGuide = nodeCentered.selectAll('.nodeLabelGuide')
         .data(repeat);
