@@ -152,7 +152,7 @@ proto.makeFramework = function() {
     var container = this.container;
     container.appendChild(canvas);
     container.appendChild(svgContainer);
-    container.appendChild(mouseContainer);
+    // container.appendChild(mouseContainer);
 };
 
 proto.toImage = function(format) {
