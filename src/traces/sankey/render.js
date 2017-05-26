@@ -264,7 +264,7 @@ function salientEnough(d) {
 }
 
 function linksTransform(d) {
-    return d.horizontal ? 'matrix(1,0,0,1,0,0)' : 'matrix(0,1,1,0,0,0)';
+    return d.horizontal ? 'matrix(1 0 0 1 0 0)' : 'matrix(0 1 1 0 0 0)';
 }
 
 function textGuidePath(d) {
@@ -444,11 +444,11 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .append('g')
         .classed('sankeyLinks', true)
         .style('fill', 'none')
-        .style('transform', linksTransform);
+        .attr('transform', linksTransform);
 
     sankeyLinks.transition()
         .ease(c.ease).duration(c.duration)
-        .style('transform', linksTransform);
+        .attr('transform', linksTransform);
 
     var sankeyLink = sankeyLinks.selectAll('.sankeyLink')
         .data(function(d) {
