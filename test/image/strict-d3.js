@@ -37,13 +37,12 @@
                     throw new Error('d3 selection.style called with value: ' + val);
                 }
             });
-
-            // Microsoft browsers incl. "Edge" don't support CSS transform on SVG elements
-            if(key === 'transform' && sel.node() instanceof SVGElement) {
-                throw new Error('d3 selection.style called on an SVG element with key: ' + key);
-            }
         }
 
+        // Microsoft browsers incl. "Edge" don't support CSS transform on SVG elements
+        if(key === 'transform' && sel.node() instanceof SVGElement) {
+            throw new Error('d3 selection.style called on an SVG element with key: ' + key);
+        }
     }
 
     // below ripped from fast-isnumeric so I don't need to build this file
