@@ -768,4 +768,26 @@ describe('animating scatter traces', function() {
             expect(trace.style('opacity')).toEqual('0.1');
         }).catch(fail).then(done);
     });
+
+    it('computes calcdata correctly when transforms are present', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                mode: 'markers',
+                transforms: [{
+                    type: 'sort',
+                    target: [1, 3, 2]
+                }]
+            }],
+            frames: [
+                {name: 'frame1', data: [{y: [1, 2, 3]}]},
+                {name: 'frame2', data: [{y: [3, 1, 2]}]}
+            ]
+        }).then(function() {
+            return Plotly.animate(gd, ['frame2'], {frame: {duration: 200, redraw: false}});
+        }).then(function() {
+            expect(gd.calcdata[0][0].y).toEqual(3);
+        }).catch(fail).then(done);
+    });
 });
