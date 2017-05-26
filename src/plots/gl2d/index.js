@@ -13,7 +13,7 @@ var Scene2D = require('./scene2d');
 var Plots = require('../plots');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var constants = require('../cartesian/constants');
-var cartesian = require('../cartesian')
+var Cartesian = require('../cartesian')
 
 exports.name = 'gl2d';
 
@@ -83,7 +83,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     }
 
     //since we use cartesian interactions, do cartesian clean
-    cartesian.clean.apply(this, arguments)
+    Cartesian.clean.apply(this, arguments)
 };
 
 exports.drawFramework = function(gd) {
