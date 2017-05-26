@@ -51,8 +51,8 @@ module.exports = function selectPoints(searchInfo, polygon) {
     }
 
     // highlight selected points here
-    var traceObj = cd[0].plot;
-    var scene = cd[0].plot.scene;
+    var traceObj = cd[0].glTrace;
+    var scene = cd[0].glTrace.scene;
     var fullTrace = cd[0].trace;
 
     fullTrace.selection = selection;

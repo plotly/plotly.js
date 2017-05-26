@@ -320,8 +320,8 @@ proto.update = function(options, cdscatter) {
     this.color = getTraceColor(options, {});
 
     //provide reference for selecting points
-    if (cdscatter && cdscatter[0] && !cdscatter[0].plot) {
-        cdscatter[0].plot = this;
+    if (cdscatter && cdscatter[0] && !cdscatter[0].glTrace) {
+        cdscatter[0].glTrace = this;
     }
 };
 
