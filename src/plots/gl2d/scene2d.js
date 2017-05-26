@@ -152,6 +152,7 @@ proto.makeFramework = function() {
     var container = this.container;
     container.appendChild(canvas);
     container.appendChild(svgContainer);
+    container.appendChild(mouseContainer);
 };
 
 proto.toImage = function(format) {
@@ -358,6 +359,7 @@ proto.destroy = function() {
 
     if(!this.staticPlot) this.container.removeChild(this.canvas);
     this.container.removeChild(this.svgContainer);
+    this.container.removeChild(this.mouseContainer);
 
     this.fullData = null;
     this.glplot = null;
@@ -389,6 +391,12 @@ proto.plot = function(fullData, calcData, fullLayout) {
         (width - size.r) - (1 - domainX[1]) * size.w,
         (height - size.t) - (1 - domainY[1]) * size.h
     ];
+
+    this.mouseContainer.style.width = size.w * (domainX[1] - domainX[0]) + 'px';
+    this.mouseContainer.style.height = size.h * (domainY[1] - domainY[0]) + 'px';
+    this.mouseContainer.height = size.h * (domainY[1] - domainY[0]);
+    this.mouseContainer.style.left = size.l + domainX[0] * size.w + 'px';
+    this.mouseContainer.style.top = size.t + (1 - domainY[1]) * size.h + 'px';
 
     var bounds = this.bounds;
     bounds[0] = bounds[1] = Infinity;
