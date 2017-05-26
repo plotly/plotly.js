@@ -44,7 +44,7 @@ module.exports = function draw(scene) {
                 fullSceneLayout.zaxis.r2l(ann.z) * dataScale[2]
             ]);
 
-            drawRaw(scene.graphDiv, ann, i, ann._xa, ann._ya);
+            drawRaw(scene.graphDiv, ann, i, scene.id, ann._xa, ann._ya);
         }
     }
 };

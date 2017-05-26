@@ -17,8 +17,7 @@ module.exports = function handleDefaults(sceneLayoutIn, sceneLayoutOut, opts) {
     handleArrayContainerDefaults(sceneLayoutIn, sceneLayoutOut, {
         name: 'annotations',
         handleItemDefaults: handleAnnotationDefaults,
-        fullLayout: opts.fullLayout,
-        sceneId: opts.id
+        fullLayout: opts.fullLayout
     });
 };
 
@@ -32,9 +31,8 @@ function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts, itemOpts) {
 
     handleAnnotationCommonDefaults(annIn, annOut, opts.fullLayout, coerce);
 
-    // Do not use Axes.coercePosition here
-    // as ax._categories aren't filled in at this stage,
-    // Axes.coercePosition is called during scene.setConvert instead
+    // do not use Axes.coercePosition here
+    // as ax._categories aren't filled in at this stage
     coerce('x');
     coerce('y');
     coerce('z');
@@ -63,8 +61,6 @@ function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts, itemOpts) {
         // if you have one part of arrow length you should have both
         Lib.noneOrAll(annIn, annOut, ['ax', 'ay']);
     }
-
-    annOut._sceneId = opts.sceneId;
 
     return annOut;
 }

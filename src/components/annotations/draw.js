@@ -58,7 +58,7 @@ function draw(gd) {
 }
 
 /*
- * drawOne: draw a single annotation, potentially with modifications
+ * drawOne: draw a single cartesian or paper-ref annotation, potentially with modifications
  *
  * index (int): the annotation to draw
  */
@@ -68,28 +68,33 @@ function drawOne(gd, index) {
     var xa = Axes.getFromId(gd, options.xref);
     var ya = Axes.getFromId(gd, options.yref);
 
-    drawRaw(gd, options, index, xa, ya);
+    drawRaw(gd, options, index, false, xa, ya);
 }
 
-/*
+/**
  * drawRaw: draw a single annotation, potentially with modifications
  *
- * options (object): this annotation's options
- * index (int): the annotation to draw
- * xa (object | undefined): full x-axis object to compute subplot pos-to-px
- * ya (object | undefined): ... y-axis
+ * @param {DOM element} gd
+ * @param {object} options : this annotation's fullLayout options
+ * @param {integer} index : index in 'annotations' container of the annotation to draw
+ * @param {string} subplotId : id of the annotation's subplot
+ *  - use false for 2d (i.e. cartesian or paper-ref) annotations
+ * @param {object | undefined} xa : full x-axis object to compute subplot pos-to-px
+ * @param {object | undefined} ya : ... y-axis
  */
-function drawRaw(gd, options, index, xa, ya) {
+function drawRaw(gd, options, index, subplotId, xa, ya) {
     var fullLayout = gd._fullLayout;
     var gs = gd._fullLayout._size;
+    var className;
+    var annbase;
 
-    var className = options._sceneId ?
-        'annotation-' + options._sceneId :
-        'annotation';
-
-    var annbase = options._sceneId ?
-        options._sceneId + '.annotations[' + index + ']' :
-        'annotations[' + index + ']';
+    if(subplotId) {
+        className = 'annotation-' + subplotId;
+        annbase = subplotId + '.annotations[' + index + ']';
+    } else {
+        className = 'annotation';
+        annbase = 'annotations[' + index + ']';
+    }
 
     // remove the existing annotation if there is one
     fullLayout._infolayer
@@ -515,7 +520,7 @@ function drawRaw(gd, options, index, xa, ya) {
 
             // the arrow dragger is a small square right at the head, then a line to the tail,
             // all expanded by a stroke width of 6px plus the arrow line width
-            if(gd._context.editable && arrow.node().parentNode && !options._sceneId) {
+            if(gd._context.editable && arrow.node().parentNode && !subplotId) {
                 var arrowDragHeadX = headX;
                 var arrowDragHeadY = headY;
                 if(options.standoff) {
@@ -625,7 +630,7 @@ function drawRaw(gd, options, index, xa, ya) {
 
                         drawArrow(dx, dy);
                     }
-                    else if(!options._sceneId) {
+                    else if(!subplotId) {
                         if(xa) update[annbase + '.x'] = options.x + dx / xa._m;
                         else {
                             var widthFraction = options._xsize / gs.w,
