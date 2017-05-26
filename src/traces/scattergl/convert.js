@@ -286,7 +286,7 @@ proto.update = function(options, cdscatter) {
         this.selectedIds = sel;
     }
     else {
-        this.selectedIds = {}
+        this.selectedIds = null
     }
 
     if(!this.isVisible) {

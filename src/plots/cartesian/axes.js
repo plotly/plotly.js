@@ -365,8 +365,7 @@ axes.doAutoRange = function(ax) {
     var hasDeps = (ax._min && ax._max && ax._min.length && ax._max.length);
 
     if(ax.autorange && hasDeps) {
-        // FIXME: scattergl calls it in async fashion, hence there is .range and _._rl mess
-        ax.range = ax._rl = axes.getAutoRange(ax);
+        ax.range = axes.getAutoRange(ax);
 
         ax._r = ax.range.slice();
         ax._rl = Lib.simpleMap(ax._r, ax.r2l);
