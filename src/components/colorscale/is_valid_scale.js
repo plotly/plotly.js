@@ -9,11 +9,15 @@
 
 'use strict';
 
+var Lib = require('../../lib');
 var scales = require('./scales');
 var isValidScaleArray = require('./is_valid_scale_array');
 
 
 module.exports = function isValidScale(scl) {
-    if(scales[scl] !== undefined) return true;
-    else return isValidScaleArray(scl);
+    if(scales[scl] !== undefined || isValidScaleArray(scl)) {
+        return true;
+    }
+    if(scl !== undefined) Lib.warn('Invalid scale passed', scl);
+    return false;
 };
