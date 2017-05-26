@@ -13,7 +13,7 @@ var Scene2D = require('./scene2d');
 var Plots = require('../plots');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var constants = require('../cartesian/constants');
-var Cartesian = require('../cartesian')
+var Cartesian = require('../cartesian');
 
 exports.name = 'gl2d';
 
@@ -24,10 +24,6 @@ exports.idRoot = ['x', 'y'];
 exports.idRegex = constants.idRegex;
 
 exports.attrRegex = constants.attrRegex;
-
-var axisIds = require('../cartesian/axis_ids');
-var Lib = require('../../lib');
-var d3 = require('d3');
 
 exports.attributes = require('../cartesian/attributes');
 
@@ -82,11 +78,11 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         }
     }
 
-    //since we use cartesian interactions, do cartesian clean
-    Cartesian.clean.apply(this, arguments)
+    // since we use cartesian interactions, do cartesian clean
+    Cartesian.clean.apply(this, arguments);
 };
 
-exports.drawFramework = Cartesian.drawFramework
+exports.drawFramework = Cartesian.drawFramework;
 
 exports.toSVG = function(gd) {
     var fullLayout = gd._fullLayout,
@@ -112,61 +108,3 @@ exports.toSVG = function(gd) {
         scene.destroy();
     }
 };
-
-
-function makeSubplotData(gd) {
-    var fullLayout = gd._fullLayout,
-        subplots = Object.keys(fullLayout._plots);
-
-    var subplotData = [],
-        overlays = [];
-
-    for(var i = 0; i < subplots.length; i++) {
-        var subplot = subplots[i],
-            plotinfo = fullLayout._plots[subplot];
-
-        var xa = plotinfo.xaxis,
-            ya = plotinfo.yaxis;
-
-        // is this subplot overlaid on another?
-        // ax.overlaying is the id of another axis of the same
-        // dimension that this one overlays to be an overlaid subplot,
-        // the main plot must exist make sure we're not trying to
-        // overlay on an axis that's already overlaying another
-        var xa2 = axisIds.getFromId(gd, xa.overlaying) || xa;
-        if(xa2 !== xa && xa2.overlaying) {
-            xa2 = xa;
-            xa.overlaying = false;
-        }
-
-        var ya2 = axisIds.getFromId(gd, ya.overlaying) || ya;
-        if(ya2 !== ya && ya2.overlaying) {
-            ya2 = ya;
-            ya.overlaying = false;
-        }
-
-        var mainplot = xa2._id + ya2._id;
-        if(mainplot !== subplot && subplots.indexOf(mainplot) !== -1) {
-            plotinfo.mainplot = mainplot;
-            plotinfo.mainplotinfo = fullLayout._plots[mainplot];
-            overlays.push(subplot);
-
-            // for now force overlays to overlay completely... so they
-            // can drag together correctly and share backgrounds.
-            // Later perhaps we make separate axis domain and
-            // tick/line domain or something, so they can still share
-            // the (possibly larger) dragger and background but don't
-            // have to both be drawn over that whole domain
-            xa.domain = xa2.domain.slice();
-            ya.domain = ya2.domain.slice();
-        }
-        else {
-            subplotData.push(subplot);
-        }
-    }
-
-    // main subplots before overlays
-    subplotData = subplotData.concat(overlays);
-
-    return subplotData;
-}

@@ -185,7 +185,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         }
     }
 
-    //clean selection
+    // clean selection
     oldFullLayout._zoomlayer.selectAll('.select-outline').remove();
 };
 

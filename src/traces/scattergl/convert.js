@@ -286,7 +286,7 @@ proto.update = function(options, cdscatter) {
         this.selectedIds = sel;
     }
     else {
-        this.selectedIds = null
+        this.selectedIds = null;
     }
 
     if(!this.isVisible) {
@@ -319,8 +319,8 @@ proto.update = function(options, cdscatter) {
     // does not handle the colorscale case
     this.color = getTraceColor(options, {});
 
-    //provide reference for selecting points
-    if (cdscatter && cdscatter[0] && !cdscatter[0].glTrace) {
+    // provide reference for selecting points
+    if(cdscatter && cdscatter[0] && !cdscatter[0].glTrace) {
         cdscatter[0].glTrace = this;
     }
 };
