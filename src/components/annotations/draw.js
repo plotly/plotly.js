@@ -135,6 +135,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             gd._dragging = false;
             gd.emit('plotly_clickannotation', {
                 index: index,
+                subplotId: subplotId,
                 annotation: options._input,
                 fullAnnotation: options,
                 event: d3.event

@@ -1659,4 +1659,54 @@ describe('Test gl3d annotations', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('should display hover labels and trigger *plotly_clickannotation* event', function(done) {
+        function dispatch(eventType) {
+            var target = d3.select('g.annotation-text-g').select('g').node();
+            target.dispatchEvent(new MouseEvent(eventType));
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            z: [1, 2, 1]
+        }], {
+            scene: {
+                annotations: [{
+                    text: 'hello',
+                    x: 2, y: 2, z: 2,
+                    ax: 0, ay: -100,
+                    hovertext: 'HELLO',
+                    hoverlabel: {
+                        bgcolor: 'red',
+                        font: { size: 20 }
+                    }
+                }]
+            },
+            width: 500,
+            height: 500
+        })
+        .then(function() {
+            dispatch('mouseover');
+            expect(d3.select('.hovertext').size()).toEqual(1);
+        })
+        .then(function() {
+            return new Promise(function(resolve, reject) {
+                gd.once('plotly_clickannotation', function(eventData) {
+                    expect(eventData.index).toEqual(0);
+                    expect(eventData.subplotId).toEqual('scene');
+                    resolve();
+                });
+
+                setTimeout(function() {
+                    reject('plotly_clickannotation did not get called!');
+                }, 100);
+
+                dispatch('click');
+            });
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
