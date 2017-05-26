@@ -86,43 +86,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     Cartesian.clean.apply(this, arguments)
 };
 
-exports.drawFramework = function(gd) {
-    var fullLayout = gd._fullLayout,
-        subplotData = makeSubplotData(gd);
-
-    var subplotLayers = fullLayout._cartesianlayer.selectAll('.subplot')
-        .data(subplotData, Lib.identity);
-    subplotLayers.enter().append('g')
-        .attr('class', function(name) { return 'subplot ' + name; });
-
-    subplotLayers.order();
-
-    subplotLayers.exit()
-        .call(purgeSubplotLayers, fullLayout);
-
-    subplotLayers.each(function(name) {
-        var plotinfo = fullLayout._plots[name];
-
-        // keep ref to plot group
-        plotinfo.plotgroup = d3.select(this);
-
-        // initialize list of overlay subplots
-        plotinfo.overlays = [];
-
-        makeSubplotLayer(plotinfo);
-
-        // fill in list of overlay subplots
-        if(plotinfo.mainplot) {
-            var mainplot = fullLayout._plots[plotinfo.mainplot];
-            mainplot.overlays.push(plotinfo);
-        }
-
-        // make separate drag layers for each subplot,
-        // but append them to paper rather than the plot groups,
-        // so they end up on top of the rest
-        plotinfo.draglayer = joinLayer(fullLayout._draggers, 'g', name);
-    });
-};
+exports.drawFramework = Cartesian.drawFramework
 
 exports.toSVG = function(gd) {
     var fullLayout = gd._fullLayout,
