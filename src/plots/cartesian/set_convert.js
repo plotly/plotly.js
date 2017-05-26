@@ -184,7 +184,7 @@ module.exports = function setConvert(ax, fullLayout) {
         ax.d2r = ax.r2d = ax.d2c = ax.r2c = ax.d2l = ax.r2l = cleanNumber;
         ax.c2d = ax.c2r = ax.l2d = ax.l2r = num;
 
-        ax.d2p = ax.r2p = function(v) { return l2p(cleanNumber(v)); };
+        ax.d2p = ax.r2p = function(v) { return ax.l2p(cleanNumber(v)); };
         ax.p2d = ax.p2r = p2l;
     }
     else if(ax.type === 'log') {
@@ -198,10 +198,10 @@ module.exports = function setConvert(ax, fullLayout) {
         ax.c2r = toLog;
         ax.l2d = fromLog;
 
-        ax.d2p = function(v, clip) { return l2p(ax.d2r(v, clip)); };
+        ax.d2p = function(v, clip) { return ax.l2p(ax.d2r(v, clip)); };
         ax.p2d = function(px) { return fromLog(p2l(px)); };
 
-        ax.r2p = function(v) { return l2p(cleanNumber(v)); };
+        ax.r2p = function(v) { return ax.l2p(cleanNumber(v)); };
         ax.p2r = p2l;
     }
     else if(ax.type === 'date') {
@@ -220,7 +220,7 @@ module.exports = function setConvert(ax, fullLayout) {
         ax.d2c = ax.r2c = ax.d2l = ax.r2l = dt2ms;
         ax.c2d = ax.c2r = ax.l2d = ax.l2r = ms2dt;
 
-        ax.d2p = ax.r2p = function(v, _, calendar) { return l2p(dt2ms(v, 0, calendar)); };
+        ax.d2p = ax.r2p = function(v, _, calendar) { return ax.l2p(dt2ms(v, 0, calendar)); };
         ax.p2d = ax.p2r = function(px, r, calendar) { return ms2dt(p2l(px), r, calendar); };
     }
     else if(ax.type === 'category') {
@@ -236,9 +236,9 @@ module.exports = function setConvert(ax, fullLayout) {
 
         ax.r2l = ax.l2r = ax.r2c = ax.c2r = num;
 
-        ax.d2p = function(v) { return l2p(getCategoryIndex(v)); };
+        ax.d2p = function(v) { return ax.l2p(getCategoryIndex(v)); };
         ax.p2d = function(px) { return getCategoryName(p2l(px)); };
-        ax.r2p = l2p;
+        ax.r2p = ax.l2p;
         ax.p2r = p2l;
     }
 
