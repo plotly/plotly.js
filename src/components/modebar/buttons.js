@@ -249,6 +249,7 @@ function handleCartesian(gd, ev) {
         }
 
         aobj[astr] = val;
+
     }
 
     Plotly.relayout(gd, aobj);

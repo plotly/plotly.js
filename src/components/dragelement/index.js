@@ -62,6 +62,13 @@ dragElement.init = function init(options) {
 
     if(!gd._mouseDownTime) gd._mouseDownTime = 0;
 
+    // enable call to options.setCursor(evt)
+    initialOnMouseMove = options.element.onmousemove;
+    if(options.setCursor) options.element.onmousemove = options.setCursor;
+
+    options.element.onmousedown = onStart;
+    options.element.style.pointerEvents = 'all';
+
     function onStart(e) {
         // disable call to options.setCursor(evt)
         options.element.onmousemove = initialOnMouseMove;
@@ -165,13 +172,6 @@ dragElement.init = function init(options) {
 
         return Lib.pauseEvent(e);
     }
-
-    // enable call to options.setCursor(evt)
-    initialOnMouseMove = options.element.onmousemove;
-    if(options.setCursor) options.element.onmousemove = options.setCursor;
-
-    options.element.onmousedown = onStart;
-    options.element.style.pointerEvents = 'all';
 };
 
 function coverSlip() {
