@@ -123,7 +123,7 @@ function createCamera(scene) {
                         result.boxStart[1] !== result.boxEnd[1])
                     ) {
                         result.boxEnabled = true;
-                        if (mode === 'select' || mode === 'lasso') {
+                        if(mode === 'select' || mode === 'lasso') {
                             // prepSelect(e, x, y, {
                             //     element: dragger, //+
                             //     gd: this.element, //+
@@ -189,7 +189,7 @@ function createCamera(scene) {
 
                     if(dx || dy) {
                         if(mode === 'select' || mode === 'lasso') {
-                            console.log('end');
+                            // console.log('end');
                         }
                         else {
                             if(dx) {
