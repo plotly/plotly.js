@@ -97,7 +97,7 @@ module.exports = function initInteractions(gd) {
             };
 
             maindrag.onclick = function(evt) {
-                Fx.click(gd, evt);
+                Fx.click(gd, evt, subplot);
             };
 
             // corner draggers
