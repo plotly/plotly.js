@@ -160,7 +160,10 @@ plotly.js charts can also be created and saved online for free at [plot.ly/plot]
 |---|--------|---------|
 |**Alex C. Johnson**| [@alexcjohnson](https://github.com/alexcjohnson) | |
 |**Étienne Tétreault-Pinard**| [@etpinard](https://github.com/etpinard) | [@etpinard](https://twitter.com/etpinard) |
-|**Mikola Lysenko**| [@mikolalysenko](https://github.com/mikolalysenko) | [@MikolaLysenko](https://twitter.com/MikolaLysenko) | |
+|**Mikola Lysenko**| [@mikolalysenko](https://github.com/mikolalysenko) | [@MikolaLysenko](https://twitter.com/MikolaLysenko) |
+|**Ricky Reusser**| [@rreusser](https://github.com/rreusser) | [@rickyreusser](https://twitter.com/rickyreusser) |
+|**Robert Monfera**| [@monfera](https://github.com/monfera) | [@monfera](https://twitter.com/monfera) |
+|**Nicolas Riesco**| [@n-riesco](https://github.com/n-riesco) | |
 |**Miklós Tusz**| [@mdtusz](https://github.com/mdtusz) | [@mdtusz](https://twitter.com/mdtusz)|
 |**Chelsea Douglas**| [@cldougl](https://github.com/cldougl) | |
 |**Ben Postlethwaite**| [@bpostlethwaite](https://github.com/bpostlethwaite) | |
