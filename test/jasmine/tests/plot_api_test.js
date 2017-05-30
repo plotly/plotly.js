@@ -10,6 +10,7 @@ var subroutines = require('@src/plot_api/subroutines');
 var helpers = require('@src/plot_api/helpers');
 
 var d3 = require('d3');
+var customMatchers = require('../assets/custom_matchers');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
@@ -104,6 +105,10 @@ describe('Test plot api', function() {
 
     describe('Plotly.relayout', function() {
         var gd;
+
+        beforeAll(function() {
+            jasmine.addMatchers(customMatchers);
+        });
 
         beforeEach(function() {
             gd = createGraphDiv();
@@ -248,6 +253,79 @@ describe('Test plot api', function() {
             })
             .then(function() {
                 return Plotly.relayout(gd, { zaxis: {} });
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('annotations, shapes and images linked to category axes should update properly on zoom/pan', function(done) {
+            var jsLogo = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
+
+            function getPos(sel) {
+                var rect = sel.node().getBoundingClientRect();
+                return [rect.left, rect.bottom];
+            }
+
+            function getAnnotationPos() {
+                return getPos(d3.select('.annotation'));
+            }
+
+            function getShapePos() {
+                return getPos(d3.select('.layer-above').select('.shapelayer').select('path'));
+            }
+
+            function getImagePos() {
+                return getPos(d3.select('.layer-above').select('.imagelayer').select('image'));
+            }
+
+            Plotly.plot(gd, [{
+                x: ['a', 'b', 'c'],
+                y: [1, 2, 1]
+            }], {
+                xaxis: {range: [-1, 5]},
+                annotations: [{
+                    xref: 'x',
+                    yref: 'y',
+                    x: 'b',
+                    y: 2
+                }],
+                shapes: [{
+                    xref: 'x',
+                    yref: 'y',
+                    type: 'line',
+                    x0: 'c',
+                    x1: 'c',
+                    y0: -1,
+                    y1: 4
+                }],
+                images: [{
+                    xref: 'x',
+                    yref: 'y',
+                    source: jsLogo,
+                    x: 'a',
+                    y: 1,
+                    sizex: 0.2,
+                    sizey: 0.2
+                }]
+            })
+            .then(function() {
+                expect(getAnnotationPos()).toBeCloseToArray([247.5, 210.1]);
+                expect(getShapePos()).toBeCloseToArray([350, 369]);
+                expect(getImagePos()).toBeCloseToArray([170, 272.52]);
+
+                return Plotly.relayout(gd, 'xaxis.range', [0, 2]);
+            })
+            .then(function() {
+                expect(getAnnotationPos()).toBeCloseToArray([337.5, 210.1]);
+                expect(getShapePos()).toBeCloseToArray([620, 369]);
+                expect(getImagePos()).toBeCloseToArray([80, 272.52]);
+
+                return Plotly.relayout(gd, 'xaxis.range', [-1, 5]);
+            })
+            .then(function() {
+                expect(getAnnotationPos()).toBeCloseToArray([247.5, 210.1]);
+                expect(getShapePos()).toBeCloseToArray([350, 369]);
+                expect(getImagePos()).toBeCloseToArray([170, 272.52]);
             })
             .catch(fail)
             .then(done);
