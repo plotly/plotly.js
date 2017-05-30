@@ -83,8 +83,12 @@ module.exports = function handleAnnotationDefaults(annIn, annOut, fullLayout, op
 
         // put the actual click data to bind to into private attributes
         // so we don't have to do this little bit of logic on every hover event
-        annOut._xclick = (xClick === undefined) ? annOut.x : xClick;
-        annOut._yclick = (yClick === undefined) ? annOut.y : yClick;
+        annOut._xclick = (xClick === undefined) ?
+            annOut.x :
+            Axes.cleanPosition(xClick, gdMock, annOut.xref);
+        annOut._yclick = (yClick === undefined) ?
+            annOut.y :
+            Axes.cleanPosition(yClick, gdMock, annOut.yref);
     }
 
     return annOut;

@@ -98,16 +98,48 @@ describe('Test annotations', function() {
             expect(layoutOut.annotations[0].ax).toEqual('2004-07-01');
         });
 
+        it('should clean *xclick* and *yclick* values', function() {
             var layoutIn = {
                 annotations: [{
+                    clicktoshow: 'onoff',
+                    xref: 'paper',
+                    yref: 'paper',
+                    xclick: '10',
+                    yclick: '30'
+                }, {
+                    clicktoshow: 'onoff',
+                    xref: 'x',
+                    yref: 'y',
+                    xclick: '1',
+                    yclick: '2017-13-50'
+                }, {
+                    clicktoshow: 'onoff',
+                    xref: 'x2',
+                    yref: 'y2',
+                    xclick: '2',
+                    yclick: 'A'
                 }]
             };
 
             var layoutOut = {
+                xaxis: {type: 'linear', range: [0, 1]},
+                yaxis: {type: 'date', range: ['2000-01-01', '2018-01-01']},
+                xaxis2: {type: 'log', range: [1, 2]},
+                yaxis2: {type: 'category', range: [0, 1]}
             };
+
+            ['xaxis', 'xaxis2', 'yaxis', 'yaxis2'].forEach(function(k) {
+                Axes.setConvert(layoutOut[k]);
+            });
 
             _supply(layoutIn, layoutOut);
 
+            expect(layoutOut.annotations[0]._xclick).toBe(10, 'paper x');
+            expect(layoutOut.annotations[0]._yclick).toBe(30, 'paper y');
+            expect(layoutOut.annotations[1]._xclick).toBe(1, 'linear');
+            expect(layoutOut.annotations[1]._yclick).toBe(undefined, 'invalid date');
+            expect(layoutOut.annotations[2]._xclick).toBe(2, 'log');
+            expect(layoutOut.annotations[2]._yclick).toBe('A', 'category');
         });
     });
 });

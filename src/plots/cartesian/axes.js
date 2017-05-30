@@ -113,6 +113,12 @@ axes.coercePosition = function(containerOut, gd, coerce, axRef, attr, dflt) {
     containerOut[attr] = ax.cleanPos(pos);
 };
 
+axes.cleanPosition = function(pos, gd, axRef) {
+    var ax = (axRef === 'paper' || axRef === 'pixel') ?
+        { cleanPos: Lib.num } :
+        axes.getFromId(gd, axRef);
+
+    return ax.cleanPos(pos);
 };
 
 axes.getDataToCoordFunc = function(gd, trace, target, targetArray) {
