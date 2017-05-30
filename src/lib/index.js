@@ -10,6 +10,11 @@
 'use strict';
 
 var d3 = require('d3');
+var isNumeric = require('fast-isnumeric');
+
+var numConstants = require('../constants/numerical');
+var FP_SAFE = numConstants.FP_SAFE;
+var BADNUM = numConstants.BADNUM;
 
 var lib = module.exports = {};
 
@@ -86,6 +91,13 @@ lib.filterVisible = require('./filter_visible');
 lib.pushUnique = require('./push_unique');
 
 lib.cleanNumber = require('./clean_number');
+
+lib.num = function num(v) {
+    if(!isNumeric(v)) return BADNUM;
+    v = Number(v);
+    if(v < -FP_SAFE || v > FP_SAFE) return BADNUM;
+    return isNumeric(v) ? Number(v) : BADNUM;
+};
 
 lib.noop = require('./noop');
 lib.identity = require('./identity');

@@ -98,39 +98,16 @@ describe('Test annotations', function() {
             expect(layoutOut.annotations[0].ax).toEqual('2004-07-01');
         });
 
-        it('should convert ax/ay category coordinates to linear coords', function() {
             var layoutIn = {
                 annotations: [{
-                    showarrow: true,
-                    axref: 'x',
-                    ayref: 'y',
-                    x: 'c',
-                    ax: 1,
-                    y: 'A',
-                    ay: 3
                 }]
             };
 
             var layoutOut = {
-                xaxis: {
-                    type: 'category',
-                    _categories: ['a', 'b', 'c'],
-                    range: [-0.5, 2.5] },
-                yaxis: {
-                    type: 'category',
-                    _categories: ['A', 'B', 'C'],
-                    range: [-0.5, 3]
-                }
             };
-            Axes.setConvert(layoutOut.xaxis);
-            Axes.setConvert(layoutOut.yaxis);
 
             _supply(layoutIn, layoutOut);
 
-            expect(layoutOut.annotations[0].x).toEqual(2);
-            expect(layoutOut.annotations[0].ax).toEqual(1);
-            expect(layoutOut.annotations[0].y).toEqual(0);
-            expect(layoutOut.annotations[0].ay).toEqual(3);
         });
     });
 });

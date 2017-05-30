@@ -57,10 +57,15 @@ module.exports = function calc(gd, trace) {
         z = binned.z;
     }
     else {
-        if(hasColumns(trace)) convertColumnData(trace, xa, ya, 'x', 'y', ['z']);
+        if(hasColumns(trace)) {
+            convertColumnData(trace, xa, ya, 'x', 'y', ['z']);
+            x = trace.x;
+            y = trace.y;
+        } else {
+            x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
+            y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
+        }
 
-        x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
-        y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
         x0 = trace.x0 || 0;
         dx = trace.dx || 1;
         y0 = trace.y0 || 0;
