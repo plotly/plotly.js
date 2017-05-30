@@ -10,7 +10,6 @@
 
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
-var attributes = require('./attributes');
 
 module.exports = function convert(scene) {
     var fullSceneLayout = scene.fullSceneLayout;
@@ -61,25 +60,4 @@ function mockAnnAxes(ann, scene) {
     ann._ya.l2p = function() {
         return 0.5 * (1 - ann.pdata[1] / ann.pdata[3]) * size.h * (domain.y[1] - domain.y[0]);
     };
-
-    // or do something more similar to 2d
-    // where Annotations.supplyLayoutDefaults is called after in Plots.doCalcdata
-    // if category axes are found.
-    function coerce(attr, dflt) {
-        return Lib.coerce(ann, ann, attributes, attr, dflt);
-    }
-
-    function coercePosition(axLetter) {
-        var axName = axLetter + 'axis';
-
-        // mock in such way that getFromId grabs correct 3D axis
-        var gdMock = { _fullLayout: {} };
-        gdMock._fullLayout[axName] = fullSceneLayout[axName];
-
-        return Axes.coercePosition(ann, gdMock, coerce, axLetter, axLetter, 0.5);
-    }
-
-    coercePosition('x');
-    coercePosition('y');
-    coercePosition('z');
 }

@@ -9,6 +9,7 @@
 'use strict';
 
 var Lib = require('../../lib');
+var Axes = require('../../plots/cartesian/axes');
 var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
 var handleAnnotationCommonDefaults = require('../annotations/common_defaults');
 var attributes = require('./attributes');
@@ -26,16 +27,25 @@ function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts, itemOpts) {
         return Lib.coerce(annIn, annOut, attributes, attr, dflt);
     }
 
+    function coercePosition(axLetter) {
+        var axName = axLetter + 'axis';
+
+        // mock in such way that getFromId grabs correct 3D axis
+        var gdMock = { _fullLayout: {} };
+        gdMock._fullLayout[axName] = sceneLayout[axName];
+
+        return Axes.coercePosition(annOut, gdMock, coerce, axLetter, axLetter, 0.5);
+    }
+
+
     var visible = coerce('visible', !itemOpts.itemIsNotPlainObject);
     if(!visible) return annOut;
 
     handleAnnotationCommonDefaults(annIn, annOut, opts.fullLayout, coerce);
 
-    // do not use Axes.coercePosition here
-    // as ax._categories aren't filled in at this stage
-    coerce('x');
-    coerce('y');
-    coerce('z');
+    coercePosition('x');
+    coercePosition('y');
+    coercePosition('z');
 
     // if you have one coordinate you should all three
     Lib.noneOrAll(annIn, annOut, ['x', 'y', 'z']);
