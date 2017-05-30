@@ -2032,7 +2032,7 @@ plots.doCalcdata = function(gd, traces) {
         }
     }
 
-    var hasCategoryAxis = initCategories(axList);
+    initCategories(axList);
 
     var hasCalcTransform = false;
 
@@ -2101,25 +2101,11 @@ plots.doCalcdata = function(gd, traces) {
     }
 
     Registry.getComponentMethod('fx', 'calc')(gd);
-
-    // To handle the case of components using category names as coordinates, we
-    // need to re-supply defaults for these objects now, after calc has
-    // finished populating the category mappings
-    // Any component that uses `Axes.coercePosition` falls into this category
-    if(hasCategoryAxis) {
-        var dataReferencedComponents = ['annotations', 'shapes', 'images'];
-        for(i = 0; i < dataReferencedComponents.length; i++) {
-            Registry.getComponentMethod(dataReferencedComponents[i], 'supplyLayoutDefaults')(
-                gd.layout, fullLayout, fullData);
-        }
-    }
 };
 
+// initialize the category list, if there is one, so we start over
+// to be filled in later by ax.d2c
 function initCategories(axList) {
-    var hasCategoryAxis = false;
-
-    // initialize the category list, if there is one, so we start over
-    // to be filled in later by ax.d2c
     for(var i = 0; i < axList.length; i++) {
         axList[i]._categories = axList[i]._initialCategories.slice();
 
@@ -2128,11 +2114,7 @@ function initCategories(axList) {
         for(var j = 0; j < axList[i]._categories.length; j++) {
             axList[i]._categoriesMap[axList[i]._categories[j]] = j;
         }
-
-        if(axList[i].type === 'category') hasCategoryAxis = true;
     }
-
-    return hasCategoryAxis;
 }
 
 plots.rehover = function(gd) {
