@@ -359,7 +359,7 @@ proto.destroy = function() {
 
     if(!this.staticPlot) this.container.removeChild(this.canvas);
     this.container.removeChild(this.svgContainer);
-    this.container.removeChild(this.mouseContainer);
+//     this.container.removeChild(this.mouseContainer);
 
     this.fullData = null;
     this.glplot = null;
