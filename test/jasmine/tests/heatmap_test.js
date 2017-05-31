@@ -428,6 +428,28 @@ describe('heatmap calc', function() {
         expect(out._xcategories).toEqual(['a', 'b', 'c']);
         expect(out._ycategories).toEqual(['A', 'B', 'C']);
     });
+
+    it('should handle the date x/y/z/ column case', function() {
+        var out = _calc({
+            x: [
+                '2016-01-01', '2016-01-01', '2016-01-01',
+                '2017-01-01', '2017-01-01', '2017-01-01',
+                '2017-06-01', '2017-06-01', '2017-06-01'
+            ],
+            y: [0, 1, 2, 0, 1, 2, 0, 1, 2],
+            z: [0, 50, 100, 50, 0, 255, 100, 510, 1010]
+        });
+
+        expect(out.x).toBeCloseToArray([
+            1435795200000, 1467417600000, 1489752000000, 1502798400000
+        ]);
+        expect(out.y).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
+        expect(out.z).toBeCloseTo2DArray([
+            [0, 50, 100],
+            [50, 0, 510],
+            [100, 255, 1010]
+        ]);
+    });
 });
 
 describe('heatmap plot', function() {
