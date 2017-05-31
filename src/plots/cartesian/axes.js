@@ -99,26 +99,27 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
  * - for other types: coerce them to numbers
  */
 axes.coercePosition = function(containerOut, gd, coerce, axRef, attr, dflt) {
-    var ax, pos;
+    var cleanPos, pos;
 
     if(axRef === 'paper' || axRef === 'pixel') {
-        ax = { cleanPos: Lib.num };
+        cleanPos = Lib.ensureNumber;
         pos = coerce(attr, dflt);
     } else {
-        ax = axes.getFromId(gd, axRef);
+        var ax = axes.getFromId(gd, axRef);
         dflt = ax.fraction2r(dflt);
         pos = coerce(attr, dflt);
+        cleanPos = ax.cleanPos;
     }
 
-    containerOut[attr] = ax.cleanPos(pos);
+    containerOut[attr] = cleanPos(pos);
 };
 
 axes.cleanPosition = function(pos, gd, axRef) {
-    var ax = (axRef === 'paper' || axRef === 'pixel') ?
-        { cleanPos: Lib.num } :
-        axes.getFromId(gd, axRef);
+    var cleanPos = (axRef === 'paper' || axRef === 'pixel') ?
+        Lib.ensureNumber :
+        axes.getFromId(gd, axRef).cleanPos;
 
-    return ax.cleanPos(pos);
+    return cleanPos(pos);
 };
 
 axes.getDataToCoordFunc = function(gd, trace, target, targetArray) {

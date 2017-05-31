@@ -92,7 +92,7 @@ lib.pushUnique = require('./push_unique');
 
 lib.cleanNumber = require('./clean_number');
 
-lib.num = function num(v) {
+lib.ensureNumber = function num(v) {
     if(!isNumeric(v)) return BADNUM;
     v = Number(v);
     if(v < -FP_SAFE || v > FP_SAFE) return BADNUM;

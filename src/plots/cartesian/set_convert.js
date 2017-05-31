@@ -16,7 +16,7 @@ var Lib = require('../../lib');
 var cleanNumber = Lib.cleanNumber;
 var ms2DateTime = Lib.ms2DateTime;
 var dateTime2ms = Lib.dateTime2ms;
-var num = Lib.num;
+var ensureNumber = Lib.ensureNumber;
 
 var numConstants = require('../../constants/numerical');
 var FP_SAFE = numConstants.FP_SAFE;
@@ -159,8 +159,8 @@ module.exports = function setConvert(ax, fullLayout) {
     function p2l(px) { return (px - ax._b) / ax._m; }
 
     // conversions among c/l/p are fairly simple - do them together for all axis types
-    ax.c2l = (ax.type === 'log') ? toLog : num;
-    ax.l2c = (ax.type === 'log') ? fromLog : num;
+    ax.c2l = (ax.type === 'log') ? toLog : ensureNumber;
+    ax.l2c = (ax.type === 'log') ? fromLog : ensureNumber;
 
     ax.l2p = l2p;
     ax.p2l = p2l;
@@ -176,12 +176,12 @@ module.exports = function setConvert(ax, fullLayout) {
     if(['linear', '-'].indexOf(ax.type) !== -1) {
         // all are data vals, but d and r need cleaning
         ax.d2r = ax.r2d = ax.d2c = ax.r2c = ax.d2l = ax.r2l = cleanNumber;
-        ax.c2d = ax.c2r = ax.l2d = ax.l2r = num;
+        ax.c2d = ax.c2r = ax.l2d = ax.l2r = ensureNumber;
 
         ax.d2p = ax.r2p = function(v) { return ax.l2p(cleanNumber(v)); };
         ax.p2d = ax.p2r = p2l;
 
-        ax.cleanPos = num;
+        ax.cleanPos = ensureNumber;
     }
     else if(ax.type === 'log') {
         // d and c are data vals, r and l are logged (but d and r need cleaning)
@@ -189,7 +189,7 @@ module.exports = function setConvert(ax, fullLayout) {
         ax.r2d = ax.r2c = function(v) { return fromLog(cleanNumber(v)); };
 
         ax.d2c = ax.r2l = cleanNumber;
-        ax.c2d = ax.l2r = num;
+        ax.c2d = ax.l2r = ensureNumber;
 
         ax.c2r = toLog;
         ax.l2d = fromLog;
@@ -200,7 +200,7 @@ module.exports = function setConvert(ax, fullLayout) {
         ax.r2p = function(v) { return ax.l2p(cleanNumber(v)); };
         ax.p2r = p2l;
 
-        ax.cleanPos = num;
+        ax.cleanPos = ensureNumber;
     }
     else if(ax.type === 'date') {
         // r and d are date strings, l and c are ms
@@ -233,7 +233,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
         ax.d2r = ax.d2l_noadd = getCategoryIndex;
 
-        ax.l2r = ax.r2c = ax.c2r = num;
+        ax.l2r = ax.r2c = ax.c2r = ensureNumber;
         ax.r2l = getCategoryIndex;
 
         ax.d2p = function(v) { return ax.l2p(getCategoryIndex(v)); };
@@ -243,7 +243,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
         ax.cleanPos = function(v) {
             if(typeof v === 'string' && v !== '') return v;
-            return num(v);
+            return ensureNumber(v);
         };
     }
 
