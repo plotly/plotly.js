@@ -381,7 +381,7 @@ describe('Drawing', function() {
                 width: 500
             })
             .then(function() {
-                var node = d3.select('text.annotation').node();
+                var node = d3.select('text.annotation-text').node();
                 assertBBox(Drawing.bBox(node), {
                     height: 14,
                     width: 27.671875,
@@ -395,7 +395,7 @@ describe('Drawing', function() {
                 return Plotly.relayout(gd, 'annotations[0].text', 'HELLO');
             })
             .then(function() {
-                var node = d3.select('text.annotation').node();
+                var node = d3.select('text.annotation-text').node();
                 assertBBox(Drawing.bBox(node), {
                     height: 14,
                     width: 41.015625,
@@ -409,7 +409,7 @@ describe('Drawing', function() {
                 return Plotly.relayout(gd, 'annotations[0].font.size', 20);
             })
             .then(function() {
-                var node = d3.select('text.annotation').node();
+                var node = d3.select('text.annotation-text').node();
                 assertBBox(Drawing.bBox(node), {
                     height: 22,
                     width: 66.015625,

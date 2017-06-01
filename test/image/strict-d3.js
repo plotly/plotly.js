@@ -17,17 +17,17 @@
 
         if(sel.size()) {
             if(typeof obj === 'string') {
-                checkVal(obj, arguments[1]);
+                checkVal(sel, obj, arguments[1]);
             }
             else {
-                Object.keys(obj).forEach(function(key) { checkVal(key, obj[key]); });
+                Object.keys(obj).forEach(function(key) { checkVal(sel, key, obj[key]); });
             }
         }
 
         return originalSelStyle.apply(sel, arguments);
     };
 
-    function checkVal(key, val) {
+    function checkVal(sel, key, val) {
         if(typeof val === 'string') {
             // in case of multipart styles (stroke-dasharray, margins, etc)
             // test each part separately
@@ -39,6 +39,10 @@
             });
         }
 
+        // Microsoft browsers incl. "Edge" don't support CSS transform on SVG elements
+        if(key === 'transform' && sel.node() instanceof SVGElement) {
+            throw new Error('d3 selection.style called on an SVG element with key: ' + key);
+        }
     }
 
     // below ripped from fast-isnumeric so I don't need to build this file

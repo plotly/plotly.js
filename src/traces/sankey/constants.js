@@ -16,5 +16,5 @@ module.exports = {
     forceIterations: 5,
     forceTicksPerFrame: 10,
     duration: 500,
-    ease: 'linear'
+    ease: 'cubic-in-out'
 };

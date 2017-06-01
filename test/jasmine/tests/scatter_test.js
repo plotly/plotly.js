@@ -437,6 +437,165 @@ describe('end-to-end scatter tests', function() {
         .catch(fail)
         .then(done);
     });
+
+    function _assertNodes(ptStyle, txContent) {
+        var pts = d3.selectAll('.point');
+        var txs = d3.selectAll('.textpoint');
+
+        expect(pts.size()).toEqual(ptStyle.length);
+        expect(txs.size()).toEqual(txContent.length);
+
+        pts.each(function(_, i) {
+            expect(d3.select(this).style('fill')).toEqual(ptStyle[i], 'pt ' + i);
+        });
+
+        txs.each(function(_, i) {
+            expect(d3.select(this).select('text').text()).toEqual(txContent[i], 'tx ' + i);
+        });
+    }
+
+    it('should reorder point and text nodes even when linked to ids (shuffle case)', function(done) {
+        Plotly.plot(gd, [{
+            x: [150, 350, 650],
+            y: [100, 300, 600],
+            text: ['apple', 'banana', 'clementine'],
+            ids: ['A', 'B', 'C'],
+            mode: 'markers+text',
+            marker: {
+                color: ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']
+            },
+            transforms: [{
+                type: 'sort',
+                enabled: false,
+                target: [0, 1, 0]
+            }]
+        }])
+        .then(function() {
+            _assertNodes(
+                ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)'],
+                ['apple', 'banana', 'clementine']
+            );
+
+            return Plotly.restyle(gd, 'transforms[0].enabled', true);
+        })
+        .then(function() {
+            _assertNodes(
+                ['rgb(255, 0, 0)', 'rgb(0, 0, 255)', 'rgb(0, 255, 0)'],
+                ['apple', 'clementine', 'banana']
+            );
+
+            return Plotly.restyle(gd, 'transforms[0].enabled', false);
+        })
+        .then(function() {
+            _assertNodes(
+                ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)'],
+                ['apple', 'banana', 'clementine']
+            );
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should reorder point and text nodes even when linked to ids (add/remove case)', function(done) {
+        Plotly.plot(gd, [{
+            x: [150, 350, null, 600],
+            y: [100, 300, null, 700],
+            text: ['apple', 'banana', null, 'clementine'],
+            ids: ['A', 'B', null, 'C'],
+            mode: 'markers+text',
+            marker: {
+                color: ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', null, 'rgb(0, 0, 255)']
+            },
+            transforms: [{
+                type: 'filter',
+                enabled: false,
+                target: [1, 0, 0, 1],
+                operation: '=',
+                value: 1
+            }]
+        }])
+        .then(function() {
+            _assertNodes(
+                ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)'],
+                ['apple', 'banana', 'clementine']
+            );
+
+            return Plotly.restyle(gd, 'transforms[0].enabled', true);
+        })
+        .then(function() {
+            _assertNodes(
+                ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
+                ['apple', 'clementine']
+            );
+
+            return Plotly.restyle(gd, 'transforms[0].enabled', false);
+        })
+        .then(function() {
+            _assertNodes(
+                ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)'],
+                ['apple', 'banana', 'clementine']
+            );
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should smoothly add/remove nodes tags with *ids* during animations', function(done) {
+        Plotly.plot(gd, {
+            data: [{
+                mode: 'markers+text',
+                y: [1, 2, 1],
+                text: ['apple', 'banana', 'clementine'],
+                ids: ['A', 'B', 'C'],
+                marker: { color: ['red', 'green', 'blue'] }
+            }],
+            frames: [{
+                data: [{
+                    y: [2, 1, 2],
+                    text: ['apple', 'banana', 'dragon fruit'],
+                    ids: ['A', 'C', 'D'],
+                    marker: { color: ['red', 'blue', 'yellow'] }
+                }]
+            }]
+        })
+        .then(function() {
+            _assertNodes(
+                ['rgb(255, 0, 0)', 'rgb(0, 128, 0)', 'rgb(0, 0, 255)'],
+                ['apple', 'banana', 'clementine']
+            );
+
+            return Plotly.animate(gd, null, {frame: {redraw: false}});
+        })
+        .then(function() {
+            _assertNodes(
+                ['rgb(255, 0, 0)', 'rgb(0, 0, 255)', 'rgb(255, 255, 0)'],
+                ['apple', 'banana', 'dragon fruit']
+            );
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('animates fillcolor', function(done) {
+        function fill() {
+            return d3.selectAll('.js-fill').node().style.fill;
+        }
+
+        Plotly.plot(gd, [{
+            x: [1, 2, 3, 4, 5, 6, 7],
+            y: [2, 3, 4, 5, 6, 7, 8],
+            fill: 'tozeroy',
+            fillcolor: 'rgb(255, 0, 0)',
+        }]).then(function() {
+            expect(fill()).toEqual('rgb(255, 0, 0)');
+            return Plotly.animate(gd,
+                [{data: [{fillcolor: 'rgb(0, 0, 255)'}]}],
+                {frame: {duration: 0, redraw: false}}
+            );
+        }).then(function() {
+            expect(fill()).toEqual('rgb(0, 0, 255)');
+        }).catch(fail).then(done);
+    });
 });
 
 describe('scatter hoverPoints', function() {

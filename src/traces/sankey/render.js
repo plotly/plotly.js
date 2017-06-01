@@ -115,8 +115,6 @@ function sankeyModel(layout, d, i) {
         node = sankeyNodes[n];
         node.width = width;
         node.height = height;
-        if(node.parallel) node.x = (horizontal ? width : height) * node.parallel;
-        if(node.perpendicular) node.y = (horizontal ? height : width) * node.perpendicular;
     }
 
     switchToForceFormat(nodes);
@@ -180,9 +178,7 @@ function nodeModel(uniqueKeys, d, n) {
         zoneThicknessPad = c.nodePadAcross,
         zoneLengthPad = d.nodePad / 2,
         visibleThickness = n.dx + 0.5,
-        visibleLength = n.dy - 0.5,
-        zoneThickness = visibleThickness + 2 * zoneThicknessPad,
-        zoneLength = visibleLength + 2 * zoneLengthPad;
+        visibleLength = n.dy - 0.5;
 
     var basicKey = n.label;
     var foundKey = uniqueKeys[basicKey];
@@ -198,15 +194,15 @@ function nodeModel(uniqueKeys, d, n) {
         nodeLineWidth: d.nodeLineWidth,
         textFont: d.textFont,
         size: d.horizontal ? d.height : d.width,
-        visibleWidth: Math.ceil(d.horizontal ? visibleThickness : visibleLength),
-        visibleHeight: Math.ceil(d.horizontal ? visibleLength : visibleThickness),
-        zoneX: d.horizontal ? -zoneThicknessPad : -zoneLengthPad,
-        zoneY: d.horizontal ? -zoneLengthPad : -zoneThicknessPad,
-        zoneWidth: d.horizontal ? zoneThickness : zoneLength,
-        zoneHeight: d.horizontal ? zoneLength : zoneThickness,
+        visibleWidth: Math.ceil(visibleThickness),
+        visibleHeight: Math.ceil(visibleLength),
+        zoneX: -zoneThicknessPad,
+        zoneY: -zoneLengthPad,
+        zoneWidth: visibleThickness + 2 * zoneThicknessPad,
+        zoneHeight: visibleLength + 2 * zoneLengthPad,
         labelY: d.horizontal ? n.dy / 2 + 1 : n.dx / 2 + 1,
         left: n.originalLayer === 1,
-        sizeAcross: d.horizontal ? d.width : d.height,
+        sizeAcross: d.width,
         forceLayouts: d.forceLayouts,
         horizontal: d.horizontal,
         darkBackground: tc.getBrightness() <= 128,
@@ -230,9 +226,7 @@ function crispLinesOnEnd(sankeyNode) {
 function updateNodePositions(sankeyNode) {
     sankeyNode
         .attr('transform', function(d) {
-            return d.horizontal ?
-                'translate(' + (d.node.x - 0.5) + ', ' + (d.node.y - d.node.dy / 2 + 0.5) + ')' :
-                'translate(' + (d.node.y - d.node.dy / 2 - 0.5) + ', ' + (d.node.x + 0.5) + ')';
+            return 'translate(' + (d.node.x - 0.5) + ', ' + (d.node.y - d.node.dy / 2 + 0.5) + ')';
         });
 }
 
@@ -259,19 +253,27 @@ function sizeNode(rect) {
         .attr('height', function(d) {return d.visibleHeight;});
 }
 
-function salientEnough(d) {
-    return d.link.dy > 1 || d.linkLineWidth > 0;
+function salientEnough(d) {return d.link.dy > 1 || d.linkLineWidth > 0;}
+
+function sankeyTransform(d) {
+    var offset = 'translate(' + d.translateX + ',' + d.translateY + ')';
+    return offset + (d.horizontal ? 'matrix(1 0 0 1 0 0)' : 'matrix(0 1 1 0 0 0)');
 }
 
-function linksTransform(d) {
-    return d.horizontal ? 'matrix(1,0,0,1,0,0)' : 'matrix(0,1,1,0,0,0)';
+function nodeCentering(d) {
+    return 'translate(' + (d.horizontal ? 0 : d.labelY) + ' ' + (d.horizontal ? d.labelY : 0) + ')';
 }
 
 function textGuidePath(d) {
     return d3.svg.line()([
-        [d.horizontal ? (d.left ? -d.sizeAcross : d.visibleWidth + c.nodeTextOffsetHorizontal) : c.nodeTextOffsetHorizontal, d.labelY],
-        [d.horizontal ? (d.left ? - c.nodeTextOffsetHorizontal : d.sizeAcross) : d.visibleWidth - c.nodeTextOffsetHorizontal, d.labelY]
+        [d.horizontal ? (d.left ? -d.sizeAcross : d.visibleWidth + c.nodeTextOffsetHorizontal) : c.nodeTextOffsetHorizontal, 0],
+        [d.horizontal ? (d.left ? - c.nodeTextOffsetHorizontal : d.sizeAcross) : d.visibleHeight - c.nodeTextOffsetHorizontal, 0]
     ]);}
+
+function sankeyInverseTransform(d) {return d.horizontal ? 'matrix(1 0 0 1 0 0)' : 'matrix(0 1 1 0 0 0)';}
+function textFlip(d) {return d.horizontal ? 'scale(1 1)' : 'scale(-1 1)';}
+function nodeTextColor(d) {return d.darkBackground && !d.horizontal ? 'rgb(255,255,255)' : 'rgb(0,0,0)';}
+function nodeTextOffset(d) {return d.horizontal && d.left ? '100%' : '0%';}
 
 // event handling
 
@@ -311,7 +313,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 
     var dragBehavior = d3.behavior.drag()
 
-        .origin(function(d) {return d.horizontal ? d.node : {x: d.node.y, y: d.node.x};})
+        .origin(function(d) {return d.node;})
 
         .on('dragstart', function(d) {
             if(d.arrangement === 'fixed') return;
@@ -335,8 +337,8 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 
         .on('drag', function(d) {
             if(d.arrangement === 'fixed') return;
-            var x = d.horizontal ? d3.event.x : d3.event.y;
-            var y = d.horizontal ? d3.event.y : d3.event.x;
+            var x = d3.event.x;
+            var y = d3.event.y;
             if(d.arrangement === 'snap') {
                 d.node.x = x;
                 d.node.y = y;
@@ -432,10 +434,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('left', 0)
         .style('shape-rendering', 'geometricPrecision')
         .style('pointer-events', 'auto')
-        .style('box-sizing', 'content-box');
+        .style('box-sizing', 'content-box')
+        .attr('transform', sankeyTransform);
 
-    sankey
-        .attr('transform', function(d) {return 'translate(' + d.translateX + ',' + d.translateY + ')';});
+    sankey.transition()
+        .ease(c.ease).duration(c.duration)
+        .attr('transform', sankeyTransform);
 
     var sankeyLinks = sankey.selectAll('.sankeyLinks')
         .data(repeat, keyFun);
@@ -443,12 +447,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
     sankeyLinks.enter()
         .append('g')
         .classed('sankeyLinks', true)
-        .style('fill', 'none')
-        .style('transform', linksTransform);
-
-    sankeyLinks.transition()
-        .ease(c.ease).duration(c.duration)
-        .style('transform', linksTransform);
+        .style('fill', 'none');
 
     var sankeyLink = sankeyLinks.selectAll('.sankeyLink')
         .data(function(d) {
@@ -562,26 +561,42 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .attr('width', function(d) {return d.zoneWidth;})
         .attr('height', function(d) {return d.zoneHeight;});
 
-    var nodeLabelGuide = sankeyNode.selectAll('.nodeLabelGuide')
+    var nodeCentered = sankeyNode.selectAll('.nodeCentered')
+        .data(repeat);
+
+    nodeCentered.enter()
+        .append('g')
+        .classed('nodeCentered', true)
+        .attr('transform', nodeCentering);
+
+    nodeCentered
+        .transition()
+        .ease(c.ease).duration(c.duration)
+        .attr('transform', nodeCentering);
+
+    var nodeLabelGuide = nodeCentered.selectAll('.nodeLabelGuide')
         .data(repeat);
 
     nodeLabelGuide.enter()
         .append('path')
         .classed('nodeLabelGuide', true)
         .attr('id', function(d) {return d.uniqueNodeLabelPathId;})
-        .attr('d', textGuidePath);
+        .attr('d', textGuidePath)
+        .attr('transform', sankeyInverseTransform);
 
     nodeLabelGuide
         .transition()
         .ease(c.ease).duration(c.duration)
-        .attr('d', textGuidePath);
+        .attr('d', textGuidePath)
+        .attr('transform', sankeyInverseTransform);
 
-    var nodeLabel = sankeyNode.selectAll('.nodeLabel')
+    var nodeLabel = nodeCentered.selectAll('.nodeLabel')
         .data(repeat);
 
     nodeLabel.enter()
         .append('text')
         .classed('nodeLabel', true)
+        .attr('transform', textFlip)
         .style('user-select', 'none')
         .style('cursor', 'default')
         .style('fill', 'black');
@@ -592,6 +607,11 @@ module.exports = function(svg, styledData, layout, callbacks) {
         })
         .each(function(d) {Drawing.font(nodeLabel, d.textFont);});
 
+    nodeLabel
+        .transition()
+        .ease(c.ease).duration(c.duration)
+        .attr('transform', textFlip);
+
     var nodeLabelTextPath = nodeLabel.selectAll('.nodeLabelTextPath')
         .data(repeat);
 
@@ -599,11 +619,17 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .append('textPath')
         .classed('nodeLabelTextPath', true)
         .attr('alignment-baseline', 'middle')
-        .attr('xlink:href', function(d) {return '#' + d.uniqueNodeLabelPathId;});
+        .attr('xlink:href', function(d) {return '#' + d.uniqueNodeLabelPathId;})
+        .attr('startOffset', nodeTextOffset)
+        .style('fill', nodeTextColor);
 
     nodeLabelTextPath
         .text(function(d) {return d.horizontal || d.node.dy > 5 ? d.node.label : '';})
-        .attr('startOffset', function(d) {return d.horizontal && d.left ? '100%' : '0%';})
-        .style('text-anchor', function(d) {return d.horizontal && d.left ? 'end' : 'start';})
-        .style('fill', function(d) {return d.darkBackground && !d.horizontal ? 'white' : 'black';});
+        .style('text-anchor', function(d) {return d.horizontal && d.left ? 'end' : 'start';});
+
+    nodeLabelTextPath
+        .transition()
+        .ease(c.ease).duration(c.duration)
+        .attr('startOffset', nodeTextOffset)
+        .style('fill', nodeTextColor);
 };

@@ -258,7 +258,7 @@ describe('Test sort transform interactions:', function() {
         .then(done);
     });
 
-    it('does not preserve hover/click `pointNumber` value', function(done) {
+    it('does not preserve event data `pointNumber` value', function(done) {
         var gd = createGraphDiv();
 
         function getPxPos(gd, id) {
@@ -273,32 +273,18 @@ describe('Test sort transform interactions:', function() {
         }
 
         function hover(gd, id) {
-            return new Promise(function(resolve) {
+            return new Promise(function(resolve, reject) {
                 gd.once('plotly_hover', function(eventData) {
+                    delete gd._lastHoverTime;
                     resolve(eventData);
                 });
 
                 var pos = getPxPos(gd, id);
                 mouseEvent('mousemove', pos[0], pos[1]);
-            });
-        }
 
-        function click(gd, id) {
-            return new Promise(function(resolve) {
-                gd.once('plotly_click', function(eventData) {
-                    resolve(eventData);
-                });
-
-                var pos = getPxPos(gd, id);
-                mouseEvent('mousemove', pos[0], pos[1]);
-                mouseEvent('mousedown', pos[0], pos[1]);
-                mouseEvent('mouseup', pos[0], pos[1]);
-            });
-        }
-
-        function wait() {
-            return new Promise(function(resolve) {
-                setTimeout(resolve, 100);
+                setTimeout(function() {
+                    reject('plotly_hover did not get called!');
+                }, 100);
             });
         }
 
@@ -334,12 +320,10 @@ describe('Test sort transform interactions:', function() {
         .then(function(eventData) {
             assertPt(eventData, 0, 1, 3, 'D');
         })
-        .then(wait)
-        .then(function() { return click(gd, 'G'); })
+        .then(function() { return hover(gd, 'G'); })
         .then(function(eventData) {
             assertPt(eventData, 1, 1, 6, 'G');
         })
-        .then(wait)
         .then(function() {
             return Plotly.restyle(gd, 'transforms[0].enabled', true);
         })
@@ -347,8 +331,18 @@ describe('Test sort transform interactions:', function() {
         .then(function(eventData) {
             assertPt(eventData, 0, 1, 1, 'D');
         })
-        .then(wait)
-        .then(function() { return click(gd, 'G'); })
+        .then(function() { return hover(gd, 'G'); })
+        .then(function(eventData) {
+            assertPt(eventData, 1, 1, 5, 'G');
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'xaxis.range', [-5, 5]);
+        })
+        .then(function() { return hover(gd, 'D'); })
+        .then(function(eventData) {
+            assertPt(eventData, 0, 1, 1, 'D');
+        })
+        .then(function() { return hover(gd, 'G'); })
         .then(function(eventData) {
             assertPt(eventData, 1, 1, 5, 'G');
         })

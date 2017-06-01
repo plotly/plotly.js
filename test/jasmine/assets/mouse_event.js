@@ -1,4 +1,4 @@
-var Lib = require('@src/lib');
+var Lib = require('../../../src/lib');
 
 module.exports = function(type, x, y, opts) {
     var fullOpts = {
