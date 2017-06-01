@@ -415,7 +415,7 @@ describe('Test Plots', function() {
             ];
 
             Plots.purge(gd);
-            expect(Object.keys(gd)).toEqual(expectedKeys);
+            expect(Object.keys(gd).sort()).toEqual(expectedKeys.sort());
             expect(gd.data).toBeUndefined();
             expect(gd.layout).toBeUndefined();
             expect(gd._fullData).toBeUndefined();
