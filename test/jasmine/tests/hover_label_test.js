@@ -754,6 +754,7 @@ describe('hover info on overlaid subplots', function() {
 describe('hover after resizing', function() {
     'use strict';
 
+    var gd;
     afterEach(destroyGraphDiv);
 
     function _click(pos) {
@@ -767,22 +768,17 @@ describe('hover after resizing', function() {
     }
 
     function assertLabelCount(pos, cnt, msg) {
-        return new Promise(function(resolve) {
-            mouseEvent('mousemove', pos[0], pos[1]);
+        delete gd._lastHoverTime;
+        mouseEvent('mousemove', pos[0], pos[1]);
 
-            setTimeout(function() {
-                var hoverText = d3.selectAll('g.hovertext');
-                expect(hoverText.size()).toEqual(cnt, msg);
-
-                resolve();
-            }, HOVERMINTIME);
-        });
+        var hoverText = d3.selectAll('g.hovertext');
+        expect(hoverText.size()).toBe(cnt, msg);
     }
 
     it('should work', function(done) {
         var data = [{ y: [2, 1, 2] }],
-            layout = { width: 600, height: 500 },
-            gd = createGraphDiv();
+            layout = { width: 600, height: 500 };
+        gd = createGraphDiv();
 
         var pos0 = [305, 403],
             pos1 = [401, 122];
