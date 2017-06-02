@@ -383,6 +383,7 @@ Plotly.plot = function(gd, data, layout, config) {
         drawFramework,
         marginPushers,
         marginPushersAgain,
+        initInteractions,
         positionAndAutorange,
         subroutines.layoutStyles,
         drawAxes,
