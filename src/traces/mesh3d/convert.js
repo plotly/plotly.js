@@ -124,6 +124,7 @@ proto.update = function(data) {
     if(data.intensity) {
         this.color = '#fff';
         config.vertexIntensity = data.intensity;
+        config.vertexIntensityBounds = [data.cmin, data.cmax];
         config.colormap = parseColorScale(data.colorscale);
     }
     else if(data.vertexcolor) {

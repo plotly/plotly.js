@@ -13,7 +13,8 @@ var Mesh3D = {};
 
 Mesh3D.attributes = require('./attributes');
 Mesh3D.supplyDefaults = require('./defaults');
-Mesh3D.colorbar = require('../heatmap/colorbar');
+Mesh3D.calc = require('./calc');
+Mesh3D.colorbar = require('./colorbar');
 Mesh3D.plot = require('./convert');
 
 Mesh3D.moduleType = 'trace';
