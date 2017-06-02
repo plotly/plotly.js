@@ -11,20 +11,7 @@ var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var selectButton = require('../assets/modebar_button');
 var customMatchers = require('../assets/custom_matchers');
-
-// useful to put callback in the event queue
-function delay() {
-    return new Promise(function(resolve) {
-        setTimeout(resolve, 20);
-    });
-}
-
-// updating the camera requires some waiting
-function waitForCamera() {
-    return new Promise(function(resolve) {
-        setTimeout(resolve, 200);
-    });
-}
+var delay = require('../assets/delay');
 
 function countCanvases() {
     return d3.selectAll('canvas').size();
@@ -100,18 +87,18 @@ describe('Test gl3d plots', function() {
 
         function _hover() {
             mouseEvent('mouseover', 605, 271);
-            return delay();
+            return delay(20)();
         }
 
         Plotly.plot(gd, _mock)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             gd.on('plotly_hover', function(eventData) {
                 ptData = eventData.points[0];
             });
         })
         .then(_hover)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             assertHoverText('x: 140.72', 'y: −96.97', 'z: −96.97');
             assertEventData(140.72, -96.97, -96.97, 0, 2);
@@ -189,18 +176,18 @@ describe('Test gl3d plots', function() {
 
         function _hover() {
             mouseEvent('mouseover', 605, 271);
-            return delay();
+            return delay(20)();
         }
 
         Plotly.plot(gd, _mock)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             gd.on('plotly_hover', function(eventData) {
                 ptData = eventData.points[0];
             });
         })
         .then(_hover)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             assertHoverText('x: 1', 'y: 2', 'z: 43', 'one two');
             assertEventData(1, 2, 43, 0, [1, 2]);
@@ -230,18 +217,18 @@ describe('Test gl3d plots', function() {
         // with button 1 pressed
         function _click() {
             mouseEvent('mouseover', 605, 271, {buttons: 1});
-            return delay();
+            return delay(20)();
         }
 
         Plotly.plot(gd, _mock)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             gd.on('plotly_click', function(eventData) {
                 ptData = eventData.points[0];
             });
         })
         .then(_click)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             assertEventData(140.72, -96.97, -96.97, 0, 2);
         })
@@ -253,7 +240,7 @@ describe('Test gl3d plots', function() {
         var sceneLayout = { aspectratio: { x: 1, y: 1, z: 1 } };
 
         Plotly.plot(gd, _mock)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             expect(countCanvases()).toEqual(1);
             expect(gd.layout.scene).toEqual(sceneLayout);
@@ -290,7 +277,7 @@ describe('Test gl3d plots', function() {
         var _mock = Lib.extendDeep({}, mock2);
 
         Plotly.plot(gd, _mock)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             return Plotly.deleteTraces(gd, [0]);
         })
@@ -329,7 +316,7 @@ describe('Test gl3d plots', function() {
         }
 
         Plotly.plot(gd, _mock)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             assertObjects(order0);
 
@@ -410,7 +397,7 @@ describe('Test gl3d modebar handlers', function() {
         };
 
         Plotly.plot(gd, mock)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             modeBar = gd._fullLayout._modeBar;
         })
@@ -634,7 +621,7 @@ describe('Test gl3d drag and wheel interactions', function() {
         };
 
         Plotly.plot(gd, mock)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             relayoutCallback = jasmine.createSpy('relayoutCallback');
             gd.on('plotly_relayout', relayoutCallback);
@@ -820,7 +807,7 @@ describe('Test gl2d plots', function() {
         var precision = 5;
 
         Plotly.plot(gd, _mock)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             expect(gd.layout.xaxis.autorange).toBe(true);
             expect(gd.layout.yaxis.autorange).toBe(true);
@@ -837,7 +824,7 @@ describe('Test gl2d plots', function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
             expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
         })
-        .then(waitForCamera)
+        .then(delay(200))
         .then(function() {
             gd.on('plotly_relayout', relayoutCallback);
 
@@ -880,7 +867,7 @@ describe('Test gl2d plots', function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
             expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
         })
-        .then(waitForCamera)
+        .then(delay(200))
         .then(function() {
             // callback count expectation: X and back; Y and back; XY and back
             expect(relayoutCallback).toHaveBeenCalledTimes(6);
@@ -906,7 +893,7 @@ describe('Test gl2d plots', function() {
         };
 
         Plotly.plot(gd, _mock)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             expect(objects().length).toEqual(OBJECT_PER_TRACE);
 
@@ -1358,7 +1345,7 @@ describe('Test gl3d annotations', function() {
     }
 
     function assertAnnotationsXY(expectations, msg) {
-        var TOL = 1.5;
+        var TOL = 2.5;
         var anns = d3.selectAll('g.annotation-text-g');
 
         expect(anns.size()).toBe(expectations.length, msg);
@@ -1379,6 +1366,9 @@ describe('Test gl3d annotations', function() {
 
         camera.eye = {x: x, y: y, z: z};
         scene.setCamera(camera);
+        // need a fairly long delay to let the camera update here
+        // 200 was not robust for me (AJ), 300 seems to be.
+        return delay(300)();
     }
 
     it('should move with camera', function(done) {
@@ -1407,13 +1397,11 @@ describe('Test gl3d annotations', function() {
 
             return updateCamera(1.5, 2.5, 1.5);
         })
-        .then(waitForCamera)
         .then(function() {
             assertAnnotationsXY([[340, 187], [341, 142], [325, 221]], 'after camera update');
 
             return updateCamera(2.1, 0.1, 0.9);
         })
-        .then(waitForCamera)
         .then(function() {
             assertAnnotationsXY([[262, 199], [257, 135], [325, 233]], 'base 0');
         })
