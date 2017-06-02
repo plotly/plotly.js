@@ -355,11 +355,11 @@ describe('Drawing', function() {
         afterEach(destroyGraphDiv);
 
         function assertBBox(actual, expected) {
-            expect(actual.height).toEqual(expected.height, 'height');
-            expect(actual.top).toEqual(expected.top, 'top');
-            expect(actual.bottom).toEqual(expected.bottom, 'bottom');
-
             var TOL = 3;
+            expect(actual.height).toBeWithin(expected.height, TOL, 'height');
+            expect(actual.top).toBeWithin(expected.top, TOL, 'top');
+            expect(actual.bottom).toBeWithin(expected.bottom, TOL, 'bottom');
+
             expect(actual.width).toBeWithin(expected.width, TOL, 'width');
             expect(actual.left).toBeWithin(expected.left, TOL, 'left');
             expect(actual.right).toBeWithin(expected.right, TOL, 'right');
