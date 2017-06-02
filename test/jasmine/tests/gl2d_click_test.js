@@ -13,6 +13,7 @@ var fail = require('../assets/fail_test.js');
 var click = require('../assets/timed_click');
 var hover = require('../assets/hover');
 var delay = require('../assets/delay');
+var mouseEvent = require('../assets/mouse_event');
 
 // contourgl is not part of the dist plotly.js bundle initially
 Plotly.register([
@@ -84,11 +85,17 @@ describe('Test hover and click interactions', function() {
     function makeUnhoverFn(gd, x0, y0) {
         return function() {
             return new Promise(function(resolve) {
+                var initialElement = document.elementFromPoint(x0, y0);
                 // fairly realistic simulation of moving with the cursor
                 var canceler = setInterval(function() {
                     x0 -= 2;
                     y0 -= 2;
                     hover(x0, y0);
+
+                    var nowElement = document.elementFromPoint(x0, y0);
+                    if(nowElement !== initialElement) {
+                        mouseEvent('mouseout', x0, y0, {element: initialElement});
+                    }
                 }, 10);
 
                 gd.on('plotly_unhover', function() {
