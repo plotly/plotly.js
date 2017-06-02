@@ -67,6 +67,11 @@ function Scene2D(options, fullLayout) {
     // last pick result
     this.pickResult = null;
 
+    // is the mouse over the plot?
+    // it's OK if this says true when it's not, so long as
+    // when we get a mouseout we set it to false before handling
+    this.isMouseOver = true;
+
     this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
 
     // flag to stop render loop
@@ -153,6 +158,15 @@ proto.makeFramework = function() {
     container.appendChild(canvas);
     container.appendChild(svgContainer);
     container.appendChild(mouseContainer);
+
+    var self = this;
+    mouseContainer.addEventListener('mouseout', function() {
+        self.isMouseOver = false;
+        self.unhover();
+    });
+    mouseContainer.addEventListener('mouseover', function() {
+        self.isMouseOver = true;
+    });
 };
 
 proto.toImage = function(format) {
@@ -574,7 +588,7 @@ proto.draw = function() {
 
         glplot.setDirty();
     }
-    else if(!camera.panning) {
+    else if(!camera.panning && this.isMouseOver) {
         this.selectBox.enabled = false;
 
         var size = fullLayout._size,
@@ -658,14 +672,20 @@ proto.draw = function() {
 
     // Remove hover effects if we're not over a point OR
     // if we're zooming or panning (in which case result is not set)
-    if(!result && this.lastPickResult) {
+    if(!result) {
+        this.unhover();
+    }
+
+    glplot.draw();
+};
+
+proto.unhover = function() {
+    if(this.lastPickResult) {
         this.spikes.update({});
         this.lastPickResult = null;
         this.graphDiv.emit('plotly_unhover');
         Fx.loneUnhover(this.svgContainer);
     }
-
-    glplot.draw();
 };
 
 proto.hoverFormatter = function(axisName, val) {
