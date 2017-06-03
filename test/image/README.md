@@ -31,7 +31,13 @@ the above evaluates the output of `docker-machine env default`.
 
 ### Step 1: Setup the testing container
 
-After `cd` into your `plotly.js` directory, pull the latest docker image with
+After `cd` into your `plotly.js` directory, install the dependencies
+
+```bash
+npm install
+```
+
+pull the latest docker image with
 
 ```bash
 npm run docker -- pull
