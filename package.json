@@ -62,7 +62,6 @@
     "d3": "^3.5.12",
     "d3-force": "^1.0.6",
     "delaunay-triangulate": "^1.1.6",
-    "es6-promise": "^3.0.2",
     "fast-isnumeric": "^1.1.1",
     "gl-contour2d": "^1.1.2",
     "gl-error2d": "^1.2.1",

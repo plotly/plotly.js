@@ -24,6 +24,7 @@ and more.
 * [Contributing](#contributing)
 * [Community](#community)
 * [Clients for R, Python, Node, and MATLAB](#clients-for-r-python-node-and-matlab)
+* [Browser Compatibility](#browser-compatibility)
 * [Creators](#creators)
 * [Copyright and license](#copyright-and-license)
 
@@ -153,6 +154,13 @@ Open-source clients to the plotly.js APIs are available at these links:
 |**Julia**| [plotly/Plotly.jl](https://github.com/plotly/Plotly.jl) | [plot.ly/julia/getting-started](https://plot.ly/julia/getting-started) |
 
 plotly.js charts can also be created and saved online for free at [plot.ly/plot](https://plot.ly/plot).
+
+## Browser Compatibility
+
+Besides [d3.js](http://d3js.org) and [stack.gl](http://stack.gl), plotly.js makes use of the [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) API, which is widely supported across browsers, see [promises](http://caniuse.com/promises/embed).
+
+But for legacy browsers, we advise using one of the many polyfills available ([core-js](https://github.com/zloirock/core-js) provides a wide variety of shims).
+
 
 ## Creators
 
