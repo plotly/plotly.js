@@ -1034,14 +1034,18 @@ describe('Test hover label custom styling:', function() {
     function assertLabel(className, expectation) {
         var g = d3.select('g.' + className);
 
-        var path = g.select('path');
-        expect(path.style('fill')).toEqual(expectation.path[0], 'bgcolor');
-        expect(path.style('stroke')).toEqual(expectation.path[1], 'bordercolor');
+        if(expectation === null) {
+            expect(g.size()).toBe(0);
+        } else {
+            var path = g.select('path');
+            expect(path.style('fill')).toEqual(expectation.path[0], 'bgcolor');
+            expect(path.style('stroke')).toEqual(expectation.path[1], 'bordercolor');
 
-        var text = g.select({hovertext: 'text.nums', axistext: 'text'}[className]);
-        expect(parseInt(text.style('font-size'))).toEqual(expectation.text[0], 'font.size');
-        expect(text.style('font-family').split(',')[0]).toEqual(expectation.text[1], 'font.family');
-        expect(text.style('fill')).toEqual(expectation.text[2], 'font.color');
+            var text = g.select({hovertext: 'text.nums', axistext: 'text'}[className]);
+            expect(parseInt(text.style('font-size'))).toEqual(expectation.text[0], 'font.size');
+            expect(text.style('font-family').split(',')[0]).toEqual(expectation.text[1], 'font.family');
+            expect(text.style('fill')).toEqual(expectation.text[2], 'font.color');
+        }
     }
 
     function assertPtLabel(expectation) {
@@ -1112,8 +1116,40 @@ describe('Test hover label custom styling:', function() {
                 text: [13, 'Arial', 'rgb(255, 255, 255)']
             });
 
+            // test arrayOk case
+            return Plotly.restyle(gd, 'hoverinfo', [['skip', 'name', 'x']]);
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[0] });
+
+            assertPtLabel(null);
+            assertCommonLabel(null);
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[1] });
+
+            assertPtLabel({
+                path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
+                text: [20, 'Arial', 'rgb(0, 128, 0)']
+            });
+            assertCommonLabel(null);
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[2] });
+
+            assertPtLabel(null);
+            assertCommonLabel({
+                path: ['rgb(255, 255, 255)', 'rgb(255, 255, 255)'],
+                text: [13, 'Arial', 'rgb(255, 255, 255)']
+            });
+
             // test base case
-            return Plotly.update(gd, { hoverlabel: null }, { hoverlabel: null });
+            return Plotly.update(gd, {
+                hoverlabel: null,
+                hoverinfo: null
+            }, {
+                hoverlabel: null
+            });
         })
         .then(function() {
             _hover(gd, { xval: gd._fullData[0].x[0] });

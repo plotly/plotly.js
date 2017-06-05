@@ -74,6 +74,7 @@ module.exports = {
         role: 'info',
         flags: ['x', 'y', 'z', 'text', 'name'],
         extras: ['all', 'none', 'skip'],
+        arrayOk: true,
         dflt: 'all',
         description: [
             'Determines which trace information appear on hover.',

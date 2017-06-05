@@ -349,10 +349,22 @@ lib.noneOrAll = function(containerIn, containerOut, attrList) {
     }
 };
 
-lib.mergeArray = function(traceAttr, cd, cdAttr) {
+/** merge data array into calcdata items
+ *
+ * @param {array} traceAttr : trace attribute
+ * @param {object} cd : calcdata trace
+ * @param {string} cdAttr : calcdata key
+ * @param {function} [fn] : optional function to apply to each array item
+ *
+ */
+lib.mergeArray = function(traceAttr, cd, cdAttr, fn) {
+    fn = fn || lib.identity;
+
     if(Array.isArray(traceAttr)) {
         var imax = Math.min(traceAttr.length, cd.length);
-        for(var i = 0; i < imax; i++) cd[i][cdAttr] = traceAttr[i];
+        for(var i = 0; i < imax; i++) {
+            cd[i][cdAttr] = fn(traceAttr[i]);
+        }
     }
 };
 

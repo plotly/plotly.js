@@ -196,7 +196,7 @@ exports.valObjects = {
             'Values in `extras` cannot be combined.'
         ].join(' '),
         requiredOpts: ['flags'],
-        otherOpts: ['dflt', 'extras'],
+        otherOpts: ['dflt', 'extras', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt, opts) {
             if(typeof v !== 'string') {
                 propOut.set(dflt);
