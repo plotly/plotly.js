@@ -154,7 +154,7 @@ describe('hover info', function() {
             expect(d3.selectAll('g.axistext').size()).toEqual(1);
             expect(d3.selectAll('g.hovertext').size()).toEqual(1);
             expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
-            expect(d3.selectAll('g.hovertext').select('text').selectAll('tspan').size()).toEqual(2);
+            expect(d3.selectAll('g.hovertext').select('text.nums').selectAll('tspan').size()).toEqual(2);
             expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('1');
             expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('hover text');
         });
