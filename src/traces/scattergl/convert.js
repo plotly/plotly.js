@@ -96,12 +96,16 @@ function LineWithMarkers(scene, uid) {
         size: 12,
         color: [0, 0, 0, 1],
         borderSize: 1,
-        borderColor: [0, 0, 0, 1]
+        borderColor: [0, 0, 0, 1],
+        snapPoints: true
     };
+    var scatterOptions1 = Lib.extendFlat({}, scatterOptions0, {snapPoints: false});
 
-    this.scatter = this.initObject(createScatter, scatterOptions0, 3);
+    this.scatter = this.initObject(function (plot, options) {
+        return createScatter(plot, options)
+    }, scatterOptions0, 3);
     this.fancyScatter = this.initObject(createFancyScatter, scatterOptions0, 4);
-    this.selectScatter = this.initObject(createScatter, scatterOptions0, 5);
+    this.selectScatter = this.initObject(createScatter, scatterOptions1, 5);
 }
 
 var proto = LineWithMarkers.prototype;
@@ -111,6 +115,14 @@ proto.initObject = function(createFn, options, objIndex) {
     var glplot = _this.scene.glplot;
     var options0 = Lib.extendFlat({}, options);
     var obj = null;
+    var result = {
+        options: options,
+        update: update,
+        clear: clear,
+        dispose: dispose
+    }
+
+    return result
 
     function update() {
         if(!obj) {
@@ -128,13 +140,6 @@ proto.initObject = function(createFn, options, objIndex) {
     function dispose() {
         if(obj) obj.dispose();
     }
-
-    return {
-        options: options,
-        update: update,
-        clear: clear,
-        dispose: dispose
-    };
 };
 
 proto.handlePick = function(pickResult) {
@@ -268,26 +273,11 @@ proto.update = function(options, cdscatter) {
         this.hasErrorY = options.error_y.visible === true;
         this.hasMarkers = subTypes.hasMarkers(options);
     }
-
     this.textLabels = options.text;
     this.name = options.name;
     this.hoverinfo = options.hoverinfo;
     this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
     this.connectgaps = !!options.connectgaps;
-
-    // form selection cache
-    var sel, selection = options.selection;
-    if(selection) {
-        sel = {};
-        for(var i = 0, l = selection.length; i < l; i++) {
-            var pt = selection[i];
-            sel[pt.pointNumber] = pt;
-        }
-        this.selectedIds = sel;
-    }
-    else {
-        this.selectedIds = null;
-    }
 
     if(!this.isVisible) {
         this.line.clear();
@@ -359,7 +349,6 @@ proto.updateFast = function(options) {
         pId = 0,
         ptr = 0,
         selection = options.selection,
-        sel = this.selectedIds,
         i, selPositions, l;
 
     var xx, yy;
@@ -383,11 +372,8 @@ proto.updateFast = function(options) {
                     xx = Lib.dateTime2ms(xx, xcalendar);
                 }
 
-                // ignore selected points from positions
-                if(!sel || !sel[i]) {
-                    positions[ptr++] = xx;
-                    positions[ptr++] = yy;
-                }
+                positions[ptr++] = xx;
+                positions[ptr++] = yy;
 
                 idToIndex[pId++] = i;
 
@@ -424,11 +410,11 @@ proto.updateFast = function(options) {
 
         // if we have selPositions array - means we have to render all points transparent, and selected points opaque
         if(selPositions) {
-            this.selectScatter.options.positions = positions;
+            this.selectScatter.options.positions = selPositions;
 
             markerColor = str2RGBArray(options.marker.color);
             borderColor = str2RGBArray(options.marker.line.color);
-            opacity = (options.opacity) * (options.marker.opacity) * DESELECTDIM;
+            opacity = (options.opacity) * (options.marker.opacity);
 
             markerColor[3] *= opacity;
             this.selectScatter.options.color = markerColor;
@@ -439,14 +425,15 @@ proto.updateFast = function(options) {
             markerSize = options.marker.size;
             this.selectScatter.options.size = markerSize;
             this.selectScatter.options.borderSize = options.marker.line.width;
+
             this.selectScatter.update();
 
 
-            this.scatter.options.positions = selPositions;
+            this.scatter.options.positions = null;
 
             markerColor = str2RGBArray(options.marker.color);
             borderColor = str2RGBArray(options.marker.line.color);
-            opacity = (options.opacity) * (options.marker.opacity);
+            opacity = (options.opacity) * (options.marker.opacity) * DESELECTDIM;
 
             markerColor[3] *= opacity;
             this.scatter.options.color = markerColor;
@@ -459,6 +446,8 @@ proto.updateFast = function(options) {
             this.scatter.options.borderSize = options.marker.line.width;
 
             this.scatter.update();
+
+            this.scatter.options.positions = positions;
         }
 
         else {

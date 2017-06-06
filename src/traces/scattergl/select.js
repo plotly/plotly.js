@@ -23,9 +23,15 @@ module.exports = function selectPoints(searchInfo, polygon) {
         x,
         y;
 
+    var scattergl = cd[0].glTrace;
+    var scene = cd[0].glTrace.scene;
+
     // TODO: include lines? that would require per-segment line properties
     var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
     if(trace.visible !== true || hasOnlyLines) return;
+
+    // filter out points by visible scatter ones
+    // var scatter2d = scattergl.scatter.instance
 
     if(polygon === false) { // clear selection
         for(i = 0; i < cd.length; i++) cd[i].dim = 0;
@@ -33,16 +39,17 @@ module.exports = function selectPoints(searchInfo, polygon) {
     else {
         for(i = 0; i < cd.length; i++) {
             di = cd[i];
+            //FIXME: this affects performance for 1e6 points
             x = xa.c2p(di.x);
             y = ya.c2p(di.y);
             if(polygon.contains([x, y])) {
                 selection.push({
-                    curveNumber: curveNumber,
-                    pointNumber: i,
+                    // curveNumber: curveNumber,
+                    // pointNumber: i,
                     x: di.x,
                     y: di.y,
                     // FIXME: di.id is undefined for scattergls
-                    id: di.id
+                    // id: di.id
                 });
                 di.dim = 0;
             }
@@ -51,16 +58,12 @@ module.exports = function selectPoints(searchInfo, polygon) {
     }
 
     // highlight selected points here
-    var traceObj = cd[0].glTrace;
-    var scene = cd[0].glTrace.scene;
-    var fullTrace = cd[0].trace;
-
-    fullTrace.selection = selection;
+    trace.selection = selection;
 
     // scene.plot([fullTrace], [cd], scene.fullLayout);
 
     // excerpt from ↑
-    traceObj.update(fullTrace, cd);
+    scattergl.update(trace, cd);
     scene.glplot.setDirty();
 
     return selection;
