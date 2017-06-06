@@ -89,9 +89,9 @@ module.exports = function plot(gd, cdpie) {
                     evt.originalEvent = d3.event;
 
                     // in case fullLayout or fullData has changed without a replot
-                    var fullLayout2 = gd._fullLayout,
-                        trace2 = gd._fullData[trace.index],
-                        hoverinfo = trace2.hoverinfo;
+                    var fullLayout2 = gd._fullLayout;
+                    var trace2 = gd._fullData[trace.index];
+                    var hoverinfo = Fx.castHoverinfo(trace2, fullLayout2, pt.i);
 
                     if(hoverinfo === 'all') hoverinfo = 'label+text+value+percent+name';
 
@@ -124,8 +124,6 @@ module.exports = function plot(gd, cdpie) {
                     if(hoverinfo.indexOf('value') !== -1) thisText.push(helpers.formatPieValue(pt.v, separators));
                     if(hoverinfo.indexOf('percent') !== -1) thisText.push(helpers.formatPiePercent(pt.v / cd0.vTotal, separators));
 
-                    var hoverLabelOpts = trace2.hoverlabel;
-
                     Fx.loneHover({
                         x0: hoverCenterX - rInscribed * cd0.r,
                         x1: hoverCenterX + rInscribed * cd0.r,
@@ -133,11 +131,11 @@ module.exports = function plot(gd, cdpie) {
                         text: thisText.join('<br>'),
                         name: hoverinfo.indexOf('name') !== -1 ? trace2.name : undefined,
                         idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
-                        color: pt.hbg || hoverLabelOpts.bgcolor || pt.color,
-                        borderColor: pt.hbc || hoverLabelOpts.bordercolor,
-                        fontFamily: pt.htf || hoverLabelOpts.font.family,
-                        fontSize: pt.hts || hoverLabelOpts.font.size,
-                        fontColor: pt.htc || hoverLabelOpts.font.color
+                        color: Fx.castHoverOption(trace, pt.i, 'bgcolor') || pt.color,
+                        borderColor: Fx.castHoverOption(trace, pt.i, 'bordercolor'),
+                        fontFamily: Fx.castHoverOption(trace, pt.i, 'font.family'),
+                        fontSize: Fx.castHoverOption(trace, pt.i, 'font.size'),
+                        fontColor: Fx.castHoverOption(trace, pt.i, 'font.color')
                     }, {
                         container: fullLayout2._hoverlayer.node(),
                         outerContainer: fullLayout2._paper.node()

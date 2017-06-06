@@ -67,8 +67,8 @@ function render(scene) {
     if(lastPicked !== null) {
         var pdata = project(scene.glplot.cameraParams, selection.dataCoordinate);
         trace = lastPicked.data;
-        var hoverinfo = trace.hoverinfo;
         var ptNumber = selection.index;
+        var hoverinfo = Fx.castHoverinfo(trace, scene.fullLayout, ptNumber);
 
         var xVal = formatter('xaxis', selection.traceCoordinate[0]),
             yVal = formatter('yaxis', selection.traceCoordinate[1]),

@@ -242,9 +242,9 @@ describe('pie hovering', function() {
                 assertLabel(['4', 'SUP', '5', '33.3%']);
 
                 return Plotly.restyle(gd, {
-                    'hoverlabel.bgcolor': [['red', 'green', 'blue']],
+                    'hoverlabel.bgcolor': [['red', 'green', 'blue', 'yellow', 'red']],
                     'hoverlabel.bordercolor': 'yellow',
-                    'hoverlabel.font.size': [[15, 20, 30]],
+                    'hoverlabel.font.size': [[15, 20, 30, 20, 15]],
                     'hoverlabel.font.family': 'Roboto',
                     'hoverlabel.font.color': 'blue'
                 });
@@ -255,6 +255,18 @@ describe('pie hovering', function() {
                     ['4', 'SUP', '5', '33.3%'],
                     ['rgb(255, 0, 0)', 'rgb(255, 255, 0)', 15, 'Roboto', 'rgb(0, 0, 255)']
                 );
+
+                return Plotly.restyle(gd, 'hoverinfo', [[null, null, null, null, 'label+percent']]);
+            })
+            .then(_hover)
+            .then(function() {
+                assertLabel(['4', '33.3%']);
+
+                return Plotly.restyle(gd, 'hoverinfo', [[null, null, null, null, 'dont+know+what+im-doing']]);
+            })
+            .then(_hover)
+            .then(function() {
+                assertLabel(['4', 'SUP', '5', '33.3%']);
             })
             .catch(fail)
             .then(done);

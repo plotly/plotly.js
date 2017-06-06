@@ -262,6 +262,25 @@ describe('filter transforms calc:', function() {
         expect(out[0].marker.color).toEqual([0.3, 0.3, 0.4]);
     });
 
+    it('filters should handle array on base trace attributes', function() {
+        var out = _transform([Lib.extendDeep({}, base, {
+            hoverinfo: ['x', 'y', 'text', 'name', 'none', 'skip', 'all'],
+            hoverlabel: {
+                bgcolor: ['red', 'green', 'blue', 'black', 'yellow', 'cyan', 'pink'],
+            },
+            transforms: [{
+                type: 'filter',
+                operation: '>',
+                value: 0
+            }]
+        })]);
+
+        expect(out[0].x).toEqual([1, 2, 3]);
+        expect(out[0].y).toEqual([2, 3, 1]);
+        expect(out[0].hoverinfo).toEqual(['none', 'skip', 'all']);
+        expect(out[0].hoverlabel.bgcolor).toEqual(['yellow', 'cyan', 'pink']);
+    });
+
     it('filters should skip if *enabled* is false', function() {
         var out = _transform([Lib.extendDeep({}, base, {
             transforms: [{
