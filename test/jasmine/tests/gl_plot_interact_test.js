@@ -936,7 +936,6 @@ describe('Test gl2d plots', function() {
     });
 
     it('should clear orphan cartesian subplots on addTraces', function(done) {
-
         Plotly.newPlot(gd, [], {
             xaxis: { title: 'X' },
             yaxis: { title: 'Y' }
@@ -949,12 +948,10 @@ describe('Test gl2d plots', function() {
             }]);
         })
         .then(function() {
-            expect(d3.select('.subplot.xy').size()).toEqual(0);
             expect(d3.select('.xtitle').size()).toEqual(0);
             expect(d3.select('.ytitle').size()).toEqual(0);
         })
         .then(done);
-
     });
 
     it('supports 1D and 2D Zoom', function(done) {
