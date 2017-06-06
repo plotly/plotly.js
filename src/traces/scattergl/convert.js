@@ -408,7 +408,7 @@ proto.updateFast = function(options) {
 
         // if we have selPositions array - means we have to render all points transparent, and selected points opaque
         if(selPositions) {
-            this.scatter.options.positions = positions;
+            this.scatter.options.positions = null;
 
             markerColor = str2RGBArray(options.marker.color);
             borderColor = str2RGBArray(options.marker.line.color);
@@ -425,6 +425,7 @@ proto.updateFast = function(options) {
             this.scatter.options.borderSize = options.marker.line.width;
 
             this.scatter.update();
+            this.scatter.options.positions = positions;
 
 
             this.selectScatter.options.positions = selPositions;
