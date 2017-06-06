@@ -84,17 +84,5 @@ module.exports = {
     fillcolor: scatterAttrs.fillcolor,
 
     error_y: scatterAttrs.error_y,
-    error_x: scatterAttrs.error_x,
-
-    hoveron: {
-        valType: 'flaglist',
-        flags: ['points', 'fills'],
-        role: 'info',
-        description: [
-            'Do the hover effects highlight individual points (markers or',
-            'line points) or do they highlight filled regions?',
-            'If the fill is *toself* or *tonext* and there are no markers',
-            'or text, then the default is *fills*, otherwise it is *points*.'
-        ].join(' ')
-    }
+    error_x: scatterAttrs.error_x
 };
