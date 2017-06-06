@@ -10,6 +10,7 @@
 'use strict';
 
 var Axes = require('../../plots/cartesian/axes');
+var calcColorscales = require('../scatter/colorscale_calc');
 
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
@@ -25,6 +26,8 @@ module.exports = function calc(gd, trace) {
     for(i = 0; i < serieslen; i++) {
         cd[i] = {x: x[i], y: y[i]};
     }
+
+    calcColorscales(trace);
 
     return cd;
 };
