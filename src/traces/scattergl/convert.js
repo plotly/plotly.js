@@ -9,7 +9,7 @@
 
 'use strict';
 
-var createScatter = require('gl-scatter2d');
+var createScatter = require('../../../../gl-scatter2d');
 var createFancyScatter = require('gl-scatter2d-sdf');
 var createLine = require('gl-line2d');
 var createError = require('gl-error2d');
@@ -410,26 +410,7 @@ proto.updateFast = function(options) {
 
         // if we have selPositions array - means we have to render all points transparent, and selected points opaque
         if(selPositions) {
-            this.selectScatter.options.positions = selPositions;
-
-            markerColor = str2RGBArray(options.marker.color);
-            borderColor = str2RGBArray(options.marker.line.color);
-            opacity = (options.opacity) * (options.marker.opacity);
-
-            markerColor[3] *= opacity;
-            this.selectScatter.options.color = markerColor;
-
-            borderColor[3] *= opacity;
-            this.selectScatter.options.borderColor = borderColor;
-
-            markerSize = options.marker.size;
-            this.selectScatter.options.size = markerSize;
-            this.selectScatter.options.borderSize = options.marker.line.width;
-
-            this.selectScatter.update();
-
-
-            this.scatter.options.positions = null;
+            this.scatter.options.positions = positions;
 
             markerColor = str2RGBArray(options.marker.color);
             borderColor = str2RGBArray(options.marker.line.color);
@@ -447,7 +428,24 @@ proto.updateFast = function(options) {
 
             this.scatter.update();
 
-            this.scatter.options.positions = positions;
+
+            this.selectScatter.options.positions = selPositions;
+
+            markerColor = str2RGBArray(options.marker.color);
+            borderColor = str2RGBArray(options.marker.line.color);
+            opacity = (options.opacity) * (options.marker.opacity);
+
+            markerColor[3] *= opacity;
+            this.selectScatter.options.color = markerColor;
+
+            borderColor[3] *= opacity;
+            this.selectScatter.options.borderColor = borderColor;
+
+            markerSize = options.marker.size;
+            this.selectScatter.options.size = markerSize;
+            this.selectScatter.options.borderSize = options.marker.line.width;
+
+            this.selectScatter.update();
         }
 
         else {
@@ -456,7 +454,6 @@ proto.updateFast = function(options) {
             markerColor = str2RGBArray(options.marker.color);
             borderColor = str2RGBArray(options.marker.line.color);
             opacity = (options.opacity) * (options.marker.opacity);
-
             markerColor[3] *= opacity;
             this.scatter.options.color = markerColor;
 
