@@ -101,9 +101,7 @@ function LineWithMarkers(scene, uid) {
     };
     var scatterOptions1 = Lib.extendFlat({}, scatterOptions0, {snapPoints: false});
 
-    this.scatter = this.initObject(function (plot, options) {
-        return createScatter(plot, options)
-    }, scatterOptions0, 3);
+    this.scatter = this.initObject(createScatter, scatterOptions0, 3);
     this.fancyScatter = this.initObject(createFancyScatter, scatterOptions0, 4);
     this.selectScatter = this.initObject(createScatter, scatterOptions1, 5);
 }
@@ -120,9 +118,9 @@ proto.initObject = function(createFn, options, objIndex) {
         update: update,
         clear: clear,
         dispose: dispose
-    }
+    };
 
-    return result
+    return result;
 
     function update() {
         if(!obj) {

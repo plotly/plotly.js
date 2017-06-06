@@ -9,13 +9,7 @@
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-
 var Axes = require('../../plots/cartesian/axes');
-
-var calcColorscale = require('../scatter/colorscale_calc');
-var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
-
 
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x'),

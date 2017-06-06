@@ -17,7 +17,6 @@ module.exports = function selectPoints(searchInfo, polygon) {
         ya = searchInfo.yaxis,
         selection = [],
         trace = cd[0].trace,
-        curveNumber = trace.index,
         i,
         di,
         x,
@@ -31,25 +30,21 @@ module.exports = function selectPoints(searchInfo, polygon) {
     if(trace.visible !== true || hasOnlyLines) return;
 
     // filter out points by visible scatter ones
-    // var scatter2d = scattergl.scatter.instance
-
-    if(polygon === false) { // clear selection
+    if(polygon === false) {
+        // clear selection
         for(i = 0; i < cd.length; i++) cd[i].dim = 0;
     }
     else {
         for(i = 0; i < cd.length; i++) {
             di = cd[i];
-            //FIXME: this affects performance for 1e6 points
+            // FIXME: this affects performance for 1e6 points
             x = xa.c2p(di.x);
             y = ya.c2p(di.y);
             if(polygon.contains([x, y])) {
                 selection.push({
-                    // curveNumber: curveNumber,
                     // pointNumber: i,
                     x: di.x,
-                    y: di.y,
-                    // FIXME: di.id is undefined for scattergls
-                    // id: di.id
+                    y: di.y
                 });
                 di.dim = 0;
             }
