@@ -180,7 +180,23 @@ describe('Test gl3d plots', function() {
         .then(_hover)
         .then(function() {
             assertHoverLabelStyle('rgb(0, 128, 0)', 'rgb(255, 255, 0)', 20, 'Roboto', 'rgb(0, 255, 255)');
+
+            return Plotly.restyle(gd, 'hoverinfo', [[null, null, 'y', null]]);
         })
+        .then(_hover)
+        .then(function() {
+            var label = d3.selectAll('g.hovertext');
+
+            expect(label.size()).toEqual(1);
+            expect(label.select('text').text()).toEqual('c');
+
+            return Plotly.restyle(gd, 'hoverinfo', [[null, null, 'dont+know', null]]);
+        })
+        .then(_hover)
+        .then(function() {
+            assertHoverText('x: 二 6, 2017', 'y: c', 'z: 100k', 'Clementine');
+        })
+        .catch(fail)
         .then(done);
     });
 
@@ -207,6 +223,11 @@ describe('Test gl3d plots', function() {
             assertHoverLabelStyle('rgb(68, 68, 68)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)');
 
             Plotly.restyle(gd, {
+                'hoverinfo': [[
+                    ['all', 'all', 'all'],
+                    ['all', 'all', 'y'],
+                    ['all', 'all', 'all']
+                ]],
                 'hoverlabel.bgcolor': 'white',
                 'hoverlabel.font.size': 9,
                 'hoverlabel.font.color': [[
@@ -219,6 +240,11 @@ describe('Test gl3d plots', function() {
         .then(_hover)
         .then(function() {
             assertHoverLabelStyle('rgb(255, 255, 255)', 'rgb(68, 68, 68)', 9, 'Arial', 'rgb(0, 255, 255)');
+
+            var label = d3.selectAll('g.hovertext');
+
+            expect(label.size()).toEqual(1);
+            expect(label.select('text').text()).toEqual('2');
         })
         .then(done);
     });

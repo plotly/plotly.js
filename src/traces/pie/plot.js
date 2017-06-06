@@ -89,9 +89,9 @@ module.exports = function plot(gd, cdpie) {
                     evt.originalEvent = d3.event;
 
                     // in case fullLayout or fullData has changed without a replot
-                    var fullLayout2 = gd._fullLayout,
-                        trace2 = gd._fullData[trace.index],
-                        hoverinfo = trace2.hoverinfo;
+                    var fullLayout2 = gd._fullLayout;
+                    var trace2 = gd._fullData[trace.index];
+                    var hoverinfo = Fx.castHoverinfo(trace2, fullLayout2, pt.i);
 
                     if(hoverinfo === 'all') hoverinfo = 'label+text+value+percent+name';
 

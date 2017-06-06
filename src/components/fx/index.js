@@ -35,7 +35,9 @@ module.exports = {
     getDistanceFunction: helpers.getDistanceFunction,
     getClosest: helpers.getClosest,
     inbox: helpers.inbox,
+
     castHoverOption: castHoverOption,
+    castHoverinfo: castHoverinfo,
 
     hover: require('./hover').hover,
     unhover: dragElement.unhover,
@@ -57,18 +59,16 @@ function loneUnhover(containerOrSelection) {
     selection.selectAll('.spikeline').remove();
 }
 
-// Handler for trace-wide vs per-point hover label options
-function castHoverOption(trace, ptNumber, attr) {
-    var labelOpts = trace.hoverlabel || {};
-    var val = Lib.nestedProperty(labelOpts, attr).get();
+// helpers for traces that use Fx.loneHover
 
-    if(Array.isArray(val)) {
-        if(Array.isArray(ptNumber) && Array.isArray(val[ptNumber[0]])) {
-            return val[ptNumber[0]][ptNumber[1]];
-        } else {
-            return val[ptNumber];
-        }
-    } else {
-        return val;
+function castHoverOption(trace, ptNumber, attr) {
+    return Lib.castOption(trace, ptNumber, 'hoverlabel.' + attr);
+}
+
+function castHoverinfo(trace, fullLayout, ptNumber) {
+    function _coerce(val) {
+        return Lib.coerceHoverinfo({hoverinfo: val}, {_module: trace._module}, fullLayout);
     }
+
+    return Lib.castOption(trace, ptNumber, 'hoverinfo', _coerce);
 }

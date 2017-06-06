@@ -1146,7 +1146,8 @@ describe('Test hover label custom styling:', function() {
             // test base case
             return Plotly.update(gd, {
                 hoverlabel: null,
-                hoverinfo: null
+                // all these items should be display as 'all'
+                hoverinfo: [['i+dont+what+im+doing', null, undefined]]
             }, {
                 hoverlabel: null
             });

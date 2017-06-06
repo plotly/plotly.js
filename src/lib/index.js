@@ -368,6 +368,31 @@ lib.mergeArray = function(traceAttr, cd, cdAttr, fn) {
     }
 };
 
+/** Handler for trace-wide vs per-point options
+ *
+ * @param {object} trace : (full) trace object
+ * @param {number} ptNumber : index of the point in question
+ * @param {string} astr : attribute string
+ * @param {function} [fn] : optional function to apply to each array item
+ *
+ * @return {any}
+ */
+lib.castOption = function(trace, ptNumber, astr, fn) {
+    fn = fn || lib.identity;
+
+    var val = lib.nestedProperty(trace, astr).get();
+
+    if(Array.isArray(val)) {
+        if(Array.isArray(ptNumber) && Array.isArray(val[ptNumber[0]])) {
+            return fn(val[ptNumber[0]][ptNumber[1]]);
+        } else {
+            return fn(val[ptNumber]);
+        }
+    } else {
+        return val;
+    }
+};
+
 /** Returns target as set by 'target' transform attribute
  *
  * @param {object} trace : full trace object

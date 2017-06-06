@@ -145,6 +145,25 @@ describe('Test hover and click interactions', function() {
         expect(text.style('fill')).toEqual(expected.fontColor, 'font.color');
     }
 
+    function assertHoveLabelContent(expected) {
+        var label = expected.label;
+
+        if(label === undefined) return;
+
+        var g = d3.select('.hovertext');
+
+        if(label === null) {
+            expect(g.size()).toBe(0);
+        } else {
+            var lines = g.selectAll('text.nums');
+
+            expect(lines.size()).toBe(label.length);
+            lines.each(function(_, i) {
+                expect(d3.select(this).text()).toEqual(label[i]);
+            });
+        }
+    }
+
     // returns basic hover/click/unhover runner for one xy position
     function makeRunner(pos, expected, opts) {
         opts = opts || {};
@@ -162,6 +181,7 @@ describe('Test hover and click interactions', function() {
                 .then(function(eventData) {
                     assertEventData(eventData, expected);
                     assertHoverLabelStyle(d3.select('g.hovertext'), expected);
+                    assertHoveLabelContent(expected);
                 })
                 .then(_click)
                 .then(function(eventData) {
@@ -196,6 +216,7 @@ describe('Test hover and click interactions', function() {
                 color: 'yellow'
             }
         };
+        _mock.data[0].hoverinfo = _mock.data[0].x.map(function(_, i) { return i % 2 ? 'y' : 'x'; });
         _mock.data[0].hoverlabel = {
             bgcolor: 'blue',
             bordercolor: _mock.data[0].x.map(function(_, i) { return i % 2 ? 'red' : 'green'; })
@@ -204,6 +225,7 @@ describe('Test hover and click interactions', function() {
         var run = makeRunner([655, 317], {
             x: 15.772,
             y: 0.387,
+            label: ['0.387'],
             curveNumber: 0,
             pointNumber: 33,
             bgColor: 'rgb(0, 0, 255)',

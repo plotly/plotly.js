@@ -623,8 +623,11 @@ proto.draw = function() {
                 // also it's important to copy, otherwise data is lost by the time event data is read
                 this.emitPointAction(nextSelection, 'plotly_hover');
 
-                var hoverinfo = selection.hoverinfo;
-                if(hoverinfo !== 'all') {
+                var trace = this.fullData[selection.trace.index] || {};
+                var ptNumber = selection.pointIndex;
+                var hoverinfo = Fx.castHoverinfo(trace, fullLayout, ptNumber);
+
+                if(hoverinfo && hoverinfo !== 'all') {
                     var parts = hoverinfo.split('+');
                     if(parts.indexOf('x') === -1) selection.traceCoord[0] = undefined;
                     if(parts.indexOf('y') === -1) selection.traceCoord[1] = undefined;
@@ -632,9 +635,6 @@ proto.draw = function() {
                     if(parts.indexOf('text') === -1) selection.textLabel = undefined;
                     if(parts.indexOf('name') === -1) selection.name = undefined;
                 }
-
-                var trace = this.fullData[selection.trace.index] || {};
-                var ptNumber = selection.pointIndex;
 
                 Fx.loneHover({
                     x: selection.screenCoord[0],
