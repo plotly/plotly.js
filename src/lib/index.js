@@ -350,6 +350,15 @@ lib.noneOrAll = function(containerIn, containerOut, attrList) {
     }
 };
 
+/** merges calcdata field (given by cdAttr) with traceAttr values
+ *
+ * N.B. Loop over minimum of cd.length and traceAttr.length
+ * i.e. it does not try to fill in beyond traceAttr.length-1
+ *
+ * @param {array} traceAttr : trace attribute
+ * @param {object} cd : calcdata trace
+ * @param {string} cdAttr : calcdata key
+ */
 lib.mergeArray = function(traceAttr, cd, cdAttr) {
     if(Array.isArray(traceAttr)) {
         var imax = Math.min(traceAttr.length, cd.length);
@@ -357,7 +366,10 @@ lib.mergeArray = function(traceAttr, cd, cdAttr) {
     }
 };
 
-/** fill data array into calcdata items
+/** fills calcdata field (given by cdAttr) with traceAttr values
+ *  or function of traceAttr values (e.g. some fallback)
+ *
+ * N.B. Loops over all of cd item.
  *
  * @param {array} traceAttr : trace attribute
  * @param {object} cd : calcdata trace
