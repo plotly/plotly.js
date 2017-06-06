@@ -9,7 +9,7 @@
 
 'use strict';
 
-var createScatter = require('../../../../gl-scatter2d');
+var createScatter = require('gl-scatter2d');
 var createFancyScatter = require('gl-scatter2d-sdf');
 var createLine = require('gl-line2d');
 var createError = require('gl-error2d');
