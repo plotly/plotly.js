@@ -25,11 +25,17 @@ module.exports = function calc(gd) {
         var cd = calcdata[i];
         var trace = cd[0].trace;
 
-        if(!trace.hoverlabel) continue;
+        // don't include hover calc fields for pie traces
+        // as calcdata items might be sorted by value and
+        // won't match the data array order.
+        if(Registry.traceIs(trace, 'pie')) continue;
 
         var mergeFn = Registry.traceIs(trace, '2dMap') ? paste : Lib.mergeArray;
 
         mergeFn(trace.hoverinfo, cd, 'hi', makeCoerceHoverInfo(trace));
+
+        if(!trace.hoverlabel) continue;
+
         mergeFn(trace.hoverlabel.bgcolor, cd, 'hbg');
         mergeFn(trace.hoverlabel.bordercolor, cd, 'hbc');
         mergeFn(trace.hoverlabel.font.size, cd, 'hts');

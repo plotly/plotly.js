@@ -242,9 +242,9 @@ describe('pie hovering', function() {
                 assertLabel(['4', 'SUP', '5', '33.3%']);
 
                 return Plotly.restyle(gd, {
-                    'hoverlabel.bgcolor': [['red', 'green', 'blue']],
+                    'hoverlabel.bgcolor': [['red', 'green', 'blue', 'yellow', 'red']],
                     'hoverlabel.bordercolor': 'yellow',
-                    'hoverlabel.font.size': [[15, 20, 30]],
+                    'hoverlabel.font.size': [[15, 20, 30, 20, 15]],
                     'hoverlabel.font.family': 'Roboto',
                     'hoverlabel.font.color': 'blue'
                 });
