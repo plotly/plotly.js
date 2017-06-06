@@ -30,17 +30,17 @@ module.exports = function calc(gd) {
         // won't match the data array order.
         if(Registry.traceIs(trace, 'pie')) continue;
 
-        var mergeFn = Registry.traceIs(trace, '2dMap') ? paste : Lib.mergeArray;
+        var fillFn = Registry.traceIs(trace, '2dMap') ? paste : Lib.fillArray;
 
-        mergeFn(trace.hoverinfo, cd, 'hi', makeCoerceHoverInfo(trace));
+        fillFn(trace.hoverinfo, cd, 'hi', makeCoerceHoverInfo(trace));
 
         if(!trace.hoverlabel) continue;
 
-        mergeFn(trace.hoverlabel.bgcolor, cd, 'hbg');
-        mergeFn(trace.hoverlabel.bordercolor, cd, 'hbc');
-        mergeFn(trace.hoverlabel.font.size, cd, 'hts');
-        mergeFn(trace.hoverlabel.font.color, cd, 'htc');
-        mergeFn(trace.hoverlabel.font.family, cd, 'htf');
+        fillFn(trace.hoverlabel.bgcolor, cd, 'hbg');
+        fillFn(trace.hoverlabel.bordercolor, cd, 'hbc');
+        fillFn(trace.hoverlabel.font.size, cd, 'hts');
+        fillFn(trace.hoverlabel.font.color, cd, 'htc');
+        fillFn(trace.hoverlabel.font.family, cd, 'htf');
     }
 };
 

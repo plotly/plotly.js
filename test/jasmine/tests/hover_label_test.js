@@ -1187,6 +1187,44 @@ describe('Test hover label custom styling:', function() {
                 path: ['rgb(68, 68, 68)', 'rgb(255, 255, 255)'],
                 text: [13, 'Arial', 'rgb(255, 255, 255)']
             });
+
+            // test insufficient arrayOk case
+            return Plotly.restyle(gd, 'hoverinfo', [['none']]);
+        })
+        .then(function() {
+            expect(gd.calcdata[0].map(function(o) { return o.hi; })).toEqual(
+                ['none', 'x+y+z+text', 'x+y+z+text'],
+                'should fill calcdata item with correct default'
+            );
+
+            _hover(gd, { xval: gd._fullData[0].x[0] });
+
+            assertPtLabel(null);
+            assertCommonLabel(null);
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[1] });
+
+            assertPtLabel({
+                path: ['rgb(0, 0, 0)', 'rgb(255, 255, 255)'],
+                text: [13, 'Arial', 'rgb(255, 255, 255)']
+            });
+            assertCommonLabel({
+                path: ['rgb(68, 68, 68)', 'rgb(255, 255, 255)'],
+                text: [13, 'Arial', 'rgb(255, 255, 255)']
+            });
+        })
+        .then(function() {
+            _hover(gd, { xval: gd._fullData[0].x[2] });
+
+            assertPtLabel({
+                path: ['rgb(0, 255, 255)', 'rgb(68, 68, 68)'],
+                text: [13, 'Arial', 'rgb(68, 68, 68)']
+            });
+            assertCommonLabel({
+                path: ['rgb(68, 68, 68)', 'rgb(255, 255, 255)'],
+                text: [13, 'Arial', 'rgb(255, 255, 255)']
+            });
         })
         .catch(fail)
         .then(done);
