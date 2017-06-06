@@ -16,7 +16,7 @@ ScatterGl.colorbar = require('../scatter/colorbar');
 ScatterGl.hoverPoints = require('../scatter/hover');
 
 // reuse the Scatter3D 'dummy' calc step so that legends know what to do
-ScatterGl.calc = require('../scatter/calc');
+ScatterGl.calc = require('./calc');
 ScatterGl.plot = require('./convert');
 ScatterGl.selectPoints = require('./select');
 
