@@ -32,7 +32,7 @@ module.exports = function calc(gd, trace) {
         cd[i] = {x: x[i], y: y[i]};
     }
 
-    arraysToCalcdata(cd, trace);
+    arraysToCalcdata([{x: false, y: false, trace: trace, t: {}}], trace);
 
     return cd;
 };
