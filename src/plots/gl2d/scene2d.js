@@ -147,12 +147,15 @@ proto.makeFramework = function() {
     // create div to catch the mouse event
     var mouseContainer = this.mouseContainer = document.createElement('div');
     mouseContainer.style.position = 'absolute';
+    mouseContainer.style['pointer-events'] = 'auto';
 
     // append canvas, hover svg and mouse div to container
     var container = this.container;
     container.appendChild(canvas);
     container.appendChild(svgContainer);
-    // container.appendChild(mouseContainer);
+    container.appendChild(mouseContainer);
+
+    this.updateFx();
 };
 
 proto.toImage = function(format) {
@@ -359,7 +362,7 @@ proto.destroy = function() {
 
     if(!this.staticPlot) this.container.removeChild(this.canvas);
     this.container.removeChild(this.svgContainer);
-//     this.container.removeChild(this.mouseContainer);
+    this.container.removeChild(this.mouseContainer);
 
     this.fullData = null;
     this.glplot = null;
@@ -507,7 +510,16 @@ proto.updateTraces = function(fullData, calcData) {
     this.glplot.objects.sort(function(a, b) {
         return a._trace.index - b._trace.index;
     });
+};
 
+proto.updateFx = function() {
+    var dragmode = this.fullLayout.dragmode;
+
+    if(dragmode === 'lasso' || dragmode === 'select') {
+        this.mouseContainer.style['pointer-events'] = 'none';
+    } else {
+        this.mouseContainer.style['pointer-events'] = 'auto';
+    }
 };
 
 proto.emitPointAction = function(nextSelection, eventType) {

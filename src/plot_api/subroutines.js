@@ -386,8 +386,10 @@ exports.doModeBar = function(gd) {
         scene.updateFx(fullLayout.dragmode, fullLayout.hovermode);
     }
 
-    // no need to do this for gl2d subplots,
-    // Plots.linkSubplots takes care of it all.
+    subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d');
+    for(i = 0; i < subplotIds.length; i++) {
+        fullLayout._plots[subplotIds[i]]._scene2d.updateFx();
+    }
 
     return Plots.previousPromises(gd);
 };
