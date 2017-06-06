@@ -865,9 +865,6 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
         var _module = plots.getModule(traceOut);
         traceOut._module = _module;
 
-        // gets overwritten in pie, geo and ternary modules
-        coerce('hoverinfo', (layout._dataLength === 1) ? 'x+y+z+text' : undefined);
-
         if(plots.traceIs(traceOut, 'showLegend')) {
             coerce('showlegend');
             coerce('legendgroup');
@@ -880,7 +877,10 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
 
         // TODO add per-base-plot-module trace defaults step
 
-        if(_module) _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        if(_module) {
+            _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            Lib.coerceHoverinfo(traceIn, traceOut, layout);
+        }
 
         if(!plots.traceIs(traceOut, 'noOpacity')) coerce('opacity');
 

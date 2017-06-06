@@ -10,31 +10,14 @@
 
 var Lib = require('../../lib');
 var Registry = require('../../registry');
-var baseAttrs = require('../../plots/attributes');
 
 module.exports = function calc(gd) {
     var calcdata = gd.calcdata;
     var fullLayout = gd._fullLayout;
 
-    function makeCoerceHoverInfo(fullTrace) {
-        var moduleAttrs = fullTrace._module.attributes;
-        var attrs = moduleAttrs.hoverinfo ?
-            {hoverinfo: moduleAttrs.hoverinfo} :
-            baseAttrs;
-        var valObj = attrs.hoverinfo;
-        var dflt;
-
-        if(fullLayout._dataLength === 1) {
-            var flags = valObj.dflt === 'all' ?
-                valObj.flags.slice() :
-                valObj.dflt.split('+');
-
-            flags.splice(flags.indexOf('name'), 1);
-            dflt = flags.join('+');
-        }
-
+    function makeCoerceHoverInfo(trace) {
         return function(val) {
-            return Lib.coerce({hoverinfo: val}, {}, attrs, 'hoverinfo', dflt);
+            return Lib.coerceHoverinfo({hoverinfo: val}, {_module: trace._module}, fullLayout);
         };
     }
 
