@@ -369,7 +369,7 @@ lib.mergeArray = function(traceAttr, cd, cdAttr) {
 /** fills calcdata field (given by cdAttr) with traceAttr values
  *  or function of traceAttr values (e.g. some fallback)
  *
- * N.B. Loops over all of cd item.
+ * N.B. Loops over all cd items.
  *
  * @param {array} traceAttr : trace attribute
  * @param {object} cd : calcdata trace
