@@ -186,7 +186,9 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     }
 
     // clean selection
-    oldFullLayout._zoomlayer.selectAll('.select-outline').remove();
+    if(oldFullLayout._zoomlayer) {
+        oldFullLayout._zoomlayer.selectAll('.select-outline').remove();
+    }
 };
 
 exports.drawFramework = function(gd) {
