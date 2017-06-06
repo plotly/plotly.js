@@ -156,6 +156,7 @@ exports.findArrayAttributes = function(trace) {
         return stack.join('.');
     }
 
+    exports.crawl(baseAttributes, callback);
     exports.crawl(trace._module.attributes, callback);
 
     if(trace.transforms) {
