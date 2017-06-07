@@ -20,6 +20,7 @@ var Color = require('../color');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var interactConstants = require('../../constants/interactions');
 
+var PLACEHOLDER_RE = /Click to enter .+ title/;
 
 var Titles = module.exports = {};
 
@@ -52,28 +53,33 @@ var Titles = module.exports = {};
  *          title, include here. Otherwise it will go in fullLayout._infolayer
  */
 Titles.draw = function(gd, titleClass, options) {
-    var cont = options.propContainer,
-        prop = options.propName,
-        traceIndex = options.traceIndex,
-        name = options.dfltName,
-        avoid = options.avoid || {},
-        attributes = options.attributes,
-        transform = options.transform,
-        group = options.containerGroup,
+    var cont = options.propContainer;
+    var prop = options.propName;
+    var traceIndex = options.traceIndex;
+    var name = options.dfltName;
+    var avoid = options.avoid || {};
+    var attributes = options.attributes;
+    var transform = options.transform;
+    var group = options.containerGroup;
 
-        fullLayout = gd._fullLayout,
-        font = cont.titlefont.family,
-        fontSize = cont.titlefont.size,
-        fontColor = cont.titlefont.color,
+    var fullLayout = gd._fullLayout;
+    var font = cont.titlefont.family;
+    var fontSize = cont.titlefont.size;
+    var fontColor = cont.titlefont.color;
 
-        opacity = 1,
-        isplaceholder = false,
-        txt = cont.title.trim();
+    var opacity = 1;
+    var isplaceholder = false;
+    var txt = cont.title.trim();
+    var editable = gd._context.editable;
+
     if(txt === '') opacity = 0;
-    if(txt.match(/Click to enter .+ title/)) {
+    if(txt.match(PLACEHOLDER_RE)) {
         opacity = 0.2;
         isplaceholder = true;
+        if(!editable) txt = '';
     }
+
+    var elShouldExist = txt || editable;
 
     if(!group) {
         group = fullLayout._infolayer.selectAll('.g-' + titleClass)
@@ -83,7 +89,7 @@ Titles.draw = function(gd, titleClass, options) {
     }
 
     var el = group.selectAll('text')
-        .data([0]);
+        .data(elShouldExist ? [0] : []);
     el.enter().append('text');
     el.text(txt)
         // this is hacky, but convertToTspans uses the class
@@ -92,6 +98,9 @@ Titles.draw = function(gd, titleClass, options) {
         // correct one (only relevant for colorbars, at least
         // for now) - ie don't use .classed
         .attr('class', titleClass);
+    el.exit().remove();
+
+    if(!elShouldExist) return;
 
     function titleLayout(titleEl) {
         Lib.syncOrAsync([drawTitle, scootTitle], titleEl);
@@ -205,7 +214,7 @@ Titles.draw = function(gd, titleClass, options) {
             });
     }
 
-    if(gd._context.editable) {
+    if(editable) {
         if(!txt) setPlaceholder();
         else el.on('.opacity', null);
 
@@ -223,9 +232,6 @@ Titles.draw = function(gd, titleClass, options) {
                     .selectAll('tspan.line')
                         .attr(attributes);
             });
-    }
-    else if(!txt || txt.match(/Click to enter .+ title/)) {
-        el.remove();
     }
     el.classed('js-placeholder', isplaceholder);
 };
