@@ -126,15 +126,16 @@ exports.lsInner = function(gd) {
 
     var freefinished = [];
     subplotSelection.each(function(subplot) {
-        var plotinfo = fullLayout._plots[subplot],
-            xa = Plotly.Axes.getFromId(gd, subplot, 'x'),
+        var plotinfo = fullLayout._plots[subplot];
+
+        var xa = Plotly.Axes.getFromId(gd, subplot, 'x'),
             ya = Plotly.Axes.getFromId(gd, subplot, 'y');
 
         // reset scale in case the margins have changed
         xa.setScale();
         ya.setScale();
 
-        if(plotinfo.bg) {
+        if(plotinfo.bg && fullLayout._has('cartesian')) {
             plotinfo.bg
                 .call(Drawing.setRect,
                     xa._offset - gs.p, ya._offset - gs.p,
