@@ -10,21 +10,31 @@
 'use strict';
 
 var Axes = require('../../plots/cartesian/axes');
+var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
 var calcColorscales = require('../scatter/colorscale_calc');
 
 module.exports = function calc(gd, trace) {
-    var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
-        ya = Axes.getFromId(gd, trace.yaxis || 'y');
+    var dragmode = gd._fullLayout.dragmode;
+    var cd;
 
-    var x = xa.makeCalcdata(trace, 'x'),
-        y = ya.makeCalcdata(trace, 'y');
+    if(dragmode === 'lasso' || dragmode === 'select') {
+        var xa = Axes.getFromId(gd, trace.xaxis || 'x');
+        var ya = Axes.getFromId(gd, trace.yaxis || 'y');
 
-    var serieslen = Math.min(x.length, y.length), i;
+        var x = xa.makeCalcdata(trace, 'x');
+        var y = ya.makeCalcdata(trace, 'y');
 
-    // create the "calculated data" to plot
-    var cd = new Array(serieslen);
-    for(i = 0; i < serieslen; i++) {
-        cd[i] = {x: x[i], y: y[i]};
+        var serieslen = Math.min(x.length, y.length), i;
+
+        // create the "calculated data" to plot
+        cd = new Array(serieslen);
+
+        for(i = 0; i < serieslen; i++) {
+            cd[i] = {x: x[i], y: y[i]};
+        }
+    } else {
+        cd = [{x: false, y: false, trace: trace, t: {}}];
+        arraysToCalcdata(cd, trace);
     }
 
     calcColorscales(trace);

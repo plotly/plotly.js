@@ -154,8 +154,6 @@ proto.makeFramework = function() {
     container.appendChild(canvas);
     container.appendChild(svgContainer);
     container.appendChild(mouseContainer);
-
-    this.updateFx();
 };
 
 proto.toImage = function(format) {
@@ -374,6 +372,7 @@ proto.plot = function(fullData, calcData, fullLayout) {
 
     this.updateRefs(fullLayout);
     this.updateTraces(fullData, calcData);
+    this.updateFx();
 
     var width = fullLayout.width,
         height = fullLayout.height;

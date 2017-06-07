@@ -386,11 +386,6 @@ exports.doModeBar = function(gd) {
         scene.updateFx(fullLayout.dragmode, fullLayout.hovermode);
     }
 
-    subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d');
-    for(i = 0; i < subplotIds.length; i++) {
-        fullLayout._plots[subplotIds[i]]._scene2d.updateFx();
-    }
-
     return Plots.previousPromises(gd);
 };
 
