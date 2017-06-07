@@ -132,6 +132,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
     var dragOptions = {
             setCursor: updateDragMode,
             element: shapePath.node(),
+            gd: gd,
             prepFn: startDrag,
             doneFn: endDrag
         },

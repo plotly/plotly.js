@@ -114,9 +114,9 @@ function style(geo) {
             group = d3.select(this);
 
         group.selectAll('path.point')
-            .call(Drawing.pointStyle, trace);
+            .call(Drawing.pointStyle, trace, geo.graphDiv);
         group.selectAll('text')
-            .call(Drawing.textPointStyle, trace);
+            .call(Drawing.textPointStyle, trace, geo.graphDiv);
     });
 
     // this part is incompatible with Drawing.lineGroupStyle

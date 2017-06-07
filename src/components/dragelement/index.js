@@ -50,7 +50,7 @@ dragElement.unhoverRaw = unhover.raw;
  *          the click & drag interaction has been initiated
  */
 dragElement.init = function init(options) {
-    var gd = Lib.getPlotDiv(options.element) || {},
+    var gd = options.gd,
         numClicks = 1,
         DBLCLICKDELAY = interactConstants.DBLCLICKDELAY,
         startX,

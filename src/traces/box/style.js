@@ -32,6 +32,6 @@ module.exports = function style(gd) {
                 })
                 .call(Color.stroke, trace.line.color);
             d3.select(this).selectAll('g.points path')
-                .call(Drawing.pointStyle, trace);
+                .call(Drawing.pointStyle, trace, gd);
         });
 };

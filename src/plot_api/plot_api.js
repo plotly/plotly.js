@@ -467,7 +467,7 @@ function plotPolar(gd, data, layout) {
     var placeholderText = 'Click to enter title';
 
     var titleLayout = function() {
-        this.call(svgTextUtils.convertToTspans);
+        this.call(svgTextUtils.convertToTspans, gd);
         // TODO: html/mathjax
         // TODO: center title
     };
@@ -493,7 +493,7 @@ function plotPolar(gd, data, layout) {
         }
 
         var setContenteditable = function() {
-            this.call(svgTextUtils.makeEditable)
+            this.call(svgTextUtils.makeEditable, {gd: gd})
                 .on('edit', function(text) {
                     gd.framework({layout: {title: text}});
                     this.attr({'data-unformatted': text})

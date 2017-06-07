@@ -138,7 +138,8 @@ module.exports = function plot(gd, cdpie) {
                         fontColor: Fx.castHoverOption(trace, pt.i, 'font.color')
                     }, {
                         container: fullLayout2._hoverlayer.node(),
-                        outerContainer: fullLayout2._paper.node()
+                        outerContainer: fullLayout2._paper.node(),
+                        gd: gd
                     });
 
                     Fx.hover(gd, evt, 'pie');
@@ -257,7 +258,7 @@ module.exports = function plot(gd, cdpie) {
                         })
                         .call(Drawing.font, textPosition === 'outside' ?
                             trace.outsidetextfont : trace.insidetextfont)
-                        .call(svgTextUtils.convertToTspans);
+                        .call(svgTextUtils.convertToTspans, gd);
                     sliceText.selectAll('tspan.line').attr({x: 0, y: 0});
 
                     // position the text relative to the slice

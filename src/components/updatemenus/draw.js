@@ -202,7 +202,7 @@ function drawHeader(gd, gHeader, gButton, scrollBox, menuOpts) {
         };
 
     header
-        .call(drawItem, menuOpts, headerOpts)
+        .call(drawItem, menuOpts, headerOpts, gd)
         .call(setItemPosition, menuOpts, posOpts, positionOverrides);
 
     // draw drop arrow at the right edge
@@ -322,7 +322,7 @@ function drawButtons(gd, gHeader, gButton, scrollBox, menuOpts) {
         var button = d3.select(this);
 
         button
-            .call(drawItem, menuOpts, buttonOpts)
+            .call(drawItem, menuOpts, buttonOpts, gd)
             .call(setItemPosition, menuOpts, posOpts);
 
         button.on('click', function() {
@@ -434,9 +434,9 @@ function hideScrollBox(scrollBox) {
     }
 }
 
-function drawItem(item, menuOpts, itemOpts) {
+function drawItem(item, menuOpts, itemOpts, gd) {
     item.call(drawItemRect, menuOpts)
-        .call(drawItemText, menuOpts, itemOpts);
+        .call(drawItemText, menuOpts, itemOpts, gd);
 }
 
 function drawItemRect(item, menuOpts) {
@@ -456,7 +456,7 @@ function drawItemRect(item, menuOpts) {
         .style('stroke-width', menuOpts.borderwidth + 'px');
 }
 
-function drawItemText(item, menuOpts, itemOpts) {
+function drawItemText(item, menuOpts, itemOpts, gd) {
     var text = item.selectAll('text')
         .data([0]);
 
@@ -467,7 +467,7 @@ function drawItemText(item, menuOpts, itemOpts) {
 
     text.call(Drawing.font, menuOpts.font)
         .text(itemOpts.label)
-        .call(svgTextUtils.convertToTspans);
+        .call(svgTextUtils.convertToTspans, gd);
 }
 
 function styleButtons(buttons, menuOpts) {
@@ -518,7 +518,7 @@ function findDimensions(gd, menuOpts) {
     fakeButtons.each(function(buttonOpts, i) {
         var button = d3.select(this);
 
-        button.call(drawItem, menuOpts, buttonOpts);
+        button.call(drawItem, menuOpts, buttonOpts, gd);
 
         var text = button.select('.' + constants.itemTextClassName),
             tspans = text.selectAll('tspan');

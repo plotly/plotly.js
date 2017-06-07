@@ -28,10 +28,10 @@ module.exports = function style(gd) {
             var pts = el.selectAll('path.point');
             var trace = d.trace || d[0].trace;
 
-            pts.call(Drawing.pointStyle, trace);
+            pts.call(Drawing.pointStyle, trace, gd);
 
             el.selectAll('text')
-                .call(Drawing.textPointStyle, trace);
+                .call(Drawing.textPointStyle, trace, gd);
         });
 
     s.selectAll('g.trace path.js-line')

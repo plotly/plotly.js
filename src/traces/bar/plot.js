@@ -153,7 +153,7 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
             })
             .call(Drawing.font, textFont);
 
-        textSelection.call(svgTextUtils.convertToTspans);
+        textSelection.call(svgTextUtils.convertToTspans, gd);
         textSelection.selectAll('tspan.line').attr({x: 0, y: 0});
 
         return textSelection;

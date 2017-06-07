@@ -111,7 +111,7 @@ Titles.draw = function(gd, titleClass, options) {
             'font-weight': Plots.fontWeight
         })
         .attr(attributes)
-        .call(svgTextUtils.convertToTspans)
+        .call(svgTextUtils.convertToTspans, gd)
         .attr(attributes);
 
         titleEl.selectAll('tspan.line')
@@ -209,7 +209,7 @@ Titles.draw = function(gd, titleClass, options) {
         if(!txt) setPlaceholder();
         else el.on('.opacity', null);
 
-        el.call(svgTextUtils.makeEditable)
+        el.call(svgTextUtils.makeEditable, {gd: gd})
             .on('edit', function(text) {
                 if(traceIndex !== undefined) Plotly.restyle(gd, prop, text, traceIndex);
                 else Plotly.relayout(gd, prop, text);

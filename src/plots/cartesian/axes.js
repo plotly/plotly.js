@@ -1809,7 +1809,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                         .call(Drawing.setPosition, labelx(d), labely(d))
                         .call(Drawing.font, d.font, d.fontSize, d.fontColor)
                         .text(d.text)
-                        .call(svgTextUtils.convertToTspans);
+                        .call(svgTextUtils.convertToTspans, gd);
                     newPromise = gd._promises[newPromise];
                     if(newPromise) {
                         // if we have an async label, we'll deal with that

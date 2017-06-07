@@ -22,7 +22,7 @@ var constants = require('./constants');
 
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout,
-        sliderData = makeSliderData(fullLayout);
+        sliderData = makeSliderData(fullLayout, gd);
 
     // draw a container for *all* sliders:
     var sliders = fullLayout._infolayer
@@ -97,13 +97,14 @@ module.exports = function draw(gd) {
 }*/
 
 // This really only just filters by visibility:
-function makeSliderData(fullLayout) {
+function makeSliderData(fullLayout, gd) {
     var contOpts = fullLayout[constants.name],
         sliderData = [];
 
     for(var i = 0; i < contOpts.length; i++) {
         var item = contOpts[i];
         if(!item.visible || !item.steps.length) continue;
+        item.gd = gd;
         sliderData.push(item);
     }
 
@@ -302,7 +303,7 @@ function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
 
     text.call(Drawing.font, sliderOpts.currentvalue.font)
         .text(str)
-        .call(svgTextUtils.convertToTspans);
+        .call(svgTextUtils.convertToTspans, sliderOpts.gd);
 
     Drawing.setTranslate(text, x0, sliderOpts.currentValueHeight);
 
@@ -340,7 +341,7 @@ function drawLabel(item, data, sliderOpts) {
 
     text.call(Drawing.font, sliderOpts.font)
         .text(data.step.label)
-        .call(svgTextUtils.convertToTspans);
+        .call(svgTextUtils.convertToTspans, sliderOpts.gd);
 
     return text;
 }

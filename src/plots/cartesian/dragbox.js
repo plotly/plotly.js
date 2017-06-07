@@ -315,7 +315,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
             if(gd._context.showAxisRangeEntryBoxes) {
                 d3.select(dragger)
-                    .call(svgTextUtils.makeEditable, null, {
+                    .call(svgTextUtils.makeEditable, {
+                        gd: gd,
                         immediate: true,
                         background: fullLayout.paper_bgcolor,
                         text: String(initialText),

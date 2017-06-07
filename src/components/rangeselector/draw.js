@@ -59,7 +59,7 @@ module.exports = function draw(gd) {
             d.isActive = isActive(axisLayout, d, update);
 
             button.call(drawButtonRect, selectorLayout, d);
-            button.call(drawButtonText, selectorLayout, d);
+            button.call(drawButtonText, selectorLayout, d, gd);
 
             button.on('click', function() {
                 if(gd._dragged) return;
@@ -146,9 +146,9 @@ function getFillColor(selectorLayout, d) {
         selectorLayout.bgcolor;
 }
 
-function drawButtonText(button, selectorLayout, d) {
+function drawButtonText(button, selectorLayout, d, gd) {
     function textLayout(s) {
-        svgTextUtils.convertToTspans(s);
+        svgTextUtils.convertToTspans(s, gd);
 
         // TODO do we need anything else here?
     }

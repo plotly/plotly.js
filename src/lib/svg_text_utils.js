@@ -79,18 +79,17 @@ function getSize(_selection, _dimension) {
     return _selection.node().getBoundingClientRect()[_dimension];
 }
 
-exports.convertToTspans = function(_context, _callback) {
+exports.convertToTspans = function(_context, gd, _callback) {
     var str = _context.text();
     var converted = convertToSVG(str);
-    var that = _context;
 
     // Until we get tex integrated more fully (so it can be used along with non-tex)
     // allow some elements to prohibit it by attaching 'data-notex' to the original
-    var tex = (!that.attr('data-notex')) && converted.match(/([^$]*)([$]+[^$]*[$]+)([^$]*)/);
+    var tex = (!_context.attr('data-notex')) && converted.match(/([^$]*)([$]+[^$]*[$]+)([^$]*)/);
     var result = str;
-    var parent = d3.select(that.node().parentNode);
+    var parent = d3.select(_context.node().parentNode);
     if(parent.empty()) return;
-    var svgClass = (that.attr('class')) ? that.attr('class').split(' ')[0] : 'text';
+    var svgClass = (_context.attr('class')) ? _context.attr('class').split(' ')[0] : 'text';
     svgClass += '-math';
     parent.selectAll('svg.' + svgClass).remove();
     parent.selectAll('g.' + svgClass + '-group').remove();
@@ -101,7 +100,7 @@ exports.convertToTspans = function(_context, _callback) {
 
     function showText() {
         if(!parent.empty()) {
-            svgClass = that.attr('class') + '-math';
+            svgClass = _context.attr('class') + '-math';
             parent.select('svg.' + svgClass).remove();
         }
         _context.text('')
@@ -122,14 +121,13 @@ exports.convertToTspans = function(_context, _callback) {
             _context.style('pointer-events', 'all');
         }
 
-        if(_callback) _callback.call(that);
+        if(_callback) _callback.call(_context);
     }
 
     if(tex) {
-        var gd = Lib.getPlotDiv(that.node());
         ((gd && gd._promises) || []).push(new Promise(function(resolve) {
-            that.style({visibility: 'hidden'});
-            var config = {fontSize: parseInt(that.style('font-size'), 10)};
+            _context.style({visibility: 'hidden'});
+            var config = {fontSize: parseInt(_context.style('font-size'), 10)};
 
             texToSVG(tex[2], config, function(_svgEl, _glyphDefs, _svgBBox) {
                 parent.selectAll('svg.' + svgClass).remove();
@@ -161,36 +159,36 @@ exports.convertToTspans = function(_context, _callback) {
                 })
                 .style({overflow: 'visible', 'pointer-events': 'none'});
 
-                var fill = that.style('fill') || 'black';
+                var fill = _context.style('fill') || 'black';
                 newSvg.select('g').attr({fill: fill, stroke: fill});
 
                 var newSvgW = getSize(newSvg, 'width'),
                     newSvgH = getSize(newSvg, 'height'),
-                    newX = +that.attr('x') - newSvgW *
-                        {start: 0, middle: 0.5, end: 1}[that.attr('text-anchor') || 'start'],
+                    newX = +_context.attr('x') - newSvgW *
+                        {start: 0, middle: 0.5, end: 1}[_context.attr('text-anchor') || 'start'],
                     // font baseline is about 1/4 fontSize below centerline
-                    textHeight = parseInt(that.style('font-size'), 10) ||
-                        getSize(that, 'height'),
+                    textHeight = parseInt(_context.style('font-size'), 10) ||
+                        getSize(_context, 'height'),
                     dy = -textHeight / 4;
 
                 if(svgClass[0] === 'y') {
                     mathjaxGroup.attr({
-                        transform: 'rotate(' + [-90, +that.attr('x'), +that.attr('y')] +
+                        transform: 'rotate(' + [-90, +_context.attr('x'), +_context.attr('y')] +
                         ') translate(' + [-newSvgW / 2, dy - newSvgH / 2] + ')'
                     });
-                    newSvg.attr({x: +that.attr('x'), y: +that.attr('y')});
+                    newSvg.attr({x: +_context.attr('x'), y: +_context.attr('y')});
                 }
                 else if(svgClass[0] === 'l') {
-                    newSvg.attr({x: that.attr('x'), y: dy - (newSvgH / 2)});
+                    newSvg.attr({x: _context.attr('x'), y: dy - (newSvgH / 2)});
                 }
                 else if(svgClass[0] === 'a') {
                     newSvg.attr({x: 0, y: dy});
                 }
                 else {
-                    newSvg.attr({x: newX, y: (+that.attr('y') + dy - newSvgH / 2)});
+                    newSvg.attr({x: newX, y: (+_context.attr('y') + dy - newSvgH / 2)});
                 }
 
-                if(_callback) _callback.call(that, mathjaxGroup);
+                if(_callback) _callback.call(_context, mathjaxGroup);
                 resolve(mathjaxGroup);
             });
         }));
@@ -528,28 +526,41 @@ function alignHTMLWith(_base, container, options) {
     };
 }
 
-// Editable title
+/*
+ * Editable title
+ * @param {d3.selection} context: the element being edited. Normally text,
+ *   but if it isn't, you should provide the styling options
+ * @param {object} options:
+ *   @param {div} options.gd: graphDiv
+ *   @param {d3.selection} options.delegate: item to bind events to if not this
+ *   @param {boolean} options.immediate: start editing now (true) or on click (false, default)
+ *   @param {string} options.fill: font color if not as shown
+ *   @param {string} options.background: background color if not as shown
+ *   @param {string} options.text: initial text, if not as shown
+ *   @param {string} options.horizontalAlign: alignment of the edit box wrt. the bound element
+ *   @param {string} options.verticalAlign: alignment of the edit box wrt. the bound element
+ */
 
-exports.makeEditable = function(context, _delegate, options) {
-    if(!options) options = {};
-    var that = this;
+exports.makeEditable = function(context, options) {
+    var gd = options.gd;
+    var _delegate = options.delegate;
     var dispatch = d3.dispatch('edit', 'input', 'cancel');
-    var textSelection = d3.select(this.node())
-        .style({'pointer-events': 'all'});
+    var handlerElement = _delegate || context;
 
-    var handlerElement = _delegate || textSelection;
-    if(_delegate) textSelection.style({'pointer-events': 'none'});
+    context.style({'pointer-events': _delegate ? 'none' : 'all'});
+
+    if(context.size() !== 1) throw new Error('boo');
 
     function handleClick() {
         appendEditable();
-        that.style({opacity: 0});
+        context.style({opacity: 0});
         // also hide any mathjax svg
         var svgClass = handlerElement.attr('class'),
             mathjaxClass;
         if(svgClass) mathjaxClass = '.' + svgClass.split(' ')[0] + '-math-group';
         else mathjaxClass = '[class*=-math-group]';
         if(mathjaxClass) {
-            d3.select(that.node().parentNode).select(mathjaxClass).style({opacity: 0});
+            d3.select(context.node().parentNode).select(mathjaxClass).style({opacity: 0});
         }
     }
 
@@ -564,63 +575,62 @@ exports.makeEditable = function(context, _delegate, options) {
     }
 
     function appendEditable() {
-        var gd = Lib.getPlotDiv(that.node()),
-            plotDiv = d3.select(gd),
+        var plotDiv = d3.select(gd),
             container = plotDiv.select('.svg-container'),
             div = container.append('div');
         div.classed('plugin-editable editable', true)
             .style({
                 position: 'absolute',
-                'font-family': that.style('font-family') || 'Arial',
-                'font-size': that.style('font-size') || 12,
-                color: options.fill || that.style('fill') || 'black',
+                'font-family': context.style('font-family') || 'Arial',
+                'font-size': context.style('font-size') || 12,
+                color: options.fill || context.style('fill') || 'black',
                 opacity: 1,
                 'background-color': options.background || 'transparent',
                 outline: '#ffffff33 1px solid',
-                margin: [-parseFloat(that.style('font-size')) / 8 + 1, 0, 0, -1].join('px ') + 'px',
+                margin: [-parseFloat(context.style('font-size')) / 8 + 1, 0, 0, -1].join('px ') + 'px',
                 padding: '0',
                 'box-sizing': 'border-box'
             })
             .attr({contenteditable: true})
-            .text(options.text || that.attr('data-unformatted'))
-            .call(alignHTMLWith(that, container, options))
+            .text(options.text || context.attr('data-unformatted'))
+            .call(alignHTMLWith(context, container, options))
             .on('blur', function() {
                 gd._editing = false;
-                that.text(this.textContent)
+                context.text(this.textContent)
                     .style({opacity: 1});
                 var svgClass = d3.select(this).attr('class'),
                     mathjaxClass;
                 if(svgClass) mathjaxClass = '.' + svgClass.split(' ')[0] + '-math-group';
                 else mathjaxClass = '[class*=-math-group]';
                 if(mathjaxClass) {
-                    d3.select(that.node().parentNode).select(mathjaxClass).style({opacity: 0});
+                    d3.select(context.node().parentNode).select(mathjaxClass).style({opacity: 0});
                 }
                 var text = this.textContent;
                 d3.select(this).transition().duration(0).remove();
                 d3.select(document).on('mouseup', null);
-                dispatch.edit.call(that, text);
+                dispatch.edit.call(context, text);
             })
             .on('focus', function() {
-                var context = this;
+                var editDiv = this;
                 gd._editing = true;
                 d3.select(document).on('mouseup', function() {
-                    if(d3.event.target === context) return false;
+                    if(d3.event.target === editDiv) return false;
                     if(document.activeElement === div.node()) div.node().blur();
                 });
             })
             .on('keyup', function() {
                 if(d3.event.which === 27) {
                     gd._editing = false;
-                    that.style({opacity: 1});
+                    context.style({opacity: 1});
                     d3.select(this)
                         .style({opacity: 0})
                         .on('blur', function() { return false; })
                         .transition().remove();
-                    dispatch.cancel.call(that, this.textContent);
+                    dispatch.cancel.call(context, this.textContent);
                 }
                 else {
-                    dispatch.input.call(that, this.textContent);
-                    d3.select(this).call(alignHTMLWith(that, container, options));
+                    dispatch.input.call(context, this.textContent);
+                    d3.select(this).call(alignHTMLWith(context, container, options));
                 }
             })
             .on('keydown', function() {
@@ -632,5 +642,5 @@ exports.makeEditable = function(context, _delegate, options) {
     if(options.immediate) handleClick();
     else handlerElement.on('click', handleClick);
 
-    return d3.rebind(this, dispatch, 'on');
+    return d3.rebind(context, dispatch, 'on');
 };

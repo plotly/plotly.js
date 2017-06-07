@@ -392,7 +392,7 @@ drawing.singlePointStyle = function(d, sel, trace, markerScale, lineScale, gd) {
 
 };
 
-drawing.pointStyle = function(s, trace) {
+drawing.pointStyle = function(s, trace, gd) {
     if(!s.size()) return;
 
     // allow array marker and marker line colors to be
@@ -400,7 +400,6 @@ drawing.pointStyle = function(s, trace) {
     var marker = trace.marker;
     var markerScale = drawing.tryColorscale(marker, '');
     var lineScale = drawing.tryColorscale(marker, 'line');
-    var gd = Lib.getPlotDiv(s.node());
 
     s.each(function(d) {
         drawing.singlePointStyle(d, d3.select(this), trace, markerScale, lineScale, gd);
@@ -423,7 +422,7 @@ drawing.tryColorscale = function(marker, prefix) {
 // draw text at points
 var TEXTOFFSETSIGN = {start: 1, end: -1, middle: 0, bottom: 1, top: -1},
     LINEEXPAND = 1.3;
-drawing.textPointStyle = function(s, trace) {
+drawing.textPointStyle = function(s, trace, gd) {
     s.each(function(d) {
         var p = d3.select(this),
             text = d.tx || trace.text;
@@ -454,7 +453,7 @@ drawing.textPointStyle = function(s, trace) {
                 d.tc || trace.textfont.color)
             .attr('text-anchor', h)
             .text(text)
-            .call(svgTextUtils.convertToTspans);
+            .call(svgTextUtils.convertToTspans, gd);
         var pgroup = d3.select(this.parentNode),
             tspans = p.selectAll('tspan.line'),
             numLines = ((tspans[0].length || 1) - 1) * LINEEXPAND + 1,

@@ -650,7 +650,8 @@ proto.draw = function() {
                     fontSize: Fx.castHoverOption(trace, ptNumber, 'font.size'),
                     fontColor: Fx.castHoverOption(trace, ptNumber, 'font.color')
                 }, {
-                    container: this.svgContainer
+                    container: this.svgContainer,
+                    gd: this.graphDiv
                 });
             }
         }

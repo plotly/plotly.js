@@ -111,7 +111,7 @@ module.exports = function draw(gd) {
     traces.enter().append('g').attr('class', 'traces');
     traces.exit().remove();
 
-    traces.call(style)
+    traces.call(style, gd)
         .style('opacity', function(d) {
             var trace = d[0].trace;
             if(Registry.traceIs(trace, 'pie')) {
@@ -317,6 +317,7 @@ module.exports = function draw(gd) {
 
         dragElement.init({
             element: legend.node(),
+            gd: gd,
             prepFn: function() {
                 var transform = Drawing.getTranslate(legend);
 
@@ -380,14 +381,14 @@ function drawTexts(g, gd) {
     .text(name);
 
     function textLayout(s) {
-        svgTextUtils.convertToTspans(s, function() {
+        svgTextUtils.convertToTspans(s, gd, function() {
             s.selectAll('tspan.line').attr({x: s.attr('x')});
             g.call(computeTextDimensions, gd);
         });
     }
 
     if(gd._context.editable && !isPie) {
-        text.call(svgTextUtils.makeEditable)
+        text.call(svgTextUtils.makeEditable, {gd: gd})
             .call(textLayout)
             .on('edit', function(text) {
                 this.attr({'data-unformatted': text});
