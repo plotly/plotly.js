@@ -42,7 +42,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
             y = ya.c2p(di.y);
             if(polygon.contains([x, y])) {
                 selection.push({
-                    // pointNumber: i,
+                    id: i,
                     x: di.x,
                     y: di.y
                 });

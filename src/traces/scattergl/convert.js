@@ -483,7 +483,7 @@ proto.updateFancy = function(options) {
         xaxis = scene.xaxis,
         yaxis = scene.yaxis,
         bounds = this.bounds,
-        sel = this.selectedIds;
+        selection = options.selection;
 
     // makeCalcdata runs d2c (data-to-coordinate) on every point
     var x = this.pickXData = xaxis.makeCalcdata(options, 'x').slice();
@@ -544,7 +544,14 @@ proto.updateFancy = function(options) {
     this.updateError('X', options, positions, errorsX);
     this.updateError('Y', options, positions, errorsY);
 
-    var sizes;
+    var sizes, selIds;
+
+    if(selection) {
+        selIds = {};
+        for(i = 0; i < selection.length; i++) {
+            selIds[selection[i].id] = true;
+        }
+    }
 
     if(this.hasMarkers) {
         this.scatter.options.positions = positions;
@@ -579,7 +586,7 @@ proto.updateFancy = function(options) {
 
             for(j = 0; j < 4; ++j) {
                 var color = colors[4 * index + j];
-                if(sel && !sel[index] && j === 3) {
+                if(selIds && !selIds[index] && j === 3) {
                     color *= DESELECTDIM;
                 }
                 this.scatter.options.colors[4 * i + j] = color;
