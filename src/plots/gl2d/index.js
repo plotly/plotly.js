@@ -82,7 +82,11 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     Cartesian.clean.apply(this, arguments);
 };
 
-exports.drawFramework = Cartesian.drawFramework;
+exports.drawFramework = function(gd) {
+    if(!gd._context.staticPlot) {
+        Cartesian.drawFramework(gd);
+    }
+};
 
 exports.toSVG = function(gd) {
     var fullLayout = gd._fullLayout,
