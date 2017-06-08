@@ -582,7 +582,16 @@ function computeTextDimensions(g, gd) {
             textLines = textSpans[0].length || 1;
 
         height = lineHeight * textLines;
-        width = text.node() && Drawing.bBox(text.node()).width;
+
+        // If there are more than 20 traces (> 20 legend items), estimate the text width
+        // so that the overhead of measureing text is not too big
+        if(gd.data.length <= 20) {
+            width = text.node() && Drawing.bBox(text.node()).width;
+        } else {
+            // "7" is empirical number based on some case studies in Sketch
+            width = legendItem.trace.name.length * 7 * opts.font.size / 11;
+        }
+
 
         // approximation to height offset to center the font
         // to avoid getBoundingClientRect
