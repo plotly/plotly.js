@@ -447,10 +447,12 @@ function _hover(gd, evt, subplot) {
             pointNumber: pt.index
         };
 
+        // could maybe :hocho: _module.eventData
         if(pt.trace._module.eventData) out = pt.trace._module.eventData(out, pt);
         else {
             out.x = pt.xVal;
             out.y = pt.yVal;
+
             out.xaxis = pt.xa;
             out.yaxis = pt.ya;
 

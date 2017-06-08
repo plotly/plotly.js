@@ -47,6 +47,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
                     pointNumber: i,
                     x: di.x,
                     y: di.y,
+                    // TODO generalize with hover/click data handler
                     id: di.id
                 });
                 di.dim = 0;
