@@ -17,6 +17,12 @@ module.exports = function getRequestOpts(specs) {
     var pathToMock = path.join(constants.pathToTestImageMocks, specs.mockName) + '.json';
     var figure = require(pathToMock);
 
+    figure.data.forEach(function(t) {
+        if(t.type === 'scattergl') {
+            t.type = 'scatter';
+        }
+    })
+
     var body = {
         figure: figure,
         format: specs.format || DEFAULT_FORMAT,
