@@ -99,60 +99,29 @@ exports.getFilterFn = function(direction) {
 };
 
 function _getFilterFn(direction) {
-    var isPrevThisDirection = null;
+    // we're optimists - before we have any changing data, assume increasing
+    var isPrevIncreasing = true;
     var cPrev = null;
-    var fn;
 
-    switch(direction) {
-        case 'increasing':
-            fn = function(o, c) {
-                if(o === c) {
-                    if(c > cPrev) {
-                        return true; // increasing
-                    } else if(c < cPrev) {
-                        return false; // decreasing
-                    } else {
-                        if(isPrevThisDirection === true) {
-                            return true; // determine by last candle
-                        } else if(isPrevThisDirection === false) {
-                            return false; // determine by last candle
-                        } else {
-                            return true; // If we don't have previous data, assume it was increasing
-                        }
-                    }
-                }
-                return o < c;
-            };
-            break;
-
-        case 'decreasing':
-            fn = function(o, c) {
-                if(o === c) {
-                    if(c > cPrev) {
-                        return false; // increasing
-                    } else if(c < cPrev) {
-                        return true; // decreasing
-                    } else {
-                        if(isPrevThisDirection === true) {
-                            return true; // determine by last candle
-                        } else if(isPrevThisDirection === false) {
-                            return false; // determine by last candle
-                        } else {
-                            return false; // If we don't have previous data, assume it was increasing
-                        }
-                    }
-                }
-                return o > c;
-            };
-            break;
+    function isIncreasing(o, c) {
+        if(o === c) {
+            if(c > cPrev) {
+                isPrevIncreasing = true; // increasing
+            } else if(c < cPrev) {
+                isPrevIncreasing = false; // decreasing
+            }
+            // else isPrevIncreasing is not changed
+        }
+        else isPrevIncreasing = (o < c);
+        cPrev = c;
+        return isPrevIncreasing;
     }
 
-    return function(o, c) {
-        var out = fn(o, c);
-        isPrevThisDirection = !!out;
-        cPrev = c;
-        return out;
-    };
+    function isDecreasing(o, c) {
+        return !isIncreasing(o, c);
+    }
+
+    return direction === 'increasing' ? isIncreasing : isDecreasing;
 }
 
 exports.addRangeSlider = function(data, layout) {
