@@ -243,13 +243,6 @@ proto.computeTickMarks = function() {
     this.xaxis.setScale();
     this.yaxis.setScale();
 
-    // override _length from backward compatibility
-    // even though setScale 'should' give the correct result
-    this.xaxis._length =
-        this.glplot.viewBox[2] - this.glplot.viewBox[0];
-    this.yaxis._length =
-        this.glplot.viewBox[3] - this.glplot.viewBox[1];
-
     var nextTicks = [
         Axes.calcTicks(this.xaxis),
         Axes.calcTicks(this.yaxis)
