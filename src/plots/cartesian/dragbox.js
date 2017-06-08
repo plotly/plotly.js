@@ -184,6 +184,9 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         zb,
         corners;
 
+    // collected changes to be made to the plot by relayout at the end
+    var updates = {};
+
     function zoomPrep(e, startX, startY) {
         var dragBBox = dragger.getBoundingClientRect();
         x0 = startX - dragBBox.left;
@@ -282,8 +285,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
 
         // TODO: edit linked axes in zoomAxRanges and in dragTail
-        if(zoomMode === 'xy' || zoomMode === 'x') zoomAxRanges(xa, box.l / pw, box.r / pw, xaLinked);
-        if(zoomMode === 'xy' || zoomMode === 'y') zoomAxRanges(ya, (ph - box.b) / ph, (ph - box.t) / ph, yaLinked);
+        if(zoomMode === 'xy' || zoomMode === 'x') zoomAxRanges(xa, box.l / pw, box.r / pw, updates, xaLinked);
+        if(zoomMode === 'xy' || zoomMode === 'y') zoomAxRanges(ya, (ph - box.b) / ph, (ph - box.t) / ph, updates, yaLinked);
 
         removeZoombox(gd);
         dragTail(zoomMode);
@@ -335,11 +338,11 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     // scroll zoom, on all draggers except corners
-    var scrollViewBox = [0, 0, pw, ph],
-        // wait a little after scrolling before redrawing
-        redrawTimer = null,
-        REDRAWDELAY = constants.REDRAWDELAY,
-        mainplot = plotinfo.mainplot ?
+    var scrollViewBox = [0, 0, pw, ph];
+    // wait a little after scrolling before redrawing
+    var redrawTimer = null;
+    var REDRAWDELAY = constants.REDRAWDELAY;
+    var mainplot = plotinfo.mainplot ?
             fullLayout._plots[plotinfo.mainplot] : plotinfo;
 
     function zoomWheel(e) {
@@ -524,6 +527,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         ticksAndAnnotations(yActive, xActive);
     }
 
+    // Draw ticks and annotations (and other components) when ranges change.
+    // Also records the ranges that have changed for use by update at the end.
     function ticksAndAnnotations(ns, ew) {
         var activeAxIds = [],
             i;
@@ -543,8 +548,12 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             pushActiveAxIds(yaLinked);
         }
 
+        updates = {};
         for(i = 0; i < activeAxIds.length; i++) {
-            doTicks(gd, activeAxIds[i], true);
+            var axId = activeAxIds[i];
+            doTicks(gd, axId, true);
+            var ax = getFromId(gd, axId);
+            updates[ax._name + '.range'] = ax.range.slice();
         }
 
         function redrawObjs(objArray, method, shortCircuit) {
@@ -641,29 +650,17 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     function dragTail(zoommode) {
         if(zoommode === undefined) zoommode = (ew ? 'x' : '') + (ns ? 'y' : '');
 
-        var attrs = {};
-        // revert to the previous axis settings, then apply the new ones
-        // through relayout - this lets relayout manage undo/redo
-        var axesToModify;
-        if(zoommode === 'xy') axesToModify = xa.concat(ya);
-        else if(zoommode === 'x') axesToModify = xa;
-        else if(zoommode === 'y') axesToModify = ya;
-
-        for(var i = 0; i < axesToModify.length; i++) {
-            var axi = axesToModify[i];
-            if(axi._r[0] !== axi.range[0]) attrs[axi._name + '.range[0]'] = axi.range[0];
-            if(axi._r[1] !== axi.range[1]) attrs[axi._name + '.range[1]'] = axi.range[1];
-
-            axi.range = axi._input.range = axi._r.slice();
-        }
-
+        // put the subplot viewboxes back to default (Because we're going to)
+        // be repositioning the data in the relayout. But DON'T call
+        // ticksAndAnnotations again - it's unnecessary and would overwrite `updates`
         updateSubplots([0, 0, pw, ph]);
-        Plotly.relayout(gd, attrs);
+        Plotly.relayout(gd, updates);
     }
 
     // updateSubplots - find all plot viewboxes that should be
     // affected by this drag, and update them. look for all plots
     // sharing an affected axis (including the one being dragged)
+    // returns all the new axis ranges as an update object
     function updateSubplots(viewBox) {
         var plotinfos = fullLayout._plots;
         var subplots = Object.keys(plotinfos);
@@ -673,6 +670,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         var editY = ns || isSubplotConstrained;
 
         var i, xScaleFactor2, yScaleFactor2, clipDx, clipDy;
+
+        var attrs = {};
 
         // Find the appropriate scaling for this axis, if it's linked to the
         // dragged axes by constraints. 0 is special, it means this axis shouldn't
@@ -693,6 +692,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             if(scaleFactor) {
                 ax.range = ax._r.slice();
                 scaleZoom(ax, scaleFactor);
+                attrs[ax._name + '.range'] = ax.range.slice();
                 return getShift(ax, scaleFactor);
             }
             return 0;
@@ -758,6 +758,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 .selectAll('.points').selectAll('.textpoint')
                 .call(Drawing.setTextPointsScale, xScaleFactor2, yScaleFactor2);
         }
+
+        return attrs;
     }
 
     return dragger;
@@ -806,7 +808,7 @@ function getEndText(ax, end) {
     }
 }
 
-function zoomAxRanges(axList, r0Fraction, r1Fraction, linkedAxes) {
+function zoomAxRanges(axList, r0Fraction, r1Fraction, updates, linkedAxes) {
     var i,
         axi,
         axRangeLinear0,
@@ -822,13 +824,14 @@ function zoomAxRanges(axList, r0Fraction, r1Fraction, linkedAxes) {
             axi.l2r(axRangeLinear0 + axRangeLinearSpan * r0Fraction),
             axi.l2r(axRangeLinear0 + axRangeLinearSpan * r1Fraction)
         ];
+        updates[axi._name + '.range'] = axi.range.slice();
     }
 
     // zoom linked axes about their centers
     if(linkedAxes && linkedAxes.length) {
         var linkedR0Fraction = (r0Fraction + (1 - r1Fraction)) / 2;
 
-        zoomAxRanges(linkedAxes, linkedR0Fraction, 1 - linkedR0Fraction);
+        zoomAxRanges(linkedAxes, linkedR0Fraction, 1 - linkedR0Fraction, updates);
     }
 }
 
