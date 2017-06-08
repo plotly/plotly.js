@@ -37,13 +37,16 @@ exports.enforce = function enforceAxisConstraints(gd) {
         var matchScale = Infinity;
         var normScales = {};
         var axes = {};
+        var hasAnyDomainConstraint = false;
 
         // find the (normalized) scale of each axis in the group
         for(j = 0; j < axisIDs.length; j++) {
             axisID = axisIDs[j];
             axes[axisID] = ax = fullLayout[id2name(axisID)];
 
-            if(!ax._inputDomain) ax._inputDomain = ax.domain.slice();
+            if(ax._inputDomain) ax.domain = ax._inputDomain.slice();
+            else ax._inputDomain = ax.domain.slice();
+
             if(!ax._inputRange) ax._inputRange = ax.range.slice();
 
             // set axis scale here so we can use _m rather than
@@ -53,18 +56,19 @@ exports.enforce = function enforceAxisConstraints(gd) {
             // abs: inverted scales still satisfy the constraint
             normScales[axisID] = normScale = Math.abs(ax._m) / group[axisID];
             minScale = Math.min(minScale, normScale);
-            if(ax._constraintShrinkable) {
-                // this has served its purpose, so remove it
-                delete ax._constraintShrinkable;
-            }
-            else {
+            if(ax.constrain === 'domain' || !ax._constraintShrinkable) {
                 matchScale = Math.min(matchScale, normScale);
             }
+
+            // this has served its purpose, so remove it
+            delete ax._constraintShrinkable;
             maxScale = Math.max(maxScale, normScale);
+
+            if(ax.constrain === 'domain') hasAnyDomainConstraint = true;
         }
 
         // Do we have a constraint mismatch? Give a small buffer for rounding errors
-        if(minScale > ALMOST_EQUAL * maxScale) continue;
+        if(minScale > ALMOST_EQUAL * maxScale && !hasAnyDomainConstraint) continue;
 
         // now increase any ranges we need to until all normalized scales are equal
         for(j = 0; j < axisIDs.length; j++) {
@@ -107,8 +111,7 @@ exports.enforce = function enforceAxisConstraints(gd) {
                         factor *= rangeShrunk;
                     }
 
-                    // TODO
-                    if(ax.autorange) {
+                    if(ax.autorange && ax._min.length && ax._max.length) {
                         /*
                          * range & factor may need to change because range was
                          * calculated for the larger scaling, so some pixel
@@ -121,12 +124,16 @@ exports.enforce = function enforceAxisConstraints(gd) {
                          * outerMin/Max are for - if the expansion was going to
                          * go beyond the original domain, it must be impossible
                          */
-                        var rangeMin = Math.min(ax.range[0], ax.range[1]);
-                        var rangeMax = Math.max(ax.range[0], ax.range[1]);
-                        var rangeCenter = (rangeMin + rangeMax) / 2;
-                        var halfRange = rangeMax - rangeCenter;
-                        var outerMin = rangeCenter - halfRange * factor;
-                        var outerMax = rangeCenter + halfRange * factor;
+                        var rl0 = ax.r2l(ax.range[0]);
+                        var rl1 = ax.r2l(ax.range[1]);
+                        var rangeCenter = (rl0 + rl1) / 2;
+                        var rangeMin = rangeCenter;
+                        var rangeMax = rangeCenter;
+                        var halfRange = Math.abs(rl1 - rangeCenter);
+                        // extra tiny bit for rounding errors, in case we actually
+                        // *are* expanding to the full domain
+                        var outerMin = rangeCenter - halfRange * factor * 1.0001;
+                        var outerMax = rangeCenter + halfRange * factor * 1.0001;
 
                         updateDomain(ax, factor);
                         ax.setScale();
@@ -135,34 +142,26 @@ exports.enforce = function enforceAxisConstraints(gd) {
                         var k;
 
                         for(k = 0; k < ax._min.length; k++) {
-                            newVal = ax._min[i].val - ax._min[i].pad / m;
+                            newVal = ax._min[k].val - ax._min[k].pad / m;
                             if(newVal > outerMin && newVal < rangeMin) {
                                 rangeMin = newVal;
                             }
                         }
 
                         for(k = 0; k < ax._max.length; k++) {
-                            newVal = ax._max[i].val + ax._max[i].pad / m;
+                            newVal = ax._max[k].val + ax._max[k].pad / m;
                             if(newVal < outerMax && newVal > rangeMax) {
                                 rangeMax = newVal;
                             }
                         }
 
-                        ax.range = ax._input.range = (ax.range[0] < ax.range[1]) ?
-                            [rangeMin, rangeMax] : [rangeMax, rangeMin];
-
-                        /*
-                         * In principle this new range can be shifted vs. what
-                         * you saw at the end of a zoom operation, like if you
-                         * have a big bubble on one side and a small bubble on
-                         * the other.
-                         * To fix this we'd have to be doing this calculation
-                         * continuously during the zoom, but it's enough of an
-                         * edge case and a subtle enough effect that I'm going
-                         * to ignore it for now.
-                         */
                         var domainExpand = (rangeMax - rangeMin) / (2 * halfRange);
                         factor /= domainExpand;
+
+                        rangeMin = ax.l2r(rangeMin);
+                        rangeMax = ax.l2r(rangeMax);
+                        ax.range = ax._input.range = (rl0 < rl1) ?
+                            [rangeMin, rangeMax] : [rangeMax, rangeMin];
                     }
 
                     updateDomain(ax, factor);
