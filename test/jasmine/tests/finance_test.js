@@ -395,14 +395,28 @@ describe('finance charts calc transforms:', function() {
         return gd.calcdata.map(calcDatatoTrace);
     }
 
+    // add some points that shouldn't make it into calcdata because
+    // one of o, h, l, c is not numeric
+    function addJunk(trace) {
+        // x filtering happens in other ways
+        if(trace.x) trace.x.push(1, 1, 1, 1);
+
+        trace.open.push('', 1, 1, 1);
+        trace.high.push(1, null, 1, 1);
+        trace.low.push(1, 1, [1], 1);
+        trace.close.push(1, 1, 1, 'close');
+    }
+
     it('should fill when *x* is not present', function() {
         var trace0 = Lib.extendDeep({}, mock0, {
             type: 'ohlc',
         });
+        addJunk(trace0);
 
         var trace1 = Lib.extendDeep({}, mock0, {
             type: 'candlestick',
         });
+        addJunk(trace1);
 
         var out = _calc([trace0, trace1]);
 

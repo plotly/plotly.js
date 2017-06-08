@@ -9,6 +9,8 @@
 
 'use strict';
 
+var isNumeric = require('fast-isnumeric');
+
 var Lib = require('../../lib');
 
 // This routine gets called during the trace supply-defaults step.
@@ -103,7 +105,7 @@ function _getFilterFn(direction) {
     var isPrevIncreasing = true;
     var cPrev = null;
 
-    function isIncreasing(o, c) {
+    function _isIncreasing(o, c) {
         if(o === c) {
             if(c > cPrev) {
                 isPrevIncreasing = true; // increasing
@@ -117,8 +119,12 @@ function _getFilterFn(direction) {
         return isPrevIncreasing;
     }
 
+    function isIncreasing(o, c) {
+        return isNumeric(o) && isNumeric(c) && _isIncreasing(+o, +c);
+    }
+
     function isDecreasing(o, c) {
-        return !isIncreasing(o, c);
+        return isNumeric(o) && isNumeric(c) && !_isIncreasing(+o, +c);
     }
 
     return direction === 'increasing' ? isIncreasing : isDecreasing;
