@@ -661,7 +661,6 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     // updateSubplots - find all plot viewboxes that should be
     // affected by this drag, and update them. look for all plots
     // sharing an affected axis (including the one being dragged)
-    // returns all the new axis ranges as an update object
     function updateSubplots(viewBox) {
         var plotinfos = fullLayout._plots;
         var subplots = Object.keys(plotinfos);
@@ -671,8 +670,6 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         var editY = ns || isSubplotConstrained;
 
         var i, xScaleFactor2, yScaleFactor2, clipDx, clipDy;
-
-        var attrs = {};
 
         // Find the appropriate scaling for this axis, if it's linked to the
         // dragged axes by constraints. 0 is special, it means this axis shouldn't
@@ -693,7 +690,6 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             if(scaleFactor) {
                 ax.range = ax._r.slice();
                 scaleZoom(ax, scaleFactor);
-                attrs[ax._name + '.range'] = ax.range.slice();
                 return getShift(ax, scaleFactor);
             }
             return 0;
@@ -759,8 +755,6 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 .selectAll('.points').selectAll('.textpoint')
                 .call(Drawing.setTextPointsScale, xScaleFactor2, yScaleFactor2);
         }
-
-        return attrs;
     }
 
     return dragger;
