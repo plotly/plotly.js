@@ -17,7 +17,7 @@ var ALMOST_EQUAL = require('../../constants/numerical').ALMOST_EQUAL;
 var FROM_BL = require('../../constants/alignment').FROM_BL;
 
 
-module.exports = function enforceAxisConstraints(gd) {
+exports.enforce = function enforceAxisConstraints(gd) {
     var fullLayout = gd._fullLayout;
     var constraintGroups = fullLayout._axisConstraintGroups;
 
@@ -168,6 +168,26 @@ module.exports = function enforceAxisConstraints(gd) {
                     updateDomain(ax, factor);
                 }
             }
+        }
+    }
+};
+
+// For use before autoranging, check if this axis was previously constrained
+// by domain but no longer is
+exports.clean = function cleanConstraints(gd, ax) {
+    if(ax._inputDomain) {
+        var isConstrained = false;
+        var axId = ax._id;
+        var constraintGroups = gd._fullLayout._axisConstraintGroups;
+        for(var j = 0; j < constraintGroups.length; j++) {
+            if(constraintGroups[j][axId]) {
+                isConstrained = true;
+                break;
+            }
+        }
+        if(!isConstrained || ax.constrain !== 'domain') {
+            ax._input.domain = ax.domain = ax._inputDomain;
+            delete ax._inputDomain;
         }
     }
 };

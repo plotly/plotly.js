@@ -32,7 +32,9 @@ var manageArrays = require('./manage_arrays');
 var helpers = require('./helpers');
 var subroutines = require('./subroutines');
 var cartesianConstants = require('../plots/cartesian/constants');
-var enforceAxisConstraints = require('../plots/cartesian/constraints');
+var axisConstraints = require('../plots/cartesian/constraints');
+var enforceAxisConstraints = axisConstraints.enforce;
+var cleanAxisConstraints = axisConstraints.clean;
 var axisIds = require('../plots/cartesian/axis_ids');
 
 
@@ -269,24 +271,8 @@ Plotly.plot = function(gd, data, layout, config) {
 
         var axList = Plotly.Axes.list(gd, '', true);
         for(var i = 0; i < axList.length; i++) {
-            // before autoranging, check if this axis was previously constrained
-            // by domain but no longer is
             var ax = axList[i];
-            if(ax._inputDomain) {
-                var isConstrained = false;
-                var axId = ax._id;
-                var constraintGroups = gd._fullLayout._axisConstraintGroups;
-                for(var j = 0; j < constraintGroups.length; j++) {
-                    if(constraintGroups[j][axId]) {
-                        isConstrained = true;
-                        break;
-                    }
-                }
-                if(!isConstrained || ax.constrain !== 'domain') {
-                    ax._input.domain = ax.domain = ax._inputDomain;
-                    delete ax._inputDomain;
-                }
-            }
+            cleanAxisConstraints(gd, ax);
 
             Plotly.Axes.doAutoRange(ax);
         }
@@ -2000,7 +1986,6 @@ function _relayout(gd, aobj) {
             }
         }
         else if(pleafPlus.match(/^[xyz]axis[0-9]*\.domain(\[[0|1]\])?$/)) {
-            axId = recordAlteredAxis(pleafPlus);
             Lib.nestedProperty(fullLayout, ptrunk + '._inputDomain').set(null);
         }
         else if(pleafPlus.match(/^[xyz]axis[0-9]*\.constrain.*$/)) {

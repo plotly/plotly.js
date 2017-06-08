@@ -22,7 +22,9 @@ var createOptions = require('./convert');
 var createCamera = require('./camera');
 var convertHTMLToUnicode = require('../../lib/html2unicode');
 var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
-var enforceAxisConstraints = require('../../plots/cartesian/constraints');
+var axisConstraints = require('../../plots/cartesian/constraints');
+var enforceAxisConstraints = axisConstraints.enforce;
+var cleanAxisConstraints = axisConstraints.clean;
 
 var AXES = ['xaxis', 'yaxis'];
 var STATIC_CANVAS, STATIC_CONTEXT;
@@ -395,6 +397,15 @@ proto.plot = function(fullData, calcData, fullLayout) {
     options.merge(fullLayout);
     options.screenBox = [0, 0, width, height];
 
+    var mockGraphDiv = {_fullLayout: {
+        _axisConstraintGroups: this.graphDiv._fullLayout._axisConstraintGroups,
+        xaxis: this.xaxis,
+        yaxis: this.yaxis
+    }};
+
+    cleanAxisConstraints(mockGraphDiv, this.xaxis);
+    cleanAxisConstraints(mockGraphDiv, this.yaxis);
+
     var size = fullLayout._size,
         domainX = this.xaxis.domain,
         domainY = this.yaxis.domain;
@@ -441,12 +452,7 @@ proto.plot = function(fullData, calcData, fullLayout) {
         ax.setScale();
     }
 
-    var mockLayout = {
-        _axisConstraintGroups: this.graphDiv._fullLayout._axisConstraintGroups,
-        xaxis: this.xaxis,
-        yaxis: this.yaxis
-    };
-    enforceAxisConstraints({_fullLayout: mockLayout});
+    enforceAxisConstraints(mockGraphDiv);
 
     options.ticks = this.computeTickMarks();
 
