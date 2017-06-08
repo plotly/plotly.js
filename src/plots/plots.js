@@ -676,6 +676,7 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
         Lib.pushUnique(modules, _module);
         Lib.pushUnique(basePlotModules, fullTrace._module.basePlotModule);
 
+        fullTrace._arrayAttrs = PlotSchema.findArrayAttributes(fullTrace);
         cnt++;
     }
 
