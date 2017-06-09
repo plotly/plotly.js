@@ -25,7 +25,6 @@ module.exports = function selectPoints(searchInfo, polygon) {
     var scattergl = cd[0].glTrace;
     var scene = cd[0].glTrace.scene;
 
-    // TODO: include lines? that would require per-segment line properties
     var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
     if(trace.visible !== true || hasOnlyLines) return;
 
@@ -37,7 +36,6 @@ module.exports = function selectPoints(searchInfo, polygon) {
     else {
         for(i = 0; i < cd.length; i++) {
             di = cd[i];
-            // FIXME: this affects performance for 1e6 points
             x = xa.c2p(di.x);
             y = ya.c2p(di.y);
             if(polygon.contains([x, y])) {
@@ -55,9 +53,6 @@ module.exports = function selectPoints(searchInfo, polygon) {
     // highlight selected points here
     trace.selection = selection;
 
-    // scene.plot([fullTrace], [cd], scene.fullLayout);
-
-    // excerpt from ↑
     scattergl.update(trace, cd);
     scene.glplot.setDirty();
 

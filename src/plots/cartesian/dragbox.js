@@ -170,6 +170,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             }
         }
     };
+
     dragElement.init(dragOptions);
 
     var x0,
@@ -386,9 +387,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             var axRange = Lib.simpleMap(ax.range, ax.r2l),
                 v0 = axRange[0] + (axRange[1] - axRange[0]) * centerFraction;
             function doZoom(v) { return ax.l2r(v0 + (v - v0) * zoom); }
-
             ax.range = axRange.map(doZoom);
-
         }
 
         if(ew || isSubplotConstrained) {
@@ -444,6 +443,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
 
         recomputeAxisLists();
+
         if(xActive === 'ew' || yActive === 'ns') {
             if(xActive) dragAxList(xa, dx);
             if(yActive) dragAxList(ya, dy);
@@ -504,7 +504,6 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 // scale the other axis the same about its middle
                 for(i = 0; i < xa.length; i++) {
                     xa[i].range = xa[i]._r.slice();
-
                     scaleZoom(xa[i], 1 - dy / ph);
                 }
                 dx = dy * pw / ph;
@@ -513,7 +512,6 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             if(!yActive && xActive.length === 1) {
                 for(i = 0; i < ya.length; i++) {
                     ya[i].range = ya[i]._r.slice();
-
                     scaleZoom(ya[i], 1 - dx / pw);
                 }
                 dy = dx * ph / pw;
@@ -633,6 +631,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 }
             }
         }
+
         gd.emit('plotly_doubleclick', null);
         Plotly.relayout(gd, attrs);
     }
@@ -655,7 +654,6 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             if(axi._r[1] !== axi.range[1]) attrs[axi._name + '.range[1]'] = axi.range[1];
 
             axi.range = axi._input.range = axi._r.slice();
-
         }
 
         updateSubplots([0, 0, pw, ph]);
@@ -815,12 +813,10 @@ function zoomAxRanges(axList, r0Fraction, r1Fraction, linkedAxes) {
 
         axRangeLinear0 = axi._rl[0];
         axRangeLinearSpan = axi._rl[1] - axRangeLinear0;
-
         axi.range = [
             axi.l2r(axRangeLinear0 + axRangeLinearSpan * r0Fraction),
             axi.l2r(axRangeLinear0 + axRangeLinearSpan * r1Fraction)
         ];
-
     }
 
     // zoom linked axes about their centers
@@ -835,7 +831,6 @@ function dragAxList(axList, pix) {
     for(var i = 0; i < axList.length; i++) {
         var axi = axList[i];
         if(!axi.fixedrange) {
-
             axi.range = [
                 axi.l2r(axi._rl[0] - pix / axi._m),
                 axi.l2r(axi._rl[1] - pix / axi._m)

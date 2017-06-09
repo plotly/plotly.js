@@ -38,8 +38,6 @@ module.exports = function initInteractions(gd) {
     subplots.forEach(function(subplot) {
         var plotinfo = fullLayout._plots[subplot];
 
-        // if(!fullLayout._has('cartesian')) return;
-
         var xa = plotinfo.xaxis,
             ya = plotinfo.yaxis,
 

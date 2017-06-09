@@ -72,6 +72,7 @@ module.exports = function manageModeBar(gd) {
 function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     var fullLayout = gd._fullLayout,
         fullData = gd._fullData;
+
     var hasCartesian = fullLayout._has('cartesian'),
         hasGL3D = fullLayout._has('gl3d'),
         hasGeo = fullLayout._has('geo'),

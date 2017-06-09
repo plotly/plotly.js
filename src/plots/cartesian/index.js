@@ -286,6 +286,7 @@ function makeSubplotData(gd) {
             subplotData.push(subplot);
         }
     }
+
     // main subplots before overlays
     subplotData = subplotData.concat(overlays);
 

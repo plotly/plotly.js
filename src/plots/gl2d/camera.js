@@ -65,8 +65,6 @@ function createCamera(scene) {
         var MINDRAG = cartesianConstants.MINDRAG * plot.pixelRatio;
         var MINZOOM = cartesianConstants.MINZOOM * plot.pixelRatio;
 
-        var mode = scene.fullLayout.dragmode;
-
         var dx, dy;
 
         x *= plot.pixelRatio;
@@ -91,10 +89,8 @@ function createCamera(scene) {
             }
         }
 
-        switch(mode) {
+        switch(scene.fullLayout.dragmode) {
             case 'zoom':
-            case 'select':
-            case 'lasso':
                 if(buttons) {
                     var dataX = x /
                             (viewBox[2] - viewBox[0]) * (dataBox[2] - dataBox[0]) +
@@ -123,16 +119,6 @@ function createCamera(scene) {
                         result.boxStart[1] !== result.boxEnd[1])
                     ) {
                         result.boxEnabled = true;
-                        if(mode === 'select' || mode === 'lasso') {
-                            // prepSelect(e, x, y, {
-                            //     element: dragger, //+
-                            //     gd: this.element, //+
-                            //     plotinfo: null, //+
-                            //     xaxes: null, //+
-                            //     yaxes: null, //+
-                            //     subplot: null //+?
-                            // }, mode);
-                        }
                     }
 
                     // constrain aspect ratio if the axes require it
@@ -186,22 +172,16 @@ function createCamera(scene) {
                 else if(result.boxEnabled) {
                     dx = result.boxStart[0] !== result.boxEnd[0];
                     dy = result.boxStart[1] !== result.boxEnd[1];
-
                     if(dx || dy) {
-                        if(mode === 'select' || mode === 'lasso') {
-                            // console.log('end');
+                        if(dx) {
+                            updateRange(0, result.boxStart[0], result.boxEnd[0]);
+                            scene.xaxis.autorange = false;
                         }
-                        else {
-                            if(dx) {
-                                updateRange(0, result.boxStart[0], result.boxEnd[0]);
-                                scene.xaxis.autorange = false;
-                            }
-                            if(dy) {
-                                updateRange(1, result.boxStart[1], result.boxEnd[1]);
-                                scene.yaxis.autorange = false;
-                            }
-                            scene.relayoutCallback();
+                        if(dy) {
+                            updateRange(1, result.boxStart[1], result.boxEnd[1]);
+                            scene.yaxis.autorange = false;
                         }
+                        scene.relayoutCallback();
                     }
                     else {
                         scene.glplot.setDirty();
@@ -264,9 +244,7 @@ function createCamera(scene) {
         var lastX = result.lastPos[0],
             lastY = result.lastPos[1];
 
-        var mode = scene.fullLayout.dragmode;
-
-        switch(mode) {
+        switch(scene.fullLayout.dragmode) {
             case 'zoom':
                 break;
 

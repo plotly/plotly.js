@@ -15,6 +15,7 @@ module.exports = function scaleZoom(ax, factor, centerFraction) {
     var rangeLinear = [ax.r2l(ax.range[0]), ax.r2l(ax.range[1])];
     var center = rangeLinear[0] + (rangeLinear[1] - rangeLinear[0]) * centerFraction;
     var newHalfSpan = (center - rangeLinear[0]) * factor;
+
     ax.range = ax._input.range = [
         ax.l2r(center - newHalfSpan),
         ax.l2r(center + newHalfSpan)

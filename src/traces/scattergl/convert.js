@@ -113,14 +113,6 @@ proto.initObject = function(createFn, options, objIndex) {
     var glplot = _this.scene.glplot;
     var options0 = Lib.extendFlat({}, options);
     var obj = null;
-    var result = {
-        options: options,
-        update: update,
-        clear: clear,
-        dispose: dispose
-    };
-
-    return result;
 
     function update() {
         if(!obj) {
@@ -138,6 +130,13 @@ proto.initObject = function(createFn, options, objIndex) {
     function dispose() {
         if(obj) obj.dispose();
     }
+
+    return {
+        options: options,
+        update: update,
+        clear: clear,
+        dispose: dispose
+    };
 };
 
 proto.handlePick = function(pickResult) {
@@ -271,6 +270,7 @@ proto.update = function(options, cdscatter) {
         this.hasErrorY = options.error_y.visible === true;
         this.hasMarkers = subTypes.hasMarkers(options);
     }
+
     this.textLabels = options.text;
     this.name = options.name;
     this.hoverinfo = options.hoverinfo;
@@ -374,7 +374,6 @@ proto.updateFast = function(options) {
                 positions[ptr++] = yy;
 
                 idToIndex[pId++] = i;
-
 
                 bounds[0] = Math.min(bounds[0], xx);
                 bounds[1] = Math.min(bounds[1], yy);

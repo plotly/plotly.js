@@ -325,6 +325,7 @@ proto.cameraChanged = function() {
 
     var nextTicks = this.computeTickMarks();
     var curTicks = this.glplotOptions.ticks;
+
     if(compareTicks(nextTicks, curTicks)) {
         this.glplotOptions.ticks = nextTicks;
         this.glplotOptions.dataBox = camera.dataBox;
@@ -424,6 +425,7 @@ proto.plot = function(fullData, calcData, fullLayout) {
 
         ax = this[AXES[i]];
         ax._length = options.viewBox[i + 2] - options.viewBox[i];
+
         Axes.doAutoRange(ax);
         ax.setScale();
     }
@@ -440,7 +442,6 @@ proto.plot = function(fullData, calcData, fullLayout) {
     options.dataBox = this.calcDataBox();
 
     options.merge(fullLayout);
-
     glplot.update(options);
 
     // force redraw so that promise is returned when rendering is completed
