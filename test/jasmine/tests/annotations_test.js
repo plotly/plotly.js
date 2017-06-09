@@ -98,39 +98,48 @@ describe('Test annotations', function() {
             expect(layoutOut.annotations[0].ax).toEqual('2004-07-01');
         });
 
-        it('should convert ax/ay category coordinates to linear coords', function() {
+        it('should clean *xclick* and *yclick* values', function() {
             var layoutIn = {
                 annotations: [{
-                    showarrow: true,
-                    axref: 'x',
-                    ayref: 'y',
-                    x: 'c',
-                    ax: 1,
-                    y: 'A',
-                    ay: 3
+                    clicktoshow: 'onoff',
+                    xref: 'paper',
+                    yref: 'paper',
+                    xclick: '10',
+                    yclick: '30'
+                }, {
+                    clicktoshow: 'onoff',
+                    xref: 'x',
+                    yref: 'y',
+                    xclick: '1',
+                    yclick: '2017-13-50'
+                }, {
+                    clicktoshow: 'onoff',
+                    xref: 'x2',
+                    yref: 'y2',
+                    xclick: '2',
+                    yclick: 'A'
                 }]
             };
 
             var layoutOut = {
-                xaxis: {
-                    type: 'category',
-                    _categories: ['a', 'b', 'c'],
-                    range: [-0.5, 2.5] },
-                yaxis: {
-                    type: 'category',
-                    _categories: ['A', 'B', 'C'],
-                    range: [-0.5, 3]
-                }
+                xaxis: {type: 'linear', range: [0, 1]},
+                yaxis: {type: 'date', range: ['2000-01-01', '2018-01-01']},
+                xaxis2: {type: 'log', range: [1, 2]},
+                yaxis2: {type: 'category', range: [0, 1]}
             };
-            Axes.setConvert(layoutOut.xaxis);
-            Axes.setConvert(layoutOut.yaxis);
+
+            ['xaxis', 'xaxis2', 'yaxis', 'yaxis2'].forEach(function(k) {
+                Axes.setConvert(layoutOut[k]);
+            });
 
             _supply(layoutIn, layoutOut);
 
-            expect(layoutOut.annotations[0].x).toEqual(2);
-            expect(layoutOut.annotations[0].ax).toEqual(1);
-            expect(layoutOut.annotations[0].y).toEqual(0);
-            expect(layoutOut.annotations[0].ay).toEqual(3);
+            expect(layoutOut.annotations[0]._xclick).toBe(10, 'paper x');
+            expect(layoutOut.annotations[0]._yclick).toBe(30, 'paper y');
+            expect(layoutOut.annotations[1]._xclick).toBe(1, 'linear');
+            expect(layoutOut.annotations[1]._yclick).toBe(undefined, 'invalid date');
+            expect(layoutOut.annotations[2]._xclick).toBe(2, 'log');
+            expect(layoutOut.annotations[2]._yclick).toBe('A', 'category');
         });
     });
 });

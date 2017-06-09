@@ -12,6 +12,7 @@
 var createPlot = require('gl-plot3d');
 var getContext = require('webgl-context');
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 
 var Axes = require('../../plots/cartesian/axes');
@@ -29,7 +30,6 @@ var computeTickMarks = require('./layout/tick_marks');
 var STATIC_CANVAS, STATIC_CONTEXT;
 
 function render(scene) {
-
     var trace;
 
     // update size of svg container
@@ -67,8 +67,8 @@ function render(scene) {
     if(lastPicked !== null) {
         var pdata = project(scene.glplot.cameraParams, selection.dataCoordinate);
         trace = lastPicked.data;
-        var hoverinfo = trace.hoverinfo;
         var ptNumber = selection.index;
+        var hoverinfo = Fx.castHoverinfo(trace, scene.fullLayout, ptNumber);
 
         var xVal = formatter('xaxis', selection.traceCoordinate[0]),
             yVal = formatter('yaxis', selection.traceCoordinate[1]),
@@ -127,6 +127,8 @@ function render(scene) {
         Fx.loneUnhover(svgContainer);
         scene.graphDiv.emit('plotly_unhover', oldEventData);
     }
+
+    scene.drawAnnotations(scene);
 }
 
 function initializeGLPlot(scene, fullLayout, canvas, gl) {
@@ -179,7 +181,7 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
         if(scene.fullSceneLayout.dragmode === false) return;
 
         var update = {};
-        update[scene.id] = getLayoutCamera(scene.camera);
+        update[scene.id + '.camera'] = getLayoutCamera(scene.camera);
         scene.saveCamera(scene.graphDiv.layout);
         scene.graphDiv.emit('plotly_relayout', update);
     };
@@ -268,6 +270,9 @@ function Scene(options, fullLayout) {
     this.dataScale = [1, 1, 1];
 
     this.contourLevels = [ [], [], [] ];
+
+    this.convertAnnotations = Registry.getComponentMethod('annotations3d', 'convert');
+    this.drawAnnotations = Registry.getComponentMethod('annotations3d', 'draw');
 
     if(!initializeGLPlot(this, fullLayout)) return; // todo check the necessity for this line
 }
@@ -393,6 +398,9 @@ proto.plot = function(sceneData, fullLayout, layout) {
     // Save scale
     this.dataScale = dataScale;
 
+    // after computeTraceBounds where ax._categories are filled in
+    this.convertAnnotations(this);
+
     // Update traces
     for(i = 0; i < sceneData.length; ++i) {
         data = sceneData[i];
@@ -452,13 +460,28 @@ proto.plot = function(sceneData, fullLayout, layout) {
         if(axis.autorange) {
             sceneBounds[0][i] = Infinity;
             sceneBounds[1][i] = -Infinity;
-            for(j = 0; j < this.glplot.objects.length; ++j) {
-                var objBounds = this.glplot.objects[j].bounds;
-                sceneBounds[0][i] = Math.min(sceneBounds[0][i],
-                  objBounds[0][i] / dataScale[i]);
-                sceneBounds[1][i] = Math.max(sceneBounds[1][i],
-                  objBounds[1][i] / dataScale[i]);
+
+            var objects = this.glplot.objects;
+            var annotations = this.fullSceneLayout.annotations || [];
+            var axLetter = axis._name.charAt(0);
+
+            for(j = 0; j < objects.length; j++) {
+                var objBounds = objects[j].bounds;
+                sceneBounds[0][i] = Math.min(sceneBounds[0][i], objBounds[0][i] / dataScale[i]);
+                sceneBounds[1][i] = Math.max(sceneBounds[1][i], objBounds[1][i] / dataScale[i]);
             }
+
+            for(j = 0; j < annotations.length; j++) {
+                var ann = annotations[j];
+
+                // N.B. not taking into consideration the arrowhead
+                if(ann.visible) {
+                    var pos = axis.r2l(ann[axLetter]);
+                    sceneBounds[0][i] = Math.min(sceneBounds[0][i], pos);
+                    sceneBounds[1][i] = Math.max(sceneBounds[1][i], pos);
+                }
+            }
+
             if('rangemode' in axis && axis.rangemode === 'tozero') {
                 sceneBounds[0][i] = Math.min(sceneBounds[0][i], 0);
                 sceneBounds[1][i] = Math.max(sceneBounds[1][i], 0);
@@ -472,9 +495,9 @@ proto.plot = function(sceneData, fullLayout, layout) {
                 sceneBounds[1][i] += d / 32.0;
             }
         } else {
-            var range = fullSceneLayout[axisProperties[i]].range;
-            sceneBounds[0][i] = range[0];
-            sceneBounds[1][i] = range[1];
+            var range = axis.range;
+            sceneBounds[0][i] = axis.r2l(range[0]);
+            sceneBounds[1][i] = axis.r2l(range[1]);
         }
         if(sceneBounds[0][i] === sceneBounds[1][i]) {
             sceneBounds[0][i] -= 1;
@@ -716,7 +739,7 @@ proto.toImage = function(format) {
 };
 
 proto.setConvert = function() {
-    for(var i = 0; i < 3; ++i) {
+    for(var i = 0; i < 3; i++) {
         var ax = this.fullSceneLayout[axisProperties[i]];
         Axes.setConvert(ax, this.fullLayout);
         ax.setScale = Lib.noop;

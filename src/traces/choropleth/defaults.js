@@ -48,6 +48,4 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     colorscaleDefaults(
         traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
     );
-
-    coerce('hoverinfo', (layout._dataLength === 1) ? 'location+z+text' : undefined);
 };

@@ -63,8 +63,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(traceOut.fill !== 'none') {
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
     }
-
-    coerce('hoverinfo', (layout._dataLength === 1) ? 'lon+lat+text' : undefined);
 };
 
 function handleLonLatDefaults(traceIn, traceOut, coerce) {

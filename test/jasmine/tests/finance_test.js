@@ -395,14 +395,28 @@ describe('finance charts calc transforms:', function() {
         return gd.calcdata.map(calcDatatoTrace);
     }
 
+    // add some points that shouldn't make it into calcdata because
+    // one of o, h, l, c is not numeric
+    function addJunk(trace) {
+        // x filtering happens in other ways
+        if(trace.x) trace.x.push(1, 1, 1, 1);
+
+        trace.open.push('', 1, 1, 1);
+        trace.high.push(1, null, 1, 1);
+        trace.low.push(1, 1, [1], 1);
+        trace.close.push(1, 1, 1, 'close');
+    }
+
     it('should fill when *x* is not present', function() {
         var trace0 = Lib.extendDeep({}, mock0, {
             type: 'ohlc',
         });
+        addJunk(trace0);
 
         var trace1 = Lib.extendDeep({}, mock0, {
             type: 'candlestick',
         });
+        addJunk(trace1);
 
         var out = _calc([trace0, trace1]);
 
@@ -703,6 +717,45 @@ describe('finance charts calc transforms:', function() {
 
         expect(out[1].x).toEqual([]);
         expect(out[3].x).toEqual([]);
+    });
+
+    it('should handle cases where \'open\' and \'close\' entries are equal', function() {
+        var out = _calc([{
+            type: 'ohlc',
+            open: [0, 1, 0, 2, 1, 1, 2, 2],
+            high: [3, 3, 3, 3, 3, 3, 3, 3],
+            low: [-1, -1, -1, -1, -1, -1, -1, -1],
+            close: [0, 2, 0, 1, 1, 1, 2, 2],
+            tickwidth: 0
+        }, {
+            type: 'candlestick',
+            open: [0, 2, 0, 1],
+            high: [3, 3, 3, 3],
+            low: [-1, -1, -1, -1],
+            close: [0, 1, 0, 2]
+        }]);
+
+        expect(out[0].x).toEqual([
+            0, 0, 0, 0, 0, 0, null,
+            1, 1, 1, 1, 1, 1, null,
+            6, 6, 6, 6, 6, 6, null,
+            7, 7, 7, 7, 7, 7, null
+        ]);
+        expect(out[1].x).toEqual([
+            2, 2, 2, 2, 2, 2, null,
+            3, 3, 3, 3, 3, 3, null,
+            4, 4, 4, 4, 4, 4, null,
+            5, 5, 5, 5, 5, 5, null
+        ]);
+
+        expect(out[2].x).toEqual([
+            0, 0, 0, 0, 0, 0,
+            3, 3, 3, 3, 3, 3
+        ]);
+        expect(out[3].x).toEqual([
+            1, 1, 1, 1, 1, 1,
+            2, 2, 2, 2, 2, 2
+        ]);
     });
 });
 

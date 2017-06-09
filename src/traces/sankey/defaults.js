@@ -15,7 +15,6 @@ var Color = require('../../components/color');
 var tinycolor = require('tinycolor2');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -44,8 +43,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             'rgba(255, 255, 255, 0.6)' :
             'rgba(0, 0, 0, 0.2)';
     }));
-
-    coerce('hoverinfo', layout._dataLength === 1 ? 'label+text+value+percent' : undefined);
 
     coerce('domain.x');
     coerce('domain.y');

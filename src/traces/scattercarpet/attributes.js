@@ -117,7 +117,7 @@ module.exports = {
     textfont: scatterAttrs.textfont,
     textposition: scatterAttrs.textposition,
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
-        flags: ['a', 'b', 'c', 'text', 'name']
+        flags: ['a', 'b', 'text', 'name']
     }),
     hoveron: scatterAttrs.hoveron,
 };

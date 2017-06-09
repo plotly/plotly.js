@@ -11,10 +11,11 @@
 
 var Lib = require('../../../lib');
 var Color = require('../../../components/color');
+var Registry = require('../../../registry');
 
 var handleSubplotDefaults = require('../../subplot_defaults');
-var layoutAttributes = require('./layout_attributes');
 var supplyGl3dAxisLayoutDefaults = require('./axis_defaults');
+var layoutAttributes = require('./layout_attributes');
 
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
@@ -33,6 +34,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         type: 'gl3d',
         attributes: layoutAttributes,
         handleDefaults: handleGl3dDefaults,
+        fullLayout: layoutOut,
         font: layoutOut.font,
         fullData: fullData,
         getDfltFromLayout: getDfltFromLayout,
@@ -96,6 +98,10 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
         bgColor: bgColorCombined,
         calendar: opts.calendar
     });
+
+    Registry.getComponentMethod('annotations3d', 'handleDefaults')(
+        sceneLayoutIn, sceneLayoutOut, opts
+    );
 
     coerce('dragmode', opts.getDfltFromLayout('dragmode'));
     coerce('hovermode', opts.getDfltFromLayout('hovermode'));

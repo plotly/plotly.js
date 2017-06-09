@@ -11,19 +11,7 @@ var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var selectButton = require('../assets/modebar_button');
 var customMatchers = require('../assets/custom_matchers');
-
-// useful to put callback in the event queue
-function delay() {
-    return new Promise(function(resolve) {
-        setTimeout(resolve, 20);
-    });
-}
-
-function waitForModeBar() {
-    return new Promise(function(resolve) {
-        setTimeout(resolve, 200);
-    });
-}
+var delay = require('../assets/delay');
 
 function countCanvases() {
     return d3.selectAll('canvas').size();
@@ -99,18 +87,18 @@ describe('Test gl3d plots', function() {
 
         function _hover() {
             mouseEvent('mouseover', 605, 271);
-            return delay();
+            return delay(20)();
         }
 
         Plotly.plot(gd, _mock)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             gd.on('plotly_hover', function(eventData) {
                 ptData = eventData.points[0];
             });
         })
         .then(_hover)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             assertHoverText('x: 140.72', 'y: −96.97', 'z: −96.97');
             assertEventData(140.72, -96.97, -96.97, 0, 2);
@@ -179,7 +167,23 @@ describe('Test gl3d plots', function() {
         .then(_hover)
         .then(function() {
             assertHoverLabelStyle('rgb(0, 128, 0)', 'rgb(255, 255, 0)', 20, 'Roboto', 'rgb(0, 255, 255)');
+
+            return Plotly.restyle(gd, 'hoverinfo', [[null, null, 'y', null]]);
         })
+        .then(_hover)
+        .then(function() {
+            var label = d3.selectAll('g.hovertext');
+
+            expect(label.size()).toEqual(1);
+            expect(label.select('text').text()).toEqual('c');
+
+            return Plotly.restyle(gd, 'hoverinfo', [[null, null, 'dont+know', null]]);
+        })
+        .then(_hover)
+        .then(function() {
+            assertHoverText('x: 二 6, 2017', 'y: c', 'z: 100k', 'Clementine');
+        })
+        .catch(fail)
         .then(done);
     });
 
@@ -188,24 +192,29 @@ describe('Test gl3d plots', function() {
 
         function _hover() {
             mouseEvent('mouseover', 605, 271);
-            return delay();
+            return delay(20)();
         }
 
         Plotly.plot(gd, _mock)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             gd.on('plotly_hover', function(eventData) {
                 ptData = eventData.points[0];
             });
         })
         .then(_hover)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             assertHoverText('x: 1', 'y: 2', 'z: 43', 'one two');
             assertEventData(1, 2, 43, 0, [1, 2]);
             assertHoverLabelStyle('rgb(68, 68, 68)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)');
 
             Plotly.restyle(gd, {
+                'hoverinfo': [[
+                    ['all', 'all', 'all'],
+                    ['all', 'all', 'y'],
+                    ['all', 'all', 'all']
+                ]],
                 'hoverlabel.bgcolor': 'white',
                 'hoverlabel.font.size': 9,
                 'hoverlabel.font.color': [[
@@ -218,6 +227,11 @@ describe('Test gl3d plots', function() {
         .then(_hover)
         .then(function() {
             assertHoverLabelStyle('rgb(255, 255, 255)', 'rgb(68, 68, 68)', 9, 'Arial', 'rgb(0, 255, 255)');
+
+            var label = d3.selectAll('g.hovertext');
+
+            expect(label.size()).toEqual(1);
+            expect(label.select('text').text()).toEqual('2');
         })
         .then(done);
     });
@@ -229,18 +243,18 @@ describe('Test gl3d plots', function() {
         // with button 1 pressed
         function _click() {
             mouseEvent('mouseover', 605, 271, {buttons: 1});
-            return delay();
+            return delay(20)();
         }
 
         Plotly.plot(gd, _mock)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             gd.on('plotly_click', function(eventData) {
                 ptData = eventData.points[0];
             });
         })
         .then(_click)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             assertEventData(140.72, -96.97, -96.97, 0, 2);
         })
@@ -252,7 +266,7 @@ describe('Test gl3d plots', function() {
         var sceneLayout = { aspectratio: { x: 1, y: 1, z: 1 } };
 
         Plotly.plot(gd, _mock)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             expect(countCanvases()).toEqual(1);
             expect(gd.layout.scene).toEqual(sceneLayout);
@@ -289,7 +303,7 @@ describe('Test gl3d plots', function() {
         var _mock = Lib.extendDeep({}, mock2);
 
         Plotly.plot(gd, _mock)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             return Plotly.deleteTraces(gd, [0]);
         })
@@ -328,7 +342,7 @@ describe('Test gl3d plots', function() {
         }
 
         Plotly.plot(gd, _mock)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             assertObjects(order0);
 
@@ -409,7 +423,7 @@ describe('Test gl3d modebar handlers', function() {
         };
 
         Plotly.plot(gd, mock)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             modeBar = gd._fullLayout._modeBar;
         })
@@ -633,7 +647,7 @@ describe('Test gl3d drag and wheel interactions', function() {
         };
 
         Plotly.plot(gd, mock)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             relayoutCallback = jasmine.createSpy('relayoutCallback');
             gd.on('plotly_relayout', relayoutCallback);
@@ -812,14 +826,14 @@ describe('Test gl2d plots', function() {
         var _mock = Lib.extendDeep({}, mock);
         var relayoutCallback = jasmine.createSpy('relayoutCallback');
 
-        var originalX = [-0.022068095838587643, 5.022068095838588];
-        var originalY = [-0.21331533513634046, 5.851205650049042];
-        var newX = [-0.23224043715846995, 4.811895754518705];
-        var newY = [-1.2962655110623016, 4.768255474123081];
+        var originalX = [-0.3037383177570093, 5.303738317757009];
+        var originalY = [-0.5532219548705213, 6.191112269783224];
+        var newX = [-0.5373831775700935, 5.070093457943925];
+        var newY = [-1.7575673521301187, 4.986766872523626];
         var precision = 5;
 
         Plotly.plot(gd, _mock)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             expect(gd.layout.xaxis.autorange).toBe(true);
             expect(gd.layout.yaxis.autorange).toBe(true);
@@ -836,7 +850,7 @@ describe('Test gl2d plots', function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
             expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
         })
-        .then(waitForModeBar)
+        .then(delay(200))
         .then(function() {
             gd.on('plotly_relayout', relayoutCallback);
 
@@ -879,7 +893,7 @@ describe('Test gl2d plots', function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
             expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
         })
-        .then(waitForModeBar)
+        .then(delay(200))
         .then(function() {
             // callback count expectation: X and back; Y and back; XY and back
             expect(relayoutCallback).toHaveBeenCalledTimes(6);
@@ -905,7 +919,7 @@ describe('Test gl2d plots', function() {
         };
 
         Plotly.plot(gd, _mock)
-        .then(delay)
+        .then(delay(20))
         .then(function() {
             expect(objects().length).toEqual(OBJECT_PER_TRACE);
 
@@ -1281,7 +1295,6 @@ describe('Test gl2d interactions', function() {
     });
 
     it('data-referenced annotations should update on drag', function(done) {
-
         function drag(start, end) {
             mouseEvent('mousemove', start[0], start[1]);
             mouseEvent('mousedown', start[0], start[1], { buttons: 1 });
@@ -1310,10 +1323,10 @@ describe('Test gl2d interactions', function() {
             dragmode: 'pan'
         })
         .then(function() {
-            assertAnnotation([327, 325]);
+            assertAnnotation([327, 315]);
 
             drag([250, 200], [200, 150]);
-            assertAnnotation([277, 275]);
+            assertAnnotation([277, 265]);
 
             return Plotly.relayout(gd, {
                 'xaxis.range': [1.5, 2.5],
@@ -1323,6 +1336,388 @@ describe('Test gl2d interactions', function() {
         .then(function() {
             assertAnnotation([327, 331]);
         })
+        .then(done);
+    });
+});
+
+describe('Test gl3d annotations', function() {
+    var gd;
+
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    function assertAnnotationText(expectations, msg) {
+        var anns = d3.selectAll('g.annotation-text-g');
+
+        expect(anns.size()).toBe(expectations.length, msg);
+
+        anns.each(function(_, i) {
+            var tx = d3.select(this).select('text').text();
+            expect(tx).toEqual(expectations[i], msg + ' - ann ' + i);
+        });
+    }
+
+    function assertAnnotationsXY(expectations, msg) {
+        var TOL = 2.5;
+        var anns = d3.selectAll('g.annotation-text-g');
+
+        expect(anns.size()).toBe(expectations.length, msg);
+
+        anns.each(function(_, i) {
+            var ann = d3.select(this).select('g');
+            var translate = Drawing.getTranslate(ann);
+
+            expect(translate.x).toBeWithin(expectations[i][0], TOL, msg + ' - ann ' + i + ' x');
+            expect(translate.y).toBeWithin(expectations[i][1], TOL, msg + ' - ann ' + i + ' y');
+        });
+    }
+
+    // more robust (especially on CI) than update camera via mouse events
+    function updateCamera(x, y, z) {
+        var scene = gd._fullLayout.scene._scene;
+        var camera = scene.getCamera();
+
+        camera.eye = {x: x, y: y, z: z};
+        scene.setCamera(camera);
+        // need a fairly long delay to let the camera update here
+        // 200 was not robust for me (AJ), 300 seems to be.
+        return delay(300)();
+    }
+
+    it('should move with camera', function(done) {
+        Plotly.plot(gd, [{
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            z: [1, 2, 1]
+        }], {
+            scene: {
+                camera: {eye: {x: 2.1, y: 0.1, z: 0.9}},
+                annotations: [{
+                    text: 'hello',
+                    x: 1, y: 1, z: 1
+                }, {
+                    text: 'sup?',
+                    x: 1, y: 1, z: 2
+                }, {
+                    text: 'look!',
+                    x: 2, y: 2, z: 1
+                }]
+            }
+        })
+        .then(function() {
+            assertAnnotationsXY([[262, 199], [257, 135], [325, 233]], 'base 0');
+
+            return updateCamera(1.5, 2.5, 1.5);
+        })
+        .then(function() {
+            assertAnnotationsXY([[340, 187], [341, 142], [325, 221]], 'after camera update');
+
+            return updateCamera(2.1, 0.1, 0.9);
+        })
+        .then(function() {
+            assertAnnotationsXY([[262, 199], [257, 135], [325, 233]], 'base 0');
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should be removed when beyond the scene axis ranges', function(done) {
+        var mock = Lib.extendDeep({}, require('@mocks/gl3d_annotations'));
+
+        // replace text with something easier to identify
+        mock.layout.scene.annotations.forEach(function(ann, i) { ann.text = String(i); });
+
+        Plotly.plot(gd, mock).then(function() {
+            assertAnnotationText(['0', '1', '2', '3'], 'base');
+
+            return Plotly.relayout(gd, 'scene.yaxis.range', [0.5, 1.5]);
+        })
+        .then(function() {
+            assertAnnotationText(['1'], 'after yaxis range relayout');
+
+            return Plotly.relayout(gd, 'scene.yaxis.range', null);
+        })
+        .then(function() {
+            assertAnnotationText(['0', '1', '2', '3'], 'back to base after yaxis range relayout');
+
+            return Plotly.relayout(gd, 'scene.zaxis.range', [0, 3]);
+        })
+        .then(function() {
+            assertAnnotationText(['0'], 'after zaxis range relayout');
+
+            return Plotly.relayout(gd, 'scene.zaxis.range', null);
+        })
+        .then(function() {
+            assertAnnotationText(['0', '1', '2', '3'], 'back to base after zaxis range relayout');
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should be able to add/remove and hide/unhide themselves via relayout', function(done) {
+        var mock = Lib.extendDeep({}, require('@mocks/gl3d_annotations'));
+
+        // replace text with something easier to identify
+        mock.layout.scene.annotations.forEach(function(ann, i) { ann.text = String(i); });
+
+        var annNew = {
+            x: '2017-03-01',
+            y: 'C',
+            z: 3,
+            text: 'new!'
+        };
+
+        Plotly.plot(gd, mock).then(function() {
+            assertAnnotationText(['0', '1', '2', '3'], 'base');
+
+            return Plotly.relayout(gd, 'scene.annotations[1].visible', false);
+        })
+        .then(function() {
+            assertAnnotationText(['0', '2', '3'], 'after [1].visible:false');
+
+            return Plotly.relayout(gd, 'scene.annotations[1].visible', true);
+        })
+        .then(function() {
+            assertAnnotationText(['0', '1', '2', '3'], 'back to base (1)');
+
+            return Plotly.relayout(gd, 'scene.annotations[0]', null);
+        })
+        .then(function() {
+            assertAnnotationText(['1', '2', '3'], 'after [0] null');
+
+            return Plotly.relayout(gd, 'scene.annotations[0]', annNew);
+        })
+        .then(function() {
+            assertAnnotationText(['new!', '1', '2', '3'], 'after add new (1)');
+
+            return Plotly.relayout(gd, 'scene.annotations', null);
+        })
+        .then(function() {
+            assertAnnotationText([], 'after rm all');
+
+            return Plotly.relayout(gd, 'scene.annotations[0]', annNew);
+        })
+        .then(function() {
+            assertAnnotationText(['new!'], 'after add new (2)');
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should work across multiple scenes', function(done) {
+        function assertAnnotationCntPerScene(id, cnt) {
+            expect(d3.selectAll('g.annotation-' + id).size()).toEqual(cnt);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            z: [1, 2, 1]
+        }, {
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            z: [2, 1, 2],
+            scene: 'scene2'
+        }], {
+            scene: {
+                annotations: [{
+                    text: 'hello',
+                    x: 1, y: 1, z: 1
+                }]
+            },
+            scene2: {
+                annotations: [{
+                    text: 'sup?',
+                    x: 1, y: 1, z: 2
+                }, {
+                    text: 'look!',
+                    x: 2, y: 2, z: 1
+                }]
+            }
+        })
+        .then(function() {
+            assertAnnotationCntPerScene('scene', 1);
+            assertAnnotationCntPerScene('scene2', 2);
+
+            return Plotly.deleteTraces(gd, [1]);
+        })
+        .then(function() {
+            assertAnnotationCntPerScene('scene', 1);
+            assertAnnotationCntPerScene('scene2', 0);
+
+            return Plotly.deleteTraces(gd, [0]);
+        })
+        .then(function() {
+            assertAnnotationCntPerScene('scene', 0);
+            assertAnnotationCntPerScene('scene2', 0);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should contribute to scene axis autorange', function(done) {
+        function assertSceneAxisRanges(xRange, yRange, zRange) {
+            var sceneLayout = gd._fullLayout.scene;
+
+            expect(sceneLayout.xaxis.range).toBeCloseToArray(xRange, 1, 'xaxis range');
+            expect(sceneLayout.yaxis.range).toBeCloseToArray(yRange, 1, 'yaxis range');
+            expect(sceneLayout.zaxis.range).toBeCloseToArray(zRange, 1, 'zaxis range');
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            z: [1, 2, 1]
+        }], {
+            scene: {
+                annotations: [{
+                    text: 'hello',
+                    x: 1, y: 1, z: 3
+                }]
+            }
+        })
+        .then(function() {
+            assertSceneAxisRanges([0.9375, 3.0625], [0.9375, 3.0625], [0.9375, 3.0625]);
+
+            return Plotly.relayout(gd, 'scene.annotations[0].z', 10);
+        })
+        .then(function() {
+            assertSceneAxisRanges([0.9375, 3.0625], [0.9375, 3.0625], [0.7187, 10.2813]);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should allow text and tail position edits under `editable: true`', function(done) {
+        function editText(newText, expectation) {
+            return new Promise(function(resolve) {
+                gd.once('plotly_relayout', function(eventData) {
+                    expect(eventData).toEqual(expectation);
+                    setTimeout(resolve, 0);
+                });
+
+                var clickNode = d3.select('g.annotation-text-g').select('g').node();
+                clickNode.dispatchEvent(new window.MouseEvent('click'));
+
+                var editNode = d3.select('.plugin-editable.editable').node();
+                editNode.dispatchEvent(new window.FocusEvent('focus'));
+
+                editNode.textContent = newText;
+                editNode.dispatchEvent(new window.FocusEvent('focus'));
+                editNode.dispatchEvent(new window.FocusEvent('blur'));
+            });
+        }
+
+        function moveArrowTail(dx, dy, expectation) {
+            var px = 243;
+            var py = 150;
+
+            return new Promise(function(resolve) {
+                gd.once('plotly_relayout', function(eventData) {
+                    expect(eventData).toEqual(expectation);
+                    resolve();
+                });
+
+                mouseEvent('mousemove', px, py);
+                mouseEvent('mousedown', px, py);
+                mouseEvent('mousemove', px + dx, py + dy);
+                mouseEvent('mouseup', px + dx, py + dy);
+            });
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            z: [1, 2, 1]
+        }], {
+            scene: {
+                annotations: [{
+                    text: 'hello',
+                    x: 2, y: 2, z: 2,
+                    font: { size: 30 }
+                }]
+            },
+            margin: {l: 0, t: 0, r: 0, b: 0},
+            width: 500,
+            height: 500
+        }, {
+            editable: true
+        })
+        .then(function() {
+            return editText('allo', {'scene.annotations[0].text': 'allo'});
+        })
+        .then(function() {
+            return moveArrowTail(-100, -50, {
+                'scene.annotations[0].ax': -110,
+                'scene.annotations[0].ay': -80
+            });
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should display hover labels and trigger *plotly_clickannotation* event', function(done) {
+        function dispatch(eventType) {
+            var target = d3.select('g.annotation-text-g').select('g').node();
+            target.dispatchEvent(new MouseEvent(eventType));
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            z: [1, 2, 1]
+        }], {
+            scene: {
+                annotations: [{
+                    text: 'hello',
+                    x: 2, y: 2, z: 2,
+                    ax: 0, ay: -100,
+                    hovertext: 'HELLO',
+                    hoverlabel: {
+                        bgcolor: 'red',
+                        font: { size: 20 }
+                    }
+                }]
+            },
+            width: 500,
+            height: 500
+        })
+        .then(function() {
+            dispatch('mouseover');
+            expect(d3.select('.hovertext').size()).toEqual(1);
+        })
+        .then(function() {
+            return new Promise(function(resolve, reject) {
+                gd.once('plotly_clickannotation', function(eventData) {
+                    expect(eventData.index).toEqual(0);
+                    expect(eventData.subplotId).toEqual('scene');
+                    resolve();
+                });
+
+                setTimeout(function() {
+                    reject('plotly_clickannotation did not get called!');
+                }, 100);
+
+                dispatch('click');
+            });
+        })
+        .catch(fail)
         .then(done);
     });
 });

@@ -1,4 +1,5 @@
 var Plotly = require('@lib');
+var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var ScatterTernary = require('@src/traces/scatterternary');
 
@@ -135,28 +136,33 @@ describe('scatterternary defaults', function() {
         expect(traceOut.b).toEqual([1]);
         expect(traceOut.c).toEqual([1]);
     });
+
     it('should include \'name\' in \'hoverinfo\' default if multi trace graph', function() {
         traceIn = {
+            type: 'scatterternary',
             a: [1, 2, 3],
             b: [1, 2, 3],
             c: [1, 2, 3]
         };
-        layout._dataLength = 2;
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
-        expect(traceOut.hoverinfo).toBe('all');
+        var gd = {data: [traceIn, {}]};
+        Plots.supplyDefaults(gd);
+
+        expect(gd._fullData[0].hoverinfo).toBe('all');
     });
 
     it('should not include \'name\' in \'hoverinfo\' default if single trace graph', function() {
         traceIn = {
+            type: 'scatterternary',
             a: [1, 2, 3],
             b: [1, 2, 3],
             c: [1, 2, 3]
         };
-        layout._dataLength = 1;
 
-        supplyDefaults(traceIn, traceOut, defaultColor, layout);
-        expect(traceOut.hoverinfo).toBe('a+b+c+text');
+        var gd = {data: [traceIn]};
+        Plots.supplyDefaults(gd);
+
+        expect(gd._fullData[0].hoverinfo).toBe('a+b+c+text');
     });
 
     it('should correctly assign \'hoveron\' default', function() {

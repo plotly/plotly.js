@@ -73,6 +73,12 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 
         if(!newFullLayout[oldSceneKey] && !!oldFullLayout[oldSceneKey]._scene) {
             oldFullLayout[oldSceneKey]._scene.destroy();
+
+            if(oldFullLayout._infolayer) {
+                oldFullLayout._infolayer
+                    .selectAll('.annotation-' + oldSceneKey)
+                    .remove();
+            }
         }
     }
 };

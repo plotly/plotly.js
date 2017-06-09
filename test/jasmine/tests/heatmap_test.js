@@ -168,8 +168,8 @@ describe('heatmap convertColumnXYZ', function() {
         };
     }
 
-    var xa = makeMockAxis(),
-        ya = makeMockAxis();
+    var xa = makeMockAxis();
+    var ya = makeMockAxis();
 
     it('should convert x/y/z columns to z(x,y)', function() {
         trace = {
@@ -305,8 +305,13 @@ describe('heatmap calc', function() {
 
         Plots.supplyDefaults(gd);
         var fullTrace = gd._fullData[0];
+        var fullLayout = gd._fullLayout;
 
-        return Heatmap.calc(gd, fullTrace)[0];
+        var out = Heatmap.calc(gd, fullTrace)[0];
+        out._xcategories = fullLayout.xaxis._categories;
+        out._ycategories = fullLayout.yaxis._categories;
+
+        return out;
     }
 
     it('should fill in bricks if x/y not given', function() {
@@ -403,6 +408,47 @@ describe('heatmap calc', function() {
         expect(out.x).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
         expect(out.y).toBeCloseToArray([-0.5, 0.5]);
         expect(out.z).toBeCloseTo2DArray([[17, 18, 19]]);
+    });
+
+    it('should handle the category x/y/z/ column case', function() {
+        var out = _calc({
+            x: ['a', 'a', 'a', 'b', 'b', 'b', 'c', 'c', 'c'],
+            y: ['A', 'B', 'C', 'A', 'B', 'C', 'A', 'B', 'C'],
+            z: [0, 50, 100, 50, 0, 255, 100, 510, 1010]
+        });
+
+        expect(out.x).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
+        expect(out.y).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
+        expect(out.z).toBeCloseTo2DArray([
+            [0, 50, 100],
+            [50, 0, 510],
+            [100, 255, 1010]
+        ]);
+
+        expect(out._xcategories).toEqual(['a', 'b', 'c']);
+        expect(out._ycategories).toEqual(['A', 'B', 'C']);
+    });
+
+    it('should handle the date x/y/z/ column case', function() {
+        var out = _calc({
+            x: [
+                '2016-01-01', '2016-01-01', '2016-01-01',
+                '2017-01-01', '2017-01-01', '2017-01-01',
+                '2017-06-01', '2017-06-01', '2017-06-01'
+            ],
+            y: [0, 1, 2, 0, 1, 2, 0, 1, 2],
+            z: [0, 50, 100, 50, 0, 255, 100, 510, 1010]
+        });
+
+        expect(out.x).toBeCloseToArray([
+            1435795200000, 1467417600000, 1489752000000, 1502798400000
+        ]);
+        expect(out.y).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
+        expect(out.z).toBeCloseTo2DArray([
+            [0, 50, 100],
+            [50, 0, 510],
+            [100, 255, 1010]
+        ]);
     });
 });
 

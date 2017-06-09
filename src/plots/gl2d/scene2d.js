@@ -22,7 +22,9 @@ var createOptions = require('./convert');
 var createCamera = require('./camera');
 var convertHTMLToUnicode = require('../../lib/html2unicode');
 var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
-var enforceAxisConstraints = require('../../plots/cartesian/constraints');
+var axisConstraints = require('../../plots/cartesian/constraints');
+var enforceAxisConstraints = axisConstraints.enforce;
+var cleanAxisConstraints = axisConstraints.clean;
 
 var AXES = ['xaxis', 'yaxis'];
 var STATIC_CANVAS, STATIC_CONTEXT;
@@ -66,6 +68,11 @@ function Scene2D(options, fullLayout) {
 
     // last pick result
     this.pickResult = null;
+
+    // is the mouse over the plot?
+    // it's OK if this says true when it's not, so long as
+    // when we get a mouseout we set it to false before handling
+    this.isMouseOver = true;
 
     this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
 
@@ -154,6 +161,15 @@ proto.makeFramework = function() {
     container.appendChild(canvas);
     container.appendChild(svgContainer);
     container.appendChild(mouseContainer);
+
+    var self = this;
+    mouseContainer.addEventListener('mouseout', function() {
+        self.isMouseOver = false;
+        self.unhover();
+    });
+    mouseContainer.addEventListener('mouseover', function() {
+        self.isMouseOver = true;
+    });
 };
 
 proto.toImage = function(format) {
@@ -243,14 +259,6 @@ proto.updateSize = function(canvas) {
 proto.computeTickMarks = function() {
     this.xaxis.setScale();
     this.yaxis.setScale();
-
-    // override _length from backward compatibility
-    // even though setScale 'should' give the correct result
-
-    this.xaxis._length =
-        this.glplot.viewBox[2] - this.glplot.viewBox[0];
-    this.yaxis._length =
-        this.glplot.viewBox[3] - this.glplot.viewBox[1];
 
     var nextTicks = [
         Axes.calcTicks(this.xaxis),
@@ -384,6 +392,15 @@ proto.plot = function(fullData, calcData, fullLayout) {
     options.merge(fullLayout);
     options.screenBox = [0, 0, width, height];
 
+    var mockGraphDiv = {_fullLayout: {
+        _axisConstraintGroups: this.graphDiv._fullLayout._axisConstraintGroups,
+        xaxis: this.xaxis,
+        yaxis: this.yaxis
+    }};
+
+    cleanAxisConstraints(mockGraphDiv, this.xaxis);
+    cleanAxisConstraints(mockGraphDiv, this.yaxis);
+
     var size = fullLayout._size,
         domainX = this.xaxis.domain,
         domainY = this.yaxis.domain;
@@ -430,12 +447,7 @@ proto.plot = function(fullData, calcData, fullLayout) {
         ax.setScale();
     }
 
-    var mockLayout = {
-        _axisConstraintGroups: this.graphDiv._fullLayout._axisConstraintGroups,
-        xaxis: this.xaxis,
-        yaxis: this.yaxis
-    };
-    enforceAxisConstraints({_fullLayout: mockLayout});
+    enforceAxisConstraints(mockGraphDiv);
 
     options.ticks = this.computeTickMarks();
 
@@ -584,7 +596,7 @@ proto.draw = function() {
 
         glplot.setDirty();
     }
-    else if(!camera.panning) {
+    else if(!camera.panning && this.isMouseOver) {
         this.selectBox.enabled = false;
 
         var size = fullLayout._size,
@@ -633,8 +645,11 @@ proto.draw = function() {
                 // also it's important to copy, otherwise data is lost by the time event data is read
                 this.emitPointAction(nextSelection, 'plotly_hover');
 
-                var hoverinfo = selection.hoverinfo;
-                if(hoverinfo !== 'all') {
+                var trace = this.fullData[selection.trace.index] || {};
+                var ptNumber = selection.pointIndex;
+                var hoverinfo = Fx.castHoverinfo(trace, fullLayout, ptNumber);
+
+                if(hoverinfo && hoverinfo !== 'all') {
                     var parts = hoverinfo.split('+');
                     if(parts.indexOf('x') === -1) selection.traceCoord[0] = undefined;
                     if(parts.indexOf('y') === -1) selection.traceCoord[1] = undefined;
@@ -642,9 +657,6 @@ proto.draw = function() {
                     if(parts.indexOf('text') === -1) selection.textLabel = undefined;
                     if(parts.indexOf('name') === -1) selection.name = undefined;
                 }
-
-                var trace = this.fullData[selection.trace.index] || {};
-                var ptNumber = selection.pointIndex;
 
                 Fx.loneHover({
                     x: selection.screenCoord[0],
@@ -668,14 +680,20 @@ proto.draw = function() {
 
     // Remove hover effects if we're not over a point OR
     // if we're zooming or panning (in which case result is not set)
-    if(!result && this.lastPickResult) {
+    if(!result) {
+        this.unhover();
+    }
+
+    glplot.draw();
+};
+
+proto.unhover = function() {
+    if(this.lastPickResult) {
         this.spikes.update({});
         this.lastPickResult = null;
         this.graphDiv.emit('plotly_unhover');
         Fx.loneUnhover(this.svgContainer);
     }
-
-    glplot.draw();
 };
 
 proto.hoverFormatter = function(axisName, val) {
