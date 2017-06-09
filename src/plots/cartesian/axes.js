@@ -455,6 +455,13 @@ axes.expand = function(ax, data, options) {
         i, j, v, di, dmin, dmax,
         ppadiplus, ppadiminus, includeThis, vmin, vmax;
 
+    // domain-constrained axes: base extrappad on the unconstrained
+    // domain so it's consistent as the domain changes
+    if(extrappad && (ax.constrain === 'domain') && ax._inputDomain) {
+        extrappad *= (ax._inputDomain[1] - ax._inputDomain[0]) /
+            (ax.domain[1] - ax.domain[0]);
+    }
+
     function getPad(item) {
         if(Array.isArray(item)) {
             return function(i) { return Math.max(Number(item[i]||0), 0); };

@@ -12,6 +12,8 @@ var fail = require('../assets/fail_test.js');
 // a click event on mouseup
 var click = require('../assets/timed_click');
 var hover = require('../assets/hover');
+var delay = require('../assets/delay');
+var mouseEvent = require('../assets/mouse_event');
 
 // contourgl is not part of the dist plotly.js bundle initially
 Plotly.register([
@@ -62,13 +64,6 @@ var mock4 = {
 describe('Test hover and click interactions', function() {
     var gd;
 
-    // need to wait a little bit before canvas can properly catch mouse events
-    function wait() {
-        return new Promise(function(resolve) {
-            setTimeout(resolve, 100);
-        });
-    }
-
     function makeHoverFn(gd, x, y) {
         return function() {
             return new Promise(function(resolve) {
@@ -90,26 +85,33 @@ describe('Test hover and click interactions', function() {
     function makeUnhoverFn(gd, x0, y0) {
         return function() {
             return new Promise(function(resolve) {
-                var eventData = null;
-
-                gd.on('plotly_unhover', function() {
-                    eventData = 'emitted plotly_unhover';
-                });
-
+                var initialElement = document.elementFromPoint(x0, y0);
                 // fairly realistic simulation of moving with the cursor
                 var canceler = setInterval(function() {
-                    hover(x0--, y0--);
+                    x0 -= 2;
+                    y0 -= 2;
+                    hover(x0, y0);
+
+                    var nowElement = document.elementFromPoint(x0, y0);
+                    if(nowElement !== initialElement) {
+                        mouseEvent('mouseout', x0, y0, {element: initialElement});
+                    }
                 }, 10);
+
+                gd.on('plotly_unhover', function() {
+                    clearInterval(canceler);
+                    resolve('emitted plotly_unhover');
+                });
 
                 setTimeout(function() {
                     clearInterval(canceler);
-                    resolve(eventData);
+                    resolve(null);
                 }, 350);
             });
         };
     }
 
-    function assertEventData(actual, expected) {
+    function assertEventData(actual, expected, msg) {
         expect(actual.points.length).toEqual(1, 'points length');
 
         var pt = actual.points[0];
@@ -119,30 +121,30 @@ describe('Test hover and click interactions', function() {
             'data', 'fullData', 'xaxis', 'yaxis'
         ], 'event data keys');
 
-        expect(typeof pt.data.uid).toEqual('string', 'uid');
-        expect(pt.xaxis.domain.length).toEqual(2, 'xaxis');
-        expect(pt.yaxis.domain.length).toEqual(2, 'yaxis');
+        expect(typeof pt.data.uid).toBe('string', msg + ' - uid');
+        expect(pt.xaxis.domain.length).toBe(2, msg + ' - xaxis');
+        expect(pt.yaxis.domain.length).toBe(2, msg + ' - yaxis');
 
-        expect(pt.x).toEqual(expected.x, 'x');
-        expect(pt.y).toEqual(expected.y, 'y');
-        expect(pt.curveNumber).toEqual(expected.curveNumber, 'curve number');
-        expect(pt.pointNumber).toEqual(expected.pointNumber, 'point number');
+        expect(pt.x).toBe(expected.x, msg + ' - x');
+        expect(pt.y).toBe(expected.y, msg + ' - y');
+        expect(pt.curveNumber).toBe(expected.curveNumber, msg + ' - curve number');
+        expect(String(pt.pointNumber)).toBe(String(expected.pointNumber), msg + ' - point number');
     }
 
-    function assertHoverLabelStyle(sel, expected) {
+    function assertHoverLabelStyle(sel, expected, msg) {
         if(sel.node() === null) {
             expect(expected.noHoverLabel).toBe(true);
             return;
         }
 
         var path = sel.select('path');
-        expect(path.style('fill')).toEqual(expected.bgColor, 'bgcolor');
-        expect(path.style('stroke')).toEqual(expected.borderColor, 'bordercolor');
+        expect(path.style('fill')).toBe(expected.bgColor, msg + ' - bgcolor');
+        expect(path.style('stroke')).toBe(expected.borderColor, msg + ' - bordercolor');
 
         var text = sel.select('text.nums');
-        expect(parseInt(text.style('font-size'))).toEqual(expected.fontSize, 'font.size');
-        expect(text.style('font-family').split(',')[0]).toEqual(expected.fontFamily, 'font.family');
-        expect(text.style('fill')).toEqual(expected.fontColor, 'font.color');
+        expect(parseInt(text.style('font-size'))).toBe(expected.fontSize, msg + ' - font.size');
+        expect(text.style('font-family').split(',')[0]).toBe(expected.fontFamily, msg + ' - font.family');
+        expect(text.style('fill')).toBe(expected.fontColor, msg + ' - font.color');
     }
 
     function assertHoveLabelContent(expected) {
@@ -176,20 +178,20 @@ describe('Test hover and click interactions', function() {
             makeUnhoverFn(gd, pos[0], pos[1]);
 
         return function() {
-            return wait()
+            return delay(100)()
                 .then(_hover)
                 .then(function(eventData) {
                     assertEventData(eventData, expected);
-                    assertHoverLabelStyle(d3.select('g.hovertext'), expected);
+                    assertHoverLabelStyle(d3.select('g.hovertext'), expected, opts.msg);
                     assertHoveLabelContent(expected);
                 })
                 .then(_click)
                 .then(function(eventData) {
-                    assertEventData(eventData, expected);
+                    assertEventData(eventData, expected, opts.msg);
                 })
                 .then(_unhover)
                 .then(function(eventData) {
-                    expect(eventData).toEqual('emitted plotly_unhover');
+                    expect(eventData).toBe('emitted plotly_unhover', opts.msg);
                 });
         };
     }
@@ -233,6 +235,8 @@ describe('Test hover and click interactions', function() {
             fontSize: 20,
             fontFamily: 'Arial',
             fontColor: 'rgb(255, 255, 0)'
+        }, {
+            msg: 'scattergl'
         });
 
         Plotly.plot(gd, _mock)
@@ -251,6 +255,8 @@ describe('Test hover and click interactions', function() {
             curveNumber: 0,
             pointNumber: 33,
             noHoverLabel: true
+        }, {
+            msg: 'scattergl with hoverinfo'
         });
 
         Plotly.plot(gd, _mock)
@@ -277,6 +283,8 @@ describe('Test hover and click interactions', function() {
             fontSize: 8,
             fontFamily: 'Arial',
             fontColor: 'rgb(255, 255, 255)'
+        }, {
+            msg: 'pointcloud'
         });
 
         Plotly.plot(gd, _mock)
@@ -308,7 +316,8 @@ describe('Test hover and click interactions', function() {
             fontFamily: 'Roboto',
             fontColor: 'rgb(255, 255, 255)'
         }, {
-            noUnHover: true
+            noUnHover: true,
+            msg: 'heatmapgl'
         });
 
         Plotly.plot(gd, _mock)
@@ -330,6 +339,8 @@ describe('Test hover and click interactions', function() {
             fontSize: 13,
             fontFamily: 'Arial',
             fontColor: 'rgb(255, 255, 255)'
+        }, {
+            msg: 'scattergl before visibility restyle'
         });
 
         // after the restyle, autorange changes the y range
@@ -343,6 +354,8 @@ describe('Test hover and click interactions', function() {
             fontSize: 13,
             fontFamily: 'Arial',
             fontColor: 'rgb(68, 68, 68)'
+        }, {
+            msg: 'scattergl after visibility restyle'
         });
 
         Plotly.plot(gd, _mock)
@@ -371,6 +384,8 @@ describe('Test hover and click interactions', function() {
             fontSize: 13,
             fontFamily: 'Arial',
             fontColor: 'rgb(255, 255, 255)'
+        }, {
+            msg: 'scattergl fancy before visibility restyle'
         });
 
         // after the restyle, autorange changes the x AND y ranges
@@ -387,6 +402,8 @@ describe('Test hover and click interactions', function() {
             fontSize: 13,
             fontFamily: 'Arial',
             fontColor: 'rgb(68, 68, 68)'
+        }, {
+            msg: 'scattergl fancy after visibility restyle'
         });
 
         Plotly.plot(gd, _mock)
@@ -417,7 +434,8 @@ describe('Test hover and click interactions', function() {
             fontFamily: 'Arial',
             fontColor: 'rgb(255, 255, 255)'
         }, {
-            noUnHover: true
+            noUnHover: true,
+            msg: 'contourgl'
         });
 
         Plotly.plot(gd, _mock)

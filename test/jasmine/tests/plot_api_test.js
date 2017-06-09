@@ -309,21 +309,21 @@ describe('Test plot api', function() {
                 }]
             })
             .then(function() {
-                expect(getAnnotationPos()).toBeCloseToArray([247.5, 210.1]);
+                expect(getAnnotationPos()).toBeCloseToArray([247.5, 210.1], -0.5);
                 expect(getShapePos()).toBeCloseToArray([350, 369]);
                 expect(getImagePos()).toBeCloseToArray([170, 272.52]);
 
                 return Plotly.relayout(gd, 'xaxis.range', [0, 2]);
             })
             .then(function() {
-                expect(getAnnotationPos()).toBeCloseToArray([337.5, 210.1]);
+                expect(getAnnotationPos()).toBeCloseToArray([337.5, 210.1], -0.5);
                 expect(getShapePos()).toBeCloseToArray([620, 369]);
                 expect(getImagePos()).toBeCloseToArray([80, 272.52]);
 
                 return Plotly.relayout(gd, 'xaxis.range', [-1, 5]);
             })
             .then(function() {
-                expect(getAnnotationPos()).toBeCloseToArray([247.5, 210.1]);
+                expect(getAnnotationPos()).toBeCloseToArray([247.5, 210.1], -0.5);
                 expect(getShapePos()).toBeCloseToArray([350, 369]);
                 expect(getImagePos()).toBeCloseToArray([170, 272.52]);
             })

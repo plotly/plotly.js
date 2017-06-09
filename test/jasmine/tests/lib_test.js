@@ -978,6 +978,12 @@ describe('Test lib.js:', function() {
                 arrayOk: true,
                 dflt: 'a'
             });
+
+            assert(['x', 'x2'], ['xx', 'x0', undefined], {
+                valType: 'enumerated',
+                values: ['/^x([2-9]|[1-9][0-9]+)?$/'],
+                dflt: 'x'
+            });
         });
 
         it('should work for valType \'boolean\' where', function() {
