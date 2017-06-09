@@ -826,10 +826,10 @@ describe('Test gl2d plots', function() {
         var _mock = Lib.extendDeep({}, mock);
         var relayoutCallback = jasmine.createSpy('relayoutCallback');
 
-        var originalX = [-0.022068095838587643, 5.022068095838588];
-        var originalY = [-0.21331533513634046, 5.851205650049042];
-        var newX = [-0.23224043715846995, 4.811895754518705];
-        var newY = [-1.2962655110623016, 4.768255474123081];
+        var originalX = [-0.3037383177570093, 5.303738317757009];
+        var originalY = [-0.5532219548705213, 6.191112269783224];
+        var newX = [-0.5373831775700935, 5.070093457943925];
+        var newY = [-1.7575673521301187, 4.986766872523626];
         var precision = 5;
 
         Plotly.plot(gd, _mock)
@@ -1326,10 +1326,10 @@ describe('Test gl2d interactions', function() {
             dragmode: 'pan'
         })
         .then(function() {
-            assertAnnotation([327, 325]);
+            assertAnnotation([327, 315]);
 
             drag([250, 200], [200, 150]);
-            assertAnnotation([277, 275]);
+            assertAnnotation([277, 265]);
 
             return Plotly.relayout(gd, {
                 'xaxis.range': [1.5, 2.5],
