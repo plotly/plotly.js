@@ -127,14 +127,16 @@ module.exports = {
         ],
         role: 'info',
         description: [
-            'If set to an opposite-letter axis id (e.g. `x2`, `y`), the range of this axis',
-            'changes together with the range of the corresponding opposite-letter axis.',
+            'If set to another axis id (e.g. `x2`, `y`), the range of this axis',
+            'changes together with the range of the corresponding axis',
             'such that the scale of pixels per unit is in a constant ratio.',
             'Both axes are still zoomable, but when you zoom one, the other will',
             'zoom the same amount, keeping a fixed midpoint.',
-            'Autorange will also expand about the midpoints to satisfy the constraint.',
+            '`constrain` and `constraintoward` determine how we enforce the constraint.',
             'You can chain these, ie `yaxis: {scaleanchor: *x*}, xaxis2: {scaleanchor: *y*}`',
             'but you can only link axes of the same `type`.',
+            'The linked axis can have the opposite letter (to constrain the aspect ratio)',
+            'or the same letter (to match scales across subplots).',
             'Loops (`yaxis: {scaleanchor: *x*}, xaxis: {scaleanchor: *y*}` or longer) are redundant',
             'and the last constraint encountered will be ignored to avoid possible',
             'inconsistent constraints via `scaleratio`.'
@@ -151,6 +153,29 @@ module.exports = {
             'this axis spans 10 times the number of pixels as a unit on the linked axis.',
             'Use this for example to create an elevation profile where the vertical scale',
             'is exaggerated a fixed amount with respect to the horizontal.'
+        ].join(' ')
+    },
+    constrain: {
+        valType: 'enumerated',
+        values: ['range', 'domain'],
+        dflt: 'range',
+        role: 'info',
+        description: [
+            'If this axis needs to be compressed (either due to its own `scaleanchor` and',
+            '`scaleratio` or those of the other axis), determines how that happens:',
+            'by increasing the *range* (default), or by decreasing the *domain*.'
+        ].join(' ')
+    },
+    // constraintoward: not used directly, just put here for reference
+    constraintoward: {
+        valType: 'enumerated',
+        values: ['left', 'center', 'right', 'top', 'middle', 'bottom'],
+        role: 'info',
+        description: [
+            'If this axis needs to be compressed (either due to its own `scaleanchor` and',
+            '`scaleratio` or those of the other axis), determines which direction we push',
+            'the originally specified plot area. Options are *left*, *center* (default),',
+            'and *right* for x axes, and *top*, *middle* (default), and *bottom* for y axes.'
         ].join(' ')
     },
     // ticks

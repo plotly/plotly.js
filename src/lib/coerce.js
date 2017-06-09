@@ -44,6 +44,20 @@ exports.valObjects = {
             if(opts.coerceNumber) v = +v;
             if(opts.values.indexOf(v) === -1) propOut.set(dflt);
             else propOut.set(v);
+        },
+        validateFunction: function(v, opts) {
+            if(opts.coerceNumber) v = +v;
+
+            var values = opts.values;
+            for(var i = 0; i < values.length; i++) {
+                var k = String(values[i]);
+
+                if((k.charAt(0) === '/' && k.charAt(k.length - 1) === '/')) {
+                    var regex = new RegExp(k.substr(1, k.length - 2));
+                    if(regex.test(v)) return true;
+                } else if(v === values[i]) return true;
+            }
+            return false;
         }
     },
     'boolean': {

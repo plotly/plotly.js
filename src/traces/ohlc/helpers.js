@@ -9,6 +9,8 @@
 
 'use strict';
 
+var isNumeric = require('fast-isnumeric');
+
 var Lib = require('../../lib');
 
 // This routine gets called during the trace supply-defaults step.
@@ -95,14 +97,38 @@ exports.makeTransform = function(traceIn, state, direction) {
 };
 
 exports.getFilterFn = function(direction) {
-    switch(direction) {
-        case 'increasing':
-            return function(o, c) { return o <= c; };
-
-        case 'decreasing':
-            return function(o, c) { return o > c; };
-    }
+    return new _getFilterFn(direction);
 };
+
+function _getFilterFn(direction) {
+    // we're optimists - before we have any changing data, assume increasing
+    var isPrevIncreasing = true;
+    var cPrev = null;
+
+    function _isIncreasing(o, c) {
+        if(o === c) {
+            if(c > cPrev) {
+                isPrevIncreasing = true; // increasing
+            } else if(c < cPrev) {
+                isPrevIncreasing = false; // decreasing
+            }
+            // else isPrevIncreasing is not changed
+        }
+        else isPrevIncreasing = (o < c);
+        cPrev = c;
+        return isPrevIncreasing;
+    }
+
+    function isIncreasing(o, c) {
+        return isNumeric(o) && isNumeric(c) && _isIncreasing(+o, +c);
+    }
+
+    function isDecreasing(o, c) {
+        return isNumeric(o) && isNumeric(c) && !_isIncreasing(+o, +c);
+    }
+
+    return direction === 'increasing' ? isIncreasing : isDecreasing;
+}
 
 exports.addRangeSlider = function(data, layout) {
     var hasOneVisibleTrace = false;
