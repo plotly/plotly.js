@@ -27,7 +27,9 @@ describe('zoom box element', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.dragmode = 'zoom';
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+        .catch(failTest)
+        .then(done);
     });
 
     afterEach(destroyGraphDiv);
@@ -74,9 +76,9 @@ describe('main plot pan', function() {
             relayoutCallback = jasmine.createSpy('relayoutCallback');
 
             gd.on('plotly_relayout', relayoutCallback);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     afterEach(destroyGraphDiv);
@@ -211,6 +213,7 @@ describe('axis zoom/pan and main plot zoom', function() {
         // each subplot is 200x200 px
         // if constrainScales is used, x/x2/y/y2 are linked, as are x3/y3
         // layoutEdits are other changes to make to the layout
+
         var data = [
             {y: [0, 1, 2]},
             {y: [0, 1, 2], xaxis: 'x2'},
@@ -242,9 +245,9 @@ describe('axis zoom/pan and main plot zoom', function() {
 
         if(layoutEdits) Lib.extendDeep(layout, layoutEdits);
 
-        return Plotly.newPlot(gd, data, layout, config).then(function() {
-            checkRanges({}, 'initial');
-
+        return Plotly.newPlot(gd, data, layout, config)
+        .then(checkRanges({}, 'initial'))
+        .then(function() {
             expect(Object.keys(gd._fullLayout._plots))
                 .toEqual(['xy', 'xy2', 'x2y', 'x3y3']);
 
@@ -278,6 +281,7 @@ describe('axis zoom/pan and main plot zoom', function() {
     function checkRanges(newRanges, msg) {
         msg = msg || '';
         if(msg) msg = ' - ' + msg;
+
         return function() {
             var allRanges = {
                 xaxis: initialRange.slice(),
