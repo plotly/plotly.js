@@ -1045,6 +1045,17 @@ describe('A bar plot', function() {
             assertTextIsInsidePath(text20, path20); // inside
             assertTextIsBelowPath(text30, path30); // outside
 
+            // clear bounding box cache - somehow when you cache
+            // text size too early sometimes it changes later...
+            // we've had this issue before, where we've had to
+            // redraw annotations to get final sizes, I wish we
+            // could get some signal that fonts are really ready
+            // and not start drawing until then (or invalidate
+            // the bbox cache when that happens?)
+            // without this change, we get an error at
+            // assertTextIsInsidePath(text30, path30);
+            Drawing.savedBBoxes = {};
+
             return Plotly.restyle(gd, 'textposition', 'inside');
         }).then(function() {
             var cd = gd.calcdata;

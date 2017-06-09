@@ -610,7 +610,7 @@ drawing.makeTester = function() {
 // in a reference frame where it isn't translated and its anchor
 // point is at (0,0)
 // always returns a copy of the bbox, so the caller can modify it safely
-var savedBBoxes = {};
+drawing.savedBBoxes = {};
 var savedBBoxesCount = 0;
 var maxSavedBBoxes = 10000;
 
@@ -618,7 +618,7 @@ drawing.bBox = function(node) {
     // cache elements we've already measured so we don't have to
     // remeasure the same thing many times
     var hash = nodeHash(node);
-    var out = savedBBoxes[hash];
+    var out = drawing.savedBBoxes[hash];
     if(out) return Lib.extendFlat({}, out);
 
     var tester = drawing.tester.node();
@@ -654,12 +654,12 @@ drawing.bBox = function(node) {
     // or a long session could overload on memory
     // by saving boxes for long-gone elements
     if(savedBBoxesCount >= maxSavedBBoxes) {
-        savedBBoxes = {};
+        drawing.savedBBoxes = {};
         maxSavedBBoxes = 0;
     }
 
     // cache this bbox
-    savedBBoxes[hash] = bb;
+    drawing.savedBBoxes[hash] = bb;
     savedBBoxesCount++;
 
     return Lib.extendFlat({}, bb);
