@@ -735,8 +735,6 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             var plotDx = xa2._offset - clipDx / xScaleFactor2,
                 plotDy = ya2._offset - clipDy / yScaleFactor2;
 
-            // console.log(subplot.id, editX2, editY2, xScaleFactor2, yScaleFactor2, clipDx, clipDy, plotDx, plotDy);
-
             fullLayout._defs.selectAll('#' + subplot.clipId)
                 .call(Drawing.setTranslate, clipDx, clipDy)
                 .call(Drawing.setScale, xScaleFactor2, yScaleFactor2);
