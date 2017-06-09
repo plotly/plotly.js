@@ -610,19 +610,18 @@ drawing.makeTester = function() {
 // in a reference frame where it isn't translated and its anchor
 // point is at (0,0)
 // always returns a copy of the bbox, so the caller can modify it safely
-var savedBBoxes = [];
+var savedBBoxes = {};
+var savedBBoxesCount = 0;
 var maxSavedBBoxes = 10000;
 
 drawing.bBox = function(node) {
     // cache elements we've already measured so we don't have to
     // remeasure the same thing many times
-    var saveNum = node.attributes['data-bb'];
-    if(saveNum && saveNum.value) {
-        return Lib.extendFlat({}, savedBBoxes[saveNum.value]);
-    }
+    var hash = nodeHash(node);
+    var out = savedBBoxes[hash];
+    if(out) return Lib.extendFlat({}, out);
 
-    var tester3 = drawing.tester;
-    var tester = tester3.node();
+    var tester = drawing.tester.node();
 
     // copy the node to test into the tester
     var testNode = node.cloneNode(true);
@@ -654,17 +653,40 @@ drawing.bBox = function(node) {
     // make sure we don't have too many saved boxes,
     // or a long session could overload on memory
     // by saving boxes for long-gone elements
-    if(savedBBoxes.length >= maxSavedBBoxes) {
-        d3.selectAll('[data-bb]').attr('data-bb', null);
-        savedBBoxes = [];
+    if(savedBBoxesCount >= maxSavedBBoxes) {
+        savedBBoxes = {};
+        maxSavedBBoxes = 0;
     }
 
     // cache this bbox
-    node.setAttribute('data-bb', savedBBoxes.length);
-    savedBBoxes.push(bb);
+    savedBBoxes[hash] = bb;
+    savedBBoxesCount++;
 
     return Lib.extendFlat({}, bb);
 };
+
+// capture everything about a node (at least in our usage) that
+// impacts its bounding box, given that bBox clears x, y, and transform
+// TODO: is this really everything? Is it worth taking only parts of style,
+// so we can share across more changes (like colors)? I guess we can't strip
+// colors and stuff from inside innerHTML so maybe not worth bothering outside.
+// TODO # 2: this can be long, so could take a lot of memory, do we want to
+// hash it? But that can be slow...
+// extracting this string from a typical element takes ~3 microsec, where
+// doing a simple hash ala https://stackoverflow.com/questions/7616461
+// adds ~15 microsec (nearly all of this is spent in charCodeAt)
+// function hash(s) {
+//   var h = 0;
+//   for (var i = 0; i < s.length; i++) {
+//     h = (((h << 5) - h) + s.charCodeAt(i)) | 0; // codePointAt?
+//   }
+//   return h;
+// }
+function nodeHash(node) {
+    return node.innerHTML +
+        node.getAttribute('text-anchor') +
+        node.getAttribute('style');
+}
 
 /*
  * make a robust clipPath url from a local id

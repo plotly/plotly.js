@@ -146,7 +146,6 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
             .attr({
                 'class': 'bartext',
                 transform: '',
-                'data-bb': '',
                 'text-anchor': 'middle',
                 x: 0,
                 y: 0

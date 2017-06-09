@@ -94,9 +94,6 @@ exports.convertToTspans = function(_context, gd, _callback) {
     parent.selectAll('svg.' + svgClass).remove();
     parent.selectAll('g.' + svgClass + '-group').remove();
     _context.style({visibility: null});
-    for(var up = _context.node(); up && up.removeAttribute; up = up.parentNode) {
-        up.removeAttribute('data-bb');
-    }
 
     function showText() {
         if(!parent.empty()) {
