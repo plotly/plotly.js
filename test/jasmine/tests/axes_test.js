@@ -811,6 +811,65 @@ describe('Test axes', function() {
             .catch(failTest)
             .then(done);
         });
+
+        it('can constrain category axes', function(done) {
+            Plotly.plot(gd, [{
+                x: ['a', 'b'],
+                y: ['c', 'd'],
+                mode: 'markers',
+                marker: {size: 4}
+            }], {
+                yaxis: {scaleanchor: 'x'},
+                width: 300,
+                height: 400,
+                margin: {l: 100, r: 100, t: 100, b: 100, p: 0}
+            })
+            .then(function() {
+                assertRangeDomain('xaxis', [-0.095238095, 1.095238095], [0, 1], [0, 1]);
+                assertRangeDomain('yaxis', [-0.69047619, 1.69047619], [0, 1], [0, 1]);
+
+                return Plotly.relayout(gd, {
+                    'xaxis.constrain': 'domain',
+                    'yaxis.constrain': 'domain'
+                });
+            })
+            .then(function() {
+                assertRangeDomain('xaxis', [-0.095238095, 1.095238095], [0, 1], [0, 1]);
+                assertRangeDomain('yaxis', [-0.1547619, 1.1547619], [0, 1], [0.225, 0.775]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('can constrain log axes', function(done) {
+            Plotly.plot(gd, [{
+                x: [1, 10],
+                y: [1, 10],
+                mode: 'markers',
+                marker: {size: 4}
+            }], {
+                xaxis: {type: 'log'},
+                yaxis: {type: 'log', scaleanchor: 'x'},
+                width: 300,
+                height: 400,
+                margin: {l: 100, r: 100, t: 100, b: 100, p: 0}
+            })
+            .then(function() {
+                assertRangeDomain('xaxis', [-0.095238095, 1.095238095], [0, 1], [0, 1]);
+                assertRangeDomain('yaxis', [-0.69047619, 1.69047619], [0, 1], [0, 1]);
+
+                return Plotly.relayout(gd, {
+                    'xaxis.constrain': 'domain',
+                    'yaxis.constrain': 'domain'
+                });
+            })
+            .then(function() {
+                assertRangeDomain('xaxis', [-0.095238095, 1.095238095], [0, 1], [0, 1]);
+                assertRangeDomain('yaxis', [-0.1547619, 1.1547619], [0, 1], [0.225, 0.775]);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('categoryorder', function() {
