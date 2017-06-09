@@ -372,7 +372,7 @@ proto.plot = function(fullData, calcData, fullLayout) {
 
     this.updateRefs(fullLayout);
     this.updateTraces(fullData, calcData);
-    this.updateFx();
+    this.updateFx(fullLayout.dragmode);
 
     var width = fullLayout.width,
         height = fullLayout.height;
@@ -511,9 +511,7 @@ proto.updateTraces = function(fullData, calcData) {
     });
 };
 
-proto.updateFx = function() {
-    var dragmode = this.fullLayout.dragmode;
-
+proto.updateFx = function(dragmode) {
     if(dragmode === 'lasso' || dragmode === 'select') {
         this.mouseContainer.style['pointer-events'] = 'none';
     } else {
