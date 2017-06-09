@@ -2141,17 +2141,17 @@ function _relayout(gd, aobj) {
                     ai.match(/^(bar|box|font)/)) {
                 flags.docalc = true;
             }
-            else if(fullLayout._has('gl2d')) {
-                if(ai.indexOf('axis') !== -1 || ai === 'plot_bgcolor') {
-                    flags.doplot = true;
-                }
-
-                if(ai === 'dragmode' &&
-                   (vi === 'lasso' || vi === 'select') &&
-                   !(vOld === 'lasso' || vOld === 'select')
-                ) {
-                    flags.docalc = true;
-                }
+            else if(fullLayout._has('gl2d') &&
+                (ai.indexOf('axis') !== -1 || ai === 'plot_bgcolor')
+            ) {
+                flags.doplot = true;
+            }
+            else if(fullLayout._has('gl2d') &&
+                (ai === 'dragmode' &&
+                (vi === 'lasso' || vi === 'select') &&
+                !(vOld === 'lasso' || vOld === 'select'))
+            ) {
+                flags.docalc = true;
             }
             else if(ai === 'hiddenlabels') flags.docalc = true;
             else if(proot.indexOf('legend') !== -1) flags.dolegend = true;

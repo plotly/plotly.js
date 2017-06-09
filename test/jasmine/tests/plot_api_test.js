@@ -254,6 +254,76 @@ describe('Test plot api', function() {
         });
     });
 
+    describe('Plotly.relayout subroutines switchboard', function() {
+        var mockedMethods = [
+            'layoutReplot',
+            'doLegend',
+            'layoutStyles',
+            'doTicksRelayout',
+            'doModeBar',
+            'doCamera'
+        ];
+
+        beforeAll(function() {
+            mockedMethods.forEach(function(m) {
+                spyOn(subroutines, m);
+            });
+        });
+
+        function mock(gd) {
+            mockedMethods.forEach(function(m) {
+                subroutines[m].calls.reset();
+            });
+
+            Plots.supplyDefaults(gd);
+            Plots.doCalcdata(gd);
+            return gd;
+        }
+
+        it('should trigger recalc when switching into select or lasso dragmode', function() {
+            var gd = mock({
+                data: [{
+                    type: 'scattergl',
+                    x: [1, 2, 3],
+                    y: [1, 2, 3]
+                }],
+                layout: {
+                    dragmode: 'zoom'
+                }
+            });
+
+            function expectModeBarOnly() {
+                expect(gd.calcdata).toBeDefined();
+                expect(subroutines.doModeBar).toHaveBeenCalled();
+                expect(subroutines.layoutReplot).not.toHaveBeenCalled();
+            }
+
+            function expectRecalc() {
+                expect(gd.calcdata).toBeUndefined();
+                expect(subroutines.doModeBar).not.toHaveBeenCalled();
+                expect(subroutines.layoutReplot).toHaveBeenCalled();
+            }
+
+            Plotly.relayout(gd, 'dragmode', 'pan');
+            expectModeBarOnly();
+
+            Plotly.relayout(mock(gd), 'dragmode', 'lasso');
+            expectRecalc();
+
+            Plotly.relayout(mock(gd), 'dragmode', 'select');
+            expectModeBarOnly();
+
+            Plotly.relayout(mock(gd), 'dragmode', 'lasso');
+            expectModeBarOnly();
+
+            Plotly.relayout(mock(gd), 'dragmode', 'zoom');
+            expectModeBarOnly();
+
+            Plotly.relayout(mock(gd), 'dragmode', 'select');
+            expectRecalc();
+        });
+    });
+
     describe('Plotly.restyle subroutines switchboard', function() {
         beforeEach(function() {
             spyOn(PlotlyInternal, 'plot');
