@@ -55,14 +55,19 @@ module.exports = {
             compare: function(actual, expected, precision, msgExtra) {
                 precision = coercePosition(precision);
 
-                var tested = actual.map(function(element, i) {
-                    return isClose(element, expected[i], precision);
-                });
+                var passed;
 
-                var passed = (
-                    expected.length === actual.length &&
-                    tested.indexOf(false) < 0
-                );
+                if(Array.isArray(actual) && Array.isArray(expected)) {
+                    var tested = actual.map(function(element, i) {
+                        return isClose(element, expected[i], precision);
+                    });
+
+                    passed = (
+                        expected.length === actual.length &&
+                        tested.indexOf(false) < 0
+                    );
+                }
+                else passed = false;
 
                 var message = [
                     'Expected', actual, 'to be close to', expected, msgExtra
