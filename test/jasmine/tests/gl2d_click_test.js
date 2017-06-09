@@ -224,7 +224,7 @@ describe('Test hover and click interactions', function() {
             bordercolor: _mock.data[0].x.map(function(_, i) { return i % 2 ? 'red' : 'green'; })
         };
 
-        var run = makeRunner([655, 317], {
+        var run = makeRunner([634, 321], {
             x: 15.772,
             y: 0.387,
             label: ['0.387'],
@@ -249,7 +249,7 @@ describe('Test hover and click interactions', function() {
         var _mock = Lib.extendDeep({}, mock1);
         _mock.data[0].hoverinfo = 'none';
 
-        var run = makeRunner([655, 317], {
+        var run = makeRunner([634, 321], {
             x: 15.772,
             y: 0.387,
             curveNumber: 0,
