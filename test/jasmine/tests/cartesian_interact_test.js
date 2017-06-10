@@ -274,7 +274,10 @@ describe('axis zoom/pan and main plot zoom', function() {
     }
 
     function doDblClick(subplot, directions) {
-        return function() { return doubleClick(getDragger(subplot, directions)); };
+        return function() {
+            gd._mouseDownTime = 0; // ensure independence from any previous clicks
+            return doubleClick(getDragger(subplot, directions));
+        };
     }
 
     function checkRanges(newRanges, msg) {
