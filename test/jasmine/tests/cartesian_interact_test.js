@@ -109,7 +109,8 @@ describe('main plot pan', function() {
         expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
         expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
 
-        setTimeout(function() {
+        delay(MODEBAR_DELAY)()
+        .then(function() {
 
             expect(relayoutCallback).toHaveBeenCalledTimes(1);
             relayoutCallback.calls.reset();
@@ -167,16 +168,14 @@ describe('main plot pan', function() {
 
             expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
             expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
-
-            setTimeout(function() {
-
-                expect(relayoutCallback).toHaveBeenCalledTimes(6); // X and back; Y and back; XY and back
-
-                done();
-
-            }, MODEBAR_DELAY);
-
-        }, MODEBAR_DELAY);
+        })
+        .then(delay(MODEBAR_DELAY))
+        .then(function() {
+            // X and back; Y and back; XY and back
+            expect(relayoutCallback).toHaveBeenCalledTimes(6);
+        })
+        .catch(failTest)
+        .then(done);
     });
 });
 
