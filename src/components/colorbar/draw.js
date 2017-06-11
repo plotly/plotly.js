@@ -556,6 +556,7 @@ module.exports = function draw(gd, id) {
 
             dragElement.init({
                 element: container.node(),
+                gd: gd,
                 prepFn: function() {
                     t0 = container.attr('transform');
                     setCursor(container);

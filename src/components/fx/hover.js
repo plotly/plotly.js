@@ -161,7 +161,7 @@ exports.loneHover = function loneHover(hoverItem, opts) {
         outerContainer: outerContainer3
     };
 
-    var hoverLabel = createHoverText([pointData], fullOpts);
+    var hoverLabel = createHoverText([pointData], fullOpts, opts.gd);
     alignHoverText(hoverLabel, fullOpts.rotateLabels);
 
     return hoverLabel.node();
@@ -490,7 +490,7 @@ function _hover(gd, evt, subplot) {
         commonLabelOpts: fullLayout.hoverlabel
     };
 
-    var hoverLabels = createHoverText(hoverData, labelOpts);
+    var hoverLabels = createHoverText(hoverData, labelOpts, gd);
 
     hoverAvoidOverlaps(hoverData, rotateLabels ? 'xa' : 'ya');
 
@@ -523,7 +523,7 @@ function _hover(gd, evt, subplot) {
     });
 }
 
-function createHoverText(hoverData, opts) {
+function createHoverText(hoverData, opts, gd) {
     var hovermode = opts.hovermode;
     var rotateLabels = opts.rotateLabels;
     var bgColor = opts.bgColor;
@@ -595,7 +595,7 @@ function createHoverText(hoverData, opts) {
             .attr('data-notex', 1);
 
         ltext.text(t0)
-            .call(svgTextUtils.convertToTspans)
+            .call(svgTextUtils.convertToTspans, gd)
             .call(Drawing.setPosition, 0, 0)
           .selectAll('tspan.line')
             .call(Drawing.setPosition, 0, 0);
@@ -745,7 +745,7 @@ function createHoverText(hoverData, opts) {
             .call(Drawing.setPosition, 0, 0)
             .text(text)
             .attr('data-notex', 1)
-            .call(svgTextUtils.convertToTspans);
+            .call(svgTextUtils.convertToTspans, gd);
         tx.selectAll('tspan.line')
             .call(Drawing.setPosition, 0, 0);
 
@@ -761,7 +761,7 @@ function createHoverText(hoverData, opts) {
                 .text(name)
                 .call(Drawing.setPosition, 0, 0)
                 .attr('data-notex', 1)
-                .call(svgTextUtils.convertToTspans);
+                .call(svgTextUtils.convertToTspans, gd);
             tx2.selectAll('tspan.line')
                 .call(Drawing.setPosition, 0, 0);
             tx2width = tx2.node().getBoundingClientRect().width + 2 * HOVERTEXTPAD;

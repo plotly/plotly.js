@@ -155,7 +155,8 @@ module.exports = function plot(gd, calcData) {
             idealAlign: d3.event.x < hoverCenterX ? 'right' : 'left'
         }, {
             container: fullLayout._hoverlayer.node(),
-            outerContainer: fullLayout._paper.node()
+            outerContainer: fullLayout._paper.node(),
+            gd: gd
         });
 
         makeTranslucent(tooltip, 0.65);
@@ -210,7 +211,8 @@ module.exports = function plot(gd, calcData) {
             idealAlign: 'left'
         }, {
             container: fullLayout._hoverlayer.node(),
-            outerContainer: fullLayout._paper.node()
+            outerContainer: fullLayout._paper.node(),
+            gd: gd
         });
 
         makeTranslucent(tooltip, 0.85);

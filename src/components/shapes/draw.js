@@ -130,8 +130,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
     var xa, ya, x2p, y2p, p2x, p2y;
 
     var dragOptions = {
-            setCursor: updateDragMode,
             element: shapePath.node(),
+            gd: gd,
             prepFn: startDrag,
             doneFn: endDrag
         },
@@ -139,6 +139,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
         dragMode;
 
     dragElement.init(dragOptions);
+
+    shapePath.node().onmousemove = updateDragMode;
 
     function updateDragMode(evt) {
         // choose 'move' or 'resize'

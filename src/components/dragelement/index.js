@@ -26,6 +26,15 @@ dragElement.unhoverRaw = unhover.raw;
 
 /**
  * Abstracts click & drag interactions
+ *
+ * During the interaction, a "coverSlip" element - a transparent
+ * div covering the whole page - is created, which has two key effects:
+ * - Lets you drag beyond the boundaries of the plot itself without
+ *   dropping (but if you drag all the way out of the browser window the
+ *   interaction will end)
+ * - Freezes the cursor: whatever mouse cursor the drag element had when the
+ *   interaction started gets copied to the coverSlip for use until mouseup
+ *
  * @param {object} options with keys:
  *      element (required) the DOM element to drag
  *      prepFn (optional) function(event, startX, startY)
@@ -44,28 +53,20 @@ dragElement.unhoverRaw = unhover.raw;
  *          numClicks is how many clicks we've registered within
  *          a doubleclick time
  *          e is the original event
- *      setCursor (optional) function(event)
- *          executed on mousemove before mousedown
- *          the purpose of this callback is to update the mouse cursor before
- *          the click & drag interaction has been initiated
  */
 dragElement.init = function init(options) {
-    var gd = Lib.getPlotDiv(options.element) || {},
+    var gd = options.gd,
         numClicks = 1,
         DBLCLICKDELAY = interactConstants.DBLCLICKDELAY,
         startX,
         startY,
         newMouseDownTime,
         dragCover,
-        initialTarget,
-        initialOnMouseMove;
+        initialTarget;
 
     if(!gd._mouseDownTime) gd._mouseDownTime = 0;
 
     function onStart(e) {
-        // disable call to options.setCursor(evt)
-        options.element.onmousemove = initialOnMouseMove;
-
         // make dragging and dragged into properties of gd
         // so that others can look at and modify them
         gd._dragged = false;
@@ -116,10 +117,6 @@ dragElement.init = function init(options) {
     }
 
     function onDone(e) {
-        // re-enable call to options.setCursor(evt)
-        initialOnMouseMove = options.element.onmousemove;
-        if(options.setCursor) options.element.onmousemove = options.setCursor;
-
         dragCover.onmousemove = null;
         dragCover.onmouseup = null;
         dragCover.onmouseout = null;
@@ -165,10 +162,6 @@ dragElement.init = function init(options) {
 
         return Lib.pauseEvent(e);
     }
-
-    // enable call to options.setCursor(evt)
-    initialOnMouseMove = options.element.onmousemove;
-    if(options.setCursor) options.element.onmousemove = options.setCursor;
 
     options.element.onmousedown = onStart;
     options.element.style.pointerEvents = 'all';
