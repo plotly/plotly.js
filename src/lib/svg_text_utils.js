@@ -14,46 +14,7 @@
 var d3 = require('d3');
 
 var Lib = require('../lib');
-var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var stringMappings = require('../constants/string_mappings');
-
-var DOM_PARSER;
-
-exports.getDOMParser = function() {
-    if(DOM_PARSER) {
-        return DOM_PARSER;
-    } else if(window.DOMParser) {
-        DOM_PARSER = new window.DOMParser();
-        return DOM_PARSER;
-    } else {
-        throw new Error('Cannot initialize DOMParser');
-    }
-};
-
-// Append SVG
-
-d3.selection.prototype.appendSVG = function(_svgString) {
-    var skeleton = [
-        '<svg xmlns="', xmlnsNamespaces.svg, '" ',
-        'xmlns:xlink="', xmlnsNamespaces.xlink, '">',
-        _svgString,
-        '</svg>'
-    ].join('');
-
-    var domParser = exports.getDOMParser();
-    var dom = domParser.parseFromString(skeleton, 'application/xml');
-    var childNode = dom.documentElement.firstChild;
-
-    while(childNode) {
-        this.node().appendChild(this.node().ownerDocument.importNode(childNode, true));
-        childNode = childNode.nextSibling;
-    }
-    if(dom.querySelector('parsererror')) {
-        Lib.log(dom.querySelector('parsererror div').textContent);
-        return null;
-    }
-    return d3.select(this.node().lastChild);
-};
 
 // Text utilities
 
@@ -81,12 +42,10 @@ function getSize(_selection, _dimension) {
 
 exports.convertToTspans = function(_context, gd, _callback) {
     var str = _context.text();
-    var converted = convertToSVG(str);
 
     // Until we get tex integrated more fully (so it can be used along with non-tex)
     // allow some elements to prohibit it by attaching 'data-notex' to the original
-    var tex = (!_context.attr('data-notex')) && converted.match(/([^$]*)([$]+[^$]*[$]+)([^$]*)/);
-    var result = str;
+    var tex = (!_context.attr('data-notex')) && str.match(/([^$]*)([$]+[^$]*[$]+)([^$]*)/);
     var parent = d3.select(_context.node().parentNode);
     if(parent.empty()) return;
     var svgClass = (_context.attr('class')) ? _context.attr('class').split(' ')[0] : 'text';
@@ -106,9 +65,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 'white-space': 'pre'
             });
 
-        result = _context.appendSVG(converted);
-
-        if(!result) _context.text(str);
+        _context.node().innerHTML = convertToSVG(str);
 
         if(_context.select('a').size()) {
             // at least in Chrome, pointer-events does not seem
