@@ -10,68 +10,222 @@
 'use strict';
 
 module.exports = {
-    'circle': '●',
-    'circle-open': '○',
-    'square': '■',
-    'square-open': '□',
-    'diamond': '◆',
-    'diamond-open': '◇',
-    'cross': '✚',
-    'triangle-up': '▲',
-    'triangle-up-open': '△',
-    'triangle-down': '▼',
-    'triangle-down-open': '▽',
-    'triangle-left': '◄',
-    'triangle-left-open': '◁',
-    'triangle-right': '►',
-    'triangle-right-open': '▷',
-    'triangle-ne': '◥',
-    'triangle-ne-open': '◹',
-    'triangle-nw': '◤',
-    'triangle-nw-open': '◸',
-    'triangle-se': '◢',
-    'triangle-se-open': '◿',
-    'triangle-sw': '◣',
-    'triangle-sw-open': '◺',
-    'pentagon': '⬟',
-    'pentagon-open': '⬠',
-    'hexagon': '⬢',
-    'hexagon-open': '⬡',
-    'hexagon2': '⬣',
-    'star': '★',
-    'star-open': '☆',
-    'diamond-tall': '♦',
-    'diamond-tall-open': '♢',
-    'diamond-wide': '▰',
-    'diamond-wide-open': '▱',
-    'bowtie': '⧓',
-    'bowtie-open': '⋈',
-    'circle-cross': '⨁',
-    'circle-x': '⨂',
-    'square-cross': '⊞',
-    'square-x': '⊠',
-    'diamond-cross': '⟠',
-    'diamond-x': '❖',
-    'cross-thin': '+',
-    'cross-thin-open': '+',
-    'x-thin': '╳',
-    'x-thin-open': '╳',
-    'asterisk': '✳',
-    'asterisk-open': '✳',
-    'y-up': '⅄',
-    'y-up-open': '⅄',
-    'y-down': 'Y',
-    'y-down-open': 'Y',
-    'y-left': '≺',
-    'y-left-open': '≺',
-    'y-right': '≻',
-    'y-right-open': '≻',
-    'line-ew': '─',
-    'line-ew-open': '─',
-    'line-ns': '│',
-    'line-ns-open': '│',
-    'line-ne': '╱',
-    'line-ne-open': '╱',
-    'line-nw': '╲',
-    'line-nw-open': '╲'
+    'circle': {
+        unicode: '●'
+    },
+    'circle-open': {
+        unicode: '○'
+    },
+    'square': {
+        unicode: '■'
+    },
+    'square-open': {
+        unicode: '□'
+    },
+    'diamond': {
+        unicode: '◆'
+    },
+    'diamond-open': {
+        unicode: '◇'
+    },
+    'cross': {
+        unicode: '✚'
+    },
+    'triangle-up': {
+        unicode: '▲'
+    },
+    'triangle-up-open': {
+        unicode: '△'
+    },
+    'triangle-down': {
+        unicode: '▼'
+    },
+    'triangle-down-open': {
+        unicode: '▽'
+    },
+    'triangle-left': {
+        unicode: '◄',
+    },
+    'triangle-left-open': {
+        unicode: '◁',
+    },
+    'triangle-right': {
+        unicode: '►',
+    },
+    'triangle-right-open': {
+        unicode: '▷',
+    },
+    'triangle-ne': {
+        unicode: '◥',
+    },
+    'triangle-ne-open': {
+        unicode: '◹',
+    },
+    'triangle-nw': {
+        unicode: '◤',
+    },
+    'triangle-nw-open': {
+        unicode: '◸',
+    },
+    'triangle-se': {
+        unicode: '◢',
+    },
+    'triangle-se-open': {
+        unicode: '◿',
+    },
+    'triangle-sw': {
+        unicode: '◣',
+    },
+    'triangle-sw-open': {
+        unicode: '◺',
+    },
+    'pentagon': {
+        unicode: '⬟',
+    },
+    'pentagon-open': {
+        unicode: '⬠',
+    },
+    'hexagon': {
+        unicode: '⬢',
+    },
+    'hexagon-open': {
+        unicode: '⬡',
+    },
+    'hexagon2': {
+        unicode: '⬣',
+    },
+    'star': {
+        unicode: '★',
+    },
+    'star-open': {
+        unicode: '☆',
+    },
+    'diamond-tall': {
+        unicode: '♦',
+    },
+    'diamond-tall-open': {
+        unicode: '♢',
+    },
+    'diamond-wide': {
+        unicode: '▰',
+    },
+    'diamond-wide-open': {
+        unicode: '▱',
+    },
+    'bowtie': {
+        unicode: '⧓',
+    },
+    'bowtie-open': {
+        unicode: '⋈',
+        bwFactor: 0.25
+    },
+    'circle-cross': {
+        unicode: '⨁',
+        bwFactor: 0.25
+    },
+    'circle-x': {
+        unicode: '⨂',
+        bwFactor: 0.25
+    },
+    'square-cross': {
+        unicode: '⊞',
+        bwFactor: 0.25
+    },
+    'square-x': {
+        unicode: '⊠',
+        bwFactor: 0.25
+    },
+    'diamond-cross': {
+        unicode: '⟠',
+        bwFactor: 0.25
+    },
+    'diamond-x': {
+        unicode: '❖',
+        bwFactor: 0.25
+    },
+    'cross-thin': {
+        unicode: '+',
+        noBorder: true
+    },
+    'cross-thin-open': {
+        unicode: '+',
+    },
+    'x-thin': {
+        unicode: '╳',
+        noBorder: true
+    },
+    'x-thin-open': {
+        unicode: '╳',
+    },
+    'asterisk': {
+        unicode: '✳',
+        noBorder: true
+    },
+    'asterisk-open': {
+        unicode: '✳',
+    },
+    'y-up': {
+        unicode: '⅄',
+        noBorder: true
+    },
+    'y-up-open': {
+        unicode: '⅄',
+        noBorder: true
+    },
+    'y-down': {
+        unicode: 'Y',
+        noBorder: true
+    },
+    'y-down-open': {
+        unicode: 'Y',
+        noBorder: true
+    },
+    'y-left': {
+        unicode: '≺',
+        noBorder: true
+    },
+    'y-left-open': {
+        unicode: '≺',
+        noBorder: true
+    },
+    'y-right': {
+        unicode: '≻',
+        noBorder: true
+    },
+    'y-right-open': {
+        unicode: '≻',
+        noBorder: true
+    },
+    'line-ew': {
+        unicode: '─',
+        noBorder: true
+    },
+    'line-ew-open': {
+        unicode: '─',
+        noBorder: true
+    },
+    'line-ns': {
+        unicode: '│',
+        noBorder: true
+    },
+    'line-ns-open': {
+        unicode: '│',
+        noBorder: true
+    },
+    'line-ne': {
+        unicode: '╱',
+        noBorder: true
+    },
+    'line-ne-open': {
+        unicode: '╱',
+        noBorder: true
+    },
+    'line-nw': {
+        unicode: '╲',
+        noBorder: true
+    },
+    'line-nw-open': {
+        unicode: '╲',
+        noBorder: true
+    }
 };
