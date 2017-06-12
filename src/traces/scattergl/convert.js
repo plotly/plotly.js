@@ -593,11 +593,11 @@ proto.updateFancy = function(options) {
             }
         }
 
-        //prevent scatter from resnapping points
-        if (selIds) {
-            this.scatter.options.positions = null
+        // prevent scatter from resnapping points
+        if(selIds) {
+            this.scatter.options.positions = null;
             this.fancyScatter.update();
-            this.scatter.options.positions = positions
+            this.scatter.options.positions = positions;
         }
         else {
             this.fancyScatter.update();
