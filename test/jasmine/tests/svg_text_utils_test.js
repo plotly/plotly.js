@@ -190,7 +190,7 @@ describe('svg+text utils', function() {
         it('attaches onclick if popup is specified', function() {
             var node = mockTextSVGElement('<a href="x" target="fred" popup="width=500,height=400">link</a>');
             assertAnchorLink(node, 'x', 'fred', 'new');
-            assertAnchorAttrs(node, {onclick: 'window.open(\'x\',\'fred\',\'width=500,height=400\');return false;'});
+            assertAnchorAttrs(node, {onclick: 'window.open("x","fred","width=500,height=400");return false;'});
         });
 
         it('keeps query parameters in href', function() {
@@ -301,7 +301,8 @@ describe('svg+text utils', function() {
             var node = mockTextSVGElement('SO<sub>4<br>44</sub>');
             expect(node.html()).toBe(
                 '<tspan class="line" dy="0em">SO​' +
-                    '<tspan style="font-size:70%" dy="0.3em">4</tspan></tspan>' +
+                    '<tspan style="font-size:70%" dy="0.3em">4</tspan>' +
+                    '<tspan dy="-0.21em">​</tspan></tspan>' +
                 '<tspan class="line" dy="1.3em">​' +
                     '<tspan style="font-size:70%" dy="0.3em">44</tspan>' +
                     '<tspan dy="-0.21em">​</tspan></tspan>');
