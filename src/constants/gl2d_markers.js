@@ -31,6 +31,19 @@ module.exports = {
     'cross': {
         unicode: '✚'
     },
+    'cross-open': {
+        unicode: '✚',
+        bwFactor: 0.5,
+        transparentFill: true
+    },
+    'x': {
+        unicode: '❌'
+    },
+    'x-open': {
+        unicode: '❌',
+        bwFactor: 0.5,
+        transparentFill: true
+    },
     'triangle-up': {
         unicode: '▲'
     },

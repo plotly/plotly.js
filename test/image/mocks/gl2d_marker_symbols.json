@@ -151,7 +151,7 @@
           20,
           20,
           20,
-          1,
+          20,
           20,
           20,
           20,
@@ -203,7 +203,7 @@
         "marker symbol: square",
         "marker symbol: diamond",
         "marker symbol: cross",
-        "marker symbol: x<br>NOT AVAILABLE",
+        "marker symbol: x",
         "marker symbol: triangle-up",
         "marker symbol: triangle-down",
         "marker symbol: triangle-left",
@@ -397,8 +397,8 @@
           20,
           20,
           20,
-          1,
-          1,
+          20,
+          20,
           20,
           20,
           20,
@@ -449,8 +449,8 @@
         "marker symbol: circle-open",
         "marker symbol: square-open",
         "marker symbol: diamond-open",
-        "marker symbol: cross-open<br>NOT AVAILABLE",
-        "marker symbol: x-open<br>NOT AVAILABLE",
+        "marker symbol: cross-open",
+        "marker symbol: x-open",
         "marker symbol: triangle-up-open",
         "marker symbol: triangle-down-open",
         "marker symbol: triangle-left-open",
@@ -1007,6 +1007,7 @@
       "zeroline": false
     },
     "showlegend": false,
-    "hovermode": "closest"
+    "hovermode": "closest",
+    "plot_bgcolor": "#d3d3d3"
   }
 }

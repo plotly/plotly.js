@@ -29,7 +29,7 @@ var MARKER_SYMBOLS = require('../../constants/gl2d_markers');
 var DASHES = require('../../constants/gl2d_dashes');
 
 var AXES = ['xaxis', 'yaxis'];
-
+var transparent = [0, 0, 0, 0];
 
 function LineWithMarkers(scene, uid) {
     this.scene = scene;
@@ -255,6 +255,12 @@ function isSymbolOpen(symbol) {
     return symbol.split('-open')[1] === '';
 }
 
+function fillColor(colorIn, colorOut, offsetIn, offsetOut) {
+    for(var j = 0; j < 4; j++) {
+        colorIn[4 * offsetIn + j] = colorOut[4 * offsetOut + j];
+    }
+}
+
 proto.update = function(options) {
     if(options.visible !== true) {
         this.isVisible = false;
@@ -444,7 +450,7 @@ proto.updateFancy = function(options) {
     var getX = (xaxis.type === 'log') ? xaxis.d2l : function(x) { return x; };
     var getY = (yaxis.type === 'log') ? yaxis.d2l : function(y) { return y; };
 
-    var i, j, xx, yy, ex0, ex1, ey0, ey1;
+    var i, xx, yy, ex0, ex1, ey0, ey1;
 
     for(i = 0; i < len; ++i) {
         this.xData[i] = xx = getX(x[i]);
@@ -529,10 +535,12 @@ proto.updateFancy = function(options) {
             this.scatter.options.glyphs[i] = symbolSpec.unicode;
             this.scatter.options.borderWidths[i] = bwFactor * borderWidths[index];
 
-            for(j = 0; j < 4; ++j) {
-                this.scatter.options.colors[4 * i + j] = _colors[4 * index + j];
-                this.scatter.options.borderColors[4 * i + j] = _borderColors[4 * index + j];
+            if(symbolSpec.transparentFill) {
+                fillColor(this.scatter.options.colors, transparent, i, 0);
+            } else {
+                fillColor(this.scatter.options.colors, _colors, i, index);
             }
+            fillColor(this.scatter.options.borderColors, _borderColors, i, index);
         }
 
         this.fancyScatter.update();
