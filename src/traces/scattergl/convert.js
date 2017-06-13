@@ -508,7 +508,7 @@ proto.updateFancy = function(options) {
         var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len);
         var borderWidths = convertNumber(markerOpts.line.width, len);
         var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len);
-        var index, symbol, symbolSpec, _colors, _borderColors, bwFactor;
+        var index, symbol, symbolSpec, _colors, _borderColors, bwFactor, isOpen;
 
         sizes = convertArray(markerSizeFunc, markerOpts.size, len);
 
@@ -516,26 +516,35 @@ proto.updateFancy = function(options) {
             index = idToIndex[i];
             symbol = symbols[index];
             symbolSpec = MARKER_SYMBOLS[symbol];
+            isOpen = isSymbolOpen(symbol);
 
-            if(isSymbolOpen(symbol)) {
-                _colors = colors;
-                _borderColors = colors;
-                bwFactor = symbolSpec.bwFactor || 0.25;
-            } else if(symbolSpec.noBorder) {
+            if(symbolSpec.noBorder && !isOpen) {
                 _colors = borderColors;
-                _borderColors = borderColors;
-                bwFactor = symbolSpec.bwFactor || 0.25;
             } else {
                 _colors = colors;
+            }
+
+            if(isOpen) {
+                _borderColors = colors;
+            } else {
                 _borderColors = borderColors;
-                bwFactor = symbolSpec.bwFactor || 0.5;
+            }
+
+            if(symbolSpec.bwFactor) {
+                bwFactor = symbolSpec.bwFactor;
+            } else if(symbolSpec.noBorder) {
+                bwFactor = 0.25;
+            } else if(symbolSpec.noFill) {
+                bwFactor = 0.1;
+            } else {
+                bwFactor = 0.5;
             }
 
             this.scatter.options.sizes[i] = 4.0 * sizes[index];
             this.scatter.options.glyphs[i] = symbolSpec.unicode;
             this.scatter.options.borderWidths[i] = bwFactor * borderWidths[index];
 
-            if(symbolSpec.transparentFill) {
+            if(isOpen && !symbolSpec.noBorder && !symbolSpec.noFill) {
                 fillColor(this.scatter.options.colors, transparent, i, 0);
             } else {
                 fillColor(this.scatter.options.colors, _colors, i, index);

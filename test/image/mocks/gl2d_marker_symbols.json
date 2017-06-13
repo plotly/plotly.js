@@ -409,7 +409,7 @@
           20,
           20,
           20,
-          1,
+          20,
           1,
           20,
           1,
@@ -461,7 +461,7 @@
         "marker symbol: triangle-nw-open",
         "marker symbol: pentagon-open",
         "marker symbol: hexagon-open",
-        "marker symbol: hexagon2-open<br>NOT AVAILABLE",
+        "marker symbol: hexagon2-open",
         "marker symbol: octagon-open<br>NOT AVAILABLE",
         "marker symbol: star-open",
         "marker symbol: hexagram-open<br>NOT AVAILABLE",
@@ -1008,6 +1008,22 @@
     },
     "showlegend": false,
     "hovermode": "closest",
-    "plot_bgcolor": "#d3d3d3"
+    "plot_bgcolor": "#d3d3d3",
+    "annotations": [
+      {
+        "showarrow": false,
+        "xref": "paper",
+        "yref": "paper",
+        "x": 1,
+        "xanchor": "right",
+        "y": 0.5,
+        "yanchor": "middle",
+        "xshift": -15,
+        "text": "<b>IMPORTANT</b>: marker symbol 'x' and 'x-open'<br>do not render in the imagetest container",
+        "font": {
+          "size": 16
+        }
+      }
+    ]
   }
 }

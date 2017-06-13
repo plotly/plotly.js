@@ -9,138 +9,65 @@
 
 'use strict';
 
-module.exports = {
+var extendFlat = require('../lib/extend').extendFlat;
+
+var symbolsWithOpenSupport = {
     'circle': {
         unicode: '●'
-    },
-    'circle-open': {
-        unicode: '○'
     },
     'square': {
         unicode: '■'
     },
-    'square-open': {
-        unicode: '□'
-    },
     'diamond': {
         unicode: '◆'
-    },
-    'diamond-open': {
-        unicode: '◇'
     },
     'cross': {
         unicode: '✚'
     },
-    'cross-open': {
-        unicode: '✚',
-        bwFactor: 0.5,
-        transparentFill: true
-    },
     'x': {
         unicode: '❌'
-    },
-    'x-open': {
-        unicode: '❌',
-        bwFactor: 0.5,
-        transparentFill: true
     },
     'triangle-up': {
         unicode: '▲'
     },
-    'triangle-up-open': {
-        unicode: '△'
-    },
     'triangle-down': {
         unicode: '▼'
     },
-    'triangle-down-open': {
-        unicode: '▽'
-    },
     'triangle-left': {
-        unicode: '◄',
-    },
-    'triangle-left-open': {
-        unicode: '◁',
+        unicode: '◄'
     },
     'triangle-right': {
-        unicode: '►',
-    },
-    'triangle-right-open': {
-        unicode: '▷',
+        unicode: '►'
     },
     'triangle-ne': {
-        unicode: '◥',
-    },
-    'triangle-ne-open': {
-        unicode: '◹',
+        unicode: '◥'
     },
     'triangle-nw': {
-        unicode: '◤',
-    },
-    'triangle-nw-open': {
-        unicode: '◸',
+        unicode: '◤'
     },
     'triangle-se': {
-        unicode: '◢',
-    },
-    'triangle-se-open': {
-        unicode: '◿',
+        unicode: '◢'
     },
     'triangle-sw': {
-        unicode: '◣',
-    },
-    'triangle-sw-open': {
-        unicode: '◺',
+        unicode: '◣'
     },
     'pentagon': {
-        unicode: '⬟',
-    },
-    'pentagon-open': {
-        unicode: '⬠',
+        unicode: '⬟'
     },
     'hexagon': {
-        unicode: '⬢',
-    },
-    'hexagon-open': {
-        unicode: '⬡',
+        unicode: '⬢'
     },
     'hexagon2': {
-        unicode: '⬣',
+        unicode: '⬣'
     },
     'star': {
-        unicode: '★',
-    },
-    'star-open': {
-        unicode: '☆',
+        unicode: '★'
     },
     'diamond-tall': {
-        unicode: '♦',
-    },
-    'diamond-tall-open': {
-        unicode: '♢',
+        unicode: '♦'
     },
     'bowtie': {
-        unicode: '⧓',
-    },
-    'bowtie-open': {
-        unicode: '⋈',
-        bwFactor: 0.2
-    },
-    'circle-cross-open': {
-        unicode: '⨁',
-        bwFactor: 0.2
-    },
-    'circle-x-open': {
-        unicode: '⨂',
-        bwFactor: 0.2
-    },
-    'square-cross-open': {
-        unicode: '⊞',
-        bwFactor: 0.2
-    },
-    'square-x-open': {
-        unicode: '⊠',
-        bwFactor: 0.2
+        unicode: '⧓'
     },
     'diamond-x': {
         unicode: '❖',
@@ -150,21 +77,11 @@ module.exports = {
         unicode: '+',
         noBorder: true
     },
-    'cross-thin-open': {
-        unicode: '+',
-    },
     'asterisk': {
         unicode: '✳',
         noBorder: true
     },
-    'asterisk-open': {
-        unicode: '✳',
-    },
     'y-up': {
-        unicode: '⅄',
-        noBorder: true
-    },
-    'y-up-open': {
         unicode: '⅄',
         noBorder: true
     },
@@ -172,24 +89,45 @@ module.exports = {
         unicode: 'Y',
         noBorder: true
     },
-    'y-down-open': {
-        unicode: 'Y',
-        noBorder: true
-    },
     'line-ew': {
-        unicode: '─',
-        noBorder: true
-    },
-    'line-ew-open': {
         unicode: '─',
         noBorder: true
     },
     'line-ns': {
         unicode: '│',
         noBorder: true
-    },
-    'line-ns-open': {
-        unicode: '│',
-        noBorder: true
     }
 };
+
+var openSymbols = {};
+var keys = Object.keys(symbolsWithOpenSupport);
+
+for(var i = 0; i < keys.length; i++) {
+    var k = keys[i];
+    openSymbols[k + '-open'] = extendFlat({}, symbolsWithOpenSupport[k]);
+}
+
+var otherSymbols = {
+    'circle-cross-open': {
+        unicode: '⨁',
+        noFill: true
+    },
+    'circle-x-open': {
+        unicode: '⨂',
+        noFill: true
+    },
+    'square-cross-open': {
+        unicode: '⊞',
+        noFill: true
+    },
+    'square-x-open': {
+        unicode: '⊠',
+        noFill: true
+    }
+};
+
+module.exports = extendFlat({},
+    symbolsWithOpenSupport,
+    openSymbols,
+    otherSymbols
+);
