@@ -500,6 +500,7 @@
       "autorange": "reversed"
     },
     "showlegend": false,
+    "plot_bgcolor": "#d3d3d3",
     "hovermode": "closest"
   }
 }
