@@ -23,12 +23,14 @@ function getSize(_selection, _dimension) {
     return _selection.node().getBoundingClientRect()[_dimension];
 }
 
+var FIND_TEX = /([^$]*)([$]+[^$]*[$]+)([^$]*)/;
+
 exports.convertToTspans = function(_context, gd, _callback) {
     var str = _context.text();
 
     // Until we get tex integrated more fully (so it can be used along with non-tex)
     // allow some elements to prohibit it by attaching 'data-notex' to the original
-    var tex = (!_context.attr('data-notex')) && str.match(/([^$]*)([$]+[^$]*[$]+)([^$]*)/);
+    var tex = (!_context.attr('data-notex')) && str.match(FIND_TEX);
     var parent = d3.select(_context.node().parentNode);
     if(parent.empty()) return;
     var svgClass = (_context.attr('class')) ? _context.attr('class').split(' ')[0] : 'text';
@@ -138,9 +140,12 @@ exports.convertToTspans = function(_context, gd, _callback) {
 
 // MathJax
 
+var LT_MATCH = /(<|&lt;|&#60;)/g;
+var GT_MATCH = /(>|&gt;|&#62;)/g;
+
 function cleanEscapesForTex(s) {
-    return s.replace(/(<|&lt;|&#60;)/g, '\\lt ')
-        .replace(/(>|&gt;|&#62;)/g, '\\gt ');
+    return s.replace(LT_MATCH, '\\lt ')
+        .replace(GT_MATCH, '\\gt ');
 }
 
 function texToSVG(_texString, _config, _callback) {
