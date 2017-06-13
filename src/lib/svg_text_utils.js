@@ -17,76 +17,20 @@ var Lib = require('../lib');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var stringMappings = require('../constants/string_mappings');
 
-var DOM_PARSER;
-
-exports.getDOMParser = function() {
-    if(DOM_PARSER) {
-        return DOM_PARSER;
-    } else if(window.DOMParser) {
-        DOM_PARSER = new window.DOMParser();
-        return DOM_PARSER;
-    } else {
-        throw new Error('Cannot initialize DOMParser');
-    }
-};
-
-// Append SVG
-
-d3.selection.prototype.appendSVG = function(_svgString) {
-    var skeleton = [
-        '<svg xmlns="', xmlnsNamespaces.svg, '" ',
-        'xmlns:xlink="', xmlnsNamespaces.xlink, '">',
-        _svgString,
-        '</svg>'
-    ].join('');
-
-    var domParser = exports.getDOMParser();
-    var dom = domParser.parseFromString(skeleton, 'application/xml');
-    var childNode = dom.documentElement.firstChild;
-
-    while(childNode) {
-        this.node().appendChild(this.node().ownerDocument.importNode(childNode, true));
-        childNode = childNode.nextSibling;
-    }
-    if(dom.querySelector('parsererror')) {
-        Lib.log(dom.querySelector('parsererror div').textContent);
-        return null;
-    }
-    return d3.select(this.node().lastChild);
-};
-
-// Text utilities
-
-exports.html_entity_decode = function(s) {
-    var hiddenDiv = d3.select('body').append('div').style({display: 'none'}).html('');
-    var replaced = s.replace(/(&[^;]*;)/gi, function(d) {
-        if(d === '&lt;') { return '&#60;'; } // special handling for brackets
-        if(d === '&rt;') { return '&#62;'; }
-        if(d.indexOf('<') !== -1 || d.indexOf('>') !== -1) { return ''; }
-        return hiddenDiv.html(d).text(); // everything else, let the browser decode it to unicode
-    });
-    hiddenDiv.remove();
-    return replaced;
-};
-
-exports.xml_entity_encode = function(str) {
-    return str.replace(/&(?!\w+;|\#[0-9]+;| \#x[0-9A-F]+;)/g, '&amp;');
-};
-
 // text converter
 
 function getSize(_selection, _dimension) {
     return _selection.node().getBoundingClientRect()[_dimension];
 }
 
+var FIND_TEX = /([^$]*)([$]+[^$]*[$]+)([^$]*)/;
+
 exports.convertToTspans = function(_context, gd, _callback) {
     var str = _context.text();
-    var converted = convertToSVG(str);
 
     // Until we get tex integrated more fully (so it can be used along with non-tex)
     // allow some elements to prohibit it by attaching 'data-notex' to the original
-    var tex = (!_context.attr('data-notex')) && converted.match(/([^$]*)([$]+[^$]*[$]+)([^$]*)/);
-    var result = str;
+    var tex = (!_context.attr('data-notex')) && str.match(FIND_TEX);
     var parent = d3.select(_context.node().parentNode);
     if(parent.empty()) return;
     var svgClass = (_context.attr('class')) ? _context.attr('class').split(' ')[0] : 'text';
@@ -106,11 +50,9 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 'white-space': 'pre'
             });
 
-        result = _context.appendSVG(converted);
+        var hasLink = buildSVGText(_context.node(), str);
 
-        if(!result) _context.text(str);
-
-        if(_context.select('a').size()) {
+        if(hasLink) {
             // at least in Chrome, pointer-events does not seem
             // to be honored in children of <text> elements
             // so if we have an anchor, we have to make the
@@ -198,9 +140,12 @@ exports.convertToTspans = function(_context, gd, _callback) {
 
 // MathJax
 
+var LT_MATCH = /(<|&lt;|&#60;)/g;
+var GT_MATCH = /(>|&gt;|&#62;)/g;
+
 function cleanEscapesForTex(s) {
-    return s.replace(/(<|&lt;|&#60;)/g, '\\lt ')
-        .replace(/(>|&gt;|&#62;)/g, '\\gt ');
+    return s.replace(LT_MATCH, '\\lt ')
+        .replace(GT_MATCH, '\\gt ');
 }
 
 function texToSVG(_texString, _config, _callback) {
@@ -231,21 +176,27 @@ var TAG_STYLES = {
     // would like to use baseline-shift for sub/sup but FF doesn't support it
     // so we need to use dy along with the uber hacky shift-back-to
     // baseline below
-    sup: 'font-size:70%" dy="-0.6em',
-    sub: 'font-size:70%" dy="0.3em',
+    sup: 'font-size:70%',
+    sub: 'font-size:70%',
     b: 'font-weight:bold',
     i: 'font-style:italic',
     a: 'cursor:pointer',
     span: '',
-    br: '',
     em: 'font-style:italic;font-weight:bold'
 };
 
-// sub/sup: extra tspan with zero-width space to get back to the right baseline
-var TAG_CLOSE = {
-    sup: '<tspan dy="0.42em">&#x200b;</tspan>',
-    sub: '<tspan dy="-0.21em">&#x200b;</tspan>'
+// baseline shifts for sub and sup
+var SHIFT_DY = {
+    sub: '0.3em',
+    sup: '-0.6em'
 };
+// reset baseline by adding a tspan (empty except for a zero-width space)
+// with dy of -70% * SHIFT_DY (because font-size=70%)
+var RESET_DY = {
+    sub: '-0.21em',
+    sup: '0.42em'
+};
+var ZERO_WIDTH_SPACE = '\u200b';
 
 /*
  * Whitelist of protocols in user-supplied urls. Mostly we want to avoid javascript
@@ -264,18 +215,13 @@ var ENTITY_TO_UNICODE = Object.keys(stringMappings.entityToUnicode).map(function
     };
 });
 
-var UNICODE_TO_ENTITY = Object.keys(stringMappings.unicodeToEntity).map(function(k) {
-    return {
-        regExp: new RegExp(k, 'g'),
-        sub: '&' + stringMappings.unicodeToEntity[k] + ';'
-    };
-});
-
 var NEWLINES = /(\r\n?|\n)/g;
 
 var SPLIT_TAGS = /(<[^<>]*>)/;
 
 var ONE_TAG = /<(\/?)([^ >]*)(\s+(.*))?>/i;
+
+var BR_TAG = /<br(\s+.*)?>/i;
 
 /*
  * style and href: pull them out of either single or double quotes. Also
@@ -307,7 +253,6 @@ function getQuotedMatch(_str, re) {
     return match && (match[3] || match[4]);
 }
 
-
 var COLORMATCH = /(^|;)\s*color:/;
 
 exports.plainText = function(_str) {
@@ -331,12 +276,18 @@ function convertEntities(_str) {
     return replaceFromMapObject(_str, ENTITY_TO_UNICODE);
 }
 
-function encodeForHTML(_str) {
-    return replaceFromMapObject(_str, UNICODE_TO_ENTITY);
-}
-
-function convertToSVG(_str) {
-    _str = convertEntities(_str)
+/*
+ * buildSVGText: convert our pseudo-html into SVG tspan elements, and attach these
+ * to containerNode
+ *
+ * @param {svg text element} containerNode: the <text> node to insert this text into
+ * @param {string} str: the pseudo-html string to convert to svg
+ *
+ * @returns {bool}: does the result contain any links? We need to handle the text element
+ *   somewhat differently if it does, so just keep track of this when it happens.
+ */
+function buildSVGText(containerNode, str) {
+    str = convertEntities(str)
         /*
          * Normalize behavior between IE and others wrt newlines and whitespace:pre
          * this combination makes IE barf https://github.com/plotly/plotly.js/issues/746
@@ -346,145 +297,166 @@ function convertToSVG(_str) {
          */
         .replace(NEWLINES, ' ');
 
-    var result = _str
-        .split(SPLIT_TAGS).map(function(d) {
-            var match = d.match(ONE_TAG);
-            var tag = match && match[2].toLowerCase();
-            var tagStyle = TAG_STYLES[tag];
+    var hasLink = false;
 
-            if(tagStyle !== undefined) {
-                var isClose = match[1];
-                if(isClose) return (tag === 'a' ? '</a>' : '</tspan>') + (TAG_CLOSE[tag] || '');
+    // as we're building the text, keep track of what elements we're nested inside
+    // nodeStack will be an array of {node, type, style, href, target, popup}
+    // where only type: 'a' gets the last 3 and node is only added when it's created
+    var nodeStack = [];
+    var currentNode;
+    var currentLine = -1;
 
-                // break: later we'll turn these into newline <tspan>s
-                // but we need to know about all the other tags first
-                if(tag === 'br') return '<br>';
+    function newLine() {
+        currentLine++;
 
-                /**
-                 * extra includes href and any random extra css (that's supported by svg)
-                 * use this like <span style="font-family:Arial"> to change font in the middle
-                 *
-                 * at one point we supported <font family="..." size="..."> but as this isn't even
-                 * valid HTML anymore and we dropped it accidentally for many months, we will not
-                 * resurrect it.
-                 */
+        var lineNode = document.createElementNS(xmlnsNamespaces.svg, 'tspan');
+        d3.select(lineNode).attr({
+            class: 'line',
+            dy: (currentLine * 1.3) + 'em'
+        });
+        containerNode.appendChild(lineNode);
+
+        currentNode = lineNode;
+
+        var oldNodeStack = nodeStack;
+        nodeStack = [{node: lineNode}];
+
+        if(oldNodeStack.length > 1) {
+            for(var i = 1; i < oldNodeStack.length; i++) {
+                enterNode(oldNodeStack[i]);
+            }
+        }
+    }
+
+    function enterNode(nodeSpec) {
+        var type = nodeSpec.type;
+        var nodeAttrs = {};
+        var nodeType;
+
+        if(type === 'a') {
+            nodeType = 'a';
+            var target = nodeSpec.target;
+            var href = nodeSpec.href;
+            var popup = nodeSpec.popup;
+            if(href) {
+                nodeAttrs = {
+                    'xlink:xlink:show': (target === '_blank' || target.charAt(0) !== '_') ? 'new' : 'replace',
+                    target: target,
+                    'xlink:xlink:href': href
+                };
+                if(popup) {
+                    nodeAttrs.onclick = 'window.open("' + href + '","' + target + '","' +
+                        popup + '");return false;';
+                }
+            }
+        }
+        else nodeType = 'tspan';
+
+        if(nodeSpec.style) nodeAttrs.style = nodeSpec.style;
+
+        var newNode = document.createElementNS(xmlnsNamespaces.svg, nodeType);
+
+        if(type === 'sup' || type === 'sub') {
+            addTextNode(currentNode, ZERO_WIDTH_SPACE);
+            currentNode.appendChild(newNode);
+
+            var resetter = document.createElementNS(xmlnsNamespaces.svg, 'tspan');
+            addTextNode(resetter, ZERO_WIDTH_SPACE);
+            d3.select(resetter).attr('dy', RESET_DY[type]);
+            nodeAttrs.dy = SHIFT_DY[type];
+
+            currentNode.appendChild(newNode);
+            currentNode.appendChild(resetter);
+        }
+        else {
+            currentNode.appendChild(newNode);
+        }
+
+        d3.select(newNode).attr(nodeAttrs);
+
+        currentNode = nodeSpec.node = newNode;
+        nodeStack.push(nodeSpec);
+    }
+
+    function addTextNode(node, text) {
+        node.appendChild(document.createTextNode(text));
+    }
+
+    function exitNode(type) {
+        var innerNode = nodeStack.pop();
+        if(type !== innerNode.type) {
+            Lib.log('Start tag <' + innerNode.type + '> doesnt match end tag <' +
+                type + '>. Pretending it did match.', str);
+        }
+        currentNode = nodeStack[nodeStack.length - 1].node;
+    }
+
+    var hasLines = BR_TAG.test(str);
+
+    if(hasLines) newLine();
+    else {
+        currentNode = containerNode;
+        nodeStack = [{node: containerNode}];
+    }
+
+    var parts = str.split(SPLIT_TAGS);
+    for(var i = 0; i < parts.length; i++) {
+        var parti = parts[i];
+        var match = parti.match(ONE_TAG);
+        var tagType = match && match[2].toLowerCase();
+        var tagStyle = TAG_STYLES[tagType];
+
+        if(tagType === 'br') {
+            newLine();
+        }
+        else if(tagStyle === undefined) {
+            addTextNode(currentNode, parti);
+        }
+        else {
+            // tag - open or close
+            if(match[1]) {
+                exitNode(tagType);
+            }
+            else {
                 var extra = match[4];
 
-                var out;
-
-                // anchor is the only tag that doesn't turn into a tspan
-                if(tag === 'a') {
-                    var href = getQuotedMatch(extra, HREFMATCH);
-
-                    out = '<a';
-
-                    if(href) {
-                        // check safe protocols
-                        var dummyAnchor = document.createElement('a');
-                        dummyAnchor.href = href;
-                        if(PROTOCOLS.indexOf(dummyAnchor.protocol) !== -1) {
-                            href = encodeForHTML(href);
-
-                            // look for target and popup specs
-                            var target = encodeForHTML(getQuotedMatch(extra, TARGETMATCH)) || '_blank';
-                            var popup = encodeForHTML(getQuotedMatch(extra, POPUPMATCH));
-
-                            /*
-                             * xlink:show is for backward compatibility only,
-                             * newer browsers allow target just like html links.
-                             */
-                            var xlinkShow = (target === '_blank' || target.charAt(0) !== '_') ?
-                                'new' : 'replace';
-
-                            out += ' xlink:show="' + xlinkShow + '" target="' + target +
-                                '" xlink:href="' + href + '"';
-
-                            if(popup) {
-                                /*
-                                 * Add the window.open call to create a popup
-                                 * Even when popup is specified, we leave the original
-                                 * href and target in place in case javascript is
-                                 * unavailable in this context (like downloaded svg)
-                                 * and for accessibility and so users can see where
-                                 * the link will lead.
-                                 */
-                                out += ' onclick="window.open(\'' + href + '\',\'' + target +
-                                    '\',\'' + popup + '\');return false;"';
-                            }
-                        }
-                    }
-                }
-                else {
-                    out = '<tspan';
-
-                    if(tag === 'sup' || tag === 'sub') {
-                        // sub/sup: extra zero-width space, fixes problem if new line starts with sub/sup
-                        out = '&#x200b;' + out;
-                    }
-                }
+                var nodeSpec = {type: tagType};
 
                 // now add style, from both the tag name and any extra css
                 // Most of the svg css that users will care about is just like html,
                 // but font color is different (uses fill). Let our users ignore this.
                 var css = getQuotedMatch(extra, STYLEMATCH);
                 if(css) {
-                    css = encodeForHTML(css.replace(COLORMATCH, '$1 fill:'));
+                    css = css.replace(COLORMATCH, '$1 fill:');
                     if(tagStyle) css += ';' + tagStyle;
                 }
                 else if(tagStyle) css = tagStyle;
 
-                if(css) return out + ' style="' + css + '">';
+                if(css) nodeSpec.style = css;
 
-                return out + '>';
-            }
-            else {
-                return exports.xml_entity_encode(d).replace(/</g, '&lt;');
-            }
-        });
+                if(tagType === 'a') {
+                    hasLink = true;
 
-    // now deal with line breaks
-    // TODO: this next section attempts to close and reopen tags that
-    // span a line break. But
-    // a) it only closes and reopens one tag, and
-    // b) all tags are treated like equivalent tspans (even <a> which isn't a tspan even now!)
-    // we should really do this in a type-aware way *before* converting to tspans.
-    var indices = [];
-    for(var index = result.indexOf('<br>'); index > 0; index = result.indexOf('<br>', index + 1)) {
-        indices.push(index);
-    }
-    var count = 0;
-    indices.forEach(function(d) {
-        var brIndex = d + count;
-        var search = result.slice(0, brIndex);
-        var previousOpenTag = '';
-        for(var i2 = search.length - 1; i2 >= 0; i2--) {
-            var isTag = search[i2].match(/<(\/?).*>/i);
-            if(isTag && search[i2] !== '<br>') {
-                if(!isTag[1]) previousOpenTag = search[i2];
-                break;
+                    var href = getQuotedMatch(extra, HREFMATCH);
+
+                    if(href) {
+                        // check safe protocols
+                        var dummyAnchor = document.createElement('a');
+                        dummyAnchor.href = href;
+                        if(PROTOCOLS.indexOf(dummyAnchor.protocol) !== -1) {
+                            nodeSpec.href = href;
+                            nodeSpec.target = getQuotedMatch(extra, TARGETMATCH) || '_blank';
+                            nodeSpec.popup = getQuotedMatch(extra, POPUPMATCH);
+                        }
+                    }
+                }
+
+                enterNode(nodeSpec);
             }
         }
-        if(previousOpenTag) {
-            result.splice(brIndex + 1, 0, previousOpenTag);
-            result.splice(brIndex, 0, '</tspan>');
-            count += 2;
-        }
-    });
-
-    var joined = result.join('');
-    var splitted = joined.split(/<br>/gi);
-    if(splitted.length > 1) {
-        result = splitted.map(function(d, i) {
-            // TODO: figure out max font size of this line and alter dy
-            // this requires either:
-            // 1) bringing the base font size into convertToTspans, or
-            // 2) only allowing relative percentage font sizes.
-            // I think #2 is the way to go
-            return '<tspan class="line" dy="' + (i * 1.3) + 'em">' + d + '</tspan>';
-        });
     }
 
-    return result.join('');
+    return hasLink;
 }
 
 function alignHTMLWith(_base, container, options) {
