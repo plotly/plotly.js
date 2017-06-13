@@ -391,7 +391,7 @@ function buildSVGText(containerNode, str) {
         currentNode = nodeStack[nodeStack.length - 1].node;
     }
 
-    var hasLines = str.match(BR_TAG);
+    var hasLines = BR_TAG.test(str);
 
     if(hasLines) newLine();
     else {
