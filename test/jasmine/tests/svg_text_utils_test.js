@@ -11,7 +11,7 @@ describe('svg+text utils', function() {
         function mockTextSVGElement(txt) {
             return d3.select('body')
                 .append('svg')
-                .attr('id', 'text')
+                .classed('text-tester', true)
                 .append('text')
                 .text(txt)
                 .call(util.convertToTspans)
@@ -74,7 +74,7 @@ describe('svg+text utils', function() {
         }
 
         afterEach(function() {
-            d3.select('#text').remove();
+            d3.selectAll('.text-tester').remove();
         });
 
         it('checks for XSS attack in href', function() {
