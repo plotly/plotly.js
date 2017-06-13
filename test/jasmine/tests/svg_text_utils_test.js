@@ -265,24 +265,24 @@ describe('svg+text utils', function() {
         it('supports superscript by itself', function() {
             var node = mockTextSVGElement('<sup>123</sup>');
             expect(node.html()).toBe(
-                '​<tspan style="font-size:70%" dy="-0.6em">123</tspan>' +
-                '<tspan dy="0.42em">​</tspan>');
+                '\u200b<tspan style="font-size:70%" dy="-0.6em">123</tspan>' +
+                '<tspan dy="0.42em">\u200b</tspan>');
         });
 
         it('supports subscript by itself', function() {
             var node = mockTextSVGElement('<sub>123</sub>');
             expect(node.html()).toBe(
-                '​<tspan style="font-size:70%" dy="0.3em">123</tspan>' +
-                '<tspan dy="-0.21em">​</tspan>');
+                '\u200b<tspan style="font-size:70%" dy="0.3em">123</tspan>' +
+                '<tspan dy="-0.21em">\u200b</tspan>');
         });
 
         it('supports superscript and subscript together with normal text', function() {
             var node = mockTextSVGElement('SO<sub>4</sub><sup>2-</sup>');
             expect(node.html()).toBe(
-                'SO​<tspan style="font-size:70%" dy="0.3em">4</tspan>' +
-                '<tspan dy="-0.21em">​</tspan>​' +
+                'SO\u200b<tspan style="font-size:70%" dy="0.3em">4</tspan>' +
+                '<tspan dy="-0.21em">\u200b</tspan>\u200b' +
                 '<tspan style="font-size:70%" dy="-0.6em">2-</tspan>' +
-                '<tspan dy="0.42em">​</tspan>');
+                '<tspan dy="0.42em">\u200b</tspan>');
         });
 
         it('allows one <b> to span <br>s', function() {
@@ -300,12 +300,36 @@ describe('svg+text utils', function() {
         it('allows one <sub> to span <br>s', function() {
             var node = mockTextSVGElement('SO<sub>4<br>44</sub>');
             expect(node.html()).toBe(
-                '<tspan class="line" dy="0em">SO​' +
+                '<tspan class="line" dy="0em">SO\u200b' +
                     '<tspan style="font-size:70%" dy="0.3em">4</tspan>' +
-                    '<tspan dy="-0.21em">​</tspan></tspan>' +
-                '<tspan class="line" dy="1.3em">​' +
+                    '<tspan dy="-0.21em">\u200b</tspan></tspan>' +
+                '<tspan class="line" dy="1.3em">\u200b' +
                     '<tspan style="font-size:70%" dy="0.3em">44</tspan>' +
-                    '<tspan dy="-0.21em">​</tspan></tspan>');
+                    '<tspan dy="-0.21em">\u200b</tspan></tspan>');
+        });
+
+        it('allows nested tags to break at <br>, eventually closed or not', function() {
+            var textCases = [
+                '<b><i><sup>many<br>lines<br>modified',
+                '<b><i><sup>many<br>lines<br>modified</sup></i></b>',
+                '<b><i><sup>many</sup><br><sup>lines</sup></i><br><i><sup>modified',
+            ];
+
+            textCases.forEach(function(textCase) {
+                var node = mockTextSVGElement(textCase);
+                function opener(dy) {
+                    return '<tspan class="line" dy="' + dy + 'em">' +
+                        '<tspan style="font-weight:bold">' +
+                        '<tspan style="font-style:italic">' +
+                        '\u200b<tspan style="font-size:70%" dy="-0.6em">';
+                }
+                var closer = '</tspan><tspan dy="0.42em">\u200b</tspan>' +
+                    '</tspan></tspan></tspan>';
+                expect(node.html()).toBe(
+                    opener(0) + 'many' + closer +
+                    opener(1.3) + 'lines' + closer +
+                    opener(2.6) + 'modified' + closer, textCase);
+            });
         });
     });
 });
