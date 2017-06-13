@@ -106,38 +106,28 @@ module.exports = {
     'diamond-tall-open': {
         unicode: '♢',
     },
-    'diamond-wide': {
-        unicode: '▰',
-    },
-    'diamond-wide-open': {
-        unicode: '▱',
-    },
     'bowtie': {
         unicode: '⧓',
     },
     'bowtie-open': {
         unicode: '⋈',
-        bwFactor: 0.25
+        bwFactor: 0.2
     },
-    'circle-cross': {
+    'circle-cross-open': {
         unicode: '⨁',
-        bwFactor: 0.25
+        bwFactor: 0.2
     },
-    'circle-x': {
+    'circle-x-open': {
         unicode: '⨂',
-        bwFactor: 0.25
+        bwFactor: 0.2
     },
-    'square-cross': {
+    'square-cross-open': {
         unicode: '⊞',
-        bwFactor: 0.25
+        bwFactor: 0.2
     },
-    'square-x': {
+    'square-x-open': {
         unicode: '⊠',
-        bwFactor: 0.25
-    },
-    'diamond-cross': {
-        unicode: '⟠',
-        bwFactor: 0.25
+        bwFactor: 0.2
     },
     'diamond-x': {
         unicode: '❖',
@@ -149,13 +139,6 @@ module.exports = {
     },
     'cross-thin-open': {
         unicode: '+',
-    },
-    'x-thin': {
-        unicode: '╳',
-        noBorder: true
-    },
-    'x-thin-open': {
-        unicode: '╳',
     },
     'asterisk': {
         unicode: '✳',
@@ -180,22 +163,6 @@ module.exports = {
         unicode: 'Y',
         noBorder: true
     },
-    'y-left': {
-        unicode: '≺',
-        noBorder: true
-    },
-    'y-left-open': {
-        unicode: '≺',
-        noBorder: true
-    },
-    'y-right': {
-        unicode: '≻',
-        noBorder: true
-    },
-    'y-right-open': {
-        unicode: '≻',
-        noBorder: true
-    },
     'line-ew': {
         unicode: '─',
         noBorder: true
@@ -210,22 +177,6 @@ module.exports = {
     },
     'line-ns-open': {
         unicode: '│',
-        noBorder: true
-    },
-    'line-ne': {
-        unicode: '╱',
-        noBorder: true
-    },
-    'line-ne-open': {
-        unicode: '╱',
-        noBorder: true
-    },
-    'line-nw': {
-        unicode: '╲',
-        noBorder: true
-    },
-    'line-nw-open': {
-        unicode: '╲',
         noBorder: true
     }
 };

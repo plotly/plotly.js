@@ -514,11 +514,11 @@ proto.updateFancy = function(options) {
             if(isSymbolOpen(symbol)) {
                 _colors = colors;
                 _borderColors = colors;
-                bwFactor = 0.25;
+                bwFactor = symbolSpec.bwFactor || 0.25;
             } else if(symbolSpec.noBorder) {
                 _colors = borderColors;
                 _borderColors = borderColors;
-                bwFactor = 0.25;
+                bwFactor = symbolSpec.bwFactor || 0.25;
             } else {
                 _colors = colors;
                 _borderColors = borderColors;
