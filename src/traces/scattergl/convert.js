@@ -508,12 +508,13 @@ proto.updateFancy = function(options) {
         var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len);
         var borderWidths = convertNumber(markerOpts.line.width, len);
         var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len);
-        var index, symbol, symbolSpec, _colors, _borderColors, bwFactor, isOpen;
+        var index, size, symbol, symbolSpec, isOpen, _colors, _borderColors, bw, minBorderWidth;
 
         sizes = convertArray(markerSizeFunc, markerOpts.size, len);
 
         for(i = 0; i < pId; ++i) {
             index = idToIndex[i];
+
             symbol = symbols[index];
             symbolSpec = MARKER_SYMBOLS[symbol];
             isOpen = isSymbolOpen(symbol);
@@ -530,19 +531,15 @@ proto.updateFancy = function(options) {
                 _borderColors = borderColors;
             }
 
-            if(symbolSpec.bwFactor) {
-                bwFactor = symbolSpec.bwFactor;
-            } else if(symbolSpec.noBorder) {
-                bwFactor = 0.25;
-            } else if(symbolSpec.noFill) {
-                bwFactor = 0.1;
-            } else {
-                bwFactor = 0.5;
-            }
+            // See  https://github.com/plotly/plotly.js/pull/1781#discussion_r121820798
+            // for more info on this logic
+            size = sizes[index];
+            bw = borderWidths[index];
+            minBorderWidth = (symbolSpec.noBorder || symbolSpec.noFill) ? 0.1 * size : 0;
 
-            this.scatter.options.sizes[i] = 4.0 * sizes[index];
+            this.scatter.options.sizes[i] = 4.0 * size;
             this.scatter.options.glyphs[i] = symbolSpec.unicode;
-            this.scatter.options.borderWidths[i] = bwFactor * borderWidths[index];
+            this.scatter.options.borderWidths[i] = 0.5 * ((bw > minBorderWidth) ? bw - minBorderWidth : 0);
 
             if(isOpen && !symbolSpec.noBorder && !symbolSpec.noFill) {
                 fillColor(this.scatter.options.colors, transparent, i, 0);

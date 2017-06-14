@@ -70,8 +70,7 @@ var symbolsWithOpenSupport = {
         unicode: '⧓'
     },
     'diamond-x': {
-        unicode: '❖',
-        bwFactor: 0.25
+        unicode: '❖'
     },
     'cross-thin': {
         unicode: '+',
