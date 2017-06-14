@@ -12,7 +12,7 @@ var Scatter3D = {};
 
 Scatter3D.plot = require('./convert');
 Scatter3D.attributes = require('./attributes');
-Scatter3D.markerSymbols = require('../../constants/gl_markers');
+Scatter3D.markerSymbols = require('../../constants/gl3d_markers');
 Scatter3D.supplyDefaults = require('./defaults');
 Scatter3D.colorbar = require('../scatter/colorbar');
 Scatter3D.calc = require('./calc');

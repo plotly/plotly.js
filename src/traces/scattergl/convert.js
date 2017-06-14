@@ -25,11 +25,11 @@ var formatColor = require('../../lib/gl_format_color');
 var subTypes = require('../scatter/subtypes');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var getTraceColor = require('../scatter/get_trace_color');
-var MARKER_SYMBOLS = require('../../constants/gl_markers');
+var MARKER_SYMBOLS = require('../../constants/gl2d_markers');
 var DASHES = require('../../constants/gl2d_dashes');
 
 var AXES = ['xaxis', 'yaxis'];
-
+var transparent = [0, 0, 0, 0];
 
 function LineWithMarkers(scene, uid) {
     this.scene = scene;
@@ -214,7 +214,7 @@ function _convertArray(convert, data, count) {
 var convertNumber = convertArray.bind(null, function(x) { return +x; });
 var convertColorBase = convertArray.bind(null, str2RGBArray);
 var convertSymbol = convertArray.bind(null, function(x) {
-    return MARKER_SYMBOLS[x] || '●';
+    return MARKER_SYMBOLS[x] ? x : 'circle';
 });
 
 function convertColor(color, opacity, count) {
@@ -251,8 +251,17 @@ function _convertColor(colors, opacities, count) {
     return result;
 }
 
-proto.update = function(options) {
+function isSymbolOpen(symbol) {
+    return symbol.split('-open')[1] === '';
+}
 
+function fillColor(colorIn, colorOut, offsetIn, offsetOut) {
+    for(var j = 0; j < 4; j++) {
+        colorIn[4 * offsetIn + j] = colorOut[4 * offsetOut + j];
+    }
+}
+
+proto.update = function(options) {
     if(options.visible !== true) {
         this.isVisible = false;
         this.hasLines = false;
@@ -441,7 +450,7 @@ proto.updateFancy = function(options) {
     var getX = (xaxis.type === 'log') ? xaxis.d2l : function(x) { return x; };
     var getY = (yaxis.type === 'log') ? yaxis.d2l : function(y) { return y; };
 
-    var i, j, xx, yy, ex0, ex1, ey0, ey1;
+    var i, xx, yy, ex0, ex1, ey0, ey1;
 
     for(i = 0; i < len; ++i) {
         this.xData[i] = xx = getX(x[i]);
@@ -491,29 +500,53 @@ proto.updateFancy = function(options) {
         this.scatter.options.colors = new Array(pId * 4);
         this.scatter.options.borderColors = new Array(pId * 4);
 
-        var markerSizeFunc = makeBubbleSizeFn(options),
-            markerOpts = options.marker,
-            markerOpacity = markerOpts.opacity,
-            traceOpacity = options.opacity,
-            colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len),
-            glyphs = convertSymbol(markerOpts.symbol, len),
-            borderWidths = convertNumber(markerOpts.line.width, len),
-            borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len),
-            index;
+        var markerSizeFunc = makeBubbleSizeFn(options);
+        var markerOpts = options.marker;
+        var markerOpacity = markerOpts.opacity;
+        var traceOpacity = options.opacity;
+        var symbols = convertSymbol(markerOpts.symbol, len);
+        var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len);
+        var borderWidths = convertNumber(markerOpts.line.width, len);
+        var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len);
+        var index, size, symbol, symbolSpec, isOpen, _colors, _borderColors, bw, minBorderWidth;
 
         sizes = convertArray(markerSizeFunc, markerOpts.size, len);
 
         for(i = 0; i < pId; ++i) {
             index = idToIndex[i];
 
-            this.scatter.options.sizes[i] = 4.0 * sizes[index];
-            this.scatter.options.glyphs[i] = glyphs[index];
-            this.scatter.options.borderWidths[i] = 0.5 * borderWidths[index];
+            symbol = symbols[index];
+            symbolSpec = MARKER_SYMBOLS[symbol];
+            isOpen = isSymbolOpen(symbol);
 
-            for(j = 0; j < 4; ++j) {
-                this.scatter.options.colors[4 * i + j] = colors[4 * index + j];
-                this.scatter.options.borderColors[4 * i + j] = borderColors[4 * index + j];
+            if(symbolSpec.noBorder && !isOpen) {
+                _colors = borderColors;
+            } else {
+                _colors = colors;
             }
+
+            if(isOpen) {
+                _borderColors = colors;
+            } else {
+                _borderColors = borderColors;
+            }
+
+            // See  https://github.com/plotly/plotly.js/pull/1781#discussion_r121820798
+            // for more info on this logic
+            size = sizes[index];
+            bw = borderWidths[index];
+            minBorderWidth = (symbolSpec.noBorder || symbolSpec.noFill) ? 0.1 * size : 0;
+
+            this.scatter.options.sizes[i] = 4.0 * size;
+            this.scatter.options.glyphs[i] = symbolSpec.unicode;
+            this.scatter.options.borderWidths[i] = 0.5 * ((bw > minBorderWidth) ? bw - minBorderWidth : 0);
+
+            if(isOpen && !symbolSpec.noBorder && !symbolSpec.noFill) {
+                fillColor(this.scatter.options.colors, transparent, i, 0);
+            } else {
+                fillColor(this.scatter.options.colors, _colors, i, index);
+            }
+            fillColor(this.scatter.options.borderColors, _borderColors, i, index);
         }
 
         this.fancyScatter.update();
