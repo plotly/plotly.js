@@ -507,7 +507,9 @@ describe('Test gl2d lasso/select:', function() {
         _mock.layout.dragmode = 'select';
         gd = createGraphDiv();
 
-        Plotly.plot(gd, _mock).then(function() {
+        Plotly.plot(gd, _mock)
+        .then(delay(100))
+        .then(function() {
             expect(countGlObjects()).toBe(1, 'has on gl-scatter2d object');
 
             return select(selectPath);
@@ -531,7 +533,9 @@ describe('Test gl2d lasso/select:', function() {
         _mock.layout.dragmode = 'lasso';
         gd = createGraphDiv();
 
-        Plotly.plot(gd, _mock).then(function() {
+        Plotly.plot(gd, _mock)
+        .then(delay(100))
+        .then(function() {
             expect(countGlObjects()).toBe(1);
 
             return select(lassoPath2);
@@ -555,7 +559,9 @@ describe('Test gl2d lasso/select:', function() {
         _mock.layout.dragmode = 'select';
         gd = createGraphDiv();
 
-        Plotly.plot(gd, _mock).then(function() {
+        Plotly.plot(gd, _mock)
+        .then(delay(100))
+        .then(function() {
             expect(countGlObjects()).toBe(2, 'has a gl-line2d and a gl-scatter2d-sdf');
 
             return select(selectPath);
@@ -575,7 +581,9 @@ describe('Test gl2d lasso/select:', function() {
         _mock.layout.dragmode = 'lasso';
         gd = createGraphDiv();
 
-        Plotly.plot(gd, _mock).then(function() {
+        Plotly.plot(gd, _mock)
+        .then(delay(100))
+        .then(function() {
             expect(countGlObjects()).toBe(2, 'has a gl-line2d and a gl-scatter2d-sdf');
 
             return select(lassoPath);
