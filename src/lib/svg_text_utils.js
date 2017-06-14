@@ -30,7 +30,10 @@ exports.convertToTspans = function(_context, gd, _callback) {
 
     // Until we get tex integrated more fully (so it can be used along with non-tex)
     // allow some elements to prohibit it by attaching 'data-notex' to the original
-    var tex = (!_context.attr('data-notex')) && str.match(FIND_TEX);
+    var tex = (!_context.attr('data-notex')) &&
+        str.match(FIND_TEX) &&
+        (typeof MathJax !== 'undefined');
+
     var parent = d3.select(_context.node().parentNode);
     if(parent.empty()) return;
     var svgClass = (_context.attr('class')) ? _context.attr('class').split(' ')[0] : 'text';
