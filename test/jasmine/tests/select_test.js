@@ -42,6 +42,23 @@ describe('select box and lasso', function() {
         expect(actual.y).toBeCloseToArray(expected.y, PRECISION);
     }
 
+    function assertEventData(actual, expected, msg) {
+        expect(actual.length).toBe(expected.length, msg + ' same number of pts');
+
+        expected.forEach(function(e, i) {
+            var a = actual[i];
+            var m = msg + ' (pt ' + i + ')';
+
+            expect(a.data).toBeDefined(m + ' has data ref');
+            expect(a.fullData).toBeDefined(m + ' has fullData ref');
+            expect(Object.keys(a).length - 2).toBe(Object.keys(e).length, m + ' has correct number of keys');
+
+            Object.keys(e).forEach(function(k) {
+                expect(a[k]).toBe(e[k], m + ' ' + k);
+            });
+        });
+    }
+
     describe('select elements', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.dragmode = 'select';
@@ -143,6 +160,10 @@ describe('select box and lasso', function() {
     describe('select events', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.dragmode = 'select';
+        mockCopy.data[0].ids = mockCopy.data[0].x
+            .map(function(v) { return 'id-' + v; });
+        mockCopy.data[0].customdata = mockCopy.data[0].y
+            .map(function(v) { return 'customdata-' + v; });
 
         var gd;
         beforeEach(function(done) {
@@ -175,38 +196,41 @@ describe('select box and lasso', function() {
             drag(selectPath);
 
             expect(selectingCnt).toEqual(1, 'with the correct selecting count');
-            expect(selectingData.points).toEqual([{
+            assertEventData(selectingData.points, [{
                 curveNumber: 0,
                 pointNumber: 0,
                 x: 0.002,
                 y: 16.25,
-                id: undefined
+                id: 'id-0.002',
+                customdata: 'customdata-16.25'
             }, {
                 curveNumber: 0,
                 pointNumber: 1,
                 x: 0.004,
                 y: 12.5,
-                id: undefined
-            }], 'with the correct selecting points');
+                id: 'id-0.004',
+                customdata: 'customdata-12.5'
+            }], 'with the correct selecting points (1)');
             assertRange(selectingData.range, {
                 x: [0.002000, 0.0046236],
                 y: [0.10209191961595454, 24.512223978291406]
             }, 'with the correct selecting range');
-
             expect(selectedCnt).toEqual(1, 'with the correct selected count');
-            expect(selectedData.points).toEqual([{
+            assertEventData(selectedData.points, [{
                 curveNumber: 0,
                 pointNumber: 0,
                 x: 0.002,
                 y: 16.25,
-                id: undefined
+                id: 'id-0.002',
+                customdata: 'customdata-16.25'
             }, {
                 curveNumber: 0,
                 pointNumber: 1,
                 x: 0.004,
                 y: 12.5,
-                id: undefined
-            }], 'with the correct selected points');
+                id: 'id-0.004',
+                customdata: 'customdata-12.5'
+            }], 'with the correct selected points (2)');
             assertRange(selectedData.range, {
                 x: [0.002000, 0.0046236],
                 y: [0.10209191961595454, 24.512223978291406]
@@ -255,22 +279,20 @@ describe('select box and lasso', function() {
             drag(lassoPath);
 
             expect(selectingCnt).toEqual(3, 'with the correct selecting count');
-            expect(selectingData.points).toEqual([{
+            assertEventData(selectingData.points, [{
                 curveNumber: 0,
                 pointNumber: 10,
                 x: 0.099,
-                y: 2.75,
-                id: undefined
-            }], 'with the correct selecting points');
+                y: 2.75
+            }], 'with the correct selecting points (1)');
 
             expect(selectedCnt).toEqual(1, 'with the correct selected count');
-            expect(selectedData.points).toEqual([{
+            assertEventData(selectedData.points, [{
                 curveNumber: 0,
                 pointNumber: 10,
                 x: 0.099,
                 y: 2.75,
-                id: undefined
-            }], 'with the correct selected points');
+            }], 'with the correct selected points (2)');
 
             doubleClick(250, 200).then(function() {
                 expect(doubleClickData).toBe(null, 'with the correct deselect data');

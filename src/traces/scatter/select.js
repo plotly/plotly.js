@@ -19,7 +19,6 @@ module.exports = function selectPoints(searchInfo, polygon) {
         ya = searchInfo.yaxis,
         selection = [],
         trace = cd[0].trace,
-        curveNumber = trace.index,
         marker = trace.marker,
         i,
         di,
@@ -43,12 +42,9 @@ module.exports = function selectPoints(searchInfo, polygon) {
 
             if(polygon.contains([x, y])) {
                 selection.push({
-                    curveNumber: curveNumber,
                     pointNumber: i,
                     x: di.x,
-                    y: di.y,
-                    // TODO generalize with hover/click data handler
-                    id: di.id
+                    y: di.y
                 });
                 di.dim = 0;
             }
