@@ -865,6 +865,9 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
     }
 
     if(visible) {
+        coerce('customdata');
+        coerce('ids');
+
         var _module = plots.getModule(traceOut);
         traceOut._module = _module;
 
