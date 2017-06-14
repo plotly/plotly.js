@@ -30,7 +30,7 @@ var DASHES = require('../../constants/gl2d_dashes');
 
 var AXES = ['xaxis', 'yaxis'];
 var DESELECTDIM = 0.2;
-var transparent = [0, 0, 0, 0];
+var TRANSPARENT = [0, 0, 0, 0];
 
 function LineWithMarkers(scene, uid) {
     this.scene = scene;
@@ -259,10 +259,14 @@ function isSymbolOpen(symbol) {
     return symbol.split('-open')[1] === '';
 }
 
-function fillColor(colorIn, colorOut, offsetIn, offsetOut) {
-    for(var j = 0; j < 4; j++) {
+function fillColor(colorIn, colorOut, offsetIn, offsetOut, isDimmed) {
+    var dim = isDimmed ? DESELECTDIM : 1;
+    var j;
+
+    for(j = 0; j < 3; j++) {
         colorIn[4 * offsetIn + j] = colorOut[4 * offsetOut + j];
     }
+    colorIn[4 * offsetIn + j] = dim * colorOut[4 * offsetOut + j];
 }
 
 proto.update = function(options, cdscatter) {
@@ -582,7 +586,7 @@ proto.updateFancy = function(options) {
         var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len);
         var borderWidths = convertNumber(markerOpts.line.width, len);
         var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len);
-        var index, size, symbol, symbolSpec, isOpen, _colors, _borderColors, bw, minBorderWidth;
+        var index, size, symbol, symbolSpec, isOpen, isDimmed, _colors, _borderColors, bw, minBorderWidth;
 
         sizes = convertArray(markerSizeFunc, markerOpts.size, len);
 
@@ -592,6 +596,7 @@ proto.updateFancy = function(options) {
             symbol = symbols[index];
             symbolSpec = MARKER_SYMBOLS[symbol];
             isOpen = isSymbolOpen(symbol);
+            isDimmed = selIds && !selIds[index];
 
             if(symbolSpec.noBorder && !isOpen) {
                 _colors = borderColors;
@@ -615,23 +620,12 @@ proto.updateFancy = function(options) {
             this.scatter.options.glyphs[i] = symbolSpec.unicode;
             this.scatter.options.borderWidths[i] = 0.5 * ((bw > minBorderWidth) ? bw - minBorderWidth : 0);
 
-            // FIXME
-
-            for(j = 0; j < 4; ++j) {
-                var color = colors[4 * index + j];
-                if(selIds && !selIds[index] && j === 3) {
-                    color *= DESELECTDIM;
-                }
-                this.scatter.options.colors[4 * i + j] = color;
-                this.scatter.options.borderColors[4 * i + j] = borderColors[4 * index + j];
-            }
-
             if(isOpen && !symbolSpec.noBorder && !symbolSpec.noFill) {
-                fillColor(this.scatter.options.colors, transparent, i, 0);
+                fillColor(this.scatter.options.colors, TRANSPARENT, i, 0);
             } else {
-                fillColor(this.scatter.options.colors, _colors, i, index);
+                fillColor(this.scatter.options.colors, _colors, i, index, isDimmed);
             }
-            fillColor(this.scatter.options.borderColors, _borderColors, i, index);
+            fillColor(this.scatter.options.borderColors, _borderColors, i, index, isDimmed);
         }
 
         // prevent scatter from resnapping points
