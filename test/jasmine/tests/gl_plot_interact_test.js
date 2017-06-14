@@ -72,17 +72,21 @@ describe('Test gl3d plots', function() {
         expect(text.style('fill')).toEqual(fontColor, 'font.color');
     }
 
-    function assertEventData(x, y, z, curveNumber, pointNumber) {
-        expect(Object.keys(ptData)).toEqual([
+    function assertEventData(x, y, z, curveNumber, pointNumber, extra) {
+        expect(Object.keys(ptData)).toEqual(jasmine.arrayContaining([
             'x', 'y', 'z',
             'data', 'fullData', 'curveNumber', 'pointNumber'
-        ], 'correct hover data fields');
+        ]), 'correct hover data fields');
 
         expect(ptData.x).toEqual(x, 'x val');
         expect(ptData.y).toEqual(y, 'y val');
         expect(ptData.z).toEqual(z, 'z val');
         expect(ptData.curveNumber).toEqual(curveNumber, 'curveNumber');
         expect(ptData.pointNumber).toEqual(pointNumber, 'pointNumber');
+
+        Object.keys(extra || {}).forEach(function(k) {
+            expect(ptData[k]).toBe(extra[k], k + ' val');
+        });
     }
 
     beforeEach(function() {
@@ -114,7 +118,12 @@ describe('Test gl3d plots', function() {
         .then(delay)
         .then(function() {
             assertHoverText('x: 140.72', 'y: −96.97', 'z: −96.97');
-            assertEventData(140.72, -96.97, -96.97, 0, 2);
+            assertEventData(140.72, -96.97, -96.97, 0, 2, {
+                'marker.symbol': 'cross',
+                'marker.size': 30,
+                'marker.color': 'orange',
+                'marker.line.color': undefined
+            });
             assertHoverLabelStyle('rgb(0, 0, 255)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)');
 
             return Plotly.restyle(gd, {
@@ -239,6 +248,10 @@ describe('Test gl3d plots', function() {
         })
         .then(_hover)
         .then(function() {
+            assertEventData(1, 2, 43, 0, [1, 2], {
+                'hoverinfo': 'y',
+                'hoverlabel.font.color': 'cyan'
+            });
             assertHoverLabelStyle('rgb(255, 255, 255)', 'rgb(68, 68, 68)', 9, 'Arial', 'rgb(0, 255, 255)');
 
             var label = d3.selectAll('g.hovertext');
