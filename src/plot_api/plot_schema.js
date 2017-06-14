@@ -157,7 +157,9 @@ exports.findArrayAttributes = function(trace) {
     }
 
     exports.crawl(baseAttributes, callback);
-    exports.crawl(trace._module.attributes, callback);
+    if(trace._module && trace._module.attributes) {
+        exports.crawl(trace._module.attributes, callback);
+    }
 
     if(trace.transforms) {
         var transforms = trace.transforms;
@@ -177,9 +179,8 @@ exports.findArrayAttributes = function(trace) {
     // At the moment, we need this block to make sure that
     // ohlc and candlestick 'open', 'high', 'low', 'close' can be
     // used with filter ang groupby transforms.
-    if(trace._fullInput) {
+    if(trace._fullInput && trace._fullInput._module && trace._fullInput._module.attributes) {
         exports.crawl(trace._fullInput._module.attributes, callback);
-
         arrayAttributes = Lib.filterUnique(arrayAttributes);
     }
 

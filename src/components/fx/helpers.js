@@ -87,11 +87,11 @@ function quadrature(dx, dy) {
 
 /** Appends values inside array attributes corresponding to given point number
  *
- * @param {object} pointData : point data object (gets mutated here
+ * @param {object} pointData : point data object (gets mutated here)
  * @param {object} trace : full trace object
- * @param {number} ptNumber : point number
+ * @param {number} pointNumber : point number
  */
-exports.appendArrayPointValue = function(pointData, trace, ptNumber) {
+exports.appendArrayPointValue = function(pointData, trace, pointNumber) {
     var arrayAttrs = trace._arrayAttrs;
 
     for(var i = 0; i < arrayAttrs.length; i++) {
@@ -99,11 +99,14 @@ exports.appendArrayPointValue = function(pointData, trace, ptNumber) {
         var key;
 
         if(astr === 'ids') key = 'id';
-        else if(astr === 'location') key = 'location';
+        else if(astr === 'locations') key = 'location';
         else key = astr;
 
         if(pointData[key] === undefined) {
-            pointData[key] = Lib.nestedProperty(trace, astr).get()[ptNumber];
+            var val = Lib.nestedProperty(trace, astr).get();
+            pointData[key] = Array.isArray(pointNumber) ?
+                val[pointNumber[0]][pointNumber[1]] :
+                val[pointNumber];
         }
     }
 };
