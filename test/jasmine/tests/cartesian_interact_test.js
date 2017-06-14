@@ -27,7 +27,9 @@ describe('zoom box element', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.dragmode = 'zoom';
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+        .catch(failTest)
+        .then(done);
     });
 
     afterEach(destroyGraphDiv);
@@ -74,9 +76,9 @@ describe('main plot pan', function() {
             relayoutCallback = jasmine.createSpy('relayoutCallback');
 
             gd.on('plotly_relayout', relayoutCallback);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     afterEach(destroyGraphDiv);
@@ -107,7 +109,8 @@ describe('main plot pan', function() {
         expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
         expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
 
-        setTimeout(function() {
+        delay(MODEBAR_DELAY)()
+        .then(function() {
 
             expect(relayoutCallback).toHaveBeenCalledTimes(1);
             relayoutCallback.calls.reset();
@@ -165,25 +168,26 @@ describe('main plot pan', function() {
 
             expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
             expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
-
-            setTimeout(function() {
-
-                expect(relayoutCallback).toHaveBeenCalledTimes(6); // X and back; Y and back; XY and back
-
-                done();
-
-            }, MODEBAR_DELAY);
-
-        }, MODEBAR_DELAY);
+        })
+        .then(delay(MODEBAR_DELAY))
+        .then(function() {
+            // X and back; Y and back; XY and back
+            expect(relayoutCallback).toHaveBeenCalledTimes(6);
+        })
+        .catch(failTest)
+        .then(done);
     });
 });
 
 describe('axis zoom/pan and main plot zoom', function() {
     var gd;
 
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
     beforeEach(function() {
         gd = createGraphDiv();
-        jasmine.addMatchers(customMatchers);
     });
 
     afterEach(destroyGraphDiv);
@@ -208,6 +212,7 @@ describe('axis zoom/pan and main plot zoom', function() {
         // each subplot is 200x200 px
         // if constrainScales is used, x/x2/y/y2 are linked, as are x3/y3
         // layoutEdits are other changes to make to the layout
+
         var data = [
             {y: [0, 1, 2]},
             {y: [0, 1, 2], xaxis: 'x2'},
@@ -239,13 +244,9 @@ describe('axis zoom/pan and main plot zoom', function() {
 
         if(layoutEdits) Lib.extendDeep(layout, layoutEdits);
 
-        return Plotly.newPlot(gd, data, layout, config).then(function() {
-            [
-                'xaxis', 'yaxis', 'xaxis2', 'yaxis2', 'xaxis3', 'yaxis3'
-            ].forEach(function(axName) {
-                expect(gd._fullLayout[axName].range).toEqual(initialRange);
-            });
-
+        return Plotly.newPlot(gd, data, layout, config)
+        .then(checkRanges({}, 'initial'))
+        .then(function() {
             expect(Object.keys(gd._fullLayout._plots))
                 .toEqual(['xy', 'xy2', 'x2y', 'x3y3']);
 
@@ -273,10 +274,16 @@ describe('axis zoom/pan and main plot zoom', function() {
     }
 
     function doDblClick(subplot, directions) {
-        return function() { return doubleClick(getDragger(subplot, directions)); };
+        return function() {
+            gd._mouseDownTime = 0; // ensure independence from any previous clicks
+            return doubleClick(getDragger(subplot, directions));
+        };
     }
 
-    function checkRanges(newRanges) {
+    function checkRanges(newRanges, msg) {
+        msg = msg || '';
+        if(msg) msg = ' - ' + msg;
+
         return function() {
             var allRanges = {
                 xaxis: initialRange.slice(),
@@ -289,8 +296,8 @@ describe('axis zoom/pan and main plot zoom', function() {
             Lib.extendDeep(allRanges, newRanges);
 
             for(var axName in allRanges) {
-                expect(gd.layout[axName].range).toBeCloseToArray(allRanges[axName], 3, axName);
-                expect(gd._fullLayout[axName].range).toBeCloseToArray(gd.layout[axName].range, 6, axName);
+                expect(gd.layout[axName].range).toBeCloseToArray(allRanges[axName], 3, axName + msg);
+                expect(gd._fullLayout[axName].range).toBeCloseToArray(gd.layout[axName].range, 6, axName + msg);
             }
         };
     }
@@ -299,45 +306,45 @@ describe('axis zoom/pan and main plot zoom', function() {
         makePlot()
         // zoombox into a small point - drag starts from the center unless you specify otherwise
         .then(doDrag('xy', 'nsew', 100, -50))
-        .then(checkRanges({xaxis: [1, 2], yaxis: [1, 1.5]}))
+        .then(checkRanges({xaxis: [1, 2], yaxis: [1, 1.5]}, 'zoombox'))
 
         // first dblclick reverts to saved ranges
         .then(doDblClick('xy', 'nsew'))
-        .then(checkRanges())
+        .then(checkRanges({}, 'dblclick #1'))
         // next dblclick autoscales (just that plot)
         .then(doDblClick('xy', 'nsew'))
-        .then(checkRanges({xaxis: autoRange, yaxis: autoRange}))
+        .then(checkRanges({xaxis: autoRange, yaxis: autoRange}, 'dblclick #2'))
         // dblclick on one axis reverts just that axis to saved
         .then(doDblClick('xy', 'ns'))
-        .then(checkRanges({xaxis: autoRange}))
+        .then(checkRanges({xaxis: autoRange}, 'dblclick y'))
         // dblclick the plot at this point (one axis default, the other autoscaled)
         // and the whole thing is reverted to default
         .then(doDblClick('xy', 'nsew'))
-        .then(checkRanges())
+        .then(checkRanges({}, 'dblclick #3'))
 
         // 1D zoombox - use the linked subplots
         .then(doDrag('xy2', 'nsew', -100, 0))
-        .then(checkRanges({xaxis: [0, 1]}))
+        .then(checkRanges({xaxis: [0, 1]}, 'xy2 zoombox'))
         .then(doDrag('x2y', 'nsew', 0, 50))
-        .then(checkRanges({xaxis: [0, 1], yaxis: [0.5, 1]}))
+        .then(checkRanges({xaxis: [0, 1], yaxis: [0.5, 1]}, 'x2y zoombox'))
         // dblclick on linked subplots just changes the linked axis
         .then(doDblClick('xy2', 'nsew'))
-        .then(checkRanges({yaxis: [0.5, 1]}))
+        .then(checkRanges({yaxis: [0.5, 1]}, 'dblclick xy2'))
         .then(doDblClick('x2y', 'nsew'))
-        .then(checkRanges())
+        .then(checkRanges({}, 'dblclick x2y'))
         // drag on axis ends - all these 1D draggers the opposite axis delta is irrelevant
         .then(doDrag('xy2', 'n', 53, 100))
-        .then(checkRanges({yaxis2: [0, 4]}))
+        .then(checkRanges({yaxis2: [0, 4]}, 'drag y2n'))
         .then(doDrag('xy', 's', 53, -100))
-        .then(checkRanges({yaxis: [-2, 2], yaxis2: [0, 4]}))
+        .then(checkRanges({yaxis: [-2, 2], yaxis2: [0, 4]}, 'drag ys'))
         // expanding drag is highly nonlinear
         .then(doDrag('x2y', 'e', 50, 53))
-        .then(checkRanges({yaxis: [-2, 2], yaxis2: [0, 4], xaxis2: [0, 0.8751]}))
+        .then(checkRanges({yaxis: [-2, 2], yaxis2: [0, 4], xaxis2: [0, 0.8751]}, 'drag x2e'))
         .then(doDrag('x2y', 'w', -50, 53))
-        .then(checkRanges({yaxis: [-2, 2], yaxis2: [0, 4], xaxis2: [0.4922, 0.8751]}))
+        .then(checkRanges({yaxis: [-2, 2], yaxis2: [0, 4], xaxis2: [0.4922, 0.8751]}, 'drag x2w'))
         // reset all from the modebar
         .then(function() { selectButton(gd._fullLayout._modeBar, 'resetScale2d').click(); })
-        .then(checkRanges())
+        .then(checkRanges({}, 'final reset'))
         .catch(failTest)
         .then(done);
     });
@@ -346,20 +353,20 @@ describe('axis zoom/pan and main plot zoom', function() {
         makePlot()
         // drag axis middles
         .then(doDrag('x3y3', 'ew', 100, 0))
-        .then(checkRanges({xaxis3: [-1, 1]}))
+        .then(checkRanges({xaxis3: [-1, 1]}, 'drag x3ew'))
         .then(doDrag('x3y3', 'ns', 53, 100))
-        .then(checkRanges({xaxis3: [-1, 1], yaxis3: [1, 3]}))
+        .then(checkRanges({xaxis3: [-1, 1], yaxis3: [1, 3]}, 'drag y3ns'))
         // drag corners
         .then(doDrag('x3y3', 'ne', -100, 100))
-        .then(checkRanges({xaxis3: [-1, 3], yaxis3: [1, 5]}))
+        .then(checkRanges({xaxis3: [-1, 3], yaxis3: [1, 5]}, 'zoom x3y3ne'))
         .then(doDrag('x3y3', 'sw', 100, -100))
-        .then(checkRanges({xaxis3: [-5, 3], yaxis3: [-3, 5]}))
+        .then(checkRanges({xaxis3: [-5, 3], yaxis3: [-3, 5]}, 'zoom x3y3sw'))
         .then(doDrag('x3y3', 'nw', -50, -50))
-        .then(checkRanges({xaxis3: [-0.5006, 3], yaxis3: [-3, 0.5006]}))
+        .then(checkRanges({xaxis3: [-0.5006, 3], yaxis3: [-3, 0.5006]}, 'zoom x3y3nw'))
         .then(doDrag('x3y3', 'se', 50, 50))
-        .then(checkRanges({xaxis3: [-0.5006, 1.0312], yaxis3: [-1.0312, 0.5006]}))
+        .then(checkRanges({xaxis3: [-0.5006, 1.0312], yaxis3: [-1.0312, 0.5006]}, 'zoom x3y3se'))
         .then(doDblClick('x3y3', 'nsew'))
-        .then(checkRanges())
+        .then(checkRanges({}, 'reset x3y3'))
         // scroll wheel
         .then(function() {
             var mainDrag = getDragger('xy', 'nsew');
@@ -367,21 +374,21 @@ describe('axis zoom/pan and main plot zoom', function() {
             mouseEvent('scroll', mainDragCoords.x, mainDragCoords.y, {deltaY: 20, element: mainDrag});
         })
         .then(delay(constants.REDRAWDELAY + 10))
-        .then(checkRanges({xaxis: [-0.4428, 2], yaxis: [0, 2.4428]}))
+        .then(checkRanges({xaxis: [-0.4428, 2], yaxis: [0, 2.4428]}, 'xy main scroll'))
         .then(function() {
             var ewDrag = getDragger('xy', 'ew');
             var ewDragCoords = getNodeCoords(ewDrag);
             mouseEvent('scroll', ewDragCoords.x - 50, ewDragCoords.y, {deltaY: -20, element: ewDrag});
         })
         .then(delay(constants.REDRAWDELAY + 10))
-        .then(checkRanges({xaxis: [-0.3321, 1.6679], yaxis: [0, 2.4428]}))
+        .then(checkRanges({xaxis: [-0.3321, 1.6679], yaxis: [0, 2.4428]}, 'x scroll'))
         .then(function() {
             var nsDrag = getDragger('xy', 'ns');
             var nsDragCoords = getNodeCoords(nsDrag);
             mouseEvent('scroll', nsDragCoords.x, nsDragCoords.y - 50, {deltaY: -20, element: nsDrag});
         })
         .then(delay(constants.REDRAWDELAY + 10))
-        .then(checkRanges({xaxis: [-0.3321, 1.6679], yaxis: [0.3321, 2.3321]}))
+        .then(checkRanges({xaxis: [-0.3321, 1.6679], yaxis: [0.3321, 2.3321]}, 'y scroll'))
         .catch(failTest)
         .then(done);
     });
@@ -390,29 +397,29 @@ describe('axis zoom/pan and main plot zoom', function() {
         makePlot(true)
         // zoombox - this *would* be 1D (dy=-1) but that's not allowed
         .then(doDrag('xy', 'nsew', 100, -1))
-        .then(checkRanges({xaxis: [1, 2], yaxis: [1, 2], xaxis2: [0.5, 1.5], yaxis2: [0.5, 1.5]}))
+        .then(checkRanges({xaxis: [1, 2], yaxis: [1, 2], xaxis2: [0.5, 1.5], yaxis2: [0.5, 1.5]}, 'zoombox xy'))
         // first dblclick reverts to saved ranges
         .then(doDblClick('xy', 'nsew'))
-        .then(checkRanges())
+        .then(checkRanges({}, 'dblclick xy'))
         // next dblclick autoscales ALL linked plots
         .then(doDblClick('xy', 'ns'))
-        .then(checkRanges({xaxis: autoRange, yaxis: autoRange, xaxis2: autoRange, yaxis2: autoRange}))
+        .then(checkRanges({xaxis: autoRange, yaxis: autoRange, xaxis2: autoRange, yaxis2: autoRange}, 'dblclick y'))
         // revert again
         .then(doDblClick('xy', 'nsew'))
-        .then(checkRanges())
+        .then(checkRanges({}, 'dblclick xy #2'))
         // corner drag - full distance in one direction and no shift in the other gets averaged
         // into half distance in each
         .then(doDrag('xy', 'ne', -200, 0))
-        .then(checkRanges({xaxis: [0, 4], yaxis: [0, 4], xaxis2: [-1, 3], yaxis2: [-1, 3]}))
+        .then(checkRanges({xaxis: [0, 4], yaxis: [0, 4], xaxis2: [-1, 3], yaxis2: [-1, 3]}, 'zoom xy ne'))
         // drag one end
         .then(doDrag('xy', 's', 53, -100))
-        .then(checkRanges({xaxis: [-2, 6], yaxis: [-4, 4], xaxis2: [-3, 5], yaxis2: [-3, 5]}))
+        .then(checkRanges({xaxis: [-2, 6], yaxis: [-4, 4], xaxis2: [-3, 5], yaxis2: [-3, 5]}, 'zoom y s'))
         // middle of an axis
         .then(doDrag('xy', 'ew', -100, 53))
-        .then(checkRanges({xaxis: [2, 10], yaxis: [-4, 4], xaxis2: [-3, 5], yaxis2: [-3, 5]}))
+        .then(checkRanges({xaxis: [2, 10], yaxis: [-4, 4], xaxis2: [-3, 5], yaxis2: [-3, 5]}, 'drag x ew'))
         // revert again
         .then(doDblClick('xy', 'nsew'))
-        .then(checkRanges())
+        .then(checkRanges({}, 'dblclick xy #3'))
         // scroll wheel
         .then(function() {
             var mainDrag = getDragger('xy', 'nsew');
@@ -420,14 +427,15 @@ describe('axis zoom/pan and main plot zoom', function() {
             mouseEvent('scroll', mainDragCoords.x, mainDragCoords.y, {deltaY: 20, element: mainDrag});
         })
         .then(delay(constants.REDRAWDELAY + 10))
-        .then(checkRanges({xaxis: [-0.4428, 2], yaxis: [0, 2.4428], xaxis2: [-0.2214, 2.2214], yaxis2: [-0.2214, 2.2214]}))
+        .then(checkRanges({xaxis: [-0.4428, 2], yaxis: [0, 2.4428], xaxis2: [-0.2214, 2.2214], yaxis2: [-0.2214, 2.2214]},
+            'scroll xy'))
         .then(function() {
             var ewDrag = getDragger('xy', 'ew');
             var ewDragCoords = getNodeCoords(ewDrag);
             mouseEvent('scroll', ewDragCoords.x - 50, ewDragCoords.y, {deltaY: -20, element: ewDrag});
         })
         .then(delay(constants.REDRAWDELAY + 10))
-        .then(checkRanges({xaxis: [-0.3321, 1.6679], yaxis: [0.2214, 2.2214]}))
+        .then(checkRanges({xaxis: [-0.3321, 1.6679], yaxis: [0.2214, 2.2214]}, 'scroll x'))
         .catch(failTest)
         .then(done);
     });

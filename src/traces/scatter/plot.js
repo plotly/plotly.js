@@ -425,7 +425,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
         if(hasTransition) {
             enter
-                .call(Drawing.pointStyle, trace)
+                .call(Drawing.pointStyle, trace, gd)
                 .call(Drawing.translatePoints, xa, ya, trace)
                 .style('opacity', 0)
                 .transition()
@@ -479,7 +479,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         });
 
         join.selectAll('text')
-            .call(Drawing.textPointStyle, trace)
+            .call(Drawing.textPointStyle, trace, gd)
             .each(function(d) {
 
                 // This just *has* to be totally custom becuase of SVG text positioning :(

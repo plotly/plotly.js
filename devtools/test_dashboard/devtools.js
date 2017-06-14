@@ -8,6 +8,8 @@ var credentials = require('../../build/credentials.json');
 var Lib = require('@src/lib');
 var d3 = Plotly.d3;
 
+require('./perf');
+
 // Our gracious testing object
 var Tabs = {
 

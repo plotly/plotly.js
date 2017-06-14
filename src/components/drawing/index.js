@@ -392,7 +392,7 @@ drawing.singlePointStyle = function(d, sel, trace, markerScale, lineScale, gd) {
 
 };
 
-drawing.pointStyle = function(s, trace) {
+drawing.pointStyle = function(s, trace, gd) {
     if(!s.size()) return;
 
     // allow array marker and marker line colors to be
@@ -400,7 +400,6 @@ drawing.pointStyle = function(s, trace) {
     var marker = trace.marker;
     var markerScale = drawing.tryColorscale(marker, '');
     var lineScale = drawing.tryColorscale(marker, 'line');
-    var gd = Lib.getPlotDiv(s.node());
 
     s.each(function(d) {
         drawing.singlePointStyle(d, d3.select(this), trace, markerScale, lineScale, gd);
@@ -423,7 +422,7 @@ drawing.tryColorscale = function(marker, prefix) {
 // draw text at points
 var TEXTOFFSETSIGN = {start: 1, end: -1, middle: 0, bottom: 1, top: -1},
     LINEEXPAND = 1.3;
-drawing.textPointStyle = function(s, trace) {
+drawing.textPointStyle = function(s, trace, gd) {
     s.each(function(d) {
         var p = d3.select(this),
             text = d.tx || trace.text;
@@ -454,7 +453,7 @@ drawing.textPointStyle = function(s, trace) {
                 d.tc || trace.textfont.color)
             .attr('text-anchor', h)
             .text(text)
-            .call(svgTextUtils.convertToTspans);
+            .call(svgTextUtils.convertToTspans, gd);
         var pgroup = d3.select(this.parentNode),
             tspans = p.selectAll('tspan.line'),
             numLines = ((tspans[0].length || 1) - 1) * LINEEXPAND + 1,
@@ -611,19 +610,18 @@ drawing.makeTester = function() {
 // in a reference frame where it isn't translated and its anchor
 // point is at (0,0)
 // always returns a copy of the bbox, so the caller can modify it safely
-var savedBBoxes = [];
+drawing.savedBBoxes = {};
+var savedBBoxesCount = 0;
 var maxSavedBBoxes = 10000;
 
 drawing.bBox = function(node) {
     // cache elements we've already measured so we don't have to
     // remeasure the same thing many times
-    var saveNum = node.attributes['data-bb'];
-    if(saveNum && saveNum.value) {
-        return Lib.extendFlat({}, savedBBoxes[saveNum.value]);
-    }
+    var hash = nodeHash(node);
+    var out = drawing.savedBBoxes[hash];
+    if(out) return Lib.extendFlat({}, out);
 
-    var tester3 = drawing.tester;
-    var tester = tester3.node();
+    var tester = drawing.tester.node();
 
     // copy the node to test into the tester
     var testNode = node.cloneNode(true);
@@ -655,17 +653,40 @@ drawing.bBox = function(node) {
     // make sure we don't have too many saved boxes,
     // or a long session could overload on memory
     // by saving boxes for long-gone elements
-    if(savedBBoxes.length >= maxSavedBBoxes) {
-        d3.selectAll('[data-bb]').attr('data-bb', null);
-        savedBBoxes = [];
+    if(savedBBoxesCount >= maxSavedBBoxes) {
+        drawing.savedBBoxes = {};
+        maxSavedBBoxes = 0;
     }
 
     // cache this bbox
-    node.setAttribute('data-bb', savedBBoxes.length);
-    savedBBoxes.push(bb);
+    drawing.savedBBoxes[hash] = bb;
+    savedBBoxesCount++;
 
     return Lib.extendFlat({}, bb);
 };
+
+// capture everything about a node (at least in our usage) that
+// impacts its bounding box, given that bBox clears x, y, and transform
+// TODO: is this really everything? Is it worth taking only parts of style,
+// so we can share across more changes (like colors)? I guess we can't strip
+// colors and stuff from inside innerHTML so maybe not worth bothering outside.
+// TODO # 2: this can be long, so could take a lot of memory, do we want to
+// hash it? But that can be slow...
+// extracting this string from a typical element takes ~3 microsec, where
+// doing a simple hash ala https://stackoverflow.com/questions/7616461
+// adds ~15 microsec (nearly all of this is spent in charCodeAt)
+// function hash(s) {
+//   var h = 0;
+//   for (var i = 0; i < s.length; i++) {
+//     h = (((h << 5) - h) + s.charCodeAt(i)) | 0; // codePointAt?
+//   }
+//   return h;
+// }
+function nodeHash(node) {
+    return node.innerHTML +
+        node.getAttribute('text-anchor') +
+        node.getAttribute('style');
+}
 
 /*
  * make a robust clipPath url from a local id

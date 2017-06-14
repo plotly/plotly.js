@@ -481,13 +481,6 @@ lib.containsAny = function(s, fragments) {
     return false;
 };
 
-// get the parent Plotly plot of any element. Whoo jquery-free tree climbing!
-lib.getPlotDiv = function(el) {
-    for(; el && el.removeAttribute; el = el.parentNode) {
-        if(lib.isPlotDiv(el)) return el;
-    }
-};
-
 lib.isPlotDiv = function(el) {
     var el3 = d3.select(el);
     return el3.node() instanceof HTMLElement &&

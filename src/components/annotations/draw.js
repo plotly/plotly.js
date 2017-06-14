@@ -168,7 +168,8 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 fontColor: hoverFont.color
             }, {
                 container: fullLayout._hoverlayer.node(),
-                outerContainer: fullLayout._paper.node()
+                outerContainer: fullLayout._paper.node(),
+                gd: gd
             });
         })
         .on('mouseout', function() {
@@ -214,7 +215,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             }[options.align] || 'middle'
         });
 
-        svgTextUtils.convertToTspans(s, drawGraphicalElements);
+        svgTextUtils.convertToTspans(s, gd, drawGraphicalElements);
         return s;
     }
 
@@ -315,7 +316,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         annotationIsOffscreen = true;
                     }
 
-                    if(annotationIsOffscreen) return;
+                    if(annotationIsOffscreen) continue;
                 }
                 basePx = ax._offset + ax.r2p(options[axLetter]);
                 autoAlignFraction = 0.5;
@@ -554,6 +555,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 // (head/tail/text) all together
                 dragElement.init({
                     element: arrowDrag.node(),
+                    gd: gd,
                     prepFn: function() {
                         var pos = Drawing.getTranslate(annTextGroupInner);
 
@@ -616,6 +618,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             // textbox and tail, leave the head untouched
             dragElement.init({
                 element: annTextGroupInner.node(),
+                gd: gd,
                 prepFn: function() {
                     baseTextTransform = annTextGroup.attr('transform');
                     update = {};
@@ -686,7 +689,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
     }
 
     if(gd._context.editable) {
-        annText.call(svgTextUtils.makeEditable, annTextGroupInner)
+        annText.call(svgTextUtils.makeEditable, {delegate: annTextGroupInner, gd: gd})
             .call(textLayout)
             .on('edit', function(_text) {
                 options.text = _text;

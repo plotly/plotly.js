@@ -98,7 +98,8 @@ function render(scene) {
                 fontSize: Fx.castHoverOption(trace, ptNumber, 'font.size'),
                 fontColor: Fx.castHoverOption(trace, ptNumber, 'font.color')
             }, {
-                container: svgContainer
+                container: svgContainer,
+                gd: scene.graphDiv
             });
         }
 

@@ -31,7 +31,7 @@ describe('dragElement', function() {
     afterEach(destroyGraphDiv);
 
     it('should init drag element', function() {
-        var options = { element: this.element };
+        var options = { element: this.element, gd: this.gd };
         dragElement.init(options);
 
         expect(this.element.style.pointerEvents).toEqual('all', 'with pointer event style');
@@ -42,6 +42,7 @@ describe('dragElement', function() {
         var args = [];
         var options = {
             element: this.element,
+            gd: this.gd,
             prepFn: function(event, startX, startY) {
                 args = [event, startX, startY];
             }
@@ -60,6 +61,7 @@ describe('dragElement', function() {
         var args = [];
         var options = {
             element: this.element,
+            gd: this.gd,
             moveFn: function(dx, dy, dragged) {
                 args = [dx, dy, dragged];
             }
@@ -79,6 +81,7 @@ describe('dragElement', function() {
         var args = [];
         var options = {
             element: this.element,
+            gd: this.gd,
             doneFn: function(dragged, numClicks) {
                 args = [dragged, numClicks];
             }
@@ -104,7 +107,7 @@ describe('dragElement', function() {
             return d3.selectAll('.dragcover').size();
         }
 
-        var options = { element: this.element };
+        var options = { element: this.element, gd: this.gd };
         dragElement.init(options);
 
         expect(countCoverSlip()).toEqual(0);
@@ -120,7 +123,7 @@ describe('dragElement', function() {
     });
 
     it('should fire off click event when down/up without dragging', function() {
-        var options = { element: this.element };
+        var options = { element: this.element, gd: this.gd };
         dragElement.init(options);
 
         var mockObj = {

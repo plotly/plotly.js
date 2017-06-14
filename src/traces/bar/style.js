@@ -67,9 +67,6 @@ module.exports = function style(gd) {
                 p.call(Color.stroke, lineColor);
             }
         });
-        // TODO: text markers on bars, either extra text or just bar values
-        // d3.select(this).selectAll('text')
-        //     .call(Drawing.textPointStyle,d.t||d[0].t);
     });
 
     s.call(ErrorBars.style);
