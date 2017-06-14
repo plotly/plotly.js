@@ -10,7 +10,6 @@
 
 var Lib = require('../lib');
 var Registry = require('../registry');
-var PlotSchema = require('../plot_api/plot_schema');
 var Axes = require('../plots/cartesian/axes');
 
 var COMPARISON_OPS = ['=', '!=', '<', '>=', '>', '<='];
@@ -148,6 +147,7 @@ exports.calcTransform = function(gd, trace, opts) {
     var target = opts.target;
     var len = targetArray.length;
     var targetCalendar = opts.targetcalendar;
+    var arrayAttrs = trace._arrayAttrs;
 
     // even if you provide targetcalendar, if target is a string and there
     // is a calendar attribute matching target it will get used instead.
@@ -158,7 +158,6 @@ exports.calcTransform = function(gd, trace, opts) {
 
     var d2c = Axes.getDataToCoordFunc(gd, trace, target, targetArray);
     var filterFunc = getFilterFunc(opts, d2c, targetCalendar);
-    var arrayAttrs = PlotSchema.findArrayAttributes(trace);
     var originalArrays = {};
 
     function forAllAttrs(fn, index) {
