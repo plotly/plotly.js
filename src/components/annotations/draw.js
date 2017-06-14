@@ -237,7 +237,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
         // at the end, even if their position changes
         annText.selectAll('tspan.line').attr({y: 0, x: 0});
 
-        var mathjaxGroup = annTextGroupInner.select('.annotation-math-group');
+        var mathjaxGroup = annTextGroupInner.select('.annotation-text-math-group');
         var hasMathjax = !mathjaxGroup.empty();
         var anntextBB = Drawing.bBox(
                 (hasMathjax ? mathjaxGroup : annText).node());
