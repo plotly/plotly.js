@@ -159,6 +159,12 @@ describe('annotations relayout', function() {
         var mockData = Lib.extendDeep([], mock.data),
             mockLayout = Lib.extendDeep({}, mock.layout);
 
+        // insert some MathJax text - to make sure we fall back correctly
+        // when MathJax is not provided (as is the case in our normal
+        // jasmine test suite)
+        expect(typeof MathJax).toBe('undefined');
+        mockLayout.annotations[14].text = '$x+y+z$';
+
         Plotly.plot(gd, mockData, mockLayout).then(done);
 
         spyOn(Loggers, 'warn');

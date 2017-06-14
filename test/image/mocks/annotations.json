@@ -26,7 +26,7 @@
             {"text":"no arrow<br>page auto BC","showarrow":false,"xref":"paper","yref":"paper","x":0.5,"y":0.25},
             {"text":"default"},
             {"text":"no arrow","x":5,"y":4,"showarrow":false},
-            {"text":"$x+y+z+q$","showarrow":false,"bordercolor":"rgb(148, 103, 189)","x":4,"y":3},
+            {"text":"border","showarrow":false,"bordercolor":"rgb(148, 103, 189)","x":4,"y":3},
             {"text":"border width","showarrow":false,"bordercolor":"rgb(0, 0, 255)","borderwidth":3,"x":5,"y":3},
             {"text":"background","showarrow":false,"bgcolor":"rgb(255, 127, 14)","x":4,"y":2},
             {"text":"padding","showarrow":false,"bordercolor":"rgb(0, 0, 0)","borderpad":3,"x":5,"y":2},
@@ -53,10 +53,6 @@
             {
                 "text": "angle, arrow TR<br>box+standoff", "x": 2, "y": 2, "ax": -20, "ay": -20,
                 "xanchor": "right", "yanchor": "top", "standoff": 5, "textangle": 45, "bordercolor": "#444"
-            },
-            {
-                "text": "$\\sqrt{42 \\pm \\Omega^2}$", "bordercolor": "#0c0", "x": 1, "y": 2,
-                "ax": 0, "ay": -20, "yanchor": "bottom", "textangle": -30
             },
             {"text": "off-plot, do not show!", "x": 5.1, "y": 3.5, "showarrow": false},
             {"text": "off-plot 2", "x": 3, "y": 5.1, "showarrow": true, "ax": 0, "ay": 100}
