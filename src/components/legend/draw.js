@@ -554,20 +554,21 @@ function handleClick(g, gd, numClicks) {
 }
 
 function computeTextDimensions(g, gd) {
-    var legendItem = g.data()[0][0],
-        mathjaxGroup = g.select('g[class*=math-group]'),
-        opts = gd._fullLayout.legend,
-        lineHeight = opts.font.size * 1.3,
-        height,
-        width;
+    var legendItem = g.data()[0][0];
 
     if(!legendItem.trace.showlegend) {
         g.remove();
         return;
     }
 
-    if(mathjaxGroup.node()) {
-        var mathjaxBB = Drawing.bBox(mathjaxGroup.node());
+    var mathjaxGroup = g.select('g[class*=math-group]');
+    var mathjaxNode = mathjaxGroup.node();
+    var opts = gd._fullLayout.legend;
+    var lineHeight = opts.font.size * 1.3;
+    var height, width;
+
+    if(mathjaxNode) {
+        var mathjaxBB = Drawing.bBox(mathjaxNode);
 
         height = mathjaxBB.height;
         width = mathjaxBB.width;
@@ -576,11 +577,12 @@ function computeTextDimensions(g, gd) {
     }
     else {
         var text = g.selectAll('.legendtext'),
-            textSpans = g.selectAll('.legendtext>tspan'),
-            textLines = textSpans[0].length || 1;
+            textSpans = text.selectAll('tspan.line'),
+            textLines = textSpans.size() || 1,
+            textNode = text.node();
 
         height = lineHeight * textLines;
-        width = text.node() && Drawing.bBox(text.node()).width;
+        width = textNode ? Drawing.bBox(textNode).width : 0;
 
         // approximation to height offset to center the font
         // to avoid getBoundingClientRect
