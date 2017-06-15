@@ -562,7 +562,7 @@ proto.updateFancy = function(options) {
     if(selection) {
         selIds = {};
         for(i = 0; i < selection.length; i++) {
-            selIds[selection[i].id] = true;
+            selIds[selection[i].pointNumber] = true;
         }
     }
 
