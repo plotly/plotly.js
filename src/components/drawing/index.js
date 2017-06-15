@@ -633,12 +633,23 @@ drawing.bBox = function(node) {
     var testNode = node.cloneNode(true);
     tester.appendChild(testNode);
 
-    // standardize its position... do we really want to do this?
-    d3.select(testNode).attr({
+    // standardize its position - and that of any newlines if we're getting
+    // the bBox of a <text> element directly (not a larger container)
+    // newline <tspan>s need to get `x` and `y` set to match whenever the
+    // containing <text> element gets repositioned, and the line offset
+    // is handled by the attribute `dy` (that we assume is already set)
+    var test3 = d3.select(testNode).attr({
         x: 0,
         y: 0,
         transform: ''
     });
+
+    if(testNode.nodeName === 'text') {
+        test3.selectAll('tspan.line').attr({
+            x: 0,
+            y: 0
+        });
+    }
 
     var testRect = testNode.getBoundingClientRect();
     var refRect = drawing.testref
