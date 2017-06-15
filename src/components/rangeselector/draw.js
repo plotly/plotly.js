@@ -184,10 +184,10 @@ function reposition(gd, buttons, opts, axName) {
     buttons.each(function() {
         var button = d3.select(this),
             text = button.select('.selector-text'),
-            tspans = text.selectAll('tspan');
+            tspans = text.selectAll('tspan.line');
 
         var tHeight = opts.font.size * 1.3,
-            tLines = tspans[0].length || 1,
+            tLines = tspans.size() || 1,
             hEff = Math.max(tHeight * tLines, 16) + 3;
 
         opts.height = Math.max(opts.height, hEff);
@@ -197,11 +197,11 @@ function reposition(gd, buttons, opts, axName) {
         var button = d3.select(this),
             rect = button.select('.selector-rect'),
             text = button.select('.selector-text'),
-            tspans = text.selectAll('tspan');
+            tspans = text.selectAll('tspan.line');
 
         var tWidth = text.node() && Drawing.bBox(text.node()).width,
             tHeight = opts.font.size * 1.3,
-            tLines = tspans[0].length || 1;
+            tLines = tspans.size() || 1;
 
         var wEff = Math.max(tWidth + 10, constants.minButtonWidth);
 

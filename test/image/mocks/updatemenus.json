@@ -91,7 +91,7 @@
               "line.color",
               "red"
             ],
-            "label": "red"
+            "label": "<span style='color:red'>red</span><br>color"
           },
           {
             "method": "restyle",
@@ -99,7 +99,7 @@
               "line.color",
               "blue"
             ],
-            "label": "blue"
+            "label": "<span style='color:blue'>blue</span><br>color"
           },
           {
             "method": "restyle",
@@ -107,7 +107,7 @@
               "line.color",
               "green"
             ],
-            "label": "green"
+            "label": "<span style='color:green'>green</span><br>trace<br>color"
           }
         ],
         "active": 1

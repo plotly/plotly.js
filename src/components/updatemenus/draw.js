@@ -463,7 +463,10 @@ function drawItemText(item, menuOpts, itemOpts, gd) {
     text.enter().append('text')
         .classed(constants.itemTextClassName, true)
         .classed('user-select-none', true)
-        .attr('text-anchor', 'start');
+        .attr({
+            'text-anchor': 'start',
+            'data-notex': 1
+        });
 
     text.call(Drawing.font, menuOpts.font)
         .text(itemOpts.label)
@@ -521,7 +524,7 @@ function findDimensions(gd, menuOpts) {
         button.call(drawItem, menuOpts, buttonOpts, gd);
 
         var text = button.select('.' + constants.itemTextClassName),
-            tspans = text.selectAll('tspan');
+            tspans = text.selectAll('tspan.line');
 
         // width is given by max width of all buttons
         var tWidth = text.node() && Drawing.bBox(text.node()).width,
@@ -529,7 +532,7 @@ function findDimensions(gd, menuOpts) {
 
         // height is determined by item text
         var tHeight = menuOpts.font.size * constants.fontSizeToHeight,
-            tLines = tspans[0].length || 1,
+            tLines = tspans.size() || 1,
             hEff = Math.max(tHeight * tLines, constants.minHeight) + constants.textOffsetY;
 
         hEff = Math.ceil(hEff);
@@ -626,28 +629,29 @@ function setItemPosition(item, menuOpts, posOpts, overrideOpts) {
     overrideOpts = overrideOpts || {};
     var rect = item.select('.' + constants.itemRectClassName),
         text = item.select('.' + constants.itemTextClassName),
-        tspans = text.selectAll('tspan'),
+        tspans = text.selectAll('tspan.line'),
         borderWidth = menuOpts.borderwidth,
         index = posOpts.index;
 
     Drawing.setTranslate(item, borderWidth + posOpts.x, borderWidth + posOpts.y);
 
     var isVertical = ['up', 'down'].indexOf(menuOpts.direction) !== -1;
+    var finalHeight = overrideOpts.height || (isVertical ? menuOpts.heights[index] : menuOpts.height1);
 
     rect.attr({
         x: 0,
         y: 0,
         width: overrideOpts.width || (isVertical ? menuOpts.width1 : menuOpts.widths[index]),
-        height: overrideOpts.height || (isVertical ? menuOpts.heights[index] : menuOpts.height1)
+        height: finalHeight
     });
 
     var tHeight = menuOpts.font.size * constants.fontSizeToHeight,
-        tLines = tspans[0].length || 1,
-        spanOffset = ((tLines - 1) * tHeight / 4);
+        tLines = tspans.size() || 1,
+        spanOffset = ((tLines - 1) * tHeight / 2);
 
     var textAttrs = {
         x: constants.textOffsetX,
-        y: menuOpts.heights[index] / 2 - spanOffset + constants.textOffsetY
+        y: finalHeight / 2 - spanOffset + constants.textOffsetY
     };
 
     text.attr(textAttrs);
