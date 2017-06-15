@@ -19,6 +19,8 @@ var anchorUtils = require('../legend/anchor_utils');
 
 var constants = require('./constants');
 
+var RESETATTRS = {x: 0, y: 0};
+
 
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout,
@@ -132,14 +134,16 @@ function findDimensions(gd, sliderOpts) {
 
         var text = drawLabel(labelGroup, {step: stepOpts}, sliderOpts);
 
-        var tWidth = (text.node() && Drawing.bBox(text.node()).width) || 0;
-
-        // This just overwrites with the last. Which is fine as long as
-        // the bounding box (probably incorrectly) measures the text *on
-        // a single line*:
-        labelHeight = (text.node() && Drawing.bBox(text.node()).height) || 0;
-
-        maxLabelWidth = Math.max(maxLabelWidth, tWidth);
+        var textNode = text.node();
+        if(textNode) {
+            var bBox = Drawing.bBox(textNode);
+            // This just overwrites with the last. Which is fine as long as
+            // the bounding box (probably incorrectly) measures the text *on
+            // a single line*:
+            // TODO: what is that comment about? should this be a max as well?
+            labelHeight = Math.max(labelHeight, bBox.height);
+            maxLabelWidth = Math.max(maxLabelWidth, bBox.width);
+        }
     });
 
     sliderLabels.remove();
@@ -152,6 +156,7 @@ function findDimensions(gd, sliderOpts) {
     sliderOpts.currentValueMaxWidth = 0;
     sliderOpts.currentValueHeight = 0;
     sliderOpts.currentValueTotalHeight = 0;
+    sliderOpts.currentValueMaxLines = 1;
 
     if(sliderOpts.currentvalue.visible) {
         // Get the dimensions of the current value label:
@@ -160,8 +165,10 @@ function findDimensions(gd, sliderOpts) {
         sliderLabels.each(function(stepOpts) {
             var curValPrefix = drawCurrentValue(dummyGroup, sliderOpts, stepOpts.label);
             var curValSize = (curValPrefix.node() && Drawing.bBox(curValPrefix.node())) || {width: 0, height: 0};
+            var lines = curValPrefix.selectAll('tspan.line').size() || 1;
             sliderOpts.currentValueMaxWidth = Math.max(sliderOpts.currentValueMaxWidth, Math.ceil(curValSize.width));
             sliderOpts.currentValueHeight = Math.max(sliderOpts.currentValueHeight, Math.ceil(curValSize.height));
+            sliderOpts.currentValueMaxLines = Math.max(sliderOpts.currentValueMaxLines, lines);
         });
 
         sliderOpts.currentValueTotalHeight = sliderOpts.currentValueHeight + sliderOpts.currentvalue.offset;
@@ -286,7 +293,10 @@ function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
     text.enter().append('text')
         .classed(constants.labelClass, true)
         .classed('user-select-none', true)
-        .attr('text-anchor', textAnchor);
+        .attr({
+            'text-anchor': textAnchor,
+            'data-notex': 1
+        });
 
     var str = sliderOpts.currentvalue.prefix ? sliderOpts.currentvalue.prefix : '';
 
@@ -303,9 +313,15 @@ function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
 
     text.call(Drawing.font, sliderOpts.currentvalue.font)
         .text(str)
-        .call(svgTextUtils.convertToTspans, sliderOpts.gd);
+        .call(svgTextUtils.convertToTspans, sliderOpts.gd)
+        .attr(RESETATTRS);
 
-    Drawing.setTranslate(text, x0, sliderOpts.currentValueHeight);
+    var tspans = text.selectAll('tspan.line').attr(RESETATTRS);
+
+    var y0 = (sliderOpts.currentValueMaxLines + 1 - (tspans.size() || 1)) *
+        sliderOpts.currentvalue.font.size * constants.fontSizeToHeight;
+
+    Drawing.setTranslate(text, x0, y0);
 
     return text;
 }
@@ -337,11 +353,17 @@ function drawLabel(item, data, sliderOpts) {
     text.enter().append('text')
         .classed(constants.labelClass, true)
         .classed('user-select-none', true)
-        .attr('text-anchor', 'middle');
+        .attr({
+            'text-anchor': 'middle',
+            'data-notex': 1
+        });
 
     text.call(Drawing.font, sliderOpts.font)
         .text(data.step.label)
-        .call(svgTextUtils.convertToTspans, sliderOpts.gd);
+        .call(svgTextUtils.convertToTspans, sliderOpts.gd)
+        .attr(RESETATTRS);
+
+    text.selectAll('tspan.line').attr(RESETATTRS);
 
     return text;
 }
@@ -368,7 +390,13 @@ function drawLabelGroup(sliderGroup, sliderOpts) {
 
         Drawing.setTranslate(item,
             normalizedValueToPosition(sliderOpts, d.fraction),
-            constants.tickOffset + sliderOpts.ticklen + sliderOpts.labelHeight + constants.labelOffset + sliderOpts.currentValueTotalHeight
+            constants.tickOffset +
+                sliderOpts.ticklen +
+                // position is the baseline of the top line of text only, even
+                // if the label spans multiple lines
+                sliderOpts.font.size * constants.fontSizeToHeight +
+                constants.labelOffset +
+                sliderOpts.currentValueTotalHeight
         );
     });
 

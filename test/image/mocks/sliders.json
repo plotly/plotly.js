@@ -57,7 +57,7 @@
     }, {
       "active": 4,
       "steps": [{
-        "label": "red",
+        "label": "<span style='color:red'>red</span><br>color",
         "method": "restyle",
         "args": [{"marker.color": "red"}]
       }, {
