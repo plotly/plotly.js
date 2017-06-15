@@ -625,7 +625,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     nodeLabelTextPath
         .text(function(d) {return d.horizontal || d.node.dy > 5 ? d.node.label : '';})
-        .style('text-anchor', function(d) {return d.horizontal && d.left ? 'end' : 'start';});
+        .attr('text-anchor', function(d) {return d.horizontal && d.left ? 'end' : 'start';});
 
     nodeLabelTextPath
         .transition()

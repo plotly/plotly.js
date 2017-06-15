@@ -373,9 +373,8 @@ function drawTexts(g, gd) {
     text.attr({
         x: 40,
         y: 0,
-        'data-unformatted': name
+        'text-anchor': 'start'
     })
-    .style('text-anchor', 'start')
     .classed('user-select-none', true)
     .call(Drawing.font, fullLayout.legend.font)
     .text(name);
