@@ -203,7 +203,6 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
     var annText = annTextGroupInner.append('text')
         .classed('annotation-text', true)
-        .attr('data-unformatted', options.text)
         .text(options.text);
 
     function textLayout(s) {
@@ -693,7 +692,6 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             .call(textLayout)
             .on('edit', function(_text) {
                 options.text = _text;
-                this.attr({'data-unformatted': options.text});
                 this.call(textLayout);
 
                 var update = {};

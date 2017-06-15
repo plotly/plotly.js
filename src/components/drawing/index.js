@@ -615,11 +615,17 @@ var savedBBoxesCount = 0;
 var maxSavedBBoxes = 10000;
 
 drawing.bBox = function(node) {
-    // cache elements we've already measured so we don't have to
+    // Cache elements we've already measured so we don't have to
     // remeasure the same thing many times
+    // We have a few bBox callers though who pass a node larger than
+    // a <text> or a MathJax <g>, such as an axis group containing many labels.
+    // These will not generate a hash (unless we figure out an appropriate
+    // hash key for them) and thus we will not hash them.
     var hash = nodeHash(node);
-    var out = drawing.savedBBoxes[hash];
-    if(out) return Lib.extendFlat({}, out);
+    if(hash) {
+        var out = drawing.savedBBoxes[hash];
+        if(out) return Lib.extendFlat({}, out);
+    }
 
     var tester = drawing.tester.node();
 
@@ -659,7 +665,7 @@ drawing.bBox = function(node) {
     }
 
     // cache this bbox
-    drawing.savedBBoxes[hash] = bb;
+    if(hash) drawing.savedBBoxes[hash] = bb;
     savedBBoxesCount++;
 
     return Lib.extendFlat({}, bb);
@@ -683,7 +689,10 @@ drawing.bBox = function(node) {
 //   return h;
 // }
 function nodeHash(node) {
-    return node.innerHTML +
+    var inputText = node.getAttribute('data-unformatted');
+    if(inputText === null) return;
+    return inputText + '~' +
+        node.getAttribute('data-math') +
         node.getAttribute('text-anchor') +
         node.getAttribute('style');
 }
