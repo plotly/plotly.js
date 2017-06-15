@@ -141,12 +141,12 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
         var textSelection = bar.append('text')
             // prohibit tex interpretation until we can handle
             // tex and regular text together
-            .attr('data-notex', 1)
             .text(text)
             .attr({
                 'class': 'bartext',
                 transform: '',
                 'text-anchor': 'middle',
+                'data-notex': 1,
                 x: 0,
                 y: 0
             })
