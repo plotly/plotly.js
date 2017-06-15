@@ -457,6 +457,7 @@ function _hover(gd, evt, subplot) {
             if(pt.zLabelVal !== undefined) out.z = pt.zLabelVal;
         }
 
+        helpers.appendArrayPointValue(out, pt.trace, pt.index);
         newhoverdata.push(out);
     }
 

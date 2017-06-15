@@ -9,7 +9,6 @@
 'use strict';
 
 var Lib = require('../lib');
-var PlotSchema = require('../plot_api/plot_schema');
 var Axes = require('../plots/cartesian/axes');
 
 exports.moduleType = 'transform';
@@ -78,7 +77,7 @@ exports.calcTransform = function(gd, trace, opts) {
 
     var target = opts.target;
     var len = targetArray.length;
-    var arrayAttrs = PlotSchema.findArrayAttributes(trace);
+    var arrayAttrs = trace._arrayAttrs;
     var d2c = Axes.getDataToCoordFunc(gd, trace, target, targetArray);
     var indices = getIndices(opts, targetArray, d2c);
 

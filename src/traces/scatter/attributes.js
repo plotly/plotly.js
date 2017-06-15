@@ -57,10 +57,6 @@ module.exports = {
             'where `y0` is the starting coordinate and `dy` the step.'
         ].join(' ')
     },
-    customdata: {
-        valType: 'data_array',
-        description: 'Assigns extra data to each scatter point DOM element'
-    },
     dy: {
         valType: 'number',
         dflt: 1,
@@ -69,10 +65,6 @@ module.exports = {
             'Sets the y coordinate step.',
             'See `y0` for more info.'
         ].join(' ')
-    },
-    ids: {
-        valType: 'data_array',
-        description: 'A list of keys for object constancy of data points during animation'
     },
     text: {
         valType: 'string',

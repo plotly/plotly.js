@@ -8,6 +8,7 @@
 
 'use strict';
 
+var Lib = require('../../lib');
 var constants = require('./constants');
 
 // look for either subplot or xaxis and yaxis attributes
@@ -83,3 +84,29 @@ function quadrature(dx, dy) {
         return Math.sqrt(x * x + y * y);
     };
 }
+
+/** Appends values inside array attributes corresponding to given point number
+ *
+ * @param {object} pointData : point data object (gets mutated here)
+ * @param {object} trace : full trace object
+ * @param {number} pointNumber : point number
+ */
+exports.appendArrayPointValue = function(pointData, trace, pointNumber) {
+    var arrayAttrs = trace._arrayAttrs;
+
+    for(var i = 0; i < arrayAttrs.length; i++) {
+        var astr = arrayAttrs[i];
+        var key;
+
+        if(astr === 'ids') key = 'id';
+        else if(astr === 'locations') key = 'location';
+        else key = astr;
+
+        if(pointData[key] === undefined) {
+            var val = Lib.nestedProperty(trace, astr).get();
+            pointData[key] = Array.isArray(pointNumber) ?
+                val[pointNumber[0]][pointNumber[1]] :
+                val[pointNumber];
+        }
+    }
+};
