@@ -702,7 +702,7 @@ drawing.bBox = function(node) {
 function nodeHash(node) {
     var inputText = node.getAttribute('data-unformatted');
     if(inputText === null) return;
-    return inputText + '~' +
+    return inputText +
         node.getAttribute('data-math') +
         node.getAttribute('text-anchor') +
         node.getAttribute('style');

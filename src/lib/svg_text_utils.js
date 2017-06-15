@@ -47,7 +47,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
             // these two (plus style and text-anchor attributes) form the key we're
             // going to use for Drawing.bBox
             'data-unformatted': str,
-            'data-math': ''
+            'data-math': 'N'
         });
 
     function showText() {
