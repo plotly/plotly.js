@@ -696,9 +696,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         function scaleAndGetShift(ax, scaleFactor) {
             if(scaleFactor) {
-
                 ax.range = ax._r.slice();
-
                 scaleZoom(ax, scaleFactor);
                 return getShift(ax, scaleFactor);
             }
