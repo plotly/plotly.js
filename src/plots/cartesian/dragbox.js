@@ -22,6 +22,8 @@ var setCursor = require('../../lib/setcursor');
 var dragElement = require('../../components/dragelement');
 var FROM_TL = require('../../constants/alignment').FROM_TL;
 
+var Plots = require('../plots');
+
 var doTicks = require('./axes').doTicks;
 var getFromId = require('./axis_ids').getFromId;
 var prepSelect = require('./select');
@@ -655,7 +657,13 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // be repositioning the data in the relayout. But DON'T call
         // ticksAndAnnotations again - it's unnecessary and would overwrite `updates`
         updateSubplots([0, 0, pw, ph]);
-        Plotly.relayout(gd, updates);
+
+        // since we may have been redrawing some things during the drag, we may have
+        // accumulated MathJax promises - wait for them before we relayout.
+        Lib.syncOrAsync([
+            Plots.previousPromises,
+            function() { Plotly.relayout(gd, updates); }
+        ], gd);
     }
 
     // updateSubplots - find all plot viewboxes that should be

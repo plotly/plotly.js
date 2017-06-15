@@ -116,10 +116,10 @@ describe('Test hover and click interactions', function() {
 
         var pt = actual.points[0];
 
-        expect(Object.keys(pt)).toEqual([
+        expect(Object.keys(pt)).toEqual(jasmine.arrayContaining([
             'x', 'y', 'curveNumber', 'pointNumber',
             'data', 'fullData', 'xaxis', 'yaxis'
-        ], 'event data keys');
+        ]), 'event data keys');
 
         expect(typeof pt.data.uid).toBe('string', msg + ' - uid');
         expect(pt.xaxis.domain.length).toBe(2, msg + ' - xaxis');

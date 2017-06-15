@@ -534,6 +534,7 @@ proto.updateFx = function(dragmode) {
 
 proto.emitPointAction = function(nextSelection, eventType) {
     var uid = nextSelection.trace.uid;
+    var ptNumber = nextSelection.pointIndex;
     var trace;
 
     for(var i = 0; i < this.fullData.length; i++) {
@@ -542,18 +543,20 @@ proto.emitPointAction = function(nextSelection, eventType) {
         }
     }
 
-    this.graphDiv.emit(eventType, {
-        points: [{
-            x: nextSelection.traceCoord[0],
-            y: nextSelection.traceCoord[1],
-            curveNumber: trace.index,
-            pointNumber: nextSelection.pointIndex,
-            data: trace._input,
-            fullData: this.fullData,
-            xaxis: this.xaxis,
-            yaxis: this.yaxis
-        }]
-    });
+    var pointData = {
+        x: nextSelection.traceCoord[0],
+        y: nextSelection.traceCoord[1],
+        curveNumber: trace.index,
+        pointNumber: ptNumber,
+        data: trace._input,
+        fullData: this.fullData,
+        xaxis: this.xaxis,
+        yaxis: this.yaxis
+    };
+
+    Fx.appendArrayPointValue(pointData, trace, ptNumber);
+
+    this.graphDiv.emit(eventType, {points: [pointData]});
 };
 
 proto.draw = function() {

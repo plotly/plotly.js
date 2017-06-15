@@ -103,17 +103,19 @@ function render(scene) {
             });
         }
 
-        var eventData = {
-            points: [{
-                x: selection.traceCoordinate[0],
-                y: selection.traceCoordinate[1],
-                z: selection.traceCoordinate[2],
-                data: trace._input,
-                fullData: trace,
-                curveNumber: trace.index,
-                pointNumber: ptNumber
-            }]
+        var pointData = {
+            x: selection.traceCoordinate[0],
+            y: selection.traceCoordinate[1],
+            z: selection.traceCoordinate[2],
+            data: trace._input,
+            fullData: trace,
+            curveNumber: trace.index,
+            pointNumber: ptNumber
         };
+
+        Fx.appendArrayPointValue(pointData, trace, ptNumber);
+
+        var eventData = {points: [pointData]};
 
         if(selection.buttons && selection.distance < 5) {
             scene.graphDiv.emit('plotly_click', eventData);

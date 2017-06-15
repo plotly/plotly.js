@@ -591,8 +591,8 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
             expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
-            expect(pt.lat).toEqual(undefined, 'points[0].lat');
-            expect(pt.lon).toEqual(undefined, 'points[0].lon');
+            expect(pt.lat).toEqual(10, 'points[0].lat');
+            expect(pt.lon).toEqual(10, 'points[0].lon');
             expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
 
             expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
@@ -635,8 +635,8 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
             expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
-            expect(pt.lat).toEqual(undefined, 'points[0].lat');
-            expect(pt.lon).toEqual(undefined, 'points[0].lon');
+            expect(pt.lat).toEqual(10, 'points[0].lat');
+            expect(pt.lon).toEqual(10, 'points[0].lon');
             expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
 
             expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
@@ -672,8 +672,8 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
             expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
-            expect(pt.lat).toEqual(undefined, 'points[0].lat');
-            expect(pt.lon).toEqual(undefined, 'points[0].lon');
+            expect(pt.lat).toEqual(10, 'points[0].lat');
+            expect(pt.lon).toEqual(10, 'points[0].lon');
             expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
 
             expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
@@ -704,8 +704,8 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
                 expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
                 expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
                 expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
-                expect(pt.lat).toEqual(undefined, 'points[0].lat');
-                expect(pt.lon).toEqual(undefined, 'points[0].lon');
+                expect(pt.lat).toEqual(10, 'points[0].lat');
+                expect(pt.lon).toEqual(10, 'points[0].lon');
                 expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
 
                 expect(evt.clientX).toEqual(nearPos[0], 'event.clientX');

@@ -521,7 +521,7 @@ plots.supplyDefaults = function(gd) {
 
 function remapTransformedArrays(cd0, newTrace) {
     var oldTrace = cd0.trace;
-    var arrayAttrs = PlotSchema.findArrayAttributes(oldTrace);
+    var arrayAttrs = oldTrace._arrayAttrs;
     var transformedArrayHash = {};
     var i, astr;
 
@@ -862,6 +862,9 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
     }
 
     if(visible) {
+        coerce('customdata');
+        coerce('ids');
+
         var _module = plots.getModule(traceOut);
         traceOut._module = _module;
 
@@ -2030,6 +2033,12 @@ plots.doCalcdata = function(gd, traces) {
             calcdata[i] = oldCalcdata[i];
             continue;
         }
+    }
+
+    // find array attributes in trace
+    for(i = 0; i < fullData.length; i++) {
+        trace = fullData[i];
+        trace._arrayAttrs = PlotSchema.findArrayAttributes(trace);
     }
 
     initCategories(axList);

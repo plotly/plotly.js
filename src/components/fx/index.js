@@ -35,6 +35,7 @@ module.exports = {
     getDistanceFunction: helpers.getDistanceFunction,
     getClosest: helpers.getClosest,
     inbox: helpers.inbox,
+    appendArrayPointValue: helpers.appendArrayPointValue,
 
     castHoverOption: castHoverOption,
     castHoverinfo: castHoverinfo,

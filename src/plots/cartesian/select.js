@@ -11,6 +11,7 @@
 
 var polygon = require('../../lib/polygon');
 var color = require('../../components/color');
+var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
 
 var axes = require('./axes');
 var constants = require('./constants');
@@ -151,7 +152,9 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         selection = [];
         for(i = 0; i < searchTraces.length; i++) {
             searchInfo = searchTraces[i];
-            [].push.apply(selection, searchInfo.selectPoints(searchInfo, poly));
+            [].push.apply(selection, fillSelectionItem(
+                searchInfo.selectPoints(searchInfo, poly), searchInfo
+            ));
         }
 
         eventData = {points: selection};
@@ -196,3 +199,20 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         }
     };
 };
+
+function fillSelectionItem(selection, searchInfo) {
+    if(Array.isArray(selection)) {
+        var trace = searchInfo.cd[0].trace;
+
+        for(var i = 0; i < selection.length; i++) {
+            var sel = selection[i];
+
+            sel.curveNumber = trace.index;
+            sel.data = trace._input;
+            sel.fullData = trace;
+            appendArrayPointValue(sel, trace, sel.pointNumber);
+        }
+    }
+
+    return selection;
+}
