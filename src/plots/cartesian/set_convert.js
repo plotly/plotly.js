@@ -231,9 +231,9 @@ module.exports = function setConvert(ax, fullLayout) {
         ax.d2c = ax.d2l = setCategoryIndex;
         ax.r2d = ax.c2d = ax.l2d = getCategoryName;
 
-        ax.d2r = ax.d2l_noadd = getCategoryIndex;
+        ax.r2c = ax.d2r = ax.d2l_noadd = getCategoryIndex;
 
-        ax.l2r = ax.r2c = ax.c2r = ensureNumber;
+        ax.l2r = ax.c2r = ensureNumber;
         ax.r2l = getCategoryIndex;
 
         ax.d2p = function(v) { return ax.l2p(getCategoryIndex(v)); };
