@@ -119,7 +119,7 @@ Titles.draw = function(gd, titleClass, options) {
             opacity: opacity * Color.opacity(fontColor),
             'font-weight': Plots.fontWeight
         })
-        .call(svgTextUtils.positionText, attributes.x, attributes.y)
+        .attr(attributes)
         .call(svgTextUtils.convertToTspans, gd);
 
         return Plots.previousPromises(gd);
