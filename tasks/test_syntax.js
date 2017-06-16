@@ -75,6 +75,8 @@ function assertSrcContents() {
                         logs.push(file + ' : contains .classList (IE failure)');
                     }
                     else if(lastPart === 'innerHTML') {
+                        // Note: if we do anything that's NOT in SVG, innerHTML is
+                        // OK in IE. We can cross that bridge when we get to it...
                         logs.push(file + ' : contains .innerHTML (IE failure in SVG)');
                     }
                     else if(lastPart === 'parentElement') {
