@@ -6,7 +6,6 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var assertDims = require('../assets/assert_dims');
 var assertStyle = require('../assets/assert_style');
 
-
 describe('groupby', function() {
 
     describe('one-to-many transforms:', function() {
@@ -19,7 +18,10 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+                styles: [
+                    {target: 'a', value: {marker: {color: 'red'}}},
+                    {target: 'b', value: {marker: {color: 'blue'}}}
+                ]
             }]
         }];
 
@@ -30,7 +32,10 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['b', 'a', 'b', 'b', 'b', 'a', 'a'],
-                style: { a: {marker: {color: 'green'}}, b: {marker: {color: 'black'}} }
+                styles: [
+                    {target: 'a', value: {marker: {color: 'green'}}},
+                    {target: 'b', value: {marker: {color: 'black'}}}
+                ]
             }]
         }];
 
@@ -56,6 +61,58 @@ describe('groupby', function() {
 
                 done();
             });
+        });
+
+        it('Accepts deprecated object notation for styles', function(done) {
+            var oldStyleMockData = [{
+                mode: 'markers',
+                x: [1, -1, -2, 0, 1, 2, 3],
+                y: [1, 2, 3, 1, 2, 3, 1],
+                transforms: [{
+                    type: 'groupby',
+                    groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
+                    styles: {
+                        a: {marker: {color: 'red'}},
+                        b: {marker: {color: 'blue'}}
+                    }
+                }]
+            }];
+            var data = Lib.extendDeep([], oldStyleMockData);
+            data[0].marker = { size: 20 };
+
+            var gd = createGraphDiv();
+            var dims = [4, 3];
+
+            Plotly.plot(gd, data).then(function() {
+                assertStyle(dims,
+                    ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
+                    [1, 1]
+                );
+
+                return Plotly.restyle(gd, 'marker.opacity', 0.4);
+            }).then(function() {
+                assertStyle(dims,
+                    ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
+                    [0.4, 0.4]
+                );
+
+                expect(gd._fullData[0].marker.opacity).toEqual(0.4);
+                expect(gd._fullData[1].marker.opacity).toEqual(0.4);
+
+                return Plotly.restyle(gd, 'marker.opacity', 1);
+            }).then(function() {
+                assertStyle(dims,
+                    ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
+                    [1, 1]
+                );
+
+                expect(gd._fullData[0].marker.opacity).toEqual(1);
+                expect(gd._fullData[1].marker.opacity).toEqual(1);
+            }).then(done);
+
+            // The final test for restyle updates using deprecated syntax
+            // is ommitted since old style syntax is *only* sanitized on
+            // initial plot, *not* on restyle.
         });
 
         it('Plotly.restyle should work', function(done) {
@@ -92,7 +149,10 @@ describe('groupby', function() {
                 expect(gd._fullData[1].marker.opacity).toEqual(1);
 
                 return Plotly.restyle(gd, {
-                    'transforms[0].style': { a: {marker: {color: 'green'}}, b: {marker: {color: 'red'}} },
+                    'transforms[0].styles': [[
+                        {target: 'a', value: {marker: {color: 'green'}}},
+                        {target: 'b', value: {marker: {color: 'red'}}}
+                    ]],
                     'marker.opacity': 0.4
                 });
             }).then(function() {
@@ -192,7 +252,10 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+                styles: [
+                    {target: 'a', value: {marker: {color: 'red'}}},
+                    {target: 'b', value: {marker: {color: 'blue'}}}
+                ]
             }]
         }];
 
@@ -387,7 +450,10 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+                styles: [
+                    {target: 'a', value: {marker: {color: 'red'}}},
+                    {target: 'b', value: {marker: {color: 'blue'}}}
+                ]
             }]
         }];
 
@@ -401,8 +467,9 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: {
-                    a: {
+                styles: [{
+                    target: 'a',
+                    value: {
                         marker: {
                             color: 'orange',
                             size: 20,
@@ -410,8 +477,10 @@ describe('groupby', function() {
                                 color: 'red'
                             }
                         }
-                    },
-                    b: {
+                    }
+                }, {
+                    target: 'b',
+                    value: {
                         mode: 'markers+lines', // heterogeonos attributes are OK: group 'a' doesn't need to define this
                         marker: {
                             color: 'cyan',
@@ -426,7 +495,7 @@ describe('groupby', function() {
                             color: 'purple'
                         }
                     }
-                }
+                }]
             }]
         }];
 
@@ -447,11 +516,14 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: {
-                    a: {marker: {size: 30}},
+                styles: [{
+                    target: 'a',
+                    value: {marker: {size: 30}}
+                }, {
                     // override general color:
-                    b: {marker: {size: 15, line: {color: 'yellow'}}, line: {color: 'purple'}}
-                }
+                    target: 'b',
+                    value: {marker: {size: 15, line: {color: 'yellow'}}, line: {color: 'purple'}}
+                }]
             }]
         }];
 
@@ -464,7 +536,7 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: {/* can be empty, or of partial group id coverage */}
+                styles: [/* can be empty, or of partial group id coverage */]
             }]
         }];
 
@@ -548,7 +620,10 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 // groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+                styles: [
+                    {target: 'a', value: {marker: {color: 'red'}}},
+                    {target: 'b', value: {marker: {color: 'blue'}}}
+                ]
             }]
         }];
 
@@ -561,7 +636,10 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: [],
-                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+                styles: [
+                    {target: 'a', value: {marker: {color: 'red'}}},
+                    {target: 'b', value: {marker: {color: 'blue'}}}
+                ]
             }]
         }];
 
@@ -574,7 +652,10 @@ describe('groupby', function() {
             transforms: [{
                 type: 'groupby',
                 groups: null,
-                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+                styles: [
+                    {target: 'a', value: {marker: {color: 'red'}}},
+                    {target: 'b', value: {marker: {color: 'blue'}}}
+                ]
             }]
         }];
 
