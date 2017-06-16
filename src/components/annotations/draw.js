@@ -231,11 +231,6 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             wholeLink.node().appendChild(annTextBG.node());
         }
 
-
-        // make sure lines are aligned the way they will be
-        // at the end, even if their position changes
-        annText.selectAll('tspan.line').attr({y: 0, x: 0});
-
         var mathjaxGroup = annTextGroupInner.select('.annotation-text-math-group');
         var hasMathjax = !mathjaxGroup.empty();
         var anntextBB = Drawing.bBox(
@@ -424,12 +419,9 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
         else {
             var texty = borderfull + yShift - anntextBB.top,
                 textx = borderfull + xShift - anntextBB.left;
-            annText.attr({
-                x: textx,
-                y: texty
-            })
-            .call(Drawing.setClipUrl, isSizeConstrained ? annClipID : null);
-            annText.selectAll('tspan.line').attr({y: texty, x: textx});
+
+            annText.call(svgTextUtils.positionText, textx, texty)
+                .call(Drawing.setClipUrl, isSizeConstrained ? annClipID : null);
         }
 
         annTextClip.select('rect').call(Drawing.setRect, borderfull, borderfull,

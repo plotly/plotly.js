@@ -119,12 +119,9 @@ Titles.draw = function(gd, titleClass, options) {
             opacity: opacity * Color.opacity(fontColor),
             'font-weight': Plots.fontWeight
         })
-        .attr(attributes)
-        .call(svgTextUtils.convertToTspans, gd)
-        .attr(attributes);
+        .call(svgTextUtils.positionText, attributes.x, attributes.y)
+        .call(svgTextUtils.convertToTspans, gd);
 
-        titleEl.selectAll('tspan.line')
-            .attr(attributes);
         return Plots.previousPromises(gd);
     }
 
@@ -226,9 +223,8 @@ Titles.draw = function(gd, titleClass, options) {
                     .call(titleLayout);
             })
             .on('input', function(d) {
-                this.text(d || ' ').attr(attributes)
-                    .selectAll('tspan.line')
-                        .attr(attributes);
+                this.text(d || ' ')
+                    .call(svgTextUtils.positionText, attributes.x, attributes.y);
             });
     }
     el.classed('js-placeholder', isplaceholder);

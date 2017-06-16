@@ -149,8 +149,6 @@ function getFillColor(selectorLayout, d) {
 function drawButtonText(button, selectorLayout, d, gd) {
     function textLayout(s) {
         svgTextUtils.convertToTspans(s, gd);
-
-        // TODO do we need anything else here?
     }
 
     var text = button.selectAll('text')
@@ -183,12 +181,10 @@ function reposition(gd, buttons, opts, axName) {
 
     buttons.each(function() {
         var button = d3.select(this),
-            text = button.select('.selector-text'),
-            tspans = text.selectAll('tspan.line');
+            text = button.select('.selector-text');
 
         var tHeight = opts.font.size * 1.3,
-            tLines = tspans.size() || 1,
-            hEff = Math.max(tHeight * tLines, 16) + 3;
+            hEff = Math.max(tHeight * svgTextUtils.lineCount(text), 16) + 3;
 
         opts.height = Math.max(opts.height, hEff);
     });
@@ -196,12 +192,11 @@ function reposition(gd, buttons, opts, axName) {
     buttons.each(function() {
         var button = d3.select(this),
             rect = button.select('.selector-rect'),
-            text = button.select('.selector-text'),
-            tspans = text.selectAll('tspan.line');
+            text = button.select('.selector-text');
 
         var tWidth = text.node() && Drawing.bBox(text.node()).width,
             tHeight = opts.font.size * 1.3,
-            tLines = tspans.size() || 1;
+            tLines = svgTextUtils.lineCount(text);
 
         var wEff = Math.max(tWidth + 10, constants.minButtonWidth);
 
@@ -220,13 +215,8 @@ function reposition(gd, buttons, opts, axName) {
             height: opts.height
         });
 
-        var textAttrs = {
-            x: wEff / 2,
-            y: opts.height / 2 - ((tLines - 1) * tHeight / 2) + 3
-        };
-
-        text.attr(textAttrs);
-        tspans.attr(textAttrs);
+        svgTextUtils.positionText(text, wEff / 2,
+            opts.height / 2 - ((tLines - 1) * tHeight / 2) + 3);
 
         opts.width += wEff + 5;
     });

@@ -68,6 +68,8 @@ exports.convertToTspans = function(_context, gd, _callback) {
             _context.style('pointer-events', 'all');
         }
 
+        exports.positionText(_context);
+
         if(_callback) _callback.call(_context);
     }
 
@@ -470,6 +472,32 @@ function buildSVGText(containerNode, str) {
 
     return hasLink;
 }
+
+exports.lineCount = function lineCount(s) {
+    return s.selectAll('tspan.line').size() || 1;
+};
+
+exports.positionText = function positionText(s, x, y) {
+    return s.each(function() {
+        var text = d3.select(this);
+
+        var thisX = x;
+        if(thisX === undefined) {
+            thisX = text.attr('x');
+            if(thisX === null) {
+                text.attr('x', 0);
+                thisX = 0;
+            }
+        }
+        else text.attr('x', thisX);
+
+        if(y !== undefined) text.attr('y', y);
+
+        if(this.nodeName === 'text') {
+            text.selectAll('tspan.line').attr('x', thisX);
+        }
+    });
+};
 
 function alignHTMLWith(_base, container, options) {
     var alignH = options.horizontalAlign,

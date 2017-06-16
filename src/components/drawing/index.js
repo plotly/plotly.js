@@ -41,6 +41,12 @@ drawing.font = function(s, family, size, color) {
     if(color) s.call(Color.fill, color);
 };
 
+/*
+ * Positioning helpers
+ * Note: do not use `setPosition` with <text> nodes modified by
+ * `svgTextUtils.convertToTspans`. Use `svgTextUtils.positionText`
+ * instead, so that <tspan.line> elements get updated to match.
+ */
 drawing.setPosition = function(s, x, y) { s.attr('x', x).attr('y', y); };
 drawing.setSize = function(s, w, h) { s.attr('width', w).attr('height', h); };
 drawing.setRect = function(s, x, y, w, h) {
@@ -455,19 +461,13 @@ drawing.textPointStyle = function(s, trace, gd) {
             .text(text)
             .call(svgTextUtils.convertToTspans, gd);
         var pgroup = d3.select(this.parentNode),
-            tspans = p.selectAll('tspan.line'),
-            numLines = ((tspans[0].length || 1) - 1) * LINEEXPAND + 1,
+            numLines = (svgTextUtils.lineCount(p) - 1) * LINEEXPAND + 1,
             dx = TEXTOFFSETSIGN[h] * r,
             dy = fontSize * 0.75 + TEXTOFFSETSIGN[v] * r +
                 (TEXTOFFSETSIGN[v] - 1) * numLines * fontSize / 2;
 
         // fix the overall text group position
         pgroup.attr('transform', 'translate(' + dx + ',' + dy + ')');
-
-        // then fix multiline text
-        if(numLines > 1) {
-            tspans.attr({ x: p.attr('x'), y: p.attr('y') });
-        }
     });
 };
 
@@ -633,23 +633,10 @@ drawing.bBox = function(node) {
     var testNode = node.cloneNode(true);
     tester.appendChild(testNode);
 
-    // standardize its position - and that of any newlines if we're getting
-    // the bBox of a <text> element directly (not a larger container)
-    // newline <tspan>s need to get `x` and `y` set to match whenever the
-    // containing <text> element gets repositioned, and the line offset
-    // is handled by the attribute `dy` (that we assume is already set)
-    var test3 = d3.select(testNode).attr({
-        x: 0,
-        y: 0,
-        transform: ''
-    });
-
-    if(testNode.nodeName === 'text') {
-        test3.selectAll('tspan.line').attr({
-            x: 0,
-            y: 0
-        });
-    }
+    // standardize its position (and newline tspans if any)
+    d3.select(testNode)
+        .attr('transform', '')
+        .call(svgTextUtils.positionText, 0, 0);
 
     var testRect = testNode.getBoundingClientRect();
     var refRect = drawing.testref

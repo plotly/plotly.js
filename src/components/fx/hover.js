@@ -595,23 +595,15 @@ function createHoverText(hoverData, opts, gd) {
             .attr('data-notex', 1);
 
         ltext.text(t0)
-            .call(svgTextUtils.convertToTspans, gd)
-            .call(Drawing.setPosition, 0, 0)
-          .selectAll('tspan.line')
-            .call(Drawing.setPosition, 0, 0);
+            .call(svgTextUtils.convertToTspans, gd);
         label.attr('transform', '');
 
         var tbb = ltext.node().getBoundingClientRect();
         if(hovermode === 'x') {
             ltext.attr('text-anchor', 'middle')
-                .call(Drawing.setPosition, 0, (xa.side === 'top' ?
+                .call(svgTextUtils.positionText, 0, (xa.side === 'top' ?
                     (outerTop - tbb.bottom - HOVERARROWSIZE - HOVERTEXTPAD) :
-                    (outerTop - tbb.top + HOVERARROWSIZE + HOVERTEXTPAD)))
-                .selectAll('tspan.line')
-                    .attr({
-                        x: ltext.attr('x'),
-                        y: ltext.attr('y')
-                    });
+                    (outerTop - tbb.top + HOVERARROWSIZE + HOVERTEXTPAD)));
 
             var topsign = xa.side === 'top' ? '-' : '';
             lpath.attr('d', 'M0,0' +
@@ -627,14 +619,9 @@ function createHoverText(hoverData, opts, gd) {
         }
         else {
             ltext.attr('text-anchor', ya.side === 'right' ? 'start' : 'end')
-                .call(Drawing.setPosition,
+                .call(svgTextUtils.positionText,
                     (ya.side === 'right' ? 1 : -1) * (HOVERTEXTPAD + HOVERARROWSIZE),
-                    outerTop - tbb.top - tbb.height / 2)
-                .selectAll('tspan.line')
-                    .attr({
-                        x: ltext.attr('x'),
-                        y: ltext.attr('y')
-                    });
+                    outerTop - tbb.top - tbb.height / 2);
 
             var leftsign = ya.side === 'right' ? '' : '-';
             lpath.attr('d', 'M0,0' +
@@ -742,12 +729,9 @@ function createHoverText(hoverData, opts, gd) {
                 d.fontFamily || fontFamily,
                 d.fontSize || fontSize,
                 d.fontColor || contrastColor)
-            .call(Drawing.setPosition, 0, 0)
             .text(text)
             .attr('data-notex', 1)
             .call(svgTextUtils.convertToTspans, gd);
-        tx.selectAll('tspan.line')
-            .call(Drawing.setPosition, 0, 0);
 
         var tx2 = g.select('text.name'),
             tx2width = 0;
@@ -759,11 +743,8 @@ function createHoverText(hoverData, opts, gd) {
                     d.fontSize || fontSize,
                     traceColor)
                 .text(name)
-                .call(Drawing.setPosition, 0, 0)
                 .attr('data-notex', 1)
                 .call(svgTextUtils.convertToTspans, gd);
-            tx2.selectAll('tspan.line')
-                .call(Drawing.setPosition, 0, 0);
             tx2width = tx2.node().getBoundingClientRect().width + 2 * HOVERTEXTPAD;
         }
         else {
@@ -1031,17 +1012,12 @@ function alignHoverText(hoverLabels, rotateLabels) {
                 'V' + (offsetY - HOVERARROWSIZE) +
                 'Z'));
 
-        tx.call(Drawing.setPosition,
-                txx + offsetX, offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD)
-            .selectAll('tspan.line')
-                .attr({
-                    x: tx.attr('x'),
-                    y: tx.attr('y')
-                });
+        tx.call(svgTextUtils.positionText,
+            txx + offsetX, offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD);
 
         if(d.tx2width) {
-            g.select('text.name, text.name tspan.line')
-                .call(Drawing.setPosition,
+            g.select('text.name')
+                .call(svgTextUtils.positionText,
                     tx2x + alignShift * HOVERTEXTPAD + offsetX,
                     offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD);
             g.select('rect')

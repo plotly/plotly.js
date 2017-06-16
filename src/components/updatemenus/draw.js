@@ -523,8 +523,7 @@ function findDimensions(gd, menuOpts) {
 
         button.call(drawItem, menuOpts, buttonOpts, gd);
 
-        var text = button.select('.' + constants.itemTextClassName),
-            tspans = text.selectAll('tspan.line');
+        var text = button.select('.' + constants.itemTextClassName);
 
         // width is given by max width of all buttons
         var tWidth = text.node() && Drawing.bBox(text.node()).width,
@@ -532,7 +531,7 @@ function findDimensions(gd, menuOpts) {
 
         // height is determined by item text
         var tHeight = menuOpts.font.size * constants.fontSizeToHeight,
-            tLines = tspans.size() || 1,
+            tLines = svgTextUtils.lineCount(text),
             hEff = Math.max(tHeight * tLines, constants.minHeight) + constants.textOffsetY;
 
         hEff = Math.ceil(hEff);
@@ -629,7 +628,6 @@ function setItemPosition(item, menuOpts, posOpts, overrideOpts) {
     overrideOpts = overrideOpts || {};
     var rect = item.select('.' + constants.itemRectClassName),
         text = item.select('.' + constants.itemTextClassName),
-        tspans = text.selectAll('tspan.line'),
         borderWidth = menuOpts.borderwidth,
         index = posOpts.index;
 
@@ -646,16 +644,11 @@ function setItemPosition(item, menuOpts, posOpts, overrideOpts) {
     });
 
     var tHeight = menuOpts.font.size * constants.fontSizeToHeight,
-        tLines = tspans.size() || 1,
+        tLines = svgTextUtils.lineCount(text),
         spanOffset = ((tLines - 1) * tHeight / 2);
 
-    var textAttrs = {
-        x: constants.textOffsetX,
-        y: finalHeight / 2 - spanOffset + constants.textOffsetY
-    };
-
-    text.attr(textAttrs);
-    tspans.attr(textAttrs);
+    svgTextUtils.positionText(text, constants.textOffsetX,
+        finalHeight / 2 - spanOffset + constants.textOffsetY);
 
     if(isVertical) {
         posOpts.y += menuOpts.heights[index] + posOpts.yPad;

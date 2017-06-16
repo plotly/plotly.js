@@ -370,19 +370,14 @@ function drawTexts(g, gd) {
     var text = g.selectAll('text.legendtext')
         .data([0]);
     text.enter().append('text').classed('legendtext', true);
-    text.attr({
-        x: 40,
-        y: 0,
-        'text-anchor': 'start'
-    })
+    text.attr('text-anchor', 'start')
     .classed('user-select-none', true)
     .call(Drawing.font, fullLayout.legend.font)
     .text(name);
 
     function textLayout(s) {
         svgTextUtils.convertToTspans(s, gd, function() {
-            s.selectAll('tspan.line').attr({x: s.attr('x')});
-            g.call(computeTextDimensions, gd);
+            computeTextDimensions(g, gd);
         });
     }
 
@@ -577,8 +572,7 @@ function computeTextDimensions(g, gd) {
     }
     else {
         var text = g.selectAll('.legendtext'),
-            textSpans = text.selectAll('tspan.line'),
-            textLines = textSpans.size() || 1,
+            textLines = svgTextUtils.lineCount(text),
             textNode = text.node();
 
         height = lineHeight * textLines;
@@ -587,8 +581,7 @@ function computeTextDimensions(g, gd) {
         // approximation to height offset to center the font
         // to avoid getBoundingClientRect
         var textY = lineHeight * (0.3 + (1 - textLines) / 2);
-        text.attr('y', textY);
-        textSpans.attr('y', textY);
+        svgTextUtils.positionText(text, 40, textY);
     }
 
     height = Math.max(height, 16) + 3;

@@ -19,8 +19,6 @@ var anchorUtils = require('../legend/anchor_utils');
 
 var constants = require('./constants');
 
-var RESETATTRS = {x: 0, y: 0};
-
 
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout,
@@ -165,7 +163,7 @@ function findDimensions(gd, sliderOpts) {
         sliderLabels.each(function(stepOpts) {
             var curValPrefix = drawCurrentValue(dummyGroup, sliderOpts, stepOpts.label);
             var curValSize = (curValPrefix.node() && Drawing.bBox(curValPrefix.node())) || {width: 0, height: 0};
-            var lines = curValPrefix.selectAll('tspan.line').size() || 1;
+            var lines = svgTextUtils.lineCount(curValPrefix);
             sliderOpts.currentValueMaxWidth = Math.max(sliderOpts.currentValueMaxWidth, Math.ceil(curValSize.width));
             sliderOpts.currentValueHeight = Math.max(sliderOpts.currentValueHeight, Math.ceil(curValSize.height));
             sliderOpts.currentValueMaxLines = Math.max(sliderOpts.currentValueMaxLines, lines);
@@ -313,15 +311,14 @@ function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
 
     text.call(Drawing.font, sliderOpts.currentvalue.font)
         .text(str)
-        .call(svgTextUtils.convertToTspans, sliderOpts.gd)
-        .attr(RESETATTRS);
+        .call(svgTextUtils.convertToTspans, sliderOpts.gd);
 
-    var tspans = text.selectAll('tspan.line').attr(RESETATTRS);
+    var lines = svgTextUtils.lineCount(text);
 
-    var y0 = (sliderOpts.currentValueMaxLines + 1 - (tspans.size() || 1)) *
+    var y0 = (sliderOpts.currentValueMaxLines + 1 - lines) *
         sliderOpts.currentvalue.font.size * constants.fontSizeToHeight;
 
-    Drawing.setTranslate(text, x0, y0);
+    svgTextUtils.positionText(text, x0, y0);
 
     return text;
 }
@@ -360,10 +357,7 @@ function drawLabel(item, data, sliderOpts) {
 
     text.call(Drawing.font, sliderOpts.font)
         .text(data.step.label)
-        .call(svgTextUtils.convertToTspans, sliderOpts.gd)
-        .attr(RESETATTRS);
-
-    text.selectAll('tspan.line').attr(RESETATTRS);
+        .call(svgTextUtils.convertToTspans, sliderOpts.gd);
 
     return text;
 }

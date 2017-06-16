@@ -251,14 +251,11 @@ module.exports = function plot(gd, cdpie) {
                         .attr({
                             'class': 'slicetext',
                             transform: '',
-                            'text-anchor': 'middle',
-                            x: 0,
-                            y: 0
+                            'text-anchor': 'middle'
                         })
                         .call(Drawing.font, textPosition === 'outside' ?
                             trace.outsidetextfont : trace.insidetextfont)
                         .call(svgTextUtils.convertToTspans, gd);
-                    sliceText.selectAll('tspan.line').attr({x: 0, y: 0});
 
                     // position the text relative to the slice
                     // TODO: so far this only accounts for flat
