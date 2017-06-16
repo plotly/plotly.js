@@ -86,15 +86,8 @@ module.exports = function draw(gd) {
         });
 
         drawSlider(gd, d3.select(this), sliderOpts);
-
-        // makeInputProxy(gd, d3.select(this), sliderOpts);
     });
 };
-
-/* function makeInputProxy(gd, sliderGroup, sliderOpts) {
-    sliderOpts.inputProxy = gd._fullLayout._paperdiv.selectAll('input.' + constants.inputProxyClass)
-        .data([0]);
-}*/
 
 // This really only just filters by visibility:
 function makeSliderData(fullLayout, gd) {
@@ -135,10 +128,6 @@ function findDimensions(gd, sliderOpts) {
         var textNode = text.node();
         if(textNode) {
             var bBox = Drawing.bBox(textNode);
-            // This just overwrites with the last. Which is fine as long as
-            // the bounding box (probably incorrectly) measures the text *on
-            // a single line*:
-            // TODO: what is that comment about? should this be a max as well?
             labelHeight = Math.max(labelHeight, bBox.height);
             maxLabelWidth = Math.max(maxLabelWidth, bBox.width);
         }
