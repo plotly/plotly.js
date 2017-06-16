@@ -1849,7 +1849,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                             (labely(d) - d.fontSize / 2) + ')') :
                         '');
                 if(mathjaxGroup.empty()) {
-                    var txt = thisLabel.select('text').attr({
+                    thisLabel.select('text').attr({
                         transform: transform,
                         'text-anchor': anchor
                     });
