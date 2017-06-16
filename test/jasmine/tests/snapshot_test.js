@@ -224,12 +224,14 @@ describe('Plotly.Snapshot', function() {
         });
 
         it('should force *visibility: visible* for text elements with *visibility: inherit*', function(done) {
+            // we've gotten rid of visibility almost entirely, using display instead
             d3.select(gd).style('visibility', 'inherit');
 
             Plotly.plot(gd, subplotMock.data, subplotMock.layout).then(function() {
 
                 d3.select(gd).selectAll('text').each(function() {
                     expect(d3.select(this).style('visibility')).toEqual('visible');
+                    expect(d3.select(this).style('display')).toEqual('block');
                 });
 
                 return Plotly.Snapshot.toSVG(gd);
@@ -239,7 +241,8 @@ describe('Plotly.Snapshot', function() {
                     textElements = svgDOM.getElementsByTagName('text');
 
                 for(var i = 0; i < textElements.length; i++) {
-                    expect(textElements[i].style.visibility).toEqual('visible');
+                    expect(textElements[i].style.visibility).toEqual('');
+                    expect(textElements[i].style.display).toEqual('');
                 }
 
                 done();
