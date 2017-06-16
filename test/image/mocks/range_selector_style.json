@@ -1102,8 +1102,7 @@
             "y": 1.02,
             "yanchor": "bottom"
         },
-        "height": 450,
-        "width": 1000,
-        "autosize": true
+        "height": 500,
+        "width": 700
     }
 }
