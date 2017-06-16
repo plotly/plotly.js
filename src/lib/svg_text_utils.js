@@ -40,7 +40,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
     svgClass += '-math';
     parent.selectAll('svg.' + svgClass).remove();
     parent.selectAll('g.' + svgClass + '-group').remove();
-    _context.style({visibility: null})
+    _context.style('display', null)
         .attr({
             // some callers use data-unformatted *from the <text> element* in 'cancel'
             // so we need it here even if we're going to turn it into math
@@ -75,7 +75,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
 
     if(tex) {
         ((gd && gd._promises) || []).push(new Promise(function(resolve) {
-            _context.style({visibility: 'hidden'});
+            _context.style('display', 'none');
             var config = {fontSize: parseInt(_context.style('font-size'), 10)};
 
             texToSVG(tex[2], config, function(_svgEl, _glyphDefs, _svgBBox) {
