@@ -151,29 +151,8 @@ function findDimensions(gd, sliderOpts) {
         constants.gripHeight
     );
 
-    sliderOpts.currentValueMaxWidth = 0;
-    sliderOpts.currentValueHeight = 0;
-    sliderOpts.currentValueTotalHeight = 0;
-    sliderOpts.currentValueMaxLines = 1;
-
-    if(sliderOpts.currentvalue.visible) {
-        // Get the dimensions of the current value label:
-        var dummyGroup = Drawing.tester.append('g');
-
-        sliderLabels.each(function(stepOpts) {
-            var curValPrefix = drawCurrentValue(dummyGroup, sliderOpts, stepOpts.label);
-            var curValSize = (curValPrefix.node() && Drawing.bBox(curValPrefix.node())) || {width: 0, height: 0};
-            var lines = svgTextUtils.lineCount(curValPrefix);
-            sliderOpts.currentValueMaxWidth = Math.max(sliderOpts.currentValueMaxWidth, Math.ceil(curValSize.width));
-            sliderOpts.currentValueHeight = Math.max(sliderOpts.currentValueHeight, Math.ceil(curValSize.height));
-            sliderOpts.currentValueMaxLines = Math.max(sliderOpts.currentValueMaxLines, lines);
-        });
-
-        sliderOpts.currentValueTotalHeight = sliderOpts.currentValueHeight + sliderOpts.currentvalue.offset;
-
-        dummyGroup.remove();
-    }
-
+    // calculate some overall dimensions - some of these are needed for
+    // calculating the currentValue dimensions
     var graphSize = gd._fullLayout._size;
     sliderOpts.lx = graphSize.l + graphSize.w * sliderOpts.x;
     sliderOpts.ly = graphSize.t + graphSize.h * (1 - sliderOpts.y);
@@ -199,6 +178,31 @@ function findDimensions(gd, sliderOpts) {
     var computedSpacePerLabel = maxLabelWidth + constants.labelPadding;
     sliderOpts.labelStride = Math.max(1, Math.ceil(computedSpacePerLabel / availableSpacePerLabel));
     sliderOpts.labelHeight = labelHeight;
+
+    // loop over all possible values for currentValue to find the
+    // area we need for it
+    sliderOpts.currentValueMaxWidth = 0;
+    sliderOpts.currentValueHeight = 0;
+    sliderOpts.currentValueTotalHeight = 0;
+    sliderOpts.currentValueMaxLines = 1;
+
+    if(sliderOpts.currentvalue.visible) {
+        // Get the dimensions of the current value label:
+        var dummyGroup = Drawing.tester.append('g');
+
+        sliderLabels.each(function(stepOpts) {
+            var curValPrefix = drawCurrentValue(dummyGroup, sliderOpts, stepOpts.label);
+            var curValSize = (curValPrefix.node() && Drawing.bBox(curValPrefix.node())) || {width: 0, height: 0};
+            var lines = svgTextUtils.lineCount(curValPrefix);
+            sliderOpts.currentValueMaxWidth = Math.max(sliderOpts.currentValueMaxWidth, Math.ceil(curValSize.width));
+            sliderOpts.currentValueHeight = Math.max(sliderOpts.currentValueHeight, Math.ceil(curValSize.height));
+            sliderOpts.currentValueMaxLines = Math.max(sliderOpts.currentValueMaxLines, lines);
+        });
+
+        sliderOpts.currentValueTotalHeight = sliderOpts.currentValueHeight + sliderOpts.currentvalue.offset;
+
+        dummyGroup.remove();
+    }
 
     sliderOpts.height = sliderOpts.currentValueTotalHeight + constants.tickOffset + sliderOpts.ticklen + constants.labelOffset + sliderOpts.labelHeight + sliderOpts.pad.t + sliderOpts.pad.b;
 
