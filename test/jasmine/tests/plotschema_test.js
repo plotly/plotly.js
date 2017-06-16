@@ -188,6 +188,13 @@ describe('plot schema', function() {
         });
     });
 
+    it('should work with registered transforms (2)', function() {
+        var valObjects = plotSchema.transforms.groupby.attributes;
+        var items = valObjects.styles.items || {};
+
+        expect(Object.keys(items)).toEqual(['style']);
+    });
+
     it('should work with registered components', function() {
         expect(plotSchema.traces.scatter.attributes.xcalendar.valType).toEqual('enumerated');
         expect(plotSchema.traces.scatter3d.attributes.zcalendar.valType).toEqual('enumerated');
