@@ -70,8 +70,15 @@ function assertSrcContents() {
                 // look for .classList
                 if(node.type === 'MemberExpression') {
                     var parts = node.source().split('.');
-                    if(parts[parts.length - 1] === 'classList') {
+                    var lastPart = parts[parts.length - 1];
+                    if(lastPart === 'classList') {
                         logs.push(file + ' : contains .classList (IE failure)');
+                    }
+                    else if(lastPart === 'innerHTML') {
+                        logs.push(file + ' : contains .innerHTML (IE failure in SVG)');
+                    }
+                    else if(node.source() === 'Math.sign') {
+                        logs.push(file + ' : contains Math.sign (IE failure)');
                     }
                 }
             });
