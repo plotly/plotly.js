@@ -587,6 +587,23 @@ describe('hover info', function() {
             Plotly.plot(gd, data, layout).then(done);
         });
 
+        it('should skip the hover event if explicitly instructed', function(done) {
+            var hoverHandler = jasmine.createSpy();
+            gd.on('plotly_hover', hoverHandler);
+
+            var gdBB = gd.getBoundingClientRect();
+            var event = {clientX: gdBB.left + 300, clientY: gdBB.top + 200};
+
+            Promise.resolve().then(function() {
+                Fx.hover(gd, event, 'xy', true);
+            })
+            .then(function() {
+                expect(hoverHandler).not.toHaveBeenCalled();
+            })
+            .catch(fail)
+            .then(done);
+        });
+
         it('should emit events only if the event looks user-driven', function(done) {
             var hoverHandler = jasmine.createSpy();
             gd.on('plotly_hover', hoverHandler);
