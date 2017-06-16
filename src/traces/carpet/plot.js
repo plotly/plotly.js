@@ -159,6 +159,7 @@ function drawAxisLabels(gd, xaxis, yaxis, trace, t, layer, labels, labelClass) {
                 'text-anchor': direction > 0 ? 'start' : 'end',
                 'data-notex': 1
             })
+            .call(Drawing.font, label.font)
             .text(label.text)
             .call(svgTextUtils.convertToTspans, gd);
 
@@ -171,8 +172,7 @@ function drawAxisLabels(gd, xaxis, yaxis, trace, t, layer, labels, labelClass) {
                 'rotate(' + orientation.angle + ')' +
                 // Adjust the baseline and indentation:
                 'translate(' + label.axis.labelpadding * direction + ',' + bbox.height * 0.3 + ')'
-            )
-            .call(Drawing.font, label.font.family, label.font.size, label.font.color);
+            );
 
         maxExtent = Math.max(maxExtent, bbox.width + label.axis.labelpadding);
     });
