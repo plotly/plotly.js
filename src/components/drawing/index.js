@@ -460,10 +460,11 @@ drawing.textPointStyle = function(s, trace, gd) {
             .attr('text-anchor', h)
             .text(text)
             .call(svgTextUtils.convertToTspans, gd);
-        var pgroup = d3.select(this.parentNode),
-            numLines = (svgTextUtils.lineCount(p) - 1) * LINEEXPAND + 1,
-            dx = TEXTOFFSETSIGN[h] * r,
-            dy = fontSize * 0.75 + TEXTOFFSETSIGN[v] * r +
+
+        var pgroup = d3.select(this.parentNode);
+        var numLines = (svgTextUtils.lineCount(p) - 1) * LINEEXPAND + 1;
+        var dx = TEXTOFFSETSIGN[h] * r;
+        var dy = fontSize * 0.75 + TEXTOFFSETSIGN[v] * r +
                 (TEXTOFFSETSIGN[v] - 1) * numLines * fontSize / 2;
 
         // fix the overall text group position

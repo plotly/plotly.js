@@ -417,8 +417,8 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             .call(Drawing.setClipUrl, isSizeConstrained ? annClipID : null);
         }
         else {
-            var texty = borderfull + yShift - anntextBB.top,
-                textx = borderfull + xShift - anntextBB.left;
+            var texty = borderfull + yShift - anntextBB.top;
+            var textx = borderfull + xShift - anntextBB.left;
 
             annText.call(svgTextUtils.positionText, textx, texty)
                 .call(Drawing.setClipUrl, isSizeConstrained ? annClipID : null);
