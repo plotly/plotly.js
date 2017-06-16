@@ -77,6 +77,9 @@ function assertSrcContents() {
                     else if(lastPart === 'innerHTML') {
                         logs.push(file + ' : contains .innerHTML (IE failure in SVG)');
                     }
+                    else if(lastPart === 'parentElement') {
+                        logs.push(file + ' : contains .parentElement (IE failure)');
+                    }
                     else if(node.source() === 'Math.sign') {
                         logs.push(file + ' : contains Math.sign (IE failure)');
                     }
