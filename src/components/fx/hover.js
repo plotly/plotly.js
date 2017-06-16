@@ -595,6 +595,7 @@ function createHoverText(hoverData, opts, gd) {
             .attr('data-notex', 1);
 
         ltext.text(t0)
+            .call(svgTextUtils.positionText, 0, 0)
             .call(svgTextUtils.convertToTspans, gd);
         label.attr('transform', '');
 
@@ -731,6 +732,7 @@ function createHoverText(hoverData, opts, gd) {
                 d.fontColor || contrastColor)
             .text(text)
             .attr('data-notex', 1)
+            .call(svgTextUtils.positionText, 0, 0)
             .call(svgTextUtils.convertToTspans, gd);
 
         var tx2 = g.select('text.name'),
@@ -744,6 +746,7 @@ function createHoverText(hoverData, opts, gd) {
                     traceColor)
                 .text(name)
                 .attr('data-notex', 1)
+                .call(svgTextUtils.positionText, 0, 0)
                 .call(svgTextUtils.convertToTspans, gd);
             tx2width = tx2.node().getBoundingClientRect().width + 2 * HOVERTEXTPAD;
         }
