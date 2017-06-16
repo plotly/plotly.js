@@ -28,5 +28,7 @@ module.exports = {
         bottom: 1,
         middle: 0.5,
         top: 0
-    }
+    },
+    // multiple of fontSize to get the vertical offset between lines
+    LINE_SPACING: 1.3
 };

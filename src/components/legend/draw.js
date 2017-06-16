@@ -22,6 +22,8 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 
 var constants = require('./constants');
 var interactConstants = require('../../constants/interactions');
+var LINE_SPACING = require('../../constants/alignment').LINE_SPACING;
+
 var getLegendData = require('./get_legend_data');
 var style = require('./style');
 var helpers = require('./helpers');
@@ -561,7 +563,7 @@ function computeTextDimensions(g, gd) {
     var mathjaxGroup = g.select('g[class*=math-group]');
     var mathjaxNode = mathjaxGroup.node();
     var opts = gd._fullLayout.legend;
-    var lineHeight = opts.font.size * 1.3;
+    var lineHeight = opts.font.size * LINE_SPACING;
     var height, width;
 
     if(mathjaxNode) {

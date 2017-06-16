@@ -19,6 +19,8 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var axisIds = require('../../plots/cartesian/axis_ids');
 var anchorUtils = require('../legend/anchor_utils');
 
+var LINE_SPACING = require('../../constants/alignment').LINE_SPACING;
+
 var constants = require('./constants');
 var getUpdateObject = require('./get_update_object');
 
@@ -183,7 +185,7 @@ function reposition(gd, buttons, opts, axName) {
         var button = d3.select(this);
         var text = button.select('.selector-text');
 
-        var tHeight = opts.font.size * 1.3;
+        var tHeight = opts.font.size * LINE_SPACING;
         var hEff = Math.max(tHeight * svgTextUtils.lineCount(text), 16) + 3;
 
         opts.height = Math.max(opts.height, hEff);
@@ -195,7 +197,7 @@ function reposition(gd, buttons, opts, axName) {
         var text = button.select('.selector-text');
 
         var tWidth = text.node() && Drawing.bBox(text.node()).width;
-        var tHeight = opts.font.size * 1.3;
+        var tHeight = opts.font.size * LINE_SPACING;
         var tLines = svgTextUtils.lineCount(text);
 
         var wEff = Math.max(tWidth + 10, constants.minButtonWidth);

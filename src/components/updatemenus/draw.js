@@ -17,6 +17,8 @@ var Drawing = require('../drawing');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var anchorUtils = require('../legend/anchor_utils');
 
+var LINE_SPACING = require('../../constants/alignment').LINE_SPACING;
+
 var constants = require('./constants');
 var ScrollBox = require('./scrollbox');
 
@@ -530,7 +532,7 @@ function findDimensions(gd, menuOpts) {
         var wEff = Math.max(tWidth + constants.textPadX, constants.minWidth);
 
         // height is determined by item text
-        var tHeight = menuOpts.font.size * constants.fontSizeToHeight;
+        var tHeight = menuOpts.font.size * LINE_SPACING;
         var tLines = svgTextUtils.lineCount(text);
         var hEff = Math.max(tHeight * tLines, constants.minHeight) + constants.textOffsetY;
 
@@ -643,7 +645,7 @@ function setItemPosition(item, menuOpts, posOpts, overrideOpts) {
         height: finalHeight
     });
 
-    var tHeight = menuOpts.font.size * constants.fontSizeToHeight;
+    var tHeight = menuOpts.font.size * LINE_SPACING;
     var tLines = svgTextUtils.lineCount(text);
     var spanOffset = ((tLines - 1) * tHeight / 2);
 

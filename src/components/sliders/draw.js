@@ -18,6 +18,7 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var anchorUtils = require('../legend/anchor_utils');
 
 var constants = require('./constants');
+var LINE_SPACING = require('../../constants/alignment').LINE_SPACING;
 
 
 module.exports = function draw(gd) {
@@ -309,7 +310,7 @@ function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
     var lines = svgTextUtils.lineCount(text);
 
     var y0 = (sliderOpts.currentValueMaxLines + 1 - lines) *
-        sliderOpts.currentvalue.font.size * constants.fontSizeToHeight;
+        sliderOpts.currentvalue.font.size * LINE_SPACING;
 
     svgTextUtils.positionText(text, x0, y0);
 
@@ -381,7 +382,7 @@ function drawLabelGroup(sliderGroup, sliderOpts) {
                 sliderOpts.ticklen +
                 // position is the baseline of the top line of text only, even
                 // if the label spans multiple lines
-                sliderOpts.font.size * constants.fontSizeToHeight +
+                sliderOpts.font.size * LINE_SPACING +
                 constants.labelOffset +
                 sliderOpts.currentValueTotalHeight
         );

@@ -16,6 +16,7 @@ var d3 = require('d3');
 var Lib = require('../lib');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var stringMappings = require('../constants/string_mappings');
+var LINE_SPACING = require('../constants/alignment').LINE_SPACING;
 
 // text converter
 
@@ -326,7 +327,7 @@ function buildSVGText(containerNode, str) {
         var lineNode = document.createElementNS(xmlnsNamespaces.svg, 'tspan');
         d3.select(lineNode).attr({
             class: 'line',
-            dy: (currentLine * 1.3) + 'em'
+            dy: (currentLine * LINE_SPACING) + 'em'
         });
         containerNode.appendChild(lineNode);
 

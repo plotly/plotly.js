@@ -20,6 +20,9 @@ var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
 
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
+var alignment = require('../../constants/alignment');
+var LINE_SPACING = alignment.LINE_SPACING;
+
 var subTypes = require('../../traces/scatter/subtypes');
 var makeBubbleSizeFn = require('../../traces/scatter/make_bubble_size_func');
 
@@ -426,8 +429,7 @@ drawing.tryColorscale = function(marker, prefix) {
 };
 
 // draw text at points
-var TEXTOFFSETSIGN = {start: 1, end: -1, middle: 0, bottom: 1, top: -1},
-    LINEEXPAND = 1.3;
+var TEXTOFFSETSIGN = {start: 1, end: -1, middle: 0, bottom: 1, top: -1};
 drawing.textPointStyle = function(s, trace, gd) {
     s.each(function(d) {
         var p = d3.select(this),
@@ -462,7 +464,7 @@ drawing.textPointStyle = function(s, trace, gd) {
             .call(svgTextUtils.convertToTspans, gd);
 
         var pgroup = d3.select(this.parentNode);
-        var numLines = (svgTextUtils.lineCount(p) - 1) * LINEEXPAND + 1;
+        var numLines = (svgTextUtils.lineCount(p) - 1) * LINE_SPACING + 1;
         var dx = TEXTOFFSETSIGN[h] * r;
         var dy = fontSize * 0.75 + TEXTOFFSETSIGN[v] * r +
                 (TEXTOFFSETSIGN[v] - 1) * numLines * fontSize / 2;
