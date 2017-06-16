@@ -638,7 +638,7 @@ drawing.bBox = function(node) {
 
     // standardize its position (and newline tspans if any)
     d3.select(testNode)
-        .attr('transform', '')
+        .attr('transform', null)
         .call(svgTextUtils.positionText, 0, 0);
 
     var testRect = testNode.getBoundingClientRect();
