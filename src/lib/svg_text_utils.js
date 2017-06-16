@@ -481,20 +481,23 @@ exports.positionText = function positionText(s, x, y) {
     return s.each(function() {
         var text = d3.select(this);
 
-        var thisX = x;
-        if(thisX === undefined) {
-            thisX = text.attr('x');
-            if(thisX === null) {
-                text.attr('x', 0);
-                thisX = 0;
+        function setOrGet(attr, val) {
+            if(val === undefined) {
+                val = text.attr(attr);
+                if(val === null) {
+                    text.attr(attr, 0);
+                    val = 0;
+                }
             }
+            else text.attr(attr, val);
+            return val;
         }
-        else text.attr('x', thisX);
 
-        if(y !== undefined) text.attr('y', y);
+        var thisX = setOrGet('x', x);
+        var thisY = setOrGet('y', y);
 
         if(this.nodeName === 'text') {
-            text.selectAll('tspan.line').attr('x', thisX);
+            text.selectAll('tspan.line').attr({x: thisX, y: thisY});
         }
     });
 };
