@@ -231,12 +231,17 @@ module.exports = function setConvert(ax, fullLayout) {
         ax.d2c = ax.d2l = setCategoryIndex;
         ax.r2d = ax.c2d = ax.l2d = getCategoryName;
 
-        ax.r2c = ax.d2r = ax.d2l_noadd = getCategoryIndex;
+        ax.d2r = ax.d2l_noadd = getCategoryIndex;
+
+        ax.r2c = function(v) {
+            var index = getCategoryIndex(v);
+            return index !== undefined ? index : ax.fraction2r(0.5);
+        };
 
         ax.l2r = ax.c2r = ensureNumber;
         ax.r2l = getCategoryIndex;
 
-        ax.d2p = function(v) { return ax.l2p(getCategoryIndex(v)); };
+        ax.d2p = function(v) { return ax.l2p(ax.r2c(v)); };
         ax.p2d = function(px) { return getCategoryName(p2l(px)); };
         ax.r2p = ax.d2p;
         ax.p2r = p2l;
