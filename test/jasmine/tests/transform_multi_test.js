@@ -227,7 +227,7 @@ describe('multiple transforms:', function() {
         transforms: [{
             type: 'groupby',
             groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-            style: [{
+            styles: [{
                 target: 'a',
                 value: {marker: {color: 'red'}},
             }, {
@@ -247,7 +247,7 @@ describe('multiple transforms:', function() {
         transforms: [{
             type: 'groupby',
             groups: ['b', 'a', 'b', 'b', 'b', 'a', 'a'],
-            style: [{
+            styles: [{
                 target: 'a',
                 value: {marker: {color: 'green'}}
             }, {
@@ -343,7 +343,7 @@ describe('multiple transforms:', function() {
             expect(gd._fullData[1].marker.opacity).toEqual(1);
 
             return Plotly.restyle(gd, {
-                'transforms[0].style': [[{
+                'transforms[0].styles': [[{
                     target: 'a',
                     value: {marker: {color: 'green'}}
                 }, {
@@ -457,7 +457,7 @@ describe('multiple traces with transforms:', function() {
         transforms: [{
             type: 'groupby',
             groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-            style: [{
+            styles: [{
                 target: 'a',
                 value: {marker: {color: 'red'}},
             }, {
@@ -534,7 +534,7 @@ describe('multiple traces with transforms:', function() {
             });
 
             return Plotly.restyle(gd, {
-                'transforms[0].style': [[{
+                'transforms[0].styles': [[{
                     target: 'a',
                     value: {marker: {color: 'green'}},
                 }, {
