@@ -619,7 +619,7 @@ drawing.savedBBoxes = {};
 var savedBBoxesCount = 0;
 var maxSavedBBoxes = 10000;
 
-drawing.bBox = function(node) {
+drawing.bBox = function(node, hash) {
     /*
      * Cache elements we've already measured so we don't have to
      * remeasure the same thing many times
@@ -628,7 +628,7 @@ drawing.bBox = function(node) {
      * These will not generate a hash (unless we figure out an appropriate
      * hash key for them) and thus we will not hash them.
      */
-    var hash = nodeHash(node);
+    if(!hash) hash = nodeHash(node);
     var out;
     if(hash) {
         out = drawing.savedBBoxes[hash];
@@ -636,8 +636,8 @@ drawing.bBox = function(node) {
     }
     else if(node.children.length === 1) {
         /*
-         * If we have only one child element, make a new hash from this element
-         * plus its x,y,transform
+         * If we have only one child element, which is itself hashable, make
+         * a new hash from this element plus its x,y,transform
          * These bounding boxes *include* x,y,transform - mostly for use by
          * callers trying to avoid overlaps (ie titles)
          */
@@ -647,12 +647,12 @@ drawing.bBox = function(node) {
         if(hash) {
             var x = +innerNode.getAttribute('x') || 0;
             var y = +innerNode.getAttribute('y') || 0;
-            var transform = innerNode.getAttribute('transform') || '';
+            var transform = innerNode.getAttribute('transform');
 
             if(!transform) {
                 // in this case, just varying x and y, don't bother caching
-                // because the alteration is simple.
-                var innerBB = drawing.bBox(innerNode);
+                // the final bBox because the alteration is quick.
+                var innerBB = drawing.bBox(innerNode, hash);
                 if(x) {
                     innerBB.left += x;
                     innerBB.right += x;
