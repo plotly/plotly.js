@@ -609,25 +609,75 @@ drawing.makeTester = function() {
     drawing.testref = testref;
 };
 
-// use our offscreen tester to get a clientRect for an element,
-// in a reference frame where it isn't translated and its anchor
-// point is at (0,0)
-// always returns a copy of the bbox, so the caller can modify it safely
+/*
+ * use our offscreen tester to get a clientRect for an element,
+ * in a reference frame where it isn't translated and its anchor
+ * point is at (0,0)
+ * always returns a copy of the bbox, so the caller can modify it safely
+ */
 drawing.savedBBoxes = {};
 var savedBBoxesCount = 0;
 var maxSavedBBoxes = 10000;
 
 drawing.bBox = function(node) {
-    // Cache elements we've already measured so we don't have to
-    // remeasure the same thing many times
-    // We have a few bBox callers though who pass a node larger than
-    // a <text> or a MathJax <g>, such as an axis group containing many labels.
-    // These will not generate a hash (unless we figure out an appropriate
-    // hash key for them) and thus we will not hash them.
+    /*
+     * Cache elements we've already measured so we don't have to
+     * remeasure the same thing many times
+     * We have a few bBox callers though who pass a node larger than
+     * a <text> or a MathJax <g>, such as an axis group containing many labels.
+     * These will not generate a hash (unless we figure out an appropriate
+     * hash key for them) and thus we will not hash them.
+     */
     var hash = nodeHash(node);
+    var out;
     if(hash) {
-        var out = drawing.savedBBoxes[hash];
+        out = drawing.savedBBoxes[hash];
         if(out) return Lib.extendFlat({}, out);
+    }
+    else if(node.children.length === 1) {
+        /*
+         * If we have only one child element, make a new hash from this element
+         * plus its x,y,transform
+         * These bounding boxes *include* x,y,transform - mostly for use by
+         * callers trying to avoid overlaps (ie titles)
+         */
+        var innerNode = node.children[0];
+
+        hash = nodeHash(innerNode);
+        if(hash) {
+            var x = +innerNode.getAttribute('x') || 0;
+            var y = +innerNode.getAttribute('y') || 0;
+            var transform = innerNode.getAttribute('transform') || '';
+
+            if(!transform) {
+                // in this case, just varying x and y, don't bother caching
+                // because the alteration is simple.
+                var innerBB = drawing.bBox(innerNode);
+                if(x) {
+                    innerBB.left += x;
+                    innerBB.right += x;
+                }
+                if(y) {
+                    innerBB.top += y;
+                    innerBB.bottom += y;
+                }
+                return innerBB;
+            }
+            /*
+             * else we have a transform - rather than make a complicated
+             * (and error-prone and probably slow) transform parser/calculator,
+             * just continue on calculating the boundingClientRect of the group
+             * and use the new composite hash to cache it.
+             * That said, `innerNode.transform.baseVal` is an array of
+             * `SVGTransform` objects, that *do* seem to have a nice matrix
+             * multiplication interface that we could use to avoid making
+             * another getBoundingClientRect call...
+             */
+            hash += '~' + x + '~' + y + '~' + transform;
+
+            out = drawing.savedBBoxes[hash];
+            if(out) return Lib.extendFlat({}, out);
+        }
     }
 
     var tester = drawing.tester.node();
@@ -662,7 +712,7 @@ drawing.bBox = function(node) {
     // by saving boxes for long-gone elements
     if(savedBBoxesCount >= maxSavedBBoxes) {
         drawing.savedBBoxes = {};
-        maxSavedBBoxes = 0;
+        savedBBoxesCount = 0;
     }
 
     // cache this bbox
@@ -674,21 +724,6 @@ drawing.bBox = function(node) {
 
 // capture everything about a node (at least in our usage) that
 // impacts its bounding box, given that bBox clears x, y, and transform
-// TODO: is this really everything? Is it worth taking only parts of style,
-// so we can share across more changes (like colors)? I guess we can't strip
-// colors and stuff from inside innerHTML so maybe not worth bothering outside.
-// TODO # 2: this can be long, so could take a lot of memory, do we want to
-// hash it? But that can be slow...
-// extracting this string from a typical element takes ~3 microsec, where
-// doing a simple hash ala https://stackoverflow.com/questions/7616461
-// adds ~15 microsec (nearly all of this is spent in charCodeAt)
-// function hash(s) {
-//   var h = 0;
-//   for (var i = 0; i < s.length; i++) {
-//     h = (((h << 5) - h) + s.charCodeAt(i)) | 0; // codePointAt?
-//   }
-//   return h;
-// }
 function nodeHash(node) {
     var inputText = node.getAttribute('data-unformatted');
     if(inputText === null) return;
