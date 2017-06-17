@@ -133,33 +133,33 @@ Titles.draw = function(gd, titleClass, options) {
 
             // move toward avoid.side (= left, right, top, bottom) if needed
             // can include pad (pixels, default 2)
-            var shift = 0,
-                backside = {
-                    left: 'right',
-                    right: 'left',
-                    top: 'bottom',
-                    bottom: 'top'
-                }[avoid.side],
-                shiftSign = (['left', 'top'].indexOf(avoid.side) !== -1) ?
-                    -1 : 1,
-                pad = isNumeric(avoid.pad) ? avoid.pad : 2,
-                titlebb = Drawing.bBox(titleGroup.node()),
-                paperbb = {
-                    left: 0,
-                    top: 0,
-                    right: fullLayout.width,
-                    bottom: fullLayout.height
-                },
-                maxshift = avoid.maxShift || (
-                    (paperbb[avoid.side] - titlebb[avoid.side]) *
-                    ((avoid.side === 'left' || avoid.side === 'top') ? -1 : 1));
+            var shift = 0;
+            var backside = {
+                left: 'right',
+                right: 'left',
+                top: 'bottom',
+                bottom: 'top'
+            }[avoid.side];
+            var shiftSign = (['left', 'top'].indexOf(avoid.side) !== -1) ?
+                    -1 : 1;
+            var pad = isNumeric(avoid.pad) ? avoid.pad : 2;
+            var titlebb = Drawing.bBox(titleGroup.node());
+            var paperbb = {
+                left: 0,
+                top: 0,
+                right: fullLayout.width,
+                bottom: fullLayout.height
+            };
+            var maxshift = avoid.maxShift || (
+                (paperbb[avoid.side] - titlebb[avoid.side]) *
+                ((avoid.side === 'left' || avoid.side === 'top') ? -1 : 1));
             // Prevent the title going off the paper
             if(maxshift < 0) shift = maxshift;
             else {
                 // so we don't have to offset each avoided element,
                 // give the title the opposite offset
-                var offsetLeft = avoid.offsetLeft || 0,
-                    offsetTop = avoid.offsetTop || 0;
+                var offsetLeft = avoid.offsetLeft || 0;
+                var offsetTop = avoid.offsetTop || 0;
                 titlebb.left -= offsetLeft;
                 titlebb.right -= offsetLeft;
                 titlebb.top -= offsetTop;
