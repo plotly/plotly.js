@@ -10,6 +10,53 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.28.0] -- 2017-06-19
+
+### Added
+- Allow constraints by domain on cartesian axes using new axis attributes:
+  `contrain: 'domain'` and `contraintoward` [#1767]
+- Add gl3d annotations [#1638, #1786]
+- Add support for lasso and select `dragmode` on `scattergl` traces [#1657]
+- Add 48 new `scattergl` marker symbols (for total of 56) [#1781]
+- Add array support for `hoverinfo` [#1761]
+- Add animation support for `fillcolor` attribute [#1722]
+- Add `colorscale` attributes to `mesh3d` traces [#1719]
+- Add support for target and popup attributes pseudo-html text links [#1726]
+- Add per-`direction` updatemenu dropdown arrows [#1792]
+- Add `execute` attribute to sliders and updatemenus to skip method calls while
+  still triggering associated events [#1700]
+- Add `skip` value to the `method` attribute for sliders and updatemenus which
+  acts as a no-op [#1699]
+
+### Changed
+- Include values of all array attributes in hover/click/select event data
+  including `ids` and `customdata` [#1770]
+- Make gl2d axis tick labels on-par with SVG versions [#1766]
+- Build SVG text nodes directly instead of using `DOMParser` [#1783]
+- Rework transform style into array syntax [#1794]
+- Recompute hover on click to increase click robustness [#1646]
+- Miscellaneous performance improvements including improved bounding box caching
+  and adding a few short-circuit [#1772, #1792]
+
+###
+- Fix pan/zoom for layout component linked to `category` axes [#1748, #1791]
+- Fix non-`linear` gl3d axis range settings [#1730]
+- Fix `ohlc` and `candlestick` when open value equals close value [#1655]
+- Fix annotations positioning when MathJax symbols are present [#1788]
+- Fix array values in event data for transformed traces [#1717, #1727, #1737]
+- Fix relayout event data for gl3d camera interactions [#1732]
+- Fix scatter markers and text nodes linked to `ids` ordering on updates [#1709]
+- Fix `Plotly.validate` for dynamic enumerated attribute
+  (e.g. axis `anchor`, `overlaying`) [#1769]
+- Fix pseudo-html handling in sliders, updatemenus, range-sliders,
+  range-selectors and carpet traces [#1792]
+- Fix annotation bounding box and arrow heads in IE [#1782]
+- Fix svg exports in IE for graphs with multiple clip paths [#1740]
+- Fix `sankey` positioning in IE [#1723, #1731, #1729, #1735]
+- Fix relative links in IE [#1715]
+- Suppress render warning in gl3d graphs with error bars [#1718]
+
+
 ## [1.27.1] -- 2017-05-17
 
 ### Fixed
