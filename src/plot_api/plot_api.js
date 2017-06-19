@@ -1948,7 +1948,8 @@ function _relayout(gd, aobj) {
             // trunk nodes (everything except the leaf)
             ptrunk = p.parts.slice(0, pend).join('.'),
             parentIn = Lib.nestedProperty(gd.layout, ptrunk).get(),
-            parentFull = Lib.nestedProperty(fullLayout, ptrunk).get();
+            parentFull = Lib.nestedProperty(fullLayout, ptrunk).get(),
+            vOld = p.get();
 
         if(vi === undefined) continue;
 
@@ -1956,7 +1957,7 @@ function _relayout(gd, aobj) {
 
         // axis reverse is special - it is its own inverse
         // op and has no flag.
-        undoit[ai] = (pleaf === 'reverse') ? vi : p.get();
+        undoit[ai] = (pleaf === 'reverse') ? vi : vOld;
 
         // Setting width or height to null must reset the graph's width / height
         // back to its initial value as computed during the first pass in Plots.plotAutoSize.
@@ -2166,7 +2167,16 @@ function _relayout(gd, aobj) {
             }
             else if(fullLayout._has('gl2d') &&
                 (ai.indexOf('axis') !== -1 || ai === 'plot_bgcolor')
-            ) flags.doplot = true;
+            ) {
+                flags.doplot = true;
+            }
+            else if(fullLayout._has('gl2d') &&
+                (ai === 'dragmode' &&
+                (vi === 'lasso' || vi === 'select') &&
+                !(vOld === 'lasso' || vOld === 'select'))
+            ) {
+                flags.docalc = true;
+            }
             else if(ai === 'hiddenlabels') flags.docalc = true;
             else if(proot.indexOf('legend') !== -1) flags.dolegend = true;
             else if(ai.indexOf('title') !== -1) flags.doticks = true;

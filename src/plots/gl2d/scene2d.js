@@ -154,6 +154,7 @@ proto.makeFramework = function() {
     // create div to catch the mouse event
     var mouseContainer = this.mouseContainer = document.createElement('div');
     mouseContainer.style.position = 'absolute';
+    mouseContainer.style['pointer-events'] = 'auto';
 
     // append canvas, hover svg and mouse div to container
     var container = this.container;
@@ -380,6 +381,7 @@ proto.plot = function(fullData, calcData, fullLayout) {
 
     this.updateRefs(fullLayout);
     this.updateTraces(fullData, calcData);
+    this.updateFx(fullLayout.dragmode);
 
     var width = fullLayout.width,
         height = fullLayout.height;
@@ -520,7 +522,14 @@ proto.updateTraces = function(fullData, calcData) {
     this.glplot.objects.sort(function(a, b) {
         return a._trace.index - b._trace.index;
     });
+};
 
+proto.updateFx = function(dragmode) {
+    if(dragmode === 'lasso' || dragmode === 'select') {
+        this.mouseContainer.style['pointer-events'] = 'none';
+    } else {
+        this.mouseContainer.style['pointer-events'] = 'auto';
+    }
 };
 
 proto.emitPointAction = function(nextSelection, eventType) {

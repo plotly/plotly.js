@@ -360,6 +360,9 @@ axes.doAutoRange = function(ax) {
     if(ax.autorange && hasDeps) {
         ax.range = axes.getAutoRange(ax);
 
+        ax._r = ax.range.slice();
+        ax._rl = Lib.simpleMap(ax._r, ax.r2l);
+
         // doAutoRange will get called on fullLayout,
         // but we want to report its results back to layout
 

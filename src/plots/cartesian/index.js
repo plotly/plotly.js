@@ -184,6 +184,11 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
             oldFullLayout._infolayer.select('.' + axIds[i] + 'title').remove();
         }
     }
+
+    // clean selection
+    if(oldFullLayout._zoomlayer) {
+        oldFullLayout._zoomlayer.selectAll('.select-outline').remove();
+    }
 };
 
 exports.drawFramework = function(gd) {

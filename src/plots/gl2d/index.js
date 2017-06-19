@@ -12,7 +12,8 @@
 var Scene2D = require('./scene2d');
 var Plots = require('../plots');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
-
+var constants = require('../cartesian/constants');
+var Cartesian = require('../cartesian');
 
 exports.name = 'gl2d';
 
@@ -20,15 +21,9 @@ exports.attr = ['xaxis', 'yaxis'];
 
 exports.idRoot = ['x', 'y'];
 
-exports.idRegex = {
-    x: /^x([2-9]|[1-9][0-9]+)?$/,
-    y: /^y([2-9]|[1-9][0-9]+)?$/
-};
+exports.idRegex = constants.idRegex;
 
-exports.attrRegex = {
-    x: /^xaxis([2-9]|[1-9][0-9]+)?$/,
-    y: /^yaxis([2-9]|[1-9][0-9]+)?$/
-};
+exports.attrRegex = constants.attrRegex;
 
 exports.attributes = require('../cartesian/attributes');
 
@@ -81,6 +76,15 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
             oldSubplot._scene2d.destroy();
             delete oldFullLayout._plots[id];
         }
+    }
+
+    // since we use cartesian interactions, do cartesian clean
+    Cartesian.clean.apply(this, arguments);
+};
+
+exports.drawFramework = function(gd) {
+    if(!gd._context.staticPlot) {
+        Cartesian.drawFramework(gd);
     }
 };
 

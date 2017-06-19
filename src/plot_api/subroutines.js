@@ -126,15 +126,16 @@ exports.lsInner = function(gd) {
 
     var freefinished = [];
     subplotSelection.each(function(subplot) {
-        var plotinfo = fullLayout._plots[subplot],
-            xa = Plotly.Axes.getFromId(gd, subplot, 'x'),
+        var plotinfo = fullLayout._plots[subplot];
+
+        var xa = Plotly.Axes.getFromId(gd, subplot, 'x'),
             ya = Plotly.Axes.getFromId(gd, subplot, 'y');
 
         // reset scale in case the margins have changed
         xa.setScale();
         ya.setScale();
 
-        if(plotinfo.bg) {
+        if(plotinfo.bg && fullLayout._has('cartesian')) {
             plotinfo.bg
                 .call(Drawing.setRect,
                     xa._offset - gs.p, ya._offset - gs.p,
@@ -254,27 +255,29 @@ exports.lsInner = function(gd) {
             rightpos += xa._offset - gs.l;
         }
 
-        plotinfo.xlines
-            .attr('transform', originx)
-            .attr('d', (
-                (showbottom ? (xpathPrefix + bottompos + xpathSuffix) : '') +
-                (showtop ? (xpathPrefix + toppos + xpathSuffix) : '') +
-                (showfreex ? (xpathPrefix + freeposx + xpathSuffix) : '')) ||
-                // so it doesn't barf with no lines shown
-                'M0,0')
-            .style('stroke-width', xlw + 'px')
-            .call(Color.stroke, xa.showline ?
-                xa.linecolor : 'rgba(0,0,0,0)');
-        plotinfo.ylines
-            .attr('transform', originy)
-            .attr('d', (
-                (showleft ? ('M' + leftpos + ypathSuffix) : '') +
-                (showright ? ('M' + rightpos + ypathSuffix) : '') +
-                (showfreey ? ('M' + freeposy + ypathSuffix) : '')) ||
-                'M0,0')
-            .attr('stroke-width', ylw + 'px')
-            .call(Color.stroke, ya.showline ?
-                ya.linecolor : 'rgba(0,0,0,0)');
+        if(fullLayout._has('cartesian')) {
+            plotinfo.xlines
+                .attr('transform', originx)
+                .attr('d', (
+                    (showbottom ? (xpathPrefix + bottompos + xpathSuffix) : '') +
+                    (showtop ? (xpathPrefix + toppos + xpathSuffix) : '') +
+                    (showfreex ? (xpathPrefix + freeposx + xpathSuffix) : '')) ||
+                    // so it doesn't barf with no lines shown
+                    'M0,0')
+                .style('stroke-width', xlw + 'px')
+                .call(Color.stroke, xa.showline ?
+                    xa.linecolor : 'rgba(0,0,0,0)');
+            plotinfo.ylines
+                .attr('transform', originy)
+                .attr('d', (
+                    (showleft ? ('M' + leftpos + ypathSuffix) : '') +
+                    (showright ? ('M' + rightpos + ypathSuffix) : '') +
+                    (showfreey ? ('M' + freeposy + ypathSuffix) : '')) ||
+                    'M0,0')
+                .attr('stroke-width', ylw + 'px')
+                .call(Color.stroke, ya.showline ?
+                    ya.linecolor : 'rgba(0,0,0,0)');
+        }
 
         plotinfo.xaxislayer.attr('transform', originx);
         plotinfo.yaxislayer.attr('transform', originy);
@@ -375,19 +378,22 @@ exports.doTicksRelayout = function(gd) {
 
 exports.doModeBar = function(gd) {
     var fullLayout = gd._fullLayout;
-    var subplotIds, i;
+    var subplotIds, scene, i;
 
     ModeBar.manage(gd);
     initInteractions(gd);
 
     subplotIds = Plots.getSubplotIds(fullLayout, 'gl3d');
     for(i = 0; i < subplotIds.length; i++) {
-        var scene = fullLayout[subplotIds[i]]._scene;
+        scene = fullLayout[subplotIds[i]]._scene;
         scene.updateFx(fullLayout.dragmode, fullLayout.hovermode);
     }
 
-    // no need to do this for gl2d subplots,
-    // Plots.linkSubplots takes care of it all.
+    subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d');
+    for(i = 0; i < subplotIds.length; i++) {
+        scene = fullLayout._plots[subplotIds[i]]._scene2d;
+        scene.updateFx(fullLayout.dragmode);
+    }
 
     return Plots.previousPromises(gd);
 };

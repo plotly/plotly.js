@@ -444,3 +444,157 @@ describe('Test hover and click interactions', function() {
         .then(done);
     });
 });
+
+describe('@noCI Test gl2d lasso/select:', function() {
+    var mockFancy = require('@mocks/gl2d_14.json');
+    var mockFast = Lib.extendDeep({}, mockFancy, {
+        data: [{mode: 'markers'}],
+        layout: {
+            xaxis: {type: 'linear'},
+            yaxis: {type: 'linear'}
+        }
+    });
+
+    var gd;
+    var selectPath = [[93, 193], [143, 193]];
+    var lassoPath = [[316, 171], [318, 239], [335, 243], [328, 169]];
+    var lassoPath2 = [[93, 193], [143, 193], [143, 500], [93, 500], [93, 193]];
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    function drag(path) {
+        var len = path.length;
+
+        mouseEvent('mousemove', path[0][0], path[0][1]);
+        mouseEvent('mousedown', path[0][0], path[0][1]);
+
+        path.slice(1, len).forEach(function(pt) {
+            mouseEvent('mousemove', pt[0], pt[1]);
+        });
+
+        mouseEvent('mouseup', path[len - 1][0], path[len - 1][1]);
+    }
+
+    function select(path) {
+        return new Promise(function(resolve, reject) {
+            gd.once('plotly_selected', resolve);
+            setTimeout(function() { reject('did not trigger *plotly_selected*');}, 100);
+            drag(path);
+        });
+    }
+
+    function assertEventData(actual, expected) {
+        expect(actual.points.length).toBe(expected.points.length);
+
+        expected.points.forEach(function(e, i) {
+            var a = actual.points[i];
+            if(a) {
+                expect(a.x).toBe(e.x, 'x');
+                expect(a.y).toBe(e.y, 'y');
+            }
+        });
+    }
+
+    function countGlObjects() {
+        return gd._fullLayout._plots.xy._scene2d.glplot.objects.length;
+    }
+
+    it('should work under fast mode with *select* dragmode', function(done) {
+        var _mock = Lib.extendDeep({}, mockFast);
+        _mock.layout.dragmode = 'select';
+        gd = createGraphDiv();
+
+        Plotly.plot(gd, _mock)
+        .then(delay(100))
+        .then(function() {
+            expect(countGlObjects()).toBe(1, 'has on gl-scatter2d object');
+
+            return select(selectPath);
+        })
+        .then(function(eventData) {
+            assertEventData(eventData, {
+                points: [
+                    {x: 3.911, y: 0.401},
+                    {x: 5.34, y: 0.403},
+                    {x: 6.915, y: 0.411}
+                ]
+            });
+            expect(countGlObjects()).toBe(2, 'adds a dimmed gl-scatter2d objects');
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should work under fast mode with *lasso* dragmode', function(done) {
+        var _mock = Lib.extendDeep({}, mockFast);
+        _mock.layout.dragmode = 'lasso';
+        gd = createGraphDiv();
+
+        Plotly.plot(gd, _mock)
+        .then(delay(100))
+        .then(function() {
+            expect(countGlObjects()).toBe(1);
+
+            return select(lassoPath2);
+        })
+        .then(function(eventData) {
+            assertEventData(eventData, {
+                points: [
+                    {x: 3.911, y: 0.401},
+                    {x: 5.34, y: 0.403},
+                    {x: 6.915, y: 0.411}
+                ]
+            });
+            expect(countGlObjects()).toBe(2);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should work under fancy mode with *select* dragmode', function(done) {
+        var _mock = Lib.extendDeep({}, mockFancy);
+        _mock.layout.dragmode = 'select';
+        gd = createGraphDiv();
+
+        Plotly.plot(gd, _mock)
+        .then(delay(100))
+        .then(function() {
+            expect(countGlObjects()).toBe(2, 'has a gl-line2d and a gl-scatter2d-sdf');
+
+            return select(selectPath);
+        })
+        .then(function(eventData) {
+            assertEventData(eventData, {
+                points: [{x: 0.004, y: 12.5}]
+            });
+            expect(countGlObjects()).toBe(2, 'only changes colors of gl-scatter2d-sdf object');
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should work under fancy mode with *lasso* dragmode', function(done) {
+        var _mock = Lib.extendDeep({}, mockFancy);
+        _mock.layout.dragmode = 'lasso';
+        gd = createGraphDiv();
+
+        Plotly.plot(gd, _mock)
+        .then(delay(100))
+        .then(function() {
+            expect(countGlObjects()).toBe(2, 'has a gl-line2d and a gl-scatter2d-sdf');
+
+            return select(lassoPath);
+        })
+        .then(function(eventData) {
+            assertEventData(eventData, {
+                points: [{ x: 0.099, y: 2.75 }]
+            });
+            expect(countGlObjects()).toBe(2, 'only changes colors of gl-scatter2d-sdf object');
+        })
+        .catch(fail)
+        .then(done);
+    });
+});

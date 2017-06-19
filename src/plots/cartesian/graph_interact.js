@@ -20,7 +20,7 @@ var dragBox = require('./dragbox');
 module.exports = function initInteractions(gd) {
     var fullLayout = gd._fullLayout;
 
-    if(!fullLayout._has('cartesian') || gd._context.staticPlot) return;
+    if((!fullLayout._has('cartesian') && !fullLayout._has('gl2d')) || gd._context.staticPlot) return;
 
     var subplots = Object.keys(fullLayout._plots || {}).sort(function(a, b) {
         // sort overlays last, then by x axis number, then y axis number
@@ -37,8 +37,6 @@ module.exports = function initInteractions(gd) {
 
     subplots.forEach(function(subplot) {
         var plotinfo = fullLayout._plots[subplot];
-
-        if(!fullLayout._has('cartesian')) return;
 
         var xa = plotinfo.xaxis,
             ya = plotinfo.yaxis,
