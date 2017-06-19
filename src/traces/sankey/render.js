@@ -220,7 +220,7 @@ function nodeModel(uniqueKeys, d, n) {
 // rendering snippets
 
 function crispLinesOnEnd(sankeyNode) {
-    d3.select(sankeyNode.node().parentElement).style('shape-rendering', 'crispEdges');
+    d3.select(sankeyNode.node().parentNode).style('shape-rendering', 'crispEdges');
 }
 
 function updateNodePositions(sankeyNode) {
@@ -239,7 +239,7 @@ function linkPath(d) {
 }
 
 function updateNodeShapes(sankeyNode) {
-    d3.select(sankeyNode.node().parentElement).style('shape-rendering', 'optimizeSpeed');
+    d3.select(sankeyNode.node().parentNode).style('shape-rendering', 'optimizeSpeed');
     sankeyNode.call(updateNodePositions);
 }
 
@@ -625,7 +625,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     nodeLabelTextPath
         .text(function(d) {return d.horizontal || d.node.dy > 5 ? d.node.label : '';})
-        .style('text-anchor', function(d) {return d.horizontal && d.left ? 'end' : 'start';});
+        .attr('text-anchor', function(d) {return d.horizontal && d.left ? 'end' : 'start';});
 
     nodeLabelTextPath
         .transition()

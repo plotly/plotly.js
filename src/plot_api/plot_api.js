@@ -480,9 +480,10 @@ function plotPolar(gd, data, layout) {
         .call(titleLayout);
 
     if(gd._context.editable) {
-        title.attr({'data-unformatted': txt});
         if(!txt || txt === placeholderText) {
             opacity = 0.2;
+            // placeholder is not going through convertToTspans
+            // so needs explicit data-unformatted
             title.attr({'data-unformatted': placeholderText})
                 .text(placeholderText)
                 .style({opacity: opacity})
@@ -500,8 +501,7 @@ function plotPolar(gd, data, layout) {
             this.call(svgTextUtils.makeEditable, {gd: gd})
                 .on('edit', function(text) {
                     gd.framework({layout: {title: text}});
-                    this.attr({'data-unformatted': text})
-                        .text(text)
+                    this.text(text)
                         .call(titleLayout);
                     this.call(setContenteditable);
                 })

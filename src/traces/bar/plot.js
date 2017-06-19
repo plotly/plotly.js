@@ -139,21 +139,17 @@ module.exports = function plot(gd, plotinfo, cdbar) {
 function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     function appendTextNode(bar, text, textFont) {
         var textSelection = bar.append('text')
-            // prohibit tex interpretation until we can handle
-            // tex and regular text together
-            .attr('data-notex', 1)
             .text(text)
             .attr({
                 'class': 'bartext',
                 transform: '',
                 'text-anchor': 'middle',
-                x: 0,
-                y: 0
+                // prohibit tex interpretation until we can handle
+                // tex and regular text together
+                'data-notex': 1
             })
-            .call(Drawing.font, textFont);
-
-        textSelection.call(svgTextUtils.convertToTspans, gd);
-        textSelection.selectAll('tspan.line').attr({x: 0, y: 0});
+            .call(Drawing.font, textFont)
+            .call(svgTextUtils.convertToTspans, gd);
 
         return textSelection;
     }

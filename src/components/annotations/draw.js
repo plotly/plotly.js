@@ -203,7 +203,6 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
     var annText = annTextGroupInner.append('text')
         .classed('annotation-text', true)
-        .attr('data-unformatted', options.text)
         .text(options.text);
 
     function textLayout(s) {
@@ -231,11 +230,6 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
             wholeLink.node().appendChild(annTextBG.node());
         }
-
-
-        // make sure lines are aligned the way they will be
-        // at the end, even if their position changes
-        annText.selectAll('tspan.line').attr({y: 0, x: 0});
 
         var mathjaxGroup = annTextGroupInner.select('.annotation-text-math-group');
         var hasMathjax = !mathjaxGroup.empty();
@@ -423,14 +417,11 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             .call(Drawing.setClipUrl, isSizeConstrained ? annClipID : null);
         }
         else {
-            var texty = borderfull + yShift - anntextBB.top,
-                textx = borderfull + xShift - anntextBB.left;
-            annText.attr({
-                x: textx,
-                y: texty
-            })
-            .call(Drawing.setClipUrl, isSizeConstrained ? annClipID : null);
-            annText.selectAll('tspan.line').attr({y: texty, x: textx});
+            var texty = borderfull + yShift - anntextBB.top;
+            var textx = borderfull + xShift - anntextBB.left;
+
+            annText.call(svgTextUtils.positionText, textx, texty)
+                .call(Drawing.setClipUrl, isSizeConstrained ? annClipID : null);
         }
 
         annTextClip.select('rect').call(Drawing.setRect, borderfull, borderfull,
@@ -693,7 +684,6 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             .call(textLayout)
             .on('edit', function(_text) {
                 options.text = _text;
-                this.attr({'data-unformatted': options.text});
                 this.call(textLayout);
 
                 var update = {};

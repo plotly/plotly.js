@@ -288,11 +288,11 @@ describe('svg+text utils', function() {
         it('allows one <b> to span <br>s', function() {
             var node = mockTextSVGElement('be <b>Bold<br>and<br><i>Strong</i></b>');
             expect(node.html()).toBe(
-                '<tspan class="line" dy="0em">be ' +
+                '<tspan class="line" dy="0em" x="0" y="0">be ' +
                     '<tspan style="font-weight:bold">Bold</tspan></tspan>' +
-                '<tspan class="line" dy="1.3em">' +
+                '<tspan class="line" dy="1.3em" x="0" y="0">' +
                     '<tspan style="font-weight:bold">and</tspan></tspan>' +
-                '<tspan class="line" dy="2.6em">' +
+                '<tspan class="line" dy="2.6em" x="0" y="0">' +
                     '<tspan style="font-weight:bold">' +
                         '<tspan style="font-style:italic">Strong</tspan></tspan></tspan>');
         });
@@ -300,10 +300,10 @@ describe('svg+text utils', function() {
         it('allows one <sub> to span <br>s', function() {
             var node = mockTextSVGElement('SO<sub>4<br>44</sub>');
             expect(node.html()).toBe(
-                '<tspan class="line" dy="0em">SO\u200b' +
+                '<tspan class="line" dy="0em" x="0" y="0">SO\u200b' +
                     '<tspan style="font-size:70%" dy="0.3em">4</tspan>' +
                     '<tspan dy="-0.21em">\u200b</tspan></tspan>' +
-                '<tspan class="line" dy="1.3em">\u200b' +
+                '<tspan class="line" dy="1.3em" x="0" y="0">\u200b' +
                     '<tspan style="font-size:70%" dy="0.3em">44</tspan>' +
                     '<tspan dy="-0.21em">\u200b</tspan></tspan>');
         });
@@ -318,7 +318,7 @@ describe('svg+text utils', function() {
             textCases.forEach(function(textCase) {
                 var node = mockTextSVGElement(textCase);
                 function opener(dy) {
-                    return '<tspan class="line" dy="' + dy + 'em">' +
+                    return '<tspan class="line" dy="' + dy + 'em" x="0" y="0">' +
                         '<tspan style="font-weight:bold">' +
                         '<tspan style="font-style:italic">' +
                         '\u200b<tspan style="font-size:70%" dy="-0.6em">';

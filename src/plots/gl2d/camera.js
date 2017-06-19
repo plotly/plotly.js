@@ -131,7 +131,7 @@ function createCamera(scene) {
 
                         if(Math.abs(dx * dydx) > Math.abs(dy)) {
                             result.boxEnd[1] = result.boxStart[1] +
-                                Math.abs(dx) * dydx * (Math.sign(dy) || 1);
+                                Math.abs(dx) * dydx * (dy >= 0 ? 1 : -1);
 
                             // gl-select-box clips to the plot area bounds,
                             // which breaks the axis constraint, so don't allow
@@ -149,7 +149,7 @@ function createCamera(scene) {
                         }
                         else {
                             result.boxEnd[0] = result.boxStart[0] +
-                                Math.abs(dy) / dydx * (Math.sign(dx) || 1);
+                                Math.abs(dy) / dydx * (dx >= 0 ? 1 : -1);
 
                             if(result.boxEnd[0] < dataBox[0]) {
                                 result.boxEnd[0] = dataBox[0];

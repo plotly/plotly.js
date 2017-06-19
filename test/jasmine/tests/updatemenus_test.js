@@ -651,7 +651,7 @@ describe('update menus interactions', function() {
 
             return Plotly.relayout(gd, 'updatemenus[1].buttons[1].label', 'a looooooooooooong<br>label');
         }).then(function() {
-            assertItemDims(selectHeader(1), 179, 35);
+            assertItemDims(selectHeader(1), 165, 35);
 
             return click(selectHeader(1));
         }).then(function() {

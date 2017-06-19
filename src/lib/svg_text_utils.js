@@ -16,6 +16,7 @@ var d3 = require('d3');
 var Lib = require('../lib');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var stringMappings = require('../constants/string_mappings');
+var LINE_SPACING = require('../constants/alignment').LINE_SPACING;
 
 // text converter
 
@@ -40,7 +41,15 @@ exports.convertToTspans = function(_context, gd, _callback) {
     svgClass += '-math';
     parent.selectAll('svg.' + svgClass).remove();
     parent.selectAll('g.' + svgClass + '-group').remove();
-    _context.style({visibility: null});
+    _context.style('display', null)
+        .attr({
+            // some callers use data-unformatted *from the <text> element* in 'cancel'
+            // so we need it here even if we're going to turn it into math
+            // these two (plus style and text-anchor attributes) form the key we're
+            // going to use for Drawing.bBox
+            'data-unformatted': str,
+            'data-math': 'N'
+        });
 
     function showText() {
         if(!parent.empty()) {
@@ -48,10 +57,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
             parent.select('svg.' + svgClass).remove();
         }
         _context.text('')
-            .style({
-                visibility: 'inherit',
-                'white-space': 'pre'
-            });
+            .style('white-space', 'pre');
 
         var hasLink = buildSVGText(_context.node(), str);
 
@@ -63,12 +69,14 @@ exports.convertToTspans = function(_context, gd, _callback) {
             _context.style('pointer-events', 'all');
         }
 
+        exports.positionText(_context);
+
         if(_callback) _callback.call(_context);
     }
 
     if(tex) {
         ((gd && gd._promises) || []).push(new Promise(function(resolve) {
-            _context.style({visibility: 'hidden'});
+            _context.style('display', 'none');
             var config = {fontSize: parseInt(_context.style('font-size'), 10)};
 
             texToSVG(tex[2], config, function(_svgEl, _glyphDefs, _svgBBox) {
@@ -84,7 +92,11 @@ exports.convertToTspans = function(_context, gd, _callback) {
 
                 var mathjaxGroup = parent.append('g')
                     .classed(svgClass + '-group', true)
-                    .attr({'pointer-events': 'none'});
+                    .attr({
+                        'pointer-events': 'none',
+                        'data-unformatted': str,
+                        'data-math': 'Y'
+                    });
 
                 mathjaxGroup.node().appendChild(newSvg.node());
 
@@ -315,7 +327,7 @@ function buildSVGText(containerNode, str) {
         var lineNode = document.createElementNS(xmlnsNamespaces.svg, 'tspan');
         d3.select(lineNode).attr({
             class: 'line',
-            dy: (currentLine * 1.3) + 'em'
+            dy: (currentLine * LINE_SPACING) + 'em'
         });
         containerNode.appendChild(lineNode);
 
@@ -461,6 +473,35 @@ function buildSVGText(containerNode, str) {
 
     return hasLink;
 }
+
+exports.lineCount = function lineCount(s) {
+    return s.selectAll('tspan.line').size() || 1;
+};
+
+exports.positionText = function positionText(s, x, y) {
+    return s.each(function() {
+        var text = d3.select(this);
+
+        function setOrGet(attr, val) {
+            if(val === undefined) {
+                val = text.attr(attr);
+                if(val === null) {
+                    text.attr(attr, 0);
+                    val = 0;
+                }
+            }
+            else text.attr(attr, val);
+            return val;
+        }
+
+        var thisX = setOrGet('x', x);
+        var thisY = setOrGet('y', y);
+
+        if(this.nodeName === 'text') {
+            text.selectAll('tspan.line').attr({x: thisX, y: thisY});
+        }
+    });
+};
 
 function alignHTMLWith(_base, container, options) {
     var alignH = options.horizontalAlign,
