@@ -10,6 +10,13 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.28.1] -- 2017-06-20
+
+### Fixed
+- Fix `scattergl` selected points. Points do not disappear after zoom any more
+  in fast mode [#1800]
+
+
 ## [1.28.0] -- 2017-06-19
 
 ### Added
@@ -38,7 +45,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
 - Miscellaneous performance improvements including improved bounding box caching
   and adding a few short-circuit [#1772, #1792]
 
-###
+### Fixed
 - Fix pan/zoom for layout component linked to `category` axes [#1748, #1791]
 - Fix non-`linear` gl3d axis range settings [#1730]
 - Fix `ohlc` and `candlestick` when open value equals close value [#1655]
