@@ -634,14 +634,14 @@ drawing.bBox = function(node, hash) {
         out = drawing.savedBBoxes[hash];
         if(out) return Lib.extendFlat({}, out);
     }
-    else if(node.children.length === 1) {
+    else if(node.childNodes.length === 1) {
         /*
          * If we have only one child element, which is itself hashable, make
          * a new hash from this element plus its x,y,transform
          * These bounding boxes *include* x,y,transform - mostly for use by
          * callers trying to avoid overlaps (ie titles)
          */
-        var innerNode = node.children[0];
+        var innerNode = node.childNodes[0];
 
         hash = nodeHash(innerNode);
         if(hash) {
