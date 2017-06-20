@@ -145,19 +145,19 @@ dragElement.init = function init(options) {
 
     function onDone(e) {
         if(hasHover) {
-            document.removeEventListener('mousemove', onMove);
-            document.removeEventListener('mouseup', onDone);
-            document.removeEventListener('mouseout', onDone);
+            dragCover.removeEventListener('mousemove', onMove);
+            dragCover.removeEventListener('mouseup', onDone);
+            dragCover.removeEventListener('mouseout', onDone);
 
             Lib.removeElement(dragCover);
         }
 
         else {
-            document.removeEventListener('touchmove', onMove);
-            document.removeEventListener('touchend', onDone);
+            dragCover.removeEventListener('touchmove', onMove);
+            dragCover.removeEventListener('touchend', onDone);
 
             if(cursor) {
-                document.documentElement.style.cursor = cursor;
+                dragCover.documentElement.style.cursor = cursor;
                 cursor = null;
             }
         }
