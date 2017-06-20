@@ -65,14 +65,19 @@ dragElement.init = function init(options) {
         startY,
         newMouseDownTime,
         cursor,
-        root = document.documentElement,
+        dragCover,
         initialTarget;
 
     if(!gd._mouseDownTime) gd._mouseDownTime = 0;
 
     options.element.style.pointerEvents = 'all';
-    options.element.onmousedown = onStart;
-    options.element.ontouchstart = onStart;
+
+    if(hasHover) {
+        options.element.onmousedown = onStart;
+    }
+    else {
+        options.element.ontouchstart = onStart;
+    }
 
     function onStart(e) {
         // make dragging and dragged into properties of gd
@@ -97,16 +102,25 @@ dragElement.init = function init(options) {
 
         if(options.prepFn) options.prepFn(e, startX, startY);
 
-        document.addEventListener('mousemove', onMove)
-        document.addEventListener('mouseup', onDone)
-        document.addEventListener('mouseout', onDone)
+        if(hasHover) {
+            dragCover = coverSlip();
+            dragCover.addEventListener('mousemove', onMove);
+            dragCover.addEventListener('mouseup', onDone);
+            dragCover.addEventListener('mouseout', onDone);
 
-        document.addEventListener('touchmove', onMove)
-        document.addEventListener('touchend', onDone)
+            dragCover.style.cursor = window.getComputedStyle(options.element).cursor;
+        }
 
-        // disable cursor
-        cursor = window.getComputedStyle(root).cursor
-        root.style.cursor = window.getComputedStyle(options.element).cursor;
+        // document acts as a dragcover for mobile, bc we can't create dragcover dynamically
+        else {
+            dragCover = document
+            document.addEventListener('touchmove', onMove);
+            document.addEventListener('touchend', onDone);
+
+            cursor = window.getComputedStyle(document.documentElement).cursor;
+            document.documentElement.style.cursor = window.getComputedStyle(options.element).cursor;
+        }
+
 
         return Lib.pauseEvent(e);
     }
@@ -130,17 +144,24 @@ dragElement.init = function init(options) {
     }
 
     function onDone(e) {
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup', onDone);
-        document.removeEventListener('mouseout', onDone);
-        document.removeEventListener('touchmove', onMove);
-        document.removeEventListener('touchend', onDone);
+        if(hasHover) {
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onDone);
+            document.removeEventListener('mouseout', onDone);
 
-        // enable cursor
-        if (cursor) {
-            root.style.cursor = cursor
-            cursor = null
+            Lib.removeElement(dragCover);
         }
+
+        else {
+            document.removeEventListener('touchmove', onMove);
+            document.removeEventListener('touchend', onDone);
+
+            if(cursor) {
+                document.documentElement.style.cursor = cursor;
+                cursor = null;
+            }
+        }
+
 
         if(!gd._dragging) {
             gd._dragged = false;
