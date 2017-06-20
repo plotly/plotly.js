@@ -84,7 +84,7 @@ dragElement.init = function init(options) {
         // so that others can look at and modify them
         gd._dragged = false;
         gd._dragging = true;
-        var offset = pointerOffset(e)
+        var offset = pointerOffset(e);
         startX = offset[0];
         startY = offset[1];
         initialTarget = e.target;
@@ -113,7 +113,7 @@ dragElement.init = function init(options) {
 
         // document acts as a dragcover for mobile, bc we can't create dragcover dynamically
         else {
-            dragCover = document
+            dragCover = document;
             document.addEventListener('touchmove', onMove);
             document.addEventListener('touchend', onDone);
 
@@ -126,8 +126,8 @@ dragElement.init = function init(options) {
     }
 
     function onMove(e) {
-        var offset = pointerOffset(e)
-        var dx = offset[0] - startX,
+        var offset = pointerOffset(e),
+            dx = offset[0] - startX,
             dy = offset[1] - startY,
             minDrag = options.minDrag || constants.MINDRAG;
 
@@ -184,7 +184,7 @@ dragElement.init = function init(options) {
                 e2 = new MouseEvent('click', e);
             }
             catch(err) {
-                var offset = pointerOffset(e)
+                var offset = pointerOffset(e);
                 e2 = document.createEvent('MouseEvents');
                 e2.initMouseEvent('click',
                     e.bubbles, e.cancelable,
@@ -235,5 +235,5 @@ function pointerOffset(e) {
     return mouseOffset(
         e.changedTouches && e.changedTouches[0] || e,
         document.body
-    )
+    );
 }
