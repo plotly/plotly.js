@@ -10,6 +10,7 @@
 'use strict';
 
 var mouseOffset = require('mouse-event-offset');
+var hasHover = require('has-hover');
 
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
@@ -63,10 +64,15 @@ dragElement.init = function init(options) {
         startX,
         startY,
         newMouseDownTime,
-        dragCover,
+        cursor,
+        root = document.documentElement,
         initialTarget;
 
     if(!gd._mouseDownTime) gd._mouseDownTime = 0;
+
+    options.element.style.pointerEvents = 'all';
+    options.element.onmousedown = onStart;
+    options.element.ontouchstart = onStart;
 
     function onStart(e) {
         // make dragging and dragged into properties of gd
@@ -91,19 +97,16 @@ dragElement.init = function init(options) {
 
         if(options.prepFn) options.prepFn(e, startX, startY);
 
-        dragCover = coverSlip();
+        document.addEventListener('mousemove', onMove)
+        document.addEventListener('mouseup', onDone)
+        document.addEventListener('mouseout', onDone)
 
+        document.addEventListener('touchmove', onMove)
+        document.addEventListener('touchend', onDone)
 
-        dragCover.onmousemove = onMove;
-        dragCover.ontouchmove = onMove;
-        dragCover.onmouseup = onDone;
-        dragCover.onmouseout = onDone;
-        dragCover.ontouchend = onDone;
-
-        // var moveEvent = new TouchEvent('touchstart', e)
-        // dragCover.dispatchEvent(moveEvent)
-
-        dragCover.style.cursor = window.getComputedStyle(options.element).cursor;
+        // disable cursor
+        cursor = window.getComputedStyle(root).cursor
+        root.style.cursor = window.getComputedStyle(options.element).cursor;
 
         return Lib.pauseEvent(e);
     }
@@ -127,12 +130,17 @@ dragElement.init = function init(options) {
     }
 
     function onDone(e) {
-        dragCover.onmousemove = null;
-        dragCover.ontouchmove = null;
-        dragCover.onmouseup = null;
-        dragCover.onmouseout = null;
-        dragCover.ontouchend = null;
-        Lib.removeElement(dragCover);
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onDone);
+        document.removeEventListener('mouseout', onDone);
+        document.removeEventListener('touchmove', onMove);
+        document.removeEventListener('touchend', onDone);
+
+        // enable cursor
+        if (cursor) {
+            root.style.cursor = cursor
+            cursor = null
+        }
 
         if(!gd._dragging) {
             gd._dragged = false;
@@ -175,10 +183,6 @@ dragElement.init = function init(options) {
 
         return Lib.pauseEvent(e);
     }
-
-    options.element.onmousedown = onStart;
-    options.element.ontouchstart = onStart;
-    options.element.style.pointerEvents = 'all';
 };
 
 function coverSlip() {
