@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.28.1
+* plotly.js (gl3d) v1.28.2
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -53144,14 +53144,14 @@ drawing.bBox = function(node, hash) {
         out = drawing.savedBBoxes[hash];
         if(out) return Lib.extendFlat({}, out);
     }
-    else if(node.children.length === 1) {
+    else if(node.childNodes.length === 1) {
         /*
          * If we have only one child element, which is itself hashable, make
          * a new hash from this element plus its x,y,transform
          * These bounding boxes *include* x,y,transform - mostly for use by
          * callers trying to avoid overlaps (ie titles)
          */
-        var innerNode = node.children[0];
+        var innerNode = node.childNodes[0];
 
         hash = nodeHash(innerNode);
         if(hash) {
@@ -64664,7 +64664,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.28.1';
+exports.version = '1.28.2';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
