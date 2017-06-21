@@ -10,6 +10,12 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.28.2] -- 2017-06-21
+
+### Fixed
+- Fix IE rendering error (`node.children` doesn't work on SVG nodes in IE) [#1803]
+
+
 ## [1.28.1] -- 2017-06-20
 
 ### Fixed
