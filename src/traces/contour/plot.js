@@ -262,7 +262,12 @@ function joinAllPaths(pi, perimeter) {
 function makeLines(plotgroup, pathinfo, contours) {
     var smoothing = pathinfo[0].smoothing;
 
-    var linegroup = plotgroup.selectAll('g.contourlevel')
+    var lineContainer = plotgroup.selectAll('g.contourlines').data([0]);
+
+    lineContainer.enter().append('g')
+        .classed('contourlines', true);
+
+    var linegroup = lineContainer.selectAll('g.contourlevel')
         .data(contours.showlines === false ? [] : pathinfo);
     linegroup.enter().append('g')
         .classed('contourlevel', true);
