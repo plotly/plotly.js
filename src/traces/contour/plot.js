@@ -81,7 +81,7 @@ function plotOne(gd, plotinfo, cd) {
     makeBackground(plotGroup, perimeter, contours);
     makeFills(plotGroup, pathinfo, perimeter, contours);
     makeLines(plotGroup, pathinfo, contours);
-    clipGaps(plotGroup, plotinfo, cd[0], perimeter);
+    clipGaps(plotGroup, plotinfo, fullLayout._defs, cd[0], perimeter);
 }
 
 function emptyPathinfo(contours, plotinfo, cd0) {
@@ -298,16 +298,14 @@ function makeLines(plotgroup, pathinfo, contours) {
         .style('vector-effect', 'non-scaling-stroke');
 }
 
-function clipGaps(plotGroup, plotinfo, cd0, perimeter) {
+function clipGaps(plotGroup, plotinfo, defs, cd0, perimeter) {
     var clipId = 'clip' + cd0.trace.uid;
 
-    var defs = plotinfo.plot.selectAll('defs')
-        .data([0]);
-    defs.enter().append('defs');
-
-    var clipPath = defs.selectAll('#' + clipId)
+    var clipPath = defs.select('.clips').selectAll('#' + clipId)
         .data(cd0.trace.connectgaps ? [] : [0]);
-    clipPath.enter().append('clipPath').attr('id', clipId);
+    clipPath.enter().append('clipPath')
+        .classed('contourclip', true)
+        .attr('id', clipId);
     clipPath.exit().remove();
 
     if(cd0.trace.connectgaps === false) {
