@@ -401,7 +401,7 @@ proto.updateFast = function(options) {
     this.idToIndex = idToIndex;
 
     // form selected set
-    if(selection) {
+    if(selection && selection.length) {
         selPositions = new Float64Array(2 * selection.length);
 
         for(i = 0, l = selection.length; i < l; i++) {
