@@ -65,6 +65,7 @@ function createCamera(scene) {
         handleInteraction(1, xy[0], xy[1]);
     });
     element.addEventListener('touchmove', function(ev) {
+        ev.preventDefault()
         var xy = mouseOffset(ev.changedTouches[0], element);
         handleInteraction(1, xy[0], xy[1]);
     });
