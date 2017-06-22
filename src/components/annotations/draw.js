@@ -487,7 +487,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             // to get the parity of the number of intersections.
             if(edges.reduce(function(a, x) {
                 return a ^
-                    !!lineIntersect(headX, headY, headX + 1e6, headY + 1e6,
+                    !!Lib.segmentsIntersect(headX, headY, headX + 1e6, headY + 1e6,
                             x[0], x[1], x[2], x[3]);
             }, false)) {
                 // no line or arrow - so quit drawArrow now
@@ -495,7 +495,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             }
 
             edges.forEach(function(x) {
-                var p = lineIntersect(tailX, tailY, headX, headY,
+                var p = Lib.segmentsIntersect(tailX, tailY, headX, headY,
                             x[0], x[1], x[2], x[3]);
                 if(p) {
                     tailX = p.x;
@@ -700,25 +700,4 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             });
     }
     else annText.call(textLayout);
-}
-
-// look for intersection of two line segments
-//   (1->2 and 3->4) - returns array [x,y] if they do, null if not
-function lineIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
-    var a = x2 - x1,
-        b = x3 - x1,
-        c = x4 - x3,
-        d = y2 - y1,
-        e = y3 - y1,
-        f = y4 - y3,
-        det = a * f - c * d;
-    // parallel lines? intersection is undefined
-    // ignore the case where they are colinear
-    if(det === 0) return null;
-    var t = (b * f - c * e) / det,
-        u = (b * d - a * e) / det;
-    // segments do not intersect?
-    if(u < 0 || u > 1 || t < 0 || t > 1) return null;
-
-    return {x: x1 + a * t, y: y1 + d * t};
 }
