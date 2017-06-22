@@ -35,5 +35,17 @@ module.exports = {
 
     // after one index has been used for a saddle, which do we
     // substitute to be used up later?
-    SADDLEREMAINDER: {1: 4, 2: 8, 4: 1, 7: 13, 8: 2, 11: 14, 13: 7, 14: 11}
+    SADDLEREMAINDER: {1: 4, 2: 8, 4: 1, 7: 13, 8: 2, 11: 14, 13: 7, 14: 11},
+
+    // number of contour levels after which we start increasing the number of
+    // labels we draw. Many contours means they will generally be close
+    // together, so it will be harder to follow a long way to find a label
+    LABELINCREASE: 10,
+
+    // minimum length of a contour line, as a multiple of the label length,
+    // at which we draw *any* labels
+    LABELMIN: 3,
+
+    // max number of labels to draw on a single contour path, no matter how long
+    LABELMAX: 10
 };

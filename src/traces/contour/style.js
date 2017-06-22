@@ -25,12 +25,13 @@ module.exports = function style(gd) {
     });
 
     contours.each(function(d) {
-        var c = d3.select(this),
-            trace = d.trace,
-            contours = trace.contours,
-            line = trace.line,
-            cs = contours.size || 1,
-            start = contours.start;
+        var c = d3.select(this);
+        var trace = d.trace;
+        var contours = trace.contours;
+        var line = trace.line;
+        var cs = contours.size || 1;
+        var start = contours.start;
+        var colorLines = contours.coloring === 'lines';
 
         var colorMap = makeColorMap(trace);
 
@@ -38,8 +39,15 @@ module.exports = function style(gd) {
             d3.select(this).selectAll('path')
                 .call(Drawing.lineGroupStyle,
                     line.width,
-                    contours.coloring === 'lines' ? colorMap(d.level) : line.color,
+                    colorLines ? colorMap(d.level) : line.color,
                     line.dash);
+        });
+
+        var labelFontColor = (contours.font || {}).color;
+        c.selectAll('g.contourlabels text').each(function(d) {
+            Drawing.font(d3.select(this), {
+                color: labelFontColor || (colorLines ? colorMap(d.level) : line.color)
+            });
         });
 
         var firstFill;

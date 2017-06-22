@@ -13,6 +13,7 @@ var scatterAttrs = require('../scatter/attributes');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 var dash = require('../../components/drawing/attributes').dash;
+var fontAttrs = require('../../plots/font_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterLineAttrs = scatterAttrs.line;
@@ -107,6 +108,32 @@ module.exports = extendFlat({}, {
             description: [
                 'Determines whether or not the contour lines are drawn.',
                 'Has only an effect if `contours.coloring` is set to *fill*.'
+            ].join(' ')
+        },
+        showlabels: {
+            valType: 'boolean',
+            dflt: false,
+            role: 'style',
+            description: [
+                'Determines whether to label the contour lines with their values.'
+            ].join(' ')
+        },
+        font: extendFlat({}, fontAttrs, {
+            description: [
+                'Sets the font used for labeling the contour levels.',
+                'The default color comes from the lines, if shown.',
+                // TODO: same size as layout.font, or smaller? 80%?
+                'The default family and size come from `layout.font`.'
+            ].join(' ')
+        }),
+        labelformat: {
+            valType: 'string',
+            dflt: '',
+            role: 'style',
+            description: [
+                'Sets the contour label formatting rule using d3 formatting',
+                'mini-language which is very similar to Python, see:',
+                'https://github.com/d3/d3-format/blob/master/README.md#locale_format.'
             ].join(' ')
         }
     },

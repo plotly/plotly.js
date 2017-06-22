@@ -13,11 +13,13 @@ var d3 = require('d3');
 
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
+var svgTextUtils = require('../../lib/svg_text_utils');
 
 var heatmapPlot = require('../heatmap/plot');
 var makeCrossings = require('./make_crossings');
 var findAllPaths = require('./find_all_paths');
 var endPlus = require('./end_plus');
+var constants = require('./constants');
 
 
 module.exports = function plot(gd, plotinfo, cdcontours) {
@@ -80,7 +82,7 @@ function plotOne(gd, plotinfo, cd) {
     var plotGroup = makeContourGroup(plotinfo, cd, id);
     makeBackground(plotGroup, perimeter, contours);
     makeFills(plotGroup, pathinfo, perimeter, contours);
-    makeLines(plotGroup, pathinfo, contours);
+    makeLines(plotGroup, pathinfo, gd, cd[0], contours, perimeter);
     clipGaps(plotGroup, plotinfo, fullLayout._defs, cd[0], perimeter);
 }
 
@@ -259,7 +261,11 @@ function joinAllPaths(pi, perimeter) {
     return fullpath;
 }
 
-function makeLines(plotgroup, pathinfo, contours) {
+var TRAILING_ZEROS = /\.?0+$/;
+
+function makeLines(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
+    var defs = gd._fullLayout._defs;
+
     var smoothing = pathinfo[0].smoothing;
 
     var lineContainer = plotgroup.selectAll('g.contourlines').data([0]);
@@ -296,6 +302,190 @@ function makeLines(plotgroup, pathinfo, contours) {
         })
         .style('stroke-miterlimit', 1)
         .style('vector-effect', 'non-scaling-stroke');
+
+    var showLabels = contours.showlabels;
+    var clipId = showLabels ? 'clipline' + cd0.trace.uid : null;
+
+    var lineClip = defs.select('.clips').selectAll('#' + clipId)
+        .data(showLabels ? [0] : []);
+    lineClip.exit().remove();
+
+    lineClip.enter().append('clipPath')
+        .classed('contourlineclip', true)
+        .attr('id', clipId);
+
+    Drawing.setClipUrl(lineContainer, clipId);
+
+    var labelGroup = plotgroup.selectAll('g.contourlabels')
+        .data(showLabels ? [0] : []);
+
+    labelGroup.exit().remove();
+
+    labelGroup.enter().append('g')
+        .classed('contourlabels', true);
+
+    if(showLabels) {
+        var labelClipPathData = straightClosedPath(perimeter);
+
+        var labelData = [];
+
+        var contourFormat;
+        if(contours.labelformat) {
+            contourFormat = d3.format(contours.labelformat);
+        }
+        else {
+            // round to 2 digits past magnitude of contours.size,
+            // then remove trailing zeroes
+            var valRound = 2 - Math.floor(Math.log(contours.size) / Math.LN10 + 0.01);
+            if(valRound <= 0) {
+                contourFormat = function(v) { return v.toFixed(); };
+            }
+            else {
+                contourFormat = function(v) {
+                    var valStr = v.toFixed(valRound);
+                    return valStr.replace(TRAILING_ZEROS, '');
+                };
+            }
+        }
+
+        var dummyText = defs.append('text')
+            .attr('data-notex', 1)
+            .call(Drawing.font, contours.font);
+
+        var plotDiagonal = Math.sqrt(Math.pow(pathinfo[0].xaxis._length, 2) +
+            Math.pow(pathinfo[0].yaxis._length, 2));
+
+        // the path length to use to scale the number of labels to draw:
+        var normLength = plotDiagonal /
+            Math.max(1, pathinfo.length / constants.LABELINCREASE);
+
+        linegroup.each(function(d) {
+            // - make a dummy label for this level and calc its bbox
+            var text = contourFormat(d.level);
+            dummyText.text(text)
+                .call(svgTextUtils.convertToTspans, gd);
+            var bBox = Drawing.bBox(dummyText.node());
+            var textWidth = bBox.width;
+            var textHeight = bBox.height;
+            var dy = (bBox.top + bBox.bottom) / 2;
+            var textOpts = {
+                text: text,
+                width: textWidth,
+                height: textHeight,
+                level: d.level,
+                dy: dy
+            };
+
+            d3.select(this).selectAll('path').each(function() {
+                var path = this;
+                var pathLen = path.getTotalLength();
+
+                if(pathLen < textWidth * constants.LABELMIN) return;
+
+                var labelCount = Math.ceil(pathLen / normLength);
+                for(var i = 0.5; i < labelCount; i++) {
+                    var positionOnPath = i * pathLen / labelCount;
+                    var loc = getLocation(path, pathLen, positionOnPath, textOpts);
+                    // TODO: no optimization yet: just get display mechanics working
+                    labelClipPathData += addLabel(loc, textOpts, labelData);
+                }
+
+            });
+            // - iterate over paths for this level, finding the best position(s)
+            //   for label(s) on that path, given all the other labels we've
+            //   already placed
+        });
+
+        dummyText.remove();
+
+        var labels = labelGroup.selectAll('text')
+            .data(labelData, function(d) {
+                return d.text + ',' + d.x + ',' + d.y + ',' + d.theta;
+            });
+
+        labels.exit().remove();
+
+        labels.enter().append('text')
+            .attr({
+                'data-notex': 1,
+                'text-anchor': 'middle'
+            })
+            .each(function(d) {
+                var x = d.x + Math.sin(d.theta) * d.dy;
+                var y = d.y - Math.cos(d.theta) * d.dy;
+                d3.select(this)
+                    .text(d.text)
+                    .attr({
+                        x: x,
+                        y: y,
+                        transform: 'rotate(' + (180 * d.theta / Math.PI) + ' ' + x + ' ' + y + ')'
+                    })
+                    .call(svgTextUtils.convertToTspans, gd)
+                    .call(Drawing.font, contours.font.family, contours.font.size);
+            });
+
+        var lineClipPath = lineClip.selectAll('path').data([0]);
+        lineClipPath.enter().append('path');
+        lineClipPath.attr('d', labelClipPathData);
+    }
+
+}
+
+function straightClosedPath(pts) {
+    return 'M' + pts.join('L') + 'Z';
+}
+
+function addLabel(loc, textOpts, labelData) {
+    var halfWidth = textOpts.width / 2;
+    var halfHeight = textOpts.height / 2;
+
+    var x = loc.x;
+    var y = loc.y;
+    var theta = loc.theta;
+
+    var sin = Math.sin(theta);
+    var cos = Math.cos(theta);
+    var dxw = halfWidth * cos;
+    var dxh = halfHeight * sin;
+    var dyw = halfWidth * sin;
+    var dyh = -halfHeight * cos;
+    var bBoxPts = [
+        [x - dxw - dxh, y - dyw - dyh],
+        [x + dxw - dxh, y + dyw - dyh],
+        [x + dxw + dxh, y + dyw + dyh],
+        [x - dxw + dxh, y - dyw + dyh],
+    ];
+
+    labelData.push({
+        text: textOpts.text,
+        x: x,
+        y: y,
+        dy: textOpts.dy,
+        theta: theta,
+        level: textOpts.level,
+        width: textOpts.width,
+        height: textOpts.height
+    });
+
+    return straightClosedPath(bBoxPts);
+}
+
+function getLocation(path, pathLen, positionOnPath, textOpts) {
+    var halfWidth = textOpts.width / 2;
+
+    // for the angle, use points on the path separated by the text width
+    // even though due to curvature, the text will cover a bit more than that
+    var p0 = path.getPointAtLength(Lib.mod(positionOnPath - halfWidth, pathLen));
+    var p1 = path.getPointAtLength(Lib.mod(positionOnPath + halfWidth, pathLen));
+    // note: atan handles 1/0 nicely
+    var theta = Math.atan((p1.y - p0.y) / (p1.x - p0.x));
+    // center the text at 2/3 of the center position plus 1/3 the p0/p1 midpoint
+    // that's the average position of this segment, assuming it's roughly quadratic
+    var pCenter = path.getPointAtLength(positionOnPath);
+    var x = (pCenter.x * 4 + p0.x + p1.x) / 6;
+    var y = (pCenter.y * 4 + p0.y + p1.y) / 6;
+
+    return {x: x, y: y, theta: theta};
 }
 
 function clipGaps(plotGroup, plotinfo, defs, cd0, perimeter) {

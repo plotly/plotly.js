@@ -1374,7 +1374,8 @@ function _restyle(gd, aobj, _traces) {
         'line.cmin', 'line.cmax',
         'marker.line.cmin', 'marker.line.cmax',
         'contours.start', 'contours.end', 'contours.size',
-        'contours.showlines',
+        'contours.showlines', 'contours.showlabels', 'contours.labelformat',
+        'contours.font', 'contours.font.family', 'contours.font.size',
         'line', 'line.smoothing', 'line.shape',
         'error_y.width', 'error_x.width', 'error_x.copy_ystyle',
         'marker.maxdisplayed'
