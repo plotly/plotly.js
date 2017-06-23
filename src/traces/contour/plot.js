@@ -273,8 +273,16 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
     lineContainer.enter().append('g')
         .classed('contourlines', true);
 
+    var showLines = contours.showlines !== false;
+    var showLabels = contours.showlabels;
+    var clipLinesForLabels = showLines && showLabels;
+
+    // Even if we're not going to show lines, we need to create them
+    // if we're showing labels, because the fill paths include the perimeter
+    // so can't be used to position the labels correctly.
+    // In this case we'll remove the lines after making the labels.
     var linegroup = lineContainer.selectAll('g.contourlevel')
-        .data(contours.showlines === false ? [] : pathinfo);
+        .data(showLines || showLabels ? pathinfo : []);
     linegroup.enter().append('g')
         .classed('contourlevel', true);
     linegroup.exit().remove();
@@ -303,11 +311,10 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
         .style('stroke-miterlimit', 1)
         .style('vector-effect', 'non-scaling-stroke');
 
-    var showLabels = contours.showlabels;
-    var clipId = showLabels ? 'clipline' + cd0.trace.uid : null;
+    var clipId = clipLinesForLabels ? 'clipline' + cd0.trace.uid : null;
 
     var lineClip = defs.select('.clips').selectAll('#' + clipId)
-        .data(showLabels ? [0] : []);
+        .data(clipLinesForLabels ? [0] : []);
     lineClip.exit().remove();
 
     lineClip.enter().append('clipPath')
@@ -440,11 +447,14 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
                     .call(Drawing.font, contours.font.family, contours.font.size);
             });
 
-        var lineClipPath = lineClip.selectAll('path').data([0]);
-        lineClipPath.enter().append('path');
-        lineClipPath.attr('d', labelClipPathData);
+        if(clipLinesForLabels) {
+            var lineClipPath = lineClip.selectAll('path').data([0]);
+            lineClipPath.enter().append('path');
+            lineClipPath.attr('d', labelClipPathData);
+        }
     }
 
+    if(showLabels && !showLines) linegroup.remove();
 }
 
 function straightClosedPath(pts) {
