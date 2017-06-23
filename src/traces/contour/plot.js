@@ -14,6 +14,8 @@ var d3 = require('d3');
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
 var svgTextUtils = require('../../lib/svg_text_utils');
+var Axes = require('../../plots/cartesian/axes');
+var setConvert = require('../../plots/cartesian/set_convert');
 
 var heatmapPlot = require('../heatmap/plot');
 var makeCrossings = require('./make_crossings');
@@ -345,18 +347,27 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
             contourFormat = d3.format(contours.labelformat);
         }
         else {
-            // round to 2 digits past magnitude of contours.size,
-            // then remove trailing zeroes
-            var valRound = 2 - Math.floor(Math.log(contours.size) / Math.LN10 + 0.01);
-            if(valRound <= 0) {
-                contourFormat = function(v) { return v.toFixed(); };
+            var formatAxis;
+            if(cd0.t.cb) {
+                formatAxis = cd0.t.cb.axis;
             }
             else {
-                contourFormat = function(v) {
-                    var valStr = v.toFixed(valRound);
-                    return valStr.replace(TRAILING_ZEROS, '');
+                formatAxis = {
+                    type: 'linear',
+                    _separators: '.,',
+                    _id: 'ycontour',
+                    nticks: pathinfo.length,
+                    showexponent: 'all',
+                    range: [contours.start, contours.end]
                 };
+                setConvert(formatAxis, gd._fullLayout);
+                Axes.calcTicks(formatAxis);
+                formatAxis._tmin = null;
+                formatAxis._tmax = null;
             }
+            contourFormat = function(v) {
+                return Axes.tickText(formatAxis, v).text;
+            };
         }
 
         var dummyText = defs.append('text')
