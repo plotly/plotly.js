@@ -107,7 +107,7 @@ module.exports = extendFlat({}, {
             role: 'style',
             description: [
                 'Determines whether or not the contour lines are drawn.',
-                'Has only an effect if `contours.coloring` is set to *fill*.'
+                'Has an effect only if `contours.coloring` is set to *fill*.'
             ].join(' ')
         },
         showlabels: {
