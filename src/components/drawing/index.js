@@ -34,7 +34,7 @@ var drawing = module.exports = {};
 
 drawing.font = function(s, family, size, color) {
     // also allow the form font(s, {family, size, color})
-    if(family && family.family) {
+    if(Lib.isPlainObject(family)) {
         color = family.color;
         size = family.size;
         family = family.family;
