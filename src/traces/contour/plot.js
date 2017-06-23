@@ -20,6 +20,7 @@ var makeCrossings = require('./make_crossings');
 var findAllPaths = require('./find_all_paths');
 var endPlus = require('./end_plus');
 var constants = require('./constants');
+var costConstants = constants.LABELOPTIMIZER;
 
 
 module.exports = function plot(gd, plotinfo, cdcontours) {
@@ -379,7 +380,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
         var plotDiagonal = Math.sqrt(xLen * xLen + yLen * yLen);
 
         // the path length to use to scale the number of labels to draw:
-        var normLength = plotDiagonal /
+        var normLength = constants.LABELDISTANCE * plotDiagonal /
             Math.max(1, pathinfo.length / constants.LABELINCREASE);
 
         linegroup.each(function(d) {
@@ -401,22 +402,59 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
 
             d3.select(this).selectAll('path').each(function() {
                 var path = this;
-                var pathLen = path.getTotalLength();
+                var pathBounds = Lib.getVisibleSegment(path, bounds, textHeight / 2);
+                if(!pathBounds) return;
+
+                var onPlotMin = pathBounds.min;
+                var onPlotMax = pathBounds.max;
+                var totalPathLen = pathBounds.total;
+                var pathLen = onPlotMax - onPlotMin;
+
+                var isOpen = d3.select(this).classed('openline');
 
                 if(pathLen < textWidth * constants.LABELMIN) return;
 
-                var labelCount = Math.ceil(pathLen / normLength);
-                for(var i = 0.5; i < labelCount; i++) {
-                    var positionOnPath = i * pathLen / labelCount;
-                    var loc = getLocation(path, pathLen, positionOnPath, textOpts);
-                    // TODO: no optimization yet: just get display mechanics working
-                    labelClipPathData += addLabel(loc, textOpts, labelData);
-                }
+                var maxLabels = Math.min(Math.ceil(pathLen / normLength),
+                    constants.LABELMAX);
+                var dp, p0, pMax, minCost, location, pMin;
 
+                for(var i = 0; i < maxLabels; i++) {
+                    // simple optimization by a wide search followed by a binary search
+                    if(isOpen) {
+                        dp = (pathLen - textWidth) / (costConstants.INITIALSEARCHPOINTS + 1);
+                        p0 = onPlotMin + dp + textWidth / 2;
+                        pMax = onPlotMax - (dp + textWidth) / 2;
+                    }
+                    else {
+                        dp = pathLen / costConstants.INITIALSEARCHPOINTS;
+                        p0 = onPlotMin + dp / 2;
+                        pMax = onPlotMax;
+                    }
+
+                    minCost = Infinity;
+                    for(var j = 0; j < costConstants.ITERATIONS; j++) {
+                        for(var p = p0; p < pMax; p += dp) {
+                            var newLocation = Lib.getTextLocation(path, totalPathLen, p, textWidth);
+                            var newCost = locationCost(newLocation, textOpts, labelData, bounds);
+                            if(newCost < minCost) {
+                                minCost = newCost;
+                                location = newLocation;
+                                pMin = p;
+                            }
+                        }
+                        if(minCost > costConstants.MAXCOST * 2) break;
+
+                        // subsequent iterations just look half steps away from the
+                        // best we found in the previous iteration
+                        p0 = pMin - dp / 2;
+                        if(j) dp /= 2;
+                        pMax = p0 + dp * 1.5;
+                    }
+                    if(minCost > costConstants.MAXCOST) break;
+
+                    labelClipPathData += addLabel(location, textOpts, labelData);
+                }
             });
-            // - iterate over paths for this level, finding the best position(s)
-            //   for label(s) on that path, given all the other labels we've
-            //   already placed
         });
 
         dummyText.remove();
@@ -459,6 +497,63 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
 
 function straightClosedPath(pts) {
     return 'M' + pts.join('L') + 'Z';
+}
+
+/*
+ * locationCost: a cost function for label locations
+ * composed of three kinds of penalty:
+ * - for open paths, being close to the end of the path
+ * - the angle away from horizontal
+ * - being too close to already placed neighbors
+ */
+function locationCost(location, textOpts, labelData, bounds) {
+    var halfWidth = textOpts.width / 2;
+    var halfHeight = textOpts.height / 2;
+    var x = location.x;
+    var y = location.y;
+    var theta = location.theta;
+    var dx = Math.cos(theta) * halfWidth;
+    var dy = Math.sin(theta) * halfWidth;
+
+    // cost for being near an edge
+    var normX = ((x > bounds.center) ? (bounds.right - x) : (x - bounds.left)) /
+        (dx + Math.abs(Math.sin(theta) * halfHeight));
+    var normY = ((y > bounds.middle) ? (bounds.bottom - y) : (y - bounds.top)) /
+        (Math.abs(dy) + Math.cos(theta) * halfHeight);
+    if(normX < 1 || normY < 1) return Infinity;
+    var cost = costConstants.EDGECOST * (1 / (normX - 1) + 1 / (normY - 1));
+
+    // cost for not being horizontal
+    cost += costConstants.ANGLECOST * theta * theta;
+
+    // cost for being close to other labels
+    var x1 = x - dx;
+    var y1 = y - dy;
+    var x2 = x + dx;
+    var y2 = y + dy;
+    for(var i = 0; i < labelData.length; i++) {
+        var labeli = labelData[i];
+        var dxd = Math.cos(labeli.theta) * labeli.width / 2;
+        var dyd = Math.sin(labeli.theta) * labeli.width / 2;
+        var dist = Lib.segmentDistance(
+            x1, y1,
+            x2, y2,
+            labeli.x - dxd, labeli.y - dyd,
+            labeli.x + dxd, labeli.y + dyd
+        ) * 2 / (textOpts.height + labeli.height);
+
+        var sameLevel = labeli.level === textOpts.level;
+        var distOffset = sameLevel ? costConstants.SAMELEVELDISTANCE : 1;
+
+        if(dist <= distOffset) return Infinity;
+
+        var distFactor = costConstants.NEIGHBORCOST *
+            (sameLevel ? costConstants.SAMELEVELFACTOR : 1);
+
+        cost += distFactor / (dist - distOffset);
+    }
+
+    return cost;
 }
 
 function addLabel(loc, textOpts, labelData) {
