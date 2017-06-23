@@ -93,6 +93,9 @@ module.exports = extendFlat({}, {
             ].join(' ')
         },
         showlines: contourContourAttrs.showlines,
+        showlabels: contourContourAttrs.showlabels,
+        font: contourContourAttrs.font,
+        labelformat: contourContourAttrs.labelformat,
         operation: {
             valType: 'enumerated',
             values: [].concat(constants.INEQUALITY_OPS).concat(constants.INTERVAL_OPS).concat(constants.SET_OPS),
