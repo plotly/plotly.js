@@ -8,6 +8,8 @@
 
 'use strict';
 
+var mod = require('./mod');
+
 /*
  * look for intersection of two line segments
  *   (1->2 and 3->4) - returns array [x,y] if they do, null if not
@@ -81,3 +83,94 @@ function perpDistance2(xab, yab, l2_ab, xac, yac) {
         return crossProduct * crossProduct / l2_ab;
     }
 }
+
+// a very short-term cache for getTextLocation, just because
+// we're often looping over the same locations multiple times
+// invalidated as soon as we look at a different path
+var locationCache, workingPath, workingTextWidth;
+
+// turn a path and position along it into x, y, and angle for the given text
+exports.getTextLocation = function getTextLocation(path, totalPathLen, positionOnPath, textWidth) {
+    if(path !== workingPath || textWidth !== workingTextWidth) {
+        locationCache = {};
+        workingPath = path;
+        workingTextWidth = textWidth;
+    }
+    if(locationCache[positionOnPath]) {
+        return locationCache[positionOnPath];
+    }
+
+    // for the angle, use points on the path separated by the text width
+    // even though due to curvature, the text will cover a bit more than that
+    var p0 = path.getPointAtLength(mod(positionOnPath - textWidth / 2, totalPathLen));
+    var p1 = path.getPointAtLength(mod(positionOnPath + textWidth / 2, totalPathLen));
+    // note: atan handles 1/0 nicely
+    var theta = Math.atan((p1.y - p0.y) / (p1.x - p0.x));
+    // center the text at 2/3 of the center position plus 1/3 the p0/p1 midpoint
+    // that's the average position of this segment, assuming it's roughly quadratic
+    var pCenter = path.getPointAtLength(mod(positionOnPath, totalPathLen));
+    var x = (pCenter.x * 4 + p0.x + p1.x) / 6;
+    var y = (pCenter.y * 4 + p0.y + p1.y) / 6;
+
+    var out = {x: x, y: y, theta: theta};
+    locationCache[positionOnPath] = out;
+    return out;
+};
+
+exports.clearLocationCache = function() {
+    workingPath = null;
+};
+
+/*
+ * Find the segment of `path` that's within the visible area
+ * given by `bounds` {left, right, top, bottom}, to within a
+ * precision of `buffer` px
+ *
+ * returns {
+ *   min: position where the path first enters bounds, or 0 if it
+ *        starts within bounds
+ *   max: position where the path last exits bounds, or the path length
+ *        if it finishes within bounds
+ *   total: the total path length - just included so the caller doesn't
+ *        need to call path.getTotalLength() again
+ * }
+ *
+ * Works by starting from either end and repeatedly finding the distance from
+ * that point to the plot area, and if it's outside the plot, moving along the
+ * path by that distance (because the plot must be at least that far away on
+ * the path). Note that if a path enters, exits, and re-enters the plot, we
+ * will not capture this behavior.
+ */
+exports.getVisibleSegment = function getVisibleSegment(path, bounds, buffer) {
+    var left = bounds.left;
+    var right = bounds.right;
+    var top = bounds.top;
+    var bottom = bounds.bottom;
+
+    function getDistToPlot(len) {
+        var pt = path.getPointAtLength(len);
+        var dx = (pt.x < left) ? left - pt.x : (pt.x > right ? pt.x - right : 0);
+        var dy = (pt.y < top) ? top - pt.y : (pt.y > bottom ? pt.y - bottom : 0);
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    var pMin = 0;
+    var pTotal = path.getTotalLength();
+    var pMax = pTotal;
+
+    var distToPlot = getDistToPlot(pMin);
+    while(distToPlot) {
+        pMin += distToPlot + buffer;
+        if(pMin > pMax) return;
+        distToPlot = getDistToPlot(pMin);
+    }
+
+    distToPlot = getDistToPlot(pMax);
+    while(distToPlot) {
+        pMax -= distToPlot + buffer;
+        if(pMin > pMax) return;
+        distToPlot = getDistToPlot(pMax);
+    }
+
+    return {min: pMin, max: pMax, total: pTotal};
+};

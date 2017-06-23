@@ -82,7 +82,7 @@ function plotOne(gd, plotinfo, cd) {
     var plotGroup = makeContourGroup(plotinfo, cd, id);
     makeBackground(plotGroup, perimeter, contours);
     makeFills(plotGroup, pathinfo, perimeter, contours);
-    makeLines(plotGroup, pathinfo, gd, cd[0], contours, perimeter);
+    makeLinesAndLabels(plotGroup, pathinfo, gd, cd[0], contours, perimeter);
     clipGaps(plotGroup, plotinfo, fullLayout._defs, cd[0], perimeter);
 }
 
@@ -263,7 +263,7 @@ function joinAllPaths(pi, perimeter) {
 
 var TRAILING_ZEROS = /\.?0+$/;
 
-function makeLines(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
+function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
     var defs = gd._fullLayout._defs;
 
     var smoothing = pathinfo[0].smoothing;
@@ -329,6 +329,9 @@ function makeLines(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
 
         var labelData = [];
 
+        // invalidate the getTextLocation cache in case paths changed
+        Lib.clearLocationCache();
+
         var contourFormat;
         if(contours.labelformat) {
             contourFormat = d3.format(contours.labelformat);
@@ -352,8 +355,21 @@ function makeLines(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
             .attr('data-notex', 1)
             .call(Drawing.font, contours.font);
 
-        var plotDiagonal = Math.sqrt(Math.pow(pathinfo[0].xaxis._length, 2) +
-            Math.pow(pathinfo[0].yaxis._length, 2));
+        var xLen = pathinfo[0].xaxis._length;
+        var yLen = pathinfo[0].yaxis._length;
+
+        // visible bounds of the contour trace (and the midpoints, to
+        // help with cost calculations)
+        var bounds = {
+            left: Math.max(perimeter[0][0], 0),
+            right: Math.min(perimeter[2][0], xLen),
+            top: Math.max(perimeter[0][1], 0),
+            bottom: Math.min(perimeter[2][1], yLen)
+        };
+        bounds.middle = (bounds.top + bounds.bottom) / 2;
+        bounds.center = (bounds.left + bounds.right) / 2;
+
+        var plotDiagonal = Math.sqrt(xLen * xLen + yLen * yLen);
 
         // the path length to use to scale the number of labels to draw:
         var normLength = plotDiagonal /
@@ -468,24 +484,6 @@ function addLabel(loc, textOpts, labelData) {
     });
 
     return straightClosedPath(bBoxPts);
-}
-
-function getLocation(path, pathLen, positionOnPath, textOpts) {
-    var halfWidth = textOpts.width / 2;
-
-    // for the angle, use points on the path separated by the text width
-    // even though due to curvature, the text will cover a bit more than that
-    var p0 = path.getPointAtLength(Lib.mod(positionOnPath - halfWidth, pathLen));
-    var p1 = path.getPointAtLength(Lib.mod(positionOnPath + halfWidth, pathLen));
-    // note: atan handles 1/0 nicely
-    var theta = Math.atan((p1.y - p0.y) / (p1.x - p0.x));
-    // center the text at 2/3 of the center position plus 1/3 the p0/p1 midpoint
-    // that's the average position of this segment, assuming it's roughly quadratic
-    var pCenter = path.getPointAtLength(positionOnPath);
-    var x = (pCenter.x * 4 + p0.x + p1.x) / 6;
-    var y = (pCenter.y * 4 + p0.y + p1.y) / 6;
-
-    return {x: x, y: y, theta: theta};
 }
 
 function clipGaps(plotGroup, plotinfo, defs, cd0, perimeter) {
