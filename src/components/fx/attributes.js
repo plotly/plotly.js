@@ -33,6 +33,13 @@ module.exports = {
             family: extendFlat({}, fontAttrs.family, { arrayOk: true }),
             size: extendFlat({}, fontAttrs.size, { arrayOk: true }),
             color: extendFlat({}, fontAttrs.color, { arrayOk: true })
+        },
+        namelength: {
+            valType: 'number',
+            min: 0,
+            dflt: 15,
+            role: 'style',
+            description: 'Sets the length (in number of characters) of the hover labels for this trace'
         }
     }
 };
