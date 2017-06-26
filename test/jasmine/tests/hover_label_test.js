@@ -1299,3 +1299,27 @@ describe('Test hover label custom styling:', function() {
         .then(done);
     });
 });
+
+describe('ohlc hover interactions', function() {
+    var data = [{
+        type: 'candlestick',
+        open: [2, 2],
+        high: [3, 3],
+        low: [0, 0],
+        close: [3, 3],
+        x: [1, 2, 3],
+        y: [0.12345, 0.23456, 0.34567]
+    }];
+
+    beforeEach(function() {
+        this.gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    // See: https://github.com/plotly/plotly.js/issues/1807
+    it('should not fail in appendArrayPointValue', function() {
+        Plotly.plot(this.gd, data);
+        mouseEvent('mousemove', 203, 213);
+    });
+});
