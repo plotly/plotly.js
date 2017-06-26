@@ -262,6 +262,15 @@ describe('svg+text utils', function() {
             expect(node.text()).toEqual('100μ & < 10 > 0  100 × 20 ± 0.5 °');
         });
 
+        it('decodes some HTML entities in text (number case)', function() {
+            var node = mockTextSVGElement(
+                '100&#956; &#28; &#60; 10 &#62; 0 &#160;' +
+                '100 &#215; 20 &#177; 0.5 &#176;'
+            );
+
+            expect(node.text()).toEqual('100μ & < 10 > 0  100 × 20 ± 0.5 °');
+        });
+
         it('supports superscript by itself', function() {
             var node = mockTextSVGElement('<sup>123</sup>');
             expect(node.html()).toBe(
