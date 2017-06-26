@@ -22,6 +22,9 @@ var MINSELECT = constants.MINSELECT;
 
 function getAxId(ax) { return ax._id; }
 
+
+var polygons = []
+
 module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     var plot = dragOptions.gd._fullLayout._zoomlayer,
         dragBBox = dragOptions.element.getBoundingClientRect(),
@@ -31,6 +34,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         y0 = startY - dragBBox.top,
         x1 = x0,
         y1 = y0,
+        //FIXME: replace path with prev polygon path
         path0 = 'M' + x0 + ',' + y0,
         pw = dragOptions.xaxes[0]._length,
         ph = dragOptions.yaxes[0]._length,
@@ -41,6 +45,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
 
     if(mode === 'lasso') {
         pts = filteredPolygon([[x0, y0]], constants.BENDPX);
+        polygons.unshift(pts)
     }
 
     var outlines = plot.selectAll('path.select-outline').data([1, 2]);
@@ -144,9 +149,29 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 'H' + poly.xmin + 'Z');
         }
         else if(mode === 'lasso') {
+            // FIXME: merge polygons here
             pts.addPt([x1, y1]);
-            poly = polygonTester(pts.filtered);
-            outlines.attr('d', 'M' + pts.filtered.join('L') + 'Z');
+
+            var vertices = []
+            var roots = []
+            for (var i = 0; i < polygons.length; i++) {
+                var ppts = polygons[i].filtered
+                vertices = vertices.concat(ppts)
+                roots.push(ppts[0])
+                vertices.push(ppts[0])
+            }
+            while (roots.length) {
+                vertices.push(roots.pop())
+            }
+            poly = polygonTester(vertices);
+
+            // poly = polygonTester(pts.filtered);
+
+            var paths = []
+            for (var i = 0 ;i < polygons.length; i++) {
+                paths.push(polygons[i].filtered.join('L'))
+            }
+            outlines.attr('d', 'M' + paths.join('ZM') + 'Z');
         }
 
         selection = [];
