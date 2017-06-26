@@ -374,6 +374,9 @@ proto.destroy = function() {
     this.fullData = null;
     this.glplot = null;
     this.stopped = true;
+    this.camera.mouseListener.enabled = false;
+    this.mouseContainer.removeEventListener('wheel', this.camera.wheelListener);
+    this.camera = null;
 };
 
 proto.plot = function(fullData, calcData, fullLayout) {

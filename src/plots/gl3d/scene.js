@@ -593,10 +593,11 @@ proto.plot = function(sceneData, fullLayout, layout) {
 };
 
 proto.destroy = function() {
+    this.camera.mouseListener.enabled = false;
+    this.container.removeEventListener('wheel', this.camera.wheelListener);
+    this.camera = this.glplot.camera = null;
     this.glplot.dispose();
     this.container.parentNode.removeChild(this.container);
-
-    // Remove reference to glplot
     this.glplot = null;
 };
 
