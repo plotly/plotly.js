@@ -15,5 +15,6 @@ module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts
 
     coerce('hoverlabel.bgcolor', opts.bgcolor);
     coerce('hoverlabel.bordercolor', opts.bordercolor);
+    coerce('hoverlabel.namelength', opts.namelength);
     Lib.coerceFont(coerce, 'hoverlabel.font', opts.font);
 };
