@@ -13,7 +13,7 @@
 module.exports = function eventData(out, pt) {
     out.lon = pt.lon;
     out.lat = pt.lat;
-    out.location = pt.lon ? pt.lon : null;
+    out.location = pt.loc ? pt.loc : null;
 
     return out;
 };
