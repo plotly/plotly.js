@@ -423,7 +423,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
 
                 var isOpen = d3.select(this).classed('openline');
 
-                if(pathLen < textWidth * constants.LABELMIN) return;
+                if(pathLen < (textWidth + textHeight) * constants.LABELMIN) return;
 
                 var maxLabels = Math.min(Math.ceil(pathLen / normLength),
                     constants.LABELMAX);
