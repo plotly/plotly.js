@@ -10,6 +10,18 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.28.3] -- 2017-06-26
+
+### Fixed
+- Fix deselect on double-clicking for gl2d traces [#1811]
+- Fix `Plotly.purge` for gl2d and gl3d subplots
+  (bug introduced in 1.28.0, leading to memory leaks) [#1821]
+- Fix hover labels for `ohlc` and `candlestick` traces
+  (bug introduced in 1.28.0) [#1808]
+- Fix event data for `scattergeo` traces [#1819]
+- Fix support of HTML entity number in pseudo-html inputs [#1820]
+
+
 ## [1.28.2] -- 2017-06-21
 
 ### Fixed
