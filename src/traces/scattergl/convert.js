@@ -401,7 +401,7 @@ proto.updateFast = function(options) {
     this.idToIndex = idToIndex;
 
     // form selected set
-    if(selection) {
+    if(selection && selection.length) {
         selPositions = new Float64Array(2 * selection.length);
 
         for(i = 0, l = selection.length; i < l; i++) {
@@ -559,7 +559,7 @@ proto.updateFancy = function(options) {
 
     var sizes, selIds;
 
-    if(selection) {
+    if(selection && selection.length) {
         selIds = {};
         for(i = 0; i < selection.length; i++) {
             selIds[selection[i].pointNumber] = true;
