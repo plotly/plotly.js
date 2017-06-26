@@ -264,8 +264,6 @@ function joinAllPaths(pi, perimeter) {
     return fullpath;
 }
 
-var TRAILING_ZEROS = /\.?0+$/;
-
 function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
     var defs = gd._fullLayout._defs;
 
