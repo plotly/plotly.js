@@ -181,7 +181,7 @@ function createCamera(element, options) {
     });
 
     var lastX = 0, lastY = 0, lastMods = {shift: false, control: false, alt: false, meta: false};
-    mouseChange(element, handleInteraction);
+    camera.mouseListener = mouseChange(element, handleInteraction);
 
     // enable simple touch interactions
     element.addEventListener('touchstart', function(ev) {
@@ -247,7 +247,7 @@ function createCamera(element, options) {
         return true;
     }
 
-    mouseWheel(element, function(dx, dy) {
+    camera.wheelListener = mouseWheel(element, function(dx, dy) {
         if(camera.keyBindingMode === false) return;
 
         var flipX = camera.flipX ? 1 : -1;
