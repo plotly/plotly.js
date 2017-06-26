@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v1.28.2
+* plotly.js (geo) v1.28.3
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -19972,6 +19972,10 @@ function quadrature(dx, dy) {
 exports.appendArrayPointValue = function(pointData, trace, pointNumber) {
     var arrayAttrs = trace._arrayAttrs;
 
+    if(!arrayAttrs) {
+        return;
+    }
+
     for(var i = 0; i < arrayAttrs.length; i++) {
         var astr = arrayAttrs[i];
         var key;
@@ -29776,29 +29780,34 @@ module.exports = {
 'use strict';
 
 // N.B. HTML entities are listed without the leading '&' and trailing ';'
+// https://www.freeformatter.com/html-entities.html
 
 module.exports = {
-
     entityToUnicode: {
         'mu': 'μ',
+        '#956': 'μ',
+
         'amp': '&',
+        '#28': '&',
+
         'lt': '<',
+        '#60': '<',
+
         'gt': '>',
+        '#62': '>',
+
         'nbsp': ' ',
+        '#160': ' ',
+
         'times': '×',
+        '#215': '×',
+
         'plusmn': '±',
-        'deg': '°'
-    },
+        '#177': '±',
 
-    unicodeToEntity: {
-        '&': 'amp',
-        '<': 'lt',
-        '>': 'gt',
-        '"': 'quot',
-        '\'': '#x27',
-        '\/': '#x2F'
+        'deg': '°',
+        '#176': '°'
     }
-
 };
 
 },{}],133:[function(require,module,exports){
@@ -29843,7 +29852,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.28.2';
+exports.version = '1.28.3';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -57857,7 +57866,7 @@ function handleLonLatLocDefaults(traceIn, traceOut, coerce) {
 module.exports = function eventData(out, pt) {
     out.lon = pt.lon;
     out.lat = pt.lat;
-    out.location = pt.lon ? pt.lon : null;
+    out.location = pt.loc ? pt.loc : null;
 
     return out;
 };
@@ -57931,8 +57940,8 @@ module.exports = function hoverPoints(pointData) {
     pointData.y1 = pos[1] + rad;
 
     pointData.loc = di.loc;
-    pointData.lat = lonlat[0];
-    pointData.lon = lonlat[1];
+    pointData.lon = lonlat[0];
+    pointData.lat = lonlat[1];
 
     pointData.color = getTraceColor(trace, di);
     pointData.extraText = getExtraText(trace, di, geo.mockAxis);

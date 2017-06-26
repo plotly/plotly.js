@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v1.28.2
+* plotly.js (gl2d) v1.28.3
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -54852,6 +54852,10 @@ function quadrature(dx, dy) {
 exports.appendArrayPointValue = function(pointData, trace, pointNumber) {
     var arrayAttrs = trace._arrayAttrs;
 
+    if(!arrayAttrs) {
+        return;
+    }
+
     for(var i = 0; i < arrayAttrs.length; i++) {
         var astr = arrayAttrs[i];
         var key;
@@ -64811,29 +64815,34 @@ module.exports = {
 'use strict';
 
 // N.B. HTML entities are listed without the leading '&' and trailing ';'
+// https://www.freeformatter.com/html-entities.html
 
 module.exports = {
-
     entityToUnicode: {
         'mu': 'μ',
+        '#956': 'μ',
+
         'amp': '&',
+        '#28': '&',
+
         'lt': '<',
+        '#60': '<',
+
         'gt': '>',
+        '#62': '>',
+
         'nbsp': ' ',
+        '#160': ' ',
+
         'times': '×',
+        '#215': '×',
+
         'plusmn': '±',
-        'deg': '°'
-    },
+        '#177': '±',
 
-    unicodeToEntity: {
-        '&': 'amp',
-        '<': 'lt',
-        '>': 'gt',
-        '"': 'quot',
-        '\'': '#x27',
-        '\/': '#x2F'
+        'deg': '°',
+        '#176': '°'
     }
-
 };
 
 },{}],332:[function(require,module,exports){
@@ -64878,7 +64887,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.28.2';
+exports.version = '1.28.3';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -83687,6 +83696,9 @@ proto.destroy = function() {
     this.fullData = null;
     this.glplot = null;
     this.stopped = true;
+    this.camera.mouseListener.enabled = false;
+    this.mouseContainer.removeEventListener('wheel', this.camera.wheelListener);
+    this.camera = null;
 };
 
 proto.plot = function(fullData, calcData, fullLayout) {
@@ -96243,7 +96255,7 @@ proto.updateFast = function(options) {
     this.idToIndex = idToIndex;
 
     // form selected set
-    if(selection) {
+    if(selection && selection.length) {
         selPositions = new Float64Array(2 * selection.length);
 
         for(i = 0, l = selection.length; i < l; i++) {
@@ -96401,7 +96413,7 @@ proto.updateFancy = function(options) {
 
     var sizes, selIds;
 
-    if(selection) {
+    if(selection && selection.length) {
         selIds = {};
         for(i = 0; i < selection.length; i++) {
             selIds[selection[i].pointNumber] = true;
