@@ -689,7 +689,7 @@ function createHoverText(hoverData, opts, gd) {
             // strip out our pseudo-html elements from d.name (if it exists at all)
             name = svgTextUtils.plainText(d.name || '');
 
-            if(name.length > 15) name = name.substr(0, 12) + '...';
+            if(name.length > commonLabelOpts.namelength) name = name.substr(0, commonLabelOpts.namelength - 3) + '...';
         }
 
         // used by other modules (initially just ternary) that
