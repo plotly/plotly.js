@@ -94,6 +94,10 @@ function quadrature(dx, dy) {
 exports.appendArrayPointValue = function(pointData, trace, pointNumber) {
     var arrayAttrs = trace._arrayAttrs;
 
+    if(!arrayAttrs) {
+        return;
+    }
+
     for(var i = 0; i < arrayAttrs.length; i++) {
         var astr = arrayAttrs[i];
         var key;
