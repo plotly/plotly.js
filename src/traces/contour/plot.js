@@ -427,7 +427,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
 
                 var maxLabels = Math.min(Math.ceil(pathLen / normLength),
                     constants.LABELMAX);
-                var dp, p0, pMax, minCost, location, pMin;
+                var dp, p0, pMax, minCost, loc, pMin;
 
                 for(var i = 0; i < maxLabels; i++) {
                     // simple optimization by a wide search followed by a binary search
@@ -449,7 +449,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
                             var newCost = locationCost(newLocation, textOpts, labelData, bounds);
                             if(newCost < minCost) {
                                 minCost = newCost;
-                                location = newLocation;
+                                loc = newLocation;
                                 pMin = p;
                             }
                         }
@@ -463,7 +463,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
                     }
                     if(minCost > costConstants.MAXCOST) break;
 
-                    labelClipPathData += addLabel(location, textOpts, labelData);
+                    labelClipPathData += addLabel(loc, textOpts, labelData);
                 }
             });
         });
@@ -517,12 +517,12 @@ function straightClosedPath(pts) {
  * - the angle away from horizontal
  * - being too close to already placed neighbors
  */
-function locationCost(location, textOpts, labelData, bounds) {
+function locationCost(loc, textOpts, labelData, bounds) {
     var halfWidth = textOpts.width / 2;
     var halfHeight = textOpts.height / 2;
-    var x = location.x;
-    var y = location.y;
-    var theta = location.theta;
+    var x = loc.x;
+    var y = loc.y;
+    var theta = loc.theta;
     var dx = Math.cos(theta) * halfWidth;
     var dy = Math.sin(theta) * halfWidth;
 
