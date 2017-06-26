@@ -1320,5 +1320,7 @@ describe('ohlc hover interactions', function() {
     it('should not fail in appendArrayPointValue', function() {
         Plotly.plot(this.gd, data);
         mouseEvent('mousemove', 203, 213);
+
+        expect(d3.select('.hovertext').size()).toBe(1);
     });
 });
