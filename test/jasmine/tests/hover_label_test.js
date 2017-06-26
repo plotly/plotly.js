@@ -1303,12 +1303,11 @@ describe('Test hover label custom styling:', function() {
 describe('ohlc hover interactions', function() {
     var data = [{
         type: 'candlestick',
+        x: ['2011-01-01', '2012-01-01'],
         open: [2, 2],
         high: [3, 3],
         low: [0, 0],
         close: [3, 3],
-        x: [1, 2, 3],
-        y: [0.12345, 0.23456, 0.34567]
     }];
 
     beforeEach(function() {
