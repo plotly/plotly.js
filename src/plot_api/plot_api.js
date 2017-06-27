@@ -1635,8 +1635,13 @@ function _restyle(gd, aobj, _traces) {
                 }
 
                 // some attributes declare an 'editType' flaglist
-                if(valObject.editType === 'docalc') {
-                    flags.docalc = true;
+                switch(valObject.editType) {
+                    case 'docalc':
+                        flags.docalc = true;
+                        break;
+                    case 'doplot':
+                        flags.doplot = true;
+                        break;
                 }
 
                 // all the other ones, just modify that one attribute

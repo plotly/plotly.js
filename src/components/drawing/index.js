@@ -62,17 +62,20 @@ drawing.setRect = function(s, x, y, w, h) {
  * @param {sel} sel : d3 selction of node to translate
  * @param {object} xa : corresponding full xaxis object
  * @param {object} ya : corresponding full yaxis object
+ * @param {object} trace : corresponding full trace object
  *
  * @return {boolean} :
  *  true if selection got translated
  *  false if selection could not get translated
  */
-drawing.translatePoint = function(d, sel, xa, ya) {
+drawing.translatePoint = function(d, sel, xa, ya, trace) {
     // put xp and yp into d if pixel scaling is already done
-    var x = d.xp || xa.c2p(d.x),
-        y = d.yp || ya.c2p(d.y);
+    var x = d.xp = xa.c2p(d.x);
+    var y = d.yp = ya.c2p(d.y);
 
-    if(isNumeric(x) && isNumeric(y) && sel.node()) {
+    if(isNumeric(x) && isNumeric(y) && sel.node() &&
+       (trace.cliponaxis !== false || xa.isPtWithinRange(d) && ya.isPtWithinRange(d))
+    ) {
         // for multiline text this works better
         if(sel.node().nodeName === 'text') {
             sel.attr('x', x).attr('y', y);

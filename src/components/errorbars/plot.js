@@ -14,22 +14,24 @@ var isNumeric = require('fast-isnumeric');
 
 var subTypes = require('../../traces/scatter/subtypes');
 
-module.exports = function plot(traces, plotinfo, transitionOpts) {
+module.exports = function plot(traces, plotinfo, transitionOpts, clipOnAxis) {
     var isNew;
 
-    var xa = plotinfo.xaxis,
-        ya = plotinfo.yaxis;
+    var xa = plotinfo.xaxis;
+    var ya = plotinfo.yaxis;
 
     var hasAnimation = transitionOpts && transitionOpts.duration > 0;
 
     traces.each(function(d) {
-        var trace = d[0].trace,
-            // || {} is in case the trace (specifically scatterternary)
-            // doesn't support error bars at all, but does go through
-            // the scatter.plot mechanics, which calls ErrorBars.plot
-            // internally
-            xObj = trace.error_x || {},
-            yObj = trace.error_y || {};
+        var tr = d3.select(this);
+        var trace = d[0].trace;
+
+        // || {} is in case the trace (specifically scatterternary)
+        // doesn't support error bars at all, but does go through
+        // the scatter.plot mechanics, which calls ErrorBars.plot
+        // internally
+        var xObj = trace.error_x || {};
+        var yObj = trace.error_y || {};
 
         var keyFunc;
 
@@ -44,8 +46,8 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
 
         if(!yObj.visible && !xObj.visible) return;
 
-        var errorbars = d3.select(this).selectAll('g.errorbar')
-            .data(d, keyFunc);
+        var errorbars = tr.selectAll('g.errorbar')
+            .data(trace.cliponaxis === clipOnAxis ? d : [], keyFunc);
 
         errorbars.exit().remove();
 
@@ -66,7 +68,7 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
 
             if(sparse && !d.vis) return;
 
-            var path;
+            var path, yerror, xerror;
 
             if(yObj.visible && isNumeric(coords.x) &&
                     isNumeric(coords.yh) &&
@@ -77,11 +79,9 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
                     coords.yh + 'h' + (2 * yw) + // hat
                     'm-' + yw + ',0V' + coords.ys; // bar
 
-
                 if(!coords.noYS) path += 'm-' + yw + ',0h' + (2 * yw); // shoe
 
-                var yerror = errorbar.select('path.yerror');
-
+                yerror = errorbar.select('path.yerror');
                 isNew = !yerror.size();
 
                 if(isNew) {
@@ -108,8 +108,7 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
 
                 if(!coords.noXS) path += 'm0,-' + xw + 'v' + (2 * xw); // shoe
 
-                var xerror = errorbar.select('path.xerror');
-
+                xerror = errorbar.select('path.xerror');
                 isNew = !xerror.size();
 
                 if(isNew) {
@@ -123,6 +122,12 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
                 }
 
                 xerror.attr('d', path);
+            }
+
+            if(trace.cliponaxis === false &&
+                !(xa.isPtWithinRange(d) && ya.isPtWithinRange(d))) {
+                yerror.remove();
+                xerror.remove();
             }
         });
     });

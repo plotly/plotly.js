@@ -6,6 +6,7 @@ var ScatterTernary = require('@src/traces/scatterternary');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
 var customMatchers = require('../assets/custom_matchers');
 
 
@@ -373,4 +374,65 @@ describe('scatterternary hover', function() {
         .then(done);
     });
 
+});
+
+describe('Test scatterternary *cliponaxis*', function() {
+    afterEach(destroyGraphDiv);
+
+    it('should show/hide point/text/errorbars in clipped and non-clipped layers', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/ternary_markers.json'));
+
+        function assertVisible(cnt, cntNoClip, msg) {
+            var selectors = ['.point', '.textpoint'];
+            var scatterLayer = d3.select('.frontplot > .scatterlayer');
+            var scatterLayerNoClip = d3.select('.frontplotnoclip > .scatterlayer');
+
+            selectors.forEach(function(s) {
+                expect(scatterLayer.selectAll(s).size())
+                    .toBe(cnt, s + ' ' + msg);
+                expect(scatterLayerNoClip.selectAll(s).size())
+                    .toBe(cntNoClip, s + ' (noclip) ' + msg);
+            });
+        }
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            assertVisible(0, 11, 'cliponaxis:false');
+            return Plotly.restyle(gd, 'visible', false);
+        })
+        .then(function() {
+            assertVisible(0, 0, 'visible:false');
+            return Plotly.restyle(gd, {visible: true, cliponaxis: null});
+        })
+        .then(function() {
+            assertVisible(11, 0, 'cliponaxis:dflt');
+            return Plotly.restyle(gd, 'cliponaxis', false);
+        })
+        .then(function() {
+            assertVisible(0, 11, 'back to cliponaxis:false');
+            return Plotly.relayout(gd, 'ternary.aaxis.min', 20);
+        })
+        .then(function() {
+            assertVisible(0, 5, 'zoomed about a-axis');
+            return Plotly.relayout(gd, 'ternary.baxis.min', 20);
+        })
+        .then(function() {
+            assertVisible(0, 3, 'zoomed about b-axis');
+            return Plotly.relayout(gd, 'ternary.caxis.min', 10);
+        })
+        .then(function() {
+            assertVisible(0, 1, 'zoomed about c-axis');
+            return Plotly.relayout(gd, {
+                'ternary.aaxis.min': null,
+                'ternary.baxis.min': null,
+                'ternary.caxis.min': null
+            });
+        })
+        .then(function() {
+            assertVisible(0, 11, 'back to original view');
+        })
+        .catch(fail)
+        .then(done);
+    });
 });

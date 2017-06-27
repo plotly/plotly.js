@@ -15,14 +15,15 @@ var scatterPlot = require('../scatter/plot');
 module.exports = function plot(ternary, moduleCalcData) {
     var plotContainer = ternary.plotContainer;
 
-    // remove all nodes inside the scatter layer
-    plotContainer.select('.scatterlayer').selectAll('*').remove();
+    // remove all nodes inside the scatter layers
+    plotContainer.selectAll('.scatterlayer').selectAll('*').remove();
 
     // mimic cartesian plotinfo
     var plotinfo = {
         xaxis: ternary.xaxis,
         yaxis: ternary.yaxis,
-        plot: plotContainer
+        plot: plotContainer.select('.frontplot'),
+        plotnoclip: plotContainer.select('.frontplotnoclip')
     };
 
     // add ref to ternary subplot object in fullData traces

@@ -70,9 +70,9 @@ describe('Test plot structure', function() {
                 expect(countDraggers()).toEqual(1);
             });
 
-            it('has one *scatterlayer* node', function() {
+            it('has two *scatterlayer* node (one clipped, one non-clipped)', function() {
                 var nodes = d3.selectAll('g.scatterlayer');
-                expect(nodes.size()).toEqual(1);
+                expect(nodes.size()).toEqual(2);
             });
 
             it('has as many *trace scatter* nodes as there are traces', function() {
