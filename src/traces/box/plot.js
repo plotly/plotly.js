@@ -204,7 +204,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                     });
                 })
                 .enter().append('path')
-                .call(Drawing.translatePoints, xa, ya);
+                .call(Drawing.translatePoints, xa, ya, trace);
         }
         // draw mean (and stdev diamond) if desired
         if(trace.boxmean) {

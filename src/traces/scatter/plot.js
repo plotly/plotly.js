@@ -508,7 +508,7 @@ function plotPoints(gd, tr, cdscatter, xa, ya, hasTransition, transition, clipOn
         join.each(function(d) {
             var el = d3.select(this);
             var sel = transition(el);
-            hasNode = Drawing.translatePoint(d, sel, xa, ya);
+            hasNode = Drawing.translatePoint(d, sel, xa, ya, trace);
 
             if(hasNode) {
                 Drawing.singlePointStyle(d, sel, trace, markerScale, lineScale, gd);
@@ -542,7 +542,7 @@ function plotPoints(gd, tr, cdscatter, xa, ya, hasTransition, transition, clipOn
         join.each(function(d) {
             var g = d3.select(this);
             var sel = transition(g.select('text'));
-            hasNode = Drawing.translatePoint(d, sel, xa, ya);
+            hasNode = Drawing.translatePoint(d, sel, xa, ya, trace);
             if(!hasNode) g.remove();
         });
 

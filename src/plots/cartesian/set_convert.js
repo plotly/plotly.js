@@ -58,6 +58,8 @@ function fromLog(v) {
 module.exports = function setConvert(ax, fullLayout) {
     fullLayout = fullLayout || {};
 
+    var axLetter = (ax._id || 'x').charAt(0);
+
     // clipMult: how many axis lengths past the edge do we render?
     // for panning, 1-2 would suffice, but for zooming more is nice.
     // also, clipping can affect the direction of lines off the edge...
@@ -277,7 +279,6 @@ module.exports = function setConvert(ax, fullLayout) {
     ax.cleanRange = function(rangeAttr) {
         if(!rangeAttr) rangeAttr = 'range';
         var range = Lib.nestedProperty(ax, rangeAttr).get(),
-            axLetter = (ax._id || 'x').charAt(0),
             i, dflt;
 
         if(ax.type === 'date') dflt = Lib.dfltRange(ax.calendar);
@@ -341,8 +342,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
     // set scaling to pixels
     ax.setScale = function(usePrivateRange) {
-        var gs = fullLayout._size,
-            axLetter = ax._id.charAt(0);
+        var gs = fullLayout._size;
 
         // TODO cleaner way to handle this case
         if(!ax._categories) ax._categories = [];
@@ -434,6 +434,18 @@ module.exports = function setConvert(ax, fullLayout) {
             isNumeric(ax.r2l(range[1]))
         );
     };
+
+    if(axLetter === 'x') {
+        ax.isPtWithinRange = function(d) {
+            var x = d.x;
+            return x >= ax.range[0] && x <= ax.range[1];
+        };
+    } else {
+        ax.isPtWithinRange = function(d) {
+            var y = d.y;
+            return y >= ax.range[0] && y <= ax.range[1];
+        };
+    }
 
     // for autoranging: arrays of objects:
     //      {val: axis value, pad: pixel padding}
