@@ -670,3 +670,67 @@ describe('scatter hoverPoints', function() {
         .then(done);
     });
 });
+
+describe('Test scatter *clipnaxis*', function() {
+    afterEach(destroyGraphDiv);
+
+    it('should show/hide point/text/errorbars in clipped and non-clipped layers', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/cliponaxis_false.json'));
+        var xRange0 = fig.layout.xaxis.range.slice();
+        var yRange0 = fig.layout.yaxis.range.slice();
+
+        function assertVisible(cnt, cntNoClip, msg) {
+            var selectors = ['.point', '.textpoint', '.yerror', '.xerror'];
+            var scatterLayer = d3.select('.plot > .scatterlayer');
+            var scatterLayerNoClip = d3.select('.plotnoclip > .scatterlayer');
+
+            selectors.forEach(function(s) {
+                expect(scatterLayer.selectAll(s).size())
+                    .toBe(cnt, s + ' ' + msg);
+                expect(scatterLayerNoClip.selectAll(s).size())
+                    .toBe(cntNoClip, s + ' (noclip) ' + msg);
+            });
+        }
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            assertVisible(0, 6, 'cliponaxis:false');
+            return Plotly.restyle(gd, 'visible', false);
+        })
+        .then(function() {
+            assertVisible(0, 0, 'visible:false');
+            return Plotly.restyle(gd, {visible: true, cliponaxis: null});
+        })
+        .then(function() {
+            assertVisible(6, 0, 'cliponaxis:dflt');
+            return Plotly.restyle(gd, 'visible', 'legendonly');
+        })
+        .then(function() {
+            assertVisible(0, 0, 'visible:legendonly');
+            return Plotly.restyle(gd, 'visible', true);
+        })
+        .then(function() {
+            assertVisible(6, 0, 'back to clipnaxis:dflt');
+            return Plotly.restyle(gd, 'cliponaxis', false);
+        })
+        .then(function() {
+            assertVisible(0, 6, 'back to cliponaxis:false');
+            return Plotly.relayout(gd, 'xaxis.range', [0, 1]);
+        })
+        .then(function() {
+            assertVisible(0, 2, 'smaller x-range');
+            return Plotly.relayout(gd, 'yaxis.range', [0, 1]);
+        })
+        .then(function() {
+            assertVisible(0, 1, 'smaller y-range');
+            return Plotly.relayout(gd, {'xaxis.range': xRange0, 'yaxis.range': yRange0});
+        })
+        .then(function() {
+            assertVisible(0, 6, 'back to original xy ranges');
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+});
