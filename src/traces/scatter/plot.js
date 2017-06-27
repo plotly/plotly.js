@@ -21,47 +21,51 @@ var linkTraces = require('./link_traces');
 var polygonTester = require('../../lib/polygon').tester;
 
 module.exports = function plot(gd, plotinfo, cdscatter, transitionOpts, makeOnCompleteCallback) {
-    var i, uids, selection, join, onComplete;
+    var i;
 
     var scatterlayer = plotinfo.plot.select('g.scatterlayer');
+
+    // Sort the traces, once created, so that the ordering is preserved even when traces
+    // are shown and hidden. This is needed since we're not just wiping everything out
+    // and recreating on every update.
+    var uids = {};
+    for(i = 0; i < cdscatter.length; i++) {
+        uids[cdscatter[i][0].trace.uid] = i;
+    }
+
+    var join = bindData(gd, plotinfo, cdscatter, scatterlayer, uids);
+
+    // After the elements are created but before they've been draw, we have to perform
+    // this extra step of linking the traces. This allows appending of fill layers so that
+    // the z-order of fill layers is correct.
+    linkTraces(gd, plotinfo, cdscatter);
+    createFills(gd, scatterlayer);
+
+    var scatterlayerNoClip, cdscatterNoClip, joinNoClip;
+
+    if(plotinfo.plotnoclip) {
+        scatterlayerNoClip = plotinfo.plotnoclip.select('g.scatterlayer');
+        cdscatterNoClip = [];
+
+        for(i = 0; i < cdscatter.length; i++) {
+            var cdi = cdscatter[i];
+
+            if(cdi[0].trace.cliponaxis === false) {
+                cdscatterNoClip.push(cdi);
+            }
+        }
+
+        joinNoClip = bindData(gd, plotinfo, cdscatterNoClip, scatterlayerNoClip, uids);
+    }
 
     // If transition config is provided, then it is only a partial replot and traces not
     // updated are removed.
     var isFullReplot = !transitionOpts;
     var hasTransition = !!transitionOpts && transitionOpts.duration > 0;
 
-    selection = scatterlayer.selectAll('g.trace');
-
-    join = selection.data(cdscatter, function(d) { return d[0].trace.uid; });
-
-    // Append new traces:
-    join.enter().append('g')
-        .attr('class', function(d) {
-            return 'trace scatter trace' + d[0].trace.uid;
-        })
-        .style('stroke-miterlimit', 2);
-
-    // After the elements are created but before they've been draw, we have to perform
-    // this extra step of linking the traces. This allows appending of fill layers so that
-    // the z-order of fill layers is correct.
-    linkTraces(gd, plotinfo, cdscatter);
-
-    createFills(gd, scatterlayer);
-
-    // Sort the traces, once created, so that the ordering is preserved even when traces
-    // are shown and hidden. This is needed since we're not just wiping everything out
-    // and recreating on every update.
-    for(i = 0, uids = {}; i < cdscatter.length; i++) {
-        uids[cdscatter[i][0].trace.uid] = i;
-    }
-
-    scatterlayer.selectAll('g.trace').sort(function(a, b) {
-        var idx1 = uids[a[0].trace.uid];
-        var idx2 = uids[b[0].trace.uid];
-        return idx1 > idx2 ? 1 : -1;
-    });
-
     if(hasTransition) {
+        var onComplete;
+
         if(makeOnCompleteCallback) {
             // If it was passed a callback to register completion, make a callback. If
             // this is created, then it must be executed on completion, otherwise the
@@ -85,20 +89,53 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionOpts, makeOnCo
             scatterlayer.selectAll('g.trace').each(function(d, i) {
                 plotOne(gd, i, plotinfo, d, cdscatter, this, transitionOpts);
             });
+
+            if(scatterlayerNoClip) {
+                scatterlayerNoClip.selectAll('g.trace').each(function(d, i) {
+                    plotOneNoClip(gd, i, plotinfo, d, cdscatter, this, transitionOpts);
+                });
+            }
         });
     } else {
         scatterlayer.selectAll('g.trace').each(function(d, i) {
             plotOne(gd, i, plotinfo, d, cdscatter, this, transitionOpts);
         });
+
+        if(scatterlayerNoClip) {
+            scatterlayerNoClip.selectAll('g.trace').each(function(d, i) {
+                plotOneNoClip(gd, i, plotinfo, d, cdscatter, this, transitionOpts);
+            });
+        }
     }
 
     if(isFullReplot) {
         join.exit().remove();
+        if(joinNoClip) joinNoClip.exit().remove();
     }
 
     // remove paths that didn't get used
     scatterlayer.selectAll('path:not([d])').remove();
 };
+
+function bindData(gd, plotinfo, cdscatter, layer, uids) {
+    var selection = layer.selectAll('g.trace');
+    var join = selection.data(cdscatter, function(d) { return d[0].trace.uid; });
+
+    // Append new traces:
+    join.enter().append('g')
+        .attr('class', function(d) {
+            return 'trace scatter trace' + d[0].trace.uid;
+        })
+        .style('stroke-miterlimit', 2);
+
+    layer.selectAll('g.trace').sort(function(a, b) {
+        var idx1 = uids[a[0].trace.uid];
+        var idx2 = uids[b[0].trace.uid];
+        return idx1 > idx2 ? 1 : -1;
+    });
+
+    return join;
+}
 
 function createFills(gd, scatterlayer) {
     var trace;
@@ -142,11 +179,8 @@ function createFills(gd, scatterlayer) {
 }
 
 function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transitionOpts) {
-    var join, i;
+    var i;
 
-    // Since this has been reorganized and we're executing this on individual traces,
-    // we need to pass it the full list of cdscatter as well as this trace's index (idx)
-    // since it does an internal n^2 loop over comparisons with other traces:
     selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll);
 
     var hasTransition = !!transitionOpts && transitionOpts.duration > 0;
@@ -155,12 +189,18 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         return hasTransition ? selection.transition() : selection;
     }
 
-    var xa = plotinfo.xaxis,
-        ya = plotinfo.yaxis;
+    var xa = plotinfo.xaxis;
+    var ya = plotinfo.yaxis;
+    var trace = cdscatter[0].trace;
+    var line = trace.line;
+    var tr = d3.select(element);
 
-    var trace = cdscatter[0].trace,
-        line = trace.line,
-        tr = d3.select(element);
+    // Option passed to errorbar and marker/text renderers:
+    // if 'cliponaxis' is undefined in full trace at this stage,
+    // it means that the callee does not support `cliponaxis: false`,
+    // hence the renderers don't need to worry about which layer
+    // (e.g. plot vs plotnoclip) they're plotting in.
+    var clipOnAxis = trace.cliponaxis === undefined ? undefined : true;
 
     // (so error bars can find them along with bars)
     // error bars are at the bottom
@@ -374,7 +414,29 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         trace._prevPolygons = thisPolygons;
     }
 
+    plotPoints(gd, tr, cdscatter, xa, ya, hasTransition, transition, clipOnAxis);
+}
 
+function plotOneNoClip(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transitionOpts) {
+    var hasTransition = !!transitionOpts && transitionOpts.duration > 0;
+
+    function transition(selection) {
+        return hasTransition ? selection.transition() : selection;
+    }
+
+    var trace = cdscatter[0].trace;
+    var tr = d3.select(element);
+    var xa = plotinfo.xaxis;
+    var ya = plotinfo.yaxis;
+
+    if(trace.visible !== true) return;
+
+    transition(tr).style('opacity', trace.opacity);
+
+    plotPoints(gd, tr, cdscatter, xa, ya, hasTransition, transition, false);
+}
+
+function plotPoints(gd, tr, cdscatter, xa, ya, hasTransition, transition, clipOnAxis) {
     function visFilter(d) {
         return d.filter(function(v) { return v.vis; });
     }
@@ -406,12 +468,18 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             markerFilter = hideFilter,
             textFilter = hideFilter;
 
-        if(showMarkers) {
-            markerFilter = (trace.marker.maxdisplayed || trace._needsCull) ? visFilter : Lib.identity;
-        }
+        if(trace.cliponaxis === clipOnAxis) {
+            if(showMarkers) {
+                markerFilter = (trace.marker.maxdisplayed || trace._needsCull) ?
+                    visFilter :
+                    Lib.identity;
+            }
 
-        if(showText) {
-            textFilter = (trace.marker.maxdisplayed || trace._needsCull) ? visFilter : Lib.identity;
+            if(showText) {
+                textFilter = (trace.marker.maxdisplayed || trace._needsCull) ?
+                    visFilter :
+                    Lib.identity;
+            }
         }
 
         // marker points
@@ -501,7 +569,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     var pointSelection = tr.selectAll('.points');
 
     // Join with new data
-    join = pointSelection.data([cdscatter]);
+    var join = pointSelection.data([cdscatter]);
 
     // Transition existing, but don't defer this to an async .transition since
     // there's no timing involved:
@@ -514,6 +582,9 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     join.exit().remove();
 }
 
+// Since this has been reorganized and we're executing this on individual traces,
+// we need to pass it the full list of cdscatter as well as this trace's index (idx)
+// since it does an internal n^2 loop over comparisons with other traces:
 function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
     var xa = plotinfo.xaxis,
         ya = plotinfo.yaxis,
