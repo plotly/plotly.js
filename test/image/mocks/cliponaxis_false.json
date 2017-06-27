@@ -1,0 +1,39 @@
+{
+  "data": [
+    {
+      "mode": "markers+text",
+      "x": [1, 1, 2, 3, 3, 2],
+      "y": [2, 1, 1, 1, 2, 2],
+      "marker": {
+        "size": [50, 20, 40, 25, 15, 40]
+      },
+      "text": "not<br>clipped",
+      "textposition": ["left", "left", "bottom", "right", "right", "top"],
+      "error_y": {
+        "array": [0.1, 0.2, 0.3, 0.1, 0.3, 0.2],
+        "arrayminus": [0.1, 0.2, 0.1, 0.1, 0.1, 0.2]
+      },
+      "error_x": {
+        "array": [0.1, 0.2, 0.3, 0.1, 0.1, 0.2],
+        "arrayminus": [0.1, 0.2, 0.1, 0.1, 0.1, 0.2]
+      },
+      "cliponaxis": false
+    }
+  ],
+  "layout": {
+    "xaxis": {
+      "range": [1, 3],
+      "showline": true,
+      "linewidth": 2,
+      "mirror": "all"
+    },
+    "yaxis": {
+      "range": [1, 2],
+      "showline": true,
+      "linewidth": 2,
+      "mirror": "all"
+    },
+    "dragmode": "pan",
+    "hovermode": "closest"
+  }
+}
