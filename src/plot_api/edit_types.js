@@ -8,8 +8,6 @@
 
 'use strict';
 
-var isPlainObject = require('../lib/is_plain_object');
-
 module.exports = {
     /*
      * default (all false) edit flags for restyle (traces)
