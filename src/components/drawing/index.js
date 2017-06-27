@@ -569,9 +569,6 @@ drawing.steps = function(shape) {
 
 // off-screen svg render testing element, shared by the whole page
 // uses the id 'js-plotly-tester' and stores it in drawing.tester
-// makes a hash of cached text items in tester.node()._cache
-// so we can add references to rendered text (including all info
-// needed to fully determine its bounding rect)
 drawing.makeTester = function() {
     var tester = d3.select('body')
         .selectAll('#js-plotly-tester')
@@ -600,10 +597,6 @@ drawing.makeTester = function() {
             'stroke-width': 0,
             fill: 'black'
         });
-
-    if(!tester.node()._cache) {
-        tester.node()._cache = {};
-    }
 
     drawing.tester = tester;
     drawing.testref = testref;
