@@ -204,7 +204,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
     // (so error bars can find them along with bars)
     // error bars are at the bottom
-    tr.call(ErrorBars.plot, plotinfo, transitionOpts);
+    tr.call(ErrorBars.plot, plotinfo, transitionOpts, clipOnAxis);
 
     if(trace.visible !== true) return;
 
@@ -428,6 +428,8 @@ function plotOneNoClip(gd, idx, plotinfo, cdscatter, cdscatterAll, element, tran
     var tr = d3.select(element);
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
+
+    tr.call(ErrorBars.plot, plotinfo, transitionOpts, false);
 
     if(trace.visible !== true) return;
 
