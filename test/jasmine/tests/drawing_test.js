@@ -1,6 +1,7 @@
 var d3 = require('d3');
 var Plotly = require('@lib/index');
 var Drawing = require('@src/components/drawing');
+var svgTextUtils = require('@src/lib/svg_text_utils');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
@@ -421,6 +422,28 @@ describe('Drawing', function() {
             })
             .catch(fail)
             .then(done);
+        });
+
+        it('works with dummy nodes created in Drawing.tester', function() {
+            var node = Drawing.tester.append('text')
+                .text('bananas')
+                .call(Drawing.font, '"Open Sans", verdana, arial, sans-serif', 19)
+                .call(svgTextUtils.convertToTspans).node();
+
+            expect(node.parentNode).toBe(Drawing.tester.node());
+
+            assertBBox(Drawing.bBox(node), {
+                height: 21,
+                width: 80,
+                left: 0,
+                top: -17,
+                right: 80,
+                bottom: 4
+            });
+
+            expect(node.parentNode).toBe(Drawing.tester.node());
+
+            node.parentNode.removeChild(node);
         });
     });
 });

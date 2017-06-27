@@ -368,7 +368,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
             };
         }
 
-        var dummyText = defs.append('text')
+        var dummyText = Drawing.tester.append('text')
             .attr('data-notex', 1)
             .call(Drawing.font, contours.font);
 
@@ -397,7 +397,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
             var text = contourFormat(d.level);
             dummyText.text(text)
                 .call(svgTextUtils.convertToTspans, gd);
-            var bBox = Drawing.bBox(dummyText.node());
+            var bBox = Drawing.bBox(dummyText.node(), true);
             var textWidth = bBox.width;
             var textHeight = bBox.height;
             var dy = (bBox.top + bBox.bottom) / 2;
