@@ -21,6 +21,8 @@ var animationAttributes = require('../plots/animation_attributes');
 var polarAreaAttrs = require('../plots/polar/area_attributes');
 var polarAxisAttrs = require('../plots/polar/axis_attributes');
 
+var editTypes = require('./edit_types');
+
 var extendFlat = Lib.extendFlat;
 var extendDeep = Lib.extendDeep;
 
@@ -62,7 +64,11 @@ exports.get = function() {
     return {
         defs: {
             valObjects: Lib.valObjects,
-            metaKeys: UNDERSCORE_ATTRS.concat(['description', 'role'])
+            metaKeys: UNDERSCORE_ATTRS.concat(['description', 'role']),
+            editTypes: {
+                traces: editTypes.traces(),
+                layout: editTypes.layout()
+            }
         },
 
         traces: traces,

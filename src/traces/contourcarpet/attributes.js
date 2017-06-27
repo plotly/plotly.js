@@ -69,6 +69,7 @@ module.exports = extendFlat({}, {
             values: ['levels', 'constraint'],
             dflt: 'levels',
             role: 'info',
+            editType: 'docalc',
             description: [
                 'If `levels`, the data is represented as a contour plot with multiple',
                 'levels displayed. If `constraint`, the data is represented as constraints',
@@ -85,6 +86,7 @@ module.exports = extendFlat({}, {
             values: ['fill', 'lines', 'none'],
             dflt: 'fill',
             role: 'style',
+            editType: 'docalc',
             description: [
                 'Determines the coloring method showing the contour values.',
                 'If *fill*, coloring is done evenly between each contour level',
@@ -101,6 +103,7 @@ module.exports = extendFlat({}, {
             values: [].concat(constants.INEQUALITY_OPS).concat(constants.INTERVAL_OPS).concat(constants.SET_OPS),
             role: 'info',
             dflt: '=',
+            editType: 'docalc',
             description: [
                 'Sets the filter operation.',
 
@@ -127,6 +130,7 @@ module.exports = extendFlat({}, {
             valType: 'any',
             dflt: 0,
             role: 'info',
+            editType: 'docalc',
             description: [
                 'Sets the value or values by which to filter by.',
 

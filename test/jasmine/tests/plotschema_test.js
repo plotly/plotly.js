@@ -11,8 +11,9 @@ describe('plot schema', function() {
     var isValObject = Plotly.PlotSchema.isValObject,
         isPlainObject = Lib.isPlainObject;
 
-    var VALTYPES = Object.keys(valObjects),
-        ROLES = ['info', 'style', 'data'];
+    var VALTYPES = Object.keys(valObjects);
+    var ROLES = ['info', 'style', 'data'];
+    var editTypes = plotSchema.defs.editTypes;
 
     function assertPlotSchema(callback) {
         var traces = plotSchema.traces;
@@ -173,6 +174,27 @@ describe('plot schema', function() {
 
                         expect(VALTYPES.indexOf(dAttr.valType) !== -1).toBe(true);
                         expect(ROLES.indexOf(dAttr.role) !== -1).toBe(true);
+                    });
+                }
+            }
+        );
+    });
+
+    it('has valid or no `editType` in every attribute', function() {
+        var validEditTypes = editTypes.traces;
+        assertPlotSchema(
+            function(attr, attrName, attrs) {
+                if(attrs === plotSchema.layout.layoutAttributes) {
+                    // detect when we switch from trace attributes to layout
+                    // attributes - depends on doing all the trace attributes
+                    // first, then switching to layout attributes
+                    validEditTypes = editTypes.layout;
+                }
+                if(attr.editType !== undefined) {
+                    var editTypeParts = attr.editType.split('+');
+                    editTypeParts.forEach(function(editTypePart) {
+                        expect(validEditTypes[editTypePart])
+                            .toBe(false, editTypePart);
                     });
                 }
             }
