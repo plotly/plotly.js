@@ -47,38 +47,14 @@ module.exports = {
 
     /*
      * update `flags` with the `editType` values found in `attr`
-     *
-     * If `attr` itself contains an `editType`, we just use that.
-     * If it doesn't, we recurse into any other objects contained
-     * in `attr` and update with all `editType` values found in
-     * *any* of them.
-     *
-     * So container objects may not need their own `editType`,
-     * if they're content to delegate to their members, but they
-     * may provide one either for performance or, in case of arrays,
-     * if adding/removing entries requires different flags than
-     * simply changing attributes of an existing entry.
      */
     update: function(flags, attr) {
-        function extend(attr1) {
-            var editType = attr1.editType;
-            if(editType === undefined) {
-                // if there's no editType defined, recurse into
-                Object.keys(attr1).forEach(function(attrName) {
-                    var attr2 = attr1[attrName];
-                    if(attrName.charAt(0) !== '_' && isPlainObject(attr2)) {
-                        extend(attr2);
-                    }
-                });
-            }
-            else {
-                var editTypeParts = editType.split('+');
-                editTypeParts.forEach(function(part) {
-                    flags[part] = true;
-                });
+        var editType = attr.editType;
+        if(editType) {
+            var editTypeParts = editType.split('+');
+            for(var i = 0; i < editTypeParts.length; i++) {
+                flags[editTypeParts[i]] = true;
             }
         }
-
-        extend(attr);
     }
 };

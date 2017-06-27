@@ -1777,29 +1777,12 @@ describe('plot_api edit_types', function() {
         var flags = {docalc: false, dolegend: true};
 
         editTypes.update(flags, {
-            editType: 'docalc',
-            family: {valType: 'string', dflt: 'Comic sans', editType: 'doticks'},
-            size: {valType: 'number', dflt: 96, editType: 'doticks'},
-            color: {valType: 'color', dflt: 'red', editType: 'dolayoutstyle'}
+            editType: 'docalc+dostyle',
+            valType: 'number',
+            dflt: 1,
+            role: 'style'
         });
 
-        expect(flags).toEqual({docalc: true, dolegend: true});
-    });
-
-    it('gets all updates from nested items if outer object has none', function() {
-        var flags = {docalc: false, dolegend: true};
-
-        editTypes.update(flags, {
-            family: {valType: 'string', dflt: 'Comic sans', editType: 'doticks'},
-            size: {valType: 'number', dflt: 96, editType: 'doticks'},
-            color: {valType: 'color', dflt: 'red', editType: 'dolayoutstyle'}
-        });
-
-        expect(flags).toEqual({
-            docalc: false,
-            dolegend: true,
-            doticks: true,
-            dolayoutstyle: true
-        });
+        expect(flags).toEqual({docalc: true, dolegend: true, dostyle: true});
     });
 });

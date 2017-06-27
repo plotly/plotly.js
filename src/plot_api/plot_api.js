@@ -1626,8 +1626,14 @@ function _restyle(gd, aobj, _traces) {
                         else break;
                     }
 
-                    // must redo calcdata when restyling array values of arrayOk attributes
-                    if(valObject.arrayOk && (Array.isArray(newVal) || Array.isArray(oldVal))) {
+                    /*
+                     * must redo calcdata when restyling:
+                     * 1) array values of arrayOk attributes
+                     * 2) a container object (it would be hard to tell what
+                     *    pieces changed, whether any are arrays, so to be
+                     *    safe we need to recalc)
+                     */
+                    if(!valObject.valType || (valObject.arrayOk && (Array.isArray(newVal) || Array.isArray(oldVal)))) {
                         flags.docalc = true;
                     }
 
