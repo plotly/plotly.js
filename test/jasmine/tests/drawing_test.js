@@ -356,14 +356,14 @@ describe('Drawing', function() {
         afterEach(destroyGraphDiv);
 
         function assertBBox(actual, expected) {
-            var TOL = 3;
-            expect(actual.height).toBeWithin(expected.height, TOL, 'height');
-            expect(actual.top).toBeWithin(expected.top, TOL, 'top');
-            expect(actual.bottom).toBeWithin(expected.bottom, TOL, 'bottom');
-
-            expect(actual.width).toBeWithin(expected.width, TOL, 'width');
-            expect(actual.left).toBeWithin(expected.left, TOL, 'left');
-            expect(actual.right).toBeWithin(expected.right, TOL, 'right');
+            [
+                'height', 'top', 'bottom',
+                'width', 'left', 'right'
+            ].forEach(function(dim) {
+                // give larger dimensions some extra tolerance
+                var tol = Math.max(expected[dim] / 10, 3);
+                expect(actual[dim]).toBeWithin(expected[dim], tol, dim);
+            });
         }
 
         it('should update bounding box dimension on window scroll', function(done) {
@@ -434,10 +434,10 @@ describe('Drawing', function() {
 
             assertBBox(Drawing.bBox(node), {
                 height: 21,
-                width: 80,
+                width: 76,
                 left: 0,
                 top: -17,
-                right: 80,
+                right: 76,
                 bottom: 4
             });
 
