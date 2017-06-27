@@ -8,7 +8,13 @@
       "contours": {
         "start": 1.1,
         "end": 4.09,
-        "size": 1
+        "size": 1,
+        "showlabels": true,
+        "labelformat": ".3f",
+        "labelfont": {
+            "size": "8",
+            "color": "#0f0"
+        }
       },
       "colorbar": {"x": 0.4, "y": 0.9, "len": 0.2}
     },
@@ -35,7 +41,9 @@
       "contours": {
         "start": -0.000001,
         "end": 0.000001,
-        "size": 0.000001
+        "size": 0.000001,
+        "showlabels": true,
+        "labelformat": ".1e"
       },
       "colorbar": {"x": 0.4, "y": 0.65, "len": 0.2},
       "yaxis": "y2"
@@ -50,7 +58,11 @@
       "contours": {
         "start": -0.000001,
         "end": 0.000001,
-        "size": 0.000001
+        "size": 0.000001,
+        "showlabels": true
+      },
+      "line": {
+        "color": "#fff"
       },
       "colorbar": {"x": 1, "y": 0.65, "len": 0.2},
       "xaxis": "x2",
@@ -66,9 +78,10 @@
       "contours": {
         "start": -0.000001,
         "end": 0.000001,
-        "size": 0.000001
+        "size": 0.000001,
+        "showlabels": true
       },
-      "colorbar": {"x": 0.4, "y": 0.4, "len": 0.2},
+      "showscale": false,
       "yaxis": "y3"
     },
     {
