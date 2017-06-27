@@ -162,6 +162,12 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
                     .selectAll('g.trace')
                     .remove();
             }
+
+            if(subplotInfo.plotnoclip) {
+                subplotInfo.plotnoclip.select('g.scatterlayer')
+                    .selectAll('g.trace')
+                    .remove();
+            }
         }
 
         oldFullLayout._infolayer.selectAll('g.rangeslider-container')
@@ -334,6 +340,9 @@ function makeSubplotLayer(plotinfo) {
         plotinfo.xaxislayer = joinLayer(plotgroup, 'g', 'xaxislayer');
         plotinfo.yaxislayer = joinLayer(plotgroup, 'g', 'yaxislayer');
         plotinfo.overaxes = joinLayer(plotgroup, 'g', 'overaxes');
+
+        plotinfo.plotnoclip = joinLayer(plotgroup, 'g', 'plotnoclip');
+        plotinfo.overplotnoclip = joinLayer(plotgroup, 'g', 'overplotnoclip');
     }
     else {
         var mainplotinfo = plotinfo.mainplotinfo;
@@ -345,16 +354,17 @@ function makeSubplotLayer(plotinfo) {
 
         plotinfo.gridlayer = joinLayer(mainplotinfo.overgrid, 'g', id);
         plotinfo.zerolinelayer = joinLayer(mainplotinfo.overzero, 'g', id);
-
         plotinfo.plot = joinLayer(mainplotinfo.overplot, 'g', id);
         plotinfo.xlines = joinLayer(mainplotinfo.overlines, 'path', id);
         plotinfo.ylines = joinLayer(mainplotinfo.overlines, 'path', id);
         plotinfo.xaxislayer = joinLayer(mainplotinfo.overaxes, 'g', id);
         plotinfo.yaxislayer = joinLayer(mainplotinfo.overaxes, 'g', id);
+        plotinfo.plotnoclip = joinLayer(mainplotinfo.overplotnoclip, 'g', id);
     }
 
     // common attributes for all subplots, overlays or not
     plotinfo.plot.call(joinPlotLayers);
+    joinLayer(plotinfo.plotnoclip, 'g', 'scatterlayer');
 
     plotinfo.xlines
         .style('fill', 'none')

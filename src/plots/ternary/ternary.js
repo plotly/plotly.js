@@ -89,7 +89,8 @@ proto.makeFramework = function() {
         'grids',
         'frontplot',
         'zoom',
-        'aaxis', 'baxis', 'caxis', 'axlines'
+        'aaxis', 'baxis', 'caxis', 'axlines',
+        'frontplotnoclip'
     ];
     var toplevel = _this.plotContainer.selectAll('g.toplevel')
         .data(plotLayers);
@@ -113,6 +114,7 @@ proto.makeFramework = function() {
                         d3.select(this).classed(d, true);
                     });
             }
+            else if(d === 'frontplotnoclip') s.append('g').classed('scatterlayer', true);
         });
 
     var grids = _this.plotContainer.select('.grids').selectAll('g.grid')

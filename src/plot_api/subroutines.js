@@ -164,9 +164,12 @@ exports.lsInner = function(gd) {
                 'height': ya._length
             });
 
+        plotinfo.plot
+            .call(Drawing.setTranslate, xa._offset, ya._offset)
+            .call(Drawing.setClipUrl, plotinfo.clipId);
 
-        plotinfo.plot.call(Drawing.setTranslate, xa._offset, ya._offset);
-        plotinfo.plot.call(Drawing.setClipUrl, plotinfo.clipId);
+        plotinfo.plotnoclip
+            .call(Drawing.setTranslate, xa._offset, ya._offset);
 
         var xlw = Drawing.crispRound(gd, xa.linewidth, 1),
             ylw = Drawing.crispRound(gd, ya.linewidth, 1),
