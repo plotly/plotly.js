@@ -370,7 +370,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
 
         var dummyText = Drawing.tester.append('text')
             .attr('data-notex', 1)
-            .call(Drawing.font, contours.font);
+            .call(Drawing.font, contours.labelfont);
 
         var xLen = pathinfo[0].xaxis._length;
         var yLen = pathinfo[0].yaxis._length;
@@ -491,7 +491,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
                         transform: 'rotate(' + (180 * d.theta / Math.PI) + ' ' + x + ' ' + y + ')'
                     })
                     .call(svgTextUtils.convertToTspans, gd)
-                    .call(Drawing.font, contours.font.family, contours.font.size);
+                    .call(Drawing.font, contours.labelfont.family, contours.labelfont.size);
             });
 
         if(clipLinesForLabels) {

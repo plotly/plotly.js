@@ -118,11 +118,10 @@ module.exports = extendFlat({}, {
                 'Determines whether to label the contour lines with their values.'
             ].join(' ')
         },
-        font: extendFlat({}, fontAttrs, {
+        labelfont: extendFlat({}, fontAttrs, {
             description: [
                 'Sets the font used for labeling the contour levels.',
                 'The default color comes from the lines, if shown.',
-                // TODO: same size as layout.font, or smaller? 80%?
                 'The default family and size come from `layout.font`.'
             ].join(' ')
         }),

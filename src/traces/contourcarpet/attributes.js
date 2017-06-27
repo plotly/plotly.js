@@ -94,7 +94,7 @@ module.exports = extendFlat({}, {
         },
         showlines: contourContourAttrs.showlines,
         showlabels: contourContourAttrs.showlabels,
-        font: contourContourAttrs.font,
+        labelfont: contourContourAttrs.font,
         labelformat: contourContourAttrs.labelformat,
         operation: {
             valType: 'enumerated',

@@ -37,7 +37,7 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout,
     var showLabels = coerce('contours.showlabels');
     if(showLabels) {
         var globalFont = layout.font;
-        Lib.coerceFont(coerce, 'contours.font', {
+        Lib.coerceFont(coerce, 'contours.labelfont', {
             family: globalFont.family,
             size: globalFont.size,
             color: lineColor

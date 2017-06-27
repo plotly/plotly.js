@@ -43,7 +43,7 @@ module.exports = function style(gd) {
                     line.dash);
         });
 
-        var labelFontColor = (contours.font || {}).color;
+        var labelFontColor = (contours.labelfont || {}).color;
         c.selectAll('g.contourlabels text').each(function(d) {
             Drawing.font(d3.select(this), {
                 color: labelFontColor || (colorLines ? colorMap(d.level) : line.color)
