@@ -69,4 +69,8 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
             oldTernary.clipDef.remove();
         }
     }
+
+    if(oldFullLayout._zoomlayer) {
+        oldFullLayout._zoomlayer.selectAll('.select-outline').remove();
+    }
 };

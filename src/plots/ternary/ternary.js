@@ -122,10 +122,6 @@ proto.makeFramework = function() {
 
     _this.plotContainer.selectAll('.backplot,.frontplot,.grids')
         .call(Drawing.setClipUrl, clipId);
-
-    if(!_this.graphDiv._context.staticPlot) {
-        _this.initInteractions();
-    }
 };
 
 var w_over_h = Math.sqrt(4 / 3);
@@ -302,6 +298,10 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
             'M' + (x0 + w / 2) + ',' + y0 + 'l' + (w / 2) + ',' + h : 'M0,0')
         .call(Color.stroke, caxis.linecolor || '#000')
         .style('stroke-width', (caxis.linewidth || 0) + 'px');
+
+    if(!_this.graphDiv._context.staticPlot) {
+        _this.initInteractions();
+    }
 };
 
 proto.drawAxes = function(doTitles) {
@@ -387,7 +387,10 @@ proto.initInteractions = function() {
     var dragOptions = {
         element: dragger,
         gd: gd,
-        plotinfo: {plot: zoomContainer},
+        plotinfo: {
+            xaxis: _this.xaxis,
+            yaxis: _this.yaxis
+        },
         doubleclick: doubleClick,
         subplot: _this.id,
         prepFn: function(e, startX, startY) {

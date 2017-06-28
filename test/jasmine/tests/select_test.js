@@ -6,6 +6,7 @@ var doubleClick = require('../assets/double_click');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var customMatchers = require('../assets/custom_matchers');
 
@@ -366,6 +367,57 @@ describe('select box and lasso', function() {
             expect(pts[0].x).toEqual(0);
             expect(pts[0].y).toEqual(0);
         })
+        .then(done);
+    });
+
+    it('should work on scatterternary traces', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/ternary_simple'));
+        var gd = createGraphDiv();
+        var pts = [];
+
+        fig.layout.width = 800;
+        fig.layout.dragmode = 'select';
+
+        function assertPoints(expected) {
+            expect(pts.length).toBe(expected.length, 'selected points length');
+
+            pts.forEach(function(p, i) {
+                var e = expected[i];
+                expect(p.a).toBe(e.a, 'selected pt a val');
+                expect(p.b).toBe(e.b, 'selected pt b val');
+                expect(p.c).toBe(e.c, 'selected pt c val');
+            });
+            pts = [];
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            gd.on('plotly_selected', function(data) {
+                pts = data.points;
+            });
+
+            assertSelectionNodes(0, 0);
+            drag([[400, 200], [445, 235]]);
+            assertSelectionNodes(0, 2);
+            assertPoints([{ a: 0.5, b: 0.25, c: 0.25 }]);
+
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        })
+        .then(function() {
+            assertSelectionNodes(0, 0);
+            drag([[400, 200], [445, 200], [445, 235], [400, 235], [400, 200]]);
+            assertSelectionNodes(0, 2);
+            assertPoints([{ a: 0.5, b: 0.25, c: 0.25 }]);
+
+            // should work after a relayout too
+            return Plotly.relayout(gd, 'width', 400);
+        })
+        .then(function() {
+            assertSelectionNodes(0, 0);
+            drag([[200, 200], [230, 200], [230, 230], [200, 230], [200, 200]]);
+            assertSelectionNodes(0, 2);
+            assertPoints([{ a: 0.5, b: 0.25, c: 0.25 }]);
+        })
+        .catch(fail)
         .then(done);
     });
 });
