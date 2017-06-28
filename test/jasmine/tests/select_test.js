@@ -420,4 +420,44 @@ describe('select box and lasso', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('should work on scattercarpet traces', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/scattercarpet'));
+        var gd = createGraphDiv();
+        var pts = [];
+
+        fig.layout.dragmode = 'select';
+
+        function assertPoints(expected) {
+            expect(pts.length).toBe(expected.length, 'selected points length');
+
+            pts.forEach(function(p, i) {
+                var e = expected[i];
+                expect(p.a).toBe(e.a, 'selected pt a val');
+                expect(p.b).toBe(e.b, 'selected pt b val');
+            });
+            pts = [];
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            gd.on('plotly_selected', function(data) {
+                pts = data.points;
+            });
+
+            assertSelectionNodes(0, 0);
+            drag([[300, 200], [400, 250]]);
+            assertSelectionNodes(0, 2);
+            assertPoints([{ a: 0.2, b: 1.5 }]);
+
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        })
+        .then(function() {
+            assertSelectionNodes(0, 0);
+            drag([[300, 200], [400, 200], [400, 250], [300, 250], [300, 200]]);
+            assertSelectionNodes(0, 2);
+            assertPoints([{ a: 0.2, b: 1.5 }]);
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
