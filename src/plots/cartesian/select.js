@@ -23,7 +23,7 @@ var MINSELECT = constants.MINSELECT;
 function getAxId(ax) { return ax._id; }
 
 module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
-    var plot = dragOptions.gd._fullLayout._zoomlayer,
+    var zoomLayer = dragOptions.gd._fullLayout._zoomlayer,
         dragBBox = dragOptions.element.getBoundingClientRect(),
         xs = dragOptions.plotinfo.xaxis._offset,
         ys = dragOptions.plotinfo.yaxis._offset,
@@ -43,7 +43,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         pts = filteredPolygon([[x0, y0]], constants.BENDPX);
     }
 
-    var outlines = plot.selectAll('path.select-outline').data([1, 2]);
+    var outlines = zoomLayer.selectAll('path.select-outline').data([1, 2]);
 
     outlines.enter()
         .append('path')
@@ -51,7 +51,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         .attr('transform', 'translate(' + xs + ', ' + ys + ')')
         .attr('d', path0 + 'Z');
 
-    var corners = plot.append('path')
+    var corners = zoomLayer.append('path')
         .attr('class', 'zoombox-corners')
         .style({
             fill: color.background,
