@@ -6,6 +6,7 @@ var doubleClick = require('../assets/double_click');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var customMatchers = require('../assets/custom_matchers');
 
@@ -16,7 +17,7 @@ describe('select box and lasso', function() {
     var selectPath = [[93, 193], [143, 193]];
     var lassoPath = [[316, 171], [318, 239], [335, 243], [328, 169]];
 
-    beforeEach(function() {
+    beforeAll(function() {
         jasmine.addMatchers(customMatchers);
     });
 
@@ -59,6 +60,13 @@ describe('select box and lasso', function() {
         });
     }
 
+    function assertSelectionNodes(cornerCnt, outlineCnt) {
+        expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
+            .toBe(cornerCnt, 'selection corner count');
+        expect(d3.selectAll('.zoomlayer > .select-outline').size())
+            .toBe(outlineCnt, 'selection outline count');
+    }
+
     describe('select elements', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.dragmode = 'select';
@@ -80,30 +88,21 @@ describe('select box and lasso', function() {
                 y2 = 50;
 
             gd.once('plotly_selecting', function() {
-                expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
-                    .toEqual(1);
-                expect(d3.selectAll('.zoomlayer > .select-outline').size())
-                    .toEqual(2);
+                assertSelectionNodes(1, 2);
             });
 
             gd.once('plotly_selected', function() {
-                expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
-                    .toEqual(0);
-                expect(d3.selectAll('.zoomlayer > .select-outline').size())
-                    .toEqual(2);
+                assertSelectionNodes(0, 2);
             });
 
             gd.once('plotly_deselect', function() {
-                expect(d3.selectAll('.zoomlayer > .select-outline').size())
-                    .toEqual(0);
+                assertSelectionNodes(0, 0);
             });
 
             mouseEvent('mousemove', x0, y0);
-            expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
-                .toEqual(0);
+            assertSelectionNodes(0, 0);
 
             drag([[x0, y0], [x1, y1]]);
-
             doubleClick(x2, y2).then(done);
         });
     });
@@ -129,30 +128,21 @@ describe('select box and lasso', function() {
                 y2 = 50;
 
             gd.once('plotly_selecting', function() {
-                expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
-                    .toEqual(1);
-                expect(d3.selectAll('.zoomlayer > .select-outline').size())
-                    .toEqual(2);
+                assertSelectionNodes(1, 2);
             });
 
             gd.once('plotly_selected', function() {
-                expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
-                    .toEqual(0);
-                expect(d3.selectAll('.zoomlayer > .select-outline').size())
-                    .toEqual(2);
+                assertSelectionNodes(0, 2);
             });
 
             gd.once('plotly_deselect', function() {
-                expect(d3.selectAll('.zoomlayer > .select-outline').size())
-                    .toEqual(0);
+                assertSelectionNodes(0, 0);
             });
 
             mouseEvent('mousemove', x0, y0);
-            expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
-                .toEqual(0);
+            assertSelectionNodes(0, 0);
 
             drag([[x0, y0], [x1, y1]]);
-
             doubleClick(x2, y2).then(done);
         });
     });
@@ -377,6 +367,97 @@ describe('select box and lasso', function() {
             expect(pts[0].x).toEqual(0);
             expect(pts[0].y).toEqual(0);
         })
+        .then(done);
+    });
+
+    it('should work on scatterternary traces', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/ternary_simple'));
+        var gd = createGraphDiv();
+        var pts = [];
+
+        fig.layout.width = 800;
+        fig.layout.dragmode = 'select';
+
+        function assertPoints(expected) {
+            expect(pts.length).toBe(expected.length, 'selected points length');
+
+            pts.forEach(function(p, i) {
+                var e = expected[i];
+                expect(p.a).toBe(e.a, 'selected pt a val');
+                expect(p.b).toBe(e.b, 'selected pt b val');
+                expect(p.c).toBe(e.c, 'selected pt c val');
+            });
+            pts = [];
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            gd.on('plotly_selected', function(data) {
+                pts = data.points;
+            });
+
+            assertSelectionNodes(0, 0);
+            drag([[400, 200], [445, 235]]);
+            assertSelectionNodes(0, 2);
+            assertPoints([{ a: 0.5, b: 0.25, c: 0.25 }]);
+
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        })
+        .then(function() {
+            assertSelectionNodes(0, 0);
+            drag([[400, 200], [445, 200], [445, 235], [400, 235], [400, 200]]);
+            assertSelectionNodes(0, 2);
+            assertPoints([{ a: 0.5, b: 0.25, c: 0.25 }]);
+
+            // should work after a relayout too
+            return Plotly.relayout(gd, 'width', 400);
+        })
+        .then(function() {
+            assertSelectionNodes(0, 0);
+            drag([[200, 200], [230, 200], [230, 230], [200, 230], [200, 200]]);
+            assertSelectionNodes(0, 2);
+            assertPoints([{ a: 0.5, b: 0.25, c: 0.25 }]);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should work on scattercarpet traces', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/scattercarpet'));
+        var gd = createGraphDiv();
+        var pts = [];
+
+        fig.layout.dragmode = 'select';
+
+        function assertPoints(expected) {
+            expect(pts.length).toBe(expected.length, 'selected points length');
+
+            pts.forEach(function(p, i) {
+                var e = expected[i];
+                expect(p.a).toBe(e.a, 'selected pt a val');
+                expect(p.b).toBe(e.b, 'selected pt b val');
+            });
+            pts = [];
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            gd.on('plotly_selected', function(data) {
+                pts = data.points;
+            });
+
+            assertSelectionNodes(0, 0);
+            drag([[300, 200], [400, 250]]);
+            assertSelectionNodes(0, 2);
+            assertPoints([{ a: 0.2, b: 1.5 }]);
+
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        })
+        .then(function() {
+            assertSelectionNodes(0, 0);
+            drag([[300, 200], [400, 200], [400, 250], [300, 250], [300, 200]]);
+            assertSelectionNodes(0, 2);
+            assertPoints([{ a: 0.2, b: 1.5 }]);
+        })
+        .catch(fail)
         .then(done);
     });
 });
