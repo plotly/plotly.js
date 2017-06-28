@@ -122,13 +122,6 @@ function plotOne(gd, plotinfo, cd) {
 
     // Draw contour lines:
     makeLines(plotGroup, pathinfo, contours);
-
-    // Clip the boundary of the plot:
-    clipBoundary(plotGroup, carpet);
-}
-
-function clipBoundary(plotGroup, carpet) {
-    plotGroup.attr('clip-path', 'url(#' + carpet.clipPathId + ')');
 }
 
 function makeContourGroup(plotinfo, cd, id) {
