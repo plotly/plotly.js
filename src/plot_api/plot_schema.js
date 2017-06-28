@@ -166,10 +166,13 @@ exports.findArrayAttributes = function(trace) {
 
         for(var i = 0; i < transforms.length; i++) {
             var transform = transforms[i];
+            var module = transform._module;
 
-            stack = ['transforms[' + i + ']'];
+            if(module) {
+                stack = ['transforms[' + i + ']'];
 
-            exports.crawl(transform._module.attributes, callback, 1);
+                exports.crawl(module.attributes, callback, 1);
+            }
         }
     }
 

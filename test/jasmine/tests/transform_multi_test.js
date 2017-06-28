@@ -17,6 +17,17 @@ describe('general transforms:', function() {
 
     var traceIn, traceOut;
 
+    it('passes through empty transforms', function() {
+        traceIn = {
+            y: [2, 1, 2],
+            transforms: [{}]
+        };
+
+        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
+
+        expect(traceOut.transforms).toEqual([{}]);
+    });
+
     it('supplyTraceDefaults should supply the transform defaults', function() {
         traceIn = {
             y: [2, 1, 2],
@@ -434,6 +445,26 @@ describe('multiple transforms:', function() {
         });
     });
 
+});
+
+describe('invalid transforms', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('ignores them', function(done) {
+        Plotly.plot(gd, [{
+            y: [1, 2, 3],
+            transforms: [{}]
+        }]).then(function() {
+            expect(gd._fullData[0].transforms.length).toEqual(1);
+            done();
+        });
+    });
 });
 
 describe('multiple traces with transforms:', function() {
