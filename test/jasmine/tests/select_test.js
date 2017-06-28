@@ -16,7 +16,7 @@ describe('select box and lasso', function() {
     var selectPath = [[93, 193], [143, 193]];
     var lassoPath = [[316, 171], [318, 239], [335, 243], [328, 169]];
 
-    beforeEach(function() {
+    beforeAll(function() {
         jasmine.addMatchers(customMatchers);
     });
 
@@ -59,6 +59,13 @@ describe('select box and lasso', function() {
         });
     }
 
+    function assertSelectionNodes(cornerCnt, outlineCnt) {
+        expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
+            .toBe(cornerCnt, 'selection corner count');
+        expect(d3.selectAll('.zoomlayer > .select-outline').size())
+            .toBe(outlineCnt, 'selection outline count');
+    }
+
     describe('select elements', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.dragmode = 'select';
@@ -80,30 +87,21 @@ describe('select box and lasso', function() {
                 y2 = 50;
 
             gd.once('plotly_selecting', function() {
-                expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
-                    .toEqual(1);
-                expect(d3.selectAll('.zoomlayer > .select-outline').size())
-                    .toEqual(2);
+                assertSelectionNodes(1, 2);
             });
 
             gd.once('plotly_selected', function() {
-                expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
-                    .toEqual(0);
-                expect(d3.selectAll('.zoomlayer > .select-outline').size())
-                    .toEqual(2);
+                assertSelectionNodes(0, 2);
             });
 
             gd.once('plotly_deselect', function() {
-                expect(d3.selectAll('.zoomlayer > .select-outline').size())
-                    .toEqual(0);
+                assertSelectionNodes(0, 0);
             });
 
             mouseEvent('mousemove', x0, y0);
-            expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
-                .toEqual(0);
+            assertSelectionNodes(0, 0);
 
             drag([[x0, y0], [x1, y1]]);
-
             doubleClick(x2, y2).then(done);
         });
     });
@@ -129,30 +127,21 @@ describe('select box and lasso', function() {
                 y2 = 50;
 
             gd.once('plotly_selecting', function() {
-                expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
-                    .toEqual(1);
-                expect(d3.selectAll('.zoomlayer > .select-outline').size())
-                    .toEqual(2);
+                assertSelectionNodes(1, 2);
             });
 
             gd.once('plotly_selected', function() {
-                expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
-                    .toEqual(0);
-                expect(d3.selectAll('.zoomlayer > .select-outline').size())
-                    .toEqual(2);
+                assertSelectionNodes(0, 2);
             });
 
             gd.once('plotly_deselect', function() {
-                expect(d3.selectAll('.zoomlayer > .select-outline').size())
-                    .toEqual(0);
+                assertSelectionNodes(0, 0);
             });
 
             mouseEvent('mousemove', x0, y0);
-            expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
-                .toEqual(0);
+            assertSelectionNodes(0, 0);
 
             drag([[x0, y0], [x1, y1]]);
-
             doubleClick(x2, y2).then(done);
         });
     });
