@@ -17,7 +17,7 @@ describe('general transforms:', function() {
 
     var traceIn, traceOut;
 
-    it('filters empty transforms', function() {
+    it('passes through empty transforms', function() {
         traceIn = {
             y: [2, 1, 2],
             transforms: [{}]
@@ -456,7 +456,7 @@ describe('invalid transforms', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('filters them', function(done) {
+    it('ignores them', function(done) {
         Plotly.plot(gd, [{
             y: [1, 2, 3],
             transforms: [{}]
