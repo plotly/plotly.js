@@ -9,6 +9,7 @@
 
 'use strict';
 
+var polybool = require('poly-bool')
 var polygon = require('../../lib/polygon');
 var color = require('../../components/color');
 var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
@@ -152,26 +153,32 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             // FIXME: merge polygons here
             pts.addPt([x1, y1]);
 
-            var vertices = []
-            var roots = []
+            var ppts = []
             for (var i = 0; i < polygons.length; i++) {
-                var ppts = polygons[i].filtered
-                vertices = vertices.concat(ppts)
-                roots.push(ppts[0])
-                vertices.push(ppts[0])
+                ppts.push(polygons[i].filtered)
             }
-            while (roots.length) {
-                vertices.push(roots.pop())
-            }
-            poly = polygonTester(vertices);
+            var mergedpoly = polymerge(ppts)
+
+            // var vertices = []
+            // var roots = []
+            // for (var i = 0; i < polygons.length; i++) {
+            //     var ppts = polygons[i].filtered
+            //     vertices = vertices.concat(ppts)
+            //     roots.push(ppts[0])
+            //     vertices.push(ppts[0])
+            // }
+            // while (roots.length) {
+            //     vertices.push(roots.pop())
+            // }
+            poly = polygonTester(mergedpoly);
 
             // poly = polygonTester(pts.filtered);
 
-            var paths = []
-            for (var i = 0 ;i < polygons.length; i++) {
-                paths.push(polygons[i].filtered.join('L'))
-            }
-            outlines.attr('d', 'M' + paths.join('ZM') + 'Z');
+            // var paths = []
+            // for (var i = 0 ;i < polygons.length; i++) {
+            //     paths.push(polygons[i].filtered.join('L'))
+            // }
+            outlines.attr('d', 'M' + poly.pts.join('L') + 'Z');
         }
 
         selection = [];
@@ -240,4 +247,15 @@ function fillSelectionItem(selection, searchInfo) {
     }
 
     return selection;
+}
+
+
+function polymerge (list) {
+    let result = [list[0]]
+
+    for (var i = 1; i < list.length; i++) {
+        result = polybool([list[i]], result, 'or')
+    }
+
+    return result[0]
 }
