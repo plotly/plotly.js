@@ -88,7 +88,6 @@ proto.makeFramework = function() {
         'backplot',
         'grids',
         'frontplot',
-        'zoom',
         'aaxis', 'baxis', 'caxis', 'axlines'
     ];
     var toplevel = _this.plotContainer.selectAll('g.toplevel')
@@ -263,7 +262,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     _this.layers.plotbg.select('path').attr('d', triangleClip);
 
     var plotTransform = 'translate(' + x0 + ',' + y0 + ')';
-    _this.plotContainer.selectAll('.scatterlayer,.maplayer,.zoom')
+    _this.plotContainer.selectAll('.scatterlayer,.maplayer')
         .attr('transform', plotTransform);
 
     // TODO: shift axes to accommodate linewidth*sin(30) tick mark angle
@@ -382,7 +381,7 @@ proto.initInteractions = function() {
     var _this = this,
         dragger = _this.layers.plotbg.select('path').node(),
         gd = _this.graphDiv,
-        zoomContainer = _this.layers.zoom;
+        zoomContainer = gd._fullLayout._zoomlayer;
 
     // use plotbg for the main interactions
     var dragOptions = {
@@ -441,6 +440,7 @@ proto.initInteractions = function() {
 
         zb = zoomContainer.append('path')
             .attr('class', 'zoombox')
+            .attr('transform', 'translate(' + _this.x0 + ', ' + _this.y0 + ')')
             .style({
                 'fill': lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
                 'stroke-width': 0
@@ -449,6 +449,7 @@ proto.initInteractions = function() {
 
         corners = zoomContainer.append('path')
             .attr('class', 'zoombox-corners')
+            .attr('transform', 'translate(' + _this.x0 + ', ' + _this.y0 + ')')
             .style({
                 fill: Color.background,
                 stroke: Color.defaultLine,
@@ -603,7 +604,7 @@ proto.initInteractions = function() {
         // until we get around to persistent selections, remove the outline
         // here. The selection itself will be removed when the plot redraws
         // at the end.
-        _this.plotContainer.selectAll('.select-outline').remove();
+        zoomContainer.selectAll('.select-outline').remove();
     }
 
     function doubleClick() {
