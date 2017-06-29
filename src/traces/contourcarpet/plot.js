@@ -15,6 +15,7 @@ var Drawing = require('../../components/drawing');
 
 var makeCrossings = require('../contour/make_crossings');
 var findAllPaths = require('../contour/find_all_paths');
+var contourPlot = require('../contour/plot');
 var convertToConstraints = require('./convert_to_constraints');
 var joinAllPaths = require('./join_all_paths');
 var emptyPathinfo = require('./empty_pathinfo');
@@ -95,7 +96,7 @@ function plotOne(gd, plotinfo, cd) {
     mapPathinfo(pathinfo, ab2p);
 
     // draw everything
-    var plotGroup = makeContourGroup(plotinfo, cd, id);
+    var plotGroup = contourPlot.makeContourGroup(plotinfo, cd, id);
 
     // Compute the boundary path
     var seg, xp, yp, i;
@@ -131,52 +132,9 @@ function clipBoundary(plotGroup, carpet) {
     plotGroup.attr('clip-path', 'url(#' + carpet.clipPathId + ')');
 }
 
-function makeContourGroup(plotinfo, cd, id) {
-    var plotgroup = plotinfo.plot.select('.maplayer')
-        .selectAll('g.contour.' + id)
-        .classed('trace', true)
-        .data(cd);
-
-    plotgroup.enter().append('g')
-        .classed('contour', true)
-        .classed(id, true);
-
-    plotgroup.exit().remove();
-
-    return plotgroup;
-}
-
 function makeLines(plotgroup, pathinfo, contours) {
-    var smoothing = pathinfo[0].smoothing;
-
-    var linegroup = plotgroup.selectAll('g.contourlevel')
-        .data(contours.showlines === false ? [] : pathinfo);
-    linegroup.enter().append('g')
-        .classed('contourlevel', true);
-    linegroup.exit().remove();
-
-    var opencontourlines = linegroup.selectAll('path.openline')
-        .data(function(d) { return d.pedgepaths; });
-    opencontourlines.enter().append('path')
-        .classed('openline', true);
-    opencontourlines.exit().remove();
-    opencontourlines
-        .attr('d', function(d) {
-            return Drawing.smoothopen(d, smoothing);
-        })
-        .style('vector-effect', 'non-scaling-stroke');
-
-    var closedcontourlines = linegroup.selectAll('path.closedline')
-        .data(function(d) { return d.ppaths; });
-    closedcontourlines.enter().append('path')
-        .classed('closedline', true);
-    closedcontourlines.exit().remove();
-    closedcontourlines
-        .attr('d', function(d) {
-            return Drawing.smoothclosed(d, smoothing);
-        })
-        .style('vector-effect', 'non-scaling-stroke')
-        .style('stroke-miterlimit', 1);
+    contourPlot.createLines(plotgroup,
+        contours.showlines !== false, pathinfo);
 }
 
 function makeBackground(plotgroup, clipsegments, xaxis, yaxis, isConstraint, coloring) {

@@ -25,7 +25,7 @@ var constants = require('./constants');
 var costConstants = constants.LABELOPTIMIZER;
 
 
-module.exports = function plot(gd, plotinfo, cdcontours) {
+exports.plot = function plot(gd, plotinfo, cdcontours) {
     for(var i = 0; i < cdcontours.length; i++) {
         plotOne(gd, plotinfo, cdcontours[i]);
     }
@@ -82,7 +82,7 @@ function plotOne(gd, plotinfo, cd) {
         ];
 
     // draw everything
-    var plotGroup = makeContourGroup(plotinfo, cd, id);
+    var plotGroup = exports.makeContourGroup(plotinfo, cd, id);
     makeBackground(plotGroup, perimeter, contours);
     makeFills(plotGroup, pathinfo, perimeter, contours);
     makeLinesAndLabels(plotGroup, pathinfo, gd, cd[0], contours, perimeter);
@@ -123,7 +123,7 @@ function emptyPathinfo(contours, plotinfo, cd0) {
     }
     return pathinfo;
 }
-function makeContourGroup(plotinfo, cd, id) {
+exports.makeContourGroup = function(plotinfo, cd, id) {
     var plotgroup = plotinfo.plot.select('.maplayer')
         .selectAll('g.contour.' + id)
         .data(cd);
@@ -135,7 +135,7 @@ function makeContourGroup(plotinfo, cd, id) {
     plotgroup.exit().remove();
 
     return plotgroup;
-}
+};
 
 function makeBackground(plotgroup, perimeter, contours) {
     var bggroup = plotgroup.selectAll('g.contourbg').data([0]);
@@ -278,7 +278,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
     // if we're showing labels, because the fill paths include the perimeter
     // so can't be used to position the labels correctly.
     // In this case we'll remove the lines after making the labels.
-    var linegroup = createLines(lineContainer, showLines || showLabels, pathinfo);
+    var linegroup = exports.createLines(lineContainer, showLines || showLabels, pathinfo);
 
     var lineClip = createLineClip(lineContainer, clipLinesForLabels,
         gd._fullLayout._defs, cd0.trace.uid);
@@ -358,7 +358,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
     if(showLabels && !showLines) linegroup.remove();
 }
 
-function createLines(lineContainer, makeLines, pathinfo) {
+exports.createLines = function(lineContainer, makeLines, pathinfo) {
     var smoothing = pathinfo[0].smoothing;
 
     var linegroup = lineContainer.selectAll('g.contourlevel')
@@ -369,8 +369,10 @@ function createLines(lineContainer, makeLines, pathinfo) {
         .classed('contourlevel', true);
 
     if(makeLines) {
+        // pedgepaths / ppaths are used by contourcarpet, for the paths transformed from a/b to x/y
+        // edgepaths / paths are used by contour since it's in x/y from the start
         var opencontourlines = linegroup.selectAll('path.openline')
-            .data(function(d) { return d.edgepaths; });
+            .data(function(d) { return d.pedgepaths || d.edgepaths; });
 
         opencontourlines.exit().remove();
         opencontourlines.enter().append('path')
@@ -384,7 +386,7 @@ function createLines(lineContainer, makeLines, pathinfo) {
             .style('vector-effect', 'non-scaling-stroke');
 
         var closedcontourlines = linegroup.selectAll('path.closedline')
-            .data(function(d) { return d.paths; });
+            .data(function(d) { return d.ppaths || d.paths; });
 
         closedcontourlines.exit().remove();
         closedcontourlines.enter().append('path')
@@ -399,7 +401,7 @@ function createLines(lineContainer, makeLines, pathinfo) {
     }
 
     return linegroup;
-}
+};
 
 function createLineClip(lineContainer, clipLinesForLabels, defs, uid) {
     var clipId = clipLinesForLabels ? ('clipline' + uid) : null;
