@@ -37,7 +37,7 @@ module.exports = function style(gd) {
         var colorLines = !isConstraintType && contours.coloring === 'lines';
         var colorFills = !isConstraintType && contours.coloring === 'fill';
 
-        var colorMap = isConstraintType ? null : makeColorMap(trace);
+        var colorMap = (colorLines || colorFills) ? makeColorMap(trace) : null;
 
         c.selectAll('g.contourlevel').each(function(d) {
             d3.select(this).selectAll('path')
