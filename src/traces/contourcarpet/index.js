@@ -15,7 +15,7 @@ ContourCarpet.supplyDefaults = require('./defaults');
 ContourCarpet.colorbar = require('../contour/colorbar');
 ContourCarpet.calc = require('./calc');
 ContourCarpet.plot = require('./plot');
-ContourCarpet.style = require('./style');
+ContourCarpet.style = require('../contour/style');
 
 ContourCarpet.moduleType = 'trace';
 ContourCarpet.name = 'contourcarpet';

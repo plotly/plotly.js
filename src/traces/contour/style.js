@@ -31,9 +31,13 @@ module.exports = function style(gd) {
         var line = trace.line;
         var cs = contours.size || 1;
         var start = contours.start;
-        var colorLines = contours.coloring === 'lines';
 
-        var colorMap = makeColorMap(trace);
+        // for contourcarpet only - is this a constraint-type contour trace?
+        var isConstraintType = contours.type === 'constraint';
+        var colorLines = !isConstraintType && contours.coloring === 'lines';
+        var colorFills = !isConstraintType && contours.coloring === 'fill';
+
+        var colorMap = isConstraintType ? null : makeColorMap(trace);
 
         c.selectAll('g.contourlevel').each(function(d) {
             d3.select(this).selectAll('path')
@@ -52,18 +56,24 @@ module.exports = function style(gd) {
             });
         });
 
-        var firstFill;
+        if(isConstraintType) {
+            c.selectAll('g.contourfill path')
+                .style('fill', trace.fillcolor);
+        }
+        else if(colorFills) {
+            var firstFill;
 
-        c.selectAll('g.contourfill path')
-            .style('fill', function(d) {
-                if(firstFill === undefined) firstFill = d.level;
-                return colorMap(d.level + 0.5 * cs);
-            });
+            c.selectAll('g.contourfill path')
+                .style('fill', function(d) {
+                    if(firstFill === undefined) firstFill = d.level;
+                    return colorMap(d.level + 0.5 * cs);
+                });
 
-        if(firstFill === undefined) firstFill = start;
+            if(firstFill === undefined) firstFill = start;
 
-        c.selectAll('g.contourbg path')
-            .style('fill', colorMap(firstFill - 0.5 * cs));
+            c.selectAll('g.contourbg path')
+                .style('fill', colorMap(firstFill - 0.5 * cs));
+        }
     });
 
     heatmapStyle(gd);
