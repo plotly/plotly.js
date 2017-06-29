@@ -1,5 +1,6 @@
 var geom2d = require('@src/lib/geometry2d');
 var customMatchers = require('../assets/custom_matchers');
+var Drawing = require('@src/components/drawing');
 
 // various reversals of segments and endpoints that should all give identical results
 function permute(_inner, x1, y1, x2, y2, x3, y3, x4, y4, expected) {
@@ -90,5 +91,111 @@ describe('segmentDistance', function() {
         permute(check, -5, 0, 5, 0, 0, 1, 0, 2, 1);
         permute(check, -5, 0, 5, 0, 3.23, 1.55, -7.13, 1.65, 1.55);
         permute(check, 100, 0, 0, 100, 0, 5, 15, 0, 85 / Math.sqrt(2));
+    });
+});
+
+describe('getVisibleSegment', function() {
+    beforeAll(function() {
+        Drawing.makeTester();
+        jasmine.addMatchers(customMatchers);
+    });
+
+    var path;
+
+    beforeEach(function() {
+        path = Drawing.tester.append('path').node();
+    });
+
+    afterEach(function() {
+        path.parentNode.removeChild(path);
+    });
+
+    // always check against the same bounds
+    var bounds = {
+        left: 50,
+        top: 100,
+        right: 250,
+        bottom: 200
+    };
+
+    function checkD(d, expected, msg) {
+        path.setAttribute('d', d);
+        [0.1, 0.3, 1, 3, 10, 30].forEach(function(buffer) {
+            var msg2 = msg ? (msg + ' - ' + buffer) : buffer;
+            var vis = geom2d.getVisibleSegment(path, bounds, buffer);
+
+            if(!expected) {
+                expect(vis).toBeUndefined(msg2);
+            }
+            else {
+                expect(vis.min).toBeWithin(expected.min, buffer * 1.1, msg2);
+                expect(vis.max).toBeWithin(expected.max, buffer * 1.1, msg2);
+                expect(vis.len).toBeWithin(expected.len, buffer * 2.1, msg2);
+                expect(vis.total).toBeWithin(expected.total, 0.1, msg2);
+                expect(vis.isClosed).toBe(expected.isClosed, msg2);
+            }
+        });
+    }
+
+    it('returns undefined if the path is out of bounds', function() {
+        checkD('M0,0V500');
+        checkD('M0,0H500');
+        checkD('M500,0H0');
+        checkD('M0,200L99,0H201L300,200L150,201Z');
+    });
+
+    it('returns the whole path if it is not clipped', function() {
+        var diag = 100 * Math.sqrt(5);
+        checkD('M50,100L250,200', {
+            min: 0, max: diag, total: diag, len: diag, isClosed: false
+        });
+
+        checkD('M100,110H200V185Z', {
+            min: 0, max: 300, total: 300, len: 300, isClosed: true
+        });
+    });
+
+    it('works with initial clipping', function() {
+        checkD('M0,0H150V150H100', {
+            min: 250, max: 350, total: 350, len: 100, isClosed: false
+        });
+    });
+
+    it('works with both ends clipped', function() {
+        checkD('M0,125H100V175H0', {
+            min: 50, max: 200, total: 250, len: 150, isClosed: false
+        });
+    });
+
+    it('works with final clipping', function() {
+        checkD('M100,150H500', {
+            min: 0, max: 150, total: 400, len: 150, isClosed: false
+        });
+    });
+
+    it('is open if entry/exit points match but are not the start/end points', function() {
+        checkD('M0,150H100Z', {
+            min: 50, max: 150, total: 200, len: 100, isClosed: false
+        });
+
+        checkD('M0,150H100H50', {
+            min: 50, max: 150, total: 150, len: 100, isClosed: false
+        });
+
+        checkD('M50,150H100H0', {
+            min: 0, max: 100, total: 150, len: 100, isClosed: false
+        });
+    });
+
+    it('can be closed even without Z', function() {
+        checkD('M100,150H200H100', {
+            min: 0, max: 200, total: 200, len: 200, isClosed: true
+        });
+
+        // notice that this one goes outside the bounds but then
+        // comes back in. We don't catch that part.
+        checkD('M100,150V650V150', {
+            min: 0, max: 1000, total: 1000, len: 1000, isClosed: true
+        });
     });
 });

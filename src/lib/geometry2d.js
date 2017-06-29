@@ -126,13 +126,17 @@ exports.clearLocationCache = function() {
  * given by `bounds` {left, right, top, bottom}, to within a
  * precision of `buffer` px
  *
- * returns {
+ * returns: undefined if nothing is visible, else object:
+ * {
  *   min: position where the path first enters bounds, or 0 if it
  *        starts within bounds
  *   max: position where the path last exits bounds, or the path length
  *        if it finishes within bounds
+ *   len: max - min, ie the length of visible path
  *   total: the total path length - just included so the caller doesn't
  *        need to call path.getTotalLength() again
+ *   isClosed: true iff the start and end points of the path are both visible
+ *        and are at the same point
  * }
  *
  * Works by starting from either end and repeatedly finding the distance from
@@ -147,16 +151,23 @@ exports.getVisibleSegment = function getVisibleSegment(path, bounds, buffer) {
     var top = bounds.top;
     var bottom = bounds.bottom;
 
+    var pMin = 0;
+    var pTotal = path.getTotalLength();
+    var pMax = pTotal;
+
+    var pt0, ptTotal;
+
     function getDistToPlot(len) {
         var pt = path.getPointAtLength(len);
+
+        // hold on to the start and end points for `closed`
+        if(len === 0) pt0 = pt;
+        else if(len === pTotal) ptTotal = pt;
+
         var dx = (pt.x < left) ? left - pt.x : (pt.x > right ? pt.x - right : 0);
         var dy = (pt.y < top) ? top - pt.y : (pt.y > bottom ? pt.y - bottom : 0);
         return Math.sqrt(dx * dx + dy * dy);
     }
-
-    var pMin = 0;
-    var pTotal = path.getTotalLength();
-    var pMax = pTotal;
 
     var distToPlot = getDistToPlot(pMin);
     while(distToPlot) {
@@ -172,5 +183,13 @@ exports.getVisibleSegment = function getVisibleSegment(path, bounds, buffer) {
         distToPlot = getDistToPlot(pMax);
     }
 
-    return {min: pMin, max: pMax, total: pTotal};
+    return {
+        min: pMin,
+        max: pMax,
+        len: pMax - pMin,
+        total: pTotal,
+        isClosed: pMin === 0 && pMax === pTotal &&
+            Math.abs(pt0.x - ptTotal.x) < 0.1 &&
+            Math.abs(pt0.y - ptTotal.y) < 0.1
+    };
 };
