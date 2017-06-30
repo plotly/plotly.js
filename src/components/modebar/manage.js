@@ -11,6 +11,7 @@
 
 var Axes = require('../../plots/cartesian/axes');
 var scatterSubTypes = require('../../traces/scatter/subtypes');
+var Registry = require('../../registry');
 
 var createModeBar = require('./modebar');
 var modeBarButtons = require('./buttons');
@@ -78,7 +79,8 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
         hasGeo = fullLayout._has('geo'),
         hasPie = fullLayout._has('pie'),
         hasGL2D = fullLayout._has('gl2d'),
-        hasTernary = fullLayout._has('ternary');
+        hasTernary = fullLayout._has('ternary'),
+        hasMapbox = fullLayout._has('mapbox');
 
     var groups = [];
 
@@ -120,6 +122,9 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
 
     if(((hasCartesian || hasGL2D) && !allAxesFixed) || hasTernary) {
         dragModeGroup = ['zoom2d', 'pan2d'];
+    }
+    if(hasMapbox) {
+        dragModeGroup = ['pan2d'];
     }
     if(isSelectable(fullData)) {
         dragModeGroup.push('select2d');
