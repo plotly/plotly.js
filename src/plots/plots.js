@@ -683,6 +683,8 @@ plots.clearExpandedTraceDefaultColors = function(expandedTraces) {
         colorAttrs = [];
         path = [];
 
+        if (!trace || !trace._module) continue;
+
         PlotSchema.crawl(trace._module.attributes, locateExpandedTraceAttrs);
 
         for(j = 0; j < colorAttrs.length; j++) {
