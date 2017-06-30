@@ -280,7 +280,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
     // In this case we'll remove the lines after making the labels.
     var linegroup = exports.createLines(lineContainer, showLines || showLabels, pathinfo);
 
-    var lineClip = createLineClip(lineContainer, clipLinesForLabels,
+    var lineClip = exports.createLineClip(lineContainer, clipLinesForLabels,
         gd._fullLayout._defs, cd0.trace.uid);
 
     var labelGroup = plotgroup.selectAll('g.contourlabels')
@@ -299,7 +299,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
         // invalidate the getTextLocation cache in case paths changed
         Lib.clearLocationCache();
 
-        var contourFormat = labelFormatter(contours, cd0.t.cb, gd._fullLayout);
+        var contourFormat = exports.labelFormatter(contours, cd0.t.cb, gd._fullLayout);
 
         var dummyText = Drawing.tester.append('text')
             .attr('data-notex', 1)
@@ -326,7 +326,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
             Math.max(1, pathinfo.length / constants.LABELINCREASE);
 
         linegroup.each(function(d) {
-            var textOpts = calcTextOpts(d.level, contourFormat, dummyText, gd);
+            var textOpts = exports.calcTextOpts(d.level, contourFormat, dummyText, gd);
 
             d3.select(this).selectAll('path').each(function() {
                 var path = this;
@@ -339,19 +339,19 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
                     constants.LABELMAX);
 
                 for(var i = 0; i < maxLabels; i++) {
-                    var loc = findBestTextLocation(path, pathBounds, textOpts,
+                    var loc = exports.findBestTextLocation(path, pathBounds, textOpts,
                         labelData, bounds);
 
                     if(!loc) break;
 
-                    addLabelData(loc, textOpts, labelData, labelClipPathData);
+                    exports.addLabelData(loc, textOpts, labelData, labelClipPathData);
                 }
             });
         });
 
         dummyText.remove();
 
-        drawLabels(labelGroup, labelData, gd, lineClip,
+        exports.drawLabels(labelGroup, labelData, gd, lineClip,
             clipLinesForLabels ? labelClipPathData : null);
     }
 
@@ -403,7 +403,7 @@ exports.createLines = function(lineContainer, makeLines, pathinfo) {
     return linegroup;
 };
 
-function createLineClip(lineContainer, clipLinesForLabels, defs, uid) {
+exports.createLineClip = function(lineContainer, clipLinesForLabels, defs, uid) {
     var clipId = clipLinesForLabels ? ('clipline' + uid) : null;
 
     var lineClip = defs.select('.clips').selectAll('#' + clipId)
@@ -417,9 +417,9 @@ function createLineClip(lineContainer, clipLinesForLabels, defs, uid) {
     Drawing.setClipUrl(lineContainer, clipId);
 
     return lineClip;
-}
+};
 
-function labelFormatter(contours, colorbar, fullLayout) {
+exports.labelFormatter = function(contours, colorbar, fullLayout) {
     if(contours.labelformat) {
         return d3.format(contours.labelformat);
     }
@@ -446,9 +446,9 @@ function labelFormatter(contours, colorbar, fullLayout) {
             return Axes.tickText(formatAxis, v).text;
         };
     }
-}
+};
 
-function calcTextOpts(level, contourFormat, dummyText, gd) {
+exports.calcTextOpts = function(level, contourFormat, dummyText, gd) {
     var text = contourFormat(level);
     dummyText.text(text)
         .call(svgTextUtils.convertToTspans, gd);
@@ -461,9 +461,9 @@ function calcTextOpts(level, contourFormat, dummyText, gd) {
         level: level,
         dy: (bBox.top + bBox.bottom) / 2
     };
-}
+};
 
-function findBestTextLocation(path, pathBounds, textOpts, labelData, plotBounds) {
+exports.findBestTextLocation = function(path, pathBounds, textOpts, labelData, plotBounds) {
     var textWidth = textOpts.width;
 
     var p0, dp, pMax, pMin, loc;
@@ -493,12 +493,12 @@ function findBestTextLocation(path, pathBounds, textOpts, labelData, plotBounds)
 
         // subsequent iterations just look half steps away from the
         // best we found in the previous iteration
-        p0 = pMin - dp / 2;
         if(j) dp /= 2;
+        p0 = pMin - dp / 2;
         pMax = p0 + dp * 1.5;
     }
     if(cost <= costConstants.MAXCOST) return loc;
-}
+};
 
 /*
  * locationCost: a cost function for label locations
@@ -557,7 +557,7 @@ function locationCost(loc, textOpts, labelData, bounds) {
     return cost;
 }
 
-function addLabelData(loc, textOpts, labelData, labelClipPathData) {
+exports.addLabelData = function(loc, textOpts, labelData, labelClipPathData) {
     var halfWidth = textOpts.width / 2;
     var halfHeight = textOpts.height / 2;
 
@@ -590,9 +590,9 @@ function addLabelData(loc, textOpts, labelData, labelClipPathData) {
     });
 
     labelClipPathData.push(bBoxPts);
-}
+};
 
-function drawLabels(labelGroup, labelData, gd, lineClip, labelClipPathData) {
+exports.drawLabels = function(labelGroup, labelData, gd, lineClip, labelClipPathData) {
     var labels = labelGroup.selectAll('text')
         .data(labelData, function(d) {
             return d.text + ',' + d.x + ',' + d.y + ',' + d.theta;
@@ -628,7 +628,7 @@ function drawLabels(labelGroup, labelData, gd, lineClip, labelClipPathData) {
         lineClipPath.enter().append('path');
         lineClipPath.attr('d', clipPath);
     }
-}
+};
 
 function clipGaps(plotGroup, plotinfo, defs, cd0, perimeter) {
     var clipId = 'clip' + cd0.trace.uid;

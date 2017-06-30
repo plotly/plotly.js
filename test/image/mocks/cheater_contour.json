@@ -7,7 +7,9 @@
       "contours":{
         "start":1,
         "end":14,
-        "size":1
+        "size":1,
+        "showlabels": true,
+        "labelfont": {"size": 9, "color": "#ff0"}
       },
       "line":{
         "width":2,
@@ -54,7 +56,8 @@
         "start":1,
         "end":14,
         "size":1,
-        "coloring": "lines"
+        "coloring": "lines",
+        "showlabels": true
       },
       "line":{
         "width":2
@@ -148,10 +151,12 @@
       "contours":{
         "start":-5,
         "end":20,
-        "size":1
+        "size":1,
+        "showlabels": true
       },
       "line":{
-        "width":2
+        "width":2,
+        "color": "#fff"
       },
       "colorbar": {
         "len": 0.4,

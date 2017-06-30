@@ -12,16 +12,19 @@ var d3 = require('d3');
 var map1dArray = require('../carpet/map_1d_array');
 var makepath = require('../carpet/makepath');
 var Drawing = require('../../components/drawing');
+var Lib = require('../../lib');
 
 var makeCrossings = require('../contour/make_crossings');
 var findAllPaths = require('../contour/find_all_paths');
 var contourPlot = require('../contour/plot');
+var constants = require('../contour/constants');
 var convertToConstraints = require('./convert_to_constraints');
 var joinAllPaths = require('./join_all_paths');
 var emptyPathinfo = require('./empty_pathinfo');
 var mapPathinfo = require('./map_pathinfo');
 var lookupCarpet = require('../carpet/lookup_carpetid');
 var closeBoundaries = require('./close_boundaries');
+
 
 module.exports = function plot(gd, plotinfo, cdcontours) {
     for(var i = 0; i < cdcontours.length; i++) {
@@ -116,20 +119,178 @@ function plotOne(gd, plotinfo, cd) {
     makeFills(trace, plotGroup, xa, ya, pathinfo, perimeter, ab2p, carpet, carpetcd, contours.coloring, boundaryPath);
 
     // Draw contour lines:
-    makeLines(plotGroup, pathinfo, contours);
+    makeLinesAndLabels(plotGroup, pathinfo, gd, cd[0], contours, plotinfo, carpet);
 
     // Clip the boundary of the plot
     Drawing.setClipUrl(plotGroup, carpet._clipPathId);
 }
 
-function makeLines(plotgroup, pathinfo, contours) {
+function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, plotinfo, carpet) {
     var lineContainer = plotgroup.selectAll('g.contourlines').data([0]);
 
     lineContainer.enter().append('g')
         .classed('contourlines', true);
 
-    contourPlot.createLines(lineContainer,
-        contours.showlines !== false, pathinfo);
+    var showLines = contours.showlines !== false;
+    var showLabels = contours.showlabels;
+    var clipLinesForLabels = showLines && showLabels;
+
+    // Even if we're not going to show lines, we need to create them
+    // if we're showing labels, because the fill paths include the perimeter
+    // so can't be used to position the labels correctly.
+    // In this case we'll remove the lines after making the labels.
+    var linegroup = contourPlot.createLines(lineContainer, showLines || showLabels, pathinfo);
+
+    var lineClip = contourPlot.createLineClip(lineContainer, clipLinesForLabels,
+        gd._fullLayout._defs, cd0.trace.uid);
+
+    var labelGroup = plotgroup.selectAll('g.contourlabels')
+        .data(showLabels ? [0] : []);
+
+    labelGroup.exit().remove();
+
+    labelGroup.enter().append('g')
+        .classed('contourlabels', true);
+
+    if(showLabels) {
+        var xa = plotinfo.xaxis;
+        var ya = plotinfo.yaxis;
+        var xLen = xa._length;
+        var yLen = ya._length;
+        // for simplicity use the xy box for label clipping outline.
+        var labelClipPathData = [[
+            [0, 0],
+            [xLen, 0],
+            [xLen, yLen],
+            [0, yLen]
+        ]];
+
+
+        var labelData = [];
+
+        // invalidate the getTextLocation cache in case paths changed
+        Lib.clearLocationCache();
+
+        var contourFormat = contourPlot.labelFormatter(contours, cd0.t.cb, gd._fullLayout);
+
+        var dummyText = Drawing.tester.append('text')
+            .attr('data-notex', 1)
+            .call(Drawing.font, contours.labelfont);
+
+        // for now at least, contourcarpet pushes labels only away from
+        // the xy box edges, not the edges of the carpet.
+        // TODO: is this OK?
+        var bounds = {
+            left: 0,
+            right: xLen,
+            center: xLen / 2,
+            top: 0,
+            bottom: yLen,
+            middle: yLen / 2
+        };
+
+        var plotDiagonal = Math.sqrt(xLen * xLen + yLen * yLen);
+
+        // the path length to use to scale the number of labels to draw:
+        var normLength = constants.LABELDISTANCE * plotDiagonal /
+            Math.max(1, pathinfo.length / constants.LABELINCREASE);
+
+        linegroup.each(function(d) {
+            var textOpts = contourPlot.calcTextOpts(d.level, contourFormat, dummyText, gd);
+
+            d3.select(this).selectAll('path').each(function(pathData) {
+                var path = this;
+                var pathBounds = Lib.getVisibleSegment(path, bounds, textOpts.height / 2);
+                if(!pathBounds) return;
+
+                constrainToCarpet(path, pathData, d, pathBounds, carpet, textOpts.height);
+
+                if(pathBounds.len < (textOpts.width + textOpts.height) * constants.LABELMIN) return;
+
+                var maxLabels = Math.min(Math.ceil(pathBounds.len / normLength),
+                    constants.LABELMAX);
+
+                for(var i = 0; i < maxLabels; i++) {
+                    var loc = contourPlot.findBestTextLocation(path, pathBounds, textOpts,
+                        labelData, bounds);
+
+                    if(!loc) break;
+
+                    contourPlot.addLabelData(loc, textOpts, labelData, labelClipPathData);
+                }
+            });
+        });
+
+        dummyText.remove();
+
+        contourPlot.drawLabels(labelGroup, labelData, gd, lineClip,
+            clipLinesForLabels ? labelClipPathData : null);
+    }
+
+    if(showLabels && !showLines) linegroup.remove();
+}
+
+// figure out if this path goes off the edge of the carpet
+// and shorten the part we call visible to keep labels away from the edge
+function constrainToCarpet(path, pathData, levelData, pathBounds, carpet, textHeight) {
+    var pathABData;
+    for(var i = 0; i < levelData.pedgepaths.length; i++) {
+        if(pathData === levelData.pedgepaths[i]) {
+            pathABData = levelData.edgepaths[i];
+        }
+    }
+    if(!pathABData) return;
+
+    var aMin = carpet.a[0];
+    var aMax = carpet.a[carpet.a.length - 1];
+    var bMin = carpet.b[0];
+    var bMax = carpet.b[carpet.b.length - 1];
+
+    function getOffset(abPt, pathVector) {
+        var offset = 0;
+        var edgeVector;
+        var dAB = 0.1;
+        if(Math.abs(abPt[0] - aMin) < dAB || Math.abs(abPt[0] - aMax) < dAB) {
+            edgeVector = normalizeVector(carpet.dxydb_rough(abPt[0], abPt[1], dAB));
+            offset = Math.max(offset, textHeight * vectorTan(pathVector, edgeVector) / 2);
+        }
+
+        if(Math.abs(abPt[1] - bMin) < dAB || Math.abs(abPt[1] - bMax) < dAB) {
+            edgeVector = normalizeVector(carpet.dxyda_rough(abPt[0], abPt[1], dAB));
+            offset = Math.max(offset, textHeight * vectorTan(pathVector, edgeVector) / 2);
+        }
+        return offset;
+    }
+
+    var startVector = getUnitVector(path, 0, 1);
+    var endVector = getUnitVector(path, pathBounds.total, pathBounds.total - 1);
+    var minStart = getOffset(pathABData[0], startVector);
+    var maxEnd = pathBounds.total - getOffset(pathABData[pathABData.length - 1], endVector);
+
+    if(pathBounds.min < minStart) pathBounds.min = minStart;
+    if(pathBounds.max > maxEnd) pathBounds.max = maxEnd;
+
+    pathBounds.len = pathBounds.max - pathBounds.min;
+}
+
+function getUnitVector(path, p0, p1) {
+    var pt0 = path.getPointAtLength(p0);
+    var pt1 = path.getPointAtLength(p1);
+    var dx = pt1.x - pt0.x;
+    var dy = pt1.y - pt0.y;
+    var len = Math.sqrt(dx * dx + dy * dy);
+    return [dx / len, dy / len];
+}
+
+function normalizeVector(v) {
+    var len = Math.sqrt(v[0] * v[0] + v[1] * v[1]);
+    return [v[0] / len, v[1] / len];
+}
+
+function vectorTan(v0, v1) {
+    var cos = Math.abs(v0[0] * v1[0] + v0[1] * v1[1]);
+    var sin = Math.sqrt(1 - cos * cos);
+    return sin / cos;
 }
 
 function makeBackground(plotgroup, clipsegments, xaxis, yaxis, isConstraint, coloring) {
