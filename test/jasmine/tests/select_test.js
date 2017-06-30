@@ -284,6 +284,11 @@ describe('select box and lasso', function() {
                 y: 2.75,
             }], 'with the correct selected points (2)');
 
+            expect(selectedData.lassoPoints.x).toBeCloseToArray(
+                [0.084, 0.087, 0.115, 0.103], 'lasso points x coords');
+            expect(selectedData.lassoPoints.y).toBeCloseToArray(
+                [4.648, 1.342, 1.247, 4.821], 'lasso points y coords');
+
             doubleClick(250, 200).then(function() {
                 expect(doubleClickData).toBe(null, 'with the correct deselect data');
                 done();
