@@ -23,12 +23,6 @@ var mapPathinfo = require('./map_pathinfo');
 var lookupCarpet = require('../carpet/lookup_carpetid');
 var closeBoundaries = require('./close_boundaries');
 
-function makeg(el, type, klass) {
-    var join = el.selectAll(type + '.' + klass).data([0]);
-    join.enter().append(type).classed(klass, true);
-    return join;
-}
-
 module.exports = function plot(gd, plotinfo, cdcontours) {
     for(var i = 0; i < cdcontours.length; i++) {
         plotOne(gd, plotinfo, cdcontours[i]);
@@ -129,13 +123,19 @@ function plotOne(gd, plotinfo, cd) {
 }
 
 function makeLines(plotgroup, pathinfo, contours) {
-    contourPlot.createLines(plotgroup,
+    var lineContainer = plotgroup.selectAll('g.contourlines').data([0]);
+
+    lineContainer.enter().append('g')
+        .classed('contourlines', true);
+
+    contourPlot.createLines(lineContainer,
         contours.showlines !== false, pathinfo);
 }
 
 function makeBackground(plotgroup, clipsegments, xaxis, yaxis, isConstraint, coloring) {
     var seg, xp, yp, i;
-    var bggroup = makeg(plotgroup, 'g', 'contourbg');
+    var bggroup = plotgroup.selectAll('g.contourbg').data([0]);
+    bggroup.enter().append('g').classed('contourbg', true);
 
     var bgfill = bggroup.selectAll('path')
         .data((coloring === 'fill' && !isConstraint) ? [0] : []);
