@@ -23,6 +23,7 @@ var convertTextOpts = require('../../plots/mapbox/convert_text_opts');
 var COLOR_PROP = 'circle-color';
 var SIZE_PROP = 'circle-radius';
 var OPACITY_PROP = 'circle-opacity';
+var DESELECTDIM = 0.2;
 
 module.exports = function convert(calcTrace) {
     var trace = calcTrace[0].trace;
@@ -185,7 +186,7 @@ function makeCircleGeoJSON(calcTrace, hash) {
     }
 
     function combineOpacities(d, mo) {
-        return trace.opacity * mo;
+        return trace.opacity * mo * (d.dim ? DESELECTDIM : 1);
     }
 
     var opacityFn;
@@ -193,6 +194,10 @@ function makeCircleGeoJSON(calcTrace, hash) {
         opacityFn = function(d) {
             var mo = isNumeric(d.mo) ? +Lib.constrain(d.mo, 0, 1) : 0;
             return combineOpacities(d, mo);
+        };
+    } else if(trace._hasDimmedPts) {
+        opacityFn = function(d) {
+            return combineOpacities(d, marker.opacity);
         };
     }
 
