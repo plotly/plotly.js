@@ -34,7 +34,7 @@ Scatter.animatable = true;
 Scatter.moduleType = 'trace';
 Scatter.name = 'scatter';
 Scatter.basePlotModule = require('../../plots/cartesian');
-Scatter.categories = ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend'];
+Scatter.categories = ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend', 'scatter-like'];
 Scatter.meta = {
     description: [
         'The scatter trace type encompasses line charts, scatter charts, text charts, and bubble charts.',

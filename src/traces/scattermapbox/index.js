@@ -22,7 +22,7 @@ ScatterMapbox.plot = require('./plot');
 ScatterMapbox.moduleType = 'trace';
 ScatterMapbox.name = 'scattermapbox';
 ScatterMapbox.basePlotModule = require('../../plots/mapbox');
-ScatterMapbox.categories = ['mapbox', 'gl', 'symbols', 'markerColorscale', 'showLegend'];
+ScatterMapbox.categories = ['mapbox', 'gl', 'symbols', 'markerColorscale', 'showLegend', 'scatterlike'];
 ScatterMapbox.meta = {
     hrName: 'scatter_mapbox',
     description: [
