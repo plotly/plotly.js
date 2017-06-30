@@ -36,8 +36,6 @@ function plotOne(gd, plotinfo, cd) {
         aax = trace.aaxis,
         bax = trace.baxis,
         fullLayout = gd._fullLayout;
-        // uid = trace.uid,
-        // id = 'carpet' + uid;
 
     var gridLayer = plotinfo.plot.selectAll('.carpetlayer');
     var clipLayer = makeg(fullLayout._defs, 'g', 'clips');
@@ -65,14 +63,11 @@ function plotOne(gd, plotinfo, cd) {
 
     drawAxisTitles(gd, labelLayer, trace, t, xa, ya, maxAExtent, maxBExtent);
 
-    // Swap for debugging in order to draw directly:
-    // drawClipPath(trace, axisLayer, xa, ya);
     drawClipPath(trace, t, clipLayer, xa, ya);
 }
 
 function drawClipPath(trace, t, layer, xaxis, yaxis) {
     var seg, xp, yp, i;
-    // var clip = makeg(layer, 'g', 'carpetclip');
 
     var clip = layer.select('#' + trace._clipPathId);
 
@@ -98,10 +93,6 @@ function drawClipPath(trace, t, layer, xaxis, yaxis) {
     var clipPathData = 'M' + segs.join('L') + 'Z';
     clip.attr('id', trace._clipPathId);
     path.attr('d', clipPathData);
-        // .style('stroke-width', 20)
-        // .style('vector-effect', 'non-scaling-stroke')
-        // .style('stroke', 'black')
-        // .style('fill', 'rgba(0, 0, 0, 0.1)');
 }
 
 function drawGridLines(xaxis, yaxis, layer, axis, axisLetter, gridlines) {
