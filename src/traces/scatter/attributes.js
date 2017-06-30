@@ -124,7 +124,8 @@ module.exports = {
         color: {
             valType: 'color',
             role: 'style',
-            description: 'Sets the line color.'
+            description: 'Sets the line color.',
+            useExpandedTraceDefaultColor: true
         },
         width: {
             valType: 'number',
@@ -203,6 +204,7 @@ module.exports = {
     fillcolor: {
         valType: 'color',
         role: 'style',
+        useExpandedTraceDefaultColor: true,
         description: [
             'Sets the fill color.',
             'Defaults to a half-transparent variant of the line color,',

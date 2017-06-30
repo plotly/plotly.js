@@ -659,6 +659,39 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
     }
 };
 
+// This function clears defaults between the first and second pass of
+// supplyDefaults. It exists because otherwise null attributes are
+// supplyDefault'd and inherited as *colors* instead of an actual null
+// attribute which needs to be supplydefaulted by the individual
+// expanded traces.
+plots.clearExpandedTraceDefaultColors = function(expandedTraces) {
+    var colorAttrs, path, trace, i, j;
+
+    // A better check *might* be to explicitly check for a groupby transform
+    if(expandedTraces.length <= 1) return;
+
+    function locateExpandedTraceAttrs(attr, attrName, attrs, level) {
+        path[level] = attrName;
+        path.length = level + 1;
+        if(attr.useExpandedTraceDefaultColor) {
+            colorAttrs.push(path.join('.'));
+        }
+    }
+
+    for(i = 0; i < expandedTraces.length; i++) {
+        trace = expandedTraces[i];
+        colorAttrs = [];
+        path = [];
+
+        PlotSchema.crawl(trace._module.attributes, locateExpandedTraceAttrs);
+
+        for(j = 0; j < colorAttrs.length; j++) {
+            Lib.nestedProperty(trace, colorAttrs[j]).set(null);
+        }
+    }
+};
+
+
 plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
     var i, fullTrace, trace;
     var modules = fullLayout._modules = [],
@@ -692,6 +725,8 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
 
         if(fullTrace.transforms && fullTrace.transforms.length) {
             var expandedTraces = applyTransforms(fullTrace, dataOut, layout, fullLayout);
+
+            plots.clearExpandedTraceDefaultColors(expandedTraces);
 
             for(var j = 0; j < expandedTraces.length; j++) {
                 var expandedTrace = expandedTraces[j],

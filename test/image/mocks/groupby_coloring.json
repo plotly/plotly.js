@@ -1,0 +1,23 @@
+{
+  "data": [{
+    "x": [2, 3, 4, 5, 6, 7],
+    "y": [3, 2, 4, 3, 5, 4],
+    "transforms": [{
+      "type": "groupby",
+      "groups": ["c", "b", "d", "c", "e", "d"]
+    }]
+  }, {
+    "x": [2, 3, 4, 5, 6, 7],
+    "y": [9, 8, 10, 9, 11, 10],
+    "marker": {
+      "symbol": "square"
+    },
+    "transforms": [{
+      "type": "groupby",
+      "groups": ["c", "b", "d", "c", "e", "d"]
+    }]
+  }],
+  "layout": {
+    "title": "Groupby expanded trace coloring"
+  }
+}

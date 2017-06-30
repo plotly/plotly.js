@@ -23,7 +23,8 @@ module.exports = function makeColorScaleAttributes(context) {
                 ' or an array of numbers that are mapped to the colorscale',
                 ' relative to the max and min values of the array or relative to',
                 ' `cmin` and `cmax` if set.'
-            ].join('')
+            ].join(''),
+            useExpandedTraceDefaultColor: true
         },
         colorscale: extendDeep({}, colorScaleAttributes.colorscale, {
             description: [

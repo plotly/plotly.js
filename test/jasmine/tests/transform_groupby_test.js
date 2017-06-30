@@ -63,23 +63,6 @@ describe('groupby', function() {
             });
         });
 
-        it('varies the color for each expanded trace', function () {
-            var uniqueColors = {};
-            var dataOut = [];
-            var dataIn = [{
-                y: [1, 2, 3],
-                transforms: [{type: 'groupby', groups: ['a', 'b', 'c']}]
-            }];
-
-            Plots.supplyDataDefaults(dataIn, dataOut, {}, {});
-
-            for (var i = 0; i < dataOut.length; i++) {
-                uniqueColors[dataOut[i].marker.color] = true;
-            }
-
-            expect(Object.keys(uniqueColors).length).toEqual(3);
-        });
-
         it('Accepts deprecated object notation for styles', function(done) {
             var oldStyleMockData = [{
                 mode: 'markers',
