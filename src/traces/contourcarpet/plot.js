@@ -177,9 +177,9 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, plotinfo, ca
             .attr('data-notex', 1)
             .call(Drawing.font, contours.labelfont);
 
-        // for now at least, contourcarpet pushes labels only away from
-        // the xy box edges, not the edges of the carpet.
-        // TODO: is this OK?
+        // use `bounds` only to keep labels away from the x/y boundaries
+        // `constrainToCarpet` below ensures labels don't go off the
+        // carpet edges
         var bounds = {
             left: 0,
             right: xLen,
