@@ -22,8 +22,8 @@ module.exports = function selectPoints(searchInfo, polygon) {
         x,
         y;
 
-    var scattergl = cd[0].glTrace;
-    var scene = cd[0].glTrace.scene;
+    var glTrace = cd[0]._glTrace;
+    var scene = glTrace.scene;
 
     var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
     if(trace.visible !== true || hasOnlyLines) return;
@@ -53,7 +53,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
     // highlight selected points here
     trace.selection = selection;
 
-    scattergl.update(trace, cd);
+    glTrace.update(trace, cd);
     scene.glplot.setDirty();
 
     return selection;
