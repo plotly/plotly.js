@@ -328,10 +328,6 @@ proto.updateFx = function(fullLayout) {
 
     if(self.isStatic) return;
 
-    function clearSelect() {
-        fullLayout._zoomlayer.selectAll('.select-outline').remove();
-    }
-
     function invert(pxpy) {
         var obj = self.map.unproject(pxpy);
         return [obj.lng, obj.lat];
@@ -376,7 +372,9 @@ proto.updateFx = function(fullLayout) {
         };
 
         dragOptions.doneFn = function(dragged, numClicks) {
-            if(numClicks === 2) clearSelect();
+            if(numClicks === 2) {
+                fullLayout._zoomlayer.selectAll('.select-outline').remove();
+            }
         };
 
         dragElement.init(dragOptions);
@@ -384,8 +382,6 @@ proto.updateFx = function(fullLayout) {
         map.dragPan.enable();
         self.div.onmousedown = null;
     }
-
-    clearSelect();
 };
 
 proto.updateFramework = function(fullLayout) {
