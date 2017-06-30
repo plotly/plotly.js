@@ -13,6 +13,7 @@ var scatterAttrs = require('../scatter/attributes');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 var dash = require('../../components/drawing/attributes').dash;
+var fontAttrs = require('../../plots/font_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterLineAttrs = scatterAttrs.line;
@@ -36,6 +37,7 @@ module.exports = extendFlat({}, {
         valType: 'boolean',
         dflt: true,
         role: 'style',
+        editType: 'docalc',
         description: [
             'Determines whether or not the contour level attributes are',
             'picked by an algorithm.',
@@ -48,6 +50,7 @@ module.exports = extendFlat({}, {
         dflt: 15,
         min: 1,
         role: 'style',
+        editType: 'docalc',
         description: [
             'Sets the maximum number of contour levels. The actual number',
             'of contours will be chosen automatically to be less than or',
@@ -62,6 +65,7 @@ module.exports = extendFlat({}, {
             valType: 'number',
             dflt: null,
             role: 'style',
+            editType: 'doplot',
             description: [
                 'Sets the starting contour level value.',
                 'Must be less than `contours.end`'
@@ -71,6 +75,7 @@ module.exports = extendFlat({}, {
             valType: 'number',
             dflt: null,
             role: 'style',
+            editType: 'doplot',
             description: [
                 'Sets the end contour level value.',
                 'Must be more than `contours.start`'
@@ -81,6 +86,7 @@ module.exports = extendFlat({}, {
             dflt: null,
             min: 0,
             role: 'style',
+            editType: 'doplot',
             description: [
                 'Sets the step between each contour level.',
                 'Must be positive.'
@@ -91,6 +97,7 @@ module.exports = extendFlat({}, {
             values: ['fill', 'heatmap', 'lines', 'none'],
             dflt: 'fill',
             role: 'style',
+            editType: 'docalc',
             description: [
                 'Determines the coloring method showing the contour values.',
                 'If *fill*, coloring is done evenly between each contour level',
@@ -104,9 +111,40 @@ module.exports = extendFlat({}, {
             valType: 'boolean',
             dflt: true,
             role: 'style',
+            editType: 'doplot',
             description: [
                 'Determines whether or not the contour lines are drawn.',
-                'Has only an effect if `contours.coloring` is set to *fill*.'
+                'Has an effect only if `contours.coloring` is set to *fill*.'
+            ].join(' ')
+        },
+        showlabels: {
+            valType: 'boolean',
+            dflt: false,
+            role: 'style',
+            editType: 'doplot',
+            description: [
+                'Determines whether to label the contour lines with their values.'
+            ].join(' ')
+        },
+        labelfont: extendFlat({}, fontAttrs, {
+            description: [
+                'Sets the font used for labeling the contour levels.',
+                'The default color comes from the lines, if shown.',
+                'The default family and size come from `layout.font`.'
+            ].join(' '),
+            family: extendFlat({}, fontAttrs.family, {editType: 'doplot'}),
+            size: extendFlat({}, fontAttrs.size, {editType: 'doplot'}),
+            color: extendFlat({}, fontAttrs.color, {editType: 'dostyle'})
+        }),
+        labelformat: {
+            valType: 'string',
+            dflt: '',
+            role: 'style',
+            editType: 'doplot',
+            description: [
+                'Sets the contour label formatting rule using d3 formatting',
+                'mini-language which is very similar to Python, see:',
+                'https://github.com/d3/d3-format/blob/master/README.md#locale_format.'
             ].join(' ')
         }
     },
@@ -115,7 +153,7 @@ module.exports = extendFlat({}, {
         color: extendFlat({}, scatterLineAttrs.color, {
             description: [
                 'Sets the color of the contour level.',
-                'Has no if `contours.coloring` is set to *lines*.'
+                'Has no effect if `contours.coloring` is set to *lines*.'
             ].join(' ')
         }),
         width: scatterLineAttrs.width,

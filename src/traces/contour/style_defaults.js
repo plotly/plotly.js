@@ -10,25 +10,38 @@
 'use strict';
 
 var colorscaleDefaults = require('../../components/colorscale/defaults');
+var Lib = require('../../lib');
 
 
 module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout, defaultColor, defaultWidth) {
     var coloring = coerce('contours.coloring');
 
     var showLines;
+    var lineColor = '';
     if(coloring === 'fill') showLines = coerce('contours.showlines');
 
     if(showLines !== false) {
-        if(coloring !== 'lines') coerce('line.color', defaultColor || '#000');
+        if(coloring !== 'lines') lineColor = coerce('line.color', defaultColor || '#000');
         coerce('line.width', defaultWidth === undefined ? 0.5 : defaultWidth);
         coerce('line.dash');
     }
 
     coerce('line.smoothing');
 
-    if((traceOut.contours || {}).coloring !== 'none') {
+    if(coloring !== 'none') {
         colorscaleDefaults(
             traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
         );
+    }
+
+    var showLabels = coerce('contours.showlabels');
+    if(showLabels) {
+        var globalFont = layout.font;
+        Lib.coerceFont(coerce, 'contours.labelfont', {
+            family: globalFont.family,
+            size: globalFont.size,
+            color: lineColor
+        });
+        coerce('contours.labelformat');
     }
 };

@@ -1,6 +1,7 @@
 var d3 = require('d3');
 var Plotly = require('@lib/index');
 var Drawing = require('@src/components/drawing');
+var svgTextUtils = require('@src/lib/svg_text_utils');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
@@ -355,14 +356,14 @@ describe('Drawing', function() {
         afterEach(destroyGraphDiv);
 
         function assertBBox(actual, expected) {
-            var TOL = 3;
-            expect(actual.height).toBeWithin(expected.height, TOL, 'height');
-            expect(actual.top).toBeWithin(expected.top, TOL, 'top');
-            expect(actual.bottom).toBeWithin(expected.bottom, TOL, 'bottom');
-
-            expect(actual.width).toBeWithin(expected.width, TOL, 'width');
-            expect(actual.left).toBeWithin(expected.left, TOL, 'left');
-            expect(actual.right).toBeWithin(expected.right, TOL, 'right');
+            [
+                'height', 'top', 'bottom',
+                'width', 'left', 'right'
+            ].forEach(function(dim) {
+                // give larger dimensions some extra tolerance
+                var tol = Math.max(expected[dim] / 10, 3);
+                expect(actual[dim]).toBeWithin(expected[dim], tol, dim);
+            });
         }
 
         it('should update bounding box dimension on window scroll', function(done) {
@@ -421,6 +422,28 @@ describe('Drawing', function() {
             })
             .catch(fail)
             .then(done);
+        });
+
+        it('works with dummy nodes created in Drawing.tester', function() {
+            var node = Drawing.tester.append('text')
+                .text('bananas')
+                .call(Drawing.font, '"Open Sans", verdana, arial, sans-serif', 19)
+                .call(svgTextUtils.convertToTspans).node();
+
+            expect(node.parentNode).toBe(Drawing.tester.node());
+
+            assertBBox(Drawing.bBox(node), {
+                height: 21,
+                width: 76,
+                left: 0,
+                top: -17,
+                right: 76,
+                bottom: 4
+            });
+
+            expect(node.parentNode).toBe(Drawing.tester.node());
+
+            node.parentNode.removeChild(node);
         });
     });
 });

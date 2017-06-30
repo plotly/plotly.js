@@ -36,8 +36,6 @@ function plotOne(gd, plotinfo, cd) {
         aax = trace.aaxis,
         bax = trace.baxis,
         fullLayout = gd._fullLayout;
-        // uid = trace.uid,
-        // id = 'carpet' + uid;
 
     var gridLayer = plotinfo.plot.selectAll('.carpetlayer');
     var clipLayer = makeg(fullLayout._defs, 'g', 'clips');
@@ -65,17 +63,13 @@ function plotOne(gd, plotinfo, cd) {
 
     drawAxisTitles(gd, labelLayer, trace, t, xa, ya, maxAExtent, maxBExtent);
 
-    // Swap for debugging in order to draw directly:
-    // drawClipPath(trace, axisLayer, xa, ya);
     drawClipPath(trace, t, clipLayer, xa, ya);
 }
 
 function drawClipPath(trace, t, layer, xaxis, yaxis) {
     var seg, xp, yp, i;
-    // var clip = makeg(layer, 'g', 'carpetclip');
-    trace.clipPathId = 'clip' + trace.uid + 'carpet';
 
-    var clip = layer.select('#' + trace.clipPathId);
+    var clip = layer.select('#' + trace._clipPathId);
 
     if(!clip.size()) {
         clip = layer.append('clipPath')
@@ -96,13 +90,9 @@ function drawClipPath(trace, t, layer, xaxis, yaxis) {
     // This could be optimized ever so slightly to avoid no-op L segments
     // at the corners, but it's so negligible that I don't think it's worth
     // the extra complexity
-    trace.clipPathData = 'M' + segs.join('L') + 'Z';
-    clip.attr('id', trace.clipPathId);
-    path.attr('d', trace.clipPathData);
-        // .style('stroke-width', 20)
-        // .style('vector-effect', 'non-scaling-stroke')
-        // .style('stroke', 'black')
-        // .style('fill', 'rgba(0, 0, 0, 0.1)');
+    var clipPathData = 'M' + segs.join('L') + 'Z';
+    clip.attr('id', trace._clipPathId);
+    path.attr('d', clipPathData);
 }
 
 function drawGridLines(xaxis, yaxis, layer, axis, axisLetter, gridlines) {

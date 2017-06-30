@@ -8,6 +8,7 @@ var Legend = require('@src/components/legend');
 var pkg = require('../../../package.json');
 var subroutines = require('@src/plot_api/subroutines');
 var helpers = require('@src/plot_api/helpers');
+var editTypes = require('@src/plot_api/edit_types');
 
 var d3 = require('d3');
 var customMatchers = require('../assets/custom_matchers');
@@ -1739,5 +1740,49 @@ describe('plot_api helpers', function() {
             // but hasParent doesn't look at the values in aobj, just its keys.
             expect(helpers.hasParent({'marker.line': 1}, attr2)).toBe(true);
         });
+    });
+});
+
+describe('plot_api edit_types', function() {
+    it('initializes flags with all false', function() {
+        ['traces', 'layout'].forEach(function(container) {
+            var initFlags = editTypes[container]();
+            Object.keys(initFlags).forEach(function(key) {
+                expect(initFlags[key]).toBe(false, container + '.' + key);
+            });
+        });
+    });
+
+    it('makes no changes if editType is not included', function() {
+        var flags = {docalc: false, dostyle: true};
+
+        editTypes.update(flags, {
+            valType: 'boolean',
+            dflt: true,
+            role: 'style'
+        });
+
+        expect(flags).toEqual({docalc: false, dostyle: true});
+
+        editTypes.update(flags, {
+            family: {valType: 'string', dflt: 'Comic sans'},
+            size: {valType: 'number', dflt: 96},
+            color: {valType: 'color', dflt: 'red'}
+        });
+
+        expect(flags).toEqual({docalc: false, dostyle: true});
+    });
+
+    it('gets updates from the outer object and ignores nested items', function() {
+        var flags = {docalc: false, dolegend: true};
+
+        editTypes.update(flags, {
+            editType: 'docalc+dostyle',
+            valType: 'number',
+            dflt: 1,
+            role: 'style'
+        });
+
+        expect(flags).toEqual({docalc: true, dolegend: true, dostyle: true});
     });
 });

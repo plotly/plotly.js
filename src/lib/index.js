@@ -74,6 +74,13 @@ lib.rotationXYMatrix = matrixModule.rotationXYMatrix;
 lib.apply2DTransform = matrixModule.apply2DTransform;
 lib.apply2DTransform2 = matrixModule.apply2DTransform2;
 
+var geom2dModule = require('./geometry2d');
+lib.segmentsIntersect = geom2dModule.segmentsIntersect;
+lib.segmentDistance = geom2dModule.segmentDistance;
+lib.getTextLocation = geom2dModule.getTextLocation;
+lib.clearLocationCache = geom2dModule.clearLocationCache;
+lib.getVisibleSegment = geom2dModule.getVisibleSegment;
+
 var extendModule = require('./extend');
 lib.extendFlat = extendModule.extendFlat;
 lib.extendDeep = extendModule.extendDeep;
