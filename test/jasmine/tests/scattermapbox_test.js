@@ -155,6 +155,8 @@ describe('scattermapbox convert', function() {
             stops: [ [0, 5], [1, 10], [2, 0] ]
         }, 'circle-radius stops');
 
+        expect(opts.circle.paint['circle-opacity']).toBe(0.7, 'circle-opacity');
+
         var circleProps = opts.circle.geojson.features.map(function(f) {
             return f.properties;
         });
@@ -166,6 +168,43 @@ describe('scattermapbox convert', function() {
             { 'circle-color': 2, 'circle-radius': 2 },
             { 'circle-color': 1, 'circle-radius': 2 },
             { 'circle-color': 1, 'circle-radius': 2 }
+        ], 'geojson feature properties');
+    });
+
+    it('should fill circle-opacity correctly', function() {
+        var opts = _convert(Lib.extendFlat({}, base, {
+            mode: 'markers',
+            marker: {
+                symbol: 'circle',
+                size: 10,
+                color: 'red',
+                opacity: [1, null, 0.5, '0.5', '1', 0, 0.8]
+            },
+            opacity: 0.5
+        }));
+
+        assertVisibility(opts, ['none', 'none', 'visible', 'none']);
+        expect(opts.circle.paint['circle-color']).toBe('red', 'circle-color');
+        expect(opts.circle.paint['circle-radius']).toBe(5, 'circle-radius');
+
+        expect(opts.circle.paint['circle-opacity']).toEqual({
+            property: 'circle-opacity',
+            stops: [ [0, 0.5], [1, 0], [2, 0.25], [6, 0.4] ]
+        }, 'circle-opacity stops');
+
+        var circleProps = opts.circle.geojson.features.map(function(f) {
+            return f.properties;
+        });
+
+
+        expect(circleProps).toEqual([
+            { 'circle-opacity': 0 },
+            { 'circle-opacity': 1 },
+            { 'circle-opacity': 2 },
+            // lat === null
+            // lon === null
+            { 'circle-opacity': 1 },
+            { 'circle-opacity': 6 },
         ], 'geojson feature properties');
     });
 
@@ -509,7 +548,6 @@ describe('@noCI scattermapbox hover', function() {
         .then(done);
     });
 });
-
 
 describe('@noCI Test plotly events on a scattermapbox plot:', function() {
     var mock = require('@mocks/mapbox_0.json');
