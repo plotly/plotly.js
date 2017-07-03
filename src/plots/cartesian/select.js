@@ -9,7 +9,7 @@
 
 'use strict';
 
-var polybool = require('poly-bool')
+var polybool = require('poly-bool');
 var polygon = require('../../lib/polygon');
 var color = require('../../components/color');
 var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
@@ -19,12 +19,13 @@ var constants = require('./constants');
 
 var filteredPolygon = polygon.filter;
 var polygonTester = polygon.tester;
+var multipolygonTester = polygon.multitester;
 var MINSELECT = constants.MINSELECT;
 
 function getAxId(ax) { return ax._id; }
 
 
-var polygons = []
+var selectedPolyPts = [], lastMergedPolyPts;
 
 module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     var plot = dragOptions.gd._fullLayout._zoomlayer,
@@ -35,18 +36,16 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         y0 = startY - dragBBox.top,
         x1 = x0,
         y1 = y0,
-        //FIXME: replace path with prev polygon path
         path0 = 'M' + x0 + ',' + y0,
         pw = dragOptions.xaxes[0]._length,
         ph = dragOptions.yaxes[0]._length,
         xAxisIds = dragOptions.xaxes.map(getAxId),
         yAxisIds = dragOptions.yaxes.map(getAxId),
         allAxes = dragOptions.xaxes.concat(dragOptions.yaxes),
-        pts;
+        currentPoly, mergedTester, mergedPolyPts, poly;
 
     if(mode === 'lasso') {
-        pts = filteredPolygon([[x0, y0]], constants.BENDPX);
-        polygons.unshift(pts)
+        currentPoly = filteredPolygon([[x0, y0]], constants.BENDPX);
     }
 
     var outlines = plot.selectAll('path.select-outline').data([1, 2]);
@@ -113,8 +112,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     function ascending(a, b) { return a - b; }
 
     dragOptions.moveFn = function(dx0, dy0) {
-        var poly,
-            ax;
+        var ax;
         x1 = Math.max(0, Math.min(pw, dx0 + x0));
         y1 = Math.max(0, Math.min(ph, dy0 + y0));
 
@@ -150,42 +148,31 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 'H' + poly.xmin + 'Z');
         }
         else if(mode === 'lasso') {
-            // FIXME: merge polygons here
-            pts.addPt([x1, y1]);
+            currentPoly.addPt([x1, y1]);
 
-            var ppts = []
-            for (var i = 0; i < polygons.length; i++) {
-                ppts.push(polygons[i].filtered)
+            if(selectedPolyPts.length) {
+                mergedPolyPts = polybool(lastMergedPolyPts, [currentPoly.filtered], 'or');
+
+                var mergedPaths = [];
+                for(i = 0; i < mergedPolyPts.length; i++) {
+                    var ppts = mergedPolyPts[i];
+                    mergedPaths.push(ppts.join('L') + 'L' + ppts[0]);
+                }
+                mergedTester = multipolygonTester(selectedPolyPts.concat([currentPoly.filtered]));
+                outlines.attr('d', 'M' + mergedPaths.join('M') + 'Z');
             }
-            var mergedpoly = polymerge(ppts)
-
-            // var vertices = []
-            // var roots = []
-            // for (var i = 0; i < polygons.length; i++) {
-            //     var ppts = polygons[i].filtered
-            //     vertices = vertices.concat(ppts)
-            //     roots.push(ppts[0])
-            //     vertices.push(ppts[0])
-            // }
-            // while (roots.length) {
-            //     vertices.push(roots.pop())
-            // }
-            poly = polygonTester(mergedpoly);
-
-            // poly = polygonTester(pts.filtered);
-
-            // var paths = []
-            // for (var i = 0 ;i < polygons.length; i++) {
-            //     paths.push(polygons[i].filtered.join('L'))
-            // }
-            outlines.attr('d', 'M' + poly.pts.join('L') + 'Z');
+            else {
+                mergedPolyPts = [currentPoly.filtered];
+                mergedTester = polygonTester(currentPoly.filtered);
+                outlines.attr('d', 'M' + mergedTester.pts.join('L') + 'Z');
+            }
         }
 
         selection = [];
         for(i = 0; i < searchTraces.length; i++) {
             searchInfo = searchTraces[i];
             [].push.apply(selection, fillSelectionItem(
-                searchInfo.selectPoints(searchInfo, poly), searchInfo
+                searchInfo.selectPoints(searchInfo, mergedTester), searchInfo
             ));
         }
 
@@ -199,8 +186,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 ax = allAxes[i];
                 axLetter = ax._id.charAt(0);
                 ranges[ax._id] = [
-                    ax.p2d(poly[axLetter + 'min']),
-                    ax.p2d(poly[axLetter + 'max'])].sort(ascending);
+                    ax.p2d(mergedTester[axLetter + 'min']),
+                    ax.p2d(mergedTester[axLetter + 'max'])].sort(ascending);
             }
         }
         else {
@@ -208,7 +195,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
 
             for(i = 0; i < allAxes.length; i++) {
                 ax = allAxes[i];
-                dataPts[ax._id] = pts.filtered.map(axValue(ax));
+                dataPts[ax._id] = currentPoly.filtered.map(axValue(ax));
             }
         }
         dragOptions.gd.emit('plotly_selecting', eventData);
@@ -229,6 +216,9 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         else {
             dragOptions.gd.emit('plotly_selected', eventData);
         }
+
+        lastMergedPolyPts = mergedPolyPts;
+        selectedPolyPts.push(currentPoly.filtered);
     };
 };
 
@@ -247,15 +237,4 @@ function fillSelectionItem(selection, searchInfo) {
     }
 
     return selection;
-}
-
-
-function polymerge (list) {
-    let result = [list[0]]
-
-    for (var i = 1; i < list.length; i++) {
-        result = polybool([list[i]], result, 'or')
-    }
-
-    return result[0]
 }
