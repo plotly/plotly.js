@@ -659,12 +659,15 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
     }
 };
 
-// This function clears defaults between the first and second pass of
-// supplyDefaults. It exists because otherwise null attributes are
-// supplyDefault'd and inherited as *colors* instead of an actual null
-// attribute which needs to be supplydefaulted by the individual
-// expanded traces.
-plots.clearTraceDefaultColors = function(trace) {
+// This function clears any attributes with useExpandedTraceDefaultColor
+// set to true in the plot schema. This is needed because groupby (which
+// is the only transform for which this currently applies) supplies parent
+// trace defaults, then expanded trace defaults. The result is that `null`
+// colors are default-supplied and inherited as a color instead of a null.
+// The result is that expanded trace default colors have no effect, with
+// the final result that groups are indistinguishable. This function clears
+// those colors so that individual groupby groups get unique colors.
+plots.clearExpandedTraceDefaultColors = function(trace) {
     var colorAttrs, path, i;
 
     // This uses weird closure state in order to satisfy the linter rule

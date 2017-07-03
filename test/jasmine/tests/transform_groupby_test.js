@@ -692,6 +692,34 @@ describe('groupby', function() {
         it('passes with no groups', test(mockData0));
         it('passes with empty groups', test(mockData1));
         it('passes with falsey groups', test(mockData2));
+    });
 
+    describe('expanded trace coloring', function() {
+        it('assigns unique colors to each group', function() {
+            var uniqueColors = {};
+            var dataOut = [];
+            var dataIn = [{
+                y: [1, 2, 3],
+                transforms: [
+                    {type: 'filter', operation: '<', value: 4},
+                    {type: 'groupby', groups: ['a', 'b', 'c']}
+                ]
+            }, {
+                y: [4, 5, 6],
+                transforms: [
+                    {type: 'filter', operation: '<', value: 4},
+                    {type: 'groupby', groups: ['a', 'b', 'b']}
+                ]
+            }];
+
+            Plots.supplyDataDefaults(dataIn, dataOut, {}, {});
+
+            for(var i = 0; i < dataOut.length; i++) {
+                uniqueColors[dataOut[i].marker.color] = true;
+            }
+
+            // Confirm that five total colors exist:
+            expect(Object.keys(uniqueColors).length).toEqual(5);
+        });
     });
 });

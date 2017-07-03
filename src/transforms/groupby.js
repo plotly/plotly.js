@@ -173,7 +173,7 @@ function transformOne(trace, state) {
 
         newTrace.name = groupName;
 
-        Plots.clearTraceDefaultColors(newTrace);
+        Plots.clearExpandedTraceDefaultColors(newTrace);
 
         // there's no need to coerce styleLookup[groupName] here
         // as another round of supplyDefaults is done on the transformed traces
