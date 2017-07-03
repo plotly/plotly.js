@@ -664,13 +664,12 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
 // supplyDefault'd and inherited as *colors* instead of an actual null
 // attribute which needs to be supplydefaulted by the individual
 // expanded traces.
-plots.clearExpandedTraceDefaultColors = function(expandedTraces) {
-    var colorAttrs, path, trace, i, j;
+plots.clearTraceDefaultColors = function(trace) {
+    var colorAttrs, path, i;
 
-    // A better check *might* be to explicitly check for a groupby transform
-    if(expandedTraces.length <= 1) return;
-
-    function locateExpandedTraceAttrs(attr, attrName, attrs, level) {
+    // This uses weird closure state in order to satisfy the linter rule
+    // that we can't create functions in a loop.
+    function locateColorAttrs(attr, attrName, attrs, level) {
         path[level] = attrName;
         path.length = level + 1;
         if(attr.useExpandedTraceDefaultColor) {
@@ -678,17 +677,25 @@ plots.clearExpandedTraceDefaultColors = function(expandedTraces) {
         }
     }
 
-    for(i = 0; i < expandedTraces.length; i++) {
-        trace = expandedTraces[i];
-        colorAttrs = [];
-        path = [];
+    path = [];
 
-        if(!trace || !trace._module) continue;
+    // Get the cached colorAttrs:
+    colorAttrs = trace._module._colorAttrs;
 
-        PlotSchema.crawl(trace._module.attributes, locateExpandedTraceAttrs);
+    // Or else compute and cache the colorAttrs on the module:
+    if(!colorAttrs) {
+        trace._module._colorAttrs = colorAttrs = [];
+        PlotSchema.crawl(
+            trace._module.attributes,
+            locateColorAttrs
+        );
+    }
 
-        for(j = 0; j < colorAttrs.length; j++) {
-            Lib.nestedProperty(trace, colorAttrs[j]).set(null);
+    for(i = 0; i < colorAttrs.length; i++) {
+        var origprop = Lib.nestedProperty(trace, '_input.' + colorAttrs[i]);
+
+        if(!origprop.get()) {
+            Lib.nestedProperty(trace, colorAttrs[i]).set(null);
         }
     }
 };
@@ -728,11 +735,9 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
         if(fullTrace.transforms && fullTrace.transforms.length) {
             var expandedTraces = applyTransforms(fullTrace, dataOut, layout, fullLayout);
 
-            plots.clearExpandedTraceDefaultColors(expandedTraces);
-
             for(var j = 0; j < expandedTraces.length; j++) {
-                var expandedTrace = expandedTraces[j],
-                    fullExpandedTrace = plots.supplyTraceDefaults(expandedTrace, cnt, fullLayout, i);
+                var expandedTrace = expandedTraces[j];
+                var fullExpandedTrace = plots.supplyTraceDefaults(expandedTrace, cnt, fullLayout, i);
 
                 // mutate uid here using parent uid and expanded index
                 // to promote consistency between update calls
