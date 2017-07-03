@@ -140,7 +140,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 // to pan (or to zoom if it already is pan) on shift
                 if(e.shiftKey) {
                     if(dragModeNow === 'pan') dragModeNow = 'zoom';
-                    else dragModeNow = 'pan';
+                    else if(!isSelectOrLasso(dragModeNow)) dragModeNow = 'pan';
                 }
                 else if(e.ctrlKey) {
                     dragModeNow = 'pan';
@@ -171,6 +171,11 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             else if(isSelectOrLasso(dragModeNow)) {
                 dragOptions.xaxes = xa;
                 dragOptions.yaxes = ya;
+                if(!e.shiftKey) {
+                    // list of all prev polygons and their merge
+                    dragOptions.polygons = [];
+                    dragOptions.mergedPolygons = null;
+                }
                 prepSelect(e, startX, startY, dragOptions, dragModeNow);
             }
         }

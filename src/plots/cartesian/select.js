@@ -25,8 +25,6 @@ var MINSELECT = constants.MINSELECT;
 function getAxId(ax) { return ax._id; }
 
 
-var selectedPolyPts = [], lastMergedPolyPts;
-
 module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     var plot = dragOptions.gd._fullLayout._zoomlayer,
         dragBBox = dragOptions.element.getBoundingClientRect(),
@@ -150,15 +148,15 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         else if(mode === 'lasso') {
             currentPoly.addPt([x1, y1]);
 
-            if(selectedPolyPts.length) {
-                mergedPolyPts = polybool(lastMergedPolyPts, [currentPoly.filtered], 'or');
+            if(dragOptions.polygons.length) {
+                mergedPolyPts = polybool(dragOptions.mergedPolygons, [currentPoly.filtered], 'or');
 
                 var mergedPaths = [];
                 for(i = 0; i < mergedPolyPts.length; i++) {
                     var ppts = mergedPolyPts[i];
                     mergedPaths.push(ppts.join('L') + 'L' + ppts[0]);
                 }
-                mergedTester = multipolygonTester(selectedPolyPts.concat([currentPoly.filtered]));
+                mergedTester = multipolygonTester(dragOptions.polygons.concat([currentPoly.filtered]));
                 outlines.attr('d', 'M' + mergedPaths.join('M') + 'Z');
             }
             else {
@@ -217,8 +215,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             dragOptions.gd.emit('plotly_selected', eventData);
         }
 
-        lastMergedPolyPts = mergedPolyPts;
-        selectedPolyPts.push(currentPoly.filtered);
+        dragOptions.mergedPolygons = mergedPolyPts;
+        dragOptions.polygons.push(currentPoly.filtered);
     };
 };
 
