@@ -727,3 +727,64 @@ describe('restyle applied on transforms:', function() {
     });
 
 });
+
+describe('supplyDefaults with groupby + filter', function () {
+    function calcDatatoTrace(calcTrace) {
+        return calcTrace[0].trace;
+    }
+
+    function _transform(data, layout) {
+        var gd = {
+            data: data,
+            layout: layout || {}
+        };
+
+        Plots.supplyDefaults(gd);
+        Plots.doCalcdata(gd);
+
+        return gd.calcdata.map(calcDatatoTrace);
+    }
+
+    it('computes the correct data when filter target blank', function () {
+        var out = _transform([{
+            x: [1, 2, 3, 4, 5, 6, 7],
+            y: [4, 6, 5, 7, 6, 8, 9],
+            transforms: [{
+                type: "filter",
+                operation: "<",
+                value: 6.5
+            }, {
+                type: "groupby",
+                groups: [1, 1, 1, 2, 2, 2, 2]
+            }]
+        }]);
+
+        expect(out[0].x).toEqual([1, 2, 3]);
+        expect(out[0].y).toEqual([4, 6, 5]);
+
+        expect(out[1].x).toEqual([4, 5, 6]);
+        expect(out[1].y).toEqual([7, 6, 8]);
+    });
+
+    it('computes the correct data when filter target present', function () {
+        var out = _transform([{
+            x: [1, 2, 3, 4, 5, 6, 7],
+            y: [4, 6, 5, 7, 6, 8, 9],
+            transforms: [{
+                type: "filter",
+                target: [1, 2, 3, 4, 5, 6, 7],
+                operation: "<",
+                value: 6.5
+            }, {
+                type: "groupby",
+                groups: [1, 1, 1, 2, 2, 2, 2]
+            }]
+        }]);
+
+        expect(out[0].x).toEqual([1, 2, 3]);
+        expect(out[0].y).toEqual([4, 6, 5]);
+
+        expect(out[1].x).toEqual([4, 5, 6]);
+        expect(out[1].y).toEqual([7, 6, 8]);
+    });
+});
