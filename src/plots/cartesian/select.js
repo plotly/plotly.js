@@ -25,7 +25,9 @@ var MINSELECT = constants.MINSELECT;
 function getAxId(ax) { return ax._id; }
 
 
-module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
+module.exports = prepSelect;
+
+function prepSelect(e, startX, startY, dragOptions, mode) {
     var plot = dragOptions.gd._fullLayout._zoomlayer,
         dragBBox = dragOptions.element.getBoundingClientRect(),
         xs = dragOptions.plotinfo.xaxis._offset,
@@ -151,19 +153,21 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         if(dragOptions.polygons.length) {
             mergedPolygons = polybool(dragOptions.mergedPolygons, [currentPolygon], 'or');
             testPoly = multipolygonTester(dragOptions.polygons.concat([currentPolygon]));
-            var mergedPaths = [];
-            for(i = 0; i < mergedPolygons.length; i++) {
-                var ppts = mergedPolygons[i];
-                mergedPaths.push(ppts.join('L') + 'L' + ppts[0]);
-            }
-            outlines.attr('d', 'M' + mergedPaths.join('M') + 'Z');
         }
         else {
             mergedPolygons = [currentPolygon];
             testPoly = polygonTester(currentPolygon);
-            outlines.attr('d', 'M' + mergedPolygons[0].join('L') + 'Z');
         }
 
+        // draw selection
+        var paths = [];
+        for(var i = 0; i < mergedPolygons.length; i++) {
+            var ppts = mergedPolygons[i];
+            paths.push(ppts.join('L') + 'L' + ppts[0]);
+        }
+        outlines.attr('d', 'M' + paths.join('M') + 'Z');
+
+        // select points
         selection = [];
         for(i = 0; i < searchTraces.length; i++) {
             searchInfo = searchTraces[i];
@@ -217,7 +221,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         dragOptions.polygons.push(currentPolygon);
 
         // we have to keep reference to arrays, therefore just replace items
-        dragOptions.mergedPolygons.splice.apply(dragOptions.mergedPolygons, [0, dragOptions.mergedPolygons].concat(mergedPolygons));
+        dragOptions.mergedPolygons.splice.apply(dragOptions.mergedPolygons, [0, dragOptions.mergedPolygons.length].concat(mergedPolygons));
     };
 };
 
