@@ -172,16 +172,15 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 dragOptions.xaxes = xa;
                 dragOptions.yaxes = ya;
                 // take over selection polygons from prev mode, if any
-                if(e.shiftKey && dragOptions.plotinfo.selectionPolygons && !dragOptions.polygons) {
-                    dragOptions.polygons = dragOptions.plotinfo.selectionPolygons;
-                    dragOptions.mergedPolygons = dragOptions.plotinfo.selectionMergedPolygons;
+                if(e.shiftKey && plotinfo.selection.polygons && !dragOptions.polygons) {
+                    dragOptions.polygons = plotinfo.selection.polygons;
+                    dragOptions.mergedPolygons = plotinfo.selection.mergedPolygons;
                 }
                 // create new polygons, if shift mode
-                else if(!e.shiftKey || (e.shiftKey && !dragOptions.plotinfo.selectionPolygons)) {
-                    dragOptions.plotinfo.selectionPolygons =
-                    dragOptions.polygons = [];
-                    dragOptions.mergedPolygons =
-                    dragOptions.plotinfo.selectionMergedPolygons = [];
+                else if(!e.shiftKey || (e.shiftKey && !plotinfo.selection.polygons)) {
+                    plotinfo.selection = {};
+                    plotinfo.selection.polygons = dragOptions.polygons = [];
+                    dragOptions.mergedPolygons = plotinfo.selection.mergedPolygons = [];
                 }
                 prepSelect(e, startX, startY, dragOptions, dragModeNow);
             }
@@ -191,7 +190,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     dragElement.init(dragOptions);
 
     // FIXME: this hack highlights selection once we enter select/lasso mode
-    if(isSelectOrLasso(gd._fullLayout.dragmode) && dragOptions.plotinfo.selectionPolygons) {
+    if(isSelectOrLasso(gd._fullLayout.dragmode) && plotinfo.selection) {
         showSelect(zoomlayer, dragOptions);
     }
 
@@ -921,10 +920,14 @@ function clearSelect(zoomlayer) {
 
 function showSelect(zoomlayer, dragOptions) {
     var outlines = zoomlayer.selectAll('path.select-outline').data([1, 2]),
-        xs = dragOptions.plotinfo.xaxis._offset,
-        ys = dragOptions.plotinfo.yaxis._offset,
-        paths = [],
-        polygons = dragOptions.plotinfo.selectionMergedPolygons;
+        plotinfo = dragOptions.plotinfo,
+        xaxis = plotinfo.xaxis,
+        yaxis = plotinfo.yaxis,
+        selection = plotinfo.selection,
+        polygons = selection.mergedPolygons,
+        xs = xaxis._offset,
+        ys = yaxis._offset,
+        paths = [];
 
     for(var i = 0; i < polygons.length; i++) {
         var ppts = polygons[i];
