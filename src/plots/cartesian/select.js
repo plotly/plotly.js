@@ -40,7 +40,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         xAxisIds = dragOptions.xaxes.map(getAxId),
         yAxisIds = dragOptions.yaxes.map(getAxId),
         allAxes = dragOptions.xaxes.concat(dragOptions.yaxes),
-        currentPoly, mergedTester, mergedPolyPts, poly;
+        currentPoly, mergedPolyPts, poly, currentPts;
 
     if(mode === 'lasso') {
         currentPoly = filteredPolygon([[x0, y0]], constants.BENDPX);
@@ -120,57 +120,55 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         if(mode === 'select') {
             if(dy < Math.min(dx * 0.6, MINSELECT)) {
                 // horizontal motion: make a vertical box
-                poly = polygonTester([[x0, 0], [x0, ph], [x1, ph], [x1, 0]]);
+                currentPts = [[x0, 0], [x0, ph], [x1, ph], [x1, 0]];
                 // extras to guide users in keeping a straight selection
-                corners.attr('d', 'M' + poly.xmin + ',' + (y0 - MINSELECT) +
+                corners.attr('d', 'M' + Math.min(x0, x1) + ',' + (y0 - MINSELECT) +
                     'h-4v' + (2 * MINSELECT) + 'h4Z' +
-                    'M' + (poly.xmax - 1) + ',' + (y0 - MINSELECT) +
+                    'M' + (Math.max(x0, x1) - 1) + ',' + (y0 - MINSELECT) +
                     'h4v' + (2 * MINSELECT) + 'h-4Z');
 
             }
             else if(dx < Math.min(dy * 0.6, MINSELECT)) {
                 // vertical motion: make a horizontal box
-                poly = polygonTester([[0, y0], [0, y1], [pw, y1], [pw, y0]]);
-                corners.attr('d', 'M' + (x0 - MINSELECT) + ',' + poly.ymin +
+                currentPts = [[0, y0], [0, y1], [pw, y1], [pw, y0]];
+                corners.attr('d', 'M' + (x0 - MINSELECT) + ',' + Math.min(y0, y1) +
                     'v-4h' + (2 * MINSELECT) + 'v4Z' +
-                    'M' + (x0 - MINSELECT) + ',' + (poly.ymax - 1) +
+                    'M' + (x0 - MINSELECT) + ',' + (Math.max(y0, y1) - 1) +
                     'v4h' + (2 * MINSELECT) + 'v-4Z');
             }
             else {
                 // diagonal motion
-                poly = polygonTester([[x0, y0], [x0, y1], [x1, y1], [x1, y0]]);
+                currentPts = [[x0, y0], [x0, y1], [x1, y1], [x1, y0]];
                 corners.attr('d', 'M0,0Z');
             }
-            outlines.attr('d', 'M' + poly.xmin + ',' + poly.ymin +
-                'H' + (poly.xmax - 1) + 'V' + (poly.ymax - 1) +
-                'H' + poly.xmin + 'Z');
         }
         else if(mode === 'lasso') {
             currentPoly.addPt([x1, y1]);
+            currentPts = currentPoly.filtered;
+        }
 
-            if(dragOptions.polygons.length) {
-                mergedPolyPts = polybool(dragOptions.mergedPolygons, [currentPoly.filtered], 'or');
-
-                var mergedPaths = [];
-                for(i = 0; i < mergedPolyPts.length; i++) {
-                    var ppts = mergedPolyPts[i];
-                    mergedPaths.push(ppts.join('L') + 'L' + ppts[0]);
-                }
-                mergedTester = multipolygonTester(dragOptions.polygons.concat([currentPoly.filtered]));
-                outlines.attr('d', 'M' + mergedPaths.join('M') + 'Z');
+        // create outline & tester
+        if(dragOptions.polygons.length) {
+            mergedPolyPts = polybool(dragOptions.mergedPolygons, [currentPts], 'or');
+            poly = multipolygonTester(dragOptions.polygons.concat([currentPts]));
+            var mergedPaths = [];
+            for(i = 0; i < mergedPolyPts.length; i++) {
+                var ppts = mergedPolyPts[i];
+                mergedPaths.push(ppts.join('L') + 'L' + ppts[0]);
             }
-            else {
-                mergedPolyPts = [currentPoly.filtered];
-                mergedTester = polygonTester(currentPoly.filtered);
-                outlines.attr('d', 'M' + mergedTester.pts.join('L') + 'Z');
-            }
+            outlines.attr('d', 'M' + mergedPaths.join('M') + 'Z');
+        }
+        else {
+            mergedPolyPts = [currentPts];
+            poly = polygonTester(currentPts);
+            outlines.attr('d', 'M' + mergedPolyPts[0].join('L') + 'Z');
         }
 
         selection = [];
         for(i = 0; i < searchTraces.length; i++) {
             searchInfo = searchTraces[i];
             [].push.apply(selection, fillSelectionItem(
-                searchInfo.selectPoints(searchInfo, mergedTester), searchInfo
+                searchInfo.selectPoints(searchInfo, poly), searchInfo
             ));
         }
 
@@ -184,8 +182,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 ax = allAxes[i];
                 axLetter = ax._id.charAt(0);
                 ranges[ax._id] = [
-                    ax.p2d(mergedTester[axLetter + 'min']),
-                    ax.p2d(mergedTester[axLetter + 'max'])].sort(ascending);
+                    ax.p2d(poly[axLetter + 'min']),
+                    ax.p2d(poly[axLetter + 'max'])].sort(ascending);
             }
         }
         else {
@@ -215,8 +213,9 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             dragOptions.gd.emit('plotly_selected', eventData);
         }
 
+        // save last polygons
+        dragOptions.polygons.push(currentPts);
         dragOptions.mergedPolygons = mergedPolyPts;
-        dragOptions.polygons.push(currentPoly.filtered);
     };
 };
 

@@ -171,10 +171,10 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             else if(isSelectOrLasso(dragModeNow)) {
                 dragOptions.xaxes = xa;
                 dragOptions.yaxes = ya;
-                if(!e.shiftKey) {
+                if(!e.shiftKey || !dragOptions.polygons) {
                     // list of all prev polygons and their merge
                     dragOptions.polygons = [];
-                    dragOptions.mergedPolygons = null;
+                    dragOptions.mergedPolygons = [];
                 }
                 prepSelect(e, startX, startY, dragOptions, dragModeNow);
             }

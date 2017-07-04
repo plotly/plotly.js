@@ -166,7 +166,11 @@ polygon.tester = function tester(ptsIn) {
  * Test multiple polygons
  */
 polygon.multitester = function multitester(list) {
-    var testers = [], xmin, xmax, ymin, ymax;
+    var testers = [],
+        xmin = list[0][0][0],
+        xmax = xmin,
+        ymin = list[0][0][1],
+        ymax = ymin;
 
     for(var i = 0; i < list.length; i++) {
         var tester = polygon.tester(list[i]);
