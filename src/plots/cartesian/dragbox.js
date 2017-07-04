@@ -190,6 +190,11 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     dragElement.init(dragOptions);
 
+    // FIXME: this hack highlights selection once we enter select/lasso mode
+    if(isSelectOrLasso(gd._fullLayout.dragmode) && dragOptions.plotinfo.selectionPolygons) {
+        showSelect(zoomlayer, dragOptions);
+    }
+
     var x0,
         y0,
         box,
@@ -912,6 +917,25 @@ function clearSelect(zoomlayer) {
     // here. The selection itself will be removed when the plot redraws
     // at the end.
     zoomlayer.selectAll('.select-outline').remove();
+}
+
+function showSelect(zoomlayer, dragOptions) {
+    var outlines = zoomlayer.selectAll('path.select-outline').data([1, 2]),
+        xs = dragOptions.plotinfo.xaxis._offset,
+        ys = dragOptions.plotinfo.yaxis._offset,
+        paths = [],
+        polygons = dragOptions.plotinfo.selectionMergedPolygons;
+
+    for(var i = 0; i < polygons.length; i++) {
+        var ppts = polygons[i];
+        paths.push(ppts.join('L') + 'L' + ppts[0]);
+    }
+
+    outlines.enter()
+        .append('path')
+        .attr('class', function(d) { return 'select-outline select-outline-' + d; })
+        .attr('transform', 'translate(' + xs + ', ' + ys + ')')
+        .attr('d', 'M' + paths.join('M') + 'Z');
 }
 
 function updateZoombox(zb, corners, box, path0, dimmed, lum) {

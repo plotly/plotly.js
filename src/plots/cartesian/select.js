@@ -28,7 +28,7 @@ function getAxId(ax) { return ax._id; }
 module.exports = prepSelect;
 
 function prepSelect(e, startX, startY, dragOptions, mode) {
-    var plot = dragOptions.gd._fullLayout._zoomlayer,
+    var zoomlayer = dragOptions.gd._fullLayout._zoomlayer,
         dragBBox = dragOptions.element.getBoundingClientRect(),
         xs = dragOptions.plotinfo.xaxis._offset,
         ys = dragOptions.plotinfo.yaxis._offset,
@@ -48,7 +48,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         filterPoly = filteredPolygon([[x0, y0]], constants.BENDPX);
     }
 
-    var outlines = plot.selectAll('path.select-outline').data([1, 2]);
+    var outlines = zoomlayer.selectAll('path.select-outline').data([1, 2]);
 
     outlines.enter()
         .append('path')
@@ -56,7 +56,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         .attr('transform', 'translate(' + xs + ', ' + ys + ')')
         .attr('d', path0 + 'Z');
 
-    var corners = plot.append('path')
+    var corners = zoomlayer.append('path')
         .attr('class', 'zoombox-corners')
         .style({
             fill: color.background,
@@ -112,7 +112,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     function ascending(a, b) { return a - b; }
 
     dragOptions.moveFn = function(dx0, dy0) {
-        var ax;
+        var ax, i;
         x1 = Math.max(0, Math.min(pw, dx0 + x0));
         y1 = Math.max(0, Math.min(ph, dy0 + y0));
 
@@ -161,7 +161,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 
         // draw selection
         var paths = [];
-        for(var i = 0; i < mergedPolygons.length; i++) {
+        for(i = 0; i < mergedPolygons.length; i++) {
             var ppts = mergedPolygons[i];
             paths.push(ppts.join('L') + 'L' + ppts[0]);
         }
@@ -223,7 +223,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         // we have to keep reference to arrays, therefore just replace items
         dragOptions.mergedPolygons.splice.apply(dragOptions.mergedPolygons, [0, dragOptions.mergedPolygons.length].concat(mergedPolygons));
     };
-};
+}
 
 function fillSelectionItem(selection, searchInfo) {
     if(Array.isArray(selection)) {
