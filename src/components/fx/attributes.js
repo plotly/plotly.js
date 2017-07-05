@@ -38,6 +38,7 @@ module.exports = {
             valType: 'number',
             min: 0,
             dflt: 15,
+            arrayOk: true,
             role: 'style',
             description: 'Sets the length (in number of characters) of the hover labels for this trace'
         }
