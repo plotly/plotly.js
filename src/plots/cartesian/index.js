@@ -347,10 +347,10 @@ function makeSubplotLayer(plotinfo) {
         plotinfo.zerolinelayer = joinLayer(mainplotinfo.overzero, 'g', id);
 
         plotinfo.plot = joinLayer(mainplotinfo.overplot, 'g', id);
-        plotinfo.xlines = joinLayer(mainplotinfo.overlines, 'path', id);
-        plotinfo.ylines = joinLayer(mainplotinfo.overlines, 'path', id);
-        plotinfo.xaxislayer = joinLayer(mainplotinfo.overaxes, 'g', id);
-        plotinfo.yaxislayer = joinLayer(mainplotinfo.overaxes, 'g', id);
+        plotinfo.xlines = joinLayer(mainplotinfo.overlines, 'path', id + '-x');
+        plotinfo.ylines = joinLayer(mainplotinfo.overlines, 'path', id + '-y');
+        plotinfo.xaxislayer = joinLayer(mainplotinfo.overaxes, 'g', id + '-x');
+        plotinfo.yaxislayer = joinLayer(mainplotinfo.overaxes, 'g', id + '-y');
     }
 
     // common attributes for all subplots, overlays or not
