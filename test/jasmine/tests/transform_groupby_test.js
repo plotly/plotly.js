@@ -696,7 +696,7 @@ describe('groupby', function() {
 
     describe('expanded trace coloring', function() {
         it('assigns unique colors to each group', function() {
-            var uniqueColors = {};
+            var colors = [];
             var dataOut = [];
             var dataIn = [{
                 y: [1, 2, 3],
@@ -715,11 +715,16 @@ describe('groupby', function() {
             Plots.supplyDataDefaults(dataIn, dataOut, {}, {});
 
             for(var i = 0; i < dataOut.length; i++) {
-                uniqueColors[dataOut[i].marker.color] = true;
+                colors.push(dataOut[i].marker.color);
             }
 
-            // Confirm that five total colors exist:
-            expect(Object.keys(uniqueColors).length).toEqual(5);
+            expect(colors).toEqual([
+                '#1f77b4',
+                '#ff7f0e',
+                '#2ca02c',
+                '#d62728',
+                '#9467bd'
+            ]);
         });
     });
 });
