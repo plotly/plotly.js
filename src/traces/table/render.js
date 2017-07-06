@@ -9,7 +9,6 @@
 'use strict';
 
 var c = require('./constants');
-var Lib = require('../../lib');
 var d3 = require('d3');
 var Drawing = require('../../components/drawing');
 
@@ -17,97 +16,7 @@ function keyFun(d) {return d.key;}
 
 function repeat(d) {return [d];}
 
-function visible(dimension) {return !('visible' in dimension) || dimension.visible;}
-
-function dimensionExtent(dimension) {
-
-    var lo = dimension.range ? dimension.range[0] : d3.min(dimension.values);
-    var hi = dimension.range ? dimension.range[1] : d3.max(dimension.values);
-
-    if(isNaN(lo) || !isFinite(lo)) {
-        lo = 0;
-    }
-
-    if(isNaN(hi) || !isFinite(hi)) {
-        hi = 0;
-    }
-
-    // avoid a degenerate (zero-width) domain
-    if(lo === hi) {
-        if(lo === void(0)) {
-            lo = 0;
-            hi = 1;
-        } else if(lo === 0) {
-            // no use to multiplying zero, so add/subtract in this case
-            lo -= 1;
-            hi += 1;
-        } else {
-            // this keeps the range in the order of magnitude of the data
-            lo *= 0.9;
-            hi *= 1.1;
-        }
-    }
-
-    return [lo, hi];
-}
-
-function ordinalScaleSnap(scale, v) {
-    var i, a, prevDiff, prevValue, diff;
-    for(i = 0, a = scale.range(), prevDiff = Infinity, prevValue = a[0], diff = null; i < a.length; i++) {
-        if((diff = Math.abs(a[i] - v)) > prevDiff) {
-            return prevValue;
-        }
-        prevDiff = diff;
-        prevValue = a[i];
-    }
-    return a[a.length - 1];
-}
-
-function domainScale(height, padding, dimension) {
-    var extent = dimensionExtent(dimension);
-    return dimension.tickvals ?
-        d3.scale.ordinal()
-            .domain(dimension.tickvals)
-            .range(dimension.tickvals
-                .map(function(d) {return (d - extent[0]) / (extent[1] - extent[0]);})
-                .map(function(d) {return (height - padding + d * (padding - (height - padding)));})) :
-        d3.scale.linear()
-            .domain(extent)
-            .range([height - padding, padding]);
-}
-
 function unitScale(height, padding) {return d3.scale.linear().range([height - padding, padding]);}
-function domainToUnitScale(dimension) {return d3.scale.linear().domain(dimensionExtent(dimension));}
-
-function ordinalScale(dimension) {
-    var extent = dimensionExtent(dimension);
-    return dimension.tickvals && d3.scale.ordinal()
-            .domain(dimension.tickvals)
-            .range(dimension.tickvals.map(function(d) {return (d - extent[0]) / (extent[1] - extent[0]);}));
-}
-
-function unitToColorScale(cscale) {
-
-    var colorStops = cscale.map(function(d) {return d[0];});
-    var colorStrings = cscale.map(function(d) {return d[1];});
-    var colorTuples = colorStrings.map(function(c) {return d3.rgb(c);});
-    var prop = function(n) {return function(o) {return o[n];};};
-
-    // We can't use d3 color interpolation as we may have non-uniform color palette raster
-    // (various color stop distances).
-    var polylinearUnitScales = 'rgb'.split('').map(function(key) {
-        return d3.scale.linear()
-            .clamp(true)
-            .domain(colorStops)
-            .range(colorTuples.map(prop(key)));
-    });
-
-    return function(d) {
-        return polylinearUnitScales.map(function(s) {
-            return s(d);
-        });
-    };
-}
 
 function unwrap(d) {
     return d[0]; // plotly data structure convention
@@ -116,22 +25,24 @@ function unwrap(d) {
 function model(layout, d, i) {
     var cd0 = unwrap(d),
         trace = cd0.trace,
-        lineColor = cd0.lineColor,
-        cscale = cd0.cscale,
-        line = trace.line,
         domain = trace.domain,
-        dimensions = trace.dimensions,
         width = layout.width,
-        labelFont = trace.labelfont;
+        labels = trace.labels,
+        columnWidths = trace.columnwidth;
 
-    var lines = Lib.extendDeep({}, line, {
-        color: lineColor.map(domainToUnitScale({values: lineColor, range: [line.cmin, line.cmax]})),
-        blockLineCount: c.blockLineCount,
-        canvasOverdrag: c.overdrag * c.canvasPixelRatio
-    });
+    var colCount = labels.length;
 
     var groupWidth = Math.floor(width * (domain.x[1] - domain.x[0]));
     var groupHeight = Math.floor(layout.height * (domain.y[1] - domain.y[0]));
+
+    columnWidths = trace.header.values.map(function(d, i) {
+        return Array.isArray(columnWidths) ?
+            columnWidths[Math.min(i, columnWidths.length - 1)] :
+            isFinite(columnWidths) && columnWidths !== null ? columnWidths : 1;
+    });
+
+    var totalColumnWidths = columnWidths.reduce(function(p, n) {return p + n;}, 0);
+    columnWidths = columnWidths.map(function(d) {return d / totalColumnWidths * groupWidth;});
 
     var pad = layout.margin || {l: 80, r: 80, t: 100, b: 80};
     var rowContentWidth = groupWidth;
@@ -139,90 +50,94 @@ function model(layout, d, i) {
 
     return {
         key: i,
-        colCount: dimensions.filter(visible).length,
-        dimensions: dimensions,
+        colCount: colCount,
         tickDistance: c.tickDistance,
-        unitToColor: unitToColorScale(cscale),
-        lines: lines,
-        labelFont: labelFont,
         translateX: domain.x[0] * width,
         translateY: layout.height - domain.y[1] * layout.height,
         pad: pad,
-        canvasWidth: rowContentWidth * c.canvasPixelRatio + 2 * lines.canvasOverdrag,
-        canvasHeight: rowHeight * c.canvasPixelRatio,
         width: rowContentWidth,
         height: rowHeight,
-        canvasPixelRatio: c.canvasPixelRatio
+        columnWidths: columnWidths,
+
+        cells: {
+            values: trace.cells.values,
+            valueFormat: trace.cells.format,
+            prefix: trace.cells.prefix,
+            suffix: trace.cells.suffix,
+            cellHeights: trace.cells.height,
+            align: trace.cells.align,
+            valign: trace.cells.valign,
+            font: trace.cells.font,
+            fillColor: trace.cells.fill.color,
+            lineWidth: trace.cells.line.width,
+            lineColor: trace.cells.line.color
+        },
+
+        headerCells: {
+            values: trace.header.values.map(repeat),
+            align: trace.header.align,
+            valign: trace.header.valign,
+            font: trace.header.font,
+            cellHeights: trace.cells.height,
+            fillColor: trace.header.fill.color,
+            lineWidth: trace.header.line.width,
+            lineColor: trace.header.line.color
+        }
     };
 }
 
 function viewModel(model) {
 
-    var width = model.width;
     var height = model.height;
-    var dimensions = model.dimensions;
-    var canvasPixelRatio = model.canvasPixelRatio;
 
-    var xScale = function(d) {return width * d / Math.max(1, model.colCount - 1);};
-
-    var unitPad = c.verticalPadding / (height * canvasPixelRatio);
-    var unitPadScale = (1 - 2 * unitPad);
-    var paddedUnitScale = function(d) {return unitPad + unitPadScale * d;};
+    var newXScale = function (d) {
+        return d.parent.columns.reduce(function(prev, next) {return next.xIndex < d.xIndex ? prev + next.columnWidth : prev}, 0);
+    }
 
     var viewModel = {
         key: model.key,
-        xScale: xScale,
         model: model
     };
 
     var uniqueKeys = {};
 
-    viewModel.dimensions = dimensions.filter(visible).map(function(dimension, i) {
-        var domainToUnit = domainToUnitScale(dimension);
-        var foundKey = uniqueKeys[dimension.label];
-        uniqueKeys[dimension.label] = (foundKey || 0) + 1;
-        var key = dimension.label + (foundKey ? '__' + foundKey : '');
+    viewModel.columns = model.headerCells.values.map(function(label, i) {
+        var foundKey = uniqueKeys[label];
+        uniqueKeys[label] = (foundKey || 0) + 1;
+        var key = label + (foundKey ? '__' + foundKey : '');
         return {
             key: key,
-            label: dimension.label,
-            valueFormat: dimension.valueformat,
-            tickvals: dimension.tickvals,
-            ticktext: dimension.ticktext,
-            font: dimension.font,
-            ordinal: !!dimension.tickvals,
-            scatter: c.scatter || dimension.scatter,
+            label: label,
             xIndex: i,
-            crossfilterDimensionIndex: i,
-            visibleIndex: dimension._index,
             height: height,
-            values: dimension.values,
-            paddedUnitValues: dimension.values.map(domainToUnit).map(paddedUnitScale),
-            xScale: xScale,
-            x: xScale(i),
-            canvasX: xScale(i) * canvasPixelRatio,
+            newXScale: newXScale,
+            x: undefined, // initialized below
             unitScale: unitScale(height, c.verticalPadding),
-            domainScale: domainScale(height, c.verticalPadding, dimension),
-            ordinalScale: ordinalScale(dimension),
-            domainToUnitScale: domainToUnit,
             filter: [0, 1],
             parent: viewModel,
-            model: model
+            model: model,
+            rowPitch: model.cells.cellHeights,
+            columnWidth: model.columnWidths[i]
         };
     });
 
+    viewModel.columns.forEach(function(dim) {
+        dim.x = newXScale(dim);
+    });
     return viewModel;
 }
 
-function lineLayerModel(vm) {
-    return c.layers.map(function(key) {
-        return {
-            key: key,
-            context: key === 'contextLineLayer',
-            pick: key === 'pickLineLayer',
-            viewModel: vm,
-            model: vm.model
-        };
-    });
+function gridPick(spec, col, row) {
+    if(Array.isArray(spec)) {
+        const column = spec[Math.min(col, spec.length - 1)];
+        if(Array.isArray(column)) {
+            return column[Math.min(row, column.length - 1)];
+        } else {
+            return column;
+        }
+    } else {
+        return spec;
+    }
 }
 
 module.exports = function(root, svg, styledData, layout, callbacks) {
@@ -231,17 +146,16 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
     var linePickActive = true;
 
     var vm = styledData
-        .filter(function(d) { return unwrap(d).trace.visible; })
         .map(model.bind(0, layout))
         .map(viewModel);
 
     svg.style('background', 'rgba(255, 255, 255, 0)');
-    var tableControlOverlay = svg.selectAll('.table')
+    var table = svg.selectAll('.table')
         .data(vm, keyFun);
 
-    tableControlOverlay.exit().remove();
+    table.exit().remove();
 
-    tableControlOverlay.enter()
+    table.enter()
         .append('g')
         .classed('table', true)
         .attr('overflow', 'visible')
@@ -250,16 +164,16 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .style('left', 0)
         .style('overflow', 'visible')
         .style('shape-rendering', 'crispEdges')
-        .style('pointer-events', 'none');
+        .style('pointer-events', 'all'); // todo restore 'none'
 
-    tableControlOverlay
+    table
         .attr('width', function(d) {return d.model.width + d.model.pad.l + d.model.pad.r;})
         .attr('height', function(d) {return d.model.height + d.model.pad.t + d.model.pad.b;})
         .attr('transform', function(d) {
             return 'translate(' + d.model.translateX + ',' + d.model.translateY + ')';
         });
 
-    var tableControlView = tableControlOverlay.selectAll('.tableControlView')
+    var tableControlView = table.selectAll('.tableControlView')
         .data(repeat, keyFun);
 
     tableControlView.enter()
@@ -271,64 +185,14 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .attr('transform', function(d) {return 'translate(' + d.model.pad.l + ',' + d.model.pad.t + ')';});
 
     var yColumn = tableControlView.selectAll('.yColumn')
-        .data(function(vm) {return vm.dimensions;}, keyFun);
-
-    function updatePanelLayouttable(yColumn, vm) {
-        var panels = vm.panels || (vm.panels = []);
-        var yColumns = yColumn.each(function(d) {return d;})[vm.key].map(function(e) {return e.__data__;});
-        var panelCount = yColumns.length - 1;
-        var rowCount = 1;
-        for(var row = 0; row < rowCount; row++) {
-            for(var p = 0; p < panelCount; p++) {
-                var panel = panels[p + row * panelCount] || (panels[p + row * panelCount] = {});
-                var dim1 = yColumns[p];
-                var dim2 = yColumns[p + 1];
-                panel.dim1 = dim1;
-                panel.dim2 = dim2;
-                panel.canvasX = dim1.canvasX;
-                panel.panelSizeX = dim2.canvasX - dim1.canvasX;
-                panel.panelSizeY = vm.model.canvasHeight / rowCount;
-                panel.y = row * panel.panelSizeY;
-                panel.canvasY = vm.model.canvasHeight - panel.y - panel.panelSizeY;
-            }
-        }
-    }
-
-    function updatePanelLayoutScatter(yColumn, vm) {
-        var panels = vm.panels || (vm.panels = []);
-        var yColumns = yColumn.each(function(d) {return d;})[vm.key].map(function(e) {return e.__data__;});
-        var panelCount = yColumns.length - 1;
-        var rowCount = panelCount;
-        for(var row = 0; row < panelCount; row++) {
-            for(var p = 0; p < panelCount; p++) {
-                var panel = panels[p + row * panelCount] || (panels[p + row * panelCount] = {});
-                var dim1 = yColumns[p];
-                var dim2 = yColumns[p + 1];
-                panel.dim1 = yColumns[row + 1];
-                panel.dim2 = dim2;
-                panel.canvasX = dim1.canvasX;
-                panel.panelSizeX = dim2.canvasX - dim1.canvasX;
-                panel.panelSizeY = vm.model.canvasHeight / rowCount;
-                panel.y = row * panel.panelSizeY;
-                panel.canvasY = vm.model.canvasHeight - panel.y - panel.panelSizeY;
-            }
-        }
-    }
-
-    function updatePanelLayout(yColumn, vm) {
-        return (c.scatter ? updatePanelLayoutScatter : updatePanelLayouttable)(yColumn, vm);
-    }
+        .data(function(vm) {return vm.columns;}, keyFun);
 
     yColumn.enter()
         .append('g')
         .classed('yColumn', true);
 
-    tableControlView.each(function(vm) {
-        updatePanelLayout(yColumn, vm);
-    });
-
     yColumn
-        .attr('transform', function(d) {return 'translate(' + d.xScale(d.xIndex) + ', 0)';});
+        .attr('transform', function(d) {return 'translate(' + d.newXScale(d) + ', 0)';});
 
     yColumn
         .call(d3.behavior.drag()
@@ -339,22 +203,26 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
                 if(domainBrushing) {
                     return;
                 }
-                d.x = Math.max(-c.overdrag, Math.min(d.model.width + c.overdrag, d3.event.x));
-                d.canvasX = d.x * d.model.canvasPixelRatio;
+                d.x = Math.max(-c.overdrag, Math.min(d.model.width + c.overdrag - d.columnWidth, d3.event.x));
                 yColumn
-                    .sort(function(a, b) {return a.x - b.x;})
+                    .sort(function(a, b) {return a.x + a.columnWidth / 2 - b.x - b.columnWidth / 2;})
                     .each(function(dd, i) {
                         dd.xIndex = i;
-                        dd.x = d === dd ? dd.x : dd.xScale(dd.xIndex);
-                        dd.canvasX = dd.x * dd.model.canvasPixelRatio;
+                        dd.x = d === dd ? dd.x : dd.newXScale(dd);
                     });
 
-                updatePanelLayout(yColumn, p);
-
                 yColumn.filter(function(dd) {return Math.abs(d.xIndex - dd.xIndex) !== 0;})
-                    .attr('transform', function(d) {return 'translate(' + d.xScale(d.xIndex) + ', 0)';});
-                d3.select(this).attr('transform', 'translate(' + d.x + ', 0)');
-                yColumn.each(function(dd, i, ii) {if(ii === d.parent.key) p.dimensions[i] = dd;});
+                    .transition()
+                    .ease(c.transitionEase)
+                    .duration(c.transitionDuration)
+                    .attr('transform', function(d) {return 'translate(' + d.newXScale(d) + ', 0)';});
+                d3.select(this)
+                    .transition()
+                    .ease(c.transitionEase)
+                    .duration(c.transitionDuration)
+                    .attr('transform', 'translate(' + d.x + ', -5)');
+                yColumn.each(function(dd, i, ii) {if(ii === d.parent.key) p.columns[i] = dd;});
+                this.parentNode.appendChild(this);
             })
             .on('dragend', function(d) {
                 var p = d.parent;
@@ -364,15 +232,16 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
                     }
                     return;
                 }
-                d.x = d.xScale(d.xIndex);
-                d.canvasX = d.x * d.model.canvasPixelRatio;
-                updatePanelLayout(yColumn, p);
+                d.x = d.newXScale(d);
                 d3.select(this)
+                    .transition()
+                    .ease(c.releaseTransitionEase, 1, .75)
+                    .duration(c.releaseTransitionDuration)
                     .attr('transform', function(d) {return 'translate(' + d.x + ', 0)';});
                 linePickActive = true;
 
-                if(callbacks && callbacks.columnsMoved) {
-                    callbacks.columnsMoved(p.key, p.dimensions.map(function(dd) {return dd.crossfilterDimensionIndex;}));
+                if(callbacks && callbacks.columnMoved) {
+                    callbacks.columnMoved(p.key, p.columns.map(function(dd) {return dd.xIndex;}));
                 }
             })
         );
@@ -387,88 +256,174 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .append('g')
         .classed('columnOverlays', true);
 
-    columnOverlays.selectAll('.column').remove();
+    var columnBlock = columnOverlays.selectAll('.columnBlock')
+        .data(function(d) {
+            var blockDataHeader = Object.assign(
+                {},
+                d,
+                {
+                    key: 'header',
+                    yOffset: 0,
+                    values: d.model.headerCells.values[d.xIndex],
+                    dragHandle: true,
+                    model: Object.assign(
+                        {},
+                        d.model,
+                        {
+                            cells: d.model.headerCells
+                        }
+                    )
+                }
+            );
 
-    var column = columnOverlays.selectAll('.column')
-        .data(repeat, keyFun);
+            return [
+                blockDataHeader,
+                Object.assign(
+                    {},
+                    d,
+                    {
+                        key: 'cells',
+                        yOffset: d.rowPitch,
+                        dragHandle: false,
+                        values: d.model.cells.values[d.xIndex],
+                        model: d.model
+                    }
+                )
+            ];
+        }, keyFun);
 
-    column.enter()
+    columnBlock.enter()
         .append('g')
-        .classed('column', true);
+        .classed('columnBlock', true);
 
-    column
-        .selectAll('.domain, .tick>line')
-        .attr('fill', 'none')
-        .attr('stroke', 'black')
-        .attr('stroke-opacity', 0.25)
-        .attr('stroke-width', '1px');
+    columnBlock
+        .attr('transform', function(d) {return 'translate(0 ' + d.yOffset + ')';})
+        .style('cursor', function(d) {return d.dragHandle ? 'ew-resize' : null;})
+        //.style('user-select', 'none')
+        //.style('pointer-events', 'auto');
 
-    column
-        .selectAll('text')
-        .style('text-shadow', '1px 1px 1px #fff, -1px -1px 1px #fff, 1px -1px 1px #fff, -1px 1px 1px #fff')
-        .style('cursor', 'default')
-        .style('user-select', 'none');
-
-    var columnHeading = columnOverlays.selectAll('.columnHeading')
-        .data(repeat, keyFun);
-
-    columnHeading.enter()
-        .append('g')
-        .classed('columnHeading', true);
-
-    var columnTitle = columnHeading.selectAll('.columnTitle')
-        .data(repeat, keyFun);
-
-    columnTitle.enter()
-        .append('text')
-        .classed('columnTitle', true)
-        .attr('text-anchor', 'end')
-        .style('cursor', 'ew-resize')
-        .style('user-select', 'none')
-        .style('pointer-events', 'auto');
-
-    columnTitle
-        .attr('transform', 'translate(0,' + -c.columnTitleOffset + ')')
-        .text(function(d) {return d.label;})
-        .each(function(d) {Drawing.font(columnTitle, d.model.labelFont);});
-
-    var columnCells = columnOverlays.selectAll('.columnCells')
+    var columnCells = columnBlock.selectAll('.columnCells')
         .data(repeat, keyFun);
 
     columnCells.enter()
         .append('g')
         .classed('columnCells', true);
 
-    columnCells.each(function(d) {Drawing.font(d3.select(this), d.font);});
+    columnCells.exit()
+        .remove();
 
     var columnCell = columnCells.selectAll('.columnCell')
-        .data(function(d) {return d.values.map(function(v, i) {return {key: i, dimension: d, model: d.model, value: v};});}, keyFun);
+        .data(function(d) {return d.values.map(function(v, i) {return {key: i, column: d, model: d.model, value: v};});}, keyFun);
 
     columnCell.enter()
         .append('g')
         .classed('columnCell', true);
 
     columnCell
-        .attr('transform', function(d, i) {return 'translate(' + 0 + ',' + i * 20 + ')';});
+        .attr('transform', function(d, i) {
+            return 'translate(' + 0 + ',' + i * d.column.rowPitch + ')';
+        })
+        .each(function(d, i) {
+            var spec = d.model.cells.font;
+            var col = d.column.xIndex;
+            var font = {
+                size: gridPick(spec.size, col, i),
+                color: gridPick(spec.color, col, i),
+                family: gridPick(spec.family, col, i)
+            };
+            Drawing.font(d3.select(this), font);
 
-    var columnCellText = columnCell.selectAll('.columnCellText')
+            d.rowNumber = i;
+            d.align = gridPick(d.model.cells.align, d.column.xIndex, i);
+            d.valign = gridPick(d.model.cells.valign, d.column.xIndex, i);
+            d.cellBorderWidth = gridPick(d.model.cells.lineWidth, d.column.xIndex, i)
+            d.font = font;
+        });
+
+    var cellRect = columnCell.selectAll('.cellRect')
         .data(repeat, keyFun);
 
-    columnCellText.enter()
-        .append('text')
-        .classed('columnCellText', true)
-        .attr('alignment-baseline', 'middle')
-        .attr('text-anchor', 'end');
+    cellRect.enter()
+        .append('rect')
+        .classed('cellRect', true);
 
-    columnCellText
+    cellRect
+        .attr('width', function(d) {return d.column.columnWidth - d.cellBorderWidth;})
+        .attr('height', function(d) {return d.column.rowPitch - d.cellBorderWidth;})
+        .attr('transform', function(d) {return 'translate(' + 0 + ' ' + (-(d.column.rowPitch - c.cellPad)) + ')'})
+        .attr('stroke', function(d) {
+            return gridPick(d.model.cells.lineColor, d.column.xIndex, d.rowNumber);
+        })
+        .attr('stroke-width', function(d) {return d.cellBorderWidth;})
+        .attr('fill', function(d) {
+            return gridPick(d.model.cells.fillColor, d.column.xIndex, d.rowNumber);
+        });
+
+    var cellLine = columnCell.selectAll('.cellLine')
+        .data(repeat, keyFun);
+
+    cellLine.enter()
+        .append('path')
+        .classed('cellLine', true);
+
+    cellLine
+        .attr('id', function(d) {return 'textpath' + d.column.xIndex;})
+        .attr('d', function(d) {
+            var x1 = 0;
+            var x2 = d.column.columnWidth;
+            var y = d.column.rowPitch;
+            return d3.svg.line()([[x1, y], [x2, y]]);
+        })
+        .attr('transform', function(d) {return 'translate(' + 0 + ' ' + (-(d.column.rowPitch - c.cellPad)) + ')'});
+
+    var cellText = columnCell.selectAll('.cellText')
+        .data(repeat, keyFun);
+
+    cellText.enter()
+        .append('text')
+        .classed('cellText', true);
+
+    cellText
+        .attr('dy', function(d) {
+            var rowPitch = d.column.rowPitch;
+            var fontSize = d.font.size;
+            return ({
+                top: -rowPitch + fontSize,
+                middle: -rowPitch / 2 + fontSize * 0.2 + c.cellPad / 2,
+                bottom: -c.cellPad
+            })[d.valign];
+        })
+        .each(function(d) {Drawing.font(d3.select(this), d.font);});
+
+    var textPath = cellText.selectAll('.textPath')
+        .data(repeat, keyFun);
+
+    textPath.enter()
+        .append('textPath')
+        .classed('textPath', true);
+
+    textPath
+        .attr('xlink:href', function(d) {return '#textpath' + d.column.xIndex;})
+        .attr('text-anchor', function(d) {
+            return ({
+                left: 'start',
+                right: 'end',
+                center: 'middle'
+            })[d.align];
+        })
+        .attr('startOffset', function(d) {
+            return ({
+                left: c.cellPad,
+                right: d.column.columnWidth - c.cellPad,
+                center: '50%'
+            })[d.align];
+        })
         .text(function(d) {
-            const starSchema = d.dimension.ticktext && d.dimension.tickvals
-            if(starSchema) {
-                var lookup = {}
-                for(var i = 0; i < d.dimension.ticktext.length; i++) {
-                    lookup[d.dimension.tickvals[i]] = d.dimension.ticktext[i]
-                }
-            }
-            return starSchema ? lookup[d.value] : d3.format(d.dimension.valueFormat)(d.value);
+            var dim = d.column.xIndex;
+            var row = d.rowNumber;
+            var prefix = gridPick(d.model.cells.prefix, dim, row) || '';
+            var suffix = gridPick(d.model.cells.suffix, dim, row) || '';
+            var valueFormat = gridPick(d.model.cells.valueFormat, dim, row);
+            return prefix + (valueFormat ? d3.format(valueFormat)(d.value) : d.value) + suffix;
         });
 };

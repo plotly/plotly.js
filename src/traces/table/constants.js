@@ -11,18 +11,11 @@
 module.exports = {
     maxDimensionCount: 60,
     overdrag: 45,
+    cellPad: 4,
     columnTitleOffset: 28,
     columnExtentOffset: 10,
-    bar: {
-        width: 4, // Visible width of the filter bar
-        capturewidth: 10, // Mouse-sensitive width for interaction (Fitts law)
-        fillcolor: 'magenta', // Color of the filter bar fill
-        fillopacity: 1, // Filter bar fill opacity
-        strokecolor: 'white', // Color of the filter bar side lines
-        strokeopacity: 1, // Filter bar side stroke opacity
-        strokewidth: 1, // Filter bar side stroke width in pixels
-        handleheight: 16, // Height of the filter bar vertical resize areas on top and bottom
-        handleopacity: 1, // Opacity of the filter bar vertical resize areas on top and bottom
-        handleoverlap: 0 // A larger than 0 value causes overlaps with the filter bar, represented as pixels.'
-    }
+    transitionEase: 'cubic-out',
+    transitionDuration: 100,
+    releaseTransitionEase: 'elastic',
+    releaseTransitionDuration: 300
 };

@@ -10,95 +10,46 @@
 
 var Lib = require('../../lib');
 var attributes = require('./attributes');
-var hasColorscale = require('../../components/colorscale/has_colorscale');
-var colorscaleDefaults = require('../../components/colorscale/defaults');
-var maxDimensionCount = require('./constants').maxDimensionCount;
-
-function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
-
-    if(hasColorscale(traceIn, 'line')) {
-        coerce('line.colorscale');
-        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'});
-    }
-}
-
-function dimensionsDefaults(traceIn, traceOut, fontDflt) {
-    var dimensionsIn = traceIn.dimensions || [],
-        dimensionsOut = traceOut.dimensions = [];
-
-    var dimensionIn, dimensionOut, i;
-    var commonLength = Infinity;
-
-    if(dimensionsIn.length > maxDimensionCount) {
-        Lib.log('table views support up to ' + maxDimensionCount + ' dimensions at the moment');
-        dimensionsIn.splice(maxDimensionCount);
-    }
-
-    function coerce(attr, dflt) {
-        return Lib.coerce(dimensionIn, dimensionOut, attributes.dimensions, attr, dflt);
-    }
-
-    for(i = 0; i < dimensionsIn.length; i++) {
-        dimensionIn = dimensionsIn[i];
-        dimensionOut = {};
-
-        if(!Lib.isPlainObject(dimensionIn)) {
-            continue;
-        }
-
-        var values = coerce('values');
-        var visible = coerce('visible', values.length > 0);
-
-        if(visible) {
-            coerce('label');
-            coerce('tickvals');
-            coerce('ticktext');
-            coerce('valueformat');
-            coerce('range');
-            Lib.coerceFont(coerce, 'font', fontDflt);
-
-            commonLength = Math.min(commonLength, dimensionOut.values.length);
-        }
-
-        dimensionOut._index = i;
-        dimensionsOut.push(dimensionOut);
-    }
-
-    if(isFinite(commonLength)) {
-        for(i = 0; i < dimensionsOut.length; i++) {
-            dimensionOut = dimensionsOut[i];
-            if(dimensionOut.visible && dimensionOut.values.length > commonLength) {
-                dimensionOut.values = dimensionOut.values.slice(0, commonLength);
-            }
-        }
-    }
-
-    return dimensionsOut;
-}
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    // make default font size 10px,
-    // scale linearly with global font size
     var fontDflt = {
         family: layout.font.family,
-        size: Math.round(layout.font.size * (10 / 12)),
+        size: layout.font.size,
         color: layout.font.color
     };
-
-    var dimensions = dimensionsDefaults(traceIn, traceOut, fontDflt);
-
-    handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
 
     coerce('domain.x');
     coerce('domain.y');
 
-    if(!Array.isArray(dimensions) || !dimensions.length) {
-        traceOut.visible = false;
-    }
+    coerce('labels');
 
-    Lib.coerceFont(coerce, 'labelfont', fontDflt);
+    coerce('columnwidth');
+
+    coerce('cells.values');
+    coerce('cells.format');
+    coerce('cells.align');
+    coerce('cells.valign');
+    coerce('cells.prefix');
+    coerce('cells.suffix');
+    coerce('cells.height');
+    coerce('cells.line.width');
+    coerce('cells.line.color');
+    coerce('cells.fill.color');
+    Lib.coerceFont(coerce, 'cells.font', fontDflt);
+
+    coerce('header.values');
+    coerce('header.format');
+    coerce('header.align');
+    coerce('header.valign');
+    coerce('header.prefix');
+    coerce('header.suffix');
+    coerce('header.height');
+    coerce('header.line.width');
+    coerce('header.line.color');
+    coerce('header.fill.color');
+    Lib.coerceFont(coerce, 'header.font', fontDflt);
 };

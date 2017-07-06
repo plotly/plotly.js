@@ -16,14 +16,14 @@ module.exports = function plot(gd, cdTable) {
     var svg = fullLayout._paper;
     var root = fullLayout._paperdiv;
 
-    var gdDimensions = {};
-    var gdDimensionsOriginalOrder = {};
+    var gdColumns = {};
+    var gdColumnsOriginalOrder = {};
 
     var size = fullLayout._size;
 
     cdTable.forEach(function(d, i) {
-        gdDimensions[i] = gd.data[i].dimensions;
-        gdDimensionsOriginalOrder[i] = gd.data[i].dimensions.slice();
+        gdColumns[i] = gd.data[i].header.values.map(function(d) {return d[0];});
+        gdColumnsOriginalOrder[i] = gdColumns[i].slice();
     });
 
     var hover = function(eventData) {
@@ -34,18 +34,12 @@ module.exports = function plot(gd, cdTable) {
         gd.emit('plotly_unhover', eventData);
     };
 
-    var columnMoved = function(i, visibleIndices) {
+    var columnMoved = function(i, indices) {
 
-        // Have updated order data on `gd.data` and raise `Plotly.restyle` event
-        // without having to incur heavy UI blocking due to an actual `Plotly.restyle` call
-
-        function visible(dimension) {return !('visible' in dimension) || dimension.visible;}
-
-        function newIdx(visibleIndices, orig, dim) {
+        function newIdx(indices, orig, dim) {
             var origIndex = orig.indexOf(dim);
-            var currentIndex = visibleIndices.indexOf(origIndex);
+            var currentIndex = indices.indexOf(origIndex);
             if(currentIndex === -1) {
-                // invisible dimensions initially go to the end
                 currentIndex += orig.length;
             }
             return currentIndex;
@@ -53,27 +47,15 @@ module.exports = function plot(gd, cdTable) {
 
         function sorter(orig) {
             return function sorter(d1, d2) {
-                var i1 = newIdx(visibleIndices, orig, d1);
-                var i2 = newIdx(visibleIndices, orig, d2);
+                var i1 = newIdx(indices, orig, d1);
+                var i2 = newIdx(indices, orig, d2);
                 return i1 - i2;
             };
         }
 
-        // drag&drop sorting of the visible dimensions
-        var orig = sorter(gdDimensionsOriginalOrder[i].filter(visible));
-        gdDimensions[i].sort(orig);
-
-        // invisible dimensions are not interpreted in the context of drag&drop sorting as an invisible dimension
-        // cannot be dragged; they're interspersed into their original positions by this subsequent merging step
-        gdDimensionsOriginalOrder[i].filter(function(d) {return !visible(d);})
-             .sort(function(d) {
-                 // subsequent splicing to be done left to right, otherwise indices may be incorrect
-                 return gdDimensionsOriginalOrder[i].indexOf(d);
-             })
-            .forEach(function(d) {
-                gdDimensions[i].splice(gdDimensions[i].indexOf(d), 1); // remove from the end
-                gdDimensions[i].splice(gdDimensionsOriginalOrder[i].indexOf(d), 0, d); // insert at original index
-            });
+        // drag&drop sorting of the columns
+        var orig = sorter(gdColumnsOriginalOrder[i].slice());
+        gdColumns[i].sort(orig);
 
         gd.emit('plotly_restyle');
     };

@@ -14,7 +14,6 @@ Table.attributes = require('./attributes');
 Table.supplyDefaults = require('./defaults');
 Table.calc = require('./calc');
 Table.plot = require('./plot');
-Table.colorbar = require('./colorbar');
 
 Table.moduleType = 'trace';
 Table.name = 'table';
