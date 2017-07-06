@@ -368,17 +368,39 @@ function makeSubplotLayer(plotinfo) {
 function purgeSubplotLayers(layers, fullLayout) {
     if(!layers) return;
 
-    layers.each(function(subplot) {
-        var plotgroup = d3.select(this),
-            clipId = 'clip' + fullLayout._uid + subplot + 'plot';
+    var overlayIdsToRemove = {};
+
+    layers.each(function(subplotId) {
+        var plotgroup = d3.select(this);
+        var clipId = 'clip' + fullLayout._uid + subplotId + 'plot';
 
         plotgroup.remove();
-        fullLayout._draggers.selectAll('g.' + subplot).remove();
+        fullLayout._draggers.selectAll('g.' + subplotId).remove();
         fullLayout._defs.select('#' + clipId).remove();
+
+        overlayIdsToRemove[subplotId] = true;
 
         // do not remove individual axis <clipPath>s here
         // as other subplots may need them
     });
+
+    // must remove overlaid subplot trace layers 'manually'
+
+    var subplots = fullLayout._plots;
+    var subplotIds = Object.keys(subplots);
+
+    for(var i = 0; i < subplotIds.length; i++) {
+        var subplotInfo = subplots[subplotIds[i]];
+        var overlays = subplotInfo.overlays || [];
+
+        for(var j = 0; j < overlays.length; j++) {
+            var overlayInfo = overlays[j];
+
+            if(overlayIdsToRemove[overlayInfo.id]) {
+                overlayInfo.plot.selectAll('.trace').remove();
+            }
+        }
+    }
 }
 
 function joinLayer(parent, nodeType, className) {

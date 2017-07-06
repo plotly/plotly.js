@@ -8,7 +8,6 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 
-
 describe('restyle', function() {
     describe('scatter traces', function() {
         var gd;
@@ -371,6 +370,35 @@ describe('subplot creation / deletion:', function() {
         })
         .then(function() {
             checkBGLayers(1, 1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should clear overlaid subplot trace layers on restyle', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/overlaying-axis-lines.json'));
+
+        function _assert(xyCnt, x2y2Cnt) {
+            expect(d3.select('.subplot.xy').select('.plot').selectAll('.trace').size())
+                .toBe(xyCnt, 'has correct xy subplot trace count');
+            expect(d3.select('.overplot').select('.x2y2').selectAll('.trace').size())
+                .toBe(x2y2Cnt, 'has correct x2y2 oveylaid subplot trace count');
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            _assert(1, 1);
+            return Plotly.restyle(gd, 'visible', false, [1]);
+        })
+        .then(function() {
+            _assert(1, 0);
+            return Plotly.restyle(gd, 'visible', true);
+        })
+        .then(function() {
+            _assert(1, 1);
+            return Plotly.restyle(gd, 'visible', false);
+        })
+        .then(function() {
+            _assert(0, 0);
         })
         .catch(failTest)
         .then(done);
