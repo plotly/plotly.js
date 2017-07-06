@@ -233,7 +233,7 @@ function finishDrag(gd) {
 
 function pointerOffset(e) {
     return mouseOffset(
-        e.changedTouches && e.changedTouches[0] || e,
+        e.changedTouches ? e.changedTouches[0] : e,
         document.body
     );
 }
