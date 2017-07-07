@@ -46,3 +46,30 @@ exports.assertStyle = function(dims, color, opacity) {
         });
     });
 };
+
+exports.assertClip = function(sel, isClipped, size, msg) {
+    expect(sel.size()).toBe(size, msg + ' clip path (selection size)');
+
+    sel.each(function(d, i) {
+        var clipPath = d3.select(this).attr('clip-path');
+
+        if(isClipped) {
+            expect(String(clipPath).substr(0, 4))
+                .toBe('url(', msg + ' clip path ' + '(item ' + i + ')');
+        } else {
+            expect(clipPath)
+                .toBe(null, msg + ' clip path ' + '(item ' + i + ')');
+        }
+    });
+
+};
+
+exports.assertNodeVisibility = function(sel, expectation, msg) {
+    expect(sel.size())
+        .toBe(expectation.length, msg + ' visibility (selection size)');
+
+    sel.each(function(d, i) {
+        expect(d3.select(this).attr('visibility'))
+            .toBe(expectation[i], msg + ' visibility ' + '(item ' + i + ')');
+    });
+};

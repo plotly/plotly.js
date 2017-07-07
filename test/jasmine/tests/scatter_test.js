@@ -8,7 +8,11 @@ var Plotly = require('@lib/index');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customMatchers = require('../assets/custom_matchers');
+var customAssertions = require('../assets/custom_assertions');
 var fail = require('../assets/fail_test');
+
+var assertClip = customAssertions.assertClip;
+var assertNodeVisibility = customAssertions.assertNodeVisibility;
 
 describe('Test scatter', function() {
     'use strict';
@@ -669,4 +673,137 @@ describe('scatter hoverPoints', function() {
         .catch(fail)
         .then(done);
     });
+});
+
+describe('Test scatter *clipnaxis*', function() {
+    afterEach(destroyGraphDiv);
+
+    it('should show/hide point/text/errorbars in clipped and non-clipped layers', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/cliponaxis_false.json'));
+        var xRange0 = fig.layout.xaxis.range.slice();
+        var yRange0 = fig.layout.yaxis.range.slice();
+
+        // only show *cliponaxis: false* trace
+        fig.data = [fig.data[2]];
+
+        // add lines
+        fig.data[0].mode = 'markers+lines+text';
+
+        function _assert(layerClips, nodeVisibilities, errorBarClips, lineClips) {
+            var subplotLayer = d3.select('.plot');
+            var scatterLayer = subplotLayer.select('.scatterlayer');
+
+            assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
+            assertClip(subplotLayer.select('.barlayer'), layerClips[1], 1, 'bar layer');
+            assertClip(scatterLayer, layerClips[2], 1, 'scatter layer');
+
+            assertNodeVisibility(
+                scatterLayer.selectAll('.point'),
+                nodeVisibilities,
+                'scatter points'
+            );
+            assertNodeVisibility(
+                scatterLayer.selectAll('.textpoint'),
+                nodeVisibilities,
+                'scatter text points'
+            );
+
+            assertClip(
+                scatterLayer.selectAll('.errorbar'),
+                errorBarClips[0], errorBarClips[1],
+                'error bars'
+            );
+            assertClip(
+                scatterLayer.selectAll('.js-line'),
+                lineClips[0], lineClips[1],
+                'line clips'
+            );
+        }
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            _assert(
+                [false, true, false],
+                [null, null, null, null, null, null],
+                [true, 6],
+                [true, 1]
+            );
+            return Plotly.restyle(gd, 'visible', false);
+        })
+        .then(function() {
+            _assert(
+                [true, false, false],
+                [],
+                [false, 0],
+                [false, 0]
+            );
+            return Plotly.restyle(gd, {visible: true, cliponaxis: null});
+        })
+        .then(function() {
+            _assert(
+                [true, false, false],
+                [null, null, null, null, null, null],
+                [false, 6],
+                [false, 1]
+            );
+            return Plotly.restyle(gd, 'visible', 'legendonly');
+        })
+        .then(function() {
+            _assert(
+                [true, false, false],
+                [],
+                [false, 0],
+                [false, 0]
+            );
+            return Plotly.restyle(gd, 'visible', true);
+        })
+        .then(function() {
+            _assert(
+                [true, false, false],
+                [null, null, null, null, null, null],
+                [false, 6],
+                [false, 1]
+            );
+            return Plotly.restyle(gd, 'cliponaxis', false);
+        })
+        .then(function() {
+            _assert(
+                [false, true, false],
+                [null, null, null, null, null, null],
+                [true, 6],
+                [true, 1]
+            );
+            return Plotly.relayout(gd, 'xaxis.range', [0, 1]);
+        })
+        .then(function() {
+            _assert(
+                [false, true, false],
+                [null, null, 'hidden', 'hidden', 'hidden', 'hidden'],
+                [true, 6],
+                [true, 1]
+            );
+            return Plotly.relayout(gd, 'yaxis.range', [0, 1]);
+        })
+        .then(function() {
+            _assert(
+                [false, true, false],
+                ['hidden', null, 'hidden', 'hidden', 'hidden', 'hidden'],
+                [true, 6],
+                [true, 1]
+            );
+            return Plotly.relayout(gd, {'xaxis.range': xRange0, 'yaxis.range': yRange0});
+        })
+        .then(function() {
+            _assert(
+                [false, true, false],
+                [null, null, null, null, null, null],
+                [true, 6],
+                [true, 1]
+            );
+        })
+        .catch(fail)
+        .then(done);
+    });
+
 });
