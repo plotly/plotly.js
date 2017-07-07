@@ -100,6 +100,17 @@ drawing.hideOutsideRangePoint = function(d, sel, xa, ya) {
     );
 };
 
+drawing.hideOutsideRangePoints = function(points, subplot) {
+    if(!subplot._hasClipOnAxisFalse) return;
+
+    var xa = subplot.xaxis;
+    var ya = subplot.yaxis;
+
+    points.each(function(d) {
+        drawing.hideOutsideRangePoint(d, d3.select(this), xa, ya);
+    });
+};
+
 drawing.getPx = function(s, styleAttr) {
     // helper to pull out a px value from a style that may contain px units
     // s is a d3 selection (will pull from the first one)

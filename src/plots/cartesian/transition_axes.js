@@ -143,16 +143,20 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
 
         subplot.plot
             .call(Drawing.setTranslate, xa2._offset, ya2._offset)
-            .call(Drawing.setScale, 1, 1)
+            .call(Drawing.setScale, 1, 1);
 
-            // This is specifically directed at scatter traces, applying an inverse
-            // scale to individual points to counteract the scale of the trace
-            // as a whole:
-            .select('.scatterlayer').selectAll('.points').selectAll('.point')
-                .call(Drawing.setPointGroupScale, 1, 1);
+        var scatterPoints = subplot.plot.select('.scatterlayer').selectAll('.points');
 
-        subplot.plot.select('.scatterlayer').selectAll('.points').selectAll('.textpoint')
-            .call(Drawing.setTextPointsScale, 1, 1);
+        // This is specifically directed at scatter traces, applying an inverse
+        // scale to individual points to counteract the scale of the trace
+        // as a whole:
+        scatterPoints.selectAll('.point')
+            .call(Drawing.setPointGroupScale, 1, 1)
+            .call(Drawing.hideOutsideRangePoints, subplot);
+
+        scatterPoints.selectAll('.textpoint')
+            .call(Drawing.setTextPointsScale, 1, 1)
+            .call(Drawing.hideOutsideRangePoints, subplot);
     }
 
     function updateSubplot(subplot, progress) {
