@@ -45,9 +45,10 @@ function equalPts(pt1, pt2, xtol, ytol) {
            Math.abs(pt1[1] - pt2[1]) < ytol;
 }
 
+// distance in index units - uses the 3rd and 4th items in points
 function ptDist(pt1, pt2) {
-    var dx = pt1[0] - pt2[0],
-        dy = pt1[1] - pt2[1];
+    var dx = pt1[2] - pt2[2],
+        dy = pt1[3] - pt2[3];
     return Math.sqrt(dx * dx + dy * dy);
 }
 
@@ -114,9 +115,13 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
         ptavg,
         thisdist;
 
-    // check for points that are too close together (<1/5 the average dist,
-    // less if less smoothed) and just take the center (or avg of center 2)
-    // this cuts down on funny behavior when a point is very close to a contour level
+    /*
+     * Check for points that are too close together (<1/5 the average dist
+     * *in grid index units* (important for log axes and nonuniform grids),
+     * less if less smoothed) and just take the center (or avg of center 2).
+     * This cuts down on funny behavior when a point is very close to a
+     * contour level.
+     */
     for(cnt = 1; cnt < pts.length; cnt++) {
         thisdist = ptDist(pts[cnt], pts[cnt - 1]);
         totaldist += thisdist;
@@ -173,6 +178,10 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
         }
     }
     pts.splice(0, cropstart);
+
+    // done with the index parts - remove them so path generation works right
+    // because it depends on only having [xpx, ypx]
+    for(cnt = 0; cnt < pts.length; cnt++) pts[cnt].length = 2;
 
     // don't return single-point paths (ie all points were the same
     // so they got deleted?)
@@ -252,6 +261,21 @@ function startStep(mi, edgeflag, loc) {
     return [dx, dy];
 }
 
+/*
+ * Find the pixel coordinates of a particular crossing
+ *
+ * @param {object} pi: the pathinfo object at this level
+ * @param {array} loc: the grid index [x, y] of the crossing
+ * @param {array} step: the direction [dx, dy] we're moving on the grid
+ *
+ * @return {array} [xpx, ypx, xi, yi]: the first two are the pixel location,
+ *   the next two are the interpolated grid indices, which we use for
+ *   distance calculations to delete points that are too close together.
+ *   This is important when the grid is nonuniform (and most dramatically when
+ *   we're on log axes and include invalid (0 or negative) values.
+ *   It's crucial to delete these extra two before turning an array of these
+ *   points into a path, because those routines require length-2 points.
+ */
 function getInterpPx(pi, loc, step) {
     var locx = loc[0] + Math.max(step[0], 0),
         locy = loc[1] + Math.max(step[1], 0),
@@ -263,11 +287,13 @@ function getInterpPx(pi, loc, step) {
         var dx = (pi.level - zxy) / (pi.z[locy][locx + 1] - zxy);
 
         return [xa.c2p((1 - dx) * pi.x[locx] + dx * pi.x[locx + 1], true),
-            ya.c2p(pi.y[locy], true)];
+            ya.c2p(pi.y[locy], true),
+            locx + dx, locy];
     }
     else {
         var dy = (pi.level - zxy) / (pi.z[locy + 1][locx] - zxy);
         return [xa.c2p(pi.x[locx], true),
-            ya.c2p((1 - dy) * pi.y[locy] + dy * pi.y[locy + 1], true)];
+            ya.c2p((1 - dy) * pi.y[locy] + dy * pi.y[locy + 1], true),
+            locx, locy + dy];
     }
 }
