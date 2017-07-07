@@ -656,6 +656,25 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
 
         plotinfo.xaxis = Plotly.Axes.getFromId(mockGd, id, 'x');
         plotinfo.yaxis = Plotly.Axes.getFromId(mockGd, id, 'y');
+
+        // By default, we clip at the subplot level,
+        // but if one trace on a given subplot has *cliponaxis* set to false,
+        // we need to clip at the trace module layer level;
+        // find this out here, once of for all.
+        plotinfo._hasClipOnAxisFalse = false;
+
+        for(var j = 0; j < newFullData.length; j++) {
+            var trace = newFullData[j];
+
+            if(
+                trace.xaxis === plotinfo.xaxis._id &&
+                trace.yaxis === plotinfo.yaxis._id &&
+                trace.cliponaxis === false
+            ) {
+                plotinfo._hasClipOnAxisFalse = true;
+                break;
+            }
+        }
     }
 };
 

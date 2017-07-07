@@ -93,6 +93,13 @@ drawing.translatePoints = function(s, xa, ya) {
     });
 };
 
+drawing.hideOutsideRangePoint = function(d, sel, xa, ya) {
+    sel.attr(
+        'visibility',
+        xa.isPtWithinRange(d) && ya.isPtWithinRange(d) ? null : 'hidden'
+    );
+};
+
 drawing.getPx = function(s, styleAttr) {
     // helper to pull out a px value from a style that may contain px units
     // s is a d3 selection (will pull from the first one)

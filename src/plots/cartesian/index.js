@@ -294,24 +294,8 @@ function makeSubplotData(gd) {
 }
 
 function makeSubplotLayer(plotinfo) {
-    var plotgroup = plotinfo.plotgroup,
-        id = plotinfo.id;
-
-    // Layers to keep plot types in the right order.
-    // from back to front:
-    // 1. heatmaps, 2D histos and contour maps
-    // 2. bars / 1D histos
-    // 3. errorbars for bars and scatter
-    // 4. scatter
-    // 5. box plots
-    function joinPlotLayers(parent) {
-        joinLayer(parent, 'g', 'imagelayer');
-        joinLayer(parent, 'g', 'maplayer');
-        joinLayer(parent, 'g', 'barlayer');
-        joinLayer(parent, 'g', 'carpetlayer');
-        joinLayer(parent, 'g', 'boxlayer');
-        joinLayer(parent, 'g', 'scatterlayer');
-    }
+    var plotgroup = plotinfo.plotgroup;
+    var id = plotinfo.id;
 
     if(!plotinfo.mainplot) {
         var backLayer = joinLayer(plotgroup, 'g', 'layer-subplot');
@@ -354,7 +338,10 @@ function makeSubplotLayer(plotinfo) {
     }
 
     // common attributes for all subplots, overlays or not
-    plotinfo.plot.call(joinPlotLayers);
+
+    for(var i = 0; i < constants.layers.length; i++) {
+        joinLayer(plotinfo.plot, 'g', constants.layers[i]);
+    }
 
     plotinfo.xlines
         .style('fill', 'none')

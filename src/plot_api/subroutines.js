@@ -20,6 +20,7 @@ var Drawing = require('../components/drawing');
 var Titles = require('../components/titles');
 var ModeBar = require('../components/modebar');
 var initInteractions = require('../plots/cartesian/graph_interact');
+var cartesianConstants = require('../plots/cartesian/constants');
 
 exports.layoutStyles = function(gd) {
     return Lib.syncOrAsync([Plots.doAutoMargin, exports.lsInner], gd);
@@ -164,9 +165,27 @@ exports.lsInner = function(gd) {
                 'height': ya._length
             });
 
-
         plotinfo.plot.call(Drawing.setTranslate, xa._offset, ya._offset);
-        plotinfo.plot.call(Drawing.setClipUrl, plotinfo.clipId);
+
+        var plotClipId;
+        var layerClipId;
+
+        if(plotinfo._hasClipOnAxisFalse) {
+            plotClipId = null;
+            layerClipId = plotinfo.clipId;
+        } else {
+            plotClipId = plotinfo.clipId;
+            layerClipId = null;
+        }
+
+        plotinfo.plot.call(Drawing.setClipUrl, plotClipId);
+
+        for(i = 0; i < cartesianConstants.layers.length; i++) {
+            var layer = cartesianConstants.layers[i];
+            if(layer !== 'scatterlayer') {
+                plotinfo.plot.selectAll('g.' + layer).call(Drawing.setClipUrl, layerClipId);
+            }
+        }
 
         var xlw = Drawing.crispRound(gd, xa.linewidth, 1),
             ylw = Drawing.crispRound(gd, ya.linewidth, 1),

@@ -168,6 +168,7 @@ module.exports = {
             ].join(' ')
         }
     },
+
     connectgaps: {
         valType: 'boolean',
         dflt: false,
@@ -178,6 +179,17 @@ module.exports = {
             'in the provided data arrays are connected.'
         ].join(' ')
     },
+    cliponaxis: {
+        valType: 'boolean',
+        dflt: true,
+        role: 'info',
+        editType: 'doplot',
+        description: [
+            'Determines whether or not markers and text nodes',
+            'are clipped about the subplot axes.'
+        ].join(' ')
+    },
+
     fill: {
         valType: 'enumerated',
         values: ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx', 'toself', 'tonext'],
