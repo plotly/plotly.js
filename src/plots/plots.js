@@ -659,8 +659,8 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
     }
 };
 
-// This function clears any attributes with useExpandedTraceDefaultColor
-// set to true in the plot schema. This is needed because groupby (which
+// This function clears any trace attributes with valType: color and
+// no set dflt filed in the plot schema. This is needed because groupby (which
 // is the only transform for which this currently applies) supplies parent
 // trace defaults, then expanded trace defaults. The result is that `null`
 // colors are default-supplied and inherited as a color instead of a null.
@@ -675,7 +675,7 @@ plots.clearExpandedTraceDefaultColors = function(trace) {
     function locateColorAttrs(attr, attrName, attrs, level) {
         path[level] = attrName;
         path.length = level + 1;
-        if(attr.useExpandedTraceDefaultColor) {
+        if(attr.valType === 'color' && attr.dflt === undefined) {
             colorAttrs.push(path.join('.'));
         }
     }
