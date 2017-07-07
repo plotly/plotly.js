@@ -95,6 +95,7 @@ module.exports = {
         smoothing: scatterLineAttrs.smoothing
     },
     connectgaps: scatterAttrs.connectgaps,
+    cliponaxis: scatterAttrs.cliponaxis,
     fill: extendFlat({}, scatterAttrs.fill, {
         values: ['none', 'toself', 'tonext'],
         description: [
