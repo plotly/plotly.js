@@ -41,10 +41,10 @@ function overlappingDomain(xDomain, yDomain, domains) {
 }
 
 exports.lsInner = function(gd) {
-    var fullLayout = gd._fullLayout,
-        gs = fullLayout._size,
-        axList = Plotly.Axes.list(gd),
-        i;
+    var fullLayout = gd._fullLayout;
+    var gs = fullLayout._size;
+    var axList = Plotly.Axes.list(gd);
+    var i;
 
     // clear axis line positions, to be set in the subplot loop below
     for(i = 0; i < axList.length; i++) axList[i]._linepositions = {};
@@ -79,11 +79,11 @@ exports.lsInner = function(gd) {
             return;
         }
 
-        var xa = Plotly.Axes.getFromId(gd, subplot, 'x'),
-            ya = Plotly.Axes.getFromId(gd, subplot, 'y'),
-            xDomain = xa.domain,
-            yDomain = ya.domain,
-            plotgroupBgData = [];
+        var xa = Plotly.Axes.getFromId(gd, subplot, 'x');
+        var ya = Plotly.Axes.getFromId(gd, subplot, 'y');
+        var xDomain = xa.domain;
+        var yDomain = ya.domain;
+        var plotgroupBgData = [];
 
         if(overlappingDomain(xDomain, yDomain, lowerDomains)) {
             plotgroupBgData = [0];
@@ -128,8 +128,8 @@ exports.lsInner = function(gd) {
     subplotSelection.each(function(subplot) {
         var plotinfo = fullLayout._plots[subplot];
 
-        var xa = Plotly.Axes.getFromId(gd, subplot, 'x'),
-            ya = Plotly.Axes.getFromId(gd, subplot, 'y');
+        var xa = Plotly.Axes.getFromId(gd, subplot, 'x');
+        var ya = Plotly.Axes.getFromId(gd, subplot, 'y');
 
         // reset scale in case the margins have changed
         xa.setScale();
@@ -168,46 +168,46 @@ exports.lsInner = function(gd) {
         plotinfo.plot.call(Drawing.setTranslate, xa._offset, ya._offset);
         plotinfo.plot.call(Drawing.setClipUrl, plotinfo.clipId);
 
-        var xlw = Drawing.crispRound(gd, xa.linewidth, 1),
-            ylw = Drawing.crispRound(gd, ya.linewidth, 1),
-            xp = gs.p + ylw,
-            xpathPrefix = 'M' + (-xp) + ',',
-            xpathSuffix = 'h' + (xa._length + 2 * xp),
-            showfreex = xa.anchor === 'free' &&
-                freefinished.indexOf(xa._id) === -1,
-            freeposx = gs.h * (1 - (xa.position||0)) + ((xlw / 2) % 1),
-            showbottom =
-                (xa.anchor === ya._id && (xa.mirror || xa.side !== 'top')) ||
-                xa.mirror === 'all' || xa.mirror === 'allticks' ||
-                (xa.mirrors && xa.mirrors[ya._id + 'bottom']),
-            bottompos = ya._length + gs.p + xlw / 2,
-            showtop =
-                (xa.anchor === ya._id && (xa.mirror || xa.side === 'top')) ||
-                xa.mirror === 'all' || xa.mirror === 'allticks' ||
-                (xa.mirrors && xa.mirrors[ya._id + 'top']),
-            toppos = -gs.p - xlw / 2,
+        var xlw = Drawing.crispRound(gd, xa.linewidth, 1);
+        var ylw = Drawing.crispRound(gd, ya.linewidth, 1);
+        var xp = gs.p + ylw;
+        var xpathPrefix = 'M' + (-xp) + ',';
+        var xpathSuffix = 'h' + (xa._length + 2 * xp);
+        var showfreex = xa.anchor === 'free' &&
+            freefinished.indexOf(xa._id) === -1;
+        var freeposx = gs.h * (1 - (xa.position||0)) + ((xlw / 2) % 1);
+        var showbottom =
+            (xa.anchor === ya._id && (xa.mirror || xa.side !== 'top')) ||
+            xa.mirror === 'all' || xa.mirror === 'allticks' ||
+            (xa.mirrors && xa.mirrors[ya._id + 'bottom']);
+        var bottompos = ya._length + gs.p + xlw / 2;
+        var showtop =
+            (xa.anchor === ya._id && (xa.mirror || xa.side === 'top')) ||
+            xa.mirror === 'all' || xa.mirror === 'allticks' ||
+            (xa.mirrors && xa.mirrors[ya._id + 'top']);
+        var toppos = -gs.p - xlw / 2;
 
-            // shorten y axis lines so they don't overlap x axis lines
-            yp = gs.p,
-            // except where there's no x line
-            // TODO: this gets more complicated with multiple x and y axes
-            ypbottom = showbottom ? 0 : xlw,
-            yptop = showtop ? 0 : xlw,
-            ypathSuffix = ',' + (-yp - yptop) +
-                'v' + (ya._length + 2 * yp + yptop + ypbottom),
-            showfreey = ya.anchor === 'free' &&
-                freefinished.indexOf(ya._id) === -1,
-            freeposy = gs.w * (ya.position||0) + ((ylw / 2) % 1),
-            showleft =
-                (ya.anchor === xa._id && (ya.mirror || ya.side !== 'right')) ||
-                ya.mirror === 'all' || ya.mirror === 'allticks' ||
-                (ya.mirrors && ya.mirrors[xa._id + 'left']),
-            leftpos = -gs.p - ylw / 2,
-            showright =
-                (ya.anchor === xa._id && (ya.mirror || ya.side === 'right')) ||
-                ya.mirror === 'all' || ya.mirror === 'allticks' ||
-                (ya.mirrors && ya.mirrors[xa._id + 'right']),
-            rightpos = xa._length + gs.p + ylw / 2;
+        // shorten y axis lines so they don't overlap x axis lines
+        var yp = gs.p;
+        // except where there's no x line
+        // TODO: this gets more complicated with multiple x and y axes
+        var ypbottom = showbottom ? 0 : xlw;
+        var yptop = showtop ? 0 : xlw;
+        var ypathSuffix = ',' + (-yp - yptop) +
+            'v' + (ya._length + 2 * yp + yptop + ypbottom);
+        var showfreey = ya.anchor === 'free' &&
+            freefinished.indexOf(ya._id) === -1;
+        var freeposy = gs.w * (ya.position||0) + ((ylw / 2) % 1);
+        var showleft =
+            (ya.anchor === xa._id && (ya.mirror || ya.side !== 'right')) ||
+            ya.mirror === 'all' || ya.mirror === 'allticks' ||
+            (ya.mirrors && ya.mirrors[xa._id + 'left']);
+        var leftpos = -gs.p - ylw / 2;
+        var showright =
+            (ya.anchor === xa._id && (ya.mirror || ya.side === 'right')) ||
+            ya.mirror === 'all' || ya.mirror === 'allticks' ||
+            (ya.mirrors && ya.mirrors[xa._id + 'right']);
+        var rightpos = xa._length + gs.p + ylw / 2;
 
         // save axis line positions for ticks, draggers, etc to reference
         // each subplot gets an entry:
@@ -241,9 +241,9 @@ exports.lsInner = function(gd) {
 
         // translate all the extra stuff to have the
         // same origin as the plot area or axes
-        var origin = 'translate(' + xa._offset + ',' + ya._offset + ')',
-            originx = origin,
-            originy = origin;
+        var origin = 'translate(' + xa._offset + ',' + ya._offset + ')';
+        var originx = origin;
+        var originy = origin;
         if(showfreex) {
             originx = 'translate(' + xa._offset + ',' + gs.t + ')';
             toppos += ya._offset - gs.t;
