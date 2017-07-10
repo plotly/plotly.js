@@ -8,6 +8,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
+var touchEvent = require('../assets/touch_event');
 var customMatchers = require('../assets/custom_matchers');
 
 
@@ -23,8 +24,22 @@ describe('select box and lasso', function() {
 
     afterEach(destroyGraphDiv);
 
-    function drag(path) {
+    function drag(path, options) {
         var len = path.length;
+
+        if(!options) options = {type: 'mouse'};
+
+        if(options.type === 'touch') {
+            touchEvent('touchstart', path[0][0], path[0][1]);
+
+            path.slice(1, len).forEach(function(pt) {
+                touchEvent('touchmove', pt[0], pt[1]);
+            });
+
+            touchEvent('touchend', path[len - 1][0], path[len - 1][1]);
+
+            return;
+        }
 
         mouseEvent('mousemove', path[0][0], path[0][1]);
         mouseEvent('mousedown', path[0][0], path[0][1]);
@@ -267,6 +282,50 @@ describe('select box and lasso', function() {
             });
 
             drag(lassoPath);
+
+            expect(selectingCnt).toEqual(3, 'with the correct selecting count');
+            assertEventData(selectingData.points, [{
+                curveNumber: 0,
+                pointNumber: 10,
+                x: 0.099,
+                y: 2.75
+            }], 'with the correct selecting points (1)');
+
+            expect(selectedCnt).toEqual(1, 'with the correct selected count');
+            assertEventData(selectedData.points, [{
+                curveNumber: 0,
+                pointNumber: 10,
+                x: 0.099,
+                y: 2.75,
+            }], 'with the correct selected points (2)');
+
+            doubleClick(250, 200).then(function() {
+                expect(doubleClickData).toBe(null, 'with the correct deselect data');
+                done();
+            });
+        });
+
+        it('should trigger selecting/selected/deselect events for touches', function(done) {
+            var selectingCnt = 0,
+                selectingData;
+            gd.on('plotly_selecting', function(data) {
+                selectingCnt++;
+                selectingData = data;
+            });
+
+            var selectedCnt = 0,
+                selectedData;
+            gd.on('plotly_selected', function(data) {
+                selectedCnt++;
+                selectedData = data;
+            });
+
+            var doubleClickData;
+            gd.on('plotly_deselect', function(data) {
+                doubleClickData = data;
+            });
+
+            drag(lassoPath, {type: 'touch'});
 
             expect(selectingCnt).toEqual(3, 'with the correct selecting count');
             assertEventData(selectingData.points, [{

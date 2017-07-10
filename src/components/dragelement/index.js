@@ -9,6 +9,9 @@
 
 'use strict';
 
+var mouseOffset = require('mouse-event-offset');
+var hasHover = require('has-hover');
+
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 
@@ -61,18 +64,25 @@ dragElement.init = function init(options) {
         startX,
         startY,
         newMouseDownTime,
+        cursor,
         dragCover,
         initialTarget;
 
     if(!gd._mouseDownTime) gd._mouseDownTime = 0;
+
+    options.element.style.pointerEvents = 'all';
+
+    options.element.onmousedown = onStart;
+    options.element.ontouchstart = onStart;
 
     function onStart(e) {
         // make dragging and dragged into properties of gd
         // so that others can look at and modify them
         gd._dragged = false;
         gd._dragging = true;
-        startX = e.clientX;
-        startY = e.clientY;
+        var offset = pointerOffset(e);
+        startX = offset[0];
+        startY = offset[1];
         initialTarget = e.target;
 
         newMouseDownTime = (new Date()).getTime();
@@ -88,20 +98,30 @@ dragElement.init = function init(options) {
 
         if(options.prepFn) options.prepFn(e, startX, startY);
 
-        dragCover = coverSlip();
+        if(hasHover) {
+            dragCover = coverSlip();
+            dragCover.style.cursor = window.getComputedStyle(options.element).cursor;
+        }
+        else {
+            // document acts as a dragcover for mobile, bc we can't create dragcover dynamically
+            dragCover = document;
+            cursor = window.getComputedStyle(document.documentElement).cursor;
+            document.documentElement.style.cursor = window.getComputedStyle(options.element).cursor;
+        }
 
-        dragCover.onmousemove = onMove;
-        dragCover.onmouseup = onDone;
-        dragCover.onmouseout = onDone;
-
-        dragCover.style.cursor = window.getComputedStyle(options.element).cursor;
+        dragCover.addEventListener('mousemove', onMove);
+        dragCover.addEventListener('mouseup', onDone);
+        dragCover.addEventListener('mouseout', onDone);
+        dragCover.addEventListener('touchmove', onMove);
+        dragCover.addEventListener('touchend', onDone);
 
         return Lib.pauseEvent(e);
     }
 
     function onMove(e) {
-        var dx = e.clientX - startX,
-            dy = e.clientY - startY,
+        var offset = pointerOffset(e),
+            dx = offset[0] - startX,
+            dy = offset[1] - startY,
             minDrag = options.minDrag || constants.MINDRAG;
 
         if(Math.abs(dx) < minDrag) dx = 0;
@@ -117,10 +137,19 @@ dragElement.init = function init(options) {
     }
 
     function onDone(e) {
-        dragCover.onmousemove = null;
-        dragCover.onmouseup = null;
-        dragCover.onmouseout = null;
-        Lib.removeElement(dragCover);
+        dragCover.removeEventListener('mousemove', onMove);
+        dragCover.removeEventListener('mouseup', onDone);
+        dragCover.removeEventListener('mouseout', onDone);
+        dragCover.removeEventListener('touchmove', onMove);
+        dragCover.removeEventListener('touchend', onDone);
+
+        if(hasHover) {
+            Lib.removeElement(dragCover);
+        }
+        else if(cursor) {
+            dragCover.documentElement.style.cursor = cursor;
+            cursor = null;
+        }
 
         if(!gd._dragging) {
             gd._dragged = false;
@@ -143,12 +172,13 @@ dragElement.init = function init(options) {
                 e2 = new MouseEvent('click', e);
             }
             catch(err) {
+                var offset = pointerOffset(e);
                 e2 = document.createEvent('MouseEvents');
                 e2.initMouseEvent('click',
                     e.bubbles, e.cancelable,
                     e.view, e.detail,
                     e.screenX, e.screenY,
-                    e.clientX, e.clientY,
+                    offset[0], offset[1],
                     e.ctrlKey, e.altKey, e.shiftKey, e.metaKey,
                     e.button, e.relatedTarget);
             }
@@ -162,9 +192,6 @@ dragElement.init = function init(options) {
 
         return Lib.pauseEvent(e);
     }
-
-    options.element.onmousedown = onStart;
-    options.element.style.pointerEvents = 'all';
 };
 
 function coverSlip() {
@@ -190,4 +217,11 @@ dragElement.coverSlip = coverSlip;
 function finishDrag(gd) {
     gd._dragging = false;
     if(gd._replotPending) Plotly.plot(gd);
+}
+
+function pointerOffset(e) {
+    return mouseOffset(
+        e.changedTouches ? e.changedTouches[0] : e,
+        document.body
+    );
 }
