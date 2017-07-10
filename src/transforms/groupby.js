@@ -10,6 +10,7 @@
 
 var Lib = require('../lib');
 var PlotSchema = require('../plot_api/plot_schema');
+var Plots = require('../plots/plots');
 
 exports.moduleType = 'transform';
 
@@ -171,6 +172,8 @@ function transformOne(trace, state) {
         }
 
         newTrace.name = groupName;
+
+        Plots.clearExpandedTraceDefaultColors(newTrace);
 
         // there's no need to coerce styleLookup[groupName] here
         // as another round of supplyDefaults is done on the transformed traces
