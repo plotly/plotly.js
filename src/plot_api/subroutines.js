@@ -164,7 +164,6 @@ exports.lsInner = function(gd) {
                 'height': ya._length
             });
 
-
         plotinfo.plot.call(Drawing.setTranslate, xa._offset, ya._offset);
         plotinfo.plot.call(Drawing.setClipUrl, plotinfo.clipId);
 

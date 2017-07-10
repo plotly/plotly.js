@@ -22,20 +22,26 @@ var getTraceColor = require('../scatter/get_trace_color');
 var MARKER_SYMBOLS = require('../../constants/gl2d_markers');
 var DASHES = require('../../constants/gl2d_dashes');
 
-function plot(scene, data, cdscatter) {
-    console.log(scene, data, cdscatter)
+function plot(container, data, cdscatter) {
+    console.log(container, data, cdscatter)
 
-    var container = scene.querySelector('.gl-container')
+    var layout = container._fullLayout
+    var xa = layout.xaxis
+    var ya = layout.yaxis
+    var container = container.querySelector('.gl-container')
 
     //FIXME: avoid forcing absolute style by disabling forced plotly background
     var canvas = container.appendChild(document.createElement('canvas'))
-    canvas.style.position = 'absolute'
+    canvas.style.position = 'absolute';
+    canvas.style.transform = 'translate(' + xa._offset + 'px, ' + ya._offset + 'px)';
+    canvas.width = 500;
+    canvas.height = 500;
 
     var ctx = canvas.getContext('2d')
 
-    ctx.fillStyle = 'black'
-    ctx.fillRect(0,0,10,10)
-    console.log(canvas)
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.fillStyle = 'black';
+    ctx.fillRect(xa.c2p(-1),ya.c2p(1),10,10)
 
     return plot;
 }
