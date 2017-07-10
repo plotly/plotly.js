@@ -28,6 +28,14 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     else hovermodeDflt = 'closest';
 
     coerce('hovermode', hovermodeDflt);
+
+    // if only mapbox subplots is present on graph,
+    // reset 'zoom' dragmode to 'pan' until 'zoom' is implemented,
+    // so that the correct modebar button is active
+    if(layoutOut._has('mapbox') && layoutOut._basePlotModules.length === 1 &&
+       layoutOut.dragmode === 'zoom') {
+        layoutOut.dragmode = 'pan';
+    }
 };
 
 function isHoriz(fullData) {

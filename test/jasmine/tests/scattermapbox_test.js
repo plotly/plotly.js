@@ -114,7 +114,7 @@ describe('scattermapbox convert', function() {
         jasmine.addMatchers(customMatchers);
     });
 
-    function _convert(trace) {
+    function _convert(trace, selected) {
         var gd = { data: [trace] };
         Plots.supplyDefaults(gd);
 
@@ -122,6 +122,18 @@ describe('scattermapbox convert', function() {
         Plots.doCalcdata(gd, fullTrace);
 
         var calcTrace = gd.calcdata[0];
+
+        if(selected) {
+            var hasDimmedPts = false;
+
+            selected.forEach(function(v, i) {
+                if(v) hasDimmedPts = true;
+                calcTrace[i].dim = v;
+            });
+
+            fullTrace._hasDimmedPts = hasDimmedPts;
+        }
+
         return convert(calcTrace);
     }
 
@@ -155,6 +167,8 @@ describe('scattermapbox convert', function() {
             stops: [ [0, 5], [1, 10], [2, 0] ]
         }, 'circle-radius stops');
 
+        expect(opts.circle.paint['circle-opacity']).toBe(0.7, 'circle-opacity');
+
         var circleProps = opts.circle.geojson.features.map(function(f) {
             return f.properties;
         });
@@ -167,6 +181,95 @@ describe('scattermapbox convert', function() {
             { 'circle-color': 1, 'circle-radius': 2 },
             { 'circle-color': 1, 'circle-radius': 2 }
         ], 'geojson feature properties');
+    });
+
+    it('should fill circle-opacity correctly', function() {
+        var opts = _convert(Lib.extendFlat({}, base, {
+            mode: 'markers',
+            marker: {
+                symbol: 'circle',
+                size: 10,
+                color: 'red',
+                opacity: [1, null, 0.5, '0.5', '1', 0, 0.8]
+            },
+            opacity: 0.5
+        }));
+
+        assertVisibility(opts, ['none', 'none', 'visible', 'none']);
+        expect(opts.circle.paint['circle-color']).toBe('red', 'circle-color');
+        expect(opts.circle.paint['circle-radius']).toBe(5, 'circle-radius');
+
+        expect(opts.circle.paint['circle-opacity']).toEqual({
+            property: 'circle-opacity',
+            stops: [ [0, 0.5], [1, 0], [2, 0.25], [6, 0.4] ]
+        }, 'circle-opacity stops');
+
+        var circleProps = opts.circle.geojson.features.map(function(f) {
+            return f.properties;
+        });
+
+
+        expect(circleProps).toEqual([
+            { 'circle-opacity': 0 },
+            { 'circle-opacity': 1 },
+            { 'circle-opacity': 2 },
+            // lat === null
+            // lon === null
+            { 'circle-opacity': 1 },
+            { 'circle-opacity': 6 },
+        ], 'geojson feature properties');
+    });
+
+    it('should fill circle-opacity correctly during selections', function() {
+        var _base = {
+            type: 'scattermapbox',
+            mode: 'markers',
+            lon: [-10, 30, 20],
+            lat: [45, 90, 180],
+            marker: {symbol: 'circle'}
+        };
+
+        var specs = [{
+            patch: {},
+            selected: [0, 1, 1],
+            expected: {stops: [[0, 1], [1, 0.2]], props: [0, 1, 1]}
+        }, {
+            patch: {opacity: 0.5},
+            selected: [0, 1, 1],
+            expected: {stops: [[0, 0.5], [1, 0.1]], props: [0, 1, 1]}
+        }, {
+            patch: {
+                marker: {opacity: 0.6}
+            },
+            selected: [1, 0, 1],
+            expected: {stops: [[0, 0.12], [1, 0.6]], props: [0, 1, 0]}
+        }, {
+            patch: {
+                marker: {opacity: [0.5, 1, 0.6]}
+            },
+            selected: [1, 0, 1],
+            expected: {stops: [[0, 0.1], [1, 1], [2, 0.12]], props: [0, 1, 2]}
+        }, {
+            patch: {
+                marker: {opacity: [2, null, -0.6]}
+            },
+            selected: [1, 1, 1],
+            expected: {stops: [[0, 0.2], [1, 0]], props: [0, 1, 1]}
+        }];
+
+        specs.forEach(function(s, i) {
+            var msg0 = '- case ' + i + ' ';
+            var opts = _convert(Lib.extendDeep({}, _base, s.patch), s.selected);
+
+            expect(opts.circle.paint['circle-opacity'].stops)
+                .toEqual(s.expected.stops, msg0 + 'stops');
+
+            var props = opts.circle.geojson.features.map(function(f) {
+                return f.properties['circle-opacity'];
+            });
+
+            expect(props).toEqual(s.expected.props, msg0 + 'props');
+        });
     });
 
     it('should generate correct output for fill + markers + lines traces', function() {
@@ -509,7 +612,6 @@ describe('@noCI scattermapbox hover', function() {
         .then(done);
     });
 });
-
 
 describe('@noCI Test plotly events on a scattermapbox plot:', function() {
     var mock = require('@mocks/mapbox_0.json');

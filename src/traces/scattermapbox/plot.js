@@ -92,6 +92,9 @@ proto.update = function update(calcTrace) {
         mapbox.setSourceData(this.idSourceSymbol, opts.symbol.geojson);
         mapbox.setOptions(this.idLayerSymbol, 'setPaintProperty', opts.symbol.paint);
     }
+
+    // link ref for quick update during selections
+    calcTrace[0].trace._glTrace = this;
 };
 
 proto.dispose = function dispose() {

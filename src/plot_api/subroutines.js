@@ -378,21 +378,27 @@ exports.doTicksRelayout = function(gd) {
 
 exports.doModeBar = function(gd) {
     var fullLayout = gd._fullLayout;
-    var subplotIds, scene, i;
+    var subplotIds, subplotObj, i;
 
     ModeBar.manage(gd);
     initInteractions(gd);
 
     subplotIds = Plots.getSubplotIds(fullLayout, 'gl3d');
     for(i = 0; i < subplotIds.length; i++) {
-        scene = fullLayout[subplotIds[i]]._scene;
-        scene.updateFx(fullLayout.dragmode, fullLayout.hovermode);
+        subplotObj = fullLayout[subplotIds[i]]._scene;
+        subplotObj.updateFx(fullLayout.dragmode, fullLayout.hovermode);
     }
 
     subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d');
     for(i = 0; i < subplotIds.length; i++) {
-        scene = fullLayout._plots[subplotIds[i]]._scene2d;
-        scene.updateFx(fullLayout.dragmode);
+        subplotObj = fullLayout._plots[subplotIds[i]]._scene2d;
+        subplotObj.updateFx(fullLayout.dragmode);
+    }
+
+    subplotIds = Plots.getSubplotIds(fullLayout, 'mapbox');
+    for(i = 0; i < subplotIds.length; i++) {
+        subplotObj = fullLayout[subplotIds[i]]._subplot;
+        subplotObj.updateFx(fullLayout);
     }
 
     return Plots.previousPromises(gd);

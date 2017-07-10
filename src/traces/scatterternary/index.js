@@ -22,7 +22,7 @@ ScatterTernary.selectPoints = require('./select');
 ScatterTernary.moduleType = 'trace';
 ScatterTernary.name = 'scatterternary';
 ScatterTernary.basePlotModule = require('../../plots/ternary');
-ScatterTernary.categories = ['ternary', 'symbols', 'markerColorscale', 'showLegend'];
+ScatterTernary.categories = ['ternary', 'symbols', 'markerColorscale', 'showLegend', 'scatter-like'];
 ScatterTernary.meta = {
     hrName: 'scatter_ternary',
     description: [

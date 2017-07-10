@@ -15,14 +15,15 @@ ScatterMapbox.attributes = require('./attributes');
 ScatterMapbox.supplyDefaults = require('./defaults');
 ScatterMapbox.colorbar = require('../scatter/colorbar');
 ScatterMapbox.calc = require('../scattergeo/calc');
+ScatterMapbox.plot = require('./plot');
 ScatterMapbox.hoverPoints = require('./hover');
 ScatterMapbox.eventData = require('./event_data');
-ScatterMapbox.plot = require('./plot');
+ScatterMapbox.selectPoints = require('./select');
 
 ScatterMapbox.moduleType = 'trace';
 ScatterMapbox.name = 'scattermapbox';
 ScatterMapbox.basePlotModule = require('../../plots/mapbox');
-ScatterMapbox.categories = ['mapbox', 'gl', 'symbols', 'markerColorscale', 'showLegend'];
+ScatterMapbox.categories = ['mapbox', 'gl', 'symbols', 'markerColorscale', 'showLegend', 'scatterlike'];
 ScatterMapbox.meta = {
     hrName: 'scatter_mapbox',
     description: [

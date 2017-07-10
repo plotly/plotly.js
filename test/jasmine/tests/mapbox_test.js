@@ -1,4 +1,5 @@
 var Plotly = require('@lib');
+var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
 var constants = require('@src/plots/mapbox/constants');
@@ -31,7 +32,7 @@ describe('mapbox defaults', function() {
     beforeEach(function() {
         layoutOut = { font: { color: 'red' } };
 
-        // needs a ternary-ref in a trace in order to be detected
+        // needs a mapbox-ref in a trace in order to be detected
         fullData = [{ type: 'scattermapbox', subplot: 'mapbox' }];
     });
 
@@ -169,6 +170,16 @@ describe('mapbox defaults', function() {
         expect(layoutOut.mapbox.layers[3].line).toBeUndefined();
         expect(layoutOut.mapbox.layers[3].fill).toBeUndefined();
         expect(layoutOut.mapbox.layers[3].circle).toBeUndefined();
+    });
+
+    it('should set *layout.dragmode* to pan while zoom is not available', function() {
+        var gd = {
+            data: fullData,
+            layout: {}
+        };
+
+        Plots.supplyDefaults(gd);
+        expect(gd._fullLayout.dragmode).toBe('pan');
     });
 });
 
