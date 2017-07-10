@@ -315,7 +315,7 @@ describe('select box and lasso', function() {
             });
         });
 
-        it('@noCI should trigger selecting/selected/deselect events for touches', function(done) {
+        it('should trigger selecting/selected/deselect events for touches', function(done) {
             var selectingCnt = 0,
                 selectingData;
             gd.on('plotly_selecting', function(data) {
