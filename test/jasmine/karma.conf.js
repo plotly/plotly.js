@@ -182,6 +182,7 @@ func.defaultConfig = {
         _Chrome: {
             base: 'Chrome',
             flags: [
+                '--touch-events',
                 '--window-size=' + argv.width + ',' + argv.height,
                 isCI ? '--ignore-gpu-blacklist' : ''
             ]
