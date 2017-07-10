@@ -19,11 +19,11 @@ var Colorscale = require('../../components/colorscale');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var subTypes = require('../scatter/subtypes');
 var convertTextOpts = require('../../plots/mapbox/convert_text_opts');
+var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 var COLOR_PROP = 'circle-color';
 var SIZE_PROP = 'circle-radius';
 var OPACITY_PROP = 'circle-opacity';
-var DESELECTDIM = 0.2;
 
 module.exports = function convert(calcTrace) {
     var trace = calcTrace[0].trace;

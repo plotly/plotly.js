@@ -10,8 +10,7 @@
 'use strict';
 
 var subtypes = require('./subtypes');
-
-var DESELECTDIM = 0.2;
+var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 module.exports = function selectPoints(searchInfo, polygon) {
     var cd = searchInfo.cd,
