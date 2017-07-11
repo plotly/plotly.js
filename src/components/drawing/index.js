@@ -68,9 +68,8 @@ drawing.setRect = function(s, x, y, w, h) {
  *  false if selection could not get translated
  */
 drawing.translatePoint = function(d, sel, xa, ya) {
-    // put xp and yp into d if pixel scaling is already done
-    var x = d.xp = xa.c2p(d.x);
-    var y = d.yp = ya.c2p(d.y);
+    var x = xa.c2p(d.x);
+    var y = ya.c2p(d.y);
 
     if(isNumeric(x) && isNumeric(y) && sel.node()) {
         // for multiline text this works better
