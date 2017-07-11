@@ -24,7 +24,7 @@ module.exports = function calc(gd, trace) {
         positions[i+1] = cd[j].y
     }
 
-    var tree = kdtree(positions, 2)
+    var tree = kdtree(positions, 512)
 
     //FIXME: make sure it is a good place to store the tree
     trace._tree = tree

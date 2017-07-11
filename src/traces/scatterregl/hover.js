@@ -30,7 +30,10 @@ function hover (pointData, xval, yval, hovermode) {
         var pt = cd[ids[i]]
         var dx = pt.x - xval, dy = pt.y - yval
         var dist = Math.sqrt(dx*dx + dy*dy)
-        if (dist < min) id = ids[i]
+        if (dist < min) {
+            min = dist
+            id = ids[i]
+        }
     }
 
     pointData.index = id
