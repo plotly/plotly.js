@@ -52,7 +52,6 @@ function plot(container, data, cdscatter) {
         canvas.height = ya._length;
 
         // scatter = subplotObj._scatter2d = {canvas: canvas}
-
         scatter = subplotObj._scatter2d = createScatter({canvas: canvas})
     }
 

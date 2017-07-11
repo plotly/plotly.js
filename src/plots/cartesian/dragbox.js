@@ -526,6 +526,10 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
 
         updateSubplots([x0, y0, pw - dx, ph - dy]);
+
+        //FIXME: Etienne I need help with that, ideally we should do event emitter
+        if (plotinfo.ondrag) plotinfo.ondrag.call([x0, y0, pw-dx, ph-dy])
+
         ticksAndAnnotations(yActive, xActive);
     }
 
@@ -708,7 +712,6 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
 
         for(i = 0; i < subplots.length; i++) {
-
             var subplot = plotinfos[subplots[i]],
                 xa2 = subplot.xaxis,
                 ya2 = subplot.yaxis,
