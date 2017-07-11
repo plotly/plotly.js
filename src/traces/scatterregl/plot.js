@@ -22,7 +22,7 @@ var getTraceColor = require('../scatter/get_trace_color');
 var MARKER_SYMBOLS = require('../../constants/gl2d_markers');
 var DASHES = require('../../constants/gl2d_dashes');
 
-// var createScatter = require('regl-scatter2d')
+var createScatter = require('../../../../regl-scatter2d')
 
 function plot(container, data, cdscatter) {
     // console.log(container, data, cdscatter)
@@ -36,34 +36,41 @@ function plot(container, data, cdscatter) {
     //FIXME: find proper way to get plot holder
     //FIXME: handle multiple subplots
     var subplotObj = layout._plots.xy
-    var scatter = subplotObj._scatterplot
+    var scatter = subplotObj._scatter2d
 
     //create regl-scatter, if not defined
     if (scatter === undefined) {
         //TODO: enhance picking
-        //TODO: create PR with questions
-        // if ()
-
+        //TODO: decide whether we should share canvas or create it every scatter plot
+        //TODO: decide if canvas should be the full-width with viewport or multiple instances
         //FIXME: avoid forcing absolute style by disabling forced plotly background
         var canvas = container.appendChild(document.createElement('canvas'))
         canvas.style.position = 'absolute';
         canvas.style.transform = 'translate(' + xa._offset + 'px, ' + ya._offset + 'px)';
         canvas.style.pointerEvents = 'none';
-        canvas.width = 700;
-        canvas.height = 500;
+        canvas.width = xa._length;
+        canvas.height = ya._length;
 
-        scatter = subplotObj._scatterplot = {canvas: canvas}
+        // scatter = subplotObj._scatter2d = {canvas: canvas}
+
+        scatter = subplotObj._scatter2d = createScatter({canvas: canvas})
     }
 
-    var canvas = scatter.canvas
-    var ctx = canvas.getContext('2d')
+    //feed in positions
+    var positions = scatter({
+        positions: positions
+    })
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.fillStyle = 'rgba(100,200,255,.8)';
 
-    for (var i = 0, l = data.x.length; i < l; i++) {
-        ctx.fillRect(xa.c2p(data.x[i]),ya.c2p(data.y[i]),5,5)
-    }
+    // var canvas = scatter.canvas
+    // var ctx = canvas.getContext('2d')
+
+    // ctx.clearRect(0, 0, canvas.width, canvas.height)
+    // ctx.fillStyle = 'rgba(100,200,255,.8)';
+
+    // for (var i = 0, l = data.x.length; i < l; i++) {
+    //     ctx.fillRect(xa.c2p(data.x[i]),ya.c2p(data.y[i]),5,5)
+    // }
 
     return plot;
 }
