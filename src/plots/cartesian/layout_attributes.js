@@ -573,6 +573,18 @@ module.exports = {
             'If *false*, this axis does not overlay any same-letter axes.'
         ].join(' ')
     },
+    layer: {
+        valType: 'enumerated',
+        values: ['above traces', 'below traces'],
+        dflt: 'above traces',
+        role: 'info',
+        description: [
+            'Sets the layer on which this axis is displayed.',
+            'If *above traces*, this axis is displayed above all the subplot\'s traces',
+            'If *below traces*, this axis is displayed below all the subplot\'s traces,',
+            'but above the grid lines.'
+        ].join(' ')
+    },
     domain: {
         valType: 'info_array',
         role: 'info',

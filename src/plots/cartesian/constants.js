@@ -65,5 +65,10 @@ module.exports = {
         'carpetlayer',
         'boxlayer',
         'scatterlayer'
-    ]
+    ],
+
+    layerValue2layerClass: {
+        'above traces': 'above',
+        'below traces': 'below'
+    }
 };

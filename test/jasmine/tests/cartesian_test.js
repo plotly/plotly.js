@@ -403,4 +403,79 @@ describe('subplot creation / deletion:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should clear obsolete content out of axis layers when relayout\'ing *layer*', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/overlaying-axis-lines.json'));
+
+        function assertPathDatum(sel, expected, msg) {
+            expect(sel.attr('d') === null ? false : true).toBe(expected, msg);
+        }
+
+        function assertChildrenCnt(sel, expected, msg) {
+            expect(sel.selectAll('*').size()).toBe(expected, msg);
+        }
+
+        function _assert(xBelow, yBelow, xAbove, yAbove) {
+            var g = d3.select('.subplot.xy');
+
+            assertPathDatum(g.select('.xlines-below'), xBelow[0], 'xlines below');
+            assertChildrenCnt(g.select('.xaxislayer-below'), xBelow[1], 'xaxislayer below');
+
+            assertPathDatum(g.select('.ylines-below'), yBelow[0], 'ylines below');
+            assertChildrenCnt(g.select('.yaxislayer-below'), yBelow[1], 'yaxislayer below');
+
+            assertPathDatum(g.select('.xlines-above'), xAbove[0], 'xlines above');
+            assertChildrenCnt(g.select('.xaxislayer-above'), xAbove[1], 'xaxislayer above');
+
+            assertPathDatum(g.select('.ylines-above'), yAbove[0], 'ylines above');
+            assertChildrenCnt(g.select('.yaxislayer-above'), yAbove[1], 'yaxislayer above');
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            _assert(
+                [false, 0],
+                [false, 0],
+                [true, 10],
+                [true, 10]
+            );
+            return Plotly.relayout(gd, 'xaxis.layer', 'below traces');
+        })
+        .then(function() {
+            _assert(
+                [true, 10],
+                [false, 0],
+                [false, 0],
+                [true, 10]
+            );
+            return Plotly.relayout(gd, 'yaxis.layer', 'below traces');
+        })
+        .then(function() {
+            _assert(
+                [true, 10],
+                [true, 10],
+                [false, 0],
+                [false, 0]
+            );
+            return Plotly.relayout(gd, { 'xaxis.layer': null, 'yaxis.layer': null });
+        })
+        .then(function() {
+            _assert(
+                [false, 0],
+                [false, 0],
+                [true, 10],
+                [true, 10]
+            );
+            return Plotly.relayout(gd, { 'xaxis.layer': 'below traces', 'yaxis.layer': 'below traces' });
+        })
+        .then(function() {
+            _assert(
+                [true, 10],
+                [true, 10],
+                [false, 0],
+                [false, 0]
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });

@@ -638,9 +638,11 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
     var ids = Plotly.Axes.getSubplots(mockGd);
 
     for(var i = 0; i < ids.length; i++) {
-        var id = ids[i],
-            oldSubplot = oldSubplots[id],
-            plotinfo;
+        var id = ids[i];
+        var oldSubplot = oldSubplots[id];
+        var xaxis = Plotly.Axes.getFromId(mockGd, id, 'x');
+        var yaxis = Plotly.Axes.getFromId(mockGd, id, 'y');
+        var plotinfo;
 
         if(oldSubplot) {
             plotinfo = newSubplots[id] = oldSubplot;
@@ -648,14 +650,23 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
             if(plotinfo._scene2d) {
                 plotinfo._scene2d.updateRefs(newFullLayout);
             }
-        }
-        else {
+
+            if(plotinfo.xaxis.layer !== xaxis.layer) {
+                plotinfo.xlines.attr('d', null);
+                plotinfo.xaxislayer.selectAll('*').remove();
+            }
+
+            if(plotinfo.yaxis.layer !== yaxis.layer) {
+                plotinfo.ylines.attr('d', null);
+                plotinfo.yaxislayer.selectAll('*').remove();
+            }
+        } else {
             plotinfo = newSubplots[id] = {};
             plotinfo.id = id;
         }
 
-        plotinfo.xaxis = Plotly.Axes.getFromId(mockGd, id, 'x');
-        plotinfo.yaxis = Plotly.Axes.getFromId(mockGd, id, 'y');
+        plotinfo.xaxis = xaxis;
+        plotinfo.yaxis = yaxis;
 
         // By default, we clip at the subplot level,
         // but if one trace on a given subplot has *cliponaxis* set to false,
