@@ -24,7 +24,16 @@ function hover (pointData, xval, yval, hovermode) {
     //FIXME: make sure this is a proper way to calc search radius
     var ids = tree.within(xval, yval, MAXDIST / xa._m)
 
-    pointData.index = ids[0]
+    //pick the id closest to the point
+    var min = MAXDIST, id = ids[0]
+    for (var i = 0; i < ids.length; i++) {
+        var pt = cd[ids[i]]
+        var dx = pt.x - xval, dy = pt.y - yval
+        var dist = Math.sqrt(dx*dx + dy*dy)
+        if (dist < min) id = ids[i]
+    }
+
+    pointData.index = id
 
     if(pointData.index != null) {
         // the closest data point

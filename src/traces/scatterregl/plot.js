@@ -57,7 +57,15 @@ function plot(container, data, cdscatter) {
     }
 
     //feed in positions
-    var positions = scatter({
+    var bounds = [xa._rl[0], ya._rl[0], xa._rl[1], ya._rl[1]]
+    var positions = Array(data.x.length*2)
+    for (var i = 0, l = data.x.length; i < l; i++) {
+        positions[i*2] = data.x[i]
+        positions[i*2+1] = data.y[i]
+    }
+
+    scatter({
+        range: bounds,
         positions: positions
     })
 
