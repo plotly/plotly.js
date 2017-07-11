@@ -178,7 +178,7 @@ exports.lsInner = function(gd) {
             layerClipId = null;
         }
 
-        plotinfo.plot.call(Drawing.setClipUrl, plotClipId);
+        Drawing.setClipUrl(plotinfo.plot, plotClipId);
 
         for(i = 0; i < cartesianConstants.layers.length; i++) {
             var layer = cartesianConstants.layers[i];
@@ -186,6 +186,10 @@ exports.lsInner = function(gd) {
                 plotinfo.plot.selectAll('g.' + layer).call(Drawing.setClipUrl, layerClipId);
             }
         }
+
+        // stash layer clipId value (null or same as clipId)
+        // to DRY up Drawing.setClipUrl calls downstream
+        plotinfo.layerClipId = layerClipId;
 
         var xlw = Drawing.crispRound(gd, xa.linewidth, 1),
             ylw = Drawing.crispRound(gd, ya.linewidth, 1),

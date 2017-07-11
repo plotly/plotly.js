@@ -139,9 +139,7 @@ function createFills(gd, scatterlayer, plotinfo) {
             trace._ownFill = null;
         }
 
-        if(plotinfo._hasClipOnAxisFalse) {
-            tr.selectAll('.js-fill').call(Drawing.setClipUrl, plotinfo.clipId);
-        }
+        tr.selectAll('.js-fill').call(Drawing.setClipUrl, plotinfo.layerClipId);
     });
 }
 
@@ -328,9 +326,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         .call(Drawing.lineGroupStyle)
         .each(makeUpdate(true));
 
-    if(plotinfo._hasClipOnAxisFalse) {
-        Drawing.setClipUrl(lineJoin, plotinfo.clipId);
-    }
+    Drawing.setClipUrl(lineJoin, plotinfo.layerClipId);
 
     if(segments.length) {
         if(ownFillEl3) {

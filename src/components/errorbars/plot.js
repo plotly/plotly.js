@@ -61,10 +61,7 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
                 .style('opacity', 1);
         }
 
-        errorbars.call(
-            Drawing.setClipUrl,
-            plotinfo._hasClipOnAxisFalse ? plotinfo.clipId : null
-        );
+        Drawing.setClipUrl(errorbars, plotinfo.layerClipId);
 
         errorbars.each(function(d) {
             var errorbar = d3.select(this);

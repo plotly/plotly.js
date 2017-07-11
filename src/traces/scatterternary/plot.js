@@ -23,8 +23,7 @@ module.exports = function plot(ternary, moduleCalcData) {
         xaxis: ternary.xaxis,
         yaxis: ternary.yaxis,
         plot: plotContainer,
-        clipId: ternary.clipIdRelative,
-        _hasClipOnAxisFalse: ternary._hasClipOnAxisFalse
+        layerClipId: ternary._hasClipOnAxisFalse ? ternary.clipIdRelative : null
     };
 
     // add ref to ternary subplot object in fullData traces
