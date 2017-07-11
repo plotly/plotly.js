@@ -1,8 +1,10 @@
 'use strict'
 
 var Lib = require('../../lib');
+var Fx = require('../../components/fx');
 var getTraceColor = require('../scatter/get_trace_color');
 var ErrorBars = require('../../components/errorbars');
+var MAXDIST = Fx.constants.MAXDIST;
 
 module.exports = hover
 
@@ -19,8 +21,8 @@ function hover (pointData, xval, yval, hovermode) {
 
     if (!tree) return [pointData]
 
-    //FIXME: use proper radius, pixel-size dependent
-    var ids = tree.within(xval, yval, 500)
+    //FIXME: make sure this is a proper way to calc search radius
+    var ids = tree.within(xval, yval, MAXDIST / xa._m)
 
     pointData.index = ids[0]
 
