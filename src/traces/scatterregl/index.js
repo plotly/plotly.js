@@ -8,29 +8,12 @@
 
 'use strict';
 
-var ScatterGl = {};
+var extend = require('object-assign')
 
-ScatterGl.attributes = require('./attributes');
-ScatterGl.supplyDefaults = require('./defaults');
-ScatterGl.colorbar = require('../scatter/colorbar');
-ScatterGl.hoverPoints = require('../scatter/hover');
+var Scatter = extend({}, require('../scatter/index'))
 
-// reuse the Scatter3D 'dummy' calc step so that legends know what to do
-ScatterGl.calc = require('./calc');
-ScatterGl.plot = require('./plot');
-ScatterGl.selectPoints = require('./select');
+Scatter.name = 'scatterregl'
+Scatter.plot = require('./plot')
+Scatter.hoverPoints = require('./hover')
 
-ScatterGl.moduleType = 'trace';
-ScatterGl.name = 'scatterregl';
-ScatterGl.basePlotModule = require('../../plots/cartesian');
-ScatterGl.categories = ['cartesian', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend'];
-ScatterGl.meta = {
-    description: [
-        'The data visualized as scatter point or lines is set in `x` and `y`',
-        'using the WebGl plotting engine.',
-        'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
-        'to a numerical arrays.'
-    ].join(' ')
-};
-
-module.exports = ScatterGl;
+module.exports = Scatter;
