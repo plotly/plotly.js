@@ -12,6 +12,6 @@ function hover (pointData, xval, yval, hovermode) {
         pt = [xpx, ypx],
         hoveron = trace.hoveron || '';
 
-    console.log(xpx, ypx, trace)
+    // console.log(xpx, ypx, trace)
 	// console.log(pointData, xval, yval, hovermode)
 }

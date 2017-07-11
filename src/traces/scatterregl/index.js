@@ -15,5 +15,6 @@ var Scatter = extend({}, require('../scatter/index'))
 Scatter.name = 'scatterregl'
 Scatter.plot = require('./plot')
 Scatter.hoverPoints = require('./hover')
+Scatter.calc = require('./calc')
 
 module.exports = Scatter;
