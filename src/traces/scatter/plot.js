@@ -404,8 +404,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         var trace = d[0].trace,
             s = d3.select(this),
             showMarkers = subTypes.hasMarkers(trace),
-            showText = subTypes.hasText(trace),
-            hasClipOnAxisFalse = trace.cliponaxis === false;
+            showText = subTypes.hasText(trace);
 
         var keyFunc = getKeyFunc(trace),
             markerFilter = hideFilter,
@@ -450,7 +449,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             if(hasNode) {
                 Drawing.singlePointStyle(d, sel, trace, markerScale, lineScale, gd);
 
-                if(hasClipOnAxisFalse) {
+                if(plotinfo.layerClipId) {
                     Drawing.hideOutsideRangePoint(d, sel, xa, ya);
                 }
 
@@ -486,7 +485,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             hasNode = Drawing.translatePoint(d, sel, xa, ya);
 
             if(hasNode) {
-                if(hasClipOnAxisFalse) {
+                if(plotinfo.layerClipId) {
                     Drawing.hideOutsideRangePoint(d, g, xa, ya);
                 }
             } else {
@@ -525,6 +524,13 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         .each(makePoints);
 
     join.exit().remove();
+
+    // lastly, clip points groups of `cliponaxis !== false` traces
+    // on `plotinfo._hasClipOnAxisFalse === true` subplots
+    join.each(function(d) {
+        var hasClipOnAxisFalse = d[0].trace.cliponaxis === false;
+        Drawing.setClipUrl(d3.select(this), hasClipOnAxisFalse ? null : plotinfo.layerClipId);
+    });
 }
 
 function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
