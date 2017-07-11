@@ -11,7 +11,7 @@ var customMatchers = require('../assets/custom_matchers');
 var customAssertions = require('../assets/custom_assertions');
 
 var assertClip = customAssertions.assertClip;
-var assertNodeVisibility = customAssertions.assertNodeVisibility;
+var assertNodeDisplay = customAssertions.assertNodeDisplay;
 
 describe('scatterternary defaults', function() {
     'use strict';
@@ -386,21 +386,21 @@ describe('Test scatterternary *cliponaxis*', function() {
         var gd = createGraphDiv();
         var fig = Lib.extendDeep({}, require('@mocks/ternary_markers.json'));
 
-        function _assert(layerClips, nodeVisibilities, lineClips) {
+        function _assert(layerClips, nodeDisplays, lineClips) {
             var frontLayer = d3.select('.frontplot');
             var scatterLayer = d3.select('.scatterlayer');
 
             assertClip(frontLayer, layerClips[0], 1, 'front layer');
             assertClip(scatterLayer, layerClips[1], 1, 'scatter layer');
 
-            assertNodeVisibility(
+            assertNodeDisplay(
                 scatterLayer.selectAll('.point'),
-                nodeVisibilities,
+                nodeDisplays,
                 'scatter points'
             );
-            assertNodeVisibility(
+            assertNodeDisplay(
                 scatterLayer.selectAll('.textpoint'),
-                nodeVisibilities,
+                nodeDisplays,
                 'scatter text points'
             );
 
@@ -415,7 +415,7 @@ describe('Test scatterternary *cliponaxis*', function() {
         .then(function() {
             _assert(
                 [false, false],
-                [null, 'hidden', null, null, null, null, null, null, 'hidden', 'hidden', 'hidden'],
+                [null, 'none', null, null, null, null, null, null, 'none', 'none', 'none'],
                 [true, 1]
            );
             return Plotly.restyle(gd, 'visible', 'legendonly');
@@ -439,7 +439,7 @@ describe('Test scatterternary *cliponaxis*', function() {
         .then(function() {
             _assert(
                 [false, false],
-                [null, 'hidden', null, null, null, null, null, null, 'hidden', 'hidden', 'hidden'],
+                [null, 'none', null, null, null, null, null, null, 'none', 'none', 'none'],
                 [true, 1]
            );
             return Plotly.relayout(gd, 'ternary.aaxis.min', 20);
@@ -447,7 +447,7 @@ describe('Test scatterternary *cliponaxis*', function() {
         .then(function() {
             _assert(
                 [false, false],
-                [null, 'hidden', null, 'hidden', 'hidden', 'hidden', null, 'hidden', 'hidden', 'hidden', 'hidden'],
+                [null, 'none', null, 'none', 'none', 'none', null, 'none', 'none', 'none', 'none'],
                 [true, 1]
            );
             return Plotly.relayout(gd, 'ternary.baxis.min', 40);
@@ -455,7 +455,7 @@ describe('Test scatterternary *cliponaxis*', function() {
         .then(function() {
             _assert(
                 [false, false],
-                ['hidden', 'hidden', 'hidden', 'hidden', 'hidden', 'hidden', null, 'hidden', 'hidden', 'hidden', 'hidden'],
+                ['none', 'none', 'none', 'none', 'none', 'none', null, 'none', 'none', 'none', 'none'],
                 [true, 1]
            );
             return Plotly.relayout(gd, 'ternary.caxis.min', 30);
@@ -463,7 +463,7 @@ describe('Test scatterternary *cliponaxis*', function() {
         .then(function() {
             _assert(
                 [false, false],
-                ['hidden', 'hidden', 'hidden', 'hidden', 'hidden', 'hidden', 'hidden', 'hidden', 'hidden', 'hidden', 'hidden'],
+                ['none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none'],
                 [true, 1]
            );
             return Plotly.relayout(gd, {

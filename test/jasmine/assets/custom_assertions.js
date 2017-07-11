@@ -64,12 +64,12 @@ exports.assertClip = function(sel, isClipped, size, msg) {
 
 };
 
-exports.assertNodeVisibility = function(sel, expectation, msg) {
+exports.assertNodeDisplay = function(sel, expectation, msg) {
     expect(sel.size())
-        .toBe(expectation.length, msg + ' visibility (selection size)');
+        .toBe(expectation.length, msg + ' display (selection size)');
 
     sel.each(function(d, i) {
-        expect(d3.select(this).attr('visibility'))
-            .toBe(expectation[i], msg + ' visibility ' + '(item ' + i + ')');
+        expect(d3.select(this).attr('display'))
+            .toBe(expectation[i], msg + ' display ' + '(item ' + i + ')');
     });
 };

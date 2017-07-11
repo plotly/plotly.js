@@ -12,7 +12,7 @@ var customAssertions = require('../assets/custom_assertions');
 var fail = require('../assets/fail_test');
 
 var assertClip = customAssertions.assertClip;
-var assertNodeVisibility = customAssertions.assertNodeVisibility;
+var assertNodeDisplay = customAssertions.assertNodeDisplay;
 
 describe('Test scatter', function() {
     'use strict';
@@ -690,7 +690,7 @@ describe('Test scatter *clipnaxis*', function() {
         // add lines
         fig.data[0].mode = 'markers+lines+text';
 
-        function _assert(layerClips, nodeVisibilities, errorBarClips, lineClips) {
+        function _assert(layerClips, nodeDisplays, errorBarClips, lineClips) {
             var subplotLayer = d3.select('.plot');
             var scatterLayer = subplotLayer.select('.scatterlayer');
 
@@ -698,14 +698,14 @@ describe('Test scatter *clipnaxis*', function() {
             assertClip(subplotLayer.select('.barlayer'), layerClips[1], 1, 'bar layer');
             assertClip(scatterLayer, layerClips[2], 1, 'scatter layer');
 
-            assertNodeVisibility(
+            assertNodeDisplay(
                 scatterLayer.selectAll('.point'),
-                nodeVisibilities,
+                nodeDisplays,
                 'scatter points'
             );
-            assertNodeVisibility(
+            assertNodeDisplay(
                 scatterLayer.selectAll('.textpoint'),
-                nodeVisibilities,
+                nodeDisplays,
                 'scatter text points'
             );
 
@@ -779,7 +779,7 @@ describe('Test scatter *clipnaxis*', function() {
         .then(function() {
             _assert(
                 [false, true, false],
-                [null, null, 'hidden', 'hidden', 'hidden', 'hidden'],
+                [null, null, 'none', 'none', 'none', 'none'],
                 [true, 6],
                 [true, 1]
             );
@@ -788,7 +788,7 @@ describe('Test scatter *clipnaxis*', function() {
         .then(function() {
             _assert(
                 [false, true, false],
-                ['hidden', null, 'hidden', 'hidden', 'hidden', 'hidden'],
+                ['none', null, 'none', 'none', 'none', 'none'],
                 [true, 6],
                 [true, 1]
             );

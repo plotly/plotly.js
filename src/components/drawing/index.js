@@ -95,8 +95,8 @@ drawing.translatePoints = function(s, xa, ya) {
 
 drawing.hideOutsideRangePoint = function(d, sel, xa, ya) {
     sel.attr(
-        'visibility',
-        xa.isPtWithinRange(d) && ya.isPtWithinRange(d) ? null : 'hidden'
+        'display',
+        xa.isPtWithinRange(d) && ya.isPtWithinRange(d) ? null : 'none'
     );
 };
 
