@@ -339,8 +339,8 @@ function makeSubplotLayer(plotinfo) {
 
     // common attributes for all subplots, overlays or not
 
-    for(var i = 0; i < constants.layers.length; i++) {
-        joinLayer(plotinfo.plot, 'g', constants.layers[i]);
+    for(var i = 0; i < constants.traceLayerClasses.length; i++) {
+        joinLayer(plotinfo.plot, 'g', constants.traceLayerClasses[i]);
     }
 
     plotinfo.xlines

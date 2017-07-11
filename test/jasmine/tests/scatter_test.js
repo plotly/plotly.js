@@ -675,7 +675,7 @@ describe('scatter hoverPoints', function() {
     });
 });
 
-describe('Test scatter *clipnaxis*', function() {
+describe('Test scatter *clipnaxis*:', function() {
     afterEach(destroyGraphDiv);
 
     it('should show/hide point/text/errorbars in clipped and non-clipped layers', function(done) {
@@ -684,7 +684,7 @@ describe('Test scatter *clipnaxis*', function() {
         var xRange0 = fig.layout.xaxis.range.slice();
         var yRange0 = fig.layout.yaxis.range.slice();
 
-        // only show *cliponaxis: false* trace
+        // only show 1 *cliponaxis: false* trace
         fig.data = [fig.data[2]];
 
         // add lines
@@ -805,5 +805,4 @@ describe('Test scatter *clipnaxis*', function() {
         .catch(fail)
         .then(done);
     });
-
 });
