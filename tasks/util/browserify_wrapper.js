@@ -7,6 +7,7 @@ var UglifyJS = require('uglify-js');
 var constants = require('./constants');
 var compressAttributes = require('./compress_attributes');
 var patchMinified = require('./patch_minified');
+var strictD3 = require('./strict_d3');
 
 /** Convenience browserify wrapper
  *
@@ -32,16 +33,20 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts) {
     opts = opts || {};
 
     // do we output a minified file?
-    var pathToMinBundle = opts.pathToMinBundle,
-        outputMinified = !!pathToMinBundle && !opts.debug;
+    var pathToMinBundle = opts.pathToMinBundle;
+    var outputMinified = !!pathToMinBundle;
 
     var browserifyOpts = {};
     browserifyOpts.standalone = opts.standalone;
     browserifyOpts.debug = opts.debug;
     browserifyOpts.transform = outputMinified ? [compressAttributes] : [];
 
-    var b = browserify(pathToIndex, browserifyOpts),
-        bundleWriteStream = fs.createWriteStream(pathToBundle);
+    if(opts.debug) {
+        browserifyOpts.transform.push(strictD3);
+    }
+
+    var b = browserify(pathToIndex, browserifyOpts);
+    var bundleWriteStream = fs.createWriteStream(pathToBundle);
 
     bundleWriteStream.on('finish', function() {
         logger(pathToBundle);
