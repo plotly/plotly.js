@@ -43,7 +43,9 @@ function overlappingDomain(xDomain, yDomain, domains) {
 exports.lsInner = function(gd) {
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
+    var pad = gs.p;
     var axList = Plotly.Axes.list(gd);
+    var hasSVGCartesian = fullLayout._has('cartesian');
     var i;
 
     // clear axis line positions, to be set in the subplot loop below
@@ -122,7 +124,7 @@ exports.lsInner = function(gd) {
         fullLayout._plots[subplot].bg = d3.select(this);
     });
 
-    var freefinished = [];
+    var freeFinished = {};
     subplotSelection.each(function(subplot) {
         var plotinfo = fullLayout._plots[subplot];
         var xa = plotinfo.xaxis;
@@ -132,11 +134,11 @@ exports.lsInner = function(gd) {
         xa.setScale();
         ya.setScale();
 
-        if(plotinfo.bg && fullLayout._has('cartesian')) {
+        if(plotinfo.bg && hasSVGCartesian) {
             plotinfo.bg
                 .call(Drawing.setRect,
-                    xa._offset - gs.p, ya._offset - gs.p,
-                    xa._length + 2 * gs.p, ya._length + 2 * gs.p)
+                    xa._offset - pad, ya._offset - pad,
+                    xa._length + 2 * pad, ya._length + 2 * pad)
                 .call(Color.fill, fullLayout.plot_bgcolor)
                 .style('stroke-width', 0);
         }
@@ -162,129 +164,132 @@ exports.lsInner = function(gd) {
             });
 
 
-        plotinfo.plot.call(Drawing.setTranslate, xa._offset, ya._offset);
-        plotinfo.plot.call(Drawing.setClipUrl, plotinfo.clipId);
+        plotinfo.plot
+            .call(Drawing.setTranslate, xa._offset, ya._offset)
+            .call(Drawing.setClipUrl, plotinfo.clipId);
+
+        function shouldShowLine(ax, counterAx, side) {
+            return (ax.anchor === counterAx._id && (ax.mirror || ax.side === side)) ||
+                ax.mirror === 'all' || ax.mirror === 'allticks' ||
+                (ax.mirrors && ax.mirrors[counterAx._id + side]);
+        }
+
+        var showFreeX = xa.anchor === 'free' && !freeFinished[xa._id];
+        var showBottom = shouldShowLine(xa, ya, 'bottom');
+        var showTop = shouldShowLine(xa, ya, 'top');
+
+        var showFreeY = ya.anchor === 'free' && !freeFinished[ya._id];
+        var showLeft = shouldShowLine(ya, xa, 'left');
+        var showRight = shouldShowLine(ya, xa, 'right');
 
         var xlw = Drawing.crispRound(gd, xa.linewidth, 1);
         var ylw = Drawing.crispRound(gd, ya.linewidth, 1);
-        var xp = gs.p + ylw;
-        var xpathPrefix = 'M' + (-xp) + ',';
-        var xpathSuffix = 'h' + (xa._length + 2 * xp);
-        var showfreex = xa.anchor === 'free' &&
-            freefinished.indexOf(xa._id) === -1;
-        var freeposx = gs.h * (1 - (xa.position||0)) + ((xlw / 2) % 1);
-        var showbottom =
-            (xa.anchor === ya._id && (xa.mirror || xa.side !== 'top')) ||
-            xa.mirror === 'all' || xa.mirror === 'allticks' ||
-            (xa.mirrors && xa.mirrors[ya._id + 'bottom']);
-        var bottompos = ya._length + gs.p + xlw / 2;
-        var showtop =
-            (xa.anchor === ya._id && (xa.mirror || xa.side === 'top')) ||
-            xa.mirror === 'all' || xa.mirror === 'allticks' ||
-            (xa.mirrors && xa.mirrors[ya._id + 'top']);
-        var toppos = -gs.p - xlw / 2;
+
+        // TODO: this gets more complicated with multiple x and y axes
+        var xLinesXLeft = -pad - ylw;
+        var xLinesXRight = xa._length + pad + ylw;
+        var xLinesYFree = gs.h * (1 - (xa.position || 0)) + ((xlw / 2) % 1);
+        var xLinesYBottom = ya._length + pad + xlw / 2;
+        var xLinesYTop = -pad - xlw / 2;
 
         // shorten y axis lines so they don't overlap x axis lines
-        var yp = gs.p;
         // except where there's no x line
         // TODO: this gets more complicated with multiple x and y axes
-        var ypbottom = showbottom ? 0 : xlw;
-        var yptop = showtop ? 0 : xlw;
-        var ypathSuffix = ',' + (-yp - yptop) +
-            'v' + (ya._length + 2 * yp + yptop + ypbottom);
-        var showfreey = ya.anchor === 'free' &&
-            freefinished.indexOf(ya._id) === -1;
-        var freeposy = gs.w * (ya.position||0) + ((ylw / 2) % 1);
-        var showleft =
-            (ya.anchor === xa._id && (ya.mirror || ya.side !== 'right')) ||
-            ya.mirror === 'all' || ya.mirror === 'allticks' ||
-            (ya.mirrors && ya.mirrors[xa._id + 'left']);
-        var leftpos = -gs.p - ylw / 2;
-        var showright =
-            (ya.anchor === xa._id && (ya.mirror || ya.side === 'right')) ||
-            ya.mirror === 'all' || ya.mirror === 'allticks' ||
-            (ya.mirrors && ya.mirrors[xa._id + 'right']);
-        var rightpos = xa._length + gs.p + ylw / 2;
+        var yLinesYBottom = ya._length + (showBottom ? 0 : xlw) + pad;
+        var yLinesYTop = (showTop ? 0 : -xlw) - pad;
+        var yLinesXFree = gs.w * (ya.position || 0) + ((ylw / 2) % 1);
+        var yLinesXLeft = -pad - ylw / 2;
+        var yLinesXRight = xa._length + pad + ylw / 2;
+
+        function xLinePath(y, showThis) {
+            if(!showThis) return '';
+            return 'M' + xLinesXLeft + ',' + y + 'H' + xLinesXRight;
+        }
+
+        function yLinePath(x, showThis) {
+            if(!showThis) return '';
+            return 'M' + x + ',' + yLinesYTop + 'V' + yLinesYBottom;
+        }
 
         // save axis line positions for ticks, draggers, etc to reference
         // each subplot gets an entry:
         //    [left or bottom, right or top, free, main]
         // main is the position at which to draw labels and draggers, if any
         xa._linepositions[subplot] = [
-            showbottom ? bottompos : undefined,
-            showtop ? toppos : undefined,
-            showfreex ? freeposx : undefined
+            showBottom ? xLinesYBottom : undefined,
+            showTop ? xLinesYTop : undefined,
+            showFreeX ? xLinesYFree : undefined
         ];
         if(xa.anchor === ya._id) {
             xa._linepositions[subplot][3] = xa.side === 'top' ?
-                toppos : bottompos;
+                xLinesYTop : xLinesYBottom;
         }
-        else if(showfreex) {
-            xa._linepositions[subplot][3] = freeposx;
+        else if(showFreeX) {
+            xa._linepositions[subplot][3] = xLinesYFree;
         }
 
         ya._linepositions[subplot] = [
-            showleft ? leftpos : undefined,
-            showright ? rightpos : undefined,
-            showfreey ? freeposy : undefined
+            showLeft ? yLinesXLeft : undefined,
+            showRight ? yLinesXRight : undefined,
+            showFreeY ? yLinesXFree : undefined
         ];
         if(ya.anchor === xa._id) {
             ya._linepositions[subplot][3] = ya.side === 'right' ?
-                rightpos : leftpos;
+                yLinesXRight : yLinesXLeft;
         }
-        else if(showfreey) {
-            ya._linepositions[subplot][3] = freeposy;
+        else if(showFreeY) {
+            ya._linepositions[subplot][3] = yLinesXFree;
         }
 
         // translate all the extra stuff to have the
         // same origin as the plot area or axes
         var origin = 'translate(' + xa._offset + ',' + ya._offset + ')';
-        var originx = origin;
-        var originy = origin;
-        if(showfreex) {
-            originx = 'translate(' + xa._offset + ',' + gs.t + ')';
-            toppos += ya._offset - gs.t;
-            bottompos += ya._offset - gs.t;
+        var originX = origin;
+        var originY = origin;
+        if(showFreeX) {
+            originX = 'translate(' + xa._offset + ',' + gs.t + ')';
+            xLinesYTop += ya._offset - gs.t;
+            xLinesYBottom += ya._offset - gs.t;
         }
-        if(showfreey) {
-            originy = 'translate(' + gs.l + ',' + ya._offset + ')';
-            leftpos += xa._offset - gs.l;
-            rightpos += xa._offset - gs.l;
+        if(showFreeY) {
+            originY = 'translate(' + gs.l + ',' + ya._offset + ')';
+            yLinesXLeft += xa._offset - gs.l;
+            yLinesXRight += xa._offset - gs.l;
         }
 
-        if(fullLayout._has('cartesian')) {
+        if(hasSVGCartesian) {
             plotinfo.xlines
-                .attr('transform', originx)
+                .attr('transform', originX)
                 .attr('d', (
-                    (showbottom ? (xpathPrefix + bottompos + xpathSuffix) : '') +
-                    (showtop ? (xpathPrefix + toppos + xpathSuffix) : '') +
-                    (showfreex ? (xpathPrefix + freeposx + xpathSuffix) : '')) ||
+                    xLinePath(xLinesYBottom, showBottom) +
+                    xLinePath(xLinesYTop, showTop) +
+                    xLinePath(xLinesYFree, showFreeX)) ||
                     // so it doesn't barf with no lines shown
                     'M0,0')
                 .style('stroke-width', xlw + 'px')
                 .call(Color.stroke, xa.showline ?
                     xa.linecolor : 'rgba(0,0,0,0)');
             plotinfo.ylines
-                .attr('transform', originy)
+                .attr('transform', originY)
                 .attr('d', (
-                    (showleft ? ('M' + leftpos + ypathSuffix) : '') +
-                    (showright ? ('M' + rightpos + ypathSuffix) : '') +
-                    (showfreey ? ('M' + freeposy + ypathSuffix) : '')) ||
+                    yLinePath(yLinesXLeft, showLeft) +
+                    yLinePath(yLinesXRight, showRight) +
+                    yLinePath(yLinesXFree, showFreeY)) ||
                     'M0,0')
-                .attr('stroke-width', ylw + 'px')
+                .style('stroke-width', ylw + 'px')
                 .call(Color.stroke, ya.showline ?
                     ya.linecolor : 'rgba(0,0,0,0)');
         }
 
-        plotinfo.xaxislayer.attr('transform', originx);
-        plotinfo.yaxislayer.attr('transform', originy);
+        plotinfo.xaxislayer.attr('transform', originX);
+        plotinfo.yaxislayer.attr('transform', originY);
         plotinfo.gridlayer.attr('transform', origin);
         plotinfo.zerolinelayer.attr('transform', origin);
         plotinfo.draglayer.attr('transform', origin);
 
         // mark free axes as displayed, so we don't draw them again
-        if(showfreex) { freefinished.push(xa._id); }
-        if(showfreey) { freefinished.push(ya._id); }
+        if(showFreeX) freeFinished[xa._id] = 1;
+        if(showFreeY) freeFinished[ya._id] = 1;
     });
 
     Plotly.Axes.makeClipPaths(gd);
