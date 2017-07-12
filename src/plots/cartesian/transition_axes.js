@@ -137,7 +137,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
         var xa2 = subplot.xaxis;
         var ya2 = subplot.yaxis;
 
-        fullLayout._defs.selectAll('#' + subplot.clipId)
+        fullLayout._defs.select('#' + subplot.clipId + '> rect')
             .call(Drawing.setTranslate, 0, 0)
             .call(Drawing.setScale, 1, 1);
 
@@ -221,7 +221,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
         var plotDx = xa2._offset - fracDx,
             plotDy = ya2._offset - fracDy;
 
-        fullLayout._defs.selectAll('#' + subplot.clipId)
+        fullLayout._defs.select('#' + subplot.clipId + '> rect')
             .call(Drawing.setTranslate, clipDx, clipDy)
             .call(Drawing.setScale, 1 / xScaleFactor, 1 / yScaleFactor);
 

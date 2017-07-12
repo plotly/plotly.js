@@ -292,7 +292,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     _this.plotContainer.selectAll('.scatterlayer,.maplayer')
         .attr('transform', plotTransform);
 
-    _this.clipDefRelative.attr('transform', null);
+    _this.clipDefRelative.select('path').attr('transform', null);
 
     // TODO: shift axes to accommodate linewidth*sin(30) tick mark angle
 
@@ -619,7 +619,7 @@ proto.initInteractions = function() {
             .attr('transform', plotTransform);
 
         var plotTransform2 = 'translate(' + -dx + ',' + -dy + ')';
-        _this.clipDefRelative.attr('transform', plotTransform2);
+        _this.clipDefRelative.select('path').attr('transform', plotTransform2);
 
         // move the ticks
         _this.aaxis.range = [mins.a, _this.sum - mins.b - mins.c];

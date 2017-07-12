@@ -743,7 +743,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             var plotDx = xa2._offset - clipDx / xScaleFactor2,
                 plotDy = ya2._offset - clipDy / yScaleFactor2;
 
-            fullLayout._defs.selectAll('#' + subplot.clipId)
+            fullLayout._defs.select('#' + subplot.clipId + '> rect')
                 .call(Drawing.setTranslate, clipDx, clipDy)
                 .call(Drawing.setScale, xScaleFactor2, yScaleFactor2);
 
