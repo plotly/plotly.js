@@ -6,9 +6,10 @@ var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var assertDims = require('../assets/assert_dims');
-var assertStyle = require('../assets/assert_style');
+var customAssertions = require('../assets/custom_assertions');
 
+var assertDims = customAssertions.assertDims;
+var assertStyle = customAssertions.assertStyle;
 
 describe('general transforms:', function() {
     'use strict';
