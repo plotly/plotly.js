@@ -208,46 +208,46 @@ exports.lsInner = function(gd) {
         var ylw = Drawing.crispRound(gd, ya.linewidth, 1);
 
         /*
-         * x lines get longer where they meet y lines, to make a crisp corner
-         * free x lines are not excluded - they don't necessarily *meet* the
-         * y lines, but it still looks good if the x line reaches to the ends
-         * of the y lines, especially in the case of a free axis parallel to
-         * an anchored axis, like this:
+         * x lines get longer where they meet y lines, to make a crisp corner.
+         * The x lines get the padding (margin.pad) plus the y line width to
+         * fill up the corner nicely. Free x lines are excluded - they always
+         * span exactly the data area of the plot
          *
+         *  | XXXXX
+         *  | XXXXX
          *  |
-         *  |
-         *  +-----
-         *    x1
-         *  ------
-         *  ^ x2
+         *  +------
+         *     x1
+         *    -----
+         *     x2
          */
-        var xLinesXLeft = -pad - findCounterAxisLineWidth(gd, xa, ylw, showLeft, 'left', axList);
-        var xLinesXRight = xa._length + pad + findCounterAxisLineWidth(gd, xa, ylw, showRight, 'right', axList);
+        var leftYLineWidth = findCounterAxisLineWidth(gd, xa, ylw, showLeft, 'left', axList);
+        var xLinesXLeft = (!xIsFree && leftYLineWidth) ?
+            (-pad - leftYLineWidth) : 0;
+        var rightYLineWidth = findCounterAxisLineWidth(gd, xa, ylw, showRight, 'right', axList);
+        var xLinesXRight = xa._length + ((!xIsFree && rightYLineWidth) ?
+            (pad + rightYLineWidth) : 0);
         var xLinesYFree = gs.h * (1 - (xa.position || 0)) + ((xlw / 2) % 1);
         var xLinesYBottom = ya._length + pad + xlw / 2;
         var xLinesYTop = -pad - xlw / 2;
 
         /*
-         * y lines do not get longer when they meet x axes, because the
-         * x axis already filled that space and we don't want to double-fill.
-         * BUT they get longer if they're free axes, for the same reason as
-         * we do not exclude x axes:
+         * y lines that meet x axes get longer only by margin.pad, because
+         * the x axes fill in the corner space. Free y axes, like free x axes,
+         * always span exactly the data area of the plot
          *
-         *   |   |
-         * y2| y1|
-         *   |   |
-         *  >|   +-----
-         *
-         * arguably if the free y axis is over top of the anchored x axis,
-         * we don't want to do this... but that's a weird edge case, doesn't
-         * seem worth adding a lot of complexity for.
+         *   |   | XXXX
+         * y2| y1| XXXX
+         *   |   | XXXX
+         *       |
+         *       +-----
          */
-        var yLinesYBottom = ya._length + pad + (yIsFree ?
-            findCounterAxisLineWidth(gd, ya, xlw, showBottom, 'bottom', axList) :
-            0);
-        var yLinesYTop = -pad - (yIsFree ?
-            findCounterAxisLineWidth(gd, ya, xlw, showTop, 'top', axList) :
-            0);
+        var connectYBottom = !yIsFree && findCounterAxisLineWidth(
+                gd, ya, xlw, showBottom, 'bottom', axList);
+        var yLinesYBottom = ya._length + (connectYBottom ? pad : 0);
+        var connectYTop = !yIsFree && findCounterAxisLineWidth(
+                gd, ya, xlw, showTop, 'top', axList);
+        var yLinesYTop = connectYTop ? -pad : 0;
         var yLinesXFree = gs.w * (ya.position || 0) + ((ylw / 2) % 1);
         var yLinesXLeft = -pad - ylw / 2;
         var yLinesXRight = xa._length + pad + ylw / 2;
