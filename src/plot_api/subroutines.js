@@ -172,12 +172,6 @@ exports.lsInner = function(gd) {
             .call(Drawing.setTranslate, xa._offset, ya._offset)
             .call(Drawing.setClipUrl, plotinfo.clipId);
 
-        function shouldShowLine(ax, counterAx, side) {
-            return (ax.anchor === counterAx._id && (ax.mirror || ax.side === side)) ||
-                ax.mirror === 'all' || ax.mirror === 'allticks' ||
-                (ax.mirrors && ax.mirrors[counterAx._id + side]);
-        }
-
         var xIsFree = xa.anchor === 'free';
         var showFreeX = xIsFree && !freeFinished[xa._id];
         var showBottom = shouldShowLine(xa, ya, 'bottom');
@@ -190,62 +184,6 @@ exports.lsInner = function(gd) {
 
         var xlw = Drawing.crispRound(gd, xa.linewidth, 1);
         var ylw = Drawing.crispRound(gd, ya.linewidth, 1);
-
-        function findMainAxis(ax) {
-            return ax.overlaying ? Plotly.Axes.getFromId(gd, ax.overlaying) : ax;
-        }
-
-        function findCounterAxes(ax) {
-            var counterAxes = [];
-            var anchorAx = Plotly.Axes.getFromId(gd, ax.anchor);
-            if(anchorAx) {
-                var counterMain = findMainAxis(anchorAx);
-                if(counterAxes.indexOf(counterMain) === -1) {
-                    counterAxes.push(counterMain);
-                }
-                for(var i = 0; i < axList.length; i++) {
-                    if(axList[i].overlaying === counterMain._id &&
-                        counterAxes.indexOf(axList[i]) === -1
-                    ) {
-                        counterAxes.push(axList[i]);
-                    }
-                }
-            }
-            return counterAxes;
-        }
-
-        function findLineWidth(axes, side) {
-            for(var i = 0; i < axes.length; i++) {
-                var ax = axes[i];
-                if(ax.anchor !== 'free' && shouldShowLine(ax, {_id: ax.anchor}, side)) {
-                    return Drawing.crispRound(gd, ax.linewidth);
-                }
-            }
-        }
-
-        function findCounterAxisLineWidth(ax, subplotCounterLineWidth,
-                subplotCounterIsShown, side) {
-            if(subplotCounterIsShown) return subplotCounterLineWidth;
-
-            var i;
-
-            // find all counteraxes for this one, then of these, find the
-            // first one that has a visible line on this side
-            var mainAxis = findMainAxis(ax);
-            var counterAxes = findCounterAxes(mainAxis);
-
-            var lineWidth = findLineWidth(counterAxes, side);
-            if(lineWidth) return lineWidth;
-
-            for(i = 0; i < axList.length; i++) {
-                if(axList[i].overlaying === mainAxis._id) {
-                    counterAxes = findCounterAxes(axList[i]);
-                    lineWidth = findLineWidth(counterAxes, side);
-                    if(lineWidth) return lineWidth;
-                }
-            }
-            return 0;
-        }
 
         /*
          * x lines get longer where they meet y lines, to make a crisp corner
@@ -261,8 +199,8 @@ exports.lsInner = function(gd) {
          *  ------
          *  ^ x2
          */
-        var xLinesXLeft = -pad - findCounterAxisLineWidth(xa, ylw, showLeft, 'left');
-        var xLinesXRight = xa._length + pad + findCounterAxisLineWidth(xa, ylw, showRight, 'right');
+        var xLinesXLeft = -pad - findCounterAxisLineWidth(gd, xa, ylw, showLeft, 'left', axList);
+        var xLinesXRight = xa._length + pad + findCounterAxisLineWidth(gd, xa, ylw, showRight, 'right', axList);
         var xLinesYFree = gs.h * (1 - (xa.position || 0)) + ((xlw / 2) % 1);
         var xLinesYBottom = ya._length + pad + xlw / 2;
         var xLinesYTop = -pad - xlw / 2;
@@ -283,10 +221,10 @@ exports.lsInner = function(gd) {
          * seem worth adding a lot of complexity for.
          */
         var yLinesYBottom = ya._length + pad + (yIsFree ?
-            findCounterAxisLineWidth(ya, xlw, showBottom, 'bottom') :
+            findCounterAxisLineWidth(gd, ya, xlw, showBottom, 'bottom', axList) :
             0);
         var yLinesYTop = -pad - (yIsFree ?
-            findCounterAxisLineWidth(ya, xlw, showTop, 'top') :
+            findCounterAxisLineWidth(gd, ya, xlw, showTop, 'top', axList) :
             0);
         var yLinesXFree = gs.w * (ya.position || 0) + ((ylw / 2) % 1);
         var yLinesXLeft = -pad - ylw / 2;
@@ -389,6 +327,68 @@ exports.lsInner = function(gd) {
 
     return gd._promises.length && Promise.all(gd._promises);
 };
+
+function shouldShowLine(ax, counterAx, side) {
+    return (ax.anchor === counterAx._id && (ax.mirror || ax.side === side)) ||
+        ax.mirror === 'all' || ax.mirror === 'allticks' ||
+        (ax.mirrors && ax.mirrors[counterAx._id + side]);
+}
+
+function findMainAxis(gd, ax) {
+    return ax.overlaying ? Plotly.Axes.getFromId(gd, ax.overlaying) : ax;
+}
+
+function findCounterAxes(gd, ax, axList) {
+    var counterAxes = [];
+    var anchorAx = Plotly.Axes.getFromId(gd, ax.anchor);
+    if(anchorAx) {
+        var counterMain = findMainAxis(gd, anchorAx);
+        if(counterAxes.indexOf(counterMain) === -1) {
+            counterAxes.push(counterMain);
+        }
+        for(var i = 0; i < axList.length; i++) {
+            if(axList[i].overlaying === counterMain._id &&
+                counterAxes.indexOf(axList[i]) === -1
+            ) {
+                counterAxes.push(axList[i]);
+            }
+        }
+    }
+    return counterAxes;
+}
+
+function findLineWidth(gd, axes, side) {
+    for(var i = 0; i < axes.length; i++) {
+        var ax = axes[i];
+        if(ax.anchor !== 'free' && shouldShowLine(ax, {_id: ax.anchor}, side)) {
+            return Drawing.crispRound(gd, ax.linewidth);
+        }
+    }
+}
+
+function findCounterAxisLineWidth(gd, ax, subplotCounterLineWidth,
+        subplotCounterIsShown, side, axList) {
+    if(subplotCounterIsShown) return subplotCounterLineWidth;
+
+    var i;
+
+    // find all counteraxes for this one, then of these, find the
+    // first one that has a visible line on this side
+    var mainAxis = findMainAxis(gd, ax);
+    var counterAxes = findCounterAxes(gd, mainAxis, axList);
+
+    var lineWidth = findLineWidth(gd, counterAxes, side);
+    if(lineWidth) return lineWidth;
+
+    for(i = 0; i < axList.length; i++) {
+        if(axList[i].overlaying === mainAxis._id) {
+            counterAxes = findCounterAxes(gd, axList[i], axList);
+            lineWidth = findLineWidth(gd, counterAxes, side);
+            if(lineWidth) return lineWidth;
+        }
+    }
+    return 0;
+}
 
 exports.drawMainTitle = function(gd) {
     var fullLayout = gd._fullLayout;
