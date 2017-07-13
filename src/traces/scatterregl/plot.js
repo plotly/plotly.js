@@ -21,16 +21,19 @@ var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var getTraceColor = require('../scatter/get_trace_color');
 var MARKER_SYMBOLS = require('../../constants/gl2d_markers');
 var DASHES = require('../../constants/gl2d_dashes');
+var colormap = require('colormap')
+var rgba = require('color-rgba')
 
 var createScatter = require('../../../../regl-scatter2d')
 
 function plot(container, data, cdscatter) {
-    // console.log(container, data, cdscatter)
+    // console.log(container, data, cd)
 
     var layout = container._fullLayout
     var data = container._fullData[0]
     var xa = layout.xaxis
     var ya = layout.yaxis
+    var cd = cdscatter[0]
     var container = container.querySelector('.gl-container')
 
     //FIXME: find proper way to get plot holder
@@ -44,6 +47,7 @@ function plot(container, data, cdscatter) {
         //TODO: decide whether we should share canvas or create it every scatter plot
         //TODO: decide if canvas should be the full-width with viewport or multiple instances
         //FIXME: avoid forcing absolute style by disabling forced plotly background
+        //TODO: figure out if there is a way to detect only new passed options
         var canvas = container.appendChild(document.createElement('canvas'))
         canvas.style.position = 'absolute';
         canvas.style.transform = 'translate(' + xa._offset + 'px, ' + ya._offset + 'px)';
@@ -55,29 +59,56 @@ function plot(container, data, cdscatter) {
         scatter = subplotObj._scatter2d = createScatter({canvas: canvas})
     }
 
-    //feed in positions
-    var bounds = [xa._rl[0], ya._rl[0], xa._rl[1], ya._rl[1]]
-    var positions = Array(data.x.length*2)
-    for (var i = 0, l = data.x.length; i < l; i++) {
-        positions[i*2] = data.x[i]
-        positions[i*2+1] = data.y[i]
+    var len = cd.length
+    var marker = data.marker
+    var bounds = [xa._rl[0], ya._rl[0], xa._rl[1], ya._rl[1]];
+
+    // get positions
+    var positions = Array(cd.length*2);
+    for (var i = 0; i < len; i++) {
+        positions[i*2] = cd[i].x;
+        positions[i*2+1] = cd[i].y;
     }
 
+    // create colormap, if required
+    var markerPalette, markerColor = marker.color
+    if (marker.colorscale) {
+        var cmax = marker.cmax, cmin = marker.cmin, range = cmax - cmin
+        var cmap = [], cscale = marker.colorscale
+        for (var i = 0; i < cscale.length; i++) {
+            cmap.push({index: cscale[i][0], rgb: rgba(cscale[i][1], false).slice(0, 3)})
+        }
+        //FIXME: making direct palette generator would be faster
+        markerPalette = colormap({
+            colormap: cmap,
+            nshades: cmax - cmin,
+            format: 'rgbaString'
+        })
+
+        if (cmin !== 0) {
+            markerColor = marker.color.map(function (v) {return v - cmin})
+        }
+    }
+
+    // if (!Array.isArray(data.marker.size)) {
+    //     size = markerSizeFunc(data.marker.size)
+    // } else {
+    //     var sizes = data.marker.sizes
+    //     size = []
+    //     for (var i = 0; i < sizes.length; i++) {
+    //         size[i] = markerSizeFunc(sizes[i])
+    //     }
+    // }
+
+    // redraw plot
     scatter({
+        color: markerColor,
+        borderColor: marker.line && marker.line.color,
+        palette: markerPalette,
+        size: marker.size,
         range: bounds,
         positions: positions
     })
-
-
-    // var canvas = scatter.canvas
-    // var ctx = canvas.getContext('2d')
-
-    // ctx.clearRect(0, 0, canvas.width, canvas.height)
-    // ctx.fillStyle = 'rgba(100,200,255,.8)';
-
-    // for (var i = 0, l = data.x.length; i < l; i++) {
-    //     ctx.fillRect(xa.c2p(data.x[i]),ya.c2p(data.y[i]),5,5)
-    // }
 
     return plot;
 }
