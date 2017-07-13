@@ -45,6 +45,10 @@ exports.lsInner = function(gd) {
     var gs = fullLayout._size;
     var pad = gs.p;
     var axList = Plotly.Axes.list(gd);
+
+    // _has('cartesian') means SVG specifically, not GL2D - but GL2D
+    // can still get here because it makes some of the SVG structure
+    // for shared features like selections.
     var hasSVGCartesian = fullLayout._has('cartesian');
     var i;
 
