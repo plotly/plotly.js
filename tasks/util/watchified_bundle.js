@@ -7,6 +7,7 @@ var prettySize = require('prettysize');
 var constants = require('./constants');
 var common = require('./common');
 var compressAttributes = require('./compress_attributes');
+var strictD3 = require('./strict_d3');
 
 /**
  * Make a plotly.js browserify bundle function watched by watchify.
@@ -22,7 +23,7 @@ module.exports = function makeWatchifiedBundle(onFirstBundleCallback) {
     var b = browserify(constants.pathToPlotlyIndex, {
         debug: true,
         standalone: 'Plotly',
-        transform: [compressAttributes],
+        transform: [strictD3, compressAttributes],
         cache: {},
         packageCache: {},
         plugin: [watchify]

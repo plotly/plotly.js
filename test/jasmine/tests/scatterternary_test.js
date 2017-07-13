@@ -6,8 +6,12 @@ var ScatterTernary = require('@src/traces/scatterternary');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
 var customMatchers = require('../assets/custom_matchers');
+var customAssertions = require('../assets/custom_assertions');
 
+var assertClip = customAssertions.assertClip;
+var assertNodeDisplay = customAssertions.assertNodeDisplay;
 
 describe('scatterternary defaults', function() {
     'use strict';
@@ -373,4 +377,109 @@ describe('scatterternary hover', function() {
         .then(done);
     });
 
+});
+
+describe('Test scatterternary *cliponaxis*', function() {
+    afterEach(destroyGraphDiv);
+
+    it('should show/hide point/text/errorbars in clipped and non-clipped layers', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/ternary_markers.json'));
+
+        function _assert(layerClips, nodeDisplays, lineClips) {
+            var frontLayer = d3.select('.frontplot');
+            var scatterLayer = d3.select('.scatterlayer');
+
+            assertClip(frontLayer, layerClips[0], 1, 'front layer');
+            assertClip(scatterLayer, layerClips[1], 1, 'scatter layer');
+
+            assertNodeDisplay(
+                scatterLayer.selectAll('.point'),
+                nodeDisplays,
+                'scatter points'
+            );
+            assertNodeDisplay(
+                scatterLayer.selectAll('.textpoint'),
+                nodeDisplays,
+                'scatter text points'
+            );
+
+            assertClip(
+                scatterLayer.selectAll('.js-line'),
+                lineClips[0], lineClips[1],
+                'line clips'
+            );
+        }
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            _assert(
+                [false, false],
+                [null, 'none', null, null, null, null, null, null, 'none', 'none', 'none'],
+                [true, 1]
+           );
+            return Plotly.restyle(gd, 'visible', 'legendonly');
+        })
+        .then(function() {
+            _assert(
+                [false, false],
+                [],
+                [false, 0]
+           );
+            return Plotly.restyle(gd, {visible: true, cliponaxis: null});
+        })
+        .then(function() {
+            _assert(
+                [true, false],
+                [null, null, null, null, null, null, null, null, null, null, null],
+                [false, 1]
+           );
+            return Plotly.restyle(gd, 'cliponaxis', false);
+        })
+        .then(function() {
+            _assert(
+                [false, false],
+                [null, 'none', null, null, null, null, null, null, 'none', 'none', 'none'],
+                [true, 1]
+           );
+            return Plotly.relayout(gd, 'ternary.aaxis.min', 20);
+        })
+        .then(function() {
+            _assert(
+                [false, false],
+                [null, 'none', null, 'none', 'none', 'none', null, 'none', 'none', 'none', 'none'],
+                [true, 1]
+           );
+            return Plotly.relayout(gd, 'ternary.baxis.min', 40);
+        })
+        .then(function() {
+            _assert(
+                [false, false],
+                ['none', 'none', 'none', 'none', 'none', 'none', null, 'none', 'none', 'none', 'none'],
+                [true, 1]
+           );
+            return Plotly.relayout(gd, 'ternary.caxis.min', 30);
+        })
+        .then(function() {
+            _assert(
+                [false, false],
+                ['none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none'],
+                [true, 1]
+           );
+            return Plotly.relayout(gd, {
+                'ternary.aaxis.min': null,
+                'ternary.baxis.min': null,
+                'ternary.caxis.min': null
+            });
+        })
+        .then(function() {
+            _assert(
+                [false, false],
+                [null, null, null, null, null, null, null, null, null, null, null],
+                [true, 1]
+           );
+        })
+        .catch(fail)
+        .then(done);
+    });
 });

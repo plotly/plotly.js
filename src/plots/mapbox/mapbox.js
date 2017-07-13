@@ -13,6 +13,8 @@ var mapboxgl = require('mapbox-gl');
 
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
+var dragElement = require('../../components/dragelement');
+var prepSelect = require('../cartesian/select');
 var constants = require('./constants');
 var layoutAttributes = require('./layout_attributes');
 var createMapboxLayer = require('./layers');
@@ -86,9 +88,9 @@ proto.plot = function(calcData, fullLayout, promises) {
 };
 
 proto.createMap = function(calcData, fullLayout, resolve, reject) {
-    var self = this,
-        gd = self.gd,
-        opts = self.opts;
+    var self = this;
+    var gd = self.gd;
+    var opts = self.opts;
 
     // store style id and URL or object
     var styleObj = self.styleObj = getStyleObj(opts.style);
@@ -107,7 +109,9 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         pitch: opts.pitch,
 
         interactive: !self.isStatic,
-        preserveDrawingBuffer: self.isStatic
+        preserveDrawingBuffer: self.isStatic,
+
+        boxZoom: false
     });
 
     // clear navigation container
@@ -127,6 +131,8 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
 
         self.resolveOnRender(resolve);
     });
+
+    if(self.isStatic) return;
 
     // keep track of pan / zoom in user layout and emit relayout event
     map.on('moveend', function(eventData) {
@@ -261,6 +267,7 @@ proto.updateLayout = function(fullLayout) {
 
     this.updateLayers();
     this.updateFramework(fullLayout);
+    this.updateFx(fullLayout);
     this.map.resize();
 };
 
@@ -312,6 +319,69 @@ proto.createFramework = function(fullLayout) {
     };
 
     self.updateFramework(fullLayout);
+};
+
+proto.updateFx = function(fullLayout) {
+    var self = this;
+    var map = self.map;
+    var gd = self.gd;
+
+    if(self.isStatic) return;
+
+    function invert(pxpy) {
+        var obj = self.map.unproject(pxpy);
+        return [obj.lng, obj.lat];
+    }
+
+    var dragMode = fullLayout.dragmode;
+    var fillRangeItems;
+
+    if(dragMode === 'select') {
+        fillRangeItems = function(eventData, poly) {
+            var ranges = eventData.range = {};
+            ranges[self.id] = [
+                invert([poly.xmin, poly.ymin]),
+                invert([poly.xmax, poly.ymax])
+            ];
+        };
+    } else {
+        fillRangeItems = function(eventData, poly, pts) {
+            var dataPts = eventData.lassoPoints = {};
+            dataPts[self.id] = pts.filtered.map(invert);
+        };
+    }
+
+    if(dragMode === 'select' || dragMode === 'lasso') {
+        map.dragPan.disable();
+
+        var dragOptions = {
+            element: self.div,
+            gd: gd,
+            plotinfo: {
+                xaxis: self.xaxis,
+                yaxis: self.yaxis,
+                fillRangeItems: fillRangeItems
+            },
+            xaxes: [self.xaxis],
+            yaxes: [self.yaxis],
+            subplot: self.id
+        };
+
+        dragOptions.prepFn = function(e, startX, startY) {
+            prepSelect(e, startX, startY, dragOptions, dragMode);
+        };
+
+        dragOptions.doneFn = function(dragged, numClicks) {
+            if(numClicks === 2) {
+                fullLayout._zoomlayer.selectAll('.select-outline').remove();
+            }
+        };
+
+        dragElement.init(dragOptions);
+    } else {
+        map.dragPan.enable();
+        self.div.onmousedown = null;
+    }
 };
 
 proto.updateFramework = function(fullLayout) {

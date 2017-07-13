@@ -20,6 +20,7 @@ var Drawing = require('../components/drawing');
 var Titles = require('../components/titles');
 var ModeBar = require('../components/modebar');
 var initInteractions = require('../plots/cartesian/graph_interact');
+var cartesianConstants = require('../plots/cartesian/constants');
 
 exports.layoutStyles = function(gd) {
     return Lib.syncOrAsync([Plots.doAutoMargin, exports.lsInner], gd);
@@ -164,9 +165,31 @@ exports.lsInner = function(gd) {
                 'height': ya._length
             });
 
-
         plotinfo.plot.call(Drawing.setTranslate, xa._offset, ya._offset);
-        plotinfo.plot.call(Drawing.setClipUrl, plotinfo.clipId);
+
+        var plotClipId;
+        var layerClipId;
+
+        if(plotinfo._hasClipOnAxisFalse) {
+            plotClipId = null;
+            layerClipId = plotinfo.clipId;
+        } else {
+            plotClipId = plotinfo.clipId;
+            layerClipId = null;
+        }
+
+        Drawing.setClipUrl(plotinfo.plot, plotClipId);
+
+        for(i = 0; i < cartesianConstants.traceLayerClasses.length; i++) {
+            var layer = cartesianConstants.traceLayerClasses[i];
+            if(layer !== 'scatterlayer') {
+                plotinfo.plot.selectAll('g.' + layer).call(Drawing.setClipUrl, layerClipId);
+            }
+        }
+
+        // stash layer clipId value (null or same as clipId)
+        // to DRY up Drawing.setClipUrl calls downstream
+        plotinfo.layerClipId = layerClipId;
 
         var xlw = Drawing.crispRound(gd, xa.linewidth, 1),
             ylw = Drawing.crispRound(gd, ya.linewidth, 1),
@@ -378,21 +401,27 @@ exports.doTicksRelayout = function(gd) {
 
 exports.doModeBar = function(gd) {
     var fullLayout = gd._fullLayout;
-    var subplotIds, scene, i;
+    var subplotIds, subplotObj, i;
 
     ModeBar.manage(gd);
     initInteractions(gd);
 
     subplotIds = Plots.getSubplotIds(fullLayout, 'gl3d');
     for(i = 0; i < subplotIds.length; i++) {
-        scene = fullLayout[subplotIds[i]]._scene;
-        scene.updateFx(fullLayout.dragmode, fullLayout.hovermode);
+        subplotObj = fullLayout[subplotIds[i]]._scene;
+        subplotObj.updateFx(fullLayout.dragmode, fullLayout.hovermode);
     }
 
     subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d');
     for(i = 0; i < subplotIds.length; i++) {
-        scene = fullLayout._plots[subplotIds[i]]._scene2d;
-        scene.updateFx(fullLayout.dragmode);
+        subplotObj = fullLayout._plots[subplotIds[i]]._scene2d;
+        subplotObj.updateFx(fullLayout.dragmode);
+    }
+
+    subplotIds = Plots.getSubplotIds(fullLayout, 'mapbox');
+    for(i = 0; i < subplotIds.length; i++) {
+        subplotObj = fullLayout[subplotIds[i]]._subplot;
+        subplotObj.updateFx(fullLayout);
     }
 
     return Plots.previousPromises(gd);

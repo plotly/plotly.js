@@ -82,9 +82,7 @@ module.exports = {
                 'are only available for *circle* symbols.'
             ].join(' ')
         },
-        opacity: extendFlat({}, markerAttrs.opacity, {
-            arrayOk: false
-        }),
+        opacity: markerAttrs.opacity,
         size: markerAttrs.size,
         sizeref: markerAttrs.sizeref,
         sizemin: markerAttrs.sizemin,
