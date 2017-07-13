@@ -174,29 +174,116 @@ exports.lsInner = function(gd) {
                 (ax.mirrors && ax.mirrors[counterAx._id + side]);
         }
 
-        var showFreeX = xa.anchor === 'free' && !freeFinished[xa._id];
+        var xIsFree = xa.anchor === 'free';
+        var showFreeX = xIsFree && !freeFinished[xa._id];
         var showBottom = shouldShowLine(xa, ya, 'bottom');
         var showTop = shouldShowLine(xa, ya, 'top');
 
-        var showFreeY = ya.anchor === 'free' && !freeFinished[ya._id];
+        var yIsFree = ya.anchor === 'free';
+        var showFreeY = yIsFree && !freeFinished[ya._id];
         var showLeft = shouldShowLine(ya, xa, 'left');
         var showRight = shouldShowLine(ya, xa, 'right');
 
         var xlw = Drawing.crispRound(gd, xa.linewidth, 1);
         var ylw = Drawing.crispRound(gd, ya.linewidth, 1);
 
-        // TODO: this gets more complicated with multiple x and y axes
-        var xLinesXLeft = -pad - ylw;
-        var xLinesXRight = xa._length + pad + ylw;
+        function findMainAxis(ax) {
+            return ax.overlaying ? Plotly.Axes.getFromId(gd, ax.overlaying) : ax;
+        }
+
+        function findCounterAxes(ax) {
+            var counterAxes = [];
+            var anchorAx = Plotly.Axes.getFromId(gd, ax.anchor);
+            if(anchorAx) {
+                var counterMain = findMainAxis(anchorAx);
+                if(counterAxes.indexOf(counterMain) === -1) {
+                    counterAxes.push(counterMain);
+                }
+                for(var i = 0; i < axList.length; i++) {
+                    if(axList[i].overlaying === counterMain._id &&
+                        counterAxes.indexOf(axList[i]) === -1
+                    ) {
+                        counterAxes.push(axList[i]);
+                    }
+                }
+            }
+            return counterAxes;
+        }
+
+        function findLineWidth(axes, side) {
+            for(var i = 0; i < axes.length; i++) {
+                var ax = axes[i];
+                if(ax.anchor !== 'free' && shouldShowLine(ax, {_id: ax.anchor}, side)) {
+                    return Drawing.crispRound(gd, ax.linewidth);
+                }
+            }
+        }
+
+        function findCounterAxisLineWidth(ax, subplotCounterLineWidth,
+                subplotCounterIsShown, side) {
+            if(subplotCounterIsShown) return subplotCounterLineWidth;
+
+            var i;
+
+            // find all counteraxes for this one, then of these, find the
+            // first one that has a visible line on this side
+            var mainAxis = findMainAxis(ax);
+            var counterAxes = findCounterAxes(mainAxis);
+
+            var lineWidth = findLineWidth(counterAxes, side);
+            if(lineWidth) return lineWidth;
+
+            for(i = 0; i < axList.length; i++) {
+                if(axList[i].overlaying === mainAxis._id) {
+                    counterAxes = findCounterAxes(axList[i]);
+                    lineWidth = findLineWidth(counterAxes, side);
+                    if(lineWidth) return lineWidth;
+                }
+            }
+            return 0;
+        }
+
+        /*
+         * x lines get longer where they meet y lines, to make a crisp corner
+         * free x lines are not excluded - they don't necessarily *meet* the
+         * y lines, but it still looks good if the x line reaches to the ends
+         * of the y lines, especially in the case of a free axis parallel to
+         * an anchored axis, like this:
+         *
+         *  |
+         *  |
+         *  +-----
+         *    x1
+         *  ------
+         *  ^ x2
+         */
+        var xLinesXLeft = -pad - findCounterAxisLineWidth(xa, ylw, showLeft, 'left');
+        var xLinesXRight = xa._length + pad + findCounterAxisLineWidth(xa, ylw, showRight, 'right');
         var xLinesYFree = gs.h * (1 - (xa.position || 0)) + ((xlw / 2) % 1);
         var xLinesYBottom = ya._length + pad + xlw / 2;
         var xLinesYTop = -pad - xlw / 2;
 
-        // shorten y axis lines so they don't overlap x axis lines
-        // except where there's no x line
-        // TODO: this gets more complicated with multiple x and y axes
-        var yLinesYBottom = ya._length + (showBottom ? 0 : xlw) + pad;
-        var yLinesYTop = (showTop ? 0 : -xlw) - pad;
+        /*
+         * y lines do not get longer when they meet x axes, because the
+         * x axis already filled that space and we don't want to double-fill.
+         * BUT they get longer if they're free axes, for the same reason as
+         * we do not exclude x axes:
+         *
+         *   |   |
+         * y2| y1|
+         *   |   |
+         *  >|   +-----
+         *
+         * arguably if the free y axis is over top of the anchored x axis,
+         * we don't want to do this... but that's a weird edge case, doesn't
+         * seem worth adding a lot of complexity for.
+         */
+        var yLinesYBottom = ya._length + pad + (yIsFree ?
+            findCounterAxisLineWidth(ya, xlw, showBottom, 'bottom') :
+            0);
+        var yLinesYTop = -pad - (yIsFree ?
+            findCounterAxisLineWidth(ya, xlw, showTop, 'top') :
+            0);
         var yLinesXFree = gs.w * (ya.position || 0) + ((ylw / 2) % 1);
         var yLinesXLeft = -pad - ylw / 2;
         var yLinesXRight = xa._length + pad + ylw / 2;
