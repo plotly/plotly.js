@@ -12,13 +12,14 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
+var Drawing = require('../drawing');
 var subTypes = require('../../traces/scatter/subtypes');
 
 module.exports = function plot(traces, plotinfo, transitionOpts) {
     var isNew;
 
-    var xa = plotinfo.xaxis,
-        ya = plotinfo.yaxis;
+    var xa = plotinfo.xaxis;
+    var ya = plotinfo.yaxis;
 
     var hasAnimation = transitionOpts && transitionOpts.duration > 0;
 
@@ -59,6 +60,8 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
                 .duration(transitionOpts.duration)
                 .style('opacity', 1);
         }
+
+        Drawing.setClipUrl(errorbars, plotinfo.layerClipId);
 
         errorbars.each(function(d) {
             var errorbar = d3.select(this);
