@@ -28,6 +28,8 @@ var ONEHOUR = constants.ONEHOUR;
 var ONEMIN = constants.ONEMIN;
 var ONESEC = constants.ONESEC;
 
+var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
+
 var axes = module.exports = {};
 
 axes.layoutAttributes = require('./layout_attributes');
@@ -1796,7 +1798,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
         else {
             flipit = (axside === 'right') ? 1 : -1;
             labely = function(d) {
-                return d.dy + d.fontSize * 0.35 - labelShift * flipit;
+                return d.dy + d.fontSize * MID_SHIFT - labelShift * flipit;
             };
             labelx = function(d) {
                 return d.dx + position + (labelStandoff + pad +
