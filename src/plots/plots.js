@@ -641,7 +641,9 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
 
     var ids = Plotly.Axes.getSubplots(mockGd);
 
-    for(var i = 0; i < ids.length; i++) {
+    var i;
+
+    for(i = 0; i < ids.length; i++) {
         var id = ids[i],
             oldSubplot = oldSubplots[id],
             plotinfo;
@@ -660,6 +662,39 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
 
         plotinfo.xaxis = Plotly.Axes.getFromId(mockGd, id, 'x');
         plotinfo.yaxis = Plotly.Axes.getFromId(mockGd, id, 'y');
+    }
+
+    // while we're at it, link overlaying axes to their main axes and
+    // anchored axes to the axes they're anchored to
+    var axList = Plotly.Axes.list(mockGd, null, true);
+    for(i = 0; i < axList.length; i++) {
+        var ax = axList[i];
+        var mainAx = null;
+
+        if(ax.overlaying) {
+            mainAx = Plotly.Axes.getFromId(mockGd, ax.overlaying);
+
+            // you cannot overlay an axis that's already overlaying another
+            if(mainAx && mainAx.overlaying) {
+                ax.overlaying = false;
+                mainAx = null;
+            }
+        }
+        ax._mainAxis = mainAx || ax;
+
+        /*
+         * For now force overlays to overlay completely... so they
+         * can drag together correctly and share backgrounds.
+         * Later perhaps we make separate axis domain and
+         * tick/line domain or something, so they can still share
+         * the (possibly larger) dragger and background but don't
+         * have to both be drawn over that whole domain
+         */
+        if(mainAx) ax.domain = mainAx.domain.slice();
+
+        ax._anchorAxis = ax.anchor === 'free' ?
+            null :
+            Plotly.Axes.getFromId(mockGd, ax.anchor);
     }
 };
 
