@@ -180,8 +180,8 @@ exports.lsInner = function(gd) {
 
         Drawing.setClipUrl(plotinfo.plot, plotClipId);
 
-        for(i = 0; i < cartesianConstants.layers.length; i++) {
-            var layer = cartesianConstants.layers[i];
+        for(i = 0; i < cartesianConstants.traceLayerClasses.length; i++) {
+            var layer = cartesianConstants.traceLayerClasses[i];
             if(layer !== 'scatterlayer') {
                 plotinfo.plot.selectAll('g.' + layer).call(Drawing.setClipUrl, layerClipId);
             }

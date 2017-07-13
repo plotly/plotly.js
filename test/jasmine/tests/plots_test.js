@@ -1,5 +1,6 @@
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
+var Lib = require('@src/lib');
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -38,12 +39,17 @@ describe('Test Plots', function() {
 
             var oldFullLayout = {
                 _plots: { xy: { plot: {} } },
-                xaxis: { c2p: function() {} },
-                yaxis: { _m: 20 },
+                xaxis: { c2p: function() {}, layer: 'above traces' },
+                yaxis: { _m: 20, layer: 'above traces' },
                 scene: { _scene: {} },
                 annotations: [{ _min: 10, }, { _max: 20 }],
                 someFunc: function() {}
             };
+
+            Lib.extendFlat(oldFullLayout._plots.xy, {
+                xaxis: oldFullLayout.xaxis,
+                yaxis: oldFullLayout.yaxis
+            });
 
             var newData = [{
                 type: 'scatter3d',
