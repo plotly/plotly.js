@@ -574,3 +574,29 @@ function setSpikelineVisibility(gd) {
 
     return aobj;
 }
+
+modeBarButtons.resetViewMapbox = {
+    name: 'resetViewMapbox',
+    title: 'Reset view',
+    attr: 'reset',
+    icon: Icons.home,
+    click: function(gd) {
+        var fullLayout = gd._fullLayout;
+        var subplotIds = Plots.getSubplotIds(fullLayout, 'mapbox');
+        var aObj = {};
+
+        for(var i = 0; i < subplotIds.length; i++) {
+            var id = subplotIds[i];
+            var subplotObj = fullLayout[id]._subplot;
+            var viewInitial = subplotObj.viewInitial;
+            var viewKeys = Object.keys(viewInitial);
+
+            for(var j = 0; j < viewKeys.length; j++) {
+                var key = viewKeys[j];
+                aObj[id + '.' + key] = viewInitial[key];
+            }
+        }
+
+        Plotly.relayout(gd, aObj);
+    }
+};
