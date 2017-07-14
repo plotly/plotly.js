@@ -28,6 +28,8 @@ var ONEHOUR = constants.ONEHOUR;
 var ONEMIN = constants.ONEMIN;
 var ONESEC = constants.ONESEC;
 
+var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
+
 var axes = module.exports = {};
 
 axes.layoutAttributes = require('./layout_attributes');
@@ -1684,8 +1686,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
         gcls = axid + 'grid',
         zcls = axid + 'zl',
         pad = (ax.linewidth || 1) / 2,
-        labelStandoff =
-            (ax.ticks === 'outside' ? ax.ticklen : 1) + (ax.linewidth || 0),
+        labelStandoff = (ax.ticks === 'outside' ? ax.ticklen : 0),
         labelShift = 0,
         gridWidth = Drawing.crispRound(gd, ax.gridwidth, 1),
         zeroLineWidth = Drawing.crispRound(gd, ax.zerolinewidth, gridWidth),
@@ -1695,8 +1696,12 @@ axes.doTicks = function(gd, axid, skipTitle) {
 
     if(ax._counterangle && ax.ticks === 'outside') {
         var caRad = ax._counterangle * Math.PI / 180;
-        labelStandoff = ax.ticklen * Math.cos(caRad) + (ax.linewidth || 0);
+        labelStandoff = ax.ticklen * Math.cos(caRad) + 1;
         labelShift = ax.ticklen * Math.sin(caRad);
+    }
+
+    if(ax.ticks === 'outside' || ax.showline) {
+        labelStandoff += 0.2 * ax.tickfont.size;
     }
 
     // positioning arguments for x vs y axes
@@ -1781,7 +1786,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
             labelpos0 = position + (labelStandoff + pad) * flipit;
             labely = function(d) {
                 return d.dy + labelpos0 + d.fontSize *
-                    ((axside === 'bottom') ? 1 : -0.5);
+                    ((axside === 'bottom') ? 1 : -0.2);
             };
             labelanchor = function(angle) {
                 if(!isNumeric(angle) || angle === 0 || angle === 180) {
@@ -1792,7 +1797,9 @@ axes.doTicks = function(gd, axid, skipTitle) {
         }
         else {
             flipit = (axside === 'right') ? 1 : -1;
-            labely = function(d) { return d.dy + d.fontSize / 2 - labelShift * flipit; };
+            labely = function(d) {
+                return d.dy + d.fontSize * MID_SHIFT - labelShift * flipit;
+            };
             labelx = function(d) {
                 return d.dx + position + (labelStandoff + pad +
                     ((Math.abs(ax.tickangle) === 90) ? d.fontSize / 2 : 0)) * flipit;
@@ -2019,16 +2026,23 @@ axes.doTicks = function(gd, axid, skipTitle) {
             avoid.offsetTop = translation.y;
         }
 
+        var titleStandoff = 10 + fontSize * offsetBase +
+            (ax.linewidth ? ax.linewidth - 1 : 0);
+
         if(axLetter === 'x') {
             counterAxis = (ax.anchor === 'free') ?
                 {_offset: gs.t + (1 - (ax.position || 0)) * gs.h, _length: 0} :
                 axisIds.getFromId(gd, ax.anchor);
 
             x = ax._offset + ax._length / 2;
-            y = counterAxis._offset + ((ax.side === 'top') ?
-                -10 - fontSize * (offsetBase + (ax.showticklabels ? 1 : 0)) :
-                counterAxis._length + 10 +
-                    fontSize * (offsetBase + (ax.showticklabels ? 1.5 : 0.5)));
+            if(ax.side === 'top') {
+                y = -titleStandoff - fontSize * (ax.showticklabels ? 1 : 0);
+            }
+            else {
+                y = counterAxis._length + titleStandoff +
+                    fontSize * (ax.showticklabels ? 1.5 : 0.5);
+            }
+            y += counterAxis._offset;
 
             if(ax.rangeslider && ax.rangeslider.visible && ax._boundingBox) {
                 y += (fullLayout.height - fullLayout.margin.b - fullLayout.margin.t) *
@@ -2043,10 +2057,14 @@ axes.doTicks = function(gd, axid, skipTitle) {
                 axisIds.getFromId(gd, ax.anchor);
 
             y = ax._offset + ax._length / 2;
-            x = counterAxis._offset + ((ax.side === 'right') ?
-                counterAxis._length + 10 +
-                    fontSize * (offsetBase + (ax.showticklabels ? 1 : 0.5)) :
-                -10 - fontSize * (offsetBase + (ax.showticklabels ? 0.5 : 0)));
+            if(ax.side === 'right') {
+                x = counterAxis._length + titleStandoff +
+                    fontSize * (ax.showticklabels ? 1 : 0.5);
+            }
+            else {
+                x = -titleStandoff - fontSize * (ax.showticklabels ? 0.5 : 0);
+            }
+            x += counterAxis._offset;
 
             transform = {rotate: '-90', offset: 0};
             if(!avoid.side) avoid.side = 'left';

@@ -9,6 +9,7 @@
 var d3 = require('d3');
 var Lib = require('../../lib');
 var extendDeepAll = Lib.extendDeepAll;
+var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 
 var µ = module.exports = { version: '0.2.2' };
 
@@ -295,7 +296,7 @@ var µ = module.exports = { version: '0.2.2' };
             angularAxisEnter.append('text').classed('axis-text', true).style(fontStyle);
             var ticksText = angularAxis.select('text.axis-text').attr({
                 x: radius + axisConfig.labelOffset,
-                dy: '.35em',
+                dy: MID_SHIFT + 'em',
                 transform: function(d, i) {
                     var angle = currentAngle(d, i);
                     var rad = radius + axisConfig.labelOffset;

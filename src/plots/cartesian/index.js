@@ -242,40 +242,16 @@ function makeSubplotData(gd) {
         var subplot = subplots[i],
             plotinfo = fullLayout._plots[subplot];
 
-        var xa = plotinfo.xaxis,
-            ya = plotinfo.yaxis;
-
-        // is this subplot overlaid on another?
-        // ax.overlaying is the id of another axis of the same
-        // dimension that this one overlays to be an overlaid subplot,
-        // the main plot must exist make sure we're not trying to
-        // overlay on an axis that's already overlaying another
-        var xa2 = axisIds.getFromId(gd, xa.overlaying) || xa;
-        if(xa2 !== xa && xa2.overlaying) {
-            xa2 = xa;
-            xa.overlaying = false;
-        }
-
-        var ya2 = axisIds.getFromId(gd, ya.overlaying) || ya;
-        if(ya2 !== ya && ya2.overlaying) {
-            ya2 = ya;
-            ya.overlaying = false;
-        }
+        var xa = plotinfo.xaxis;
+        var ya = plotinfo.yaxis;
+        var xa2 = xa._mainAxis;
+        var ya2 = ya._mainAxis;
 
         var mainplot = xa2._id + ya2._id;
         if(mainplot !== subplot && subplots.indexOf(mainplot) !== -1) {
             plotinfo.mainplot = mainplot;
             plotinfo.mainplotinfo = fullLayout._plots[mainplot];
             overlays.push(subplot);
-
-            // for now force overlays to overlay completely... so they
-            // can drag together correctly and share backgrounds.
-            // Later perhaps we make separate axis domain and
-            // tick/line domain or something, so they can still share
-            // the (possibly larger) dragger and background but don't
-            // have to both be drawn over that whole domain
-            xa.domain = xa2.domain.slice();
-            ya.domain = ya2.domain.slice();
         }
         else {
             subplotData.push(subplot);

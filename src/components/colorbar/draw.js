@@ -169,6 +169,7 @@ module.exports = function draw(gd, id) {
                 ticksuffix: opts.ticksuffix,
                 title: opts.title,
                 titlefont: opts.titlefont,
+                showline: true,
                 anchor: 'free',
                 position: 1
             },
