@@ -686,7 +686,6 @@ proto.updateLines = function(options, positions) {
                 this.line.options.fill = [false, false, false, false];
                 break;
         }
-
         var fillColor = str2RGBArray(options.fillcolor);
 
         this.line.options.color = lineColor;

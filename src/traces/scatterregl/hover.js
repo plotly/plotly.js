@@ -61,10 +61,7 @@ function hover (pointData, xval, yval, hovermode) {
         else if(trace.hovertext) pointData.text = trace.hovertext;
         else if(di.tx) pointData.text = di.tx;
         else if(trace.text) pointData.text = trace.text;
-
         ErrorBars.hoverInfo(di, trace, pointData);
-
-        return [pointData];
     }
 
     return [pointData]
