@@ -102,8 +102,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
 
     function updateLayoutObjs() {
         function redrawObjs(objArray, method) {
-            var i;
-            for(i = 0; i < objArray.length; i++) {
+            for(var i = 0; i < objArray.length; i++) {
                 method(gd, i);
             }
         }

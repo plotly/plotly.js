@@ -1344,3 +1344,41 @@ describe('annotation effects', function() {
         .then(done);
     });
 });
+
+describe('animating annotations', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('updates annoations when no axis update present', function(done) {
+
+        function assertAnnotations(expected) {
+            var texts = Plotly.d3.select(gd).selectAll('.annotation .annotation-text');
+            expect(expected.length).toEqual(texts.size());
+
+            texts.each(function(i) {
+                expect(Plotly.d3.select(this).text()).toEqual(expected[i]);
+            });
+        }
+
+        Plotly.plot(gd,
+            [{y: [1, 2, 3]}],
+            {annotations: [{text: 'hello'}]}
+        ).then(function() {
+            assertAnnotations(['hello']);
+
+            return Plotly.animate(gd, [{
+                layout: {annotations: [{text: 'hi'}]}
+            }], {
+                frame: {redraw: false, duration: 0}
+            });
+        }).then(function() {
+            assertAnnotations(['hi']);
+
+        }).catch(failTest).then(done);
+    });
+});
