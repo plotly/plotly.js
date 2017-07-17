@@ -63,7 +63,7 @@ proto.handlePick = function(pickResult) {
         ],
         textLabel: this.textLabels[index],
         name: this.name,
-        pointIndex: [xIndex, yIndex],
+        pointIndex: [yIndex, xIndex],
         hoverinfo: this.hoverinfo
     };
 };
