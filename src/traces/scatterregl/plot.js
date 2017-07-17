@@ -69,7 +69,7 @@ function createLineWithMarkers(container, data, cdscatter) {
 
     scatter.update(data, cdscatter);
 
-    return plot;
+    return scatter
 }
 
 function createScatterScene(container) {
@@ -103,7 +103,7 @@ function createScatterScene(container) {
         sizes: [],
         colors: [],
         glyphs: [],
-        borderWidths: [],
+        borderSizes: [],
         borderColors: [],
         size: 12,
         color: [0, 0, 0, 1],
@@ -261,7 +261,7 @@ proto.updateFancy = function(options) {
 
         this.scatter.options.sizes = new Array(pId);
         this.scatter.options.glyphs = new Array(pId);
-        this.scatter.options.borderWidths = new Array(pId);
+        this.scatter.options.borderSizes = new Array(pId);
         this.scatter.options.colors = new Array(pId);
         this.scatter.options.borderColors = new Array(pId);
 
@@ -271,7 +271,7 @@ proto.updateFancy = function(options) {
         var traceOpacity = options.opacity;
         var symbols = convertSymbol(markerOpts.symbol, len);
         var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len);
-        var borderWidths = convertNumber(markerOpts.line.width, len);
+        var borderSizes = convertNumber(markerOpts.line.width, len);
         var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len);
         var index, size, symbol, symbolSpec, isOpen, isDimmed, _colors, _borderColors, bw, minBorderWidth;
 
@@ -300,12 +300,12 @@ proto.updateFancy = function(options) {
             // See  https://github.com/plotly/plotly.js/pull/1781#discussion_r121820798
             // for more info on this logic
             size = sizes[index];
-            bw = borderWidths[index];
+            bw = borderSizes[index];
             minBorderWidth = (symbolSpec.noBorder || symbolSpec.noFill) ? 0.1 * size : 0;
 
             this.scatter.options.sizes[i] = 2.0 * size;
             this.scatter.options.glyphs[i] = symbolSpec.unicode;
-            this.scatter.options.borderWidths[i] = 0.5 * ((bw > minBorderWidth) ? bw - minBorderWidth : 0);
+            this.scatter.options.borderSizes[i] = 0.5 * ((bw > minBorderWidth) ? bw - minBorderWidth : 0);
 
             var optColors = this.scatter.options.colors
             var dim = isDimmed ? DESELECTDIM : 1;

@@ -584,6 +584,7 @@ proto.updateFancy = function(options) {
         var traceOpacity = options.opacity;
         var symbols = convertSymbol(markerOpts.symbol, len);
         var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len);
+            console.log(colors.slice(0,4).map(v => v*255))
         var borderWidths = convertNumber(markerOpts.line.width, len);
         var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len);
         var index, size, symbol, symbolSpec, isOpen, isDimmed, _colors, _borderColors, bw, minBorderWidth;
