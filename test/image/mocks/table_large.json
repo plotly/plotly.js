@@ -50,7 +50,7 @@
             },
 
             "font": {
-                "family": "PT Sans Narrow",
+                "family": "\"PT Sans Narrow\"",
                 "size": 16,
                 "color": ["white", "grey"]
             }

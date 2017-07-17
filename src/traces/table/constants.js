@@ -12,10 +12,12 @@ module.exports = {
     maxDimensionCount: 60,
     overdrag: 45,
     cellPad: 4,
+    uplift: 5,
     columnTitleOffset: 28,
     columnExtentOffset: 10,
     transitionEase: 'cubic-out',
     transitionDuration: 100,
     releaseTransitionEase: 'elastic',
-    releaseTransitionDuration: 300
+    releaseTransitionDuration: 300,
+    clipView: false
 };
