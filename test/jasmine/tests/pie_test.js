@@ -178,7 +178,9 @@ describe('pie hovering', function() {
             var fields = [
                 'v', 'label', 'color', 'i', 'hidden',
                 'text', 'px1', 'pxmid', 'midangle',
-                'px0', 'largeArc', 'cxFinal', 'cyFinal',
+                'px0', 'largeArc',
+                'pointNumber', 'curveNumber',
+                'cxFinal', 'cyFinal',
                 'originalEvent'
             ];
 
@@ -392,11 +394,14 @@ describe('Test event property of interactions on a pie plot:', function() {
             expect(typeof trace).toEqual(typeof {}, 'points.trace');
 
             var pt = futureData.points[0];
-            expect(Object.keys(pt)).toEqual([
+            expect(Object.keys(pt)).toEqual(jasmine.arrayContaining([
                 'v', 'label', 'color', 'i', 'hidden', 'vTotal', 'text', 't',
                 'trace', 'r', 'cx', 'cy', 'px1', 'pxmid', 'midangle', 'px0',
-                'largeArc', 'cxFinal', 'cyFinal'
-            ]);
+                'largeArc', 'cxFinal', 'cyFinal',
+                'pointNumber', 'curveNumber'
+            ]));
+            expect(Object.keys(pt).length).toBe(21);
+
             expect(typeof pt.color).toEqual(typeof '#1f77b4', 'points[0].color');
             expect(pt.cx).toEqual(200, 'points[0].cx');
             expect(pt.cxFinal).toEqual(200, 'points[0].cxFinal');
@@ -404,6 +409,7 @@ describe('Test event property of interactions on a pie plot:', function() {
             expect(pt.cyFinal).toEqual(160, 'points[0].cyFinal');
             expect(pt.hidden).toEqual(false, 'points[0].hidden');
             expect(pt.i).toEqual(4, 'points[0].i');
+            expect(pt.pointNumber).toEqual(4, 'points[0].pointNumber');
             expect(pt.label).toEqual('4', 'points[0].label');
             expect(pt.largeArc).toEqual(0, 'points[0].largeArc');
             expect(pt.midangle).toEqual(1.0471975511965976, 'points[0].midangle');
@@ -416,6 +422,7 @@ describe('Test event property of interactions on a pie plot:', function() {
             expect(typeof pt.trace).toEqual(typeof {}, 'points[0].trace');
             expect(pt.v).toEqual(5, 'points[0].v');
             expect(pt.vTotal).toEqual(15, 'points[0].vTotal');
+            expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
 
             var evt = futureData.event;
             expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
@@ -453,11 +460,13 @@ describe('Test event property of interactions on a pie plot:', function() {
             expect(typeof trace).toEqual(typeof {}, 'points.trace');
 
             var pt = futureData.points[0];
-            expect(Object.keys(pt)).toEqual([
+            expect(Object.keys(pt)).toEqual(jasmine.arrayContaining([
                 'v', 'label', 'color', 'i', 'hidden', 'vTotal', 'text', 't',
                 'trace', 'r', 'cx', 'cy', 'px1', 'pxmid', 'midangle', 'px0',
-                'largeArc', 'cxFinal', 'cyFinal'
-            ]);
+                'largeArc', 'cxFinal', 'cyFinal',
+                'pointNumber', 'curveNumber'
+            ]));
+
             expect(typeof pt.color).toEqual(typeof '#1f77b4', 'points[0].color');
             expect(pt.cx).toEqual(200, 'points[0].cx');
             expect(pt.cxFinal).toEqual(200, 'points[0].cxFinal');
@@ -465,6 +474,7 @@ describe('Test event property of interactions on a pie plot:', function() {
             expect(pt.cyFinal).toEqual(160, 'points[0].cyFinal');
             expect(pt.hidden).toEqual(false, 'points[0].hidden');
             expect(pt.i).toEqual(4, 'points[0].i');
+            expect(pt.pointNumber).toEqual(4, 'points[0].pointNumber');
             expect(pt.label).toEqual('4', 'points[0].label');
             expect(pt.largeArc).toEqual(0, 'points[0].largeArc');
             expect(pt.midangle).toEqual(1.0471975511965976, 'points[0].midangle');
@@ -477,6 +487,7 @@ describe('Test event property of interactions on a pie plot:', function() {
             expect(typeof pt.trace).toEqual(typeof {}, 'points[0].trace');
             expect(pt.v).toEqual(5, 'points[0].v');
             expect(pt.vTotal).toEqual(15, 'points[0].vTotal');
+            expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
 
             var evt = futureData.event;
             expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
