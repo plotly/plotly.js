@@ -22,6 +22,7 @@ var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var getTraceColor = require('../scatter/get_trace_color');
 var MARKER_SYMBOLS = require('../../constants/gl2d_markers');
 var DASHES = require('../../constants/gl2d_dashes');
+var fit = require('canvas-fit')
 
 var AXES = ['xaxis', 'yaxis'];
 var DESELECTDIM = 0.2;
@@ -34,12 +35,10 @@ var createScatter = require('../../../../regl-scatter2d')
 module.exports = createLineWithMarkers
 
 
-function createLineWithMarkers(container, data, cdscatter) {
+function createLineWithMarkers(container, plotinfo, cdscatter) {
     var layout = container._fullLayout
-    var data = container._fullData[0]
     var xa = layout.xaxis
     var ya = layout.yaxis
-    var cd = cdscatter[0]
     var glContainer = container.querySelector('.gl-container')
 
     //FIXME: find proper way to get plot holder
@@ -55,19 +54,27 @@ function createLineWithMarkers(container, data, cdscatter) {
         //FIXME: avoid forcing absolute style by disabling forced plotly background
         //TODO: figure out if there is a way to detect only new passed options
         var canvas = glContainer.appendChild(document.createElement('canvas'))
-        canvas.style.position = 'absolute';
-        canvas.style.transform = 'translate(' + xa._offset + 'px, ' + ya._offset + 'px)';
-        canvas.style.pointerEvents = 'none';
-        canvas.width = xa._length;
-        canvas.height = ya._length;
 
-        // scatter = subplotObj._scatter2d = {canvas: canvas}
+        //FIXME: make sure this is the right place for that
+        glContainer.style.height = '100%';
+        glContainer.style.width = '100%';
+
+        canvas.style.position = 'absolute';
+        canvas.style.top = '0px';
+        canvas.style.left = '0px';
+        canvas.style.pointerEvents = 'none';
+
+        //TODO: fit canvas every window.resize or plotly.resize or whatever
+        fit(canvas, glContainer);
+
         container.glContainer = glContainer
         container.canvas = canvas
         scatter = subplotObj._scatter2d = createScatterScene(container)
     }
 
-    scatter.update(data, cdscatter);
+    container._fullData.forEach(function(data, i) {
+        scatter.update(data, cdscatter[i]);
+    })
 
     return scatter
 }
@@ -76,7 +83,7 @@ function createScatterScene(container) {
     if (!(this instanceof createScatterScene)) return new createScatterScene(container)
 
     this.container = container;
-    this.type = 'scattergl';
+    this.type = 'scatterregl';
 
     this.pickXData = [];
     this.pickYData = [];
@@ -98,6 +105,9 @@ function createScatterScene(container) {
     this.hasErrorY = false;
     this.hasMarkers = false;
 
+    this.xaxis = container._fullLayout.xaxis
+    this.yaxis = container._fullLayout.yaxis
+
     var scatterOptions0 = {
         positions: Array(),
         sizes: [],
@@ -116,6 +126,7 @@ function createScatterScene(container) {
     this.scatter = createScatter(scatterOptions0);
     this.scatter.options = scatterOptions0
     this.scatter._trace = this
+
 
     return this
 }
@@ -327,6 +338,20 @@ proto.updateFancy = function(options) {
             this.scatter.options.borderColors[i][2] = _borderColors[4*index + 2] * 255;
             this.scatter.options.borderColors[i][3] = dim * _borderColors[4*index + 3] * 255;
         }
+
+
+        var size = container._fullLayout._size,
+            domainX = container._fullLayout.xaxis.domain,
+            domainY = container._fullLayout.yaxis.domain,
+            width = container._fullLayout.width,
+            height = container._fullLayout.height;
+
+        var viewBox = [
+            size.l + domainX[0] * size.w,
+            size.b + domainY[0] * size.h,
+            (width - size.r) - (1 - domainX[1]) * size.w,
+            (height - size.t) - (1 - domainY[1]) * size.h
+        ];
 
         var bounds = [xaxis._rl[0], yaxis._rl[0], xaxis._rl[1], yaxis._rl[1]];
         this.scatter.options.range = bounds;
