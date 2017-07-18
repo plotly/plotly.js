@@ -110,7 +110,7 @@ exports.appendArrayPointValue = function(pointData, trace, pointNumber) {
             var val = Lib.nestedProperty(trace, astr).get();
 
             if(Array.isArray(pointNumber)) {
-                if(Array.isArray(val) && Array.isArray(val[0])) {
+                if(Array.isArray(val) && Array.isArray(val[pointNumber[0]])) {
                     pointData[key] = val[pointNumber[0]][pointNumber[1]];
                 }
             } else {
