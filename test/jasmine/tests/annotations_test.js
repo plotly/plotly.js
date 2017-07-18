@@ -1344,3 +1344,83 @@ describe('annotation effects', function() {
         .then(done);
     });
 });
+
+describe('animating annotations', function() {
+    var gd;
+
+    // Two slightly different 1x1 pngs:
+    var img1 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2P4z/C/HgAGfgJ+p8YU1AAAAABJRU5ErkJggg==';
+    var img2 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2P4//9/PQAJewN9w0ic/wAAAABJRU5ErkJggg==';
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('updates annoations when no axis update present', function(done) {
+
+        function assertAnnotations(expected) {
+            var texts = Plotly.d3.select(gd).selectAll('.annotation .annotation-text');
+            expect(expected.length).toEqual(texts.size());
+
+            texts.each(function(d, i) {
+                expect(Plotly.d3.select(this).text()).toEqual(expected[i]);
+            });
+        }
+
+        function assertShapes(expected) {
+            var paths = Plotly.d3.select(gd).selectAll('.shapelayer path');
+
+            expect(expected.length).toEqual(paths.size());
+
+            paths.each(function(d, i) {
+                expect(Plotly.d3.select(this).style('fill')).toEqual(expected[i]);
+            });
+        }
+
+        function assertImages(expected) {
+            var imgs = Plotly.d3.select(gd).selectAll('.imagelayer image');
+
+            expect(expected.length).toEqual(imgs.size());
+
+            imgs.each(function(d, i) {
+                expect(Plotly.d3.select(this).attr('href')).toEqual(expected[i]);
+            });
+        }
+
+        Plotly.plot(gd,
+            [{y: [1, 2, 3]}],
+            {
+                annotations: [{text: 'hello'}],
+                shapes: [{fillcolor: 'rgb(170, 170, 170)'}],
+                images: [{source: img1}]
+            }
+        ).then(function() {
+            assertAnnotations(['hello']);
+            assertShapes(['rgb(170, 170, 170)']);
+            assertImages([img1]);
+
+            return Plotly.animate(gd, [{
+                layout: {
+                    annotations: [{text: 'hi'}],
+                    shapes: [
+                        {fillcolor: 'rgb(171, 171, 171)'},
+                        {fillcolor: 'rgb(172, 172, 172)'}
+                    ],
+                    images: [{source: img2}]
+                }
+            }], {
+                frame: {redraw: false, duration: 0}
+            });
+        }).then(function() {
+            assertAnnotations(['hi']);
+            assertShapes([
+                'rgb(171, 171, 171)',
+                'rgb(172, 172, 172)'
+            ]);
+            assertImages([img2]);
+
+        }).catch(failTest).then(done);
+    });
+});
