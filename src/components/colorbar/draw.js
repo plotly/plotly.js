@@ -550,7 +550,7 @@ module.exports = function draw(gd, id) {
         if(cbDone && cbDone.then) (gd._promises || []).push(cbDone);
 
         // dragging...
-        if(gd._context.editable) {
+        if(gd._context.edits.colorbarPosition) {
             var t0,
                 xf,
                 yf;

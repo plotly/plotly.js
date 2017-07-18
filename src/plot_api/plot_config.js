@@ -23,8 +23,27 @@ module.exports = {
     // no interactivity, for export or image generation
     staticPlot: false,
 
-    // we can edit titles, move annotations, etc
+    // we can edit titles, move annotations, etc - sets all pieces of `edits`
+    // unless a separate `edits` config item overrides individual parts
     editable: false,
+    edits: {
+        // annotationPosition: the main anchor of the annotation, which is the
+        // text (if no arrow) or the arrow (which drags the whole thing leaving
+        // the arrow length & direction unchanged)
+        annotationPosition: false,
+        // just for annotations with arrows, change the length  and direction of the arrow
+        annotationTail: false,
+        annotationText: false,
+        axisTitleText: false,
+        colorbarPosition: false,
+        colorbarTitleText: false,
+        legendPosition: false,
+        // edit the trace name fields from the legend
+        legendText: false,
+        shapePosition: false,
+        // the global `layout.title`
+        titleText: false
+    },
 
     // DO autosize once regardless of layout.autosize
     // (use default width or height values otherwise)

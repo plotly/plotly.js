@@ -312,7 +312,7 @@ module.exports = function draw(gd) {
         });
     }
 
-    if(gd._context.editable) {
+    if(gd._context.edits.legendPosition) {
         var xf, yf, x0, y0;
 
         legend.classed('cursor-move', true);
@@ -385,7 +385,7 @@ function drawTexts(g, gd) {
         });
     }
 
-    if(gd._context.editable && !isPie) {
+    if(gd._context.edits.legendText && !isPie) {
         text.call(svgTextUtils.makeEditable, {gd: gd})
             .call(textLayout)
             .on('edit', function(text) {
@@ -730,7 +730,7 @@ function computeLegendDimensions(gd, groups, traces) {
         bg.call(Drawing.setRect,
             0,
             -legendItem.height / 2,
-            (gd._context.editable ? 0 : opts.width) + extraWidth,
+            (gd._context.edits.legendText ? 0 : opts.width) + extraWidth,
             legendItem.height
         );
     });
