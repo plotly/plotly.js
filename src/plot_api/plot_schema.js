@@ -142,13 +142,25 @@ exports.isValObject = function(obj) {
  *  list of array attributes for the given trace
  */
 exports.findArrayAttributes = function(trace) {
-    var arrayAttributes = [],
-        stack = [];
+    var arrayAttributes = [];
+    var stack = [];
 
     function callback(attr, attrName, attrs, level) {
         stack = stack.slice(0, level).concat([attrName]);
 
-        var splittableAttr = attr && (attr.valType === 'data_array' || attr.arrayOk === true);
+        var splittableAttr = (
+            attr &&
+            (attr.valType === 'data_array' || attr.arrayOk === true) &&
+            !(stack[level - 1] === 'colorbar' && (attrName === 'ticktext' || attrName === 'tickvals'))
+        );
+
+        // Manually exclude 'colorbar.tickvals' and 'colorbar.ticktext' for now
+        // which are declared as `valType: 'data_array'` but scale independently of
+        // the coordinate arrays.
+        //
+        // Down the road, we might want to add a schema field (e.g `uncorrelatedArray: true`)
+        // to distinguish attributes of the likes.
+
         if(!splittableAttr) return;
 
         var astr = toAttrString(stack);
