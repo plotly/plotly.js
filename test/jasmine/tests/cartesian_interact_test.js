@@ -440,3 +440,83 @@ describe('axis zoom/pan and main plot zoom', function() {
         .then(done);
     });
 });
+
+describe('Event data:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _hover(px, py) {
+        return new Promise(function(resolve, reject) {
+            gd.once('plotly_hover', function(d) {
+                delete gd._lastHoverTime;
+                resolve(d);
+            });
+
+            mouseEvent('mousemove', px, py);
+
+            setTimeout(function() {
+                reject('plotly_hover did not get called!');
+            }, 100);
+        });
+    }
+
+    it('should have correct content for *scatter* traces', function(done) {
+        Plotly.plot(gd, [{
+            y: [1, 2, 1],
+            marker: {
+                color: [20, 30, 10],
+                colorbar: {
+                    tickvals: [25],
+                    ticktext: ['one single tick']
+                }
+            }
+        }], {
+            width: 500,
+            height: 500
+        })
+        .then(function() { return _hover(200, 200); })
+        .then(function(d) {
+            var pt = d.points[0];
+
+            expect(pt.y).toBe(2, 'y');
+            expect(pt['marker.color']).toBe(30, 'marker.color');
+            expect('marker.colorbar.tickvals' in pt).toBe(false, 'marker.colorbar.tickvals');
+            expect('marker.colorbar.ticktext' in pt).toBe(false, 'marker.colorbar.ticktext');
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should have correct content for *heatmap* traces', function(done) {
+        Plotly.plot(gd, [{
+            type: 'heatmap',
+            z: [[1, 2, 1], [2, 3, 1]],
+            colorbar: {
+                tickvals: [2],
+                ticktext: ['one single tick']
+            },
+            text: [['incomplete array']],
+            ids: [['incomplete array']]
+        }], {
+            width: 500,
+            height: 500
+        })
+        .then(function() { return _hover(200, 200); })
+        .then(function(d) {
+            var pt = d.points[0];
+
+            expect(pt.z).toBe(3, 'z');
+            expect(pt.text).toBe(undefined, 'undefined text items are included');
+            expect('id' in pt).toBe(false, 'undefined ids items are not included');
+            expect('marker.colorbar.tickvals' in pt).toBe(false, 'marker.colorbar.tickvals');
+            expect('marker.colorbar.ticktext' in pt).toBe(false, 'marker.colorbar.ticktext');
+        })
+        .catch(fail)
+        .then(done);
+    });
+});
