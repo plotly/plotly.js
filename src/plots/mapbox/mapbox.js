@@ -19,7 +19,6 @@ var constants = require('./constants');
 var layoutAttributes = require('./layout_attributes');
 var createMapboxLayer = require('./layers');
 
-
 function Mapbox(opts) {
     this.id = opts.id;
     this.gd = opts.gd;
@@ -111,6 +110,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         interactive: !self.isStatic,
         preserveDrawingBuffer: self.isStatic,
 
+        doubleClickZoom: false,
         boxZoom: false
     });
 
@@ -186,6 +186,24 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
 
     map.on('dragstart', unhover);
     map.on('zoomstart', unhover);
+
+    map.on('dblclick', function() {
+        var viewInitial = self.viewInitial;
+
+        map.setCenter(convertCenter(viewInitial.center));
+        map.setZoom(viewInitial.zoom);
+        map.setBearing(viewInitial.bearing);
+        map.setPitch(viewInitial.pitch);
+
+        var viewNow = self.getView();
+
+        opts._input.center = opts.center = viewNow.center;
+        opts._input.zoom = opts.zoom = viewNow.zoom;
+        opts._input.bearing = opts.bearing = viewNow.bearing;
+        opts._input.pitch = opts.pitch = viewNow.pitch;
+
+        gd.emit('plotly_doubleclick', null);
+    });
 };
 
 proto.updateMap = function(calcData, fullLayout, resolve, reject) {
@@ -488,8 +506,8 @@ proto.project = function(v) {
 proto.getView = function() {
     var map = this.map;
 
-    var mapCenter = map.getCenter(),
-        center = { lon: mapCenter.lng, lat: mapCenter.lat };
+    var mapCenter = map.getCenter();
+    var center = { lon: mapCenter.lng, lat: mapCenter.lat };
 
     return {
         center: center,

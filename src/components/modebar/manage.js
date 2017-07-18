@@ -148,6 +148,9 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     else if(hasPie) {
         addGroup(['hoverClosestPie']);
     }
+    else if(hasMapbox) {
+        addGroup(['resetViewMapbox', 'toggleHover']);
+    }
 
     return appendButtonsToGroups(groups, buttonsToAdd);
 }

@@ -270,6 +270,44 @@ describe('ModeBar', function() {
             checkButtons(modeBar, buttons, 1);
         });
 
+        it('creates mode bar (mapbox version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['pan2d'],
+                ['resetViewMapbox', 'toggleHover']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._basePlotModules = [{ name: 'mapbox' }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (mapbox + selected version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['pan2d', 'select2d', 'lasso2d'],
+                ['resetViewMapbox', 'toggleHover']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._basePlotModules = [{ name: 'mapbox' }];
+            gd._fullData = [{
+                type: 'scatter',
+                visible: true,
+                mode: 'markers',
+                _module: {selectPoints: true}
+            }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
         it('creates mode bar (gl2d version)', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
@@ -882,5 +920,50 @@ describe('ModeBar', function() {
 
         });
 
+        describe('@noCI mapbox handlers', function() {
+            it('button *resetViewMapbox* should reset the mapbox view attribute to their default', function(done) {
+                var gd = createGraphDiv();
+
+                function _assert(centerLon, centerLat, zoom) {
+                    var mapboxLayout = gd._fullLayout.mapbox;
+
+                    expect(mapboxLayout.center.lon).toBe(centerLon, 'center.lon');
+                    expect(mapboxLayout.center.lat).toBe(centerLat, 'center.lat');
+                    expect(mapboxLayout.zoom).toBe(zoom, 'zoom');
+                }
+
+                Plotly.plot(gd, [{
+                    type: 'scattermapbox',
+                    lon: [10, 20, 30],
+                    lat: [10, 20, 30]
+                }], {
+                    mapbox: {
+                        center: {lon: 10, lat: 10},
+                        zoom: 8
+                    }
+                }, {
+                    mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+                })
+                .then(function() {
+                    _assert(10, 10, 8);
+
+                    return Plotly.relayout(gd, {
+                        'mapbox.zoom': 10,
+                        'mapbox.center.lon': 30
+                    });
+                })
+                .then(function() {
+                    _assert(30, 10, 10);
+
+                    var button = selectButton(gd._fullLayout._modeBar, 'resetViewMapbox');
+
+                    button.isActive(false);
+                    button.click(false);
+                    _assert(10, 10, 8);
+                    button.isActive(false);
+                })
+                .then(done);
+            });
+        });
     });
 });
