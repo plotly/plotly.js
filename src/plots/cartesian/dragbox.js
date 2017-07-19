@@ -747,7 +747,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 .call(Drawing.setTranslate, clipDx, clipDy)
                 .call(Drawing.setScale, xScaleFactor2, yScaleFactor2);
 
-            var scatterPoints = subplot.plot.select('.scatterlayer').selectAll('.points');
+            var scatterPoints = subplot.plot.selectAll('.scatterlayer .points, .boxlayer .points');
 
             subplot.plot
                 .call(Drawing.setTranslate, plotDx, plotDy)
