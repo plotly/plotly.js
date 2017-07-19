@@ -41,6 +41,7 @@ module.exports = function calc(gd) {
         fillFn(trace.hoverlabel.font.size, cd, 'hts');
         fillFn(trace.hoverlabel.font.color, cd, 'htc');
         fillFn(trace.hoverlabel.font.family, cd, 'htf');
+        fillFn(trace.hoverlabel.namelength, cd, 'hnl');
     }
 };
 

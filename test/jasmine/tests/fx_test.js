@@ -148,7 +148,8 @@ describe('Fx defaults', function() {
                 family: 'Roboto',
                 size: 40,
                 color: 'pink'
-            }
+            },
+            namelength: 15
         });
 
         expect(out.data[1].hoverlabel).toEqual({
@@ -158,7 +159,8 @@ describe('Fx defaults', function() {
                 family: 'Roboto',
                 size: 20,
                 color: 'red'
-            }
+            },
+            namelength: 15
         });
 
         expect(out.layout.annotations[0].hoverlabel).toEqual({
