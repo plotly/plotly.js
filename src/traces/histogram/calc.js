@@ -106,7 +106,7 @@ module.exports = function calc(gd, trace) {
     // decrease end a little in case of rounding errors
     binend = pr2c(binspec.end) + (i - Axes.tickIncrement(i, binspec.size, false, calendar)) / 1e6;
 
-    while(i < binend && pos.length < 5000) {
+    while(i < binend && pos.length < 1e6) {
         i2 = Axes.tickIncrement(i, binspec.size, false, calendar);
         pos.push((i + i2) / 2);
         size.push(sizeinit);
@@ -116,6 +116,8 @@ module.exports = function calc(gd, trace) {
         // nonuniform bins also need nonuniform normalization factors
         if(densitynorm) inc.push(1 / (i2 - i));
         if(doavg) counts.push(0);
+        // break to avoid infinite loops
+        if(i2 <= i) break;
         i = i2;
     }
 

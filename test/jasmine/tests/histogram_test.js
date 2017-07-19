@@ -246,6 +246,19 @@ describe('Test histogram', function() {
             ]);
         });
 
+        it('should handle very small bins', function() {
+            var out = _calc({
+                x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                xbins: {
+                    start: 0,
+                    end: 10,
+                    size: 0.001
+                }
+            });
+
+            expect(out.length).toEqual(9001);
+        });
+
         describe('cumulative distribution functions', function() {
             var base = {
                 x: [0, 5, 10, 15, 5, 10, 15, 10, 15, 15],
