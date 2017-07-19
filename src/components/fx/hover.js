@@ -689,8 +689,11 @@ function createHoverText(hoverData, opts, gd) {
             // strip out our pseudo-html elements from d.name (if it exists at all)
             name = svgTextUtils.plainText(d.name || '');
 
-            if(commonLabelOpts.namelength > 0 && name.length > commonLabelOpts.namelength) {
-                name = name.substr(0, commonLabelOpts.namelength - 3) + '...';
+            var nameLength = Math.round(d.nameLength);
+
+            if(nameLength > -1 && name.length > nameLength) {
+                if(nameLength > 3) name = name.substr(0, nameLength - 3) + '...';
+                else name = name.substr(0, nameLength);
             }
         }
 
@@ -1063,6 +1066,7 @@ function cleanPoint(d, hovermode) {
     fill('fontFamily', 'htf', 'hoverlabel.font.family');
     fill('fontSize', 'hts', 'hoverlabel.font.size');
     fill('fontColor', 'htc', 'hoverlabel.font.color');
+    fill('nameLength', 'hnl', 'hoverlabel.namelength');
 
     d.posref = hovermode === 'y' ? (d.x0 + d.x1) / 2 : (d.y0 + d.y1) / 2;
 

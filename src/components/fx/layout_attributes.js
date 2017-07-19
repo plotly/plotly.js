@@ -57,11 +57,18 @@ module.exports = {
             color: extendFlat({}, fontAttrs.color)
         },
         namelength: {
-            valType: 'number',
-            min: 0,
+            valType: 'integer',
+            min: -1,
             dflt: 15,
             role: 'style',
-            description: 'Sets the length (in number of characters) of the hover labels for this trace'
+            description: [
+                'Sets the default length (in number of characters) of the trace name in',
+                'the hover labels for all traces. -1 shows the whole name',
+                'regardless of length. 0-3 shows the first 0-3 characters, and',
+                'an integer >3 will show the whole name if it is less than that',
+                'many characters, but if it is longer, will truncate to',
+                '`namelength - 3` characters and add an ellipsis.'
+            ].join(' ')
         }
     }
 };
