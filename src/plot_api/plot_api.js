@@ -585,6 +585,14 @@ Plotly.redraw = function(gd) {
 Plotly.newPlot = function(gd, data, layout, config) {
     gd = helpers.getGraphDiv(gd);
 
+    // clear 'auto' axis types that could have leaked in user layout
+    // in previous Plotly.plot calls
+    var axList = Plotly.Axes.list({ _fullLayout: layout || {} });
+    for(var i = 0; i < axList.length; i++) {
+        var ax = axList[i];
+        if(ax && ax.type) ax.type = '-';
+    }
+
     // remove gl contexts
     Plots.cleanPlot([], {}, gd._fullData || {}, gd._fullLayout || {});
 
