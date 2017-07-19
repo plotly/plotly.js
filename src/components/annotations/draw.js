@@ -85,6 +85,8 @@ function drawOne(gd, index) {
 function drawRaw(gd, options, index, subplotId, xa, ya) {
     var fullLayout = gd._fullLayout;
     var gs = gd._fullLayout._size;
+    var edits = gd._context.edits;
+
     var className;
     var annbase;
 
@@ -128,8 +130,11 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
     var annTextGroup = annGroup.append('g')
         .classed('annotation-text-g', true);
 
+    var editTextPosition = edits[options.showarrow ? 'annotationTail' : 'annotationPosition'];
+    var textEvents = options.captureevents || edits.annotationText || editTextPosition;
+
     var annTextGroupInner = annTextGroup.append('g')
-        .style('pointer-events', options.captureevents ? 'all' : null)
+        .style('pointer-events', textEvents ? 'all' : null)
         .call(setCursor, 'default')
         .on('click', function() {
             gd._dragging = false;
@@ -519,7 +524,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
             // the arrow dragger is a small square right at the head, then a line to the tail,
             // all expanded by a stroke width of 6px plus the arrow line width
-            if(gd._context.editable && arrow.node().parentNode && !subplotId) {
+            if(edits.annotationPosition && arrow.node().parentNode && !subplotId) {
                 var arrowDragHeadX = headX;
                 var arrowDragHeadY = headY;
                 if(options.standoff) {
@@ -601,7 +606,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
         if(options.showarrow) drawArrow(0, 0);
 
         // user dragging the annotation (text, not arrow)
-        if(gd._context.editable) {
+        if(editTextPosition) {
             var update,
                 baseTextTransform;
 
@@ -679,7 +684,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
         }
     }
 
-    if(gd._context.editable) {
+    if(edits.annotationText) {
         annText.call(svgTextUtils.makeEditable, {delegate: annTextGroupInner, gd: gd})
             .call(textLayout)
             .on('edit', function(_text) {
