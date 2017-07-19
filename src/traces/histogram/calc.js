@@ -106,7 +106,7 @@ module.exports = function calc(gd, trace) {
     // decrease end a little in case of rounding errors
     binend = pr2c(binspec.end) + (i - Axes.tickIncrement(i, binspec.size, false, calendar)) / 1e6;
 
-    while(i < binend) {
+    while(i < binend && pos.length < 1e6) {
         i2 = Axes.tickIncrement(i, binspec.size, false, calendar);
         pos.push((i + i2) / 2);
         size.push(sizeinit);
