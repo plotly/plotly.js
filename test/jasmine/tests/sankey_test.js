@@ -470,37 +470,49 @@ describe('sankey tests', function() {
             .then(function() { return _hover('node'); })
             .then(function(d) {
                 _assert(d, {
-                    curveNumber: 0
+                    curveNumber: 0,
+                    pointNumber: 4,
+                    label: 'Solid'
                 });
             })
             .then(function() { return _hover('link'); })
             .then(function(d) {
                 _assert(d, {
-                    curveNumber: 0
+                    curveNumber: 0,
+                    pointNumber: 61,
+                    value: 46.477
                 });
             })
             .then(function() { return _click('node'); })
             .then(function(d) {
                 _assert(d, {
-                    curveNumber: 0
+                    curveNumber: 0,
+                    pointNumber: 4,
+                    label: 'Solid'
                 });
             })
             .then(function() { return _click('link'); })
             .then(function(d) {
                 _assert(d, {
-                    curveNumber: 0
+                    curveNumber: 0,
+                    pointNumber: 61,
+                    value: 46.477
                 });
             })
             .then(function() { return _unhover('node'); })
             .then(function(d) {
                 _assert(d, {
-                    curveNumber: 0
+                    curveNumber: 0,
+                    pointNumber: 4,
+                    label: 'Solid'
                 });
             })
             .then(function() { return _unhover('link'); })
             .then(function(d) {
                 _assert(d, {
-                    curveNumber: 0
+                    curveNumber: 0,
+                    pointNumber: 61,
+                    value: 46.477
                 });
             })
             .catch(fail)

@@ -86,6 +86,7 @@ function sankeyModel(layout, d, i) {
 
     var nodes = nodeSpec.label.map(function(l, i) {
         return {
+            pointNumber: i,
             label: l,
             color: Lib.isArray(nodeSpec.color) ? nodeSpec.color[i] : nodeSpec.color
         };
@@ -93,6 +94,7 @@ function sankeyModel(layout, d, i) {
 
     var links = linkSpec.value.map(function(d, i) {
         return {
+            pointNumber: i,
             label: linkSpec.label[i],
             color: Lib.isArray(linkSpec.color) ? linkSpec.color[i] : linkSpec.color,
             source: linkSpec.source[i],
@@ -159,7 +161,6 @@ function linkModel(uniqueKeys, d, l) {
     // for event data
     l.trace = d.trace;
     l.curveNumber = d.trace.index;
-    l.pointNumber = 'TODO';
 
     return {
         key: key,
@@ -191,7 +192,6 @@ function nodeModel(uniqueKeys, d, n) {
     // for event data
     n.trace = d.trace;
     n.curveNumber = d.trace.index;
-    n.pointNumber = 'TODO';
 
     return {
         key: key,
@@ -424,7 +424,6 @@ function snappingForce(sankeyNode, forceKey, nodes, d) {
 // scene graph
 
 module.exports = function(svg, styledData, layout, callbacks) {
-
     var sankey = svg.selectAll('.sankey')
         .data(styledData
                 .filter(function(d) {return unwrap(d).trace.visible;})
