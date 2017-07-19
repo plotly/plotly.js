@@ -1938,6 +1938,19 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
         plots.doCalcdata(gd);
 
+        var subplotInfo, _module;
+        var subplots = plots.getSubplotIds(gd._fullLayout, 'cartesian'),
+            modules = gd._fullLayout._modules;
+
+        for(i = 0; i < subplots.length; i++) {
+            subplotInfo = gd._fullLayout._plots[subplots[i]];
+
+            for(var j = 0; j < modules.length; j++) {
+                _module = modules[j];
+                if(_module.setPositions) _module.setPositions(gd, subplotInfo);
+            }
+        }
+
         ErrorBars.calc(gd);
 
         return Promise.resolve();
