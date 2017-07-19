@@ -124,8 +124,10 @@ module.exports = function plot(gd, plotinfo, cdbar) {
                     // append bar path and text
                     var bar = d3.select(this);
 
-                    bar.append('path').attr('d',
-                        'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z');
+                    bar.append('path')
+                        .style('vector-effect', 'non-scaling-stroke')
+                        .attr('d',
+                            'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z');
 
                     appendBarText(gd, bar, d, i, x0, x1, y0, y1);
                 });

@@ -89,6 +89,7 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
 
                 if(isNew) {
                     yerror = errorbar.append('path')
+                        .style('vector-effect', 'non-scaling-stroke')
                         .classed('yerror', true);
                 } else if(hasAnimation) {
                     yerror = yerror
@@ -117,6 +118,7 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
 
                 if(isNew) {
                     xerror = errorbar.append('path')
+                        .style('vector-effect', 'non-scaling-stroke')
                         .classed('xerror', true);
                 } else if(hasAnimation) {
                     xerror = xerror
