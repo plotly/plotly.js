@@ -1,5 +1,5 @@
 /**
-* plotly.js v1.28.3
+* plotly.js v1.29.0
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -69,7 +69,7 @@ var saneTopojson = require('sane-topojson');
 
 
 // package version injected by `npm run preprocess`
-exports.version = '1.28.3';
+exports.version = '1.29.0';
 
 exports.topojson = saneTopojson;
 
