@@ -286,7 +286,7 @@ proto.updateFancy = function(options) {
         var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len);
         var borderSizes = convertNumber(markerOpts.line.width, len);
         var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len);
-        var index, size, symbol, symbolSpec, isOpen, isDimmed, _colors, _borderColors, bw, minBorderWidth;
+        var index, size, symbol, symbolName, symbolSpec, isOpen, isDimmed, _colors, _borderColors, bw, minBorderWidth;
 
         sizes = convertArray(markerSizeFunc, markerOpts.size, len);
 
@@ -294,21 +294,22 @@ proto.updateFancy = function(options) {
             index = idToIndex[i];
 
             symbol = symbols[index];
-            symbolSpec = MARKER_SVG_SYMBOLS[symbol] || {};
+            symbolName = symbol.split(/-open|-dot/)[0]
+            symbolSpec = MARKER_SVG_SYMBOLS[symbolName] || {};
             isOpen = isSymbolOpen(symbol);
             isDimmed = selIds && !selIds[index];
 
-            // if(symbolSpec.noBorder && !isOpen) {
-            //     _colors = borderColors;
-            // } else {
+            if(symbolSpec.noBorder && !isOpen) {
+                _colors = borderColors;
+            } else {
                 _colors = colors;
-            // }
+            }
 
-            // if(isOpen) {
-                // _borderColors = colors;
-            // } else {
+            if(isOpen) {
+                _borderColors = colors;
+            } else {
                 _borderColors = borderColors;
-            // }
+            }
 
             // See  https://github.com/plotly/plotly.js/pull/1781#discussion_r121820798
             // for more info on this logic
@@ -324,17 +325,17 @@ proto.updateFancy = function(options) {
             var optColors = this.scatter.options.colors
             var dim = isDimmed ? DESELECTDIM : 1;
             if (!optColors[i]) optColors[i] = []
-            // if(isOpen && !symbolSpec.noBorder && !symbolSpec.noFill) {
-            //     optColors[i][0] = TRANSPARENT[0];
-            //     optColors[i][1] = TRANSPARENT[1];
-            //     optColors[i][2] = TRANSPARENT[2];
-            //     optColors[i][3] = TRANSPARENT[3];
-            // } else {
+            if(isOpen && !symbolSpec.noBorder && !symbolSpec.noFill) {
+                optColors[i][0] = TRANSPARENT[0];
+                optColors[i][1] = TRANSPARENT[1];
+                optColors[i][2] = TRANSPARENT[2];
+                optColors[i][3] = TRANSPARENT[3];
+            } else {
                 optColors[i][0] = _colors[4*index + 0] * 255;
                 optColors[i][1] = _colors[4*index + 1] * 255;
                 optColors[i][2] = _colors[4*index + 2] * 255;
                 optColors[i][3] = dim * _colors[4*index + 3] * 255;
-            // }
+            }
             if (!this.scatter.options.borderColors[i]) this.scatter.options.borderColors[i] = []
             this.scatter.options.borderColors[i][0] = _borderColors[4*index + 0] * 255;
             this.scatter.options.borderColors[i][1] = _borderColors[4*index + 1] * 255;
