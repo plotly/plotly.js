@@ -45,7 +45,8 @@ module.exports = function calc(gd, trace) {
 
 
     // calculate the bins
-    if(trace.autobinx || !('xbins' in trace)) {
+    if(trace.autobinx || !trace.xbins ||
+            trace.xbins.start === null || trace.xbins.end === null) {
         trace.xbins = Axes.autoBin(x, xa, trace.nbinsx, '2d', xcalendar);
         if(trace.type === 'histogram2dcontour') {
             // the "true" last argument reverses the tick direction (which we can't
@@ -58,8 +59,14 @@ module.exports = function calc(gd, trace) {
 
         // copy bin info back to the source data.
         trace._input.xbins = trace.xbins;
+        // note that it's possible to get here with an explicit autobin: false
+        // if the bins were not specified.
+        // in that case this will remain in the trace, so that future updates
+        // which would change the autobinning will not do so.
+        trace._input.autobinx = trace.autobinx;
     }
-    if(trace.autobiny || !('ybins' in trace)) {
+    if(trace.autobiny || !trace.ybins ||
+            trace.ybins.start === null || trace.ybins.end === null) {
         trace.ybins = Axes.autoBin(y, ya, trace.nbinsy, '2d', ycalendar);
         if(trace.type === 'histogram2dcontour') {
             trace.ybins.start = yc2r(Axes.tickIncrement(
@@ -68,6 +75,7 @@ module.exports = function calc(gd, trace) {
                 yr2c(trace.ybins.end), trace.ybins.size, false, ycalendar));
         }
         trace._input.ybins = trace.ybins;
+        trace._input.autobiny = trace.autobiny;
     }
 
     // make the empty bin array & scale the map

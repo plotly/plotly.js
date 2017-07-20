@@ -43,9 +43,11 @@ module.exports = function calc(gd, trace) {
     var pos0 = pa.makeCalcdata(trace, maindata);
 
     // calculate the bins
-    var binAttr = maindata + 'bins',
-        binspec;
-    if((trace['autobin' + maindata] !== false) || !(binAttr in trace)) {
+    var binAttr = maindata + 'bins';
+    var autoBinAttr = 'autobin' + maindata;
+    var binspec = trace[binAttr];
+    if((trace[autoBinAttr] !== false) || !binspec ||
+            binspec.start === null || binspec.end === null) {
         binspec = Axes.autoBin(pos0, pa, trace['nbins' + maindata], false, calendar);
 
         // adjust for CDF edge cases
@@ -60,9 +62,11 @@ module.exports = function calc(gd, trace) {
 
         // copy bin info back to the source and full data.
         trace._input[binAttr] = trace[binAttr] = binspec;
-    }
-    else {
-        binspec = trace[binAttr];
+        // note that it's possible to get here with an explicit autobin: false
+        // if the bins were not specified.
+        // in that case this will remain in the trace, so that future updates
+        // which would change the autobinning will not do so.
+        trace._input[autoBinAttr] = trace[autoBinAttr];
     }
 
     var nonuniformBins = typeof binspec.size === 'string',
