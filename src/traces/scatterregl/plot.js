@@ -21,6 +21,7 @@ var subTypes = require('../scatter/subtypes');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var getTraceColor = require('../scatter/get_trace_color');
 var MARKER_SYMBOLS = require('../../constants/gl2d_markers');
+var MARKER_SVG_SYMBOLS = require('../../components/drawing/symbol_defs');
 var DASHES = require('../../constants/gl2d_dashes');
 var fit = require('canvas-fit')
 
@@ -112,7 +113,7 @@ function createScatterScene(container) {
         positions: Array(),
         sizes: [],
         colors: [],
-        glyphs: [],
+        markers: [],
         borderSizes: [],
         borderColors: [],
         size: 12,
@@ -271,7 +272,7 @@ proto.updateFancy = function(options) {
         // we don't have to loop through the data another time
 
         this.scatter.options.sizes = new Array(pId);
-        this.scatter.options.glyphs = new Array(pId);
+        this.scatter.options.markers = new Array(pId);
         this.scatter.options.borderSizes = new Array(pId);
         this.scatter.options.colors = new Array(pId);
         this.scatter.options.borderColors = new Array(pId);
@@ -280,7 +281,8 @@ proto.updateFancy = function(options) {
         var markerOpts = options.marker;
         var markerOpacity = markerOpts.opacity;
         var traceOpacity = options.opacity;
-        var symbols = convertSymbol(markerOpts.symbol, len);
+
+        var symbols = markerOpts.symbol//convertSymbol(markerOpts.symbol, len);
         var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len);
         var borderSizes = convertNumber(markerOpts.line.width, len);
         var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len);
@@ -292,46 +294,47 @@ proto.updateFancy = function(options) {
             index = idToIndex[i];
 
             symbol = symbols[index];
-            symbolSpec = MARKER_SYMBOLS[symbol];
+            symbolSpec = MARKER_SVG_SYMBOLS[symbol] || {};
             isOpen = isSymbolOpen(symbol);
             isDimmed = selIds && !selIds[index];
 
-            if(symbolSpec.noBorder && !isOpen) {
-                _colors = borderColors;
-            } else {
+            // if(symbolSpec.noBorder && !isOpen) {
+            //     _colors = borderColors;
+            // } else {
                 _colors = colors;
-            }
+            // }
 
-            if(isOpen) {
-                _borderColors = colors;
-            } else {
+            // if(isOpen) {
+                // _borderColors = colors;
+            // } else {
                 _borderColors = borderColors;
-            }
+            // }
 
             // See  https://github.com/plotly/plotly.js/pull/1781#discussion_r121820798
             // for more info on this logic
             size = sizes[index];
             bw = borderSizes[index];
-            minBorderWidth = (symbolSpec.noBorder || symbolSpec.noFill) ? 0.1 * size : 0;
+            // minBorderWidth = (symbolSpec.noBorder || symbolSpec.noFill) ? 0.1 * size : 0;
+            minBorderWidth = 0
 
-            this.scatter.options.sizes[i] = 2.0 * size;
-            this.scatter.options.glyphs[i] = symbolSpec.unicode;
+            this.scatter.options.sizes[i] = 3.0 * size;
+            this.scatter.options.markers[i] = symbolSpec.f && symbolSpec.f(40) || null;
             this.scatter.options.borderSizes[i] = 0.5 * ((bw > minBorderWidth) ? bw - minBorderWidth : 0);
 
             var optColors = this.scatter.options.colors
             var dim = isDimmed ? DESELECTDIM : 1;
             if (!optColors[i]) optColors[i] = []
-            if(isOpen && !symbolSpec.noBorder && !symbolSpec.noFill) {
-                optColors[i][0] = TRANSPARENT[0];
-                optColors[i][1] = TRANSPARENT[1];
-                optColors[i][2] = TRANSPARENT[2];
-                optColors[i][3] = TRANSPARENT[3];
-            } else {
+            // if(isOpen && !symbolSpec.noBorder && !symbolSpec.noFill) {
+            //     optColors[i][0] = TRANSPARENT[0];
+            //     optColors[i][1] = TRANSPARENT[1];
+            //     optColors[i][2] = TRANSPARENT[2];
+            //     optColors[i][3] = TRANSPARENT[3];
+            // } else {
                 optColors[i][0] = _colors[4*index + 0] * 255;
                 optColors[i][1] = _colors[4*index + 1] * 255;
                 optColors[i][2] = _colors[4*index + 2] * 255;
                 optColors[i][3] = dim * _colors[4*index + 3] * 255;
-            }
+            // }
             if (!this.scatter.options.borderColors[i]) this.scatter.options.borderColors[i] = []
             this.scatter.options.borderColors[i][0] = _borderColors[4*index + 0] * 255;
             this.scatter.options.borderColors[i][1] = _borderColors[4*index + 1] * 255;
