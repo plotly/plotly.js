@@ -10,7 +10,6 @@
 
 var annAttrs = require('../../components/annotations/attributes');
 var fontAttrs = require('../../plots/font_attributes');
-
 var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = {
@@ -44,23 +43,22 @@ module.exports = {
         }
     },
 
-    labelfont: extendFlat({}, fontAttrs, {
-        description: 'Sets the font for the `dimension` labels.'
-    }),
-
-    labels: {
-        valType: 'data_array',
-        role: 'info',
-        dflt: [],
-        description: 'The shown name of the columns.'
-    },
-
     columnwidth: {
         valType: 'number',
         arrayOk: true,
         dflt: null,
         role: 'style',
         description: 'The width of cells.'
+    },
+
+    columnorder: {
+        valType: 'data_array',
+        role: 'info',
+        description: [
+            'Specifies the rendered order of the data columns; for example, a value `2` at position `0`',
+            'means that column index `0` in the data will be rendered as the',
+            'third column, as columns have an index base of zero.'
+        ].join(' ')
     },
 
     header: {
@@ -84,7 +82,7 @@ module.exports = {
                 'Sets the cell value formatting rule using d3 formatting mini-language',
                 'which is similar to those of Python. See',
                 'https://github.com/d3/d3-format/blob/master/README.md#locale_format'
-            ]
+            ].join(' ')
         },
 
         prefix: {
@@ -105,7 +103,6 @@ module.exports = {
 
         height: {
             valType: 'number',
-            arrayOk: false,
             dflt: 28,
             role: 'style',
             description: 'The height of cells.'
@@ -193,7 +190,7 @@ module.exports = {
                 'Sets the cell value formatting rule using d3 formatting mini-language',
                 'which is similar to those of Python. See',
                 'https://github.com/d3/d3-format/blob/master/README.md#locale_format'
-            ]
+            ].join(' ')
         },
 
         prefix: {
@@ -214,7 +211,6 @@ module.exports = {
 
         height: {
             valType: 'number',
-            arrayOk: false,
             dflt: 20,
             role: 'style',
             description: 'The height of cells.'

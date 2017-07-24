@@ -11,6 +11,18 @@
 var Lib = require('../../lib');
 var attributes = require('./attributes');
 
+function defaultColumnOrder(traceIn, coerce) {
+    var specifiedColumnOrder = traceIn.columnorder || [];
+    var commonLength = traceIn.header.values.length;
+    var truncated = specifiedColumnOrder.slice(0, commonLength);
+    var sorted = truncated.slice().sort(function(a, b) {return a - b;});
+    var oneStepped = truncated.map(function(d) {return sorted.indexOf(d);});
+    for(var i = oneStepped.length; i < commonLength; i++) {
+        oneStepped.push(i);
+    }
+    coerce('columnorder', oneStepped);
+};
+
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
@@ -25,9 +37,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('domain.x');
     coerce('domain.y');
 
-    coerce('labels');
-
     coerce('columnwidth');
+    defaultColumnOrder(traceIn, coerce);
 
     coerce('cells.values');
     coerce('cells.format');

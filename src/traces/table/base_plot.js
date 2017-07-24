@@ -27,7 +27,5 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 
     if(hadTable && !hasTable) {
         oldFullLayout._paperdiv.selectAll('.table').remove();
-        oldFullLayout._paperdiv.selectAll('.table').remove();
-        oldFullLayout._glimages.selectAll('*').remove();
     }
 };
