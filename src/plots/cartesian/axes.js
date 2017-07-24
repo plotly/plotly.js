@@ -1706,7 +1706,9 @@ axes.doTicks = function(gd, axid, skipTitle) {
     }
 
     if(ax.ticks === 'outside' || ax.showline) {
-        labelStandoff += 0.2 * ax.tickfont.size;
+        var tickFontSize = ax.tickfont ? ax.tickfont.size : 12;
+
+        labelStandoff += 0.2 * tickFontSize;
     }
 
     // positioning arguments for x vs y axes
