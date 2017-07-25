@@ -815,4 +815,28 @@ describe('supplyDefaults with groupby + filter', function() {
         expect(out[1].x).toEqual([4, 5, 6]);
         expect(out[1].y).toEqual([7, 6, 8]);
     });
+
+    it('computes the correct data when groupby + groupby', function() {
+        var out = _transform([{
+            x: [1, 2, 3, 4, 5, 6, 7, 8],
+            y: [4, 6, 5, 7, 6, 8, 9, 10],
+            transforms: [{
+                type: 'groupby',
+                groups: [1, 1, 1, 1, 2, 2, 2, 2]
+            }, {
+                type: 'groupby',
+                groups: [3, 4, 3, 4, 3, 4, 3, 5],
+            }]
+        }]);
+        //               |  |  |  |  |  |  |  |
+        //               v  v  v  v  v  v  v  v
+        // Trace number: 0  1  0  1  2  3  2  4
+
+        expect(out.length).toEqual(5);
+        expect(out[0].x).toEqual([1, 3]);
+        expect(out[1].x).toEqual([2, 4]);
+        expect(out[2].x).toEqual([5, 7]);
+        expect(out[3].x).toEqual([6]);
+        expect(out[4].x).toEqual([8]);
+    });
 });
