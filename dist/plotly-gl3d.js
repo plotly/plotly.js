@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.29.0
+* plotly.js (gl3d) v1.29.1
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -50854,20 +50854,23 @@ module.exports = function draw(gd, id) {
             return;
         }
         var zrange = d3.extent(((typeof opts.fillcolor === 'function') ?
-                opts.fillcolor : opts.line.color).domain()),
-            linelevels = [],
-            filllevels = [],
-            l,
-            linecolormap = typeof opts.line.color === 'function' ?
-                opts.line.color : function() { return opts.line.color; },
-            fillcolormap = typeof opts.fillcolor === 'function' ?
-                opts.fillcolor : function() { return opts.fillcolor; };
+            opts.fillcolor : opts.line.color).domain());
+        var linelevels = [];
+        var filllevels = [];
+        var linecolormap = typeof opts.line.color === 'function' ?
+            opts.line.color : function() { return opts.line.color; };
+        var fillcolormap = typeof opts.fillcolor === 'function' ?
+            opts.fillcolor : function() { return opts.fillcolor; };
+        var l;
+        var i;
 
         var l0 = opts.levels.end + opts.levels.size / 100,
             ls = opts.levels.size,
             zr0 = (1.001 * zrange[0] - 0.001 * zrange[1]),
             zr1 = (1.001 * zrange[1] - 0.001 * zrange[0]);
-        for(l = opts.levels.start; (l - l0) * ls < 0; l += ls) {
+        for(i = 0; i < 1e5; i++) {
+            l = opts.levels.start + i * ls;
+            if(ls > 0 ? (l >= l0) : (l <= l0)) break;
             if(l > zr0 && l < zr1) linelevels.push(l);
         }
 
@@ -50875,7 +50878,9 @@ module.exports = function draw(gd, id) {
             if(opts.filllevels) {
                 l0 = opts.filllevels.end + opts.filllevels.size / 100;
                 ls = opts.filllevels.size;
-                for(l = opts.filllevels.start; (l - l0) * ls < 0; l += ls) {
+                for(i = 0; i < 1e5; i++) {
+                    l = opts.filllevels.start + i * ls;
+                    if(ls > 0 ? (l >= l0) : (l <= l0)) break;
                     if(l > zrange[0] && l < zrange[1]) filllevels.push(l);
                 }
             }
@@ -64802,7 +64807,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.29.0';
+exports.version = '1.29.1';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -77390,7 +77395,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
         labelShift = ax.ticklen * Math.sin(caRad);
     }
 
-    if(ax.ticks === 'outside' || ax.showline) {
+    if(ax.showticklabels && (ax.ticks === 'outside' || ax.showline)) {
         labelStandoff += 0.2 * ax.tickfont.size;
     }
 
