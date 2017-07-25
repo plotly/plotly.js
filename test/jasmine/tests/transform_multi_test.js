@@ -868,4 +868,25 @@ describe('supplyDefaults with groupby + filter', function() {
         expect(out[3].x).toEqual([]);
         expect(out[4].x).toEqual([]);
     });
+
+    it('fiter + filter', function() {
+        var out = _transform([{
+            x: [1, 2, 3, 4, 5, 6, 7],
+            y: [4, 6, 5, 7, 8, 9, 10],
+            transforms: [{
+                type: 'filter',
+                target: [1, 2, 3, 4, 5, 6, 7],
+                operation: '<',
+                value: 6.5
+            }, {
+                type: 'filter',
+                target: [1, 2, 3, 4, 5, 6, 7],
+                operation: '>',
+                value: 1.5
+            }]
+        }]);
+
+        expect(out[0].x).toEqual([2, 3, 4, 5, 6]);
+        expect(out[0].y).toEqual([6, 5, 7, 8, 9]);
+    });
 });
