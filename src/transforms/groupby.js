@@ -196,12 +196,5 @@ function transformOne(trace, state) {
         newTrace = Lib.extendDeepNoArrays(newTrace, styleLookup[groupName] || {});
     }
 
-    for(i = 0; i < newData.length; i++) {
-        var data = newData[i];
-        var transforms = data.transforms.slice();
-        transforms.splice(state.transformIndex, 1);
-        data.transforms = transforms;
-    }
-
     return newData;
 }
