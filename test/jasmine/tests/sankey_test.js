@@ -410,4 +410,113 @@ describe('sankey tests', function() {
             .then(done);
         });
     });
+
+    describe('Test hover/click event data:', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        function _makeWrapper(eventType, mouseFn) {
+            var posByElementType = {
+                node: [400, 300],
+                link: [450, 300]
+            };
+
+            return function(elType) {
+                return new Promise(function(resolve, reject) {
+                    gd.once(eventType, function(d) {
+                        delete gd._lastHoverTime;
+                        resolve(d);
+                    });
+
+                    mouseFn(posByElementType[elType]);
+                    setTimeout(function() {
+                        reject(eventType + ' did not get called!');
+                    }, 100);
+                });
+            };
+        }
+
+        var _hover = _makeWrapper('plotly_hover', function(pos) {
+            mouseEvent('mouseover', pos[0], pos[1]);
+        });
+
+        var _click = _makeWrapper('plotly_click', function(pos) {
+            mouseEvent('click', pos[0], pos[1]);
+        });
+
+        var _unhover = _makeWrapper('plotly_unhover', function(pos) {
+            mouseEvent('mouseover', pos[0], pos[1]);
+            mouseEvent('mouseout', pos[0], pos[1]);
+        });
+
+        it('should output correct hover/click/unhover event data', function(done) {
+            var fig = Lib.extendDeep({}, mock);
+
+            function _assert(d, expectedPtData) {
+                expect(d.event).toBeDefined('original event reference');
+
+                var ptData = d.points[0];
+                Object.keys(expectedPtData).forEach(function(k) {
+                    expect(ptData[k]).toBe(expectedPtData[k], 'point data for ' + k);
+                });
+            }
+
+            Plotly.plot(gd, fig)
+            .then(function() { return _hover('node'); })
+            .then(function(d) {
+                _assert(d, {
+                    curveNumber: 0,
+                    pointNumber: 4,
+                    label: 'Solid'
+                });
+            })
+            .then(function() { return _hover('link'); })
+            .then(function(d) {
+                _assert(d, {
+                    curveNumber: 0,
+                    pointNumber: 61,
+                    value: 46.477
+                });
+            })
+            .then(function() { return _click('node'); })
+            .then(function(d) {
+                _assert(d, {
+                    curveNumber: 0,
+                    pointNumber: 4,
+                    label: 'Solid'
+                });
+            })
+            .then(function() { return _click('link'); })
+            .then(function(d) {
+                _assert(d, {
+                    curveNumber: 0,
+                    pointNumber: 61,
+                    value: 46.477
+                });
+            })
+            .then(function() { return _unhover('node'); })
+            .then(function(d) {
+                _assert(d, {
+                    curveNumber: 0,
+                    pointNumber: 4,
+                    label: 'Solid'
+                });
+            })
+            .then(function() { return _unhover('link'); })
+            .then(function(d) {
+                _assert(d, {
+                    curveNumber: 0,
+                    pointNumber: 61,
+                    value: 46.477
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+    });
 });

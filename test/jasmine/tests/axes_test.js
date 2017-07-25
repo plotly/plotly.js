@@ -2225,6 +2225,38 @@ describe('Test axes', function() {
                 ['2000-01-01 11:00:00.0001', 'Jan 1, 2000, 11:00:00.0001']
             ]);
         });
+
+        it('avoids infinite loops due to rounding errors', function() {
+            var textOut = mockCalc({
+                type: 'linear',
+                tickmode: 'linear',
+                tick0: 1e200,
+                dtick: 1e-200,
+                range: [1e200, 2e200]
+            });
+
+            // This actually gives text '-Infinity' because it can't
+            // calculate the first tick properly, but since it's not going to
+            // be able to do any better with the rest, we don't much care.
+            expect(textOut.length).toBe(1);
+        });
+
+        it('truncates at the greater of 1001 ticks or one per pixel', function() {
+            var ax = {
+                type: 'linear',
+                tickmode: 'linear',
+                tick0: 0,
+                dtick: 1,
+                range: [0, 1e6],
+                _length: 100
+            };
+
+            expect(mockCalc(ax).length).toBe(1001);
+
+            ax._length = 10000;
+
+            expect(mockCalc(ax).length).toBe(10001);
+        });
     });
 
     describe('autoBin', function() {

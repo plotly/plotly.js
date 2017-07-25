@@ -65,7 +65,6 @@ function switchToSankeyFormat(nodes) {
 // view models
 
 function sankeyModel(layout, d, i) {
-
     var trace = unwrap(d).trace,
         domain = trace.domain,
         nodeSpec = trace.node,
@@ -87,6 +86,7 @@ function sankeyModel(layout, d, i) {
 
     var nodes = nodeSpec.label.map(function(l, i) {
         return {
+            pointNumber: i,
             label: l,
             color: Lib.isArray(nodeSpec.color) ? nodeSpec.color[i] : nodeSpec.color
         };
@@ -94,6 +94,7 @@ function sankeyModel(layout, d, i) {
 
     var links = linkSpec.value.map(function(d, i) {
         return {
+            pointNumber: i,
             label: linkSpec.label[i],
             color: Lib.isArray(linkSpec.color) ? linkSpec.color[i] : linkSpec.color,
             source: linkSpec.source[i],
@@ -121,6 +122,7 @@ function sankeyModel(layout, d, i) {
 
     return {
         key: i,
+        trace: trace,
         guid: Math.floor(1e12 * (1 + Math.random())),
         horizontal: horizontal,
         width: width,
@@ -150,12 +152,15 @@ function sankeyModel(layout, d, i) {
 }
 
 function linkModel(uniqueKeys, d, l) {
-
     var tc = tinycolor(l.color);
     var basicKey = l.source.label + '|' + l.target.label;
     var foundKey = uniqueKeys[basicKey];
     uniqueKeys[basicKey] = (foundKey === void(0) ? foundKey : 0) + 1;
     var key = basicKey + (foundKey === void(0) ? '' : '__' + foundKey);
+
+    // for event data
+    l.trace = d.trace;
+    l.curveNumber = d.trace.index;
 
     return {
         key: key,
@@ -173,7 +178,6 @@ function linkModel(uniqueKeys, d, l) {
 }
 
 function nodeModel(uniqueKeys, d, n) {
-
     var tc = tinycolor(n.color),
         zoneThicknessPad = c.nodePadAcross,
         zoneLengthPad = d.nodePad / 2,
@@ -184,6 +188,10 @@ function nodeModel(uniqueKeys, d, n) {
     var foundKey = uniqueKeys[basicKey];
     uniqueKeys[basicKey] = (foundKey === void(0) ? foundKey : 0) + 1;
     var key = basicKey + (foundKey === void(0) ? '' : '__' + foundKey);
+
+    // for event data
+    n.trace = d.trace;
+    n.curveNumber = d.trace.index;
 
     return {
         key: key,
@@ -416,7 +424,6 @@ function snappingForce(sankeyNode, forceKey, nodes, d) {
 // scene graph
 
 module.exports = function(svg, styledData, layout, callbacks) {
-
     var sankey = svg.selectAll('.sankey')
         .data(styledData
                 .filter(function(d) {return unwrap(d).trace.visible;})

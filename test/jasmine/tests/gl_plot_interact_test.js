@@ -245,6 +245,20 @@ describe('Test gl3d plots', function() {
 
             expect(label.size()).toEqual(1);
             expect(label.select('text').text()).toEqual('2');
+
+            return Plotly.restyle(gd, {
+                'colorbar.tickvals': [[25]],
+                'colorbar.ticktext': [['single tick!']]
+            });
+        })
+        .then(_hover)
+        .then(function() {
+            assertEventData(1, 2, 43, 0, [1, 2], {
+                'hoverinfo': 'y',
+                'hoverlabel.font.color': 'cyan',
+                'colorbar.tickvals': undefined,
+                'colorbar.ticktext': undefined
+            });
         })
         .then(done);
     });

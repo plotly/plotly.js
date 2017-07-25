@@ -804,13 +804,18 @@ axes.calcTicks = function calcTicks(ax) {
         endtick = (axrev) ? Math.max(-0.5, endtick) :
             Math.min(ax._categories.length - 0.5, endtick);
     }
+
+    var xPrevious = null;
+    var maxTicks = Math.max(1000, ax._length || 0);
     for(var x = ax._tmin;
             (axrev) ? (x >= endtick) : (x <= endtick);
             x = axes.tickIncrement(x, ax.dtick, axrev, ax.calendar)) {
-        vals.push(x);
+        // prevent infinite loops - no more than one tick per pixel,
+        // and make sure each value is different from the previous
+        if(vals.length > maxTicks || x === xPrevious) break;
+        xPrevious = x;
 
-        // prevent infinite loops
-        if(vals.length > 1000) break;
+        vals.push(x);
     }
 
     // save the last tick as well as first, so we can
@@ -1700,7 +1705,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
         labelShift = ax.ticklen * Math.sin(caRad);
     }
 
-    if(ax.ticks === 'outside' || ax.showline) {
+    if(ax.showticklabels && (ax.ticks === 'outside' || ax.showline)) {
         labelStandoff += 0.2 * ax.tickfont.size;
     }
 

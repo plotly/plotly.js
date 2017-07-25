@@ -312,7 +312,7 @@ module.exports = function draw(gd) {
         });
     }
 
-    if(gd._context.editable) {
+    if(gd._context.edits.legendPosition) {
         var xf, yf, x0, y0;
 
         legend.classed('cursor-move', true);
@@ -385,7 +385,7 @@ function drawTexts(g, gd) {
         });
     }
 
-    if(gd._context.editable && !isPie) {
+    if(gd._context.edits.legendText && !isPie) {
         text.call(svgTextUtils.makeEditable, {gd: gd})
             .call(textLayout)
             .on('edit', function(text) {
@@ -597,10 +597,15 @@ function computeTextDimensions(g, gd) {
 }
 
 function computeLegendDimensions(gd, groups, traces) {
-    var fullLayout = gd._fullLayout,
-        opts = fullLayout.legend,
-        borderwidth = opts.borderwidth,
-        isGrouped = helpers.isGrouped(opts);
+    var fullLayout = gd._fullLayout;
+    var opts = fullLayout.legend;
+    var borderwidth = opts.borderwidth;
+    var isGrouped = helpers.isGrouped(opts);
+
+    var extraWidth = 0;
+
+    opts.width = 0;
+    opts.height = 0;
 
     if(helpers.isVertical(opts)) {
         if(isGrouped) {
@@ -608,9 +613,6 @@ function computeLegendDimensions(gd, groups, traces) {
                 Drawing.setTranslate(this, 0, i * opts.tracegroupgap);
             });
         }
-
-        opts.width = 0;
-        opts.height = 0;
 
         traces.each(function(d) {
             var legendItem = d[0],
@@ -632,26 +634,9 @@ function computeLegendDimensions(gd, groups, traces) {
             opts.height += (opts._lgroupsLength - 1) * opts.tracegroupgap;
         }
 
-        // make sure we're only getting full pixels
-        opts.width = Math.ceil(opts.width);
-        opts.height = Math.ceil(opts.height);
-
-        traces.each(function(d) {
-            var legendItem = d[0],
-                bg = d3.select(this).select('.legendtoggle');
-
-            bg.call(Drawing.setRect,
-                0,
-                -legendItem.height / 2,
-                (gd._context.editable ? 0 : opts.width) + 40,
-                legendItem.height
-            );
-        });
+        extraWidth = 40;
     }
     else if(isGrouped) {
-        opts.width = 0;
-        opts.height = 0;
-
         var groupXOffsets = [opts.width],
             groupData = groups.data();
 
@@ -692,26 +677,8 @@ function computeLegendDimensions(gd, groups, traces) {
 
         opts.height += 10 + borderwidth * 2;
         opts.width += borderwidth * 2;
-
-        // make sure we're only getting full pixels
-        opts.width = Math.ceil(opts.width);
-        opts.height = Math.ceil(opts.height);
-
-        traces.each(function(d) {
-            var legendItem = d[0],
-                bg = d3.select(this).select('.legendtoggle');
-
-            bg.call(Drawing.setRect,
-                0,
-                -legendItem.height / 2,
-                (gd._context.editable ? 0 : opts.width),
-                legendItem.height
-            );
-        });
     }
     else {
-        opts.width = 0;
-        opts.height = 0;
         var rowHeight = 0,
             maxTraceHeight = 0,
             maxTraceWidth = 0,
@@ -750,22 +717,23 @@ function computeLegendDimensions(gd, groups, traces) {
         opts.width += borderwidth * 2;
         opts.height += 10 + borderwidth * 2;
 
-        // make sure we're only getting full pixels
-        opts.width = Math.ceil(opts.width);
-        opts.height = Math.ceil(opts.height);
-
-        traces.each(function(d) {
-            var legendItem = d[0],
-                bg = d3.select(this).select('.legendtoggle');
-
-            bg.call(Drawing.setRect,
-                0,
-                -legendItem.height / 2,
-                (gd._context.editable ? 0 : opts.width),
-                legendItem.height
-            );
-        });
     }
+
+    // make sure we're only getting full pixels
+    opts.width = Math.ceil(opts.width);
+    opts.height = Math.ceil(opts.height);
+
+    traces.each(function(d) {
+        var legendItem = d[0],
+            bg = d3.select(this).select('.legendtoggle');
+
+        bg.call(Drawing.setRect,
+            0,
+            -legendItem.height / 2,
+            (gd._context.edits.legendText ? 0 : opts.width) + extraWidth,
+            legendItem.height
+        );
+    });
 }
 
 function expandMargin(gd) {

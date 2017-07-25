@@ -1,8 +1,12 @@
+var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
 var supplyDefaults = require('@src/traces/histogram/defaults');
 var calc = require('@src/traces/histogram/calc');
+
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 
 describe('Test histogram', function() {
@@ -246,6 +250,19 @@ describe('Test histogram', function() {
             ]);
         });
 
+        it('should handle very small bins', function() {
+            var out = _calc({
+                x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                xbins: {
+                    start: 0,
+                    end: 10,
+                    size: 0.001
+                }
+            });
+
+            expect(out.length).toEqual(9001);
+        });
+
         describe('cumulative distribution functions', function() {
             var base = {
                 x: [0, 5, 10, 15, 5, 10, 15, 10, 15, 15],
@@ -351,5 +368,60 @@ describe('Test histogram', function() {
             });
         });
 
+    });
+
+    describe('plot / restyle', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should update autobins correctly when restyling', function() {
+            // note: I'm *not* testing what this does to gd.data, as that's
+            // really a matter of convenience and will perhaps change later (v2?)
+            var data1 = [1.5, 2, 2, 3, 3, 3, 4, 4, 5];
+            Plotly.plot(gd, [{x: data1, type: 'histogram' }]);
+            expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
+            expect(gd._fullData[0].autobinx).toBe(true);
+
+            // same range but fewer samples changes autobin size
+            var data2 = [1.5, 5];
+            Plotly.restyle(gd, 'x', [data2]);
+            expect(gd._fullData[0].xbins).toEqual({start: -2.5, end: 7.5, size: 5});
+            expect(gd._fullData[0].autobinx).toBe(true);
+
+            // different range
+            var data3 = [10, 20.2, 20, 30, 30, 30, 40, 40, 50];
+            Plotly.restyle(gd, 'x', [data3]);
+            expect(gd._fullData[0].xbins).toEqual({start: 5, end: 55, size: 10});
+            expect(gd._fullData[0].autobinx).toBe(true);
+
+            // explicit change to a bin attribute clears autobin
+            Plotly.restyle(gd, 'xbins.start', 3);
+            expect(gd._fullData[0].xbins).toEqual({start: 3, end: 55, size: 10});
+            expect(gd._fullData[0].autobinx).toBe(false);
+
+            // restart autobin
+            Plotly.restyle(gd, 'autobinx', true);
+            expect(gd._fullData[0].xbins).toEqual({start: 5, end: 55, size: 10});
+            expect(gd._fullData[0].autobinx).toBe(true);
+        });
+
+        it('respects explicit autobin: false as a one-time autobin', function() {
+            var data1 = [1.5, 2, 2, 3, 3, 3, 4, 4, 5];
+            Plotly.plot(gd, [{x: data1, type: 'histogram', autobinx: false }]);
+            // we have no bins, so even though autobin is false we have to autobin once
+            expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
+            expect(gd._fullData[0].autobinx).toBe(false);
+
+            // since autobin is false, this will not change the bins
+            var data2 = [1.5, 5];
+            Plotly.restyle(gd, 'x', [data2]);
+            expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
+            expect(gd._fullData[0].autobinx).toBe(false);
+        });
     });
 });

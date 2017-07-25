@@ -82,6 +82,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
         d3.select(this).selectAll('path.box')
             .data(Lib.identity)
             .enter().append('path')
+            .style('vector-effect', 'non-scaling-stroke')
             .attr('class', 'box')
             .each(function(d) {
                 var posc = posAxis.c2p(d.pos + bPos, true),
@@ -204,6 +205,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                     });
                 })
                 .enter().append('path')
+                .classed('point', true)
                 .call(Drawing.translatePoints, xa, ya);
         }
         // draw mean (and stdev diamond) if desired
@@ -212,7 +214,10 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                 .data(Lib.identity)
                 .enter().append('path')
                 .attr('class', 'mean')
-                .style('fill', 'none')
+                .style({
+                    fill: 'none',
+                    'vector-effect': 'non-scaling-stroke'
+                })
                 .each(function(d) {
                     var posc = posAxis.c2p(d.pos + bPos, true),
                         pos0 = posAxis.c2p(d.pos + bPos - bdPos, true),
