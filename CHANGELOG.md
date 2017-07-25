@@ -10,6 +10,15 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.29.1] -- 2017-07-25
+
+### Fixed
+- Fix axis line rendering when `showticklabels` is false
+  (bug introduced in 1.29.0) [#1910]
+- Fix histogram auto bin restyle [#1901]
+- Fix colorbar edge case that caused infinite loops [#1906]
+
+
 ## [1.29.0] -- 2017-07-19
 
 ### Added
