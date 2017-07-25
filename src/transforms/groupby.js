@@ -141,8 +141,8 @@ function pasteArray(newTrace, trace, j, a) {
 // a filter transform), we have to break the connection and clone the
 // transforms so that each group writes grouped values into a different
 // destination. This function does not break the array reference
-// connection between the split transforms it creates. That's handled
-// ininialize, which creates a new empty array for each arrayAttr.
+// connection between the split transforms it creates. That's handled in
+// initialize, which creates a new empty array for each arrayAttr.
 function cloneTransforms(newTrace) {
     var transforms = newTrace.transforms;
     newTrace.transforms = [];
