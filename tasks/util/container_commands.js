@@ -59,11 +59,13 @@ function getRunCI(commands) {
     commands = ['export CIRCLECI=1', containerCommands.cdHome].concat(commands);
 
     var commandsJoined = '"' + commands.join(' && ') + '"';
+    var containerId = '$(docker inspect --format \'{{.Id}}\' ' + constants.testContainerName + ')';
 
     return [
         'sudo',
-        'lxc-attach -n',
-        '$(docker inspect --format \'{{.Id}}\' ' + constants.testContainerName + ')',
+        'lxc-attach',
+        '-n', containerId,
+        '-f', '/var/lib/docker/containers/' + containerId + '/config.lxc',
         '-- bash -c',
         commandsJoined
     ].join(' ');

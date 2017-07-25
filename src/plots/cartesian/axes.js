@@ -1705,7 +1705,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
         labelShift = ax.ticklen * Math.sin(caRad);
     }
 
-    if(ax.ticks === 'outside' || ax.showline) {
+    if(ax.showticklabels && (ax.ticks === 'outside' || ax.showline)) {
         labelStandoff += 0.2 * ax.tickfont.size;
     }
 
