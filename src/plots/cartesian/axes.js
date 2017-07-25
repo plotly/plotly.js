@@ -1705,10 +1705,8 @@ axes.doTicks = function(gd, axid, skipTitle) {
         labelShift = ax.ticklen * Math.sin(caRad);
     }
 
-    if(ax.ticks === 'outside' || ax.showline) {
-        var tickFontSize = ax.tickfont ? ax.tickfont.size : 12;
-
-        labelStandoff += 0.2 * tickFontSize;
+    if(ax.showticklabels && (ax.ticks === 'outside' || ax.showline)) {
+        labelStandoff += 0.2 * ax.tickfont.size;
     }
 
     // positioning arguments for x vs y axes
