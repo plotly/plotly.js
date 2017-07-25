@@ -1053,24 +1053,41 @@ plots.supplyTransformDefaults = function(traceIn, traceOut, layout) {
 };
 
 function applyTransforms(fullTrace, fullData, layout, fullLayout) {
-    var container = fullTrace.transforms,
-        dataOut = [fullTrace];
+    var dataOut = [];
 
-    for(var i = 0; i < container.length; i++) {
-        var transform = container[i],
-            _module = transformsRegistry[transform.type];
+    // Takes single trace, returns list of expanded traces
+    function recurse(trace, transformIndex) {
+        var transformedTraces = [trace];
+        var transform = trace.transforms[transformIndex];
+        var _module = transformsRegistry[transform.type];
 
         if(_module && _module.transform) {
-            dataOut = _module.transform(dataOut, {
+            transformedTraces = _module.transform([trace], {
                 transform: transform,
-                fullTrace: fullTrace,
+                fullTrace: trace,
                 fullData: fullData,
                 layout: layout,
                 fullLayout: fullLayout,
-                transformIndex: i
+                transformIndex: transformIndex
             });
         }
+
+        for(var i = 0; i < transformedTraces.length; i++) {
+            if(transformIndex >= transformedTraces[i].transforms.length - 1) {
+                // If we get here, we've reached the end of the line and this expanded
+                // trace has no more transforms to apply. That is, it's an output trace
+                // so we push it onto dataOut.
+                dataOut.push(transformedTraces[i]);
+            } else {
+                // Otherwise there are more transforms to be performed. We don't need
+                // to worry about the return value since every transform will eventually
+                // reach the end of the line and push its result onto the output.
+                recurse(transformedTraces[i], transformIndex + 1);
+            }
+        }
     }
+
+    recurse(fullTrace, 0);
 
     return dataOut;
 }

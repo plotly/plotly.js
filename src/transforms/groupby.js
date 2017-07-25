@@ -137,8 +137,22 @@ function pasteArray(newTrace, trace, j, a) {
     );
 }
 
+// In order for groups to apply correctly to other transform data (e.g.
+// a filter transform), we have to break the connection and clone the
+// transforms so that each group writes grouped values into a different
+// destination. This function does not break the array reference
+// connection between the split transforms it creates. That's handled
+// ininialize, which creates a new empty array for each arrayAttr.
+function cloneTransforms(newTrace) {
+    var transforms = newTrace.transforms;
+    newTrace.transforms = [];
+    for(var j = 0; j < transforms.length; j++) {
+        newTrace.transforms[j] = Lib.extendDeepNoArrays({}, transforms[j]);
+    }
+}
+
 function transformOne(trace, state) {
-    var i;
+    var i, j;
     var opts = state.transform;
     var groups = trace.transforms[state.transformIndex].groups;
 
@@ -163,12 +177,14 @@ function transformOne(trace, state) {
 
         var newTrace = newData[i] = Lib.extendDeepNoArrays({}, trace);
 
+        cloneTransforms(newTrace);
+
         arrayAttrs.forEach(initializeArray.bind(null, newTrace));
 
-        for(var j = 0; j < len; j++) {
+        for(j = 0; j < len; j++) {
             if(groups[j] !== groupName) continue;
 
-            arrayAttrs.forEach(pasteArray.bind(0, newTrace, trace, j));
+            arrayAttrs.forEach(pasteArray.bind(null, newTrace, trace, j));
         }
 
         newTrace.name = groupName;
@@ -178,6 +194,13 @@ function transformOne(trace, state) {
         // there's no need to coerce styleLookup[groupName] here
         // as another round of supplyDefaults is done on the transformed traces
         newTrace = Lib.extendDeepNoArrays(newTrace, styleLookup[groupName] || {});
+    }
+
+    for(i = 0; i < newData.length; i++) {
+        var data = newData[i];
+        var transforms = data.transforms.slice();
+        transforms.splice(state.transformIndex, 1);
+        data.transforms = transforms;
     }
 
     return newData;
