@@ -727,3 +727,166 @@ describe('restyle applied on transforms:', function() {
     });
 
 });
+
+describe('supplyDefaults with groupby + filter', function() {
+    function calcDatatoTrace(calcTrace) {
+        return calcTrace[0].trace;
+    }
+
+    function _transform(data, layout) {
+        var gd = {
+            data: data,
+            layout: layout || {}
+        };
+
+        Plots.supplyDefaults(gd);
+        Plots.doCalcdata(gd);
+
+        return gd.calcdata.map(calcDatatoTrace);
+    }
+
+    it('filter + groupby with blank target', function() {
+        var out = _transform([{
+            x: [1, 2, 3, 4, 5, 6, 7],
+            y: [4, 6, 5, 7, 6, 8, 9],
+            transforms: [{
+                type: 'filter',
+                operation: '<',
+                value: 6.5
+            }, {
+                type: 'groupby',
+                groups: [1, 1, 1, 2, 2, 2, 2]
+            }]
+        }]);
+
+        expect(out[0].x).toEqual([1, 2, 3]);
+        expect(out[0].y).toEqual([4, 6, 5]);
+
+        expect(out[1].x).toEqual([4, 5, 6]);
+        expect(out[1].y).toEqual([7, 6, 8]);
+    });
+
+    it('fiter + groupby', function() {
+        var out = _transform([{
+            x: [5, 4, 3],
+            y: [6, 5, 4],
+        }, {
+            x: [1, 2, 3, 4, 5, 6, 7],
+            y: [4, 6, 5, 7, 8, 9, 10],
+            transforms: [{
+                type: 'filter',
+                target: [1, 2, 3, 4, 5, 6, 7],
+                operation: '<',
+                value: 6.5
+            }, {
+                type: 'groupby',
+                groups: [1, 1, 1, 2, 2, 2, 2]
+            }]
+        }]);
+
+        expect(out[0].x).toEqual([5, 4, 3]);
+        expect(out[0].y).toEqual([6, 5, 4]);
+
+        expect(out[1].x).toEqual([1, 2, 3]);
+        expect(out[1].y).toEqual([4, 6, 5]);
+
+        expect(out[2].x).toEqual([4, 5, 6]);
+        expect(out[2].y).toEqual([7, 8, 9]);
+    });
+
+    it('groupby + filter', function() {
+        var out = _transform([{
+            x: [1, 2, 3, 4, 5, 6, 7],
+            y: [4, 6, 5, 7, 6, 8, 9],
+            transforms: [{
+                type: 'groupby',
+                groups: [1, 1, 1, 2, 2, 2, 2]
+            }, {
+                type: 'filter',
+                target: [1, 2, 3, 4, 5, 6, 7],
+                operation: '<',
+                value: 6.5
+            }]
+        }]);
+
+        expect(out[0].x).toEqual([1, 2, 3]);
+        expect(out[0].y).toEqual([4, 6, 5]);
+
+        expect(out[1].x).toEqual([4, 5, 6]);
+        expect(out[1].y).toEqual([7, 6, 8]);
+    });
+
+    it('groupby + groupby', function() {
+        var out = _transform([{
+            x: [1, 2, 3, 4, 5, 6, 7, 8],
+            y: [4, 6, 5, 7, 6, 8, 9, 10],
+            transforms: [{
+                type: 'groupby',
+                groups: [1, 1, 1, 1, 2, 2, 2, 2]
+            }, {
+                type: 'groupby',
+                groups: [3, 4, 3, 4, 3, 4, 3, 5],
+            }]
+        }]);
+        //               |  |  |  |  |  |  |  |
+        //               v  v  v  v  v  v  v  v
+        // Trace number: 0  1  0  1  2  3  2  4
+
+        expect(out.length).toEqual(5);
+        expect(out[0].x).toEqual([1, 3]);
+        expect(out[1].x).toEqual([2, 4]);
+        expect(out[2].x).toEqual([5, 7]);
+        expect(out[3].x).toEqual([6]);
+        expect(out[4].x).toEqual([8]);
+    });
+
+    it('groupby + groupby + filter', function() {
+        var out = _transform([{
+            x: [1, 2, 3, 4, 5, 6, 7, 8],
+            y: [4, 6, 5, 7, 6, 8, 9, 10],
+            transforms: [{
+                type: 'groupby',
+                groups: [1, 1, 1, 1, 2, 2, 2, 2]
+            }, {
+                type: 'groupby',
+                groups: [3, 4, 3, 4, 3, 4, 3, 5],
+            }, {
+                type: 'filter',
+                target: [1, 2, 3, 4, 5, 6, 7, 8],
+                operation: '<',
+                value: 4.5
+            }]
+        }]);
+        //               |  |  |  |  |  |  |  |
+        //               v  v  v  v  v  v  v  v
+        // Trace number: 0  1  0  1  2  3  2  4
+
+        expect(out.length).toEqual(5);
+        expect(out[0].x).toEqual([1, 3]);
+        expect(out[1].x).toEqual([2, 4]);
+        expect(out[2].x).toEqual([]);
+        expect(out[3].x).toEqual([]);
+        expect(out[4].x).toEqual([]);
+    });
+
+    it('fiter + filter', function() {
+        var out = _transform([{
+            x: [1, 2, 3, 4, 5, 6, 7],
+            y: [4, 6, 5, 7, 8, 9, 10],
+            transforms: [{
+                type: 'filter',
+                target: [1, 2, 3, 4, 5, 6, 7],
+                operation: '<',
+                value: 6.5
+            }, {
+                type: 'filter',
+                target: [1, 2, 3, 4, 5, 6, 7],
+                operation: '>',
+                value: 1.5
+            }]
+        }]);
+
+        expect(out[0].x).toEqual([2, 3, 4, 5, 6]);
+        expect(out[0].y).toEqual([6, 5, 7, 8, 9]);
+    });
+});

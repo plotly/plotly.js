@@ -116,34 +116,29 @@ exports.supplyDefaults = function(transformIn) {
  *  array of transformed traces
  */
 exports.transform = function(data, state) {
+    var newTraces, i, j;
     var newData = [];
 
-    for(var i = 0; i < data.length; i++) {
-        newData = newData.concat(transformOne(data[i], state));
+    for(i = 0; i < data.length; i++) {
+        newTraces = transformOne(data[i], state);
+
+        for(j = 0; j < newTraces.length; j++) {
+            newData.push(newTraces[j]);
+        }
     }
 
     return newData;
 };
 
-function initializeArray(newTrace, a) {
-    Lib.nestedProperty(newTrace, a).set([]);
-}
-
-function pasteArray(newTrace, trace, j, a) {
-    Lib.nestedProperty(newTrace, a).set(
-        Lib.nestedProperty(newTrace, a).get().concat([
-            Lib.nestedProperty(trace, a).get()[j]
-        ])
-    );
-}
 
 function transformOne(trace, state) {
-    var i;
+    var i, j, k, attr, srcArray, groupName, newTrace, transforms, arrayLookup;
+
     var opts = state.transform;
     var groups = trace.transforms[state.transformIndex].groups;
 
     if(!(Array.isArray(groups)) || groups.length === 0) {
-        return trace;
+        return [trace];
     }
 
     var groupNames = Lib.filterUnique(groups),
@@ -158,20 +153,59 @@ function transformOne(trace, state) {
         styleLookup[styles[i].target] = styles[i].value;
     }
 
+    // An index to map group name --> expanded trace index
+    var indexLookup = {};
+
     for(i = 0; i < groupNames.length; i++) {
-        var groupName = groupNames[i];
+        groupName = groupNames[i];
+        indexLookup[groupName] = i;
 
-        var newTrace = newData[i] = Lib.extendDeepNoArrays({}, trace);
+        // Start with a deep extend that just copies array references.
+        newTrace = newData[i] = Lib.extendDeepNoArrays({}, trace);
+        newTrace.name = groupName;
 
-        arrayAttrs.forEach(initializeArray.bind(null, newTrace));
-
-        for(var j = 0; j < len; j++) {
-            if(groups[j] !== groupName) continue;
-
-            arrayAttrs.forEach(pasteArray.bind(0, newTrace, trace, j));
+        // In order for groups to apply correctly to other transform data (e.g.
+        // a filter transform), we have to break the connection and clone the
+        // transforms so that each group writes grouped values into a different
+        // destination. This function does not break the array reference
+        // connection between the split transforms it creates. That's handled in
+        // initialize, which creates a new empty array for each arrayAttr.
+        transforms = newTrace.transforms;
+        newTrace.transforms = [];
+        for(j = 0; j < transforms.length; j++) {
+            newTrace.transforms[j] = Lib.extendDeepNoArrays({}, transforms[j]);
         }
 
-        newTrace.name = groupName;
+        // Initialize empty arrays for the arrayAttrs, to be split in the next step
+        for(j = 0; j < arrayAttrs.length; j++) {
+            Lib.nestedProperty(newTrace, arrayAttrs[j]).set([]);
+        }
+    }
+
+    // For each array attribute including those nested inside this and other
+    // transforms (small note that we technically only need to do this for
+    // transforms that have not yet been applied):
+    for(k = 0; k < arrayAttrs.length; k++) {
+        attr = arrayAttrs[k];
+
+        // Cache all the arrays to which we'll push:
+        for(j = 0, arrayLookup = []; j < groupNames.length; j++) {
+            arrayLookup[j] = Lib.nestedProperty(newData[j], attr).get();
+        }
+
+        // Get the input data:
+        srcArray = Lib.nestedProperty(trace, attr).get();
+
+        // Send each data point to the appropriate expanded trace:
+        for(j = 0; j < len; j++) {
+            // Map group data --> trace index --> array and push data onto it
+            arrayLookup[indexLookup[groups[j]]].push(srcArray[j]);
+        }
+    }
+
+    for(i = 0; i < groupNames.length; i++) {
+        groupName = groupNames[i];
+        newTrace = newData[i];
 
         Plots.clearExpandedTraceDefaultColors(newTrace);
 
