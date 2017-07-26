@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v1.29.1
+* plotly.js (gl2d) v1.29.2
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -9046,6 +9046,8 @@ function fromNumber (n, normalized) {
 }
 
 },{"clamp":48}],52:[function(require,module,exports){
+'use strict'
+
 module.exports = {
 	"aliceblue": [240, 248, 255],
 	"antiquewhite": [250, 235, 215],
@@ -9196,7 +9198,9 @@ module.exports = {
 	"yellow": [255, 255, 0],
 	"yellowgreen": [154, 205, 50]
 };
+
 },{}],53:[function(require,module,exports){
+(function (global){
 /**
  * @module color-parse
  */
@@ -9360,7 +9364,7 @@ function parse (cstr) {
 	}
 
 	//array
-	else if (Array.isArray(cstr) || ArrayBuffer.isView(cstr)) {
+	else if (Array.isArray(cstr) || global.ArrayBuffer && ArrayBuffer.isView && ArrayBuffer.isView(cstr)) {
 		parts = [cstr[0], cstr[1], cstr[2]];
 		space = 'rgb'
 		alpha = cstr.length === 4 ? cstr[3] : 1;
@@ -9373,6 +9377,7 @@ function parse (cstr) {
 	};
 }
 
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"color-name":52,"is-plain-obj":156}],54:[function(require,module,exports){
 /** @module  color-rgba */
 
@@ -9383,13 +9388,13 @@ var hsl = require('color-space/hsl')
 var clamp = require('clamp')
 
 module.exports = function rgba (color, normalize) {
+	if (Array.isArray(color)) return color;
+
 	if (normalize == null) normalize = true
 
 	var parsed = parse(color);
 
 	if (!parsed.space) return [];
-
-	if (Array.isArray(color)) return color;
 
 	var values = parsed.values, i, l = values.length;
 	for (i = 0; i < l; i++) {
@@ -24737,7 +24742,7 @@ arguments[4][47][0].apply(exports,arguments)
 },{"dup":47}],86:[function(require,module,exports){
 
 
-exports.lineVertex    = "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 aHi, aLo, dHi, dLo;\n\nuniform vec2 scaleHi, translateHi, scaleLo, translateLo, screenShape;\nuniform float width;\n\nvarying vec2 direction;\n\n\nvec2 project_2_0(vec2 scHi, vec2 trHi, vec2 scLo, vec2 trLo, vec2 posHi, vec2 posLo) {\n  return (posHi + trHi) * scHi\n       + (posLo + trLo) * scHi\n       + (posHi + trHi) * scLo\n       + (posLo + trLo) * scLo;\n}\n\n\nvec2 project_1_1(vec2 scHi, vec2 scLo, vec2 posHi, vec2 posLo) {\n  return scHi * posHi\n       + scLo * posHi\n       + scHi * posLo\n       + scLo * posLo;\n}\n\nvoid main() {\n  vec2 p = project_2_0(scaleHi, translateHi, scaleLo, translateLo, aHi, aLo);\n  vec2 dir = project_1_1(scaleHi, scaleLo, dHi, dLo);\n  vec2 n = 0.5 * width * normalize(screenShape.yx * vec2(dir.y, -dir.x)) / screenShape.xy;\n  vec2 tangent = normalize(screenShape.xy * dir);\n  if(dir.x < 0.0 || (dir.x == 0.0 && dir.y < 0.0)) {\n    direction = -tangent;\n  } else {\n    direction = tangent;\n  }\n  gl_Position = vec4(p + n, 0.0, 1.0);\n}"
+exports.lineVertex    = "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 aHi, aLo, dHi, dLo;\n\nuniform vec2 scaleHi, translateHi, scaleLo, translateLo, screenShape;\nuniform float width;\n\nvarying vec2 direction;\n\n\nvec2 project_1_0(vec2 scHi, vec2 trHi, vec2 scLo, vec2 trLo, vec2 posHi, vec2 posLo) {\n  return (posHi + trHi) * scHi\n       + (posLo + trLo) * scHi\n       + (posHi + trHi) * scLo\n       + (posLo + trLo) * scLo;\n}\n\n\nvec2 project_2_1(vec2 scHi, vec2 scLo, vec2 posHi, vec2 posLo) {\n  return scHi * posHi\n       + scLo * posHi\n       + scHi * posLo\n       + scLo * posLo;\n}\n\nvoid main() {\n  vec2 p = project_1_0(scaleHi, translateHi, scaleLo, translateLo, aHi, aLo);\n  vec2 dir = project_2_1(scaleHi, scaleLo, dHi, dLo);\n  vec2 n = 0.5 * width * normalize(screenShape.yx * vec2(dir.y, -dir.x)) / screenShape.xy;\n  vec2 tangent = normalize(screenShape.xy * dir);\n  if(dir.x < 0.0 || (dir.x == 0.0 && dir.y < 0.0)) {\n    direction = -tangent;\n  } else {\n    direction = tangent;\n  }\n  gl_Position = vec4(p + n, 0.0, 1.0);\n}"
 exports.lineFragment  = "precision highp float;\n#define GLSLIFY 1\n\nuniform vec4 color;\nuniform vec2 screenShape;\nuniform sampler2D dashPattern;\nuniform float dashLength;\n\nvarying vec2 direction;\n\nvoid main() {\n  float t = fract(dot(direction, gl_FragCoord.xy) / dashLength);\n  vec4 pcolor = color * texture2D(dashPattern, vec2(t, 0.0)).r;\n  gl_FragColor = vec4(pcolor.rgb * pcolor.a, pcolor.a);\n}"
 exports.mitreVertex   = "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 aHi, aLo;\n\nuniform vec2 scaleHi, translateHi, scaleLo, translateLo;\nuniform float radius;\n\n\nvec2 project_1_0(vec2 scHi, vec2 trHi, vec2 scLo, vec2 trLo, vec2 posHi, vec2 posLo) {\n  return (posHi + trHi) * scHi\n       + (posLo + trLo) * scHi\n       + (posHi + trHi) * scLo\n       + (posLo + trLo) * scLo;\n}\n\n\nvoid main() {\n  vec2 p = project_1_0(scaleHi, translateHi, scaleLo, translateLo, aHi, aLo);\n  gl_Position = vec4(p, 0.0, 1.0);\n  gl_PointSize = radius;\n}"
 exports.mitreFragment = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  if(length(gl_PointCoord.xy - 0.5) > 0.25) {\n    discard;\n  }\n  gl_FragColor = vec4(color.rgb, color.a);\n}"
@@ -65048,7 +65053,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.29.1';
+exports.version = '1.29.2';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
