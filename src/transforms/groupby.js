@@ -154,11 +154,11 @@ function transformOne(trace, state) {
     }
 
     // An index to map group name --> expanded trace index
-    var groupIndex = {};
+    var indexLookup = {};
 
     for(i = 0; i < groupNames.length; i++) {
         groupName = groupNames[i];
-        groupIndex[groupName] = i;
+        indexLookup[groupName] = i;
 
         // Start with a deep extend that just copies array references.
         newTrace = newData[i] = Lib.extendDeepNoArrays({}, trace);
@@ -199,7 +199,7 @@ function transformOne(trace, state) {
         // Send each data point to the appropriate expanded trace:
         for(j = 0; j < len; j++) {
             // Map group data --> trace index --> array and push data onto it
-            arrayLookup[groupIndex[groups[j]]].push(srcArray[j]);
+            arrayLookup[indexLookup[groups[j]]].push(srcArray[j]);
         }
     }
 
