@@ -132,7 +132,8 @@ exports.transform = function(data, state) {
 
 
 function transformOne(trace, state) {
-    var i, j, k, attr, srcArray, groupName, newTrace, transforms;
+    var i, j, k, attr, srcArray, groupName, newTrace, transforms, arrayLookup;
+
     var opts = state.transform;
     var groups = trace.transforms[state.transformIndex].groups;
 
@@ -152,13 +153,15 @@ function transformOne(trace, state) {
         styleLookup[styles[i].target] = styles[i].value;
     }
 
-    var newDataByGroup = {};
+    // An index to map group name --> expanded trace index
+    var groupIndex = {};
 
     for(i = 0; i < groupNames.length; i++) {
         groupName = groupNames[i];
+        groupIndex[groupName] = i;
 
         // Start with a deep extend that just copies array references.
-        newTrace = newData[i] = newDataByGroup[groupName] = Lib.extendDeepNoArrays({}, trace);
+        newTrace = newData[i] = Lib.extendDeepNoArrays({}, trace);
         newTrace.name = groupName;
 
         // In order for groups to apply correctly to other transform data (e.g.
@@ -179,19 +182,24 @@ function transformOne(trace, state) {
         }
     }
 
-
     // For each array attribute including those nested inside this and other
     // transforms (small note that we technically only need to do this for
     // transforms that have not yet been applied):
     for(k = 0; k < arrayAttrs.length; k++) {
         attr = arrayAttrs[k];
 
+        // Cache all the arrays to which we'll push:
+        for(j = 0, arrayLookup = []; j < groupNames.length; j++) {
+            arrayLookup[j] = Lib.nestedProperty(newData[j], attr).get();
+        }
+
         // Get the input data:
         srcArray = Lib.nestedProperty(trace, attr).get();
 
-        // And push each value onto the appropriate destination for this group:
+        // Send each data point to the appropriate expanded trace:
         for(j = 0; j < len; j++) {
-            Lib.nestedProperty(newDataByGroup[groups[j]], attr).get().push(srcArray[j]);
+            // Map group data --> trace index --> array and push data onto it
+            arrayLookup[groupIndex[groups[j]]].push(srcArray[j]);
         }
     }
 
