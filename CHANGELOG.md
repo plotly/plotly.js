@@ -10,6 +10,13 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.29.2] -- 2017-07-26
+
+### Fixed
+- Add fallback for `ArrayBuffer.isView` fixing gl2d and gl3d rendering
+  in environments that don't support it (e.g. RStudio) [#1915]
+
+
 ## [1.29.1] -- 2017-07-25
 
 ### Fixed
