@@ -561,7 +561,7 @@ function _convertColor(colors, opacities, count) {
 }
 
 function isSymbolOpen(symbol) {
-    return symbol.split('-open')[1] === '';
+    return /-open/.test(symbol);
 }
 
 // We'd ideally know that all values are of fast types; sampling gives no certainty but faster
