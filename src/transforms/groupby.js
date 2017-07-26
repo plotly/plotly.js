@@ -137,7 +137,7 @@ function transformOne(trace, state) {
     var groups = trace.transforms[state.transformIndex].groups;
 
     if(!(Array.isArray(groups)) || groups.length === 0) {
-        return trace;
+        return [trace];
     }
 
     var groupNames = Lib.filterUnique(groups),
@@ -177,12 +177,6 @@ function transformOne(trace, state) {
         for(j = 0; j < arrayAttrs.length; j++) {
             Lib.nestedProperty(newTrace, arrayAttrs[j]).set([]);
         }
-
-        Plots.clearExpandedTraceDefaultColors(newTrace);
-
-        // there's no need to coerce styleLookup[groupName] here
-        // as another round of supplyDefaults is done on the transformed traces
-        newTrace = Lib.extendDeepNoArrays(newTrace, styleLookup[groupName] || {});
     }
 
 
@@ -199,6 +193,17 @@ function transformOne(trace, state) {
         for(j = 0; j < len; j++) {
             Lib.nestedProperty(newDataByGroup[groups[j]], attr).get().push(srcArray[j]);
         }
+    }
+
+    for(i = 0; i < groupNames.length; i++) {
+        groupName = groupNames[i];
+        newTrace = newData[i];
+
+        Plots.clearExpandedTraceDefaultColors(newTrace);
+
+        // there's no need to coerce styleLookup[groupName] here
+        // as another round of supplyDefaults is done on the transformed traces
+        newTrace = Lib.extendDeepNoArrays(newTrace, styleLookup[groupName] || {});
     }
 
     return newData;
