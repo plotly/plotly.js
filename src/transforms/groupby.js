@@ -35,7 +35,7 @@ exports.attributes = {
             'with `x` [1, 3] and one trace with `x` [2, 4].'
         ].join(' ')
     },
-    namepattern: {
+    nameformat: {
         valType: 'string',
         dflt: '%g (%t)',
         description: [
@@ -50,7 +50,7 @@ exports.attributes = {
         description: [
             'An array of trace names based on group name. Each entry must be an',
             'object `{name: "group", value: "trace name"}` which is then applied',
-            'to the particular group, overriding the name derived from `namepattern`.'
+            'to the particular group, overriding the name derived from `nameformat`.'
         ].join(' ')
     },
     styles: {
@@ -102,7 +102,7 @@ exports.supplyDefaults = function(transformIn) {
 
     coerce('groups');
     coerce('groupnames');
-    coerce('namepattern');
+    coerce('nameformat');
 
     var styleIn = transformIn.styles;
     var styleOut = transformOut.styles = [];
@@ -202,7 +202,7 @@ function transformOne(trace, state) {
         if(suppliedName) {
             newTrace.name = suppliedName;
         } else {
-            newTrace.name = computeName(opts.namepattern, trace.name, groupName);
+            newTrace.name = computeName(opts.nameformat, trace.name, groupName);
         }
 
         // In order for groups to apply correctly to other transform data (e.g.
