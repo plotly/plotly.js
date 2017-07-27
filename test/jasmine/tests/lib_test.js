@@ -1605,6 +1605,102 @@ describe('Test lib.js:', function() {
             expect(c.MESSAGES).toEqual([]);
         });
     });
+
+    describe('keyedContainer', function() {
+        describe('with a filled container', function() {
+            var container, carr;
+
+            beforeEach(function() {
+                container = {
+                    styles: [
+                        {name: 'name1', value: 'value1'},
+                        {name: 'name2', value: 'value2'}
+                    ]
+                };
+
+                carr = Lib.keyedContainer(container, 'styles');
+            });
+
+            describe('modifying the object', function() {
+                it('adds and updates items', function() {
+                    carr.set('foo', 'bar');
+                    carr.set('name1', 'value3');
+
+                    expect(container).toEqual({styles: [
+                        {name: 'name1', value: 'value3'},
+                        {name: 'name2', value: 'value2'},
+                        {name: 'foo', value: 'bar'}
+                    ]});
+                });
+
+                it('removes items', function() {
+                    carr.set('foo', 'bar');
+                    carr.remove('name1');
+
+                    expect(container).toEqual({styles: [
+                        {name: 'name2', value: 'value2'},
+                        {name: 'foo', value: 'bar'}
+                    ]});
+                });
+
+                it('gets items', function() {
+                    expect(carr.get('foo')).toBe(undefined);
+                    expect(carr.get('name1')).toEqual('value1');
+
+                    carr.remove('name1');
+
+                    expect(carr.get('name1')).toBe(undefined);
+
+                    carr.rename('name2', 'name3');
+
+                    expect(carr.get('name3')).toEqual('value2');
+                });
+
+                it('renames items', function() {
+                    carr.rename('name2', 'name3');
+
+                    expect(container).toEqual({styles: [
+                        {name: 'name1', value: 'value1'},
+                        {name: 'name3', value: 'value2'}
+                    ]});
+                });
+            });
+
+            describe('constrcting updates', function() {
+                it('constructs updates for addition and modification', function() {
+                    carr.set('foo', 'bar');
+                    carr.set('name1', 'value3');
+
+                    expect(carr.constructUpdate()).toEqual({
+                        'styles[0].value': 'value3',
+                        'styles[2].name': 'foo',
+                        'styles[2].value': 'bar'
+                    });
+                });
+
+                it('constructs updates for removal', function() {
+                    carr.set('foo', 'bar');
+                    carr.remove('name1');
+
+                    expect(carr.constructUpdate()).toEqual({
+                        'styles[0].name': 'name2',
+                        'styles[0].value': 'value2',
+                        'styles[1].name': 'foo',
+                        'styles[1].value': 'bar',
+                        'styles[2]': null
+                    });
+                });
+
+                it('constructs updates for renaming', function() {
+                    carr.rename('name2', 'name3');
+
+                    expect(carr.constructUpdate()).toEqual({
+                        'styles[1].name': 'name3'
+                    });
+                });
+            });
+        });
+    });
 });
 
 describe('Queue', function() {

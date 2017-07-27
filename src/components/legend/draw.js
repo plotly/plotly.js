@@ -31,6 +31,7 @@ var anchorUtils = require('./anchor_utils');
 
 var SHOWISOLATETIP = true;
 var DBLCLICKDELAY = interactConstants.DBLCLICKDELAY;
+var BLANK_STRING_REGEX = /^[\s\r]*$/;
 
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout;
@@ -392,24 +393,57 @@ function drawTexts(g, gd) {
                 this.text(text)
                     .call(textLayout);
 
+                var origText = text;
+
                 if(!this.text()) text = ' \u0020\u0020 ';
 
-                var fullInput = legendItem.trace._fullInput || {},
-                    astr;
+                var i, transforms, direction;
+                var fullInput = legendItem.trace._fullInput || {};
+                var needsRedraw = false;
+                var update = {};
 
                 // N.B. this block isn't super clean,
                 // is unfortunately untested at the moment,
                 // and only works for for 'ohlc' and 'candlestick',
                 // but should be generalized for other one-to-many transforms
                 if(['ohlc', 'candlestick'].indexOf(fullInput.type) !== -1) {
-                    var transforms = legendItem.trace.transforms,
-                        direction = transforms[transforms.length - 1].direction;
+                    transforms = legendItem.trace.transforms;
+                    direction = transforms[transforms.length - 1].direction;
 
-                    astr = direction + '.name';
+                    update[direction + '.name'] = [text];
+                } else {
+                    if(fullInput.transforms) {
+                        for(i = fullInput.transforms.length - 1; i >= 0; i--) {
+                            if(fullInput.transforms[i].type === 'groupby') {
+                                break;
+                            }
+                        }
+
+                        var carr = Lib.keyedContainer(fullInput, 'transforms[' + i + '].groupnames');
+
+                        if(BLANK_STRING_REGEX.test(origText)) {
+                            carr.remove(legendItem.trace._group);
+                            needsRedraw = true;
+                        } else {
+                            carr.set(legendItem.trace._group, [text]);
+                        }
+
+                        update = carr.constructUpdate();
+                    }
                 }
-                else astr = 'name';
 
-                Plotly.restyle(gd, astr, text, traceIndex);
+                var p = Plotly.restyle(gd, update, traceIndex);
+
+                // If a groupby label is deleted, it seems like we need another redraw in order
+                // to restore the label. Otherwise it simply sets this property and the blank
+                // string is retained.
+                if(needsRedraw) {
+                    p = p.then(function() {
+                        return Plotly.redraw(gd);
+                    });
+                }
+
+                return p;
             });
     }
     else text.call(textLayout);
