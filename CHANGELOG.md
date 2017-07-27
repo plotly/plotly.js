@@ -10,6 +10,13 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.29.3] -- 2017-07-27
+
+### Fixed
+- Fix `groupby` / `filter` interactions when filter includes `target` data
+  [#1892]
+
+
 ## [1.29.2] -- 2017-07-26
 
 ### Fixed
