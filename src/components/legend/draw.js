@@ -410,26 +410,26 @@ function drawTexts(g, gd) {
                     transforms = legendItem.trace.transforms;
                     direction = transforms[transforms.length - 1].direction;
 
-                    update[direction + '.name'] = [text];
-                } else {
-                    if(fullInput.transforms) {
-                        for(i = fullInput.transforms.length - 1; i >= 0; i--) {
-                            if(fullInput.transforms[i].type === 'groupby') {
-                                break;
-                            }
+                    update[direction + '.name'] = text;
+                } else if(fullInput.transforms) {
+                    for(i = fullInput.transforms.length - 1; i >= 0; i--) {
+                        if(fullInput.transforms[i].type === 'groupby') {
+                            break;
                         }
-
-                        var carr = Lib.keyedContainer(fullInput, 'transforms[' + i + '].groupnames');
-
-                        if(BLANK_STRING_REGEX.test(origText)) {
-                            carr.remove(legendItem.trace._group);
-                            needsRedraw = true;
-                        } else {
-                            carr.set(legendItem.trace._group, [text]);
-                        }
-
-                        update = carr.constructUpdate();
                     }
+
+                    var carr = Lib.keyedContainer(fullInput, 'transforms[' + i + '].groupnames');
+
+                    if(BLANK_STRING_REGEX.test(origText)) {
+                        carr.remove(legendItem.trace._group);
+                        needsRedraw = true;
+                    } else {
+                        carr.set(legendItem.trace._group, text);
+                    }
+
+                    update = carr.constructUpdate();
+                } else {
+                    update.name = text;
                 }
 
                 var p = Plotly.restyle(gd, update, traceIndex);
