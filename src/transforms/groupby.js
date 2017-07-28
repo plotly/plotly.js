@@ -46,12 +46,22 @@ exports.attributes = {
         ].join(' ')
     },
     groupnames: {
-        valType: 'any',
-        description: [
-            'An array of trace names based on group name. Each entry must be an',
-            'object `{name: "group", value: "trace name"}` which is then applied',
-            'to the particular group, overriding the name derived from `nameformat`.'
-        ].join(' ')
+        _isLinkedToArray: 'groupname',
+        group: {
+            valType: 'string',
+            role: 'info',
+            description: [
+                'An group to which this name applies. If a `group` and `name` are specified,',
+                'that name overrides the `nameformat` for that group\'s trace.'
+            ].join(' ')
+        },
+        name: {
+            valType: 'string',
+            role: 'info',
+            description: [
+                'Trace names assigned to the grouped traces of the corresponding `group`.'
+            ].join(' ')
+        }
     },
     styles: {
         _isLinkedToArray: 'style',
@@ -90,6 +100,7 @@ exports.attributes = {
  *  copy of transformIn that contains attribute defaults
  */
 exports.supplyDefaults = function(transformIn) {
+    var i;
     var transformOut = {};
 
     function coerce(attr, dflt) {
@@ -101,14 +112,24 @@ exports.supplyDefaults = function(transformIn) {
     if(!enabled) return transformOut;
 
     coerce('groups');
-    coerce('groupnames');
     coerce('nameformat');
+
+    var nameFormatIn = transformIn.groupnames;
+    var nameFormatOut = transformOut.groupnames = [];
+
+    if(nameFormatIn) {
+        for(i = 0; i < nameFormatIn.length; i++) {
+            nameFormatOut[i] = {};
+            Lib.coerce(nameFormatIn[i], nameFormatOut[i], exports.attributes.groupnames, 'group');
+            Lib.coerce(nameFormatIn[i], nameFormatOut[i], exports.attributes.groupnames, 'name');
+        }
+    }
 
     var styleIn = transformIn.styles;
     var styleOut = transformOut.styles = [];
 
     if(styleIn) {
-        for(var i = 0; i < styleIn.length; i++) {
+        for(i = 0; i < styleIn.length; i++) {
             styleOut[i] = {};
             Lib.coerce(styleIn[i], styleOut[i], exports.attributes.styles, 'target');
             Lib.coerce(styleIn[i], styleOut[i], exports.attributes.styles, 'value');
