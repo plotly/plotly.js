@@ -1666,7 +1666,7 @@ describe('Test lib.js:', function() {
                 });
             });
 
-            describe('constrcting updates', function() {
+            describe('constructing updates', function() {
                 it('constructs updates for addition and modification', function() {
                     carr.set('foo', 'bar');
                     carr.set('name1', 'value3');
@@ -1697,6 +1697,33 @@ describe('Test lib.js:', function() {
                     expect(carr.constructUpdate()).toEqual({
                         'styles[1].name': 'name3'
                     });
+                });
+            });
+        });
+
+        describe('with custom named properties', function() {
+            it('performs standard operations', function() {
+                var container = {styles: [
+                    {foo: 'name1', bar: 'value1'},
+                    {foo: 'name2', bar: 'value2'}
+                ]};
+
+                var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar');
+
+                carr.set('name3', 'value3');
+                carr.remove('name2');
+                carr.rename('name1', 'name2');
+
+                expect(container).toEqual({styles: [
+                    {foo: 'name2', bar: 'value1'},
+                    {foo: 'name3', bar: 'value3'}
+                ]});
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[0].foo': 'name2',
+                    'styles[1].foo': 'name3',
+                    'styles[1].bar': 'value3',
+                    'styles[2]': null
                 });
             });
         });

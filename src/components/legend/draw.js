@@ -418,7 +418,7 @@ function drawTexts(g, gd) {
                         }
                     }
 
-                    var carr = Lib.keyedContainer(fullInput, 'transforms[' + i + '].groupnames');
+                    var carr = Lib.keyedContainer(fullInput, 'transforms[' + i + '].groupnames', 'group', 'name');
 
                     if(BLANK_STRING_REGEX.test(origText)) {
                         carr.remove(legendItem.trace._group);
