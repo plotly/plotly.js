@@ -798,7 +798,7 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
 
     for(i = 0; i < dataIn.length; i++) {
         trace = dataIn[i];
-        fullTrace = plots.supplyTraceDefaults(trace, cnt, fullLayout, i);
+        fullTrace = plots.supplyTraceDefaults(trace, cnt, fullLayout, i, dataIn.length);
 
         fullTrace.index = i;
         fullTrace._input = trace;
@@ -809,7 +809,7 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
 
             for(var j = 0; j < expandedTraces.length; j++) {
                 var expandedTrace = expandedTraces[j];
-                var fullExpandedTrace = plots.supplyTraceDefaults(expandedTrace, cnt, fullLayout, i);
+                var fullExpandedTrace = plots.supplyTraceDefaults(expandedTrace, cnt, fullLayout, i, dataIn.length);
 
                 // The group key gets cleared. If set, pass it forward
                 if(expandedTrace._group) {
@@ -945,7 +945,7 @@ plots.supplyFrameDefaults = function(frameIn) {
     return frameOut;
 };
 
-plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInIndex) {
+plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInIndex, inputTraceCount) {
     var traceOut = {},
         defaultColor = Color.defaults[traceOutIndex % Color.defaults.length];
 
@@ -1018,13 +1018,13 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
             traceOut.visible = !!traceOut.visible;
         }
 
-        plots.supplyTransformDefaults(traceIn, traceOut, layout);
+        plots.supplyTransformDefaults(traceIn, traceOut, layout, inputTraceCount);
     }
 
     return traceOut;
 };
 
-plots.supplyTransformDefaults = function(traceIn, traceOut, layout) {
+plots.supplyTransformDefaults = function(traceIn, traceOut, layout, inputTraceCount) {
     var globalTransforms = layout._globalTransforms || [];
     var transformModules = layout._transformModules || [];
 
@@ -1043,7 +1043,7 @@ plots.supplyTransformDefaults = function(traceIn, traceOut, layout) {
         if(!_module) Lib.warn('Unrecognized transform type ' + type + '.');
 
         if(_module && _module.supplyDefaults) {
-            transformOut = _module.supplyDefaults(transformIn, traceOut, layout, traceIn);
+            transformOut = _module.supplyDefaults(transformIn, traceOut, layout, traceIn, inputTraceCount);
             transformOut.type = type;
             transformOut._module = _module;
 

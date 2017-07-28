@@ -37,12 +37,13 @@ exports.attributes = {
     },
     nameformat: {
         valType: 'string',
-        dflt: '%g (%t)',
         description: [
-            'Pattern by which grouped traces are named. Available special escape',
-            'sequences are `%g`, which inserts the group name, and `%t`, which',
-            'inserts the trace name. If grouping GDP data by country, for example',
-            'The default "%g (%t)" would return "Monaco (GDP per capita)".'
+            'Pattern by which grouped traces are named. If only one trace is present,',
+            'defaults to the group name (`"%g"`), otherwise defaults to the group name',
+            'with trace name (`"%g (%t)"`). Available escape sequences are `%g`, which',
+            'inserts the group name, and `%t`, which inserts the trace name. If grouping',
+            'GDP data by country when more than one trace is present, for example, the',
+            'default "%g (%t)" would return "Monaco (GDP per capita)".'
         ].join(' ')
     },
     groupnames: {
@@ -99,7 +100,7 @@ exports.attributes = {
  * @return {object} transformOut
  *  copy of transformIn that contains attribute defaults
  */
-exports.supplyDefaults = function(transformIn) {
+exports.supplyDefaults = function(transformIn, traceOut, layout, traceIn, inputTraceCount) {
     var i;
     var transformOut = {};
 
@@ -112,7 +113,7 @@ exports.supplyDefaults = function(transformIn) {
     if(!enabled) return transformOut;
 
     coerce('groups');
-    coerce('nameformat');
+    coerce('nameformat', inputTraceCount > 1 ? '%g (%t)' : '%g');
 
     var nameFormatIn = transformIn.groupnames;
     var nameFormatOut = transformOut.groupnames = [];
