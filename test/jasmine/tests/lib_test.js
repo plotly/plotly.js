@@ -1728,6 +1728,32 @@ describe('Test lib.js:', function() {
             });
         });
     });
+
+    describe('templateString', function() {
+        it('evaluates attributes', function() {
+            expect(Lib.templateString('foo %{bar}', {bar: 'baz'})).toEqual('foo baz');
+        });
+
+        it('evaluates nested properties', function() {
+            expect(Lib.templateString('foo %{bar.baz}', {bar: {baz: 'asdf'}})).toEqual('foo asdf');
+        });
+
+        it('evaluates array nested properties', function() {
+            expect(Lib.templateString('foo %{bar[0].baz}', {bar: [{baz: 'asdf'}]})).toEqual('foo asdf');
+        });
+
+        it('subtitutes multiple matches', function() {
+            expect(Lib.templateString('foo %{group} %{trace}', {group: 'asdf', trace: 'jkl;'})).toEqual('foo asdf jkl;');
+        });
+
+        it('replaces missing matches with empty string', function() {
+            expect(Lib.templateString('foo %{group} %{trace}', {})).toEqual('foo  ');
+        });
+
+        it('replaces empty key with empty string', function() {
+            expect(Lib.templateString('foo %{} %{}', {})).toEqual('foo  ');
+        });
+    });
 });
 
 describe('Queue', function() {

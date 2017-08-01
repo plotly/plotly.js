@@ -39,11 +39,11 @@ exports.attributes = {
         valType: 'string',
         description: [
             'Pattern by which grouped traces are named. If only one trace is present,',
-            'defaults to the group name (`"%g"`), otherwise defaults to the group name',
-            'with trace name (`"%g (%t)"`). Available escape sequences are `%g`, which',
-            'inserts the group name, and `%t`, which inserts the trace name. If grouping',
+            'defaults to the group name (`"%{group}"`), otherwise defaults to the group name',
+            'with trace name (`"%{group} (%{trace})"`). Available escape sequences are `%{group}`, which',
+            'inserts the group name, and `%{trace}`, which inserts the trace name. If grouping',
             'GDP data by country when more than one trace is present, for example, the',
-            'default "%g (%t)" would return "Monaco (GDP per capita)".'
+            'default "%{group} (%{trace})" would return "Monaco (GDP per capita)".'
         ].join(' ')
     },
     groupnames: {
@@ -100,7 +100,7 @@ exports.attributes = {
  * @return {object} transformOut
  *  copy of transformIn that contains attribute defaults
  */
-exports.supplyDefaults = function(transformIn, traceOut, layout, traceIn) {
+exports.supplyDefaults = function(transformIn, traceOut, layout) {
     var i;
     var transformOut = {};
 
@@ -113,7 +113,7 @@ exports.supplyDefaults = function(transformIn, traceOut, layout, traceIn) {
     if(!enabled) return transformOut;
 
     coerce('groups');
-    coerce('nameformat', layout._dataLength > 1 ? '%g (%t)' : '%g');
+    coerce('nameformat', layout._dataLength > 1 ? '%{group} (%{trace})' : '%{group}');
 
     var nameFormatIn = transformIn.groupnames;
     var nameFormatOut = transformOut.groupnames = [];
@@ -172,12 +172,6 @@ exports.transform = function(data, state) {
     return newData;
 };
 
-function computeName(pattern, traceName, groupName) {
-    return pattern.replace(/%g/g, groupName)
-        .replace(/%t/g, traceName);
-}
-
-
 function transformOne(trace, state) {
     var i, j, k, attr, srcArray, groupName, newTrace, transforms, arrayLookup;
     var groupNameObj;
@@ -224,7 +218,10 @@ function transformOne(trace, state) {
         if(suppliedName) {
             newTrace.name = suppliedName;
         } else {
-            newTrace.name = computeName(opts.nameformat, trace.name, groupName);
+            newTrace.name = Lib.templateString(opts.nameformat, {
+                trace: trace.name,
+                group: groupName
+            });
         }
 
         // In order for groups to apply correctly to other transform data (e.g.
