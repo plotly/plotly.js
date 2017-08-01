@@ -811,10 +811,7 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
                 var expandedTrace = expandedTraces[j];
                 var fullExpandedTrace = plots.supplyTraceDefaults(expandedTrace, cnt, fullLayout, i);
 
-                // The group key gets cleared. If set, pass it forward
-                if(expandedTrace._group) {
-                    fullExpandedTrace._group = expandedTrace._group;
-                }
+                relinkPrivateKeys(fullExpandedTrace, expandedTrace);
 
                 // mutate uid here using parent uid and expanded index
                 // to promote consistency between update calls
