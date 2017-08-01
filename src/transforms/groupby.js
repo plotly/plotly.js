@@ -100,7 +100,7 @@ exports.attributes = {
  * @return {object} transformOut
  *  copy of transformIn that contains attribute defaults
  */
-exports.supplyDefaults = function(transformIn, traceOut, layout, traceIn, inputTraceCount) {
+exports.supplyDefaults = function(transformIn, traceOut, layout, traceIn) {
     var i;
     var transformOut = {};
 
@@ -113,7 +113,7 @@ exports.supplyDefaults = function(transformIn, traceOut, layout, traceIn, inputT
     if(!enabled) return transformOut;
 
     coerce('groups');
-    coerce('nameformat', inputTraceCount > 1 ? '%g (%t)' : '%g');
+    coerce('nameformat', layout._dataLength > 1 ? '%g (%t)' : '%g');
 
     var nameFormatIn = transformIn.groupnames;
     var nameFormatOut = transformOut.groupnames = [];
