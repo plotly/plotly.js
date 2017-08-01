@@ -399,7 +399,6 @@ function drawTexts(g, gd) {
 
                 var transforms, direction;
                 var fullInput = legendItem.trace._fullInput || {};
-                var needsRedraw = false;
                 var update = {};
 
                 // N.B. this block isn't super clean,
@@ -419,7 +418,6 @@ function drawTexts(g, gd) {
 
                     if(BLANK_STRING_REGEX.test(origText)) {
                         carr.remove(legendItem.trace._group);
-                        needsRedraw = true;
                     } else {
                         carr.set(legendItem.trace._group, text);
                     }
@@ -429,18 +427,7 @@ function drawTexts(g, gd) {
                     update.name = text;
                 }
 
-                var p = Plotly.restyle(gd, update, traceIndex);
-
-                // If a groupby label is deleted, it seems like we need another redraw in order
-                // to restore the label. Otherwise it simply sets this property and the blank
-                // string is retained.
-                if(needsRedraw) {
-                    p = p.then(function() {
-                        return Plotly.redraw(gd);
-                    });
-                }
-
-                return p;
+                return Plotly.restyle(gd, update, traceIndex);
             });
     }
     else text.call(textLayout);
