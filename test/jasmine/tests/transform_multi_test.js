@@ -232,6 +232,10 @@ describe('user-defined transforms:', function() {
 describe('multiple transforms:', function() {
     'use strict';
 
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+
     var mockData0 = [{
         mode: 'markers',
         x: [1, -1, -2, 0, 1, 2, 3],
@@ -278,8 +282,6 @@ describe('multiple transforms:', function() {
     it('Plotly.plot should plot the transform traces', function(done) {
         var data = Lib.extendDeep([], mockData0);
 
-        var gd = createGraphDiv();
-
         Plotly.plot(gd, data).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
@@ -302,8 +304,6 @@ describe('multiple transforms:', function() {
 
         data[0].transforms.slice().reverse();
 
-        var gd = createGraphDiv();
-
         Plotly.plot(gd, data).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
@@ -325,7 +325,6 @@ describe('multiple transforms:', function() {
         var data = Lib.extendDeep([], mockData0);
         data[0].marker = { size: 20 };
 
-        var gd = createGraphDiv();
         var dims = [2, 2];
 
         Plotly.plot(gd, data).then(function() {
@@ -377,8 +376,6 @@ describe('multiple transforms:', function() {
     it('Plotly.extendTraces should work', function(done) {
         var data = Lib.extendDeep([], mockData0);
 
-        var gd = createGraphDiv();
-
         Plotly.plot(gd, data).then(function() {
             expect(gd.data[0].x.length).toEqual(7);
             expect(gd._fullData[0].x.length).toEqual(2);
@@ -405,8 +402,6 @@ describe('multiple transforms:', function() {
     it('Plotly.deleteTraces should work', function(done) {
         var data = Lib.extendDeep([], mockData1);
 
-        var gd = createGraphDiv();
-
         Plotly.plot(gd, data).then(function() {
             assertDims([2, 2, 2, 2]);
 
@@ -424,8 +419,6 @@ describe('multiple transforms:', function() {
 
     it('toggling trace visibility should work', function(done) {
         var data = Lib.extendDeep([], mockData1);
-
-        var gd = createGraphDiv();
 
         Plotly.plot(gd, data).then(function() {
             assertDims([2, 2, 2, 2]);
