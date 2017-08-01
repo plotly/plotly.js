@@ -277,4 +277,54 @@ describe('the register function', function() {
 
         expect(Registry.transformsRegistry['mah-transform']).toBeDefined();
     });
+
+    describe('getTransformIndices', function() {
+        it('returns an empty array if no transforms present', function() {
+            expect(Registry.getTransformIndices({}, 'groupby')).toEqual([]);
+        });
+
+        it('returns an empty array if none present', function() {
+            expect(Registry.getTransformIndices({
+                transforms: [
+                    {type: 'filter'},
+                    {type: 'groupby'}
+                ]
+            }, 'degauss')).toEqual([]);
+        });
+
+        it('returns an empty array if none present', function() {
+            expect(Registry.getTransformIndices({
+                transforms: [
+                    {type: 'filter'},
+                    {type: 'groupby'},
+                    {type: 'groupby'}
+                ]
+            }, 'groupby')).toEqual([1, 2]);
+        });
+    });
+
+    describe('hasTransform', function() {
+        it('returns an false array if no transforms present', function() {
+            expect(Registry.hasTransform({}, 'groupby')).toBe(false);
+        });
+
+        it('returns an empty array if none present', function() {
+            expect(Registry.hasTransform({
+                transforms: [
+                    {type: 'filter'},
+                    {type: 'groupby'}
+                ]
+            }, 'degauss')).toBe(false);
+        });
+
+        it('returns an empty array if none present', function() {
+            expect(Registry.hasTransform({
+                transforms: [
+                    {type: 'filter'},
+                    {type: 'groupby'},
+                    {type: 'groupby'}
+                ]
+            }, 'groupby')).toBe(true);
+        });
+    });
 });

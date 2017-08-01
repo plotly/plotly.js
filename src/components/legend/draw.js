@@ -397,7 +397,7 @@ function drawTexts(g, gd) {
 
                 if(!this.text()) text = ' \u0020\u0020 ';
 
-                var i, transforms, direction;
+                var transforms, direction;
                 var fullInput = legendItem.trace._fullInput || {};
                 var needsRedraw = false;
                 var update = {};
@@ -411,14 +411,11 @@ function drawTexts(g, gd) {
                     direction = transforms[transforms.length - 1].direction;
 
                     update[direction + '.name'] = text;
-                } else if(fullInput.transforms) {
-                    for(i = fullInput.transforms.length - 1; i >= 0; i--) {
-                        if(fullInput.transforms[i].type === 'groupby') {
-                            break;
-                        }
-                    }
+                } else if(Registry.hasTransform(fullInput, 'groupby')) {
+                    var groupbyIndices = Registry.getTransformIndices(fullInput, 'groupby');
+                    var index = groupbyIndices[groupbyIndices.length - 1];
 
-                    var carr = Lib.keyedContainer(fullInput, 'transforms[' + i + '].groupnames', 'group', 'name');
+                    var carr = Lib.keyedContainer(fullInput, 'transforms[' + index + '].groupnames', 'group', 'name');
 
                     if(BLANK_STRING_REGEX.test(origText)) {
                         carr.remove(legendItem.trace._group);
