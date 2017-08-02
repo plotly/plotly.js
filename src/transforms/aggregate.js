@@ -47,8 +47,8 @@ var attrs = exports.attributes = {
         ].join(' ')
     },
     aggregations: {
-        _isLinkedToArray: 'style',
-        array: {
+        _isLinkedToArray: 'aggregation',
+        target: {
             valType: 'string',
             role: 'info',
             description: [
@@ -67,7 +67,7 @@ var attrs = exports.attributes = {
             role: 'info',
             description: [
                 'Sets the aggregation function.',
-                'All values from the linked `array`, corresponding to the same value',
+                'All values from the linked `target`, corresponding to the same value',
                 'in the `groups` array, are collected and reduced by this function.',
                 '*count* is simply the number of values in the `groups` array, so does',
                 'not even require the linked array to exist. *first* (*last*) is just',
@@ -134,13 +134,13 @@ exports.supplyDefaults = function(transformIn, traceOut) {
     if(aggregationsIn) {
         for(i = 0; i < aggregationsIn.length; i++) {
             var aggregationOut = {};
-            var array = Lib.coerce(aggregationsIn[i], aggregationOut, attrs.aggregations, 'array');
+            var target = Lib.coerce(aggregationsIn[i], aggregationOut, attrs.aggregations, 'target');
             var func = Lib.coerce(aggregationsIn[i], aggregationOut, attrs.aggregations, 'func');
 
             // add this aggregation to the output only if it's the first instance
-            // of a valid array attribute - or an unused array attribute with "count"
-            if(array && (arrayAttrs[array] || (func === 'count' && arrayAttrs[array] === undefined))) {
-                arrayAttrs[array] = 0;
+            // of a valid target attribute - or an unused target attribute with "count"
+            if(target && (arrayAttrs[target] || (func === 'count' && arrayAttrs[target] === undefined))) {
+                arrayAttrs[target] = 0;
                 aggregationsOut.push(aggregationOut);
             }
         }
@@ -150,7 +150,7 @@ exports.supplyDefaults = function(transformIn, traceOut) {
     for(i = 0; i < arrayAttrArray.length; i++) {
         if(arrayAttrs[arrayAttrArray[i]]) {
             aggregationsOut.push({
-                array: arrayAttrArray[i],
+                target: arrayAttrArray[i],
                 func: attrs.aggregations.func.dflt
             });
         }
@@ -189,12 +189,12 @@ exports.calcTransform = function(gd, trace, opts) {
     }
 
     if(typeof groups === 'string') {
-        aggregateOneArray(gd, trace, groupings, {array: groups, func: 'first'});
+        aggregateOneArray(gd, trace, groupings, {target: groups, func: 'first'});
     }
 };
 
 function aggregateOneArray(gd, trace, groupings, aggregation) {
-    var attr = aggregation.array;
+    var attr = aggregation.target;
     var targetNP = Lib.nestedProperty(trace, attr);
     var arrayIn = targetNP.get();
     var conversions = Axes.getDataConversions(gd, trace, attr, arrayIn);

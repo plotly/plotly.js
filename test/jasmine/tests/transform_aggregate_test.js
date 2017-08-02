@@ -31,19 +31,19 @@ describe('aggregate', function() {
                 groups: ['a', 'b', 'a', 'a', 'a'],
                 aggregations: [
                     // missing array - the entry is ignored
-                    {array: '', func: 'avg'},
-                    {array: 'x', func: 'sum'},
+                    {target: '', func: 'avg'},
+                    {target: 'x', func: 'sum'},
                     // non-numerics will not count toward numerator or denominator for avg
-                    {array: 'y', func: 'avg'},
-                    {array: 'marker.size', func: 'min'},
-                    {array: 'marker.color', func: 'max'},
+                    {target: 'y', func: 'avg'},
+                    {target: 'marker.size', func: 'min'},
+                    {target: 'marker.color', func: 'max'},
                     // marker.opacity doesn't have an entry, but it will default to first
-                    // as if it were {array: 'marker.opacity', func: 'first'},
-                    {array: 'marker.line.color', func: 'last'},
+                    // as if it were {target: 'marker.opacity', func: 'first'},
+                    {target: 'marker.line.color', func: 'last'},
                     // not present in data, but that's OK for count
-                    {array: 'marker.line.width', func: 'count'},
+                    {target: 'marker.line.width', func: 'count'},
                     // duplicate entry - discarded
-                    {array: 'x', func: 'min'}
+                    {target: 'x', func: 'min'}
                 ]
             }]
         }], {
@@ -76,16 +76,16 @@ describe('aggregate', function() {
                 // will always compare as strings = so 1 === '1' === 1.0 !== '1.0'
                 groups: [1, 2, '1', 1.0, 1],
                 aggregations: [
-                    {array: 'x', func: 'avg'},
-                    {array: 'y', func: 'min'},
-                    {array: 'text', func: 'max'},
+                    {target: 'x', func: 'avg'},
+                    {target: 'y', func: 'min'},
+                    {target: 'text', func: 'max'},
                     // hovertext doesn't have a func, default to first
-                    {array: 'hovertext'},
-                    {array: 'customdata', func: 'last'},
+                    {target: 'hovertext'},
+                    {target: 'customdata', func: 'last'},
                     // not present in data, but that's OK for count
-                    {array: 'marker.line.width', func: 'count'},
+                    {target: 'marker.line.width', func: 'count'},
                     // duplicate entry - discarded
-                    {array: 'x', func: 'min'}
+                    {target: 'x', func: 'min'}
                 ]
             }]
         }]);
@@ -111,14 +111,14 @@ describe('aggregate', function() {
                 type: 'aggregate',
                 groups: [1, 2, 1, 1, 1],
                 aggregations: [
-                    {array: 'x', func: 'min'},
-                    {array: 'y', func: 'max'},
-                    {array: 'text', func: 'last'},
+                    {target: 'x', func: 'min'},
+                    {target: 'y', func: 'max'},
+                    {target: 'text', func: 'last'},
                     // hovertext doesn't have an entry, but it will default to first
                     // not present in data, but that's OK for count
-                    {array: 'marker.line.width', func: 'count'},
+                    {target: 'marker.line.width', func: 'count'},
                     // duplicate entry - discarded
-                    {array: 'x', func: 'max'}
+                    {target: 'x', func: 'max'}
                 ]
             }]
         }], {
@@ -148,9 +148,9 @@ describe('aggregate', function() {
                 type: 'aggregate',
                 groups: [1, 1, 2, 2],
                 aggregations: [
-                    {array: 'x', func: 'sum'},
-                    {array: 'y', func: 'sum'},
-                    {array: 'text', func: 'avg'}
+                    {target: 'x', func: 'sum'},
+                    {target: 'y', func: 'sum'},
+                    {target: 'text', func: 'avg'}
                 ]
             }]
         }]);
@@ -175,8 +175,8 @@ describe('aggregate', function() {
                 type: 'aggregate',
                 groups: 'marker.size',
                 aggregations: [
-                    {array: 'x', func: 'sum'},
-                    {array: 'y', func: 'avg'}
+                    {target: 'x', func: 'sum'},
+                    {target: 'y', func: 'avg'}
                 ]
             }]
         }]);

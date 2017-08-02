@@ -449,8 +449,8 @@ describe('multiple transforms:', function() {
                 type: 'aggregate',
                 groups: [1, 2, 2, 1, 1],
                 aggregations: [
-                    {array: 'x', func: 'sum'},
-                    {array: 'y', func: 'avg'}
+                    {target: 'x', func: 'sum'},
+                    {target: 'y', func: 'avg'}
                 ]
             }, {
                 type: 'filter',
@@ -488,8 +488,8 @@ describe('multiple transforms:', function() {
                 type: 'aggregate',
                 groups: [1, 2, 2, 1, 1],
                 aggregations: [
-                    {array: 'x', func: 'sum'},
-                    {array: 'y', func: 'avg'}
+                    {target: 'x', func: 'sum'},
+                    {target: 'y', func: 'avg'}
                 ]
             }]
         };
