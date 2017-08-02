@@ -74,8 +74,17 @@ var attrs = exports.attributes = {
                 'the first (last) linked value.'
             ].join(' ')
         },
+        enabled: {
+            valType: 'boolean',
+            dflt: true,
+            description: [
+                'Determines whether this aggregation function is enabled or disabled.'
+            ].join(' ')
+        }
     }
 };
+
+var aggAttrs = attrs.aggregations;
 
 /**
  * Supply transform attributes defaults
@@ -129,20 +138,22 @@ exports.supplyDefaults = function(transformIn, traceOut) {
     }
 
     var aggregationsIn = transformIn.aggregations;
-    var aggregationsOut = transformOut.aggregations = [];
+    var aggregationsOut = transformOut.aggregations = new Array(aggregationsIn.length);
 
     if(aggregationsIn) {
         for(i = 0; i < aggregationsIn.length; i++) {
             var aggregationOut = {};
-            var target = Lib.coerce(aggregationsIn[i], aggregationOut, attrs.aggregations, 'target');
-            var func = Lib.coerce(aggregationsIn[i], aggregationOut, attrs.aggregations, 'func');
+            var target = Lib.coerce(aggregationsIn[i], aggregationOut, aggAttrs, 'target');
+            var func = Lib.coerce(aggregationsIn[i], aggregationOut, aggAttrs, 'func');
+            var enabledi = Lib.coerce(aggregationsIn[i], aggregationOut, aggAttrs, 'enabled');
 
             // add this aggregation to the output only if it's the first instance
             // of a valid target attribute - or an unused target attribute with "count"
-            if(target && (arrayAttrs[target] || (func === 'count' && arrayAttrs[target] === undefined))) {
+            if(enabledi && target && (arrayAttrs[target] || (func === 'count' && arrayAttrs[target] === undefined))) {
                 arrayAttrs[target] = 0;
-                aggregationsOut.push(aggregationOut);
+                aggregationsOut[i] = aggregationOut;
             }
+            else aggregationsOut[i] = {enabled: false};
         }
     }
 
@@ -151,7 +162,8 @@ exports.supplyDefaults = function(transformIn, traceOut) {
         if(arrayAttrs[arrayAttrArray[i]]) {
             aggregationsOut.push({
                 target: arrayAttrArray[i],
-                func: attrs.aggregations.func.dflt
+                func: aggAttrs.func.dflt,
+                enabled: true
             });
         }
     }
@@ -189,11 +201,17 @@ exports.calcTransform = function(gd, trace, opts) {
     }
 
     if(typeof groups === 'string') {
-        aggregateOneArray(gd, trace, groupings, {target: groups, func: 'first'});
+        aggregateOneArray(gd, trace, groupings, {
+            target: groups,
+            func: 'first',
+            enabled: true
+        });
     }
 };
 
 function aggregateOneArray(gd, trace, groupings, aggregation) {
+    if(!aggregation.enabled) return;
+
     var attr = aggregation.target;
     var targetNP = Lib.nestedProperty(trace, attr);
     var arrayIn = targetNP.get();
