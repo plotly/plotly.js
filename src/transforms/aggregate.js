@@ -38,12 +38,12 @@ var attrs = exports.attributes = {
             'Data points with matching group values will be coalesced into',
             'one point, using the supplied aggregation functions to reduce data',
             'in other data arrays.',
-            'If a string, *groups* is assumed to be a reference to a data array',
+            'If a string, `groups` is assumed to be a reference to a data array',
             'in the parent trace object.',
             'To aggregate by nested variables, use *.* to access them.',
             'For example, set `groups` to *marker.color* to aggregate',
             'about the marker color array.',
-            'If an array, *groups* is itself the data array by which we aggregate.'
+            'If an array, `groups` is itself the data array by which we aggregate.'
         ].join(' ')
     },
     aggregations: {
@@ -55,7 +55,7 @@ var attrs = exports.attributes = {
                 'A reference to the data array in the parent trace to aggregate.',
                 'To aggregate by nested variables, use *.* to access them.',
                 'For example, set `groups` to *marker.color* to aggregate',
-                'about the marker color array.',
+                'over the marker color array.',
                 'The referenced array must already exist, unless `func` is *count*,',
                 'and each array may only be referenced once.'
             ].join(' ')
