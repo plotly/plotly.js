@@ -32,6 +32,8 @@ describe('aggregate', function() {
                 aggregations: [
                     // missing array - the entry is ignored
                     {target: '', func: 'avg'},
+                    // disabled explicitly
+                    {target: 'x', func: 'avg', enabled: false},
                     {target: 'x', func: 'sum'},
                     // non-numerics will not count toward numerator or denominator for avg
                     {target: 'y', func: 'avg'},
@@ -186,5 +188,38 @@ describe('aggregate', function() {
         expect(traceOut.x).toEqual([8, 7]);
         expect(traceOut.y).toBeCloseToArray([16 / 3, 7], 5);
         expect(traceOut.marker.size).toEqual([10, 20]);
+    });
+
+    it('handles median, mode, rms, & stddev for numeric data', function() {
+        // again, nothing is going to barf with non-numeric data, but sometimes it
+        // won't make much sense.
+
+        Plotly.newPlot(gd, [{
+            x: [1, 1, 2, 2, 1],
+            y: [1, 2, 3, 4, 5],
+            marker: {
+                size: [1, 2, 3, 4, 5],
+                line: {width: [1, 1, 2, 2, 1]}
+            },
+            transforms: [{
+                type: 'aggregate',
+                groups: [1, 2, 1, 1, 1],
+                aggregations: [
+                    {target: 'x', func: 'mode'},
+                    {target: 'y', func: 'median'},
+                    {target: 'marker.size', func: 'rms'},
+                    {target: 'marker.line.width', func: 'stddev'}
+                ]
+            }]
+        }]);
+
+        var traceOut = gd._fullData[0];
+
+        // 1 and 2 both have count of 2 in the first group,
+        // but 2 gets to that count first
+        expect(traceOut.x).toEqual([2, 1]);
+        expect(traceOut.y).toBeCloseToArray([3.5, 2], 5);
+        expect(traceOut.marker.size).toBeCloseToArray([Math.sqrt(51 / 4), 2], 5);
+        expect(traceOut.marker.line.width).toBeCloseToArray([0.5, 0], 5);
     });
 });

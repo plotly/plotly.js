@@ -62,7 +62,7 @@ var attrs = exports.attributes = {
         },
         func: {
             valType: 'enumerated',
-            values: ['count', 'sum', 'avg', 'min', 'max', 'first', 'last'],
+            values: ['count', 'sum', 'avg', 'median', 'mode', 'rms', 'stddev', 'min', 'max', 'first', 'last'],
             dflt: 'first',
             role: 'info',
             description: [
@@ -71,7 +71,16 @@ var attrs = exports.attributes = {
                 'in the `groups` array, are collected and reduced by this function.',
                 '*count* is simply the number of values in the `groups` array, so does',
                 'not even require the linked array to exist. *first* (*last*) is just',
-                'the first (last) linked value.'
+                'the first (last) linked value.',
+                'Invalid values are ignored, so for example in *avg* they do not',
+                'contribute to either the numerator or the denominator.',
+                'Any data type (numeric, date, category) may be aggregated with any',
+                'function, even though in certain cases it is unlikely to make sense,',
+                'for example a sum of dates or average of categories.',
+                '*median* will return the average of the two central values if there is',
+                'an even count. *mode* will return the first value to reach the maximum',
+                'count, in case of a tie. *stddev* uses the population formula',
+                '(denominator N, not N-1)'
             ].join(' ')
         },
         enabled: {
@@ -246,7 +255,7 @@ function getAggregateFunction(func, conversions) {
                 var total = 0;
                 for(var i = 0; i < indices.length; i++) {
                     var vi = d2c(array[indices[i]]);
-                    if(vi !== BADNUM) total += +vi;
+                    if(vi !== BADNUM) total += vi;
                 }
                 return c2d(total);
             };
@@ -259,7 +268,7 @@ function getAggregateFunction(func, conversions) {
                 for(var i = 0; i < indices.length; i++) {
                     var vi = d2c(array[indices[i]]);
                     if(vi !== BADNUM) {
-                        total += +vi;
+                        total += vi;
                         cnt++;
                     }
                 }
@@ -271,7 +280,7 @@ function getAggregateFunction(func, conversions) {
                 var out = Infinity;
                 for(var i = 0; i < indices.length; i++) {
                     var vi = d2c(array[indices[i]]);
-                    if(vi !== BADNUM) out = Math.min(out, +vi);
+                    if(vi !== BADNUM) out = Math.min(out, vi);
                 }
                 return (out === Infinity) ? BADNUM : c2d(out);
             };
@@ -281,9 +290,88 @@ function getAggregateFunction(func, conversions) {
                 var out = -Infinity;
                 for(var i = 0; i < indices.length; i++) {
                     var vi = d2c(array[indices[i]]);
-                    if(vi !== BADNUM) out = Math.max(out, +vi);
+                    if(vi !== BADNUM) out = Math.max(out, vi);
                 }
                 return (out === -Infinity) ? BADNUM : c2d(out);
+            };
+
+        case 'median':
+            return function(array, indices) {
+                var sortCalc = [];
+                for(var i = 0; i < indices.length; i++) {
+                    var vi = d2c(array[indices[i]]);
+                    if(vi !== BADNUM) sortCalc.push(vi);
+                }
+                if(!sortCalc.length) return BADNUM;
+                sortCalc.sort();
+                var mid = (sortCalc.length - 1) / 2;
+                return c2d((sortCalc[Math.floor(mid)] + sortCalc[Math.ceil(mid)]) / 2);
+            };
+
+        case 'mode':
+            return function(array, indices) {
+                var counts = {};
+                var maxCnt = 0;
+                var out = BADNUM;
+                for(var i = 0; i < indices.length; i++) {
+                    var vi = d2c(array[indices[i]]);
+                    if(vi !== BADNUM) {
+                        var counti = counts[vi] = (counts[vi] || 0) + 1;
+                        if(counti > maxCnt) {
+                            maxCnt = counti;
+                            out = vi;
+                        }
+                    }
+                }
+                return maxCnt ? c2d(out) : BADNUM;
+            };
+
+        case 'rms':
+            return function(array, indices) {
+                var total = 0;
+                var cnt = 0;
+                for(var i = 0; i < indices.length; i++) {
+                    var vi = d2c(array[indices[i]]);
+                    if(vi !== BADNUM) {
+                        total += vi * vi;
+                        cnt++;
+                    }
+                }
+                return cnt ? c2d(Math.sqrt(total / cnt)) : BADNUM;
+            };
+
+        case 'stddev':
+            return function(array, indices) {
+                // balance numerical stability with performance:
+                // so that we call d2c once per element but don't need to
+                // store them, reference all to the first element
+                var total = 0;
+                var total2 = 0;
+                var cnt = 1;
+                var v0 = BADNUM;
+                var i;
+                for(i = 0; i < indices.length && v0 === BADNUM; i++) {
+                    v0 = d2c(array[indices[i]]);
+                }
+                if(v0 === BADNUM) return BADNUM;
+
+                for(; i < indices.length; i++) {
+                    var vi = d2c(array[indices[i]]);
+                    if(vi !== BADNUM) {
+                        var dv = vi - v0;
+                        total += dv;
+                        total2 += dv * dv;
+                        cnt++;
+                    }
+                }
+
+                // This is population std dev, if we want sample std dev
+                // we would need (...) / (cnt - 1)
+                // Also note there's no c2d here - that means for dates the result
+                // is a number of milliseconds, and for categories it's a number
+                // of category differences, which is not generically meaningful but
+                // as in other cases we don't forbid it.
+                return Math.sqrt((total2 - (total * total / cnt)) / cnt);
             };
     }
 }
