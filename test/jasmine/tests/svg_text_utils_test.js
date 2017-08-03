@@ -371,5 +371,19 @@ describe('svg+text utils', function() {
                     opener(2.6) + 'modified' + closer, textCase);
             });
         });
+
+        it('ignores bare closing tags', function() {
+            var node = mockTextSVGElement('</sub>');
+
+            // sub shows up as a zero-width space (u200B) on either side of the 5:
+            expect(node.text()).toEqual('');
+        });
+
+        it('ignores extra closing tags', function() {
+            var node = mockTextSVGElement('test<sub>5</sub></sub>more');
+
+            // sub shows up as a zero-width space (u200B) on either side of the 5:
+            expect(node.text()).toEqual('test\u200b5\u200bmore');
+        });
     });
 });

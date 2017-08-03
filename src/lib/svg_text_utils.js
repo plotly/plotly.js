@@ -400,7 +400,15 @@ function buildSVGText(containerNode, str) {
     }
 
     function exitNode(type) {
+        // A bare closing tag can't close the root node. If we encounter this it
+        // means there's an extra closing tag that can just be ignored:
+        if(nodeStack.length === 1) {
+            Lib.log('Ignoring unexpected end tag </' + type + '>.', str);
+            return;
+        }
+
         var innerNode = nodeStack.pop();
+
         if(type !== innerNode.type) {
             Lib.log('Start tag <' + innerNode.type + '> doesnt match end tag <' +
                 type + '>. Pretending it did match.', str);
