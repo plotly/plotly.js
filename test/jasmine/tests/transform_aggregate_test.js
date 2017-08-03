@@ -199,7 +199,8 @@ describe('aggregate', function() {
             y: [1, 2, 3, 4, 5],
             marker: {
                 size: [1, 2, 3, 4, 5],
-                line: {width: [1, 1, 2, 2, 1]}
+                line: {width: [1, 1, 2, 2, 1]},
+                color: [1, 1, 2, 2, 1]
             },
             transforms: [{
                 type: 'aggregate',
@@ -208,7 +209,8 @@ describe('aggregate', function() {
                     {target: 'x', func: 'mode'},
                     {target: 'y', func: 'median'},
                     {target: 'marker.size', func: 'rms'},
-                    {target: 'marker.line.width', func: 'stddev'}
+                    {target: 'marker.line.width', func: 'stddev', funcmode: 'population'},
+                    {target: 'marker.color', func: 'stddev'}
                 ]
             }]
         }]);
@@ -221,5 +223,6 @@ describe('aggregate', function() {
         expect(traceOut.y).toBeCloseToArray([3.5, 2], 5);
         expect(traceOut.marker.size).toBeCloseToArray([Math.sqrt(51 / 4), 2], 5);
         expect(traceOut.marker.line.width).toBeCloseToArray([0.5, 0], 5);
+        expect(traceOut.marker.color).toBeCloseToArray([Math.sqrt(1 / 3), 0], 5);
     });
 });

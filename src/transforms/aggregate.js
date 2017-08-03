@@ -79,8 +79,17 @@ var attrs = exports.attributes = {
                 'for example a sum of dates or average of categories.',
                 '*median* will return the average of the two central values if there is',
                 'an even count. *mode* will return the first value to reach the maximum',
-                'count, in case of a tie. *stddev* uses the population formula',
-                '(denominator N, not N-1)'
+                'count, in case of a tie.'
+            ].join(' ')
+        },
+        funcmode: {
+            valType: 'enumerated',
+            values: ['sample', 'population'],
+            dflt: 'sample',
+            role: 'info',
+            description: [
+                '*stddev* supports two formula variants: *sample* (normalize by N-1)',
+                'and *population* (normalize by N).'
             ].join(' ')
         },
         enabled: {
@@ -148,17 +157,24 @@ exports.supplyDefaults = function(transformIn, traceOut) {
 
     var aggregationsIn = transformIn.aggregations;
     var aggregationsOut = transformOut.aggregations = new Array(aggregationsIn.length);
+    var aggregationOut;
+
+    function coercei(attr, dflt) {
+        return Lib.coerce(aggregationsIn[i], aggregationOut, aggAttrs, attr, dflt);
+    }
 
     if(aggregationsIn) {
         for(i = 0; i < aggregationsIn.length; i++) {
-            var aggregationOut = {};
-            var target = Lib.coerce(aggregationsIn[i], aggregationOut, aggAttrs, 'target');
-            var func = Lib.coerce(aggregationsIn[i], aggregationOut, aggAttrs, 'func');
-            var enabledi = Lib.coerce(aggregationsIn[i], aggregationOut, aggAttrs, 'enabled');
+            aggregationOut = {};
+            var target = coercei('target');
+            var func = coercei('func');
+            var enabledi = coercei('enabled');
 
             // add this aggregation to the output only if it's the first instance
             // of a valid target attribute - or an unused target attribute with "count"
             if(enabledi && target && (arrayAttrs[target] || (func === 'count' && arrayAttrs[target] === undefined))) {
+                if(func === 'stddev') coercei('funcmode');
+
                 arrayAttrs[target] = 0;
                 aggregationsOut[i] = aggregationOut;
             }
@@ -225,7 +241,7 @@ function aggregateOneArray(gd, trace, groupings, aggregation) {
     var targetNP = Lib.nestedProperty(trace, attr);
     var arrayIn = targetNP.get();
     var conversions = Axes.getDataConversions(gd, trace, attr, arrayIn);
-    var func = getAggregateFunction(aggregation.func, conversions);
+    var func = getAggregateFunction(aggregation, conversions);
 
     var arrayOut = new Array(groupings.length);
     for(var i = 0; i < groupings.length; i++) {
@@ -234,7 +250,8 @@ function aggregateOneArray(gd, trace, groupings, aggregation) {
     targetNP.set(arrayOut);
 }
 
-function getAggregateFunction(func, conversions) {
+function getAggregateFunction(opts, conversions) {
+    var func = opts.func;
     var d2c = conversions.d2c;
     var c2d = conversions.c2d;
 
@@ -371,7 +388,11 @@ function getAggregateFunction(func, conversions) {
                 // is a number of milliseconds, and for categories it's a number
                 // of category differences, which is not generically meaningful but
                 // as in other cases we don't forbid it.
-                return Math.sqrt((total2 - (total * total / cnt)) / cnt);
+                var norm = (opts.funcmode === 'sample') ? (cnt - 1) : cnt;
+                // this is debatable: should a count of 1 return sample stddev of
+                // 0 or undefined?
+                if(!norm) return 0;
+                return Math.sqrt((total2 - (total * total / cnt)) / norm);
             };
     }
 }
