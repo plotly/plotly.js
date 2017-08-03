@@ -232,6 +232,10 @@ describe('user-defined transforms:', function() {
 describe('multiple transforms:', function() {
     'use strict';
 
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+
     var mockData0 = [{
         mode: 'markers',
         x: [1, -1, -2, 0, 1, 2, 3],
@@ -278,8 +282,6 @@ describe('multiple transforms:', function() {
     it('Plotly.plot should plot the transform traces', function(done) {
         var data = Lib.extendDeep([], mockData0);
 
-        var gd = createGraphDiv();
-
         Plotly.plot(gd, data).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
@@ -302,8 +304,6 @@ describe('multiple transforms:', function() {
 
         data[0].transforms.slice().reverse();
 
-        var gd = createGraphDiv();
-
         Plotly.plot(gd, data).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
@@ -325,7 +325,6 @@ describe('multiple transforms:', function() {
         var data = Lib.extendDeep([], mockData0);
         data[0].marker = { size: 20 };
 
-        var gd = createGraphDiv();
         var dims = [2, 2];
 
         Plotly.plot(gd, data).then(function() {
@@ -377,8 +376,6 @@ describe('multiple transforms:', function() {
     it('Plotly.extendTraces should work', function(done) {
         var data = Lib.extendDeep([], mockData0);
 
-        var gd = createGraphDiv();
-
         Plotly.plot(gd, data).then(function() {
             expect(gd.data[0].x.length).toEqual(7);
             expect(gd._fullData[0].x.length).toEqual(2);
@@ -405,8 +402,6 @@ describe('multiple transforms:', function() {
     it('Plotly.deleteTraces should work', function(done) {
         var data = Lib.extendDeep([], mockData1);
 
-        var gd = createGraphDiv();
-
         Plotly.plot(gd, data).then(function() {
             assertDims([2, 2, 2, 2]);
 
@@ -424,8 +419,6 @@ describe('multiple transforms:', function() {
 
     it('toggling trace visibility should work', function(done) {
         var data = Lib.extendDeep([], mockData1);
-
-        var gd = createGraphDiv();
 
         Plotly.plot(gd, data).then(function() {
             assertDims([2, 2, 2, 2]);
@@ -446,6 +439,88 @@ describe('multiple transforms:', function() {
         });
     });
 
+    it('executes filter and aggregate in the order given', function() {
+        // filter and aggregate do not commute!
+
+        var trace1 = {
+            x: [0, -5, 7, 4, 5],
+            y: [2, 4, 6, 8, 10],
+            transforms: [{
+                type: 'aggregate',
+                groups: [1, 2, 2, 1, 1],
+                aggregations: [
+                    {target: 'x', func: 'sum'},
+                    {target: 'y', func: 'avg'}
+                ]
+            }, {
+                type: 'filter',
+                target: 'x',
+                operation: '<',
+                value: 5
+            }]
+        };
+
+        var trace2 = Lib.extendDeep({}, trace1);
+        trace2.transforms.reverse();
+
+        Plotly.newPlot(gd, [trace1, trace2]);
+
+        var trace1Out = gd._fullData[0];
+        expect(trace1Out.x).toEqual([2]);
+        expect(trace1Out.y).toEqual([5]);
+
+        var trace2Out = gd._fullData[1];
+        expect(trace2Out.x).toEqual([4, -5]);
+        expect(trace2Out.y).toEqual([5, 4]);
+    });
+
+    it('always executes groupby before aggregate', function() {
+        // aggregate and groupby wouldn't commute, but groupby always happens first
+        // because it has a `transform`, and aggregate has a `calcTransform`
+
+        var trace1 = {
+            x: [1, 2, 3, 4, 5],
+            y: [2, 4, 6, 8, 10],
+            transforms: [{
+                type: 'groupby',
+                groups: [1, 1, 2, 2, 2]
+            }, {
+                type: 'aggregate',
+                groups: [1, 2, 2, 1, 1],
+                aggregations: [
+                    {target: 'x', func: 'sum'},
+                    {target: 'y', func: 'avg'}
+                ]
+            }]
+        };
+
+        var trace2 = Lib.extendDeep({}, trace1);
+        trace2.transforms.reverse();
+
+        Plotly.newPlot(gd, [trace1, trace2]);
+
+        var t1g1 = gd._fullData[0];
+        var t1g2 = gd._fullData[1];
+        var t2g1 = gd._fullData[2];
+        var t2g2 = gd._fullData[3];
+
+        expect(t1g1.x).toEqual([1, 2]);
+        expect(t1g1.y).toEqual([2, 4]);
+        // group 2 has its aggregations switched, since group 2 comes first
+        expect(t1g2.x).toEqual([3, 9]);
+        expect(t1g2.y).toEqual([6, 9]);
+
+        // if we had done aggregation first, we'd implicitly get the first val
+        // for each of the groupby groups, which is [1, 1]
+        // so we'd only make 1 output trace, and it would look like:
+        // {x: [10, 5], y: [20/3, 5]}
+        // (and if we got some other groupby groups values, the most it could do
+        // is break ^^ into two separate traces)
+        expect(t2g1.x).toEqual(t1g1.x);
+        expect(t2g1.y).toEqual(t1g1.y);
+        expect(t2g2.x).toEqual(t1g2.x);
+        expect(t2g2.y).toEqual(t1g2.y);
+    });
 });
 
 describe('invalid transforms', function() {

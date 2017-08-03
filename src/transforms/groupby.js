@@ -63,10 +63,12 @@ exports.attributes = {
  *
  * @param {object} transformIn
  *  object linked to trace.transforms[i] with 'type' set to exports.name
- * @param {object} fullData
- *  the plot's full data
+ * @param {object} traceOut
+ *  the _fullData trace this transform applies to
  * @param {object} layout
  *  the plot's (not-so-full) layout
+ * @param {object} traceIn
+ *  the input data trace this transform applies to
  *
  * @return {object} transformOut
  *  copy of transformIn that contains attribute defaults
