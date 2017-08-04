@@ -95,6 +95,7 @@ describe('Bar.supplyDefaults', function() {
         expect(traceOut.texfont).toBeUndefined();
         expect(traceOut.insidetexfont).toBeUndefined();
         expect(traceOut.outsidetexfont).toBeUndefined();
+        expect(traceOut.constraintext).toBeUndefined();
     });
 
     it('should default textfont to layout.font', function() {
@@ -116,6 +117,7 @@ describe('Bar.supplyDefaults', function() {
         expect(traceOut.insidetextfont).not.toBe(layout.font);
         expect(traceOut.insidetextfont).not.toBe(traceOut.textfont);
         expect(traceOut.outsidetexfont).toBeUndefined();
+        expect(traceOut.constraintext).toBeUndefined();
     });
 
     it('should inherit layout.calendar', function() {
