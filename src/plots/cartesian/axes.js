@@ -1207,8 +1207,8 @@ axes.tickText = function(ax, x, hover) {
         return showAttr !== 'all' && x !== first_or_last;
     }
 
-    if (hover) {
-        hideexp = 'never'
+    if(hover) {
+        hideexp = 'never';
     } else {
         hideexp = ax.exponentformat !== 'none' && isHidden(ax.showexponent) ? 'hide' : '';
     }
@@ -1350,14 +1350,14 @@ function formatCategory(ax, out) {
 }
 
 function formatLinear(ax, out, hover, extraPrecision, hideexp) {
-    if (hideexp === 'never') {
+    if(hideexp === 'never') {
         // If this is a hover label, then we must *never* hide the exponent
         // for the sake of display, which could give the wrong value by
         // potentially many orders of magnitude. If hideexp was 'never', then
         // it's now succeeded by preventing the other condition from automating
         // this choice. Thus we can unset it so that the axis formatting takes
         // precedence.
-        hideexp = ''
+        hideexp = '';
     } else if(ax.showexponent === 'all' && Math.abs(out.x / ax.dtick) < 1e-6) {
         // don't add an exponent to zero if we're showing all exponents
         // so the only reason you'd show an exponent on zero is if it's the
