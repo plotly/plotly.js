@@ -356,6 +356,8 @@ proto.handleAnnotations = function() {
 };
 
 proto.destroy = function() {
+    if(!this.glplot) return;
+
     var traces = this.traces;
 
     if(traces) {

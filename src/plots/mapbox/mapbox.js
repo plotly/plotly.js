@@ -454,8 +454,8 @@ proto.destroy = function() {
     if(this.map) {
         this.map.remove();
         this.map = null;
+        this.container.removeChild(this.div);
     }
-    this.container.removeChild(this.div);
 };
 
 proto.toImage = function() {
