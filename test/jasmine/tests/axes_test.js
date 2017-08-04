@@ -2363,6 +2363,23 @@ describe('Test axes', function() {
 
             expect(mockCalc(ax).length).toBe(10001);
         });
+
+        it('never hides the exponent when in hover mode', function() {
+            var ax = {
+                type: 'linear',
+                tickmode: 'linear',
+                tick0: 0,
+                dtick: 2e20,
+                range: [0, 1.0732484076433121e21],
+                _length: 270
+            };
+
+            mockCalc(ax);
+
+            expect(mockHoverText(ax, 1e-21)).toBe('1e\u221221');
+            expect(mockHoverText(ax, 1)).toBe('1');
+            expect(mockHoverText(ax, 1e21)).toBe('1e+21');
+        });
     });
 
     describe('autoBin', function() {
