@@ -260,7 +260,8 @@ describe('Plotly.Snapshot', function() {
                     color: ['red', 'blue', 'green']
                 }
             }], {
-                font: { family: 'Times New Roman' }
+                font: { family: 'Times New Roman' },
+                showlegend: true
             })
             .then(function() {
                 d3.selectAll('text').each(function() {
@@ -268,7 +269,7 @@ describe('Plotly.Snapshot', function() {
                     expect(tx.style('font-family')).toEqual('\"Times New Roman\"');
                 });
 
-                d3.selectAll('.point').each(function() {
+                d3.selectAll('.point,.scatterpts').each(function() {
                     var pt = d3.select(this);
                     expect(pt.style('fill').substr(0, 6)).toEqual('url(\"#');
                 });
@@ -280,7 +281,7 @@ describe('Plotly.Snapshot', function() {
                 var i;
 
                 var textElements = svgDOM.getElementsByTagName('text');
-                expect(textElements.length).toEqual(11);
+                expect(textElements.length).toEqual(12);
 
                 for(i = 0; i < textElements.length; i++) {
                     expect(textElements[i].style['font-family']).toEqual('\"Times New Roman\"');
@@ -292,6 +293,10 @@ describe('Plotly.Snapshot', function() {
                 for(i = 0; i < pointElements.length; i++) {
                     expect(pointElements[i].style.fill.substr(0, 6)).toEqual('url(\"#');
                 }
+
+                var legendPointElements = svgDOM.getElementsByClassName('scatterpts');
+                expect(legendPointElements.length).toEqual(1);
+                expect(legendPointElements[0].style.fill.substr(0, 6)).toEqual('url(\"#');
             })
             .catch(fail)
             .then(done);
