@@ -86,7 +86,8 @@ module.exports = {
         role: 'info',
         dflt: 'both',
         description: [
-            'Constrain the size of text the bar to be no larger than the bar itself.'
+            'Constrain the size of text inside or outside a bar to be no',
+            'larger than the bar itself.'
         ].join(' ')
     },
 
