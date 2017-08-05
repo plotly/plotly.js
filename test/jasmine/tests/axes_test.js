@@ -2376,9 +2376,9 @@ describe('Test axes', function() {
 
             mockCalc(ax);
 
-            expect(mockHoverText(ax, 1e-21)).toBe('1e\u221221');
+            expect(mockHoverText(ax, 1e-21)).toBe('1×10<sup>−21</sup>');
             expect(mockHoverText(ax, 1)).toBe('1');
-            expect(mockHoverText(ax, 1e21)).toBe('1e+21');
+            expect(mockHoverText(ax, 1e21)).toBe('1×10<sup>21</sup>');
         });
     });
 
