@@ -95,7 +95,7 @@ describe('Bar.supplyDefaults', function() {
         expect(traceOut.texfont).toBeUndefined();
         expect(traceOut.insidetexfont).toBeUndefined();
         expect(traceOut.outsidetexfont).toBeUndefined();
-        expect(traceOut.constraintext).toBe();
+        expect(traceOut.constraintext).toBeUndefined();
     });
 
     it('should default textfont to layout.font', function() {

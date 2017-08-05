@@ -350,7 +350,6 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation, const
     }
 
     // compute rotation and scale
-    var rotate = false;
     var scale = 1;
     if(constrained) {
         scale = (orientation === 'h') ?
@@ -365,14 +364,9 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation, const
         targetHeight,
         targetX,
         targetY;
-    if(rotate) {
-        targetWidth = scale * textBB.height;
-        targetHeight = scale * textBB.width;
-    }
-    else {
-        targetWidth = scale * textBB.width;
-        targetHeight = scale * textBB.height;
-    }
+
+    targetWidth = scale * textBB.width;
+    targetHeight = scale * textBB.height;
 
     if(orientation === 'h') {
         if(x1 < x0) {
@@ -397,7 +391,7 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation, const
         }
     }
 
-    return getTransform(textX, textY, targetX, targetY, scale, rotate);
+    return getTransform(textX, textY, targetX, targetY, scale, false);
 }
 
 function getTransform(textX, textY, targetX, targetY, scale, rotate) {
