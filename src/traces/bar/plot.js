@@ -237,20 +237,22 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     }
 
     // compute text transform
-    var transform;
+    var transform, constrained;
     if(textPosition === 'outside') {
+        constrained = trace.constraintext === 'both' || trace.constraintext === 'outside';
         transform = getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB,
-            orientation);
+            orientation, constrained);
     }
     else {
+        constrained = trace.constraintext === 'both' || trace.constraintext === 'inside';
         transform = getTransformToMoveInsideBar(x0, x1, y0, y1, textBB,
-            orientation);
+            orientation, constrained);
     }
 
     textSelection.attr('transform', transform);
 }
 
-function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation) {
+function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constrained) {
     // compute text and target positions
     var textWidth = textBB.width,
         textHeight = textBB.height,
@@ -289,12 +291,12 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation) {
     else if((textWidth < textHeight) === (barWidth < barHeight)) {
         // only scale is required
         rotate = false;
-        scale = Math.min(barWidth / textWidth, barHeight / textHeight);
+        scale = constrained ? Math.min(barWidth / textWidth, barHeight / textHeight) : 1;
     }
     else {
         // both scale and rotation are required
         rotate = true;
-        scale = Math.min(barHeight / textWidth, barWidth / textHeight);
+        scale = constrained ? Math.min(barHeight / textWidth, barWidth / textHeight) : 1;
     }
 
     if(rotate) rotate = 90;  // rotate clockwise
@@ -335,23 +337,25 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation) {
     return getTransform(textX, textY, targetX, targetY, scale, rotate);
 }
 
-function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
+function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation, constrained) {
     var barWidth = (orientation === 'h') ?
             Math.abs(y1 - y0) :
             Math.abs(x1 - x0),
         textpad;
 
-    // apply text padding if possible
+    // Keep the padding so the text doesn't sit right against
+    // the bars, but don't factor it into barWidth
     if(barWidth > 2 * TEXTPAD) {
         textpad = TEXTPAD;
-        barWidth -= 2 * textpad;
     }
 
     // compute rotation and scale
-    var rotate = false,
+    var scale = 1;
+    if(constrained) {
         scale = (orientation === 'h') ?
             Math.min(1, barWidth / textBB.height) :
             Math.min(1, barWidth / textBB.width);
+    }
 
     // compute text and target positions
     var textX = (textBB.left + textBB.right) / 2,
@@ -360,14 +364,9 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
         targetHeight,
         targetX,
         targetY;
-    if(rotate) {
-        targetWidth = scale * textBB.height;
-        targetHeight = scale * textBB.width;
-    }
-    else {
-        targetWidth = scale * textBB.width;
-        targetHeight = scale * textBB.height;
-    }
+
+    targetWidth = scale * textBB.width;
+    targetHeight = scale * textBB.height;
 
     if(orientation === 'h') {
         if(x1 < x0) {
@@ -392,7 +391,7 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
         }
     }
 
-    return getTransform(textX, textY, targetX, targetY, scale, rotate);
+    return getTransform(textX, textY, targetX, targetY, scale, false);
 }
 
 function getTransform(textX, textY, targetX, targetY, scale, rotate) {

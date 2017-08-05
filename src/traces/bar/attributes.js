@@ -80,6 +80,17 @@ module.exports = {
         description: 'Sets the font used for `text` lying outside the bar.'
     }),
 
+    constraintext: {
+        valType: 'enumerated',
+        values: ['inside', 'outside', 'both', 'none'],
+        role: 'info',
+        dflt: 'both',
+        description: [
+            'Constrain the size of text inside or outside a bar to be no',
+            'larger than the bar itself.'
+        ].join(' ')
+    },
+
     orientation: {
         valType: 'enumerated',
         role: 'info',

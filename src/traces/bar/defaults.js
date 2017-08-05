@@ -48,6 +48,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         var textFont = coerceFont(coerce, 'textfont', layout.font);
         if(hasInside) coerceFont(coerce, 'insidetextfont', textFont);
         if(hasOutside) coerceFont(coerce, 'outsidetextfont', textFont);
+        coerce('constraintext');
     }
 
     handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
