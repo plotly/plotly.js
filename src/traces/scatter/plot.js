@@ -204,6 +204,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
     // initialize line join data / method
     var segments = [],
+        lineSegments = [],
         makeUpdate = Lib.noop;
 
     ownFillEl3 = trace._ownFill;
@@ -269,6 +270,10 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             pt1 = lastSegment[lastSegment.length - 1];
         }
 
+        lineSegments = segments.filter(function(s, i) {
+            return s.length > 1 || i === segments.length - 1 || i === 0;
+        });
+
         makeUpdate = function(isEnter) {
             return function(pts) {
                 thispath = pathfn(pts);
@@ -307,7 +312,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         };
     }
 
-    var lineJoin = tr.selectAll('.js-line').data(segments);
+    var lineJoin = tr.selectAll('.js-line').data(lineSegments);
 
     transition(lineJoin.exit())
         .style('opacity', 0)
