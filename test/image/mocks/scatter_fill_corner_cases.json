@@ -2,28 +2,81 @@
   "data": [
     {
       "x": [1.5],
-      "y": [1.75],
-      "fill": "tozeroy"
+      "y": [1.25],
+      "fill": "tozeroy",
+      "showlegend": false
     },
     {
       "x": [0, 1, 2, 3],
-      "y": [1.5, null, 1.5, 1.5],
-      "fill": "tozeroy"
+      "y": [1, null, 1, 1],
+      "fill": "tozeroy",
+      "showlegend": false
     },
     {
       "x": [0, 1, 1.5, 2, 2.5, 3],
-      "y": [1.25, 1.25, null, 1.35, null, 1.25, 1.25],
-      "fill": "tozeroy"
+      "y": [0.75, 0.75, null, 0.85, null, 0.75, 0.75],
+      "fill": "tozeroy",
+      "showlegend": false
     },
     {
       "x": [0, 1, 2, 3],
-      "y": [1.0, 1.1, null, 1.0],
-      "fill": "tozeroy"
+      "y": [0.5, 0.6, null, 0.5],
+      "fill": "tozeroy",
+      "showlegend": false
     },
     {
       "x": [0, 1.5, 3],
-      "y": [0.75, null, 0.75],
-      "fill": "tozeroy"
+      "y": [0.25, null, 0.25],
+      "fill": "tozeroy",
+      "showlegend": false
+    },
+    {
+      "x": [1.5],
+      "y": [1.25],
+      "fill": "tozeroy",
+      "line": {"shape": "spline"},
+      "xaxis": "x2",
+      "showlegend": false
+    },
+    {
+      "x": [0, 1, 2, 3],
+      "y": [1, null, 1, 1],
+      "fill": "tozeroy",
+      "line": {"shape": "spline"},
+      "xaxis": "x2",
+      "showlegend": false
+    },
+    {
+      "x": [0, 1, 1.5, 2, 2.5, 3],
+      "y": [0.75, 0.75, null, 0.85, null, 0.75, 0.75],
+      "fill": "tozeroy",
+      "line": {"shape": "spline"},
+      "xaxis": "x2",
+      "showlegend": false
+    },
+    {
+      "x": [0, 1, 2, 3],
+      "y": [0.5, 0.6, null, 0.5],
+      "fill": "tozeroy",
+      "line": {"shape": "spline"},
+      "xaxis": "x2",
+      "showlegend": false
+    },
+    {
+      "x": [0, 1.5, 3],
+      "y": [0.25, null, 0.25],
+      "fill": "tozeroy",
+      "line": {"shape": "spline"},
+      "xaxis": "x2",
+      "showlegend": false
     }
-  ]
+  ],
+  "layout": {
+    "xaxis": {
+      "domain": [0, 0.45]
+    },
+    "xaxis2": {
+      "domain": [0.55, 1]
+    }
+  }
 }
