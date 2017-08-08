@@ -414,7 +414,7 @@ function drawTexts(g, gd) {
                     var groupbyIndices = Registry.getTransformIndices(fullInput, 'groupby');
                     var index = groupbyIndices[groupbyIndices.length - 1];
 
-                    var carr = Lib.keyedContainer(fullInput, 'transforms[' + index + '].groupnames', 'group', 'name');
+                    var carr = Lib.keyedContainer(fullInput, 'transforms[' + index + '].styles', 'group', 'value.name');
 
                     if(BLANK_STRING_REGEX.test(origText)) {
                         carr.remove(legendItem.trace._group);

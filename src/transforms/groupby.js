@@ -46,24 +46,6 @@ exports.attributes = {
             'default "%{group} (%{trace})" would return "Monaco (GDP per capita)".'
         ].join(' ')
     },
-    groupnames: {
-        _isLinkedToArray: 'groupname',
-        group: {
-            valType: 'string',
-            role: 'info',
-            description: [
-                'An group to which this name applies. If a `group` and `name` are specified,',
-                'that name overrides the `nameformat` for that group\'s trace.'
-            ].join(' ')
-        },
-        name: {
-            valType: 'string',
-            role: 'info',
-            description: [
-                'Trace names assigned to the grouped traces of the corresponding `group`.'
-            ].join(' ')
-        }
-    },
     styles: {
         _isLinkedToArray: 'style',
         target: {
@@ -114,17 +96,6 @@ exports.supplyDefaults = function(transformIn, traceOut, layout) {
 
     coerce('groups');
     coerce('nameformat', layout._dataLength > 1 ? '%{group} (%{trace})' : '%{group}');
-
-    var nameFormatIn = transformIn.groupnames;
-    var nameFormatOut = transformOut.groupnames = [];
-
-    if(nameFormatIn) {
-        for(i = 0; i < nameFormatIn.length; i++) {
-            nameFormatOut[i] = {};
-            Lib.coerce(nameFormatIn[i], nameFormatOut[i], exports.attributes.groupnames, 'group');
-            Lib.coerce(nameFormatIn[i], nameFormatOut[i], exports.attributes.groupnames, 'name');
-        }
-    }
 
     var styleIn = transformIn.styles;
     var styleOut = transformOut.styles = [];
@@ -195,8 +166,8 @@ function transformOne(trace, state) {
         styleLookup[styles[i].target] = styles[i].value;
     }
 
-    if(opts.groupnames) {
-        groupNameObj = Lib.keyedContainer(opts, 'groupnames', 'group', 'name');
+    if(opts.styles) {
+        groupNameObj = Lib.keyedContainer(opts, 'styles', 'group', 'value.name');
     }
 
     // An index to map group name --> expanded trace index

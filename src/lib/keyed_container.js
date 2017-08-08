@@ -10,6 +10,8 @@
 
 var nestedProperty = require('./nested_property');
 
+var SIMPLE_PROPERTY_REGEX = /^\w*$/;
+
 // bitmask for deciding what's updated:
 var NONE = 0;
 var NAME = 1;
@@ -17,7 +19,6 @@ var VALUE = 2;
 var BOTH = 3;
 
 module.exports = function keyedContainer(baseObj, path, keyName, valueName) {
-
     keyName = keyName || 'name';
     valueName = valueName || 'value';
     var i, arr;
@@ -37,6 +38,8 @@ module.exports = function keyedContainer(baseObj, path, keyName, valueName) {
         indexLookup[arr[i][keyName]] = i;
     }
 
+    var isSimpleValueProp = SIMPLE_PROPERTY_REGEX.test(valueName);
+
     var obj = {
         // NB: this does not actually modify the baseObj
         set: function(name, value) {
@@ -46,12 +49,18 @@ module.exports = function keyedContainer(baseObj, path, keyName, valueName) {
                 changeType = BOTH;
                 idx = arr.length;
                 indexLookup[name] = idx;
-            } else if(value !== arr[idx][valueName]) {
+            } else if(value !== (isSimpleValueProp ? arr[idx][valueName] : nestedProperty(arr[idx], valueName).get())) {
                 changeType = VALUE;
             }
             var newValue = {};
             newValue[keyName] = name;
-            newValue[valueName] = value;
+
+            if(isSimpleValueProp) {
+                newValue[valueName] = value;
+            } else {
+                nestedProperty(newValue, valueName).set(value);
+            }
+
             arr[idx] = newValue;
 
             changeTypes[idx] = changeTypes[idx] | changeType;
@@ -60,7 +69,14 @@ module.exports = function keyedContainer(baseObj, path, keyName, valueName) {
         },
         get: function(name) {
             var idx = indexLookup[name];
-            return idx === undefined ? undefined : arr[idx][valueName];
+
+            if(idx === undefined) {
+                return undefined;
+            } else if(isSimpleValueProp) {
+                return arr[idx][valueName];
+            } else {
+                return nestedProperty(arr[idx], valueName).get();
+            }
         },
         rename: function(name, newName) {
             var idx = indexLookup[name];
@@ -101,7 +117,11 @@ module.exports = function keyedContainer(baseObj, path, keyName, valueName) {
                         update[astr + '.' + keyName] = arr[idx][keyName];
                     }
                     if(changeTypes[idx] & VALUE) {
-                        update[astr + '.' + valueName] = arr[idx][valueName];
+                        if(isSimpleValueProp) {
+                            update[astr + '.' + valueName] = arr[idx][valueName];
+                        } else {
+                            update[astr + '.' + valueName] = nestedProperty(arr[idx], valueName).get();
+                        }
                     }
                 } else {
                     update[astr] = null;
