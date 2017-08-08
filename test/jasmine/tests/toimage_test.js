@@ -1,10 +1,9 @@
-// move toimage to plot_api_test.js
-//  once established and confirmed?
-
-var Plotly = require('@lib/index');
+var Plotly = require('@lib');
+var Lib = require('@src/lib');
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
+var fail = require('../assets/fail_test');
 var subplotMock = require('@mocks/multiple_subplots.json');
 
 
@@ -24,6 +23,15 @@ describe('Plotly.toImage', function() {
         d3.selectAll('.js-plotly-plot').remove();
         d3.selectAll('#graph').remove();
     });
+
+    function createImage(url) {
+        return new Promise(function(resolve, reject) {
+            var img = document.createElement('img');
+            img.src = url;
+            img.onload = function() { return resolve(img); };
+            img.onerror = function() { return reject('error during createImage'); };
+        });
+    }
 
     it('should be attached to Plotly', function() {
         expect(Plotly.toImage).toBeDefined();
@@ -71,52 +79,54 @@ describe('Plotly.toImage', function() {
     });
 
     it('should create img with proper height and width', function(done) {
-        var img = document.createElement('img');
+        var fig = Lib.extendDeep({}, subplotMock);
 
         // specify height and width
-        subplotMock.layout.height = 600;
-        subplotMock.layout.width = 700;
+        fig.layout.height = 600;
+        fig.layout.width = 700;
 
-        Plotly.plot(gd, subplotMock.data, subplotMock.layout).then(function(gd) {
+        Plotly.plot(gd, fig.data, fig.layout).then(function(gd) {
             expect(gd.layout.height).toBe(600);
             expect(gd.layout.width).toBe(700);
             return Plotly.toImage(gd);
-        }).then(function(url) {
-            return new Promise(function(resolve) {
-                img.src = url;
-                img.onload = function() {
-                    expect(img.height).toBe(600);
-                    expect(img.width).toBe(700);
-                };
-                // now provide height and width in opts
-                resolve(Plotly.toImage(gd, {height: 400, width: 400}));
-            });
-        }).then(function(url) {
-            img.src = url;
-            img.onload = function() {
-                expect(img.height).toBe(400);
-                expect(img.width).toBe(400);
-                done();
-            };
-        });
+        })
+        .then(createImage)
+        .then(function(img) {
+            expect(img.height).toBe(600);
+            expect(img.width).toBe(700);
+
+            return Plotly.toImage(gd, {height: 400, width: 400});
+        })
+        .then(createImage)
+        .then(function(img) {
+            expect(img.height).toBe(400);
+            expect(img.width).toBe(400);
+        })
+        .catch(fail)
+        .then(done);
     });
 
     it('should create proper file type', function(done) {
-        var plot = Plotly.plot(gd, subplotMock.data, subplotMock.layout);
+        var fig = Lib.extendDeep({}, subplotMock);
 
-        plot.then(function(gd) {
-            return Plotly.toImage(gd, {format: 'png'});
-        }).then(function(url) {
+        Plotly.plot(gd, fig.data, fig.layout)
+        .then(function() { return Plotly.toImage(gd, {format: 'png'}); })
+        .then(function(url) {
             expect(url.split('png')[0]).toBe('data:image/');
-            // now do jpeg
-            return Plotly.toImage(gd, {format: 'jpeg'});
-        }).then(function(url) {
+        })
+        .then(function() { return Plotly.toImage(gd, {format: 'jpeg'}); })
+        .then(function(url) {
             expect(url.split('jpeg')[0]).toBe('data:image/');
-            // now do svg
-            return Plotly.toImage(gd, {format: 'svg'});
-        }).then(function(url) {
+        })
+        .then(function() { return Plotly.toImage(gd, {format: 'svg'}); })
+        .then(function(url) {
             expect(url.split('svg')[0]).toBe('data:image/');
-            done();
-        });
+        })
+        .then(function() { return Plotly.toImage(gd, {format: 'webp'}); })
+        .then(function(url) {
+            expect(url.split('webp')[0]).toBe('data:image/');
+        })
+        .catch(fail)
+        .then(done);
     });
 });
