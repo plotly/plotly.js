@@ -8,8 +8,6 @@
 
 'use strict';
 
-/* eslint-disable no-console */
-
 /**
  * This will be transferred over to gd and overridden by
  * config args to Plotly.plot.
@@ -109,8 +107,9 @@ module.exports = {
     plotGlPixelRatio: 2,
 
     // function to add the background color to a different container
-    // or 'opaque' to ensure there's white behind it
-    setBackground: defaultSetBackground,
+    // or 'opaque' to ensure there's white behind it,
+    // or any other custom function of gd
+    setBackground: 'transparent',
 
     // URL to topojson files used in geo charts
     topojsonURL: 'https://cdn.plot.ly/',
@@ -128,16 +127,3 @@ module.exports = {
     // specification needed
     globalTransforms: []
 };
-
-// where and how the background gets set can be overridden by context
-// so we define the default (plotly.js) behavior here
-function defaultSetBackground(gd, bgColor) {
-    try {
-        gd._fullLayout._paper.style('background', bgColor);
-    }
-    catch(e) {
-        if(module.exports.logging > 0) {
-            console.error(e);
-        }
-    }
-}
