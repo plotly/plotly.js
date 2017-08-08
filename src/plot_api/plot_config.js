@@ -108,6 +108,7 @@ module.exports = {
 
     // function to add the background color to a different container
     // or 'opaque' to ensure there's white behind it,
+    // or 'blend' to blend bg color with white,
     // or any other custom function of gd
     setBackground: 'transparent',
 

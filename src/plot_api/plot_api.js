@@ -404,6 +404,11 @@ function opaqueSetBackground(gd, bgColor) {
     setBackground(gd, bgColor);
 }
 
+function blendSetBackground(gd, bgColor) {
+    var blend = Color.combine(bgColor, 'white');
+    setBackground(gd, blend);
+}
+
 function setPlotContext(gd, config) {
     if(!gd._context) gd._context = Lib.extendDeep({}, Plotly.defaultConfig);
     var context = gd._context;
@@ -416,10 +421,15 @@ function setPlotContext(gd, config) {
             key = keys[i];
             if(key === 'editable' || key === 'edits') continue;
             if(key in context) {
-                if(key === 'setBackground' && config[key] === 'opaque') {
-                    context[key] = opaqueSetBackground;
+                if(key === 'setBackground') {
+                    if(config[key] === 'opaque') {
+                        context[key] = opaqueSetBackground;
+                    } else if(config[key] === 'blend') {
+                        context[key] = blendSetBackground;
+                    }
+                } else {
+                    context[key] = config[key];
                 }
-                else context[key] = config[key];
             }
         }
 
