@@ -7,6 +7,7 @@ var calc = require('@src/traces/histogram/calc');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var customMatchers = require('../assets/custom_matchers');
 
 
 describe('Test histogram', function() {
@@ -162,10 +163,20 @@ describe('Test histogram', function() {
 
 
     describe('calc', function() {
-        function _calc(opts) {
-            var base = { type: 'histogram' },
-                trace = Lib.extendFlat({}, base, opts),
-                gd = { data: [trace] };
+        beforeAll(function() {
+            jasmine.addMatchers(customMatchers);
+        });
+
+        function _calc(opts, extraTraces) {
+            var base = { type: 'histogram' };
+            var trace = Lib.extendFlat({}, base, opts);
+            var gd = { data: [trace] };
+
+            if(Array.isArray(extraTraces)) {
+                extraTraces.forEach(function(extraTrace) {
+                    gd.data.push(Lib.extendFlat({}, base, extraTrace));
+                });
+            }
 
             Plots.supplyDefaults(gd);
             var fullTrace = gd._fullData[0];
@@ -261,6 +272,40 @@ describe('Test histogram', function() {
             });
 
             expect(out.length).toEqual(9001);
+        });
+
+        function calcPositions(opts, extraTraces) {
+            return _calc(opts, extraTraces).map(function(v) { return v.p; });
+        }
+
+        it('harmonizes autobins when all traces are autobinned', function() {
+            var trace1 = {x: [1, 2, 3, 4]};
+            var trace2 = {x: [5, 5.5, 6, 6.5]};
+
+            expect(calcPositions(trace1)).toEqual([0.5, 2.5, 4.5]);
+
+            expect(calcPositions(trace2)).toEqual[5, 6, 7];
+
+            expect(calcPositions(trace1, [trace2])).toEqual([1, 2, 3, 4]);
+            expect(calcPositions(trace2, [trace1])).toEqual([5, 6, 7]);
+        });
+
+        it('harmonizes autobins with smaller manual bins', function() {
+            var trace1 = {x: [1, 2, 3, 4]};
+            var trace2 = {x: [5, 6, 7, 8], xbins: {start: 4.3, end: 7.1, size: 0.4}};
+
+            expect(calcPositions(trace1, [trace2])).toBeCloseToArray([
+                0.9, 1.3, 1.7, 2.1, 2.5, 2.9, 3.3, 3.7, 4.1
+            ], 5);
+        });
+
+        it('harmonizes autobins with larger manual bins', function() {
+            var trace1 = {x: [1, 2, 3, 4]};
+            var trace2 = {x: [5, 6, 7, 8], xbins: {start: 4.3, end: 15, size: 7}};
+
+            expect(calcPositions(trace1, [trace2])).toBeCloseToArray([
+                0.8, 2.55, 4.3
+            ], 5);
         });
 
         describe('cumulative distribution functions', function() {
