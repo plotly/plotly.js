@@ -167,7 +167,7 @@ function transformOne(trace, state) {
     }
 
     if(opts.styles) {
-        groupNameObj = Lib.keyedContainer(opts, 'styles', 'group', 'value.name');
+        groupNameObj = Lib.keyedContainer(opts, 'styles', 'target', 'value.name');
     }
 
     // An index to map group name --> expanded trace index
