@@ -308,6 +308,16 @@ describe('Test histogram', function() {
             ], 5);
         });
 
+        it('ignores traces on other axes', function() {
+            var trace1 = {x: [1, 2, 3, 4]};
+            var trace2 = {x: [5, 5.5, 6, 6.5]};
+            var trace3 = {x: [1, 1.1, 1.2, 1.3], xaxis: 'x2'};
+            var trace4 = {x: [1, 1.2, 1.4, 1.6], yaxis: 'y2'};
+
+            expect(calcPositions(trace1, [trace2, trace3, trace4])).toEqual([1, 2, 3, 4]);
+            expect(calcPositions(trace3)).toBeCloseToArray([0.9, 1.1, 1.3]);
+        });
+
         describe('cumulative distribution functions', function() {
             var base = {
                 x: [0, 5, 10, 15, 5, 10, 15, 10, 15, 15],
