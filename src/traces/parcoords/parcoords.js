@@ -69,7 +69,7 @@ function domainScale(height, padding, dimension) {
     var extent = dimensionExtent(dimension);
     return dimension.tickvals ?
         d3.scale.ordinal()
-            .domain(dimension.tickvals)
+            .domain(dimension.ticktext || dimension.tickvals)
             .range(dimension.tickvals
                 .map(function(d) {return (d - extent[0]) / (extent[1] - extent[0]);})
                 .map(function(d) {return (height - padding + d * (padding - (height - padding)));})) :
@@ -557,7 +557,7 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
                     .outerTickSize(2)
                     .ticks(wantedTickCount, d.tickFormat) // works for continuous scales only...
                     .tickValues(d.ordinal ? // and this works for ordinal scales
-                        sdom.map(function(d, i) {return texts && texts[i] || d;}) :
+                        sdom.map(function(d, i) {return texts && texts[i] !== undefined ? texts[i] : d;}) :
                         null)
                     .tickFormat(d.ordinal ? function(d) {return d;} : null)
                     .scale(scale));
