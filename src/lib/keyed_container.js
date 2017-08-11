@@ -17,6 +17,7 @@ var NONE = 0;
 var NAME = 1;
 var VALUE = 2;
 var BOTH = 3;
+var UNSET = 4;
 
 module.exports = function keyedContainer(baseObj, path, keyName, valueName) {
     keyName = keyName || 'name';
@@ -43,16 +44,18 @@ module.exports = function keyedContainer(baseObj, path, keyName, valueName) {
     var obj = {
         // NB: this does not actually modify the baseObj
         set: function(name, value) {
-            var changeType = NONE;
+            var changeType = value === null ? UNSET : NONE;
+
             var idx = indexLookup[name];
             if(idx === undefined) {
-                changeType = BOTH;
+                changeType = changeType | BOTH;
                 idx = arr.length;
                 indexLookup[name] = idx;
             } else if(value !== (isSimpleValueProp ? arr[idx][valueName] : nestedProperty(arr[idx], valueName).get())) {
-                changeType = VALUE;
+                changeType = changeType | VALUE;
             }
-            var newValue = {};
+
+            var newValue = arr[idx] = arr[idx] || {};
             newValue[keyName] = name;
 
             if(isSimpleValueProp) {
@@ -61,7 +64,11 @@ module.exports = function keyedContainer(baseObj, path, keyName, valueName) {
                 nestedProperty(newValue, valueName).set(value);
             }
 
-            arr[idx] = newValue;
+            // If it's not an unset, force that bit to be unset. This is all related to the fact
+            // that undefined and null are a bit specially implemented in nestedProperties.
+            if(value !== null) {
+                changeType = changeType & ~UNSET;
+            }
 
             changeTypes[idx] = changeTypes[idx] | changeType;
 
@@ -93,7 +100,17 @@ module.exports = function keyedContainer(baseObj, path, keyName, valueName) {
         },
         remove: function(name) {
             var idx = indexLookup[name];
+
             if(idx === undefined) return obj;
+
+            var object = arr[idx];
+            if(Object.keys(object).length > 2) {
+                // This object contains more than just the key/value, so unset
+                // the value without modifying the entry otherwise:
+                changeTypes[idx] = changeTypes[idx] | VALUE;
+                return obj.set(name, null);
+            }
+
             for(i = idx; i < arr.length; i++) {
                 changeTypes[i] = changeTypes[i] | BOTH;
             }
@@ -118,9 +135,9 @@ module.exports = function keyedContainer(baseObj, path, keyName, valueName) {
                     }
                     if(changeTypes[idx] & VALUE) {
                         if(isSimpleValueProp) {
-                            update[astr + '.' + valueName] = arr[idx][valueName];
+                            update[astr + '.' + valueName] = (changeTypes[idx] & UNSET) ? null : arr[idx][valueName];
                         } else {
-                            update[astr + '.' + valueName] = nestedProperty(arr[idx], valueName).get();
+                            update[astr + '.' + valueName] = (changeTypes[idx] & UNSET) ? null : nestedProperty(arr[idx], valueName).get();
                         }
                     }
                 } else {

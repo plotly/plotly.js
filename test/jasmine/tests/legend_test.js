@@ -885,6 +885,7 @@ describe('legend interaction', function() {
         });
     });
 
+
     describe('editable mode interactions', function() {
         var gd;
         var mock = {
@@ -927,15 +928,15 @@ describe('legend interaction', function() {
                 // Set the name of the third legend item:
                 return _setValue(3, 'bar');
             }).then(function() {
-                expect(gd.data[1].transforms[0].groupnames).toEqual([
-                    {name: 'bar', group: 3}
+                expect(gd.data[1].transforms[0].styles).toEqual([
+                    {value: {name: 'bar'}, target: 3}
                 ]);
             }).then(function() {
                 return _setValue(4, 'asdf');
             }).then(function() {
-                expect(gd.data[1].transforms[0].groupnames).toEqual([
-                    {name: 'bar', group: 3},
-                    {name: 'asdf', group: 4}
+                expect(gd.data[1].transforms[0].styles).toEqual([
+                    {value: {name: 'bar'}, target: 3},
+                    {value: {name: 'asdf'}, target: 4}
                 ]);
             }).then(function() {
                 // Unset the group names:
@@ -944,7 +945,7 @@ describe('legend interaction', function() {
                 return _setValue(4, '');
             }).then(function() {
                 // Verify the group names have been cleaned up:
-                expect(gd.data[1].transforms[0].groupnames).toEqual([]);
+                expect(gd.data[1].transforms[0].styles).toEqual([]);
             }).catch(fail).then(done);
         });
     });

@@ -1702,7 +1702,7 @@ describe('Test lib.js:', function() {
         });
 
         describe('with custom named properties', function() {
-            it('performs standard operations', function() {
+            it('performs all of the operations', function() {
                 var container = {styles: [
                     {foo: 'name1', bar: 'value1'},
                     {foo: 'name2', bar: 'value2'}
@@ -1710,8 +1710,38 @@ describe('Test lib.js:', function() {
 
                 var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar');
 
+                // SET A VALUE
+
                 carr.set('name3', 'value3');
+
+                expect(container).toEqual({styles: [
+                    {foo: 'name1', bar: 'value1'},
+                    {foo: 'name2', bar: 'value2'},
+                    {foo: 'name3', bar: 'value3'}
+                ]});
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[2].foo': 'name3',
+                    'styles[2].bar': 'value3'
+                });
+
+                // REMOVE A VALUE
+
                 carr.remove('name2');
+
+                expect(container).toEqual({styles: [
+                    {foo: 'name1', bar: 'value1'},
+                    {foo: 'name3', bar: 'value3'}
+                ]});
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[1].foo': 'name3',
+                    'styles[1].bar': 'value3',
+                    'styles[2]': null
+                });
+
+                // RENAME A VALUE
+
                 carr.rename('name1', 'name2');
 
                 expect(container).toEqual({styles: [
@@ -1725,6 +1755,24 @@ describe('Test lib.js:', function() {
                     'styles[1].bar': 'value3',
                     'styles[2]': null
                 });
+
+                // SET A VALUE
+
+                carr.set('name2', 'value2');
+
+                expect(container).toEqual({styles: [
+                    {foo: 'name2', bar: 'value2'},
+                    {foo: 'name3', bar: 'value3'}
+                ]});
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[0].foo': 'name2',
+                    'styles[0].bar': 'value2',
+                    'styles[1].foo': 'name3',
+                    'styles[1].bar': 'value3',
+                    'styles[2]': null
+                });
+
             });
         });
 
@@ -1781,6 +1829,22 @@ describe('Test lib.js:', function() {
                     'styles[1].foo': 'name3',
                     'styles[1].bar.value': 'value3',
                     'styles[2]': null
+                });
+            });
+
+            it('unsets but does not remove items with extra top-level data', function() {
+                var container = {styles: [
+                    {foo: 'name', bar: {value: 'value'}, extra: 'data'}
+                ]};
+
+                var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar.value');
+
+                carr.remove('name');
+
+                expect(container.styles).toEqual([{foo: 'name', extra: 'data'}]);
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[0].bar.value': null,
                 });
             });
         });
