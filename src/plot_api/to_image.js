@@ -47,7 +47,7 @@ var attrs = {
             'Sets the image background mode.',
             'By default, the image background is determined by `layout.paper_bgcolor`,',
             'the *transparent* mode.',
-            'One might consider setting `setBackground` to *opaque* or *blend*',
+            'One might consider setting `setBackground` to *opaque*',
             'when exporting a *jpeg* image as JPEGs do not support opacity.'
         ].join(' ')
     },

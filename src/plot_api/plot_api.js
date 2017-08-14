@@ -400,11 +400,6 @@ function setBackground(gd, bgColor) {
 }
 
 function opaqueSetBackground(gd, bgColor) {
-    gd._fullLayout._paperdiv.style('background', 'white');
-    setBackground(gd, bgColor);
-}
-
-function blendSetBackground(gd, bgColor) {
     var blend = Color.combine(bgColor, 'white');
     setBackground(gd, blend);
 }
@@ -421,12 +416,8 @@ function setPlotContext(gd, config) {
             key = keys[i];
             if(key === 'editable' || key === 'edits') continue;
             if(key in context) {
-                if(key === 'setBackground') {
-                    if(config[key] === 'opaque') {
-                        context[key] = opaqueSetBackground;
-                    } else if(config[key] === 'blend') {
-                        context[key] = blendSetBackground;
-                    }
+                if(key === 'setBackground' && config[key] === 'opaque') {
+                    context[key] = opaqueSetBackground;
                 } else {
                     context[key] = config[key];
                 }
