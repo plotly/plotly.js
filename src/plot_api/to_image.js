@@ -144,8 +144,12 @@ function toImage(gd, opts) {
         return new Promise(function(resolve, reject) {
             var svg = toSVG(clonedGd);
 
-            if(format === 'svg' && imageDataOnly) {
-                return resolve(svg);
+            if(format === 'svg') {
+                if(imageDataOnly) {
+                    return resolve(svg);
+                } else {
+                    return resolve('data:image/svg+xml,' + encodeURIComponent(svg));
+                }
             }
 
             var canvas = document.createElement('canvas');
