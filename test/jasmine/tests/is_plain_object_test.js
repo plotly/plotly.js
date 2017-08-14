@@ -31,7 +31,8 @@ describe('isPlainObject', function() {
         new Array(10),
         new Date(),
         new RegExp('foo'),
-        new String('string')
+        new String('string'),
+        document.createElement('div')
     ];
 
     shouldPass.forEach(function(obj) {

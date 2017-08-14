@@ -593,6 +593,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
 };
 
 proto.destroy = function() {
+    if(!this.glplot) return;
+
     this.camera.mouseListener.enabled = false;
     this.container.removeEventListener('wheel', this.camera.wheelListener);
     this.camera = this.glplot.camera = null;
