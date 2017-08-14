@@ -55,19 +55,11 @@ describe('Plotly.toImage', function() {
 
     it('should throw error with unsupported file type', function(done) {
         var fig = Lib.extendDeep({}, subplotMock);
-        var errors = [];
 
         Plotly.plot(gd, fig.data, fig.layout)
         .then(function(gd) {
-            try {
-                Plotly.toImage(gd, {format: 'x'});
-            } catch(e) {
-                errors.push(e.message);
-            }
-        })
-        .then(function() {
-            expect(errors.length).toBe(1);
-            expect(errors[0]).toBe('Image format is not jpeg, png, svg or webp.');
+            expect(function() { Plotly.toImage(gd, {format: 'x'}); })
+                .toThrow(new Error('Image format is not jpeg, png, svg or webp.'));
         })
         .catch(fail)
         .then(done);
@@ -75,27 +67,15 @@ describe('Plotly.toImage', function() {
 
     it('should throw error with height and/or width < 1', function(done) {
         var fig = Lib.extendDeep({}, subplotMock);
-        var errors = [];
 
         Plotly.plot(gd, fig.data, fig.layout)
         .then(function() {
-            try {
-                Plotly.toImage(gd, {height: 0.5});
-            } catch(e) {
-                errors.push(e.message);
-            }
+            expect(function() { Plotly.toImage(gd, {height: 0.5}); })
+                .toThrow(new Error('Height and width should be pixel values.'));
         })
         .then(function() {
-            try {
-                Plotly.toImage(gd, {width: 0.5});
-            } catch(e) {
-                errors.push(e.message);
-            }
-        })
-        .then(function() {
-            expect(errors.length).toBe(2);
-            expect(errors[0]).toBe('Height and width should be pixel values.');
-            expect(errors[1]).toBe('Height and width should be pixel values.');
+            expect(function() { Plotly.toImage(gd, {width: 0.5}); })
+                .toThrow(new Error('Height and width should be pixel values.'));
         })
         .catch(fail)
         .then(done);
