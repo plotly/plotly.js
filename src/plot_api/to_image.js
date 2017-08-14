@@ -90,15 +90,15 @@ function toImage(gd, opts) {
         config = gd._context;
     }
 
-    function isBadlySet(attr) {
+    function isImpliedOrValid(attr) {
         return !(attr in opts) || Lib.validate(opts[attr], attrs[attr]);
     }
 
-    if(!isBadlySet('width') || !isBadlySet('height')) {
+    if(!isImpliedOrValid('width') || !isImpliedOrValid('height')) {
         throw new Error('Height and width should be pixel values.');
     }
 
-    if(!isBadlySet('format')) {
+    if(!isImpliedOrValid('format')) {
         throw new Error('Image format is not jpeg, png, svg or webp.');
     }
 
