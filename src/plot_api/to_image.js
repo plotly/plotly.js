@@ -128,10 +128,7 @@ function toImage(gd, opts) {
     // extend config for static plot
     var configImage = Lib.extendFlat({}, config, {
         staticPlot: true,
-        plotGlPixelRatio: 2,
-        displaylogo: false,
-        showLink: false,
-        showTips: false,
+        plotGlPixelRatio: config.plotGlPixelRatio || 2,
         setBackground: setBackground
     });
 
