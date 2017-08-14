@@ -39,7 +39,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 exports.toSVG = function(gd) {
 
     var imageRoot = gd._fullLayout._glimages;
-    var root = d3.selectAll('.svg-container');
+    var root = d3.select(gd).selectAll('.svg-container');
     var canvases = root.filter(function(d, i) {return i === root.size() - 1;})
         .selectAll('.parcoords-lines.context, .parcoords-lines.focus');
 

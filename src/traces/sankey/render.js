@@ -155,8 +155,8 @@ function linkModel(uniqueKeys, d, l) {
     var tc = tinycolor(l.color);
     var basicKey = l.source.label + '|' + l.target.label;
     var foundKey = uniqueKeys[basicKey];
-    uniqueKeys[basicKey] = (foundKey === void(0) ? foundKey : 0) + 1;
-    var key = basicKey + (foundKey === void(0) ? '' : '__' + foundKey);
+    uniqueKeys[basicKey] = (foundKey || 0) + 1;
+    var key = basicKey + '__' + uniqueKeys[basicKey];
 
     // for event data
     l.trace = d.trace;
@@ -186,8 +186,8 @@ function nodeModel(uniqueKeys, d, n) {
 
     var basicKey = n.label;
     var foundKey = uniqueKeys[basicKey];
-    uniqueKeys[basicKey] = (foundKey === void(0) ? foundKey : 0) + 1;
-    var key = basicKey + (foundKey === void(0) ? '' : '__' + foundKey);
+    uniqueKeys[basicKey] = (foundKey || 0) + 1;
+    var key = basicKey + '__' + uniqueKeys[basicKey];
 
     // for event data
     n.trace = d.trace;
