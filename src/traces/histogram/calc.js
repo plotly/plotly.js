@@ -233,11 +233,6 @@ function calcAllAutoBins(gd, trace, pa, maindata) {
         // But manually binned traces won't be adjusted, even if the auto values
         // are inconsistent with the manual ones (or the manual ones are inconsistent
         // with each other).
-        //
-        // TODO: there's probably a weird case here where a larger bin pushes the
-        // start/end out, then it gets shrunk and doesn't make sense with the smaller bin.
-        // Need to look for cases like this and see if the results are acceptable
-        // or we need to think harder about it.
         minSize = getMinSize(minSize, binspec.size);
         minStart = Math.min(minStart, pa.r2c(binspec.start, 0, calendar));
         maxEnd = Math.max(maxEnd, pa.r2c(binspec.end, 0, calendar));
@@ -283,10 +278,10 @@ function calcAllAutoBins(gd, trace, pa, maindata) {
 }
 
 /*
- * return an array of traces that are all stacked or grouped together
- * TODO: only considers histograms. Should we also harmonize with bars?
- * in principle people can mix and match these, but bars always
- * specify their positions explicitly...
+ * Return an array of traces that are all stacked or grouped together
+ * Only considers histograms. In principle we could include them in a
+ * similar way to how we do manually binned histograms, though this
+ * would have tons of edge cases and value judgments to make.
  */
 function getConnectedHistograms(gd, trace) {
     if(gd._fullLayout.barmode === 'overlay') return [trace];
