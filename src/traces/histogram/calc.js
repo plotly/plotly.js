@@ -40,12 +40,9 @@ module.exports = function calc(gd, trace) {
 
     cleanBins(trace, pa, maindata);
 
-    var binspec = calcAllAutoBins(gd, trace, pa, maindata);
-
-    // the raw data was prepared in calcAllAutoBins (during the first trace in
-    // this group) and stashed. Pull it out and drop the stash
-    var pos0 = trace._pos0;
-    delete trace._pos0;
+    var binsAndPos = calcAllAutoBins(gd, trace, pa, maindata);
+    var binspec = binsAndPos[0];
+    var pos0 = binsAndPos[1];
 
     var nonuniformBins = typeof binspec.size === 'string';
     var bins = nonuniformBins ? [] : binspec;
@@ -166,115 +163,116 @@ module.exports = function calc(gd, trace) {
  */
 function calcAllAutoBins(gd, trace, pa, maindata) {
     var binAttr = maindata + 'bins';
+    var i, tracei, calendar, firstManual, pos0;
 
     // all but the first trace in this group has already been marked finished
     // clear this flag, so next time we run calc we will run autobin again
     if(trace._autoBinFinished) {
         delete trace._autoBinFinished;
-
-        return trace[binAttr];
     }
+    else {
+        // must be the first trace in the group - do the autobinning on them all
+        var traceGroup = getConnectedHistograms(gd, trace);
+        var autoBinnedTraces = [];
 
-    // must be the first trace in the group - do the autobinning on them all
-    var traceGroup = getConnectedHistograms(gd, trace);
-    var autoBinnedTraces = [];
+        var minSize = Infinity;
+        var minStart = Infinity;
+        var maxEnd = -Infinity;
 
-    var minSize = Infinity;
-    var minStart = Infinity;
-    var maxEnd = -Infinity;
+        var autoBinAttr = 'autobin' + maindata;
 
-    var autoBinAttr = 'autobin' + maindata;
-    var i, tracei, calendar, firstManual;
+        for(i = 0; i < traceGroup.length; i++) {
+            tracei = traceGroup[i];
 
+            // stash pos0 on the trace so we don't need to duplicate this
+            // in the main body of calc
+            pos0 = tracei._pos0 = pa.makeCalcdata(tracei, maindata);
+            var binspec = tracei[binAttr];
 
-    for(i = 0; i < traceGroup.length; i++) {
-        tracei = traceGroup[i];
+            if((tracei[autoBinAttr]) || !binspec ||
+                    binspec.start === null || binspec.end === null) {
+                calendar = tracei[maindata + 'calendar'];
+                var cumulativeSpec = tracei.cumulative;
 
-        // stash pos0 on the trace so we don't need to duplicate this
-        // in the main body of calc
-        var pos0 = tracei._pos0 = pa.makeCalcdata(tracei, maindata);
-        var binspec = tracei[binAttr];
+                binspec = Axes.autoBin(pos0, pa, tracei['nbins' + maindata], false, calendar);
 
-        if((tracei[autoBinAttr]) || !binspec ||
-                binspec.start === null || binspec.end === null) {
-            calendar = tracei[maindata + 'calendar'];
-            var cumulativeSpec = tracei.cumulative;
-
-            binspec = Axes.autoBin(pos0, pa, tracei['nbins' + maindata], false, calendar);
-
-            // adjust for CDF edge cases
-            if(cumulativeSpec.enabled && (cumulativeSpec.currentbin !== 'include')) {
-                if(cumulativeSpec.direction === 'decreasing') {
-                    minStart = Math.min(minStart, pa.r2c(binspec.start, 0, calendar) - binspec.size);
+                // adjust for CDF edge cases
+                if(cumulativeSpec.enabled && (cumulativeSpec.currentbin !== 'include')) {
+                    if(cumulativeSpec.direction === 'decreasing') {
+                        minStart = Math.min(minStart, pa.r2c(binspec.start, 0, calendar) - binspec.size);
+                    }
+                    else {
+                        maxEnd = Math.max(maxEnd, pa.r2c(binspec.end, 0, calendar) + binspec.size);
+                    }
                 }
-                else {
-                    maxEnd = Math.max(maxEnd, pa.r2c(binspec.end, 0, calendar) + binspec.size);
-                }
+
+                // note that it's possible to get here with an explicit autobin: false
+                // if the bins were not specified. mark this trace for followup
+                autoBinnedTraces.push(tracei);
+            }
+            else if(!firstManual) {
+                // Remember the first manually set binspec. We'll try to be extra
+                // accommodating of this one, so other bins line up with these
+                // if there's more than one manual bin set and they're mutually inconsistent,
+                // then there's not much we can do...
+                firstManual = {
+                    size: binspec.size,
+                    start: pa.r2c(binspec.start, 0, calendar),
+                    end: pa.r2c(binspec.end, 0, calendar)
+                };
             }
 
-            // note that it's possible to get here with an explicit autobin: false
-            // if the bins were not specified. mark this trace for followup
-            autoBinnedTraces.push(tracei);
+            // Even non-autobinned traces get included here, so we get the greatest extent
+            // and minimum bin size of them all.
+            // But manually binned traces won't be adjusted, even if the auto values
+            // are inconsistent with the manual ones (or the manual ones are inconsistent
+            // with each other).
+            minSize = getMinSize(minSize, binspec.size);
+            minStart = Math.min(minStart, pa.r2c(binspec.start, 0, calendar));
+            maxEnd = Math.max(maxEnd, pa.r2c(binspec.end, 0, calendar));
+
+            // add the flag that lets us abort autobin on later traces
+            if(i) trace._autoBinFinished = 1;
         }
-        else if(!firstManual) {
-            // Remember the first manually set binspec. We'll try to be extra
-            // accommodating of this one, so other bins line up with these
-            // if there's more than one manual bin set and they're mutually inconsistent,
-            // then there's not much we can do...
-            firstManual = {
-                size: binspec.size,
-                start: pa.r2c(binspec.start, 0, calendar),
-                end: pa.r2c(binspec.end, 0, calendar)
+
+        // do what we can to match the auto bins to the first manual bins
+        // but only if sizes are all numeric
+        if(firstManual && isNumeric(firstManual.size) && isNumeric(minSize)) {
+            // first need to ensure the bin size is the same as or an integer fraction
+            // of the first manual bin
+            // allow the bin size to increase just under the autobin step size to match,
+            // (which is a factor of 2 or 2.5) otherwise shrink it
+            if(minSize > firstManual.size / 1.9) minSize = firstManual.size;
+            else minSize = firstManual.size / Math.ceil(firstManual.size / minSize);
+
+            // now decrease minStart if needed to make the bin centers line up
+            var adjustedFirstStart = firstManual.start + (firstManual.size - minSize) / 2;
+            minStart = adjustedFirstStart - minSize * Math.ceil((adjustedFirstStart - minStart) / minSize);
+        }
+
+        // now go back to the autobinned traces and update their bin specs with the final values
+        for(i = 0; i < autoBinnedTraces.length; i++) {
+            tracei = autoBinnedTraces[i];
+            calendar = tracei[maindata + 'calendar'];
+
+            tracei._input[binAttr] = tracei[binAttr] = {
+                start: pa.c2r(minStart, 0, calendar),
+                end: pa.c2r(maxEnd, 0, calendar),
+                size: minSize
             };
+
+            // note that it's possible to get here with an explicit autobin: false
+            // if the bins were not specified.
+            // in that case this will remain in the trace, so that future updates
+            // which would change the autobinning will not do so.
+            tracei._input[autoBinAttr] = tracei[autoBinAttr];
         }
-
-        // Even non-autobinned traces get included here, so we get the greatest extent
-        // and minimum bin size of them all.
-        // But manually binned traces won't be adjusted, even if the auto values
-        // are inconsistent with the manual ones (or the manual ones are inconsistent
-        // with each other).
-        minSize = getMinSize(minSize, binspec.size);
-        minStart = Math.min(minStart, pa.r2c(binspec.start, 0, calendar));
-        maxEnd = Math.max(maxEnd, pa.r2c(binspec.end, 0, calendar));
-
-        // add the flag that lets us abort autobin on later traces
-        if(i) trace._autoBinFinished = 1;
     }
 
-    // do what we can to match the auto bins to the first manual bins
-    // but only if sizes are all numeric
-    if(firstManual && isNumeric(firstManual.size) && isNumeric(minSize)) {
-        // first need to ensure the bin size is the same as or an integer fraction
-        // of the first manual bin
-        // allow the bin size to increase just under the autobin step size to match,
-        // (which is a factor of 2 or 2.5) otherwise shrink it
-        if(minSize > firstManual.size / 1.9) minSize = firstManual.size;
-        else minSize = firstManual.size / Math.ceil(firstManual.size / minSize);
+    pos0 = trace._pos0;
+    delete trace._pos0;
 
-        // now decrease minStart if needed to make the bin centers line up
-        var adjustedFirstStart = firstManual.start + (firstManual.size - minSize) / 2;
-        minStart = adjustedFirstStart - minSize * Math.ceil((adjustedFirstStart - minStart) / minSize);
-    }
-
-    // now go back to the autobinned traces and update their bin specs with the final values
-    for(i = 0; i < autoBinnedTraces.length; i++) {
-        tracei = autoBinnedTraces[i];
-        calendar = tracei[maindata + 'calendar'];
-
-        tracei._input[binAttr] = tracei[binAttr] = {
-            start: pa.c2r(minStart, 0, calendar),
-            end: pa.c2r(maxEnd, 0, calendar),
-            size: minSize
-        };
-
-        // note that it's possible to get here with an explicit autobin: false
-        // if the bins were not specified.
-        // in that case this will remain in the trace, so that future updates
-        // which would change the autobinning will not do so.
-        tracei._input[autoBinAttr] = tracei[autoBinAttr];
-    }
-
-    return trace[binAttr];
+    return [trace[binAttr], pos0];
 }
 
 /*
