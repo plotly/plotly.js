@@ -32,67 +32,67 @@ module.exports = function calc(gd, trace) {
     var size = [];
     var pa = Axes.getFromId(gd, trace.orientation === 'h' ?
         (trace.yaxis || 'y') : (trace.xaxis || 'x'));
-    var maindata = trace.orientation === 'h' ? 'y' : 'x';
-    var counterdata = {x: 'y', y: 'x'}[maindata];
-    var calendar = trace[maindata + 'calendar'];
+    var mainData = trace.orientation === 'h' ? 'y' : 'x';
+    var counterData = {x: 'y', y: 'x'}[mainData];
+    var calendar = trace[mainData + 'calendar'];
     var cumulativeSpec = trace.cumulative;
     var i;
 
-    cleanBins(trace, pa, maindata);
+    cleanBins(trace, pa, mainData);
 
-    var binsAndPos = calcAllAutoBins(gd, trace, pa, maindata);
-    var binspec = binsAndPos[0];
+    var binsAndPos = calcAllAutoBins(gd, trace, pa, mainData);
+    var binSpec = binsAndPos[0];
     var pos0 = binsAndPos[1];
 
-    var nonuniformBins = typeof binspec.size === 'string';
-    var bins = nonuniformBins ? [] : binspec;
+    var nonuniformBins = typeof binSpec.size === 'string';
+    var bins = nonuniformBins ? [] : binSpec;
     // make the empty bin array
     var inc = [];
     var counts = [];
     var total = 0;
     var norm = trace.histnorm;
     var func = trace.histfunc;
-    var densitynorm = norm.indexOf('density') !== -1;
-    var i2, binend, n;
+    var densityNorm = norm.indexOf('density') !== -1;
+    var i2, binEnd, n;
 
-    if(cumulativeSpec.enabled && densitynorm) {
+    if(cumulativeSpec.enabled && densityNorm) {
         // we treat "cumulative" like it means "integral" if you use a density norm,
         // which in the end means it's the same as without "density"
         norm = norm.replace(/ ?density$/, '');
-        densitynorm = false;
+        densityNorm = false;
     }
 
-    var extremefunc = func === 'max' || func === 'min';
-    var sizeinit = extremefunc ? null : 0;
-    var binfunc = binFunctions.count;
-    var normfunc = normFunctions[norm];
-    var doavg = false;
+    var extremeFunc = func === 'max' || func === 'min';
+    var sizeInit = extremeFunc ? null : 0;
+    var binFunc = binFunctions.count;
+    var normFunc = normFunctions[norm];
+    var isAvg = false;
     var pr2c = function(v) { return pa.r2c(v, 0, calendar); };
     var rawCounterData;
 
-    if(Array.isArray(trace[counterdata]) && func !== 'count') {
-        rawCounterData = trace[counterdata];
-        doavg = func === 'avg';
-        binfunc = binFunctions[func];
+    if(Array.isArray(trace[counterData]) && func !== 'count') {
+        rawCounterData = trace[counterData];
+        isAvg = func === 'avg';
+        binFunc = binFunctions[func];
     }
 
     // create the bins (and any extra arrays needed)
     // assume more than 1e6 bins is an error, so we don't crash the browser
-    i = pr2c(binspec.start);
+    i = pr2c(binSpec.start);
 
     // decrease end a little in case of rounding errors
-    binend = pr2c(binspec.end) + (i - Axes.tickIncrement(i, binspec.size, false, calendar)) / 1e6;
+    binEnd = pr2c(binSpec.end) + (i - Axes.tickIncrement(i, binSpec.size, false, calendar)) / 1e6;
 
-    while(i < binend && pos.length < 1e6) {
-        i2 = Axes.tickIncrement(i, binspec.size, false, calendar);
+    while(i < binEnd && pos.length < 1e6) {
+        i2 = Axes.tickIncrement(i, binSpec.size, false, calendar);
         pos.push((i + i2) / 2);
-        size.push(sizeinit);
+        size.push(sizeInit);
         // nonuniform bins (like months) we need to search,
         // rather than straight calculate the bin we're in
         if(nonuniformBins) bins.push(i);
         // nonuniform bins also need nonuniform normalization factors
-        if(densitynorm) inc.push(1 / (i2 - i));
-        if(doavg) counts.push(0);
+        if(densityNorm) inc.push(1 / (i2 - i));
+        if(isAvg) counts.push(0);
         // break to avoid infinite loops
         if(i2 <= i) break;
         i = i2;
@@ -112,30 +112,30 @@ module.exports = function calc(gd, trace) {
     // bin the data
     for(i = 0; i < pos0.length; i++) {
         n = Lib.findBin(pos0[i], bins);
-        if(n >= 0 && n < nMax) total += binfunc(n, i, size, rawCounterData, counts);
+        if(n >= 0 && n < nMax) total += binFunc(n, i, size, rawCounterData, counts);
     }
 
     // average and/or normalize the data, if needed
-    if(doavg) total = doAvg(size, counts);
-    if(normfunc) normfunc(size, total, inc);
+    if(isAvg) total = doAvg(size, counts);
+    if(normFunc) normFunc(size, total, inc);
 
     // after all normalization etc, now we can accumulate if desired
     if(cumulativeSpec.enabled) cdf(size, cumulativeSpec.direction, cumulativeSpec.currentbin);
 
 
-    var serieslen = Math.min(pos.length, size.length);
+    var seriesLen = Math.min(pos.length, size.length);
     var cd = [];
     var firstNonzero = 0;
-    var lastNonzero = serieslen - 1;
+    var lastNonzero = seriesLen - 1;
 
     // look for empty bins at the ends to remove, so autoscale omits them
-    for(i = 0; i < serieslen; i++) {
+    for(i = 0; i < seriesLen; i++) {
         if(size[i]) {
             firstNonzero = i;
             break;
         }
     }
-    for(i = serieslen - 1; i > firstNonzero; i--) {
+    for(i = seriesLen - 1; i > firstNonzero; i--) {
         if(size[i]) {
             lastNonzero = i;
             break;
@@ -161,8 +161,8 @@ module.exports = function calc(gd, trace) {
  * smallest bins of any of the auto values for all histograms grouped/stacked
  * together.
  */
-function calcAllAutoBins(gd, trace, pa, maindata) {
-    var binAttr = maindata + 'bins';
+function calcAllAutoBins(gd, trace, pa, mainData) {
+    var binAttr = mainData + 'bins';
     var i, tracei, calendar, firstManual, pos0;
 
     // all but the first trace in this group has already been marked finished
@@ -179,30 +179,30 @@ function calcAllAutoBins(gd, trace, pa, maindata) {
         var minStart = Infinity;
         var maxEnd = -Infinity;
 
-        var autoBinAttr = 'autobin' + maindata;
+        var autoBinAttr = 'autobin' + mainData;
 
         for(i = 0; i < traceGroup.length; i++) {
             tracei = traceGroup[i];
 
             // stash pos0 on the trace so we don't need to duplicate this
             // in the main body of calc
-            pos0 = tracei._pos0 = pa.makeCalcdata(tracei, maindata);
-            var binspec = tracei[binAttr];
+            pos0 = tracei._pos0 = pa.makeCalcdata(tracei, mainData);
+            var binSpec = tracei[binAttr];
 
-            if((tracei[autoBinAttr]) || !binspec ||
-                    binspec.start === null || binspec.end === null) {
-                calendar = tracei[maindata + 'calendar'];
+            if((tracei[autoBinAttr]) || !binSpec ||
+                    binSpec.start === null || binSpec.end === null) {
+                calendar = tracei[mainData + 'calendar'];
                 var cumulativeSpec = tracei.cumulative;
 
-                binspec = Axes.autoBin(pos0, pa, tracei['nbins' + maindata], false, calendar);
+                binSpec = Axes.autoBin(pos0, pa, tracei['nbins' + mainData], false, calendar);
 
                 // adjust for CDF edge cases
                 if(cumulativeSpec.enabled && (cumulativeSpec.currentbin !== 'include')) {
                     if(cumulativeSpec.direction === 'decreasing') {
-                        minStart = Math.min(minStart, pa.r2c(binspec.start, 0, calendar) - binspec.size);
+                        minStart = Math.min(minStart, pa.r2c(binSpec.start, 0, calendar) - binSpec.size);
                     }
                     else {
-                        maxEnd = Math.max(maxEnd, pa.r2c(binspec.end, 0, calendar) + binspec.size);
+                        maxEnd = Math.max(maxEnd, pa.r2c(binSpec.end, 0, calendar) + binSpec.size);
                     }
                 }
 
@@ -211,14 +211,14 @@ function calcAllAutoBins(gd, trace, pa, maindata) {
                 autoBinnedTraces.push(tracei);
             }
             else if(!firstManual) {
-                // Remember the first manually set binspec. We'll try to be extra
+                // Remember the first manually set binSpec. We'll try to be extra
                 // accommodating of this one, so other bins line up with these
                 // if there's more than one manual bin set and they're mutually inconsistent,
                 // then there's not much we can do...
                 firstManual = {
-                    size: binspec.size,
-                    start: pa.r2c(binspec.start, 0, calendar),
-                    end: pa.r2c(binspec.end, 0, calendar)
+                    size: binSpec.size,
+                    start: pa.r2c(binSpec.start, 0, calendar),
+                    end: pa.r2c(binSpec.end, 0, calendar)
                 };
             }
 
@@ -227,9 +227,9 @@ function calcAllAutoBins(gd, trace, pa, maindata) {
             // But manually binned traces won't be adjusted, even if the auto values
             // are inconsistent with the manual ones (or the manual ones are inconsistent
             // with each other).
-            minSize = getMinSize(minSize, binspec.size);
-            minStart = Math.min(minStart, pa.r2c(binspec.start, 0, calendar));
-            maxEnd = Math.max(maxEnd, pa.r2c(binspec.end, 0, calendar));
+            minSize = getMinSize(minSize, binSpec.size);
+            minStart = Math.min(minStart, pa.r2c(binSpec.start, 0, calendar));
+            maxEnd = Math.max(maxEnd, pa.r2c(binSpec.end, 0, calendar));
 
             // add the flag that lets us abort autobin on later traces
             if(i) trace._autoBinFinished = 1;
@@ -253,7 +253,7 @@ function calcAllAutoBins(gd, trace, pa, maindata) {
         // now go back to the autobinned traces and update their bin specs with the final values
         for(i = 0; i < autoBinnedTraces.length; i++) {
             tracei = autoBinnedTraces[i];
-            calendar = tracei[maindata + 'calendar'];
+            calendar = tracei[mainData + 'calendar'];
 
             tracei._input[binAttr] = tracei[binAttr] = {
                 start: pa.c2r(minStart, 0, calendar),
@@ -323,7 +323,7 @@ function numericSize(size) {
     return Infinity;
 }
 
-function cdf(size, direction, currentbin) {
+function cdf(size, direction, currentBin) {
     var i, vi, prevSum;
 
     function firstHalfPoint(i) {
@@ -337,7 +337,7 @@ function cdf(size, direction, currentbin) {
         prevSum += vi;
     }
 
-    if(currentbin === 'half') {
+    if(currentBin === 'half') {
 
         if(direction === 'increasing') {
             firstHalfPoint(0);
@@ -358,7 +358,7 @@ function cdf(size, direction, currentbin) {
         }
 
         // 'exclude' is identical to 'include' just shifted one bin over
-        if(currentbin === 'exclude') {
+        if(currentBin === 'exclude') {
             size.unshift(0);
             size.pop();
         }
@@ -368,7 +368,7 @@ function cdf(size, direction, currentbin) {
             size[i] += size[i + 1];
         }
 
-        if(currentbin === 'exclude') {
+        if(currentBin === 'exclude') {
             size.push(0);
             size.shift();
         }
