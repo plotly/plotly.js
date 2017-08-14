@@ -143,6 +143,11 @@ function toImage(gd, opts) {
     function convert() {
         return new Promise(function(resolve, reject) {
             var svg = toSVG(clonedGd);
+            var width = clonedGd._fullLayout.width;
+            var height = clonedGd._fullLayout.height;
+
+            Plotly.purge(clonedGd)
+            document.body.removeChild(clonedGd)
 
             if(format === 'svg') {
                 if(imageDataOnly) {
@@ -157,8 +162,8 @@ function toImage(gd, opts) {
 
             svgToImg({
                 format: format,
-                width: clonedGd._fullLayout.width,
-                height: clonedGd._fullLayout.height,
+                width: width,
+                height: height,
                 canvas: canvas,
                 svg: svg,
                 // ask svgToImg to return a Promise
@@ -167,14 +172,8 @@ function toImage(gd, opts) {
                 //  compatibility
                 promise: true
             })
-            .then(function(url) {
-                Plotly.purge(clonedGd);
-                document.body.removeChild(clonedGd);
-                resolve(url);
-            })
-            .catch(function(err) {
-                reject(err);
-            });
+            .then(resolve)
+            .catch(reject)
         });
     }
 
