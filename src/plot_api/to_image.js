@@ -146,8 +146,8 @@ function toImage(gd, opts) {
             var width = clonedGd._fullLayout.width;
             var height = clonedGd._fullLayout.height;
 
-            Plotly.purge(clonedGd)
-            document.body.removeChild(clonedGd)
+            Plotly.purge(clonedGd);
+            document.body.removeChild(clonedGd);
 
             if(format === 'svg') {
                 if(imageDataOnly) {
@@ -173,7 +173,7 @@ function toImage(gd, opts) {
                 promise: true
             })
             .then(resolve)
-            .catch(reject)
+            .catch(reject);
         });
     }
 

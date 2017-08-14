@@ -1,7 +1,6 @@
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 
-var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
@@ -21,7 +20,7 @@ describe('Plotly.toImage', function() {
         gd = createGraphDiv();
     });
 
-    afterEach(destroyGraphDiv)
+    afterEach(destroyGraphDiv);
 
     function createImage(url) {
         return new Promise(function(resolve, reject) {
