@@ -31,7 +31,6 @@ var anchorUtils = require('./anchor_utils');
 
 var SHOWISOLATETIP = true;
 var DBLCLICKDELAY = interactConstants.DBLCLICKDELAY;
-var BLANK_STRING_REGEX = /^[\s\r]*$/;
 
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout;
@@ -416,7 +415,7 @@ function drawTexts(g, gd) {
 
                     var carr = Lib.keyedContainer(fullInput, 'transforms[' + index + '].styles', 'target', 'value.name');
 
-                    if(BLANK_STRING_REGEX.test(origText)) {
+                    if(origText === '') {
                         carr.remove(legendItem.trace._group);
                     } else {
                         carr.set(legendItem.trace._group, text);
