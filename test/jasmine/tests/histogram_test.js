@@ -7,6 +7,7 @@ var calc = require('@src/traces/histogram/calc');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var customMatchers = require('../assets/custom_matchers');
 
 
 describe('Test histogram', function() {
@@ -162,10 +163,20 @@ describe('Test histogram', function() {
 
 
     describe('calc', function() {
-        function _calc(opts) {
-            var base = { type: 'histogram' },
-                trace = Lib.extendFlat({}, base, opts),
-                gd = { data: [trace] };
+        beforeAll(function() {
+            jasmine.addMatchers(customMatchers);
+        });
+
+        function _calc(opts, extraTraces) {
+            var base = { type: 'histogram' };
+            var trace = Lib.extendFlat({}, base, opts);
+            var gd = { data: [trace] };
+
+            if(Array.isArray(extraTraces)) {
+                extraTraces.forEach(function(extraTrace) {
+                    gd.data.push(Lib.extendFlat({}, base, extraTrace));
+                });
+            }
 
             Plots.supplyDefaults(gd);
             var fullTrace = gd._fullData[0];
@@ -261,6 +272,85 @@ describe('Test histogram', function() {
             });
 
             expect(out.length).toEqual(9001);
+        });
+
+        function calcPositions(opts, extraTraces) {
+            return _calc(opts, extraTraces).map(function(v) { return v.p; });
+        }
+
+        it('harmonizes autobins when all traces are autobinned', function() {
+            var trace1 = {x: [1, 2, 3, 4]};
+            var trace2 = {x: [5, 5.5, 6, 6.5]};
+
+            expect(calcPositions(trace1)).toBeCloseToArray([0.5, 2.5, 4.5], 5);
+
+            expect(calcPositions(trace2)).toBeCloseToArray([5.5, 6.5], 5);
+
+            expect(calcPositions(trace1, [trace2])).toEqual([1, 2, 3, 4]);
+            // huh, turns out even this one is an example of "unexpected bin positions"
+            // (see another example below) - in this case it's because trace1 gets
+            // autoshifted to keep integers off the bin edges, whereas trace2 doesn't
+            // because there are as many integers as half-integers.
+            // In this case though, it's unexpected but arguably better than the
+            // "expected" result.
+            expect(calcPositions(trace2, [trace1])).toEqual([5, 6, 7]);
+        });
+
+        it('can sometimes give unexpected bin positions', function() {
+            // documenting an edge case that might not be desirable but for now
+            // we've decided to ignore: a larger bin sets the bin start, but then it
+            // doesn't quite make sense with the smaller bin we end up with
+            // we *could* fix this by ensuring that the bin start is based on the
+            // same bin spec that gave the minimum bin size, but incremented down to
+            // include the minimum start... but that would have awkward edge cases
+            // involving month bins so for now we're ignoring it.
+
+            // all integers, so all autobins should get shifted to start 0.5 lower
+            // than they otherwise would.
+            var trace1 = {x: [1, 2, 3, 4]};
+            var trace2 = {x: [-2, 1, 4, 7]};
+
+            // as above... size: 2
+            expect(calcPositions(trace1)).toBeCloseToArray([0.5, 2.5, 4.5], 5);
+
+            // {size: 5, start: -5.5}: -5..-1, 0..4, 5..9
+            expect(calcPositions(trace2)).toEqual([-3, 2, 7]);
+
+            // unexpected behavior when we put these together,
+            // because 2 and 5 are mutually prime. Normally you could never get
+            // groupings 1&2, 3&4... you'd always get 0&1, 2&3...
+            expect(calcPositions(trace1, [trace2])).toBeCloseToArray([1.5, 3.5], 5);
+            expect(calcPositions(trace2, [trace1])).toBeCloseToArray([
+                -2.5, -0.5, 1.5, 3.5, 5.5, 7.5
+            ], 5);
+        });
+
+        it('harmonizes autobins with smaller manual bins', function() {
+            var trace1 = {x: [1, 2, 3, 4]};
+            var trace2 = {x: [5, 6, 7, 8], xbins: {start: 4.3, end: 7.1, size: 0.4}};
+
+            expect(calcPositions(trace1, [trace2])).toBeCloseToArray([
+                0.9, 1.3, 1.7, 2.1, 2.5, 2.9, 3.3, 3.7, 4.1
+            ], 5);
+        });
+
+        it('harmonizes autobins with larger manual bins', function() {
+            var trace1 = {x: [1, 2, 3, 4]};
+            var trace2 = {x: [5, 6, 7, 8], xbins: {start: 4.3, end: 15, size: 7}};
+
+            expect(calcPositions(trace1, [trace2])).toBeCloseToArray([
+                0.8, 2.55, 4.3
+            ], 5);
+        });
+
+        it('ignores traces on other axes', function() {
+            var trace1 = {x: [1, 2, 3, 4]};
+            var trace2 = {x: [5, 5.5, 6, 6.5]};
+            var trace3 = {x: [1, 1.1, 1.2, 1.3], xaxis: 'x2'};
+            var trace4 = {x: [1, 1.2, 1.4, 1.6], yaxis: 'y2'};
+
+            expect(calcPositions(trace1, [trace2, trace3, trace4])).toEqual([1, 2, 3, 4]);
+            expect(calcPositions(trace3)).toBeCloseToArray([0.9, 1.1, 1.3], 5);
         });
 
         describe('cumulative distribution functions', function() {
