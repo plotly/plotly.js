@@ -240,23 +240,18 @@ Plotly.plot = function(gd, data, layout, config) {
         var subplots = Plots.getSubplotIds(fullLayout, 'cartesian');
         var modules = fullLayout._modules;
         var setPositionsArray = [];
-        var hasSetPositions = false;
 
         // position and range calculations for traces that
         // depend on each other ie bars (stacked or grouped)
         // and boxes (grouped) push each other out of the way
 
-        var subplotInfo, setPositionsFunc, i, j;
+        var subplotInfo, i, j;
 
         for(j = 0; j < modules.length; j++) {
-            setPositionsFunc = modules[j].setPositions;
-            if(setPositionsFunc && setPositionsArray.indexOf(setPositionsFunc) === -1) {
-                setPositionsArray.push(setPositionsFunc);
-                hasSetPositions = true;
-            }
+            Lib.pushUnique(setPositionsArray, modules[j].setPositions);
         }
 
-        if(hasSetPositions) {
+        if(setPositionsArray.length) {
             for(i = 0; i < subplots.length; i++) {
                 subplotInfo = fullLayout._plots[subplots[i]];
 
