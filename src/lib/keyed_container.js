@@ -12,7 +12,18 @@ var nestedProperty = require('./nested_property');
 
 var SIMPLE_PROPERTY_REGEX = /^\w*$/;
 
-// bitmask for deciding what's updated:
+// bitmask for deciding what's updated. Sometimes the name needs to be updated,
+// sometimes the value needs to be updated, and sometimes both do. This is just
+// a simple way to track what's updated such that it's a simple OR operation to
+// assimilate new updates.
+//
+// The only exception is the UNSET bit that tracks when we need to explicitly
+// unset and remove the property. This concrn arises because of the special
+// way in which nestedProperty handles null/undefined. When you specify `null`,
+// it prunes any unused items in the tree. I ran into some issues with it getting
+// null vs undefined confused, so UNSET is just a bit that forces the property
+// update to send `null`, removing the property explicitly rather than setting
+// it to undefined.
 var NONE = 0;
 var NAME = 1;
 var VALUE = 2;
@@ -111,14 +122,27 @@ module.exports = function keyedContainer(baseObj, path, keyName, valueName) {
                 return obj.set(name, null);
             }
 
-            for(i = idx; i < arr.length; i++) {
-                changeTypes[i] = changeTypes[i] | BOTH;
+            if(isSimpleValueProp) {
+                for(i = idx; i < arr.length; i++) {
+                    changeTypes[i] = changeTypes[i] | BOTH;
+                }
+                for(i = idx; i < arr.length; i++) {
+                    indexLookup[arr[i][keyName]]--;
+                }
+                arr.splice(idx, 1);
+                delete(indexLookup[name]);
+            } else {
+                // Perform this update *strictly* so we can check whether the result's
+                // been pruned. If so, it's a removal. If not, it's a value unset only.
+                nestedProperty(object, valueName).set(null);
+
+                // Now check if the top level nested property has any keys left. If so,
+                // the object still has values so we only want to unset the key. If not,
+                // the entire object can be removed since there's no other data.
+                // var topLevelKeys = Object.keys(object[valueName.split('.')[0]] || []);
+
+                changeTypes[idx] = changeTypes[idx] | VALUE | UNSET;
             }
-            for(i = idx; i < arr.length; i++) {
-                indexLookup[arr[i][keyName]]--;
-            }
-            arr.splice(idx, 1);
-            delete(indexLookup[name]);
 
             return obj;
         },
