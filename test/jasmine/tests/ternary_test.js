@@ -6,12 +6,12 @@ var supplyLayoutDefaults = require('@src/plots/ternary/layout/defaults');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 var doubleClick = require('../assets/double_click');
 var customMatchers = require('../assets/custom_matchers');
 var getClientPosition = require('../assets/get_client_position');
-
 
 describe('ternary plots', function() {
     'use strict';
@@ -242,6 +242,78 @@ describe('ternary plots', function() {
                 done();
             });
         });
+    });
+
+    it('should be able to reorder axis layers when relayout\'ing *layer*', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/ternary_simple.json'));
+        var dflt = [
+            'draglayer', 'plotbg', 'backplot', 'grids',
+            'frontplot',
+            'aaxis', 'aline', 'baxis', 'bline', 'caxis', 'cline'
+        ];
+
+        function _assert(layers) {
+            var toplevel = d3.selectAll('g.ternary > .toplevel');
+
+            expect(toplevel.size()).toBe(layers.length, '# of layer');
+
+            toplevel.each(function(d, i) {
+                var className = d3.select(this)
+                    .attr('class')
+                    .split('toplevel ')[1];
+
+                expect(className).toBe(layers[i], 'layer ' + i);
+            });
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            _assert(dflt);
+            return Plotly.relayout(gd, 'ternary.aaxis.layer', 'below traces');
+        })
+        .then(function() {
+            _assert([
+                'draglayer', 'plotbg', 'backplot', 'grids',
+                'aaxis', 'aline',
+                'frontplot',
+                'baxis', 'bline', 'caxis', 'cline'
+            ]);
+            return Plotly.relayout(gd, 'ternary.caxis.layer', 'below traces');
+        })
+        .then(function() {
+            _assert([
+                'draglayer', 'plotbg', 'backplot', 'grids',
+                'aaxis', 'aline', 'caxis', 'cline',
+                'frontplot',
+                'baxis', 'bline'
+            ]);
+            return Plotly.relayout(gd, 'ternary.baxis.layer', 'below traces');
+        })
+        .then(function() {
+            _assert([
+                'draglayer', 'plotbg', 'backplot', 'grids',
+                'aaxis', 'aline', 'baxis', 'bline', 'caxis', 'cline',
+                'frontplot'
+            ]);
+            return Plotly.relayout(gd, 'ternary.aaxis.layer', null);
+        })
+        .then(function() {
+            _assert([
+                'draglayer', 'plotbg', 'backplot', 'grids',
+                'baxis', 'bline', 'caxis', 'cline',
+                'frontplot',
+                'aaxis', 'aline'
+            ]);
+            return Plotly.relayout(gd, {
+                'ternary.baxis.layer': null,
+                'ternary.caxis.layer': null
+            });
+        })
+        .then(function() {
+            _assert(dflt);
+        })
+        .catch(fail)
+        .then(done);
     });
 
     function countTernarySubplot() {
