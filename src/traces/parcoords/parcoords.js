@@ -14,7 +14,6 @@ var Lib = require('../../lib');
 var d3 = require('d3');
 var Drawing = require('../../components/drawing');
 
-
 function keyFun(d) {return d.key;}
 
 function repeat(d) {return [d];}
@@ -65,23 +64,27 @@ function ordinalScaleSnap(scale, v) {
     return a[a.length - 1];
 }
 
+function toText(formatter, texts) {
+    return function(v, i) {
+        if(texts) {
+            var text = texts[i];
+            if(text === null || text === undefined) {
+                return formatter(v);
+            } else {
+                return text;
+            }
+        } else {
+            return formatter(v);
+        }
+    };
+}
+
 function domainScale(height, padding, dimension) {
     var extent = dimensionExtent(dimension);
-    var ticktext = dimension.ticktext;
+    var texts = dimension.ticktext;
     return dimension.tickvals ?
         d3.scale.ordinal()
-            .domain(dimension.tickvals.map(function(v, i) {
-                if(ticktext) {
-                    var text = ticktext[i];
-                    if(text === undefined || text === null) {
-                        return d3.format(dimension.tickformat)(v);
-                    } else {
-                        return text;
-                    }
-                } else {
-                    return d3.format(dimension.tickformat)(v);
-                }
-            }))
+            .domain(dimension.tickvals.map(toText(d3.format(dimension.tickformat), texts)))
             .range(dimension.tickvals
                 .map(function(d) {return (d - extent[0]) / (extent[1] - extent[0]);})
                 .map(function(d) {return (height - padding + d * (padding - (height - padding)));})) :
@@ -569,18 +572,7 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
                     .outerTickSize(2)
                     .ticks(wantedTickCount, d.tickFormat) // works for continuous scales only...
                     .tickValues(d.ordinal ? // and this works for ordinal scales
-                        sdom.map(function(dd, i) {
-                            if(texts) {
-                                var text = texts[i];
-                                if(text === null || text === undefined) {
-                                    return dd;
-                                } else {
-                                    return text;
-                                }
-                            } else {
-                                return dd;
-                            }
-                        }) :
+                        sdom.map(toText(Lib.identity), texts) :
                         null)
                     .tickFormat(d.ordinal ? function(d) {return d;} : null)
                     .scale(scale));
