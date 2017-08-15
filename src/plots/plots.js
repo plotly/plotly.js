@@ -811,6 +811,10 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
                 var expandedTrace = expandedTraces[j];
                 var fullExpandedTrace = plots.supplyTraceDefaults(expandedTrace, cnt, fullLayout, i);
 
+                // relink private (i.e. underscore) keys expanded trace to full expanded trace so
+                // that transform supply-default methods can set _ keys for future use.
+                relinkPrivateKeys(fullExpandedTrace, expandedTrace);
+
                 // mutate uid here using parent uid and expanded index
                 // to promote consistency between update calls
                 expandedTrace.uid = fullExpandedTrace.uid = fullTrace.uid + j;

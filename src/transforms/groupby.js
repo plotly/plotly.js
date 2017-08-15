@@ -35,6 +35,17 @@ exports.attributes = {
             'with `x` [1, 3] and one trace with `x` [2, 4].'
         ].join(' ')
     },
+    nameformat: {
+        valType: 'string',
+        description: [
+            'Pattern by which grouped traces are named. If only one trace is present,',
+            'defaults to the group name (`"%{group}"`), otherwise defaults to the group name',
+            'with trace name (`"%{group} (%{trace})"`). Available escape sequences are `%{group}`, which',
+            'inserts the group name, and `%{trace}`, which inserts the trace name. If grouping',
+            'GDP data by country when more than one trace is present, for example, the',
+            'default "%{group} (%{trace})" would return "Monaco (GDP per capita)".'
+        ].join(' ')
+    },
     styles: {
         _isLinkedToArray: 'style',
         target: {
@@ -73,7 +84,8 @@ exports.attributes = {
  * @return {object} transformOut
  *  copy of transformIn that contains attribute defaults
  */
-exports.supplyDefaults = function(transformIn) {
+exports.supplyDefaults = function(transformIn, traceOut, layout) {
+    var i;
     var transformOut = {};
 
     function coerce(attr, dflt) {
@@ -85,12 +97,13 @@ exports.supplyDefaults = function(transformIn) {
     if(!enabled) return transformOut;
 
     coerce('groups');
+    coerce('nameformat', layout._dataLength > 1 ? '%{group} (%{trace})' : '%{group}');
 
     var styleIn = transformIn.styles;
     var styleOut = transformOut.styles = [];
 
     if(styleIn) {
-        for(var i = 0; i < styleIn.length; i++) {
+        for(i = 0; i < styleIn.length; i++) {
             styleOut[i] = {};
             Lib.coerce(styleIn[i], styleOut[i], exports.attributes.styles, 'target');
             Lib.coerce(styleIn[i], styleOut[i], exports.attributes.styles, 'value');
@@ -132,9 +145,9 @@ exports.transform = function(data, state) {
     return newData;
 };
 
-
 function transformOne(trace, state) {
     var i, j, k, attr, srcArray, groupName, newTrace, transforms, arrayLookup;
+    var groupNameObj;
 
     var opts = state.transform;
     var groups = trace.transforms[state.transformIndex].groups;
@@ -155,6 +168,10 @@ function transformOne(trace, state) {
         styleLookup[styles[i].target] = styles[i].value;
     }
 
+    if(opts.styles) {
+        groupNameObj = Lib.keyedContainer(opts, 'styles', 'target', 'value.name');
+    }
+
     // An index to map group name --> expanded trace index
     var indexLookup = {};
 
@@ -164,7 +181,21 @@ function transformOne(trace, state) {
 
         // Start with a deep extend that just copies array references.
         newTrace = newData[i] = Lib.extendDeepNoArrays({}, trace);
-        newTrace.name = groupName;
+        newTrace._group = groupName;
+
+        var suppliedName = null;
+        if(groupNameObj) {
+            suppliedName = groupNameObj.get(groupName);
+        }
+
+        if(suppliedName) {
+            newTrace.name = suppliedName;
+        } else {
+            newTrace.name = Lib.templateString(opts.nameformat, {
+                trace: trace.name,
+                group: groupName
+            });
+        }
 
         // In order for groups to apply correctly to other transform data (e.g.
         // a filter transform), we have to break the connection and clone the
