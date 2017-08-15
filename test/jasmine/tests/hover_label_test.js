@@ -199,6 +199,26 @@ describe('hover info', function() {
         });
     });
 
+    describe('hover info y on log axis', function() {
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        mockCopy.data[0].hoverinfo = 'y';
+
+        beforeEach(function(done) {
+            for(var i = 0; i < mockCopy.data[0].y.length; i++) {
+                mockCopy.data[0].y[i] *= 1e9;
+            }
+
+            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('responds to hover y+text', function() {
+            Fx.hover('graph', evt, 'xy');
+
+            expect(d3.selectAll('g.hovertext').selectAll('text.nums').node().innerHTML).toEqual('1e+9');
+        });
+    });
+
     describe('hover info y+text', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
