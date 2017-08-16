@@ -564,7 +564,6 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
             var wantedTickCount = d.model.height / d.model.tickDistance;
             var scale = d.domainScale;
             var sdom = scale.domain();
-            var texts = d.ticktext;
             d3.select(this)
                 .call(d3.svg.axis()
                     .orient('left')
@@ -572,7 +571,7 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
                     .outerTickSize(2)
                     .ticks(wantedTickCount, d.tickFormat) // works for continuous scales only...
                     .tickValues(d.ordinal ? // and this works for ordinal scales
-                        sdom.map(toText(Lib.identity), texts) :
+                        sdom :
                         null)
                     .tickFormat(d.ordinal ? function(d) {return d;} : null)
                     .scale(scale));
