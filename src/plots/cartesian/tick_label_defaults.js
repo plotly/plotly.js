@@ -40,6 +40,7 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
 
         if(axType !== 'category') {
             var tickFormat = coerce('tickformat');
+            coerce('tickformatstops');
             if(!tickFormat && axType !== 'date') {
                 coerce('showexponent', showAttrDflt);
                 coerce('exponentformat');

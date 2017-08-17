@@ -1241,7 +1241,7 @@ function tickTextObj(ax, x, text) {
 
 function formatDate(ax, out, hover, extraPrecision) {
     var tr = ax._tickround,
-        fmt = (hover && ax.hoverformat) || ax.tickformat;
+        fmt = (hover && ax.hoverformat) || axes.getTickFormat(ax);
 
     if(extraPrecision) {
         // second or sub-second precision: extra always shows max digits.
@@ -1406,7 +1406,7 @@ function numFormat(v, ax, fmtoverride, hover) {
         tickRound = ax._tickround,
         exponentFormat = fmtoverride || ax.exponentformat || 'B',
         exponent = ax._tickexponent,
-        tickformat = ax.tickformat,
+        tickformat = axes.getTickFormat(ax),
         separatethousands = ax.separatethousands;
 
     // special case for hover: set exponent just for this value, and
@@ -1506,6 +1506,59 @@ function numFormat(v, ax, fmtoverride, hover) {
     if(isNeg) return MINUS_SIGN + v;
     return v;
 }
+
+axes.getTickFormat = function(ax) {
+    function convertToMs(dtick) {
+        return typeof dtick !== 'string' ? dtick : Number(dtick.replace('M', '') * ONEAVGMONTH);
+    }
+    function isProperStop(dtick, range, convert) {
+        var convertFn = convert || function(x) { return x;};
+        var leftDtick = range[0];
+        var rightDtick = range[1];
+        return (!leftDtick || convertFn(leftDtick) <= convertFn(dtick)) &&
+               (!rightDtick || convertFn(rightDtick) >= convertFn(dtick));
+    }
+    function getRangeWidth(range, convert) {
+        var convertFn = convert || function(x) { return x;};
+        var left = range[0] || 0;
+        var right = range[1] || 0;
+        return Math.abs(convertFn(right) - convertFn(left));
+    }
+
+    var tickstop;
+    if(ax.tickformatstops && ax.tickformatstops.length > 0) {
+        switch(ax.type) {
+            case 'date': {
+                tickstop = ax.tickformatstops.reduce(function(acc, stop) {
+                    if(!isProperStop(ax.dtick, stop.dtickrange, convertToMs)) {
+                        return acc;
+                    }
+                    if(!acc) {
+                        return stop;
+                    } else {
+                        return getRangeWidth(stop.dtickrange, convertToMs) > getRangeWidth(acc.dtickrange, convertToMs) ? stop : acc;
+                    }
+                }, null);
+                break;
+            }
+            case 'linear': {
+                tickstop = ax.tickformatstops.reduce(function(acc, stop) {
+                    if(!isProperStop(ax.dtick, stop.dtickrange)) {
+                        return acc;
+                    }
+                    if(!acc) {
+                        return stop;
+                    } else {
+                        return getRangeWidth(stop.dtickrange) > getRangeWidth(acc.dtickrange) ? stop : acc;
+                    }
+                }, null);
+                break;
+            }
+            default:
+        }
+    }
+    return tickstop ? tickstop.value : ax.tickformat;
+};
 
 axes.subplotMatch = /^x([0-9]*)y([0-9]*)$/;
 
