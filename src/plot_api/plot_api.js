@@ -1949,7 +1949,10 @@ function _relayout(gd, aobj) {
         if(attr in aobj || helpers.hasParent(aobj, attr)) return;
 
         var p = Lib.nestedProperty(layout, attr);
-        if(!(attr in undoit)) undoit[attr] = p.get();
+        if(!(attr in undoit)) {
+            var undoVal = p.get();
+            undoit[attr] = undoVal === undefined ? null : undoVal;
+        }
         if(val !== undefined) p.set(val);
     }
 
@@ -2012,7 +2015,7 @@ function _relayout(gd, aobj) {
 
         // axis reverse is special - it is its own inverse
         // op and has no flag.
-        undoit[ai] = (pleaf === 'reverse') ? vi : vOld;
+        undoit[ai] = (pleaf === 'reverse') ? vi : (vOld === undefined ? null : vOld);
 
         // Setting width or height to null must reset the graph's width / height
         // back to its initial value as computed during the first pass in Plots.plotAutoSize.
@@ -2083,6 +2086,9 @@ function _relayout(gd, aobj) {
 
             if(toLog || fromLog) {
                 if(!ax || !ax.range) {
+                    // 2D never gets here, but 3D does
+                    // I don't think this is needed, but left here in case there
+                    // are edge cases I'm not thinking of.
                     doextra(ptrunk + '.autorange', true);
                 }
                 else if(!parentFull.autorange) {
@@ -2122,6 +2128,7 @@ function _relayout(gd, aobj) {
                 // any other type changes: the range from the previous type
                 // will not make sense, so autorange it.
                 doextra(ptrunk + '.autorange', true);
+                doextra(ptrunk + '.range', null);
             }
             Lib.nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
         }

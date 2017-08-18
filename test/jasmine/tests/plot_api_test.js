@@ -2,6 +2,7 @@ var Plotly = require('@lib/index');
 var PlotlyInternal = require('@src/plotly');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
+var Queue = require('@src/lib/queue');
 var Scatter = require('@src/traces/scatter');
 var Bar = require('@src/traces/bar');
 var Legend = require('@src/components/legend');
@@ -113,9 +114,18 @@ describe('Test plot api', function() {
 
         beforeEach(function() {
             gd = createGraphDiv();
+
+            // some of these tests use the undo/redo queue
+            // OK, this is weird... the undo/redo queue length is a global config only.
+            // It's ignored on the plot, even though the queue itself is per-plot.
+            // We may ditch this later, but probably not until v2
+            Plotly.setPlotConfig({queueLength: 3});
         });
 
-        afterEach(destroyGraphDiv);
+        afterEach(function() {
+            destroyGraphDiv();
+            Plotly.setPlotConfig({queueLength: 0});
+        });
 
         it('should update the plot clipPath if the plot is resized', function(done) {
 
@@ -327,6 +337,162 @@ describe('Test plot api', function() {
                 expect(getAnnotationPos()).toBeCloseToArray([247.5, 210.1], -0.5);
                 expect(getShapePos()).toBeCloseToArray([350, 369]);
                 expect(getImagePos()).toBeCloseToArray([170, 272.52]);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('clears autorange when you modify a range or part of a range', function(done) {
+            var initialXRange;
+            var initialYRange;
+
+            Plotly.plot(gd, [{x: [1, 2], y: [1, 2]}])
+            .then(function() {
+                expect(gd.layout.xaxis.autorange).toBe(true);
+                expect(gd.layout.yaxis.autorange).toBe(true);
+
+                initialXRange = gd.layout.xaxis.range.slice();
+                initialYRange = gd.layout.yaxis.range.slice();
+
+                return Plotly.relayout(gd, {'xaxis.range': [0, 1], 'yaxis.range[1]': 3});
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.autorange).toBe(false);
+                expect(gd.layout.xaxis.range).toEqual([0, 1]);
+                expect(gd.layout.yaxis.autorange).toBe(false);
+                expect(gd.layout.yaxis.range[1]).toBe(3);
+
+                return Plotly.relayout(gd, {'xaxis.autorange': true, 'yaxis.autorange': true});
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toEqual(initialXRange);
+                expect(gd.layout.yaxis.range).toEqual(initialYRange);
+
+                // finally, test that undoing autorange puts back the previous explicit range
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.autorange).toBe(false);
+                expect(gd.layout.xaxis.range).toEqual([0, 1]);
+                expect(gd.layout.yaxis.autorange).toBe(false);
+                expect(gd.layout.yaxis.range[1]).toBe(3);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('sets aspectmode to manual when you provide any aspectratio', function(done) {
+            Plotly.plot(gd, [{x: [1, 2], y: [1, 2], z: [1, 2], type: 'scatter3d'}])
+            .then(function() {
+                expect(gd.layout.scene.aspectmode).toBe('auto');
+
+                return Plotly.relayout(gd, {'scene.aspectratio.x': 2});
+            })
+            .then(function() {
+                expect(gd.layout.scene.aspectmode).toBe('manual');
+
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                expect(gd.layout.scene.aspectmode).toBe('auto');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('sets tickmode to linear when you edit tick0 or dtick', function(done) {
+            Plotly.plot(gd, [{x: [1, 2], y: [1, 2]}])
+            .then(function() {
+                expect(gd.layout.xaxis.tickmode).toBeUndefined();
+                expect(gd.layout.yaxis.tickmode).toBeUndefined();
+
+                return Plotly.relayout(gd, {'xaxis.tick0': 0.23, 'yaxis.dtick': 0.34});
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.tickmode).toBe('linear');
+                expect(gd.layout.yaxis.tickmode).toBe('linear');
+
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.tickmode).toBeUndefined();
+                expect(gd.layout.yaxis.tickmode).toBeUndefined();
+
+                expect(gd.layout.xaxis.tick0).toBeUndefined();
+                expect(gd.layout.yaxis.dtick).toBeUndefined();
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('updates non-auto ranges for linear/log changes', function(done) {
+            Plotly.plot(gd, [{x: [3, 5], y: [3, 5]}], {
+                xaxis: {range: [1, 10]},
+                yaxis: {type: 'log', range: [0, 1]}
+            })
+            .then(function() {
+                return Plotly.relayout(gd, {'xaxis.type': 'log', 'yaxis.type': 'linear'});
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([0, 1], 5);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([1, 10], 5);
+
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 10], 5);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0, 1], 5);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('respects reversed autorange when switching linear to log', function(done) {
+            Plotly.plot(gd, [{x: [1, 2], y: [1, 2]}])
+            .then(function() {
+                // Ideally we should change this to xaxis.autorange: 'reversed'
+                // but that's a weird disappearing setting used just to force
+                // an initial reversed autorange. Proposed v2 change at:
+                // https://github.com/plotly/plotly.js/issues/420#issuecomment-323435082
+                return Plotly.relayout(gd, 'xaxis.reverse', true);
+            })
+            .then(function() {
+                var xRange = gd.layout.xaxis.range;
+                expect(xRange[1]).toBeLessThan(xRange[0]);
+                expect(xRange[0]).toBeGreaterThan(1);
+
+                return Plotly.relayout(gd, 'xaxis.type', 'log');
+            })
+            .then(function() {
+                var xRange = gd.layout.xaxis.range;
+                expect(xRange[1]).toBeLessThan(xRange[0]);
+                // make sure it's a real loggy range
+                expect(xRange[0]).toBeLessThan(1);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('autoranges automatically when switching to/from any other axis type than linear <-> log', function(done) {
+            Plotly.plot(gd, [{x: ['1.5', '0.8'], y: [1, 2]}], {xaxis: {range: [0.6, 1.7]}})
+            .then(function() {
+                expect(gd.layout.xaxis.autorange).toBeUndefined();
+                expect(gd._fullLayout.xaxis.type).toBe('linear');
+                expect(gd.layout.xaxis.range).toEqual([0.6, 1.7]);
+
+                return Plotly.relayout(gd, 'xaxis.type', 'category');
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.autorange).toBe(true);
+                expect(gd._fullLayout.xaxis.type).toBe('category');
+                expect(gd.layout.xaxis.range[0]).toBeLessThan(0);
+
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.autorange).toBeUndefined();
+                expect(gd._fullLayout.xaxis.type).toBe('linear');
+                expect(gd.layout.xaxis.range).toEqual([0.6, 1.7]);
             })
             .catch(fail)
             .then(done);

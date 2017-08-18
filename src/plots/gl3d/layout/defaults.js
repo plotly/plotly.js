@@ -89,6 +89,12 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
         sceneLayoutIn.aspectratio = sceneLayoutOut.aspectratio = {x: 1, y: 1, z: 1};
 
         if(aspectMode === 'manual') sceneLayoutOut.aspectmode = 'auto';
+
+        /*
+         * kind of like autorange - we need the calculated aspectmode back in
+         * the input layout or relayout can cause problems later
+         */
+        sceneLayoutIn.aspectmode = sceneLayoutOut.aspectmode;
     }
 
     supplyGl3dAxisLayoutDefaults(sceneLayoutIn, sceneLayoutOut, {
