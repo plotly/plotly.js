@@ -123,7 +123,7 @@ module.exports = function plot(gd, calcdata) {
             });
             var revolverPanel2 = extendFlat({}, d, {
                 key: 'cells2',
-                anchor: Math.ceil((d.calcdata.scrollHeight + c.uplift) / d.calcdata.cells.height) * d.calcdata.cells.height, // will be mutated on scroll; points to current place
+                anchor: effectiveHeightOfPanelA(d), // will be mutated on scroll; points to current place
                 type: 'cells',
                 yOffset: d.calcdata.headerHeight,
                 dragHandle: false,
@@ -161,7 +161,7 @@ module.exports = function plot(gd, calcdata) {
                         var bottom = d.calcdata.cells.values[0].length * d.calcdata.cells.height - d.calcdata.scrollHeight;
                         calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
                         var blockY = calcdata.scrollY;
-                        var panelHeight = Math.ceil((d.calcdata.scrollHeight + c.uplift) / d.calcdata.cells.height) * d.calcdata.cells.height;
+                        var panelHeight = effectiveHeightOfPanel(d);
                         if(blockY - d.anchor > panelHeight) {
                             d.anchor += 2 * panelHeight;
                             anchorChanged = true;
@@ -251,6 +251,18 @@ module.exports = function plot(gd, calcdata) {
         .attr('height', function(d) {return d.calcdata.height + c.uplift;});
 };
 
+function rowCountOfPanel(d) {
+    return Math.ceil((d.calcdata.scrollHeight + c.uplift) / d.calcdata.cells.height);
+}
+
+function effectiveHeightOfPanel(d) {
+    return rowCountOfPanel(d) * d.calcdata.cells.height;
+}
+
+function effectiveHeightOfPanelA(d) {
+    return effectiveHeightOfPanel(d);
+}
+
 function columnMoved(gd, calcdata, i, indices) {
 
     var o = calcdata[i][0].gdColumnsOriginalOrder;
@@ -302,7 +314,7 @@ function renderColumnBlocks(columnBlock) {
     var columnCell = columnCells.selectAll('.columnCell')
         .data(function(d) {
             var rowFrom = Math.round(d.anchor / d.calcdata.cells.height);
-            var rowTo = rowFrom + (rowFrom >= 0 ? Math.ceil((d.calcdata.scrollHeight + c.uplift) / d.calcdata.cells.height) : 0);
+            var rowTo = rowFrom + (rowFrom >= 0 ? rowCountOfPanel(d) : 0);
 
             return d.values.slice(rowFrom, rowTo).map(function(v, i) {return {key: rowFrom + i, column: d, calcdata: d.calcdata, value: v};});
         }, gup.keyFun);

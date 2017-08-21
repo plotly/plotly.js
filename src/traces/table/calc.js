@@ -29,6 +29,14 @@ module.exports = function calc(gd, trace) {
     var headerRows = trace.header.values[0].length;
     var headerHeight = headerRows * trace.header.height;
     var scrollHeight = groupHeight - headerHeight;
+    var rowHeights = trace.cells.values[0].map(function(_, i) {return trace.cells.height;});
+
+    var rowAnchors = [];
+    var acc = 0;
+    for(var i = 0; i < rowHeights.length; i++) {
+        rowAnchors.push(acc);
+        acc += rowHeights[i];
+    }
 
     var uniqueKeys = {};
 
@@ -48,6 +56,8 @@ module.exports = function calc(gd, trace) {
         scrollY: 0, // will be mutated on scroll
         cells: trace.cells,
         headerCells: trace.header,
+        rowHeights: rowHeights,
+        rowAnchors: rowAnchors,
         columns: trace.header.values.map(function(label, i) {
             var foundKey = uniqueKeys[label];
             uniqueKeys[label] = (foundKey || 0) + 1;
