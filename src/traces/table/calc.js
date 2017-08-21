@@ -54,7 +54,7 @@ module.exports = function calc(gd, trace) {
         columns: trace.header.values.map(function(label, i) {
             var foundKey = uniqueKeys[label];
             uniqueKeys[label] = (foundKey || 0) + 1;
-            var key = label + (foundKey ? '__' + foundKey : '');
+            var key = label + '__' + uniqueKeys[label];
             return {
                 key: key,
                 label: label,
