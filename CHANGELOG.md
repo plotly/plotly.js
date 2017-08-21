@@ -10,6 +10,30 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.30.0] -- 2017-08-21
+
+### Added
+- Add aggregate transform [#1924]
+- Add `constraintext` attribute for bar traces [#1931]
+- Add axis `layer` attribute to ternary axes [#1952]
+- Add cross-trace matching auto-binning logic to histogram traces [#1944]
+- Add `data/layout/config` api to `Plotly.toImage` to generate a static
+  graph without having to render an interactive graph first [#1939]
+- Add `nameformat` attribute to `groupby` transforms to set pattern by which
+  grouped traces are named [#1919]
+
+### Fixed
+- Fix hover label exponents [#1932, #1949]
+- Fix scatter fill with isolated endpoints [#1933]
+- Fix parcoords axis tick scale when `ticktext` is unordered [#1945]
+- Fix sankey with 4 multi-links or more [#1934]
+- Fix exponent labels beyond SI prefixes [#1930]
+- Fix image generation for marker gradient legend items [#1928]
+- Fix parcoords image generation when multiple parcoords graphs
+  are present on page [#1947]
+- Ignore bare closing tags in pseudo-html string inputs [#1926]
+
+
 ## [1.29.3] -- 2017-07-27
 
 ### Fixed
