@@ -252,7 +252,7 @@ module.exports = function plot(gd, calcdata) {
 };
 
 function rowCountOfPanel(d) {
-    return Math.ceil((d.calcdata.scrollHeight + c.uplift) / d.calcdata.cells.height);
+    return Math.ceil((d.calcdata.minimumFillHeight) / d.calcdata.cells.height);
 }
 
 function effectiveHeightOfPanel(d) {
@@ -296,6 +296,13 @@ function easeColumn(elem, d, y) {
         .attr('transform', 'translate(' + d.x + ' ' + y + ')');
 }
 
+function rowFromTo(d) {
+    var rowBlock = d.calcdata.anchorToRowBlock[d.anchor];
+    var rowFrom = rowBlock ? rowBlock[0].rowIndex : 0;
+    var rowTo = rowBlock ? rowFrom + rowBlock.length : 0;
+    return [rowFrom, rowTo];
+}
+
 function renderColumnBlocks(columnBlock) {
 
     // this is performance critical code as scrolling calls it on every revolver switch
@@ -313,10 +320,8 @@ function renderColumnBlocks(columnBlock) {
 
     var columnCell = columnCells.selectAll('.columnCell')
         .data(function(d) {
-            var rowFrom = Math.round(d.anchor / d.calcdata.cells.height);
-            var rowTo = rowFrom + (rowFrom >= 0 ? rowCountOfPanel(d) : 0);
-
-            return d.values.slice(rowFrom, rowTo).map(function(v, i) {return {key: rowFrom + i, column: d, calcdata: d.calcdata, value: v};});
+            var fromTo = rowFromTo(d);
+            return d.values.slice(fromTo[0], fromTo[1]).map(function(v, i) {return {key: fromTo[0] + i, column: d, calcdata: d.calcdata, value: v};});
         }, gup.keyFun);
 
     columnCell.enter()

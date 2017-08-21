@@ -29,6 +29,7 @@ module.exports = function calc(gd, trace) {
     var headerRows = trace.header.values[0].length;
     var headerHeight = headerRows * trace.header.height;
     var scrollHeight = groupHeight - headerHeight;
+    var minimumFillHeight = scrollHeight + c.uplift;
     var rowHeights = trace.cells.values[0].map(function(_, i) {return trace.cells.height;});
 
     var rowAnchors = [];
@@ -36,6 +37,25 @@ module.exports = function calc(gd, trace) {
     for(var i = 0; i < rowHeights.length; i++) {
         rowAnchors.push(acc);
         acc += rowHeights[i];
+    }
+
+    var anchorToRowBlock = {};
+    var currentRowHeight;
+    var currentAnchor = 0;
+    var currentBlockHeight = 0;
+    var currentBlock = [];
+    for(i = 0; i < rowHeights.length; i++) {
+        currentRowHeight = rowHeights[i];
+        currentBlockHeight += currentRowHeight;
+        currentBlock.push({
+            rowIndex: i
+        });
+        if(currentBlockHeight >= minimumFillHeight || i === rowHeights.length - 1) {
+            anchorToRowBlock[currentAnchor] = currentBlock;
+            currentBlock = [];
+            currentAnchor += currentBlockHeight;
+            currentBlockHeight = 0;
+        }
     }
 
     var uniqueKeys = {};
@@ -53,6 +73,8 @@ module.exports = function calc(gd, trace) {
         columnOrder: columnOrder, // will be mutated on column move
         headerHeight: headerHeight,
         scrollHeight: scrollHeight,
+        minimumFillHeight: minimumFillHeight,
+        anchorToRowBlock: anchorToRowBlock,
         scrollY: 0, // will be mutated on scroll
         cells: trace.cells,
         headerCells: trace.header,
