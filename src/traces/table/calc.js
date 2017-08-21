@@ -43,16 +43,16 @@ module.exports = function calc(gd, trace) {
     var currentRowHeight;
     var currentAnchor = 0;
     var currentBlockHeight = 0;
-    var currentBlock = [];
+    var currentBlock = {rows: []};
     for(i = 0; i < rowHeights.length; i++) {
         currentRowHeight = rowHeights[i];
         currentBlockHeight += currentRowHeight;
-        currentBlock.push({
+        currentBlock.rows.push({
             rowIndex: i
         });
         if(currentBlockHeight >= minimumFillHeight || i === rowHeights.length - 1) {
             anchorToRowBlock[currentAnchor] = currentBlock;
-            currentBlock = [];
+            currentBlock = {rows: []};
             currentAnchor += currentBlockHeight;
             currentBlockHeight = 0;
         }

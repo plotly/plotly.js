@@ -263,6 +263,13 @@ function effectiveHeightOfPanelA(d) {
     return effectiveHeightOfPanel(d);
 }
 
+function rowFromTo(d) {
+    var rowBlock = d.calcdata.anchorToRowBlock[d.anchor];
+    var rowFrom = rowBlock ? rowBlock.rows[0].rowIndex : 0;
+    var rowTo = rowBlock ? rowFrom + rowBlock.rows.length : 0;
+    return [rowFrom, rowTo];
+}
+
 function columnMoved(gd, calcdata, i, indices) {
 
     var o = calcdata[i][0].gdColumnsOriginalOrder;
@@ -294,13 +301,6 @@ function easeColumn(elem, d, y) {
         .ease(c.releaseTransitionEase, 1, .75)
         .duration(c.releaseTransitionDuration)
         .attr('transform', 'translate(' + d.x + ' ' + y + ')');
-}
-
-function rowFromTo(d) {
-    var rowBlock = d.calcdata.anchorToRowBlock[d.anchor];
-    var rowFrom = rowBlock ? rowBlock[0].rowIndex : 0;
-    var rowTo = rowBlock ? rowFrom + rowBlock.length : 0;
-    return [rowFrom, rowTo];
 }
 
 function renderColumnBlocks(columnBlock) {
