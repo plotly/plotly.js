@@ -123,7 +123,7 @@ module.exports = function plot(gd, calcdata) {
             });
             var revolverPanel2 = extendFlat({}, d, {
                 key: 'cells2',
-                anchor: d.calcdata.panelHeight, // will be mutated on scroll; points to current place
+                anchor: Math.ceil((d.calcdata.scrollHeight + c.uplift) / d.calcdata.cells.height) * d.calcdata.cells.height, // will be mutated on scroll; points to current place
                 type: 'cells',
                 yOffset: d.calcdata.headerHeight,
                 dragHandle: false,
@@ -161,12 +161,12 @@ module.exports = function plot(gd, calcdata) {
                         var bottom = d.calcdata.cells.values[0].length * d.calcdata.cells.height - d.calcdata.scrollHeight;
                         calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
                         var blockY = calcdata.scrollY;
-
-                        if(d.anchor - blockY + d.calcdata.panelHeight < 0) {
-                            d.anchor += 2 * d.calcdata.panelHeight;
+                        var panelHeight = Math.ceil((d.calcdata.scrollHeight + c.uplift) / d.calcdata.cells.height) * d.calcdata.cells.height;
+                        if(blockY - d.anchor > panelHeight) {
+                            d.anchor += 2 * panelHeight;
                             anchorChanged = true;
-                        } else if(d.anchor - blockY > d.calcdata.panelHeight) {
-                            d.anchor -= 2 * d.calcdata.panelHeight;
+                        } else if(d.anchor - blockY > panelHeight) {
+                            d.anchor -= 2 * panelHeight;
                             anchorChanged = true;
                         }
 
@@ -178,7 +178,8 @@ module.exports = function plot(gd, calcdata) {
                 if(anchorChanged) {
                     window.clearTimeout(d.currentRepaint);
                     d.currentRepaint = window.setTimeout(function() {
-                        // setTimeout might lag rendering but yields a smoother scroll
+                        // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
+                        // some repaints invisible ie. wasteful (DOM work blocks the main thread)
                         renderColumnBlocks(columnBlock);
                     });
                 }
@@ -301,7 +302,7 @@ function renderColumnBlocks(columnBlock) {
     var columnCell = columnCells.selectAll('.columnCell')
         .data(function(d) {
             var rowFrom = Math.round(d.anchor / d.calcdata.cells.height);
-            var rowTo = rowFrom + (rowFrom >= 0 ? d.calcdata.rowsPerPanel : 0);
+            var rowTo = rowFrom + (rowFrom >= 0 ? Math.ceil((d.calcdata.scrollHeight + c.uplift) / d.calcdata.cells.height) : 0);
 
             return d.values.slice(rowFrom, rowTo).map(function(v, i) {return {key: rowFrom + i, column: d, calcdata: d.calcdata, value: v};});
         }, gup.keyFun);
@@ -314,6 +315,8 @@ function renderColumnBlocks(columnBlock) {
 
     columnCell
         .attr('transform', function(d, i) {
+            console.log(i)
+            //debugger
             return 'translate(' + 0 + ' ' + i * d.column.rowPitch + ')';
         })
         .each(function(d, i) {

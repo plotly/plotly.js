@@ -29,7 +29,6 @@ module.exports = function calc(gd, trace) {
     var headerRows = trace.header.values[0].length;
     var headerHeight = headerRows * trace.header.height;
     var scrollHeight = groupHeight - headerHeight;
-    var rowCount = Math.ceil((scrollHeight + c.uplift) / trace.cells.height);
 
     var uniqueKeys = {};
 
@@ -44,8 +43,6 @@ module.exports = function calc(gd, trace) {
         height: groupHeight,
         columnWidths: columnWidths,
         columnOrder: columnOrder, // will be mutated on column move
-        panelHeight: rowCount * trace.cells.height,
-        rowsPerPanel: rowCount,
         headerHeight: headerHeight,
         scrollHeight: scrollHeight,
         scrollY: 0, // will be mutated on scroll

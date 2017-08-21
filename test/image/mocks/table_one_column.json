@@ -1,9 +1,9 @@
 {
     "layout": {
         "width": 1000,
-        "height": 300,
+        "height": 600,
         "title": "Widget parameters and cost",
-        "margin": {"t": 80, "r": 60, "b": 54, "l": 60}
+        "margin": {"t": 380, "r": 60, "b": 54, "l": 60}
     },
 
     "data": [{
@@ -23,7 +23,7 @@
             "height": 20,
 
             "values": [
-                ["Index"   , "#"],
+                ["Index"   , "#"]
             ],
 
             "align": ["right"],
