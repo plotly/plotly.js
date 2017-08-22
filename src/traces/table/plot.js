@@ -359,6 +359,7 @@ function renderColumnBlocks(columnBlock) {
         return lookup.rows[d.key - lookup.firstRowIndex].rowHeight;
     }
 
+
     cellRect
         .attr('width', function(d) {return d.column.columnWidth;})
         .attr('height', rowHeight)
