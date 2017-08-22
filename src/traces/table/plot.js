@@ -157,11 +157,15 @@ module.exports = function plot(gd, calcdata) {
                 var anchorChanged = false;
                 cellsColumnBlock
                     .attr('transform', function(d) {
-                        var bottom = d.calcdata.cells.values[0].length * d.calcdata.cells.height - d.calcdata.scrollHeight;
-                        calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
-                        var blockY = calcdata.scrollY;
                         var selfHeight = d.calcdata.anchorToRowBlock[d.anchor].totalHeight;
                         var otherHeight = d.calcdata.anchorToRowBlock[d.otherPanel.anchor].totalHeight;
+                        var blockAnchors = Object.keys(d.calcdata.anchorToRowBlock);
+                        var lastAnchor = parseInt(blockAnchors[blockAnchors.length - 1]);
+                        var lastBlock = d.calcdata.anchorToRowBlock[lastAnchor];
+                        var lastRow = lastBlock.rows[lastBlock.rows.length - 1];
+                        var bottom = lastRow.rowAnchor + lastRow.rowHeight - d.calcdata.scrollHeight;
+                        calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
+                        var blockY = calcdata.scrollY;
                         var jump = selfHeight + otherHeight;
                         if(blockY - d.anchor > otherHeight && d.anchor + jump < 540) {
                             d.anchor += jump;
