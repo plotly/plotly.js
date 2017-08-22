@@ -105,7 +105,6 @@ module.exports = function plot(gd, calcdata) {
                 yOffset: 0,
                 anchor: 0,
                 values: d.calcdata.headerCells.values[d.specIndex],
-                rowPitch: d.calcdata.headerCells.height,
                 dragHandle: true,
                 rowBlockOffset: 0,
                 calcdata: extendFlat({}, d.calcdata, {cells: d.calcdata.headerCells})
@@ -117,7 +116,6 @@ module.exports = function plot(gd, calcdata) {
                 yOffset: d.calcdata.headerHeight,
                 dragHandle: false,
                 values: d.calcdata.cells.values[d.specIndex],
-                rowPitch: d.calcdata.cells.height,
                 rowBlockOffset: 0,
                 calcdata: d.calcdata
             });
@@ -128,7 +126,6 @@ module.exports = function plot(gd, calcdata) {
                 yOffset: d.calcdata.headerHeight,
                 dragHandle: false,
                 values: d.calcdata.cells.values[d.specIndex],
-                rowPitch: d.calcdata.cells.height,
                 rowBlockOffset: 1,
                 calcdata: d.calcdata
             });
