@@ -154,7 +154,7 @@ module.exports = function plot(gd, calcdata) {
             .on('drag', function(d) {
                 var calcdata = d.calcdata;
                 var direction = d3.event.dy < 0 ? 'down' : d3.event.dy > 0 ? 'up' : null;
-                if(direction) console.log(direction)
+                if(!direction) return;
                 calcdata.scrollY -= d3.event.dy;
                 var anchorChanged = false;
                 cellsColumnBlock
@@ -167,7 +167,7 @@ module.exports = function plot(gd, calcdata) {
                         var bottom = lastRow.rowAnchor + lastRow.rowHeight - d.calcdata.scrollHeight;
                         calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
                         var scrollY = calcdata.scrollY;
-                        if(direction === 'down' && scrollY - d.anchor > d.calcdata.scrollHeight) {
+                        if(direction === 'down' && scrollY - d.anchor > d.calcdata.anchorToRowBlock[d.anchor].totalHeight) {
                             if(blockAnchors.indexOf(d.anchor) + 2 < blockAnchors.length) {
                                 d.anchor = blockAnchors[blockAnchors.indexOf(d.anchor) + 2];
                                 anchorChanged = true;
