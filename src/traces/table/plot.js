@@ -167,10 +167,12 @@ module.exports = function plot(gd, calcdata) {
                         calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
                         var blockY = calcdata.scrollY;
                         var jump = selfHeight + otherHeight;
-                        if(blockY - d.anchor > otherHeight && d.anchor + jump < 540) {
+                        if(blockY - d.anchor > selfHeight && d.calcdata.anchorToRowBlock[d.anchor + jump]) {
+                            console.log('downward')
                             d.anchor += jump;
                             anchorChanged = true;
-                        } else if(d.anchor - blockY > otherHeight) {
+                        } else if(d.anchor - blockY > selfHeight && d.calcdata.anchorToRowBlock[d.anchor - jump]) {
+                            console.log('upward')
                             d.anchor -= jump;
                             anchorChanged = true;
                         }
@@ -358,7 +360,6 @@ function renderColumnBlocks(columnBlock) {
         var lookup = d.calcdata.anchorToRowBlock[d.column.anchor];
         return lookup.rows[d.key - lookup.firstRowIndex].rowHeight;
     }
-
 
     cellRect
         .attr('width', function(d) {return d.column.columnWidth;})
