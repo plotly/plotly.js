@@ -162,7 +162,7 @@ module.exports = function plot(gd, calcdata) {
                         calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
                         var blockY = calcdata.scrollY;
                         var panelHeight = effectiveHeightOfPanel(d);
-                        if(blockY - d.anchor > panelHeight) {
+                        if(blockY - d.anchor > panelHeight && d.anchor + 2 * panelHeight < 540) {
                             d.anchor += 2 * panelHeight;
                             anchorChanged = true;
                         } else if(d.anchor - blockY > panelHeight) {
@@ -256,11 +256,13 @@ function rowCountOfPanel(d) {
 }
 
 function effectiveHeightOfPanel(d) {
-    return rowCountOfPanel(d) * d.calcdata.cells.height;
+    var rowBlock = d.calcdata.anchorToRowBlock[d.anchor];
+    if(!rowBlock) debugger
+    return rowBlock ? rowBlock.totalHeight : NaN;
 }
 
 function effectiveHeightOfPanelA(d) {
-    return effectiveHeightOfPanel(d);
+    return rowCountOfPanel(d) * d.calcdata.cells.height;
 }
 
 function rowFromTo(d) {

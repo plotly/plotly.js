@@ -39,11 +39,18 @@ module.exports = function calc(gd, trace) {
         acc += rowHeights[i];
     }
 
+    var makeIdentity = function() {
+        return {
+            totalHeight: 0,
+            rows: []
+        };
+    }
+
     var anchorToRowBlock = {};
     var currentRowHeight;
     var currentAnchor = 0;
     var currentBlockHeight = 0;
-    var currentBlock = {rows: []};
+    var currentBlock = makeIdentity();
     for(i = 0; i < rowHeights.length; i++) {
         currentRowHeight = rowHeights[i];
         currentBlockHeight += currentRowHeight;
@@ -52,7 +59,8 @@ module.exports = function calc(gd, trace) {
         });
         if(currentBlockHeight >= minimumFillHeight || i === rowHeights.length - 1) {
             anchorToRowBlock[currentAnchor] = currentBlock;
-            currentBlock = {rows: []};
+            currentBlock.totalHeight = currentBlockHeight;
+            currentBlock = makeIdentity();
             currentAnchor += currentBlockHeight;
             currentBlockHeight = 0;
         }
