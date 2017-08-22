@@ -30,7 +30,7 @@ module.exports = function calc(gd, trace) {
     var headerHeight = headerRows * trace.header.height;
     var scrollHeight = groupHeight - headerHeight;
     var minimumFillHeight = scrollHeight + c.uplift;
-    var rowHeights = trace.cells.values[0].map(function(_, i) {return trace.cells.height;});
+    var rowHeights = trace.cells.values[0].map(function(_, i) {return trace.cells.height + Math.round(20 * (Math.random() - 0.5));});
 
     var rowAnchors = [];
     var acc = 0;
@@ -42,6 +42,8 @@ module.exports = function calc(gd, trace) {
     var makeIdentity = function() {
         return {
             totalHeight: 0,
+            firstRowIndex: null,
+            lastRowIndex: null,
             rows: []
         };
     }
@@ -51,6 +53,7 @@ module.exports = function calc(gd, trace) {
     var currentAnchor = 0;
     var currentBlockHeight = 0;
     var currentBlock = makeIdentity();
+    var currentFirstRowIndex = 0;
     for(i = 0; i < rowHeights.length; i++) {
         currentRowHeight = rowHeights[i];
         currentBlock.rows.push({
@@ -62,8 +65,11 @@ module.exports = function calc(gd, trace) {
         if(currentBlockHeight >= minimumFillHeight || i === rowHeights.length - 1) {
             anchorToRowBlock[currentAnchor] = currentBlock;
             currentBlock.totalHeight = currentBlockHeight;
+            currentBlock.firstRowIndex = currentFirstRowIndex;
+            currentBlock.lastRowIndex = i;
             currentBlock = makeIdentity();
             currentAnchor += currentBlockHeight;
+            currentFirstRowIndex = i + 1;
             currentBlockHeight = 0;
         }
     }

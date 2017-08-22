@@ -256,6 +256,8 @@ module.exports = function plot(gd, calcdata) {
         .attr('height', function(d) {return d.calcdata.height + c.uplift;});
 };
 
+function textPathUrl(d) {return 'textpath_' + d.column.key + '_' + d.key;}
+
 function rowFromTo(d) {
     var rowBlock = d.calcdata.anchorToRowBlock[d.anchor];
     var rowFrom = rowBlock ? rowBlock.rows[0].rowIndex : 0;
@@ -352,9 +354,14 @@ function renderColumnBlocks(columnBlock) {
         .append('rect')
         .classed('cellRect', true);
 
+    function rowHeight(d) {
+        var lookup = d.calcdata.anchorToRowBlock[d.column.anchor];
+        return lookup.rows[d.key - lookup.firstRowIndex].rowHeight;
+    }
+
     cellRect
         .attr('width', function(d) {return d.column.columnWidth;})
-        .attr('height', function(d, i) {return d.calcdata.anchorToRowBlock[d.column.anchor].rows[i].rowHeight;})
+        .attr('height', rowHeight)
         .attr('stroke-width', function(d) {return d.cellBorderWidth;})
         .attr('stroke', function(d) {
             return gridPick(d.calcdata.cells.line.color, d.column.specIndex, d.rowNumber);
@@ -371,11 +378,12 @@ function renderColumnBlocks(columnBlock) {
         .classed('cellLine', true);
 
     cellLine
-        .attr('id', function(d) {return 'textpath_' + d.column.key + '_' + d.column.specIndex;})
+        .attr('id', textPathUrl)
         .attr('d', function(d, i) {
             var x1 = 0;
             var x2 = d.column.columnWidth;
-            var y = d.calcdata.anchorToRowBlock[d.column.anchor].rows[i].rowHeight;
+            var y = rowHeight(d);
+
             return d3.svg.line()([[x1, y], [x2, y]]);
         });
 
@@ -388,10 +396,10 @@ function renderColumnBlocks(columnBlock) {
 
     cellText
         .attr('dy', function(d, i) {
-            var rowHeight = d.calcdata.anchorToRowBlock[d.column.anchor].rows[i].rowHeight;
+            var height = rowHeight(d);
             return ({
-                top: -rowHeight + c.cellPad,
-                middle: -rowHeight / 2,
+                top: -height + c.cellPad,
+                middle: -height / 2,
                 bottom: -c.cellPad
             })[d.valign];
         })
@@ -405,7 +413,7 @@ function renderColumnBlocks(columnBlock) {
         .classed('textPath', true);
 
     textPath
-        .attr('xlink:href', function(d) {return '#textpath_' + d.column.key + '_' + d.column.specIndex;})
+        .attr('xlink:href', function(d) {return '#' + textPathUrl(d);})
         .attr('text-anchor', function(d) {
             return ({
                 left: 'start',
