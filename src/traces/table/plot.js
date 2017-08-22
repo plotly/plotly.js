@@ -123,7 +123,7 @@ module.exports = function plot(gd, calcdata) {
             });
             var revolverPanel2 = extendFlat({}, d, {
                 key: 'cells2',
-                anchor: effectiveHeightOfPanelA(d), // will be mutated on scroll; points to current place
+                anchor: d.calcdata.anchorToRowBlock[revolverPanel1.anchor].totalHeight, // will be mutated on scroll; points to current place
                 type: 'cells',
                 yOffset: d.calcdata.headerHeight,
                 dragHandle: false,
@@ -163,12 +163,9 @@ module.exports = function plot(gd, calcdata) {
                         var bottom = d.calcdata.cells.values[0].length * d.calcdata.cells.height - d.calcdata.scrollHeight;
                         calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
                         var blockY = calcdata.scrollY;
-                        var jumpOld = 2 * effectiveHeightOfPanel(d)
                         var selfHeight = d.calcdata.anchorToRowBlock[d.anchor].totalHeight;
                         var otherHeight = d.calcdata.anchorToRowBlock[d.otherPanel.anchor].totalHeight;
                         var jump = selfHeight + otherHeight;
-                        if(jump !== jumpOld) debugger
-                        //if(d.anchor + 2 * panelHeight >= 540) debugger
                         if(blockY - d.anchor > otherHeight && d.anchor + jump < 540) {
                             d.anchor += jump;
                             anchorChanged = true;
@@ -257,18 +254,6 @@ module.exports = function plot(gd, calcdata) {
         .attr('width', function(d) {return d.columnWidth;})
         .attr('height', function(d) {return d.calcdata.height + c.uplift;});
 };
-
-function rowCountOfPanel(d) {
-    return Math.ceil((d.calcdata.minimumFillHeight) / d.calcdata.cells.height);
-}
-
-function effectiveHeightOfPanel(d) {
-    return d.calcdata.anchorToRowBlock[d.anchor].totalHeight;
-}
-
-function effectiveHeightOfPanelA(d) {
-    return rowCountOfPanel(d) * d.calcdata.cells.height;
-}
 
 function rowFromTo(d) {
     var rowBlock = d.calcdata.anchorToRowBlock[d.anchor];
