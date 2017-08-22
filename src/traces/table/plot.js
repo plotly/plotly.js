@@ -113,7 +113,7 @@ module.exports = function plot(gd, calcdata) {
                 key: 'cells1',
                 type: 'cells',
                 anchor: 0, // will be mutated on scroll; points to current place
-                yOffset: d.calcdata.headerHeight,
+                yOffset: d.calcdata.headerHeight, // fixme
                 dragHandle: false,
                 values: d.calcdata.cells.values[d.specIndex],
                 rowBlockOffset: 0,
@@ -123,7 +123,7 @@ module.exports = function plot(gd, calcdata) {
                 key: 'cells2',
                 anchor: d.calcdata.anchorToRowBlock[revolverPanel1.anchor].totalHeight, // will be mutated on scroll; points to current place
                 type: 'cells',
-                yOffset: d.calcdata.headerHeight,
+                yOffset: d.calcdata.headerHeight, // fixme
                 dragHandle: false,
                 values: d.calcdata.cells.values[d.specIndex],
                 rowBlockOffset: 1,
@@ -302,6 +302,11 @@ function easeColumn(elem, d, y) {
         .attr('transform', 'translate(' + d.x + ' ' + y + ')');
 }
 
+function rowHeight(d) {
+    var lookup = d.calcdata.anchorToRowBlock[d.column.anchor];
+    return lookup.rows[d.key - lookup.firstRowIndex].rowHeight;
+}
+
 function renderColumnBlocks(columnBlock) {
 
     // this is performance critical code as scrolling calls it on every revolver switch
@@ -357,11 +362,6 @@ function renderColumnBlocks(columnBlock) {
     cellRect.enter()
         .append('rect')
         .classed('cellRect', true);
-
-    function rowHeight(d) {
-        var lookup = d.calcdata.anchorToRowBlock[d.column.anchor];
-        return lookup.rows[d.key - lookup.firstRowIndex].rowHeight;
-    }
 
     cellRect
         .attr('width', function(d) {return d.column.columnWidth;})
