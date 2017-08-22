@@ -12,7 +12,6 @@ var scatterAttrs = require('../scatter/attributes');
 var colorAttributes = require('../../components/colorscale/color_attributes');
 
 var DASHES = require('../../constants/gl2d_dashes');
-var MARKERS = require('../../constants/gl2d_markers');
 var extendFlat = require('../../lib/extend').extendFlat;
 var extendDeep = require('../../lib/extend').extendDeep;
 
@@ -58,14 +57,7 @@ module.exports = {
         }
     },
     marker: extendDeep({}, colorAttributes('marker'), {
-        symbol: {
-            valType: 'enumerated',
-            values: Object.keys(MARKERS),
-            dflt: 'circle',
-            arrayOk: true,
-            role: 'style',
-            description: 'Sets the marker symbol type.'
-        },
+        symbol: scatterMarkerAttrs.symbol,
         size: scatterMarkerAttrs.size,
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,

@@ -102,6 +102,7 @@ function LineWithMarkers(scene, uid) {
     var scatterOptions1 = Lib.extendFlat({}, scatterOptions0, {snapPoints: false});
 
     this.scatter = this.initObject(createScatter, scatterOptions0, 3);
+
     this.fancyScatter = this.initObject(createFancyScatter, scatterOptions0, 4);
     this.selectScatter = this.initObject(createScatter, scatterOptions1, 5);
 }
@@ -130,7 +131,6 @@ proto.initObject = function(createFn, options, objIndex) {
     function dispose() {
         if(obj) obj.dispose();
     }
-
     return {
         options: options,
         update: update,
@@ -617,6 +617,7 @@ proto.updateFancy = function(options) {
             minBorderWidth = (symbolSpec.noBorder || symbolSpec.noFill) ? 0.1 * size : 0;
 
             this.scatter.options.sizes[i] = 4.0 * size;
+
             this.scatter.options.glyphs[i] = symbolSpec.unicode;
             this.scatter.options.borderWidths[i] = 0.5 * ((bw > minBorderWidth) ? bw - minBorderWidth : 0);
 

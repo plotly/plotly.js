@@ -20,16 +20,17 @@ var formatColor = require('../../lib/gl_format_color');
 var subTypes = require('../scatter/subtypes');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var getTraceColor = require('../scatter/get_trace_color');
-var MARKER_SYMBOLS = require('../../constants/gl2d_markers');
 var MARKER_SVG_SYMBOLS = require('../../components/drawing/symbol_defs');
 var DASHES = require('../../constants/gl2d_dashes');
 var fit = require('canvas-fit')
+var createScatter = require('../../../../regl-scatter2d')
+var createLine = require('../../../../regl-line2d')
+var Drawing = require('../../components/drawing');
 
 var AXES = ['xaxis', 'yaxis'];
 var DESELECTDIM = 0.2;
 var TRANSPARENT = [0, 0, 0, 0];
 
-var createScatter = require('../../../../regl-scatter2d')
 
 
 
@@ -121,12 +122,27 @@ function createScatterScene(container) {
         borderSize: 1,
         borderColor: [0, 0, 0, 1],
         snapPoints: true,
-        canvas: container.canvas
+        canvas: container.canvas,
+        pixelRatio: container._context.plotGlPixelRatio || window.devicePixelRatio
     };
 
     this.scatter = createScatter(scatterOptions0);
     this.scatter.options = scatterOptions0
     this.scatter._trace = this
+
+
+    this.line = createLine({
+        positions: new Float64Array(0),
+        color: [0, 0, 0, 1],
+        width: 1,
+        fill: [false, false, false, false],
+        fillColor: [
+            [0, 0, 0, 1],
+            [0, 0, 0, 1],
+            [0, 0, 0, 1],
+            [0, 0, 0, 1]],
+        dashes: [1],
+    }, 0);
 
 
     return this
@@ -252,7 +268,7 @@ proto.updateFancy = function(options) {
     positions = positions.slice(0, ptr);
     this.idToIndex = idToIndex;
 
-    // this.updateLines(options, positions);
+    this.updateLines(options, positions);
     // this.updateError('X', options, positions, errorsX);
     // this.updateError('Y', options, positions, errorsY);
 
@@ -278,11 +294,13 @@ proto.updateFancy = function(options) {
         this.scatter.options.borderColors = new Array(pId);
 
         var markerSizeFunc = makeBubbleSizeFn(options);
+
         var markerOpts = options.marker;
         var markerOpacity = markerOpts.opacity;
         var traceOpacity = options.opacity;
 
-        var symbols = markerOpts.symbol//convertSymbol(markerOpts.symbol, len);
+        var symbols = convertSymbol(markerOpts.symbol, len);
+
         var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len);
         var borderSizes = convertNumber(markerOpts.line.width, len);
         var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len);
@@ -296,6 +314,7 @@ proto.updateFancy = function(options) {
             symbol = symbols[index];
             symbolName = symbol.split(/-open|-dot/)[0]
             symbolSpec = MARKER_SVG_SYMBOLS[symbolName] || {};
+
             isOpen = isSymbolOpen(symbol);
             isDimmed = selIds && !selIds[index];
 
@@ -318,8 +337,15 @@ proto.updateFancy = function(options) {
             // minBorderWidth = (symbolSpec.noBorder || symbolSpec.noFill) ? 0.1 * size : 0;
             minBorderWidth = 0
 
-            this.scatter.options.sizes[i] = 3.0 * size;
-            this.scatter.options.markers[i] = symbolSpec.f && symbolSpec.f(40) || null;
+            this.scatter.options.sizes[i] = 2.0 * size;
+
+            //FIXME: add better handler here
+            if (symbolName === 'circle') {
+                this.scatter.options.markers[i] = null;
+            }
+            else {
+                this.scatter.options.markers[i] = symbolSpec.f && symbolSpec.f(40) || null;
+            }
             this.scatter.options.borderSizes[i] = 0.5 * ((bw > minBorderWidth) ? bw - minBorderWidth : 0);
 
             var optColors = this.scatter.options.colors
@@ -359,6 +385,7 @@ proto.updateFancy = function(options) {
 
         var bounds = [xaxis._rl[0], yaxis._rl[0], xaxis._rl[1], yaxis._rl[1]];
         this.scatter.options.range = bounds;
+        this.scatter.options.viewport = viewBox
 
         // prevent scatter from resnapping points
         this.scatter(this.scatter.options);
@@ -523,7 +550,7 @@ function _convertArray(convert, data, count) {
 var convertNumber = convertArray.bind(null, function(x) { return +x; });
 var convertColorBase = convertArray.bind(null, str2RGBArray);
 var convertSymbol = convertArray.bind(null, function(x) {
-    return MARKER_SYMBOLS[x] ? x : 'circle';
+    return MARKER_SVG_SYMBOLS[x] ? x : 'circle';
 });
 
 function convertColor(color, opacity, count) {
