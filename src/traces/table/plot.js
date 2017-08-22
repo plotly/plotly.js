@@ -132,6 +132,8 @@ module.exports = function plot(gd, calcdata) {
                 rowBlockOffset: 1,
                 calcdata: d.calcdata
             });
+            revolverPanel1.otherPanel = revolverPanel2;
+            revolverPanel2.otherPanel = revolverPanel1;
             return [revolverPanel1, revolverPanel2, headerPanel]; // order due to SVG using painter's algo
         }, gup.keyFun);
 
@@ -161,12 +163,17 @@ module.exports = function plot(gd, calcdata) {
                         var bottom = d.calcdata.cells.values[0].length * d.calcdata.cells.height - d.calcdata.scrollHeight;
                         calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
                         var blockY = calcdata.scrollY;
-                        var panelHeight = effectiveHeightOfPanel(d);
-                        if(blockY - d.anchor > panelHeight && d.anchor + 2 * panelHeight < 540) {
-                            d.anchor += 2 * panelHeight;
+                        var jumpOld = 2 * effectiveHeightOfPanel(d)
+                        var selfHeight = d.calcdata.anchorToRowBlock[d.anchor].totalHeight;
+                        var otherHeight = d.calcdata.anchorToRowBlock[d.otherPanel.anchor].totalHeight;
+                        var jump = selfHeight + otherHeight;
+                        if(jump !== jumpOld) debugger
+                        //if(d.anchor + 2 * panelHeight >= 540) debugger
+                        if(blockY - d.anchor > otherHeight && d.anchor + jump < 540) {
+                            d.anchor += jump;
                             anchorChanged = true;
-                        } else if(d.anchor - blockY > panelHeight) {
-                            d.anchor -= 2 * panelHeight;
+                        } else if(d.anchor - blockY > otherHeight) {
+                            d.anchor -= jump;
                             anchorChanged = true;
                         }
 
@@ -256,9 +263,7 @@ function rowCountOfPanel(d) {
 }
 
 function effectiveHeightOfPanel(d) {
-    var rowBlock = d.calcdata.anchorToRowBlock[d.anchor];
-    if(!rowBlock) debugger
-    return rowBlock ? rowBlock.totalHeight : NaN;
+    return d.calcdata.anchorToRowBlock[d.anchor].totalHeight;
 }
 
 function effectiveHeightOfPanelA(d) {
