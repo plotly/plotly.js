@@ -53,10 +53,12 @@ module.exports = function calc(gd, trace) {
     var currentBlock = makeIdentity();
     for(i = 0; i < rowHeights.length; i++) {
         currentRowHeight = rowHeights[i];
-        currentBlockHeight += currentRowHeight;
         currentBlock.rows.push({
-            rowIndex: i
+            rowIndex: i,
+            rowHeight: currentRowHeight,
+            rowAnchor: currentAnchor + currentBlockHeight
         });
+        currentBlockHeight += currentRowHeight;
         if(currentBlockHeight >= minimumFillHeight || i === rowHeights.length - 1) {
             anchorToRowBlock[currentAnchor] = currentBlock;
             currentBlock.totalHeight = currentBlockHeight;

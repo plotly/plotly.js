@@ -324,9 +324,8 @@ function renderColumnBlocks(columnBlock) {
 
     columnCell
         .attr('transform', function(d, i) {
-            console.log(i)
-            //debugger
-            return 'translate(' + 0 + ' ' + i * d.column.rowPitch + ')';
+            var lookup = d.calcdata.anchorToRowBlock[d.column.anchor].rows;
+            return 'translate(' + 0 + ' ' + (lookup[i].rowAnchor - d.column.anchor) + ')';
         })
         .each(function(d, i) {
             var spec = d.calcdata.cells.font;
@@ -354,7 +353,7 @@ function renderColumnBlocks(columnBlock) {
 
     cellRect
         .attr('width', function(d) {return d.column.columnWidth;})
-        .attr('height', function(d) {return d.column.rowPitch;})
+        .attr('height', function(d, i) {return d.calcdata.anchorToRowBlock[d.column.anchor].rows[i].rowHeight;})
         .attr('stroke-width', function(d) {return d.cellBorderWidth;})
         .attr('stroke', function(d) {
             return gridPick(d.calcdata.cells.line.color, d.column.specIndex, d.rowNumber);
@@ -372,10 +371,10 @@ function renderColumnBlocks(columnBlock) {
 
     cellLine
         .attr('id', function(d) {return 'textpath_' + d.column.key + '_' + d.column.specIndex;})
-        .attr('d', function(d) {
+        .attr('d', function(d, i) {
             var x1 = 0;
             var x2 = d.column.columnWidth;
-            var y = d.column.rowPitch;
+            var y = d.calcdata.anchorToRowBlock[d.column.anchor].rows[i].rowHeight;
             return d3.svg.line()([[x1, y], [x2, y]]);
         });
 
@@ -387,11 +386,11 @@ function renderColumnBlocks(columnBlock) {
         .classed('cellText', true);
 
     cellText
-        .attr('dy', function(d) {
-            var rowPitch = d.column.rowPitch;
+        .attr('dy', function(d, i) {
+            var rowHeight = d.calcdata.anchorToRowBlock[d.column.anchor].rows[i].rowHeight;
             return ({
-                top: -rowPitch + c.cellPad,
-                middle: -rowPitch / 2,
+                top: -rowHeight + c.cellPad,
+                middle: -rowHeight / 2,
                 bottom: -c.cellPad
             })[d.valign];
         })
