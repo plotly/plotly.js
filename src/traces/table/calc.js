@@ -30,7 +30,7 @@ module.exports = function calc(gd, trace) {
     var headerHeight = headerRows * trace.header.height;
     var scrollHeight = groupHeight - headerHeight;
     var minimumFillHeight = scrollHeight + c.uplift;
-    var rowHeights = trace.cells.values[0].map(function(_, i) {return trace.cells.height + Math.round((i < 2 ? 0 : 20) * (Math.random() - 0.5));});
+    var rowHeights = trace.cells.values[0].map(function(_, i) {return trace.cells.height + Math.round((i < 2 ? 0 : 25) * (Math.random() - 0.5));});
 
     var rowAnchors = [];
     var acc = 0;

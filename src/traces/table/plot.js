@@ -260,7 +260,7 @@ module.exports = function plot(gd, calcdata) {
         .attr('height', function(d) {return d.calcdata.height + c.uplift;});
 };
 
-function textPathUrl(d) {return 'textpath_' + d.column.key + '_' + d.key;}
+function textPathUrl(d) {return 'textpath_' + d.column.key + '_' + d.column.specIndex + '_' + d.key;}
 
 function rowFromTo(d) {
     var rowBlock = d.calcdata.anchorToRowBlock[d.anchor];

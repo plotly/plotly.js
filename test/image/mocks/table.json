@@ -88,7 +88,7 @@
             "prefix": ["#", "", "", "", "", "US ", ""],
             "suffix": ["", " class", "m", ""],
 
-            "height": 27,
+            "height": 20,
 
             "align": ["right", "center", "right", "center", "right", "right", "right", "left", "right", "right", "right"],
             "valign": ["middle", "top", "bottom", "middle"],
