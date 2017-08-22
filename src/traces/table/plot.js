@@ -159,32 +159,23 @@ module.exports = function plot(gd, calcdata) {
                 var anchorChanged = false;
                 cellsColumnBlock
                     .attr('transform', function(d) {
-                        var selfHeight = d.calcdata.anchorToRowBlock[d.anchor].totalHeight;
-                        var otherHeight = d.calcdata.anchorToRowBlock[d.otherPanel.anchor].totalHeight;
-                        var blockAnchors = Object.keys(d.calcdata.anchorToRowBlock);
-                        var blockAnchorsNumeric = blockAnchors.map(function(v) {return parseInt(v);});
-                        var lastAnchor = parseInt(blockAnchors[blockAnchors.length - 1]);
+                        var blockAnchorKeys = Object.keys(d.calcdata.anchorToRowBlock);
+                        var blockAnchors = blockAnchorKeys.map(function(v) {return parseInt(v);});
+                        var lastAnchor = blockAnchors[blockAnchors.length - 1];
                         var lastBlock = d.calcdata.anchorToRowBlock[lastAnchor];
                         var lastRow = lastBlock.rows[lastBlock.rows.length - 1];
                         var bottom = lastRow.rowAnchor + lastRow.rowHeight - d.calcdata.scrollHeight;
                         calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
                         var scrollY = calcdata.scrollY;
-                        //console.log(scrollY)
-                        var jump = selfHeight + otherHeight;
-                        if(direction === 'down' && scrollY - d.anchor > selfHeight) {
-                            if(d.calcdata.anchorToRowBlock[d.anchor + jump]) {
-                                console.log('downward')
-                                d.anchor += jump;
+                        if(direction === 'down' && scrollY - d.anchor > d.calcdata.scrollHeight) {
+                            if(blockAnchors.indexOf(d.anchor) + 2 < blockAnchors.length) {
+                                d.anchor = blockAnchors[blockAnchors.indexOf(d.anchor) + 2];
                                 anchorChanged = true;
                             }
-                        } else if(direction === 'up' &&  d.anchor  > scrollY + selfHeight) {
-                            if(d.calcdata.anchorToRowBlock[d.anchor - jump]) {
-                                console.log('upward')
-                                d.anchor -= jump;
+                        } else if(direction === 'up' &&  d.anchor  > scrollY + d.calcdata.scrollHeight) {
+                            if(blockAnchors.indexOf(d.anchor) - 2 >= 0) {
+                                d.anchor = blockAnchors[blockAnchors.indexOf(d.anchor) - 2];
                                 anchorChanged = true;
-                            } else {
-                                debugger
-                                console.log('failed')
                             }
                         }
 
