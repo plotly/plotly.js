@@ -159,15 +159,15 @@ module.exports = function plot(gd, calcdata) {
                 var anchorChanged = false;
                 cellsColumnBlock
                     .attr('transform', function(d) {
-                        var blockAnchorKeys = Object.keys(d.calcdata.anchorToRowBlock);
+                        var anchorToBlock = d.calcdata.anchorToRowBlock;
+                        var blockAnchorKeys = Object.keys(anchorToBlock);
                         var blockAnchors = blockAnchorKeys.map(function(v) {return parseInt(v);});
                         var lastAnchor = blockAnchors[blockAnchors.length - 1];
-                        var lastBlock = d.calcdata.anchorToRowBlock[lastAnchor];
+                        var lastBlock = anchorToBlock[lastAnchor];
                         var lastRow = lastBlock.rows[lastBlock.rows.length - 1];
                         var bottom = lastRow.rowAnchor + lastRow.rowHeight - d.calcdata.scrollHeight;
-                        calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
-                        var scrollY = calcdata.scrollY;
-                        if(direction === 'down' && scrollY - d.anchor > d.calcdata.anchorToRowBlock[d.anchor].totalHeight) {
+                        var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
+                        if(direction === 'down' && scrollY - d.anchor > anchorToBlock[d.anchor].totalHeight) {
                             if(blockAnchors.indexOf(d.anchor) + 2 < blockAnchors.length) {
                                 d.anchor = blockAnchors[blockAnchors.indexOf(d.anchor) + 2];
                                 anchorChanged = true;
