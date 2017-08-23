@@ -40,6 +40,14 @@ var attrs = {
             'Defaults to the value found in `layout.height`'
         ].join(' ')
     },
+    scale: {
+        valType: 'number',
+        min: 0,
+        dflt: 1,
+        description: [
+            '...'
+        ].join(' ')
+    },
     setBackground: {
         valType: 'any',
         dflt: false,
@@ -111,6 +119,7 @@ function toImage(gd, opts) {
     var format = coerce('format');
     var width = coerce('width');
     var height = coerce('height');
+    var scale = coerce('scale');
     var setBackground = coerce('setBackground');
     var imageDataOnly = coerce('imageDataOnly');
 
@@ -142,7 +151,7 @@ function toImage(gd, opts) {
 
     function convert() {
         return new Promise(function(resolve, reject) {
-            var svg = toSVG(clonedGd);
+            var svg = toSVG(clonedGd, format, scale);
             var width = clonedGd._fullLayout.width;
             var height = clonedGd._fullLayout.height;
 
@@ -164,6 +173,7 @@ function toImage(gd, opts) {
                 format: format,
                 width: width,
                 height: height,
+                scale: scale,
                 canvas: canvas,
                 svg: svg,
                 // ask svgToImg to return a Promise

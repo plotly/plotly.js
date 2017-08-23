@@ -36,11 +36,13 @@ function xmlEntityEncode(str) {
     return str.replace(/&(?!\w+;|\#[0-9]+;| \#x[0-9A-F]+;)/g, '&amp;');
 }
 
-module.exports = function toSVG(gd, format) {
-    var fullLayout = gd._fullLayout,
-        svg = fullLayout._paper,
-        toppaper = fullLayout._toppaper,
-        i;
+module.exports = function toSVG(gd, format, scale) {
+    var fullLayout = gd._fullLayout;
+    var svg = fullLayout._paper;
+    var toppaper = fullLayout._toppaper;
+    var width = fullLayout.width;
+    var height = fullLayout.height;
+    var i;
 
     // make background color a rect in the svg, then revert after scraping
     // all other alterations have been dealt with by properly preparing the svg
@@ -48,7 +50,7 @@ module.exports = function toSVG(gd, format) {
     // have to remove them, and providing the right namespaces in the svg to
     // begin with
     svg.insert('rect', ':first-child')
-        .call(Drawing.setRect, 0, 0, fullLayout.width, fullLayout.height)
+        .call(Drawing.setRect, 0, 0, width, height)
         .call(Color.fill, fullLayout.paper_bgcolor);
 
     // subplot-specific to-SVG methods
@@ -136,6 +138,12 @@ module.exports = function toSVG(gd, format) {
     // http://stackoverflow.com/questions/19610089/unwanted-namespaces-on-svg-markup-when-using-xmlserializer-in-javascript-with-ie
     svg.node().setAttributeNS(xmlnsNamespaces.xmlns, 'xmlns', xmlnsNamespaces.svg);
     svg.node().setAttributeNS(xmlnsNamespaces.xmlns, 'xmlns:xlink', xmlnsNamespaces.xlink);
+
+    if(format === 'svg' && scale) {
+        svg.attr('width', scale * width);
+        svg.attr('height', scale * height);
+        svg.attr('viewBox', '0 0 ' + width + ' ' + height);
+    }
 
     var s = new window.XMLSerializer().serializeToString(svg.node());
     s = htmlEntityDecode(s);
