@@ -31,18 +31,11 @@ module.exports = function calc(gd, trace) {
     var totalColumnWidths = columnWidths.reduce(function(p, n) {return p + n;}, 0);
     columnWidths = columnWidths.map(function(d) {return d / totalColumnWidths * groupWidth;});
 
-    var headerRows = trace.header.values[0].length;
-    var headerHeight = headerRows * trace.header.height;
+    var headerRowHeights = trace.header.values[0].map(function(_, i) {return trace.header.height + Math.round((i < 0 ? 0 : 25) * (Math.random() - 0.5));});
+    var rowHeights = trace.cells.values[0].map(function(_, i) {return trace.cells.height + Math.round((i < 0 ? 0 : 25) * (Math.random() - 0.5));});
+    var headerHeight = headerRowHeights.reduce(function(a, b) {return a + b;}, 0);
     var scrollHeight = groupHeight - headerHeight;
     var minimumFillHeight = scrollHeight + c.uplift;
-    var rowHeights = trace.cells.values[0].map(function(_, i) {return trace.cells.height + Math.round((i < 0 ? 0 : 25) * (Math.random() - 0.5));});
-
-    var rowAnchors = [];
-    var acc = 0;
-    for(var i = 0; i < rowHeights.length; i++) {
-        rowAnchors.push(acc);
-        acc += rowHeights[i];
-    }
 
     var makeIdentity = function() {
         return {
@@ -59,7 +52,7 @@ module.exports = function calc(gd, trace) {
     var currentBlockHeight = 0;
     var currentBlock = makeIdentity();
     var currentFirstRowIndex = 0;
-    for(i = 0; i < rowHeights.length; i++) {
+    for(var i = 0; i < rowHeights.length; i++) {
         currentRowHeight = rowHeights[i];
         currentBlock.rows.push({
             rowIndex: i,
@@ -99,7 +92,6 @@ module.exports = function calc(gd, trace) {
         cells: trace.cells,
         headerCells: trace.header,
         rowHeights: rowHeights,
-        rowAnchors: rowAnchors,
         columns: trace.header.values.map(function(label, i) {
             var foundKey = uniqueKeys[label];
             uniqueKeys[label] = (foundKey || 0) + 1;
