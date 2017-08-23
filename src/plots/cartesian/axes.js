@@ -1297,7 +1297,8 @@ function formatDate(ax, out, hover, extraPrecision) {
 
 function formatLog(ax, out, hover, extraPrecision, hideexp) {
     var dtick = ax.dtick,
-        x = out.x;
+        x = out.x,
+        tickformat = ax.tickformat;
 
     if(hideexp === 'never') {
         // If this is a hover label, then we must *never* hide the exponent
@@ -1311,7 +1312,7 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
 
     if(extraPrecision && ((typeof dtick !== 'string') || dtick.charAt(0) !== 'L')) dtick = 'L3';
 
-    if(ax.tickformat || (typeof dtick === 'string' && dtick.charAt(0) === 'L')) {
+    if(tickformat || (typeof dtick === 'string' && dtick.charAt(0) === 'L')) {
         out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
     }
     else if(isNumeric(dtick) || ((dtick.charAt(0) === 'D') && (Lib.mod(x + 0.01, 1) < 0.1))) {
@@ -1515,14 +1516,32 @@ axes.getTickFormat = function(ax) {
         var convertFn = convert || function(x) { return x;};
         var leftDtick = range[0];
         var rightDtick = range[1];
-        return (!leftDtick || convertFn(leftDtick) <= convertFn(dtick)) &&
-               (!rightDtick || convertFn(rightDtick) >= convertFn(dtick));
+        return (leftDtick === null || convertFn(leftDtick) <= convertFn(dtick)) &&
+               (rightDtick === null || convertFn(rightDtick) >= convertFn(dtick));
     }
     function getRangeWidth(range, convert) {
         var convertFn = convert || function(x) { return x;};
         var left = range[0] || 0;
         var right = range[1] || 0;
         return Math.abs(convertFn(right) - convertFn(left));
+    }
+    function compareLogTicks(left, right) {
+        var priority = ['L', 'D'];
+        if(typeof left === typeof right) {
+            if(typeof left === 'number') {
+                return left - right;
+            } else {
+                var leftPriority = priority.indexOf(left.charAt(0));
+                var rightPriority = priority.indexOf(right.charAt(0));
+                if(leftPriority === rightPriority) {
+                    return Number(left.replace(/(L|D)/g, '')) - Number(right.replace(/(L|D)/g, ''));
+                } else {
+                    return leftPriority - rightPriority;
+                }
+            }
+        } else {
+            return typeof left === 'number' ? 1 : -1;
+        }
     }
 
     var tickstop;
@@ -1552,6 +1571,17 @@ axes.getTickFormat = function(ax) {
                         return getRangeWidth(stop.dtickrange) > getRangeWidth(acc.dtickrange) ? stop : acc;
                     }
                 }, null);
+                break;
+            }
+            case 'log': {
+                tickstop = ax.tickformatstops.filter(function(stop) {
+                    var left = stop.dtickrange[0], right = stop.dtickrange[1];
+                    var isLeftDtickNull = left === null;
+                    var isRightDtickNull = right === null;
+                    var isDtickInRangeLeft = compareLogTicks(ax.dtick, left) >= 0;
+                    var isDtickInRangeRight = compareLogTicks(ax.dtick, right) <= 0;
+                    return (isLeftDtickNull || isDtickInRangeLeft) && (isRightDtickNull || isDtickInRangeRight);
+                })[0];
                 break;
             }
             default:
