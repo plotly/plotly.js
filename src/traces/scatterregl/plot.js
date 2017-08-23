@@ -20,18 +20,21 @@ var formatColor = require('../../lib/gl_format_color');
 var subTypes = require('../scatter/subtypes');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var getTraceColor = require('../scatter/get_trace_color');
-var MARKER_SVG_SYMBOLS = require('../../components/drawing/symbol_defs');
 var DASHES = require('../../constants/gl2d_dashes');
 var fit = require('canvas-fit')
 var createScatter = require('../../../../regl-scatter2d')
 var createLine = require('../../../../regl-line2d')
 var Drawing = require('../../components/drawing');
+var MARKER_SVG_SYMBOLS = require('../../components/drawing/symbol_defs');
+var svgSdf = require('svg-path-sdf')
 
 var AXES = ['xaxis', 'yaxis'];
 var DESELECTDIM = 0.2;
 var TRANSPARENT = [0, 0, 0, 0];
 
-
+// tables with symbol SDF values
+var SYMBOL_SDF_SIZE = 100
+var SYMBOL_SDF = {}
 
 
 module.exports = createLineWithMarkers
@@ -131,18 +134,18 @@ function createScatterScene(container) {
     this.scatter._trace = this
 
 
-    this.line = createLine({
-        positions: new Float64Array(0),
-        color: [0, 0, 0, 1],
-        width: 1,
-        fill: [false, false, false, false],
-        fillColor: [
-            [0, 0, 0, 1],
-            [0, 0, 0, 1],
-            [0, 0, 0, 1],
-            [0, 0, 0, 1]],
-        dashes: [1],
-    }, 0);
+    // this.line = createLine({
+    //     positions: new Float64Array(0),
+    //     color: [0, 0, 0, 1],
+    //     width: 1,
+    //     fill: [false, false, false, false],
+    //     fillColor: [
+    //         [0, 0, 0, 1],
+    //         [0, 0, 0, 1],
+    //         [0, 0, 0, 1],
+    //         [0, 0, 0, 1]],
+    //     dashes: [1],
+    // }, 0);
 
 
     return this
@@ -174,11 +177,11 @@ proto.update = function(options, cdscatter) {
     this.connectgaps = !!options.connectgaps;
 
     if(!this.isVisible) {
-        this.line.clear();
-        this.errorX.clear();
-        this.errorY.clear();
-        this.scatter.clear();
-        this.fancyScatter.clear();
+        // this.line.clear();
+        // this.errorX.clear();
+        // this.errorY.clear();
+        // this.scatter();
+        // this.fancyScatter.clear();
     }
     else {
         this.updateFancy(options);
@@ -268,7 +271,7 @@ proto.updateFancy = function(options) {
     positions = positions.slice(0, ptr);
     this.idToIndex = idToIndex;
 
-    this.updateLines(options, positions);
+    // this.updateLines(options, positions);
     // this.updateError('X', options, positions, errorsX);
     // this.updateError('Y', options, positions, errorsY);
 
@@ -304,21 +307,24 @@ proto.updateFancy = function(options) {
         var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len);
         var borderSizes = convertNumber(markerOpts.line.width, len);
         var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len);
-        var index, size, symbol, symbolName, symbolSpec, isOpen, isDimmed, _colors, _borderColors, bw, minBorderWidth;
+        var index, size, symbol, symbolName, symbolSpec, symbolNumber, isOpen, isDimmed, _colors, _borderColors, bw, minBorderWidth, noBorder, symbolFunc, noDot, symbolSdf;
 
         sizes = convertArray(markerSizeFunc, markerOpts.size, len);
 
         for(i = 0; i < pId; ++i) {
             index = idToIndex[i];
-
             symbol = symbols[index];
-            symbolName = symbol.split(/-open|-dot/)[0]
-            symbolSpec = MARKER_SVG_SYMBOLS[symbolName] || {};
+            symbolNumber = Drawing.symbolNumber(symbol)
+            symbolName = Drawing.symbolNames[symbolNumber % 100]
+            symbolFunc = Drawing.symbolFuncs[symbolNumber % 100]
+            noBorder = !!Drawing.symbolNeedLines[symbolNumber % 100]
+            noDot = !!Drawing.symbolNoDot[symbolNumber % 100]
 
             isOpen = isSymbolOpen(symbol);
             isDimmed = selIds && !selIds[index];
 
-            if(symbolSpec.noBorder && !isOpen) {
+
+            if(noBorder && !isOpen) {
                 _colors = borderColors;
             } else {
                 _colors = colors;
@@ -334,24 +340,36 @@ proto.updateFancy = function(options) {
             // for more info on this logic
             size = sizes[index];
             bw = borderSizes[index];
-            // minBorderWidth = (symbolSpec.noBorder || symbolSpec.noFill) ? 0.1 * size : 0;
+            // minBorderWidth = (noBorder) ? 0.1 * size : 0;
             minBorderWidth = 0
 
-            this.scatter.options.sizes[i] = 2.0 * size;
+            this.scatter.options.sizes[i] = size;
 
-            //FIXME: add better handler here
+
             if (symbolName === 'circle') {
                 this.scatter.options.markers[i] = null;
             }
             else {
-                this.scatter.options.markers[i] = symbolSpec.f && symbolSpec.f(40) || null;
+                //get symbol sdf from cache or generate it
+                if (SYMBOL_SDF[symbolName]) {
+                    symbolSdf = SYMBOL_SDF[symbolName]
+                } else {
+                    symbolSdf = svgSdf(symbolFunc(10), {
+                        w: SYMBOL_SDF_SIZE,
+                        h: SYMBOL_SDF_SIZE,
+                        viewBox: [-10,-10,10,10]
+                    })
+                    SYMBOL_SDF[symbolName] = symbolSdf
+                }
+
+                this.scatter.options.markers[i] = symbolSdf || null;
             }
             this.scatter.options.borderSizes[i] = 0.5 * ((bw > minBorderWidth) ? bw - minBorderWidth : 0);
 
             var optColors = this.scatter.options.colors
             var dim = isDimmed ? DESELECTDIM : 1;
             if (!optColors[i]) optColors[i] = []
-            if(isOpen && !symbolSpec.noBorder && !symbolSpec.noFill) {
+            if(isOpen && !noBorder) {
                 optColors[i][0] = TRANSPARENT[0];
                 optColors[i][1] = TRANSPARENT[1];
                 optColors[i][2] = TRANSPARENT[2];
