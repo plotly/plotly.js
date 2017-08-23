@@ -105,6 +105,7 @@ module.exports = function plot(gd, calcdata) {
                 yOffset: 0,
                 anchor: 0,
                 values: d.calcdata.headerCells.values[d.specIndex],
+                anchorToRowBlock: d.calcdata.anchorToHeaderRowBlock,
                 dragHandle: true,
                 rowBlockOffset: 0,
                 calcdata: extendFlat({}, d.calcdata, {cells: d.calcdata.headerCells})
@@ -116,6 +117,7 @@ module.exports = function plot(gd, calcdata) {
                 yOffset: d.calcdata.headerHeight, // fixme
                 dragHandle: false,
                 values: d.calcdata.cells.values[d.specIndex],
+                anchorToRowBlock: d.calcdata.anchorToRowBlock,
                 rowBlockOffset: 0,
                 calcdata: d.calcdata
             });
@@ -126,6 +128,7 @@ module.exports = function plot(gd, calcdata) {
                 yOffset: d.calcdata.headerHeight, // fixme
                 dragHandle: false,
                 values: d.calcdata.cells.values[d.specIndex],
+                anchorToRowBlock: d.calcdata.anchorToRowBlock,
                 rowBlockOffset: 1,
                 calcdata: d.calcdata
             });
@@ -159,7 +162,7 @@ module.exports = function plot(gd, calcdata) {
                 var anchorChanged = false;
                 cellsColumnBlock
                     .attr('transform', function(d) {
-                        var anchorToBlock = d.calcdata.anchorToRowBlock;
+                        var anchorToBlock = d.anchorToRowBlock;
                         var blockAnchorKeys = Object.keys(anchorToBlock);
                         var blockAnchors = blockAnchorKeys.map(function(v) {return parseInt(v);});
                         var lastAnchor = blockAnchors[blockAnchors.length - 1];
@@ -263,7 +266,7 @@ module.exports = function plot(gd, calcdata) {
 function textPathUrl(d) {return 'textpath_' + d.column.key + '_' + d.column.specIndex + '_' + d.key;}
 
 function rowFromTo(d) {
-    var rowBlock = d.calcdata.anchorToRowBlock[d.anchor];
+    var rowBlock = d.anchorToRowBlock[d.anchor];
     var rowFrom = rowBlock ? rowBlock.rows[0].rowIndex : 0;
     var rowTo = rowBlock ? rowFrom + rowBlock.rows.length : 0;
     return [rowFrom, rowTo];
@@ -303,7 +306,7 @@ function easeColumn(elem, d, y) {
 }
 
 function rowHeight(d) {
-    var lookup = d.calcdata.anchorToRowBlock[d.column.anchor];
+    var lookup = d.anchorToRowBlock[d.column.anchor];
     return lookup.rows[d.key - lookup.firstRowIndex].rowHeight;
 }
 
@@ -325,7 +328,7 @@ function renderColumnBlocks(columnBlock) {
     var columnCell = columnCells.selectAll('.columnCell')
         .data(function(d) {
             var fromTo = rowFromTo(d);
-            return d.values.slice(fromTo[0], fromTo[1]).map(function(v, i) {return {key: fromTo[0] + i, column: d, calcdata: d.calcdata, value: v};});
+            return d.values.slice(fromTo[0], fromTo[1]).map(function(v, i) {return {key: fromTo[0] + i, column: d, calcdata: d.calcdata, anchorToRowBlock: d.anchorToRowBlock, value: v};});
         }, gup.keyFun);
 
     columnCell.enter()
@@ -336,7 +339,7 @@ function renderColumnBlocks(columnBlock) {
 
     columnCell
         .attr('transform', function(d, i) {
-            var lookup = d.calcdata.anchorToRowBlock[d.column.anchor].rows;
+            var lookup = d.anchorToRowBlock[d.column.anchor].rows;
             return 'translate(' + 0 + ' ' + (lookup[i].rowAnchor - d.column.anchor) + ')';
         })
         .each(function(d, i) {

@@ -11,40 +11,16 @@
 var c = require('./constants');
 var wrap = require('../../lib/gup').wrap;
 
-function makeAnchorToRowBlock() {
-
-    return anchorToRowBlock;
+function makeIdentity() {
+    return {
+        totalHeight: 0,
+        firstRowIndex: null,
+        lastRowIndex: null,
+        rows: []
+    };
 }
 
-module.exports = function calc(gd, trace) {
-
-    var domain = trace.domain;
-    var groupWidth = Math.floor(gd._fullLayout._size.w * (domain.x[1] - domain.x[0]));
-    var groupHeight = Math.floor(gd._fullLayout._size.h * (domain.y[1] - domain.y[0]));
-
-    var columnWidths = trace.header.values.map(function(d, i) {
-        return Array.isArray(trace.columnwidth) ?
-            trace.columnwidth[Math.min(i, trace.columnwidth.length - 1)] :
-            isFinite(trace.columnwidth) && trace.columnwidth !== null ? trace.columnwidth : 1;
-    });
-
-    var totalColumnWidths = columnWidths.reduce(function(p, n) {return p + n;}, 0);
-    columnWidths = columnWidths.map(function(d) {return d / totalColumnWidths * groupWidth;});
-
-    var headerRowHeights = trace.header.values[0].map(function(_, i) {return trace.header.height + Math.round((i < 0 ? 0 : 25) * (Math.random() - 0.5));});
-    var rowHeights = trace.cells.values[0].map(function(_, i) {return trace.cells.height + Math.round((i < 0 ? 0 : 25) * (Math.random() - 0.5));});
-    var headerHeight = headerRowHeights.reduce(function(a, b) {return a + b;}, 0);
-    var scrollHeight = groupHeight - headerHeight;
-    var minimumFillHeight = scrollHeight + c.uplift;
-
-    var makeIdentity = function() {
-        return {
-            totalHeight: 0,
-            firstRowIndex: null,
-            lastRowIndex: null,
-            rows: []
-        };
-    }
+function makeAnchorToRowBlock(rowHeights, minimumFillHeight) {
 
     var anchorToRowBlock = {};
     var currentRowHeight;
@@ -72,6 +48,33 @@ module.exports = function calc(gd, trace) {
         }
     }
 
+    return anchorToRowBlock;
+}
+
+module.exports = function calc(gd, trace) {
+
+    var domain = trace.domain;
+    var groupWidth = Math.floor(gd._fullLayout._size.w * (domain.x[1] - domain.x[0]));
+    var groupHeight = Math.floor(gd._fullLayout._size.h * (domain.y[1] - domain.y[0]));
+
+    var columnWidths = trace.header.values.map(function(d, i) {
+        return Array.isArray(trace.columnwidth) ?
+            trace.columnwidth[Math.min(i, trace.columnwidth.length - 1)] :
+            isFinite(trace.columnwidth) && trace.columnwidth !== null ? trace.columnwidth : 1;
+    });
+
+    var totalColumnWidths = columnWidths.reduce(function(p, n) {return p + n;}, 0);
+    columnWidths = columnWidths.map(function(d) {return d / totalColumnWidths * groupWidth;});
+
+    var headerRowHeights = trace.header.values[0].map(function(_, i) {return trace.header.height + Math.round((i < 0 ? 0 : 25) * (Math.random() - 0.5));});
+    var rowHeights = trace.cells.values[0].map(function(_, i) {return trace.cells.height + Math.round((i < 0 ? 0 : 25) * (Math.random() - 0.5));});
+    var headerHeight = headerRowHeights.reduce(function(a, b) {return a + b;}, 0);
+    var scrollHeight = groupHeight - headerHeight;
+    var minimumFillHeight = scrollHeight + c.uplift;
+
+    var anchorToRowBlock = makeAnchorToRowBlock(rowHeights, minimumFillHeight);
+    var anchorToHeaderRowBlock = makeAnchorToRowBlock(headerRowHeights, headerHeight);
+
     var uniqueKeys = {};
 
     var columnOrder = trace._fullInput.columnorder;
@@ -88,6 +91,7 @@ module.exports = function calc(gd, trace) {
         headerHeight: headerHeight,
         scrollHeight: scrollHeight,
         anchorToRowBlock: anchorToRowBlock,
+        anchorToHeaderRowBlock: anchorToHeaderRowBlock,
         scrollY: 0, // will be mutated on scroll
         cells: trace.cells,
         headerCells: trace.header,
