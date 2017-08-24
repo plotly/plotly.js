@@ -19,10 +19,10 @@ var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var getTraceColor = require('../scatter/get_trace_color');
 var DASHES = require('../../constants/gl2d_dashes');
 var fit = require('canvas-fit');
-var createScatter = require('../../../../regl-scatter2d');
+var createScatter = require('regl-scatter2d');
 // var createLine = require('../../../../regl-line2d');
 var Drawing = require('../../components/drawing');
-var svgSdf = require('../../../../svg-path-sdf');
+var svgSdf = require('svg-path-sdf');
 
 var DESELECTDIM = 0.2;
 var TRANSPARENT = [0, 0, 0, 0];
@@ -304,7 +304,7 @@ proto.updateFancy = function(options) {
         var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len);
         var borderSizes = convertNumber(markerOpts.line.width, len);
         var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len);
-        var index, size, symbol, symbolNumber, isOpen, isDimmed, _colors, _borderColors, bw, symbolNeedLine, symbolFunc, symbolNoDot, symbolSdf, symbolNoFill, symbolPath, isDot;
+        var index, size, symbol, symbolNumber, isOpen, isDimmed, _colors, _borderColors, bw, symbolFunc, symbolNoDot, symbolSdf, symbolNoFill, symbolPath, isDot;
 
         sizes = convertArray(markerSizeFunc, markerOpts.size, len);
 
@@ -313,7 +313,6 @@ proto.updateFancy = function(options) {
             symbol = Array.isArray(symbols) ? symbols[index] : symbols;
             symbolNumber = Drawing.symbolNumber(symbol);
             symbolFunc = Drawing.symbolFuncs[symbolNumber % 100];
-            symbolNeedLine = !!Drawing.symbolNeedLines[symbolNumber % 100];
             symbolNoDot = !!Drawing.symbolNoDot[symbolNumber % 100];
             symbolNoFill = !!Drawing.symbolNoFill[symbolNumber % 100];
 
@@ -355,7 +354,7 @@ proto.updateFancy = function(options) {
                         w: SYMBOL_SDF_SIZE,
                         h: SYMBOL_SDF_SIZE,
                         viewBox: [-SYMBOL_SIZE, -SYMBOL_SIZE, SYMBOL_SIZE, SYMBOL_SIZE],
-                        stroke: symbolNoFill ? SYMBOL_STROKE : symbolNeedLine ? -SYMBOL_STROKE : 0
+                        stroke: symbolNoFill ? SYMBOL_STROKE : -SYMBOL_STROKE
                     });
                     SYMBOL_SDF[symbol] = symbolSdf;
                 }
