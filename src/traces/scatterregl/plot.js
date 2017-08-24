@@ -26,15 +26,18 @@ var createScatter = require('../../../../regl-scatter2d')
 var createLine = require('../../../../regl-line2d')
 var Drawing = require('../../components/drawing');
 var MARKER_SVG_SYMBOLS = require('../../components/drawing/symbol_defs');
-var svgSdf = require('svg-path-sdf')
+var svgSdf = require('../../../../svg-path-sdf')
 
 var AXES = ['xaxis', 'yaxis'];
 var DESELECTDIM = 0.2;
 var TRANSPARENT = [0, 0, 0, 0];
 
 // tables with symbol SDF values
-var SYMBOL_SDF_SIZE = 100
+var SYMBOL_SDF_SIZE = 200
+var SYMBOL_SIZE = 20
+var SYMBOL_STROKE = SYMBOL_SIZE / 20
 var SYMBOL_SDF = {}
+var SYMBOL_SVG_CIRCLE = Drawing.symbolFuncs[0](SYMBOL_SIZE * .05)
 
 
 module.exports = createLineWithMarkers
@@ -301,13 +304,12 @@ proto.updateFancy = function(options) {
         var markerOpts = options.marker;
         var markerOpacity = markerOpts.opacity;
         var traceOpacity = options.opacity;
-
-        var symbols = convertSymbol(markerOpts.symbol, len);
+        var symbols = markerOpts.symbol;
 
         var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len);
         var borderSizes = convertNumber(markerOpts.line.width, len);
         var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len);
-        var index, size, symbol, symbolName, symbolSpec, symbolNumber, isOpen, isDimmed, _colors, _borderColors, bw, minBorderWidth, noBorder, symbolFunc, noDot, symbolSdf;
+        var index, size, symbol, symbolName, symbolSpec, symbolNumber, isOpen, isDimmed, _colors, _borderColors, bw, minBorderWidth, symbolNeedLine, symbolFunc, symbolNoDot, symbolSdf, symbolNoFill, symbolPath, isDot;
 
         sizes = convertArray(markerSizeFunc, markerOpts.size, len);
 
@@ -317,18 +319,19 @@ proto.updateFancy = function(options) {
             symbolNumber = Drawing.symbolNumber(symbol)
             symbolName = Drawing.symbolNames[symbolNumber % 100]
             symbolFunc = Drawing.symbolFuncs[symbolNumber % 100]
-            noBorder = !!Drawing.symbolNeedLines[symbolNumber % 100]
-            noDot = !!Drawing.symbolNoDot[symbolNumber % 100]
+            symbolNeedLine = !!Drawing.symbolNeedLines[symbolNumber % 100]
+            symbolNoDot = !!Drawing.symbolNoDot[symbolNumber % 100]
+            symbolNoFill = !!Drawing.symbolNoFill[symbolNumber % 100]
 
-            isOpen = isSymbolOpen(symbol);
+            isOpen = /-open/.test(symbol);
+            isDot = /-dot/.test(symbol);
             isDimmed = selIds && !selIds[index];
 
-
-            if(noBorder && !isOpen) {
-                _colors = borderColors;
-            } else {
+            // if(symbolNeedLine && !isOpen) {
+            //     _colors = borderColors;
+            // } else {
                 _colors = colors;
-            }
+            // }
 
             if(isOpen) {
                 _borderColors = colors;
@@ -340,26 +343,34 @@ proto.updateFancy = function(options) {
             // for more info on this logic
             size = sizes[index];
             bw = borderSizes[index];
-            // minBorderWidth = (noBorder) ? 0.1 * size : 0;
+            // minBorderWidth = (symbolNeedLine) ? 0.1 * size : 0;
             minBorderWidth = 0
 
             this.scatter.options.sizes[i] = size;
 
 
-            if (symbolName === 'circle') {
+            if (symbol === 'circle') {
                 this.scatter.options.markers[i] = null;
             }
             else {
                 //get symbol sdf from cache or generate it
-                if (SYMBOL_SDF[symbolName]) {
-                    symbolSdf = SYMBOL_SDF[symbolName]
+                if (SYMBOL_SDF[symbol]) {
+                    symbolSdf = SYMBOL_SDF[symbol]
                 } else {
-                    symbolSdf = svgSdf(symbolFunc(10), {
+                    if (isDot && !symbolNoDot) {
+                        symbolPath = symbolFunc(SYMBOL_SIZE * 1.1) + SYMBOL_SVG_CIRCLE
+                    }
+                    else {
+                        symbolPath = symbolFunc(SYMBOL_SIZE)
+                    }
+
+                    symbolSdf = svgSdf(symbolPath, {
                         w: SYMBOL_SDF_SIZE,
                         h: SYMBOL_SDF_SIZE,
-                        viewBox: [-10,-10,10,10]
+                        viewBox: [-SYMBOL_SIZE,-SYMBOL_SIZE,SYMBOL_SIZE,SYMBOL_SIZE],
+                        stroke: symbolNoFill ? SYMBOL_STROKE : -SYMBOL_STROKE
                     })
-                    SYMBOL_SDF[symbolName] = symbolSdf
+                    SYMBOL_SDF[symbol] = symbolSdf
                 }
 
                 this.scatter.options.markers[i] = symbolSdf || null;
@@ -369,7 +380,7 @@ proto.updateFancy = function(options) {
             var optColors = this.scatter.options.colors
             var dim = isDimmed ? DESELECTDIM : 1;
             if (!optColors[i]) optColors[i] = []
-            if(isOpen && !noBorder) {
+            if(isOpen || symbolNoFill) {
                 optColors[i][0] = TRANSPARENT[0];
                 optColors[i][1] = TRANSPARENT[1];
                 optColors[i][2] = TRANSPARENT[2];
@@ -567,9 +578,6 @@ function _convertArray(convert, data, count) {
 
 var convertNumber = convertArray.bind(null, function(x) { return +x; });
 var convertColorBase = convertArray.bind(null, str2RGBArray);
-var convertSymbol = convertArray.bind(null, function(x) {
-    return MARKER_SVG_SYMBOLS[x] ? x : 'circle';
-});
 
 function convertColor(color, opacity, count) {
     return _convertColor(
@@ -603,10 +611,6 @@ function _convertColor(colors, opacities, count) {
     }
 
     return result;
-}
-
-function isSymbolOpen(symbol) {
-    return /-open/.test(symbol);
 }
 
 // We'd ideally know that all values are of fast types; sampling gives no certainty but faster
