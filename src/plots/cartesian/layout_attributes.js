@@ -452,7 +452,12 @@ module.exports = {
         _isLinkedToArray: 'tickformatstop',
 
         dtickrange: {
-            valType: 'data_array',
+            valType: 'info_array',
+            role: 'info',
+            items: [
+                {valType: 'any'},
+                {valType: 'any'}
+            ],
             description: [
                 'range [*min*, *max*], where *min*, *max* - dtick values',
                 'which describe some zoom level, it is possible to omit *min*',
