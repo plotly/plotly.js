@@ -11,6 +11,7 @@
 var extendFlat = require('../../lib/extend').extendFlat;
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../../components/color/attributes');
+var axesAttrs = require('../../plots/cartesian/layout_attributes')
 
 module.exports = {
     color: {
@@ -265,31 +266,7 @@ module.exports = {
             '*%H~%M~%S.%2f* would display *09~15~23.46*'
         ].join(' ')
     },
-    tickformatstops: {
-        _isLinkedToArray: 'tickformatstop',
-
-        dtickrange: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'any'},
-                {valType: 'any'}
-            ],
-            description: [
-                'range [*min*, *max*], where *min*, *max* - dtick values',
-                'which describe some zoom level, it is possible to omit *min*',
-                'or *max* value by passing *null*'
-            ].join(' ')
-        },
-        value: {
-            valType: 'string',
-            dflt: '',
-            role: 'style',
-            description: [
-                'string - dtickformat for described zoom level, the same as *tickformat*'
-            ].join(' ')
-        }
-    },
+    tickformatstops: axesAttrs.tickformatstops,
     categoryorder: {
         valType: 'enumerated',
         values: [
