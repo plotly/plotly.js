@@ -13,6 +13,7 @@ var d3 = require('d3');
 var gup = require('../../lib/gup');
 var Drawing = require('../../components/drawing');
 var extendFlat = require('../../lib/extend').extendFlat;
+var util = require('../../lib/svg_text_utils');
 
 module.exports = function plot(gd, calcdata) {
 
@@ -394,24 +395,7 @@ function renderColumnBlocks(columnBlock) {
                 bottom: -c.cellPad
             })[d.valign];
         })
-        .each(function(d) {Drawing.font(d3.select(this), d.font);});
-
-    var textFragment = cellText.selectAll('.textFragment')
-        .data(gup.repeat, gup.keyFun);
-
-    textFragment.enter()
-        .append('tspan')
-        .classed('textFragment', true);
-
-    textFragment
-        .attr('alignment-baseline', function(d) {
-            return "hanging";
-            return ({
-                top: "hanging",
-                middle: "central",
-                bottom: "alphabetic"
-            })[d.valign];
-        })
+        .attr('alignment-baseline', 'hanging')
         .text(function(d) {
             var col = d.column.specIndex;
             var row = d.rowNumber;
@@ -419,5 +403,10 @@ function renderColumnBlocks(columnBlock) {
             var suffix = gridPick(d.calcdata.cells.suffix, col, row) || '';
             var format = gridPick(d.calcdata.cells.format, col, row) || '';
             return prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
+        })
+        .each(function(d) {
+            var selection = d3.select(this);
+            Drawing.font(selection, d.font);
+            util.convertToTspans(selection);
         });
 };
