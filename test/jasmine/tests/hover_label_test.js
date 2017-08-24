@@ -199,6 +199,26 @@ describe('hover info', function() {
         });
     });
 
+    describe('hover info y on log axis', function() {
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        mockCopy.data[0].hoverinfo = 'y';
+
+        beforeEach(function(done) {
+            for(var i = 0; i < mockCopy.data[0].y.length; i++) {
+                mockCopy.data[0].y[i] *= 1e9;
+            }
+
+            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('responds to hover y+text', function() {
+            Fx.hover('graph', evt, 'xy');
+
+            expect(d3.selectAll('g.hovertext').selectAll('text.nums').node().innerHTML).toEqual('1e+9');
+        });
+    });
+
     describe('hover info y+text', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
@@ -683,7 +703,13 @@ describe('hover info on stacked subplots', function() {
     });
 
     describe('hover info on stacked subplots with shared y-axis', function() {
-        var mock = require('@mocks/stacked_subplots_shared_yaxis.json');
+        var mock = Lib.extendDeep(require('@mocks/stacked_subplots_shared_yaxis.json'));
+        mock.data[0].name = 'Who put the bomp in the bomp bah bomp bah bomp';
+        mock.data[0].hoverlabel = {namelength: -1};
+        mock.data[1].name = 'Who put the ram in the rama lama ding dong';
+        mock.data[1].hoverlabel = {namelength: [2, 4]};
+        mock.data[2].name = 'Who put the bop in the bop shoo bop shoo bop';
+        mock.layout.hoverlabel = {namelength: 10};
 
         beforeEach(function(done) {
             Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
@@ -727,11 +753,11 @@ describe('hover info on stacked subplots', function() {
             expect(d3.selectAll('g.hovertext').size()).toEqual(3);
             var textNodes = d3.selectAll('g.hovertext').selectAll('text');
 
-            expect(textNodes[0][0].innerHTML).toEqual('trace 0');
+            expect(textNodes[0][0].innerHTML).toEqual('Who put the bomp in the bomp bah bomp bah bomp');
             expect(textNodes[0][1].innerHTML).toEqual('1');
-            expect(textNodes[1][0].innerHTML).toEqual('trace 1');
+            expect(textNodes[1][0].innerHTML).toEqual('Wh');
             expect(textNodes[1][1].innerHTML).toEqual('2.1');
-            expect(textNodes[2][0].innerHTML).toEqual('trace 2');
+            expect(textNodes[2][0].innerHTML).toEqual('Who put...');
             expect(textNodes[2][1].innerHTML).toEqual('3');
         });
     });

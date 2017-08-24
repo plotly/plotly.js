@@ -67,10 +67,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         if(!newFullLayout[oldTernaryKey] && !!oldTernary) {
             oldTernary.plotContainer.remove();
             oldTernary.clipDef.remove();
+            oldTernary.clipDefRelative.remove();
         }
-    }
-
-    if(oldFullLayout._zoomlayer) {
-        oldFullLayout._zoomlayer.selectAll('.select-outline').remove();
     }
 };

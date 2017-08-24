@@ -77,6 +77,10 @@ module.exports = function plot(gd, cdpie) {
                     return;
                 }
 
+                // to have consistent event data compared to other traces
+                pt.pointNumber = pt.i;
+                pt.curveNumber = trace.index;
+
                 quadrants[pt.pxmid[1] < 0 ? 0 : 1][pt.pxmid[0] < 0 ? 0 : 1].push(pt);
 
                 var cx = cd0.cx + depthVector[0],

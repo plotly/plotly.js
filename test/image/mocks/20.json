@@ -88,10 +88,31 @@
             "name": "yaxis6 data",
             "yaxis": "y6",
             "type": "scatter"
+        },
+        {
+            "x": [1, 2, 3],
+            "y": [1, 2, 3],
+            "xaxis": "x2",
+            "yaxis": "y7",
+            "name": "x2y7"
+        },
+        {
+            "x": [2, 3, 4],
+            "y": [2, 3, 1],
+            "xaxis": "x3",
+            "yaxis": "y8",
+            "name": "x3y8"
+        },
+        {
+            "x": [3, 4, 5],
+            "y": [3, 1, 2],
+            "xaxis": "x4",
+            "yaxis": "y9",
+            "name": "x4y9"
         }
     ],
     "layout": {
-        "title": "multiple y-axes example",
+        "title": "multiple axes example",
         "xaxis": {
             "domain": [
                 0.3,
@@ -99,9 +120,12 @@
             ],
             "showline": true,
             "ticks": "outside",
-            "mirror": true
+            "mirror": true,
+            "linecolor": "rgba(0,0,0,0.5)",
+            "linewidth": 10
         },
         "yaxis": {
+            "domain": [0.5, 1],
             "title": "yaxis title",
             "titlefont": {
                 "color": "#1f77b4"
@@ -112,11 +136,12 @@
             "tickfont": {
                 "color": "#1f77b4"
             },
-            "linecolor": "#1f77b4"
+            "linecolor": "rgba(31,119,180,0.5)",
+            "linewidth": 20
         },
         "legend": {
-            "x": 1.1,
-            "y": 1,
+            "x": 1,
+            "y": 0,
             "bordercolor": "#000",
             "borderwidth": 1
         },
@@ -131,7 +156,8 @@
             "tickfont": {
                 "color": "#ff7f0e"
             },
-            "linecolor": "#ff7f0e",
+            "linecolor": "rgba(255,127,14,0.4)",
+            "linewidth": 6,
             "anchor": "free",
             "position": 0.15,
             "overlaying": "y"
@@ -147,7 +173,7 @@
             "tickfont": {
                 "color": "#2ca02c"
             },
-            "linecolor": "#2ca02c",
+            "linecolor": "rgba(44,160,44,0.5)",
             "anchor": "free",
             "position": 0,
             "overlaying": "y"
@@ -164,7 +190,8 @@
                 "color": "#d62728"
             },
             "showexponent": "last",
-            "linecolor": "#d62728",
+            "linecolor": "rgba(214,39,40,0.5)",
+            "linewidth": 15,
             "side": "right",
             "overlaying": "y"
         },
@@ -181,7 +208,8 @@
             },
             "exponentformat": "power",
             "showexponent": "first",
-            "linecolor": "#9467bd",
+            "linecolor": "rgba(148,103,189,0.5)",
+            "linewidth": 5,
             "anchor": "free",
             "side": "right",
             "position": 0.85,
@@ -199,11 +227,70 @@
                 "color": "#8c564b"
             },
             "exponentformat": "SI",
-            "linecolor": "#8c564b",
+            "linecolor": "rgba(140,86,75,0.5)",
             "anchor": "free",
             "side": "right",
             "position": 1,
             "overlaying": "y"
-        }
+        },
+        "xaxis2": {
+            "title": "xaxis2 title",
+            "domain": [0.2, 0.8],
+            "anchor": "y7",
+            "color": "rgba(100,100,0,0.6)",
+            "showline": true,
+            "ticks": "outside",
+            "linewidth": 3
+        },
+        "xaxis3": {
+            "title": "xaxis3 title",
+            "overlaying": "x2",
+            "anchor": "y7",
+            "color": "rgba(100,0,100,0.6)",
+            "showline": true,
+            "ticks": "outside",
+            "linewidth": 6,
+            "side": "top"
+        },
+        "xaxis4": {
+            "title": "xaxis4 title",
+            "overlaying": "x2",
+            "color": "rgba(0,0,0,0.6)",
+            "showline": true,
+            "ticks": "outside",
+            "position": 0,
+            "anchor": "free"
+        },
+        "yaxis7": {
+            "title": "yaxis7 title",
+            "domain": [0.15, 0.3],
+            "color": "rgba(0,0,0,0.6)",
+            "anchor": "x2",
+            "showline": true,
+            "ticks": "outside",
+            "linewidth": 4
+        },
+        "yaxis8": {
+            "title": "yaxis8 title",
+            "overlaying": "y7",
+            "color": "rgba(0,0,0,0.6)",
+            "anchor": "x2",
+            "side": "right",
+            "showline": true,
+            "ticks": "outside",
+            "linewidth": 8
+        },
+        "yaxis9": {
+            "title": "yaxis9 title",
+            "overlaying": "y7",
+            "color": "rgba(0,0,0,0.6)",
+            "anchor": "free",
+            "position": 0,
+            "showline": true,
+            "ticks": "outside"
+        },
+        "width": 750,
+        "height": 600,
+        "margin": {"r": 200, "l": 50, "t": 50, "b": 50, "pad": 5}
     }
 }

@@ -95,6 +95,7 @@ if(isFullSuite) {
 }
 
 var pathToShortcutPath = path.join(__dirname, '..', '..', 'tasks', 'util', 'shortcut_paths.js');
+var pathToStrictD3 = path.join(__dirname, '..', '..', 'tasks', 'util', 'strict_d3.js');
 var pathToMain = path.join(__dirname, '..', '..', 'lib', 'index.js');
 var pathToJQuery = path.join(__dirname, 'assets', 'jquery-1.8.3.min.js');
 var pathToIE9mock = path.join(__dirname, 'assets', 'ie9_mock.js');
@@ -182,6 +183,7 @@ func.defaultConfig = {
         _Chrome: {
             base: 'Chrome',
             flags: [
+                '--touch-events',
                 '--window-size=' + argv.width + ',' + argv.height,
                 isCI ? '--ignore-gpu-blacklist' : ''
             ]
@@ -193,7 +195,7 @@ func.defaultConfig = {
     },
 
     browserify: {
-        transform: [pathToShortcutPath],
+        transform: [pathToStrictD3, pathToShortcutPath],
         extensions: ['.js'],
         watch: !argv.nowatch,
         debug: true

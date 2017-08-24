@@ -356,6 +356,8 @@ proto.handleAnnotations = function() {
 };
 
 proto.destroy = function() {
+    if(!this.glplot) return;
+
     var traces = this.traces;
 
     if(traces) {
@@ -528,10 +530,22 @@ proto.updateTraces = function(fullData, calcData) {
 };
 
 proto.updateFx = function(dragmode) {
+    // switch to svg interactions in lasso/select mode
     if(dragmode === 'lasso' || dragmode === 'select') {
         this.mouseContainer.style['pointer-events'] = 'none';
     } else {
         this.mouseContainer.style['pointer-events'] = 'auto';
+    }
+
+    // set proper cursor
+    if(dragmode === 'pan') {
+        this.mouseContainer.style.cursor = 'move';
+    }
+    else if(dragmode === 'zoom') {
+        this.mouseContainer.style.cursor = 'crosshair';
+    }
+    else {
+        this.mouseContainer.style.cursor = null;
     }
 };
 

@@ -11,6 +11,7 @@
 
 var Axes = require('../../plots/cartesian/axes');
 var scatterSubTypes = require('../../traces/scatter/subtypes');
+var Registry = require('../../registry');
 
 var createModeBar = require('./modebar');
 var modeBarButtons = require('./buttons');
@@ -78,7 +79,8 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
         hasGeo = fullLayout._has('geo'),
         hasPie = fullLayout._has('pie'),
         hasGL2D = fullLayout._has('gl2d'),
-        hasTernary = fullLayout._has('ternary');
+        hasTernary = fullLayout._has('ternary'),
+        hasMapbox = fullLayout._has('mapbox');
 
     var groups = [];
 
@@ -121,7 +123,10 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     if(((hasCartesian || hasGL2D) && !allAxesFixed) || hasTernary) {
         dragModeGroup = ['zoom2d', 'pan2d'];
     }
-    if((hasCartesian || hasTernary || hasGL2D) && isSelectable(fullData)) {
+    if(hasMapbox) {
+        dragModeGroup = ['pan2d'];
+    }
+    if(isSelectable(fullData)) {
         dragModeGroup.push('select2d');
         dragModeGroup.push('lasso2d');
     }
@@ -142,6 +147,9 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     }
     else if(hasPie) {
         addGroup(['hoverClosestPie']);
+    }
+    else if(hasMapbox) {
+        addGroup(['resetViewMapbox', 'toggleHover']);
     }
 
     return appendButtonsToGroups(groups, buttonsToAdd);
@@ -173,7 +181,7 @@ function isSelectable(fullData) {
 
         if(!trace._module || !trace._module.selectPoints) continue;
 
-        if(trace.type === 'scatter' || trace.type === 'scatterternary' || trace.type === 'scattergl') {
+        if(Registry.traceIs(trace, 'scatter-like')) {
             if(scatterSubTypes.hasMarkers(trace) || scatterSubTypes.hasText(trace)) {
                 selectable = true;
             }

@@ -70,7 +70,14 @@ Titles.draw = function(gd, titleClass, options) {
     var opacity = 1;
     var isplaceholder = false;
     var txt = cont.title.trim();
-    var editable = gd._context.editable;
+
+    // only make this title editable if we positively identify its property
+    // as one that has editing enabled.
+    var editAttr;
+    if(prop === 'title') editAttr = 'titleText';
+    else if(prop.indexOf('axis') !== -1) editAttr = 'axisTitleText';
+    else if(prop.indexOf('colorbar' !== -1)) editAttr = 'colorbarTitleText';
+    var editable = gd._context.edits[editAttr];
 
     if(txt === '') opacity = 0;
     if(txt.match(PLACEHOLDER_RE)) {

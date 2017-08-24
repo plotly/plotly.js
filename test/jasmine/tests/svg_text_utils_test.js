@@ -190,7 +190,38 @@ describe('svg+text utils', function() {
         it('attaches onclick if popup is specified', function() {
             var node = mockTextSVGElement('<a href="x" target="fred" popup="width=500,height=400">link</a>');
             assertAnchorLink(node, 'x', 'fred', 'new');
-            assertAnchorAttrs(node, {onclick: 'window.open("x","fred","width=500,height=400");return false;'});
+            assertAnchorAttrs(node, {onclick: 'window.open(this.href.baseVal,this.target.baseVal,"width=500,height=400");return false;'});
+        });
+
+        it('drops XSS attacks via popup script', function() {
+            var textCases = [
+                [
+                    '<a href=\'#\' target=\'b\' popup=\'1");alert(document.cookie);//\'>XSS</a>',
+                    '#', 'b', null
+                ],
+                [
+                    '<a href=\'#\' target=\'b");alert(document.cookie);//\' popup=\'1\'>XSS</a>',
+                    '#', 'b");alert(document.cookie);//', '1'
+                ],
+                [
+                    '<a href=\'#");alert(document.cookie);//\' target=\'b\' popup=\'1\'>XSS</a>',
+                    '#%22);alert(document.cookie);//', 'b', '1'
+                ]
+            ];
+
+            textCases.forEach(function(textCase) {
+                var node = mockTextSVGElement(textCase[0]);
+
+                var attrs = {};
+                if(textCase[3]) {
+                    attrs.onclick = 'window.open(this.href.baseVal,this.target.baseVal,"' +
+                        textCase[3] + '");return false;';
+                }
+
+                expect(node.text()).toEqual('XSS');
+                assertAnchorAttrs(node, attrs, textCase[0]);
+                assertAnchorLink(node, textCase[1], textCase[2], 'new', textCase[0]);
+            });
         });
 
         it('keeps query parameters in href', function() {
@@ -339,6 +370,20 @@ describe('svg+text utils', function() {
                     opener(1.3) + 'lines' + closer +
                     opener(2.6) + 'modified' + closer, textCase);
             });
+        });
+
+        it('ignores bare closing tags', function() {
+            var node = mockTextSVGElement('</sub>');
+
+            // sub shows up as a zero-width space (u200B) on either side of the 5:
+            expect(node.text()).toEqual('');
+        });
+
+        it('ignores extra closing tags', function() {
+            var node = mockTextSVGElement('test<sub>5</sub></sub>more');
+
+            // sub shows up as a zero-width space (u200B) on either side of the 5:
+            expect(node.text()).toEqual('test\u200b5\u200bmore');
         });
     });
 });

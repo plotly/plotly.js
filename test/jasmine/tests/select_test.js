@@ -8,7 +8,10 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
+var touchEvent = require('../assets/touch_event');
 var customMatchers = require('../assets/custom_matchers');
+
+var LONG_TIMEOUT_INTERVAL = 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 
 describe('select box and lasso', function() {
@@ -23,8 +26,22 @@ describe('select box and lasso', function() {
 
     afterEach(destroyGraphDiv);
 
-    function drag(path) {
+    function drag(path, options) {
         var len = path.length;
+
+        if(!options) options = {type: 'mouse'};
+
+        if(options.type === 'touch') {
+            touchEvent('touchstart', path[0][0], path[0][1]);
+
+            path.slice(1, len).forEach(function(pt) {
+                touchEvent('touchmove', pt[0], pt[1]);
+            });
+
+            touchEvent('touchend', path[len - 1][0], path[len - 1][1]);
+
+            return;
+        }
 
         mouseEvent('mousemove', path[0][0], path[0][1]);
         mouseEvent('mousedown', path[0][0], path[0][1]);
@@ -284,6 +301,55 @@ describe('select box and lasso', function() {
                 y: 2.75,
             }], 'with the correct selected points (2)');
 
+            expect(selectedData.lassoPoints.x).toBeCloseToArray(
+                [0.084, 0.087, 0.115, 0.103], 'lasso points x coords');
+            expect(selectedData.lassoPoints.y).toBeCloseToArray(
+                [4.648, 1.342, 1.247, 4.821], 'lasso points y coords');
+
+            doubleClick(250, 200).then(function() {
+                expect(doubleClickData).toBe(null, 'with the correct deselect data');
+                done();
+            });
+        });
+
+        it('should trigger selecting/selected/deselect events for touches', function(done) {
+            var selectingCnt = 0,
+                selectingData;
+            gd.on('plotly_selecting', function(data) {
+                selectingCnt++;
+                selectingData = data;
+            });
+
+            var selectedCnt = 0,
+                selectedData;
+            gd.on('plotly_selected', function(data) {
+                selectedCnt++;
+                selectedData = data;
+            });
+
+            var doubleClickData;
+            gd.on('plotly_deselect', function(data) {
+                doubleClickData = data;
+            });
+
+            drag(lassoPath, {type: 'touch'});
+
+            expect(selectingCnt).toEqual(3, 'with the correct selecting count');
+            assertEventData(selectingData.points, [{
+                curveNumber: 0,
+                pointNumber: 10,
+                x: 0.099,
+                y: 2.75
+            }], 'with the correct selecting points (1)');
+
+            expect(selectedCnt).toEqual(1, 'with the correct selected count');
+            assertEventData(selectedData.points, [{
+                curveNumber: 0,
+                pointNumber: 10,
+                x: 0.099,
+                y: 2.75,
+            }], 'with the correct selected points (2)');
+
             doubleClick(250, 200).then(function() {
                 expect(doubleClickData).toBe(null, 'with the correct deselect data');
                 done();
@@ -460,4 +526,134 @@ describe('select box and lasso', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('@noCI should work on scattermapbox traces', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/mapbox_bubbles-text'));
+        var gd = createGraphDiv();
+        var eventData;
+
+        fig.layout.dragmode = 'select';
+        fig.config = {
+            mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+        };
+
+        function assertPoints(expected) {
+            var pts = eventData.points || [];
+
+            expect(pts.length).toBe(expected.length, 'selected points length');
+
+            pts.forEach(function(p, i) {
+                var e = expected[i];
+                expect(p.lon).toBe(e.lon, 'selected pt lon val');
+                expect(p.lat).toBe(e.lat, 'selected pt lat val');
+            });
+        }
+
+        function assertRanges(expected) {
+            var ranges = (eventData.range || {}).mapbox || [];
+            expect(ranges).toBeCloseTo2DArray(expected, 1, 'select box range (in lon/lat)');
+        }
+
+        function assertLassoPoints(expected) {
+            var lassoPoints = (eventData.lassoPoints || {}).mapbox || [];
+            expect(lassoPoints).toBeCloseTo2DArray(expected, 1, 'lasso points (in lon/lat)');
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            var selectingCnt = 0;
+            var selectedCnt = 0;
+            var deselectCnt = 0;
+
+            gd.once('plotly_selecting', function() {
+                assertSelectionNodes(1, 2);
+                selectingCnt++;
+            });
+
+            gd.once('plotly_selected', function(d) {
+                assertSelectionNodes(0, 2);
+                selectedCnt++;
+                eventData = d;
+            });
+
+            gd.once('plotly_deselect', function() {
+                deselectCnt++;
+                assertSelectionNodes(0, 0);
+            });
+
+            drag([[370, 120], [500, 200]]);
+            assertPoints([{lon: 30, lat: 30}]);
+            assertRanges([[21.99, 34.55], [38.14, 25.98]]);
+
+            return doubleClick(250, 200).then(function() {
+                expect(selectingCnt).toBe(1, 'plotly_selecting call count');
+                expect(selectedCnt).toBe(1, 'plotly_selected call count');
+                expect(deselectCnt).toBe(1, 'plotly_deselect call count');
+            });
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        })
+        .then(function() {
+            var selectingCnt = 0;
+            var selectedCnt = 0;
+            var deselectCnt = 0;
+
+            gd.once('plotly_selecting', function() {
+                assertSelectionNodes(1, 2);
+                selectingCnt++;
+            });
+
+            gd.once('plotly_selected', function(d) {
+                assertSelectionNodes(0, 2);
+                selectedCnt++;
+                eventData = d;
+            });
+
+            gd.once('plotly_deselect', function() {
+                deselectCnt++;
+                assertSelectionNodes(0, 0);
+            });
+
+            drag([[300, 200], [300, 300], [400, 300], [400, 200], [300, 200]]);
+            assertPoints([{lon: 20, lat: 20}]);
+            assertLassoPoints([
+                [13.28, 25.97], [13.28, 14.33], [25.71, 14.33], [25.71, 25.97], [13.28, 25.97]
+            ]);
+
+            return doubleClick(250, 200).then(function() {
+                expect(selectingCnt).toBe(1, 'plotly_selecting call count');
+                expect(selectedCnt).toBe(1, 'plotly_selected call count');
+                expect(deselectCnt).toBe(1, 'plotly_deselect call count');
+            });
+        })
+        .then(function() {
+            // make selection handlers don't get called in 'pan' dragmode
+            return Plotly.relayout(gd, 'dragmode', 'pan');
+        })
+        .then(function() {
+            var selectingCnt = 0;
+            var selectedCnt = 0;
+            var deselectCnt = 0;
+
+            gd.once('plotly_selecting', function() {
+                selectingCnt++;
+            });
+
+            gd.once('plotly_selected', function() {
+                selectedCnt++;
+            });
+
+            gd.once('plotly_deselect', function() {
+                deselectCnt++;
+            });
+
+            return doubleClick(250, 200).then(function() {
+                expect(selectingCnt).toBe(0, 'plotly_selecting call count');
+                expect(selectedCnt).toBe(0, 'plotly_selected call count');
+                expect(deselectCnt).toBe(0, 'plotly_deselect call count');
+            });
+        })
+        .catch(fail)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
 });

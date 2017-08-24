@@ -9,6 +9,8 @@ var helpers = require('@src/components/legend/helpers');
 var anchorUtils = require('@src/components/legend/anchor_utils');
 
 var d3 = require('d3');
+var fail = require('../assets/fail_test');
+var delay = require('../assets/delay');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customMatchers = require('../assets/custom_matchers');
@@ -880,6 +882,74 @@ describe('legend interaction', function() {
             })
             .catch(fail)
             .then(done);
+        });
+    });
+
+
+    describe('editable mode interactions', function() {
+        var gd;
+        var mock = {
+            data: [{
+                x: [1, 2, 3],
+                y: [5, 4, 3]
+            }, {
+                x: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+                y: [1, 3, 2, 4, 3, 5, 4, 6, 5, 7, 6, 8, 7, 9],
+                transforms: [{
+                    type: 'groupby',
+                    groups: [1, 2, 1, 2, 3, 4, 3, 4, 5, 6, 5, 6, 7, 8]
+                }]
+            }],
+            config: {editable: true}
+        };
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            Plotly.plot(gd, Lib.extendDeep({}, mock)).then(done);
+        });
+
+        afterEach(destroyGraphDiv);
+
+        function _setValue(index, str) {
+            var item = d3.selectAll('text.legendtext')[0][index || 0];
+            item.dispatchEvent(new MouseEvent('click'));
+            return delay(20)().then(function() {
+                var input = d3.select('.plugin-editable.editable');
+                input.text(str);
+                input.node().dispatchEvent(new KeyboardEvent('blur'));
+            }).then(delay(20));
+        }
+
+        it('sets and unsets trace group names', function(done) {
+            // Set the name of the first trace:
+            _setValue(0, 'foo').then(function() {
+                expect(gd.data[0].name).toEqual('foo');
+            }).then(function() {
+                // Set the name of the third legend item:
+                return _setValue(3, 'bar');
+            }).then(function() {
+                expect(gd.data[1].transforms[0].styles).toEqual([
+                    {value: {name: 'bar'}, target: 3}
+                ]);
+            }).then(function() {
+                return _setValue(4, 'asdf');
+            }).then(function() {
+                expect(gd.data[1].transforms[0].styles).toEqual([
+                    {value: {name: 'bar'}, target: 3},
+                    {value: {name: 'asdf'}, target: 4}
+                ]);
+            }).then(function() {
+                // Unset the group names:
+                return _setValue(3, '');
+            }).then(function() {
+                return _setValue(4, '');
+            }).then(function() {
+                // Verify the group names have been cleaned up:
+                expect(gd.data[1].transforms[0].styles).toEqual([
+                    {target: 3},
+                    {target: 4}
+                ]);
+            }).catch(fail).then(done);
         });
     });
 });

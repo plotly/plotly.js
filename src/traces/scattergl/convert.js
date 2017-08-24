@@ -27,9 +27,9 @@ var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var getTraceColor = require('../scatter/get_trace_color');
 var MARKER_SYMBOLS = require('../../constants/gl2d_markers');
 var DASHES = require('../../constants/gl2d_dashes');
+var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 var AXES = ['xaxis', 'yaxis'];
-var DESELECTDIM = 0.2;
 var TRANSPARENT = [0, 0, 0, 0];
 
 function LineWithMarkers(scene, uid) {
@@ -322,8 +322,8 @@ proto.update = function(options, cdscatter) {
     this.color = getTraceColor(options, {});
 
     // provide reference for selecting points
-    if(cdscatter && cdscatter[0] && !cdscatter[0].glTrace) {
-        cdscatter[0].glTrace = this;
+    if(cdscatter && cdscatter[0] && !cdscatter[0]._glTrace) {
+        cdscatter[0]._glTrace = this;
     }
 };
 

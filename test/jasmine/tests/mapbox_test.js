@@ -1,4 +1,5 @@
 var Plotly = require('@lib');
+var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
 var constants = require('@src/plots/mapbox/constants');
@@ -22,7 +23,6 @@ Plotly.setPlotConfig({
     mapboxAccessToken: MAPBOX_ACCESS_TOKEN
 });
 
-
 describe('mapbox defaults', function() {
     'use strict';
 
@@ -31,7 +31,7 @@ describe('mapbox defaults', function() {
     beforeEach(function() {
         layoutOut = { font: { color: 'red' } };
 
-        // needs a ternary-ref in a trace in order to be detected
+        // needs a mapbox-ref in a trace in order to be detected
         fullData = [{ type: 'scattermapbox', subplot: 'mapbox' }];
     });
 
@@ -169,6 +169,16 @@ describe('mapbox defaults', function() {
         expect(layoutOut.mapbox.layers[3].line).toBeUndefined();
         expect(layoutOut.mapbox.layers[3].fill).toBeUndefined();
         expect(layoutOut.mapbox.layers[3].circle).toBeUndefined();
+    });
+
+    it('should set *layout.dragmode* to pan while zoom is not available', function() {
+        var gd = {
+            data: fullData,
+            layout: {}
+        };
+
+        Plots.supplyDefaults(gd);
+        expect(gd._fullLayout.dragmode).toBe('pan');
     });
 });
 
@@ -777,31 +787,19 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('should respond drag / scroll interactions', function(done) {
-        var relayoutCnt = 0,
-            updateData;
+    it('should respond drag / scroll / double-click interactions', function(done) {
+        var relayoutCnt = 0;
+        var doubleClickCnt = 0;
+        var updateData;
 
         gd.on('plotly_relayout', function(eventData) {
             relayoutCnt++;
             updateData = eventData;
         });
 
-        function _drag(p0, p1, cb) {
-            var promise = _mouseEvent('mousemove', p0, noop).then(function() {
-                return _mouseEvent('mousedown', p0, noop);
-            }).then(function() {
-                return _mouseEvent('mousemove', p1, noop);
-            }).then(function() {
-                // repeat mousemove to simulate long dragging motion
-                return _mouseEvent('mousemove', p1, noop);
-            }).then(function() {
-                return _mouseEvent('mouseup', p1, noop);
-            }).then(function() {
-                return _mouseEvent('mouseup', p1, noop);
-            }).then(cb);
-
-            return promise;
-        }
+        gd.on('plotly_doubleclick', function() {
+            doubleClickCnt++;
+        });
 
         function assertLayout(center, zoom, opts) {
             var mapInfo = getMapInfo(gd),
@@ -827,8 +825,13 @@ describe('@noCI, mapbox plots', function() {
 
         _drag(pointPos, p1, function() {
             expect(relayoutCnt).toEqual(1);
-            assertLayout([-19.651, 13.751], 1.234, { withUpdateData: true });
+            assertLayout([-19.651, 13.751], 1.234, {withUpdateData: true});
 
+            return _doubleClick(p1);
+        })
+        .then(function() {
+            expect(doubleClickCnt).toBe(1, 'double click cnt');
+            assertLayout([-4.710, 19.475], 1.234);
         })
         .catch(failTest)
         .then(done);
@@ -843,16 +846,6 @@ describe('@noCI, mapbox plots', function() {
         gd.on('plotly_click', function(eventData) {
             ptData = eventData.points[0];
         });
-
-        function _click(pos, cb) {
-            var promise = _mouseEvent('mousemove', pos, noop).then(function() {
-                return _mouseEvent('mousedown', pos, noop);
-            }).then(function() {
-                return _mouseEvent('click', pos, cb);
-            });
-
-            return promise;
-        }
 
         _click(blankPos, function() {
             expect(ptData).toBe(undefined, 'not firing on blank points');
@@ -980,6 +973,38 @@ describe('@noCI, mapbox plots', function() {
             }, MOUSE_DELAY);
         });
     }
+
+    function _click(pos, cb) {
+        var promise = _mouseEvent('mousemove', pos, noop).then(function() {
+            return _mouseEvent('mousedown', pos, noop);
+        }).then(function() {
+            return _mouseEvent('click', pos, cb);
+        });
+
+        return promise;
+    }
+
+    function _doubleClick(pos) {
+        return _mouseEvent('dblclick', pos, noop);
+    }
+
+    function _drag(p0, p1, cb) {
+        var promise = _mouseEvent('mousemove', p0, noop).then(function() {
+            return _mouseEvent('mousedown', p0, noop);
+        }).then(function() {
+            return _mouseEvent('mousemove', p1, noop);
+        }).then(function() {
+            // repeat mousemove to simulate long dragging motion
+            return _mouseEvent('mousemove', p1, noop);
+        }).then(function() {
+            return _mouseEvent('mouseup', p1, noop);
+        }).then(function() {
+            return _mouseEvent('mouseup', p1, noop);
+        }).then(cb);
+
+        return promise;
+    }
+
 });
 
 describe('@noCI, mapbox toImage', function() {

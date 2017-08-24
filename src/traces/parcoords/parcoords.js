@@ -14,7 +14,6 @@ var Lib = require('../../lib');
 var d3 = require('d3');
 var Drawing = require('../../components/drawing');
 
-
 function keyFun(d) {return d.key;}
 
 function repeat(d) {return [d];}
@@ -65,11 +64,27 @@ function ordinalScaleSnap(scale, v) {
     return a[a.length - 1];
 }
 
+function toText(formatter, texts) {
+    return function(v, i) {
+        if(texts) {
+            var text = texts[i];
+            if(text === null || text === undefined) {
+                return formatter(v);
+            } else {
+                return text;
+            }
+        } else {
+            return formatter(v);
+        }
+    };
+}
+
 function domainScale(height, padding, dimension) {
     var extent = dimensionExtent(dimension);
+    var texts = dimension.ticktext;
     return dimension.tickvals ?
         d3.scale.ordinal()
-            .domain(dimension.tickvals)
+            .domain(dimension.tickvals.map(toText(d3.format(dimension.tickformat), texts)))
             .range(dimension.tickvals
                 .map(function(d) {return (d - extent[0]) / (extent[1] - extent[0]);})
                 .map(function(d) {return (height - padding + d * (padding - (height - padding)));})) :
@@ -549,7 +564,6 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
             var wantedTickCount = d.model.height / d.model.tickDistance;
             var scale = d.domainScale;
             var sdom = scale.domain();
-            var texts = d.ticktext;
             d3.select(this)
                 .call(d3.svg.axis()
                     .orient('left')
@@ -557,7 +571,7 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
                     .outerTickSize(2)
                     .ticks(wantedTickCount, d.tickFormat) // works for continuous scales only...
                     .tickValues(d.ordinal ? // and this works for ordinal scales
-                        sdom.map(function(d, i) {return texts && texts[i] || d;}) :
+                        sdom :
                         null)
                     .tickFormat(d.ordinal ? function(d) {return d;} : null)
                     .scale(scale));

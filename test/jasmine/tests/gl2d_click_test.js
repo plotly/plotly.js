@@ -326,6 +326,39 @@ describe('Test hover and click interactions', function() {
         .then(done);
     });
 
+    it('should output correct event data for heatmapgl (asymmetric case) ', function(done) {
+        var _mock = {
+            data: [{
+                type: 'heatmapgl',
+                z: [[1, 2, 0], [2, 3, 1]],
+                text: [['a', 'b', 'c'], ['D', 'E', 'F']],
+                hoverlabel: {
+                    bgcolor: [['red', 'blue', 'green'], ['cyan', 'pink', 'black']]
+                }
+            }]
+        };
+
+        var run = makeRunner([540, 150], {
+            x: 2,
+            y: 1,
+            curveNumber: 0,
+            pointNumber: [1, 2],
+            bgColor: 'rgb(0, 0, 0)',
+            borderColor: 'rgb(255, 255, 255)',
+            fontSize: 13,
+            fontFamily: 'Arial',
+            fontColor: 'rgb(255, 255, 255)'
+        }, {
+            noUnHover: true,
+            msg: 'heatmapgl'
+        });
+
+        Plotly.plot(gd, _mock)
+        .then(run)
+        .catch(fail)
+        .then(done);
+    });
+
     it('should output correct event data for scattergl after visibility restyle', function(done) {
         var _mock = Lib.extendDeep({}, mock4);
 

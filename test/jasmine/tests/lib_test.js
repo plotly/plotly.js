@@ -1605,6 +1605,337 @@ describe('Test lib.js:', function() {
             expect(c.MESSAGES).toEqual([]);
         });
     });
+
+    describe('keyedContainer', function() {
+        describe('with a filled container', function() {
+            var container, carr;
+
+            beforeEach(function() {
+                container = {
+                    styles: [
+                        {name: 'name1', value: 'value1'},
+                        {name: 'name2', value: 'value2'}
+                    ]
+                };
+
+                carr = Lib.keyedContainer(container, 'styles');
+            });
+
+            describe('modifying the object', function() {
+                it('adds and updates items', function() {
+                    carr.set('foo', 'bar');
+                    carr.set('name1', 'value3');
+
+                    expect(container).toEqual({styles: [
+                        {name: 'name1', value: 'value3'},
+                        {name: 'name2', value: 'value2'},
+                        {name: 'foo', value: 'bar'}
+                    ]});
+                });
+
+                it('removes items', function() {
+                    carr.set('foo', 'bar');
+                    carr.remove('name1');
+
+                    expect(container).toEqual({styles: [
+                        {name: 'name2', value: 'value2'},
+                        {name: 'foo', value: 'bar'}
+                    ]});
+                });
+
+                it('gets items', function() {
+                    expect(carr.get('foo')).toBe(undefined);
+                    expect(carr.get('name1')).toEqual('value1');
+
+                    carr.remove('name1');
+
+                    expect(carr.get('name1')).toBe(undefined);
+
+                    carr.rename('name2', 'name3');
+
+                    expect(carr.get('name3')).toEqual('value2');
+                });
+
+                it('renames items', function() {
+                    carr.rename('name2', 'name3');
+
+                    expect(container).toEqual({styles: [
+                        {name: 'name1', value: 'value1'},
+                        {name: 'name3', value: 'value2'}
+                    ]});
+                });
+            });
+
+            describe('constructing updates', function() {
+                it('constructs updates for addition and modification', function() {
+                    carr.set('foo', 'bar');
+                    carr.set('name1', 'value3');
+
+                    expect(carr.constructUpdate()).toEqual({
+                        'styles[0].value': 'value3',
+                        'styles[2].name': 'foo',
+                        'styles[2].value': 'bar'
+                    });
+                });
+
+                it('constructs updates for removal', function() {
+                    carr.set('foo', 'bar');
+                    carr.remove('name1');
+
+                    expect(carr.constructUpdate()).toEqual({
+                        'styles[0].name': 'name2',
+                        'styles[0].value': 'value2',
+                        'styles[1].name': 'foo',
+                        'styles[1].value': 'bar',
+                        'styles[2]': null
+                    });
+                });
+
+                it('constructs updates for renaming', function() {
+                    carr.rename('name2', 'name3');
+
+                    expect(carr.constructUpdate()).toEqual({
+                        'styles[1].name': 'name3'
+                    });
+                });
+            });
+        });
+
+        describe('with custom named properties', function() {
+            it('performs all of the operations', function() {
+                var container = {styles: [
+                    {foo: 'name1', bar: 'value1'},
+                    {foo: 'name2', bar: 'value2'}
+                ]};
+
+                var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar');
+
+                // SET A VALUE
+
+                carr.set('name3', 'value3');
+
+                expect(container).toEqual({styles: [
+                    {foo: 'name1', bar: 'value1'},
+                    {foo: 'name2', bar: 'value2'},
+                    {foo: 'name3', bar: 'value3'}
+                ]});
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[2].foo': 'name3',
+                    'styles[2].bar': 'value3'
+                });
+
+                // REMOVE A VALUE
+
+                carr.remove('name2');
+
+                expect(container).toEqual({styles: [
+                    {foo: 'name1', bar: 'value1'},
+                    {foo: 'name3', bar: 'value3'}
+                ]});
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[1].foo': 'name3',
+                    'styles[1].bar': 'value3',
+                    'styles[2]': null
+                });
+
+                // RENAME A VALUE
+
+                carr.rename('name1', 'name2');
+
+                expect(container).toEqual({styles: [
+                    {foo: 'name2', bar: 'value1'},
+                    {foo: 'name3', bar: 'value3'}
+                ]});
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[0].foo': 'name2',
+                    'styles[1].foo': 'name3',
+                    'styles[1].bar': 'value3',
+                    'styles[2]': null
+                });
+
+                // SET A VALUE
+
+                carr.set('name2', 'value2');
+
+                expect(container).toEqual({styles: [
+                    {foo: 'name2', bar: 'value2'},
+                    {foo: 'name3', bar: 'value3'}
+                ]});
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[0].foo': 'name2',
+                    'styles[0].bar': 'value2',
+                    'styles[1].foo': 'name3',
+                    'styles[1].bar': 'value3',
+                    'styles[2]': null
+                });
+
+            });
+        });
+
+        describe('with nested valueName', function() {
+            it('gets and sets values', function() {
+                var container = {styles: []};
+
+                var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar.value');
+
+                carr.set('name1', 'value1');
+
+                expect(container).toEqual({styles: [
+                    {foo: 'name1', bar: {value: 'value1'}}
+                ]});
+
+                expect(carr.get('name1')).toEqual('value1');
+            });
+
+            it('renames values', function() {
+                var container = {styles: []};
+
+                var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar.value');
+
+                carr.set('name1', 'value1');
+                carr.rename('name1', 'name2');
+
+                expect(container).toEqual({styles: [
+                    {foo: 'name2', bar: {value: 'value1'}}
+                ]});
+
+                expect(carr.get('name2')).toEqual('value1');
+                expect(carr.get('name1')).toBeUndefined();
+            });
+
+            it('constructs updates', function() {
+                var container = {styles: [
+                    {foo: 'name1', bar: {value: 'value1'}},
+                    {foo: 'name2', bar: {value: 'value2'}}
+                ]};
+
+                var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar.value');
+
+                carr.set('name3', 'value3');
+                carr.remove('name2');
+                carr.rename('name1', 'name4');
+
+                expect(container).toEqual({styles: [
+                    {foo: 'name4', bar: {value: 'value1'}},
+                    {foo: 'name2'},
+                    {foo: 'name3', bar: {value: 'value3'}}
+                ]});
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[0].foo': 'name4',
+                    'styles[1].bar.value': null,
+                    'styles[2].foo': 'name3',
+                    'styles[2].bar.value': 'value3',
+                });
+            });
+
+            it('unsets but does not remove items with extra top-level data', function() {
+                var container = {styles: [
+                    {foo: 'name', bar: {value: 'value'}, extra: 'data'}
+                ]};
+
+                var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar.value');
+
+                carr.remove('name');
+
+                expect(container.styles).toEqual([{foo: 'name', extra: 'data'}]);
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[0].bar.value': null,
+                });
+            });
+
+            it('unsets but does not remove items with extra value data', function() {
+                var container = {styles: [
+                    {foo: 'name1', bar: {value: 'value1', extra: 'data'}},
+                    {foo: 'name2', bar: {value: 'value2'}},
+                    {foo: 'name3', bar: {value: 'value3', extra: 'data'}},
+                ]};
+
+                var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar.value');
+
+                // Remove the first value:
+
+                carr.remove('name1');
+
+                expect(container.styles).toEqual([
+                    {foo: 'name1', bar: {extra: 'data'}},
+                    {foo: 'name2', bar: {value: 'value2'}},
+                    {foo: 'name3', bar: {value: 'value3', extra: 'data'}},
+                ]);
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[0].bar.value': null
+                });
+
+                // Remove the second value:
+                carr.remove('name2');
+
+                expect(container.styles).toEqual([
+                    {foo: 'name1', bar: {extra: 'data'}},
+                    {foo: 'name2'},
+                    {foo: 'name3', bar: {value: 'value3', extra: 'data'}},
+                ]);
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[0].bar.value': null,
+                    'styles[1].bar.value': null
+                });
+            });
+
+            it('does not compress nested attributes *sigh*', function() {
+                var container = {styles: [
+                    {foo: 'name1', bar: {value: 'value1'}},
+                    {foo: 'name2', bar: {value: 'value2', extra: 'data2'}},
+                ]};
+
+                var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar.value');
+
+                // Remove the first value:
+
+                carr.remove('name1');
+
+                expect(container.styles).toEqual([
+                    {foo: 'name1'},
+                    {foo: 'name2', bar: {value: 'value2', extra: 'data2'}},
+                ]);
+
+                expect(carr.constructUpdate()).toEqual({
+                    'styles[0].bar.value': null
+                });
+            });
+        });
+    });
+
+    describe('templateString', function() {
+        it('evaluates attributes', function() {
+            expect(Lib.templateString('foo %{bar}', {bar: 'baz'})).toEqual('foo baz');
+        });
+
+        it('evaluates nested properties', function() {
+            expect(Lib.templateString('foo %{bar.baz}', {bar: {baz: 'asdf'}})).toEqual('foo asdf');
+        });
+
+        it('evaluates array nested properties', function() {
+            expect(Lib.templateString('foo %{bar[0].baz}', {bar: [{baz: 'asdf'}]})).toEqual('foo asdf');
+        });
+
+        it('subtitutes multiple matches', function() {
+            expect(Lib.templateString('foo %{group} %{trace}', {group: 'asdf', trace: 'jkl;'})).toEqual('foo asdf jkl;');
+        });
+
+        it('replaces missing matches with empty string', function() {
+            expect(Lib.templateString('foo %{group} %{trace}', {})).toEqual('foo  ');
+        });
+
+        it('replaces empty key with empty string', function() {
+            expect(Lib.templateString('foo %{} %{}', {})).toEqual('foo  ');
+        });
+    });
 });
 
 describe('Queue', function() {

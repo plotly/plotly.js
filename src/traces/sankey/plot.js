@@ -115,24 +115,26 @@ function castHoverOption(trace, attr) {
 }
 
 module.exports = function plot(gd, calcData) {
-
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._paper;
     var size = fullLayout._size;
 
     var linkSelect = function(element, d) {
-        gd._hoverdata = [d.link];
-        gd._hoverdata.trace = calcData.trace;
+        var evt = d.link;
+        evt.originalEvent = d3.event;
+        gd._hoverdata = [evt];
         Fx.click(gd, { target: true });
     };
 
     var linkHover = function(element, d, sankey) {
+        var evt = d.link;
+        evt.originalEvent = d3.event;
         d3.select(element).call(linkHoveredStyle.bind(0, d, sankey, true));
-        Fx.hover(gd, d.link, 'sankey');
+        Fx.hover(gd, evt, 'sankey');
     };
 
     var linkHoverFollow = function(element, d) {
-        var trace = gd._fullData[d.traceId];
+        var trace = d.link.trace;
         var rootBBox = gd.getBoundingClientRect();
         var boundingBox = element.getBoundingClientRect();
         var hoverCenterX = boundingBox.left + boundingBox.width / 2;
@@ -166,6 +168,7 @@ module.exports = function plot(gd, calcData) {
     var linkUnhover = function(element, d, sankey) {
         d3.select(element).call(linkNonHoveredStyle.bind(0, d, sankey, true));
         gd.emit('plotly_unhover', {
+            event: d3.event,
             points: [d.link]
         });
 
@@ -173,19 +176,22 @@ module.exports = function plot(gd, calcData) {
     };
 
     var nodeSelect = function(element, d, sankey) {
-        gd._hoverdata = [d.node];
-        gd._hoverdata.trace = calcData.trace;
+        var evt = d.node;
+        evt.originalEvent = d3.event;
+        gd._hoverdata = [evt];
         d3.select(element).call(nodeNonHoveredStyle, d, sankey);
         Fx.click(gd, { target: true });
     };
 
     var nodeHover = function(element, d, sankey) {
+        var evt = d.node;
+        evt.originalEvent = d3.event;
         d3.select(element).call(nodeHoveredStyle, d, sankey);
-        Fx.hover(gd, d.node, 'sankey');
+        Fx.hover(gd, evt, 'sankey');
     };
 
     var nodeHoverFollow = function(element, d) {
-        var trace = gd._fullData[d.traceId];
+        var trace = d.node.trace;
         var nodeRect = d3.select(element).select('.nodeRect');
         var rootBBox = gd.getBoundingClientRect();
         var boundingBox = nodeRect.node().getBoundingClientRect();
@@ -220,9 +226,9 @@ module.exports = function plot(gd, calcData) {
     };
 
     var nodeUnhover = function(element, d, sankey) {
-
         d3.select(element).call(nodeNonHoveredStyle, d, sankey);
         gd.emit('plotly_unhover', {
+            event: d3.event,
             points: [d.node]
         });
 

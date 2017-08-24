@@ -59,5 +59,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
         Lib.noneOrAll(containerIn.domain, containerOut.domain, [0, 1]);
     }
 
+    coerce('layer');
+
     return containerOut;
 };

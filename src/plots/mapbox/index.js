@@ -11,6 +11,7 @@
 
 var mapboxgl = require('mapbox-gl');
 
+var Lib = require('../../lib');
 var Plots = require('../plots');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
@@ -73,6 +74,15 @@ exports.plot = function plotMapbox(gd) {
             });
 
             fullLayout[id]._subplot = mapbox;
+        }
+
+        if(!mapbox.viewInitial) {
+            mapbox.viewInitial = {
+                center: Lib.extendFlat({}, opts.center),
+                zoom: opts.zoom,
+                bearing: opts.bearing,
+                pitch: opts.pitch
+            };
         }
 
         mapbox.plot(subplotCalcData, fullLayout, gd._promises);

@@ -137,13 +137,17 @@ describe('Test histogram2d', function() {
         });
     });
 
-    describe('relayout interaction', function() {
+    describe('restyle / relayout interaction', function() {
+
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
 
         afterEach(destroyGraphDiv);
 
         it('should update paths on zooms', function(done) {
-            var gd = createGraphDiv();
-
             Plotly.newPlot(gd, [{
                 type: 'histogram2dcontour',
                 x: [1, 1, 2, 2, 3],
@@ -156,6 +160,75 @@ describe('Test histogram2d', function() {
             .then(done);
         });
 
+
+        it('handles autobin correctly on restyles', function() {
+            var x1 = [
+                1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4,
+                1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4];
+            var y1 = [
+                1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4,
+                1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4];
+            Plotly.newPlot(gd, [{type: 'histogram2d', x: x1, y: y1}]);
+            expect(gd._fullData[0].xbins).toEqual({start: 0.5, end: 4.5, size: 1});
+            expect(gd._fullData[0].ybins).toEqual({start: 0.5, end: 4.5, size: 1});
+            expect(gd._fullData[0].autobinx).toBe(true);
+            expect(gd._fullData[0].autobiny).toBe(true);
+
+            // same range but fewer samples increases sizes
+            Plotly.restyle(gd, {x: [[1, 3, 4]], y: [[1, 2, 4]]});
+            expect(gd._fullData[0].xbins).toEqual({start: -0.5, end: 5.5, size: 2});
+            expect(gd._fullData[0].ybins).toEqual({start: -0.5, end: 5.5, size: 2});
+            expect(gd._fullData[0].autobinx).toBe(true);
+            expect(gd._fullData[0].autobiny).toBe(true);
+
+            // larger range
+            Plotly.restyle(gd, {x: [[10, 30, 40]], y: [[10, 20, 40]]});
+            expect(gd._fullData[0].xbins).toEqual({start: -0.5, end: 59.5, size: 20});
+            expect(gd._fullData[0].ybins).toEqual({start: -0.5, end: 59.5, size: 20});
+            expect(gd._fullData[0].autobinx).toBe(true);
+            expect(gd._fullData[0].autobiny).toBe(true);
+
+            // explicit changes to bin settings
+            Plotly.restyle(gd, 'xbins.start', 12);
+            expect(gd._fullData[0].xbins).toEqual({start: 12, end: 59.5, size: 20});
+            expect(gd._fullData[0].ybins).toEqual({start: -0.5, end: 59.5, size: 20});
+            expect(gd._fullData[0].autobinx).toBe(false);
+            expect(gd._fullData[0].autobiny).toBe(true);
+
+            Plotly.restyle(gd, {'ybins.end': 12, 'ybins.size': 3});
+            expect(gd._fullData[0].xbins).toEqual({start: 12, end: 59.5, size: 20});
+            expect(gd._fullData[0].ybins).toEqual({start: -0.5, end: 12, size: 3});
+            expect(gd._fullData[0].autobinx).toBe(false);
+            expect(gd._fullData[0].autobiny).toBe(false);
+
+            // restart autobin
+            Plotly.restyle(gd, {autobinx: true, autobiny: true});
+            expect(gd._fullData[0].xbins).toEqual({start: -0.5, end: 59.5, size: 20});
+            expect(gd._fullData[0].ybins).toEqual({start: -0.5, end: 59.5, size: 20});
+            expect(gd._fullData[0].autobinx).toBe(true);
+            expect(gd._fullData[0].autobiny).toBe(true);
+        });
+
+        it('respects explicit autobin: false as a one-time autobin', function() {
+            var x1 = [
+                1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4,
+                1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4];
+            var y1 = [
+                1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4,
+                1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4];
+            Plotly.newPlot(gd, [{type: 'histogram2d', x: x1, y: y1, autobinx: false, autobiny: false}]);
+            expect(gd._fullData[0].xbins).toEqual({start: 0.5, end: 4.5, size: 1});
+            expect(gd._fullData[0].ybins).toEqual({start: 0.5, end: 4.5, size: 1});
+            expect(gd._fullData[0].autobinx).toBe(false);
+            expect(gd._fullData[0].autobiny).toBe(false);
+
+            // with autobin false this will no longer update the bins.
+            Plotly.restyle(gd, {x: [[1, 3, 4]], y: [[1, 2, 4]]});
+            expect(gd._fullData[0].xbins).toEqual({start: 0.5, end: 4.5, size: 1});
+            expect(gd._fullData[0].ybins).toEqual({start: 0.5, end: 4.5, size: 1});
+            expect(gd._fullData[0].autobinx).toBe(false);
+            expect(gd._fullData[0].autobiny).toBe(false);
+        });
     });
 
 });

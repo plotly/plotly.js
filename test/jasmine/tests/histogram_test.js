@@ -1,8 +1,13 @@
+var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
 var supplyDefaults = require('@src/traces/histogram/defaults');
 var calc = require('@src/traces/histogram/calc');
+
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var customMatchers = require('../assets/custom_matchers');
 
 
 describe('Test histogram', function() {
@@ -158,10 +163,20 @@ describe('Test histogram', function() {
 
 
     describe('calc', function() {
-        function _calc(opts) {
-            var base = { type: 'histogram' },
-                trace = Lib.extendFlat({}, base, opts),
-                gd = { data: [trace] };
+        beforeAll(function() {
+            jasmine.addMatchers(customMatchers);
+        });
+
+        function _calc(opts, extraTraces) {
+            var base = { type: 'histogram' };
+            var trace = Lib.extendFlat({}, base, opts);
+            var gd = { data: [trace] };
+
+            if(Array.isArray(extraTraces)) {
+                extraTraces.forEach(function(extraTrace) {
+                    gd.data.push(Lib.extendFlat({}, base, extraTrace));
+                });
+            }
 
             Plots.supplyDefaults(gd);
             var fullTrace = gd._fullData[0];
@@ -244,6 +259,98 @@ describe('Test histogram', function() {
                 {b: 0, p: x2, s: 0},
                 {b: 0, p: x3, s: 1}
             ]);
+        });
+
+        it('should handle very small bins', function() {
+            var out = _calc({
+                x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                xbins: {
+                    start: 0,
+                    end: 10,
+                    size: 0.001
+                }
+            });
+
+            expect(out.length).toEqual(9001);
+        });
+
+        function calcPositions(opts, extraTraces) {
+            return _calc(opts, extraTraces).map(function(v) { return v.p; });
+        }
+
+        it('harmonizes autobins when all traces are autobinned', function() {
+            var trace1 = {x: [1, 2, 3, 4]};
+            var trace2 = {x: [5, 5.5, 6, 6.5]};
+
+            expect(calcPositions(trace1)).toBeCloseToArray([0.5, 2.5, 4.5], 5);
+
+            expect(calcPositions(trace2)).toBeCloseToArray([5.5, 6.5], 5);
+
+            expect(calcPositions(trace1, [trace2])).toEqual([1, 2, 3, 4]);
+            // huh, turns out even this one is an example of "unexpected bin positions"
+            // (see another example below) - in this case it's because trace1 gets
+            // autoshifted to keep integers off the bin edges, whereas trace2 doesn't
+            // because there are as many integers as half-integers.
+            // In this case though, it's unexpected but arguably better than the
+            // "expected" result.
+            expect(calcPositions(trace2, [trace1])).toEqual([5, 6, 7]);
+        });
+
+        it('can sometimes give unexpected bin positions', function() {
+            // documenting an edge case that might not be desirable but for now
+            // we've decided to ignore: a larger bin sets the bin start, but then it
+            // doesn't quite make sense with the smaller bin we end up with
+            // we *could* fix this by ensuring that the bin start is based on the
+            // same bin spec that gave the minimum bin size, but incremented down to
+            // include the minimum start... but that would have awkward edge cases
+            // involving month bins so for now we're ignoring it.
+
+            // all integers, so all autobins should get shifted to start 0.5 lower
+            // than they otherwise would.
+            var trace1 = {x: [1, 2, 3, 4]};
+            var trace2 = {x: [-2, 1, 4, 7]};
+
+            // as above... size: 2
+            expect(calcPositions(trace1)).toBeCloseToArray([0.5, 2.5, 4.5], 5);
+
+            // {size: 5, start: -5.5}: -5..-1, 0..4, 5..9
+            expect(calcPositions(trace2)).toEqual([-3, 2, 7]);
+
+            // unexpected behavior when we put these together,
+            // because 2 and 5 are mutually prime. Normally you could never get
+            // groupings 1&2, 3&4... you'd always get 0&1, 2&3...
+            expect(calcPositions(trace1, [trace2])).toBeCloseToArray([1.5, 3.5], 5);
+            expect(calcPositions(trace2, [trace1])).toBeCloseToArray([
+                -2.5, -0.5, 1.5, 3.5, 5.5, 7.5
+            ], 5);
+        });
+
+        it('harmonizes autobins with smaller manual bins', function() {
+            var trace1 = {x: [1, 2, 3, 4]};
+            var trace2 = {x: [5, 6, 7, 8], xbins: {start: 4.3, end: 7.1, size: 0.4}};
+
+            expect(calcPositions(trace1, [trace2])).toBeCloseToArray([
+                0.9, 1.3, 1.7, 2.1, 2.5, 2.9, 3.3, 3.7, 4.1
+            ], 5);
+        });
+
+        it('harmonizes autobins with larger manual bins', function() {
+            var trace1 = {x: [1, 2, 3, 4]};
+            var trace2 = {x: [5, 6, 7, 8], xbins: {start: 4.3, end: 15, size: 7}};
+
+            expect(calcPositions(trace1, [trace2])).toBeCloseToArray([
+                0.8, 2.55, 4.3
+            ], 5);
+        });
+
+        it('ignores traces on other axes', function() {
+            var trace1 = {x: [1, 2, 3, 4]};
+            var trace2 = {x: [5, 5.5, 6, 6.5]};
+            var trace3 = {x: [1, 1.1, 1.2, 1.3], xaxis: 'x2'};
+            var trace4 = {x: [1, 1.2, 1.4, 1.6], yaxis: 'y2'};
+
+            expect(calcPositions(trace1, [trace2, trace3, trace4])).toEqual([1, 2, 3, 4]);
+            expect(calcPositions(trace3)).toBeCloseToArray([0.9, 1.1, 1.3], 5);
         });
 
         describe('cumulative distribution functions', function() {
@@ -351,5 +458,60 @@ describe('Test histogram', function() {
             });
         });
 
+    });
+
+    describe('plot / restyle', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should update autobins correctly when restyling', function() {
+            // note: I'm *not* testing what this does to gd.data, as that's
+            // really a matter of convenience and will perhaps change later (v2?)
+            var data1 = [1.5, 2, 2, 3, 3, 3, 4, 4, 5];
+            Plotly.plot(gd, [{x: data1, type: 'histogram' }]);
+            expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
+            expect(gd._fullData[0].autobinx).toBe(true);
+
+            // same range but fewer samples changes autobin size
+            var data2 = [1.5, 5];
+            Plotly.restyle(gd, 'x', [data2]);
+            expect(gd._fullData[0].xbins).toEqual({start: -2.5, end: 7.5, size: 5});
+            expect(gd._fullData[0].autobinx).toBe(true);
+
+            // different range
+            var data3 = [10, 20.2, 20, 30, 30, 30, 40, 40, 50];
+            Plotly.restyle(gd, 'x', [data3]);
+            expect(gd._fullData[0].xbins).toEqual({start: 5, end: 55, size: 10});
+            expect(gd._fullData[0].autobinx).toBe(true);
+
+            // explicit change to a bin attribute clears autobin
+            Plotly.restyle(gd, 'xbins.start', 3);
+            expect(gd._fullData[0].xbins).toEqual({start: 3, end: 55, size: 10});
+            expect(gd._fullData[0].autobinx).toBe(false);
+
+            // restart autobin
+            Plotly.restyle(gd, 'autobinx', true);
+            expect(gd._fullData[0].xbins).toEqual({start: 5, end: 55, size: 10});
+            expect(gd._fullData[0].autobinx).toBe(true);
+        });
+
+        it('respects explicit autobin: false as a one-time autobin', function() {
+            var data1 = [1.5, 2, 2, 3, 3, 3, 4, 4, 5];
+            Plotly.plot(gd, [{x: data1, type: 'histogram', autobinx: false }]);
+            // we have no bins, so even though autobin is false we have to autobin once
+            expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
+            expect(gd._fullData[0].autobinx).toBe(false);
+
+            // since autobin is false, this will not change the bins
+            var data2 = [1.5, 5];
+            Plotly.restyle(gd, 'x', [data2]);
+            expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
+            expect(gd._fullData[0].autobinx).toBe(false);
+        });
     });
 });

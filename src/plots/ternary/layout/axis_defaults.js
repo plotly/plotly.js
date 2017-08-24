@@ -79,4 +79,6 @@ module.exports = function supplyLayoutDefaults(containerIn, containerOut, option
         coerce('gridcolor', colorMix(dfltColor, options.bgColor, 60).toRgbString());
         coerce('gridwidth');
     }
+
+    coerce('layer');
 };

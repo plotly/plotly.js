@@ -1929,6 +1929,112 @@ describe('Test axes', function() {
             });
         }
 
+        it('reverts to "power" for SI/B exponentformat beyond the prefix range (linear case)', function() {
+            var textOut = mockCalc({
+                type: 'linear',
+                tickmode: 'linear',
+                exponentformat: 'B',
+                showexponent: 'all',
+                tick0: 0,
+                dtick: 1e13,
+                range: [8.5e13, 11.5e13]
+            });
+
+            expect(textOut).toEqual([
+                '90T', '100T', '110T'
+            ]);
+
+            textOut = mockCalc({
+                type: 'linear',
+                tickmode: 'linear',
+                exponentformat: 'B',
+                showexponent: 'all',
+                tick0: 0,
+                dtick: 1e14,
+                range: [8.5e14, 11.5e14]
+            });
+
+            expect(textOut).toEqual([
+                '0.9×10<sup>15</sup>',
+                '1×10<sup>15</sup>',
+                '1.1×10<sup>15</sup>'
+            ]);
+
+            textOut = mockCalc({
+                type: 'linear',
+                tickmode: 'linear',
+                exponentformat: 'SI',
+                showexponent: 'all',
+                tick0: 0,
+                dtick: 1e-16,
+                range: [8.5e-16, 11.5e-16]
+            });
+
+            expect(textOut).toEqual([
+                '0.9f', '1f', '1.1f'
+            ]);
+
+            textOut = mockCalc({
+                type: 'linear',
+                tickmode: 'linear',
+                exponentformat: 'SI',
+                showexponent: 'all',
+                tick0: 0,
+                dtick: 1e-17,
+                range: [8.5e-17, 11.5e-17]
+            });
+
+            expect(textOut).toEqual([
+                '0.9×10<sup>\u221216</sup>',
+                '1×10<sup>\u221216</sup>',
+                '1.1×10<sup>\u221216</sup>'
+            ]);
+        });
+
+        it('reverts to "power" for SI/B exponentformat beyond the prefix range (log case)', function() {
+            var textOut = mockCalc({
+                type: 'log',
+                tickmode: 'linear',
+                exponentformat: 'B',
+                showexponent: 'all',
+                tick0: 0,
+                dtick: 1,
+                range: [-18.5, 18.5]
+            });
+
+            expect(textOut).toEqual([
+                '10<sup>\u221218</sup>',
+                '10<sup>\u221217</sup>',
+                '10<sup>\u221216</sup>',
+                '1f', '10f', '100f', '1p', '10p', '100p', '1n', '10n', '100n',
+                '1μ', '10μ', '100μ', '0.001', '0.01', '0.1', '1', '10', '100',
+                '1000', '10k', '100k', '1M', '10M', '100M', '1B', '10B', '100B',
+                '1T', '10T', '100T',
+                '10<sup>15</sup>',
+                '10<sup>16</sup>',
+                '10<sup>17</sup>',
+                '10<sup>18</sup>'
+            ]);
+
+            textOut = mockCalc({
+                type: 'log',
+                tickmode: 'linear',
+                exponentformat: 'SI',
+                showexponent: 'all',
+                tick0: 0,
+                dtick: 'D2',
+                range: [7.9, 12.1]
+            });
+
+            expect(textOut).toEqual([
+                '100M', '2', '5',
+                '1G', '2', '5',
+                '10G', '2', '5',
+                '100G', '2', '5',
+                '1T'
+            ]);
+        });
+
         it('provides a new date suffix whenever the suffix changes', function() {
             var ax = {
                 type: 'date',
@@ -2224,6 +2330,55 @@ describe('Test axes', function() {
                 ['2000-01-01 11:00:00.1', 'Jan 1, 2000, 11:00:00.1'],
                 ['2000-01-01 11:00:00.0001', 'Jan 1, 2000, 11:00:00.0001']
             ]);
+        });
+
+        it('avoids infinite loops due to rounding errors', function() {
+            var textOut = mockCalc({
+                type: 'linear',
+                tickmode: 'linear',
+                tick0: 1e200,
+                dtick: 1e-200,
+                range: [1e200, 2e200]
+            });
+
+            // This actually gives text '-Infinity' because it can't
+            // calculate the first tick properly, but since it's not going to
+            // be able to do any better with the rest, we don't much care.
+            expect(textOut.length).toBe(1);
+        });
+
+        it('truncates at the greater of 1001 ticks or one per pixel', function() {
+            var ax = {
+                type: 'linear',
+                tickmode: 'linear',
+                tick0: 0,
+                dtick: 1,
+                range: [0, 1e6],
+                _length: 100
+            };
+
+            expect(mockCalc(ax).length).toBe(1001);
+
+            ax._length = 10000;
+
+            expect(mockCalc(ax).length).toBe(10001);
+        });
+
+        it('never hides the exponent when in hover mode', function() {
+            var ax = {
+                type: 'linear',
+                tickmode: 'linear',
+                tick0: 0,
+                dtick: 2e20,
+                range: [0, 1.0732484076433121e21],
+                _length: 270
+            };
+
+            mockCalc(ax);
+
+            expect(mockHoverText(ax, 1e-21)).toBe('1×10<sup>−21</sup>');
+            expect(mockHoverText(ax, 1)).toBe('1');
+            expect(mockHoverText(ax, 1e21)).toBe('1×10<sup>21</sup>');
         });
     });
 

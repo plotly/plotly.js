@@ -31,7 +31,7 @@ function Ternary(options, fullLayout) {
     this.id = options.id;
     this.graphDiv = options.graphDiv;
     this.init(fullLayout);
-    this.makeFramework();
+    this.makeFramework(fullLayout);
 }
 
 module.exports = Ternary;
@@ -43,22 +43,33 @@ proto.init = function(fullLayout) {
     this.defs = fullLayout._defs;
     this.layoutId = fullLayout._uid;
     this.traceHash = {};
+    this.layers = {};
 };
 
 proto.plot = function(ternaryCalcData, fullLayout) {
-    var _this = this,
-        ternaryLayout = fullLayout[_this.id],
-        graphSize = fullLayout._size;
+    var _this = this;
+    var ternaryLayout = fullLayout[_this.id];
+    var graphSize = fullLayout._size;
 
+    _this._hasClipOnAxisFalse = false;
+    for(var i = 0; i < ternaryCalcData.length; i++) {
+        var trace = ternaryCalcData[i][0].trace;
+
+        if(trace.cliponaxis === false) {
+            _this._hasClipOnAxisFalse = true;
+            break;
+        }
+    }
+
+    _this.updateLayers(ternaryLayout);
     _this.adjustLayout(ternaryLayout, graphSize);
-
     Plots.generalUpdatePerTraceModule(_this, ternaryCalcData, ternaryLayout);
-
     _this.layers.plotbg.select('path').call(Color.fill, ternaryLayout.bgcolor);
 };
 
-proto.makeFramework = function() {
+proto.makeFramework = function(fullLayout) {
     var _this = this;
+    var ternaryLayout = fullLayout[_this.id];
 
     var defGroup = _this.defs.selectAll('g.clips')
         .data([0]);
@@ -66,10 +77,17 @@ proto.makeFramework = function() {
         .classed('clips', true);
 
     // clippath for this ternary subplot
-    var clipId = 'clip' + _this.layoutId + _this.id;
+    var clipId = _this.clipId = 'clip' + _this.layoutId + _this.id;
     _this.clipDef = defGroup.selectAll('#' + clipId)
         .data([0]);
     _this.clipDef.enter().append('clipPath').attr('id', clipId)
+        .append('path').attr('d', 'M0,0Z');
+
+    // 'relative' clippath (i.e. no translation) for this ternary subplot
+    var clipIdRelative = _this.clipIdRelative = 'clip-relative' + _this.layoutId + _this.id;
+    _this.clipDefRelative = defGroup.selectAll('#' + clipIdRelative)
+        .data([0]);
+    _this.clipDefRelative.enter().append('clipPath').attr('id', clipIdRelative)
         .append('path').attr('d', 'M0,0Z');
 
     // container for everything in this ternary subplot
@@ -78,50 +96,75 @@ proto.makeFramework = function() {
     _this.plotContainer.enter().append('g')
         .classed(_this.id, true);
 
-    _this.layers = {};
+    _this.updateLayers(ternaryLayout);
+
+    Drawing.setClipUrl(_this.layers.backplot, clipId);
+    Drawing.setClipUrl(_this.layers.grids, clipId);
+};
+
+proto.updateLayers = function(ternaryLayout) {
+    var _this = this;
+    var layers = _this.layers;
 
     // inside that container, we have one container for the data, and
     // one each for the three axes around it.
-    var plotLayers = [
-        'draglayer',
-        'plotbg',
-        'backplot',
-        'grids',
-        'frontplot',
-        'aaxis', 'baxis', 'caxis', 'axlines'
-    ];
+
+    var plotLayers = ['draglayer', 'plotbg', 'backplot', 'grids'];
+
+    if(ternaryLayout.aaxis.layer === 'below traces') {
+        plotLayers.push('aaxis', 'aline');
+    }
+    if(ternaryLayout.baxis.layer === 'below traces') {
+        plotLayers.push('baxis', 'bline');
+    }
+    if(ternaryLayout.caxis.layer === 'below traces') {
+        plotLayers.push('caxis', 'cline');
+    }
+
+    plotLayers.push('frontplot');
+
+    if(ternaryLayout.aaxis.layer === 'above traces') {
+        plotLayers.push('aaxis', 'aline');
+    }
+    if(ternaryLayout.baxis.layer === 'above traces') {
+        plotLayers.push('baxis', 'bline');
+    }
+    if(ternaryLayout.caxis.layer === 'above traces') {
+        plotLayers.push('caxis', 'cline');
+    }
+
     var toplevel = _this.plotContainer.selectAll('g.toplevel')
-        .data(plotLayers);
+        .data(plotLayers, String);
+
+    var grids = ['agrid', 'bgrid', 'cgrid'];
+
     toplevel.enter().append('g')
         .attr('class', function(d) { return 'toplevel ' + d; })
         .each(function(d) {
             var s = d3.select(this);
-            _this.layers[d] = s;
+            layers[d] = s;
 
             // containers for different trace types.
             // NOTE - this is different from cartesian, where all traces
             // are in front of grids. Here I'm putting maps behind the grids
             // so the grids will always be visible if they're requested.
             // Perhaps we want that for cartesian too?
-            if(d === 'frontplot') s.append('g').classed('scatterlayer', true);
-            else if(d === 'backplot') s.append('g').classed('maplayer', true);
-            else if(d === 'plotbg') s.append('path').attr('d', 'M0,0Z');
-            else if(d === 'axlines') {
-                s.selectAll('path').data(['aline', 'bline', 'cline'])
-                    .enter().append('path').each(function(d) {
-                        d3.select(this).classed(d, true);
-                    });
+            if(d === 'frontplot') {
+                s.append('g').classed('scatterlayer', true);
+            } else if(d === 'backplot') {
+                s.append('g').classed('maplayer', true);
+            } else if(d === 'plotbg') {
+                s.append('path').attr('d', 'M0,0Z');
+            } else if(d === 'aline' || d === 'bline' || d === 'cline') {
+                s.append('path');
+            } else if(d === 'grids') {
+                grids.forEach(function(d) {
+                    layers[d] = s.append('g').classed('grid ' + d, true);
+                });
             }
         });
 
-    var grids = _this.plotContainer.select('.grids').selectAll('g.grid')
-        .data(['agrid', 'bgrid', 'cgrid']);
-    grids.enter().append('g')
-        .attr('class', function(d) { return 'grid ' + d; })
-        .each(function(d) { _this.layers[d] = d3.select(this); });
-
-    _this.plotContainer.selectAll('.backplot,.frontplot,.grids')
-        .call(Drawing.setClipUrl, clipId);
+    toplevel.order();
 };
 
 var w_over_h = Math.sqrt(4 / 3);
@@ -175,6 +218,16 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     };
     setConvert(_this.xaxis, _this.graphDiv._fullLayout);
     _this.xaxis.setScale();
+    _this.xaxis.isPtWithinRange = function(d) {
+        return (
+            d.a >= _this.aaxis.range[0] &&
+            d.a <= _this.aaxis.range[1] &&
+            d.b >= _this.baxis.range[1] &&
+            d.b <= _this.baxis.range[0] &&
+            d.c >= _this.caxis.range[1] &&
+            d.c <= _this.caxis.range[0]
+        );
+    };
 
     _this.yaxis = {
         type: 'linear',
@@ -187,6 +240,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     };
     setConvert(_this.yaxis, _this.graphDiv._fullLayout);
     _this.yaxis.setScale();
+    _this.yaxis.isPtWithinRange = function() { return true; };
 
     // set up the modified axes for tick drawing
     var yDomain0 = _this.yaxis.domain[0];
@@ -257,9 +311,14 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     _this.clipDef.select('path').attr('d', triangleClip);
     _this.layers.plotbg.select('path').attr('d', triangleClip);
 
+    var triangleClipRelative = 'M0,' + h + 'h' + w + 'l-' + (w / 2) + ',-' + h + 'Z';
+    _this.clipDefRelative.select('path').attr('d', triangleClipRelative);
+
     var plotTransform = 'translate(' + x0 + ',' + y0 + ')';
     _this.plotContainer.selectAll('.scatterlayer,.maplayer')
         .attr('transform', plotTransform);
+
+    _this.clipDefRelative.select('path').attr('transform', null);
 
     // TODO: shift axes to accommodate linewidth*sin(30) tick mark angle
 
@@ -282,18 +341,17 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     // make these counterproductive.
     _this.plotContainer.selectAll('.crisp').classed('crisp', false);
 
-    var axlines = _this.layers.axlines;
-    axlines.select('.aline')
+    _this.layers.aline.select('path')
         .attr('d', aaxis.showline ?
             'M' + x0 + ',' + (y0 + h) + 'l' + (w / 2) + ',-' + h : 'M0,0')
         .call(Color.stroke, aaxis.linecolor || '#000')
         .style('stroke-width', (aaxis.linewidth || 0) + 'px');
-    axlines.select('.bline')
+    _this.layers.bline.select('path')
         .attr('d', baxis.showline ?
             'M' + x0 + ',' + (y0 + h) + 'h' + w : 'M0,0')
         .call(Color.stroke, baxis.linecolor || '#000')
         .style('stroke-width', (baxis.linewidth || 0) + 'px');
-    axlines.select('.cline')
+    _this.layers.cline.select('path')
         .attr('d', caxis.showline ?
             'M' + (x0 + w / 2) + ',' + y0 + 'l' + (w / 2) + ',' + h : 'M0,0')
         .call(Color.stroke, caxis.linecolor || '#000')
@@ -302,6 +360,11 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     if(!_this.graphDiv._context.staticPlot) {
         _this.initInteractions();
     }
+
+    Drawing.setClipUrl(
+        _this.layers.frontplot,
+        _this._hasClipOnAxisFalse ? null : _this.clipId
+    );
 };
 
 proto.drawAxes = function(doTitles) {
@@ -582,6 +645,9 @@ proto.initInteractions = function() {
         _this.plotContainer.selectAll('.scatterlayer,.maplayer')
             .attr('transform', plotTransform);
 
+        var plotTransform2 = 'translate(' + -dx + ',' + -dy + ')';
+        _this.clipDefRelative.select('path').attr('transform', plotTransform2);
+
         // move the ticks
         _this.aaxis.range = [mins.a, _this.sum - mins.b - mins.c];
         _this.baxis.range = [_this.sum - mins.a - mins.c, mins.b];
@@ -589,6 +655,17 @@ proto.initInteractions = function() {
 
         _this.drawAxes(false);
         _this.plotContainer.selectAll('.crisp').classed('crisp', false);
+
+        if(_this._hasClipOnAxisFalse) {
+            var scatterPoints = _this.plotContainer
+                .select('.scatterlayer').selectAll('.points');
+
+            scatterPoints.selectAll('.point')
+                .call(Drawing.hideOutsideRangePoints, _this);
+
+            scatterPoints.selectAll('.textpoint')
+                .call(Drawing.hideOutsideRangePoints, _this);
+        }
     }
 
     function dragDone(dragged, numClicks) {

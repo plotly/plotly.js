@@ -47,6 +47,7 @@ module.exports = {
     showgrid: extendFlat({}, axesAttrs.showgrid, {dflt: true}),
     gridcolor: axesAttrs.gridcolor,
     gridwidth: axesAttrs.gridwidth,
+    layer: axesAttrs.layer,
     // range
     min: {
         valType: 'number',

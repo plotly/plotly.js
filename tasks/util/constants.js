@@ -58,6 +58,7 @@ module.exports = {
     pathToTestDashboardBundle: path.join(pathToBuild, 'test_dashboard-bundle.js'),
     pathToImageViewerBundle: path.join(pathToBuild, 'image_viewer-bundle.js'),
 
+    pathToImageTest: pathToImageTest,
     pathToTestImageMocks: path.join(pathToImageTest, 'mocks/'),
     pathToTestImageBaselines: path.join(pathToImageTest, 'baselines/'),
     pathToTestImages: path.join(pathToBuild, 'test_images/'),

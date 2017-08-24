@@ -9,6 +9,8 @@
 
 'use strict';
 
+var isNumeric = require('fast-isnumeric');
+
 var Lib = require('../../lib');
 var BADNUM = require('../../constants/numerical').BADNUM;
 var geoJsonUtils = require('../../lib/geojson_utils');
@@ -17,10 +19,11 @@ var Colorscale = require('../../components/colorscale');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var subTypes = require('../scatter/subtypes');
 var convertTextOpts = require('../../plots/mapbox/convert_text_opts');
+var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 var COLOR_PROP = 'circle-color';
 var SIZE_PROP = 'circle-radius';
-
+var OPACITY_PROP = 'circle-opacity';
 
 module.exports = function convert(calcTrace) {
     var trace = calcTrace[0].trace;
@@ -80,12 +83,13 @@ module.exports = function convert(calcTrace) {
         var hash = {};
         hash[COLOR_PROP] = {};
         hash[SIZE_PROP] = {};
+        hash[OPACITY_PROP] = {};
 
         circle.geojson = makeCircleGeoJSON(calcTrace, hash);
         circle.layout.visibility = 'visible';
 
         Lib.extendFlat(circle.paint, {
-            'circle-opacity': trace.opacity * trace.marker.opacity,
+            'circle-opacity': calcCircleOpacity(trace, hash),
             'circle-color': calcCircleColor(trace, hash),
             'circle-radius': calcCircleRadius(trace, hash)
         });
@@ -179,8 +183,22 @@ function makeCircleGeoJSON(calcTrace, hash) {
     var sizeFn;
     if(subTypes.isBubble(trace)) {
         sizeFn = makeBubbleSizeFn(trace);
-    } else if(Array.isArray(marker.size)) {
-        sizeFn = Lib.identity;
+    }
+
+    function combineOpacities(d, mo) {
+        return trace.opacity * mo * (d.dim ? DESELECTDIM : 1);
+    }
+
+    var opacityFn;
+    if(Array.isArray(marker.opacity)) {
+        opacityFn = function(d) {
+            var mo = isNumeric(d.mo) ? +Lib.constrain(d.mo, 0, 1) : 0;
+            return combineOpacities(d, mo);
+        };
+    } else if(trace._hasDimmedPts) {
+        opacityFn = function(d) {
+            return combineOpacities(d, marker.opacity);
+        };
     }
 
     // Translate vals in trace arrayOk containers
@@ -204,7 +222,12 @@ function makeCircleGeoJSON(calcTrace, hash) {
             var mcc = calcPt.mcc = colorFn(calcPt.mc);
             translate(props, COLOR_PROP, mcc, i);
         }
-        if(sizeFn) translate(props, SIZE_PROP, sizeFn(calcPt.ms), i);
+        if(sizeFn) {
+            translate(props, SIZE_PROP, sizeFn(calcPt.ms), i);
+        }
+        if(opacityFn) {
+            translate(props, OPACITY_PROP, opacityFn(calcPt), i);
+        }
 
         features.push({
             type: 'Feature',
@@ -304,18 +327,38 @@ function calcCircleRadius(trace, hash) {
             stops.push([ hash[SIZE_PROP][val], +val ]);
         }
 
-        // stops indices must be sorted
-        stops.sort(function(a, b) {
-            return a[0] - b[0];
-        });
-
         out = {
             property: SIZE_PROP,
-            stops: stops
+            stops: stops.sort(ascending)
         };
     }
     else {
         out = marker.size / 2;
+    }
+
+    return out;
+}
+
+function calcCircleOpacity(trace, hash) {
+    var marker = trace.marker;
+    var out;
+
+    if(Array.isArray(marker.opacity) || trace._hasDimmedPts) {
+        var vals = Object.keys(hash[OPACITY_PROP]);
+        var stops = [];
+
+        for(var i = 0; i < vals.length; i++) {
+            var val = vals[i];
+            stops.push([hash[OPACITY_PROP][val], +val]);
+        }
+
+        out = {
+            property: OPACITY_PROP,
+            stops: stops.sort(ascending)
+        };
+    }
+    else {
+        out = trace.opacity * marker.opacity;
     }
 
     return out;
@@ -334,6 +377,8 @@ function getFillFunc(attr) {
 }
 
 function blankFillFunc() { return ''; }
+
+function ascending(a, b) { return a[0] - b[0]; }
 
 // only need to check lon (OR lat)
 function isBADNUM(lonlat) {

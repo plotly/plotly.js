@@ -11,6 +11,7 @@
 
 var mouseChange = require('mouse-change');
 var mouseWheel = require('mouse-wheel');
+var mouseOffset = require('mouse-event-offset');
 var cartesianConstants = require('../cartesian/constants');
 
 module.exports = createCamera;
@@ -55,7 +56,24 @@ function createCamera(scene) {
         return false;
     }
 
-    result.mouseListener = mouseChange(element, function(buttons, x, y) {
+    result.mouseListener = mouseChange(element, handleInteraction);
+
+    // enable simple touch interactions
+    element.addEventListener('touchstart', function(ev) {
+        var xy = mouseOffset(ev.changedTouches[0], element);
+        handleInteraction(0, xy[0], xy[1]);
+        handleInteraction(1, xy[0], xy[1]);
+    });
+    element.addEventListener('touchmove', function(ev) {
+        ev.preventDefault();
+        var xy = mouseOffset(ev.changedTouches[0], element);
+        handleInteraction(1, xy[0], xy[1]);
+    });
+    element.addEventListener('touchend', function() {
+        handleInteraction(0, result.lastPos[0], result.lastPos[1]);
+    });
+
+    function handleInteraction(buttons, x, y) {
         var dataBox = scene.calcDataBox(),
             viewBox = plot.viewBox;
 
@@ -235,7 +253,7 @@ function createCamera(scene) {
 
         result.lastPos[0] = x;
         result.lastPos[1] = y;
-    });
+    }
 
     result.wheelListener = mouseWheel(element, function(dx, dy) {
         var dataBox = scene.calcDataBox(),
