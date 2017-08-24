@@ -9,11 +9,8 @@
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
-var autoType = require('../../plots/cartesian/axis_autotype');
 var ErrorBars = require('../../components/errorbars');
 var str2RGBArray = require('../../lib/str2rgbarray');
 var formatColor = require('../../lib/gl_format_color');
@@ -21,49 +18,47 @@ var subTypes = require('../scatter/subtypes');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var getTraceColor = require('../scatter/get_trace_color');
 var DASHES = require('../../constants/gl2d_dashes');
-var fit = require('canvas-fit')
-var createScatter = require('../../../../regl-scatter2d')
-var createLine = require('../../../../regl-line2d')
+var fit = require('canvas-fit');
+var createScatter = require('../../../../regl-scatter2d');
+// var createLine = require('../../../../regl-line2d');
 var Drawing = require('../../components/drawing');
-var MARKER_SVG_SYMBOLS = require('../../components/drawing/symbol_defs');
-var svgSdf = require('../../../../svg-path-sdf')
+var svgSdf = require('../../../../svg-path-sdf');
 
-var AXES = ['xaxis', 'yaxis'];
 var DESELECTDIM = 0.2;
 var TRANSPARENT = [0, 0, 0, 0];
 
 // tables with symbol SDF values
-var SYMBOL_SDF_SIZE = 200
-var SYMBOL_SIZE = 20
-var SYMBOL_STROKE = SYMBOL_SIZE / 20
-var SYMBOL_SDF = {}
-var SYMBOL_SVG_CIRCLE = Drawing.symbolFuncs[0](SYMBOL_SIZE * .05)
+var SYMBOL_SDF_SIZE = 200;
+var SYMBOL_SIZE = 20;
+var SYMBOL_STROKE = SYMBOL_SIZE / 20;
+var SYMBOL_SDF = {};
+var SYMBOL_SVG_CIRCLE = Drawing.symbolFuncs[0](SYMBOL_SIZE * 0.05);
+
+var convertNumber, convertColorBase;
 
 
-module.exports = createLineWithMarkers
+module.exports = createLineWithMarkers;
 
 
 function createLineWithMarkers(container, plotinfo, cdscatter) {
-    var layout = container._fullLayout
-    var xa = layout.xaxis
-    var ya = layout.yaxis
-    var glContainer = container.querySelector('.gl-container')
+    var layout = container._fullLayout;
+    var glContainer = container.querySelector('.gl-container');
 
-    //FIXME: find proper way to get plot holder
-    //FIXME: handle multiple subplots
-    var subplotObj = layout._plots.xy
-    var scatter = subplotObj._scatter2d
+    // FIXME: find proper way to get plot holder
+    // FIXME: handle multiple subplots
+    var subplotObj = layout._plots.xy;
+    var scatter = subplotObj._scatter2d;
 
-    //create regl-scatter, if not defined
-    if (scatter === undefined) {
-        //TODO: enhance picking
-        //TODO: decide whether we should share canvas or create it every scatter plot
-        //TODO: decide if canvas should be the full-width with viewport or multiple instances
-        //FIXME: avoid forcing absolute style by disabling forced plotly background
-        //TODO: figure out if there is a way to detect only new passed options
-        var canvas = glContainer.appendChild(document.createElement('canvas'))
+    // create regl-scatter, if not defined
+    if(scatter === undefined) {
+        // TODO: enhance picking
+        // TODO: decide whether we should share canvas or create it every scatter plot
+        // TODO: decide if canvas should be the full-width with viewport or multiple instances
+        // FIXME: avoid forcing absolute style by disabling forced plotly background
+        // TODO: figure out if there is a way to detect only new passed options
+        var canvas = glContainer.appendChild(document.createElement('canvas'));
 
-        //FIXME: make sure this is the right place for that
+        // FIXME: make sure this is the right place for that
         glContainer.style.height = '100%';
         glContainer.style.width = '100%';
 
@@ -72,23 +67,23 @@ function createLineWithMarkers(container, plotinfo, cdscatter) {
         canvas.style.left = '0px';
         canvas.style.pointerEvents = 'none';
 
-        //TODO: fit canvas every window.resize or plotly.resize or whatever
+        // TODO: fit canvas every window.resize or plotly.resize or whatever
         fit(canvas, glContainer);
 
-        container.glContainer = glContainer
-        container.canvas = canvas
-        scatter = subplotObj._scatter2d = createScatterScene(container)
+        container.glContainer = glContainer;
+        container.canvas = canvas;
+        scatter = subplotObj._scatter2d = new ScatterScene(container);
     }
 
     container._fullData.forEach(function(data, i) {
         scatter.update(data, cdscatter[i]);
-    })
+    });
 
-    return scatter
+    return scatter;
 }
 
-function createScatterScene(container) {
-    if (!(this instanceof createScatterScene)) return new createScatterScene(container)
+function ScatterScene(container) {
+    if(!(this instanceof ScatterScene)) return new ScatterScene(container);
 
     this.container = container;
     this.type = 'scatterregl';
@@ -113,8 +108,8 @@ function createScatterScene(container) {
     this.hasErrorY = false;
     this.hasMarkers = false;
 
-    this.xaxis = container._fullLayout.xaxis
-    this.yaxis = container._fullLayout.yaxis
+    this.xaxis = container._fullLayout.xaxis;
+    this.yaxis = container._fullLayout.yaxis;
 
     var scatterOptions0 = {
         positions: Array(),
@@ -133,8 +128,8 @@ function createScatterScene(container) {
     };
 
     this.scatter = createScatter(scatterOptions0);
-    this.scatter.options = scatterOptions0
-    this.scatter._trace = this
+    this.scatter.options = scatterOptions0;
+    this.scatter._trace = this;
 
 
     // this.line = createLine({
@@ -151,10 +146,10 @@ function createScatterScene(container) {
     // }, 0);
 
 
-    return this
+    return this;
 }
 
-var proto = createScatterScene.prototype;
+var proto = ScatterScene.prototype;
 
 
 proto.update = function(options, cdscatter) {
@@ -214,8 +209,8 @@ proto.update = function(options, cdscatter) {
 
 proto.updateFancy = function(options) {
     var container = this.container,
-        xaxis = container._fullLayout.xaxis,
-        yaxis = container._fullLayout.yaxis,
+        xaxis = Axes.getFromId(container, options.xaxis || 'x'),
+        yaxis = Axes.getFromId(container, options.yaxis || 'y'),
         bounds = this.bounds,
         selection = options.selection;
 
@@ -309,29 +304,24 @@ proto.updateFancy = function(options) {
         var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len);
         var borderSizes = convertNumber(markerOpts.line.width, len);
         var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len);
-        var index, size, symbol, symbolName, symbolSpec, symbolNumber, isOpen, isDimmed, _colors, _borderColors, bw, minBorderWidth, symbolNeedLine, symbolFunc, symbolNoDot, symbolSdf, symbolNoFill, symbolPath, isDot;
+        var index, size, symbol, symbolNumber, isOpen, isDimmed, _colors, _borderColors, bw, symbolNeedLine, symbolFunc, symbolNoDot, symbolSdf, symbolNoFill, symbolPath, isDot;
 
         sizes = convertArray(markerSizeFunc, markerOpts.size, len);
 
         for(i = 0; i < pId; ++i) {
             index = idToIndex[i];
-            symbol = symbols[index];
-            symbolNumber = Drawing.symbolNumber(symbol)
-            symbolName = Drawing.symbolNames[symbolNumber % 100]
-            symbolFunc = Drawing.symbolFuncs[symbolNumber % 100]
-            symbolNeedLine = !!Drawing.symbolNeedLines[symbolNumber % 100]
-            symbolNoDot = !!Drawing.symbolNoDot[symbolNumber % 100]
-            symbolNoFill = !!Drawing.symbolNoFill[symbolNumber % 100]
+            symbol = Array.isArray(symbols) ? symbols[index] : symbols;
+            symbolNumber = Drawing.symbolNumber(symbol);
+            symbolFunc = Drawing.symbolFuncs[symbolNumber % 100];
+            symbolNeedLine = !!Drawing.symbolNeedLines[symbolNumber % 100];
+            symbolNoDot = !!Drawing.symbolNoDot[symbolNumber % 100];
+            symbolNoFill = !!Drawing.symbolNoFill[symbolNumber % 100];
 
             isOpen = /-open/.test(symbol);
             isDot = /-dot/.test(symbol);
             isDimmed = selIds && !selIds[index];
 
-            // if(symbolNeedLine && !isOpen) {
-            //     _colors = borderColors;
-            // } else {
-                _colors = colors;
-            // }
+            _colors = colors;
 
             if(isOpen) {
                 _borderColors = colors;
@@ -343,85 +333,86 @@ proto.updateFancy = function(options) {
             // for more info on this logic
             size = sizes[index];
             bw = borderSizes[index];
-            // minBorderWidth = (symbolNeedLine) ? 0.1 * size : 0;
-            minBorderWidth = 0
 
             this.scatter.options.sizes[i] = size;
 
-
-            if (symbol === 'circle') {
+            if(symbol === 'circle') {
                 this.scatter.options.markers[i] = null;
             }
             else {
-                //get symbol sdf from cache or generate it
-                if (SYMBOL_SDF[symbol]) {
-                    symbolSdf = SYMBOL_SDF[symbol]
+                // get symbol sdf from cache or generate it
+                if(SYMBOL_SDF[symbol]) {
+                    symbolSdf = SYMBOL_SDF[symbol];
                 } else {
-                    if (isDot && !symbolNoDot) {
-                        symbolPath = symbolFunc(SYMBOL_SIZE * 1.1) + SYMBOL_SVG_CIRCLE
+                    if(isDot && !symbolNoDot) {
+                        symbolPath = symbolFunc(SYMBOL_SIZE * 1.1) + SYMBOL_SVG_CIRCLE;
                     }
                     else {
-                        symbolPath = symbolFunc(SYMBOL_SIZE)
+                        symbolPath = symbolFunc(SYMBOL_SIZE);
                     }
 
                     symbolSdf = svgSdf(symbolPath, {
                         w: SYMBOL_SDF_SIZE,
                         h: SYMBOL_SDF_SIZE,
-                        viewBox: [-SYMBOL_SIZE,-SYMBOL_SIZE,SYMBOL_SIZE,SYMBOL_SIZE],
-                        stroke: symbolNoFill ? SYMBOL_STROKE : -SYMBOL_STROKE
-                    })
-                    SYMBOL_SDF[symbol] = symbolSdf
+                        viewBox: [-SYMBOL_SIZE, -SYMBOL_SIZE, SYMBOL_SIZE, SYMBOL_SIZE],
+                        stroke: symbolNoFill ? SYMBOL_STROKE : symbolNeedLine ? -SYMBOL_STROKE : 0
+                    });
+                    SYMBOL_SDF[symbol] = symbolSdf;
                 }
 
                 this.scatter.options.markers[i] = symbolSdf || null;
             }
-            this.scatter.options.borderSizes[i] = 0.5 * ((bw > minBorderWidth) ? bw - minBorderWidth : 0);
+            this.scatter.options.borderSizes[i] = 0.5 * bw;
 
-            var optColors = this.scatter.options.colors
+            var optColors = this.scatter.options.colors;
             var dim = isDimmed ? DESELECTDIM : 1;
-            if (!optColors[i]) optColors[i] = []
+            if(!optColors[i]) optColors[i] = [];
             if(isOpen || symbolNoFill) {
                 optColors[i][0] = TRANSPARENT[0];
                 optColors[i][1] = TRANSPARENT[1];
                 optColors[i][2] = TRANSPARENT[2];
                 optColors[i][3] = TRANSPARENT[3];
             } else {
-                optColors[i][0] = _colors[4*index + 0] * 255;
-                optColors[i][1] = _colors[4*index + 1] * 255;
-                optColors[i][2] = _colors[4*index + 2] * 255;
-                optColors[i][3] = dim * _colors[4*index + 3] * 255;
+                optColors[i][0] = _colors[4 * index + 0] * 255;
+                optColors[i][1] = _colors[4 * index + 1] * 255;
+                optColors[i][2] = _colors[4 * index + 2] * 255;
+                optColors[i][3] = dim * _colors[4 * index + 3] * 255;
             }
-            if (!this.scatter.options.borderColors[i]) this.scatter.options.borderColors[i] = []
-            this.scatter.options.borderColors[i][0] = _borderColors[4*index + 0] * 255;
-            this.scatter.options.borderColors[i][1] = _borderColors[4*index + 1] * 255;
-            this.scatter.options.borderColors[i][2] = _borderColors[4*index + 2] * 255;
-            this.scatter.options.borderColors[i][3] = dim * _borderColors[4*index + 3] * 255;
+            if(!this.scatter.options.borderColors[i]) this.scatter.options.borderColors[i] = [];
+            this.scatter.options.borderColors[i][0] = _borderColors[4 * index + 0] * 255;
+            this.scatter.options.borderColors[i][1] = _borderColors[4 * index + 1] * 255;
+            this.scatter.options.borderColors[i][2] = _borderColors[4 * index + 2] * 255;
+            this.scatter.options.borderColors[i][3] = dim * _borderColors[4 * index + 3] * 255;
         }
 
 
-        var size = container._fullLayout._size,
-            domainX = container._fullLayout.xaxis.domain,
-            domainY = container._fullLayout.yaxis.domain,
+        var vpSize = container._fullLayout._size,
+            domainX = xaxis.domain,
+            domainY = yaxis.domain,
             width = container._fullLayout.width,
             height = container._fullLayout.height;
 
         var viewBox = [
-            size.l + domainX[0] * size.w,
-            size.b + domainY[0] * size.h,
-            (width - size.r) - (1 - domainX[1]) * size.w,
-            (height - size.t) - (1 - domainY[1]) * size.h
+            vpSize.l + domainX[0] * vpSize.w,
+            vpSize.b + domainY[0] * vpSize.h,
+            (width - vpSize.r) - (1 - domainX[1]) * vpSize.w,
+            (height - vpSize.t) - (1 - domainY[1]) * vpSize.h
         ];
 
-        var bounds = [xaxis._rl[0], yaxis._rl[0], xaxis._rl[1], yaxis._rl[1]];
-        this.scatter.options.range = bounds;
-        this.scatter.options.viewport = viewBox
+        var range = [xaxis._rl[0], yaxis._rl[0], xaxis._rl[1], yaxis._rl[1]];
+
+        this.scatter.options.range = range;
+        this.scatter.options.viewport = viewBox;
+
 
         // prevent scatter from resnapping points
         this.scatter(this.scatter.options);
     }
 
     // add item for autorange routine
-    this.expandAxesFancy(x, y, sizes);
+    // former expandAxesFancy
+    Axes.expand(xaxis, x, {padded: true, ppad: sizes});
+    Axes.expand(yaxis, y, {padded: true, ppad: sizes});
 };
 
 proto.updateLines = function(options, positions) {
@@ -497,35 +488,6 @@ proto.updateError = function(axLetter, options, positions, errors) {
     }
 };
 
-proto.expandAxesFast = function(bounds, markerSize) {
-    var pad = markerSize || 10;
-    var ax, min, max;
-
-    for(var i = 0; i < 2; i++) {
-        ax = this.container[AXES[i]];
-
-        min = ax._min;
-        if(!min) min = [];
-        min.push({ val: bounds[i], pad: pad });
-
-        max = ax._max;
-        if(!max) max = [];
-        max.push({ val: bounds[i + 2], pad: pad });
-    }
-};
-
-// not quite on-par with 'scatter' (scatter fill in several other expand options)
-// but close enough for now
-proto.expandAxesFancy = function(x, y, ppad) {
-    var container = this.container,
-        expandOpts = { padded: true, ppad: ppad };
-
-    Axes.expand(container._fullLayout.xaxis, x, expandOpts);
-    Axes.expand(container._fullLayout.yaxis, y, expandOpts);
-};
-
-
-
 
 // proto.handlePick = function(pickResult) {
 //     var index = pickResult.pointId;
@@ -555,6 +517,8 @@ proto.expandAxesFancy = function(x, y, ppad) {
 //     };
 // };
 
+convertNumber = convertArray.bind(null, function(x) { return +x; });
+convertColorBase = convertArray.bind(null, str2RGBArray);
 
 // handle the situation where values can be array-like or not array like
 function convertArray(convert, data, count) {
@@ -576,8 +540,6 @@ function _convertArray(convert, data, count) {
     return result;
 }
 
-var convertNumber = convertArray.bind(null, function(x) { return +x; });
-var convertColorBase = convertArray.bind(null, str2RGBArray);
 
 function convertColor(color, opacity, count) {
     return _convertColor(
@@ -612,27 +574,3 @@ function _convertColor(colors, opacities, count) {
 
     return result;
 }
-
-// We'd ideally know that all values are of fast types; sampling gives no certainty but faster
-//     (for the future, typed arrays can guarantee it, and Date values can be done with
-//      representing the epoch milliseconds in a typed array;
-//      also, perhaps the Python / R interfaces take care of String->Date conversions
-//      such that there's no need to check for string dates in plotly.js)
-// Patterned from axis_autotype.js:moreDates
-// Code DRYing is not done to preserve the most direct compilation possible for speed;
-// also, there are quite a few differences
-function allFastTypesLikely(a) {
-    var len = a.length,
-        inc = Math.max(1, (len - 1) / Math.min(Math.max(len, 1), 1000)),
-        ai;
-
-    for(var i = 0; i < len; i += inc) {
-        ai = a[Math.floor(i)];
-        if(!isNumeric(ai) && !(ai instanceof Date)) {
-            return false;
-        }
-    }
-
-    return true;
-}
-

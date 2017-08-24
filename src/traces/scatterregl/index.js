@@ -8,13 +8,13 @@
 
 'use strict';
 
-var extend = require('object-assign')
+var extend = require('object-assign');
 
-var Scatter = extend({}, require('../scatter/index'))
+var Scatter = extend({}, require('../scatter/index'));
 
-Scatter.name = 'scatterregl'
-Scatter.plot = require('./plot')
-Scatter.calc = require('./calc')
-Scatter.hoverPoints = require('./hover')
+Scatter.name = 'scatterregl';
+Scatter.plot = require('./plot');
+Scatter.calc = require('./calc');
+Scatter.hoverPoints = require('./hover');
 
 module.exports = Scatter;
