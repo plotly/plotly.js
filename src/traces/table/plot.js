@@ -263,7 +263,7 @@ module.exports = function plot(gd, calcdata) {
         .attr('height', function(d) {return d.calcdata.height + c.uplift;});
 };
 
-function textPathUrl(d) {return 'textpath_' + d.column.key + '_' + d.column.specIndex + '_' + d.key;}
+function textFragmentUrl(d) {return 'textFragment_' + d.column.key + '_' + d.column.specIndex + '_' + d.key;}
 
 function rowFromTo(d) {
     var rowBlock = d.anchorToRowBlock[d.anchor];
@@ -377,23 +377,6 @@ function renderColumnBlocks(columnBlock) {
             return gridPick(d.calcdata.cells.fill.color, d.column.specIndex, d.rowNumber);
         });
 
-    var cellLine = columnCell.selectAll('.cellLine')
-        .data(gup.repeat, gup.keyFun);
-
-    cellLine.enter()
-        .append('path')
-        .classed('cellLine', true);
-
-    cellLine
-        .attr('id', textPathUrl)
-        .attr('d', function(d, i) {
-            var x1 = 0;
-            var x2 = d.column.columnWidth;
-            var y = rowHeight(d);
-
-            return d3.svg.line()([[x1, y], [x2, y]]);
-        });
-
     var cellText = columnCell.selectAll('.cellText')
         .data(gup.repeat, gup.keyFun);
 
@@ -404,6 +387,7 @@ function renderColumnBlocks(columnBlock) {
     cellText
         .attr('dy', function(d, i) {
             var height = rowHeight(d);
+            return c.cellPad;
             return ({
                 top: -height + c.cellPad,
                 middle: -height / 2,
@@ -412,30 +396,16 @@ function renderColumnBlocks(columnBlock) {
         })
         .each(function(d) {Drawing.font(d3.select(this), d.font);});
 
-    var textPath = cellText.selectAll('.textPath')
+    var textFragment = cellText.selectAll('.textFragment')
         .data(gup.repeat, gup.keyFun);
 
-    textPath.enter()
-        .append('textPath')
-        .classed('textPath', true);
+    textFragment.enter()
+        .append('tspan')
+        .classed('textFragment', true);
 
-    textPath
-        .attr('xlink:href', function(d) {return '#' + textPathUrl(d);})
-        .attr('text-anchor', function(d) {
-            return ({
-                left: 'start',
-                right: 'end',
-                center: 'middle'
-            })[d.align];
-        })
-        .attr('startOffset', function(d) {
-            return ({
-                left: c.cellPad,
-                right: d.column.columnWidth - c.cellPad,
-                center: '50%'
-            })[d.align];
-        })
+    textFragment
         .attr('alignment-baseline', function(d) {
+            return "hanging";
             return ({
                 top: "hanging",
                 middle: "central",
