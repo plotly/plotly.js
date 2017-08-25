@@ -11,7 +11,7 @@
 var extendFlat = require('../../lib/extend').extendFlat;
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../../components/color/attributes');
-var axesAttrs = require('../../plots/cartesian/layout_attributes')
+var axesAttrs = require('../../plots/cartesian/layout_attributes');
 
 module.exports = {
     color: {
