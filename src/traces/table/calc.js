@@ -67,7 +67,7 @@ module.exports = function calc(gd, trace) {
     columnWidths = columnWidths.map(function(d) {return d / totalColumnWidths * groupWidth;});
 
     var headerRowHeights = trace.header.values[0].map(function(_, i) {return trace.header.height + Math.round((i < 0 ? 0 : 25) * (Math.random() - 0.5));});
-    var rowHeights = trace.cells.values[0].map(function(_, i) {return trace.cells.height + Math.round((i < 0 ? 0 : 25) * (Math.random() - 0.5));});
+    var rowHeights = trace.cells.values[0].map(function(_, i) {return trace.cells.height + 30 + Math.round((i < 0 ? 0 : 0) * (Math.random() - 0.5));});
     var headerHeight = headerRowHeights.reduce(function(a, b) {return a + b;}, 0);
     var scrollHeight = groupHeight - headerHeight;
     var minimumFillHeight = scrollHeight + c.uplift;

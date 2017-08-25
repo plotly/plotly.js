@@ -193,7 +193,7 @@ module.exports = function plot(gd, calcdata) {
                     d.currentRepaint = window.setTimeout(function() {
                         // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
                         // some repaints invisible ie. wasteful (DOM work blocks the main thread)
-                        renderColumnBlocks(columnBlock);
+                        renderColumnBlocks(cellsColumnBlock);
                     });
                 }
             })
@@ -339,10 +339,6 @@ function renderColumnBlocks(columnBlock) {
     columnCell.exit().remove();
 
     columnCell
-        .attr('transform', function(d, i) {
-            var lookup = d.anchorToRowBlock[d.column.anchor].rows;
-            return 'translate(' + 0 + ' ' + (lookup[i].rowAnchor - d.column.anchor) + ')';
-        })
         .each(function(d, i) {
             var spec = d.calcdata.cells.font;
             var col = d.column.specIndex;
@@ -369,7 +365,6 @@ function renderColumnBlocks(columnBlock) {
 
     cellRect
         .attr('width', function(d) {return d.column.columnWidth;})
-        .attr('height', rowHeight)
         .attr('stroke-width', function(d) {return d.cellBorderWidth;})
         .attr('stroke', function(d) {
             return gridPick(d.calcdata.cells.line.color, d.column.specIndex, d.rowNumber);
@@ -385,16 +380,9 @@ function renderColumnBlocks(columnBlock) {
         .append('text')
         .classed('cellText', true);
 
+
+    // it is only in this leaf selection that the actual cell height can be recovered...
     cellText
-        .attr('dy', function(d, i) {
-            var height = rowHeight(d);
-            return c.cellPad;
-            return ({
-                top: -height + c.cellPad,
-                middle: -height / 2,
-                bottom: -c.cellPad
-            })[d.valign];
-        })
         .attr('alignment-baseline', 'hanging')
         .text(function(d) {
             var col = d.column.specIndex;
@@ -405,8 +393,37 @@ function renderColumnBlocks(columnBlock) {
             return prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
         })
         .each(function(d) {
-            var selection = d3.select(this);
+            var element = this;
+            var selection = d3.select(element);
+            var initialBbox = element.getBoundingClientRect();
+            var initialHeight = initialBbox.bottom - initialBbox.top;
             Drawing.font(selection, d.font);
             util.convertToTspans(selection);
+            var bbox = element.getBoundingClientRect();
+            var height = bbox.bottom - bbox.top;
+            console.log(initialHeight, height);
+            //if(initialHeight !== height) debugger;
         });
+
+    // ... therefore all channels for selections above that need to know the height are set below
+    // It's not clear from the variable bindings: `enter` ordering is also driven by the painter's algo that SVG uses
+
+    columnCell
+        .attr('transform', function(d, i) {
+            var lookup = d.anchorToRowBlock[d.column.anchor].rows;
+            return 'translate(' + 0 + ' ' + (lookup[i].rowAnchor - d.column.anchor) + ')';
+        });
+
+    cellRect.attr('height', rowHeight);
+
+    cellText.attr('dy', function(d, i) {
+        var height = rowHeight(d);
+        return c.cellPad;
+        return ({
+            top: -height + c.cellPad,
+            middle: -height / 2,
+            bottom: -c.cellPad
+        })[d.valign];
+    });
+
 };
