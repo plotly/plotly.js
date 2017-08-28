@@ -1516,8 +1516,8 @@ axes.getTickFormat = function(ax) {
         var convertFn = convert || function(x) { return x;};
         var leftDtick = range[0];
         var rightDtick = range[1];
-        return (leftDtick === null || convertFn(leftDtick) <= convertFn(dtick)) &&
-               (rightDtick === null || convertFn(rightDtick) >= convertFn(dtick));
+        return ((!leftDtick && typeof leftDtick !== 'number') || convertFn(leftDtick) <= convertFn(dtick)) &&
+               ((!rightDtick && typeof rightDtick !== 'number') || convertFn(rightDtick) >= convertFn(dtick));
     }
     function getRangeWidth(range, convert) {
         var convertFn = convert || function(x) { return x;};
