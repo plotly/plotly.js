@@ -1314,6 +1314,13 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     });
 };
 
+// for undo: undefined initial vals must be turned into nulls
+// so that we unset rather than ignore them
+function undefinedToNull(val) {
+    if(val === undefined) return null;
+    return val;
+}
+
 function _restyle(gd, aobj, _traces) {
     var fullLayout = gd._fullLayout,
         fullData = gd._fullData,
@@ -1434,6 +1441,8 @@ function _restyle(gd, aobj, _traces) {
 
     var zscl = ['zmin', 'zmax'],
         cscl = ['cmin', 'cmax'],
+        mcscl = ['marker.cmin', 'marker.cmax'],
+        mlcscl = ['marker.line.cmin', 'marker.line.cmax'],
         xbins = ['xbins.start', 'xbins.end', 'xbins.size'],
         ybins = ['ybins.start', 'ybins.end', 'ybins.size'],
         contourAttrs = ['contours.start', 'contours.end', 'contours.size'];
@@ -1482,7 +1491,7 @@ function _restyle(gd, aobj, _traces) {
             undoit[attr] = a0();
         }
         if(undoit[attr][i] === undefined) {
-            undoit[attr][i] = extraparam.get();
+            undoit[attr][i] = undefinedToNull(extraparam.get());
         }
         if(val !== undefined) {
             extraparam.set(val);
@@ -1507,7 +1516,7 @@ function _restyle(gd, aobj, _traces) {
 
         if(ai.substr(0, 6) === 'LAYOUT') {
             param = Lib.nestedProperty(gd.layout, ai.replace('LAYOUT', ''));
-            undoit[ai] = [param.get()];
+            undoit[ai] = [undefinedToNull(param.get())];
             // since we're allowing val to be an array, allow it here too,
             // even though that's meaningless
             param.set(Array.isArray(vi) ? vi[0] : vi);
@@ -1533,8 +1542,26 @@ function _restyle(gd, aobj, _traces) {
             if(zscl.indexOf(ai) !== -1) {
                 doextra('zauto', false, i);
             }
-            if(cscl.indexOf(ai) !== -1) {
+            else if(ai === 'zauto') {
+                doextra(zscl, undefined, i);
+            }
+            else if(cscl.indexOf(ai) !== -1) {
                 doextra('cauto', false, i);
+            }
+            else if(ai === 'cauto') {
+                doextra(cscl, undefined, i);
+            }
+            else if(mcscl.indexOf(ai) !== -1) {
+                doextra('marker.cauto', false, i);
+            }
+            else if(ai === 'marker.cauto') {
+                doextra(mcscl, undefined, i);
+            }
+            else if(mlcscl.indexOf(ai) !== -1) {
+                doextra('marker.line.cauto', false, i);
+            }
+            else if(ai === 'marker.line.cauto') {
+                doextra(mlcscl, undefined, i);
             }
             else if(ai === 'colorscale') {
                 doextra('autocolorscale', false, i);
@@ -1548,8 +1575,11 @@ function _restyle(gd, aobj, _traces) {
             else if(ai === 'marker.autocolorscale') {
                 doextra('marker.colorscale', undefined, i);
             }
-            else if(ai === 'zauto') {
-                doextra(zscl, undefined, i);
+            else if(ai === 'marker.line.colorscale') {
+                doextra('marker.line.autocolorscale', false, i);
+            }
+            else if(ai === 'marker.line.autocolorscale') {
+                doextra('marker.line.colorscale', undefined, i);
             }
             else if(xbins.indexOf(ai) !== -1) {
                 doextra('autobinx', false, i);
@@ -1571,6 +1601,7 @@ function _restyle(gd, aobj, _traces) {
             }
             // heatmaps: setting x0 or dx, y0 or dy,
             // should turn xtype/ytype to 'scaled' if 'array'
+            // TODO: support xtype/ytype for scatter too? bar?
             else if(['x0', 'dx'].indexOf(ai) !== -1 &&
                     contFull.x && contFull.xtype !== 'scaled') {
                 doextra('xtype', 'scaled', i);
@@ -1607,10 +1638,6 @@ function _restyle(gd, aobj, _traces) {
             else if(ai === 'colorbar.tick0' || ai === 'colorbar.dtick') {
                 doextra('colorbar.tickmode', 'linear', i);
             }
-            else if(ai === 'colorbar.tickmode') {
-                doextra(['colorbar.tick0', 'colorbar.dtick'], undefined, i);
-            }
-
 
             if(ai === 'type' && (newVal === 'pie') !== (oldVal === 'pie')) {
                 var labelsTo = 'x',
@@ -1638,7 +1665,7 @@ function _restyle(gd, aobj, _traces) {
                 }
             }
 
-            undoit[ai][i] = oldVal;
+            undoit[ai][i] = undefinedToNull(oldVal);
             // set the new value - if val is an array, it's one el per trace
             // first check for attributes that get more complex alterations
             var swapAttrs = [
@@ -1950,8 +1977,7 @@ function _relayout(gd, aobj) {
 
         var p = Lib.nestedProperty(layout, attr);
         if(!(attr in undoit)) {
-            var undoVal = p.get();
-            undoit[attr] = undoVal === undefined ? null : undoVal;
+            undoit[attr] = undefinedToNull(p.get());
         }
         if(val !== undefined) p.set(val);
     }
@@ -2015,7 +2041,7 @@ function _relayout(gd, aobj) {
 
         // axis reverse is special - it is its own inverse
         // op and has no flag.
-        undoit[ai] = (pleaf === 'reverse') ? vi : (vOld === undefined ? null : vOld);
+        undoit[ai] = (pleaf === 'reverse') ? vi : undefinedToNull(vOld);
 
         // Setting width or height to null must reset the graph's width / height
         // back to its initial value as computed during the first pass in Plots.plotAutoSize.

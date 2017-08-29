@@ -838,10 +838,17 @@ describe('Test plot api', function() {
 
         beforeEach(function() {
             gd = createGraphDiv();
+
+            // some of these tests use the undo/redo queue
+            // OK, this is weird... the undo/redo queue length is a global config only.
+            // It's ignored on the plot, even though the queue itself is per-plot.
+            // We may ditch this later, but probably not until v2
+            Plotly.setPlotConfig({queueLength: 3});
         });
 
         afterEach(function() {
             destroyGraphDiv();
+            Plotly.setPlotConfig({queueLength: 0});
         });
 
         it('should redo auto z/contour when editing z array', function(done) {
@@ -898,6 +905,242 @@ describe('Test plot api', function() {
                 })
                 .catch(fail)
                 .then(done);
+        });
+
+        function negateIf(condition, negate) {
+            if(negate) return condition.not;
+            return condition;
+        }
+
+        it('turns off zauto when you edit zmin or zmax', function(done) {
+            var zmin0 = 2;
+            var zmax1 = 10;
+
+            function check(auto, msg) {
+                negateIf(expect(gd.data[0].zmin), auto).toBe(zmin0, msg);
+                expect(gd.data[0].zauto).toBe(auto, msg);
+                negateIf(expect(gd.data[1].zmax), auto).toBe(zmax1, msg);
+                expect(gd.data[1].zauto).toBe(auto, msg);
+            }
+
+            Plotly.plot(gd, [
+                {z: [[1, 2], [3, 4]], type: 'heatmap'},
+                {x: [2, 3], z: [[5, 6], [7, 8]], type: 'contour'}
+            ])
+            .then(function() {
+                check(true, 'initial');
+                return Plotly.restyle(gd, 'zmin', zmin0, [0]);
+            })
+            .then(function() {
+                return Plotly.restyle(gd, 'zmax', zmax1, [1]);
+            })
+            .then(function() {
+                check(false, 'set min/max');
+                return Plotly.restyle(gd, 'zauto', true);
+            })
+            .then(function() {
+                check(true, 'reset');
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                check(false, 'undo');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('turns off cauto (autocolorscale) when you edit cmin or cmax (colorscale)', function(done) {
+            var autocscale = require('@src/components/colorscale/scales').Reds;
+
+            var mcmin0 = 3;
+            var mcscl0 = 'rainbow';
+            var mlcmax1 = 6;
+            var mlcscl1 = 'greens';
+
+            function check(auto, msg) {
+                expect(gd.data[0].marker.cauto).toBe(auto, msg);
+                negateIf(expect(gd.data[0].marker.cmin), auto).toBe(mcmin0);
+                expect(gd._fullData[0].marker.autocolorscale).toBe(auto, msg);
+                expect(gd.data[0].marker.colorscale).toEqual(auto ? autocscale : mcscl0);
+                expect(gd.data[1].marker.line.cauto).toBe(auto, msg);
+                negateIf(expect(gd.data[1].marker.line.cmax), auto).toBe(mlcmax1);
+                expect(gd._fullData[1].marker.line.autocolorscale).toBe(auto, msg);
+                expect(gd.data[1].marker.line.colorscale).toEqual(auto ? autocscale : mlcscl1);
+            }
+
+            Plotly.plot(gd, [
+                {y: [1, 2], mode: 'markers', marker: {color: [1, 10]}},
+                {y: [2, 1], mode: 'markers', marker: {line: {width: 2, color: [3, 4]}}}
+            ])
+            .then(function() {
+                check(true, 'initial');
+                return Plotly.restyle(gd, {'marker.cmin': mcmin0, 'marker.colorscale': mcscl0}, null, [0]);
+            })
+            .then(function() {
+                return Plotly.restyle(gd, {'marker.line.cmax': mlcmax1, 'marker.line.colorscale': mlcscl1}, null, [1]);
+            })
+            .then(function() {
+                check(false, 'set min/max/scale');
+                return Plotly.restyle(gd, {'marker.cauto': true, 'marker.autocolorscale': true}, null, [0]);
+            })
+            .then(function() {
+                return Plotly.restyle(gd, {'marker.line.cauto': true, 'marker.line.autocolorscale': true}, null, [1]);
+            })
+            .then(function() {
+                check(true, 'reset');
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                check(false, 'undo');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('turns off autobin when you edit bin specs', function(done) {
+            var start0 = 0.2;
+            var end1 = 6;
+            var size1 = 0.5;
+
+            function check(auto, msg) {
+                expect(gd.data[0].autobinx).toBe(auto, msg);
+                negateIf(expect(gd.data[0].xbins.start), auto).toBe(start0, msg);
+                expect(gd.data[1].autobinx).toBe(auto, msg);
+                expect(gd.data[1].autobiny).toBe(auto, msg);
+                negateIf(expect(gd.data[1].xbins.end), auto).toBe(end1, msg);
+                negateIf(expect(gd.data[1].ybins.size), auto).toBe(size1, msg);
+            }
+
+            Plotly.plot(gd, [
+                {x: [1, 1, 1, 1, 2, 2, 2, 3, 3, 4], type: 'histogram'},
+                {x: [1, 1, 2, 2, 3, 3, 4, 4], y: [1, 1, 2, 2, 3, 3, 4, 4], type: 'histogram2d'}
+            ])
+            .then(function() {
+                check(true, 'initial');
+                return Plotly.restyle(gd, 'xbins.start', start0, [0]);
+            })
+            .then(function() {
+                return Plotly.restyle(gd, {'xbins.end': end1, 'ybins.size': size1}, null, [1]);
+            })
+            .then(function() {
+                check(false, 'set start/end/size');
+                return Plotly.restyle(gd, {autobinx: true, autobiny: true});
+            })
+            .then(function() {
+                check(true, 'reset');
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                check(false, 'undo');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('turns off autocontour when you edit contour specs', function(done) {
+            var start0 = 1.7;
+            var size1 = 0.6;
+
+            function check(auto, msg) {
+                expect(gd.data[0].autocontour).toBe(auto, msg);
+                expect(gd.data[1].autocontour).toBe(auto, msg);
+                negateIf(expect(gd.data[0].contours.start), auto).toBe(start0, msg);
+                negateIf(expect(gd.data[1].contours.size), auto).toBe(size1, msg);
+            }
+
+            Plotly.plot(gd, [
+                {z: [[1, 2], [3, 4]], type: 'contour'},
+                {x: [1, 2, 3, 4], y: [3, 4, 5, 6], type: 'histogram2dcontour'}
+            ])
+            .then(function() {
+                check(true, 'initial');
+                return Plotly.restyle(gd, 'contours.start', start0, [0]);
+            })
+            .then(function() {
+                return Plotly.restyle(gd, 'contours.size', size1, [1]);
+            })
+            .then(function() {
+                check(false, 'set start/size');
+                return Plotly.restyle(gd, 'autocontour', true);
+            })
+            .then(function() {
+                check(true, 'reset');
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                check(false, 'undo');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('sets x/ytype scaled when editing heatmap x0/dx/y0/dy', function(done) {
+            var x0 = 3;
+            var dy = 5;
+
+            function check(scaled, msg) {
+                negateIf(expect(gd.data[0].x0), !scaled).toBe(x0, msg);
+                expect(gd.data[0].xtype).toBe(scaled ? 'scaled' : undefined, msg);
+                negateIf(expect(gd.data[0].dy), !scaled).toBe(dy, msg);
+                expect(gd.data[0].ytype).toBe(scaled ? 'scaled' : undefined, msg);
+            }
+
+            Plotly.plot(gd, [{x: [1, 2, 4], y: [2, 3, 5], z: [[1, 2], [3, 4]], type: 'heatmap'}])
+            .then(function() {
+                check(false, 'initial');
+                return Plotly.restyle(gd, {x0: x0, dy: dy});
+            })
+            .then(function() {
+                check(true, 'set x0 & dy');
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                check(false, 'undo');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('sets colorbar.tickmode to linear when editing colorbar.tick0/dtick', function(done) {
+            // note: this *should* apply to marker.colorbar etc too but currently that's not implemented
+            // once we get this all in the schema it will work though.
+            var tick00 = 0.33;
+            var dtick1 = 0.8;
+
+            function check(auto, msg) {
+                negateIf(expect(gd._fullData[0].colorbar.tick0), auto).toBe(tick00, msg);
+                expect(gd._fullData[0].colorbar.tickmode).toBe(auto ? 'auto' : 'linear', msg);
+                negateIf(expect(gd._fullData[1].colorbar.dtick), auto).toBe(dtick1, msg);
+                expect(gd._fullData[1].colorbar.tickmode).toBe(auto ? 'auto' : 'linear', msg);
+            }
+
+            Plotly.plot(gd, [
+                {z: [[1, 2], [3, 4]], type: 'heatmap'},
+                {x: [2, 3], z: [[1, 2], [3, 4]], type: 'heatmap'}
+            ])
+            .then(function() {
+                check(true, 'initial');
+                return Plotly.restyle(gd, 'colorbar.tick0', tick00, [0]);
+            })
+            .then(function() {
+                return Plotly.restyle(gd, 'colorbar.dtick', dtick1, [1]);
+            })
+            .then(function() {
+                check(false, 'change tick0, dtick');
+                return Plotly.restyle(gd, 'colorbar.tickmode', 'auto');
+            })
+            .then(function() {
+                check(true, 'reset');
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                check(false, 'undo');
+            })
+            .catch(fail)
+            .then(done);
         });
     });
 
