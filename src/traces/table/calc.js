@@ -101,8 +101,8 @@ module.exports = function calc(gd, trace) {
         columnOrder: columnOrder, // will be mutated on column move
         headerHeight: headerHeight,
         scrollHeight: scrollHeight,
-        anchorToRowBlock: anchorToRowBlock,
-        anchorToHeaderRowBlock: anchorToHeaderRowBlock,
+        //anchorToRowBlock: anchorToRowBlock,
+        //anchorToHeaderRowBlock: anchorToHeaderRowBlock,
         rowBlocks: rowBlocks,
         headerRowBlocks: headerRowBlocks,
         scrollY: 0, // will be mutated on scroll

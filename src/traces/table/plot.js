@@ -109,7 +109,6 @@ module.exports = function plot(gd, calcdata) {
                 currentAnchorCarry: 0,
                 anchorCarry: 0,
                 values: d.calcdata.headerCells.values[d.specIndex],
-                anchorToRowBlock: d.calcdata.anchorToHeaderRowBlock,
                 rowBlocks: d.calcdata.headerRowBlocks,
                 dragHandle: true,
                 rowBlockOffset: 0,
@@ -125,14 +124,13 @@ module.exports = function plot(gd, calcdata) {
                 yOffset: d.calcdata.headerHeight, // fixme
                 dragHandle: false,
                 values: d.calcdata.cells.values[d.specIndex],
-                anchorToRowBlock: d.calcdata.anchorToRowBlock,
                 rowBlocks: d.calcdata.rowBlocks,
                 rowBlockOffset: 0,
                 calcdata: d.calcdata
             });
             var revolverPanel2 = extendFlat({}, d, {
                 key: 'cells2',
-                anchor: d.calcdata.rowBlocks[0].totalHeight, //d.calcdata.anchorToRowBlock[revolverPanel1.anchor].totalHeight, // will be mutated on scroll; points to current place
+                anchor: d.calcdata.rowBlocks[0].totalHeight, // will be mutated on scroll; points to current place
                 page: 1,
                 currentAnchorCarry: 0,
                 anchorCarry: 0,
@@ -140,7 +138,6 @@ module.exports = function plot(gd, calcdata) {
                 yOffset: d.calcdata.headerHeight, // fixme
                 dragHandle: false,
                 values: d.calcdata.cells.values[d.specIndex],
-                anchorToRowBlock: d.calcdata.anchorToRowBlock,
                 rowBlocks: d.calcdata.rowBlocks,
                 rowBlockOffset: 1,
                 calcdata: d.calcdata
@@ -341,7 +338,6 @@ function renderColumnBlocks(columnBlock) {
                     column: d,
                     calcdata: d.calcdata,
                     page: d.page,
-                    anchorToRowBlock: d.anchorToRowBlock,
                     rowBlocks: d.rowBlocks,
                     value: v
                 };
