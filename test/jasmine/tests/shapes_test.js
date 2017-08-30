@@ -580,32 +580,54 @@ describe('Test shapes: a plot with shapes and an overlaid axis', function() {
         gd = createGraphDiv();
 
         data = [{
-            'y': [1934.5, 1932.3, 1930.3],
-            'x': ['1947-01-01', '1947-04-01', '1948-07-01'],
-            'type': 'scatter'
+            y: [1934.5, 1932.3, 1930.3],
+            x: ['1947-01-01', '1947-04-01', '1948-07-01'],
+            type: 'scatter'
         }];
 
         layout = {
-            'yaxis': {
-                'type': 'linear'
+            yaxis: {
+                type: 'linear'
             },
-            'xaxis': {
-                'type': 'date'
+            xaxis: {
+                type: 'date'
             },
-            'yaxis2': {
-                'side': 'right',
-                'overlaying': 'y'
+            yaxis2: {
+                side: 'right',
+                overlaying: 'y'
             },
-            'shapes': [{
-                'fillcolor': '#ccc',
-                'type': 'rect',
-                'x0': '1947-01-01',
-                'x1': '1947-04-01',
-                'xref': 'x',
-                'y0': 0,
-                'y1': 1,
-                'yref': 'paper',
-                'layer': 'below'
+            shapes: [{
+                fillcolor: '#ccc',
+                type: 'rect',
+                x0: '1947-01-01',
+                x1: '1947-04-01',
+                xref: 'x',
+                y0: 0,
+                y1: 1,
+                yref: 'paper',
+                layer: 'below'
+            }, {
+                type: 'path',
+                xref: 'x',
+                yref: 'y2',
+                path: 'M1947-01-01_12:00,2V4H1947-03-01Z'
+            }, {
+                type: 'rect',
+                xref: 'x',
+                yref: 'y2',
+                x0: '1947-02-01',
+                x1: '1947-03-01',
+                y0: 3,
+                y1: 5,
+                layer: 'below'
+            }, {
+                type: 'circle',
+                xref: 'x',
+                yref: 'y',
+                x0: '1947-01-15',
+                x1: '1947-02-15',
+                y0: 1931,
+                y1: 1934
             }]
         };
     });
