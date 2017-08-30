@@ -147,6 +147,18 @@ describe('plot schema', function() {
         });
     });
 
+    it('includes xaxis-only items on only the x axis, not y or bare', function() {
+        var items = ['rangeselector', 'rangeslider'];
+
+        var layoutAttrs = plotSchema.layout.layoutAttributes;
+
+        items.forEach(function(item) {
+            expect(layoutAttrs.xaxis[item]).toBeDefined(item);
+            expect(layoutAttrs.yaxis[item]).toBeUndefined(item);
+            expect(layoutAttrs[item]).toBeUndefined(item);
+        });
+    });
+
     it('valObjects descriptions should be strings', function() {
         assertPlotSchema(
             function(attr) {
