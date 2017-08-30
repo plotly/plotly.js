@@ -199,7 +199,7 @@ exports.findArrayAttributes = function(trace) {
     //
     // At the moment, we need this block to make sure that
     // ohlc and candlestick 'open', 'high', 'low', 'close' can be
-    // used with filter ang groupby transforms.
+    // used with filter and groupby transforms.
     if(trace._fullInput && trace._fullInput._module && trace._fullInput._module.attributes) {
         exports.crawl(trace._fullInput._module.attributes, callback);
         arrayAttributes = Lib.filterUnique(arrayAttributes);
@@ -236,17 +236,6 @@ function getTraceAttributes(type) {
         extendDeep(attributes, basePlotModule.attributes);
     }
 
-    // add registered components trace attributes
-    Object.keys(Registry.componentsRegistry).forEach(function(k) {
-        var _module = Registry.componentsRegistry[k];
-
-        if(_module.schema && _module.schema.traces && _module.schema.traces[type]) {
-            Object.keys(_module.schema.traces[type]).forEach(function(v) {
-                insertAttrs(attributes, _module.schema.traces[type][v], v);
-            });
-        }
-    });
-
     // 'type' gets overwritten by baseAttributes; reset it here
     attributes.type = type;
 
@@ -268,15 +257,16 @@ function getTraceAttributes(type) {
 
 function getLayoutAttributes() {
     var layoutAttributes = {};
+    var key, _module;
 
     // global layout attributes
     extendDeep(layoutAttributes, baseLayoutAttributes);
 
     // add base plot module layout attributes
-    Object.keys(Registry.subplotsRegistry).forEach(function(k) {
-        var _module = Registry.subplotsRegistry[k];
+    for(key in Registry.subplotsRegistry) {
+        _module = Registry.subplotsRegistry[key];
 
-        if(!_module.layoutAttributes) return;
+        if(!_module.layoutAttributes) continue;
 
         if(_module.name === 'cartesian') {
             handleBasePlotModule(layoutAttributes, _module, 'xaxis');
@@ -287,26 +277,37 @@ function getLayoutAttributes() {
 
             handleBasePlotModule(layoutAttributes, _module, astr);
         }
-    });
+    }
 
     // polar layout attributes
     layoutAttributes = assignPolarLayoutAttrs(layoutAttributes);
 
     // add registered components layout attributes
-    Object.keys(Registry.componentsRegistry).forEach(function(k) {
-        var _module = Registry.componentsRegistry[k];
+    for(key in Registry.componentsRegistry) {
+        _module = Registry.componentsRegistry[key];
+        var schema = _module.schema;
 
-        if(!_module.layoutAttributes) return;
-
-        if(_module.schema && _module.schema.layout) {
-            Object.keys(_module.schema.layout).forEach(function(v) {
-                insertAttrs(layoutAttributes, _module.schema.layout[v], v);
-            });
+        /*
+         * Components with defined schema have already been merged in at register time
+         * but a few components define attributes that apply only to xaxis
+         * not yaxis (rangeselector, rangeslider) - delete from y schema.
+         * Note that the input attributes for xaxis/yaxis are the same object
+         * so it's not possible to only add them to xaxis from the start.
+         * If we ever have such asymmetry the other way, or anywhere else,
+         * we will need to extend both this code and mergeComponentAttrsToSubplot
+         * (which will not find yaxis only for example)
+         */
+        if(schema && (schema.subplots || schema.layout)) {
+            var subplots = schema.subplots;
+            if(subplots && subplots.xaxis && !subplots.yaxis) {
+                for(var xkey in subplots.xaxis) delete layoutAttributes.yaxis[xkey];
+            }
         }
-        else {
+        // older style without schema need to be explicitly merged in now
+        else if(_module.layoutAttributes) {
             insertAttrs(layoutAttributes, _module.layoutAttributes, _module.name);
         }
-    });
+    }
 
     return {
         layoutAttributes: formatAttributes(layoutAttributes)
