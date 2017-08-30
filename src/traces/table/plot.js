@@ -130,8 +130,8 @@ module.exports = function plot(gd, calcdata) {
             });
             var revolverPanel2 = extendFlat({}, d, {
                 key: 'cells2',
-                anchor: d.calcdata.rowBlocks[0].totalHeight, // will be mutated on scroll; points to current place
-                page: 1,
+                anchor: -d.calcdata.rowBlocks[1].totalHeight, // will be mutated on scroll; points to current place
+                page: -1,
                 currentAnchorCarry: 0,
                 anchorCarry: 0,
                 type: 'cells',
@@ -179,7 +179,7 @@ module.exports = function plot(gd, calcdata) {
                         var lastRow = lastBlock.rows[lastBlock.rows.length - 1];
                         var bottom = lastRow.rowAnchor + lastRow.rowHeight - d.calcdata.scrollHeight;
                         var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
-                        if(direction === 'down' && scrollY - d.anchor > currentBlock.totalHeight) {
+                        if(d.page < 0 || direction === 'down' && scrollY - d.anchor > currentBlock.totalHeight) {
                             if(d.page + 2 < blockAnchors.length) {
                                 d.page += 2;
                                 d.anchor = blockAnchors[d.page];
@@ -421,6 +421,10 @@ function renderColumnBlocks(columnBlock) {
             if(increase) {
                 l.rows[d.key - l.firstRowIndex].rowHeightStretch += increase;
                 d.column.anchorCarry += increase;
+                d.rowBlocks[d.page].totalHeight += increase;
+                for(var p = d.page + 1; p < d.rowBlocks.length; p++) {
+                    d.rowBlocks[p].firstRowAnchor += increase;
+                }
             }
         });
 
