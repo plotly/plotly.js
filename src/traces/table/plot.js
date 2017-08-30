@@ -417,8 +417,7 @@ function renderColumnBlocks(columnBlock) {
             var height = bbox.bottom - bbox.top;
             var l = lookup(d);
             l.rows[d.key - l.firstRowIndex].rowAnchorCarry += d.column.anchorCarry;
-            var increase = Math.max(0, height - initialHeight);
-            console.log(d.column.key)
+            var increase = Math.max(0, height - initialHeight - l.rows[d.key - l.firstRowIndex].rowHeightStretch);
             if(increase) {
                 l.rows[d.key - l.firstRowIndex].rowHeightStretch += increase;
                 d.column.anchorCarry += increase;
