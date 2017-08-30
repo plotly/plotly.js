@@ -177,7 +177,7 @@ module.exports = function plot(gd, calcdata) {
                         var blockAnchors = rowBlocks.map(function(v) {return v.firstRowAnchor;});
                         var lastBlock = rowBlocks[rowBlocks.length - 1];
                         var lastRow = lastBlock.rows[lastBlock.rows.length - 1];
-                        var bottom = lastRow.rowAnchor + lastRow.rowHeight - d.calcdata.scrollHeight;
+                        var bottom = lastBlock.firstRowAnchor + lastRow.rowAnchor + lastRow.rowHeight - d.calcdata.scrollHeight;
                         var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
                         if(d.page < 0 || direction === 'down' && scrollY - d.anchor > currentBlock.totalHeight) {
                             if(d.page + 2 < blockAnchors.length) {
@@ -460,7 +460,8 @@ function lookup(d) {
 
 function rowOffset(d, i) {
     var l = lookup(d);
-    var o = (l.rows[i].rowAnchor + l.rows[i].rowAnchorCarry) - (d.column.anchor + 0 * d.column.anchorCarry);
+   // if(d.column.anchor) debugger
+    var o = (l.rows[i].rowAnchor + l.rows[i].rowAnchorCarry + l.firstRowAnchor) - (d.column.anchor + 0 * d.column.anchorCarry);
     return o;
 }
 
