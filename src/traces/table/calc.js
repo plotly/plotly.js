@@ -33,12 +33,15 @@ function makeAnchorToRowBlock(rowHeights, minimumFillHeight) {
         currentBlock.rows.push({
             rowIndex: i,
             rowHeight: currentRowHeight,
-            rowAnchor: currentAnchor + currentBlockHeight
+            rowHeightStretch: 0,
+            rowAnchor: currentAnchor + currentBlockHeight,
+            rowAnchorCarry: 0
         });
         currentBlockHeight += currentRowHeight;
         if(currentBlockHeight >= minimumFillHeight || i === rowHeights.length - 1) {
             anchorToRowBlock[currentAnchor] = currentBlock;
             currentBlock.totalHeight = currentBlockHeight;
+            currentBlock.totalHeightStretch = 0;
             currentBlock.firstRowIndex = currentFirstRowIndex;
             currentBlock.lastRowIndex = i;
             currentBlock = makeIdentity();

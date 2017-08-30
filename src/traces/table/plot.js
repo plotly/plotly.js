@@ -105,6 +105,9 @@ module.exports = function plot(gd, calcdata) {
                 type: 'header',
                 yOffset: 0,
                 anchor: 0,
+                page: 0,
+                currentAnchorCarry: 0,
+                anchorCarry: 0,
                 values: d.calcdata.headerCells.values[d.specIndex],
                 anchorToRowBlock: d.calcdata.anchorToHeaderRowBlock,
                 dragHandle: true,
@@ -115,6 +118,9 @@ module.exports = function plot(gd, calcdata) {
                 key: 'cells1',
                 type: 'cells',
                 anchor: 0, // will be mutated on scroll; points to current place
+                page: 0,
+                currentAnchorCarry: 0,
+                anchorCarry: 0,
                 yOffset: d.calcdata.headerHeight, // fixme
                 dragHandle: false,
                 values: d.calcdata.cells.values[d.specIndex],
@@ -125,6 +131,9 @@ module.exports = function plot(gd, calcdata) {
             var revolverPanel2 = extendFlat({}, d, {
                 key: 'cells2',
                 anchor: d.calcdata.anchorToRowBlock[revolverPanel1.anchor].totalHeight, // will be mutated on scroll; points to current place
+                page: 1,
+                currentAnchorCarry: 0,
+                anchorCarry: 0,
                 type: 'cells',
                 yOffset: d.calcdata.headerHeight, // fixme
                 dragHandle: false,
@@ -172,14 +181,16 @@ module.exports = function plot(gd, calcdata) {
                         var bottom = lastRow.rowAnchor + lastRow.rowHeight - d.calcdata.scrollHeight;
                         var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
                         if(direction === 'down' && scrollY - d.anchor > anchorToBlock[d.anchor].totalHeight) {
-                            if(blockAnchors.indexOf(d.anchor) + 2 < blockAnchors.length) {
-                                d.anchor = blockAnchors[blockAnchors.indexOf(d.anchor) + 2];
-                                anchorChanged = true;
+                            if(d.page + 2 < blockAnchors.length) {
+                                d.page += 2;
+                                d.anchor = blockAnchors[d.page];
+                                anchorChanged = d.key;
                             }
                         } else if(direction === 'up' &&  d.anchor  > scrollY + d.calcdata.scrollHeight) {
-                            if(blockAnchors.indexOf(d.anchor) - 2 >= 0) {
-                                d.anchor = blockAnchors[blockAnchors.indexOf(d.anchor) - 2];
-                                anchorChanged = true;
+                            if(d.page - 2 >= 0) {
+                                d.page -= 2;
+                                d.anchor = blockAnchors[d.page];
+                                anchorChanged = d.key;
                             }
                         }
 
@@ -193,7 +204,7 @@ module.exports = function plot(gd, calcdata) {
                     d.currentRepaint = window.setTimeout(function() {
                         // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
                         // some repaints invisible ie. wasteful (DOM work blocks the main thread)
-                        renderColumnBlocks(cellsColumnBlock);
+                        renderColumnBlocks(cellsColumnBlock.filter(function(d) {return d.key === anchorChanged;}));
                     });
                 }
             })
@@ -264,8 +275,6 @@ module.exports = function plot(gd, calcdata) {
         .attr('height', function(d) {return d.calcdata.height + c.uplift;});
 };
 
-function textFragmentUrl(d) {return 'textFragment_' + d.column.key + '_' + d.column.specIndex + '_' + d.key;}
-
 function rowFromTo(d) {
     var rowBlock = d.anchorToRowBlock[d.anchor];
     var rowFrom = rowBlock ? rowBlock.rows[0].rowIndex : 0;
@@ -306,11 +315,6 @@ function easeColumn(elem, d, y) {
         .attr('transform', 'translate(' + d.x + ' ' + y + ')');
 }
 
-function rowHeight(d) {
-    var lookup = d.anchorToRowBlock[d.column.anchor];
-    return lookup.rows[d.key - lookup.firstRowIndex].rowHeight;
-}
-
 function renderColumnBlocks(columnBlock) {
 
     // this is performance critical code as scrolling calls it on every revolver switch
@@ -329,7 +333,15 @@ function renderColumnBlocks(columnBlock) {
     var columnCell = columnCells.selectAll('.columnCell')
         .data(function(d) {
             var fromTo = rowFromTo(d);
-            return d.values.slice(fromTo[0], fromTo[1]).map(function(v, i) {return {key: fromTo[0] + i, column: d, calcdata: d.calcdata, anchorToRowBlock: d.anchorToRowBlock, value: v};});
+            return d.values.slice(fromTo[0], fromTo[1]).map(function(v, i) {
+                return {
+                    key: fromTo[0] + i,
+                    column: d,
+                    calcdata: d.calcdata,
+                    anchorToRowBlock: d.anchorToRowBlock,
+                    value: v
+                };
+            });
         }, gup.keyFun);
 
     columnCell.enter()
@@ -381,6 +393,8 @@ function renderColumnBlocks(columnBlock) {
         .classed('cellText', true);
 
 
+    var rowCarry = 0;
+
     // it is only in this leaf selection that the actual cell height can be recovered...
     cellText
         .attr('alignment-baseline', 'hanging')
@@ -392,7 +406,7 @@ function renderColumnBlocks(columnBlock) {
             var format = gridPick(d.calcdata.cells.format, col, row) || '';
             return prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
         })
-        .each(function(d) {
+        .each(function(d, i) {
             var element = this;
             var selection = d3.select(element);
             var initialBbox = element.getBoundingClientRect();
@@ -401,29 +415,55 @@ function renderColumnBlocks(columnBlock) {
             util.convertToTspans(selection);
             var bbox = element.getBoundingClientRect();
             var height = bbox.bottom - bbox.top;
-            console.log(initialHeight, height);
-            //if(initialHeight !== height) debugger;
+            var l = lookup(d);
+            l.rows[d.key - l.firstRowIndex].rowAnchorCarry += d.column.anchorCarry;
+            var increase = Math.max(0, height - initialHeight);
+            console.log(d.column.key)
+            if(increase) {
+                l.rows[d.key - l.firstRowIndex].rowHeightStretch += increase;
+                d.column.anchorCarry += increase;
+            }
         });
+
+    console.log('retabulate?')
 
     // ... therefore all channels for selections above that need to know the height are set below
     // It's not clear from the variable bindings: `enter` ordering is also driven by the painter's algo that SVG uses
 
     columnCell
         .attr('transform', function(d, i) {
-            var lookup = d.anchorToRowBlock[d.column.anchor].rows;
-            return 'translate(' + 0 + ' ' + (lookup[i].rowAnchor - d.column.anchor) + ')';
+            return 'translate(' + 0 + ' ' + rowOffset(d, i) + ')';
         });
 
     cellRect.attr('height', rowHeight);
 
-    cellText.attr('dy', function(d, i) {
-        var height = rowHeight(d);
-        return c.cellPad;
-        return ({
-            top: -height + c.cellPad,
-            middle: -height / 2,
-            bottom: -c.cellPad
-        })[d.valign];
-    });
+    cellText
+        .attr('dy', function(d, i) {
+            var height = rowHeight(d);
+            console.log(height)
+            //return height / 2;
+            return ({
+                top: -height + c.cellPad,
+                middle: -height / 2,
+                bottom: -c.cellPad - 20 + height
+            })[d.valign];
+        });
 
 };
+
+function lookup(d) {
+    return d.anchorToRowBlock[d.column.anchor];
+}
+
+function rowOffset(d, i) {
+    var l = lookup(d);
+    var o = (l.rows[i].rowAnchor + l.rows[i].rowAnchorCarry) - (d.column.anchor + 0 * d.column.anchorCarry);
+    return o;
+}
+
+function rowHeight(d) {
+    var l = lookup(d);
+    var h = l.rows[d.key - l.firstRowIndex].rowHeight + l.rows[d.key - l.firstRowIndex].rowHeightStretch;
+    return h;
+}
+
