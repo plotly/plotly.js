@@ -40,6 +40,7 @@ function makeAnchorToRowBlock(rowHeights, minimumFillHeight) {
         currentBlockHeight += currentRowHeight;
         if(currentBlockHeight >= minimumFillHeight || i === rowHeights.length - 1) {
             anchorToRowBlock[currentAnchor] = currentBlock;
+            currentBlock.firstRowAnchor = currentAnchor;
             currentBlock.totalHeight = currentBlockHeight;
             currentBlock.totalHeightStretch = 0;
             currentBlock.firstRowIndex = currentFirstRowIndex;
@@ -75,8 +76,15 @@ module.exports = function calc(gd, trace) {
     var scrollHeight = groupHeight - headerHeight;
     var minimumFillHeight = scrollHeight + c.uplift;
 
+    function rb(anchorToRowBlock) {
+        var blockAnchorKeys = Object.keys(anchorToRowBlock);
+        return blockAnchorKeys.map(function(k) {return anchorToRowBlock[k];})
+    }
+
     var anchorToRowBlock = makeAnchorToRowBlock(rowHeights, minimumFillHeight);
     var anchorToHeaderRowBlock = makeAnchorToRowBlock(headerRowHeights, headerHeight);
+    var rowBlocks = rb(anchorToRowBlock);
+    var headerRowBlocks = rb(anchorToHeaderRowBlock);
 
     var uniqueKeys = {};
 
@@ -95,6 +103,8 @@ module.exports = function calc(gd, trace) {
         scrollHeight: scrollHeight,
         anchorToRowBlock: anchorToRowBlock,
         anchorToHeaderRowBlock: anchorToHeaderRowBlock,
+        rowBlocks: rowBlocks,
+        headerRowBlocks: headerRowBlocks,
         scrollY: 0, // will be mutated on scroll
         cells: trace.cells,
         headerCells: trace.header,

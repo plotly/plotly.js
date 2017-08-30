@@ -110,6 +110,7 @@ module.exports = function plot(gd, calcdata) {
                 anchorCarry: 0,
                 values: d.calcdata.headerCells.values[d.specIndex],
                 anchorToRowBlock: d.calcdata.anchorToHeaderRowBlock,
+                rowBlocks: d.calcdata.headerRowBlocks,
                 dragHandle: true,
                 rowBlockOffset: 0,
                 calcdata: extendFlat({}, d.calcdata, {cells: d.calcdata.headerCells})
@@ -125,12 +126,13 @@ module.exports = function plot(gd, calcdata) {
                 dragHandle: false,
                 values: d.calcdata.cells.values[d.specIndex],
                 anchorToRowBlock: d.calcdata.anchorToRowBlock,
+                rowBlocks: d.calcdata.rowBlocks,
                 rowBlockOffset: 0,
                 calcdata: d.calcdata
             });
             var revolverPanel2 = extendFlat({}, d, {
                 key: 'cells2',
-                anchor: d.calcdata.anchorToRowBlock[revolverPanel1.anchor].totalHeight, // will be mutated on scroll; points to current place
+                anchor: d.calcdata.rowBlocks[0].totalHeight, //d.calcdata.anchorToRowBlock[revolverPanel1.anchor].totalHeight, // will be mutated on scroll; points to current place
                 page: 1,
                 currentAnchorCarry: 0,
                 anchorCarry: 0,
@@ -139,6 +141,7 @@ module.exports = function plot(gd, calcdata) {
                 dragHandle: false,
                 values: d.calcdata.cells.values[d.specIndex],
                 anchorToRowBlock: d.calcdata.anchorToRowBlock,
+                rowBlocks: d.calcdata.rowBlocks,
                 rowBlockOffset: 1,
                 calcdata: d.calcdata
             });
@@ -172,15 +175,14 @@ module.exports = function plot(gd, calcdata) {
                 var anchorChanged = false;
                 cellsColumnBlock
                     .attr('transform', function(d) {
-                        var anchorToBlock = d.anchorToRowBlock;
-                        var blockAnchorKeys = Object.keys(anchorToBlock);
-                        var blockAnchors = blockAnchorKeys.map(function(v) {return parseInt(v);});
-                        var lastAnchor = blockAnchors[blockAnchors.length - 1];
-                        var lastBlock = anchorToBlock[lastAnchor];
+                        var rowBlocks = d.rowBlocks;
+                        var currentBlock = rowBlocks[d.page];
+                        var blockAnchors = rowBlocks.map(function(v) {return v.firstRowAnchor;});
+                        var lastBlock = rowBlocks[rowBlocks.length - 1];
                         var lastRow = lastBlock.rows[lastBlock.rows.length - 1];
                         var bottom = lastRow.rowAnchor + lastRow.rowHeight - d.calcdata.scrollHeight;
                         var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
-                        if(direction === 'down' && scrollY - d.anchor > anchorToBlock[d.anchor].totalHeight) {
+                        if(direction === 'down' && scrollY - d.anchor > currentBlock.totalHeight) {
                             if(d.page + 2 < blockAnchors.length) {
                                 d.page += 2;
                                 d.anchor = blockAnchors[d.page];
@@ -276,7 +278,7 @@ module.exports = function plot(gd, calcdata) {
 };
 
 function rowFromTo(d) {
-    var rowBlock = d.anchorToRowBlock[d.anchor];
+    var rowBlock = d.rowBlocks[d.page];
     var rowFrom = rowBlock ? rowBlock.rows[0].rowIndex : 0;
     var rowTo = rowBlock ? rowFrom + rowBlock.rows.length : 0;
     return [rowFrom, rowTo];
@@ -338,7 +340,9 @@ function renderColumnBlocks(columnBlock) {
                     key: fromTo[0] + i,
                     column: d,
                     calcdata: d.calcdata,
+                    page: d.page,
                     anchorToRowBlock: d.anchorToRowBlock,
+                    rowBlocks: d.rowBlocks,
                     value: v
                 };
             });
@@ -452,7 +456,7 @@ function renderColumnBlocks(columnBlock) {
 };
 
 function lookup(d) {
-    return d.anchorToRowBlock[d.column.anchor];
+    return d.rowBlocks[d.page];
 }
 
 function rowOffset(d, i) {
