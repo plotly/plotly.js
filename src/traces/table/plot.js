@@ -117,7 +117,7 @@ module.exports = function plot(gd, calcdata) {
                 type: 'cells',
                 anchor: 0, // will be mutated on scroll; points to current place
                 page: 0,
-                yOffset: d.calcdata.headerHeight, // fixme
+                yOffset: d.calcdata.headerHeight,
                 dragHandle: false,
                 values: d.calcdata.cells.values[d.specIndex],
                 rowBlocks: d.calcdata.rowBlocks,
@@ -129,7 +129,7 @@ module.exports = function plot(gd, calcdata) {
                 anchor: -d.calcdata.rowBlocks[1].totalHeight, // will be mutated on scroll; points to current place
                 page: -1,
                 type: 'cells',
-                yOffset: d.calcdata.headerHeight, // fixme
+                yOffset: d.calcdata.headerHeight,
                 dragHandle: false,
                 values: d.calcdata.cells.values[d.specIndex],
                 rowBlocks: d.calcdata.rowBlocks,
@@ -401,14 +401,12 @@ function renderColumnBlocks(columnBlock) {
         .each(function(d) {
             var element = this;
             var selection = d3.select(element);
-            var initialBbox = element.getBoundingClientRect();
-            var initialHeight = initialBbox.bottom - initialBbox.top;
+            var l = lookup(d);
+            var initialHeight = element.getBoundingClientRect().height;
             Drawing.font(selection, d.font);
             util.convertToTspans(selection);
-            var bbox = element.getBoundingClientRect();
-            var height = bbox.bottom - bbox.top;
-            var l = lookup(d);
-            var increase = Math.max(0, height - initialHeight - l.rows[d.key - l.firstRowIndex].rowHeightStretch);
+            var renderedHeight = element.getBoundingClientRect().height;
+            var increase = Math.max(0, renderedHeight - initialHeight - l.rows[d.key - l.firstRowIndex].rowHeightStretch);
             if(increase) {
                 l.rows[d.key - l.firstRowIndex].rowHeightStretch += increase;
                 for(var r = (d.key - l.firstRowIndex) + 1; r < l.rows.length; r++) {
