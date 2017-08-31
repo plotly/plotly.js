@@ -387,8 +387,6 @@ function renderColumnBlocks(columnBlock) {
         .classed('cellText', true);
 
 
-    var rowCarry = 0;
-
     // it is only in this leaf selection that the actual cell height can be recovered...
     cellText
         .attr('alignment-baseline', 'hanging')
@@ -400,7 +398,7 @@ function renderColumnBlocks(columnBlock) {
             var format = gridPick(d.calcdata.cells.format, col, row) || '';
             return prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
         })
-        .each(function(d, i) {
+        .each(function(d) {
             var element = this;
             var selection = d3.select(element);
             var initialBbox = element.getBoundingClientRect();
@@ -434,7 +432,7 @@ function renderColumnBlocks(columnBlock) {
     cellRect.attr('height', rowHeight);
 
     cellText
-        .attr('dy', function(d, i) {
+        .attr('dy', function(d) {
             var height = rowHeight(d);
             return ({
                 top: -height + c.cellPad,
@@ -451,7 +449,6 @@ function lookup(d) {
 
 function rowOffset(d, i) {
     var l = lookup(d);
-   // if(d.column.anchor) debugger
     var o = (l.rows[i].rowAnchor + l.rows[i].rowAnchorCarry + l.firstRowAnchor) - d.column.anchor;
     return o;
 }
