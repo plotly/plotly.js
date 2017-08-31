@@ -412,7 +412,7 @@ function renderColumnBlocks(columnBlock) {
             if(increase) {
                 l.rows[d.key - l.firstRowIndex].rowHeightStretch += increase;
                 for(var r = (d.key - l.firstRowIndex) + 1; r < l.rows.length; r++) {
-                    l.rows[r].rowAnchorCarry += increase;
+                    l.rows[r].rowAnchor += increase;
                 }
                 for(var p = d.page + 1; p < d.rowBlocks.length; p++) {
                     d.rowBlocks[p].firstRowAnchor += increase;
@@ -449,7 +449,7 @@ function lookup(d) {
 
 function rowOffset(d, i) {
     var l = lookup(d);
-    var o = (l.rows[i].rowAnchor + l.rows[i].rowAnchorCarry + l.firstRowAnchor) - d.column.anchor;
+    var o = (l.rows[i].rowAnchor + l.firstRowAnchor) - d.column.anchor;
     return o;
 }
 

@@ -35,8 +35,7 @@ function makeAnchorToRowBlock(rowHeights, minimumFillHeight) {
             rowIndex: i,
             rowHeight: currentRowHeight,
             rowHeightStretch: 0,
-            rowAnchor: currentBlockHeight,
-            rowAnchorCarry: 0
+            rowAnchor: currentBlockHeight
         });
         currentBlockHeight += currentRowHeight;
         if(currentBlockHeight >= minimumFillHeight || i === rowHeights.length - 1) {
