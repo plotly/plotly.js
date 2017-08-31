@@ -106,7 +106,6 @@ module.exports = function plot(gd, calcdata) {
                 yOffset: 0,
                 anchor: 0,
                 page: 0,
-                anchorCarry: 0,
                 values: d.calcdata.headerCells.values[d.specIndex],
                 rowBlocks: d.calcdata.headerRowBlocks,
                 dragHandle: true,
@@ -118,7 +117,6 @@ module.exports = function plot(gd, calcdata) {
                 type: 'cells',
                 anchor: 0, // will be mutated on scroll; points to current place
                 page: 0,
-                anchorCarry: 0,
                 yOffset: d.calcdata.headerHeight, // fixme
                 dragHandle: false,
                 values: d.calcdata.cells.values[d.specIndex],
@@ -130,7 +128,6 @@ module.exports = function plot(gd, calcdata) {
                 key: 'cells2',
                 anchor: -d.calcdata.rowBlocks[1].totalHeight, // will be mutated on scroll; points to current place
                 page: -1,
-                anchorCarry: 0,
                 type: 'cells',
                 yOffset: d.calcdata.headerHeight, // fixme
                 dragHandle: false,
@@ -414,23 +411,17 @@ function renderColumnBlocks(columnBlock) {
             var height = bbox.bottom - bbox.top;
             var l = lookup(d);
             var increase = Math.max(0, height - initialHeight - l.rows[d.key - l.firstRowIndex].rowHeightStretch);
-            //l.rows[d.key - l.firstRowIndex].rowAnchorCarry += d.column.anchorCarry;
             if(increase) {
-                console.log('increase!!!!!!!!!!')
                 l.rows[d.key - l.firstRowIndex].rowHeightStretch += increase;
                 for(var r = (d.key - l.firstRowIndex) + 1; r < l.rows.length; r++) {
                     l.rows[r].rowAnchorCarry += increase;
                 }
-                //d.column.anchorCarry = increase;
-                d.rowBlocks[d.page].totalHeight += increase;
                 for(var p = d.page + 1; p < d.rowBlocks.length; p++) {
-                    console.log('increasing firstRowAnchor on block', d.rowBlocks[p].key, 'from', d.rowBlocks[p].firstRowAnchor, 'by', increase)
                     d.rowBlocks[p].firstRowAnchor += increase;
                 }
+                d.rowBlocks[d.page].totalHeight += increase;
             }
         });
-
-    console.log('retabulate?')
 
     // ... therefore all channels for selections above that need to know the height are set below
     // It's not clear from the variable bindings: `enter` ordering is also driven by the painter's algo that SVG uses
@@ -463,7 +454,7 @@ function lookup(d) {
 function rowOffset(d, i) {
     var l = lookup(d);
    // if(d.column.anchor) debugger
-    var o = (l.rows[i].rowAnchor + l.rows[i].rowAnchorCarry + l.firstRowAnchor) - (d.column.anchor + 0 * d.column.anchorCarry);
+    var o = (l.rows[i].rowAnchor + l.rows[i].rowAnchorCarry + l.firstRowAnchor) - d.column.anchor;
     return o;
 }
 
