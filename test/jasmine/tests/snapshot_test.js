@@ -301,5 +301,25 @@ describe('Plotly.Snapshot', function() {
             .catch(fail)
             .then(done);
         });
+
+        it('should adapt *viewBox* attribute under *scale* option', function(done) {
+            Plotly.plot(gd, [{
+                y: [1, 2, 1]
+            }], {
+                width: 300,
+                height: 400
+            })
+            .then(function() {
+                var str = Plotly.Snapshot.toSVG(gd, 'svg', 2.5);
+                var dom = parser.parseFromString(str, 'image/svg+xml');
+                var el = dom.getElementsByTagName('svg')[0];
+
+                expect(el.getAttribute('width')).toBe('750', 'width');
+                expect(el.getAttribute('height')).toBe('1000', 'height');
+                expect(el.getAttribute('viewBox')).toBe('0 0 300 400', 'viewbox');
+            })
+            .catch(fail)
+            .then(done);
+        });
     });
 });

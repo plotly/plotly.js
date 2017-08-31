@@ -7,6 +7,8 @@ var fail = require('../assets/fail_test');
 var customMatchers = require('../assets/custom_matchers');
 var subplotMock = require('@mocks/multiple_subplots.json');
 
+var FORMATS = ['png', 'jpeg', 'webp', 'svg'];
+
 describe('Plotly.toImage', function() {
     'use strict';
 
@@ -28,6 +30,19 @@ describe('Plotly.toImage', function() {
             img.src = url;
             img.onload = function() { return resolve(img); };
             img.onerror = function() { return reject('error during createImage'); };
+        });
+    }
+
+    function assertSize(url, width, height) {
+        return new Promise(function(resolve, reject) {
+            var img = new Image();
+            img.onload = function() {
+                expect(img.width).toBe(width, 'image width');
+                expect(img.height).toBe(height, 'image height');
+                resolve(url);
+            };
+            img.onerror = reject;
+            img.src = url;
         });
     }
 
@@ -109,18 +124,22 @@ describe('Plotly.toImage', function() {
 
         Plotly.plot(gd, fig.data, fig.layout)
         .then(function() { return Plotly.toImage(gd, {format: 'png'}); })
+        .then(function(url) { return assertSize(url, 700, 450); })
         .then(function(url) {
             expect(url.split('png')[0]).toBe('data:image/');
         })
         .then(function() { return Plotly.toImage(gd, {format: 'jpeg'}); })
+        .then(function(url) { return assertSize(url, 700, 450); })
         .then(function(url) {
             expect(url.split('jpeg')[0]).toBe('data:image/');
         })
         .then(function() { return Plotly.toImage(gd, {format: 'svg'}); })
+        .then(function(url) { return assertSize(url, 700, 450); })
         .then(function(url) {
             expect(url.split('svg')[0]).toBe('data:image/');
         })
         .then(function() { return Plotly.toImage(gd, {format: 'webp'}); })
+        .then(function(url) { return assertSize(url, 700, 450); })
         .then(function(url) {
             expect(url.split('webp')[0]).toBe('data:image/');
         })
@@ -154,6 +173,20 @@ describe('Plotly.toImage', function() {
         })
         .catch(fail)
         .then(done);
+    });
+
+    FORMATS.forEach(function(f) {
+        it('should respond to *scale* option ( format ' + f + ')', function(done) {
+            var fig = Lib.extendDeep({}, subplotMock);
+
+            Plotly.plot(gd, fig.data, fig.layout)
+            .then(function() { return Plotly.toImage(gd, {format: f, scale: 2}); })
+            .then(function(url) { return assertSize(url, 1400, 900); })
+            .then(function() { return Plotly.toImage(gd, {format: f, scale: 0.5}); })
+            .then(function(url) { return assertSize(url, 350, 225); })
+            .catch(fail)
+            .then(done);
+        });
     });
 
     it('should accept data/layout/config figure object as input', function(done) {

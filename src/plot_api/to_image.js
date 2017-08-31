@@ -45,7 +45,10 @@ var attrs = {
         min: 0,
         dflt: 1,
         description: [
-            '...'
+            'Sets a scaling for the generated image.',
+            'If set, all features of a graphs (e.g. text, line width)',
+            'are scaled, unlike simply setting',
+            'a bigger *width* and *height*.'
         ].join(' ')
     },
     setBackground: {
@@ -137,7 +140,6 @@ function toImage(gd, opts) {
     // extend config for static plot
     var configImage = Lib.extendFlat({}, config, {
         staticPlot: true,
-        plotGlPixelRatio: config.plotGlPixelRatio || 2,
         setBackground: setBackground
     });
 
