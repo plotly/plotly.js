@@ -268,46 +268,6 @@ module.exports = function plot(gd, calcdata) {
         .attr('height', function(d) {return d.calcdata.height + c.uplift;});
 };
 
-function rowFromTo(d) {
-    var rowBlock = d.rowBlocks[d.page];
-    var rowFrom = rowBlock ? rowBlock.rows[0].rowIndex : 0;
-    var rowTo = rowBlock ? rowFrom + rowBlock.rows.length : 0;
-    return [rowFrom, rowTo];
-}
-
-function columnMoved(gd, calcdata, i, indices) {
-
-    var o = calcdata[i][0].gdColumnsOriginalOrder;
-    calcdata[i][0].gdColumns.sort(function (a, b) {
-        return indices[o.indexOf(a)] - indices[o.indexOf(b)];
-    });
-
-    calcdata[i][0].columnorder = indices;
-
-    gd.emit('plotly_restyle');
-}
-
-function gridPick(spec, col, row) {
-    if(Array.isArray(spec)) {
-        const column = spec[Math.min(col, spec.length - 1)];
-        if(Array.isArray(column)) {
-            return column[Math.min(row, column.length - 1)];
-        } else {
-            return column;
-        }
-    } else {
-        return spec;
-    }
-}
-
-function easeColumn(elem, d, y) {
-    d3.select(elem)
-        .transition()
-        .ease(c.releaseTransitionEase, 1, .75)
-        .duration(c.releaseTransitionDuration)
-        .attr('transform', 'translate(' + d.x + ' ' + y + ')');
-}
-
 function renderColumnBlocks(columnBlock) {
 
     // this is performance critical code as scrolling calls it on every revolver switch
@@ -454,6 +414,46 @@ function renderColumnBlocks(columnBlock) {
 
 };
 
+function rowFromTo(d) {
+    var rowBlock = d.rowBlocks[d.page];
+    var rowFrom = rowBlock ? rowBlock.rows[0].rowIndex : 0;
+    var rowTo = rowBlock ? rowFrom + rowBlock.rows.length : 0;
+    return [rowFrom, rowTo];
+}
+
+function columnMoved(gd, calcdata, i, indices) {
+
+    var o = calcdata[i][0].gdColumnsOriginalOrder;
+    calcdata[i][0].gdColumns.sort(function (a, b) {
+        return indices[o.indexOf(a)] - indices[o.indexOf(b)];
+    });
+
+    calcdata[i][0].columnorder = indices;
+
+    gd.emit('plotly_restyle');
+}
+
+function gridPick(spec, col, row) {
+    if(Array.isArray(spec)) {
+        const column = spec[Math.min(col, spec.length - 1)];
+        if(Array.isArray(column)) {
+            return column[Math.min(row, column.length - 1)];
+        } else {
+            return column;
+        }
+    } else {
+        return spec;
+    }
+}
+
+function easeColumn(elem, d, y) {
+    d3.select(elem)
+        .transition()
+        .ease(c.releaseTransitionEase, 1, .75)
+        .duration(c.releaseTransitionDuration)
+        .attr('transform', 'translate(' + d.x + ' ' + y + ')');
+}
+
 function lookup(d) {
     return d.rowBlocks[d.page];
 }
@@ -469,4 +469,3 @@ function rowHeight(d) {
     var h = l.rows[d.key - l.firstRowIndex].rowHeight;
     return h;
 }
-
