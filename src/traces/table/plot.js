@@ -399,23 +399,36 @@ function renderColumnBlocks(columnBlock) {
             return prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
         })
         .each(function(d) {
+
             var element = this;
             var selection = d3.select(element);
-            var l = lookup(d);
-            var initialHeight = element.getBoundingClientRect().height;
+
+            // finalize what's in the DOM
             Drawing.font(selection, d.font);
             util.convertToTspans(selection);
+
+            var l = lookup(d);
+            var rowIndex = d.key - l.firstRowIndex;
             var renderedHeight = element.getBoundingClientRect().height;
-            var increase = Math.max(0, renderedHeight - initialHeight - l.rows[d.key - l.firstRowIndex].rowHeightStretch);
+            var increase = Math.max(0, renderedHeight + 2 * c.cellPad - l.rows[rowIndex].rowHeight);
+
             if(increase) {
-                l.rows[d.key - l.firstRowIndex].rowHeightStretch += increase;
-                for(var r = (d.key - l.firstRowIndex) + 1; r < l.rows.length; r++) {
+
+                // current row height increased
+                l.rows[d.key - l.firstRowIndex].rowHeight += increase;
+
+                // current block height increased
+                d.rowBlocks[d.page].totalHeight += increase;
+
+                // subsequent rows in block pushed south
+                for(var r = rowIndex + 1; r < l.rows.length; r++) {
                     l.rows[r].rowAnchor += increase;
                 }
+
+                // subsequent blocks pushed down
                 for(var p = d.page + 1; p < d.rowBlocks.length; p++) {
                     d.rowBlocks[p].firstRowAnchor += increase;
                 }
-                d.rowBlocks[d.page].totalHeight += increase;
             }
         });
 
@@ -453,7 +466,7 @@ function rowOffset(d, i) {
 
 function rowHeight(d) {
     var l = lookup(d);
-    var h = l.rows[d.key - l.firstRowIndex].rowHeight + l.rows[d.key - l.firstRowIndex].rowHeightStretch;
+    var h = l.rows[d.key - l.firstRowIndex].rowHeight;
     return h;
 }
 
