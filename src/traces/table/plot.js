@@ -436,8 +436,6 @@ function renderColumnBlocks(columnBlock) {
     cellText
         .attr('dy', function(d, i) {
             var height = rowHeight(d);
-            console.log(height)
-            //return height / 2;
             return ({
                 top: -height + c.cellPad,
                 middle: -height / 2,
