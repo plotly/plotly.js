@@ -126,7 +126,7 @@ module.exports = function plot(gd, calcdata) {
             });
             var revolverPanel2 = extendFlat({}, d, {
                 key: 'cells2',
-                anchor: -d.calcdata.rowBlocks[1].totalHeight, // will be mutated on scroll; points to current place
+                anchor: d.calcdata.rowBlocks[1] ? -d.calcdata.rowBlocks[1].totalHeight : 0, // will be mutated on scroll; points to current place
                 page: -1,
                 type: 'cells',
                 yOffset: d.calcdata.headerHeight,
