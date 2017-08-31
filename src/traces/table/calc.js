@@ -28,6 +28,7 @@ function makeAnchorToRowBlock(rowHeights, minimumFillHeight) {
     var currentBlockHeight = 0;
     var currentBlock = makeIdentity();
     var currentFirstRowIndex = 0;
+    var blockCounter = 0;
     for(var i = 0; i < rowHeights.length; i++) {
         currentRowHeight = rowHeights[i];
         currentBlock.rows.push({
@@ -40,6 +41,7 @@ function makeAnchorToRowBlock(rowHeights, minimumFillHeight) {
         currentBlockHeight += currentRowHeight;
         if(currentBlockHeight >= minimumFillHeight || i === rowHeights.length - 1) {
             anchorToRowBlock[currentAnchor] = currentBlock;
+            currentBlock.key = blockCounter++;
             currentBlock.firstRowAnchor = currentAnchor;
             currentBlock.totalHeight = currentBlockHeight;
             currentBlock.totalHeightStretch = 0;

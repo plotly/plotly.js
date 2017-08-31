@@ -416,13 +416,16 @@ function renderColumnBlocks(columnBlock) {
             var bbox = element.getBoundingClientRect();
             var height = bbox.bottom - bbox.top;
             var l = lookup(d);
-            l.rows[d.key - l.firstRowIndex].rowAnchorCarry += d.column.anchorCarry;
             var increase = Math.max(0, height - initialHeight - l.rows[d.key - l.firstRowIndex].rowHeightStretch);
+            if(d.column.anchorCarry) console.log('anchor carry increase!!!!!!!!!!')
+            //l.rows[d.key - l.firstRowIndex].rowAnchorCarry += d.column.anchorCarry;
             if(increase) {
+                console.log('increase!!!!!!!!!!')
                 l.rows[d.key - l.firstRowIndex].rowHeightStretch += increase;
                 d.column.anchorCarry += increase;
                 d.rowBlocks[d.page].totalHeight += increase;
                 for(var p = d.page + 1; p < d.rowBlocks.length; p++) {
+                    console.log('increasing firstRowAnchor on block', d.rowBlocks[p].key, 'from', d.rowBlocks[p].firstRowAnchor, 'by', increase)
                     d.rowBlocks[p].firstRowAnchor += increase;
                 }
             }
