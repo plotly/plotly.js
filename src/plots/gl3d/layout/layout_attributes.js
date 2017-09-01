@@ -11,6 +11,8 @@
 
 var gl3dAxisAttrs = require('./axis_attributes');
 var extendFlat = require('../../../lib/extend').extendFlat;
+var counterRegex = require('../../../lib').counterRegex;
+
 
 function makeVector(x, y, z) {
     return {
@@ -33,7 +35,7 @@ function makeVector(x, y, z) {
 }
 
 module.exports = {
-    _arrayAttrRegexps: [/^scene([2-9]|[1-9][0-9]+)?\.annotations/],
+    _arrayAttrRegexps: [counterRegex('scene', '.annotations', true)],
 
     bgcolor: {
         valType: 'color',

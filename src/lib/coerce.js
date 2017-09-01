@@ -16,8 +16,7 @@ var baseTraceAttrs = require('../plots/attributes');
 var getColorscale = require('../components/colorscale/get_scale');
 var colorscaleNames = Object.keys(require('../components/colorscale/scales'));
 var nestedProperty = require('./nested_property');
-
-var ID_REGEX = /^([2-9]|[1-9][0-9]+)$/;
+var counterRegex = require('./regex').counter;
 
 exports.valObjects = {
     data_array: {
@@ -181,23 +180,18 @@ exports.valObjects = {
         requiredOpts: ['dflt'],
         otherOpts: [],
         coerceFunction: function(v, propOut, dflt) {
-            var dlen = dflt.length;
-            if(typeof v === 'string' && v.substr(0, dlen) === dflt &&
-                    ID_REGEX.test(v.substr(dlen))) {
+            if(typeof v === 'string' && counterRegex(dflt).test(v)) {
                 propOut.set(v);
                 return;
             }
             propOut.set(dflt);
         },
         validateFunction: function(v, opts) {
-            var dflt = opts.dflt,
-                dlen = dflt.length;
+            var dflt = opts.dflt;
 
             if(v === dflt) return true;
             if(typeof v !== 'string') return false;
-            if(v.substr(0, dlen) === dflt && ID_REGEX.test(v.substr(dlen))) {
-                return true;
-            }
+            if(counterRegex(dflt).test(v)) return true;
 
             return false;
         }

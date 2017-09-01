@@ -93,6 +93,9 @@ lib.log = loggersModule.log;
 lib.warn = loggersModule.warn;
 lib.error = loggersModule.error;
 
+var regexModule = require('./regex');
+lib.counterRegex = regexModule.counter;
+
 lib.notifier = require('./notifier');
 
 lib.filterUnique = require('./filter_unique');
