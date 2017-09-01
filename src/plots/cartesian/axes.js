@@ -1698,6 +1698,8 @@ axes.doTicks = function(gd, axid, skipTitle) {
                     .selectAll('path').remove();
                 plotinfo.zerolinelayer
                     .selectAll('path').remove();
+                fullLayout._infolayer.select('.g-' + xa._id + 'title').remove();
+                fullLayout._infolayer.select('.g-' + ya._id + 'title').remove();
             });
         }
 
