@@ -1828,6 +1828,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
         if(!ax.showticklabels || !isNumeric(position)) {
             tickLabels.remove();
             drawAxTitle();
+            calcBoundingBox();
             return;
         }
 
@@ -1993,23 +1994,43 @@ axes.doTicks = function(gd, axid, skipTitle) {
         }
 
         function calcBoundingBox() {
-            var bBox = container.node().getBoundingClientRect();
-            var gdBB = gd.getBoundingClientRect();
+            if(ax.showticklabels) {
+                var gdBB = gd.getBoundingClientRect();
+                var bBox = container.node().getBoundingClientRect();
 
-            /*
-             * the way we're going to use this, the positioning that matters
-             * is relative to the origin of gd. This is important particularly
-             * if gd is scrollable, and may have been scrolled between the time
-             * we calculate this and the time we use it
-             */
-            ax._boundingBox = {
-                width: bBox.width,
-                height: bBox.height,
-                left: bBox.left - gdBB.left,
-                right: bBox.right - gdBB.left,
-                top: bBox.top - gdBB.top,
-                bottom: bBox.bottom - gdBB.top
-            };
+                /*
+                 * the way we're going to use this, the positioning that matters
+                 * is relative to the origin of gd. This is important particularly
+                 * if gd is scrollable, and may have been scrolled between the time
+                 * we calculate this and the time we use it
+                 */
+
+                ax._boundingBox = {
+                    width: bBox.width,
+                    height: bBox.height,
+                    left: bBox.left - gdBB.left,
+                    right: bBox.right - gdBB.left,
+                    top: bBox.top - gdBB.top,
+                    bottom: bBox.bottom - gdBB.top
+                };
+            } else {
+                var gs = fullLayout._size;
+                var pos;
+
+                // set dummy bbox for ticklabel-less axes
+
+                if(axLetter === 'x') {
+                    pos = ax.anchor === 'free' ?
+                        gs.t + gs.h * (1 - ax.position) :
+                        gs.t + gs.h * (1 - ax._anchorAxis.domain[{bottom: 0, top: 1}[ax.side]]);
+                    ax._boundingBox = {top: pos, bottom: pos};
+                } else {
+                    pos = ax.anchor === 'free' ?
+                        gs.l + gs.w * ax.position :
+                        gs.l + gs.w * ax._anchorAxis.domain[{left: 0, right: 1}[ax.side]];
+                    ax._boundingBox = {left: pos, right: pos};
+                }
+            }
 
             /*
              * for spikelines: what's the full domain of positions in the
