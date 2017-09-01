@@ -49,7 +49,7 @@ if(argv.help) {
 var mockList = getMockList(argv._);
 var input = mockList.map(function(m) { return getImagePaths(m).mock; });
 
-run(input, argv, function write(info, _, done) {
+run(mockList, input, argv, function write(info, done) {
     var mockName = mockList[info.itemIndex];
     var imgData = info.body;
     var paths = getImagePaths(mockName);

@@ -78,7 +78,7 @@ if(argv._.indexOf('gl2d_*') !== -1) {
 
 var input = mockList.map(function(m) { return getImagePaths(m).mock; });
 
-run(input, argv, function write(info, _, done) {
+run(mockList, input, argv, function write(info, done) {
     var mockName = mockList[info.itemIndex];
     var paths = getImagePaths(mockName);
     var imgData = info.body;

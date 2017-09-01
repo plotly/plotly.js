@@ -16,9 +16,6 @@ var argv = require('minimist')(process.argv.slice(2), {
     }
 });
 
-// image-exporter cannot generate pdf & eps at the same time for some reason
-argv['parallel-limit'] = 1;
-
 // no 'png' as it is tested in `compare_pixels_test.js`
 var FORMATS = ['jpeg', 'webp', 'svg', 'pdf', 'eps'];
 
@@ -65,13 +62,14 @@ if(argv.help) {
     process.exit(0);
 }
 
-var mockList = argv._.length > 0 ? getMockList(argv._) : DEFAULT_LIST;
+var _mockList = argv._.length > 0 ? getMockList(argv._) : DEFAULT_LIST;
+var mockList = [];
 var input = [];
 
-mockList.forEach(function(mockName) {
+_mockList.forEach(function(mockName) {
     FORMATS.forEach(function(format) {
+        mockList.push(mockName + '.' + format)
         input.push({
-            fid: mockName,
             figure: getImagePaths(mockName).mock,
             format: format,
             width: WIDTH,
@@ -80,8 +78,8 @@ mockList.forEach(function(mockName) {
     });
 });
 
-run(input, argv, function write(info, _, done) {
-    var mockName = input[info.itemIndex].fid;
+run(mockList, input, argv, function write(info, done) {
+    var mockName = mockList[info.itemIndex];
     var format = info.format;
     var paths = getImagePaths(mockName, format);
 
@@ -95,7 +93,7 @@ run(input, argv, function write(info, _, done) {
             didExport = stats.size > MIN_SIZE;
         } else {
             var dims = sizeOf(paths.test);
-            didExport = (dims.width === 200) && (dims.height === HEIGHT);
+            didExport = (dims.width === WIDTH) && (dims.height === HEIGHT);
         }
 
         done(didExport ? '' : format);
