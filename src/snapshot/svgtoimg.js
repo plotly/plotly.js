@@ -34,8 +34,8 @@ function svgToImg(opts) {
 
         var canvas = opts.canvas;
         var scale = opts.scale || 1;
-        var w0 = opts.width || 150;
-        var h0 = opts.height || 300;
+        var w0 = opts.width || 300;
+        var h0 = opts.height || 150;
         var w1 = scale * w0;
         var h1 = scale * h0;
 
