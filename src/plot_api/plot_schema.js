@@ -208,6 +208,142 @@ exports.findArrayAttributes = function(trace) {
     return arrayAttributes;
 };
 
+/*
+ * Find the valObject for one attribute in an existing trace
+ *
+ * @param {object} trace
+ *  full trace object that contains a reference to `_module.attributes`
+ * @param {object} parts
+ *  an array of parts, like ['transforms', 1, 'value']
+ *  typically from nestedProperty(...).parts
+ *
+ * @return {object|false}
+ *  the valObject for this attribute, or the last found parent
+ *  in some cases the innermost valObject will not exist, for example
+ *  `valType: 'any'` attributes where we might set a part of the attribute.
+ *  In that case, stop at the deepest valObject we *do* find.
+ */
+exports.getTraceValObject = function(trace, parts) {
+    var head = parts[0];
+    var i = 1; // index to start recursing from
+    var moduleAttrs, valObject;
+
+    if(head === 'transforms') {
+        if(!Array.isArray(trace.transforms)) return false;
+        var tNum = parts[1];
+        if(!isIndex(tNum) || tNum >= trace.transforms.length) {
+            return false;
+        }
+        moduleAttrs = (Registry.transformsRegistry[trace.transforms[tNum].type] || {}).attributes;
+        valObject = moduleAttrs && moduleAttrs[parts[2]];
+        i = 3; // start recursing only inside the transform
+    }
+    else if(trace.type === 'area') {
+        valObject = polarAreaAttrs[head];
+    }
+    else {
+        // first look in the module for this trace
+        // components have already merged their trace attributes in here
+        var _module = trace._module;
+        if(!_module) _module = (Registry.modules[trace.type || baseAttributes.type.dflt] || {})._module;
+        if(!_module) return false;
+
+        moduleAttrs = _module.attributes;
+        valObject = moduleAttrs && moduleAttrs[head];
+
+        // then look in the global attributes
+        if(!valObject) valObject = baseAttributes[head];
+
+        // finally look in the subplot attributes
+        if(!valObject) {
+            var subplotModule = _module.basePlotModule;
+            if(subplotModule && subplotModule.attributes) {
+                valObject = subplotModule.attributes[head];
+            }
+        }
+    }
+
+    return recurseIntoValObject(valObject, parts, i);
+};
+
+/*
+ * Find the valObject for one layout attribute
+ *
+ * @param {array} parts
+ *  an array of parts, like ['annotations', 1, 'x']
+ *  typically from nestedProperty(...).parts
+ *
+ * @return {object|false}
+ *  the valObject for this attribute, or the last found parent
+ *  in some cases the innermost valObject will not exist, for example
+ *  `valType: 'any'` attributes where we might set a part of the attribute.
+ *  In that case, stop at the deepest valObject we *do* find.
+ */
+exports.getLayoutValObject = function(parts) {
+    var valObject = layoutHeadAttr(parts[0]);
+
+    return recurseIntoValObject(valObject, parts, 1);
+};
+
+function layoutHeadAttr(head) {
+    if(head in baseLayoutAttributes) return baseLayoutAttributes[head];
+    if(head in Registry.traceLayoutAttributes) return Registry.traceLayoutAttributes[head];
+
+    var key, _module;
+
+    for(key in Registry.componentsRegistry) {
+        _module = Registry.componentsRegistry[key];
+        if(head === _module.name) return _module.layoutAttributes;
+    }
+
+    for(key in Registry.subplotsRegistry) {
+        _module = Registry.subplotsRegistry[key];
+        if(_module.attrRegex && _module.attrRegex.test(head)) return _module.layoutAttributes;
+    }
+
+    if(head === 'radialaxis' || head === 'angularaxis') {
+        return polarAxisAttrs[head];
+    }
+    return polarAxisAttrs.layout[head] || false;
+}
+
+function recurseIntoValObject(valObject, parts, i) {
+    if(!valObject) return false;
+
+    if(valObject._isLinkedToArray) {
+        // skip array index, abort if we try to dive into an array without an index
+        if(isIndex(parts[i])) i++;
+        else if(i < parts.length) return false;
+    }
+
+    // now recurse as far as we can. Occasionally we have an attribute
+    // setting an internal part below what's
+    for(; i < parts.length; i++) {
+        var newValObject = valObject[parts[i]];
+        if(Lib.isPlainObject(newValObject)) valObject = newValObject;
+        else break;
+
+        if(i === parts.length - 1) break;
+
+        if(valObject._isLinkedToArray) {
+            i++;
+            if(!isIndex(parts[i])) return false;
+        }
+        else if(valObject.valType === 'info_array') {
+            i++;
+            var index = parts[i];
+            if(!isIndex(index) || index >= valObject.items.length) return false;
+            valObject = valObject.items[index];
+        }
+    }
+
+    return valObject;
+}
+
+function isIndex(val) {
+    return val === Math.round(val) && val >= 0;
+}
+
 function getTraceAttributes(type) {
     var _module, basePlotModule;
 

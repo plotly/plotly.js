@@ -24,6 +24,7 @@ exports.transformsRegistry = {};
 exports.componentsRegistry = {};
 exports.layoutArrayContainers = [];
 exports.layoutArrayRegexes = [];
+exports.traceLayoutAttributes = {};
 
 /**
  * register a module as the handler for a trace type
@@ -59,6 +60,15 @@ exports.register = function(_module, thisType, categoriesIn, meta) {
 
     for(var componentName in exports.componentsRegistry) {
         mergeComponentAttrsToTrace(componentName, thisType);
+    }
+
+    /*
+     * Collect all trace layout attributes in one place for easier lookup later
+     * but don't merge them into the base schema as it would confuse the docs
+     * (at least after https://github.com/plotly/documentation/issues/202 gets done!)
+     */
+    if(_module.layoutAttributes) {
+        Lib.extendFlat(exports.traceLayoutAttributes, _module.layoutAttributes);
     }
 };
 

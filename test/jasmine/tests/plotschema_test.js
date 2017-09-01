@@ -2,6 +2,18 @@ var Plotly = require('@lib/index');
 
 var Lib = require('@src/lib');
 
+var baseAttrs = require('@src/plots/attributes');
+var scatter = require('@src/traces/scatter');
+var parcoords = require('@src/traces/parcoords');
+var surface = require('@src/traces/surface');
+
+var baseLayoutAttrs = require('@src/plots/layout_attributes');
+var cartesianAttrs = require('@src/plots/cartesian').layoutAttributes;
+var gl3dAttrs = require('@src/plots/gl3d').layoutAttributes;
+var polarLayoutAttrs = require('@src/plots/polar/axis_attributes');
+var annotationAttrs = require('@src/components/annotations').layoutAttributes;
+var updatemenuAttrs = require('@src/components/updatemenus').layoutAttributes;
+
 describe('plot schema', function() {
     'use strict';
 
@@ -256,5 +268,180 @@ describe('plot schema', function() {
         expect(plotSchema.frames.role).toEqual('object');
         expect(plotSchema.frames.items.frames_entry).toBeDefined();
         expect(plotSchema.frames.items.frames_entry.role).toEqual('object');
+    });
+});
+
+describe('getTraceValObject', function() {
+    var getTraceValObject = Plotly.PlotSchema.getTraceValObject;
+
+    it('finds base attributes', function() {
+        expect(getTraceValObject({}, ['type']))
+            .toBe(baseAttrs.type);
+        expect(getTraceValObject({_module: parcoords}, ['customdata', 0, 'charm']))
+            .toBe(baseAttrs.customdata);
+    });
+
+    it('looks first for trace._module, then for trace.type, then dflt', function() {
+        expect(getTraceValObject({_module: parcoords}, ['domain', 'x', 0]))
+            .toBe(parcoords.attributes.domain.x.items[0]);
+        expect(getTraceValObject({_module: parcoords}, ['fugacity'])).toBe(false);
+
+        expect(getTraceValObject({type: 'parcoords'}, ['dimensions', 5, 'range', 1]))
+            .toBe(parcoords.attributes.dimensions.range.items[1]);
+        expect(getTraceValObject({type: 'parcoords'}, ['llamas'])).toBe(false);
+
+        expect(getTraceValObject({}, ['marker', 'opacity']))
+            .toBe(scatter.attributes.marker.opacity);
+        expect(getTraceValObject({}, ['dimensions', 5, 'range', 1])).toBe(false);
+    });
+
+    it('finds subplot attributes', function() {
+        expect(getTraceValObject({}, ['xaxis']))
+            .toBe(require('@src/plots/cartesian').attributes.xaxis);
+
+        expect(getTraceValObject({type: 'surface'}, ['scene']))
+            .toBe(require('@src/plots/gl3d').attributes.scene);
+        expect(getTraceValObject({type: 'surface'}, ['xaxis'])).toBe(false);
+    });
+
+    it('finds pre-merged component attributes', function() {
+        expect(getTraceValObject({}, ['xcalendar']))
+            .toBe(scatter.attributes.xcalendar);
+        expect(getTraceValObject({_module: surface}, ['xcalendar']))
+            .toBe(surface.attributes.xcalendar);
+        expect(getTraceValObject({_module: surface}, ['zcalendar']))
+            .toBe(surface.attributes.zcalendar);
+    });
+
+    it('supports transform attributes', function() {
+        var mockTrace = {transforms: [
+            {type: 'filter'},
+            {type: 'groupby'}
+        ]};
+
+        var filterAttrs = require('@src/transforms/filter').attributes;
+        expect(getTraceValObject(mockTrace, ['transforms', 0, 'operation']))
+            .toBe(filterAttrs.operation);
+        // check a component-provided attr
+        expect(getTraceValObject(mockTrace, ['transforms', 0, 'valuecalendar']))
+            .toBe(filterAttrs.valuecalendar);
+
+        expect(getTraceValObject(mockTrace, ['transforms', 1, 'styles', 13, 'value', 'line', 'color']))
+            .toBe(require('@src/transforms/groupby').attributes.styles.value);
+
+        [
+            ['transforms', 0],
+            ['transforms', 0, 'nameformat'],
+            ['transforms', 2, 'enabled'],
+            ['transforms', '0', 'operation']
+        ].forEach(function(attrArray) {
+            expect(getTraceValObject(mockTrace, attrArray)).toBe(false, attrArray);
+        });
+
+        expect(getTraceValObject({}, ['transforms', 0, 'operation'])).toBe(false);
+    });
+
+    it('supports polar area attributes', function() {
+        var areaAttrs = require('@src/plots/polar/area_attributes');
+        expect(getTraceValObject({type: 'area'}, ['r'])).toBe(areaAttrs.r);
+        expect(getTraceValObject({type: 'area'}, ['t', 23])).toBe(areaAttrs.t);
+        expect(getTraceValObject({type: 'area'}, ['q'])).toBe(false);
+    });
+
+    it('does not return attribute properties', function() {
+        // it still returns the attribute itself - but maybe we should only do this
+        // for valType: any? (or data_array/arrayOk with just an index)
+        [
+            'valType', 'dflt', 'role', 'description', 'arrayOk',
+            'editTypes', 'min', 'max', 'values'
+        ].forEach(function(prop) {
+            expect(getTraceValObject({}, ['x', prop]))
+                .toBe(scatter.attributes.x, prop);
+
+            expect(getTraceValObject({}, ['xcalendar', prop]))
+                .toBe(scatter.attributes.xcalendar, prop);
+
+            expect(getTraceValObject({}, ['line', 'smoothing', prop]))
+                .toBe(scatter.attributes.line.smoothing, prop);
+        });
+    });
+});
+
+describe('getLayoutValObject', function() {
+    var getLayoutValObject = Plotly.PlotSchema.getLayoutValObject;
+
+    it('finds base attributes', function() {
+        expect(getLayoutValObject(['font', 'family'])).toBe(baseLayoutAttrs.font.family);
+        expect(getLayoutValObject(['margin'])).toBe(baseLayoutAttrs.margin);
+        expect(getLayoutValObject(['margarine'])).toBe(false);
+    });
+
+    it('finds trace layout attributes', function() {
+        expect(getLayoutValObject(['barmode']))
+            .toBe(require('@src/traces/bar').layoutAttributes.barmode);
+        expect(getLayoutValObject(['boxgap']))
+            .toBe(require('@src/traces/box').layoutAttributes.boxgap);
+        expect(getLayoutValObject(['hiddenlabels']))
+            .toBe(require('@src/traces/pie').layoutAttributes.hiddenlabels);
+    });
+
+    it('finds component attributes', function() {
+        // the ones with schema are already merged into other places
+        expect(getLayoutValObject(['calendar']))
+            .toBe(baseLayoutAttrs.calendar);
+        expect(getLayoutValObject(['scene4', 'annotations', 44, 'z']))
+            .toBe(gl3dAttrs.annotations.z);
+
+        // ones with only layoutAttributes we need to look in the component
+        expect(getLayoutValObject(['annotations']))
+            .toBe(annotationAttrs);
+        expect(getLayoutValObject(['annotations', 123]))
+            .toBe(annotationAttrs);
+        expect(getLayoutValObject(['annotations', 123, 'textangle']))
+            .toBe(annotationAttrs.textangle);
+
+        expect(getLayoutValObject(['updatemenus', 3, 'buttons', 4, 'args', 2]))
+            .toBe(updatemenuAttrs.buttons.args.items[2]);
+    });
+
+    it('finds cartesian subplot attributes', function() {
+        expect(getLayoutValObject(['xaxis', 'title']))
+            .toBe(cartesianAttrs.title);
+        expect(getLayoutValObject(['yaxis', 'tickfont', 'family']))
+            .toBe(cartesianAttrs.tickfont.family);
+        expect(getLayoutValObject(['xaxis3', 'range', 1]))
+            .toBe(cartesianAttrs.range.items[1]);
+        expect(getLayoutValObject(['yaxis12', 'dtick']))
+            .toBe(cartesianAttrs.dtick);
+
+        // improper axis names
+        [
+            'xaxis0', 'yaxis1', 'xaxis2a', 'yaxis3x3', 'zaxis', 'aaxis'
+        ].forEach(function(name) {
+            expect(getLayoutValObject([name, 'dtick'])).toBe(false, name);
+        });
+    });
+
+    it('finds 3d subplot attributes', function() {
+        expect(getLayoutValObject(['scene', 'zaxis', 'spikesides']))
+            .toBe(gl3dAttrs.zaxis.spikesides);
+        expect(getLayoutValObject(['scene45', 'bgcolor']))
+            .toBe(gl3dAttrs.bgcolor);
+
+        // improper scene names
+        expect(getLayoutValObject(['scene0', 'bgcolor'])).toBe(false);
+        expect(getLayoutValObject(['scene1', 'bgcolor'])).toBe(false);
+        expect(getLayoutValObject(['scene2k', 'bgcolor'])).toBe(false);
+    });
+
+    it('finds polar attributes', function() {
+        expect(getLayoutValObject(['direction']))
+            .toBe(polarLayoutAttrs.layout.direction);
+
+        expect(getLayoutValObject(['radialaxis', 'range', 0]))
+            .toBe(polarLayoutAttrs.radialaxis.range.items[0]);
+
+        expect(getLayoutValObject(['angularaxis', 'domain']))
+            .toBe(polarLayoutAttrs.angularaxis.domain);
     });
 });
