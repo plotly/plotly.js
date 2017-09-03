@@ -197,7 +197,7 @@ module.exports = function plot(gd, calcdata) {
                     d.currentRepaint = window.setTimeout(function() {
                         // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
                         // some repaints invisible ie. wasteful (DOM work blocks the main thread)
-                        renderColumnBlocks(cellsColumnBlock.filter(function(d) {return d.key === anchorChanged;}));
+                        renderColumnBlocks(gd, cellsColumnBlock.filter(function(d) {return d.key === anchorChanged;}));
                     });
                 }
             })
@@ -205,7 +205,7 @@ module.exports = function plot(gd, calcdata) {
             })
         );
 
-    renderColumnBlocks(columnBlock); // initial render
+    renderColumnBlocks(gd, columnBlock); // initial render
 
     var scrollAreaClip = tableControlView.selectAll('.scrollAreaClip')
         .data(gup.repeat, gup.keyFun);
@@ -268,7 +268,7 @@ module.exports = function plot(gd, calcdata) {
         .attr('height', function(d) {return d.calcdata.height + c.uplift;});
 };
 
-function renderColumnBlocks(columnBlock) {
+function renderColumnBlocks(gd, columnBlock) {
 
     // this is performance critical code as scrolling calls it on every revolver switch
     // it appears sufficiently fast but there are plenty of low-hanging fruits for performance optimization
@@ -353,6 +353,19 @@ function renderColumnBlocks(columnBlock) {
         .append('text')
         .classed('cellText', true);
 
+    var finalizeYPosition = function(cellTextHolder) {
+        return function() {
+            cellTextHolder
+                .attr('transform', function (d) {
+                    var element = this;
+                    var box = element.parentElement.getBoundingClientRect();
+                    var rectBox = d3.select(element.parentElement).select('.cellRect').node().getBoundingClientRect();
+                    var yPosition = (rectBox.top - box.top + c.cellPad)
+                    return 'translate(' + c.cellPad + ' ' + yPosition + ')';
+                });
+        };
+    };
+
     // it is only in this leaf selection that the actual cell height can be recovered...
     cellText
     //.attr('alignment-baseline', 'hanging')
@@ -371,7 +384,7 @@ function renderColumnBlocks(columnBlock) {
 
             // finalize what's in the DOM
             Drawing.font(selection, d.font);
-            util.convertToTspans(selection);
+            util.convertToTspans(selection, gd, finalizeYPosition(d3.select(element.parentElement)));
 
             var l = lookup(d);
             var rowIndex = d.key - l.firstRowIndex;
@@ -420,14 +433,6 @@ function renderColumnBlocks(columnBlock) {
             })[d.valign];
             return 'translate(0 ' + yOffset + ')';
             return yOffset;
-        });
-
-    cellTextHolder
-        .attr('transform', function(d) {
-            var element = this;
-            var box = element.parentElement.getBoundingClientRect();
-            var rectBox = d3.select(element.parentElement).select('.cellRect').node().getBoundingClientRect();
-            return 'translate(' + c.cellPad + ' ' + (rectBox.bottom - box.bottom - c.cellPad) + ')';
         });
 };
 

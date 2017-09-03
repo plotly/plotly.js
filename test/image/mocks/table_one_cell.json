@@ -1,6 +1,6 @@
 {
     "layout": {
-        "width": 1000,
+        "width": 300,
         "height": 810,
         "title": "Widget parameters and cost",
         "margin": {"t": 380, "r": 60, "b": 54, "l": 60}
@@ -48,7 +48,7 @@
         "cells": {
 
             "values": [
-                ["$LaTeX$" || "A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br><br>C<sub>D</sub>"]
+                ["$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$" || "A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br><br>C<sub>D</sub>"]
             ],
 
             "format": [
@@ -58,7 +58,7 @@
             //"prefix": ["#"],
             //"suffix": ["cell"],
 
-            "height": 5,
+            "height": 9,
 
             "align": ["right"],
             "valign": ["bottom"],
