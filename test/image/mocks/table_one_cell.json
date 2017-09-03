@@ -48,17 +48,17 @@
         "cells": {
 
             "values": [
-                [0 || "<em>1</em><br>B<br><sub>C</sub>D"]
+                ["$LaTeX$" || "A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br><br>C<sub>D</sub>"]
             ],
 
             "format": [
                 null
             ],
 
-            "prefix": ["#"],
-            "suffix": ["cell"],
+            //"prefix": ["#"],
+            //"suffix": ["cell"],
 
-            "height": 15,
+            "height": 5,
 
             "align": ["right"],
             "valign": ["bottom"],

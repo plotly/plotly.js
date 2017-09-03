@@ -339,17 +339,23 @@ function renderColumnBlocks(columnBlock) {
             return gridPick(d.calcdata.cells.fill.color, d.column.specIndex, d.rowNumber);
         });
 
-    var cellText = columnCell.selectAll('.cellText')
+    var cellTextHolder = columnCell.selectAll('.cellText')
+        .data(gup.repeat, gup.keyFun);
+
+    cellTextHolder.enter()
+        .append('g')
+        .classed('cellTextHolder', true);
+
+    var cellText = cellTextHolder.selectAll('.cellText')
         .data(gup.repeat, gup.keyFun);
 
     cellText.enter()
         .append('text')
         .classed('cellText', true);
 
-
     // it is only in this leaf selection that the actual cell height can be recovered...
     cellText
-        .attr('alignment-baseline', 'hanging')
+    //.attr('alignment-baseline', 'hanging')
         .text(function(d) {
             var col = d.column.specIndex;
             var row = d.rowNumber;
@@ -369,7 +375,9 @@ function renderColumnBlocks(columnBlock) {
 
             var l = lookup(d);
             var rowIndex = d.key - l.firstRowIndex;
-            var renderedHeight = element.getBoundingClientRect().height;
+            var box = element.getBoundingClientRect();
+            var renderedHeight = box.height;
+
             var increase = Math.max(0, renderedHeight + 2 * c.cellPad - l.rows[rowIndex].rowHeight);
 
             if(increase) {
@@ -403,15 +411,24 @@ function renderColumnBlocks(columnBlock) {
     cellRect.attr('height', rowHeight);
 
     cellText
-        .attr('dy', function(d) {
+        .attr('transform', function(d) {
             var height = rowHeight(d);
-            return ({
-                top: -height + c.cellPad,
+            var yOffset = ({
+                top: c.cellPad,
                 middle: -height / 2,
-                bottom: -c.cellPad - 20 + height
+                bottom: -c.cellPad + height
             })[d.valign];
+            return 'translate(0 ' + yOffset + ')';
+            return yOffset;
         });
 
+    cellTextHolder
+        .attr('transform', function(d) {
+            var element = this;
+            var box = element.parentElement.getBoundingClientRect();
+            var rectBox = d3.select(element.parentElement).select('.cellRect').node().getBoundingClientRect();
+            return 'translate(' + c.cellPad + ' ' + (rectBox.bottom - box.bottom - c.cellPad) + ')';
+        });
 };
 
 function rowFromTo(d) {
