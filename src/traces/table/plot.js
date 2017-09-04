@@ -353,53 +353,9 @@ function renderColumnBlocks(gd, columnBlock) {
         .append('text')
         .classed('cellText', true);
 
-    var finalizeYPosition = function(cellTextHolder) {
+    var finalizeYPosition = function(element, d) {
         return function() {
-            cellTextHolder
-                .attr('transform', function (d) {
-                    var element = this;
-                    var box = element.parentElement.getBoundingClientRect();
-                    var rectBox = d3.select(element.parentElement).select('.cellRect').node().getBoundingClientRect();
-                    var yPosition = (rectBox.top - box.top + c.cellPad)
-                    debugger
-                    //var yPosition = (rectBox.bottom - box.bottom + c.cellPad)
-                    return 'translate(' + c.cellPad + ' ' + yPosition + ')';
-                });
-
-            cellTextHolder.select('.cellText')
-                .attr('transform', function(d) {
-                    var height = rowHeight(d);
-                    var yOffset = ({
-                        top: c.cellPad,
-                        middle: -height / 2,
-                        bottom: -c.cellPad + height
-                    })[d.valign];
-                    return 'translate(0 ' + yOffset + ')';
-                    return yOffset;
-                })
-        };
-    };
-
-    // it is only in this leaf selection that the actual cell height can be recovered...
-    cellText
-    //.attr('alignment-baseline', 'hanging')
-        .text(function(d) {
-            var col = d.column.specIndex;
-            var row = d.rowNumber;
-            var prefix = gridPick(d.calcdata.cells.prefix, col, row) || '';
-            var suffix = gridPick(d.calcdata.cells.suffix, col, row) || '';
-            var format = gridPick(d.calcdata.cells.format, col, row) || '';
-            return prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
-        })
-        .each(function(d) {
-
-            var element = this;
-            var selection = d3.select(element);
-
-            // finalize what's in the DOM
-            Drawing.font(selection, d.font);
-            util.convertToTspans(selection, gd, finalizeYPosition(d3.select(element.parentElement.parentElement)));
-
+            var columnCell = d3.select(element.parentElement.parentElement);
             var l = lookup(d);
             var rowIndex = d.key - l.firstRowIndex;
             var box = element.getBoundingClientRect();
@@ -425,17 +381,66 @@ function renderColumnBlocks(gd, columnBlock) {
                     d.rowBlocks[p].firstRowAnchor += increase;
                 }
             }
+
+            var cellTextHolder = columnCell.select('.cellTextHolder');
+
+            if(1)
+            cellTextHolder
+                .attr('transform', function (d) {
+                    var element = this;
+                    var box = element.parentElement.getBoundingClientRect();
+                    var rectBox = d3.select(element.parentElement).select('.cellRect').node().getBoundingClientRect();
+                    //var yPosition = (rectBox.top - box.top)
+                    var yPosition = (rectBox.bottom - box.bottom)
+                    return 'translate(' + c.cellPad + ' ' + yPosition + ')';
+                });
+
+            columnCell.select('.cellRect').attr('height', rowHeight);
+
+            cellTextHolder.selectAll('.cellText')
+                .attr('transform', function(d) {
+                    var height = rowHeight(d);
+                    var yOffset = ({
+                        top: c.cellPad,
+                        middle: -height / 2,
+                        bottom: -c.cellPad + height
+                    })[d.valign];
+                    return 'translate(0 ' + yOffset + ')';
+                    return yOffset;
+                });
+
+            if(0)
+            columnCell
+                .attr('transform', function(d, i) {
+                    return 'translate(' + 0 + ' ' + rowOffset(d, i) + ')';
+                });
+        };
+    };
+
+    // it is only in this leaf selection that the actual cell height can be recovered...
+    cellText
+    //.attr('alignment-baseline', 'hanging')
+        .text(function(d) {
+            var col = d.column.specIndex;
+            var row = d.rowNumber;
+            var prefix = gridPick(d.calcdata.cells.prefix, col, row) || '';
+            var suffix = gridPick(d.calcdata.cells.suffix, col, row) || '';
+            var format = gridPick(d.calcdata.cells.format, col, row) || '';
+            return prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
+        })
+        .each(function(d) {
+
+            var element = this;
+            var selection = d3.select(element);
+
+            // finalize what's in the DOM
+            Drawing.font(selection, d.font);
+            util.convertToTspans(selection, gd, finalizeYPosition(element, d));
         });
 
     // ... therefore all channels for selections above that need to know the height are set below
     // It's not clear from the variable bindings: `enter` ordering is also driven by the painter's algo that SVG uses
 
-    columnCell
-        .attr('transform', function(d, i) {
-            return 'translate(' + 0 + ' ' + rowOffset(d, i) + ')';
-        });
-
-    cellRect.attr('height', rowHeight);
 };
 
 function rowFromTo(d) {
