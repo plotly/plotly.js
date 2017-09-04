@@ -384,19 +384,20 @@ function renderColumnBlocks(gd, columnBlock) {
 
             var cellTextHolder = columnCell.select('.cellTextHolder');
 
+            columnCell.select('.cellRect').attr('height', rowHeight);
+
             if(1)
             cellTextHolder
                 .attr('transform', function (d) {
                     var element = this;
                     var box = element.parentElement.getBoundingClientRect();
                     var rectBox = d3.select(element.parentElement).select('.cellRect').node().getBoundingClientRect();
-                    //var yPosition = (rectBox.top - box.top)
-                    var yPosition = (rectBox.bottom - box.bottom)
+                    var yPosition = (rectBox.top - box.top)
+                    //var yPosition = (rectBox.bottom - box.bottom)
                     return 'translate(' + c.cellPad + ' ' + yPosition + ')';
                 });
 
-            columnCell.select('.cellRect').attr('height', rowHeight);
-
+            if(0)
             cellTextHolder.selectAll('.cellText')
                 .attr('transform', function(d) {
                     var height = rowHeight(d);
@@ -409,7 +410,7 @@ function renderColumnBlocks(gd, columnBlock) {
                     return yOffset;
                 });
 
-            if(0)
+            if(1)
             columnCell
                 .attr('transform', function(d, i) {
                     return 'translate(' + 0 + ' ' + rowOffset(d, i) + ')';
