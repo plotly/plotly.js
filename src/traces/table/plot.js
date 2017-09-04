@@ -358,15 +358,19 @@ function renderColumnBlocks(gd, columnBlock) {
             var columnCell = d3.select(element.parentElement.parentElement);
             var l = lookup(d);
             var rowIndex = d.key - l.firstRowIndex;
-            var box = element.getBoundingClientRect();
+            var box = element.parentElement.getBoundingClientRect();
+
             var renderedHeight = box.height;
 
             var increase = Math.max(0, renderedHeight + 2 * c.cellPad - l.rows[rowIndex].rowHeight);
 
+            console.log('current height is', renderedHeight, 'and model rowHeight is',l.rows[rowIndex].rowHeight )
+            console.log('checking if height increase is needed')
             if(increase) {
-
+console.log('height increase!')
                 // current row height increased
                 l.rows[d.key - l.firstRowIndex].rowHeight += increase;
+                console.log('new rowHeight is', l.rows[d.key - l.firstRowIndex].rowHeight)
 
                 // current block height increased
                 d.rowBlocks[d.page].totalHeight += increase;
@@ -386,14 +390,12 @@ function renderColumnBlocks(gd, columnBlock) {
 
             columnCell.select('.cellRect').attr('height', rowHeight);
 
-            if(1)
             cellTextHolder
                 .attr('transform', function (d) {
                     var element = this;
                     var box = element.parentElement.getBoundingClientRect();
                     var rectBox = d3.select(element.parentElement).select('.cellRect').node().getBoundingClientRect();
-                    var yPosition = (rectBox.top - box.top)
-                    //var yPosition = (rectBox.bottom - box.bottom)
+                    var yPosition = (rectBox.top - box.top + c.cellPad)
                     return 'translate(' + c.cellPad + ' ' + yPosition + ')';
                 });
 
