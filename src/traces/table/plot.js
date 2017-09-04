@@ -364,10 +364,8 @@ function renderColumnBlocks(gd, columnBlock) {
 
             var increase = Math.max(0, renderedHeight + 2 * c.cellPad - l.rows[rowIndex].rowHeight);
 
-            console.log('current height is', renderedHeight, 'and model rowHeight is',l.rows[rowIndex].rowHeight )
-            console.log('checking if height increase is needed')
             if(increase) {
-console.log('height increase!')
+
                 // current row height increased
                 l.rows[d.key - l.firstRowIndex].rowHeight += increase;
                 console.log('new rowHeight is', l.rows[d.key - l.firstRowIndex].rowHeight)
@@ -399,20 +397,6 @@ console.log('height increase!')
                     return 'translate(' + c.cellPad + ' ' + yPosition + ')';
                 });
 
-            if(0)
-            cellTextHolder.selectAll('.cellText')
-                .attr('transform', function(d) {
-                    var height = rowHeight(d);
-                    var yOffset = ({
-                        top: c.cellPad,
-                        middle: -height / 2,
-                        bottom: -c.cellPad + height
-                    })[d.valign];
-                    return 'translate(0 ' + yOffset + ')';
-                    return yOffset;
-                });
-
-            if(1)
             columnCell
                 .attr('transform', function(d, i) {
                     return 'translate(' + 0 + ' ' + rowOffset(d, i) + ')';
