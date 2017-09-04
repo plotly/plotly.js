@@ -138,7 +138,7 @@ module.exports = function plot(gd, calcdata) {
             });
             revolverPanel1.otherPanel = revolverPanel2;
             revolverPanel2.otherPanel = revolverPanel1;
-            return [revolverPanel1, revolverPanel2, headerPanel]; // order due to SVG using painter's algo
+            return [revolverPanel1, revolverPanel2/*, headerPanel*/]; // order due to SVG using painter's algo
         }, gup.keyFun);
 
     columnBlock.enter()
@@ -361,10 +361,13 @@ function renderColumnBlocks(gd, columnBlock) {
                     var box = element.parentElement.getBoundingClientRect();
                     var rectBox = d3.select(element.parentElement).select('.cellRect').node().getBoundingClientRect();
                     var yPosition = (rectBox.top - box.top + c.cellPad)
+                    debugger
+                    //var yPosition = (rectBox.bottom - box.bottom + c.cellPad)
                     return 'translate(' + c.cellPad + ' ' + yPosition + ')';
                 });
         };
     };
+
 
     // it is only in this leaf selection that the actual cell height can be recovered...
     cellText
