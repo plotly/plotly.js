@@ -339,7 +339,7 @@ function renderColumnBlocks(gd, columnBlock) {
             return gridPick(d.calcdata.cells.fill.color, d.column.specIndex, d.rowNumber);
         });
 
-    var cellTextHolder = columnCell.selectAll('.cellText')
+    var cellTextHolder = columnCell.selectAll('.cellTextHolder')
         .data(gup.repeat, gup.keyFun);
 
     cellTextHolder.enter()
@@ -365,9 +365,20 @@ function renderColumnBlocks(gd, columnBlock) {
                     //var yPosition = (rectBox.bottom - box.bottom + c.cellPad)
                     return 'translate(' + c.cellPad + ' ' + yPosition + ')';
                 });
+
+            cellTextHolder.select('.cellText')
+                .attr('transform', function(d) {
+                    var height = rowHeight(d);
+                    var yOffset = ({
+                        top: c.cellPad,
+                        middle: -height / 2,
+                        bottom: -c.cellPad + height
+                    })[d.valign];
+                    return 'translate(0 ' + yOffset + ')';
+                    return yOffset;
+                })
         };
     };
-
 
     // it is only in this leaf selection that the actual cell height can be recovered...
     cellText
@@ -387,7 +398,7 @@ function renderColumnBlocks(gd, columnBlock) {
 
             // finalize what's in the DOM
             Drawing.font(selection, d.font);
-            util.convertToTspans(selection, gd, finalizeYPosition(d3.select(element.parentElement)));
+            util.convertToTspans(selection, gd, finalizeYPosition(d3.select(element.parentElement.parentElement)));
 
             var l = lookup(d);
             var rowIndex = d.key - l.firstRowIndex;
@@ -425,18 +436,6 @@ function renderColumnBlocks(gd, columnBlock) {
         });
 
     cellRect.attr('height', rowHeight);
-
-    cellText
-        .attr('transform', function(d) {
-            var height = rowHeight(d);
-            var yOffset = ({
-                top: c.cellPad,
-                middle: -height / 2,
-                bottom: -c.cellPad + height
-            })[d.valign];
-            return 'translate(0 ' + yOffset + ')';
-            return yOffset;
-        });
 };
 
 function rowFromTo(d) {
