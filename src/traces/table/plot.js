@@ -138,7 +138,7 @@ module.exports = function plot(gd, calcdata) {
             });
             revolverPanel1.otherPanel = revolverPanel2;
             revolverPanel2.otherPanel = revolverPanel1;
-            return [revolverPanel1, revolverPanel2/*, headerPanel*/]; // order due to SVG using painter's algo
+            return [revolverPanel1, revolverPanel2, headerPanel]; // order due to SVG using painter's algo
         }, gup.keyFun);
 
     columnBlock.enter()
@@ -355,6 +355,7 @@ function renderColumnBlocks(gd, columnBlock) {
 
     var finalizeYPosition = function(element, d) {
         return function() {
+            var cellTextHolder = d3.select(element.parentElement);
             var columnCell = d3.select(element.parentElement.parentElement);
             var l = lookup(d);
             var rowIndex = d.key - l.firstRowIndex;
@@ -382,9 +383,11 @@ function renderColumnBlocks(gd, columnBlock) {
                 for(var p = d.page + 1; p < d.rowBlocks.length; p++) {
                     d.rowBlocks[p].firstRowAnchor += increase;
                 }
-            }
 
-            var cellTextHolder = columnCell.select('.cellTextHolder');
+                if(d.column.type === 'header') {
+                    // somehow push down possibly already rendered `cells` type rows
+                }
+            }
 
             columnCell.select('.cellRect').attr('height', rowHeight);
 
@@ -398,7 +401,8 @@ function renderColumnBlocks(gd, columnBlock) {
                 });
 
             columnCell
-                .attr('transform', function(d, i) {
+                .attr('transform', function(d) {
+                    var i = d.key;
                     return 'translate(' + 0 + ' ' + rowOffset(d, i) + ')';
                 });
         };

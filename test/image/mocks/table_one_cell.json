@@ -20,7 +20,7 @@
 
         "header": {
 
-            "height": 20,
+            "height": 30,
 
             "values": [
                 ["Index"   , "#"]
@@ -48,7 +48,7 @@
         "cells": {
 
             "values": [
-                [["$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$", "A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>"][1]]
+                ["$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$", "A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>"]
             ],
 
             "format": [
@@ -58,7 +58,7 @@
             //"prefix": ["#"],
             //"suffix": ["cell"],
 
-            "height": 1,
+            "height": 100,
 
             "align": ["right"],
             "valign": ["bottom"],
