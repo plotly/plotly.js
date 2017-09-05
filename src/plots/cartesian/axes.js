@@ -2023,12 +2023,28 @@ axes.doTicks = function(gd, axid, skipTitle) {
                     pos = ax.anchor === 'free' ?
                         gs.t + gs.h * (1 - ax.position) :
                         gs.t + gs.h * (1 - ax._anchorAxis.domain[{bottom: 0, top: 1}[ax.side]]);
-                    ax._boundingBox = {top: pos, bottom: pos};
+
+                    ax._boundingBox = {
+                        top: pos,
+                        bottom: pos,
+                        left: ax._offset,
+                        rigth: ax._offset + ax._length,
+                        width: ax._length,
+                        height: 0
+                    };
                 } else {
                     pos = ax.anchor === 'free' ?
                         gs.l + gs.w * ax.position :
                         gs.l + gs.w * ax._anchorAxis.domain[{left: 0, right: 1}[ax.side]];
-                    ax._boundingBox = {left: pos, right: pos};
+
+                    ax._boundingBox = {
+                        left: pos,
+                        right: pos,
+                        bottom: ax._offset + ax._length,
+                        top: ax._offset,
+                        height: ax._length,
+                        width: 0
+                    };
                 }
             }
 
