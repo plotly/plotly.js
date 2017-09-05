@@ -1825,7 +1825,13 @@ axes.doTicks = function(gd, axid, skipTitle) {
         // tick labels - for now just the main labels.
         // TODO: mirror labels, esp for subplots
         var tickLabels = container.selectAll('g.' + tcls).data(vals, datafn);
-        if(!ax.showticklabels || !isNumeric(position)) {
+
+        if(!isNumeric(position)) {
+            tickLabels.remove();
+            drawAxTitle();
+            return;
+        }
+        if(!ax.showticklabels) {
             tickLabels.remove();
             drawAxTitle();
             calcBoundingBox();
