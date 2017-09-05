@@ -3043,6 +3043,15 @@ function makePlotFramework(gd) {
         })
         .classed('gl-container', true);
 
+    // update sizes
+    fullLayout._glPickCanvas.width =
+    fullLayout._glBackCanvas.width =
+    fullLayout._glFrontCanvas.width = fullLayout.width;
+
+    fullLayout._glPickCanvas.height =
+    fullLayout._glBackCanvas.height =
+    fullLayout._glFrontCanvas.height = fullLayout.height;
+
     fullLayout._paperdiv.selectAll('.main-svg').remove();
 
     fullLayout._paper = fullLayout._paperdiv.insert('svg', ':first-child')
@@ -3133,59 +3142,54 @@ function initRegl(gd, container) {
         backCanvas = fullLayout._glBackCanvas,
         pickCanvas = fullLayout._glPickCanvas;
 
-    // just update size
-    if(!frontCanvas) {
-        for(var i = 0; i < fullLayout._modules.length; i++) {
-            var module = fullLayout._modules[i];
-            if(module.categories && module.categories.indexOf('regl') >= 0) {
-                var extensions = [
-                    'ANGLE_instanced_arrays',
-                    'OES_element_index_uint'
-                ];
+    if(frontCanvas) return;
 
-                // FIXME: is it fine creating elements like that in plotly?
-                frontCanvas = fullLayout._glFrontCanvas = container.appendChild(document.createElement('canvas'));
-                backCanvas = fullLayout._glBackCanvas = container.appendChild(document.createElement('canvas'));
-                pickCanvas = fullLayout._glPickCanvas = document.createElement('canvas');
+    for(var i = 0; i < fullLayout._modules.length; i++) {
+        var module = fullLayout._modules[i];
+        if(module.categories && module.categories.indexOf('regl') >= 0) {
+            var extensions = [
+                'ANGLE_instanced_arrays',
+                'OES_element_index_uint'
+            ];
 
-                frontCanvas.style.width = backCanvas.style.width = '100%';
-                frontCanvas.style.height = backCanvas.style.height = '100%';
-                frontCanvas.style.position = backCanvas.style.position = 'absolute';
-                frontCanvas.style.top = backCanvas.style.top = '0px';
-                frontCanvas.style.left = backCanvas.style.left = '0px';
-                frontCanvas.style.pointerEvents = backCanvas.style.pointerEvents = 'none';
+            // FIXME: is it fine creating elements like that in plotly?
+            frontCanvas = fullLayout._glFrontCanvas = container.appendChild(document.createElement('canvas'));
+            backCanvas = fullLayout._glBackCanvas = container.appendChild(document.createElement('canvas'));
+            pickCanvas = fullLayout._glPickCanvas = document.createElement('canvas');
 
-                // FIXME: handle pixelRatios
-                fullLayout._reglFront = createRegl({
-                    canvas: frontCanvas,
-                    attributes: {
-                        preserveDrawingBuffer: true,
-                        antialias: true
-                    },
-                    extensions: extensions
-                });
-                fullLayout._reglBack = createRegl({
-                    canvas: backCanvas,
-                    attributes: {
-                        preserveDrawingBuffer: true,
-                        antialias: true
-                    },
-                    extensions: extensions
-                });
+            frontCanvas.style.width = backCanvas.style.width = '100%';
+            frontCanvas.style.height = backCanvas.style.height = '100%';
+            frontCanvas.style.position = backCanvas.style.position = 'absolute';
+            frontCanvas.style.top = backCanvas.style.top = '0px';
+            frontCanvas.style.left = backCanvas.style.left = '0px';
+            frontCanvas.style.pointerEvents = backCanvas.style.pointerEvents = 'none';
 
-                fullLayout._reglPick = createRegl({
-                    canvas: pickCanvas,
-                    attributes: {
-                        preserveDrawingBuffer: true,
-                        antialias: false
-                    },
-                    extensions: extensions
-                });
-            }
+            // FIXME: handle pixelRatios
+            fullLayout._reglFront = createRegl({
+                canvas: frontCanvas,
+                attributes: {
+                    preserveDrawingBuffer: true,
+                    antialias: true
+                },
+                extensions: extensions
+            });
+            fullLayout._reglBack = createRegl({
+                canvas: backCanvas,
+                attributes: {
+                    preserveDrawingBuffer: true,
+                    antialias: true
+                },
+                extensions: extensions
+            });
+
+            fullLayout._reglPick = createRegl({
+                canvas: pickCanvas,
+                attributes: {
+                    preserveDrawingBuffer: true,
+                    antialias: false
+                },
+                extensions: extensions
+            });
         }
     }
-
-    // update sizes
-    pickCanvas.width = backCanvas.width = frontCanvas.width = fullLayout.width;
-    pickCanvas.height = backCanvas.height = frontCanvas.height = fullLayout.height;
 }
