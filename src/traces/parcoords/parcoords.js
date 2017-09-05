@@ -233,18 +233,6 @@ function viewModel(model) {
     return viewModel;
 }
 
-function lineLayerModel(vm) {
-    return c.layers.map(function(key) {
-        return {
-            key: key,
-            context: key === 'contextLineLayer',
-            pick: key === 'pickLineLayer',
-            viewModel: vm,
-            model: vm.model
-        };
-    });
-}
-
 function styleExtentTexts(selection) {
     selection
         .classed('axisExtentText', true)
@@ -253,7 +241,7 @@ function styleExtentTexts(selection) {
         .style('user-select', 'none');
 }
 
-module.exports = function(root, svg, styledData, layout, callbacks) {
+module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, callbacks) {
     var domainBrushing = false;
     var linePickActive = true;
 
@@ -300,37 +288,31 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .map(model.bind(0, layout))
         .map(viewModel);
 
-    root.selectAll('.parcoords-line-layers').remove();
-
-    var parcoordsLineLayers = root.selectAll('.parcoords-line-layers')
-        .data(vm, keyFun);
-
-    parcoordsLineLayers.enter()
-        .insert('div', '.' + svg.attr('class').split(' ').join(' .')) // not hardcoding .main-svg
-        .classed('parcoords-line-layers', true)
-        .style('box-sizing', 'content-box');
+    parcoordsLineLayers.each(function(d, i) {
+        return Lib.extendFlat(d, vm[i]);
+    });
 
     parcoordsLineLayers
         .style('transform', function(d) {
             return 'translate(' + (d.model.translateX - c.overdrag) + 'px,' + d.model.translateY + 'px)';
         });
 
-    var parcoordsLineLayer = parcoordsLineLayers.selectAll('.parcoords-lines')
-        .data(lineLayerModel, keyFun);
+    var parcoordsLineLayer = parcoordsLineLayers.selectAll('.gl-canvas')
+        .each(function(d) {
+            var key = d.key;
+            d.context = key === 'contextLayer';
+            d.pick = key === 'pickLayer';
+
+            // FIXME: figure out how to handle multiple instances
+            d.viewModel = vm[0];
+            d.model = vm[0].model;
+        });
 
     var tweakables = {renderers: [], dimensions: []};
 
     var lastHovered = null;
 
-    parcoordsLineLayer.enter()
-        .append('canvas')
-        .attr('class', function(d) {return 'parcoords-lines ' + (d.context ? 'context' : d.pick ? 'pick' : 'focus');})
-        .style('box-sizing', 'content-box')
-        .style('float', 'left')
-        .style('clear', 'both')
-        .style('left', 0)
-        .style('overflow', 'visible')
-        .style('position', function(d, i) {return i > 0 ? 'absolute' : 'absolute';})
+    parcoordsLineLayer
         .filter(function(d) {return d.pick;})
         .on('mousemove', function(d) {
             if(linePickActive && d.lineLayer && callbacks && callbacks.hover) {
@@ -512,8 +494,8 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
                     .attr('transform', function(d) {return 'translate(' + d.xScale(d.xIndex) + ', 0)';});
                 d3.select(this).attr('transform', 'translate(' + d.x + ', 0)');
                 yAxis.each(function(dd, i, ii) {if(ii === d.parent.key) p.dimensions[i] = dd;});
-                p.contextLineLayer && p.contextLineLayer.render(p.panels, false, !someFiltersActive(p));
-                p.focusLineLayer.render && p.focusLineLayer.render(p.panels);
+                p.contextLayer && p.contextLayer.render(p.panels, false, !someFiltersActive(p));
+                p.focusLayer.render && p.focusLayer.render(p.panels);
             })
             .on('dragend', function(d) {
                 var p = d.parent;
@@ -528,9 +510,9 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
                 updatePanelLayout(yAxis, p);
                 d3.select(this)
                     .attr('transform', function(d) {return 'translate(' + d.x + ', 0)';});
-                p.contextLineLayer && p.contextLineLayer.render(p.panels, false, !someFiltersActive(p));
-                p.focusLineLayer && p.focusLineLayer.render(p.panels);
-                p.pickLineLayer && p.pickLineLayer.render(p.panels, true);
+                p.contextLayer && p.contextLayer.render(p.panels, false, !someFiltersActive(p));
+                p.focusLayer && p.focusLayer.render(p.panels);
+                p.pickLayer && p.pickLayer.render(p.panels, true);
                 linePickActive = true;
 
                 if(callbacks && callbacks.axesMoved) {
@@ -742,13 +724,13 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         var newExtent = reset ? [0, 1] : extent.slice();
         if(newExtent[0] !== filter[0] || newExtent[1] !== filter[1]) {
             dimensions[dimension.xIndex].filter = newExtent;
-            p.focusLineLayer && p.focusLineLayer.render(p.panels, true);
+            p.focusLayer && p.focusLayer.render(p.panels, true);
             var filtersActive = someFiltersActive(p);
             if(!contextShown && filtersActive) {
-                p.contextLineLayer && p.contextLineLayer.render(p.panels, true);
+                p.contextLayer && p.contextLayer.render(p.panels, true);
                 contextShown = true;
             } else if(contextShown && !filtersActive) {
-                p.contextLineLayer && p.contextLineLayer.render(p.panels, true, true);
+                p.contextLayer && p.contextLayer.render(p.panels, true, true);
                 contextShown = false;
             }
         }
@@ -769,9 +751,9 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
                 f[1] = Math.min(1, f[1] + 0.05);
             }
             d3.select(this).transition().duration(150).call(dimension.brush.extent(f));
-            p.focusLineLayer.render(p.panels, true);
+            p.focusLayer.render(p.panels, true);
         }
-        p.pickLineLayer && p.pickLineLayer.render(p.panels, true);
+        p.pickLayer && p.pickLayer.render(p.panels, true);
         linePickActive = true;
         domainBrushing = 'ending';
         if(callbacks && callbacks.filterChanged) {

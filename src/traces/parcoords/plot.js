@@ -15,6 +15,7 @@ module.exports = function plot(gd, cdparcoords) {
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._paper;
     var root = fullLayout._paperdiv;
+    var container = fullLayout._glcontainer;
 
     var gdDimensions = {};
     var gdDimensionsOriginalOrder = {};
@@ -98,6 +99,7 @@ module.exports = function plot(gd, cdparcoords) {
     parcoords(
         root,
         svg,
+        container,
         cdparcoords,
         {
             width: size.w,
