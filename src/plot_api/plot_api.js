@@ -3033,8 +3033,7 @@ function makePlotFramework(gd) {
         .classed('gl-container', true);
 
     // If there are modules with `gl` category, we make sure
-    // main, secondary and pick regl canvases are created for them
-    // that is required by parcoords and regl- components
+    // main, secondary and pick regl-canvases created
     // TODO: make gl- components use that
     fullLayout._reglFront;
     fullLayout._reglBack;
