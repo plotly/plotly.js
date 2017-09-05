@@ -353,9 +353,18 @@ function renderColumnBlocks(gd, columnBlock) {
         .append('text')
         .classed('cellText', true);
 
-    var verticalBump = function() {
-        console.log('vertically bumping (due to changed height)')
-    }
+    var verticalBump = function(increase, rowIndex, l, d) {
+        console.log('vertically bumping (due to changed height)');
+        // subsequent rows in block pushed south
+        for(var r = rowIndex + 1; r < l.rows.length; r++) {
+            l.rows[r].rowAnchor += increase;
+        }
+
+        // subsequent blocks pushed down
+        for(var p = d.page + 1; p < d.rowBlocks.length; p++) {
+            d.rowBlocks[p].firstRowAnchor += increase;
+        }
+    };
 
     var finalizeYPosition = function(element, d) {
         return function() {
@@ -379,15 +388,7 @@ function renderColumnBlocks(gd, columnBlock) {
                 // current block height increased
                 d.rowBlocks[d.page].totalHeight += increase;
 
-                // subsequent rows in block pushed south
-                for(var r = rowIndex + 1; r < l.rows.length; r++) {
-                    l.rows[r].rowAnchor += increase;
-                }
-
-                // subsequent blocks pushed down
-                for(var p = d.page + 1; p < d.rowBlocks.length; p++) {
-                    d.rowBlocks[p].firstRowAnchor += increase;
-                }
+                verticalBump(increase, rowIndex, l, d);
 
                 if(d.column.type === 'header') {
                     // somehow push down possibly already rendered `cells` type rows
