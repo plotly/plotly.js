@@ -357,6 +357,7 @@ function renderColumnBlocks(gd, columnBlock) {
         console.log('vertically bumping (due to changed height)');
         // subsequent rows in block pushed south
         for(var r = rowIndex + 1; r < l.rows.length; r++) {
+            console.log('height bumping row', r);
             l.rows[r].rowAnchor += increase;
         }
 
@@ -377,13 +378,14 @@ function renderColumnBlocks(gd, columnBlock) {
 
             var renderedHeight = box.height;
 
-            var increase = Math.max(0, renderedHeight + 2 * c.cellPad - l.rows[rowIndex].rowHeight);
+            var requiredHeight = renderedHeight + 2 * c.cellPad;
+            var finalHeight = Math.max(requiredHeight, l.rows[rowIndex].rowHeight);
+            var increase = finalHeight - l.rows[rowIndex].rowHeight;
 
             if(increase) {
 
                 // current row height increased
-                l.rows[d.key - l.firstRowIndex].rowHeight += increase;
-                console.log('new rowHeight is', l.rows[d.key - l.firstRowIndex].rowHeight)
+                l.rows[d.key - l.firstRowIndex].rowHeight = finalHeight;
 
                 // current block height increased
                 d.rowBlocks[d.page].totalHeight += increase;
@@ -392,13 +394,6 @@ function renderColumnBlocks(gd, columnBlock) {
 
                 if(d.column.type === 'header') {
                     // somehow push down possibly already rendered `cells` type rows
-                }
-
-                if(d.column.type === 'cells') {
-                    columnCells.selectAll('.columnCell').each(function(dd) {
-                        if(dd.key > d.key)
-                            console.log('will bump height', dd.key);
-                    })
                 }
             }
 
@@ -413,7 +408,8 @@ function renderColumnBlocks(gd, columnBlock) {
                     return 'translate(' + c.cellPad + ' ' + yPosition + ')';
                 });
 
-            columnCell
+            // translate all downstream cells
+            columnCells.selectAll('.columnCell').filter(function(dd) {return dd.key > d.key;})
                 .attr('transform', function(d) {
                     var i = d.key;
                     return 'translate(' + 0 + ' ' + rowOffset(d, i) + ')';
