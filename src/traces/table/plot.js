@@ -353,7 +353,7 @@ function renderColumnBlocks(gd, columnBlock) {
         .append('text')
         .classed('cellText', true);
 
-    var verticalBump = function(increase, rowIndex, l, d) {
+    function verticalBump(increase, rowIndex, l, d) {
         console.log('vertically bumping (due to changed height)');
         // subsequent rows in block pushed south
         for(var r = rowIndex + 1; r < l.rows.length; r++) {
@@ -365,10 +365,17 @@ function renderColumnBlocks(gd, columnBlock) {
         for(var p = d.page + 1; p < d.rowBlocks.length; p++) {
             d.rowBlocks[p].firstRowAnchor += increase;
         }
-    };
+    }
 
-    var finalizeYPosition = function(element, d) {
-        return function() {
+    function translateY(impactedColumCells) {
+        impactedColumCells
+            .attr('transform', function(d) {
+                return 'translate(' + 0 + ' ' + rowOffset(d, d.key) + ')';
+            });
+    }
+
+    function finalizeYPositionMaker(element, d) {
+        return function finalizeYPosition() {
             var cellTextHolder = d3.select(element.parentElement);
             var columnCell = d3.select(element.parentElement.parentElement);
             var columnCells = d3.select(element.parentElement.parentElement.parentElement);
@@ -410,15 +417,19 @@ function renderColumnBlocks(gd, columnBlock) {
 
             // translate all downstream cells
             // if there's no increase, then the subsequent rows don't need to be pushed down
-            var impactedColumCells = increase ? columnCells.selectAll('.columnCell').filter(function(dd) {return dd.key > d.key;}) : columnCell;
-            impactedColumCells
-                .attr('transform', function(d) {
-                    var i = d.key;
-                    return 'translate(' + 0 + ' ' + rowOffset(d, i) + ')';
-                });
+            translateY(increase ? columnCells.selectAll('.columnCell').filter(function(dd) {return dd.key > d.key;}) : columnCell)
 
+            // translate all downstream panels (naturally, max. 1 of 2)
+            if(increase) {
+                d3.select(element.parentElement.parentElement.parentElement.parentElement.parentElement).selectAll('.columnBlock')
+                    .each(function(dd) {
+                       if(dd.type === 'cells' && d.column.type === 'cells' && dd.anchor > d.column.anchor) {
+                           debugger;
+                       }
+                    });
+            }
         };
-    };
+    }
 
     // it is only in this leaf selection that the actual cell height can be recovered...
     cellText
@@ -438,7 +449,7 @@ function renderColumnBlocks(gd, columnBlock) {
 
             // finalize what's in the DOM
             Drawing.font(selection, d.font);
-            util.convertToTspans(selection, gd, finalizeYPosition(element, d));
+            util.convertToTspans(selection, gd, finalizeYPositionMaker(element, d));
         });
 
     // ... therefore all channels for selections above that need to know the height are set below
