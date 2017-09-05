@@ -353,6 +353,10 @@ function renderColumnBlocks(gd, columnBlock) {
         .append('text')
         .classed('cellText', true);
 
+    var verticalBump = function() {
+        console.log('vertically bumping (due to changed height)')
+    }
+
     var finalizeYPosition = function(element, d) {
         return function() {
             var cellTextHolder = d3.select(element.parentElement);
@@ -390,10 +394,9 @@ function renderColumnBlocks(gd, columnBlock) {
                 }
 
                 if(d.column.type === 'cells') {
-                    columnCells.selectAll('.columnCell').filter(function(dd) {
-                        return dd.key > d.key;
-                    }).each(function(dd) {
-                        console.log('will bump height', dd.key);
+                    columnCells.selectAll('.columnCell').each(function(dd) {
+                        if(dd.key > d.key)
+                            console.log('will bump height', dd.key);
                     })
                 }
             }
