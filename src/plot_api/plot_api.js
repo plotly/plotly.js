@@ -13,6 +13,7 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 var hasHover = require('has-hover');
+var createRegl = require('regl');
 
 var Plotly = require('../plotly');
 var Lib = require('../lib');
@@ -3030,6 +3031,48 @@ function makePlotFramework(gd) {
         .data([0]);
     fullLayout._glcontainer.enter().append('div')
         .classed('gl-container', true);
+
+    // If there are modules with `gl` category, we make sure
+    // main, secondary and pick regl canvases are created for them
+    // that is required by parcoords and regl- components
+    // TODO: make gl- components use that
+    fullLayout._reglFront;
+    fullLayout._reglBack;
+    fullLayout._reglPick;
+    for(var i = 0; i < fullLayout._modules.length; i++) {
+        var module = fullLayout._modules[i];
+        if(module.categories && module.categories.indexOf('gl') >= 0) {
+            // FIXME: handpicked from various regl traces
+            // there might be a better way to handle extensions
+            var extensions = [
+                'ANGLE_instanced_arrays',
+                'OES_element_index_uint'
+            ];
+            fullLayout._reglBack = createRegl({
+                container: fullLayout._glcontainer.node(),
+                attributes: {
+                    preserveDrawingBuffer: true,
+                    antialias: true
+                },
+                extensions: extensions
+            });
+            fullLayout._reglFront = createRegl({
+                container: fullLayout._glcontainer.node(),
+                attributes: {
+                    preserveDrawingBuffer: true,
+                    antialias: true
+                },
+                extensions: extensions
+            });
+            fullLayout._reglPick = createRegl({
+                attributes: {
+                    preserveDrawingBuffer: true,
+                    antialias: false
+                },
+                extensions: extensions
+            });
+        }
+    }
 
     fullLayout._paperdiv.selectAll('.main-svg').remove();
 
