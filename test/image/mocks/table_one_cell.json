@@ -58,7 +58,7 @@
             //"prefix": ["#"],
             //"suffix": ["cell"],
 
-            "height": 100,
+            "height": 1,
 
             "align": ["right"],
             "valign": ["bottom"],

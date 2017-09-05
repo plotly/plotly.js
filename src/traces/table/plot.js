@@ -357,6 +357,7 @@ function renderColumnBlocks(gd, columnBlock) {
         return function() {
             var cellTextHolder = d3.select(element.parentElement);
             var columnCell = d3.select(element.parentElement.parentElement);
+            var columnCells = d3.select(element.parentElement.parentElement.parentElement);
             var l = lookup(d);
             var rowIndex = d.key - l.firstRowIndex;
             var box = element.parentElement.getBoundingClientRect();
@@ -386,6 +387,14 @@ function renderColumnBlocks(gd, columnBlock) {
 
                 if(d.column.type === 'header') {
                     // somehow push down possibly already rendered `cells` type rows
+                }
+
+                if(d.column.type === 'cells') {
+                    columnCells.selectAll('.columnCell').filter(function(dd) {
+                        return dd.key > d.key;
+                    }).each(function(dd) {
+                        console.log('will bump height', dd.key);
+                    })
                 }
             }
 
