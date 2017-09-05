@@ -409,11 +409,14 @@ function renderColumnBlocks(gd, columnBlock) {
                 });
 
             // translate all downstream cells
-            columnCells.selectAll('.columnCell').filter(function(dd) {return dd.key > d.key;})
+            // if there's no increase, then the subsequent rows don't need to be pushed down
+            var impactedColumCells = increase ? columnCells.selectAll('.columnCell').filter(function(dd) {return dd.key > d.key;}) : columnCell;
+            impactedColumCells
                 .attr('transform', function(d) {
                     var i = d.key;
                     return 'translate(' + 0 + ' ' + rowOffset(d, i) + ')';
                 });
+
         };
     };
 
