@@ -39,6 +39,7 @@ describe('spikeline', function() {
         }
 
         function _assert(lineExpect, circleExpect) {
+            var TOL = 5;
             var lines = d3.selectAll('line.spikeline');
             var circles = d3.selectAll('circle.spikeline');
 
@@ -49,7 +50,7 @@ describe('spikeline', function() {
                 var sel = d3.select(this);
                 ['x1', 'y1', 'x2', 'y2'].forEach(function(d, j) {
                     expect(sel.attr(d))
-                        .toBeWithin(lineExpect[i][j], 1, 'line ' + i + ' attr ' + d);
+                        .toBeWithin(lineExpect[i][j], TOL, 'line ' + i + ' attr ' + d);
                 });
             });
 
@@ -57,7 +58,7 @@ describe('spikeline', function() {
                 var sel = d3.select(this);
                 ['cx', 'cy'].forEach(function(d, j) {
                     expect(sel.attr(d))
-                        .toBeWithin(circleExpect[i][j], 1, 'circle ' + i + ' attr ' + d);
+                        .toBeWithin(circleExpect[i][j], TOL, 'circle ' + i + ' attr ' + d);
                 });
             });
         }
