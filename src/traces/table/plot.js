@@ -422,11 +422,8 @@ function renderColumnBlocks(gd, columnBlock) {
             // translate all downstream panels (naturally, max. 1 of 2)
             if(increase) {
                 d3.select(element.parentElement.parentElement.parentElement.parentElement.parentElement).selectAll('.columnBlock')
-                    .each(function(dd) {
-                       if(dd.type === 'cells' && d.column.type === 'cells' && dd.anchor > d.column.anchor) {
-                           debugger;
-                       }
-                    });
+                    .filter(function(dd) {return dd.type === 'cells' && d.column.type === 'cells' && dd.anchor > d.column.anchor;})
+                    .call(columnBlockPositionY);
             }
         };
     }
