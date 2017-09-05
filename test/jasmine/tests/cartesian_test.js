@@ -478,4 +478,46 @@ describe('subplot creation / deletion:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('clear axis ticks, labels and title when relayout an axis to `*visible:false*', function(done) {
+        function _assert(xaxis, yaxis) {
+            var g = d3.select('.subplot.xy');
+            var info = d3.select('.infolayer');
+
+            expect(g.selectAll('.xtick').size()).toBe(xaxis[0], 'x tick cnt');
+            expect(g.selectAll('.gridlayer > .xgrid').size()).toBe(xaxis[1], 'x gridline cnt');
+            expect(info.selectAll('.g-xtitle').size()).toBe(xaxis[2], 'x title cnt');
+
+            expect(g.selectAll('.ytick').size()).toBe(yaxis[0], 'y tick cnt');
+            expect(g.selectAll('.gridlayer > .ygrid').size()).toBe(yaxis[1], 'y gridline cnt');
+            expect(info.selectAll('.g-ytitle').size()).toBe(yaxis[2], 'y title cnt');
+        }
+
+        Plotly.plot(gd, [{
+            y: [1, 2, 1]
+        }], {
+            xaxis: {title: 'X'},
+            yaxis: {title: 'Y'}
+        })
+        .then(function() {
+            _assert([5, 4, 1], [6, 6, 1]);
+            return Plotly.relayout(gd, 'xaxis.visible', false);
+        })
+        .then(function() {
+            _assert([0, 0, 0], [6, 6, 1]);
+            return Plotly.relayout(gd, 'yaxis.visible', false);
+        })
+        .then(function() {
+            _assert([0, 0, 0], [0, 0, 0]);
+            return Plotly.relayout(gd, {
+                'xaxis.visible': true,
+                'yaxis.visible': true
+            });
+        })
+        .then(function() {
+            _assert([5, 4, 1], [6, 6, 1]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
