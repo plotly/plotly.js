@@ -49,7 +49,7 @@ module.exports = function plot(gd, calcdata) {
         .style('box-sizing', 'content-box');
 
     tableControlView
-        .attr('transform', function(d) {return 'translate(' + d.size.l + ',' + d.size.t + ')';})
+        .attr('transform', function(d) {return 'translate(' + d.size.l + ' ' + d.size.t + ')';})
         .attr('clip-path', function(d) {return 'url(#scrollAreaBottomClip_' + d.key + ')';});
 
     var yColumn = tableControlView.selectAll('.yColumn')
@@ -60,7 +60,7 @@ module.exports = function plot(gd, calcdata) {
         .classed('yColumn', true);
 
     yColumn
-        .attr('transform', function(d) {return 'translate(' + d.x + ' 0)';});
+        .attr('transform', function(d) {console.log(d.x); return 'translate(' + d.x + ' 0)';});
 
     yColumn
         .attr('clip-path', function(d) {return 'url(#columnBoundaryClippath_' + d.specIndex + ')';})

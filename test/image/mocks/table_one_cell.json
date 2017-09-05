@@ -1,6 +1,6 @@
 {
     "layout": {
-        "width": 400,
+        "width": 500,
         "height": 810,
         "title": "Widget parameters and cost",
         "margin": {"t": 380, "r": 60, "b": 54, "l": 60}
@@ -16,7 +16,7 @@
         },
 
         "columnwidth": [50],
-        "columnorder": [0],
+        "columnorder": [0, 1],
 
         "header": {
 
@@ -84,7 +84,7 @@
                     "7A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
                     "$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
                     "8A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
-                ]
+                ].map(function(d, i) {return i})
 
             ],
 
