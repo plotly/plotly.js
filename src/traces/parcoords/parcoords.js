@@ -254,7 +254,6 @@ function styleExtentTexts(selection) {
 }
 
 module.exports = function(root, svg, styledData, layout, callbacks) {
-
     var domainBrushing = false;
     var linePickActive = true;
 
