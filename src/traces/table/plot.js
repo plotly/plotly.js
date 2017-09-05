@@ -150,7 +150,7 @@ module.exports = function plot(gd, calcdata) {
 
     columnBlock
         .style('cursor', function(d) {return d.dragHandle ? 'ew-resize' : 'ns-resize';})
-        .attr('transform', function(d) {return 'translate(0 ' + (d.anchor + d.yOffset) + ')';});
+        .call(columnBlockPositionY);
 
     cellsColumnBlock
         .call(d3.behavior.drag()
@@ -456,6 +456,10 @@ function renderColumnBlocks(gd, columnBlock) {
     // It's not clear from the variable bindings: `enter` ordering is also driven by the painter's algo that SVG uses
 
 };
+
+function columnBlockPositionY(columnBlock) {
+    columnBlock.attr('transform', function(d) {return 'translate(0 ' + (d.anchor + d.yOffset) + ')';});
+}
 
 function rowFromTo(d) {
     var rowBlock = d.rowBlocks[d.page];
