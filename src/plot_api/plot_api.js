@@ -3022,6 +3022,14 @@ function makePlotFramework(gd) {
         .classed('svg-container', true)
         .style('position', 'relative');
 
+    // regl traces stubs get initialized by condition
+    fullLayout._reglFront;
+    fullLayout._reglBack;
+    fullLayout._reglPick;
+    fullLayout._glFrontCanvas;
+    fullLayout._glBackCanvas;
+    fullLayout._glPickCanvas;
+
     // Make the graph containers
     // start fresh each time we get here, so we know the order comes out
     // right, rather than enter/exit which can muck up the order
@@ -3030,48 +3038,10 @@ function makePlotFramework(gd) {
     fullLayout._glcontainer = fullLayout._paperdiv.selectAll('.gl-container')
         .data([0]);
     fullLayout._glcontainer.enter().append('div')
+        .each(function() {
+            initRegl(gd, this);
+        })
         .classed('gl-container', true);
-
-    // If there are modules with `gl` category, we make sure
-    // main, secondary and pick regl-canvases created
-    // TODO: make gl- components use that
-    fullLayout._reglFront;
-    fullLayout._reglBack;
-    fullLayout._reglPick;
-    for(var i = 0; i < fullLayout._modules.length; i++) {
-        var module = fullLayout._modules[i];
-        if(module.categories && module.categories.indexOf('gl') >= 0) {
-            // FIXME: handpicked from various regl traces
-            // there might be a better way to handle extensions
-            var extensions = [
-                'ANGLE_instanced_arrays',
-                'OES_element_index_uint'
-            ];
-            fullLayout._reglBack = createRegl({
-                container: fullLayout._glcontainer.node(),
-                attributes: {
-                    preserveDrawingBuffer: true,
-                    antialias: true
-                },
-                extensions: extensions
-            });
-            fullLayout._reglFront = createRegl({
-                container: fullLayout._glcontainer.node(),
-                attributes: {
-                    preserveDrawingBuffer: true,
-                    antialias: true
-                },
-                extensions: extensions
-            });
-            fullLayout._reglPick = createRegl({
-                attributes: {
-                    preserveDrawingBuffer: true,
-                    antialias: false
-                },
-                extensions: extensions
-            });
-        }
-    }
 
     fullLayout._paperdiv.selectAll('.main-svg').remove();
 
@@ -3151,4 +3121,71 @@ function makePlotFramework(gd) {
     fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
 
     gd.emit('plotly_framework');
+}
+
+
+// If there are modules with `regl` category, we make sure
+// main, secondary and pick regl-canvases created
+// TODO: make gl- components use that
+function initRegl(gd, container) {
+    var fullLayout = gd._fullLayout;
+    var frontCanvas = fullLayout._glFrontCanvas,
+        backCanvas = fullLayout._glBackCanvas,
+        pickCanvas = fullLayout._glPickCanvas;
+
+    // just update size
+    if(!frontCanvas) {
+        for(var i = 0; i < fullLayout._modules.length; i++) {
+            var module = fullLayout._modules[i];
+            if(module.categories && module.categories.indexOf('regl') >= 0) {
+                var extensions = [
+                    'ANGLE_instanced_arrays',
+                    'OES_element_index_uint'
+                ];
+
+                // FIXME: is it fine creating elements like that in plotly?
+                frontCanvas = fullLayout._glFrontCanvas = container.appendChild(document.createElement('canvas'));
+                backCanvas = fullLayout._glBackCanvas = container.appendChild(document.createElement('canvas'));
+                pickCanvas = fullLayout._glPickCanvas = document.createElement('canvas');
+
+                frontCanvas.style.width = backCanvas.style.width = '100%';
+                frontCanvas.style.height = backCanvas.style.height = '100%';
+                frontCanvas.style.position = backCanvas.style.position = 'absolute';
+                frontCanvas.style.top = backCanvas.style.top = '0px';
+                frontCanvas.style.left = backCanvas.style.left = '0px';
+                frontCanvas.style.pointerEvents = backCanvas.style.pointerEvents = 'none';
+
+                // FIXME: handle pixelRatios
+                fullLayout._reglFront = createRegl({
+                    canvas: frontCanvas,
+                    attributes: {
+                        preserveDrawingBuffer: true,
+                        antialias: true
+                    },
+                    extensions: extensions
+                });
+                fullLayout._reglBack = createRegl({
+                    canvas: backCanvas,
+                    attributes: {
+                        preserveDrawingBuffer: true,
+                        antialias: true
+                    },
+                    extensions: extensions
+                });
+
+                fullLayout._reglPick = createRegl({
+                    canvas: pickCanvas,
+                    attributes: {
+                        preserveDrawingBuffer: true,
+                        antialias: false
+                    },
+                    extensions: extensions
+                });
+            }
+        }
+    }
+
+    // update sizes
+    pickCanvas.width = backCanvas.width = frontCanvas.width = fullLayout.width;
+    pickCanvas.height = backCanvas.height = frontCanvas.height = fullLayout.height;
 }
