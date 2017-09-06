@@ -138,7 +138,7 @@ module.exports = function plot(gd, calcdata) {
             });
             revolverPanel1.otherPanel = revolverPanel2;
             revolverPanel2.otherPanel = revolverPanel1;
-            return [revolverPanel1, revolverPanel2, headerPanel]; // order due to SVG using painter's algo
+            return [revolverPanel1/*, revolverPanel2, headerPanel*/]; // order due to SVG using painter's algo
         }, gup.keyFun);
 
     columnBlock.enter()
@@ -268,7 +268,6 @@ module.exports = function plot(gd, calcdata) {
         .attr('height', function(d) {return d.calcdata.height + c.uplift;});
 };
 
-
 function renderColumnBlocks(gd, columnBlock) {
 
     // this is performance critical code as scrolling calls it on every revolver switch
@@ -371,7 +370,9 @@ function renderColumnBlocks(gd, columnBlock) {
     function translateY(impactedColumCells) {
         impactedColumCells
             .attr('transform', function(d) {
-                return 'translate(' + 0 + ' ' + rowOffset(d, d.key) + ')';
+                var yOffset = rowOffset(d, d.key);
+                console.log('height induced translateY to', yOffset)
+                return 'translate(' + 0 + ' ' + yOffset + ')';
             });
     }
 
@@ -420,11 +421,24 @@ function renderColumnBlocks(gd, columnBlock) {
             // if there's no increase, then the subsequent rows don't need to be pushed down
             translateY(increase ? columnCells.selectAll('.columnCell').filter(function(dd) {return dd.key > d.key;}) : columnCell)
 
-            // translate all downstream panels (naturally, max. 1 of 2)
+            // translate all downstream revolver column panels (naturally, max. 1 of 2)
             if(increase) {
                 d3.select(element.parentElement.parentElement.parentElement.parentElement.parentElement).selectAll('.columnBlock')
                     .filter(function(dd) {return dd.type === 'cells' && d.column.type === 'cells' && dd.anchor > d.column.anchor;})
-                    .call(columnBlockPositionY);
+                    .call(columnBlockPositionY)
+
+                //debugger
+                d3.select(element.parentElement.parentElement.parentElement.parentElement.parentElement).selectAll('.columnBlock')
+                    .filter(function(dd) { return
+                        dd.type === 'cells' && // don't worry about the header rows (yet)
+                        d.column.key === dd.key; // don't worry about other panels (why tho?)
+                    })
+                    .selectAll('.columnCell')
+                    .filter(function(dd) {return
+                        //dd.key > d.key // only bump preceding columns
+                    //debugger
+                        ;})
+                    .call(translateY);
             }
         };
     }
