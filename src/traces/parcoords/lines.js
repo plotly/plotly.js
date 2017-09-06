@@ -261,13 +261,11 @@ module.exports = function(canvasGL, d, scatter) {
             }
         },
 
-        viewport: () => {
-            return {
-                x: model.pad.l - overdrag + model.layoutWidth * domain.x[0],
-                y: model.pad.b + model.layoutHeight * domain.y[0],
-                width: canvasWidth,
-                height: canvasHeight
-            }
+        viewport: {
+            x: regl.prop('viewportX'),
+            y: regl.prop('viewportY'),
+            width: regl.prop('viewportWidth'),
+            height: regl.prop('viewportHeight')
         },
 
         dither: false,
@@ -363,10 +361,16 @@ module.exports = function(canvasGL, d, scatter) {
 
             colorClamp: colorClamp,
             scatter: scatter || 0,
+
             scissorX: (I === leftmost ? 0 : x + overdrag) + (model.pad.l - overdrag) + model.layoutWidth * domain.x[0],
             scissorWidth: (I === rightmost ? canvasWidth - x + overdrag : panelSizeX + 0.5) + (I === leftmost ? x + overdrag : 0),
             scissorY: y + model.pad.b + model.layoutHeight * domain.y[0],
-            scissorHeight: canvasPanelSizeY
+            scissorHeight: canvasPanelSizeY,
+
+            viewportX: model.pad.l - overdrag + model.layoutWidth * domain.x[0],
+            viewportY: model.pad.b + model.layoutHeight * domain.y[0],
+            viewportWidth: canvasWidth,
+            viewportHeight: canvasHeight
         };
     }
 
