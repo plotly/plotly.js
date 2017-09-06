@@ -166,6 +166,9 @@ function model(layout, d, i) {
         labelFont: labelFont,
         tickFont: tickFont,
         rangeFont: rangeFont,
+        layoutWidth: width,
+        layoutHeight: layout.height,
+        domain: domain,
         translateX: domain.x[0] * width,
         translateY: layout.height - domain.y[1] * layout.height,
         pad: pad,
@@ -292,11 +295,6 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
         return Lib.extendFlat(d, vm[i]);
     });
 
-    parcoordsLineLayers
-        .style('transform', function(d) {
-            return 'translate(' + (d.model.translateX - c.overdrag) + 'px,' + d.model.translateY + 'px)';
-        });
-
     var parcoordsLineLayer = parcoordsLineLayers.selectAll('.gl-canvas')
         .each(function(d) {
             var key = d.key;
@@ -350,14 +348,6 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
         });
 
     parcoordsLineLayer
-        .style('margin', function(d) {
-            var p = d.model.pad;
-            return p.t + 'px ' + p.r + 'px ' + p.b + 'px ' + p.l + 'px';
-        })
-        .attr('width', function(d) {return d.model.canvasWidth;})
-        .attr('height', function(d) {return d.model.canvasHeight;})
-        .style('width', function(d) {return (d.model.width + 2 * c.overdrag) + 'px';})
-        .style('height', function(d) {return d.model.height + 'px';})
         .style('opacity', function(d) {return d.pick ? 0.01 : 1;});
 
     svg.style('background', 'rgba(255, 255, 255, 0)');

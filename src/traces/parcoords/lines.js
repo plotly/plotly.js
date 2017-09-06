@@ -10,7 +10,7 @@
 
 var createREGL = require('regl');
 var glslify = require('glslify');
-var verticalPadding = require('./constants').verticalPadding;
+var c = require('./constants');
 var vertexShaderSource = glslify('./shaders/vertex.glsl');
 var pickVertexShaderSource = glslify('./shaders/pick_vertex.glsl');
 var fragmentShaderSource = glslify('./shaders/fragment.glsl');
@@ -56,7 +56,8 @@ function renderBlock(regl, glAes, renderState, blockLineCount, sampleCount, item
         item.offset = sectionVertexCount * blockNumber * blockLineCount;
         item.count = sectionVertexCount * count;
         if(blockNumber === 0) {
-            window.cancelAnimationFrame(renderState.currentRafs[rafKey]); // stop drawing possibly stale glyphs before clearing
+            // stop drawing possibly stale glyphs before clearing
+            window.cancelAnimationFrame(renderState.currentRafs[rafKey]);
             delete renderState.currentRafs[rafKey];
             clear(regl, item.scissorX, item.scissorY, item.scissorWidth, item.viewBoxSize[1]);
         }
@@ -167,7 +168,8 @@ function valid(i, offset, panelCount) {
 
 module.exports = function(canvasGL, d, scatter) {
     var model = d.model,
-        vm = d.viewModel;
+        vm = d.viewModel,
+        domain = model.domain;
 
     var lines = model.lines,
         canvasWidth = model.canvasWidth,
@@ -177,7 +179,6 @@ module.exports = function(canvasGL, d, scatter) {
         unitToColor = model.unitToColor,
         context = d.context,
         pick = d.pick;
-
 
     var renderState = {
         currentRafs: {},
@@ -260,6 +261,15 @@ module.exports = function(canvasGL, d, scatter) {
             }
         },
 
+        viewport: () => {
+            return {
+                x: model.pad.l - overdrag + model.layoutWidth * domain.x[0],
+                y: model.pad.b + model.layoutHeight * domain.y[0],
+                width: canvasWidth,
+                height: canvasHeight
+            }
+        },
+
         dither: false,
 
         vert: pick ? pickVertexShaderSource : vertexShaderSource,
@@ -309,7 +319,7 @@ module.exports = function(canvasGL, d, scatter) {
     function makeItem(i, ii, x, y, panelSizeX, canvasPanelSizeY, crossfilterDimensionIndex, scatter, I, leftmost, rightmost) {
         var loHi, abcd, d, index;
         var leftRight = [i, ii];
-        var filterEpsilon = verticalPadding / canvasPanelSizeY;
+        var filterEpsilon = c.verticalPadding / canvasPanelSizeY;
 
         var dims = [0, 1].map(function() {return [0, 1, 2, 3].map(function() {return new Float32Array(16);});});
         var lims = [0, 1].map(function() {return [0, 1, 2, 3].map(function() {return new Float32Array(16);});});
@@ -353,9 +363,9 @@ module.exports = function(canvasGL, d, scatter) {
 
             colorClamp: colorClamp,
             scatter: scatter || 0,
-            scissorX: I === leftmost ? 0 : x + overdrag,
+            scissorX: (I === leftmost ? 0 : x + overdrag) + (model.pad.l - overdrag) + model.layoutWidth * domain.x[0],
             scissorWidth: (I === rightmost ? canvasWidth - x + overdrag : panelSizeX + 0.5) + (I === leftmost ? x + overdrag : 0),
-            scissorY: y,
+            scissorY: y + model.pad.b + model.layoutHeight * domain.y[0],
             scissorHeight: canvasPanelSizeY
         };
     }
