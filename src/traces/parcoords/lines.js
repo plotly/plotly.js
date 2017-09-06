@@ -165,7 +165,19 @@ function valid(i, offset, panelCount) {
     return i + offset <= panelCount;
 }
 
-module.exports = function(canvasGL, lines, canvasWidth, canvasHeight, initialDimensions, initialPanels, unitToColor, context, pick, scatter) {
+module.exports = function(canvasGL, d, scatter) {
+    var model = d.model,
+        vm = d.viewModel;
+
+    var lines = model.lines,
+        canvasWidth = model.canvasWidth,
+        canvasHeight = model.canvasHeight,
+        initialDimensions = vm.dimensions,
+        initialPanels = vm.panels,
+        unitToColor = model.unitToColor,
+        context = d.context,
+        pick = d.pick;
+
 
     var renderState = {
         currentRafs: {},

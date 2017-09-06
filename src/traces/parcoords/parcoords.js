@@ -460,7 +460,7 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
 
     parcoordsLineLayer
         .each(function(d) {
-            d.lineLayer = lineLayerMaker(this, d.model.lines, d.model.canvasWidth, d.model.canvasHeight, d.viewModel.dimensions, d.viewModel.panels, d.model.unitToColor, d.context, d.pick, c.scatter);
+            d.lineLayer = lineLayerMaker(this, d, c.scatter);
             d.viewModel[d.key] = d.lineLayer;
             tweakables.renderers.push(function() {d.lineLayer.render(d.viewModel.panels, true);});
             d.lineLayer.render(d.viewModel.panels, !d.context);
