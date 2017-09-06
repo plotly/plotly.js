@@ -15,7 +15,7 @@
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.30.0';
+exports.version = '1.30.1';
 
 // inject promise polyfill
 require('es6-promise').polyfill();

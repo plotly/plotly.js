@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.30.0
+* plotly.js (gl3d) v1.30.1
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -38191,7 +38191,7 @@ function createSurfaceExtractor(args) {
 
 
 
-var fill = require('cwise/lib/wrapper')({"args":["index","array","scalar"],"pre":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"body":{"body":"{_inline_4_arg1_=_inline_4_arg2_.apply(void 0,_inline_4_arg0_)}","args":[{"name":"_inline_4_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_4_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_4_arg2_","lvalue":false,"rvalue":true,"count":1}],"thisVars":[],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
+var fill = require('cwise/lib/wrapper')({"args":["index","array","scalar"],"pre":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"body":{"body":"{_inline_7_arg1_=_inline_7_arg2_.apply(void 0,_inline_7_arg0_)}","args":[{"name":"_inline_7_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_7_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_7_arg2_","lvalue":false,"rvalue":true,"count":1}],"thisVars":[],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
 
 module.exports = function(array, f) {
   fill(array, f)
@@ -39881,13 +39881,13 @@ module.exports = sort
 var interp  = require('ndarray-linear-interpolate')
 
 
-var do_warp = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=new Array(_inline_21_arg4_)}","args":[{"name":"_inline_21_arg0_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_21_arg1_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_21_arg2_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_21_arg3_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_21_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_22_arg2_(this_warped,_inline_22_arg0_),_inline_22_arg1_=_inline_22_arg3_.apply(void 0,this_warped)}","args":[{"name":"_inline_22_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_22_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_22_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_22_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_22_arg4_","lvalue":false,"rvalue":false,"count":0}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warpND","blockSize":64})
+var do_warp = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=new Array(_inline_33_arg4_)}","args":[{"name":"_inline_33_arg0_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_33_arg1_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_33_arg2_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_33_arg3_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_33_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_34_arg2_(this_warped,_inline_34_arg0_),_inline_34_arg1_=_inline_34_arg3_.apply(void 0,this_warped)}","args":[{"name":"_inline_34_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_34_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg4_","lvalue":false,"rvalue":false,"count":0}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warpND","blockSize":64})
 
-var do_warp_1 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_25_arg2_(this_warped,_inline_25_arg0_),_inline_25_arg1_=_inline_25_arg3_(_inline_25_arg4_,this_warped[0])}","args":[{"name":"_inline_25_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_25_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_25_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_25_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_25_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp1D","blockSize":64})
+var do_warp_1 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_37_arg2_(this_warped,_inline_37_arg0_),_inline_37_arg1_=_inline_37_arg3_(_inline_37_arg4_,this_warped[0])}","args":[{"name":"_inline_37_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_37_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_37_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_37_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_37_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp1D","blockSize":64})
 
-var do_warp_2 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_28_arg2_(this_warped,_inline_28_arg0_),_inline_28_arg1_=_inline_28_arg3_(_inline_28_arg4_,this_warped[0],this_warped[1])}","args":[{"name":"_inline_28_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_28_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_28_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_28_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_28_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp2D","blockSize":64})
+var do_warp_2 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_40_arg2_(this_warped,_inline_40_arg0_),_inline_40_arg1_=_inline_40_arg3_(_inline_40_arg4_,this_warped[0],this_warped[1])}","args":[{"name":"_inline_40_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_40_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_40_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_40_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_40_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp2D","blockSize":64})
 
-var do_warp_3 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_31_arg2_(this_warped,_inline_31_arg0_),_inline_31_arg1_=_inline_31_arg3_(_inline_31_arg4_,this_warped[0],this_warped[1],this_warped[2])}","args":[{"name":"_inline_31_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_31_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp3D","blockSize":64})
+var do_warp_3 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_43_arg2_(this_warped,_inline_43_arg0_),_inline_43_arg1_=_inline_43_arg3_(_inline_43_arg4_,this_warped[0],this_warped[1],this_warped[2])}","args":[{"name":"_inline_43_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_43_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_43_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_43_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_43_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp3D","blockSize":64})
 
 module.exports = function warp(dest, src, func) {
   switch(src.shape.length) {
@@ -61256,7 +61256,7 @@ function drawOne(gd, index) {
     else {
         var plotinfo = gd._fullLayout._plots[options.xref + options.yref];
         if(plotinfo) {
-            var mainPlot = plotinfo.mainplot || plotinfo;
+            var mainPlot = plotinfo.mainplotinfo || plotinfo;
             drawShape(mainPlot.shapelayer);
         }
         else {
@@ -64835,7 +64835,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.30.0';
+exports.version = '1.30.1';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -77716,6 +77716,8 @@ axes.doTicks = function(gd, axid, skipTitle) {
                     .selectAll('path').remove();
                 plotinfo.zerolinelayer
                     .selectAll('path').remove();
+                fullLayout._infolayer.select('.g-' + xa._id + 'title').remove();
+                fullLayout._infolayer.select('.g-' + ya._id + 'title').remove();
             });
         }
 
@@ -77843,9 +77845,16 @@ axes.doTicks = function(gd, axid, skipTitle) {
         // tick labels - for now just the main labels.
         // TODO: mirror labels, esp for subplots
         var tickLabels = container.selectAll('g.' + tcls).data(vals, datafn);
-        if(!ax.showticklabels || !isNumeric(position)) {
+
+        if(!isNumeric(position)) {
             tickLabels.remove();
             drawAxTitle();
+            return;
+        }
+        if(!ax.showticklabels) {
+            tickLabels.remove();
+            drawAxTitle();
+            calcBoundingBox();
             return;
         }
 
@@ -78011,23 +78020,59 @@ axes.doTicks = function(gd, axid, skipTitle) {
         }
 
         function calcBoundingBox() {
-            var bBox = container.node().getBoundingClientRect();
-            var gdBB = gd.getBoundingClientRect();
+            if(ax.showticklabels) {
+                var gdBB = gd.getBoundingClientRect();
+                var bBox = container.node().getBoundingClientRect();
 
-            /*
-             * the way we're going to use this, the positioning that matters
-             * is relative to the origin of gd. This is important particularly
-             * if gd is scrollable, and may have been scrolled between the time
-             * we calculate this and the time we use it
-             */
-            ax._boundingBox = {
-                width: bBox.width,
-                height: bBox.height,
-                left: bBox.left - gdBB.left,
-                right: bBox.right - gdBB.left,
-                top: bBox.top - gdBB.top,
-                bottom: bBox.bottom - gdBB.top
-            };
+                /*
+                 * the way we're going to use this, the positioning that matters
+                 * is relative to the origin of gd. This is important particularly
+                 * if gd is scrollable, and may have been scrolled between the time
+                 * we calculate this and the time we use it
+                 */
+
+                ax._boundingBox = {
+                    width: bBox.width,
+                    height: bBox.height,
+                    left: bBox.left - gdBB.left,
+                    right: bBox.right - gdBB.left,
+                    top: bBox.top - gdBB.top,
+                    bottom: bBox.bottom - gdBB.top
+                };
+            } else {
+                var gs = fullLayout._size;
+                var pos;
+
+                // set dummy bbox for ticklabel-less axes
+
+                if(axLetter === 'x') {
+                    pos = ax.anchor === 'free' ?
+                        gs.t + gs.h * (1 - ax.position) :
+                        gs.t + gs.h * (1 - ax._anchorAxis.domain[{bottom: 0, top: 1}[ax.side]]);
+
+                    ax._boundingBox = {
+                        top: pos,
+                        bottom: pos,
+                        left: ax._offset,
+                        rigth: ax._offset + ax._length,
+                        width: ax._length,
+                        height: 0
+                    };
+                } else {
+                    pos = ax.anchor === 'free' ?
+                        gs.l + gs.w * ax.position :
+                        gs.l + gs.w * ax._anchorAxis.domain[{left: 0, right: 1}[ax.side]];
+
+                    ax._boundingBox = {
+                        left: pos,
+                        right: pos,
+                        bottom: ax._offset + ax._length,
+                        top: ax._offset,
+                        height: ax._length,
+                        width: 0
+                    };
+                }
+            }
 
             /*
              * for spikelines: what's the full domain of positions in the
