@@ -36,7 +36,6 @@ function makeAnchorToRowBlock(rowHeights, minimumFillHeight) {
             rowHeight: currentRowHeight,
             rowAnchor: currentBlockHeight
         });
-        console.log('calc rowHeight is', currentRowHeight)
         currentBlockHeight += currentRowHeight;
         if(currentBlockHeight >= minimumFillHeight || i === rowHeights.length - 1) {
             anchorToRowBlock[currentAnchor] = currentBlock;

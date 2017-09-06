@@ -418,7 +418,7 @@ function renderColumnBlocks(gd, columnBlock) {
 
 
                 // height increasing stuff in the same row
-                d3.select(element.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode).selectAll('.columnBlock')
+                columnBlock
                     .filter(function(dd) {
                         return dd.type === 'cells' && // don't worry about the header rows (yet)
                             d.column.key === dd.key; // don't worry about other panels (why tho?)
@@ -433,7 +433,7 @@ function renderColumnBlocks(gd, columnBlock) {
 
 
                 //downshifting other cells
-                d3.select(element.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode).selectAll('.columnBlock')
+                columnBlock
                     .filter(function(dd) {
                         return dd.type === 'cells' && // don't worry about the header rows (yet)
                         d.column.key === dd.key; // don't worry about other panels (why tho?)
