@@ -367,12 +367,12 @@ function renderColumnBlocks(gd, columnBlock) {
 
     function finalizeYPositionMaker(element, d) {
         return function finalizeYPosition() {
-            var cellTextHolder = d3.select(element.parentElement);
-            var columnCell = d3.select(element.parentElement.parentElement);
-            var columnCells = d3.select(element.parentElement.parentElement.parentElement);
+            var cellTextHolder = d3.select(element.parentNode);
+            var columnCell = d3.select(element.parentNode.parentNode);
+            var columnCells = d3.select(element.parentNode.parentNode.parentNode);
             var l = lookup(d);
             var rowIndex = d.key - l.firstRowIndex;
-            var box = element.parentElement.getBoundingClientRect();
+            var box = element.parentNode.getBoundingClientRect();
 
             var renderedHeight = box.height;
 
@@ -400,8 +400,8 @@ function renderColumnBlocks(gd, columnBlock) {
             cellTextHolder
                 .attr('transform', function (d) {
                     var element = this;
-                    var box = element.parentElement.getBoundingClientRect();
-                    var rectBox = d3.select(element.parentElement).select('.cellRect').node().getBoundingClientRect();
+                    var box = element.parentNode.getBoundingClientRect();
+                    var rectBox = d3.select(element.parentNode).select('.cellRect').node().getBoundingClientRect();
                     var yPosition = (rectBox.top - box.top + c.cellPad)
                     return 'translate(' + c.cellPad + ' ' + yPosition + ')';
                 });
@@ -412,13 +412,13 @@ function renderColumnBlocks(gd, columnBlock) {
 
             // translate all downstream revolver column panels (naturally, max. 1 of 2)
             if(increase) {
-                d3.select(element.parentElement.parentElement.parentElement.parentElement.parentElement).selectAll('.columnBlock')
+                d3.select(element.parentNode.parentNode.parentNode.parentNode.parentNode).selectAll('.columnBlock')
                     .filter(function(dd) {return dd.type === 'cells' && d.column.type === 'cells' && dd.anchor > d.column.anchor;})
                     .call(columnBlockPositionY)
 
 
                 // height increasing stuff in the same row
-                d3.select(element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement).selectAll('.columnBlock')
+                d3.select(element.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode).selectAll('.columnBlock')
                     .filter(function(dd) {
                         return dd.type === 'cells' && // don't worry about the header rows (yet)
                             d.column.key === dd.key; // don't worry about other panels (why tho?)
@@ -433,7 +433,7 @@ function renderColumnBlocks(gd, columnBlock) {
 
 
                 //downshifting other cells
-                d3.select(element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement).selectAll('.columnBlock')
+                d3.select(element.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode).selectAll('.columnBlock')
                     .filter(function(dd) {
                         return dd.type === 'cells' && // don't worry about the header rows (yet)
                         d.column.key === dd.key; // don't worry about other panels (why tho?)
