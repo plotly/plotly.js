@@ -47,7 +47,12 @@ exports.toSVG = function(gd) {
 
         image.attr({
             xmlns: xmlnsNamespaces.svg,
-            'xlink:href': imageData
+            'xlink:href': imageData,
+            preserveAspectRatio: 'none',
+            x: 0,
+            y: 0,
+            width: canvas.width,
+            height: canvas.height
         });
     }
 
