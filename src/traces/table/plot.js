@@ -268,6 +268,7 @@ module.exports = function plot(gd, calcdata) {
         .attr('height', function(d) {return d.calcdata.height + c.uplift;});
 };
 
+
 function renderColumnBlocks(gd, columnBlock) {
 
     // this is performance critical code as scrolling calls it on every revolver switch
