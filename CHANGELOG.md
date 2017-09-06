@@ -10,6 +10,13 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.30.1] -- 2017-09-06
+
+### Fixed
+- Fix shapes on overlaid axes [#1975]
+- Correctly clear cartesian axis titles on full axis updates [#1981]
+- Make cartesian hover spikes work when no tick labels are present [#1980]
+
 ## [1.30.0] -- 2017-08-21
 
 ### Added
