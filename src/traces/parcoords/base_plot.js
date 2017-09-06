@@ -28,8 +28,6 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     var hasParcoords = (newFullLayout._has && newFullLayout._has('parcoords'));
 
     if(hadParcoords && !hasParcoords) {
-        oldFullLayout._paperdiv.selectAll('.parcoords-line-layers').remove();
-        oldFullLayout._paperdiv.selectAll('.parcoords-line-layers').remove();
         oldFullLayout._paperdiv.selectAll('.parcoords').remove();
         oldFullLayout._paperdiv.selectAll('.parcoords').remove();
         oldFullLayout._glimages.selectAll('*').remove();
@@ -41,7 +39,7 @@ exports.toSVG = function(gd) {
     var imageRoot = gd._fullLayout._glimages;
     var root = d3.select(gd).selectAll('.svg-container');
     var canvases = root.filter(function(d, i) {return i === root.size() - 1;})
-        .selectAll('.parcoords-lines.context, .parcoords-lines.focus');
+        .selectAll('.gl-canvas-context, .gl-canvas-focus');
 
     function canvasToImage(d) {
         var canvas = this;
