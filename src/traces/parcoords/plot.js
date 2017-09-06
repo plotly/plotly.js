@@ -13,7 +13,7 @@ var parcoords = require('./parcoords');
 module.exports = function plot(gd, cdparcoords) {
 
     var fullLayout = gd._fullLayout;
-    var svg = fullLayout._paper;
+    var svg = fullLayout._toppaper;
     var root = fullLayout._paperdiv;
     var container = fullLayout._glcontainer;
 
