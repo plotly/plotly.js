@@ -60,7 +60,7 @@ module.exports = function plot(gd, calcdata) {
         .classed('yColumn', true);
 
     yColumn
-        .attr('transform', function(d) {console.log(d.x); return 'translate(' + d.x + ' 0)';});
+        .attr('transform', function(d) {return 'translate(' + d.x + ' 0)';});
 
     yColumn
         .attr('clip-path', function(d) {return 'url(#columnBoundaryClippath_' + d.specIndex + ')';})
@@ -138,7 +138,7 @@ module.exports = function plot(gd, calcdata) {
             });
             revolverPanel1.otherPanel = revolverPanel2;
             revolverPanel2.otherPanel = revolverPanel1;
-            return [revolverPanel1/*, revolverPanel2, headerPanel*/]; // order due to SVG using painter's algo
+            return [revolverPanel1, revolverPanel2, headerPanel]; // order due to SVG using painter's algo
         }, gup.keyFun);
 
     columnBlock.enter()
@@ -354,10 +354,8 @@ function renderColumnBlocks(gd, columnBlock) {
         .classed('cellText', true);
 
     function verticalBump(increase, rowIndex, l, d) {
-        console.log('vertically bumping (due to changed height)');
         // subsequent rows in block pushed south
         for(var r = rowIndex + 1; r < l.rows.length; r++) {
-            console.log('height bumping row', r);
             l.rows[r].rowAnchor += increase;
         }
 
@@ -371,9 +369,27 @@ function renderColumnBlocks(gd, columnBlock) {
         impactedColumCells
             .attr('transform', function(d) {
                 var yOffset = rowOffset(d, d.key);
-                console.log('height induced translateY to', yOffset)
                 return 'translate(' + 0 + ' ' + yOffset + ')';
             });
+    }
+
+    function translateY2(impactedColumCells) {
+        impactedColumCells
+            .attr('transform', function(d) {
+                var yOffset = rowOffset(d, d.key);
+                return 'translate(' + 0 + ' ' + yOffset + ')';
+            });
+    }
+
+    function setRowHeight(columnCell) {
+        columnCell.select('.cellRect').attr('height', rowHeight);
+    }
+
+    function setRowHeight2(columnCell) {
+        columnCell.select('.cellRect').attr('height', function(d) {
+            var newValue = rowHeight(d);
+            return newValue;
+        });
     }
 
     function finalizeYPositionMaker(element, d) {
@@ -406,7 +422,7 @@ function renderColumnBlocks(gd, columnBlock) {
                 }
             }
 
-            columnCell.select('.cellRect').attr('height', rowHeight);
+            columnCell.call(setRowHeight);
 
             cellTextHolder
                 .attr('transform', function (d) {
@@ -427,18 +443,34 @@ function renderColumnBlocks(gd, columnBlock) {
                     .filter(function(dd) {return dd.type === 'cells' && d.column.type === 'cells' && dd.anchor > d.column.anchor;})
                     .call(columnBlockPositionY)
 
-                //debugger
-                d3.select(element.parentElement.parentElement.parentElement.parentElement.parentElement).selectAll('.columnBlock')
-                    .filter(function(dd) { return
-                        dd.type === 'cells' && // don't worry about the header rows (yet)
+
+                // height increasing stuff in the same row
+                d3.select(element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement).selectAll('.columnBlock')
+                    .filter(function(dd) {
+                        return dd.type === 'cells' && // don't worry about the header rows (yet)
+                            d.column.key === dd.key; // don't worry about other panels (why tho?)
+                    })
+                    .selectAll('.columnCell')
+                    .filter(function(dd) {return true
+                        //dd.key > d.key // only bump preceding columns
+                        //debugger
+                        ;})
+                    .call(setRowHeight2);
+
+
+
+                //downshifting other cells
+                d3.select(element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement).selectAll('.columnBlock')
+                    .filter(function(dd) {
+                        return dd.type === 'cells' && // don't worry about the header rows (yet)
                         d.column.key === dd.key; // don't worry about other panels (why tho?)
                     })
                     .selectAll('.columnCell')
-                    .filter(function(dd) {return
+                    .filter(function(dd) {return true
                         //dd.key > d.key // only bump preceding columns
                     //debugger
                         ;})
-                    .call(translateY);
+                    .call(translateY2);
             }
         };
     }
@@ -519,7 +551,8 @@ function lookup(d) {
 
 function rowOffset(d, i) {
     var l = lookup(d);
-    var o = (l.rows[i].rowAnchor + l.firstRowAnchor) - d.column.anchor;
+    // fixme unify this with the next function, e.g. `l.rows[i - l.firstRowIndex]`
+    var o = (l.rows[i - l.firstRowIndex].rowAnchor + l.firstRowAnchor) - d.column.anchor;
     return o;
 }
 
