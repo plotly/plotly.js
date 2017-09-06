@@ -365,33 +365,6 @@ function renderColumnBlocks(gd, columnBlock) {
         }
     }
 
-    function translateY(impactedColumCells) {
-        impactedColumCells
-            .attr('transform', function(d) {
-                var yOffset = rowOffset(d, d.key);
-                return 'translate(' + 0 + ' ' + yOffset + ')';
-            });
-    }
-
-    function translateY2(impactedColumCells) {
-        impactedColumCells
-            .attr('transform', function(d) {
-                var yOffset = rowOffset(d, d.key);
-                return 'translate(' + 0 + ' ' + yOffset + ')';
-            });
-    }
-
-    function setRowHeight(columnCell) {
-        columnCell.select('.cellRect').attr('height', rowHeight);
-    }
-
-    function setRowHeight2(columnCell) {
-        columnCell.select('.cellRect').attr('height', function(d) {
-            var newValue = rowHeight(d);
-            return newValue;
-        });
-    }
-
     function finalizeYPositionMaker(element, d) {
         return function finalizeYPosition() {
             var cellTextHolder = d3.select(element.parentElement);
@@ -455,7 +428,7 @@ function renderColumnBlocks(gd, columnBlock) {
                         //dd.key > d.key // only bump preceding columns
                         //debugger
                         ;})
-                    .call(setRowHeight2);
+                    .call(setRowHeight);
 
 
 
@@ -470,7 +443,7 @@ function renderColumnBlocks(gd, columnBlock) {
                         //dd.key > d.key // only bump preceding columns
                     //debugger
                         ;})
-                    .call(translateY2);
+                    .call(translateY);
             }
         };
     }
@@ -547,6 +520,18 @@ function easeColumn(elem, d, y) {
 
 function lookup(d) {
     return d.rowBlocks[d.page];
+}
+
+function translateY(impactedColumCells) {
+    impactedColumCells
+        .attr('transform', function(d) {
+            var yOffset = rowOffset(d, d.key);
+            return 'translate(' + 0 + ' ' + yOffset + ')';
+        });
+}
+
+function setRowHeight(columnCell) {
+    columnCell.select('.cellRect').attr('height', rowHeight);
 }
 
 function rowOffset(d, i) {
