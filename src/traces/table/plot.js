@@ -413,15 +413,7 @@ function renderColumnBlocks(gd, columnBlock) {
             // translate all downstream revolver column panels (naturally, max. 1 of 2)
             if(increase) {
                 columnBlock
-                    .filter(function(dd) {return (
-                        dd.xIndex === d.column.xIndex &&
-                        dd.type === 'cells' &&
-                        d.column.type === 'cells' &&
-                        dd.anchor > d.column.anchor
-                    );})
                     .call(columnBlockPositionY)
-
-                columnBlock
                     .selectAll('.columnCell')
                     .call(setRowHeight) // height increasing stuff in the same row
                     .call(translateY); //downshifting other cells
