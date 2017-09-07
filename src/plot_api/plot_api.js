@@ -3065,7 +3065,7 @@ function makePlotFramework(gd) {
 
     fullLayout._glcanvas
         .attr('width', fullLayout.width)
-        .attr('height', fullLayout.width);
+        .attr('height', fullLayout.height);
 
     fullLayout._paperdiv.selectAll('.main-svg').remove();
 
