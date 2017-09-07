@@ -424,10 +424,6 @@ function renderColumnBlocks(gd, columnBlock) {
                             d.column.key === dd.key; // don't worry about other panels (why tho?)
                     })
                     .selectAll('.columnCell')
-                    .filter(function(dd) {return true
-                        //dd.key > d.key // only bump preceding columns
-                        //debugger
-                        ;})
                     .call(setRowHeight);
 
                 //downshifting other cells
