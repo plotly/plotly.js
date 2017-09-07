@@ -458,6 +458,7 @@ plots.supplyDefaults = function(gd) {
 
     // attach helper method to check whether a plot type is present on graph
     newFullLayout._has = plots._hasPlotType.bind(newFullLayout);
+    newFullLayout._hasCategory = plots._hasCategory.bind(newFullLayout);
 
     // special cases that introduce interactions between traces
     var _modules = newFullLayout._modules;
@@ -571,6 +572,21 @@ plots._hasPlotType = function(category) {
         var _module = basePlotModules[i];
 
         if(_module.name === category) return true;
+    }
+
+    return false;
+};
+
+// check whether trace has a category
+plots._hasCategory = function(category) {
+    var modules = this._modules || [];
+
+    // create canvases only in case if there is at least one regl component
+    for(var i = 0; i < modules.length; i++) {
+        var _ = modules[i];
+        if(_.categories && _.categories.indexOf(category) >= 0) {
+            return true;
+        }
     }
 
     return false;
