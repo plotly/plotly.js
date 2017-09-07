@@ -194,23 +194,29 @@ Plotly.plot = function(gd, data, layout, config) {
             }
         }
 
-        if(fullLayout._hasCategory('gl') && fullLayout._glcanvas.empty()) {
-            fullLayout._glcanvas.enter().append('canvas')
-                .attr('class', function(d) {
-                    return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
-                })
-                .style('position', 'absolute')
-                .style('top', 0)
-                .style('left', 0)
-                .style('width', '100%')
-                .style('height', '100%')
-                .style('pointer-events', 'none')
-                .style('overflow', 'visible');
-        }
+        fullLayout._glcanvas = fullLayout._glcontainer.selectAll('.gl-canvas').data(fullLayout._hasCategory('gl') ? [{
+            key: 'contextLayer'
+        }, {
+            key: 'focusLayer'
+        }, {
+            key: 'pickLayer'
+        }] : []);
 
-        fullLayout._glcanvas
+        fullLayout._glcanvas.enter().append('canvas')
+            .attr('class', function(d) {
+                return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
+            })
+            .style('position', 'absolute')
+            .style('top', 0)
+            .style('left', 0)
+            .style('width', '100%')
+            .style('height', '100%')
+            .style('pointer-events', 'none')
+            .style('overflow', 'visible')
             .attr('width', fullLayout.width)
             .attr('height', fullLayout.height);
+
+        fullLayout._glcanvas.exit().remove();
 
         return Lib.syncOrAsync([
             subroutines.layoutStyles
@@ -3049,15 +3055,7 @@ function makePlotFramework(gd) {
 
     fullLayout._glcontainer.enter().append('div')
         .classed('gl-container', true);
-
-    fullLayout._glcanvas = fullLayout._glcontainer.selectAll('.gl-canvas')
-        .data([{
-            key: 'contextLayer'
-        }, {
-            key: 'focusLayer'
-        }, {
-            key: 'pickLayer'
-        }]);
+    fullLayout._glcanvas;
 
     fullLayout._paperdiv.selectAll('.main-svg').remove();
 
