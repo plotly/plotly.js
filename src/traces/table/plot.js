@@ -412,30 +412,19 @@ function renderColumnBlocks(gd, columnBlock) {
 
             // translate all downstream revolver column panels (naturally, max. 1 of 2)
             if(increase) {
-                columnBlock.filter(function(dd) {return dd.xIndex === d.column.xIndex;})
-                    .filter(function(dd) {return dd.type === 'cells' && d.column.type === 'cells' && dd.anchor > d.column.anchor;})
+                columnBlock
+                    .filter(function(dd) {return (
+                        dd.xIndex === d.column.xIndex &&
+                        dd.type === 'cells' &&
+                        d.column.type === 'cells' &&
+                        dd.anchor > d.column.anchor
+                    );})
                     .call(columnBlockPositionY)
 
-
-                // height increasing stuff in the same row
                 columnBlock
-                    .filter(function(dd) {
-                        return d.column.key === dd.key; // don't worry about other panels (why tho?)
-                    })
                     .selectAll('.columnCell')
-                    .call(setRowHeight);
-
-                //downshifting other cells
-                columnBlock
-                    .filter(function(dd) {
-                        return  d.column.key === dd.key; // don't worry about other panels (why tho?)
-                    })
-                    .selectAll('.columnCell')
-                    .filter(function(dd) {return true
-                        //dd.key > d.key // only bump preceding columns
-                    //debugger
-                        ;})
-                    .call(translateY);
+                    .call(setRowHeight) // height increasing stuff in the same row
+                    .call(translateY); //downshifting other cells
             }
         };
     }
