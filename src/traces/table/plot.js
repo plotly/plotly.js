@@ -393,6 +393,13 @@ function renderColumnBlocks(gd, columnBlock) {
                 if(d.column.type === 'header') {
                     // somehow push down possibly already rendered `cells` type rows
                 }
+
+                // translate all downstream revolver column panels (naturally, max. 1 of 2)
+                columnBlock
+                    .call(columnBlockPositionY)
+                    .selectAll('.columnCell')
+                    .call(setRowHeight) // height increasing stuff in the same row
+                    .call(translateY); //downshifting other cells
             } else {
                 columnCell.call(setRowHeight); // simply set the height
             }
@@ -409,15 +416,6 @@ function renderColumnBlocks(gd, columnBlock) {
             // translate all downstream cells
             // if there's no increase, then the subsequent rows don't need to be pushed down
             translateY(increase ? columnCells.selectAll('.columnCell').filter(function(dd) {return dd.key > d.key;}) : columnCell)
-
-            // translate all downstream revolver column panels (naturally, max. 1 of 2)
-            if(increase) {
-                columnBlock
-                    .call(columnBlockPositionY)
-                    .selectAll('.columnCell')
-                    .call(setRowHeight) // height increasing stuff in the same row
-                    .call(translateY); //downshifting other cells
-            }
         };
     }
 
