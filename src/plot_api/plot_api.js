@@ -3051,8 +3051,6 @@ function makePlotFramework(gd) {
                 .attr('class', function(d) {
                     return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
                 })
-                .attr('width', fullLayout.width)
-                .attr('height', fullLayout.height)
                 .style('position', 'absolute')
                 .style('top', 0)
                 .style('left', 0)
@@ -3064,6 +3062,10 @@ function makePlotFramework(gd) {
             break;
         }
     }
+
+    fullLayout._glcanvas
+        .attr('width', fullLayout.width)
+        .attr('height', fullLayout.width);
 
     fullLayout._paperdiv.selectAll('.main-svg').remove();
 
