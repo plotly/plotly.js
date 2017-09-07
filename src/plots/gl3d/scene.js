@@ -136,9 +136,9 @@ function render(scene) {
 
 function initializeGLPlot(scene, fullLayout, canvas, gl) {
     var glplotOptions = {
+        canvas: canvas,
         gl: gl,
         container: scene.container,
-        canvas: scene.container.querySelector('.gl-canvas-focus'),
         axes: scene.axesOptions,
         spikes: scene.spikeOptions,
         pickRadius: 10,
@@ -228,7 +228,8 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
 function Scene(options, fullLayout) {
 
     // create sub container for plot
-    var sceneContainer = fullLayout._glcontainer.node();
+    var sceneContainer = document.createElement('div');
+    var plotContainer = options.container;
 
     // keep a ref to the graph div to fire hover+click events
     this.graphDiv = options.graphDiv;
@@ -250,6 +251,7 @@ function Scene(options, fullLayout) {
     sceneContainer.style.position = 'absolute';
     sceneContainer.style.top = sceneContainer.style.left = '0px';
     sceneContainer.style.width = sceneContainer.style.height = '100%';
+    plotContainer.appendChild(sceneContainer);
 
     this.fullLayout = fullLayout;
     this.id = options.id || 'scene';

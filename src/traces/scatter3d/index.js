@@ -20,7 +20,7 @@ Scatter3D.calc = require('./calc');
 Scatter3D.moduleType = 'trace';
 Scatter3D.name = 'scatter3d';
 Scatter3D.basePlotModule = require('../../plots/gl3d');
-Scatter3D.categories = ['gl', 'gl3d', 'symbols', 'markerColorscale', 'showLegend'];
+Scatter3D.categories = ['gl3d', 'symbols', 'markerColorscale', 'showLegend'];
 Scatter3D.meta = {
     hrName: 'scatter_3d',
     description: [
