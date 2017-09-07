@@ -420,8 +420,7 @@ function renderColumnBlocks(gd, columnBlock) {
                 // height increasing stuff in the same row
                 columnBlock
                     .filter(function(dd) {
-                        return dd.type === 'cells' && // don't worry about the header rows (yet)
-                            d.column.key === dd.key; // don't worry about other panels (why tho?)
+                        return d.column.key === dd.key; // don't worry about other panels (why tho?)
                     })
                     .selectAll('.columnCell')
                     .call(setRowHeight);
@@ -429,8 +428,7 @@ function renderColumnBlocks(gd, columnBlock) {
                 //downshifting other cells
                 columnBlock
                     .filter(function(dd) {
-                        return dd.type === 'cells' && // don't worry about the header rows (yet)
-                        d.column.key === dd.key; // don't worry about other panels (why tho?)
+                        return  d.column.key === dd.key; // don't worry about other panels (why tho?)
                     })
                     .selectAll('.columnCell')
                     .filter(function(dd) {return true

@@ -24,7 +24,7 @@
 
             "values": [
                 ["Index"   , "#"],
-                ["Column 2"   , "kg"],
+                ["Column 2"   , "1A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>"],
                 ["Column 3"   , "hours"]
             ],
 
