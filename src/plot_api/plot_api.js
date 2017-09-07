@@ -194,6 +194,24 @@ Plotly.plot = function(gd, data, layout, config) {
             }
         }
 
+        if(fullLayout._hasCategory('gl') && fullLayout._glcanvas.empty()) {
+            fullLayout._glcanvas.enter().append('canvas')
+                .attr('class', function(d) {
+                    return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
+                })
+                .style('position', 'absolute')
+                .style('top', 0)
+                .style('left', 0)
+                .style('width', '100%')
+                .style('height', '100%')
+                .style('pointer-events', 'none')
+                .style('overflow', 'visible');
+        }
+
+        fullLayout._glcanvas
+            .attr('width', fullLayout.width)
+            .attr('height', fullLayout.height);
+
         return Lib.syncOrAsync([
             subroutines.layoutStyles
         ], gd);
@@ -3029,11 +3047,10 @@ function makePlotFramework(gd) {
     fullLayout._glcontainer = fullLayout._paperdiv.selectAll('.gl-container')
         .data([{}]);
 
-    // FIXME: bring this constant to some plotly constants module
-    // it is taken from parcoords lineLayerModel
-    fullLayout._glcanvas = fullLayout._glcontainer.enter().append('div')
-        .classed('gl-container', true)
-        .selectAll('.gl-canvas')
+    fullLayout._glcontainer.enter().append('div')
+        .classed('gl-container', true);
+
+    fullLayout._glcanvas = fullLayout._glcontainer.selectAll('.gl-canvas')
         .data([{
             key: 'contextLayer'
         }, {
@@ -3041,31 +3058,6 @@ function makePlotFramework(gd) {
         }, {
             key: 'pickLayer'
         }]);
-
-    // create canvases only in case if there is at least one regl component
-    // FIXME: probably there is a better d3 way of doing so
-    for(var i = 0; i < fullLayout._modules.length; i++) {
-        var module = fullLayout._modules[i];
-        if(module.categories && module.categories.indexOf('gl') >= 0) {
-            fullLayout._glcanvas.enter().append('canvas')
-                .attr('class', function(d) {
-                    return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
-                })
-                .style('position', 'absolute')
-                .style('top', 0)
-                .style('left', 0)
-                .style('width', '100%')
-                .style('height', '100%')
-                .style('pointer-events', 'none')
-                .style('overflow', 'visible');
-
-            break;
-        }
-    }
-
-    fullLayout._glcanvas
-        .attr('width', fullLayout.width)
-        .attr('height', fullLayout.height);
 
     fullLayout._paperdiv.selectAll('.main-svg').remove();
 
