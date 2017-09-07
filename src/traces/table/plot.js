@@ -393,9 +393,9 @@ function renderColumnBlocks(gd, columnBlock) {
                 if(d.column.type === 'header') {
                     // somehow push down possibly already rendered `cells` type rows
                 }
+            } else {
+                columnCell.call(setRowHeight); // simply set the height
             }
-
-            columnCell.call(setRowHeight);
 
             cellTextHolder
                 .attr('transform', function (d) {
