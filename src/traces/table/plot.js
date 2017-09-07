@@ -412,7 +412,7 @@ function renderColumnBlocks(gd, columnBlock) {
 
             // translate all downstream revolver column panels (naturally, max. 1 of 2)
             if(increase) {
-                d3.select(element.parentNode.parentNode.parentNode.parentNode.parentNode).selectAll('.columnBlock')
+                columnBlock.filter(function(dd) {return dd.xIndex === d.column.xIndex;})
                     .filter(function(dd) {return dd.type === 'cells' && d.column.type === 'cells' && dd.anchor > d.column.anchor;})
                     .call(columnBlockPositionY)
 
@@ -429,8 +429,6 @@ function renderColumnBlocks(gd, columnBlock) {
                         //debugger
                         ;})
                     .call(setRowHeight);
-
-
 
                 //downshifting other cells
                 columnBlock
