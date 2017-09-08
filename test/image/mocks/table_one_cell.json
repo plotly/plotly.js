@@ -20,11 +20,11 @@
 
         "header": {
 
-            "height": [1,1],
+            "height": 1, // fixme for some reason it doesn't recognize arrays here
 
             "values": [
                 ["Index"   , "#"],
-                ["Column 2"   , "1A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>"],
+                ["Column 2"   , "Header" ||"1A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>"],
                 ["Column 3"   , "hours"]
             ].map(function(r) {return r.slice(1, 2)}).slice(1, 2),
 
