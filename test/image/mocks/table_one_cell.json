@@ -20,13 +20,13 @@
 
         "header": {
 
-            "height": [30, 20],
+            "height": [1,1],
 
             "values": [
                 ["Index"   , "#"],
                 ["Column 2"   , "1A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>"],
                 ["Column 3"   , "hours"]
-            ],
+            ].map(function(r) {return r.slice(1, 2)}).slice(1, 2),
 
             "align": ["right"],
             "valign": "middle",
@@ -105,7 +105,7 @@
                     "x8A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
                 ].map(function(d, i) {return d})
 
-            ].map(function(a) {return a.slice(0, Infinity)}),
+            ].map(function(a) {return a.slice(1, 2)}).slice(0, 1),
 
             "format": [
                 null
