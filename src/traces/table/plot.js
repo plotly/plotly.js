@@ -368,11 +368,6 @@ function renderColumnBlocks(gd, columnBlock) {
         }
     }
 
-    function verticalBump(increase, rowIndex, l, d) {
-        verticalBumpRows(increase, rowIndex, l);
-        verticalBumpBlocks(increase, d);
-    }
-
     function finalizeYPositionMaker(element, d) {
         return function finalizeYPosition() {
             console.log('finalizeYPositionMaker height', d.value)
@@ -406,11 +401,12 @@ function renderColumnBlocks(gd, columnBlock) {
                         if(i === 1) //{return;}
                             verticalBumpBlocks(increase, dd);
                     })
-                    verticalBumpRows(increase, rowIndex, l);
                 }
                 else {
-                    verticalBump(increase, rowIndex, l, d);
+                    verticalBumpBlocks(increase, d);
                 }
+
+                verticalBumpRows(increase, rowIndex, l);
 
                 window.monfera = true
                 console.log('height columBlock count:', columnBlock[0].map(function(d) {return d.__data__.key}))
