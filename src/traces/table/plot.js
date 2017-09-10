@@ -394,7 +394,7 @@ function renderColumnBlocks(gd, columnBlock) {
                 d.rowBlocks[d.page].totalHeight += increase;
 
                 if(d.column.type === 'header') {
-                    console.log('height increase, `header`')
+                    console.log('height increase, `header` item cnt', columnBlock[0].length)
                     // somehow push down possibly already rendered `cells` type rows
                     columnBlock.each(function(dd, i) {
                         if(i === 1) //{return;}
