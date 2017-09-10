@@ -139,7 +139,7 @@ module.exports = function plot(gd, calcdata) {
             revolverPanel1.otherPanel = revolverPanel2;
             revolverPanel2.otherPanel = revolverPanel1;
             console.log('height yOffsets', headerPanel.yOffset, revolverPanel1.yOffset, revolverPanel2.yOffset)
-            return [revolverPanel1, /*revolverPanel2, */headerPanel]; // order due to SVG using painter's algo
+            return [revolverPanel1, revolverPanel2, headerPanel]; // order due to SVG using painter's algo
         }, gup.keyFun);
 
     columnBlock.enter()
@@ -354,16 +354,23 @@ function renderColumnBlocks(gd, columnBlock) {
         .append('text')
         .classed('cellText', true);
 
-    function verticalBump(increase, rowIndex, l, d) {
+    function verticalBumpRows(increase, rowIndex, l) {
         // subsequent rows in block pushed south
         for(var r = rowIndex + 1; r < l.rows.length; r++) {
             l.rows[r].rowAnchor += increase;
         }
+    }
 
+    function verticalBumpBlocks(increase, d) {
         // subsequent blocks pushed down
         for(var p = d.page + 1; p < d.rowBlocks.length; p++) {
             d.rowBlocks[p].firstRowAnchor += increase;
         }
+    }
+
+    function verticalBump(increase, rowIndex, l, d) {
+        verticalBumpRows(increase, rowIndex, l);
+        verticalBumpBlocks(increase, d);
     }
 
     function finalizeYPositionMaker(element, d) {
@@ -392,11 +399,17 @@ function renderColumnBlocks(gd, columnBlock) {
                 // current block height increased
                 d.rowBlocks[d.page].totalHeight += increase;
 
-                verticalBump(increase, rowIndex, l, d);
-
                 if(d.column.type === 'header') {
                     console.log('height increase, `header`')
                     // somehow push down possibly already rendered `cells` type rows
+                    columnBlock.each(function(dd, i) {
+                        if(i === 1) //{return;}
+                            verticalBumpBlocks(increase, dd);
+                    })
+                    verticalBumpRows(increase, rowIndex, l);
+                }
+                else {
+                    verticalBump(increase, rowIndex, l, d);
                 }
 
                 window.monfera = true
@@ -406,7 +419,8 @@ function renderColumnBlocks(gd, columnBlock) {
                         console.log('height thinking:', dd.anchor, dd.yOffset, d.column.anchor, d.column.yOffset)
                         if(d.column !== dd && dd.anchor + dd.yOffset >= d.column.anchor + d.column.yOffset) {
                             console.log('height increase in each:', increase)
-                            dd.yOffset += increase;
+
+                            //dd.yOffset += increase;
                         }
                     })
                     .call(columnBlockPositionY) // translate all downstream revolver column panels (naturally, max. 1 of 2)
