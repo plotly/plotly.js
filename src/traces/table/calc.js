@@ -69,7 +69,7 @@ module.exports = function calc(gd, trace) {
     var totalColumnWidths = columnWidths.reduce(function(p, n) {return p + n;}, 0);
     columnWidths = columnWidths.map(function(d) {return d / totalColumnWidths * groupWidth;});
 
-    var headerRowHeights = trace.header.values[0].map(function(_, i) {return trace.header.height + Math.round((i < 0 ? 0 : 25) * (Math.random() - 0.5));});
+    var headerRowHeights = trace.header.values[0].map(function(_, i) {return trace.header.height + 0 * Math.round((i < 0 ? 0 : 25) * (Math.random() - 0.5));});
     var rowHeights = trace.cells.values[0].map(function(_, i) {return trace.cells.height;});
     var headerHeight = headerRowHeights.reduce(function(a, b) {return a + b;}, 0);
     var scrollHeight = groupHeight - headerHeight;
@@ -88,7 +88,7 @@ module.exports = function calc(gd, trace) {
     var uniqueKeys = {};
 
     var columnOrder = trace._fullInput.columnorder;
-
+console.log('calc headerHeight', headerHeight)
     var calcdata = {
         key: trace.index,
         translateX: domain.x[0] * gd._fullLayout._size.w,
