@@ -387,7 +387,6 @@ function renderColumnBlocks(gd, columnBlock) {
             console.log('height increase:', increase)
 
             if(increase) {
-
                 // current row height increased
                 l.rows[d.key - l.firstRowIndex].rowHeight = finalHeight;
 
@@ -411,14 +410,6 @@ function renderColumnBlocks(gd, columnBlock) {
                 window.monfera = true
                 console.log('height columBlock count:', columnBlock[0].map(function(d) {return d.__data__.key}))
                 columnBlock
-                    .each(function(dd) {
-                        console.log('height thinking:', dd.anchor, dd.yOffset, d.column.anchor, d.column.yOffset)
-                        if(d.column !== dd && dd.anchor + dd.yOffset >= d.column.anchor + d.column.yOffset) {
-                            console.log('height increase in each:', increase)
-
-                            //dd.yOffset += increase;
-                        }
-                    })
                     .call(columnBlockPositionY) // translate all downstream revolver column panels (naturally, max. 1 of 2)
                     .selectAll('.columnCell')
                     .call(setRowHeight) // height increasing stuff in the same row
