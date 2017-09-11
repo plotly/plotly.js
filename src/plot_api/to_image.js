@@ -40,6 +40,17 @@ var attrs = {
             'Defaults to the value found in `layout.height`'
         ].join(' ')
     },
+    scale: {
+        valType: 'number',
+        min: 0,
+        dflt: 1,
+        description: [
+            'Sets a scaling for the generated image.',
+            'If set, all features of a graphs (e.g. text, line width)',
+            'are scaled, unlike simply setting',
+            'a bigger *width* and *height*.'
+        ].join(' ')
+    },
     setBackground: {
         valType: 'any',
         dflt: false,
@@ -111,6 +122,7 @@ function toImage(gd, opts) {
     var format = coerce('format');
     var width = coerce('width');
     var height = coerce('height');
+    var scale = coerce('scale');
     var setBackground = coerce('setBackground');
     var imageDataOnly = coerce('imageDataOnly');
 
@@ -128,7 +140,6 @@ function toImage(gd, opts) {
     // extend config for static plot
     var configImage = Lib.extendFlat({}, config, {
         staticPlot: true,
-        plotGlPixelRatio: config.plotGlPixelRatio || 2,
         setBackground: setBackground
     });
 
@@ -142,7 +153,7 @@ function toImage(gd, opts) {
 
     function convert() {
         return new Promise(function(resolve, reject) {
-            var svg = toSVG(clonedGd);
+            var svg = toSVG(clonedGd, format, scale);
             var width = clonedGd._fullLayout.width;
             var height = clonedGd._fullLayout.height;
 
@@ -164,6 +175,7 @@ function toImage(gd, opts) {
                 format: format,
                 width: width,
                 height: height,
+                scale: scale,
                 canvas: canvas,
                 svg: svg,
                 // ask svgToImg to return a Promise
