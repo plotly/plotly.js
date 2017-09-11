@@ -490,7 +490,6 @@ function verticalBumpBlocksAll(increase, d, xIndex) {
 function finalizeYPositionMaker(columnBlock, element, d) {
     return function finalizeYPosition() {
         var cellTextHolder = d3.select(element.parentNode);
-        var columnCell = d3.select(element.parentNode.parentNode);
         var columnCells = d3.select(element.parentNode.parentNode.parentNode);
         var l = lookup(d);
         var rowIndex = d.key - l.firstRowIndex;
