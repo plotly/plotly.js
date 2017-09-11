@@ -198,7 +198,7 @@ module.exports = function plot(gd, calcdata) {
                     d.currentRepaint = window.setTimeout(function() {
                         // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
                         // some repaints invisible ie. wasteful (DOM work blocks the main thread)
-                        renderColumnBlocks(gd, cellsColumnBlock.filter(anchorChanged), cellsColumnBlock.filter(anchorChanged));
+                        renderColumnBlocks(gd, cellsColumnBlock.filter(anchorChangedFn), cellsColumnBlock.filter(anchorChangedFn));
                     });
                 }
             })
@@ -356,35 +356,6 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
     cellText.enter()
         .append('text')
         .classed('cellText', true);
-
-    function verticalBumpRows(increase, rowIndex, l) {
-        // subsequent rows in block pushed south
-        for(var r = rowIndex + 1; r < l.rows.length; r++) {
-            l.rows[r].rowAnchor += increase;
-        }
-    }
-
-    function verticalBumpBlocks(increase, d, xIndex) {
-        // subsequent blocks pushed down
-        //console.log('xIndex', xIndex)
-        if(xIndex === 0) {
-            for(var p = d.page + 1; p < d.rowBlocks.length; p++) {
-                //console.log('bumping d.rowBlocks[', p, '].firstRowAnchor by', increase)
-                d.rowBlocks[p].firstRowAnchor += increase;
-            }
-        }
-    }
-
-    function verticalBumpBlocksAll(increase, d, xIndex) {
-        // subsequent blocks pushed down
-        console.log('xIndex', xIndex)
-        if(xIndex === 0) {
-            for(var p = 0; p < d.rowBlocks.length; p++) {
-                console.log('bumping d.rowBlocks[', p, '].firstRowAnchor by', increase)
-                d.rowBlocks[p].firstRowAnchor += increase;
-            }
-        }
-    }
 
     function finalizeYPositionMaker(element, d) {
         return function finalizeYPosition() {
@@ -558,4 +529,34 @@ function rowHeight(d) {
 
 function cellsBlock(d) {return d.type === 'cells';}
 function headerBlock(d) {return d.type === 'header';}
-function anchorChanged(d) {return d.key === anchorChanged;}
+function anchorChangedFn(d) {return d.key === anchorChanged;}
+
+function verticalBumpRows(increase, rowIndex, l) {
+    // subsequent rows in block pushed south
+    for(var r = rowIndex + 1; r < l.rows.length; r++) {
+        l.rows[r].rowAnchor += increase;
+    }
+}
+
+function verticalBumpBlocks(increase, d, xIndex) {
+    // subsequent blocks pushed down
+    //console.log('xIndex', xIndex)
+    if(xIndex === 0) {
+        for(var p = d.page + 1; p < d.rowBlocks.length; p++) {
+            //console.log('bumping d.rowBlocks[', p, '].firstRowAnchor by', increase)
+            d.rowBlocks[p].firstRowAnchor += increase;
+        }
+    }
+}
+
+function verticalBumpBlocksAll(increase, d, xIndex) {
+    // subsequent blocks pushed down
+    console.log('xIndex', xIndex)
+    if(xIndex === 0) {
+        for(var p = 0; p < d.rowBlocks.length; p++) {
+            console.log('bumping d.rowBlocks[', p, '].firstRowAnchor by', increase)
+            d.rowBlocks[p].firstRowAnchor += increase;
+        }
+    }
+}
+
