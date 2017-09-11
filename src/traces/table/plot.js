@@ -471,7 +471,7 @@ function verticalBumpRows(increase, rowIndex, l) {
 
 function verticalBumpBlocks(increase, d, xIndex) {
     // subsequent blocks pushed down
-    if(xIndex === 0) {
+    if(xIndex === 1) {
         for(var p = d.page + 1; p < d.rowBlocks.length; p++) {
             d.rowBlocks[p].firstRowAnchor += increase;
         }

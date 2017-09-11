@@ -16,7 +16,7 @@
         },
 
         "columnwidth": [20, 50, 50],
-        "columnorder": [0, 1, 2],
+        "columnorder": [0, 1],
 
         "header": {
 
