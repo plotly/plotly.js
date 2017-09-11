@@ -357,74 +357,6 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
         .append('text')
         .classed('cellText', true);
 
-    function finalizeYPositionMaker(element, d) {
-        return function finalizeYPosition() {
-            console.log('finalizeYPositionMaker height', d.value)
-            var cellTextHolder = d3.select(element.parentNode);
-            var columnCell = d3.select(element.parentNode.parentNode);
-            var columnCells = d3.select(element.parentNode.parentNode.parentNode);
-            var l = lookup(d);
-            var rowIndex = d.key - l.firstRowIndex;
-            var box = element.parentNode.getBoundingClientRect();
-
-            var renderedHeight = box.height;
-
-            var requiredHeight = renderedHeight + 2 * c.cellPad;
-            var finalHeight = Math.max(requiredHeight, l.rows[rowIndex].rowHeight);
-            var increase = finalHeight - l.rows[rowIndex].rowHeight;
-
-            console.log('height increase:', increase)
-
-            if(increase) {
-                // current row height increased
-                l.rows[d.key - l.firstRowIndex].rowHeight = finalHeight;
-
-                // current block height increased
-                d.rowBlocks[d.page].totalHeight += increase;
-
-                if(d.column.type === 'header') {
-                    console.log('height increase, `header` item cnt', columnBlock[0].length)
-                    // somehow push down possibly already rendered `cells` type rows
-                    var bumped = false
-                    allColumnBlock.each(function(dd, i) {
-                        if(!bumped && dd.type !== 'header') {
-                            verticalBumpBlocksAll(increase, dd, dd.xIndex);
-                            bumped = true;
-                        }
-                    })
-                }
-                else {
-                    verticalBumpBlocks(increase, d, d.column.xIndex);
-                }
-
-                verticalBumpRows(increase, rowIndex, l);
-
-                window.monfera = true
-                console.log('height columBlock count:', columnBlock[0].map(function(d) {return d.__data__.key}))
-                columnBlock
-                    .call(columnBlockPositionY) // translate all downstream revolver column panels (naturally, max. 1 of 2)
-                    .selectAll('.columnCell')
-                    .call(setRowHeight) // height increasing stuff in the same row
-                    .call(translateY); //downshifting other cells
-            } else {
-                columnCell.call(setRowHeight); // simply set the height
-            }
-
-            cellTextHolder
-                .attr('transform', function (d) {
-                    var element = this;
-                    var box = element.parentNode.getBoundingClientRect();
-                    var rectBox = d3.select(element.parentNode).select('.cellRect').node().getBoundingClientRect();
-                    var yPosition = (rectBox.top - box.top + c.cellPad)
-                    return 'translate(' + c.cellPad + ' ' + yPosition + ')';
-                });
-
-            // translate all downstream cells
-            // if there's no increase, then the subsequent rows don't need to be pushed down
-            translateY(increase ? columnCells.selectAll('.columnCell').filter(function(dd) {return dd.key > d.key;}) : columnCell)
-        };
-    }
-
     // it is only in this leaf selection that the actual cell height can be recovered...
     cellText
     //.attr('alignment-baseline', 'hanging')
@@ -443,7 +375,7 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
 
             // finalize what's in the DOM
             Drawing.font(selection, d.font);
-            util.convertToTspans(selection, gd, finalizeYPositionMaker(element, d));
+            util.convertToTspans(selection, gd, finalizeYPositionMaker(allColumnBlock, columnBlock, element, d));
         });
 
     // ... therefore all channels for selections above that need to know the height are set below
@@ -560,3 +492,70 @@ function verticalBumpBlocksAll(increase, d, xIndex) {
     }
 }
 
+function finalizeYPositionMaker(allColumnBlock, columnBlock, element, d) {
+    return function finalizeYPosition() {
+        console.log('finalizeYPositionMaker height', d.value)
+        var cellTextHolder = d3.select(element.parentNode);
+        var columnCell = d3.select(element.parentNode.parentNode);
+        var columnCells = d3.select(element.parentNode.parentNode.parentNode);
+        var l = lookup(d);
+        var rowIndex = d.key - l.firstRowIndex;
+        var box = element.parentNode.getBoundingClientRect();
+
+        var renderedHeight = box.height;
+
+        var requiredHeight = renderedHeight + 2 * c.cellPad;
+        var finalHeight = Math.max(requiredHeight, l.rows[rowIndex].rowHeight);
+        var increase = finalHeight - l.rows[rowIndex].rowHeight;
+
+        console.log('height increase:', increase)
+
+        if(increase) {
+            // current row height increased
+            l.rows[d.key - l.firstRowIndex].rowHeight = finalHeight;
+
+            // current block height increased
+            d.rowBlocks[d.page].totalHeight += increase;
+
+            if(d.column.type === 'header') {
+                console.log('height increase, `header` item cnt', columnBlock[0].length)
+                // somehow push down possibly already rendered `cells` type rows
+                var bumped = false
+                allColumnBlock.each(function(dd, i) {
+                    if(!bumped && dd.type !== 'header') {
+                        verticalBumpBlocksAll(increase, dd, dd.xIndex);
+                        bumped = true;
+                    }
+                })
+            }
+            else {
+                verticalBumpBlocks(increase, d, d.column.xIndex);
+            }
+
+            verticalBumpRows(increase, rowIndex, l);
+
+            window.monfera = true
+            console.log('height columBlock count:', columnBlock[0].map(function(d) {return d.__data__.key}))
+            columnBlock
+                .call(columnBlockPositionY) // translate all downstream revolver column panels (naturally, max. 1 of 2)
+                .selectAll('.columnCell')
+                .call(setRowHeight) // height increasing stuff in the same row
+                .call(translateY); //downshifting other cells
+        } else {
+            columnCell.call(setRowHeight); // simply set the height
+        }
+
+        cellTextHolder
+            .attr('transform', function (d) {
+                var element = this;
+                var box = element.parentNode.getBoundingClientRect();
+                var rectBox = d3.select(element.parentNode).select('.cellRect').node().getBoundingClientRect();
+                var yPosition = (rectBox.top - box.top + c.cellPad)
+                return 'translate(' + c.cellPad + ' ' + yPosition + ')';
+            });
+
+        // translate all downstream cells
+        // if there's no increase, then the subsequent rows don't need to be pushed down
+        translateY(increase ? columnCells.selectAll('.columnCell').filter(function(dd) {return dd.key > d.key;}) : columnCell)
+    };
+}
