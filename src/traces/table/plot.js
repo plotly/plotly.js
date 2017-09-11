@@ -193,6 +193,7 @@ module.exports = function plot(gd, calcdata) {
 
                     });
                 if(anchorChanged) {
+                    console.log('Anchor changed!')
                     window.clearTimeout(d.currentRepaint);
                     d.currentRepaint = window.setTimeout(function() {
                         // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
@@ -336,7 +337,7 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
         .attr('width', function(d) {return d.column.columnWidth;})
         .attr('stroke-width', function(d) {return d.cellBorderWidth;})
         .attr('stroke', function(d) {
-            return gridPick(d.calcdata.cells.line.color, d.column.specIndex, d.rowNumber);
+            return c.clipView ? ({header: 'blue', cells1: 'red', cells2: 'green'})[d.column.key] : gridPick(d.calcdata.cells.line.color, d.column.specIndex, d.rowNumber);
         })
         .attr('fill', function(d) {
             return gridPick(d.calcdata.cells.fill.color, d.column.specIndex, d.rowNumber);

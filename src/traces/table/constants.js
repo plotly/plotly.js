@@ -19,5 +19,5 @@ module.exports = {
     transitionDuration: 100,
     releaseTransitionEase: 'elastic',
     releaseTransitionDuration: 300,
-    clipView: false
+    clipView: true
 };

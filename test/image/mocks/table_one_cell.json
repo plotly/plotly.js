@@ -20,7 +20,7 @@
 
         "header": {
 
-            "height": 1, // fixme for some reason it doesn't recognize arrays here
+            "height": 60, // fixme for some reason it doesn't recognize arrays here
 
             "values": [
                 ["Index"   , "#"],
@@ -114,7 +114,7 @@
             //"prefix": ["#"],
             //"suffix": ["cell"],
 
-            "height": 1,
+            "height": 80,
 
             "align": ["right"],
             "valign": ["bottom"],
