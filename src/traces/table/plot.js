@@ -198,7 +198,7 @@ module.exports = function plot(gd, calcdata) {
                     d.currentRepaint = window.setTimeout(function() {
                         // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
                         // some repaints invisible ie. wasteful (DOM work blocks the main thread)
-                        renderColumnBlocks(gd, cellsColumnBlock.filter(function(d) {return d.key === anchorChanged;}));
+                        renderColumnBlocks(gd, cellsColumnBlock.filter(anchorChanged), cellsColumnBlock.filter(anchorChanged));
                     });
                 }
             })
@@ -208,11 +208,9 @@ module.exports = function plot(gd, calcdata) {
 
     // initial rendering: header is rendered first, as it may may have async LaTeX (show header first)
     // but blocks are _entered_ the way they are due to painter's algo (header on top)
-    var cellText1 = renderColumnBlockContainers(columnBlock.filter(headerBlock));
-    var cellText2 = renderColumnBlockContainers(columnBlock.filter(cellsBlock));
 
-    renderColumnBlockContents(gd, columnBlock, columnBlock.filter(headerBlock), cellText1); // initial render:
-    renderColumnBlockContents(gd, columnBlock, columnBlock.filter(cellsBlock), cellText2); // initial render: normal cell rows
+    renderColumnBlocks(gd, columnBlock.filter(headerBlock), columnBlock);
+    renderColumnBlocks(gd, columnBlock.filter(cellsBlock), columnBlock);
 
     var scrollAreaClip = tableControlView.selectAll('.scrollAreaClip')
         .data(gup.repeat, gup.keyFun);
@@ -275,13 +273,7 @@ module.exports = function plot(gd, calcdata) {
         .attr('height', function(d) {return d.calcdata.height + c.uplift;});
 };
 
-function renderColumnBlocks(gd, columnBlock) {
-    var cellText = renderColumnBlockContainers(columnBlock);
-    renderColumnBlockContents(gd, columnBlock, cellText);
-}
-
-function renderColumnBlockContainers(columnBlock) {
-
+function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
     // this is performance critical code as scrolling calls it on every revolver switch
     // it appears sufficiently fast but there are plenty of low-hanging fruits for performance optimization
 
@@ -364,11 +356,6 @@ function renderColumnBlockContainers(columnBlock) {
     cellText.enter()
         .append('text')
         .classed('cellText', true);
-
-    return cellText;
-}
-
-function renderColumnBlockContents(gd, allColumnBlock, columnBlock, cellText) {
 
     function verticalBumpRows(increase, rowIndex, l) {
         // subsequent rows in block pushed south
@@ -571,3 +558,4 @@ function rowHeight(d) {
 
 function cellsBlock(d) {return d.type === 'cells';}
 function headerBlock(d) {return d.type === 'header';}
+function anchorChanged(d) {return d.key === anchorChanged;}
