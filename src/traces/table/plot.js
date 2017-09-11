@@ -361,10 +361,25 @@ function renderColumnBlocks(gd, columnBlock) {
         }
     }
 
-    function verticalBumpBlocks(increase, d) {
+    function verticalBumpBlocks(increase, d, xIndex) {
         // subsequent blocks pushed down
-        for(var p = d.page + 1; p < d.rowBlocks.length; p++) {
-            d.rowBlocks[p].firstRowAnchor += increase;
+        //console.log('xIndex', xIndex)
+        if(xIndex === 0) {
+            for(var p = d.page + 1; p < d.rowBlocks.length; p++) {
+                //console.log('bumping d.rowBlocks[', p, '].firstRowAnchor by', increase)
+                d.rowBlocks[p].firstRowAnchor += increase;
+            }
+        }
+    }
+
+    function verticalBumpBlocksAll(increase, d, xIndex) {
+        // subsequent blocks pushed down
+        console.log('xIndex', xIndex)
+        if(xIndex === 0) {
+            for(var p = 0; p < d.rowBlocks.length; p++) {
+                console.log('bumping d.rowBlocks[', p, '].firstRowAnchor by', increase)
+                d.rowBlocks[p].firstRowAnchor += increase;
+            }
         }
     }
 
@@ -396,13 +411,16 @@ function renderColumnBlocks(gd, columnBlock) {
                 if(d.column.type === 'header') {
                     console.log('height increase, `header` item cnt', columnBlock[0].length)
                     // somehow push down possibly already rendered `cells` type rows
+                    var bumped = false
                     columnBlock.each(function(dd, i) {
-                        if(i === 1) //{return;}
-                            verticalBumpBlocks(increase, dd);
+                        if(!bumped && dd.type !== 'header') {
+                            verticalBumpBlocksAll(increase, dd, dd.xIndex);
+                            bumped = true;
+                        }
                     })
                 }
                 else {
-                    verticalBumpBlocks(increase, d);
+                    verticalBumpBlocks(increase, d, d.column.xIndex);
                 }
 
                 verticalBumpRows(increase, rowIndex, l);
