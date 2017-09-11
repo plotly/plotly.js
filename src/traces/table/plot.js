@@ -147,7 +147,7 @@ module.exports = function plot(gd, calcdata) {
         .classed('columnBlock', true)
         .style('user-select', 'none');
 
-    var cellsColumnBlock = columnBlock.filter(function(d) {return d.type === 'cells';});
+    var cellsColumnBlock = columnBlock.filter(cellsBlock);
 
     columnBlock
         .style('cursor', function(d) {return d.dragHandle ? 'ew-resize' : 'ns-resize';})
@@ -206,7 +206,13 @@ module.exports = function plot(gd, calcdata) {
             })
         );
 
-    renderColumnBlocks(gd, columnBlock); // initial render
+    // initial rendering: header is rendered first, as it may may have async LaTeX (show header first)
+    // but blocks are _entered_ the way they are due to painter's algo (header on top)
+    var cellText1 = renderColumnBlockContainers(columnBlock.filter(headerBlock));
+    var cellText2 = renderColumnBlockContainers(columnBlock.filter(cellsBlock));
+
+    renderColumnBlockContents(gd, columnBlock, columnBlock.filter(headerBlock), cellText1); // initial render:
+    renderColumnBlockContents(gd, columnBlock, columnBlock.filter(cellsBlock), cellText2); // initial render: normal cell rows
 
     var scrollAreaClip = tableControlView.selectAll('.scrollAreaClip')
         .data(gup.repeat, gup.keyFun);
@@ -270,6 +276,11 @@ module.exports = function plot(gd, calcdata) {
 };
 
 function renderColumnBlocks(gd, columnBlock) {
+    var cellText = renderColumnBlockContainers(columnBlock);
+    renderColumnBlockContents(gd, columnBlock, cellText);
+}
+
+function renderColumnBlockContainers(columnBlock) {
 
     // this is performance critical code as scrolling calls it on every revolver switch
     // it appears sufficiently fast but there are plenty of low-hanging fruits for performance optimization
@@ -354,6 +365,11 @@ function renderColumnBlocks(gd, columnBlock) {
         .append('text')
         .classed('cellText', true);
 
+    return cellText;
+}
+
+function renderColumnBlockContents(gd, allColumnBlock, columnBlock, cellText) {
+
     function verticalBumpRows(increase, rowIndex, l) {
         // subsequent rows in block pushed south
         for(var r = rowIndex + 1; r < l.rows.length; r++) {
@@ -412,7 +428,7 @@ function renderColumnBlocks(gd, columnBlock) {
                     console.log('height increase, `header` item cnt', columnBlock[0].length)
                     // somehow push down possibly already rendered `cells` type rows
                     var bumped = false
-                    columnBlock.each(function(dd, i) {
+                    allColumnBlock.each(function(dd, i) {
                         if(!bumped && dd.type !== 'header') {
                             verticalBumpBlocksAll(increase, dd, dd.xIndex);
                             bumped = true;
@@ -475,7 +491,7 @@ function renderColumnBlocks(gd, columnBlock) {
     // ... therefore all channels for selections above that need to know the height are set below
     // It's not clear from the variable bindings: `enter` ordering is also driven by the painter's algo that SVG uses
 
-};
+}
 
 function columnBlockPositionY(columnBlock) {
     columnBlock.attr('transform', function(d) {
@@ -552,3 +568,6 @@ function rowHeight(d) {
     var h = l.rows[d.key - l.firstRowIndex].rowHeight;
     return h;
 }
+
+function cellsBlock(d) {return d.type === 'cells';}
+function headerBlock(d) {return d.type === 'header';}
