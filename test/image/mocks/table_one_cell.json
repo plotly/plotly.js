@@ -25,7 +25,7 @@
             "values": [
                 ["Index"   , "#"],
                 ["Column 2"   , "ASDF<br>GHJKL<sub>WW</sub>" || "$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$" || "1A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>"],
-                ["Column 3"   , "hours"]
+                ["Column 3"   , "$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1 \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$"]
             ].map(function(r) {return r.slice(0, Infinity)}).slice(0, Infinity),
 
             "align": ["right"],
