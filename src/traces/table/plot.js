@@ -375,6 +375,8 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
 
             // finalize what's in the DOM
             Drawing.font(selection, d.font);
+            columnCell.call(setRowHeight);
+            translateY(columnCell);
             util.convertToTspans(selection, gd, finalizeYPositionMaker(allColumnBlock, element, d));
         });
 
@@ -498,6 +500,7 @@ function finalizeYPositionMaker(columnBlock, element, d) {
         var increase = finalHeight - l.rows[rowIndex].rowHeight;
 
         if(increase) {
+            debugger
             // current row height increased
             l.rows[d.key - l.firstRowIndex].rowHeight = finalHeight;
 
@@ -525,8 +528,6 @@ function finalizeYPositionMaker(columnBlock, element, d) {
                 .selectAll('.columnCell')
                 .call(setRowHeight) // height increasing stuff in the same row
                 .call(translateY); //downshifting other cells
-        } else {
-            columnCell.call(setRowHeight); // simply set the height
         }
 
         cellTextHolder
@@ -540,6 +541,8 @@ function finalizeYPositionMaker(columnBlock, element, d) {
 
         // translate all downstream cells
         // if there's no increase, then the subsequent rows don't need to be pushed down
-        translateY(increase ? columnCells.selectAll('.columnCell').filter(function(dd) {return dd.key > d.key;}) : columnCell)
+        if(increase) {
+            translateY(columnCells.selectAll('.columnCell').filter(function(dd) {return dd.key > d.key;}))
+        }
     };
 }
