@@ -197,7 +197,6 @@ module.exports = function plot(gd, calcdata) {
 
                     });
                 if(anchorChanged) {
-                    console.log('Anchor changed!')
                     window.clearTimeout(d.currentRepaint);
                     d.currentRepaint = window.setTimeout(function() {
                         // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
@@ -504,7 +503,6 @@ function finalizeYPositionMaker(columnBlock, element, d) {
         var increase = finalHeight - l.rows[rowIndex].rowHeight;
 
         if(increase) {
-            debugger
             // current row height increased
             l.rows[d.key - l.firstRowIndex].rowHeight = finalHeight;
 

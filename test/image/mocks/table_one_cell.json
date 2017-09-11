@@ -1,7 +1,7 @@
 {
     "layout": {
         "width": 600,
-        "height": 330 + 380 - 200,
+        "height": 330 + 380 - 220,
         "title": "Widget parameters and cost",
         "margin": {"t": 0 || 380, "r": 60, "b": 54, "l": 60}
     },
@@ -26,7 +26,7 @@
                 ["Index"   , "#"],
                 ["Column 2"   , "ASDF<br>GHJKL<sub>WW</sub>" || "$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$" || "1A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>"],
                 ["Column 3"   , "$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1 \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$"]
-            ].map(function(r) {return r.slice(0, 100)}).slice(0, 2),
+            ].map(function(r) {return r.slice(0, 100)}).slice(1, 2),
 
             "align": ["right"],
             "valign": "middle",
@@ -69,7 +69,7 @@
                     "8A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
                 ].map(function(d, i) {return i}),
                 [
-                   "A" || "$\\begin{eqnarray*} 1*\\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
+                   "0 A" || "$\\begin{eqnarray*} 1*\\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
                     "1A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
                     "$\\begin{eqnarray*} 2*\\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
                     "2A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
@@ -105,7 +105,7 @@
                     "x8A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
                 ].map(function(d, i) {return d})
 
-            ].map(function(a) {return a.slice(0, 100)}).slice(0, 2),
+            ].map(function(a) {return a.slice(0, 19)}).slice(1, 2),
 
             "format": [
                 null
@@ -114,7 +114,7 @@
             //"prefix": ["#"],
             //"suffix": ["cell"],
 
-            "height": 80,
+            "height": 40,
 
             "align": ["right"],
             "valign": ["bottom"],
