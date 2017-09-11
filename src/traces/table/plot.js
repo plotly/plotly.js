@@ -197,7 +197,7 @@ module.exports = function plot(gd, calcdata) {
                     d.currentRepaint = window.setTimeout(function() {
                         // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
                         // some repaints invisible ie. wasteful (DOM work blocks the main thread)
-                        renderColumnBlocks(gd, cellsColumnBlock.filter(anchorChangedFn), cellsColumnBlock.filter(anchorChangedFn));
+                        renderColumnBlocks(gd, cellsColumnBlock.filter(function (d) {return d.key === anchorChanged;}), cellsColumnBlock.filter(function (d) {return d.key === anchorChanged;}));
                     });
                 }
             })
@@ -444,20 +444,17 @@ function setRowHeight(columnCell) {
 
 function rowOffset(d, i) {
     var l = lookup(d);
-    // fixme unify this with the next function, e.g. `l.rows[i - l.firstRowIndex]`
-    var o = (l.rows[i - l.firstRowIndex].rowAnchor + l.firstRowAnchor) - d.column.anchor;
-    return o;
+    return lookupRow(l, i).rowAnchor + l.firstRowAnchor - d.column.anchor;
 }
 
 function rowHeight(d) {
     var l = lookup(d);
-    var h = l.rows[d.key - l.firstRowIndex].rowHeight;
-    return h;
+    return lookupRow(l, d.key).rowHeight;
 }
 
+function lookupRow(l, i) {return l.rows[i - l.firstRowIndex];}
 function cellsBlock(d) {return d.type === 'cells';}
 function headerBlock(d) {return d.type === 'header';}
-function anchorChangedFn(d) {return d.key === anchorChanged;}
 
 function verticalBumpRows(increase, rowIndex, l) {
     // subsequent rows in block pushed south
