@@ -536,7 +536,7 @@ function finalizeYPositionMaker(allColumnBlock, columnBlock, element, d) {
 
             window.monfera = true
             console.log('height columBlock count:', columnBlock[0].map(function(d) {return d.__data__.key}))
-            columnBlock
+            allColumnBlock
                 .call(columnBlockPositionY) // translate all downstream revolver column panels (naturally, max. 1 of 2)
                 .selectAll('.columnCell')
                 .call(setRowHeight) // height increasing stuff in the same row
