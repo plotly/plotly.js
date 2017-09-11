@@ -374,7 +374,7 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
 
             // finalize what's in the DOM
             Drawing.font(selection, d.font);
-            util.convertToTspans(selection, gd, finalizeYPositionMaker(allColumnBlock, columnBlock, element, d));
+            util.convertToTspans(selection, gd, finalizeYPositionMaker(allColumnBlock, element, d));
         });
 
     // ... therefore all channels for selections above that need to know the height are set below
@@ -484,7 +484,7 @@ function verticalBumpBlocksAll(increase, d, xIndex) {
     }
 }
 
-function finalizeYPositionMaker(allColumnBlock, columnBlock, element, d) {
+function finalizeYPositionMaker(columnBlock, element, d) {
     return function finalizeYPosition() {
         var cellTextHolder = d3.select(element.parentNode);
         var columnCell = d3.select(element.parentNode.parentNode);
@@ -509,7 +509,7 @@ function finalizeYPositionMaker(allColumnBlock, columnBlock, element, d) {
             if(d.column.type === 'header') {
                 // somehow push down possibly already rendered `cells` type rows
                 var bumped = false
-                allColumnBlock.each(function(dd, i) {
+                columnBlock.each(function(dd) {
                     if(!bumped && dd.type !== 'header') {
                         verticalBumpBlocksAll(increase, dd, dd.xIndex);
                         bumped = true;
@@ -522,7 +522,7 @@ function finalizeYPositionMaker(allColumnBlock, columnBlock, element, d) {
 
             verticalBumpRows(increase, rowIndex, l);
 
-            allColumnBlock
+            columnBlock
                 .call(columnBlockPositionY) // translate all downstream revolver column panels (naturally, max. 1 of 2)
                 .selectAll('.columnCell')
                 .call(setRowHeight) // height increasing stuff in the same row
@@ -532,7 +532,7 @@ function finalizeYPositionMaker(allColumnBlock, columnBlock, element, d) {
         }
 
         cellTextHolder
-            .attr('transform', function (d) {
+            .attr('transform', function () {
                 var element = this;
                 var box = element.parentNode.getBoundingClientRect();
                 var rectBox = d3.select(element.parentNode).select('.cellRect').node().getBoundingClientRect();
