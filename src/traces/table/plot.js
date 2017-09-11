@@ -17,6 +17,10 @@ var util = require('../../lib/svg_text_utils');
 
 module.exports = function plot(gd, calcdata) {
 
+    if(c.clipView) {
+        gd._fullLayout._paper.attr('height', 2000);
+    }
+
     var table = gd._fullLayout._paper.selectAll('.table')
         .data(calcdata.map(gup.unwrap), gup.keyFun);
 
@@ -138,7 +142,7 @@ module.exports = function plot(gd, calcdata) {
             });
             revolverPanel1.otherPanel = revolverPanel2;
             revolverPanel2.otherPanel = revolverPanel1;
-            return [revolverPanel1, revolverPanel2, headerPanel]; // order due to SVG using painter's algo
+            return [revolverPanel1, revolverPanel2/*, headerPanel*/]; // order due to SVG using painter's algo
         }, gup.keyFun);
 
     columnBlock.enter()
