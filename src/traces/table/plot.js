@@ -130,7 +130,7 @@ module.exports = function plot(gd, calcdata) {
             });
             var revolverPanel2 = extendFlat({}, d, {
                 key: 'cells2',
-                anchor: d.calcdata.rowBlocks[1] ? -d.calcdata.rowBlocks[1].totalHeight : 0, // will be mutated on scroll; points to current place
+                anchor: d.calcdata.rowBlocks[1] ? -totalHeight(d.calcdata.rowBlocks[1]) : 0, // will be mutated on scroll; points to current place
                 page: -1,
                 type: 'cells',
                 yOffset: d.calcdata.headerHeight,
@@ -177,7 +177,7 @@ module.exports = function plot(gd, calcdata) {
                         var lastRow = lastBlock.rows[lastBlock.rows.length - 1];
                         var bottom = lastBlock.firstRowAnchor + lastRow.rowAnchor + lastRow.rowHeight - d.calcdata.scrollHeight;
                         var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
-                        if(d.page < 0 || direction === 'down' && scrollY - d.anchor > currentBlock.totalHeight) {
+                        if(d.page < 0 || direction === 'down' && scrollY - d.anchor > totalHeight(currentBlock)) {
                             if(d.page + 2 < blockAnchors.length) {
                                 d.page += 2;
                                 d.anchor = blockAnchors[d.page];
@@ -461,6 +461,7 @@ function rowHeight(d) {
 function lookupRow(l, i) {return l.rows[i - l.firstRowIndex];}
 function cellsBlock(d) {return d.type === 'cells';}
 function headerBlock(d) {return d.type === 'header';}
+function totalHeight(rowBlock) {return rowBlock.rows.reduce(function(p,n) {return n.rowHeight + p;}, 0)}
 
 function verticalBumpRows(increase, rowIndex, l) {
     // subsequent rows in block pushed south
@@ -504,9 +505,6 @@ function finalizeYPositionMaker(columnBlock, element, d) {
         if(increase) {
             // current row height increased
             l.rows[d.key - l.firstRowIndex].rowHeight = finalHeight;
-
-            // current block height increased
-            d.rowBlocks[d.page].totalHeight += increase;
 
             if(d.column.type === 'header') {
                 // somehow push down possibly already rendered `cells` type rows

@@ -13,7 +13,6 @@ var wrap = require('../../lib/gup').wrap;
 
 function makeIdentity() {
     return {
-        totalHeight: 0,
         firstRowIndex: null,
         lastRowIndex: null,
         rows: []
@@ -41,7 +40,6 @@ function makeAnchorToRowBlock(rowHeights, minimumFillHeight) {
             anchorToRowBlock[currentAnchor] = currentBlock;
             currentBlock.key = blockCounter++;
             currentBlock.firstRowAnchor = currentAnchor;
-            currentBlock.totalHeight = currentBlockHeight;
             currentBlock.firstRowIndex = currentFirstRowIndex;
             currentBlock.lastRowIndex = i;
             currentBlock = makeIdentity();
