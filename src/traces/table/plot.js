@@ -138,7 +138,6 @@ module.exports = function plot(gd, calcdata) {
             });
             revolverPanel1.otherPanel = revolverPanel2;
             revolverPanel2.otherPanel = revolverPanel1;
-            console.log('height yOffsets', headerPanel.yOffset, revolverPanel1.yOffset, revolverPanel2.yOffset)
             return [revolverPanel1, revolverPanel2, headerPanel]; // order due to SVG using painter's algo
         }, gup.keyFun);
 
@@ -384,10 +383,7 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
 }
 
 function columnBlockPositionY(columnBlock) {
-    columnBlock.attr('transform', function(d) {
-        //if(window.monfera) debugger
-        console.log('height induced translate:', d.anchor, d.yOffset)
-        return 'translate(0 ' + (d.anchor + d.yOffset) + ')';});
+    columnBlock.attr('transform', function(d) {return 'translate(0 ' + (d.anchor + d.yOffset) + ')';});
 }
 
 function rowFromTo(d) {
@@ -472,10 +468,8 @@ function verticalBumpRows(increase, rowIndex, l) {
 
 function verticalBumpBlocks(increase, d, xIndex) {
     // subsequent blocks pushed down
-    //console.log('xIndex', xIndex)
     if(xIndex === 0) {
         for(var p = d.page + 1; p < d.rowBlocks.length; p++) {
-            //console.log('bumping d.rowBlocks[', p, '].firstRowAnchor by', increase)
             d.rowBlocks[p].firstRowAnchor += increase;
         }
     }
@@ -483,10 +477,8 @@ function verticalBumpBlocks(increase, d, xIndex) {
 
 function verticalBumpBlocksAll(increase, d, xIndex) {
     // subsequent blocks pushed down
-    console.log('xIndex', xIndex)
     if(xIndex === 0) {
         for(var p = 0; p < d.rowBlocks.length; p++) {
-            console.log('bumping d.rowBlocks[', p, '].firstRowAnchor by', increase)
             d.rowBlocks[p].firstRowAnchor += increase;
         }
     }
@@ -494,7 +486,6 @@ function verticalBumpBlocksAll(increase, d, xIndex) {
 
 function finalizeYPositionMaker(allColumnBlock, columnBlock, element, d) {
     return function finalizeYPosition() {
-        console.log('finalizeYPositionMaker height', d.value)
         var cellTextHolder = d3.select(element.parentNode);
         var columnCell = d3.select(element.parentNode.parentNode);
         var columnCells = d3.select(element.parentNode.parentNode.parentNode);
@@ -508,8 +499,6 @@ function finalizeYPositionMaker(allColumnBlock, columnBlock, element, d) {
         var finalHeight = Math.max(requiredHeight, l.rows[rowIndex].rowHeight);
         var increase = finalHeight - l.rows[rowIndex].rowHeight;
 
-        console.log('height increase:', increase)
-
         if(increase) {
             // current row height increased
             l.rows[d.key - l.firstRowIndex].rowHeight = finalHeight;
@@ -518,7 +507,6 @@ function finalizeYPositionMaker(allColumnBlock, columnBlock, element, d) {
             d.rowBlocks[d.page].totalHeight += increase;
 
             if(d.column.type === 'header') {
-                console.log('height increase, `header` item cnt', columnBlock[0].length)
                 // somehow push down possibly already rendered `cells` type rows
                 var bumped = false
                 allColumnBlock.each(function(dd, i) {
@@ -534,8 +522,6 @@ function finalizeYPositionMaker(allColumnBlock, columnBlock, element, d) {
 
             verticalBumpRows(increase, rowIndex, l);
 
-            window.monfera = true
-            console.log('height columBlock count:', columnBlock[0].map(function(d) {return d.__data__.key}))
             allColumnBlock
                 .call(columnBlockPositionY) // translate all downstream revolver column panels (naturally, max. 1 of 2)
                 .selectAll('.columnCell')

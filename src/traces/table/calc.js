@@ -88,7 +88,7 @@ module.exports = function calc(gd, trace) {
     var uniqueKeys = {};
 
     var columnOrder = trace._fullInput.columnorder;
-console.log('calc headerHeight', headerHeight)
+
     var calcdata = {
         key: trace.index,
         translateX: domain.x[0] * gd._fullLayout._size.w,
