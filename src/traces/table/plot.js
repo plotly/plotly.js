@@ -142,7 +142,7 @@ module.exports = function plot(gd, calcdata) {
             });
             revolverPanel1.otherPanel = revolverPanel2;
             revolverPanel2.otherPanel = revolverPanel1;
-            return [revolverPanel1, revolverPanel2/*, headerPanel*/]; // order due to SVG using painter's algo
+            return [revolverPanel1, revolverPanel2, headerPanel]; // order due to SVG using painter's algo
         }, gup.keyFun);
 
     columnBlock.enter()
