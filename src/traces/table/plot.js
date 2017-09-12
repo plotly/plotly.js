@@ -172,10 +172,10 @@ module.exports = function plot(gd, calcdata) {
                     .attr('transform', function(d) {
                         var rowBlocks = d.rowBlocks;
                         var currentBlock = rowBlocks[d.page];
-                        var blockAnchors = rowBlocks.map(function(v) {return firstRowAnchor(v);});
+                        var blockAnchors = rowBlocks.map(function(v) {return firstRowAnchor(rowBlocks, v);});
                         var lastBlock = rowBlocks[rowBlocks.length - 1];
                         var lastRow = lastBlock.rows[lastBlock.rows.length - 1];
-                        var bottom = firstRowAnchor(lastBlock) + rowAnchor(lastBlock, lastRow) + lastRow.rowHeight - d.calcdata.scrollHeight;
+                        var bottom = firstRowAnchor(rowBlocks, lastBlock) + rowAnchor(lastBlock, lastRow) + lastRow.rowHeight - d.calcdata.scrollHeight;
                         var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
                         if(d.page < 0 || direction === 'down' && scrollY - d.anchor > totalHeight(currentBlock)) {
                             if(d.page + 2 < blockAnchors.length) {
@@ -436,10 +436,10 @@ function lookup(d) {
     return d.rowBlocks[d.page];
 }
 
-function translateY(impactedColumCells) {
-    impactedColumCells
+function translateY(columCell) {
+    columCell
         .attr('transform', function(d) {
-            var yOffset = rowOffset(d, d.key);
+            var yOffset = rowOffset(d.rowBlocks, d, d.key);
             return 'translate(' + 0 + ' ' + yOffset + ')';
         });
 }
@@ -448,13 +448,18 @@ function setRowHeight(columnCell) {
     columnCell.select('.cellRect').attr('height', rowHeight);
 }
 
-function firstRowAnchor(l) {
-    return l.firstRowAnchr;
+function firstRowAnchor(rowBlocks, l) {
+    var total = 0;
+    for(var i = 0; i < rowBlocks.length; i++) {
+        if(rowBlocks[i] === l) break;
+        total += totalHeight(rowBlocks[i]);
+    }
+    return total;
 }
 
-function rowOffset(d, i) {
+function rowOffset(rowBlocks, d, i) {
     var l = lookup(d);
-    return rowAnchor(l, lookupRow(l, i)) + firstRowAnchor(l) - d.column.anchor;
+    return rowAnchor(l, lookupRow(l, i)) + firstRowAnchor(rowBlocks, l) - d.column.anchor;
 }
 
 function rowHeight(d) {
