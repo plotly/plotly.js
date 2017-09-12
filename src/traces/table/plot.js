@@ -121,7 +121,7 @@ module.exports = function plot(gd, calcdata) {
                 type: 'cells',
                 anchor: 0, // will be mutated on scroll; points to current place
                 page: 0,
-                yOffset: d.calcdata.headerHeight,
+                yOffset: 0,//d.calcdata.headerHeight,
                 dragHandle: false,
                 values: d.calcdata.cells.values[d.specIndex],
                 rowBlocks: d.calcdata.rowBlocks,
@@ -133,7 +133,7 @@ module.exports = function plot(gd, calcdata) {
                 anchor: d.calcdata.rowBlocks[1] ? -totalHeight(d.calcdata.rowBlocks[1]) : 0, // will be mutated on scroll; points to current place
                 page: -1,
                 type: 'cells',
-                yOffset: d.calcdata.headerHeight,
+                yOffset: 0,//d.calcdata.headerHeight,
                 dragHandle: false,
                 values: d.calcdata.cells.values[d.specIndex],
                 rowBlocks: d.calcdata.rowBlocks,
@@ -439,7 +439,8 @@ function lookup(d) {
 function translateY(columCell) {
     columCell
         .attr('transform', function(d) {
-            var yOffset = rowOffset(d.rowBlocks, d, d.key);
+            //if(d.rowBlocks[0].auxiliaryBlocks.length) debugger
+            var yOffset = rowOffset(d.rowBlocks, d, d.key) + d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + totalHeight(n)}, 0);
             return 'translate(' + 0 + ' ' + yOffset + ')';
         });
 }

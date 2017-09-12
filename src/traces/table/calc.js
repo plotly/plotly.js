@@ -10,6 +10,7 @@
 
 var c = require('./constants');
 var wrap = require('../../lib/gup').wrap;
+var extendFlat = require('../../lib/extend').extendFlat;
 
 function makeIdentity() {
     return {
@@ -72,15 +73,15 @@ module.exports = function calc(gd, trace) {
     var scrollHeight = groupHeight - headerHeight;
     var minimumFillHeight = scrollHeight + c.uplift;
 
-    function rb(anchorToRowBlock) {
+    function rb(anchorToRowBlock, auxiliary) {
         var blockAnchorKeys = Object.keys(anchorToRowBlock);
-        return blockAnchorKeys.map(function(k) {return anchorToRowBlock[k];})
+        return blockAnchorKeys.map(function(k) {return extendFlat({}, anchorToRowBlock[k], {auxiliaryBlocks: auxiliary});})
     }
 
     var anchorToRowBlock = makeAnchorToRowBlock(rowHeights, minimumFillHeight);
     var anchorToHeaderRowBlock = makeAnchorToRowBlock(headerRowHeights, headerHeight);
-    var rowBlocks = rb(anchorToRowBlock);
-    var headerRowBlocks = rb(anchorToHeaderRowBlock);
+    var headerRowBlocks = rb(anchorToHeaderRowBlock, []);
+    var rowBlocks = rb(anchorToRowBlock, headerRowBlocks);
 
     var uniqueKeys = {};
 
