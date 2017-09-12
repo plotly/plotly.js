@@ -489,24 +489,16 @@ function finalizeYPositionMaker(columnBlock, element, d) {
 
 function renderHeightAndPosition(columnCell) {
     columnCell
-        .call(setRowHeight)
-        .call(translateY);
-}
-
-function setRowHeight(columnCell) {
-    columnCell.select('.cellRect').attr('height', rowHeight);
+        .attr('transform', function(d) {
+            var yOffset = rowOffset(d.rowBlocks, d, d.key) + d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + totalHeight(n)}, 0);
+            return 'translate(' + 0 + ' ' + yOffset + ')';
+        })
+        .select('.cellRect')
+        .attr('height', rowHeight);
 }
 
 function columnBlockPositionY(columnBlock) {
     columnBlock.attr('transform', function(d) {return 'translate(0 ' + d.anchor + ')';});
-}
-
-function translateY(columCell) {
-    columCell
-        .attr('transform', function(d) {
-            var yOffset = rowOffset(d.rowBlocks, d, d.key) + d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + totalHeight(n)}, 0);
-            return 'translate(' + 0 + ' ' + yOffset + ')';
-        });
 }
 
 function rowOffset(rowBlocks, d, i) {
