@@ -846,7 +846,7 @@ describe('Test lib.js:', function() {
     });
 
     describe('coerceFont', function() {
-        var fontAttrs = Plots.fontAttrs,
+        var fontAttrs = Plots.fontAttrs({}),
             extendFlat = Lib.extendFlat,
             coerceFont = Lib.coerceFont;
 
@@ -1934,6 +1934,34 @@ describe('Test lib.js:', function() {
 
         it('replaces empty key with empty string', function() {
             expect(Lib.templateString('foo %{} %{}', {})).toEqual('foo  ');
+        });
+    });
+
+    describe('relativeAttr()', function() {
+        it('replaces the last part always', function() {
+            expect(Lib.relativeAttr('annotations[3].x', 'y')).toBe('annotations[3].y');
+            expect(Lib.relativeAttr('x', 'z')).toBe('z');
+            expect(Lib.relativeAttr('marker.line.width', 'colorbar.x')).toBe('marker.line.colorbar.x');
+        });
+
+        it('ascends with ^', function() {
+            expect(Lib.relativeAttr('annotations[3].x', '^[2].z')).toBe('annotations[2].z');
+            expect(Lib.relativeAttr('annotations[3].x', '^^margin')).toBe('margin');
+            expect(Lib.relativeAttr('annotations[3].x', '^^margin.r')).toBe('margin.r');
+            expect(Lib.relativeAttr('marker.line.width', '^colorbar.x')).toBe('marker.colorbar.x');
+        });
+
+        it('fails on ascending too far', function() {
+            expect(function() { return Lib.relativeAttr('x', '^y'); }).toThrow();
+            expect(function() { return Lib.relativeAttr('marker.line.width', '^^^colorbar.x'); }).toThrow();
+        });
+
+        it('fails with malformed baseAttr', function() {
+            expect(function() { return Lib.relativeAttr('x[]', 'z'); }).toThrow();
+            expect(function() { return Lib.relativeAttr('x.a]', 'z'); }).toThrow();
+            expect(function() { return Lib.relativeAttr('x[a]', 'z'); }).toThrow();
+            expect(function() { return Lib.relativeAttr('x[3].', 'z'); }).toThrow();
+            expect(function() { return Lib.relativeAttr('x.y.', 'z'); }).toThrow();
         });
     });
 });
