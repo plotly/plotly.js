@@ -406,10 +406,9 @@ function makeDragRow(cellsColumnBlock) {
             .attr('transform', function (d) {
                 var blocks = d.rowBlocks;
                 var currentBlock = blocks[d.page];
-                var lastBlock = blocks[blocks.length - 1];
                 var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function (p, n) {return p + totalHeight(n)}, 0);
                 var scrollHeight = d.calcdata.groupHeight - headerHeight;
-                var bottom = firstRowAnchor(blocks, lastBlock.key + 1) - scrollHeight;
+                var bottom = firstRowAnchor(blocks, blocks.length) - scrollHeight;
                 var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
                 if(d.page < 0 || direction === 'down' && scrollY - d.anchor > totalHeight(currentBlock)) {
                     if(d.page + 2 < blocks.length) {
