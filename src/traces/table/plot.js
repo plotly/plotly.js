@@ -334,69 +334,6 @@ function headerBlock(d) {return d.type === 'header';}
  * The tricky parts
  */
 
-function lookup(d) {return d.rowBlocks[d.page];}
-function lookupRow(l, i) {return l.rows[i - l.firstRowIndex];}
-
-function rowFromTo(d) {
-    var rowBlock = d.rowBlocks[d.page];
-    // fixme rowBlock truthiness check is due to ugly hack of placing 2nd panel as d.page = -1
-    var rowFrom = rowBlock ? rowBlock.rows[0].rowIndex : 0;
-    var rowTo = rowBlock ? rowFrom + rowBlock.rows.length : 0;
-    return [rowFrom, rowTo];
-}
-
-function columnBlockPositionY(columnBlock) {
-    columnBlock.attr('transform', function(d) {return 'translate(0 ' + d.anchor + ')';});
-}
-
-function rowOffset(rowBlocks, d, i) {
-    var l = lookup(d);
-    return rowAnchor(l, lookupRow(l, i)) + firstRowAnchor(rowBlocks, l) - d.column.anchor;
-}
-
-function rowHeight(d) {
-    var l = lookup(d);
-    return lookupRow(l, d.key).rowHeight;
-}
-
-function totalHeight(rowBlock) {
-    var total = 0;
-    for(var i = 0; i < rowBlock.rows.length; i++) {
-        total += rowBlock.rows[i].rowHeight;
-    }
-    return total;
-}
-
-function rowAnchor(rowBlock, row) {
-    var total = 0;
-    for(var i = 0; i < rowBlock.rows.length; i++) {
-        if(rowBlock.rows[i] === row) break;
-        total += rowBlock.rows[i].rowHeight;
-    }
-    return total;
-}
-
-function translateY(columCell) {
-    columCell
-        .attr('transform', function(d) {
-            var yOffset = rowOffset(d.rowBlocks, d, d.key) + d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + totalHeight(n)}, 0);
-            return 'translate(' + 0 + ' ' + yOffset + ')';
-        });
-}
-
-function setRowHeight(columnCell) {
-    columnCell.select('.cellRect').attr('height', rowHeight);
-}
-
-function firstRowAnchor(rowBlocks, l) {
-    var total = 0;
-    for(var i = 0; i < rowBlocks.length; i++) {
-        if(rowBlocks[i] === l) break;
-        total += totalHeight(rowBlocks[i]);
-    }
-    return total;
-}
-
 function splitToPanels(d) {
     var headerPanel = extendFlat({}, d, {
         key: 'header',
@@ -443,6 +380,22 @@ function splitToCells(d) {
             value: v
         };
     });
+}
+
+function totalHeight(rowBlock) {
+    var total = 0;
+    for(var i = 0; i < rowBlock.rows.length; i++) {
+        total += rowBlock.rows[i].rowHeight;
+    }
+    return total;
+}
+
+function rowFromTo(d) {
+    var rowBlock = d.rowBlocks[d.page];
+    // fixme rowBlock truthiness check is due to ugly hack of placing 2nd panel as d.page = -1
+    var rowFrom = rowBlock ? rowBlock.rows[0].rowIndex : 0;
+    var rowTo = rowBlock ? rowFrom + rowBlock.rows.length : 0;
+    return [rowFrom, rowTo];
 }
 
 function makeDragRow(cellsColumnBlock) {
@@ -504,7 +457,7 @@ function finalizeYPositionMaker(columnBlock, element, d) {
     return function finalizeYPosition() {
         var cellTextHolder = d3.select(element.parentNode);
         var columnCells = d3.select(element.parentNode.parentNode.parentNode);
-        var l = lookup(d);
+        var l = getBlock(d);
         var rowIndex = d.key - l.firstRowIndex;
         var box = element.parentNode.getBoundingClientRect();
 
@@ -541,3 +494,51 @@ function finalizeYPositionMaker(columnBlock, element, d) {
         }
     };
 }
+
+function setRowHeight(columnCell) {
+    columnCell.select('.cellRect').attr('height', rowHeight);
+}
+
+function columnBlockPositionY(columnBlock) {
+    columnBlock.attr('transform', function(d) {return 'translate(0 ' + d.anchor + ')';});
+}
+
+function translateY(columCell) {
+    columCell
+        .attr('transform', function(d) {
+            var yOffset = rowOffset(d.rowBlocks, d, d.key) + d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + totalHeight(n)}, 0);
+            return 'translate(' + 0 + ' ' + yOffset + ')';
+        });
+}
+
+function rowOffset(rowBlocks, d, i) {
+    var l = getBlock(d);
+    return rowAnchor(l, getRow(l, i)) + firstRowAnchor(rowBlocks, l) - d.column.anchor;
+}
+
+function rowAnchor(rowBlock, row) {
+    var total = 0;
+    for(var i = 0; i < rowBlock.rows.length; i++) {
+        if(rowBlock.rows[i] === row) break;
+        total += rowBlock.rows[i].rowHeight;
+    }
+    return total;
+}
+
+function firstRowAnchor(rowBlocks, l) {
+    var total = 0;
+    for(var i = 0; i < rowBlocks.length; i++) {
+        if(rowBlocks[i] === l) break;
+        total += totalHeight(rowBlocks[i]);
+    }
+    return total;
+}
+
+function rowHeight(d) {
+    var l = getBlock(d);
+    return getRow(l, d.key).rowHeight;
+}
+
+function getBlock(d) {return d.rowBlocks[d.page];}
+function getRow(l, i) {return l.rows[i - l.firstRowIndex];}
+
