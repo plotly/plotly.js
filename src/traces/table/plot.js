@@ -469,14 +469,6 @@ function finalizeYPositionMaker(columnBlock, element, d) {
 }
 
 
-function rowsHeight(rowBlock, key) {
-    var total = 0;
-    for(var i = 0; i < rowBlock.rows.length && rowBlock.rows[i].rowIndex < key; i++) {
-        total += rowBlock.rows[i].rowHeight;
-    }
-    return total;
-}
-
 function setCellHeightAndPositionY(columnCell) {
 
     columnCell
@@ -491,7 +483,11 @@ function setCellHeightAndPositionY(columnCell) {
             return 'translate(' + 0 + ' ' + yOffset + ')';
         })
         .select('.cellRect')
-        .attr('height', rowHeight);
+        .attr('height', function(d) {
+                var l = getBlock(d);
+                return getRow(l, d.key).rowHeight;
+            }
+        );
 }
 
 function firstRowAnchor(rowBlocks, page) {
@@ -502,9 +498,12 @@ function firstRowAnchor(rowBlocks, page) {
     return total;
 }
 
-function rowHeight(d) {
-    var l = getBlock(d);
-    return getRow(l, d.key).rowHeight;
+function rowsHeight(rowBlock, key) {
+    var total = 0;
+    for(var i = 0; i < rowBlock.rows.length && rowBlock.rows[i].rowIndex < key; i++) {
+        total += rowBlock.rows[i].rowHeight;
+    }
+    return total;
 }
 
 function getBlock(d) {return d.rowBlocks[d.page];}
