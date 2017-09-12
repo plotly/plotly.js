@@ -404,26 +404,23 @@ function makeDragRow(cellsColumnBlock) {
         var anchorChanged = false;
         cellsColumnBlock
             .attr('transform', function (d) {
-                var rowBlocks = d.rowBlocks;
-                var currentBlock = rowBlocks[d.page];
-                var lastBlock = rowBlocks[rowBlocks.length - 1];
-                var lastRow = lastBlock.rows[lastBlock.rows.length - 1];
-                var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function (p, n) {
-                    return p + totalHeight(n)
-                }, 0);
+                var blocks = d.rowBlocks;
+                var currentBlock = blocks[d.page];
+                var lastBlock = blocks[blocks.length - 1];
+                var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function (p, n) {return p + totalHeight(n)}, 0);
                 var scrollHeight = d.calcdata.groupHeight - headerHeight;
-                var bottom = firstRowAnchor(rowBlocks, lastBlock.key) + rowAnchor(lastBlock, lastRow) + lastRow.rowHeight - scrollHeight;
+                var bottom = firstRowAnchor(blocks, lastBlock.key + 1) - scrollHeight;
                 var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
                 if(d.page < 0 || direction === 'down' && scrollY - d.anchor > totalHeight(currentBlock)) {
-                    if(d.page + 2 < rowBlocks.length) {
+                    if(d.page + 2 < blocks.length) {
                         d.page += 2;
-                        d.anchor = firstRowAnchor(rowBlocks, d.page);//blockAnchors[d.page];
+                        d.anchor = firstRowAnchor(blocks, d.page);
                         anchorChanged = d.key;
                     }
                 } else if(direction === 'up' && d.anchor > scrollY + scrollHeight) {
                     if(d.page - 2 >= 0) {
                         d.page -= 2;
-                        d.anchor = firstRowAnchor(rowBlocks, d.page); //blockAnchors[d.page];
+                        d.anchor = firstRowAnchor(blocks, d.page);
                         anchorChanged = d.key;
                     }
                 }
@@ -450,7 +447,6 @@ function makeDragRow(cellsColumnBlock) {
 function finalizeYPositionMaker(columnBlock, element, d) {
     return function finalizeYPosition() {
         var cellTextHolder = d3.select(element.parentNode);
-        var columnCells = d3.select(element.parentNode.parentNode.parentNode);
         var l = getBlock(d);
         var rowIndex = d.key - l.firstRowIndex;
         var box = element.parentNode.getBoundingClientRect();
