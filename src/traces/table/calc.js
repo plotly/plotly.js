@@ -39,7 +39,6 @@ function makeAnchorToRowBlock(rowHeights, minimumFillHeight) {
         if(currentBlockHeight >= minimumFillHeight || i === rowHeights.length - 1) {
             anchorToRowBlock[currentAnchor] = currentBlock;
             currentBlock.key = blockCounter++;
-            currentBlock.firstRowAnchr = currentAnchor;
             currentBlock.firstRowIndex = currentFirstRowIndex;
             currentBlock.lastRowIndex = i;
             currentBlock = makeIdentity();
