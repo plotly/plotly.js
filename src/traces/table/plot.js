@@ -488,14 +488,15 @@ function setCellHeightAndPositionY(columnCell) {
             var l = getBlock(d);
             var row = getRow(l, d.key)
 
-            var rowAnchr = 0;
+            var rowAnchor = 0;
             for(var i = 0; i < l.rows.length; i++) {
                 if(l.rows[i] === row) break;
-                rowAnchr += l.rows[i].rowHeight;
+                rowAnchor += l.rows[i].rowHeight;
             }
 
-            var rowOffs = rowAnchr + firstRowAnchor(d.rowBlocks, l.key) - d.column.anchor;
-            var yOffset = rowOffs + d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + totalHeight(n)}, 0);
+            var rowOffs = rowAnchor + firstRowAnchor(d.rowBlocks, l.key) - d.column.anchor;
+            var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + totalHeight(n)}, 0);
+            var yOffset = rowOffs + headerHeight;
             return 'translate(' + 0 + ' ' + yOffset + ')';
         })
         .select('.cellRect')
