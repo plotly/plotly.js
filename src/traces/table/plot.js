@@ -120,7 +120,7 @@ module.exports = function plot(gd, calcdata) {
 
     columnBlock
         .style('cursor', function(d) {return d.dragHandle ? 'ew-resize' : 'ns-resize';})
-        .call(columnBlockPositionY);
+        .call(setColumnBlockPositionY);
 
     cellsColumnBlock
         .call(d3.behavior.drag()
@@ -288,7 +288,7 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
 
             // finalize what's in the DOM
             Drawing.font(selection, d.font);
-            renderHeightAndPosition(columnCell);
+            setCellHeightAndPositionY(columnCell);
             svgUtil.convertToTspans(selection, gd, finalizeYPositionMaker(allColumnBlock, element, d));
         });
 }
@@ -471,9 +471,9 @@ function finalizeYPositionMaker(columnBlock, element, d) {
             l.rows[d.key - l.firstRowIndex].rowHeight = finalHeight;
 
             columnBlock
-                .call(columnBlockPositionY) // translate all downstream revolver column panels (naturally, max. 1 of 2)
+                .call(setColumnBlockPositionY)
                 .selectAll('.columnCell')
-                .call(renderHeightAndPosition); //downshifting other cells
+                .call(setCellHeightAndPositionY);
         }
 
         cellTextHolder
@@ -487,7 +487,7 @@ function finalizeYPositionMaker(columnBlock, element, d) {
     };
 }
 
-function renderHeightAndPosition(columnCell) {
+function setCellHeightAndPositionY(columnCell) {
     columnCell
         .attr('transform', function(d) {
             var yOffset = rowOffset(d.rowBlocks, d, d.key) + d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + totalHeight(n)}, 0);
@@ -497,7 +497,7 @@ function renderHeightAndPosition(columnCell) {
         .attr('height', rowHeight);
 }
 
-function columnBlockPositionY(columnBlock) {
+function setColumnBlockPositionY(columnBlock) {
     columnBlock.attr('transform', function(d) {return 'translate(0 ' + d.anchor + ')';});
 }
 
