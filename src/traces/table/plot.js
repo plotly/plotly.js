@@ -461,7 +461,17 @@ function rowHeight(d) {
 function lookupRow(l, i) {return l.rows[i - l.firstRowIndex];}
 function cellsBlock(d) {return d.type === 'cells';}
 function headerBlock(d) {return d.type === 'header';}
-function totalHeight(rowBlock) {return rowBlock.rows.reduce(function(p,n) {return n.rowHeight + p;}, 0)}
+function totalHeight(rowBlock) {
+    var total = 0;
+    for(var i = 0; i < rowBlock.rows.length; i++) {
+        total += rowBlock.rows[i].rowHeight;
+    }
+    return total;
+}
+
+function rowAnchor(rowBlock, row) {
+    return rowBlock.rows.reduce(function(p,n) {return n.rowHeight + p;}, 0)
+}
 
 function verticalBumpRows(increase, rowIndex, l) {
     // subsequent rows in block pushed south
