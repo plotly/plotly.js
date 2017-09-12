@@ -339,6 +339,7 @@ function lookupRow(l, i) {return l.rows[i - l.firstRowIndex];}
 
 function rowFromTo(d) {
     var rowBlock = d.rowBlocks[d.page];
+    // fixme rowBlock truthiness check is due to ugly hack of placing 2nd panel as d.page = -1
     var rowFrom = rowBlock ? rowBlock.rows[0].rowIndex : 0;
     var rowTo = rowBlock ? rowFrom + rowBlock.rows.length : 0;
     return [rowFrom, rowTo];
