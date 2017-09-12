@@ -362,8 +362,6 @@ function splitToPanels(d) {
         values: d.calcdata.cells.values[d.specIndex],
         rowBlocks: d.calcdata.rowBlocks
     });
-    revolverPanel1.otherPanel = revolverPanel2;
-    revolverPanel2.otherPanel = revolverPanel1;
     return [revolverPanel1, revolverPanel2, headerPanel]; // order due to SVG using painter's algo
 }
 
