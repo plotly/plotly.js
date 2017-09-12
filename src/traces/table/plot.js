@@ -488,24 +488,6 @@ function rowAnchor(rowBlock, row) {
     return total;
 }
 
-function verticalBumpBlocks(increase, d, xIndex) {
-    // subsequent blocks pushed down
-    if(xIndex === 1) {
-        for(var p = d.page + 1; p < d.rowBlocks.length; p++) {
-            d.rowBlocks[p].firstRowAnchr += increase;
-        }
-    }
-}
-
-function verticalBumpBlocksAll(increase, d, xIndex) {
-    // subsequent blocks pushed down
-    if(xIndex === 0) {
-        for(var p = 0; p < d.rowBlocks.length; p++) {
-            d.rowBlocks[p].firstRowAnchr += increase;
-        }
-    }
-}
-
 function finalizeYPositionMaker(columnBlock, element, d) {
     return function finalizeYPosition() {
         var cellTextHolder = d3.select(element.parentNode);
@@ -523,20 +505,6 @@ function finalizeYPositionMaker(columnBlock, element, d) {
         if(increase) {
             // current row height increased
             l.rows[d.key - l.firstRowIndex].rowHeight = finalHeight;
-
-            if(d.column.type === 'header') {
-                // somehow push down possibly already rendered `cells` type rows
-                var bumped = false
-                columnBlock.each(function(dd) {
-                    if(!bumped && dd.type !== 'header') {
-                        verticalBumpBlocksAll(increase, dd, dd.xIndex);
-                        bumped = true;
-                    }
-                })
-            }
-            else {
-                verticalBumpBlocks(increase, d, d.column.xIndex);
-            }
 
             columnBlock
                 .call(columnBlockPositionY) // translate all downstream revolver column panels (naturally, max. 1 of 2)
