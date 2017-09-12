@@ -288,8 +288,7 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
 
             // finalize what's in the DOM
             Drawing.font(selection, d.font);
-            columnCell.call(setRowHeight);
-            translateY(columnCell);
+            synchronousHeightAndPosition(columnCell);
             svgUtil.convertToTspans(selection, gd, finalizeYPositionMaker(allColumnBlock, element, d));
         });
 }
@@ -493,6 +492,11 @@ function finalizeYPositionMaker(columnBlock, element, d) {
             translateY(columnCells.selectAll('.columnCell').filter(function(dd) {return dd.key > d.key;}))
         }
     };
+}
+
+function synchronousHeightAndPosition(columnCell) {
+    columnCell.call(setRowHeight);
+    translateY(columnCell);
 }
 
 function setRowHeight(columnCell) {
