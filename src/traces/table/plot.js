@@ -347,7 +347,7 @@ function splitToPanels(d) {
     var revolverPanel1 = extendFlat({}, d, {
         key: 'cells1',
         type: 'cells',
-        anchor: 0, // will be mutated on scroll; points to current place
+        anchor: 0,
         page: 0,
         dragHandle: false,
         values: d.calcdata.cells.values[d.specIndex],
@@ -356,13 +356,14 @@ function splitToPanels(d) {
     var revolverPanel2 = extendFlat({}, d, {
         key: 'cells2',
         type: 'cells',
-        anchor: d.calcdata.rowBlocks[1] ? -totalHeight(d.calcdata.rowBlocks[1]) : 0, // will be mutated on scroll; points to current place
+        anchor: 0,
         page: -1,
         dragHandle: false,
         values: d.calcdata.cells.values[d.specIndex],
         rowBlocks: d.calcdata.rowBlocks
     });
-    return [revolverPanel1, revolverPanel2, headerPanel]; // order due to SVG using painter's algo
+    // order due to SVG using painter's algo:
+    return [revolverPanel1, revolverPanel2, headerPanel];
 }
 
 function splitToCells(d) {
@@ -427,7 +428,7 @@ function makeDragRow(cellsColumnBlock) {
                 var yTranslate = d.anchor - scrollY;
 
                 return 'translate(0 ' + yTranslate + ')';
-            });
+            })//.call(setColumnBlockPositionY);
         if(anchorChanged) {
             window.clearTimeout(d.currentRepaint);
             d.currentRepaint = window.setTimeout(function () {
