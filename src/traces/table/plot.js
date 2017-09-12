@@ -484,12 +484,6 @@ function finalizeYPositionMaker(columnBlock, element, d) {
                 var yPosition = (rectBox.top - box.top + c.cellPad)
                 return 'translate(' + c.cellPad + ' ' + yPosition + ')';
             });
-
-        // translate all downstream cells
-        // if there's no increase, then the subsequent rows don't need to be pushed down
-        if(increase) {
-            translateY(columnCells.selectAll('.columnCell').filter(function(dd) {return dd.key > d.key;}))
-        }
     };
 }
 
