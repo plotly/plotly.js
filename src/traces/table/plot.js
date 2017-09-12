@@ -288,7 +288,7 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
 
             // finalize what's in the DOM
             Drawing.font(selection, d.font);
-            synchronousHeightAndPosition(columnCell);
+            renderHeightAndPosition(columnCell);
             svgUtil.convertToTspans(selection, gd, finalizeYPositionMaker(allColumnBlock, element, d));
         });
 }
@@ -473,8 +473,7 @@ function finalizeYPositionMaker(columnBlock, element, d) {
             columnBlock
                 .call(columnBlockPositionY) // translate all downstream revolver column panels (naturally, max. 1 of 2)
                 .selectAll('.columnCell')
-                .call(setRowHeight) // height increasing stuff in the same row
-                .call(translateY); //downshifting other cells
+                .call(renderHeightAndPosition); //downshifting other cells
         }
 
         cellTextHolder
@@ -494,9 +493,10 @@ function finalizeYPositionMaker(columnBlock, element, d) {
     };
 }
 
-function synchronousHeightAndPosition(columnCell) {
-    columnCell.call(setRowHeight);
-    translateY(columnCell);
+function renderHeightAndPosition(columnCell) {
+    columnCell
+        .call(setRowHeight)
+        .call(translateY);
 }
 
 function setRowHeight(columnCell) {
