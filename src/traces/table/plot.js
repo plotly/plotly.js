@@ -13,7 +13,8 @@ var d3 = require('d3');
 var gup = require('../../lib/gup');
 var Drawing = require('../../components/drawing');
 var extendFlat = require('../../lib/extend').extendFlat;
-var util = require('../../lib/svg_text_utils');
+var svgUtil = require('../../lib/svg_text_utils');
+var raiseToTop = require('../../lib').raiseToTop;
 
 module.exports = function plot(gd, calcdata) {
 
@@ -70,11 +71,13 @@ module.exports = function plot(gd, calcdata) {
         .attr('clip-path', function(d) {return 'url(#columnBoundaryClippath_' + d.specIndex + ')';})
         .call(d3.behavior.drag()
             .origin(function(d) {
-                easeColumn(this, d, -c.uplift);
-                this.parentNode.appendChild(this);
+                var movedColumn = d3.select(this);
+                easeColumn(movedColumn, d, -c.uplift);
+                raiseToTop(this);
                 return d;
             })
             .on('drag', function(d) {
+                var movedColumn = d3.select(this);
                 d.x = Math.max(-c.overdrag, Math.min(d.calcdata.width + c.overdrag - d.columnWidth, d3.event.x));
                 var newOrder = yColumn.data().sort(function(a, b) {return a.x + a.columnWidth / 2 - b.x - b.columnWidth / 2;});
                 newOrder.forEach(function(dd, i) {
@@ -87,14 +90,15 @@ module.exports = function plot(gd, calcdata) {
                     .ease(c.transitionEase)
                     .duration(c.transitionDuration)
                     .attr('transform', function(d) {return 'translate(' + d.x + ' 0)';});
-                d3.select(this)
-                    .transition().duration(0) // this just cancels the easeColumn easing in .origin
+                movedColumn
+                    .call(cancelEeaseColumn)
                     .attr('transform', 'translate(' + d.x + ' -' + c.uplift + ' )');
             })
             .on('dragend', function(d) {
+                var movedColumn = d3.select(this);
                 var p = d.calcdata;
                 d.x = d.xScale(d);
-                easeColumn(this, d, 0);
+                easeColumn(movedColumn, d, 0);
                 columnMoved(gd, calcdata, p.key, p.columns.map(function(dd) {return dd.xIndex;}));
             })
         );
@@ -378,7 +382,7 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
             Drawing.font(selection, d.font);
             columnCell.call(setRowHeight);
             translateY(columnCell);
-            util.convertToTspans(selection, gd, finalizeYPositionMaker(allColumnBlock, element, d));
+            svgUtil.convertToTspans(selection, gd, finalizeYPositionMaker(allColumnBlock, element, d));
         });
 
     // ... therefore all channels for selections above that need to know the height are set below
@@ -422,12 +426,16 @@ function gridPick(spec, col, row) {
     }
 }
 
-function easeColumn(elem, d, y) {
-    d3.select(elem)
+function easeColumn(selection, d, y) {
+    selection
         .transition()
         .ease(c.releaseTransitionEase, 1, .75)
         .duration(c.releaseTransitionDuration)
         .attr('transform', 'translate(' + d.x + ' ' + y + ')');
+}
+
+function cancelEeaseColumn(selection) {
+    selection.transition().duration(0);
 }
 
 function lookup(d) {
