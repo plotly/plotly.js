@@ -191,7 +191,7 @@ module.exports = function plot(gd, calcdata) {
                             }
                         }
 
-                        var yTranslate = d.anchor - scrollY + d.yOffset;
+                        var yTranslate = d.anchor - scrollY + 0 * d.yOffset;
 
                         return 'translate(0 ' + yTranslate + ')';
 
@@ -389,7 +389,7 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
 }
 
 function columnBlockPositionY(columnBlock) {
-    columnBlock.attr('transform', function(d) {return 'translate(0 ' + (d.anchor + d.yOffset) + ')';});
+    columnBlock.attr('transform', function(d) {return 'translate(0 ' + (d.anchor + 0 * d.yOffset) + ')';});
 }
 
 function rowFromTo(d) {
