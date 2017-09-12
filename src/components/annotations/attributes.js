@@ -164,13 +164,16 @@ module.exports = {
         min: 0.3,
         dflt: 1,
         role: 'style',
-        description: 'Sets the size (in px) of annotation arrow head.'
+        description: [
+            'Sets the size of the annotation arrow head, relative to `arrowwidth`.',
+            'A value of 1 (default) gives a head about 3x as wide as the line.'
+        ].join(' ')
     },
     arrowwidth: {
         valType: 'number',
         min: 0.1,
         role: 'style',
-        description: 'Sets the width (in px) of annotation arrow.'
+        description: 'Sets the width (in px) of annotation arrow line.'
     },
     standoff: {
         valType: 'number',
