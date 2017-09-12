@@ -108,39 +108,7 @@ module.exports = function plot(gd, calcdata) {
         .remove();
 
     var columnBlock = yColumn.selectAll('.columnBlock')
-        .data(function(d) {
-            var headerPanel = extendFlat({}, d, {
-                key: 'header',
-                type: 'header',
-                anchor: 0,
-                page: 0,
-                values: d.calcdata.headerCells.values[d.specIndex],
-                rowBlocks: d.calcdata.headerRowBlocks,
-                dragHandle: true,
-                calcdata: extendFlat({}, d.calcdata, {cells: d.calcdata.headerCells})
-            });
-            var revolverPanel1 = extendFlat({}, d, {
-                key: 'cells1',
-                type: 'cells',
-                anchor: 0, // will be mutated on scroll; points to current place
-                page: 0,
-                dragHandle: false,
-                values: d.calcdata.cells.values[d.specIndex],
-                rowBlocks: d.calcdata.rowBlocks
-            });
-            var revolverPanel2 = extendFlat({}, d, {
-                key: 'cells2',
-                anchor: d.calcdata.rowBlocks[1] ? -totalHeight(d.calcdata.rowBlocks[1]) : 0, // will be mutated on scroll; points to current place
-                page: -1,
-                type: 'cells',
-                dragHandle: false,
-                values: d.calcdata.cells.values[d.specIndex],
-                rowBlocks: d.calcdata.rowBlocks
-            });
-            revolverPanel1.otherPanel = revolverPanel2;
-            revolverPanel2.otherPanel = revolverPanel1;
-            return [revolverPanel1, revolverPanel2, headerPanel]; // order due to SVG using painter's algo
-        }, gup.keyFun);
+        .data(splitToPanels, gup.keyFun);
 
     columnBlock.enter()
         .append('g')
@@ -159,51 +127,9 @@ module.exports = function plot(gd, calcdata) {
                 d3.event.stopPropagation();
                 return d;
             })
-            .on('drag', function(d) {
-                var calcdata = d.calcdata;
-                var direction = d3.event.dy < 0 ? 'down' : d3.event.dy > 0 ? 'up' : null;
-                if(!direction) return;
-                calcdata.scrollY -= d3.event.dy;
-                var anchorChanged = false;
-                cellsColumnBlock
-                    .attr('transform', function(d) {
-                        var rowBlocks = d.rowBlocks;
-                        var currentBlock = rowBlocks[d.page];
-                        var blockAnchors = rowBlocks.map(function(v) {return firstRowAnchor(rowBlocks, v);});
-                        var lastBlock = rowBlocks[rowBlocks.length - 1];
-                        var lastRow = lastBlock.rows[lastBlock.rows.length - 1];
-                        var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + totalHeight(n)}, 0);
-                        var scrollHeight =  d.calcdata.groupHeight - headerHeight;
-                        var bottom = firstRowAnchor(rowBlocks, lastBlock) + rowAnchor(lastBlock, lastRow) + lastRow.rowHeight - scrollHeight;
-                        var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
-                        if(d.page < 0 || direction === 'down' && scrollY - d.anchor > totalHeight(currentBlock)) {
-                            if(d.page + 2 < blockAnchors.length) {
-                                d.page += 2;
-                                d.anchor = blockAnchors[d.page];
-                                anchorChanged = d.key;
-                            }
-                        } else if(direction === 'up' &&  d.anchor  > scrollY + scrollHeight) {
-                            if(d.page - 2 >= 0) {
-                                d.page -= 2;
-                                d.anchor = blockAnchors[d.page];
-                                anchorChanged = d.key;
-                            }
-                        }
-
-                        var yTranslate = d.anchor - scrollY;
-
-                        return 'translate(0 ' + yTranslate + ')';
-                    });
-                if(anchorChanged) {
-                    window.clearTimeout(d.currentRepaint);
-                    d.currentRepaint = window.setTimeout(function() {
-                        // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
-                        // some repaints invisible ie. wasteful (DOM work blocks the main thread)
-                        renderColumnBlocks(gd, cellsColumnBlock.filter(function (d) {return d.key === anchorChanged;}), cellsColumnBlock.filter(function (d) {return d.key === anchorChanged;}));
-                    });
-                }
-            })
+            .on('drag', makeDragRow(cellsColumnBlock))
             .on('dragend', function(d) {
+                // fixme emit plotly notification
             })
         );
 
@@ -480,6 +406,95 @@ function firstRowAnchor(rowBlocks, l) {
         total += totalHeight(rowBlocks[i]);
     }
     return total;
+}
+
+function splitToPanels(d) {
+    var headerPanel = extendFlat({}, d, {
+        key: 'header',
+        type: 'header',
+        anchor: 0,
+        page: 0,
+        values: d.calcdata.headerCells.values[d.specIndex],
+        rowBlocks: d.calcdata.headerRowBlocks,
+        dragHandle: true,
+        calcdata: extendFlat({}, d.calcdata, {cells: d.calcdata.headerCells})
+    });
+    var revolverPanel1 = extendFlat({}, d, {
+        key: 'cells1',
+        type: 'cells',
+        anchor: 0, // will be mutated on scroll; points to current place
+        page: 0,
+        dragHandle: false,
+        values: d.calcdata.cells.values[d.specIndex],
+        rowBlocks: d.calcdata.rowBlocks
+    });
+    var revolverPanel2 = extendFlat({}, d, {
+        key: 'cells2',
+        anchor: d.calcdata.rowBlocks[1] ? -totalHeight(d.calcdata.rowBlocks[1]) : 0, // will be mutated on scroll; points to current place
+        page: -1,
+        type: 'cells',
+        dragHandle: false,
+        values: d.calcdata.cells.values[d.specIndex],
+        rowBlocks: d.calcdata.rowBlocks
+    });
+    revolverPanel1.otherPanel = revolverPanel2;
+    revolverPanel2.otherPanel = revolverPanel1;
+    return [revolverPanel1, revolverPanel2, headerPanel]; // order due to SVG using painter's algo
+}
+
+function makeDragRow(cellsColumnBlock) {
+    return function dragRow (d) {
+        var calcdata = d.calcdata;
+        var direction = d3.event.dy < 0 ? 'down' : d3.event.dy > 0 ? 'up' : null;
+        if(!direction) return;
+        calcdata.scrollY -= d3.event.dy;
+        var anchorChanged = false;
+        cellsColumnBlock
+            .attr('transform', function (d) {
+                var rowBlocks = d.rowBlocks;
+                var currentBlock = rowBlocks[d.page];
+                var blockAnchors = rowBlocks.map(function (v) {
+                    return firstRowAnchor(rowBlocks, v);
+                });
+                var lastBlock = rowBlocks[rowBlocks.length - 1];
+                var lastRow = lastBlock.rows[lastBlock.rows.length - 1];
+                var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function (p, n) {
+                    return p + totalHeight(n)
+                }, 0);
+                var scrollHeight = d.calcdata.groupHeight - headerHeight;
+                var bottom = firstRowAnchor(rowBlocks, lastBlock) + rowAnchor(lastBlock, lastRow) + lastRow.rowHeight - scrollHeight;
+                var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
+                if(d.page < 0 || direction === 'down' && scrollY - d.anchor > totalHeight(currentBlock)) {
+                    if(d.page + 2 < blockAnchors.length) {
+                        d.page += 2;
+                        d.anchor = blockAnchors[d.page];
+                        anchorChanged = d.key;
+                    }
+                } else if(direction === 'up' && d.anchor > scrollY + scrollHeight) {
+                    if(d.page - 2 >= 0) {
+                        d.page -= 2;
+                        d.anchor = blockAnchors[d.page];
+                        anchorChanged = d.key;
+                    }
+                }
+
+                var yTranslate = d.anchor - scrollY;
+
+                return 'translate(0 ' + yTranslate + ')';
+            });
+        if(anchorChanged) {
+            window.clearTimeout(d.currentRepaint);
+            d.currentRepaint = window.setTimeout(function () {
+                // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
+                // some repaints invisible ie. wasteful (DOM work blocks the main thread)
+                renderColumnBlocks(gd, cellsColumnBlock.filter(function (d) {
+                    return d.key === anchorChanged;
+                }), cellsColumnBlock.filter(function (d) {
+                    return d.key === anchorChanged;
+                }));
+            });
+        }
+    }
 }
 
 function finalizeYPositionMaker(columnBlock, element, d) {
