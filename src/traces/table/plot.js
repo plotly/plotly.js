@@ -119,8 +119,7 @@ module.exports = function plot(gd, calcdata) {
     var cellsColumnBlock = columnBlock.filter(cellsBlock);
 
     columnBlock
-        .style('cursor', function(d) {return d.dragHandle ? 'ew-resize' : 'ns-resize';})
-        .call(setColumnBlockPositionY);
+        .style('cursor', function(d) {return d.dragHandle ? 'ew-resize' : 'ns-resize';});
 
     cellsColumnBlock
         .call(d3.behavior.drag()
@@ -428,7 +427,7 @@ function makeDragRow(cellsColumnBlock) {
                 var yTranslate = d.anchor - scrollY;
 
                 return 'translate(0 ' + yTranslate + ')';
-            })//.call(setColumnBlockPositionY);
+            });
         if(anchorChanged) {
             window.clearTimeout(d.currentRepaint);
             d.currentRepaint = window.setTimeout(function () {
@@ -462,7 +461,6 @@ function finalizeYPositionMaker(columnBlock, element, d) {
             l.rows[d.key - l.firstRowIndex].rowHeight = finalHeight;
 
             columnBlock
-                .call(setColumnBlockPositionY)
                 .selectAll('.columnCell')
                 .call(setCellHeightAndPositionY);
         }
@@ -486,10 +484,6 @@ function setCellHeightAndPositionY(columnCell) {
         })
         .select('.cellRect')
         .attr('height', rowHeight);
-}
-
-function setColumnBlockPositionY(columnBlock) {
-    columnBlock.attr('transform', function(d) {return 'translate(0 ' + d.anchor + ')';});
 }
 
 function rowOffset(rowBlocks, d, i) {
