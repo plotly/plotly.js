@@ -379,14 +379,6 @@ function splitToCells(d) {
     });
 }
 
-function totalHeight(rowBlock) {
-    var total = 0;
-    for(var i = 0; i < rowBlock.rows.length; i++) {
-        total += rowBlock.rows[i].rowHeight;
-    }
-    return total;
-}
-
 function rowFromTo(d) {
     var rowBlock = d.rowBlocks[d.page];
     // fixme rowBlock truthiness check is due to ugly hack of placing 2nd panel as d.page = -1
@@ -406,11 +398,11 @@ function makeDragRow(cellsColumnBlock) {
             .attr('transform', function (d) {
                 var blocks = d.rowBlocks;
                 var currentBlock = blocks[d.page];
-                var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function (p, n) {return p + totalHeight(n)}, 0);
+                var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
                 var scrollHeight = d.calcdata.groupHeight - headerHeight;
                 var bottom = firstRowAnchor(blocks, blocks.length) - scrollHeight;
                 var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
-                if(d.page < 0 || direction === 'down' && scrollY - d.anchor > totalHeight(currentBlock)) {
+                if(d.page < 0 || direction === 'down' && scrollY - d.anchor > rowsHeight(currentBlock, Infinity)) {
                     if(d.page + 2 < blocks.length) {
                         d.page += 2;
                         d.anchor = firstRowAnchor(blocks, d.page);
@@ -477,8 +469,13 @@ function finalizeYPositionMaker(columnBlock, element, d) {
 }
 
 
-
-
+function rowsHeight(rowBlock, key) {
+    var total = 0;
+    for(var i = 0; i < rowBlock.rows.length && rowBlock.rows[i].rowIndex < key; i++) {
+        total += rowBlock.rows[i].rowHeight;
+    }
+    return total;
+}
 
 function setCellHeightAndPositionY(columnCell) {
 
@@ -486,16 +483,10 @@ function setCellHeightAndPositionY(columnCell) {
         .attr('transform', function(d) {
 
             var l = getBlock(d);
-            var row = getRow(l, d.key)
-
-            var rowAnchor = 0;
-            for(var i = 0; i < l.rows.length; i++) {
-                if(l.rows[i] === row) break;
-                rowAnchor += l.rows[i].rowHeight;
-            }
+            var rowAnchor = rowsHeight(l, d.key);
 
             var rowOffs = rowAnchor + firstRowAnchor(d.rowBlocks, l.key) - d.column.anchor;
-            var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + totalHeight(n)}, 0);
+            var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + rowsHeight(n, Infinity)}, 0);
             var yOffset = rowOffs + headerHeight;
             return 'translate(' + 0 + ' ' + yOffset + ')';
         })
@@ -503,15 +494,10 @@ function setCellHeightAndPositionY(columnCell) {
         .attr('height', rowHeight);
 }
 
-
-
-
-
-
 function firstRowAnchor(rowBlocks, page) {
     var total = 0;
     for(var i = 0; i <= page - 1; i++) {
-        total += totalHeight(rowBlocks[i]);
+        total += rowsHeight(rowBlocks[i], Infinity);
     }
     return total;
 }
