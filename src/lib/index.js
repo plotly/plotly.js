@@ -135,6 +135,13 @@ lib.pauseEvent = function(e) {
     return false;
 };
 
+/**
+ * SVG painter's algo worked around with reinsertion
+ */
+lib.raiseToTop = function raiseToTop(elem) {
+    elem.parentNode.appendChild(elem);
+};
+
 // constrain - restrict a number v to be between v0 and v1
 lib.constrain = function(v, v0, v1) {
     if(v0 > v1) return Math.max(v1, Math.min(v0, v));

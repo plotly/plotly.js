@@ -317,7 +317,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 
         .on('dragstart', function(d) {
             if(d.arrangement === 'fixed') return;
-            this.parentNode.appendChild(this); // bring element to top (painter's algo)
+            Lib.raiseToTop(this);
             d.interactionState.dragInProgress = d.node;
             saveCurrentDragPosition(d.node);
             if(d.interactionState.hovered) {
