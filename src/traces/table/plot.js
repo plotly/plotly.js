@@ -136,7 +136,6 @@ module.exports = function plot(gd, calcdata) {
 
     // initial rendering: header is rendered first, as it may may have async LaTeX (show header first)
     // but blocks are _entered_ the way they are due to painter's algo (header on top)
-
     renderColumnBlocks(gd, columnBlock.filter(headerBlock), columnBlock);
     renderColumnBlocks(gd, columnBlock.filter(cellsBlock), columnBlock);
 
@@ -216,19 +215,7 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
         .remove();
 
     var columnCell = columnCells.selectAll('.columnCell')
-        .data(function(d) {
-            var fromTo = rowFromTo(d);
-            return d.values.slice(fromTo[0], fromTo[1]).map(function(v, i) {
-                return {
-                    key: fromTo[0] + i,
-                    column: d,
-                    calcdata: d.calcdata,
-                    page: d.page,
-                    rowBlocks: d.rowBlocks,
-                    value: v
-                };
-            });
-        }, gup.keyFun);
+        .data(splitToCells, gup.keyFun);
 
     columnCell.enter()
         .append('g')
@@ -441,6 +428,20 @@ function splitToPanels(d) {
     revolverPanel1.otherPanel = revolverPanel2;
     revolverPanel2.otherPanel = revolverPanel1;
     return [revolverPanel1, revolverPanel2, headerPanel]; // order due to SVG using painter's algo
+}
+
+function splitToCells(d) {
+    var fromTo = rowFromTo(d);
+    return d.values.slice(fromTo[0], fromTo[1]).map(function(v, i) {
+        return {
+            key: fromTo[0] + i,
+            column: d,
+            calcdata: d.calcdata,
+            page: d.page,
+            rowBlocks: d.rowBlocks,
+            value: v
+        };
+    });
 }
 
 function makeDragRow(cellsColumnBlock) {
