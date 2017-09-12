@@ -175,7 +175,7 @@ module.exports = function plot(gd, calcdata) {
                         var blockAnchors = rowBlocks.map(function(v) {return v.firstRowAnchor;});
                         var lastBlock = rowBlocks[rowBlocks.length - 1];
                         var lastRow = lastBlock.rows[lastBlock.rows.length - 1];
-                        var bottom = lastBlock.firstRowAnchor + lastRow.rowAnchor + lastRow.rowHeight - d.calcdata.scrollHeight;
+                        var bottom = lastBlock.firstRowAnchor + rowAnchor(lastBlock, lastRow) + lastRow.rowHeight - d.calcdata.scrollHeight;
                         var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
                         if(d.page < 0 || direction === 'down' && scrollY - d.anchor > totalHeight(currentBlock)) {
                             if(d.page + 2 < blockAnchors.length) {
@@ -450,7 +450,7 @@ function setRowHeight(columnCell) {
 
 function rowOffset(d, i) {
     var l = lookup(d);
-    return lookupRow(l, i).rowAnchor + l.firstRowAnchor - d.column.anchor;
+    return rowAnchor(l, lookupRow(l, i)) + l.firstRowAnchor - d.column.anchor;
 }
 
 function rowHeight(d) {
@@ -470,14 +470,12 @@ function totalHeight(rowBlock) {
 }
 
 function rowAnchor(rowBlock, row) {
-    return rowBlock.rows.reduce(function(p,n) {return n.rowHeight + p;}, 0)
-}
-
-function verticalBumpRows(increase, rowIndex, l) {
-    // subsequent rows in block pushed south
-    for(var r = rowIndex + 1; r < l.rows.length; r++) {
-        l.rows[r].rowAnchor += increase;
+    var total = 0;
+    for(var i = 0; i < rowBlock.rows.length; i++) {
+        if(rowBlock.rows[i] === row) break;
+        total += rowBlock.rows[i].rowHeight;
     }
+    return total;
 }
 
 function verticalBumpBlocks(increase, d, xIndex) {
@@ -529,8 +527,6 @@ function finalizeYPositionMaker(columnBlock, element, d) {
             else {
                 verticalBumpBlocks(increase, d, d.column.xIndex);
             }
-
-            verticalBumpRows(increase, rowIndex, l);
 
             columnBlock
                 .call(columnBlockPositionY) // translate all downstream revolver column panels (naturally, max. 1 of 2)
