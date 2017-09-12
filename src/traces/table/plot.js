@@ -126,8 +126,7 @@ module.exports = function plot(gd, calcdata) {
                 page: 0,
                 dragHandle: false,
                 values: d.calcdata.cells.values[d.specIndex],
-                rowBlocks: d.calcdata.rowBlocks,
-                calcdata: d.calcdata
+                rowBlocks: d.calcdata.rowBlocks
             });
             var revolverPanel2 = extendFlat({}, d, {
                 key: 'cells2',
@@ -136,8 +135,7 @@ module.exports = function plot(gd, calcdata) {
                 type: 'cells',
                 dragHandle: false,
                 values: d.calcdata.cells.values[d.specIndex],
-                rowBlocks: d.calcdata.rowBlocks,
-                calcdata: d.calcdata
+                rowBlocks: d.calcdata.rowBlocks
             });
             revolverPanel1.otherPanel = revolverPanel2;
             revolverPanel2.otherPanel = revolverPanel1;
