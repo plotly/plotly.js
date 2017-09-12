@@ -380,19 +380,7 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
         });
 }
 
-function columnBlockPositionY(columnBlock) {
-    columnBlock.attr('transform', function(d) {return 'translate(0 ' + d.anchor + ')';});
-}
-
-function rowFromTo(d) {
-    var rowBlock = d.rowBlocks[d.page];
-    var rowFrom = rowBlock ? rowBlock.rows[0].rowIndex : 0;
-    var rowTo = rowBlock ? rowFrom + rowBlock.rows.length : 0;
-    return [rowFrom, rowTo];
-}
-
 function columnMoved(gd, calcdata, i, indices) {
-
     var o = calcdata[i][0].gdColumnsOriginalOrder;
     calcdata[i][0].gdColumns.sort(function (a, b) {
         return indices[o.indexOf(a)] - indices[o.indexOf(b)];
@@ -424,8 +412,53 @@ function easeColumn(selection, d, y) {
         .attr('transform', 'translate(' + d.x + ' ' + y + ')');
 }
 
-function lookup(d) {
-    return d.rowBlocks[d.page];
+function cellsBlock(d) {return d.type === 'cells';}
+function headerBlock(d) {return d.type === 'header';}
+
+
+/**
+ * The tricky parts
+ */
+
+function lookup(d) {return d.rowBlocks[d.page];}
+function lookupRow(l, i) {return l.rows[i - l.firstRowIndex];}
+
+function rowFromTo(d) {
+    var rowBlock = d.rowBlocks[d.page];
+    var rowFrom = rowBlock ? rowBlock.rows[0].rowIndex : 0;
+    var rowTo = rowBlock ? rowFrom + rowBlock.rows.length : 0;
+    return [rowFrom, rowTo];
+}
+
+function columnBlockPositionY(columnBlock) {
+    columnBlock.attr('transform', function(d) {return 'translate(0 ' + d.anchor + ')';});
+}
+
+function rowOffset(rowBlocks, d, i) {
+    var l = lookup(d);
+    return rowAnchor(l, lookupRow(l, i)) + firstRowAnchor(rowBlocks, l) - d.column.anchor;
+}
+
+function rowHeight(d) {
+    var l = lookup(d);
+    return lookupRow(l, d.key).rowHeight;
+}
+
+function totalHeight(rowBlock) {
+    var total = 0;
+    for(var i = 0; i < rowBlock.rows.length; i++) {
+        total += rowBlock.rows[i].rowHeight;
+    }
+    return total;
+}
+
+function rowAnchor(rowBlock, row) {
+    var total = 0;
+    for(var i = 0; i < rowBlock.rows.length; i++) {
+        if(rowBlock.rows[i] === row) break;
+        total += rowBlock.rows[i].rowHeight;
+    }
+    return total;
 }
 
 function translateY(columCell) {
@@ -445,36 +478,6 @@ function firstRowAnchor(rowBlocks, l) {
     for(var i = 0; i < rowBlocks.length; i++) {
         if(rowBlocks[i] === l) break;
         total += totalHeight(rowBlocks[i]);
-    }
-    return total;
-}
-
-function rowOffset(rowBlocks, d, i) {
-    var l = lookup(d);
-    return rowAnchor(l, lookupRow(l, i)) + firstRowAnchor(rowBlocks, l) - d.column.anchor;
-}
-
-function rowHeight(d) {
-    var l = lookup(d);
-    return lookupRow(l, d.key).rowHeight;
-}
-
-function lookupRow(l, i) {return l.rows[i - l.firstRowIndex];}
-function cellsBlock(d) {return d.type === 'cells';}
-function headerBlock(d) {return d.type === 'header';}
-function totalHeight(rowBlock) {
-    var total = 0;
-    for(var i = 0; i < rowBlock.rows.length; i++) {
-        total += rowBlock.rows[i].rowHeight;
-    }
-    return total;
-}
-
-function rowAnchor(rowBlock, row) {
-    var total = 0;
-    for(var i = 0; i < rowBlock.rows.length; i++) {
-        if(rowBlock.rows[i] === row) break;
-        total += rowBlock.rows[i].rowHeight;
     }
     return total;
 }
