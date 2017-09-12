@@ -107,7 +107,6 @@ module.exports = function plot(gd, calcdata) {
             var headerPanel = extendFlat({}, d, {
                 key: 'header',
                 type: 'header',
-                yOffset: 0,
                 anchor: 0,
                 page: 0,
                 values: d.calcdata.headerCells.values[d.specIndex],
@@ -121,7 +120,6 @@ module.exports = function plot(gd, calcdata) {
                 type: 'cells',
                 anchor: 0, // will be mutated on scroll; points to current place
                 page: 0,
-                yOffset: 0,//d.calcdata.headerHeight,
                 dragHandle: false,
                 values: d.calcdata.cells.values[d.specIndex],
                 rowBlocks: d.calcdata.rowBlocks,
@@ -133,7 +131,6 @@ module.exports = function plot(gd, calcdata) {
                 anchor: d.calcdata.rowBlocks[1] ? -totalHeight(d.calcdata.rowBlocks[1]) : 0, // will be mutated on scroll; points to current place
                 page: -1,
                 type: 'cells',
-                yOffset: 0,//d.calcdata.headerHeight,
                 dragHandle: false,
                 values: d.calcdata.cells.values[d.specIndex],
                 rowBlocks: d.calcdata.rowBlocks,
@@ -175,7 +172,9 @@ module.exports = function plot(gd, calcdata) {
                         var blockAnchors = rowBlocks.map(function(v) {return firstRowAnchor(rowBlocks, v);});
                         var lastBlock = rowBlocks[rowBlocks.length - 1];
                         var lastRow = lastBlock.rows[lastBlock.rows.length - 1];
-                        var bottom = firstRowAnchor(rowBlocks, lastBlock) + rowAnchor(lastBlock, lastRow) + lastRow.rowHeight - d.calcdata.scrollHeight;
+                        var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + totalHeight(n)}, 0);
+                        var scrollHeight =  d.calcdata.groupHeight - headerHeight;
+                        var bottom = firstRowAnchor(rowBlocks, lastBlock) + rowAnchor(lastBlock, lastRow) + lastRow.rowHeight - scrollHeight;
                         var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
                         if(d.page < 0 || direction === 'down' && scrollY - d.anchor > totalHeight(currentBlock)) {
                             if(d.page + 2 < blockAnchors.length) {
@@ -183,7 +182,7 @@ module.exports = function plot(gd, calcdata) {
                                 d.anchor = blockAnchors[d.page];
                                 anchorChanged = d.key;
                             }
-                        } else if(direction === 'up' &&  d.anchor  > scrollY + d.calcdata.scrollHeight) {
+                        } else if(direction === 'up' &&  d.anchor  > scrollY + scrollHeight) {
                             if(d.page - 2 >= 0) {
                                 d.page -= 2;
                                 d.anchor = blockAnchors[d.page];
@@ -191,10 +190,9 @@ module.exports = function plot(gd, calcdata) {
                             }
                         }
 
-                        var yTranslate = d.anchor - scrollY + 0 * d.yOffset;
+                        var yTranslate = d.anchor - scrollY;
 
                         return 'translate(0 ' + yTranslate + ')';
-
                     });
                 if(anchorChanged) {
                     window.clearTimeout(d.currentRepaint);
@@ -389,7 +387,7 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
 }
 
 function columnBlockPositionY(columnBlock) {
-    columnBlock.attr('transform', function(d) {return 'translate(0 ' + (d.anchor + 0 * d.yOffset) + ')';});
+    columnBlock.attr('transform', function(d) {return 'translate(0 ' + d.anchor + ')';});
 }
 
 function rowFromTo(d) {
@@ -439,7 +437,6 @@ function lookup(d) {
 function translateY(columCell) {
     columCell
         .attr('transform', function(d) {
-            //if(d.rowBlocks[0].auxiliaryBlocks.length) debugger
             var yOffset = rowOffset(d.rowBlocks, d, d.key) + d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + totalHeight(n)}, 0);
             return 'translate(' + 0 + ' ' + yOffset + ')';
         });

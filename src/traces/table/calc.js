@@ -67,8 +67,8 @@ module.exports = function calc(gd, trace) {
     var totalColumnWidths = columnWidths.reduce(function(p, n) {return p + n;}, 0);
     columnWidths = columnWidths.map(function(d) {return d / totalColumnWidths * groupWidth;});
 
-    var headerRowHeights = trace.header.values[0].map(function(_, i) {return trace.header.height + 0 * Math.round((i < 0 ? 0 : 25) * (Math.random() - 0.5));});
-    var rowHeights = trace.cells.values[0].map(function(_, i) {return trace.cells.height;});
+    var headerRowHeights = trace.header.values[0].map(function() {return trace.header.height;});
+    var rowHeights = trace.cells.values[0].map(function() {return trace.cells.height;});
     var headerHeight = headerRowHeights.reduce(function(a, b) {return a + b;}, 0);
     var scrollHeight = groupHeight - headerHeight;
     var minimumFillHeight = scrollHeight + c.uplift;
@@ -96,10 +96,7 @@ module.exports = function calc(gd, trace) {
         height: groupHeight,
         columnWidths: columnWidths,
         columnOrder: columnOrder, // will be mutated on column move
-        headerHeight: headerHeight,
-        scrollHeight: scrollHeight,
-        //anchorToRowBlock: anchorToRowBlock,
-        //anchorToHeaderRowBlock: anchorToHeaderRowBlock,
+        groupHeight: groupHeight,
         rowBlocks: rowBlocks,
         headerRowBlocks: headerRowBlocks,
         scrollY: 0, // will be mutated on scroll
