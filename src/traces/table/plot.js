@@ -339,9 +339,9 @@ function splitToPanels(d) {
         type: 'header',
         anchor: 0,
         page: 0,
+        dragHandle: true,
         values: d.calcdata.headerCells.values[d.specIndex],
         rowBlocks: d.calcdata.headerRowBlocks,
-        dragHandle: true,
         calcdata: extendFlat({}, d.calcdata, {cells: d.calcdata.headerCells})
     });
     var revolverPanel1 = extendFlat({}, d, {
@@ -355,9 +355,9 @@ function splitToPanels(d) {
     });
     var revolverPanel2 = extendFlat({}, d, {
         key: 'cells2',
+        type: 'cells',
         anchor: d.calcdata.rowBlocks[1] ? -totalHeight(d.calcdata.rowBlocks[1]) : 0, // will be mutated on scroll; points to current place
         page: -1,
-        type: 'cells',
         dragHandle: false,
         values: d.calcdata.cells.values[d.specIndex],
         rowBlocks: d.calcdata.rowBlocks
