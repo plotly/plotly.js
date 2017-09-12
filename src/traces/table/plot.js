@@ -482,20 +482,19 @@ function finalizeYPositionMaker(columnBlock, element, d) {
 
 function setCellHeightAndPositionY(columnCell) {
 
-    function rowAnchor(rowBlock, row) {
-        var total = 0;
-        for(var i = 0; i < rowBlock.rows.length; i++) {
-            if(rowBlock.rows[i] === row) break;
-            total += rowBlock.rows[i].rowHeight;
-        }
-        return total;
-    }
-
     columnCell
         .attr('transform', function(d) {
 
             var l = getBlock(d);
-            var rowOffs = rowAnchor(l, getRow(l, d.key)) + firstRowAnchor(d.rowBlocks, l.key) - d.column.anchor;
+            var row = getRow(l, d.key)
+
+            var rowAnchr = 0;
+            for(var i = 0; i < l.rows.length; i++) {
+                if(l.rows[i] === row) break;
+                rowAnchr += l.rows[i].rowHeight;
+            }
+
+            var rowOffs = rowAnchr + firstRowAnchor(d.rowBlocks, l.key) - d.column.anchor;
             var yOffset = rowOffs + d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + totalHeight(n)}, 0);
             return 'translate(' + 0 + ' ' + yOffset + ')';
         })
