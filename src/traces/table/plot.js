@@ -406,9 +406,9 @@ function makeDragRow(cellsColumnBlock) {
             .attr('transform', function (d) {
                 var rowBlocks = d.rowBlocks;
                 var currentBlock = rowBlocks[d.page];
-                var blockAnchors = rowBlocks.map(function (v) {
-                    return firstRowAnchor(rowBlocks, v);
-                });
+                var getAnchor = function(rowBlocks, page) {
+                    return firstRowAnchor(rowBlocks, rowBlocks[page])
+                }
                 var lastBlock = rowBlocks[rowBlocks.length - 1];
                 var lastRow = lastBlock.rows[lastBlock.rows.length - 1];
                 var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function (p, n) {
@@ -418,15 +418,15 @@ function makeDragRow(cellsColumnBlock) {
                 var bottom = firstRowAnchor(rowBlocks, lastBlock) + rowAnchor(lastBlock, lastRow) + lastRow.rowHeight - scrollHeight;
                 var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
                 if(d.page < 0 || direction === 'down' && scrollY - d.anchor > totalHeight(currentBlock)) {
-                    if(d.page + 2 < blockAnchors.length) {
+                    if(d.page + 2 < rowBlocks.length) {
                         d.page += 2;
-                        d.anchor = blockAnchors[d.page];
+                        d.anchor = getAnchor(rowBlocks, d.page);//blockAnchors[d.page];
                         anchorChanged = d.key;
                     }
                 } else if(direction === 'up' && d.anchor > scrollY + scrollHeight) {
                     if(d.page - 2 >= 0) {
                         d.page -= 2;
-                        d.anchor = blockAnchors[d.page];
+                        d.anchor = getAnchor(rowBlocks, d.page); //blockAnchors[d.page];
                         anchorChanged = d.key;
                     }
                 }
