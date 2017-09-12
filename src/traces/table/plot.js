@@ -406,27 +406,24 @@ function makeDragRow(cellsColumnBlock) {
             .attr('transform', function (d) {
                 var rowBlocks = d.rowBlocks;
                 var currentBlock = rowBlocks[d.page];
-                var getAnchor = function(rowBlocks, page) {
-                    return firstRowAnchor(rowBlocks, rowBlocks[page])
-                }
                 var lastBlock = rowBlocks[rowBlocks.length - 1];
                 var lastRow = lastBlock.rows[lastBlock.rows.length - 1];
                 var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function (p, n) {
                     return p + totalHeight(n)
                 }, 0);
                 var scrollHeight = d.calcdata.groupHeight - headerHeight;
-                var bottom = firstRowAnchor(rowBlocks, lastBlock) + rowAnchor(lastBlock, lastRow) + lastRow.rowHeight - scrollHeight;
+                var bottom = firstRowAnchor(rowBlocks, lastBlock.key) + rowAnchor(lastBlock, lastRow) + lastRow.rowHeight - scrollHeight;
                 var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
                 if(d.page < 0 || direction === 'down' && scrollY - d.anchor > totalHeight(currentBlock)) {
                     if(d.page + 2 < rowBlocks.length) {
                         d.page += 2;
-                        d.anchor = getAnchor(rowBlocks, d.page);//blockAnchors[d.page];
+                        d.anchor = firstRowAnchor(rowBlocks, d.page);//blockAnchors[d.page];
                         anchorChanged = d.key;
                     }
                 } else if(direction === 'up' && d.anchor > scrollY + scrollHeight) {
                     if(d.page - 2 >= 0) {
                         d.page -= 2;
-                        d.anchor = getAnchor(rowBlocks, d.page); //blockAnchors[d.page];
+                        d.anchor = firstRowAnchor(rowBlocks, d.page); //blockAnchors[d.page];
                         anchorChanged = d.key;
                     }
                 }
@@ -501,7 +498,7 @@ function setColumnBlockPositionY(columnBlock) {
 
 function rowOffset(rowBlocks, d, i) {
     var l = getBlock(d);
-    return rowAnchor(l, getRow(l, i)) + firstRowAnchor(rowBlocks, l) - d.column.anchor;
+    return rowAnchor(l, getRow(l, i)) + firstRowAnchor(rowBlocks, l.key) - d.column.anchor;
 }
 
 function rowAnchor(rowBlock, row) {
@@ -513,10 +510,9 @@ function rowAnchor(rowBlock, row) {
     return total;
 }
 
-function firstRowAnchor(rowBlocks, l) {
+function firstRowAnchor(rowBlocks, page) {
     var total = 0;
-    for(var i = 0; i < rowBlocks.length; i++) {
-        if(rowBlocks[i] === l) break;
+    for(var i = 0; i <= page - 1; i++) {
         total += totalHeight(rowBlocks[i]);
     }
     return total;
