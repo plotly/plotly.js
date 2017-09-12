@@ -358,9 +358,7 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
         .append('text')
         .classed('cellText', true);
 
-    // it is only in this leaf selection that the actual cell height can be recovered...
     cellText
-    //.attr('alignment-baseline', 'hanging')
         .text(function(d) {
             var col = d.column.specIndex;
             var row = d.rowNumber;
@@ -380,10 +378,6 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
             translateY(columnCell);
             svgUtil.convertToTspans(selection, gd, finalizeYPositionMaker(allColumnBlock, element, d));
         });
-
-    // ... therefore all channels for selections above that need to know the height are set below
-    // It's not clear from the variable bindings: `enter` ordering is also driven by the painter's algo that SVG uses
-
 }
 
 function columnBlockPositionY(columnBlock) {
