@@ -172,10 +172,10 @@ module.exports = function plot(gd, calcdata) {
                     .attr('transform', function(d) {
                         var rowBlocks = d.rowBlocks;
                         var currentBlock = rowBlocks[d.page];
-                        var blockAnchors = rowBlocks.map(function(v) {return v.firstRowAnchor;});
+                        var blockAnchors = rowBlocks.map(function(v) {return firstRowAnchor(v);});
                         var lastBlock = rowBlocks[rowBlocks.length - 1];
                         var lastRow = lastBlock.rows[lastBlock.rows.length - 1];
-                        var bottom = lastBlock.firstRowAnchor + rowAnchor(lastBlock, lastRow) + lastRow.rowHeight - d.calcdata.scrollHeight;
+                        var bottom = firstRowAnchor(lastBlock) + rowAnchor(lastBlock, lastRow) + lastRow.rowHeight - d.calcdata.scrollHeight;
                         var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
                         if(d.page < 0 || direction === 'down' && scrollY - d.anchor > totalHeight(currentBlock)) {
                             if(d.page + 2 < blockAnchors.length) {
@@ -448,9 +448,13 @@ function setRowHeight(columnCell) {
     columnCell.select('.cellRect').attr('height', rowHeight);
 }
 
+function firstRowAnchor(l) {
+    return l.firstRowAnchr;
+}
+
 function rowOffset(d, i) {
     var l = lookup(d);
-    return rowAnchor(l, lookupRow(l, i)) + l.firstRowAnchor - d.column.anchor;
+    return rowAnchor(l, lookupRow(l, i)) + firstRowAnchor(l) - d.column.anchor;
 }
 
 function rowHeight(d) {
@@ -482,7 +486,7 @@ function verticalBumpBlocks(increase, d, xIndex) {
     // subsequent blocks pushed down
     if(xIndex === 1) {
         for(var p = d.page + 1; p < d.rowBlocks.length; p++) {
-            d.rowBlocks[p].firstRowAnchor += increase;
+            d.rowBlocks[p].firstRowAnchr += increase;
         }
     }
 }
@@ -491,7 +495,7 @@ function verticalBumpBlocksAll(increase, d, xIndex) {
     // subsequent blocks pushed down
     if(xIndex === 0) {
         for(var p = 0; p < d.rowBlocks.length; p++) {
-            d.rowBlocks[p].firstRowAnchor += increase;
+            d.rowBlocks[p].firstRowAnchr += increase;
         }
     }
 }
