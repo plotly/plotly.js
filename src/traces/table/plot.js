@@ -15,6 +15,7 @@ var Drawing = require('../../components/drawing');
 var extendFlat = require('../../lib/extend').extendFlat;
 var svgUtil = require('../../lib/svg_text_utils');
 var raiseToTop = require('../../lib').raiseToTop;
+var cancelEeaseColumn = require('../../lib').cancelTransition;
 
 module.exports = function plot(gd, calcdata) {
 
@@ -432,10 +433,6 @@ function easeColumn(selection, d, y) {
         .ease(c.releaseTransitionEase, 1, .75)
         .duration(c.releaseTransitionDuration)
         .attr('transform', 'translate(' + d.x + ' ' + y + ')');
-}
-
-function cancelEeaseColumn(selection) {
-    selection.transition().duration(0);
 }
 
 function lookup(d) {
