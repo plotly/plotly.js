@@ -8,7 +8,6 @@
 
 'use strict';
 
-var extendFlat = require('../../lib/extend').extendFlat;
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../../components/color/attributes');
 
