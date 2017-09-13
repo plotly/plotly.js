@@ -7,6 +7,7 @@
 #### Spots are still available for a 2 day, Plotly.js master class in NYC, November 16-17. 
 #### [Registration here](https://plotcon.plot.ly/workshops) 🎨 📈 🗽
 
+***
 
 Built on top of [d3.js](http://d3js.org/) and [stack.gl](http://stack.gl/),
 plotly.js is a high-level, declarative charting library. plotly.js ships with over 20
