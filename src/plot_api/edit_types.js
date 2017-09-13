@@ -8,6 +8,10 @@
 
 'use strict';
 
+var Lib = require('../lib');
+var extendFlat = Lib.extendFlat;
+var isPlainObject = Lib.isPlainObject;
+
 module.exports = {
     /*
      * default (all false) edit flags for restyle (traces)
@@ -54,5 +58,53 @@ module.exports = {
                 flags[editTypeParts[i]] = true;
             }
         }
-    }
+    },
+
+    overrideAll: overrideAll
 };
+
+/*
+ * For attributes that are largely copied from elsewhere into a plot type that doesn't
+ * support partial redraws - overrides the editType field of all attributes in the object
+ *
+ * @param {object} attrs: the attributes to override. Will not be mutated.
+ * @param {string} editTypeOverride: the new editType to use
+ * @param {bool|'nested'} overrideContainers: should we override editType for containers or just
+ *   `valObject`s? 'nested' will override editType for all but the top level. Containers below
+ *   the absolute top level (trace or layout root) DO need an editType, to handle the case
+ *   where you edit the whole container, but in some cases you want to provide it explicitly
+ *   as it may be more expansive than the attribute editTypes, since you don't know if there
+ *   is a data array in the container (which if provided directly triggers an automatic docalc)
+ */
+function overrideAll(attrs, editTypeOverride, overrideContainers) {
+    var out = extendFlat({}, attrs);
+    for(var key in out) {
+        var attr = out[key];
+        if(isPlainObject(attr)) {
+            out[key] = overrideOne(attr, editTypeOverride, overrideContainers, key);
+        }
+    }
+    if(overrideContainers === true) out.editType = editTypeOverride;
+
+    return out;
+}
+
+function overrideOne(attr, editTypeOverride, overrideContainers, key) {
+    if(attr.valType) {
+        var out = extendFlat({}, attr);
+        out.editType = editTypeOverride;
+
+        if(Array.isArray(attr.items)) {
+            out.items = new Array(attr.items.length);
+            for(var i = 0; i < attr.items.length; i++) {
+                out.items[i] = overrideOne(attr.items[i], editTypeOverride, !!overrideContainers);
+            }
+        }
+        return out;
+    }
+    else {
+        // don't provide an editType for the _deprecated container
+        return overrideAll(attr, editTypeOverride,
+            (key.charAt(0) === '_') ? overrideContainers && 'nested' : !!overrideContainers);
+    }
+}
