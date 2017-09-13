@@ -384,6 +384,10 @@ function rowFromTo(d) {
     return [rowFrom, rowTo];
 }
 
+function overlap(a, b) {
+    return a[0] < b[1] && a[1] > b[0];
+}
+
 function makeDragRow(cellsColumnBlock) {
     return function dragRow (d) {
         var calcdata = d.calcdata;
@@ -400,6 +404,15 @@ function makeDragRow(cellsColumnBlock) {
                 var bottom = firstRowAnchor(blocks, blocks.length);
                 var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom - scrollHeight, calcdata.scrollY));
                 var dAnchor = firstRowAnchor(blocks, d.page);
+                var pages = [];
+                for(var p = 0; p < blocks.length; p++) {
+                    var pTop = firstRowAnchor(blocks, p);
+                    var pBottom = pTop + rowsHeight(blocks[p], Infinity);
+                    if(overlap([scrollY, scrollY + scrollHeight], [pTop, pBottom])) {
+                        pages.push(p);
+                    }
+                }
+                console.log('pages:', pages);
                 if(d.page < 0 || direction === 'down' && scrollY - dAnchor > rowsHeight(currentBlock, Infinity)) {
                     if(d.page + 2 < blocks.length) {
                         d.page += 2;
