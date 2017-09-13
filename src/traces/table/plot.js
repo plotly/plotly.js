@@ -393,7 +393,7 @@ function makeDragRow(cellsColumnBlock) {
         var direction = d3.event.dy < 0 ? 'down' : d3.event.dy > 0 ? 'up' : null;
         if(!direction) return;
         calcdata.scrollY -= d3.event.dy;
-        var anchorChanged = false;
+        var anchorsChanged = [];
         cellsColumnBlock
             .attr('transform', function (d) {
                 var blocks = d.rowBlocks;
@@ -406,13 +406,13 @@ function makeDragRow(cellsColumnBlock) {
                     if(d.page + 2 < blocks.length) {
                         d.page += 2;
                         d.anchor = firstRowAnchor(blocks, d.page);
-                        anchorChanged = d.key;
+                        anchorsChanged.push(d.key);
                     }
                 } else if(direction === 'up' && d.anchor > scrollY + scrollHeight) {
                     if(d.page - 2 >= 0) {
                         d.page -= 2;
                         d.anchor = firstRowAnchor(blocks, d.page);
-                        anchorChanged = d.key;
+                        anchorsChanged.push(d.key);
                     }
                 }
 
@@ -420,15 +420,15 @@ function makeDragRow(cellsColumnBlock) {
 
                 return 'translate(0 ' + yTranslate + ')';
             });
-        if(anchorChanged) {
+        if(anchorsChanged.length) {
             window.clearTimeout(d.currentRepaint);
             d.currentRepaint = window.setTimeout(function () {
                 // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
                 // some repaints invisible ie. wasteful (DOM work blocks the main thread)
                 renderColumnBlocks(gd, cellsColumnBlock.filter(function (d) {
-                    return d.key === anchorChanged;
+                    return anchorsChanged.indexOf(d.key) !== -1;
                 }), cellsColumnBlock.filter(function (d) {
-                    return d.key === anchorChanged;
+                    return anchorsChanged.indexOf(d.key) !== -1;
                 }));
             });
         }
@@ -477,7 +477,7 @@ function setCellHeightAndPositionY(columnCell) {
             var l = getBlock(d);
             var rowAnchor = rowsHeight(l, d.key);
 
-            var rowOffs = rowAnchor + firstRowAnchor(d.rowBlocks, l.key) - d.column.anchor;
+            var rowOffs = firstRowAnchor(d.rowBlocks, l.key) + rowAnchor - d.column.anchor;
             var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + rowsHeight(n, Infinity)}, 0);
             var yOffset = rowOffs + headerHeight;
             return 'translate(' + 0 + ' ' + yOffset + ')';
