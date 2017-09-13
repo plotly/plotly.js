@@ -104,7 +104,6 @@ function ordinalScale(dimension) {
 }
 
 function unitToColorScale(cscale) {
-
     var colorStops = cscale.map(function(d) {return d[0];});
     var colorStrings = cscale.map(function(d) {return d[1];});
     var colorTuples = colorStrings.map(function(c) {return d3.rgb(c);});
