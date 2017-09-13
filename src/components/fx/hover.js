@@ -580,24 +580,27 @@ function createHoverText(hoverData, opts, gd) {
             ltext = label.selectAll('text').data([0]);
 
         lpath.enter().append('path')
-            .style({
-                fill: commonLabelOpts.bgcolor || Color.defaultLine,
-                stroke: commonLabelOpts.bordercolor || Color.background,
-                'stroke-width': '1px'
-            });
+            .style({'stroke-width': '1px'});
+
+        lpath.style({
+            fill: commonLabelOpts.bgcolor || Color.defaultLine,
+            stroke: commonLabelOpts.bordercolor || Color.background,
+        });
+
         ltext.enter().append('text')
-            .call(Drawing.font,
-                commonLabelOpts.font.family || fontFamily,
-                commonLabelOpts.font.size || fontSize,
-                commonLabelOpts.font.color || Color.background
-             )
             // prohibit tex interpretation until we can handle
             // tex and regular text together
             .attr('data-notex', 1);
 
         ltext.text(t0)
+            .call(Drawing.font,
+                commonLabelOpts.font.family || fontFamily,
+                commonLabelOpts.font.size || fontSize,
+                commonLabelOpts.font.color || Color.background
+             )
             .call(svgTextUtils.positionText, 0, 0)
             .call(svgTextUtils.convertToTspans, gd);
+
         label.attr('transform', '');
 
         var tbb = ltext.node().getBoundingClientRect();
