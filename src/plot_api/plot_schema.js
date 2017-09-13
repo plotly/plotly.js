@@ -100,23 +100,31 @@ exports.get = function() {
  *  The decision to not use callback return values for controlling tree pruning arose from
  *  the goal of keeping the crawler backwards compatible. Observe that one of the pruning conditions
  *  precedes the callback call.
+ * @param {string} [attrString]
+ *  the path to the current attribute, as an attribute string (ie 'marker.line')
+ *  typically unsupplied, but you may supply it if you want to disambiguate which attrs tree you
+ *  are starting from
  *
  * @return {object} transformOut
  *  copy of transformIn that contains attribute defaults
  */
-exports.crawl = function(attrs, callback, specifiedLevel) {
+exports.crawl = function(attrs, callback, specifiedLevel, attrString) {
     var level = specifiedLevel || 0;
+    attrString = attrString || '';
 
     Object.keys(attrs).forEach(function(attrName) {
         var attr = attrs[attrName];
 
         if(UNDERSCORE_ATTRS.indexOf(attrName) !== -1) return;
 
-        callback(attr, attrName, attrs, level);
+        var fullAttrString = (attrString ? attrString + '.' : '') + attrName;
+        callback(attr, attrName, attrs, level, fullAttrString);
 
         if(exports.isValObject(attr)) return;
 
-        if(Lib.isPlainObject(attr)) exports.crawl(attr, callback, level + 1);
+        if(Lib.isPlainObject(attr)) {
+            exports.crawl(attr, callback, level + 1, fullAttrString);
+        }
     });
 };
 
