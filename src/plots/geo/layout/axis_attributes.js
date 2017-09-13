@@ -57,5 +57,6 @@ module.exports = {
         description: [
             'Sets the graticule\'s stroke width (in px).'
         ].join(' ')
-    }
+    },
+    editType: 'doplot'
 };

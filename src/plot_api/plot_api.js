@@ -20,6 +20,7 @@ var Events = require('../lib/events');
 var Queue = require('../lib/queue');
 
 var Registry = require('../registry');
+var PlotSchema = require('./plot_schema');
 var Plots = require('../plots/plots');
 var Polar = require('../plots/polar');
 var initInteractions = require('../plots/cartesian/graph_interact');
@@ -1339,120 +1340,11 @@ function _restyle(gd, aobj, _traces) {
         axlist,
         flagAxForDelete = {};
 
-    // recalcAttrs attributes need a full regeneration of calcdata
-    // as well as a replot, because the right objects may not exist,
-    // or autorange may need recalculating
-    // in principle we generally shouldn't need to redo ALL traces... that's
-    // harder though.
-    var recalcAttrs = [
-        'mode', 'visible', 'type', 'orientation', 'fill',
-        'histfunc', 'histnorm', 'text',
-        'x', 'y', 'z',
-        'a', 'b', 'c',
-        'open', 'high', 'low', 'close',
-        'base', 'width', 'offset',
-        'xtype', 'x0', 'dx', 'ytype', 'y0', 'dy', 'xaxis', 'yaxis',
-        'line.width',
-        'connectgaps', 'transpose', 'zsmooth',
-        'showscale', 'marker.showscale',
-        'zauto', 'marker.cauto',
-        'autocolorscale', 'marker.autocolorscale',
-        'colorscale', 'marker.colorscale',
-        'reversescale', 'marker.reversescale',
-        'autobinx', 'nbinsx', 'xbins', 'xbins.start', 'xbins.end', 'xbins.size',
-        'autobiny', 'nbinsy', 'ybins', 'ybins.start', 'ybins.end', 'ybins.size',
-        'error_y', 'error_y.visible', 'error_y.value', 'error_y.type',
-        'error_y.traceref', 'error_y.array', 'error_y.symmetric',
-        'error_y.arrayminus', 'error_y.valueminus', 'error_y.tracerefminus',
-        'error_x', 'error_x.visible', 'error_x.value', 'error_x.type',
-        'error_x.traceref', 'error_x.array', 'error_x.symmetric',
-        'error_x.arrayminus', 'error_x.valueminus', 'error_x.tracerefminus',
-        'swapxy', 'swapxyaxes', 'orientationaxes',
-        'marker.colors', 'values', 'labels', 'label0', 'dlabel', 'sort',
-        'textinfo', 'textposition', 'textfont.size', 'textfont.family', 'textfont.color',
-        'insidetextfont.size', 'insidetextfont.family', 'insidetextfont.color',
-        'outsidetextfont.size', 'outsidetextfont.family', 'outsidetextfont.color',
-        'hole', 'scalegroup', 'domain', 'domain.x', 'domain.y',
-        'domain.x[0]', 'domain.x[1]', 'domain.y[0]', 'domain.y[1]',
-        'tilt', 'tiltaxis', 'depth', 'direction', 'rotation', 'pull',
-        'line.showscale', 'line.cauto', 'line.autocolorscale', 'line.reversescale',
-        'marker.line.showscale', 'marker.line.cauto', 'marker.line.autocolorscale', 'marker.line.reversescale',
-        'xcalendar', 'ycalendar',
-        'cumulative', 'cumulative.enabled', 'cumulative.direction', 'cumulative.currentbin',
-        'a0', 'da', 'b0', 'db', 'atype', 'btype',
-        'cheaterslope', 'carpet', 'sum',
-    ];
-
-    var carpetAxisAttributes = [
-        'color', 'smoothing', 'title', 'titlefont', 'titlefont.size', 'titlefont.family',
-        'titlefont.color', 'titleoffset', 'type', 'autorange', 'rangemode', 'range',
-        'fixedrange', 'cheatertype', 'tickmode', 'nticks', 'tickvals', 'ticktext',
-        'ticks', 'mirror', 'ticklen', 'tickwidth', 'tickcolor', 'showticklabels',
-        'tickfont', 'tickfont.size', 'tickfont.family', 'tickfont.color', 'tickprefix',
-        'showtickprefix', 'ticksuffix', 'showticksuffix', 'showexponent', 'exponentformat',
-        'separatethousands', 'tickformat', 'categoryorder', 'categoryarray', 'labelpadding',
-        'labelprefix', 'labelsuffix', 'labelfont', 'labelfont.family', 'labelfont.size',
-        'labelfont.color', 'showline', 'linecolor', 'linewidth', 'gridcolor', 'gridwidth',
-        'showgrid', 'minorgridcount', 'minorgridwidth', 'minorgridcolor', 'startline',
-        'startlinecolor', 'startlinewidth', 'endline', 'endlinewidth', 'endlinecolor',
-        'tick0', 'dtick', 'arraytick0', 'arraydtick', 'hoverformat', 'tickangle'
-    ];
-
-    for(i = 0; i < carpetAxisAttributes.length; i++) {
-        recalcAttrs.push('aaxis.' + carpetAxisAttributes[i]);
-        recalcAttrs.push('baxis.' + carpetAxisAttributes[i]);
-    }
-
-    for(i = 0; i < traces.length; i++) {
-        if(Registry.traceIs(fullData[traces[i]], 'box')) {
-            recalcAttrs.push('name');
-            break;
-        }
-    }
-
-    // autorangeAttrs attributes need a full redo of calcdata
-    // only if an axis is autoranged,
-    // because .calc() is where the autorange gets determined
-    // TODO: could we break this out as well?
-    var autorangeAttrs = [
-        'marker', 'marker.size', 'textfont',
-        'boxpoints', 'jitter', 'pointpos', 'whiskerwidth', 'boxmean',
-        'tickwidth'
-    ];
-
-    // replotAttrs attributes need a replot (because different
-    // objects need to be made) but not a recalc
-    var replotAttrs = [
-        'zmin', 'zmax', 'zauto',
-        'xgap', 'ygap',
-        'marker.cmin', 'marker.cmax', 'marker.cauto',
-        'line.cmin', 'line.cmax',
-        'marker.line.cmin', 'marker.line.cmax',
-        'line', 'line.smoothing', 'line.shape',
-        'error_y.width', 'error_x.width', 'error_x.copy_ystyle',
-        'marker.maxdisplayed'
-    ];
-
     // these ones may alter the axis type
     // (at least if the first trace is involved)
     var axtypeAttrs = [
         'type', 'x', 'y', 'x0', 'y0', 'orientation', 'xaxis', 'yaxis'
     ];
-
-    var zscl = ['zmin', 'zmax'],
-        cscl = ['cmin', 'cmax'],
-        mcscl = ['marker.cmin', 'marker.cmax'],
-        mlcscl = ['marker.line.cmin', 'marker.line.cmax'],
-        xbins = ['xbins.start', 'xbins.end', 'xbins.size'],
-        ybins = ['ybins.start', 'ybins.end', 'ybins.size'],
-        contourAttrs = ['contours.start', 'contours.end', 'contours.size'];
-
-    // At the moment, only cartesian, pie and ternary plot types can afford
-    // to not go through a full replot
-    var doPlotWhiteList = ['cartesian', 'pie', 'ternary'];
-    fullLayout._basePlotModules.forEach(function(_module) {
-        if(doPlotWhiteList.indexOf(_module.name) === -1) flags.docalc = true;
-    });
 
     // make a new empty vals array for undoit
     function a0() { return traces.map(function() { return undefined; }); }
@@ -1510,7 +1402,8 @@ function _restyle(gd, aobj, _traces) {
             contFull,
             param,
             oldVal,
-            newVal;
+            newVal,
+            valObject;
 
         redoit[ai] = vi;
 
@@ -1537,79 +1430,14 @@ function _restyle(gd, aobj, _traces) {
 
             if(newVal === undefined) continue;
 
-            // setting bin or z settings should turn off auto
-            // and setting auto should save bin or z settings
-            if(zscl.indexOf(ai) !== -1) {
-                doextra('zauto', false, i);
+            valObject = PlotSchema.getTraceValObject(contFull, param.parts);
+
+            if(valObject && valObject.impliedEdits && newVal !== null) {
+                for(var impliedKey in valObject.impliedEdits) {
+                    doextra(Lib.relativeAttr(ai, impliedKey), valObject.impliedEdits[impliedKey], i);
+                }
             }
-            else if(ai === 'zauto') {
-                doextra(zscl, undefined, i);
-            }
-            else if(cscl.indexOf(ai) !== -1) {
-                doextra('cauto', false, i);
-            }
-            else if(ai === 'cauto') {
-                doextra(cscl, undefined, i);
-            }
-            else if(mcscl.indexOf(ai) !== -1) {
-                doextra('marker.cauto', false, i);
-            }
-            else if(ai === 'marker.cauto') {
-                doextra(mcscl, undefined, i);
-            }
-            else if(mlcscl.indexOf(ai) !== -1) {
-                doextra('marker.line.cauto', false, i);
-            }
-            else if(ai === 'marker.line.cauto') {
-                doextra(mlcscl, undefined, i);
-            }
-            else if(ai === 'colorscale') {
-                doextra('autocolorscale', false, i);
-            }
-            else if(ai === 'autocolorscale') {
-                doextra('colorscale', undefined, i);
-            }
-            else if(ai === 'marker.colorscale') {
-                doextra('marker.autocolorscale', false, i);
-            }
-            else if(ai === 'marker.autocolorscale') {
-                doextra('marker.colorscale', undefined, i);
-            }
-            else if(ai === 'marker.line.colorscale') {
-                doextra('marker.line.autocolorscale', false, i);
-            }
-            else if(ai === 'marker.line.autocolorscale') {
-                doextra('marker.line.colorscale', undefined, i);
-            }
-            else if(xbins.indexOf(ai) !== -1) {
-                doextra('autobinx', false, i);
-            }
-            else if(ai === 'autobinx') {
-                doextra(xbins, undefined, i);
-            }
-            else if(ybins.indexOf(ai) !== -1) {
-                doextra('autobiny', false, i);
-            }
-            else if(ai === 'autobiny') {
-                doextra(ybins, undefined, i);
-            }
-            else if(contourAttrs.indexOf(ai) !== -1) {
-                doextra('autocontour', false, i);
-            }
-            else if(ai === 'autocontour') {
-                doextra(contourAttrs, undefined, i);
-            }
-            // heatmaps: setting x0 or dx, y0 or dy,
-            // should turn xtype/ytype to 'scaled' if 'array'
-            // TODO: support xtype/ytype for scatter too? bar?
-            else if(['x0', 'dx'].indexOf(ai) !== -1 &&
-                    contFull.x && contFull.xtype !== 'scaled') {
-                doextra('xtype', 'scaled', i);
-            }
-            else if(['y0', 'dy'].indexOf(ai) !== -1 &&
-                    contFull.y && contFull.ytype !== 'scaled') {
-                doextra('ytype', 'scaled', i);
-            }
+
             // changing colorbar size modes,
             // make the resulting size not change
             // note that colorbar fractional sizing is based on the
@@ -1692,41 +1520,20 @@ function _restyle(gd, aobj, _traces) {
                 flags.docalc = true;
             }
             else {
-                var aiHead = param.parts[0];
-                var moduleAttrs = (contFull._module || {}).attributes;
-                var valObject = moduleAttrs && moduleAttrs[aiHead];
-                if(!valObject) valObject = Plots.attributes[aiHead];
                 if(valObject) {
-                    /*
-                     * In occasional cases we can't the innermost valObject
-                     * doesn't exist, for example `valType: 'any'` items like
-                     * contourcarpet `contours.value` where we might set
-                     * `contours.value[0]`. In that case, stop at the deepest
-                     * valObject we *do* find.
-                     */
-                    for(var parti = 1; parti < param.parts.length; parti++) {
-                        var newValObject = valObject[param.parts[parti]];
-                        if(newValObject) valObject = newValObject;
-                        else break;
-                    }
-
-                    /*
-                     * must redo calcdata when restyling:
-                     * 1) array values of arrayOk attributes
-                     * 2) a container object (it would be hard to tell what
-                     *    pieces changed, whether any are arrays, so to be
-                     *    safe we need to recalc)
-                     */
-                    if(!valObject.valType || (valObject.arrayOk && (Array.isArray(newVal) || Array.isArray(oldVal)))) {
+                    // must redo calcdata when restyling array values of arrayOk attributes
+                    if(valObject.arrayOk && (Array.isArray(newVal) || Array.isArray(oldVal))) {
                         flags.docalc = true;
                     }
-
-                    // some attributes declare an 'editType' flaglist
-                    editTypes.update(flags, valObject);
+                    else editTypes.update(flags, valObject);
                 }
                 else {
-                    // if we couldn't find valObject even at the root,
-                    // assume a full recalc.
+                    /*
+                     * if we couldn't find valObject,  assume a full recalc.
+                     * This can happen if you're changing type and making
+                     * some other edits too, so the modules we're
+                     * looking at don't have these attributes in them.
+                     */
                     flags.docalc = true;
                 }
 
@@ -1753,53 +1560,27 @@ function _restyle(gd, aobj, _traces) {
         // check if we need to call axis type
         if((traces.indexOf(0) !== -1) && (axtypeAttrs.indexOf(ai) !== -1)) {
             Plotly.Axes.clearTypes(gd, traces);
-            flags.docalc = true;
         }
 
-        // switching from auto to manual binning or z scaling doesn't
-        // actually do anything but change what you see in the styling
-        // box. everything else at least needs to apply styles
-        if((['autobinx', 'autobiny', 'zauto'].indexOf(ai) === -1) ||
-                newVal !== false) {
-            flags.dostyle = true;
-        }
-        if(['colorbar', 'line'].indexOf(param.parts[0]) !== -1 ||
-            param.parts[0] === 'marker' && param.parts[1] === 'colorbar') {
-            flags.docolorbars = true;
-        }
+        // major enough changes deserve autoscale, autobin, and
+        // non-reversed axes so people don't get confused
+        if(['orientation', 'type'].indexOf(ai) !== -1) {
+            axlist = [];
+            for(i = 0; i < traces.length; i++) {
+                var trace = data[traces[i]];
 
-        var aiArrayStart = ai.indexOf('['),
-            aiAboveArray = aiArrayStart === -1 ? ai : ai.substr(0, aiArrayStart);
+                if(Registry.traceIs(trace, 'cartesian')) {
+                    addToAxlist(trace.xaxis || 'x');
+                    addToAxlist(trace.yaxis || 'y');
 
-        if(recalcAttrs.indexOf(aiAboveArray) !== -1) {
-            // major enough changes deserve autoscale, autobin, and
-            // non-reversed axes so people don't get confused
-            if(['orientation', 'type'].indexOf(ai) !== -1) {
-                axlist = [];
-                for(i = 0; i < traces.length; i++) {
-                    var trace = data[traces[i]];
-
-                    if(Registry.traceIs(trace, 'cartesian')) {
-                        addToAxlist(trace.xaxis || 'x');
-                        addToAxlist(trace.yaxis || 'y');
-
-                        if(ai === 'type') {
-                            doextra(['autobinx', 'autobiny'], true, i);
-                        }
+                    if(ai === 'type') {
+                        doextra(['autobinx', 'autobiny'], true, i);
                     }
                 }
-
-                doextra(axlist.map(autorangeAttr), true, 0);
-                doextra(axlist.map(rangeAttr), [0, 1], 0);
             }
-            flags.docalc = true;
 
-        } else if(replotAttrs.indexOf(aiAboveArray) !== -1) {
-            flags.doplot = true;
-        } else if(aiAboveArray.indexOf('aaxis') === 0 || aiAboveArray.indexOf('baxis') === 0) {
-            flags.doplot = true;
-        } else if(autorangeAttrs.indexOf(aiAboveArray) !== -1) {
-            flags.docalcAutorange = true;
+            doextra(axlist.map(autorangeAttr), true, 0);
+            doextra(axlist.map(rangeAttr), [0, 1], 0);
         }
     }
 
@@ -2025,7 +1806,6 @@ function _relayout(gd, aobj) {
             // p.parts may end with an index integer if the property is an array
             pend = typeof p.parts[plen - 1] === 'string' ? (plen - 1) : (plen - 2),
             // last property in chain (leaf node)
-            proot = p.parts[0],
             pleaf = p.parts[pend],
             // leaf plus immediate parent
             pleafPlus = p.parts[pend - 1] + '.' + pleaf,
@@ -2043,6 +1823,14 @@ function _relayout(gd, aobj) {
         // op and has no flag.
         undoit[ai] = (pleaf === 'reverse') ? vi : undefinedToNull(vOld);
 
+        var valObject = PlotSchema.getLayoutValObject(fullLayout, p.parts);
+
+        if(valObject && valObject.impliedEdits && vi !== null) {
+            for(var impliedKey in valObject.impliedEdits) {
+                doextra(Lib.relativeAttr(ai, impliedKey), valObject.impliedEdits[impliedKey]);
+            }
+        }
+
         // Setting width or height to null must reset the graph's width / height
         // back to its initial value as computed during the first pass in Plots.plotAutoSize.
         //
@@ -2052,13 +1840,10 @@ function _relayout(gd, aobj) {
         }
         // check autorange vs range
         else if(pleafPlus.match(/^[xyz]axis[0-9]*\.range(\[[0|1]\])?$/)) {
-            doextra(ptrunk + '.autorange', false);
             recordAlteredAxis(pleafPlus);
             Lib.nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
         }
         else if(pleafPlus.match(/^[xyz]axis[0-9]*\.autorange$/)) {
-            doextra([ptrunk + '.range[0]', ptrunk + '.range[1]'],
-                undefined);
             recordAlteredAxis(pleafPlus);
             Lib.nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
             var axFull = Lib.nestedProperty(fullLayout, ptrunk).get();
@@ -2070,34 +1855,6 @@ function _relayout(gd, aobj) {
         }
         else if(pleafPlus.match(/^[xyz]axis[0-9]*\.domain(\[[0|1]\])?$/)) {
             Lib.nestedProperty(fullLayout, ptrunk + '._inputDomain').set(null);
-        }
-        else if(pleafPlus.match(/^[xyz]axis[0-9]*\.constrain.*$/)) {
-            flags.docalc = true;
-        }
-        else if(pleafPlus.match(/^aspectratio\.[xyz]$/)) {
-            doextra(proot + '.aspectmode', 'manual');
-        }
-        else if(pleafPlus.match(/^aspectmode$/)) {
-            doextra([ptrunk + '.x', ptrunk + '.y', ptrunk + '.z'], undefined);
-        }
-        else if(pleaf === 'tick0' || pleaf === 'dtick') {
-            doextra(ptrunk + '.tickmode', 'linear');
-        }
-        else if(pleaf === 'tickmode') {
-            doextra([ptrunk + '.tick0', ptrunk + '.dtick'], undefined);
-        }
-        else if(/[xy]axis[0-9]*?$/.test(pleaf) && !Object.keys(vi || {}).length) {
-            flags.docalc = true;
-        }
-        else if(/[xy]axis[0-9]*\.categoryorder$/.test(pleafPlus)) {
-            flags.docalc = true;
-        }
-        else if(/[xy]axis[0-9]*\.categoryarray/.test(pleafPlus)) {
-            flags.docalc = true;
-        }
-
-        if(pleafPlus.indexOf('rangeslider') !== -1) {
-            flags.docalc = true;
         }
 
         // toggling axis type between log and linear: we need to convert
@@ -2180,36 +1937,39 @@ function _relayout(gd, aobj) {
         if(containerArrayMatch) {
             arrayStr = containerArrayMatch.array;
             i = containerArrayMatch.index;
-            var propStr = containerArrayMatch.property,
-                componentArray = Lib.nestedProperty(layout, arrayStr),
-                obji = (componentArray || [])[i] || {};
+            var propStr = containerArrayMatch.property;
+            var componentArray = Lib.nestedProperty(layout, arrayStr);
+            var obji = (componentArray || [])[i] || {};
+            var objToAutorange = obji;
+
+            var updateValObject = valObject || {editType: 'docalc'};
+            var checkForAutorange = updateValObject.editType.indexOf('docalcAutorange') !== -1;
 
             if(i === '') {
-                // replacing the entire array: too much going on, force recalc
-                if(ai.indexOf('updatemenus') === -1) flags.docalc = true;
+                // replacing the entire array - too many possibilities, just recalc
+                if(checkForAutorange) flags.docalc = true;
+                else editTypes.update(flags, updateValObject);
+                checkForAutorange = false; // clear this, we're already doing a recalc
             }
             else if(propStr === '') {
                 // special handling of undoit if we're adding or removing an element
                 // ie 'annotations[2]' which can be {...} (add) or null (remove)
-                var toggledObj = vi;
+                objToAutorange = vi;
                 if(manageArrays.isAddVal(vi)) {
                     undoit[ai] = null;
                 }
                 else if(manageArrays.isRemoveVal(vi)) {
                     undoit[ai] = obji;
-                    toggledObj = obji;
+                    objToAutorange = obji;
                 }
                 else Lib.warn('unrecognized full object value', aobj);
-
-                if(refAutorange(toggledObj, 'x') || refAutorange(toggledObj, 'y') &&
-                        ai.indexOf('updatemenus') === -1) {
-                    flags.docalc = true;
-                }
             }
-            else if((refAutorange(obji, 'x') || refAutorange(obji, 'y')) &&
-                    !Lib.containsAny(ai, ['color', 'opacity', 'align', 'dash', 'updatemenus'])) {
+
+            if(checkForAutorange && (refAutorange(objToAutorange, 'x') || refAutorange(objToAutorange, 'y'))) {
                 flags.docalc = true;
             }
+            else editTypes.update(flags, updateValObject);
+
 
             // prepare the edits object we'll send to applyContainerArrayChanges
             if(!arrayEdits[arrayStr]) arrayEdits[arrayStr] = {};
@@ -2219,7 +1979,7 @@ function _relayout(gd, aobj) {
 
             delete aobj[ai];
         }
-        // handle axis reversal explicitly, as there's no 'reverse' flag
+        // handle axis reversal explicitly, as there's no 'reverse' attribute
         else if(pleaf === 'reverse') {
             if(parentIn.range) parentIn.range.reverse();
             else {
@@ -2231,73 +1991,15 @@ function _relayout(gd, aobj) {
             else flags.doplot = true;
         }
         else {
-            var pp1 = String(p.parts[1] || '');
-            // check whether we can short-circuit a full redraw
-            // 3d or geo at this point just needs to redraw.
-            if(proot.indexOf('scene') === 0) {
-                if(p.parts[1] === 'camera') flags.docamera = true;
-                else flags.doplot = true;
-            }
-            else if(proot.indexOf('geo') === 0) flags.doplot = true;
-            else if(proot.indexOf('ternary') === 0) flags.doplot = true;
-            else if(ai === 'paper_bgcolor') flags.doplot = true;
-            else if(proot === 'margin' ||
-                    pp1 === 'autorange' ||
-                    pp1 === 'rangemode' ||
-                    pp1 === 'type' ||
-                    pp1 === 'domain' ||
-                    pp1 === 'fixedrange' ||
-                    pp1 === 'scaleanchor' ||
-                    pp1 === 'scaleratio' ||
-                    ai.indexOf('calendar') !== -1 ||
-                    ai.match(/^(bar|box|font)/)) {
-                flags.docalc = true;
-            }
-            else if(fullLayout._has('gl2d') &&
-                (ai.indexOf('axis') !== -1 || ai === 'plot_bgcolor')
-            ) {
-                flags.doplot = true;
-            }
-            else if(fullLayout._has('gl2d') &&
+            if(fullLayout._has('gl2d') &&
                 (ai === 'dragmode' &&
                 (vi === 'lasso' || vi === 'select') &&
                 !(vOld === 'lasso' || vOld === 'select'))
             ) {
                 flags.docalc = true;
             }
-            else if(ai === 'hiddenlabels') flags.docalc = true;
-            else if(proot.indexOf('legend') !== -1) flags.dolegend = true;
-            else if(ai.indexOf('title') !== -1) flags.doticks = true;
-            else if(proot.indexOf('bgcolor') !== -1) flags.dolayoutstyle = true;
-            else if(plen > 1 && Lib.containsAny(pp1, ['tick', 'exponent', 'grid', 'zeroline'])) {
-                flags.doticks = true;
-            }
-            else if(ai.indexOf('.linewidth') !== -1 &&
-                    ai.indexOf('axis') !== -1) {
-                flags.doticks = flags.dolayoutstyle = true;
-            }
-            else if(plen > 1 && pp1.indexOf('line') !== -1) {
-                flags.dolayoutstyle = true;
-            }
-            else if(plen > 1 && pp1 === 'mirror') {
-                flags.doticks = flags.dolayoutstyle = true;
-            }
-            else if(ai === 'margin.pad') {
-                flags.doticks = flags.dolayoutstyle = true;
-            }
-            /*
-             * hovermode, dragmode, and spikes don't need any redrawing, since they just
-             * affect reaction to user input. Everything else, assume full replot.
-             * height, width, autosize get dealt with below. Except for the case of
-             * of subplots - scenes - which require scene.updateFx to be called.
-             */
-            else if(['hovermode', 'dragmode'].indexOf(ai) !== -1 ||
-                    ai.indexOf('spike') !== -1) {
-                flags.domodebar = true;
-            }
-            else if(['height', 'width', 'autosize'].indexOf(ai) === -1) {
-                flags.doplot = true;
-            }
+            else if(valObject) editTypes.update(flags, valObject);
+            else flags.docalc = true;
 
             p.set(vi);
         }

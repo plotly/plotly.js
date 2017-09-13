@@ -259,16 +259,16 @@ exports.getTraceValObject = function(trace, parts) {
         moduleAttrs = _module.attributes;
         valObject = moduleAttrs && moduleAttrs[head];
 
-        // then look in the global attributes
-        if(!valObject) valObject = baseAttributes[head];
-
-        // finally look in the subplot attributes
+        // then look in the subplot attributes
         if(!valObject) {
             var subplotModule = _module.basePlotModule;
             if(subplotModule && subplotModule.attributes) {
                 valObject = subplotModule.attributes[head];
             }
         }
+
+        // finally look in the global attributes
+        if(!valObject) valObject = baseAttributes[head];
     }
 
     return recurseIntoValObject(valObject, parts, i);
@@ -287,28 +287,68 @@ exports.getTraceValObject = function(trace, parts) {
  *  `valType: 'any'` attributes where we might set a part of the attribute.
  *  In that case, stop at the deepest valObject we *do* find.
  */
-exports.getLayoutValObject = function(parts) {
-    var valObject = layoutHeadAttr(parts[0]);
+exports.getLayoutValObject = function(fullLayout, parts) {
+    var valObject = layoutHeadAttr(fullLayout, parts[0]);
 
     return recurseIntoValObject(valObject, parts, 1);
 };
 
-function layoutHeadAttr(head) {
-    if(head in baseLayoutAttributes) return baseLayoutAttributes[head];
-    if(head in Registry.traceLayoutAttributes) return Registry.traceLayoutAttributes[head];
+function layoutHeadAttr(fullLayout, head) {
+    var i, key, _module, attributes;
 
-    var key, _module;
+    // look for attributes of the subplot types used on the plot
+    var basePlotModules = fullLayout._basePlotModules;
+    if(basePlotModules) {
+        var out;
+        for(i = 0; i < basePlotModules.length; i++) {
+            _module = basePlotModules[i];
+            if(_module.attrRegex && _module.attrRegex.test(head)) {
+                // if a module defines overrides, these take precedence
+                // initially this is to allow gl2d different editTypes from svg cartesian
+                if(_module.layoutAttrOverrides) return _module.layoutAttrOverrides;
 
+                // otherwise take the first attributes we find
+                if(!out && _module.layoutAttributes) out = _module.layoutAttributes;
+            }
+
+            // a module can also override the behavior of base (and component) module layout attrs
+            // again see gl2d for initial use case
+            var baseOverrides = _module.baseLayoutAttrOverrides;
+            if(baseOverrides && head in baseOverrides) return baseOverrides[head];
+        }
+        if(out) return out;
+    }
+
+    // look for layout attributes contributed by traces on the plot
+    var modules = fullLayout._modules;
+    if(modules) {
+        for(i = 0; i < modules.length; i++) {
+            attributes = modules[i].layoutAttributes;
+            if(attributes && head in attributes) {
+                return attributes[head];
+            }
+        }
+    }
+
+    /*
+     * Next look in components.
+     * Components that define a schema have already merged this into
+     * base and subplot attribute defs, so ignore these.
+     * Others (older style) all put all their attributes
+     * inside a container matching the module `name`
+     * eg `attributes` (array) or `legend` (object)
+     */
     for(key in Registry.componentsRegistry) {
         _module = Registry.componentsRegistry[key];
-        if(head === _module.name) return _module.layoutAttributes;
+        if(!_module.schema && (head === _module.name)) {
+            return _module.layoutAttributes;
+        }
     }
 
-    for(key in Registry.subplotsRegistry) {
-        _module = Registry.subplotsRegistry[key];
-        if(_module.attrRegex && _module.attrRegex.test(head)) return _module.layoutAttributes;
-    }
+    if(head in baseLayoutAttributes) return baseLayoutAttributes[head];
 
+    // Polar doesn't populate _modules or _basePlotModules
+    // just fall back on these when the others fail
     if(head === 'radialaxis' || head === 'angularaxis') {
         return polarAxisAttrs[head];
     }
@@ -504,7 +544,8 @@ function mergeValTypeAndRole(attrs) {
             description: [
                 'Sets the source reference on plot.ly for ',
                 attrName, '.'
-            ].join(' ')
+            ].join(' '),
+            editType: 'none'
         };
     }
 

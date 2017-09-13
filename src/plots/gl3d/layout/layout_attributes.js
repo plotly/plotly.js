@@ -14,23 +14,27 @@ var extendFlat = require('../../../lib/extend').extendFlat;
 var counterRegex = require('../../../lib').counterRegex;
 
 
-function makeVector(x, y, z) {
+function makeCameraVector(x, y, z) {
     return {
         x: {
             valType: 'number',
             role: 'info',
-            dflt: x
+            dflt: x,
+            editType: 'docamera'
         },
         y: {
             valType: 'number',
             role: 'info',
-            dflt: y
+            dflt: y,
+            editType: 'docamera'
         },
         z: {
             valType: 'number',
             role: 'info',
-            dflt: z
-        }
+            dflt: z,
+            editType: 'docamera'
+        },
+        editType: 'docamera'
     };
 }
 
@@ -40,10 +44,11 @@ module.exports = {
     bgcolor: {
         valType: 'color',
         role: 'style',
-        dflt: 'rgba(0,0,0,0)'
+        dflt: 'rgba(0,0,0,0)',
+        editType: 'doplot'
     },
     camera: {
-        up: extendFlat(makeVector(0, 0, 1), {
+        up: extendFlat(makeCameraVector(0, 0, 1), {
             description: [
                 'Sets the (x,y,z) components of the \'up\' camera vector.',
                 'This vector determines the up direction of this scene',
@@ -52,7 +57,7 @@ module.exports = {
                 'the z axis points up.'
             ].join(' ')
         }),
-        center: extendFlat(makeVector(0, 0, 0), {
+        center: extendFlat(makeCameraVector(0, 0, 0), {
             description: [
                 'Sets the (x,y,z) components of the \'center\' camera vector',
                 'This vector determines the translation (x,y,z) space',
@@ -60,23 +65,25 @@ module.exports = {
                 'By default, there is no such translation.'
             ].join(' ')
         }),
-        eye: extendFlat(makeVector(1.25, 1.25, 1.25), {
+        eye: extendFlat(makeCameraVector(1.25, 1.25, 1.25), {
             description: [
                 'Sets the (x,y,z) components of the \'eye\' camera vector.',
                 'This vector determines the view point about the origin',
                 'of this scene.'
             ].join(' ')
-        })
+        }),
+        editType: 'docamera'
     },
     domain: {
         x: {
             valType: 'info_array',
             role: 'info',
             items: [
-                {valType: 'number', min: 0, max: 1},
-                {valType: 'number', min: 0, max: 1}
+                {valType: 'number', min: 0, max: 1, editType: 'doplot'},
+                {valType: 'number', min: 0, max: 1, editType: 'doplot'}
             ],
             dflt: [0, 1],
+            editType: 'doplot',
             description: [
                 'Sets the horizontal domain of this scene',
                 '(in plot fraction).'
@@ -86,21 +93,29 @@ module.exports = {
             valType: 'info_array',
             role: 'info',
             items: [
-                {valType: 'number', min: 0, max: 1},
-                {valType: 'number', min: 0, max: 1}
+                {valType: 'number', min: 0, max: 1, editType: 'doplot'},
+                {valType: 'number', min: 0, max: 1, editType: 'doplot'}
             ],
             dflt: [0, 1],
+            editType: 'doplot',
             description: [
                 'Sets the vertical domain of this scene',
                 '(in plot fraction).'
             ].join(' ')
-        }
+        },
+        editType: 'doplot'
     },
     aspectmode: {
         valType: 'enumerated',
         role: 'info',
         values: ['auto', 'cube', 'data', 'manual'],
         dflt: 'auto',
+        editType: 'doplot',
+        impliedEdits: {
+            'aspectratio.x': undefined,
+            'aspectratio.y': undefined,
+            'aspectratio.z': undefined
+        },
         description: [
             'If *cube*, this scene\'s axes are drawn as a cube,',
             'regardless of the axes\' ranges.',
@@ -122,18 +137,26 @@ module.exports = {
         x: {
             valType: 'number',
             role: 'info',
-            min: 0
+            min: 0,
+            editType: 'doplot',
+            impliedEdits: {'^aspectmode': 'manual'}
         },
         y: {
             valType: 'number',
             role: 'info',
-            min: 0
+            min: 0,
+            editType: 'doplot',
+            impliedEdits: {'^aspectmode': 'manual'}
         },
         z: {
             valType: 'number',
             role: 'info',
-            min: 0
+            min: 0,
+            editType: 'doplot',
+            impliedEdits: {'^aspectmode': 'manual'}
         },
+        editType: 'doplot',
+        impliedEdits: {aspectmode: 'manual'},
         description: [
             'Sets this scene\'s axis aspectratio.'
         ].join(' ')
@@ -148,6 +171,7 @@ module.exports = {
         role: 'info',
         values: ['orbit', 'turntable', 'zoom', 'pan', false],
         dflt: 'turntable',
+        editType: 'doplot',
         description: [
             'Determines the mode of drag interactions for this scene.'
         ].join(' ')
@@ -157,15 +181,18 @@ module.exports = {
         role: 'info',
         values: ['closest', false],
         dflt: 'closest',
+        editType: 'domodebar',
         description: [
             'Determines the mode of hover interactions for this scene.'
         ].join(' ')
     },
+    editType: 'doplot',
 
     _deprecated: {
         cameraposition: {
             valType: 'info_array',
             role: 'info',
+            editType: 'docamera',
             description: 'Obsolete. Use `camera` instead.'
         }
     }

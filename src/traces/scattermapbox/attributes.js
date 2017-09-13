@@ -15,12 +15,13 @@ var plotAttrs = require('../../plots/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
 var lineAttrs = scatterGeoAttrs.line;
 var markerAttrs = scatterGeoAttrs.marker;
 
 
-module.exports = {
+module.exports = overrideAll({
     lon: scatterGeoAttrs.lon,
     lat: scatterGeoAttrs.lat,
 
@@ -61,7 +62,8 @@ module.exports = {
 
     line: {
         color: lineAttrs.color,
-        width: lineAttrs.width
+        width: lineAttrs.width,
+        editType: 'docalc'
 
         // TODO
         // dash: dash
@@ -95,7 +97,8 @@ module.exports = {
         autocolorscale: markerAttrs.autocolorscale,
         reversescale: markerAttrs.reversescale,
         showscale: markerAttrs.showscale,
-        colorbar: colorbarAttrs
+        colorbar: colorbarAttrs,
+        editType: 'docalc'
 
         // line
     },
@@ -108,5 +111,5 @@ module.exports = {
 
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['lon', 'lat', 'text', 'name']
-    }),
-};
+    })
+}, 'docalc');

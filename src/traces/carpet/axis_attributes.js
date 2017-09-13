@@ -16,6 +16,7 @@ module.exports = {
     color: {
         valType: 'color',
         role: 'style',
+        editType: 'docalc',
         description: [
             'Sets default for all colors associated with this axis',
             'all at once: line, font, tick, and grid colors.',
@@ -28,14 +29,17 @@ module.exports = {
         dflt: 1,
         min: 0,
         max: 1.3,
-        role: 'info'
+        role: 'info',
+        editType: 'docalc'
     },
     title: {
         valType: 'string',
         role: 'info',
+        editType: 'docalc',
         description: 'Sets the title of this axis.'
     },
-    titlefont: extendFlat({}, fontAttrs, {
+    titlefont: fontAttrs({
+        editType: 'docalc',
         description: [
             'Sets this axis\' title font.'
         ].join(' ')
@@ -44,6 +48,7 @@ module.exports = {
         valType: 'number',
         role: 'info',
         dflt: 10,
+        editType: 'docalc',
         description: [
             'An additional amount by which to offset the title from the tick',
             'labels, given in pixels'
@@ -57,6 +62,7 @@ module.exports = {
         values: ['-', 'linear', 'date', 'category'],
         dflt: '-',
         role: 'info',
+        editType: 'docalc',
         description: [
             'Sets the axis type.',
             'By default, plotly attempts to determined the axis type',
@@ -69,6 +75,7 @@ module.exports = {
         values: [true, false, 'reversed'],
         dflt: true,
         role: 'style',
+        editType: 'docalc',
         description: [
             'Determines whether or not the range of this axis is',
             'computed in relation to the input data.',
@@ -81,6 +88,7 @@ module.exports = {
         values: ['normal', 'tozero', 'nonnegative'],
         dflt: 'normal',
         role: 'style',
+        editType: 'docalc',
         description: [
             'If *normal*, the range is computed in relation to the extrema',
             'of the input data.',
@@ -93,9 +101,10 @@ module.exports = {
     range: {
         valType: 'info_array',
         role: 'info',
+        editType: 'docalc',
         items: [
-            {valType: 'any'},
-            {valType: 'any'}
+            {valType: 'any', editType: 'docalc'},
+            {valType: 'any', editType: 'docalc'}
         ],
         description: [
             'Sets the range of this axis.',
@@ -115,6 +124,7 @@ module.exports = {
         valType: 'boolean',
         dflt: false,
         role: 'info',
+        editType: 'docalc',
         description: [
             'Determines whether or not this axis is zoom-able.',
             'If true, then zoom is disabled.'
@@ -124,19 +134,22 @@ module.exports = {
         valType: 'enumerated',
         values: ['index', 'value'],
         dflt: 'value',
-        role: 'info'
+        role: 'info',
+        editType: 'docalc'
     },
     tickmode: {
         valType: 'enumerated',
         values: ['linear', 'array'],
         dflt: 'array',
         role: 'info',
+        editType: 'docalc'
     },
     nticks: {
         valType: 'integer',
         min: 0,
         dflt: 0,
         role: 'style',
+        editType: 'docalc',
         description: [
             'Specifies the maximum number of ticks for the particular axis.',
             'The actual number of ticks will be chosen automatically to be',
@@ -146,6 +159,7 @@ module.exports = {
     },
     tickvals: {
         valType: 'data_array',
+        editType: 'docalc',
         description: [
             'Sets the values at which ticks on this axis appear.',
             'Only has an effect if `tickmode` is set to *array*.',
@@ -154,6 +168,7 @@ module.exports = {
     },
     ticktext: {
         valType: 'data_array',
+        editType: 'docalc',
         description: [
             'Sets the text displayed at the ticks position via `tickvals`.',
             'Only has an effect if `tickmode` is set to *array*.',
@@ -165,18 +180,21 @@ module.exports = {
         values: ['start', 'end', 'both', 'none'],
         dflt: 'start',
         role: 'style',
+        editType: 'docalc',
         description: [
             'Determines whether axis labels are drawn on the low side,',
             'the high side, both, or neither side of the axis.'
         ].join(' ')
     },
-    tickfont: extendFlat({}, fontAttrs, {
+    tickfont: fontAttrs({
+        editType: 'docalc',
         description: 'Sets the tick font.'
     }),
     tickangle: {
         valType: 'angle',
         dflt: 'auto',
         role: 'style',
+        editType: 'docalc',
         description: [
             'Sets the angle of the tick labels with respect to the horizontal.',
             'For example, a `tickangle` of -90 draws the tick labels',
@@ -187,6 +205,7 @@ module.exports = {
         valType: 'string',
         dflt: '',
         role: 'style',
+        editType: 'docalc',
         description: 'Sets a tick label prefix.'
     },
     showtickprefix: {
@@ -194,6 +213,7 @@ module.exports = {
         values: ['all', 'first', 'last', 'none'],
         dflt: 'all',
         role: 'style',
+        editType: 'docalc',
         description: [
             'If *all*, all tick labels are displayed with a prefix.',
             'If *first*, only the first tick is displayed with a prefix.',
@@ -205,6 +225,7 @@ module.exports = {
         valType: 'string',
         dflt: '',
         role: 'style',
+        editType: 'docalc',
         description: 'Sets a tick label suffix.'
     },
     showticksuffix: {
@@ -212,6 +233,7 @@ module.exports = {
         values: ['all', 'first', 'last', 'none'],
         dflt: 'all',
         role: 'style',
+        editType: 'docalc',
         description: 'Same as `showtickprefix` but for tick suffixes.'
     },
     showexponent: {
@@ -219,6 +241,7 @@ module.exports = {
         values: ['all', 'first', 'last', 'none'],
         dflt: 'all',
         role: 'style',
+        editType: 'docalc',
         description: [
             'If *all*, all exponents are shown besides their significands.',
             'If *first*, only the exponent of the first tick is shown.',
@@ -231,6 +254,7 @@ module.exports = {
         values: ['none', 'e', 'E', 'power', 'SI', 'B'],
         dflt: 'B',
         role: 'style',
+        editType: 'docalc',
         description: [
             'Determines a formatting rule for the tick exponents.',
             'For example, consider the number 1,000,000,000.',
@@ -246,6 +270,7 @@ module.exports = {
         valType: 'boolean',
         dflt: false,
         role: 'style',
+        editType: 'docalc',
         description: [
             'If "true", even 4-digit integers are separated'
         ].join(' ')
@@ -254,6 +279,7 @@ module.exports = {
         valType: 'string',
         dflt: '',
         role: 'style',
+        editType: 'docalc',
         description: [
             'Sets the tick label formatting rule using d3 formatting mini-languages',
             'which are very similar to those in Python. For numbers, see:',
@@ -273,6 +299,7 @@ module.exports = {
         ],
         dflt: 'trace',
         role: 'info',
+        editType: 'docalc',
         description: [
             'Specifies the ordering logic for the case of categorical variables.',
             'By default, plotly uses *trace*, which specifies the order that is present in the data supplied.',
@@ -288,6 +315,7 @@ module.exports = {
     categoryarray: {
         valType: 'data_array',
         role: 'info',
+        editType: 'docalc',
         description: [
             'Sets the order in which categories on this axis appear.',
             'Only has an effect if `categoryorder` is set to *array*.',
@@ -298,17 +326,20 @@ module.exports = {
         valType: 'integer',
         role: 'style',
         dflt: 10,
+        editType: 'docalc',
         description: 'Extra padding between label and the axis'
     },
     labelprefix: {
         valType: 'string',
         role: 'style',
+        editType: 'docalc',
         description: 'Sets a axis label prefix.'
     },
     labelsuffix: {
         valType: 'string',
         dflt: '',
         role: 'style',
+        editType: 'docalc',
         description: 'Sets a axis label suffix.'
     },
     // lines and grids
@@ -316,6 +347,7 @@ module.exports = {
         valType: 'boolean',
         dflt: false,
         role: 'style',
+        editType: 'docalc',
         description: [
             'Determines whether or not a line bounding this axis is drawn.'
         ].join(' ')
@@ -324,6 +356,7 @@ module.exports = {
         valType: 'color',
         dflt: colorAttrs.defaultLine,
         role: 'style',
+        editType: 'docalc',
         description: 'Sets the axis line color.'
     },
     linewidth: {
@@ -331,11 +364,13 @@ module.exports = {
         min: 0,
         dflt: 1,
         role: 'style',
+        editType: 'docalc',
         description: 'Sets the width (in px) of the axis line.'
     },
     gridcolor: {
         valType: 'color',
         role: 'style',
+        editType: 'docalc',
         description: 'Sets the axis line color.'
     },
     gridwidth: {
@@ -343,12 +378,14 @@ module.exports = {
         min: 0,
         dflt: 1,
         role: 'style',
+        editType: 'docalc',
         description: 'Sets the width (in px) of the axis line.'
     },
     showgrid: {
         valType: 'boolean',
         role: 'style',
         dflt: true,
+        editType: 'docalc',
         description: [
             'Determines whether or not grid lines are drawn.',
             'If *true*, the grid lines are drawn at every tick mark.'
@@ -359,6 +396,7 @@ module.exports = {
         min: 0,
         dflt: 0,
         role: 'info',
+        editType: 'docalc',
         description: 'Sets the number of minor grid ticks per major grid tick'
     },
     minorgridwidth: {
@@ -366,17 +404,20 @@ module.exports = {
         min: 0,
         dflt: 1,
         role: 'style',
+        editType: 'docalc',
         description: 'Sets the width (in px) of the grid lines.'
     },
     minorgridcolor: {
         valType: 'color',
         dflt: colorAttrs.lightLine,
         role: 'style',
+        editType: 'docalc',
         description: 'Sets the color of the grid lines.'
     },
     startline: {
         valType: 'boolean',
         role: 'style',
+        editType: 'docalc',
         description: [
             'Determines whether or not a line is drawn at along the starting value',
             'of this axis.',
@@ -386,17 +427,20 @@ module.exports = {
     startlinecolor: {
         valType: 'color',
         role: 'style',
+        editType: 'docalc',
         description: 'Sets the line color of the start line.'
     },
     startlinewidth: {
         valType: 'number',
         dflt: 1,
         role: 'style',
+        editType: 'docalc',
         description: 'Sets the width (in px) of the start line.'
     },
     endline: {
         valType: 'boolean',
         role: 'style',
+        editType: 'docalc',
         description: [
             'Determines whether or not a line is drawn at along the final value',
             'of this axis.',
@@ -407,11 +451,13 @@ module.exports = {
         valType: 'number',
         dflt: 1,
         role: 'style',
+        editType: 'docalc',
         description: 'Sets the width (in px) of the end line.'
     },
     endlinecolor: {
         valType: 'color',
         role: 'style',
+        editType: 'docalc',
         description: 'Sets the line color of the end line.'
     },
     tick0: {
@@ -419,6 +465,7 @@ module.exports = {
         min: 0,
         dflt: 0,
         role: 'info',
+        editType: 'docalc',
         description: 'The starting index of grid lines along the axis'
     },
     dtick: {
@@ -426,6 +473,7 @@ module.exports = {
         min: 0,
         dflt: 1,
         role: 'info',
+        editType: 'docalc',
         description: 'The stride between grid lines along the axis'
     },
     arraytick0: {
@@ -433,6 +481,7 @@ module.exports = {
         min: 0,
         dflt: 0,
         role: 'info',
+        editType: 'docalc',
         description: 'The starting index of grid lines along the axis'
     },
     arraydtick: {
@@ -440,6 +489,8 @@ module.exports = {
         min: 1,
         dflt: 1,
         role: 'info',
+        editType: 'docalc',
         description: 'The stride between grid lines along the axis'
     },
+    editType: 'docalc'
 };

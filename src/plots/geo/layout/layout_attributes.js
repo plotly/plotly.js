@@ -11,9 +11,10 @@
 var colorAttrs = require('../../../components/color/attributes');
 var constants = require('../constants');
 var geoAxesAttrs = require('./axis_attributes');
+var overrideAll = require('../../../plot_api/edit_types').overrideAll;
 
 
-module.exports = {
+module.exports = overrideAll({
     domain: {
         x: {
             valType: 'info_array',
@@ -254,4 +255,4 @@ module.exports = {
     },
     lonaxis: geoAxesAttrs,
     lataxis: geoAxesAttrs
-};
+}, 'doplot', true);

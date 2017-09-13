@@ -59,7 +59,7 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
     var bgcolor = coerce('bgcolor'),
         bgColorCombined = Color.combine(bgcolor, opts.paper_bgcolor);
 
-    var cameraKeys = Object.keys(layoutAttributes.camera);
+    var cameraKeys = ['up', 'center', 'eye'];
 
     for(var j = 0; j < cameraKeys.length; j++) {
         coerce('camera.' + cameraKeys[j] + '.x');

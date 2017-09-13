@@ -15,12 +15,13 @@ var DASHES = require('../../constants/gl2d_dashes');
 var MARKERS = require('../../constants/gl2d_markers');
 var extendFlat = require('../../lib/extend').extendFlat;
 var extendDeep = require('../../lib/extend').extendDeep;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
 var scatterLineAttrs = scatterAttrs.line,
     scatterMarkerAttrs = scatterAttrs.marker,
     scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
-module.exports = {
+module.exports = overrideAll({
     x: scatterAttrs.x,
     x0: scatterAttrs.x0,
     dx: scatterAttrs.dx,
@@ -85,4 +86,4 @@ module.exports = {
 
     error_y: scatterAttrs.error_y,
     error_x: scatterAttrs.error_x
-};
+}, 'docalc', 'nested');

@@ -18,7 +18,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterLineAttrs = scatterAttrs.line;
 
-module.exports = extendFlat({}, {
+module.exports = extendFlat({
     z: heatmapAttrs.z,
     x: heatmapAttrs.x,
     x0: heatmapAttrs.x0,
@@ -38,6 +38,11 @@ module.exports = extendFlat({}, {
         dflt: true,
         role: 'style',
         editType: 'docalc',
+        impliedEdits: {
+            'contours.start': undefined,
+            'contours.end': undefined,
+            'contours.size': undefined
+        },
         description: [
             'Determines whether or not the contour level attributes are',
             'picked by an algorithm.',
@@ -66,6 +71,7 @@ module.exports = extendFlat({}, {
             dflt: null,
             role: 'style',
             editType: 'doplot',
+            impliedEdits: {'^autocontour': false},
             description: [
                 'Sets the starting contour level value.',
                 'Must be less than `contours.end`'
@@ -76,6 +82,7 @@ module.exports = extendFlat({}, {
             dflt: null,
             role: 'style',
             editType: 'doplot',
+            impliedEdits: {'^autocontour': false},
             description: [
                 'Sets the end contour level value.',
                 'Must be more than `contours.start`'
@@ -87,6 +94,7 @@ module.exports = extendFlat({}, {
             min: 0,
             role: 'style',
             editType: 'doplot',
+            impliedEdits: {'^autocontour': false},
             description: [
                 'Sets the step between each contour level.',
                 'Must be positive.'
@@ -126,15 +134,14 @@ module.exports = extendFlat({}, {
                 'Determines whether to label the contour lines with their values.'
             ].join(' ')
         },
-        labelfont: extendFlat({}, fontAttrs, {
+        labelfont: fontAttrs({
+            editType: 'doplot',
+            colorEditType: 'dostyle',
             description: [
                 'Sets the font used for labeling the contour levels.',
                 'The default color comes from the lines, if shown.',
                 'The default family and size come from `layout.font`.'
             ].join(' '),
-            family: extendFlat({}, fontAttrs.family, {editType: 'doplot'}),
-            size: extendFlat({}, fontAttrs.size, {editType: 'doplot'}),
-            color: extendFlat({}, fontAttrs.color, {editType: 'dostyle'})
         }),
         labelformat: {
             valType: 'string',
@@ -146,24 +153,30 @@ module.exports = extendFlat({}, {
                 'mini-language which is very similar to Python, see:',
                 'https://github.com/d3/d3-format/blob/master/README.md#locale_format.'
             ].join(' ')
-        }
+        },
+        editType: 'docalc',
+        impliedEdits: {'autocontour': false}
     },
 
     line: {
         color: extendFlat({}, scatterLineAttrs.color, {
+            editType: 'dostyle+docolorbars',
             description: [
                 'Sets the color of the contour level.',
                 'Has no effect if `contours.coloring` is set to *lines*.'
             ].join(' ')
         }),
-        width: scatterLineAttrs.width,
+        width: extendFlat({}, scatterLineAttrs.width, {
+            editType: 'dostyle+docolorbars'
+        }),
         dash: dash,
         smoothing: extendFlat({}, scatterLineAttrs.smoothing, {
             description: [
                 'Sets the amount of smoothing for the contour lines,',
                 'where *0* corresponds to no smoothing.'
             ].join(' ')
-        })
+        }),
+        editType: 'doplot'
     }
 },
     colorscaleAttrs, {

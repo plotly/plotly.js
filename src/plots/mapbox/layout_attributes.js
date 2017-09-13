@@ -13,9 +13,18 @@ var Lib = require('../../lib');
 var defaultLine = require('../../components/color').defaultLine;
 var fontAttrs = require('../font_attributes');
 var textposition = require('../../traces/scatter/attributes').textposition;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
 
-module.exports = {
+var fontAttr = fontAttrs({
+    description: [
+        'Sets the icon text font.',
+        'Has an effect only when `type` is set to *symbol*.'
+    ].join(' ')
+});
+fontAttr.family.dflt = 'Open Sans Regular, Arial Unicode MS Regular';
+
+module.exports = overrideAll({
     _arrayAttrRegexps: [Lib.counterRegex('mapbox', '.layers', true)],
     domain: {
         x: {
@@ -250,17 +259,8 @@ module.exports = {
                     'Sets the symbol text.'
                 ].join(' ')
             },
-            textfont: Lib.extendDeep({}, fontAttrs, {
-                description: [
-                    'Sets the icon text font.',
-                    'Has an effect only when `type` is set to *symbol*.'
-                ].join(' '),
-                family: {
-                    dflt: 'Open Sans Regular, Arial Unicode MS Regular'
-                }
-            }),
+            textfont: fontAttr,
             textposition: Lib.extendFlat({}, textposition, { arrayOk: false })
         }
     }
-
-};
+}, 'doplot', true);

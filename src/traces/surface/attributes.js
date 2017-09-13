@@ -13,6 +13,7 @@ var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
 function makeContourProjAttr(axLetter) {
     return {
@@ -44,7 +45,8 @@ function makeContourAttr(axLetter) {
         project: {
             x: makeContourProjAttr('x'),
             y: makeContourProjAttr('y'),
-            z: makeContourProjAttr('z')
+            z: makeContourProjAttr('z'),
+            editType: 'docalc'
         },
         color: {
             valType: 'color',
@@ -92,11 +94,12 @@ function makeContourAttr(axLetter) {
             max: 16,
             dflt: 2,
             description: 'Sets the width of the highlighted contour lines.'
-        }
+        },
+        editType: 'docalc'
     };
 }
 
-module.exports = {
+module.exports = overrideAll({
     z: {
         valType: 'data_array',
         description: 'Sets the z coordinates.'
@@ -135,7 +138,8 @@ module.exports = {
     contours: {
         x: makeContourAttr('x'),
         y: makeContourAttr('y'),
-        z: makeContourAttr('z')
+        z: makeContourAttr('z'),
+        editType: 'docalc'
     },
     hidesurface: {
         valType: 'boolean',
@@ -173,7 +177,8 @@ module.exports = {
             max: 1e5,
             dflt: 0,
             description: 'Numeric vector, representing the Z coordinate for each vertex.'
-        }
+        },
+        editType: 'docalc'
     },
 
     lighting: {
@@ -219,7 +224,8 @@ module.exports = {
                 'Represents the reflectance as a dependency of the viewing angle; e.g. paper is reflective',
                 'when viewing it from the edge of the paper (almost 90 degrees), causing shine.'
             ].join(' ')
-        }
+        },
+        editType: 'docalc'
     },
 
     opacity: {
@@ -242,4 +248,4 @@ module.exports = {
             description: 'Obsolete. Use `cmax` instead.'
         })
     }
-};
+}, 'docalc');

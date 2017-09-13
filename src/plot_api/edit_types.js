@@ -41,8 +41,10 @@ module.exports = {
             dolayoutstyle: false,
             doplot: false,
             docalc: false,
+            docalcAutorange: false,
             domodebar: false,
             docamera: false,
+            doarraydraw: false,
             layoutReplot: false
         };
     },
@@ -52,7 +54,7 @@ module.exports = {
      */
     update: function(flags, attr) {
         var editType = attr.editType;
-        if(editType) {
+        if(editType && editType !== 'none') {
             var editTypeParts = editType.split('+');
             for(var i = 0; i < editTypeParts.length; i++) {
                 flags[editTypeParts[i]] = true;

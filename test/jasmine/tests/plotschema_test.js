@@ -1,6 +1,7 @@
 var Plotly = require('@lib/index');
 
 var Lib = require('@src/lib');
+var Registry = require('@src/registry');
 
 var baseAttrs = require('@src/plots/attributes');
 var scatter = require('@src/traces/scatter');
@@ -27,21 +28,46 @@ describe('plot schema', function() {
     var ROLES = ['info', 'style', 'data'];
     var editTypes = plotSchema.defs.editTypes;
 
-    function assertPlotSchema(callback) {
+    function assertTraceSchema(callback) {
         var traces = plotSchema.traces;
 
         Object.keys(traces).forEach(function(traceName) {
-            Plotly.PlotSchema.crawl(traces[traceName].attributes, callback);
+            Plotly.PlotSchema.crawl(traces[traceName].attributes, callback, 0, traceName);
         });
+    }
 
-        Plotly.PlotSchema.crawl(plotSchema.layout.layoutAttributes, callback);
+    function assertTransformSchema(callback) {
+        var transforms = plotSchema.transforms;
+
+        Object.keys(transforms).forEach(function(transformName) {
+            Plotly.PlotSchema.crawl(transforms[transformName].attributes, callback, 0, transformName);
+        });
+    }
+
+    function assertLayoutSchema(callback) {
+        Plotly.PlotSchema.crawl(plotSchema.layout.layoutAttributes, callback, 0, 'layout');
+
+        var traces = plotSchema.traces;
+
+        Object.keys(traces).forEach(function(traceName) {
+            var layoutAttrs = traces[traceName].layoutAttributes;
+            if(layoutAttrs) {
+                Plotly.PlotSchema.crawl(layoutAttrs, callback, 0, traceName + ': layout');
+            }
+        });
+    }
+
+    function assertPlotSchema(callback) {
+        assertTraceSchema(callback);
+        assertLayoutSchema(callback);
+        assertTransformSchema(callback);
     }
 
     it('all attributes should have a valid `valType`', function() {
         assertPlotSchema(
             function(attr) {
                 if(isValObject(attr)) {
-                    expect(VALTYPES.indexOf(attr.valType) !== -1).toBe(true);
+                    expect(VALTYPES.indexOf(attr.valType) !== -1).toBe(true, attr);
                 }
             }
         );
@@ -89,7 +115,7 @@ describe('plot schema', function() {
                     var valObject = valObjects[attr.valType],
                         opts = valObject.requiredOpts
                             .concat(valObject.otherOpts)
-                            .concat(['valType', 'description', 'role', 'editType']);
+                            .concat(['valType', 'description', 'role', 'editType', 'impliedEdits']);
 
                     Object.keys(attr).forEach(function(key) {
                         expect(opts.indexOf(key) !== -1).toBe(true, key, attr);
@@ -191,38 +217,69 @@ describe('plot schema', function() {
         var DEPRECATED = '_deprecated';
 
         assertPlotSchema(
-            function(attr) {
+            function(attr, attrName, attrs, level, attrString) {
                 if(isPlainObject(attr[DEPRECATED])) {
                     Object.keys(attr[DEPRECATED]).forEach(function(dAttrName) {
                         var dAttr = attr[DEPRECATED][dAttrName];
 
-                        expect(VALTYPES.indexOf(dAttr.valType) !== -1).toBe(true);
-                        expect(ROLES.indexOf(dAttr.role) !== -1).toBe(true);
+                        expect(VALTYPES.indexOf(dAttr.valType) !== -1)
+                            .toBe(true, attrString + ': ' + dAttrName);
+                        expect(ROLES.indexOf(dAttr.role) !== -1)
+                            .toBe(true, attrString + ': ' + dAttrName);
                     });
                 }
             }
         );
     });
 
-    it('has valid or no `editType` in every attribute', function() {
-        var validEditTypes = editTypes.traces;
-        assertPlotSchema(
-            function(attr, attrName, attrs) {
-                if(attrs === plotSchema.layout.layoutAttributes) {
-                    // detect when we switch from trace attributes to layout
-                    // attributes - depends on doing all the trace attributes
-                    // first, then switching to layout attributes
-                    validEditTypes = editTypes.layout;
-                }
-                if(attr.editType !== undefined) {
-                    var editTypeParts = attr.editType.split('+');
-                    editTypeParts.forEach(function(editTypePart) {
-                        expect(validEditTypes[editTypePart])
-                            .toBe(false, editTypePart);
-                    });
-                }
+    it('has valid or no `impliedEdits` in every attribute', function() {
+        assertPlotSchema(function(attr, attrName, attrs, level, attrString) {
+            if(attr.impliedEdits !== undefined) {
+                expect(isPlainObject(attr.impliedEdits))
+                    .toBe(true, attrString + ': ' + JSON.stringify(attr.impliedEdits));
             }
-        );
+        });
+    });
+
+    it('has valid `editType` in all attributes and containers', function() {
+        var traceEditTypeOpts = {
+            valType: 'flaglist',
+            extras: ['none'],
+            flags: Object.keys(editTypes.traces)
+        };
+        var layoutEditTypeOpts = {
+            valType: 'flaglist',
+            extras: ['none'],
+            flags: Object.keys(editTypes.layout)
+        };
+
+        function shouldHaveEditType(attr, attrName) {
+            // ensure any object (container or regular val object) has editType
+            // array containers have extra nesting where editType would be redundant
+            return Lib.isPlainObject(attr) && attrName !== 'impliedEdits' &&
+                attrName !== 'items' && !Lib.isPlainObject(attr.items);
+        }
+
+        assertTraceSchema(function(attr, attrName, attrs, level, attrString) {
+            if(shouldHaveEditType(attr, attrName)) {
+                expect(Lib.validate(attr.editType, traceEditTypeOpts))
+                    .toBe(true, attrString + ': ' + JSON.stringify(attr.editType));
+            }
+        });
+
+        assertTransformSchema(function(attr, attrName, attrs, level, attrString) {
+            if(shouldHaveEditType(attr, attrName)) {
+                expect(Lib.validate(attr.editType, traceEditTypeOpts))
+                    .toBe(true, attrString + ': ' + JSON.stringify(attr.editType));
+            }
+        });
+
+        assertLayoutSchema(function(attr, attrName, attrs, level, attrString) {
+            if(shouldHaveEditType(attr, attrName)) {
+                expect(Lib.validate(attr.editType, layoutEditTypeOpts))
+                    .toBe(true, attrString + ': ' + JSON.stringify(attr.editType));
+            }
+        });
     });
 
     it('should work with registered transforms', function() {
@@ -369,79 +426,131 @@ describe('getTraceValObject', function() {
 
 describe('getLayoutValObject', function() {
     var getLayoutValObject = Plotly.PlotSchema.getLayoutValObject;
+    var blankLayout = {};
 
     it('finds base attributes', function() {
-        expect(getLayoutValObject(['font', 'family'])).toBe(baseLayoutAttrs.font.family);
-        expect(getLayoutValObject(['margin'])).toBe(baseLayoutAttrs.margin);
-        expect(getLayoutValObject(['margarine'])).toBe(false);
+        expect(getLayoutValObject(blankLayout, ['font', 'family'])).toBe(baseLayoutAttrs.font.family);
+        expect(getLayoutValObject(blankLayout, ['margin'])).toBe(baseLayoutAttrs.margin);
+        expect(getLayoutValObject(blankLayout, ['margarine'])).toBe(false);
     });
 
     it('finds trace layout attributes', function() {
-        expect(getLayoutValObject(['barmode']))
+        var layoutBar = {_modules: [Registry.modules.bar._module]};
+        expect(getLayoutValObject(layoutBar, ['barmode']))
             .toBe(require('@src/traces/bar').layoutAttributes.barmode);
-        expect(getLayoutValObject(['boxgap']))
+        var layoutBox = {_modules: [Registry.modules.box._module]};
+        expect(getLayoutValObject(layoutBox, ['boxgap']))
             .toBe(require('@src/traces/box').layoutAttributes.boxgap);
-        expect(getLayoutValObject(['hiddenlabels']))
+        var layoutPie = {_modules: [Registry.modules.pie._module]};
+        expect(getLayoutValObject(layoutPie, ['hiddenlabels']))
             .toBe(require('@src/traces/pie').layoutAttributes.hiddenlabels);
+
+        // not found when these traces are unused on the plot
+        expect(getLayoutValObject(blankLayout, ['barmode'])).toBe(false);
+        expect(getLayoutValObject(blankLayout, ['boxgap'])).toBe(false);
+        expect(getLayoutValObject(blankLayout, ['hiddenlabels'])).toBe(false);
     });
 
     it('finds component attributes', function() {
+        var layout3D = {_basePlotModules: [Registry.subplotsRegistry.gl3d]};
         // the ones with schema are already merged into other places
-        expect(getLayoutValObject(['calendar']))
+        expect(getLayoutValObject(blankLayout, ['calendar']))
             .toBe(baseLayoutAttrs.calendar);
-        expect(getLayoutValObject(['scene4', 'annotations', 44, 'z']))
+        expect(getLayoutValObject(layout3D, ['scene4', 'annotations', 44, 'z']))
             .toBe(gl3dAttrs.annotations.z);
 
+        // still need to have the subplot in the plot to find these
+        expect(getLayoutValObject(blankLayout, ['scene4', 'annotations', 44, 'z'])).toBe(false);
+
         // ones with only layoutAttributes we need to look in the component
-        expect(getLayoutValObject(['annotations']))
+        expect(getLayoutValObject(blankLayout, ['annotations']))
             .toBe(annotationAttrs);
-        expect(getLayoutValObject(['annotations', 123]))
+        expect(getLayoutValObject(blankLayout, ['annotations', 123]))
             .toBe(annotationAttrs);
-        expect(getLayoutValObject(['annotations', 123, 'textangle']))
+        expect(getLayoutValObject(blankLayout, ['annotations', 123, 'textangle']))
             .toBe(annotationAttrs.textangle);
 
-        expect(getLayoutValObject(['updatemenus', 3, 'buttons', 4, 'args', 2]))
+        expect(getLayoutValObject(blankLayout, ['updatemenus', 3, 'buttons', 4, 'args', 2]))
             .toBe(updatemenuAttrs.buttons.args.items[2]);
     });
 
     it('finds cartesian subplot attributes', function() {
-        expect(getLayoutValObject(['xaxis', 'title']))
+        var layoutCartesian = {_basePlotModules: [Registry.subplotsRegistry.cartesian]};
+        expect(getLayoutValObject(layoutCartesian, ['xaxis', 'title']))
             .toBe(cartesianAttrs.title);
-        expect(getLayoutValObject(['yaxis', 'tickfont', 'family']))
+        expect(getLayoutValObject(layoutCartesian, ['yaxis', 'tickfont', 'family']))
             .toBe(cartesianAttrs.tickfont.family);
-        expect(getLayoutValObject(['xaxis3', 'range', 1]))
+        expect(getLayoutValObject(layoutCartesian, ['xaxis3', 'range', 1]))
             .toBe(cartesianAttrs.range.items[1]);
-        expect(getLayoutValObject(['yaxis12', 'dtick']))
+        expect(getLayoutValObject(layoutCartesian, ['yaxis12', 'dtick']))
             .toBe(cartesianAttrs.dtick);
+
+        // not found when cartesian is unused
+        expect(getLayoutValObject(blankLayout, ['xaxis', 'title'])).toBe(false);
+        expect(getLayoutValObject(blankLayout, ['yaxis', 'tickfont', 'family'])).toBe(false);
+        expect(getLayoutValObject(blankLayout, ['xaxis3', 'range', 1])).toBe(false);
+        expect(getLayoutValObject(blankLayout, ['yaxis12', 'dtick'])).toBe(false);
 
         // improper axis names
         [
             'xaxis0', 'yaxis1', 'xaxis2a', 'yaxis3x3', 'zaxis', 'aaxis'
         ].forEach(function(name) {
-            expect(getLayoutValObject([name, 'dtick'])).toBe(false, name);
+            expect(getLayoutValObject(layoutCartesian, [name, 'dtick'])).toBe(false, name);
         });
     });
 
-    it('finds 3d subplot attributes', function() {
-        expect(getLayoutValObject(['scene', 'zaxis', 'spikesides']))
+    it('finds 3d subplot attributes if 3d is present', function() {
+        var layout3D = {_basePlotModules: [Registry.subplotsRegistry.gl3d]};
+        expect(getLayoutValObject(layout3D, ['scene', 'zaxis', 'spikesides']))
             .toBe(gl3dAttrs.zaxis.spikesides);
-        expect(getLayoutValObject(['scene45', 'bgcolor']))
+        expect(getLayoutValObject(layout3D, ['scene45', 'bgcolor']))
             .toBe(gl3dAttrs.bgcolor);
 
+        // not found when the gl3d is unused
+        expect(getLayoutValObject(blankLayout, ['scene', 'zaxis', 'spikesides'])).toBe(false);
+        expect(getLayoutValObject(blankLayout, ['scene45', 'bgcolor'])).toBe(false);
+
         // improper scene names
-        expect(getLayoutValObject(['scene0', 'bgcolor'])).toBe(false);
-        expect(getLayoutValObject(['scene1', 'bgcolor'])).toBe(false);
-        expect(getLayoutValObject(['scene2k', 'bgcolor'])).toBe(false);
+        expect(getLayoutValObject(layout3D, ['scene0', 'bgcolor'])).toBe(false);
+        expect(getLayoutValObject(layout3D, ['scene1', 'bgcolor'])).toBe(false);
+        expect(getLayoutValObject(layout3D, ['scene2k', 'bgcolor'])).toBe(false);
     });
 
     it('finds polar attributes', function() {
-        expect(getLayoutValObject(['direction']))
+        expect(getLayoutValObject(blankLayout, ['direction']))
             .toBe(polarLayoutAttrs.layout.direction);
 
-        expect(getLayoutValObject(['radialaxis', 'range', 0]))
+        expect(getLayoutValObject(blankLayout, ['radialaxis', 'range', 0]))
             .toBe(polarLayoutAttrs.radialaxis.range.items[0]);
 
-        expect(getLayoutValObject(['angularaxis', 'domain']))
+        expect(getLayoutValObject(blankLayout, ['angularaxis', 'domain']))
             .toBe(polarLayoutAttrs.angularaxis.domain);
+    });
+
+    it('lets gl2d override cartesian & global attrs', function() {
+        var svgModule = Registry.subplotsRegistry.cartesian;
+        var gl2dModule = Registry.subplotsRegistry.gl2d;
+        var layoutSVG = {_basePlotModules: [svgModule]};
+        var layoutGL2D = {_basePlotModules: [gl2dModule]};
+        var combinedLayout1 = {_basePlotModules: [svgModule, gl2dModule]};
+        var combinedLayout2 = {_basePlotModules: [gl2dModule, svgModule]};
+
+        var bgParts = ['plot_bgcolor'];
+        var baseBG = baseLayoutAttrs.plot_bgcolor;
+        var gl2dBG = gl2dModule.baseLayoutAttrOverrides.plot_bgcolor;
+        expect(getLayoutValObject(blankLayout, bgParts)).toBe(baseBG);
+        expect(getLayoutValObject(layoutSVG, bgParts)).toBe(baseBG);
+        expect(getLayoutValObject(layoutGL2D, bgParts)).toBe(gl2dBG);
+        expect(getLayoutValObject(combinedLayout1, bgParts)).toBe(gl2dBG);
+        expect(getLayoutValObject(combinedLayout2, bgParts)).toBe(gl2dBG);
+
+        var ticklenParts = ['xaxis4', 'ticklen'];
+        var svgTicklen = svgModule.layoutAttributes.ticklen;
+        var gl2dTicklen = gl2dModule.layoutAttrOverrides.ticklen;
+        expect(getLayoutValObject(blankLayout, ticklenParts)).toBe(false);
+        expect(getLayoutValObject(layoutSVG, ticklenParts)).toBe(svgTicklen);
+        expect(getLayoutValObject(layoutGL2D, ticklenParts)).toBe(gl2dTicklen);
+        expect(getLayoutValObject(combinedLayout1, ticklenParts)).toBe(gl2dTicklen);
+        expect(getLayoutValObject(combinedLayout2, ticklenParts)).toBe(gl2dTicklen);
     });
 });

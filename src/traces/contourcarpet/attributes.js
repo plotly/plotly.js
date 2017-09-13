@@ -24,6 +24,7 @@ module.exports = extendFlat({}, {
     carpet: {
         valType: 'string',
         role: 'info',
+        editType: 'docalc',
         description: [
             'The `carpet` of the carpet axes on which this contour trace lies'
         ].join(' ')
@@ -45,6 +46,7 @@ module.exports = extendFlat({}, {
         flags: ['lines', 'fill'],
         extras: ['none'],
         role: 'info',
+        editType: 'docalc',
         description: ['The mode.'].join(' ')
     },
 
@@ -53,6 +55,7 @@ module.exports = extendFlat({}, {
     fillcolor: {
         valType: 'color',
         role: 'style',
+        editType: 'docalc',
         description: [
             'Sets the fill color.',
             'Defaults to a half-transparent variant of the line color,',
@@ -151,7 +154,8 @@ module.exports = extendFlat({}, {
                 '*value* is expected to be an array with as many items as',
                 'the desired set elements.'
             ].join(' ')
-        }
+        },
+        editType: 'docalc'
     },
 
     line: {
@@ -168,7 +172,8 @@ module.exports = extendFlat({}, {
                 'Sets the amount of smoothing for the contour lines,',
                 'where *0* corresponds to no smoothing.'
             ].join(' ')
-        })
+        }),
+        editType: 'doplot'
     }
 },
     colorscaleAttrs,

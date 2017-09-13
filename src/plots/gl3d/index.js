@@ -9,6 +9,9 @@
 
 'use strict';
 
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var fxAttrs = require('../../components/fx/layout_attributes');
+
 var Scene = require('./scene');
 var Plots = require('../plots');
 var Lib = require('../../lib');
@@ -29,6 +32,13 @@ exports.idRegex = exports.attrRegex = Lib.counterRegex('scene');
 exports.attributes = require('./layout/attributes');
 
 exports.layoutAttributes = require('./layout/layout_attributes');
+
+exports.baseLayoutAttrOverrides = overrideAll({
+    hoverlabel: fxAttrs.hoverlabel
+    // dragmode needs docalc but only when transitioning TO lasso or select
+    // so for now it's left inside _relayout
+    // dragmode: fxAttrs.dragmode
+}, 'doplot', 'nested');
 
 exports.supplyLayoutDefaults = require('./layout/defaults');
 

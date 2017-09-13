@@ -48,8 +48,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(a && len < a.length) traceOut.a = a.slice(0, len);
     if(b && len < b.length) traceOut.b = b.slice(0, len);
 
-    coerce('sum');
-
     coerce('text');
 
     var defaultMode = len < constants.PTS_LINESONLY ? 'lines+markers' : 'lines';
