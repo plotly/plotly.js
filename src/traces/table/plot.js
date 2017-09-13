@@ -336,7 +336,6 @@ function splitToPanels(d) {
     var headerPanel = extendFlat({}, d, {
         key: 'header',
         type: 'header',
-        anchor: 0,
         page: 0,
         dragHandle: true,
         values: d.calcdata.headerCells.values[d.specIndex],
@@ -346,7 +345,6 @@ function splitToPanels(d) {
     var revolverPanel1 = extendFlat({}, d, {
         key: 'cells1',
         type: 'cells',
-        anchor: 0,
         page: 0,
         dragHandle: false,
         values: d.calcdata.cells.values[d.specIndex],
@@ -355,7 +353,6 @@ function splitToPanels(d) {
     var revolverPanel2 = extendFlat({}, d, {
         key: 'cells2',
         type: 'cells',
-        anchor: 0,
         page: -1,
         dragHandle: false,
         values: d.calcdata.cells.values[d.specIndex],
@@ -402,21 +399,20 @@ function makeDragRow(cellsColumnBlock) {
                 var scrollHeight = d.calcdata.groupHeight - headerHeight;
                 var bottom = firstRowAnchor(blocks, blocks.length) - scrollHeight;
                 var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom, calcdata.scrollY));
-                if(d.page < 0 || direction === 'down' && scrollY - d.anchor > rowsHeight(currentBlock, Infinity)) {
+                var dAnchor = firstRowAnchor(blocks, d.page);
+                if(d.page < 0 || direction === 'down' && scrollY - dAnchor > rowsHeight(currentBlock, Infinity)) {
                     if(d.page + 2 < blocks.length) {
                         d.page += 2;
-                        d.anchor = firstRowAnchor(blocks, d.page);
                         anchorsChanged.push(d.key);
                     }
-                } else if(direction === 'up' && d.anchor > scrollY + scrollHeight) {
+                } else if(direction === 'up' && dAnchor > scrollY + scrollHeight) {
                     if(d.page - 2 >= 0) {
                         d.page -= 2;
-                        d.anchor = firstRowAnchor(blocks, d.page);
                         anchorsChanged.push(d.key);
                     }
                 }
 
-                var yTranslate = d.anchor - scrollY;
+                var yTranslate = dAnchor - scrollY;
 
                 return 'translate(0 ' + yTranslate + ')';
             });
@@ -477,7 +473,7 @@ function setCellHeightAndPositionY(columnCell) {
             var l = getBlock(d);
             var rowAnchor = rowsHeight(l, d.key);
 
-            var rowOffs = firstRowAnchor(d.rowBlocks, l.key) + rowAnchor - d.column.anchor;
+            var rowOffs = firstRowAnchor(d.rowBlocks, l.key) + rowAnchor - firstRowAnchor(d.rowBlocks, d.page);
             var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + rowsHeight(n, Infinity)}, 0);
             var yOffset = rowOffs + headerHeight;
             return 'translate(' + 0 + ' ' + yOffset + ')';
