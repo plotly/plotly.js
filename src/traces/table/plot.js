@@ -399,8 +399,6 @@ function makeDragRow(cellsColumnBlock) {
         var anchorsChanged = [];
         cellsColumnBlock
             .attr('transform', function (d) {
-                //var blocks = d.rowBlocks;
-                var currentBlock = blocks[d.page];
                 var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
                 var scrollHeight = d.calcdata.groupHeight - headerHeight;
                 var bottom = firstRowAnchor(blocks, blocks.length);
@@ -415,7 +413,7 @@ function makeDragRow(cellsColumnBlock) {
                     }
                 }
                 console.log('pages:', pages);
-                if(d.page < 0 || direction === 'down' && scrollY - dAnchor > rowsHeight(currentBlock, Infinity)) {
+                if(d.page < 0 || direction === 'down' && scrollY - dAnchor > rowsHeight(blocks[d.page], Infinity)) {
                     if(d.page + 2 < blocks.length) {
                         d.page += 2;
                         anchorsChanged.push(d.key);
