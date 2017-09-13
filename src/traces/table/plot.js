@@ -389,6 +389,8 @@ function overlap(a, b) {
 }
 
 function makeDragRow(cellsColumnBlock) {
+    var d = cellsColumnBlock[0][0].__data__;
+    var blocks = d.rowBlocks;
     return function dragRow (d) {
         var calcdata = d.calcdata;
         var direction = d3.event.dy < 0 ? 'down' : d3.event.dy > 0 ? 'up' : null;
@@ -397,7 +399,7 @@ function makeDragRow(cellsColumnBlock) {
         var anchorsChanged = [];
         cellsColumnBlock
             .attr('transform', function (d) {
-                var blocks = d.rowBlocks;
+                //var blocks = d.rowBlocks;
                 var currentBlock = blocks[d.page];
                 var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
                 var scrollHeight = d.calcdata.groupHeight - headerHeight;
