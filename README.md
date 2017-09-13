@@ -3,6 +3,8 @@
 [![npm version](https://badge.fury.io/js/plotly.js.svg)](https://badge.fury.io/js/plotly.js)
 [![circle ci](https://circleci.com/gh/plotly/plotly.js.png?&style=shield&circle-token=1f42a03b242bd969756fc3e53ede204af9b507c0)](https://circleci.com/gh/plotly/plotly.js)
 
+🎨 📈 🗽 2 day master class for Plotly.js in NYC, [November 16-17](https://plotcon.plot.ly/workshops)
+
 Built on top of [d3.js](http://d3js.org/) and [stack.gl](http://stack.gl/),
 plotly.js is a high-level, declarative charting library. plotly.js ships with over 20
 chart types, including scientific charts, 3D graphs, statistical charts, SVG maps, financial charts,
