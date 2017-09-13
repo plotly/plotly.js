@@ -391,8 +391,8 @@ function overlap(a, b) {
 function makeDragRow(cellsColumnBlock) {
     var d = cellsColumnBlock[0][0].__data__;
     var blocks = d.rowBlocks;
+    var calcdata = d.calcdata;
     return function dragRow (d) {
-        var calcdata = d.calcdata;
         var direction = d3.event.dy < 0 ? 'down' : d3.event.dy > 0 ? 'up' : null;
         if(!direction) return;
         calcdata.scrollY -= d3.event.dy;
