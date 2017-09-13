@@ -396,13 +396,13 @@ function makeDragRow(cellsColumnBlock) {
         var direction = d3.event.dy < 0 ? 'down' : d3.event.dy > 0 ? 'up' : null;
         if(!direction) return;
         calcdata.scrollY -= d3.event.dy;
+        var bottom = firstRowAnchor(blocks, blocks.length);
+        var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
+        var scrollHeight = d.calcdata.groupHeight - headerHeight;
+        var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom - scrollHeight, calcdata.scrollY));
         var anchorsChanged = [];
         cellsColumnBlock
             .attr('transform', function (d) {
-                var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
-                var scrollHeight = d.calcdata.groupHeight - headerHeight;
-                var bottom = firstRowAnchor(blocks, blocks.length);
-                var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom - scrollHeight, calcdata.scrollY));
                 var dAnchor = firstRowAnchor(blocks, d.page);
                 var pages = [];
                 for(var p = 0; p < blocks.length; p++) {
