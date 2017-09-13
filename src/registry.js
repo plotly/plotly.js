@@ -12,9 +12,12 @@
 var Loggers = require('./lib/loggers');
 var noop = require('./lib/noop');
 var pushUnique = require('./lib/push_unique');
+var ExtendModule = require('./lib/extend');
+var extendFlat = ExtendModule.extendFlat;
+var extendDeep = ExtendModule.extendDeep;
+
 var basePlotAttributes = require('./plots/attributes');
 var baseLayoutAttributes = require('./plots/layout_attributes');
-var Lib = require('./lib');
 
 exports.modules = {};
 exports.allCategories = {};
@@ -68,7 +71,7 @@ exports.register = function(_module, thisType, categoriesIn, meta) {
      * (at least after https://github.com/plotly/documentation/issues/202 gets done!)
      */
     if(_module.layoutAttributes) {
-        Lib.extendFlat(exports.traceLayoutAttributes, _module.layoutAttributes);
+        extendFlat(exports.traceLayoutAttributes, _module.layoutAttributes);
     }
 };
 
@@ -137,7 +140,7 @@ exports.registerComponent = function(_module) {
     }
 
     if(_module.schema && _module.schema.layout) {
-        Lib.extendDeep(baseLayoutAttributes, _module.schema.layout);
+        extendDeep(baseLayoutAttributes, _module.schema.layout);
     }
 };
 
@@ -166,7 +169,7 @@ function mergeComponentAttrsToTrace(componentName, traceType) {
 
     var traceAttrs = componentSchema.traces[traceType];
     if(traceAttrs) {
-        Lib.extendDeep(exports.modules[traceType]._module.attributes, traceAttrs);
+        extendDeep(exports.modules[traceType]._module.attributes, traceAttrs);
     }
 }
 
@@ -176,7 +179,7 @@ function mergeComponentAttrsToTransform(componentName, transformType) {
 
     var transformAttrs = componentSchema.transforms[transformType];
     if(transformAttrs) {
-        Lib.extendDeep(exports.transformsRegistry[transformType].attributes, transformAttrs);
+        extendDeep(exports.transformsRegistry[transformType].attributes, transformAttrs);
     }
 }
 
@@ -191,7 +194,7 @@ function mergeComponentAttrsToSubplot(componentName, subplotName) {
 
     var componentLayoutAttrs = componentSchema.subplots[subplotAttr];
     if(subplotAttrs && componentLayoutAttrs) {
-        Lib.extendDeep(subplotAttrs, componentLayoutAttrs);
+        extendDeep(subplotAttrs, componentLayoutAttrs);
     }
 }
 
