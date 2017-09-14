@@ -479,7 +479,7 @@ function finalizeYPositionMaker(columnBlock, element, d) {
                 var element = this;
                 var box = element.parentNode.getBoundingClientRect();
                 var rectBox = d3.select(element.parentNode).select('.cellRect').node().getBoundingClientRect();
-                var yPosition = (rectBox.top - box.top + c.cellPad)
+                var yPosition = (rectBox.top - box.top + c.cellPad);
                 return 'translate(' + c.cellPad + ' ' + yPosition + ')';
             });
     };
@@ -487,24 +487,20 @@ function finalizeYPositionMaker(columnBlock, element, d) {
 
 
 function setCellHeightAndPositionY(columnCell) {
-
     columnCell
         .attr('transform', function(d) {
-
             var l = getBlock(d);
             var rowAnchor = rowsHeight(l, d.key);
-
-            var rowOffs = firstRowAnchor(d.rowBlocks, l.key) + rowAnchor - firstRowAnchor(d.rowBlocks, d.page);
+            var rowOffset = firstRowAnchor(d.rowBlocks, l.key) + rowAnchor - firstRowAnchor(d.rowBlocks, d.page);
             var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + rowsHeight(n, Infinity)}, 0);
-            var yOffset = rowOffs + headerHeight;
+            var yOffset = rowOffset + headerHeight;
             return 'translate(' + 0 + ' ' + yOffset + ')';
         })
         .select('.cellRect')
         .attr('height', function(d) {
                 var l = getBlock(d);
                 return getRow(l, d.key).rowHeight;
-            }
-        );
+            });
 }
 
 function firstRowAnchor(rowBlocks, page) {
