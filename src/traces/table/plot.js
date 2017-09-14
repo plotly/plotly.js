@@ -337,6 +337,7 @@ function splitToPanels(d) {
         key: 'header',
         type: 'header',
         page: 0,
+        currentRepaint: [null, null],
         dragHandle: true,
         values: d.calcdata.headerCells.values[d.specIndex],
         rowBlocks: d.calcdata.headerRowBlocks,
@@ -346,6 +347,7 @@ function splitToPanels(d) {
         key: 'cells1',
         type: 'cells',
         page: 0,
+        currentRepaint: [null, null],
         dragHandle: false,
         values: d.calcdata.cells.values[d.specIndex],
         rowBlocks: d.calcdata.rowBlocks
@@ -354,6 +356,7 @@ function splitToPanels(d) {
         key: 'cells2',
         type: 'cells',
         page: 0,
+        currentRepaint: [null, null],
         dragHandle: false,
         values: d.calcdata.cells.values[d.specIndex],
         rowBlocks: d.calcdata.rowBlocks
@@ -434,16 +437,22 @@ function makeDragRow(cellsColumnBlock) {
                 var yTranslate = firstRowAnchor(blocks, dPage) - scrollY;
                 return 'translate(0 ' + yTranslate + ')';
             });
-        if(pages[0] !== prevPages[0] || pages[1] !== prevPages[1]) {
-            window.clearTimeout(d.currentRepaint);
-            d.currentRepaint = window.setTimeout(function () {
-                // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
-                // some repaints invisible ie. wasteful (DOM work blocks the main thread)
-                var toRerender = cellsColumnBlock.filter(function (d, i) {return pages[i] !== prevPages[i];});
-                renderColumnBlocks(gd, toRerender, toRerender);
-                prevPages = pages.slice();
-            });
+
+        function rerenderIfNeeded(revolverIndex) {
+            if(pages[revolverIndex] !== prevPages[revolverIndex]) {
+                window.clearTimeout(d.currentRepaint[revolverIndex]);
+                d.currentRepaint[revolverIndex] = window.setTimeout(function () {
+                    // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
+                    // some repaints invisible ie. wasteful (DOM work blocks the main thread)
+                    var toRerender = cellsColumnBlock.filter(function (d, i) {return i === revolverIndex && pages[i] !== prevPages[i];});
+                    renderColumnBlocks(gd, toRerender, toRerender);
+                    prevPages[revolverIndex] = pages[revolverIndex];
+                });
+            }
         }
+
+        rerenderIfNeeded(0);
+        rerenderIfNeeded(1);
     }
 }
 
