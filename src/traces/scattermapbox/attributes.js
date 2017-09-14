@@ -62,8 +62,7 @@ module.exports = overrideAll({
 
     line: {
         color: lineAttrs.color,
-        width: lineAttrs.width,
-        editType: 'docalc'
+        width: lineAttrs.width
 
         // TODO
         // dash: dash
@@ -98,7 +97,6 @@ module.exports = overrideAll({
         reversescale: markerAttrs.reversescale,
         showscale: markerAttrs.showscale,
         colorbar: colorbarAttrs,
-        editType: 'docalc'
 
         // line
     },
@@ -112,4 +110,4 @@ module.exports = overrideAll({
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['lon', 'lat', 'text', 'name']
     })
-}, 'docalc');
+}, 'docalc', 'nested');

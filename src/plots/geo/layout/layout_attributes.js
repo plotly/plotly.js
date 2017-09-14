@@ -255,4 +255,4 @@ module.exports = overrideAll({
     },
     lonaxis: geoAxesAttrs,
     lataxis: geoAxesAttrs
-}, 'doplot', true);
+}, 'doplot', 'from-root');

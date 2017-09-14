@@ -285,4 +285,4 @@ module.exports = overrideAll({
         role: 'style',
         description: 'Sets the length in pixels of minor step tick marks'
     }
-}, 'doarraydraw', true);
+}, 'doarraydraw', 'from-root');

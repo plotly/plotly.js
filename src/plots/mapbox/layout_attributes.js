@@ -263,4 +263,4 @@ module.exports = overrideAll({
             textposition: Lib.extendFlat({}, textposition, { arrayOk: false })
         }
     }
-}, 'doplot', true);
+}, 'doplot', 'from-root');

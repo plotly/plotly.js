@@ -65,18 +65,20 @@ module.exports = {
     overrideAll: overrideAll
 };
 
-/*
+/**
  * For attributes that are largely copied from elsewhere into a plot type that doesn't
  * support partial redraws - overrides the editType field of all attributes in the object
  *
  * @param {object} attrs: the attributes to override. Will not be mutated.
  * @param {string} editTypeOverride: the new editType to use
- * @param {bool|'nested'} overrideContainers: should we override editType for containers or just
- *   `valObject`s? 'nested' will override editType for all but the top level. Containers below
- *   the absolute top level (trace or layout root) DO need an editType, to handle the case
- *   where you edit the whole container, but in some cases you want to provide it explicitly
- *   as it may be more expansive than the attribute editTypes, since you don't know if there
- *   is a data array in the container (which if provided directly triggers an automatic docalc)
+ * @param {'nested'|'from-root'} overrideContainers:
+ *   - 'nested' will override editType for nested containers but not the root.
+ *   - 'from-root' will also override editType of the root container.
+ *   Containers below the absolute top level (trace or layout root) DO need an
+ *   editType even if they are not `valObject`s themselves (eg `scatter.marker`)
+ *   to handle the case where you edit the whole container.
+ *
+ * @return {object} a new attributes object with `editType` modified as directed
  */
 function overrideAll(attrs, editTypeOverride, overrideContainers) {
     var out = extendFlat({}, attrs);
@@ -86,7 +88,7 @@ function overrideAll(attrs, editTypeOverride, overrideContainers) {
             out[key] = overrideOne(attr, editTypeOverride, overrideContainers, key);
         }
     }
-    if(overrideContainers === true) out.editType = editTypeOverride;
+    if(overrideContainers === 'from-root') out.editType = editTypeOverride;
 
     return out;
 }
@@ -99,7 +101,7 @@ function overrideOne(attr, editTypeOverride, overrideContainers, key) {
         if(Array.isArray(attr.items)) {
             out.items = new Array(attr.items.length);
             for(var i = 0; i < attr.items.length; i++) {
-                out.items[i] = overrideOne(attr.items[i], editTypeOverride, !!overrideContainers);
+                out.items[i] = overrideOne(attr.items[i], editTypeOverride, 'from-root');
             }
         }
         return out;
@@ -107,6 +109,6 @@ function overrideOne(attr, editTypeOverride, overrideContainers, key) {
     else {
         // don't provide an editType for the _deprecated container
         return overrideAll(attr, editTypeOverride,
-            (key.charAt(0) === '_') ? overrideContainers && 'nested' : !!overrideContainers);
+            (key.charAt(0) === '_') ? 'nested' : 'from-root');
     }
 }

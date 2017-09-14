@@ -113,4 +113,4 @@ module.exports = overrideAll({
     zeroline: axesAttrs.zeroline,
     zerolinecolor: axesAttrs.zerolinecolor,
     zerolinewidth: axesAttrs.zerolinewidth
-}, 'doplot', true);
+}, 'doplot', 'from-root');

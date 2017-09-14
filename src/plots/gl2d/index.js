@@ -34,7 +34,7 @@ exports.attributes = require('../cartesian/attributes');
 // this could potentially be just `layoutAttributes` but it would
 // still need special handling somewhere to give it precedence over
 // the svg version when both are in use on one plot
-exports.layoutAttrOverrides = overrideAll(Cartesian.layoutAttributes, 'doplot', true);
+exports.layoutAttrOverrides = overrideAll(Cartesian.layoutAttributes, 'doplot', 'from-root');
 
 // similar overrides for base plot attributes (and those added by components)
 exports.baseLayoutAttrOverrides = overrideAll({

@@ -45,8 +45,7 @@ function makeContourAttr(axLetter) {
         project: {
             x: makeContourProjAttr('x'),
             y: makeContourProjAttr('y'),
-            z: makeContourProjAttr('z'),
-            editType: 'docalc'
+            z: makeContourProjAttr('z')
         },
         color: {
             valType: 'color',
@@ -94,8 +93,7 @@ function makeContourAttr(axLetter) {
             max: 16,
             dflt: 2,
             description: 'Sets the width of the highlighted contour lines.'
-        },
-        editType: 'docalc'
+        }
     };
 }
 
@@ -138,8 +136,7 @@ module.exports = overrideAll({
     contours: {
         x: makeContourAttr('x'),
         y: makeContourAttr('y'),
-        z: makeContourAttr('z'),
-        editType: 'docalc'
+        z: makeContourAttr('z')
     },
     hidesurface: {
         valType: 'boolean',
@@ -177,8 +174,7 @@ module.exports = overrideAll({
             max: 1e5,
             dflt: 0,
             description: 'Numeric vector, representing the Z coordinate for each vertex.'
-        },
-        editType: 'docalc'
+        }
     },
 
     lighting: {
@@ -224,8 +220,7 @@ module.exports = overrideAll({
                 'Represents the reflectance as a dependency of the viewing angle; e.g. paper is reflective',
                 'when viewing it from the edge of the paper (almost 90 degrees), causing shine.'
             ].join(' ')
-        },
-        editType: 'docalc'
+        }
     },
 
     opacity: {
@@ -248,4 +243,4 @@ module.exports = overrideAll({
             description: 'Obsolete. Use `cmax` instead.'
         })
     }
-}, 'docalc');
+}, 'docalc', 'nested');
