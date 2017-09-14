@@ -393,6 +393,11 @@ function makeDragRow(cellsColumnBlock) {
     var blocks = d.rowBlocks;
     var calcdata = d.calcdata;
     var headerBlocks = d.rowBlocks[0].auxiliaryBlocks;
+
+    function calc(d, dyD3event) {
+
+    }
+
     return function dragRow (d) {
         var direction = d3.event.dy < 0 ? 'down' : d3.event.dy > 0 ? 'up' : null;
         if(!direction) return;
@@ -402,18 +407,20 @@ function makeDragRow(cellsColumnBlock) {
         var scrollHeight = d.calcdata.groupHeight - headerHeight;
         var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom - scrollHeight, calcdata.scrollY));
         var anchorsChanged = [];
+
+        var pages = [];
+        for(var p = 0; p < blocks.length; p++) {
+            var pTop = firstRowAnchor(blocks, p);
+            var pBottom = pTop + rowsHeight(blocks[p], Infinity);
+            if(overlap([scrollY, scrollY + scrollHeight], [pTop, pBottom])) {
+                pages.push(p);
+            }
+        }
+        console.log('pages:', pages);
+
         cellsColumnBlock
             .attr('transform', function (d) {
                 var dAnchor = firstRowAnchor(blocks, d.page);
-                var pages = [];
-                for(var p = 0; p < blocks.length; p++) {
-                    var pTop = firstRowAnchor(blocks, p);
-                    var pBottom = pTop + rowsHeight(blocks[p], Infinity);
-                    if(overlap([scrollY, scrollY + scrollHeight], [pTop, pBottom])) {
-                        pages.push(p);
-                    }
-                }
-                console.log('pages:', pages);
                 if(d.page < 0 || direction === 'down' && scrollY - dAnchor > rowsHeight(blocks[d.page], Infinity)) {
                     if(d.page + 2 < blocks.length) {
                         d.page += 2;
