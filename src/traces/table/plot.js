@@ -434,21 +434,22 @@ function makeDragRow(cellsColumnBlock) {
                 return 'translate(0 ' + yTranslate + ')';
             });
 
-        function rerenderIfNeeded(revolverIndex) {
-            if(pages[revolverIndex] !== prevPages[revolverIndex]) {
-                window.clearTimeout(d.currentRepaint[revolverIndex]);
-                d.currentRepaint[revolverIndex] = window.setTimeout(function () {
-                    // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
-                    // some repaints invisible ie. wasteful (DOM work blocks the main thread)
-                    var toRerender = cellsColumnBlock.filter(function (d, i) {return i === revolverIndex && pages[i] !== prevPages[i];});
-                    renderColumnBlocks(gd, toRerender, toRerender);
-                    prevPages[revolverIndex] = pages[revolverIndex];
-                });
-            }
-        }
+        // conditionally rerendering panel 0 and 1
+        conditionalPanelRerender(cellsColumnBlock, pages, prevPages, d, 0);
+        conditionalPanelRerender(cellsColumnBlock, pages, prevPages, d, 1);
+    }
+}
 
-        rerenderIfNeeded(0);
-        rerenderIfNeeded(1);
+function conditionalPanelRerender(cellsColumnBlock, pages, prevPages, d, revolverIndex) {
+    if(pages[revolverIndex] !== prevPages[revolverIndex]) {
+        window.clearTimeout(d.currentRepaint[revolverIndex]);
+        d.currentRepaint[revolverIndex] = window.setTimeout(function () {
+            // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
+            // some repaints invisible ie. wasteful (DOM work blocks the main thread)
+            var toRerender = cellsColumnBlock.filter(function (d, i) {return i === revolverIndex && pages[i] !== prevPages[i];});
+            renderColumnBlocks(gd, toRerender, toRerender);
+            prevPages[revolverIndex] = pages[revolverIndex];
+        });
     }
 }
 
