@@ -441,7 +441,8 @@ function makeDragRow(cellsColumnBlock) {
 }
 
 function conditionalPanelRerender(cellsColumnBlock, pages, prevPages, d, revolverIndex) {
-    if(pages[revolverIndex] !== prevPages[revolverIndex]) {
+    var shouldComponentUpdate = pages[revolverIndex] !== prevPages[revolverIndex];
+    if(shouldComponentUpdate) {
         window.clearTimeout(d.currentRepaint[revolverIndex]);
         d.currentRepaint[revolverIndex] = window.setTimeout(function () {
             // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
