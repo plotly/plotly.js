@@ -287,7 +287,7 @@ function renderCellText(cellText, allColumnBlock, columnCell) {
             var fragments = prefixSuffixedText.split(c.wrapSplitCharacter);
             var textToRender = fragments.join('<br>') + "<br> ";
             d.latex = latex;
-            d.wrappingNeeded = !latex;
+            d.wrappingNeeded = !d.wrapped && !latex;
             d.fragments = fragments.map(function(f) {return {fragment:f, width: null};})
             d.fragments.push({fragment: c.wrapSpacer, width: null})
             return textToRender;
@@ -484,14 +484,15 @@ function wrapText(columnBlock, element, d) {
                 cellTextHolder.selectAll('tspan.line').each(function(dd, i) {
                     fragments[i].width = this.getComputedTextLength();
                 });
-                d.value = 'kjhdlk<br>jkelrjlk'
+                d.value = 'kjhdlk<br>jkelrjlk';
+                d.wrapped = true;
             });
 
         // the pre-wrapped text was rendered only for the text measurements
         cellTextHolder.selectAll('tspan.line').remove();
 
         // resupply text, now wrapped
-        //renderCellText(cellTextHolder.select('.cellText'), allColumnBlock, columnCell);
+        renderCellText(cellTextHolder.select('.cellText'), columnBlock, d3.select(element.parentNode.parentNode));
 
         nextRenderCallback();
     };
