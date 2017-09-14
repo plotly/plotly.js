@@ -16,5 +16,6 @@ Scatter.name = 'scatterregl';
 Scatter.plot = require('./plot');
 Scatter.calc = require('./calc');
 Scatter.hoverPoints = require('./hover');
+Scatter.categories = ['gl', 'gl2d', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend', 'scatter-like'];
 
 module.exports = Scatter;
