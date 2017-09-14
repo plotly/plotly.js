@@ -392,12 +392,13 @@ function makeDragRow(cellsColumnBlock) {
     var d = cellsColumnBlock[0][0].__data__;
     var blocks = d.rowBlocks;
     var calcdata = d.calcdata;
+    var headerBlocks = d.rowBlocks[0].auxiliaryBlocks;
     return function dragRow (d) {
         var direction = d3.event.dy < 0 ? 'down' : d3.event.dy > 0 ? 'up' : null;
         if(!direction) return;
         calcdata.scrollY -= d3.event.dy;
         var bottom = firstRowAnchor(blocks, blocks.length);
-        var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
+        var headerHeight = headerBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
         var scrollHeight = d.calcdata.groupHeight - headerHeight;
         var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom - scrollHeight, calcdata.scrollY));
         var anchorsChanged = [];
