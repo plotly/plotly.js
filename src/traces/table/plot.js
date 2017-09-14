@@ -439,11 +439,8 @@ function makeDragRow(cellsColumnBlock) {
             d.currentRepaint = window.setTimeout(function () {
                 // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
                 // some repaints invisible ie. wasteful (DOM work blocks the main thread)
-                renderColumnBlocks(gd, cellsColumnBlock.filter(function (d, i) {
-                    return pages[i] !== prevPages[i];
-                }), cellsColumnBlock.filter(function (d, i) {
-                    return pages[i] !== prevPages[i];
-                }));
+                var toRerender = cellsColumnBlock.filter(function (d, i) {return pages[i] !== prevPages[i];});
+                renderColumnBlocks(gd, toRerender, toRerender);
                 prevPages = pages.slice();
             });
         }
