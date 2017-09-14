@@ -353,7 +353,7 @@ function splitToPanels(d) {
     var revolverPanel2 = extendFlat({}, d, {
         key: 'cells2',
         type: 'cells',
-        page: -1,
+        page: 0,
         dragHandle: false,
         values: d.calcdata.cells.values[d.specIndex],
         rowBlocks: d.calcdata.rowBlocks
@@ -394,9 +394,7 @@ function makeDragRow(cellsColumnBlock) {
     var calcdata = d.calcdata;
     var headerBlocks = d.rowBlocks[0].auxiliaryBlocks;
 
-    function calc(d, dyD3event) {
-
-    }
+    var prevPages = [0, 0];
 
     return function dragRow (d) {
         var direction = d3.event.dy < 0 ? 'down' : d3.event.dy > 0 ? 'up' : null;
@@ -416,38 +414,35 @@ function makeDragRow(cellsColumnBlock) {
                 pages.push(p);
             }
         }
-        console.log('pages:', pages);
+        if(pages.length === 1) {
+            if(pages[0] === blocks.length - 1) {
+                pages.unshift(pages[0] - 1)
+            } else {
+                pages.push(pages[0] + 1);
+            }
+        }
+
+        var processedPages = pages[0];
 
         cellsColumnBlock
-            .attr('transform', function (d) {
-                var dAnchor = firstRowAnchor(blocks, d.page);
-                if(d.page < 0 || direction === 'down' && scrollY - dAnchor > rowsHeight(blocks[d.page], Infinity)) {
-                    if(d.page + 2 < blocks.length) {
-                        d.page += 2;
-                        anchorsChanged.push(d.key);
-                    }
-                } else if(direction === 'up' && dAnchor > scrollY + scrollHeight) {
-                    if(d.page - 2 >= 0) {
-                        d.page -= 2;
-                        anchorsChanged.push(d.key);
-                    }
-                }
-
-                var yTranslate = dAnchor - scrollY;
-
+            .attr('transform', function (d, i) {
+                var dPage = processedPages + i;
+                d.page = dPage;
+                var yTranslate = firstRowAnchor(blocks, dPage) - scrollY;
                 return 'translate(0 ' + yTranslate + ')';
             });
-        if(anchorsChanged.length) {
+        if(pages[0] !== prevPages[0] || pages[1] !== prevPages[1]) {
             window.clearTimeout(d.currentRepaint);
             d.currentRepaint = window.setTimeout(function () {
                 // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
                 // some repaints invisible ie. wasteful (DOM work blocks the main thread)
                 renderColumnBlocks(gd, cellsColumnBlock.filter(function (d) {
-                    return anchorsChanged.indexOf(d.key) !== -1;
+                    return true || anchorsChanged.indexOf(d.key) !== -1;
                 }), cellsColumnBlock.filter(function (d) {
-                    return anchorsChanged.indexOf(d.key) !== -1;
+                    return true || anchorsChanged.indexOf(d.key) !== -1;
                 }));
             });
+            prevPages = pages.slice();
         }
     }
 }
