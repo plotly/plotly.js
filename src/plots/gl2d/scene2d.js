@@ -111,7 +111,7 @@ proto.makeFramework = function() {
         this.gl = STATIC_CONTEXT;
     }
     else {
-        var liveCanvas = document.createElement('canvas');
+        var liveCanvas = this.container.querySelector('.gl-canvas-focus');
 
         var gl = getContext({
             canvas: liveCanvas,
@@ -139,7 +139,7 @@ proto.makeFramework = function() {
     // disabling user select on the canvas
     // sanitizes double-clicks interactions
     // ref: https://github.com/plotly/plotly.js/issues/744
-    canvas.className += 'user-select-none';
+    canvas.className += ' user-select-none';
 
     // create SVG container for hover text
     var svgContainer = this.svgContainer = document.createElementNS(
@@ -158,7 +158,6 @@ proto.makeFramework = function() {
 
     // append canvas, hover svg and mouse div to container
     var container = this.container;
-    container.appendChild(canvas);
     container.appendChild(svgContainer);
     container.appendChild(mouseContainer);
 
@@ -369,7 +368,6 @@ proto.destroy = function() {
 
     this.glplot.dispose();
 
-    if(!this.staticPlot) this.container.removeChild(this.canvas);
     this.container.removeChild(this.svgContainer);
     this.container.removeChild(this.mouseContainer);
 
