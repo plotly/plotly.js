@@ -35,9 +35,6 @@ exports.layoutAttributes = require('./layout/layout_attributes');
 
 exports.baseLayoutAttrOverrides = overrideAll({
     hoverlabel: fxAttrs.hoverlabel
-    // dragmode needs docalc but only when transitioning TO lasso or select
-    // so for now it's left inside _relayout
-    // dragmode: fxAttrs.dragmode
 }, 'doplot', 'nested');
 
 exports.supplyLayoutDefaults = require('./layout/defaults');
