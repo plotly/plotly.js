@@ -12,42 +12,69 @@ var Lib = require('../lib');
 var extendFlat = Lib.extendFlat;
 var isPlainObject = Lib.isPlainObject;
 
+var traceOpts = {
+    valType: 'flaglist',
+    extras: ['none'],
+    flags: ['calc', 'calcIfAutorange', 'plot', 'style', 'colorbars'],
+    description: [
+        'trace attributes should include an `editType` string matching this flaglist.',
+        '*calc* is the most extensive: a full `Plotly.plot` starting by clearing `gd.calcdata`',
+        'to force it to be regenerated',
+        '*calcIfAutorange* does a full `Plotly.plot`, but only clears and redoes `gd.calcdata`',
+        'if there is at least one autoranged axis.',
+        '*plot* calls `Plotly.plot` but without first clearing `gd.calcdata`.',
+        '*style* only calls `module.style` for all trace modules and redraws the legend.',
+        '*colorbars* only redraws colorbars.'
+    ].join(' ')
+};
+
+var layoutOpts = {
+    valType: 'flaglist',
+    extras: ['none'],
+    flags: [
+        'calc', 'calcIfAutorange', 'plot', 'legend', 'ticks',
+        'layoutstyle', 'modebar', 'camera', 'arraydraw'
+    ],
+    description: [
+        'layout attributes should include an `editType` string matching this flaglist.',
+        '*calc* is the most extensive: a full `Plotly.plot` starting by clearing `gd.calcdata`',
+        'to force it to be regenerated',
+        '*calcIfAutorange* does a full `Plotly.plot`, but only clears and redoes `gd.calcdata`',
+        'if there is at least one autoranged axis.',
+        '*plot* calls `Plotly.plot` but without first clearing `gd.calcdata`.',
+        '*legend* only redraws the legend.',
+        '*ticks* only redraws axis ticks, labels, and gridlines.',
+        '*layoutstyle* reapplies global and SVG cartesian axis styles.',
+        '*modebar* just updates the modebar.',
+        '*camera* just updates the camera settings for gl3d scenes.',
+        '*arraydraw* allows component arrays to invoke the redraw routines just for the',
+        'component(s) that changed.'
+    ].join(' ')
+};
+
+// flags for inside restyle/relayout include a few extras
+// that shouldn't be used in attributes, to deal with certain
+// combinations and conditionals efficiently
+var traceEditTypeFlags = traceOpts.flags.slice()
+    .concat(['clearCalc', 'fullReplot']);
+
+var layoutEditTypeFlags = layoutOpts.flags.slice()
+    .concat('layoutReplot');
+
 module.exports = {
+    traces: traceOpts,
+    layout: layoutOpts,
     /*
      * default (all false) edit flags for restyle (traces)
      * creates a new object each call, so the caller can mutate freely
      */
-    traces: function() {
-        return {
-            calc: false,
-            calcIfAutorange: false,
-            plot: false,
-            style: false,
-            colorbars: false,
-            autorangeOn: false,
-            clearCalc: false,
-            fullReplot: false
-        };
-    },
+    traceFlags: function() { return falseObj(traceEditTypeFlags); },
 
     /*
      * default (all false) edit flags for relayout
      * creates a new object each call, so the caller can mutate freely
      */
-    layout: function() {
-        return {
-            legend: false,
-            ticks: false,
-            layoutstyle: false,
-            plot: false,
-            calc: false,
-            calcIfAutorange: false,
-            modebar: false,
-            camera: false,
-            arraydraw: false,
-            layoutReplot: false
-        };
-    },
+    layoutFlags: function() { return falseObj(layoutEditTypeFlags); },
 
     /*
      * update `flags` with the `editType` values found in `attr`
@@ -64,6 +91,12 @@ module.exports = {
 
     overrideAll: overrideAll
 };
+
+function falseObj(keys) {
+    var out = {};
+    for(var i = 0; i < keys.length; i++) out[keys[i]] = false;
+    return out;
+}
 
 /**
  * For attributes that are largely copied from elsewhere into a plot type that doesn't

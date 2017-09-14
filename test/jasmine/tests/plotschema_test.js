@@ -242,17 +242,6 @@ describe('plot schema', function() {
     });
 
     it('has valid `editType` in all attributes and containers', function() {
-        var traceEditTypeOpts = {
-            valType: 'flaglist',
-            extras: ['none'],
-            flags: Object.keys(editTypes.traces)
-        };
-        var layoutEditTypeOpts = {
-            valType: 'flaglist',
-            extras: ['none'],
-            flags: Object.keys(editTypes.layout)
-        };
-
         function shouldHaveEditType(attr, attrName) {
             // ensure any object (container or regular val object) has editType
             // array containers have extra nesting where editType would be redundant
@@ -262,21 +251,21 @@ describe('plot schema', function() {
 
         assertTraceSchema(function(attr, attrName, attrs, level, attrString) {
             if(shouldHaveEditType(attr, attrName)) {
-                expect(Lib.validate(attr.editType, traceEditTypeOpts))
+                expect(Lib.validate(attr.editType, editTypes.traces))
                     .toBe(true, attrString + ': ' + JSON.stringify(attr.editType));
             }
         });
 
         assertTransformSchema(function(attr, attrName, attrs, level, attrString) {
             if(shouldHaveEditType(attr, attrName)) {
-                expect(Lib.validate(attr.editType, traceEditTypeOpts))
+                expect(Lib.validate(attr.editType, editTypes.traces))
                     .toBe(true, attrString + ': ' + JSON.stringify(attr.editType));
             }
         });
 
         assertLayoutSchema(function(attr, attrName, attrs, level, attrString) {
             if(shouldHaveEditType(attr, attrName)) {
-                expect(Lib.validate(attr.editType, layoutEditTypeOpts))
+                expect(Lib.validate(attr.editType, editTypes.layout))
                     .toBe(true, attrString + ': ' + JSON.stringify(attr.editType));
             }
         });

@@ -63,11 +63,29 @@ exports.get = function() {
 
     return {
         defs: {
-            valObjects: Lib.valObjects,
+            valObjects: Lib.valObjectMeta,
             metaKeys: UNDERSCORE_ATTRS.concat(['description', 'role']),
-            editTypes: {
-                traces: editTypes.traces(),
-                layout: editTypes.layout()
+            editType: {
+                traces: editTypes.traces,
+                layout: editTypes.layout
+            },
+            impliedEdits: {
+                description: [
+                    'Sometimes when an attribute is changed, other attributes',
+                    'must be altered as well in order to achieve the intended',
+                    'result. For example, when `range` is specified, it is',
+                    'important to set `autorange` to `false` or the new `range`',
+                    'value would be lost in the redraw. `impliedEdits` is the',
+                    'mechanism to do this: `impliedEdits: {autorange: false}`.',
+                    'Each key is a relative paths to the attribute string to',
+                    'change, using *^* to ascend into the parent container,',
+                    'for example `range[0]` has `impliedEdits: {*^autorange*: false}`.',
+                    'A value of `undefined` means that the attribute will not be',
+                    'changed, but its previous value should be recorded in case',
+                    'we want to reverse this change later. For example, `autorange`',
+                    'has `impliedEdits: {*range[0]*: undefined, *range[1]*:undefined}',
+                    'because the range will likely be changed by redraw.'
+                ].join(' ')
             }
         },
 

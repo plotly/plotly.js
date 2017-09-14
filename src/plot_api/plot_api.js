@@ -1331,7 +1331,7 @@ function _restyle(gd, aobj, _traces) {
     var traces = helpers.coerceTraceIndices(gd, _traces);
 
     // initialize flags
-    var flags = editTypes.traces();
+    var flags = editTypes.traceFlags();
 
     // copies of the change (and previous values of anything affected)
     // for the undo / redo queue
@@ -1585,9 +1585,14 @@ function _restyle(gd, aobj, _traces) {
     }
 
     // do we need to force a recalc?
-    Plotly.Axes.list(gd).forEach(function(ax) {
-        if(ax.autorange) flags.autorangeOn = true;
-    });
+    var autorangeOn = false;
+    var axList = Plotly.Axes.list(gd);
+    for(i = 0; i < axList.length; i++) {
+        if(axList[i].autorange) {
+            autorangeOn = true;
+            break;
+        }
+    }
 
     // check axes we've flagged for possible deletion
     // flagAxForDelete is a hash so we can make sure we only get each axis once
@@ -1610,7 +1615,7 @@ function _restyle(gd, aobj, _traces) {
     }
 
     // combine a few flags together;
-    if(flags.calc || (flags.calcIfAutorange && flags.autorangeOn)) {
+    if(flags.calc || (flags.calcIfAutorange && autorangeOn)) {
         flags.clearCalc = true;
     }
     if(flags.calc || flags.plot || flags.calcIfAutorange) {
@@ -1735,7 +1740,7 @@ function _relayout(gd, aobj) {
     }
 
     // initialize flags
-    var flags = editTypes.layout();
+    var flags = editTypes.layoutFlags();
 
     // copies of the change (and previous values of anything affected)
     // for the undo / redo queue

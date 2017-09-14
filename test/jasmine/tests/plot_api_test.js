@@ -2154,7 +2154,7 @@ describe('plot_api helpers', function() {
 
 describe('plot_api edit_types', function() {
     it('initializes flags with all false', function() {
-        ['traces', 'layout'].forEach(function(container) {
+        ['traceFlags', 'layoutFlags'].forEach(function(container) {
             var initFlags = editTypes[container]();
             Object.keys(initFlags).forEach(function(key) {
                 expect(initFlags[key]).toBe(false, container + '.' + key);
@@ -2163,7 +2163,7 @@ describe('plot_api edit_types', function() {
     });
 
     it('makes no changes if editType is not included', function() {
-        var flags = {docalc: false, dostyle: true};
+        var flags = {calc: false, style: true};
 
         editTypes.update(flags, {
             valType: 'boolean',
@@ -2171,7 +2171,7 @@ describe('plot_api edit_types', function() {
             role: 'style'
         });
 
-        expect(flags).toEqual({docalc: false, dostyle: true});
+        expect(flags).toEqual({calc: false, style: true});
 
         editTypes.update(flags, {
             family: {valType: 'string', dflt: 'Comic sans'},
@@ -2179,19 +2179,19 @@ describe('plot_api edit_types', function() {
             color: {valType: 'color', dflt: 'red'}
         });
 
-        expect(flags).toEqual({docalc: false, dostyle: true});
+        expect(flags).toEqual({calc: false, style: true});
     });
 
     it('gets updates from the outer object and ignores nested items', function() {
-        var flags = {docalc: false, dolegend: true};
+        var flags = {calc: false, legend: true};
 
         editTypes.update(flags, {
-            editType: 'docalc+dostyle',
+            editType: 'calc+style',
             valType: 'number',
             dflt: 1,
             role: 'style'
         });
 
-        expect(flags).toEqual({docalc: true, dolegend: true, dostyle: true});
+        expect(flags).toEqual({calc: true, legend: true, style: true});
     });
 });
