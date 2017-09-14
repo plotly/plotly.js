@@ -422,6 +422,11 @@ function makeDragRow(cellsColumnBlock) {
             }
         }
 
+        if(pages[0] % 2) {
+            // make phased out page jump by 2 while leaving stationary page intact
+            pages.reverse();
+        }
+
         cellsColumnBlock
             .attr('transform', function (d, i) {
                 var dPage = pages[i];
@@ -434,13 +439,13 @@ function makeDragRow(cellsColumnBlock) {
             d.currentRepaint = window.setTimeout(function () {
                 // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
                 // some repaints invisible ie. wasteful (DOM work blocks the main thread)
-                renderColumnBlocks(gd, cellsColumnBlock.filter(function (d) {
-                    return true || anchorsChanged.indexOf(d.key) !== -1;
-                }), cellsColumnBlock.filter(function (d) {
-                    return true || anchorsChanged.indexOf(d.key) !== -1;
+                renderColumnBlocks(gd, cellsColumnBlock.filter(function (d, i) {
+                    return pages[i] !== prevPages[i];
+                }), cellsColumnBlock.filter(function (d, i) {
+                    return pages[i] !== prevPages[i];
                 }));
+                prevPages = pages.slice();
             });
-            prevPages = pages.slice();
         }
     }
 }
