@@ -100,7 +100,8 @@ module.exports = function calc(gd, trace) {
         scrollY: 0, // will be mutated on scroll
         cells: trace.cells,
         headerCells: trace.header,
-        rowHeights: rowHeights,
+        gdColumns: trace.header.values.map(function(d) {return d[0];}),
+        gdColumnsOriginalOrder: trace.header.values.map(function(d) {return d[0];}),
         columns: trace.header.values.map(function(label, i) {
             var foundKey = uniqueKeys[label];
             uniqueKeys[label] = (foundKey || 0) + 1;
@@ -115,10 +116,7 @@ module.exports = function calc(gd, trace) {
                 calcdata: undefined, // initialized below
                 columnWidth: columnWidths[i]
             };
-        }),
-
-        gdColumns: trace.header.values.map(function(d) {return d[0];}),
-        gdColumnsOriginalOrder: trace.header.values.map(function(d) {return d[0];})
+        })
     };
 
     calcdata.columns.forEach(function(col) {
@@ -130,5 +128,7 @@ module.exports = function calc(gd, trace) {
 };
 
 var xScale = function (d) {
-    return d.calcdata.columns.reduce(function(prev, next) {return next.xIndex < d.xIndex ? prev + next.columnWidth : prev}, 0);
+    return d.calcdata.columns.reduce(function(prev, next) {
+        return next.xIndex < d.xIndex ? prev + next.columnWidth : prev
+    }, 0);
 }
