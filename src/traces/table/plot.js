@@ -66,9 +66,7 @@ module.exports = function plot(gd, calcdata) {
         .classed('yColumn', true);
 
     yColumn
-        .attr('transform', function(d) {return 'translate(' + d.x + ' 0)';});
-
-    yColumn
+        .attr('transform', function(d) {return 'translate(' + d.x + ' 0)';})
         .attr('clip-path', function(d) {return 'url(#columnBoundaryClippath_' + d.specIndex + ')';})
         .call(d3.behavior.drag()
             .origin(function(d) {
@@ -116,10 +114,10 @@ module.exports = function plot(gd, calcdata) {
         .classed('columnBlock', true)
         .style('user-select', 'none');
 
-    var cellsColumnBlock = columnBlock.filter(cellsBlock);
-
     columnBlock
         .style('cursor', function(d) {return d.dragHandle ? 'ew-resize' : 'ns-resize';});
+
+    var cellsColumnBlock = columnBlock.filter(cellsBlock);
 
     cellsColumnBlock
         .call(d3.behavior.drag()
@@ -143,9 +141,7 @@ module.exports = function plot(gd, calcdata) {
 
     scrollAreaClip.enter()
         .append(c.clipView ? 'g' : 'clipPath')
-        .classed('scrollAreaClip', true);
-
-    scrollAreaClip
+        .classed('scrollAreaClip', true)
         .attr('id', function(d) { return 'scrollAreaBottomClip_' + d.key;})
 
     var scrollAreaClipRect = scrollAreaClip.selectAll('.scrollAreaClipRect')
@@ -251,7 +247,9 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
         .attr('width', function(d) {return d.column.columnWidth;})
         .attr('stroke-width', function(d) {return d.cellBorderWidth;})
         .attr('stroke', function(d) {
-            return c.clipView ? ({header: 'blue', cells1: 'red', cells2: 'green'})[d.column.key] : gridPick(d.calcdata.cells.line.color, d.column.specIndex, d.rowNumber);
+            return c.clipView ?
+                ({header: 'blue', cells1: 'red', cells2: 'green'})[d.column.key] :
+                gridPick(d.calcdata.cells.line.color, d.column.specIndex, d.rowNumber);
         })
         .attr('fill', function(d) {
             return gridPick(d.calcdata.cells.fill.color, d.column.specIndex, d.rowNumber);
@@ -327,9 +325,8 @@ function easeColumn(selection, d, y) {
 function cellsBlock(d) {return d.type === 'cells';}
 function headerBlock(d) {return d.type === 'header';}
 
-
 /**
- * The tricky parts
+ * Revolver panel and cell contents layouting
  */
 
 function splitToPanels(d) {
@@ -407,7 +404,6 @@ function makeDragRow(cellsColumnBlock) {
         var headerHeight = headerBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
         var scrollHeight = d.calcdata.groupHeight - headerHeight;
         var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom - scrollHeight, calcdata.scrollY));
-        var anchorsChanged = [];
 
         var pages = [];
         for(var p = 0; p < blocks.length; p++) {
@@ -419,14 +415,14 @@ function makeDragRow(cellsColumnBlock) {
         }
         if(pages.length === 1) {
             if(pages[0] === blocks.length - 1) {
-                pages.unshift(pages[0] - 1)
+                pages.unshift(pages[0] - 1);
             } else {
                 pages.push(pages[0] + 1);
             }
         }
 
+        // make phased out page jump by 2 while leaving stationary page intact
         if(pages[0] % 2) {
-            // make phased out page jump by 2 while leaving stationary page intact
             pages.reverse();
         }
 
