@@ -273,10 +273,14 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
         .text(function(d) {
             var col = d.column.specIndex;
             var row = d.rowNumber;
-            var prefix = gridPick(d.calcdata.cells.prefix, col, row) || '';
-            var suffix = gridPick(d.calcdata.cells.suffix, col, row) || '';
-            var format = gridPick(d.calcdata.cells.format, col, row) || '';
-            return prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
+            var userSuppliedContent = d.value;
+            var latex = latexEh(userSuppliedContent);
+            var prefix = latex ? '' : gridPick(d.calcdata.cells.prefix, col, row) || '';
+            var suffix = latex ? '' : gridPick(d.calcdata.cells.suffix, col, row) || '';
+            var format = latex ? null : gridPick(d.calcdata.cells.format, col, row) || null;
+            var prefixSuffixedText = prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
+            var textToRender = prefixSuffixedText.replace(/ /g, '<br>');
+            return textToRender;
         })
         .each(function(d) {
 
@@ -288,6 +292,10 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
             setCellHeightAndPositionY(columnCell);
             svgUtil.convertToTspans(selection, gd, finalizeYPositionMaker(allColumnBlock, element, d));
         });
+}
+
+function latexEh(content) {
+    return typeof content === 'string' && content[0] === c.latexMark && content[content.length - 1] === c.latexMark;
 }
 
 function columnMoved(gd, calcdata, i, indices) {

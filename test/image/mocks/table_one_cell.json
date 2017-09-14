@@ -1,6 +1,6 @@
 {
     "layout": {
-        "width": 200,
+        "width": 300,
         "height": 330 + 380 - 150,
         "title": "Widget parameters and cost",
         "margin": {"t": 0 || 380, "r": 60, "b": 54, "l": 60}
