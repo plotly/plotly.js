@@ -171,4 +171,4 @@ module.exports = overrideAll({
     error_x: errorBarAttrs,
     error_y: errorBarAttrs,
     error_z: errorBarAttrs,
-}, 'docalc', 'nested');
+}, 'calc', 'nested');

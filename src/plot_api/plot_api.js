@@ -1295,8 +1295,8 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
 
         Plots.supplyDefaults(gd);
 
-        if(flags.dostyle) seq.push(subroutines.doTraceStyle);
-        if(flags.docolorbars) seq.push(subroutines.doColorBars);
+        if(flags.style) seq.push(subroutines.doTraceStyle);
+        if(flags.colorbars) seq.push(subroutines.doColorBars);
     }
 
     seq.push(Plots.rehover);
@@ -1415,7 +1415,7 @@ function _restyle(gd, aobj, _traces) {
             param.set(Array.isArray(vi) ? vi[0] : vi);
             // ironically, the layout attrs in restyle only require replot,
             // not relayout
-            flags.docalc = true;
+            flags.calc = true;
             continue;
         }
 
@@ -1517,13 +1517,13 @@ function _restyle(gd, aobj, _traces) {
             else if(Plots.dataArrayContainers.indexOf(param.parts[0]) !== -1) {
                 // TODO: use manageArrays.applyContainerArrayChanges here too
                 helpers.manageArrayContainers(param, newVal, undoit);
-                flags.docalc = true;
+                flags.calc = true;
             }
             else {
                 if(valObject) {
                     // must redo calcdata when restyling array values of arrayOk attributes
                     if(valObject.arrayOk && (Array.isArray(newVal) || Array.isArray(oldVal))) {
-                        flags.docalc = true;
+                        flags.calc = true;
                     }
                     else editTypes.update(flags, valObject);
                 }
@@ -1534,7 +1534,7 @@ function _restyle(gd, aobj, _traces) {
                      * some other edits too, so the modules we're
                      * looking at don't have these attributes in them.
                      */
-                    flags.docalc = true;
+                    flags.calc = true;
                 }
 
                 // all the other ones, just modify that one attribute
@@ -1610,10 +1610,10 @@ function _restyle(gd, aobj, _traces) {
     }
 
     // combine a few flags together;
-    if(flags.docalc || (flags.docalcAutorange && flags.autorangeOn)) {
+    if(flags.calc || (flags.calcIfAutorange && flags.autorangeOn)) {
         flags.clearCalc = true;
     }
-    if(flags.docalc || flags.doplot || flags.docalcAutorange) {
+    if(flags.calc || flags.plot || flags.calcIfAutorange) {
         flags.fullReplot = true;
     }
 
@@ -1670,7 +1670,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
         flags = specs.flags;
 
     // clear calcdata if required
-    if(flags.docalc) gd.calcdata = undefined;
+    if(flags.calc) gd.calcdata = undefined;
 
     // fill in redraw sequence
 
@@ -1685,11 +1685,11 @@ Plotly.relayout = function relayout(gd, astr, val) {
     else if(Object.keys(aobj).length) {
         Plots.supplyDefaults(gd);
 
-        if(flags.dolegend) seq.push(subroutines.doLegend);
-        if(flags.dolayoutstyle) seq.push(subroutines.layoutStyles);
-        if(flags.doticks) seq.push(subroutines.doTicksRelayout);
-        if(flags.domodebar) seq.push(subroutines.doModeBar);
-        if(flags.docamera) seq.push(subroutines.doCamera);
+        if(flags.legend) seq.push(subroutines.doLegend);
+        if(flags.layoutstyle) seq.push(subroutines.layoutStyles);
+        if(flags.ticks) seq.push(subroutines.doTicksRelayout);
+        if(flags.modebar) seq.push(subroutines.doModeBar);
+        if(flags.camera) seq.push(subroutines.doCamera);
     }
 
     seq.push(Plots.rehover);
@@ -1942,12 +1942,12 @@ function _relayout(gd, aobj) {
             var obji = (componentArray || [])[i] || {};
             var objToAutorange = obji;
 
-            var updateValObject = valObject || {editType: 'docalc'};
-            var checkForAutorange = updateValObject.editType.indexOf('docalcAutorange') !== -1;
+            var updateValObject = valObject || {editType: 'calc'};
+            var checkForAutorange = updateValObject.editType.indexOf('calcIfAutorange') !== -1;
 
             if(i === '') {
                 // replacing the entire array - too many possibilities, just recalc
-                if(checkForAutorange) flags.docalc = true;
+                if(checkForAutorange) flags.calc = true;
                 else editTypes.update(flags, updateValObject);
                 checkForAutorange = false; // clear this, we're already doing a recalc
             }
@@ -1966,7 +1966,7 @@ function _relayout(gd, aobj) {
             }
 
             if(checkForAutorange && (refAutorange(objToAutorange, 'x') || refAutorange(objToAutorange, 'y'))) {
-                flags.docalc = true;
+                flags.calc = true;
             }
             else editTypes.update(flags, updateValObject);
 
@@ -1987,8 +1987,8 @@ function _relayout(gd, aobj) {
                 parentIn.range = [1, 0];
             }
 
-            if(parentFull.autorange) flags.docalc = true;
-            else flags.doplot = true;
+            if(parentFull.autorange) flags.calc = true;
+            else flags.plot = true;
         }
         else {
             if(fullLayout._has('gl2d') &&
@@ -1996,10 +1996,10 @@ function _relayout(gd, aobj) {
                 (vi === 'lasso' || vi === 'select') &&
                 !(vOld === 'lasso' || vOld === 'select'))
             ) {
-                flags.docalc = true;
+                flags.calc = true;
             }
             else if(valObject) editTypes.update(flags, valObject);
-            else flags.docalc = true;
+            else flags.calc = true;
 
             p.set(vi);
         }
@@ -2009,7 +2009,7 @@ function _relayout(gd, aobj) {
     for(arrayStr in arrayEdits) {
         var finished = manageArrays.applyContainerArrayChanges(gd,
             Lib.nestedProperty(layout, arrayStr), arrayEdits[arrayStr], flags);
-        if(!finished) flags.doplot = true;
+        if(!finished) flags.plot = true;
     }
 
     // figure out if we need to recalculate axis constraints
@@ -2023,7 +2023,7 @@ function _relayout(gd, aobj) {
                 // specifying arbitrary ranges for all axes in the group.
                 // this way some ranges may expand beyond what's specified,
                 // as they do at first draw, to satisfy the constraints.
-                flags.docalc = true;
+                flags.calc = true;
                 for(var groupAxId in group) {
                     if(!rangesAltered[groupAxId]) {
                         axisIds.getFromId(gd, groupAxId)._constraintShrinkable = true;
@@ -2044,9 +2044,9 @@ function _relayout(gd, aobj) {
         (fullLayout.width !== oldWidth) ||
         (fullLayout.height !== oldHeight);
 
-    if(hasSizechanged) flags.docalc = true;
+    if(hasSizechanged) flags.calc = true;
 
-    if(flags.doplot || flags.docalc) {
+    if(flags.plot || flags.calc) {
         flags.layoutReplot = true;
     }
 
@@ -2097,7 +2097,7 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, traces) {
         relayoutFlags = relayoutSpecs.flags;
 
     // clear calcdata if required
-    if(restyleFlags.clearCalc || relayoutFlags.docalc) gd.calcdata = undefined;
+    if(restyleFlags.clearCalc || relayoutFlags.calc) gd.calcdata = undefined;
 
     // fill in redraw sequence
     var seq = [];
@@ -2123,13 +2123,13 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, traces) {
         seq.push(Plots.previousPromises);
         Plots.supplyDefaults(gd);
 
-        if(restyleFlags.dostyle) seq.push(subroutines.doTraceStyle);
-        if(restyleFlags.docolorbars) seq.push(subroutines.doColorBars);
-        if(relayoutFlags.dolegend) seq.push(subroutines.doLegend);
-        if(relayoutFlags.dolayoutstyle) seq.push(subroutines.layoutStyles);
-        if(relayoutFlags.doticks) seq.push(subroutines.doTicksRelayout);
-        if(relayoutFlags.domodebar) seq.push(subroutines.doModeBar);
-        if(relayoutFlags.doCamera) seq.push(subroutines.doCamera);
+        if(restyleFlags.style) seq.push(subroutines.doTraceStyle);
+        if(restyleFlags.colorbars) seq.push(subroutines.doColorBars);
+        if(relayoutFlags.legend) seq.push(subroutines.doLegend);
+        if(relayoutFlags.layoutstyle) seq.push(subroutines.layoutStyles);
+        if(relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
+        if(relayoutFlags.modebar) seq.push(subroutines.doModeBar);
+        if(relayoutFlags.camera) seq.push(subroutines.doCamera);
     }
 
     seq.push(Plots.rehover);

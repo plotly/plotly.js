@@ -20,7 +20,7 @@ var palettes = require('./scales.js');
  *   the container this is in (*marker*, *marker.line* etc)
  * @param {optional string} editTypeOverride:
  *   most of these attributes already require a recalc, but the ones that do not
- *   have editType *dostyle* or *doplot* unless you override (presumably with *docalc*)
+ *   have editType *style* or *plot* unless you override (presumably with *calc*)
  * @param {optional bool} autoColorDflt:
  *   normally autocolorscale.dflt is `true`, but pass `false` to override
  *
@@ -34,7 +34,7 @@ module.exports = function makeColorScaleAttributes(context, editTypeOverride, au
             valType: 'color',
             arrayOk: true,
             role: 'style',
-            editType: editTypeOverride || 'dostyle',
+            editType: editTypeOverride || 'style',
             description: [
                 'Sets the', context, 'color. It accepts either a specific color',
                 'or an array of numbers that are mapped to the colorscale',

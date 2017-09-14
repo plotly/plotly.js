@@ -19,11 +19,11 @@ module.exports = {
      */
     traces: function() {
         return {
-            docalc: false,
-            docalcAutorange: false,
-            doplot: false,
-            dostyle: false,
-            docolorbars: false,
+            calc: false,
+            calcIfAutorange: false,
+            plot: false,
+            style: false,
+            colorbars: false,
             autorangeOn: false,
             clearCalc: false,
             fullReplot: false
@@ -36,15 +36,15 @@ module.exports = {
      */
     layout: function() {
         return {
-            dolegend: false,
-            doticks: false,
-            dolayoutstyle: false,
-            doplot: false,
-            docalc: false,
-            docalcAutorange: false,
-            domodebar: false,
-            docamera: false,
-            doarraydraw: false,
+            legend: false,
+            ticks: false,
+            layoutstyle: false,
+            plot: false,
+            calc: false,
+            calcIfAutorange: false,
+            modebar: false,
+            camera: false,
+            arraydraw: false,
             layoutReplot: false
         };
     },

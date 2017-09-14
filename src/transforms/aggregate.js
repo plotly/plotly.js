@@ -22,7 +22,7 @@ var attrs = exports.attributes = {
         valType: 'boolean',
         dflt: true,
         role: 'info',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Determines whether this aggregate transform is enabled or disabled.'
         ].join(' ')
@@ -36,7 +36,7 @@ var attrs = exports.attributes = {
         arrayOk: true,
         dflt: 'x',
         role: 'info',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets the grouping target to which the aggregation is applied.',
             'Data points with matching group values will be coalesced into',
@@ -55,7 +55,7 @@ var attrs = exports.attributes = {
         target: {
             valType: 'string',
             role: 'info',
-            editType: 'docalc',
+            editType: 'calc',
             description: [
                 'A reference to the data array in the parent trace to aggregate.',
                 'To aggregate by nested variables, use *.* to access them.',
@@ -70,7 +70,7 @@ var attrs = exports.attributes = {
             values: ['count', 'sum', 'avg', 'median', 'mode', 'rms', 'stddev', 'min', 'max', 'first', 'last'],
             dflt: 'first',
             role: 'info',
-            editType: 'docalc',
+            editType: 'calc',
             description: [
                 'Sets the aggregation function.',
                 'All values from the linked `target`, corresponding to the same value',
@@ -93,7 +93,7 @@ var attrs = exports.attributes = {
             values: ['sample', 'population'],
             dflt: 'sample',
             role: 'info',
-            editType: 'docalc',
+            editType: 'calc',
             description: [
                 '*stddev* supports two formula variants: *sample* (normalize by N-1)',
                 'and *population* (normalize by N).'
@@ -103,14 +103,14 @@ var attrs = exports.attributes = {
             valType: 'boolean',
             dflt: true,
             role: 'info',
-            editType: 'docalc',
+            editType: 'calc',
             description: [
                 'Determines whether this aggregation function is enabled or disabled.'
             ].join(' ')
         },
-        editType: 'docalc'
+        editType: 'calc'
     },
-    editType: 'docalc'
+    editType: 'calc'
 };
 
 var aggAttrs = attrs.aggregations;

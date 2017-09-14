@@ -11,6 +11,7 @@
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var padAttrs = require('../../plots/pad_attributes');
 
 var buttonsAttrs = {
@@ -21,7 +22,6 @@ var buttonsAttrs = {
         values: ['restyle', 'relayout', 'animate', 'update', 'skip'],
         dflt: 'restyle',
         role: 'info',
-        editType: 'doarraydraw',
         description: [
             'Sets the Plotly method to be called on click.',
             'If the `skip` method is used, the API updatemenu will function as normal',
@@ -35,11 +35,10 @@ var buttonsAttrs = {
         role: 'info',
         freeLength: true,
         items: [
-            {valType: 'any', editType: 'doarraydraw'},
-            {valType: 'any', editType: 'doarraydraw'},
-            {valType: 'any', editType: 'doarraydraw'}
+            {valType: 'any'},
+            {valType: 'any'},
+            {valType: 'any'}
         ],
-        editType: 'doarraydraw',
         description: [
             'Sets the arguments values to be passed to the Plotly',
             'method set in `method` on click.'
@@ -49,14 +48,12 @@ var buttonsAttrs = {
         valType: 'string',
         role: 'info',
         dflt: '',
-        editType: 'doarraydraw',
         description: 'Sets the text label to appear on the button.'
     },
     execute: {
         valType: 'boolean',
         role: 'info',
         dflt: true,
-        editType: 'doarraydraw',
         description: [
             'When true, the API method is executed. When false, all other behaviors are the same',
             'and command execution is skipped. This may be useful when hooking into, for example,',
@@ -64,18 +61,16 @@ var buttonsAttrs = {
             'the benefit of the updatemenu automatically binding to the state of the plot through the',
             'specification of `method` and `args`.'
         ].join(' ')
-    },
-    editType: 'doarraydraw'
+    }
 };
 
-module.exports = {
+module.exports = overrideAll({
     _isLinkedToArray: 'updatemenu',
     _arrayAttrRegexps: [/^updatemenus\[(0|[1-9][0-9]+)\]\.buttons/],
 
     visible: {
         valType: 'boolean',
         role: 'info',
-        editType: 'doarraydraw',
         description: [
             'Determines whether or not the update menu is visible.'
         ].join(' ')
@@ -86,7 +81,6 @@ module.exports = {
         values: ['dropdown', 'buttons'],
         dflt: 'dropdown',
         role: 'info',
-        editType: 'doarraydraw',
         description: [
             'Determines whether the buttons are accessible via a dropdown menu',
             'or whether the buttons are stacked horizontally or vertically'
@@ -98,7 +92,6 @@ module.exports = {
         values: ['left', 'right', 'up', 'down'],
         dflt: 'down',
         role: 'info',
-        editType: 'doarraydraw',
         description: [
             'Determines the direction in which the buttons are laid out, whether',
             'in a dropdown menu or a row/column of buttons. For `left` and `up`,',
@@ -112,7 +105,6 @@ module.exports = {
         role: 'info',
         min: -1,
         dflt: 0,
-        editType: 'doarraydraw',
         description: [
             'Determines which button (by index starting from 0) is',
             'considered active.'
@@ -123,7 +115,6 @@ module.exports = {
         valType: 'boolean',
         role: 'info',
         dflt: true,
-        editType: 'doarraydraw',
         description: 'Highlights active dropdown item or active button if true.'
     },
 
@@ -135,7 +126,6 @@ module.exports = {
         max: 3,
         dflt: -0.05,
         role: 'style',
-        editType: 'doarraydraw',
         description: 'Sets the x position (in normalized coordinates) of the update menu.'
     },
     xanchor: {
@@ -143,7 +133,6 @@ module.exports = {
         values: ['auto', 'left', 'center', 'right'],
         dflt: 'right',
         role: 'info',
-        editType: 'doarraydraw',
         description: [
             'Sets the update menu\'s horizontal position anchor.',
             'This anchor binds the `x` position to the *left*, *center*',
@@ -156,7 +145,6 @@ module.exports = {
         max: 3,
         dflt: 1,
         role: 'style',
-        editType: 'doarraydraw',
         description: 'Sets the y position (in normalized coordinates) of the update menu.'
     },
     yanchor: {
@@ -164,7 +152,6 @@ module.exports = {
         values: ['auto', 'top', 'middle', 'bottom'],
         dflt: 'top',
         role: 'info',
-        editType: 'doarraydraw',
         description: [
             'Sets the update menu\'s vertical position anchor',
             'This anchor binds the `y` position to the *top*, *middle*',
@@ -177,21 +164,18 @@ module.exports = {
     }),
 
     font: fontAttrs({
-        editType: 'doarraydraw',
         description: 'Sets the font of the update menu button text.'
     }),
 
     bgcolor: {
         valType: 'color',
         role: 'style',
-        editType: 'doarraydraw',
         description: 'Sets the background color of the update menu buttons.'
     },
     bordercolor: {
         valType: 'color',
         dflt: colorAttrs.borderLine,
         role: 'style',
-        editType: 'doarraydraw',
         description: 'Sets the color of the border enclosing the update menu.'
     },
     borderwidth: {
@@ -199,8 +183,7 @@ module.exports = {
         min: 0,
         dflt: 1,
         role: 'style',
-        editType: 'doarraydraw',
+        editType: 'arraydraw',
         description: 'Sets the width (in px) of the border enclosing the update menu.'
-    },
-    editType: 'doarraydraw'
-};
+    }
+}, 'arraydraw', 'from-root');

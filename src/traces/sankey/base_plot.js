@@ -19,7 +19,7 @@ exports.attr = 'type';
 
 exports.baseLayoutAttrOverrides = overrideAll({
     hoverlabel: fxAttrs.hoverlabel
-}, 'doplot', 'nested');
+}, 'plot', 'nested');
 
 exports.plot = function(gd) {
     var calcData = Plots.getSubplotCalcData(gd.calcdata, 'sankey', 'sankey');

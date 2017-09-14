@@ -20,7 +20,7 @@ module.exports = {
         valType: 'boolean',
         role: 'info',
         dflt: true,
-        editType: 'docalcAutorange',
+        editType: 'calcIfAutorange',
         description: [
             'Determines whether or not this shape is visible.'
         ].join(' ')
@@ -30,7 +30,7 @@ module.exports = {
         valType: 'enumerated',
         values: ['circle', 'rect', 'path', 'line'],
         role: 'info',
-        editType: 'docalcAutorange',
+        editType: 'calcIfAutorange',
         description: [
             'Specifies the shape type to be drawn.',
 
@@ -53,7 +53,7 @@ module.exports = {
         values: ['below', 'above'],
         dflt: 'above',
         role: 'info',
-        editType: 'doarraydraw',
+        editType: 'arraydraw',
         description: 'Specifies whether shapes are drawn below or above traces.'
     },
 
@@ -74,7 +74,7 @@ module.exports = {
     x0: {
         valType: 'any',
         role: 'info',
-        editType: 'docalcAutorange',
+        editType: 'calcIfAutorange',
         description: [
             'Sets the shape\'s starting x position.',
             'See `type` for more info.'
@@ -83,7 +83,7 @@ module.exports = {
     x1: {
         valType: 'any',
         role: 'info',
-        editType: 'docalcAutorange',
+        editType: 'calcIfAutorange',
         description: [
             'Sets the shape\'s end x position.',
             'See `type` for more info.'
@@ -103,7 +103,7 @@ module.exports = {
     y0: {
         valType: 'any',
         role: 'info',
-        editType: 'docalcAutorange',
+        editType: 'calcIfAutorange',
         description: [
             'Sets the shape\'s starting y position.',
             'See `type` for more info.'
@@ -112,7 +112,7 @@ module.exports = {
     y1: {
         valType: 'any',
         role: 'info',
-        editType: 'docalcAutorange',
+        editType: 'calcIfAutorange',
         description: [
             'Sets the shape\'s end y position.',
             'See `type` for more info.'
@@ -122,7 +122,7 @@ module.exports = {
     path: {
         valType: 'string',
         role: 'info',
-        editType: 'docalcAutorange',
+        editType: 'calcIfAutorange',
         description: [
             'For `type` *path* - a valid SVG path but with the pixel values',
             'replaced by data values. There are a few restrictions / quirks',
@@ -153,24 +153,24 @@ module.exports = {
         max: 1,
         dflt: 1,
         role: 'info',
-        editType: 'doarraydraw',
+        editType: 'arraydraw',
         description: 'Sets the opacity of the shape.'
     },
     line: {
-        color: extendFlat({}, scatterLineAttrs.color, {editType: 'doarraydraw'}),
-        width: extendFlat({}, scatterLineAttrs.width, {editType: 'docalcAutorange'}),
-        dash: extendFlat({}, dash, {editType: 'doarraydraw'}),
+        color: extendFlat({}, scatterLineAttrs.color, {editType: 'arraydraw'}),
+        width: extendFlat({}, scatterLineAttrs.width, {editType: 'calcIfAutorange'}),
+        dash: extendFlat({}, dash, {editType: 'arraydraw'}),
         role: 'info',
-        editType: 'docalcAutorange'
+        editType: 'calcIfAutorange'
     },
     fillcolor: {
         valType: 'color',
         dflt: 'rgba(0,0,0,0)',
         role: 'info',
-        editType: 'doarraydraw',
+        editType: 'arraydraw',
         description: [
             'Sets the color filling the shape\'s interior.'
         ].join(' ')
     },
-    editType: 'doarraydraw'
+    editType: 'arraydraw'
 };

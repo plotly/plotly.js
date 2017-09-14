@@ -243,4 +243,4 @@ module.exports = overrideAll({
             description: 'Obsolete. Use `cmax` instead.'
         })
     }
-}, 'docalc', 'nested');
+}, 'calc', 'nested');

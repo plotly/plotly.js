@@ -20,21 +20,21 @@ function makeCameraVector(x, y, z) {
             valType: 'number',
             role: 'info',
             dflt: x,
-            editType: 'docamera'
+            editType: 'camera'
         },
         y: {
             valType: 'number',
             role: 'info',
             dflt: y,
-            editType: 'docamera'
+            editType: 'camera'
         },
         z: {
             valType: 'number',
             role: 'info',
             dflt: z,
-            editType: 'docamera'
+            editType: 'camera'
         },
-        editType: 'docamera'
+        editType: 'camera'
     };
 }
 
@@ -45,7 +45,7 @@ module.exports = {
         valType: 'color',
         role: 'style',
         dflt: 'rgba(0,0,0,0)',
-        editType: 'doplot'
+        editType: 'plot'
     },
     camera: {
         up: extendFlat(makeCameraVector(0, 0, 1), {
@@ -72,18 +72,18 @@ module.exports = {
                 'of this scene.'
             ].join(' ')
         }),
-        editType: 'docamera'
+        editType: 'camera'
     },
     domain: {
         x: {
             valType: 'info_array',
             role: 'info',
             items: [
-                {valType: 'number', min: 0, max: 1, editType: 'doplot'},
-                {valType: 'number', min: 0, max: 1, editType: 'doplot'}
+                {valType: 'number', min: 0, max: 1, editType: 'plot'},
+                {valType: 'number', min: 0, max: 1, editType: 'plot'}
             ],
             dflt: [0, 1],
-            editType: 'doplot',
+            editType: 'plot',
             description: [
                 'Sets the horizontal domain of this scene',
                 '(in plot fraction).'
@@ -93,24 +93,24 @@ module.exports = {
             valType: 'info_array',
             role: 'info',
             items: [
-                {valType: 'number', min: 0, max: 1, editType: 'doplot'},
-                {valType: 'number', min: 0, max: 1, editType: 'doplot'}
+                {valType: 'number', min: 0, max: 1, editType: 'plot'},
+                {valType: 'number', min: 0, max: 1, editType: 'plot'}
             ],
             dflt: [0, 1],
-            editType: 'doplot',
+            editType: 'plot',
             description: [
                 'Sets the vertical domain of this scene',
                 '(in plot fraction).'
             ].join(' ')
         },
-        editType: 'doplot'
+        editType: 'plot'
     },
     aspectmode: {
         valType: 'enumerated',
         role: 'info',
         values: ['auto', 'cube', 'data', 'manual'],
         dflt: 'auto',
-        editType: 'doplot',
+        editType: 'plot',
         impliedEdits: {
             'aspectratio.x': undefined,
             'aspectratio.y': undefined,
@@ -138,24 +138,24 @@ module.exports = {
             valType: 'number',
             role: 'info',
             min: 0,
-            editType: 'doplot',
+            editType: 'plot',
             impliedEdits: {'^aspectmode': 'manual'}
         },
         y: {
             valType: 'number',
             role: 'info',
             min: 0,
-            editType: 'doplot',
+            editType: 'plot',
             impliedEdits: {'^aspectmode': 'manual'}
         },
         z: {
             valType: 'number',
             role: 'info',
             min: 0,
-            editType: 'doplot',
+            editType: 'plot',
             impliedEdits: {'^aspectmode': 'manual'}
         },
-        editType: 'doplot',
+        editType: 'plot',
         impliedEdits: {aspectmode: 'manual'},
         description: [
             'Sets this scene\'s axis aspectratio.'
@@ -171,7 +171,7 @@ module.exports = {
         role: 'info',
         values: ['orbit', 'turntable', 'zoom', 'pan', false],
         dflt: 'turntable',
-        editType: 'doplot',
+        editType: 'plot',
         description: [
             'Determines the mode of drag interactions for this scene.'
         ].join(' ')
@@ -181,18 +181,18 @@ module.exports = {
         role: 'info',
         values: ['closest', false],
         dflt: 'closest',
-        editType: 'domodebar',
+        editType: 'modebar',
         description: [
             'Determines the mode of hover interactions for this scene.'
         ].join(' ')
     },
-    editType: 'doplot',
+    editType: 'plot',
 
     _deprecated: {
         cameraposition: {
             valType: 'info_array',
             role: 'info',
-            editType: 'docamera',
+            editType: 'camera',
             description: 'Obsolete. Use `camera` instead.'
         }
     }

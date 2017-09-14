@@ -25,11 +25,11 @@ module.exports = {
             valType: 'info_array',
             role: 'info',
             items: [
-                {valType: 'number', min: 0, max: 1, editType: 'docalc'},
-                {valType: 'number', min: 0, max: 1, editType: 'docalc'}
+                {valType: 'number', min: 0, max: 1, editType: 'calc'},
+                {valType: 'number', min: 0, max: 1, editType: 'calc'}
             ],
             dflt: [0, 1],
-            editType: 'docalc',
+            editType: 'calc',
             description: [
                 'Sets the horizontal domain of this `parcoords` trace',
                 '(in plot fraction).'
@@ -39,29 +39,29 @@ module.exports = {
             valType: 'info_array',
             role: 'info',
             items: [
-                {valType: 'number', min: 0, max: 1, editType: 'docalc'},
-                {valType: 'number', min: 0, max: 1, editType: 'docalc'}
+                {valType: 'number', min: 0, max: 1, editType: 'calc'},
+                {valType: 'number', min: 0, max: 1, editType: 'calc'}
             ],
             dflt: [0, 1],
-            editType: 'docalc',
+            editType: 'calc',
             description: [
                 'Sets the vertical domain of this `parcoords` trace',
                 '(in plot fraction).'
             ].join(' ')
         },
-        editType: 'docalc'
+        editType: 'calc'
     },
 
     labelfont: fontAttrs({
-        editType: 'docalc',
+        editType: 'calc',
         description: 'Sets the font for the `dimension` labels.'
     }),
     tickfont: fontAttrs({
-        editType: 'docalc',
+        editType: 'calc',
         description: 'Sets the font for the `dimension` tick values.'
     }),
     rangefont: fontAttrs({
-        editType: 'docalc',
+        editType: 'calc',
         description: 'Sets the font for the `dimension` range values.'
     }),
 
@@ -70,16 +70,16 @@ module.exports = {
         label: {
             valType: 'string',
             role: 'info',
-            editType: 'docalc',
+            editType: 'calc',
             description: 'The shown name of the dimension.'
         },
-        tickvals: extendFlat({}, axesAttrs.tickvals, {editType: 'docalc'}),
-        ticktext: extendFlat({}, axesAttrs.ticktext, {editType: 'docalc'}),
+        tickvals: extendFlat({}, axesAttrs.tickvals, {editType: 'calc'}),
+        ticktext: extendFlat({}, axesAttrs.ticktext, {editType: 'calc'}),
         tickformat: {
             valType: 'string',
             dflt: '3s',
             role: 'style',
-            editType: 'docalc',
+            editType: 'calc',
             description: [
                 'Sets the tick label formatting rule using d3 formatting mini-language',
                 'which is similar to those of Python. See',
@@ -90,17 +90,17 @@ module.exports = {
             valType: 'boolean',
             dflt: true,
             role: 'info',
-            editType: 'docalc',
+            editType: 'calc',
             description: 'Shows the dimension when set to `true` (the default). Hides the dimension for `false`.'
         },
         range: {
             valType: 'info_array',
             role: 'info',
             items: [
-                {valType: 'number', editType: 'docalc'},
-                {valType: 'number', editType: 'docalc'}
+                {valType: 'number', editType: 'calc'},
+                {valType: 'number', editType: 'calc'}
             ],
-            editType: 'docalc',
+            editType: 'calc',
             description: [
                 'The domain range that represents the full, shown axis extent. Defaults to the `values` extent.',
                 'Must be an array of `[fromValue, toValue]` with finite numbers as elements.'
@@ -110,10 +110,10 @@ module.exports = {
             valType: 'info_array',
             role: 'info',
             items: [
-                {valType: 'number', editType: 'docalc'},
-                {valType: 'number', editType: 'docalc'}
+                {valType: 'number', editType: 'calc'},
+                {valType: 'number', editType: 'calc'}
             ],
-            editType: 'docalc',
+            editType: 'calc',
             description: [
                 'The domain range to which the filter on the dimension is constrained. Must be an array',
                 'of `[fromValue, toValue]` with finite numbers as elements.'
@@ -123,14 +123,14 @@ module.exports = {
             valType: 'data_array',
             role: 'info',
             dflt: [],
-            editType: 'docalc',
+            editType: 'calc',
             description: [
                 'Dimension values. `values[n]` represents the value of the `n`th point in the dataset,',
                 'therefore the `values` vector for all dimensions must be the same (longer vectors',
                 'will be truncated). Each value must be a finite number.'
             ].join(' ')
         },
-        editType: 'docalc',
+        editType: 'calc',
         description: 'The dimensions (variables) of the parallel coordinates chart. 2..60 dimensions are supported.'
     },
 
@@ -138,7 +138,7 @@ module.exports = {
         // the default autocolorscale isn't quite usable for parcoords due to context ambiguity around 0 (grey, off-white)
         // autocolorscale therefore defaults to false too, to avoid being overridden by the  blue-white-red autocolor palette
         extendDeep(
-            colorAttributes('line', 'docalc'),
+            colorAttributes('line', 'calc'),
             {
                 colorscale: {dflt: colorscales.Viridis},
                 autocolorscale: {
@@ -162,14 +162,14 @@ module.exports = {
                 valType: 'boolean',
                 role: 'info',
                 dflt: false,
-                editType: 'docalc',
+                editType: 'calc',
                 description: [
                     'Has an effect only if `line.color` is set to a numerical array.',
                     'Determines whether or not a colorbar is displayed.'
                 ].join(' ')
             },
             colorbar: colorbarAttrs,
-            editType: 'docalc'
+            editType: 'calc'
         }
     )
 };

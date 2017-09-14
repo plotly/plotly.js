@@ -86,4 +86,4 @@ module.exports = overrideAll({
 
     error_y: scatterAttrs.error_y,
     error_x: scatterAttrs.error_x
-}, 'docalc', 'nested');
+}, 'calc', 'nested');

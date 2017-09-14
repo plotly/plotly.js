@@ -14,7 +14,7 @@ module.exports = {
         valType: 'subplotid',
         role: 'info',
         dflt: 'x',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets a reference between this trace\'s x coordinates and',
             'a 2D cartesian x axis.',
@@ -27,7 +27,7 @@ module.exports = {
         valType: 'subplotid',
         role: 'info',
         dflt: 'y',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets a reference between this trace\'s y coordinates and',
             'a 2D cartesian y axis.',

@@ -21,7 +21,7 @@ exports.attributes = {
         valType: 'boolean',
         dflt: true,
         role: 'info',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Determines whether this group-by transform is enabled or disabled.'
         ].join(' ')
@@ -30,7 +30,7 @@ exports.attributes = {
         valType: 'data_array',
         dflt: [],
         role: 'info',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets the groups in which the trace data will be split.',
             'For example, with `x` set to *[1, 2, 3, 4]* and',
@@ -42,7 +42,7 @@ exports.attributes = {
     nameformat: {
         valType: 'string',
         role: 'info',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Pattern by which grouped traces are named. If only one trace is present,',
             'defaults to the group name (`"%{group}"`), otherwise defaults to the group name',
@@ -57,7 +57,7 @@ exports.attributes = {
         target: {
             valType: 'string',
             role: 'info',
-            editType: 'docalc',
+            editType: 'calc',
             description: [
                 'The group value which receives these styles.'
             ].join(' ')
@@ -66,7 +66,7 @@ exports.attributes = {
             valType: 'any',
             role: 'info',
             dflt: {},
-            editType: 'docalc',
+            editType: 'calc',
             description: [
                 'Sets each group styles.',
                 'For example, with `groups` set to *[\'a\', \'b\', \'a\', \'b\']*',
@@ -74,9 +74,9 @@ exports.attributes = {
                 'marker points in group *\'a\'* will be drawn in red.'
             ].join(' ')
         },
-        editType: 'docalc'
+        editType: 'calc'
     },
-    editType: 'docalc'
+    editType: 'calc'
 };
 
 /**

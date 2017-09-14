@@ -35,7 +35,7 @@ exports.layoutAttributes = require('./layout/layout_attributes');
 
 exports.baseLayoutAttrOverrides = overrideAll({
     hoverlabel: fxAttrs.hoverlabel
-}, 'doplot', 'nested');
+}, 'plot', 'nested');
 
 exports.supplyLayoutDefaults = require('./layout/defaults');
 

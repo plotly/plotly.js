@@ -19,6 +19,6 @@ module.exports = {
         size: scatterMarkerAttrs.size,
         symbol: scatterMarkerAttrs.symbol,
         opacity: scatterMarkerAttrs.opacity,
-        editType: 'docalc'
+        editType: 'calc'
     }
 };

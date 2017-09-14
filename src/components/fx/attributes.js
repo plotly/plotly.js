@@ -16,7 +16,7 @@ module.exports = {
             valType: 'color',
             role: 'style',
             arrayOk: true,
-            editType: 'dostyle',
+            editType: 'none',
             description: [
                 'Sets the background color of the hover labels for this trace'
             ].join(' ')
@@ -25,14 +25,14 @@ module.exports = {
             valType: 'color',
             role: 'style',
             arrayOk: true,
-            editType: 'dostyle',
+            editType: 'none',
             description: [
                 'Sets the border color of the hover labels for this trace.'
             ].join(' ')
         },
         font: fontAttrs({
             arrayOk: true,
-            editType: 'dostyle',
+            editType: 'none',
             description: 'Sets the font used in hover labels.'
         }),
         namelength: {
@@ -40,7 +40,7 @@ module.exports = {
             min: -1,
             arrayOk: true,
             role: 'style',
-            editType: 'dostyle',
+            editType: 'none',
             description: [
                 'Sets the length (in number of characters) of the trace name in',
                 'the hover labels for this trace. -1 shows the whole name',
@@ -50,6 +50,6 @@ module.exports = {
                 '`namelength - 3` characters and add an ellipsis.'
             ].join(' ')
         },
-        editType: 'dostyle'
+        editType: 'calc'
     }
 };

@@ -23,7 +23,7 @@ module.exports = {
     carpet: {
         valType: 'string',
         role: 'info',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'An identifier for this carpet, so that `scattercarpet` and',
             '`scattercontour` traces can specify a carpet plot on which',
@@ -32,7 +32,7 @@ module.exports = {
     },
     a: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets the quantity of component `a` in each data point.',
             'If `a`, `b`, and `c` are all provided, they need not be',
@@ -43,7 +43,7 @@ module.exports = {
     },
     b: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets the quantity of component `a` in each data point.',
             'If `a`, `b`, and `c` are all provided, they need not be',
@@ -69,7 +69,7 @@ module.exports = {
         shape: extendFlat({}, scatterLineAttrs.shape,
             {values: ['linear', 'spline']}),
         smoothing: scatterLineAttrs.smoothing,
-        editType: 'docalc'
+        editType: 'calc'
     },
     connectgaps: scatterAttrs.connectgaps,
     fill: extendFlat({}, scatterAttrs.fill, {
@@ -97,12 +97,12 @@ module.exports = {
         sizemode: scatterMarkerAttrs.sizemode,
         line: extendFlat({
             width: scatterMarkerLineAttrs.width,
-            editType: 'docalc'
+            editType: 'calc'
         },
             colorAttributes('marker'.line)
         ),
         gradient: scatterMarkerAttrs.gradient,
-        editType: 'docalc'
+        editType: 'calc'
     }, colorAttributes('marker'), {
         showscale: scatterMarkerAttrs.showscale,
         colorbar: colorbarAttrs

@@ -34,16 +34,16 @@ exports.attributes = require('../cartesian/attributes');
 // this could potentially be just `layoutAttributes` but it would
 // still need special handling somewhere to give it precedence over
 // the svg version when both are in use on one plot
-exports.layoutAttrOverrides = overrideAll(Cartesian.layoutAttributes, 'doplot', 'from-root');
+exports.layoutAttrOverrides = overrideAll(Cartesian.layoutAttributes, 'plot', 'from-root');
 
 // similar overrides for base plot attributes (and those added by components)
 exports.baseLayoutAttrOverrides = overrideAll({
     plot_bgcolor: Plots.layoutAttributes.plot_bgcolor,
     hoverlabel: fxAttrs.hoverlabel
-    // dragmode needs docalc but only when transitioning TO lasso or select
+    // dragmode needs calc but only when transitioning TO lasso or select
     // so for now it's left inside _relayout
     // dragmode: fxAttrs.dragmode
-}, 'doplot', 'nested');
+}, 'plot', 'nested');
 
 exports.plot = function plotGl2d(gd) {
     var fullLayout = gd._fullLayout,

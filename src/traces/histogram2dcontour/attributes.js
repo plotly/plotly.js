@@ -15,7 +15,7 @@ var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
-module.exports = extendFlat({}, {
+module.exports = extendFlat({
     x: histogram2dAttrs.x,
     y: histogram2dAttrs.y,
     z: histogram2dAttrs.z,
@@ -36,8 +36,8 @@ module.exports = extendFlat({}, {
     line: contourAttrs.line
 },
     colorscaleAttrs, {
-        zmin: extendFlat({}, colorscaleAttrs.zmin, {editType: 'docalc'}),
-        zmax: extendFlat({}, colorscaleAttrs.zmax, {editType: 'docalc'})
+        zmin: extendFlat({}, colorscaleAttrs.zmin, {editType: 'calc'}),
+        zmax: extendFlat({}, colorscaleAttrs.zmax, {editType: 'calc'})
     },
     { colorbar: colorbarAttrs }
 );

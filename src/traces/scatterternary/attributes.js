@@ -23,7 +23,7 @@ var scatterMarkerAttrs = scatterAttrs.marker,
 module.exports = {
     a: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets the quantity of component `a` in each data point.',
             'If `a`, `b`, and `c` are all provided, they need not be',
@@ -34,7 +34,7 @@ module.exports = {
     },
     b: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets the quantity of component `a` in each data point.',
             'If `a`, `b`, and `c` are all provided, they need not be',
@@ -45,7 +45,7 @@ module.exports = {
     },
     c: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets the quantity of component `a` in each data point.',
             'If `a`, `b`, and `c` are all provided, they need not be',
@@ -59,7 +59,7 @@ module.exports = {
         role: 'info',
         dflt: 0,
         min: 0,
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'The number each triplet should sum to,',
             'if only two of `a`, `b`, and `c` are provided.',
@@ -97,7 +97,7 @@ module.exports = {
         shape: extendFlat({}, scatterLineAttrs.shape,
             {values: ['linear', 'spline']}),
         smoothing: scatterLineAttrs.smoothing,
-        editType: 'docalc'
+        editType: 'calc'
     },
     connectgaps: scatterAttrs.connectgaps,
     cliponaxis: scatterAttrs.cliponaxis,
@@ -126,12 +126,12 @@ module.exports = {
         sizemode: scatterMarkerAttrs.sizemode,
         line: extendFlat({
             width: scatterMarkerLineAttrs.width,
-            editType: 'docalc'
+            editType: 'calc'
         },
             colorAttributes('marker.line')
         ),
         gradient: scatterMarkerAttrs.gradient,
-        editType: 'docalc'
+        editType: 'calc'
     }, colorAttributes('marker'), {
         showscale: scatterMarkerAttrs.showscale,
         colorbar: colorbarAttrs

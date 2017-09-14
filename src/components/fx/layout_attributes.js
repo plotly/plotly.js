@@ -23,7 +23,7 @@ module.exports = {
         role: 'info',
         values: ['zoom', 'pan', 'select', 'lasso', 'orbit', 'turntable'],
         dflt: 'zoom',
-        editType: 'domodebar',
+        editType: 'modebar',
         description: [
             'Determines the mode of drag interactions.',
             '*select* and *lasso* apply only to scatter traces with',
@@ -35,7 +35,7 @@ module.exports = {
         valType: 'enumerated',
         role: 'info',
         values: ['x', 'y', 'closest', false],
-        editType: 'domodebar',
+        editType: 'modebar',
         description: 'Determines the mode of hover interactions.'
     },
 

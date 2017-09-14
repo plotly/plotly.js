@@ -16,10 +16,10 @@ var surfaceAtts = require('../surface/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 
-module.exports = extendFlat(colorAttrs('', 'docalc', false), {
+module.exports = extendFlat(colorAttrs('', 'calc', false), {
     x: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets the X coordinates of the vertices. The nth element of vectors `x`, `y` and `z`',
             'jointly represent the X, Y and Z coordinates of the nth vertex.'
@@ -27,7 +27,7 @@ module.exports = extendFlat(colorAttrs('', 'docalc', false), {
     },
     y: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets the Y coordinates of the vertices. The nth element of vectors `x`, `y` and `z`',
             'jointly represent the X, Y and Z coordinates of the nth vertex.'
@@ -35,7 +35,7 @@ module.exports = extendFlat(colorAttrs('', 'docalc', false), {
     },
     z: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets the Z coordinates of the vertices. The nth element of vectors `x`, `y` and `z`',
             'jointly represent the X, Y and Z coordinates of the nth vertex.'
@@ -44,7 +44,7 @@ module.exports = extendFlat(colorAttrs('', 'docalc', false), {
 
     i: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'A vector of vertex indices, i.e. integer values between 0 and the length of the vertex',
             'vectors, representing the *first* vertex of a triangle. For example, `{i[m], j[m], k[m]}`',
@@ -55,7 +55,7 @@ module.exports = extendFlat(colorAttrs('', 'docalc', false), {
     },
     j: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'A vector of vertex indices, i.e. integer values between 0 and the length of the vertex',
             'vectors, representing the *second* vertex of a triangle. For example, `{i[m], j[m], k[m]}` ',
@@ -67,7 +67,7 @@ module.exports = extendFlat(colorAttrs('', 'docalc', false), {
     },
     k: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'A vector of vertex indices, i.e. integer values between 0 and the length of the vertex',
             'vectors, representing the *third* vertex of a triangle. For example, `{i[m], j[m], k[m]}`',
@@ -83,7 +83,7 @@ module.exports = extendFlat(colorAttrs('', 'docalc', false), {
         role: 'info',
         values: [ 'x', 'y', 'z' ],
         dflt: 'z',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets the Delaunay axis, which is the axis that is perpendicular to the surface of the',
             'Delaunay triangulation.',
@@ -96,7 +96,7 @@ module.exports = extendFlat(colorAttrs('', 'docalc', false), {
         valType: 'number',
         role: 'style',
         dflt: -1,
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Determines how the mesh surface triangles are derived from the set of',
             'vertices (points) represented by the `x`, `y` and `z` arrays, if',
@@ -121,7 +121,7 @@ module.exports = extendFlat(colorAttrs('', 'docalc', false), {
 
     intensity: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets the vertex intensity values,',
             'used for plotting fields on meshes'
@@ -132,13 +132,13 @@ module.exports = extendFlat(colorAttrs('', 'docalc', false), {
     color: {
         valType: 'color',
         role: 'style',
-        editType: 'docalc',
+        editType: 'calc',
         description: 'Sets the color of the whole mesh'
     },
     vertexcolor: {
         valType: 'data_array',
         role: 'style',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets the color of each vertex',
             'Overrides *color*.'
@@ -147,7 +147,7 @@ module.exports = extendFlat(colorAttrs('', 'docalc', false), {
     facecolor: {
         valType: 'data_array',
         role: 'style',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets the color of each face',
             'Overrides *color* and *vertexcolor*.'
@@ -162,7 +162,7 @@ module.exports = extendFlat(colorAttrs('', 'docalc', false), {
         valType: 'boolean',
         role: 'style',
         dflt: false,
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Determines whether or not normal smoothing is applied to the meshes,',
             'creating meshes with an angular, low-poly look via flat reflections.'
@@ -177,7 +177,7 @@ module.exports = extendFlat(colorAttrs('', 'docalc', false), {
         }),
         color: surfaceAtts.contours.x.color,
         width: surfaceAtts.contours.x.width,
-        editType: 'docalc'
+        editType: 'calc'
     },
 
     showscale: colorscaleAttrs.showscale,
@@ -187,7 +187,7 @@ module.exports = extendFlat(colorAttrs('', 'docalc', false), {
         x: extendFlat({}, surfaceAtts.lightposition.x, {dflt: 1e5}),
         y: extendFlat({}, surfaceAtts.lightposition.y, {dflt: 1e5}),
         z: extendFlat({}, surfaceAtts.lightposition.z, {dflt: 0}),
-        editType: 'docalc'
+        editType: 'calc'
     },
     lighting: extendFlat({
         vertexnormalsepsilon: {
@@ -196,7 +196,7 @@ module.exports = extendFlat(colorAttrs('', 'docalc', false), {
             min: 0.00,
             max: 1,
             dflt: 1e-12, // otherwise finely tessellated things eg. the brain will have no specular light reflection
-            editType: 'docalc',
+            editType: 'calc',
             description: 'Epsilon for vertex normals calculation avoids math issues arising from degenerate geometry.'
         },
         facenormalsepsilon: {
@@ -205,9 +205,9 @@ module.exports = extendFlat(colorAttrs('', 'docalc', false), {
             min: 0.00,
             max: 1,
             dflt: 1e-6, // even the brain model doesn't appear to need finer than this
-            editType: 'docalc',
+            editType: 'calc',
             description: 'Epsilon for face normals calculation avoids math issues arising from degenerate geometry.'
         },
-        editType: 'docalc'
+        editType: 'calc'
     }, surfaceAtts.lighting)
 });

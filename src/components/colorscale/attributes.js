@@ -13,7 +13,7 @@ module.exports = {
         valType: 'boolean',
         role: 'info',
         dflt: true,
-        editType: 'docalc',
+        editType: 'calc',
         impliedEdits: {zmin: undefined, zmax: undefined},
         description: [
             'Determines the whether or not the color domain is computed',
@@ -24,7 +24,7 @@ module.exports = {
         valType: 'number',
         role: 'info',
         dflt: null,
-        editType: 'doplot',
+        editType: 'plot',
         impliedEdits: {zauto: false},
         description: 'Sets the lower bound of color domain.'
     },
@@ -32,14 +32,14 @@ module.exports = {
         valType: 'number',
         role: 'info',
         dflt: null,
-        editType: 'doplot',
+        editType: 'plot',
         impliedEdits: {zauto: false},
         description: 'Sets the upper bound of color domain.'
     },
     colorscale: {
         valType: 'colorscale',
         role: 'style',
-        editType: 'docalc',
+        editType: 'calc',
         impliedEdits: {autocolorscale: false},
         description: [
             'Sets the colorscale.',
@@ -57,7 +57,7 @@ module.exports = {
         valType: 'boolean',
         role: 'style',
         dflt: true,  // gets overrode in 'heatmap' & 'surface' for backwards comp.
-        editType: 'docalc',
+        editType: 'calc',
         impliedEdits: {colorscale: undefined},
         description: [
             'Determines whether or not the colorscale is picked using the sign of',
@@ -68,14 +68,14 @@ module.exports = {
         valType: 'boolean',
         role: 'style',
         dflt: false,
-        editType: 'docalc',
+        editType: 'calc',
         description: 'Reverses the colorscale.'
     },
     showscale: {
         valType: 'boolean',
         role: 'info',
         dflt: true,
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Determines whether or not a colorbar is displayed for this trace.'
         ].join(' ')

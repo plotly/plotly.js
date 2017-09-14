@@ -192,4 +192,4 @@ module.exports = overrideAll({
             'with respect to the color bar.'
         ].join(' ')
     }
-}, 'docolorbars', 'from-root');
+}, 'colorbars', 'from-root');

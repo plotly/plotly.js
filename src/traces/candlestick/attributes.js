@@ -20,11 +20,11 @@ var directionAttrs = {
     line: {
         color: Lib.extendFlat({}, boxAttrs.line.color),
         width: Lib.extendFlat({}, boxAttrs.line.width),
-        editType: 'dostyle'
+        editType: 'style'
     },
 
     fillcolor: Lib.extendFlat({}, boxAttrs.fillcolor),
-    editType: 'dostyle'
+    editType: 'style'
 };
 
 module.exports = {
@@ -43,7 +43,7 @@ module.exports = {
                 '`decreasing.line.width`.'
             ].join(' ')
         }),
-        editType: 'dostyle'
+        editType: 'style'
     },
 
     increasing: Lib.extendDeep({}, directionAttrs, {

@@ -20,7 +20,7 @@ exports.attributes = {
         valType: 'boolean',
         dflt: true,
         role: 'info',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Determines whether this sort transform is enabled or disabled.'
         ].join(' ')
@@ -32,7 +32,7 @@ exports.attributes = {
         arrayOk: true,
         dflt: 'x',
         role: 'info',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets the target by which the sort transform is applied.',
 
@@ -51,12 +51,12 @@ exports.attributes = {
         values: ['ascending', 'descending'],
         dflt: 'ascending',
         role: 'info',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets the sort transform order.'
         ].join(' ')
     },
-    editType: 'docalc'
+    editType: 'calc'
 };
 
 exports.supplyDefaults = function(transformIn) {

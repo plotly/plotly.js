@@ -20,7 +20,7 @@ var attributes = {
     valType: 'enumerated',
     values: Object.keys(calendars.calendars),
     role: 'info',
-    editType: 'docalc',
+    editType: 'calc',
     dflt: 'gregorian'
 };
 

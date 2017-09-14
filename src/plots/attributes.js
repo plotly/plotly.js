@@ -16,14 +16,14 @@ module.exports = {
         role: 'info',
         values: [],     // listed dynamically
         dflt: 'scatter',
-        editType: 'docalc'
+        editType: 'calc'
     },
     visible: {
         valType: 'enumerated',
         values: [true, false, 'legendonly'],
         role: 'info',
         dflt: true,
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Determines whether or not this trace is visible.',
             'If *legendonly*, the trace is not drawn,',
@@ -35,7 +35,7 @@ module.exports = {
         valType: 'boolean',
         role: 'info',
         dflt: true,
-        editType: 'dostyle',
+        editType: 'style',
         description: [
             'Determines whether or not an item corresponding to this',
             'trace is shown in the legend.'
@@ -45,7 +45,7 @@ module.exports = {
         valType: 'string',
         role: 'info',
         dflt: '',
-        editType: 'dostyle',
+        editType: 'style',
         description: [
             'Sets the legend group for this trace.',
             'Traces part of the same legend group hide/show at the same time',
@@ -58,13 +58,13 @@ module.exports = {
         min: 0,
         max: 1,
         dflt: 1,
-        editType: 'dostyle',
+        editType: 'style',
         description: 'Sets the opacity of the trace.'
     },
     name: {
         valType: 'string',
         role: 'info',
-        editType: 'dostyle',
+        editType: 'style',
         description: [
             'Sets the trace name.',
             'The trace name appear as the legend item and on hover.'
@@ -74,11 +74,11 @@ module.exports = {
         valType: 'string',
         role: 'info',
         dflt: '',
-        editType: 'docalc'
+        editType: 'calc'
     },
     ids: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Assigns id labels to each datum.',
             'These ids for object constancy of data points during animation.'
@@ -86,7 +86,7 @@ module.exports = {
     },
     customdata: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Assigns extra data each datum.',
             'This may be useful when listening to hover, click and selection events.',
@@ -115,7 +115,7 @@ module.exports = {
             noBlank: true,
             strict: true,
             role: 'info',
-            editType: 'docalc',
+            editType: 'calc',
             description: [
                 'The stream id number links a data trace on a plot with a stream.',
                 'See https://plot.ly/settings for more details.'
@@ -127,7 +127,7 @@ module.exports = {
             max: 10000,
             dflt: 500,
             role: 'info',
-            editType: 'docalc',
+            editType: 'calc',
             description: [
                 'Sets the maximum number of points to keep on the plots from an',
                 'incoming stream.',
@@ -135,6 +135,6 @@ module.exports = {
                 'be displayed on the plot.'
             ].join(' ')
         },
-        editType: 'docalc'
+        editType: 'calc'
     }
 };

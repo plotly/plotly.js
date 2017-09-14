@@ -212,4 +212,4 @@ module.exports = overrideAll({
         },
         description: 'The links of the Sankey plot.'
     }
-}, 'docalc', 'nested');
+}, 'calc', 'nested');

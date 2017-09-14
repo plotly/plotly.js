@@ -14,7 +14,7 @@ module.exports = {
         valType: 'subplotid',
         role: 'info',
         dflt: 'ternary',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets a reference between this trace\'s data coordinates and',
             'a ternary subplot.',

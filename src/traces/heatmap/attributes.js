@@ -17,7 +17,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 module.exports = extendFlat({}, {
     z: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: 'Sets the z data.'
     },
     x: extendFlat({}, scatterAttrs.x, {impliedEdits: {xtype: 'array'}}),
@@ -29,21 +29,21 @@ module.exports = extendFlat({}, {
 
     text: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: 'Sets the text elements associated with each z value.'
     },
     transpose: {
         valType: 'boolean',
         dflt: false,
         role: 'info',
-        editType: 'docalc',
+        editType: 'calc',
         description: 'Transposes the z data.'
     },
     xtype: {
         valType: 'enumerated',
         values: ['array', 'scaled'],
         role: 'info',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'If *array*, the heatmap\'s x coordinates are given by *x*',
             '(the default behavior when `x` is provided).',
@@ -55,7 +55,7 @@ module.exports = extendFlat({}, {
         valType: 'enumerated',
         values: ['array', 'scaled'],
         role: 'info',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'If *array*, the heatmap\'s y coordinates are given by *y*',
             '(the default behavior when `y` is provided)',
@@ -68,7 +68,7 @@ module.exports = extendFlat({}, {
         values: ['fast', 'best', false],
         dflt: false,
         role: 'style',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Picks a smoothing algorithm use to smooth `z` data.'
         ].join(' ')
@@ -77,7 +77,7 @@ module.exports = extendFlat({}, {
         valType: 'boolean',
         dflt: false,
         role: 'info',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Determines whether or not gaps',
             '(i.e. {nan} or missing values)',
@@ -89,7 +89,7 @@ module.exports = extendFlat({}, {
         dflt: 0,
         min: 0,
         role: 'style',
-        editType: 'doplot',
+        editType: 'plot',
         description: 'Sets the horizontal gap (in pixels) between bricks.'
     },
     ygap: {
@@ -97,7 +97,7 @@ module.exports = extendFlat({}, {
         dflt: 0,
         min: 0,
         role: 'style',
-        editType: 'doplot',
+        editType: 'plot',
         description: 'Sets the vertical gap (in pixels) between bricks.'
     },
 },

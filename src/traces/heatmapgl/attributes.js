@@ -39,4 +39,4 @@ extendFlat(
     { colorbar: colorbarAttrs }
 );
 
-module.exports = overrideAll(attrs, 'docalc', 'nested');
+module.exports = overrideAll(attrs, 'calc', 'nested');

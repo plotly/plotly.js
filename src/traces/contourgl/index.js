@@ -13,7 +13,7 @@ var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
 var ContourGl = {};
 
-ContourGl.attributes = overrideAll(require('../contour/attributes'), 'docalc', 'nested');
+ContourGl.attributes = overrideAll(require('../contour/attributes'), 'calc', 'nested');
 ContourGl.supplyDefaults = require('../contour/defaults');
 ContourGl.colorbar = require('../contour/colorbar');
 

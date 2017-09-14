@@ -26,7 +26,7 @@ module.exports = {
     visible: {
         valType: 'boolean',
         role: 'info',
-        editType: 'doplot',
+        editType: 'plot',
         description: [
             'Determines whether or not this range selector is visible.',
             'Note that range selectors are only available for x axes of',
@@ -41,7 +41,7 @@ module.exports = {
         min: -2,
         max: 3,
         role: 'style',
-        editType: 'doplot',
+        editType: 'plot',
         description: 'Sets the x position (in normalized coordinates) of the range selector.'
     },
     xanchor: {
@@ -49,7 +49,7 @@ module.exports = {
         values: ['auto', 'left', 'center', 'right'],
         dflt: 'left',
         role: 'info',
-        editType: 'doplot',
+        editType: 'plot',
         description: [
             'Sets the range selector\'s horizontal position anchor.',
             'This anchor binds the `x` position to the *left*, *center*',
@@ -61,7 +61,7 @@ module.exports = {
         min: -2,
         max: 3,
         role: 'style',
-        editType: 'doplot',
+        editType: 'plot',
         description: 'Sets the y position (in normalized coordinates) of the range selector.'
     },
     yanchor: {
@@ -69,7 +69,7 @@ module.exports = {
         values: ['auto', 'top', 'middle', 'bottom'],
         dflt: 'bottom',
         role: 'info',
-        editType: 'doplot',
+        editType: 'plot',
         description: [
             'Sets the range selector\'s vertical position anchor',
             'This anchor binds the `y` position to the *top*, *middle*',
@@ -78,7 +78,7 @@ module.exports = {
     },
 
     font: fontAttrs({
-        editType: 'doplot',
+        editType: 'plot',
         description: 'Sets the font of the range selector button text.'
     }),
 
@@ -86,20 +86,20 @@ module.exports = {
         valType: 'color',
         dflt: colorAttrs.lightLine,
         role: 'style',
-        editType: 'doplot',
+        editType: 'plot',
         description: 'Sets the background color of the range selector buttons.'
     },
     activecolor: {
         valType: 'color',
         role: 'style',
-        editType: 'doplot',
+        editType: 'plot',
         description: 'Sets the background color of the active range selector button.'
     },
     bordercolor: {
         valType: 'color',
         dflt: colorAttrs.defaultLine,
         role: 'style',
-        editType: 'doplot',
+        editType: 'plot',
         description: 'Sets the color of the border enclosing the range selector.'
     },
     borderwidth: {
@@ -107,8 +107,8 @@ module.exports = {
         min: 0,
         dflt: 0,
         role: 'style',
-        editType: 'doplot',
+        editType: 'plot',
         description: 'Sets the width (in px) of the border enclosing the range selector.'
     },
-    editType: 'doplot'
+    editType: 'plot'
 };

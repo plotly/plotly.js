@@ -22,7 +22,7 @@ var ScatterGeoMarkerLineAttrs = ScatterGeoAttrs.marker.line;
 module.exports = extendFlat({
     locations: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets the coordinates via location IDs or names.',
             'See `locationmode` for more info.'
@@ -31,30 +31,30 @@ module.exports = extendFlat({
     locationmode: ScatterGeoAttrs.locationmode,
     z: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: 'Sets the color values.'
     },
     text: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: 'Sets the text elements associated with each location.'
     },
     marker: {
         line: {
             color: ScatterGeoMarkerLineAttrs.color,
             width: extendFlat({}, ScatterGeoMarkerLineAttrs.width, {dflt: 1}),
-            editType: 'docalc'
+            editType: 'calc'
         },
-        editType: 'docalc'
+        editType: 'calc'
     },
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
-        editType: 'docalc',
+        editType: 'calc',
         flags: ['location', 'z', 'text', 'name']
     }),
 },
     extendDeep({}, colorscaleAttrs, {
-        zmax: {editType: 'docalc'},
-        zmin: {editType: 'docalc'}
+        zmax: {editType: 'calc'},
+        zmin: {editType: 'calc'}
     }),
     { colorbar: colorbarAttrs }
 );

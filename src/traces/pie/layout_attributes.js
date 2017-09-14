@@ -16,6 +16,6 @@ module.exports = {
      */
     hiddenlabels: {
         valType: 'data_array',
-        editType: 'docalc'
+        editType: 'calc'
     }
 };

@@ -121,4 +121,4 @@ module.exports = overrideAll({
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['lon', 'lat', 'location', 'text', 'name']
     })
-}, 'docalc', 'nested');
+}, 'calc', 'nested');

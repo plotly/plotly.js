@@ -14,7 +14,7 @@ module.exports = {
         valType: 'subplotid',
         role: 'info',
         dflt: 'scene',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets a reference between this trace\'s 3D coordinate system and',
             'a 3D scene.',

@@ -14,14 +14,14 @@ var barAttrs = require('../bar/attributes');
 module.exports = {
     x: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets the sample data to be binned on the x axis.'
         ].join(' ')
     },
     y: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets the sample data to be binned on the y axis.'
         ].join(' ')
@@ -35,7 +35,7 @@ module.exports = {
         values: ['count', 'sum', 'avg', 'min', 'max'],
         role: 'style',
         dflt: 'count',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Specifies the binning function used for this histogram trace.',
 
@@ -53,7 +53,7 @@ module.exports = {
         values: ['', 'percent', 'probability', 'density', 'probability density'],
         dflt: '',
         role: 'style',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Specifies the type of normalization used for this histogram trace.',
 
@@ -81,7 +81,7 @@ module.exports = {
             valType: 'boolean',
             dflt: false,
             role: 'info',
-            editType: 'docalc',
+            editType: 'calc',
             description: [
                 'If true, display the cumulative distribution by summing the',
                 'binned values. Use the `direction` and `centralbin` attributes',
@@ -99,7 +99,7 @@ module.exports = {
             values: ['increasing', 'decreasing'],
             dflt: 'increasing',
             role: 'info',
-            editType: 'docalc',
+            editType: 'calc',
             description: [
                 'Only applies if cumulative is enabled.',
                 'If *increasing* (default) we sum all prior bins, so the result',
@@ -113,7 +113,7 @@ module.exports = {
             values: ['include', 'exclude', 'half'],
             dflt: 'include',
             role: 'info',
-            editType: 'docalc',
+            editType: 'calc',
             description: [
                 'Only applies if cumulative is enabled.',
                 'Sets whether the current bin is included, excluded, or has half',
@@ -124,14 +124,14 @@ module.exports = {
                 'it.'
             ].join(' ')
         },
-        editType: 'docalc'
+        editType: 'calc'
     },
 
     autobinx: {
         valType: 'boolean',
         dflt: null,
         role: 'style',
-        editType: 'docalc',
+        editType: 'calc',
         impliedEdits: {
             'xbins.start': undefined,
             'xbins.end': undefined,
@@ -149,7 +149,7 @@ module.exports = {
         min: 0,
         dflt: 0,
         role: 'style',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Specifies the maximum number of desired bins. This value will be used',
             'in an algorithm that will decide the optimal bin size such that the',
@@ -162,7 +162,7 @@ module.exports = {
         valType: 'boolean',
         dflt: null,
         role: 'style',
-        editType: 'docalc',
+        editType: 'calc',
         impliedEdits: {
             'ybins.start': undefined,
             'ybins.end': undefined,
@@ -180,7 +180,7 @@ module.exports = {
         min: 0,
         dflt: 0,
         role: 'style',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Specifies the maximum number of desired bins. This value will be used',
             'in an algorithm that will decide the optimal bin size such that the',
@@ -210,7 +210,7 @@ function makeBinsAttr(axLetter) {
             valType: 'any', // for date axes
             dflt: null,
             role: 'style',
-            editType: 'docalc',
+            editType: 'calc',
             impliedEdits: impliedEditsInner,
             description: [
                 'Sets the starting value for the', axLetter,
@@ -221,7 +221,7 @@ function makeBinsAttr(axLetter) {
             valType: 'any', // for date axes
             dflt: null,
             role: 'style',
-            editType: 'docalc',
+            editType: 'calc',
             impliedEdits: impliedEditsInner,
             description: [
                 'Sets the end value for the', axLetter,
@@ -232,14 +232,14 @@ function makeBinsAttr(axLetter) {
             valType: 'any', // for date axes
             dflt: null,
             role: 'style',
-            editType: 'docalc',
+            editType: 'calc',
             impliedEdits: impliedEditsInner,
             description: [
                 'Sets the step in-between value each', axLetter,
                 'axis bin.'
             ].join(' ')
         },
-        editType: 'docalc',
+        editType: 'calc',
         impliedEdits: impliedEdits
     };
 }

@@ -12,7 +12,7 @@ var fontAttrs = require('./font_attributes');
 var colorAttrs = require('../components/color/attributes');
 
 var globalFont = fontAttrs({
-    editType: 'docalc',
+    editType: 'calc',
     description: [
         'Sets the global font.',
         'Note that fonts used in traces and other',
@@ -29,13 +29,13 @@ module.exports = {
         valType: 'string',
         role: 'info',
         dflt: 'Click to enter Plot title',
-        editType: 'dolayoutstyle',
+        editType: 'layoutstyle',
         description: [
             'Sets the plot\'s title.'
         ].join(' ')
     },
     titlefont: fontAttrs({
-        editType: 'dolayoutstyle',
+        editType: 'layoutstyle',
         description: 'Sets the title font.'
     }),
     autosize: {
@@ -81,7 +81,7 @@ module.exports = {
             role: 'info',
             min: 0,
             dflt: 80,
-            editType: 'docalc',
+            editType: 'calc',
             description: 'Sets the left margin (in px).'
         },
         r: {
@@ -89,7 +89,7 @@ module.exports = {
             role: 'info',
             min: 0,
             dflt: 80,
-            editType: 'docalc',
+            editType: 'calc',
             description: 'Sets the right margin (in px).'
         },
         t: {
@@ -97,7 +97,7 @@ module.exports = {
             role: 'info',
             min: 0,
             dflt: 100,
-            editType: 'docalc',
+            editType: 'calc',
             description: 'Sets the top margin (in px).'
         },
         b: {
@@ -105,7 +105,7 @@ module.exports = {
             role: 'info',
             min: 0,
             dflt: 80,
-            editType: 'docalc',
+            editType: 'calc',
             description: 'Sets the bottom margin (in px).'
         },
         pad: {
@@ -113,7 +113,7 @@ module.exports = {
             role: 'info',
             min: 0,
             dflt: 0,
-            editType: 'docalc',
+            editType: 'calc',
             description: [
                 'Sets the amount of padding (in px)',
                 'between the plotting area and the axis lines'
@@ -123,15 +123,15 @@ module.exports = {
             valType: 'boolean',
             role: 'info',
             dflt: true,
-            editType: 'docalc'
+            editType: 'calc'
         },
-        editType: 'docalc'
+        editType: 'calc'
     },
     paper_bgcolor: {
         valType: 'color',
         role: 'style',
         dflt: colorAttrs.background,
-        editType: 'doplot',
+        editType: 'plot',
         description: 'Sets the color of paper where the graph is drawn.'
     },
     plot_bgcolor: {
@@ -140,7 +140,7 @@ module.exports = {
         valType: 'color',
         role: 'style',
         dflt: colorAttrs.background,
-        editType: 'dolayoutstyle',
+        editType: 'layoutstyle',
         description: [
             'Sets the color of plotting area in-between x and y axes.'
         ].join(' ')
@@ -149,7 +149,7 @@ module.exports = {
         valType: 'string',
         role: 'style',
         dflt: '.,',
-        editType: 'doplot',
+        editType: 'plot',
         description: [
             'Sets the decimal and thousand separators.',
             'For example, *. * puts a \'.\' before decimals and',
@@ -160,7 +160,7 @@ module.exports = {
         valType: 'boolean',
         role: 'info',
         dflt: false,
-        editType: 'doplot',
+        editType: 'plot',
         description: [
             'Determines whether or not a text link citing the data source is',
             'placed at the bottom-right cored of the figure.',
@@ -181,7 +181,7 @@ module.exports = {
         // but included here because it's not in the legend object
         valType: 'boolean',
         role: 'info',
-        editType: 'dolegend',
+        editType: 'legend',
         description: 'Determines whether or not a legend is drawn.'
     }
 };

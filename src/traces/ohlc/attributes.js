@@ -22,7 +22,7 @@ var directionAttrs = {
     name: {
         valType: 'string',
         role: 'info',
-        editType: 'dostyle',
+        editType: 'style',
         description: [
             'Sets the segment name.',
             'The segment name appear as the legend item and on hover.'
@@ -33,7 +33,7 @@ var directionAttrs = {
         valType: 'boolean',
         role: 'info',
         dflt: true,
-        editType: 'dostyle',
+        editType: 'style',
         description: [
             'Determines whether or not an item corresponding to this',
             'segment is shown in the legend.'
@@ -44,16 +44,16 @@ var directionAttrs = {
         color: lineAttrs.color,
         width: lineAttrs.width,
         dash: dash,
-        editType: 'dostyle'
+        editType: 'style'
     },
-    editType: 'dostyle'
+    editType: 'style'
 };
 
 module.exports = {
 
     x: {
         valType: 'data_array',
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets the x coordinates.',
             'If absent, linear coordinate will be generated.'
@@ -63,28 +63,28 @@ module.exports = {
     open: {
         valType: 'data_array',
         dflt: [],
-        editType: 'docalc',
+        editType: 'calc',
         description: 'Sets the open values.'
     },
 
     high: {
         valType: 'data_array',
         dflt: [],
-        editType: 'docalc',
+        editType: 'calc',
         description: 'Sets the high values.'
     },
 
     low: {
         valType: 'data_array',
         dflt: [],
-        editType: 'docalc',
+        editType: 'calc',
         description: 'Sets the low values.'
     },
 
     close: {
         valType: 'data_array',
         dflt: [],
-        editType: 'docalc',
+        editType: 'calc',
         description: 'Sets the close values.'
     },
 
@@ -105,7 +105,7 @@ module.exports = {
                 '`decreasing.line.dash`.'
             ].join(' ')
         }),
-        editType: 'dostyle'
+        editType: 'style'
     },
 
     increasing: Lib.extendDeep({}, directionAttrs, {
@@ -121,7 +121,7 @@ module.exports = {
         role: 'info',
         dflt: '',
         arrayOk: true,
-        editType: 'docalc',
+        editType: 'calc',
         description: [
             'Sets hover text elements associated with each sample point.',
             'If a single string, the same string appears over',
@@ -137,7 +137,7 @@ module.exports = {
         max: 0.5,
         dflt: 0.3,
         role: 'style',
-        editType: 'docalcAutorange',
+        editType: 'calcIfAutorange',
         description: [
             'Sets the width of the open/close tick marks',
             'relative to the *x* minimal interval.'

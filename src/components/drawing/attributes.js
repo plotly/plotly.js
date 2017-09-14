@@ -18,7 +18,7 @@ exports.dash = {
     values: ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'],
     dflt: 'solid',
     role: 'style',
-    editType: 'dostyle',
+    editType: 'style',
     description: [
         'Sets the dash style of lines. Set to a dash type string',
         '(*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*)',

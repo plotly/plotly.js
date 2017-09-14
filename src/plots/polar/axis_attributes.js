@@ -146,4 +146,4 @@ module.exports = overrideAll({
             ].join(' ')
         }
     }
-}, 'doplot', 'nested');
+}, 'plot', 'nested');

@@ -61,4 +61,4 @@ module.exports = overrideAll({
     aaxis: ternaryAxesAttrs,
     baxis: ternaryAxesAttrs,
     caxis: ternaryAxesAttrs
-}, 'doplot', 'from-root');
+}, 'plot', 'from-root');
