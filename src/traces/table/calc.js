@@ -93,8 +93,7 @@ module.exports = function calc(gd, trace) {
         size: gd._fullLayout._size,
         width: groupWidth,
         height: groupHeight,
-        columnWidths: columnWidths,
-        columnOrder: columnOrder, // will be mutated on column move
+        columnOrder: columnOrder, // will be mutated on column move, todo use in callback
         groupHeight: groupHeight,
         rowBlocks: rowBlocks,
         headerRowBlocks: headerRowBlocks,
@@ -118,7 +117,6 @@ module.exports = function calc(gd, trace) {
             };
         }),
 
-        // these two are being phased out in favor of the new `columnOrder` attribute
         gdColumns: trace.header.values.map(function(d) {return d[0];}),
         gdColumnsOriginalOrder: trace.header.values.map(function(d) {return d[0];})
     };

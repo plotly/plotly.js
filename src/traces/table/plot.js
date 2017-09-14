@@ -486,7 +486,6 @@ function finalizeYPositionMaker(columnBlock, element, d) {
     };
 }
 
-
 function setCellHeightAndPositionY(columnCell) {
     columnCell
         .attr('transform', function(d) {
@@ -495,13 +494,10 @@ function setCellHeightAndPositionY(columnCell) {
             var rowOffset = firstRowAnchor(d.rowBlocks, l.key) + rowAnchor - firstRowAnchor(d.rowBlocks, d.page);
             var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + rowsHeight(n, Infinity)}, 0);
             var yOffset = rowOffset + headerHeight;
-            return 'translate(' + 0 + ' ' + yOffset + ')';
+            return 'translate(0 ' + yOffset + ')';
         })
         .select('.cellRect')
-        .attr('height', function(d) {
-                var l = getBlock(d);
-                return getRow(l, d.key).rowHeight;
-            });
+        .attr('height', function(d) {return getRow(getBlock(d), d.key).rowHeight;});
 }
 
 function firstRowAnchor(rowBlocks, page) {
