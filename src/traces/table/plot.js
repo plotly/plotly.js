@@ -270,6 +270,11 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
         .classed('cellText', true);
 
     cellText
+        .call(renderCellText, allColumnBlock, columnCell);
+}
+
+function renderCellText(cellText, allColumnBlock, columnCell) {
+    cellText
         .text(function(d) {
             var col = d.column.specIndex;
             var row = d.rowNumber;
@@ -279,7 +284,12 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
             var suffix = latex ? '' : gridPick(d.calcdata.cells.suffix, col, row) || '';
             var format = latex ? null : gridPick(d.calcdata.cells.format, col, row) || null;
             var prefixSuffixedText = prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
-            var textToRender = prefixSuffixedText.replace(/ /g, '<br>');
+            var fragments = prefixSuffixedText.split(c.wrapSplitCharacter);
+            var textToRender = fragments.join('<br>') + "<br> ";
+            d.latex = latex;
+            d.wrappingNeeded = !latex;
+            d.fragments = fragments.map(function(f) {return {fragment:f, width: null};})
+            d.fragments.push({fragment: c.wrapSpacer, width: null})
             return textToRender;
         })
         .each(function(d) {
@@ -290,7 +300,9 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
             // finalize what's in the DOM
             Drawing.font(selection, d.font);
             setCellHeightAndPositionY(columnCell);
-            svgUtil.convertToTspans(selection, gd, finalizeYPositionMaker(allColumnBlock, element, d));
+
+            var renderCallback = d.wrappingNeeded ? wrapText : finalizeYPositionMaker;
+            svgUtil.convertToTspans(selection, gd, renderCallback(allColumnBlock, element, d));
         });
 }
 
@@ -460,6 +472,29 @@ function conditionalPanelRerender(cellsColumnBlock, pages, prevPages, d, revolve
             prevPages[revolverIndex] = pages[revolverIndex];
         });
     }
+}
+
+function wrapText(columnBlock, element, d) {
+    var nextRenderCallback = finalizeYPositionMaker(columnBlock, element, d);
+    return function finalizeYPosition() {
+        var cellTextHolder = d3.select(element.parentNode);
+        cellTextHolder
+            .each(function(d) {
+                var fragments = d.fragments;
+                cellTextHolder.selectAll('tspan.line').each(function(dd, i) {
+                    fragments[i].width = this.getComputedTextLength();
+                });
+                d.value = 'kjhdlk<br>jkelrjlk'
+            });
+
+        // the pre-wrapped text was rendered only for the text measurements
+        cellTextHolder.selectAll('tspan.line').remove();
+
+        // resupply text, now wrapped
+        //renderCellText(cellTextHolder.select('.cellText'), allColumnBlock, columnCell);
+
+        nextRenderCallback();
+    };
 }
 
 function finalizeYPositionMaker(columnBlock, element, d) {

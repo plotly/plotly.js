@@ -13,6 +13,8 @@ module.exports = {
     overdrag: 45,
     cellPad: 4,
     latexMark: '$',
+    wrapSplitCharacter: ' ',
+    wrapSpacer: ' ',
     uplift: 5,
     columnTitleOffset: 28,
     columnExtentOffset: 10,
