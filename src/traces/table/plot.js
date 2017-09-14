@@ -422,11 +422,9 @@ function makeDragRow(cellsColumnBlock) {
             }
         }
 
-        var processedPages = pages[0];
-
         cellsColumnBlock
             .attr('transform', function (d, i) {
-                var dPage = processedPages + i;
+                var dPage = pages[i];
                 d.page = dPage;
                 var yTranslate = firstRowAnchor(blocks, dPage) - scrollY;
                 return 'translate(0 ' + yTranslate + ')';
