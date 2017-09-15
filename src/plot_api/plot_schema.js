@@ -64,7 +64,7 @@ exports.get = function() {
     return {
         defs: {
             valObjects: Lib.valObjectMeta,
-            metaKeys: UNDERSCORE_ATTRS.concat(['description', 'role']),
+            metaKeys: UNDERSCORE_ATTRS.concat(['description', 'role', 'editType', 'impliedEdits']),
             editType: {
                 traces: editTypes.traces,
                 layout: editTypes.layout
