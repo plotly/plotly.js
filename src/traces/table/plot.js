@@ -379,7 +379,7 @@ function splitToPanels(d) {
         rowBlocks: d.calcdata.rowBlocks
     });
     // order due to SVG using painter's algo:
-    return [revolverPanel1, revolverPanel2, headerPanel];
+    return [revolverPanel1/*, revolverPanel2, headerPanel*/];
 }
 
 function splitToCells(d) {
@@ -484,7 +484,7 @@ function wrapText(columnBlock, element, d) {
                 cellTextHolder.selectAll('tspan.line').each(function(dd, i) {
                     fragments[i].width = this.getComputedTextLength();
                 });
-                d.value = 'kjhdlk<br>jkelrjlk';
+                d.value = 'kjhdlk<br>jkelrjlk<br>jkelrjlk<br>jkelrjlk<br>jkelrjlk<br>jkelrjlk<br>jkelrjlk<br>jkelrjlk';
                 d.wrapped = true;
             });
 
