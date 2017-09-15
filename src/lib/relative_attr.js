@@ -9,9 +9,13 @@
 
 'use strict';
 
-
+// ASCEND: chop off the last nesting level - either [<n>] or .<key> - to ascend
+// the attribute tree. the remaining attrString is in match[1]
 var ASCEND = /^(.*)(\.[^\.\[\]]+|\[\d\])$/;
+
+// SIMPLEATTR: is this an un-nested attribute? (no dots or brackets)
 var SIMPLEATTR = /^[^\.\[\]]+$/;
+
 /*
  * calculate a relative attribute string, similar to a relative path
  *
