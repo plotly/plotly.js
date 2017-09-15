@@ -284,12 +284,16 @@ function renderCellText(cellText, allColumnBlock, columnCell) {
             var suffix = latex ? '' : gridPick(d.calcdata.cells.suffix, col, row) || '';
             var format = latex ? null : gridPick(d.calcdata.cells.format, col, row) || null;
             var prefixSuffixedText = prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
-            var fragments = prefixSuffixedText.split(c.wrapSplitCharacter);
-            var textToRender = fragments.join('<br>') + "<br> ";
             d.latex = latex;
             d.wrappingNeeded = !d.wrapped && !latex;
-            d.fragments = fragments.map(function(f) {return {fragment:f, width: null};})
-            d.fragments.push({fragment: c.wrapSpacer, width: null})
+            var fragments = prefixSuffixedText.split(c.wrapSplitCharacter);
+            var textToRender = d.wrappingNeeded ? fragments.join(c.lineBreaker) + c.lineBreaker + c.wrapSpacer : d.value;
+            if(d.wrappingNeeded) {
+                d.fragments = fragments.map(function (f) {return {text: f, width: null};});
+                d.fragments.push({fragment: c.wrapSpacer, width: null});
+            } else {
+                delete d.fragments;
+            }
             return textToRender;
         })
         .each(function(d) {
@@ -379,7 +383,7 @@ function splitToPanels(d) {
         rowBlocks: d.calcdata.rowBlocks
     });
     // order due to SVG using painter's algo:
-    return [revolverPanel1, revolverPanel2, headerPanel];
+    return [revolverPanel1/*, revolverPanel2, headerPanel*/];
 }
 
 function splitToCells(d) {
@@ -484,7 +488,28 @@ function wrapText(columnBlock, element, d) {
                 cellTextHolder.selectAll('tspan.line').each(function(dd, i) {
                     fragments[i].width = this.getComputedTextLength();
                 });
-                d.value = 'kjhdlk<br>jkelrjlk';
+                // last element is only for measuring the separator character, so it's ignored:
+                var separatorLength = fragments[fragments.length - 1].width;
+                var rest = fragments.slice(0, -1);
+                var currentRow = [];
+                var currentAddition, currentAdditionLength;
+                var currentRowLength = 0;
+                var rowLengthLimit = d.column.columnWidth;
+                d.value = "";
+                while(rest.length) {
+                    currentAddition = rest.shift();
+                    currentAdditionLength = currentAddition.width + separatorLength;
+                    if(currentRowLength + currentAdditionLength > rowLengthLimit) {
+                        d.value += c.lineBreaker + currentRow.join(c.wrapSpacer);
+                        currentRow = [];
+                        currentRowLength = 0;
+                    }
+                    currentRow.push(currentAddition.text);
+                    currentRowLength += currentAdditionLength;
+                }
+                if(currentRowLength) {
+                    d.value += c.lineBreaker + currentRow.join(c.wrapSpacer);
+                }
                 d.wrapped = true;
             });
 

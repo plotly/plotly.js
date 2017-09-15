@@ -15,6 +15,7 @@ module.exports = {
     latexMark: '$',
     wrapSplitCharacter: ' ',
     wrapSpacer: ' ',
+    lineBreaker: '<br>',
     uplift: 5,
     columnTitleOffset: 28,
     columnExtentOffset: 10,
