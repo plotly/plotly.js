@@ -26,7 +26,7 @@ describe('plot schema', function() {
 
     var VALTYPES = Object.keys(valObjects);
     var ROLES = ['info', 'style', 'data'];
-    var editTypes = plotSchema.defs.editTypes;
+    var editType = plotSchema.defs.editType;
 
     function assertTraceSchema(callback) {
         var traces = plotSchema.traces;
@@ -251,21 +251,21 @@ describe('plot schema', function() {
 
         assertTraceSchema(function(attr, attrName, attrs, level, attrString) {
             if(shouldHaveEditType(attr, attrName)) {
-                expect(Lib.validate(attr.editType, editTypes.traces))
+                expect(Lib.validate(attr.editType, editType.traces))
                     .toBe(true, attrString + ': ' + JSON.stringify(attr.editType));
             }
         });
 
         assertTransformSchema(function(attr, attrName, attrs, level, attrString) {
             if(shouldHaveEditType(attr, attrName)) {
-                expect(Lib.validate(attr.editType, editTypes.traces))
+                expect(Lib.validate(attr.editType, editType.traces))
                     .toBe(true, attrString + ': ' + JSON.stringify(attr.editType));
             }
         });
 
         assertLayoutSchema(function(attr, attrName, attrs, level, attrString) {
             if(shouldHaveEditType(attr, attrName)) {
-                expect(Lib.validate(attr.editType, editTypes.layout))
+                expect(Lib.validate(attr.editType, editType.layout))
                     .toBe(true, attrString + ': ' + JSON.stringify(attr.editType));
             }
         });
@@ -399,7 +399,7 @@ describe('getTraceValObject', function() {
         // for valType: any? (or data_array/arrayOk with just an index)
         [
             'valType', 'dflt', 'role', 'description', 'arrayOk',
-            'editTypes', 'min', 'max', 'values'
+            'editType', 'min', 'max', 'values'
         ].forEach(function(prop) {
             expect(getTraceValObject({}, ['x', prop]))
                 .toBe(scatter.attributes.x, prop);
@@ -541,5 +541,28 @@ describe('getLayoutValObject', function() {
         expect(getLayoutValObject(layoutGL2D, ticklenParts)).toBe(gl2dTicklen);
         expect(getLayoutValObject(combinedLayout1, ticklenParts)).toBe(gl2dTicklen);
         expect(getLayoutValObject(combinedLayout2, ticklenParts)).toBe(gl2dTicklen);
+    });
+});
+
+describe('component schemas', function() {
+    it('does not have yaxis-only attributes or mismatched x/yaxis attributes', function() {
+        // in principle either of these should be allowable, but we don't currently
+        // support them so lets simply test that we haven't added them accidentally!
+
+        function delDescription(attr) { delete attr.description; }
+
+        for(var key in Registry.componentsRegistry) {
+            var _module = Registry.componentsRegistry[key];
+            var schema = _module.schema;
+            if(schema && schema.subplots && schema.subplots.yaxis) {
+                expect(schema.subplots.xaxis).toBeDefined(_module.name);
+
+                var xa = Lib.extendDeep({}, schema.subplots.xaxis);
+                var ya = Lib.extendDeep({}, schema.subplots.yaxis);
+                Plotly.PlotSchema.crawl(xa, delDescription);
+                Plotly.PlotSchema.crawl(ya, delDescription);
+                expect(JSON.stringify(xa)).toBe(JSON.stringify(ya), _module.name);
+            }
+        }
     });
 });
