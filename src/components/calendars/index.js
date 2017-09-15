@@ -206,6 +206,7 @@ module.exports = {
         traces: {
             scatter: xyAttrs,
             bar: xyAttrs,
+            box: xyAttrs,
             heatmap: xyAttrs,
             contour: xyAttrs,
             histogram: xyAttrs,

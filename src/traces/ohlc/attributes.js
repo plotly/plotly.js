@@ -9,7 +9,7 @@
 
 'use strict';
 
-var Lib = require('../../lib');
+var extendFlat = require('../../lib').extendFlat;
 var scatterAttrs = require('../scatter/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 
@@ -18,36 +18,38 @@ var DECREASING_COLOR = '#FF4136';
 
 var lineAttrs = scatterAttrs.line;
 
-var directionAttrs = {
-    name: {
-        valType: 'string',
-        role: 'info',
-        editType: 'style',
-        description: [
-            'Sets the segment name.',
-            'The segment name appear as the legend item and on hover.'
-        ].join(' ')
-    },
+function directionAttrs(lineColorDefault) {
+    return {
+        name: {
+            valType: 'string',
+            role: 'info',
+            editType: 'style',
+            description: [
+                'Sets the segment name.',
+                'The segment name appear as the legend item and on hover.'
+            ].join(' ')
+        },
 
-    showlegend: {
-        valType: 'boolean',
-        role: 'info',
-        dflt: true,
-        editType: 'style',
-        description: [
-            'Determines whether or not an item corresponding to this',
-            'segment is shown in the legend.'
-        ].join(' ')
-    },
+        showlegend: {
+            valType: 'boolean',
+            role: 'info',
+            dflt: true,
+            editType: 'style',
+            description: [
+                'Determines whether or not an item corresponding to this',
+                'segment is shown in the legend.'
+            ].join(' ')
+        },
 
-    line: {
-        color: lineAttrs.color,
-        width: lineAttrs.width,
-        dash: dash,
+        line: {
+            color: extendFlat({}, lineAttrs.color, {dflt: lineColorDefault}),
+            width: lineAttrs.width,
+            dash: dash,
+            editType: 'style'
+        },
         editType: 'style'
-    },
-    editType: 'style'
-};
+    };
+}
 
 module.exports = {
 
@@ -89,7 +91,7 @@ module.exports = {
     },
 
     line: {
-        width: Lib.extendFlat({}, lineAttrs.width, {
+        width: extendFlat({}, lineAttrs.width, {
             description: [
                 lineAttrs.width,
                 'Note that this style setting can also be set per',
@@ -97,7 +99,7 @@ module.exports = {
                 '`decreasing.line.width`.'
             ].join(' ')
         }),
-        dash: Lib.extendFlat({}, dash, {
+        dash: extendFlat({}, dash, {
             description: [
                 dash.description,
                 'Note that this style setting can also be set per',
@@ -108,13 +110,9 @@ module.exports = {
         editType: 'style'
     },
 
-    increasing: Lib.extendDeep({}, directionAttrs, {
-        line: { color: { dflt: INCREASING_COLOR } }
-    }),
+    increasing: directionAttrs(INCREASING_COLOR),
 
-    decreasing: Lib.extendDeep({}, directionAttrs, {
-        line: { color: { dflt: DECREASING_COLOR } }
-    }),
+    decreasing: directionAttrs(DECREASING_COLOR),
 
     text: {
         valType: 'string',

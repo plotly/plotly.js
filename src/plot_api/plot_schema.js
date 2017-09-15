@@ -24,7 +24,7 @@ var polarAxisAttrs = require('../plots/polar/axis_attributes');
 var editTypes = require('./edit_types');
 
 var extendFlat = Lib.extendFlat;
-var extendDeep = Lib.extendDeep;
+var extendDeepAll = Lib.extendDeepAll;
 
 var IS_SUBPLOT_OBJ = '_isSubplotObj';
 var IS_LINKED_TO_ARRAY = '_isLinkedToArray';
@@ -140,7 +140,7 @@ exports.crawl = function(attrs, callback, specifiedLevel, attrString) {
 
         if(exports.isValObject(attr)) return;
 
-        if(Lib.isPlainObject(attr)) {
+        if(Lib.isPlainObject(attr) && attrName !== 'impliedEdits') {
             exports.crawl(attr, callback, level + 1, fullAttrString);
         }
     });
@@ -428,14 +428,14 @@ function getTraceAttributes(type) {
     attributes.type = null;
 
     // base attributes (same for all trace types)
-    extendDeep(attributes, baseAttributes);
+    extendDeepAll(attributes, baseAttributes);
 
     // module attributes
-    extendDeep(attributes, _module.attributes);
+    extendDeepAll(attributes, _module.attributes);
 
     // subplot attributes
     if(basePlotModule.attributes) {
-        extendDeep(attributes, basePlotModule.attributes);
+        extendDeepAll(attributes, basePlotModule.attributes);
     }
 
     // 'type' gets overwritten by baseAttributes; reset it here
@@ -450,7 +450,7 @@ function getTraceAttributes(type) {
     if(_module.layoutAttributes) {
         var layoutAttributes = {};
 
-        extendDeep(layoutAttributes, _module.layoutAttributes);
+        extendDeepAll(layoutAttributes, _module.layoutAttributes);
         out.layoutAttributes = formatAttributes(layoutAttributes);
     }
 
@@ -462,7 +462,7 @@ function getLayoutAttributes() {
     var key, _module;
 
     // global layout attributes
-    extendDeep(layoutAttributes, baseLayoutAttributes);
+    extendDeepAll(layoutAttributes, baseLayoutAttributes);
 
     // add base plot module layout attributes
     for(key in Registry.subplotsRegistry) {
@@ -518,7 +518,7 @@ function getLayoutAttributes() {
 
 function getTransformAttributes(type) {
     var _module = Registry.transformsRegistry[type];
-    var attributes = extendDeep({}, _module.attributes);
+    var attributes = extendDeepAll({}, _module.attributes);
 
     // add registered components transform attributes
     Object.keys(Registry.componentsRegistry).forEach(function(k) {
@@ -538,7 +538,7 @@ function getTransformAttributes(type) {
 
 function getFramesAttributes() {
     var attrs = {
-        frames: Lib.extendDeep({}, frameAttributes)
+        frames: Lib.extendDeepAll({}, frameAttributes)
     };
 
     formatAttributes(attrs);
@@ -621,7 +621,7 @@ function assignPolarLayoutAttrs(layoutAttributes) {
 
 function handleBasePlotModule(layoutAttributes, _module, astr) {
     var np = Lib.nestedProperty(layoutAttributes, astr),
-        attrs = extendDeep({}, _module.layoutAttributes);
+        attrs = extendDeepAll({}, _module.layoutAttributes);
 
     attrs[IS_SUBPLOT_OBJ] = true;
     np.set(attrs);
@@ -630,5 +630,5 @@ function handleBasePlotModule(layoutAttributes, _module, astr) {
 function insertAttrs(baseAttrs, newAttrs, astr) {
     var np = Lib.nestedProperty(baseAttrs, astr);
 
-    np.set(extendDeep(np.get() || {}, newAttrs));
+    np.set(extendDeepAll(np.get() || {}, newAttrs));
 }

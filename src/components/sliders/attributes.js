@@ -10,7 +10,7 @@
 
 var fontAttrs = require('../../plots/font_attributes');
 var padAttrs = require('../../plots/pad_attributes');
-var extendDeep = require('../../lib/extend').extendDeep;
+var extendDeepAll = require('../../lib/extend').extendDeepAll;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var animationAttrs = require('../../plots/animation_attributes');
 var constants = require('./constants');
@@ -128,7 +128,7 @@ module.exports = overrideAll({
         role: 'style',
         description: 'Sets the x position (in normalized coordinates) of the slider.'
     },
-    pad: extendDeep({}, padAttrs, {
+    pad: extendDeepAll({}, padAttrs, {
         description: 'Set the padding of the slider component along each side.'
     }, {t: {dflt: 20}}),
     xanchor: {

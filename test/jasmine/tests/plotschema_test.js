@@ -237,6 +237,8 @@ describe('plot schema', function() {
             if(attr.impliedEdits !== undefined) {
                 expect(isPlainObject(attr.impliedEdits))
                     .toBe(true, attrString + ': ' + JSON.stringify(attr.impliedEdits));
+                // make sure it wasn't emptied out
+                expect(Object.keys(attr.impliedEdits).length).not.toBe(0, attrString);
             }
         });
     });

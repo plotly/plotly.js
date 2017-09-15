@@ -15,7 +15,7 @@ var axesAttrs = require('../../plots/cartesian/layout_attributes');
 var fontAttrs = require('../../plots/font_attributes');
 
 var extend = require('../../lib/extend');
-var extendDeep = extend.extendDeep;
+var extendDeepAll = extend.extendDeepAll;
 var extendFlat = extend.extendFlat;
 
 module.exports = {
@@ -137,7 +137,7 @@ module.exports = {
     line: extendFlat(
         // the default autocolorscale isn't quite usable for parcoords due to context ambiguity around 0 (grey, off-white)
         // autocolorscale therefore defaults to false too, to avoid being overridden by the  blue-white-red autocolor palette
-        extendDeep(
+        extendDeepAll(
             colorAttributes('line', 'calc'),
             {
                 colorscale: {dflt: colorscales.Viridis},

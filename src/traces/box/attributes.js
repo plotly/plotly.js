@@ -63,8 +63,6 @@ module.exports = {
             'missing and the position axis is categorical'
         ].join(' ')
     },
-    xcalendar: scatterAttrs.xcalendar,
-    ycalendar: scatterAttrs.ycalendar,
     whiskerwidth: {
         valType: 'number',
         min: 0,

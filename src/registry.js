@@ -14,7 +14,7 @@ var noop = require('./lib/noop');
 var pushUnique = require('./lib/push_unique');
 var ExtendModule = require('./lib/extend');
 var extendFlat = ExtendModule.extendFlat;
-var extendDeep = ExtendModule.extendDeep;
+var extendDeepAll = ExtendModule.extendDeepAll;
 
 var basePlotAttributes = require('./plots/attributes');
 var baseLayoutAttributes = require('./plots/layout_attributes');
@@ -140,7 +140,7 @@ exports.registerComponent = function(_module) {
     }
 
     if(_module.schema && _module.schema.layout) {
-        extendDeep(baseLayoutAttributes, _module.schema.layout);
+        extendDeepAll(baseLayoutAttributes, _module.schema.layout);
     }
 };
 
@@ -169,7 +169,7 @@ function mergeComponentAttrsToTrace(componentName, traceType) {
 
     var traceAttrs = componentSchema.traces[traceType];
     if(traceAttrs) {
-        extendDeep(exports.modules[traceType]._module.attributes, traceAttrs);
+        extendDeepAll(exports.modules[traceType]._module.attributes, traceAttrs);
     }
 }
 
@@ -179,7 +179,7 @@ function mergeComponentAttrsToTransform(componentName, transformType) {
 
     var transformAttrs = componentSchema.transforms[transformType];
     if(transformAttrs) {
-        extendDeep(exports.transformsRegistry[transformType].attributes, transformAttrs);
+        extendDeepAll(exports.transformsRegistry[transformType].attributes, transformAttrs);
     }
 }
 
@@ -194,7 +194,7 @@ function mergeComponentAttrsToSubplot(componentName, subplotName) {
 
     var componentLayoutAttrs = componentSchema.subplots[subplotAttr];
     if(subplotAttrs && componentLayoutAttrs) {
-        extendDeep(subplotAttrs, componentLayoutAttrs);
+        extendDeepAll(subplotAttrs, componentLayoutAttrs);
     }
 }
 

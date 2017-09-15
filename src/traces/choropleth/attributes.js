@@ -15,7 +15,7 @@ var plotAttrs = require('../../plots/attributes');
 
 var extend = require('../../lib/extend');
 var extendFlat = extend.extendFlat;
-var extendDeep = extend.extendDeep;
+var extendDeepAll = extend.extendDeepAll;
 
 var ScatterGeoMarkerLineAttrs = ScatterGeoAttrs.marker.line;
 
@@ -52,7 +52,7 @@ module.exports = extendFlat({
         flags: ['location', 'z', 'text', 'name']
     }),
 },
-    extendDeep({}, colorscaleAttrs, {
+    extendDeepAll({}, colorscaleAttrs, {
         zmax: {editType: 'calc'},
         zmin: {editType: 'calc'}
     }),

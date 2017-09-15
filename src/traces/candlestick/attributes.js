@@ -9,23 +9,25 @@
 
 'use strict';
 
-var Lib = require('../../lib');
+var extendFlat = require('../../lib').extendFlat;
 var OHLCattrs = require('../ohlc/attributes');
 var boxAttrs = require('../box/attributes');
 
-var directionAttrs = {
-    name: OHLCattrs.increasing.name,
-    showlegend: OHLCattrs.increasing.showlegend,
+function directionAttrs(lineColorDefault) {
+    return {
+        name: OHLCattrs.increasing.name,
+        showlegend: OHLCattrs.increasing.showlegend,
 
-    line: {
-        color: Lib.extendFlat({}, boxAttrs.line.color),
-        width: Lib.extendFlat({}, boxAttrs.line.width),
+        line: {
+            color: extendFlat({}, boxAttrs.line.color, {dflt: lineColorDefault}),
+            width: boxAttrs.line.width,
+            editType: 'style'
+        },
+
+        fillcolor: boxAttrs.fillcolor,
         editType: 'style'
-    },
-
-    fillcolor: Lib.extendFlat({}, boxAttrs.fillcolor),
-    editType: 'style'
-};
+    };
+}
 
 module.exports = {
     x: OHLCattrs.x,
@@ -35,7 +37,7 @@ module.exports = {
     close: OHLCattrs.close,
 
     line: {
-        width: Lib.extendFlat({}, boxAttrs.line.width, {
+        width: extendFlat({}, boxAttrs.line.width, {
             description: [
                 boxAttrs.line.width.description,
                 'Note that this style setting can also be set per',
@@ -46,14 +48,10 @@ module.exports = {
         editType: 'style'
     },
 
-    increasing: Lib.extendDeep({}, directionAttrs, {
-        line: { color: { dflt: OHLCattrs.increasing.line.color.dflt } }
-    }),
+    increasing: directionAttrs(OHLCattrs.increasing.line.color.dflt),
 
-    decreasing: Lib.extendDeep({}, directionAttrs, {
-        line: { color: { dflt: OHLCattrs.decreasing.line.color.dflt } }
-    }),
+    decreasing: directionAttrs(OHLCattrs.decreasing.line.color.dflt),
 
     text: OHLCattrs.text,
-    whiskerwidth: Lib.extendFlat({}, boxAttrs.whiskerwidth, { dflt: 0 })
+    whiskerwidth: extendFlat({}, boxAttrs.whiskerwidth, { dflt: 0 })
 };
