@@ -307,7 +307,7 @@ describe('plot schema', function() {
         expect(plotSchema.defs.metaKeys)
             .toEqual([
                 '_isSubplotObj', '_isLinkedToArray', '_arrayAttrRegexps',
-                '_deprecated', 'description', 'role'
+                '_deprecated', 'description', 'role', 'editType', 'impliedEdits'
             ]);
     });
 
