@@ -4,7 +4,7 @@
 [![circle ci](https://circleci.com/gh/plotly/plotly.js.png?&style=shield&circle-token=1f42a03b242bd969756fc3e53ede204af9b507c0)](https://circleci.com/gh/plotly/plotly.js)
 
 #### 📢 Announcement!
-#### Seats are still available for a 2 day, Plotly.js master class in NYC, November 16-17. 
+#### Seats are still available for a 2 day, Plotly.js master class in NYC, November 16-17.
 #### [Registration here](https://plotcon.plot.ly/workshops) 🎨 📈 🗽
 
 ***
@@ -109,9 +109,23 @@ Important: the plotly.js code base contains some non-ascii characters. Therefore
 ```
 
 
-#### Webpack Usage with Modules
+#### Building plotly.js with Webpack
 
-Browserify [transforms](https://github.com/substack/browserify-handbook#transforms) are required to build plotly.js, namely, [glslify](https://github.com/stackgl/glslify) to transform WebGL shaders and [cwise](https://github.com/scijs/cwise) to compile component-wise array operations. To make the trace module system work with Webpack, you will need to install [ify-loader](https://github.com/hughsk/ify-loader) and add it to your `webpack.config.json` for your build to correctly bundle plotly.js files.
+For plotly.js to build with Webpack you will need to install [ify-loader@v1.1.0+](https://github.com/hughsk/ify-loader) and add it to your `webpack.config.json`. This adds Browserify transform compatibility to Webpack which is necessary for some plotly.js dependencies.
+
+A repo that demonstrates how to build plotly.js with Webpack can be found [here](https://github.com/rreusser/plotly-webpack). In short add `ify-loader` to the `module` section in your `webpack.config.js`:
+```js
+...
+    module: {
+        loaders: [
+            {
+                test: /\.js$/,
+                loader: 'ify-loader'
+            }
+        ]
+    },
+...
+```
 
 ## Bugs and feature requests
 
