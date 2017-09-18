@@ -93,7 +93,8 @@ function ScatterScene(container) {
     this.canvas = container.querySelector('.gl-canvas-focus');
     this.regl = createRegl({
         canvas: this.canvas,
-        extensions: ['ANGLE_instanced_arrays', 'OES_element_index_uint']
+        extensions: ['ANGLE_instanced_arrays', 'OES_element_index_uint'],
+        pixelRatio: container._context.plotGlPixelRatio || global.devicePixelRatio
     });
 
     this.scatterOptions = {
@@ -109,8 +110,7 @@ function ScatterScene(container) {
         borderSize: 1,
         borderColor: [0, 0, 0, 1],
         snapPoints: true,
-        canvas: this.canvas,
-        pixelRatio: container._context.plotGlPixelRatio || window.devicePixelRatio
+        canvas: this.canvas
     };
 
     this.scatter = createScatter(this.scatterOptions);
