@@ -44,14 +44,14 @@ function createLineWithMarkers(container, plotinfo, cdscatter) {
     var layout = container._fullLayout;
 
     var subplotObj = layout._plots.xy;
-    var scatter = subplotObj._scatter2d;
+    var scatter = subplotObj._scattergl;
 
     // create regl-scatter, if not defined
     if(scatter === undefined) {
         // TODO: enhance picking
         // TODO: figure out if there is a way to detect only new passed options
 
-        scatter = subplotObj._scatter2d = new ScatterScene(container);
+        scatter = subplotObj._scattergl = new ScatterScene(container);
     }
 
     container._fullData.forEach(function(data, i) {
@@ -97,8 +97,10 @@ function ScatterScene(container) {
         pixelRatio: container._context.plotGlPixelRatio || global.devicePixelRatio
     });
 
+    this.range;
+    this.viewport;
+
     this.scatterOptions = {
-        regl: this.regl,
         positions: Array(),
         sizes: [],
         colors: [],
@@ -110,10 +112,12 @@ function ScatterScene(container) {
         borderSize: 1,
         borderColor: [0, 0, 0, 1],
         snapPoints: true,
-        canvas: this.canvas
+        range: this.range,
+        viewport: this.viewport
     };
 
-    this.scatter = createScatter(this.scatterOptions);
+    this.scatter = createScatter({regl: this.regl});
+    this.line = createLine({regl: this.regl});
 
     this.lineOptions = {
         regl: this.regl,
@@ -122,6 +126,8 @@ function ScatterScene(container) {
         thickness: 1,
         miterLimit: 2,
         canvas: this.canvas,
+        range: this.range,
+        viewport: this.viewport,
         // fill: [false, false, false, false],
         // fillColor: [
         //     [0, 0, 0, 1],
@@ -131,7 +137,6 @@ function ScatterScene(container) {
         dashes: [1],
     };
 
-    this.line = createLine(this.lineOptions);
 
     return this;
 }
@@ -139,11 +144,36 @@ function ScatterScene(container) {
 var proto = ScatterScene.prototype;
 
 
-proto.update = function(options, cdscatter) {
-    var container = this.container,
-        xaxis = Axes.getFromId(container, options.xaxis || 'x'),
-        yaxis = Axes.getFromId(container, options.yaxis || 'y');
+proto.updateRange = function(range) {
+    this.range = this.scatterOptions.range = this.lineOptions.range = range;
 
+    this.regl._refresh();
+    this.scatter({
+        range: range
+    });
+    this.regl._refresh();
+    this.line({
+        range: range
+    });
+}
+
+
+proto.update = function(options, cdscatter) {
+     var container = this.container,
+        xaxis = Axes.getFromId(container, options.xaxis || 'x'),
+        yaxis = Axes.getFromId(container, options.yaxis || 'y'),
+        bounds = this.bounds,
+        selection = options.selection;
+    var vpSize = container._fullLayout._size,
+        width = container._fullLayout.width,
+        height = container._fullLayout.height;
+
+    // makeCalcdata runs d2c (data-to-coordinate) on every point
+    var x = this.pickXData = xaxis.makeCalcdata(options, 'x').slice();
+    var y = this.pickYData = yaxis.makeCalcdata(options, 'y').slice();
+
+    this.xData = x.slice();
+    this.yData = y.slice();
 
     if(options.visible !== true) {
         this.isVisible = false;
@@ -166,28 +196,15 @@ proto.update = function(options, cdscatter) {
     this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
     this.connectgaps = !!options.connectgaps;
 
-
     // update viewport & range
-    var vpSize = container._fullLayout._size,
-        domainX = xaxis.domain,
-        domainY = yaxis.domain,
-        width = container._fullLayout.width,
-        height = container._fullLayout.height;
-
-    var viewBox = [
-        vpSize.l + domainX[0] * vpSize.w,
-        vpSize.b + domainY[0] * vpSize.h,
-        (width - vpSize.r) - (1 - domainX[1]) * vpSize.w,
-        (height - vpSize.t) - (1 - domainY[1]) * vpSize.h
+    this.viewport = this.scatterOptions.viewport = this.lineOptions.viewport = [
+        vpSize.l + xaxis.domain[0] * vpSize.w,
+        vpSize.b + yaxis.domain[0] * vpSize.h,
+        (width - vpSize.r) - (1 - xaxis.domain[1]) * vpSize.w,
+        (height - vpSize.t) - (1 - yaxis.domain[1]) * vpSize.h
     ];
 
-    var range = [xaxis._rl[0], yaxis._rl[0], xaxis._rl[1], yaxis._rl[1]];
-
-    this.scatterOptions.range =
-    this.lineOptions.range = range;
-    this.scatterOptions.viewport =
-    this.lineOptions.viewport = viewBox;
-
+    this.range = this.scatterOptions.range = this.lineOptions.range = [xaxis._rl[0], yaxis._rl[0], xaxis._rl[1], yaxis._rl[1]];
 
     if(!this.isVisible) {
         // this.line.clear();
@@ -196,45 +213,6 @@ proto.update = function(options, cdscatter) {
         // this.scatter();
         // this.fancyScatter.clear();
     }
-    else {
-        this.updateFancy(options);
-    }
-
-    // sort objects so that order is preserve on updates:
-    // - lines
-    // - errorX
-    // - errorY
-    // - markers
-    // this.container.glplot.objects.sort(function(a, b) {
-    //     return a._index - b._index;
-    // });
-
-    // set trace index so that scene2d can sort object per traces
-    this.index = options.index;
-
-    // not quite on-par with 'scatter', but close enough for now
-    // does not handle the colorscale case
-    this.color = getTraceColor(options, {});
-
-    // provide reference for selecting points
-    if(cdscatter && cdscatter[0] && !cdscatter[0].glTrace) {
-        cdscatter[0].glTrace = this;
-    }
-};
-
-proto.updateFancy = function(options) {
-    var container = this.container,
-        xaxis = Axes.getFromId(container, options.xaxis || 'x'),
-        yaxis = Axes.getFromId(container, options.yaxis || 'y'),
-        bounds = this.bounds,
-        selection = options.selection;
-
-    // makeCalcdata runs d2c (data-to-coordinate) on every point
-    var x = this.pickXData = xaxis.makeCalcdata(options, 'x').slice();
-    var y = this.pickYData = yaxis.makeCalcdata(options, 'y').slice();
-
-    this.xData = x.slice();
-    this.yData = y.slice();
 
     // get error values
     var errorVals = ErrorBars.calcFromTrace(options, container._fullLayout);
@@ -408,7 +386,29 @@ proto.updateFancy = function(options) {
     // former expandAxesFancy
     Axes.expand(xaxis, x, {padded: true, ppad: sizes});
     Axes.expand(yaxis, y, {padded: true, ppad: sizes});
+
+    // sort objects so that order is preserve on updates:
+    // - lines
+    // - errorX
+    // - errorY
+    // - markers
+    // this.container.glplot.objects.sort(function(a, b) {
+    //     return a._index - b._index;
+    // });
+
+    // set trace index so that scene2d can sort object per traces
+    this.index = options.index;
+
+    // not quite on-par with 'scatter', but close enough for now
+    // does not handle the colorscale case
+    this.color = getTraceColor(options, {});
+
+    // provide reference for selecting points
+    if(cdscatter && cdscatter[0] && !cdscatter[0].glTrace) {
+        cdscatter[0].glTrace = this;
+    }
 };
+
 
 proto.updateLines = function(options, positions) {
     var i;
@@ -453,6 +453,7 @@ proto.updateLines = function(options, positions) {
     }
     var fillColor = str2RGBArray(options.fillcolor);
 
+    this.lineOptions.opacity = options.opacity;
     this.lineOptions.color = lineColor;
     this.lineOptions.dashes = dashes;
 
