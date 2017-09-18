@@ -8,11 +8,13 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 describe('Bundle with core only', function() {
     'use strict';
+    var gd;
 
     var mock = require('@mocks/bar_line.json');
 
     beforeEach(function(done) {
-        Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
+        gd = createGraphDiv();
+        Plotly.plot(gd, mock.data, mock.layout).then(done);
     });
 
     afterEach(destroyGraphDiv);
@@ -27,5 +29,12 @@ describe('Bundle with core only', function() {
         var nodes = d3.selectAll('g.trace.bars');
 
         expect(nodes.size()).toEqual(0);
+    });
+
+    it('should not have calendar attributes', function() {
+        // calendars is a register-able component that we have not registered
+        expect(gd._fullLayout.calendar).toBeUndefined();
+        expect(gd._fullLayout.xaxis.calendar).toBeUndefined();
+        expect(gd._fullData[0].xcalendar).toBeUndefined();
     });
 });
