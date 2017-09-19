@@ -311,6 +311,29 @@ describe('sankey tests', function() {
                     done();
                 });
         });
+
+        it('\'node\' remains visible even if \'value\' is very low', function(done) {
+
+            var gd = createGraphDiv();
+            var minimock = [{
+                type: 'sankey',
+                node: {
+                    label: ['a', 'b1', 'b2']
+                },
+                link: {
+                    source: [0, 0],
+                    target: [1, 2],
+                    value: [1000000, 0.001]
+                }
+            }];
+            Plotly.plot(gd, minimock)
+                .then(function() {
+                    expect(d3.selectAll('.sankey .nodeRect')[0].reduce(function(prevMin, rect) {
+                        return Math.min(prevMin, d3.select(rect).attr('height'));
+                    }, Infinity)).toEqual(1);
+                    done();
+                });
+        });
     });
 
     describe('Test hover/click interactions:', function() {
