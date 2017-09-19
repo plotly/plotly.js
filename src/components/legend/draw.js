@@ -573,11 +573,11 @@ function handleClick(g, gd, numClicks) {
         var hasLegendgroup = legendgroup && legendgroup.length;
         var traceIndicesInGroup = [];
         var tracei;
-        if (hasLegendgroup) {
-            for (i = 0; i < fullData.length; i++) {
+        if(hasLegendgroup) {
+            for(i = 0; i < fullData.length; i++) {
                 tracei = fullData[i];
-                if (!tracei.visible) continue;
-                if (tracei.legendgroup === legendgroup) {
+                if(!tracei.visible) continue;
+                if(tracei.legendgroup === legendgroup) {
                     traceIndicesInGroup.push(i);
                 }
             }
@@ -599,9 +599,9 @@ function handleClick(g, gd, numClicks) {
                     break;
             }
 
-            if (hasLegendgroup) {
-                for (i = 0; i < fullData.length; i++) {
-                    if (fullData[i].visible && fullData[i].legendgroup === legendgroup) {
+            if(hasLegendgroup) {
+                for(i = 0; i < fullData.length; i++) {
+                    if(fullData[i].visible && fullData[i].legendgroup === legendgroup) {
                         setVisibility(fullData[i], nextVisibility);
                     }
                 }
@@ -611,17 +611,17 @@ function handleClick(g, gd, numClicks) {
         } else if(numClicks === 2) {
             // Compute the clicked index. expandedIndex does what we want for expanded traces
             // but also culls hidden traces. That means we have some work to do.
-            var clickedIndex;
+            var clickedIndex, isIsolated, isClicked, isInGroup, otherState;
             for(clickedIndex = 0; clickedIndex < fullData.length; clickedIndex++) {
                 if(fullData[clickedIndex] === fullTrace) break;
             }
 
-            var isIsolated = true;
+            isIsolated = true;
             for(i = 0; i < fullData.length; i++) {
-                var isClicked = fullData[i] === fullTrace;
-                if (isClicked) continue;
+                isClicked = fullData[i] === fullTrace;
+                if(isClicked) continue;
 
-                var isInGroup = (hasLegendgroup && fullData[i].legendgroup === legendgroup);
+                isInGroup = (hasLegendgroup && fullData[i].legendgroup === legendgroup);
 
                 if(!isInGroup && fullData[i].visible === true && !Registry.traceIs(fullData[i], 'notLegendIsolatable')) {
                     isIsolated = false;
@@ -642,9 +642,9 @@ function handleClick(g, gd, numClicks) {
                         setVisibility(fullData[i], true);
                         break;
                     case true:
-                        var otherState = isIsolated ? true : 'legendonly';
-                        var isClicked = fullData[i] === fullTrace;
-                        var isInGroup = isClicked || (hasLegendgroup && fullData[i].legendgroup === legendgroup);
+                        otherState = isIsolated ? true : 'legendonly';
+                        isClicked = fullData[i] === fullTrace;
+                        isInGroup = isClicked || (hasLegendgroup && fullData[i].legendgroup === legendgroup);
                         setVisibility(fullData[i], isInGroup ? true : otherState);
                         break;
                 }
