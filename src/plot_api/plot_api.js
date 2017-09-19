@@ -1261,7 +1261,7 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
  * If the array is too short, it will wrap around (useful for
  * style files that want to specify cyclical default values).
  */
-Plotly.restyle = function restyle(gd, astr, val, traces) {
+Plotly.restyle = function restyle(gd, astr, val, _traces) {
     gd = helpers.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
@@ -1270,14 +1270,16 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     else if(Lib.isPlainObject(astr)) {
         // the 3-arg form
         aobj = Lib.extendFlat({}, astr);
-        if(traces === undefined) traces = val;
+        if(_traces === undefined) _traces = val;
     }
     else {
-        Lib.warn('Restyle fail.', astr, val, traces);
+        Lib.warn('Restyle fail.', astr, val, _traces);
         return Promise.reject();
     }
 
     if(Object.keys(aobj).length) gd.changed = true;
+
+    var traces = helpers.coerceTraceIndices(gd, _traces);
 
     var specs = _restyle(gd, aobj, traces),
         flags = specs.flags;
@@ -1323,13 +1325,11 @@ function undefinedToNull(val) {
     return val;
 }
 
-function _restyle(gd, aobj, _traces) {
+function _restyle(gd, aobj, traces) {
     var fullLayout = gd._fullLayout,
         fullData = gd._fullData,
         data = gd.data,
         i;
-
-    var traces = helpers.coerceTraceIndices(gd, _traces);
 
     // initialize flags
     var flags = editTypes.traceFlags();
@@ -2071,7 +2071,7 @@ function _relayout(gd, aobj) {
  *  integer or array of integers for the traces to alter (all if omitted)
  *
  */
-Plotly.update = function update(gd, traceUpdate, layoutUpdate, traces) {
+Plotly.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
     gd = helpers.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
@@ -2084,6 +2084,8 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, traces) {
 
     if(Object.keys(traceUpdate).length) gd.changed = true;
     if(Object.keys(layoutUpdate).length) gd.changed = true;
+
+    var traces = helpers.coerceTraceIndices(gd, _traces);
 
     var restyleSpecs = _restyle(gd, Lib.extendFlat({}, traceUpdate), traces),
         restyleFlags = restyleSpecs.flags;
@@ -2152,10 +2154,6 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, traces) {
 // so we auto-set them again
 var axLetters = ['x', 'y', 'z'];
 function clearAxisTypes(gd, traces, layoutUpdate) {
-    if(typeof traces === 'number') traces = [traces];
-    else if(!Array.isArray(traces) || !traces.length) {
-        traces = (gd._fullData).map(function(d, i) { return i; });
-    }
     for(var i = 0; i < traces.length; i++) {
         var trace = gd._fullData[i];
         for(var j = 0; j < 3; j++) {
