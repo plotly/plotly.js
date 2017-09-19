@@ -500,7 +500,7 @@ function wrapText(columnBlock, element, d) {
                     currentAddition = rest.shift();
                     currentAdditionLength = currentAddition.width + separatorLength;
                     if(currentRowLength + currentAdditionLength > rowLengthLimit) {
-                        d.value += c.lineBreaker + currentRow.join(c.wrapSpacer);
+                        d.value += currentRow.join(c.wrapSpacer) + c.lineBreaker;
                         currentRow = [];
                         currentRowLength = 0;
                     }
@@ -508,7 +508,7 @@ function wrapText(columnBlock, element, d) {
                     currentRowLength += currentAdditionLength;
                 }
                 if(currentRowLength) {
-                    d.value += c.lineBreaker + currentRow.join(c.wrapSpacer);
+                    d.value += currentRow.join(c.wrapSpacer);
                 }
                 d.wrapped = true;
             });
