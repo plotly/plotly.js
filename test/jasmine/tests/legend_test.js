@@ -1134,6 +1134,15 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, true, true, true, true, true, true, true]))
                     .catch(fail).then(done);
             });
+
+            it('double-clicking isolates a groupby trace', function(done) {
+                Promise.resolve()
+                    .then(click(1, 2))
+                    .then(assertVisible([false, 'legendonly', true, 'legendonly', 'legendonly', 'legendonly', 'legendonly', 'legendonly']))
+                    .then(click(1, 2))
+                    .then(assertVisible([false, true, true, true, true, true, true, true]))
+                    .catch(fail).then(done);
+            });
         });
     });
 });
