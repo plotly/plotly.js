@@ -18,25 +18,25 @@ var DEV = (arg === 'dev') || (arg === '--dev');
 
 
 // Check if style and font build files are there
-var doesFileExist = common.doesFileExist;
-if(!doesFileExist(constants.pathToCSSBuild) || !doesFileExist(constants.pathToFontSVG)) {
-    throw new Error([
-        'build/ is missing one or more files',
-        'Please run `npm run preprocess` first'
-    ].join('\n'));
-}
+// var doesFileExist = common.doesFileExist;
+// if(!doesFileExist(constants.pathToCSSBuild) || !doesFileExist(constants.pathToFontSVG)) {
+//     throw new Error([
+//         'build/ is missing one or more files',
+//         'Please run `npm run preprocess` first'
+//     ].join('\n'));
+// }
 
-// Browserify plotly.js
-_bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDist, {
-    standalone: 'Plotly',
-    debug: DEV,
-    pathToMinBundle: constants.pathToPlotlyDistMin
-});
+// // Browserify plotly.js
+// _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDist, {
+//     standalone: 'Plotly',
+//     debug: DEV,
+//     pathToMinBundle: constants.pathToPlotlyDistMin
+// });
 
-// Browserify the geo assets
-_bundle(constants.pathToPlotlyGeoAssetsSrc, constants.pathToPlotlyGeoAssetsDist, {
-    standalone: 'PlotlyGeoAssets'
-});
+// // Browserify the geo assets
+// _bundle(constants.pathToPlotlyGeoAssetsSrc, constants.pathToPlotlyGeoAssetsDist, {
+//     standalone: 'PlotlyGeoAssets'
+// });
 
 // Browserify the plotly.js with meta
 _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDistWithMeta, {
@@ -45,11 +45,11 @@ _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDistWithMeta, {
     then: makeSchema(constants.pathToPlotlyDistWithMeta, constants.pathToSchema)
 });
 
-// Browserify the plotly.js partial bundles
-constants.partialBundlePaths.forEach(function(pathObj) {
-    _bundle(pathObj.index, pathObj.dist, {
-        standalone: 'Plotly',
-        debug: DEV,
-        pathToMinBundle: pathObj.distMin
-    });
-});
+// // Browserify the plotly.js partial bundles
+// constants.partialBundlePaths.forEach(function(pathObj) {
+//     _bundle(pathObj.index, pathObj.dist, {
+//         standalone: 'Plotly',
+//         debug: DEV,
+//         pathToMinBundle: pathObj.distMin
+//     });
+// });
