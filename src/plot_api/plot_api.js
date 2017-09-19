@@ -1286,7 +1286,7 @@ Plotly.restyle = function restyle(gd, astr, val, _traces) {
 
     // clear calcdata and/or axis types if required so they get regenerated
     if(flags.clearCalc) gd.calcdata = undefined;
-    if(flags.clearAxisTypes) clearAxisTypes(gd, traces, {});
+    if(flags.clearAxisTypes) helpers.clearAxisTypes(gd, traces, {});
 
     // fill in redraw sequence
     var seq = [];
@@ -2095,7 +2095,7 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
 
     // clear calcdata and/or axis types if required
     if(restyleFlags.clearCalc || relayoutFlags.calc) gd.calcdata = undefined;
-    if(restyleFlags.clearAxisTypes) clearAxisTypes(gd, traces, layoutUpdate);
+    if(restyleFlags.clearAxisTypes) helpers.clearAxisTypes(gd, traces, layoutUpdate);
 
     // fill in redraw sequence
     var seq = [];
@@ -2149,33 +2149,6 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
         return gd;
     });
 };
-
-// empty out types for all axes containing these traces
-// so we auto-set them again
-var axLetters = ['x', 'y', 'z'];
-function clearAxisTypes(gd, traces, layoutUpdate) {
-    for(var i = 0; i < traces.length; i++) {
-        var trace = gd._fullData[i];
-        for(var j = 0; j < 3; j++) {
-            var ax = Plotly.Axes.getFromTrace(gd, trace, axLetters[j]);
-
-            // do not clear log type - that's never an auto result so must have been intentional
-            if(ax && ax.type !== 'log') {
-                var axAttr = ax._name;
-                var sceneName = ax._id.substr(1);
-                if(sceneName.substr(0, 5) === 'scene') {
-                    if(layoutUpdate[sceneName] !== undefined) continue;
-                    axAttr = sceneName + '.' + axAttr;
-                }
-                var typeAttr = axAttr + '.type';
-
-                if(layoutUpdate[axAttr] === undefined && layoutUpdate[typeAttr] === undefined) {
-                    Lib.nestedProperty(gd.layout, typeAttr).set(null);
-                }
-            }
-        }
-    }
-}
 
 /**
  * Animate to a frame, sequence of frame, frame group, or frame definition
