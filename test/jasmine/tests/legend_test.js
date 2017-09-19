@@ -833,23 +833,27 @@ describe('legend interaction', function() {
         afterAll(destroyGraphDiv);
 
         function _click(index) {
-            var item = d3.selectAll('rect.legendtoggle')[0][index || 0];
-            return new Promise(function(resolve) {
-                item.dispatchEvent(new MouseEvent('mousedown'));
-                item.dispatchEvent(new MouseEvent('mouseup'));
-                setTimeout(resolve, DBLCLICKDELAY + 20);
-            });
+            return function() {
+                var item = d3.selectAll('rect.legendtoggle')[0][index || 0];
+                return new Promise(function(resolve) {
+                    item.dispatchEvent(new MouseEvent('mousedown'));
+                    item.dispatchEvent(new MouseEvent('mouseup'));
+                    setTimeout(resolve, DBLCLICKDELAY + 20);
+                });
+            };
         }
 
         function _dblclick(index) {
-            var item = d3.selectAll('rect.legendtoggle')[0][index || 0];
-            return new Promise(function(resolve) {
-                item.dispatchEvent(new MouseEvent('mousedown'));
-                item.dispatchEvent(new MouseEvent('mouseup'));
-                item.dispatchEvent(new MouseEvent('mousedown'));
-                item.dispatchEvent(new MouseEvent('mouseup'));
-                setTimeout(resolve, 20);
-            });
+            return function() {
+                var item = d3.selectAll('rect.legendtoggle')[0][index || 0];
+                return new Promise(function(resolve) {
+                    item.dispatchEvent(new MouseEvent('mousedown'));
+                    item.dispatchEvent(new MouseEvent('mouseup'));
+                    item.dispatchEvent(new MouseEvent('mousedown'));
+                    item.dispatchEvent(new MouseEvent('mouseup'));
+                    setTimeout(resolve, 20);
+                });
+            };
         }
 
         function assertVisible(gd, expectation) {
@@ -864,19 +868,19 @@ describe('legend interaction', function() {
             Plotly.plot(gd, _mock).then(function() {
                 assertVisible(gd, [true, true, true, true]);
             })
-            .then(_click)
+            .then(_click(0))
             .then(function() {
                 assertVisible(gd, [true, 'legendonly', true, true]);
             })
-            .then(_click)
+            .then(_click(0))
             .then(function() {
                 assertVisible(gd, [true, true, true, true]);
             })
-            .then(_dblclick)
+            .then(_dblclick(0))
             .then(function() {
                 assertVisible(gd, [true, true, 'legendonly', 'legendonly']);
             })
-            .then(_dblclick)
+            .then(_dblclick(0))
             .then(function() {
                 assertVisible(gd, [true, true, true, true]);
             })
@@ -950,6 +954,186 @@ describe('legend interaction', function() {
                     {target: 4}
                 ]);
             }).catch(fail).then(done);
+        });
+    });
+
+    describe('legend visibility interactions', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        function click(index, clicks) {
+            return function() {
+                return new Promise(function(resolve) {
+                    var item = d3.selectAll('rect.legendtoggle')[0][index || 0];
+                    for(var i = 0; i < (clicks || 1); i++) {
+                        item.dispatchEvent(new MouseEvent('mousedown'));
+                        item.dispatchEvent(new MouseEvent('mouseup'));
+                    }
+                    setTimeout(resolve, DBLCLICKDELAY + 20);
+                });
+            };
+        }
+
+        function assertVisible(expectation) {
+            return function() {
+                var actual = gd._fullData.map(function(trace) { return trace.visible; });
+                expect(actual).toEqual(expectation);
+            };
+        }
+
+        describe('for regular traces', function() {
+            beforeEach(function(done) {
+                Plotly.plot(gd, [
+                    {x: [1, 2], y: [0, 1], visible: false},
+                    {x: [1, 2], y: [1, 2], visible: 'legendonly'},
+                    {x: [1, 2], y: [2, 3]}
+                ]).then(done);
+            });
+
+            it('clicking once toggles legendonly -> true', function(done) {
+                Promise.resolve()
+                    .then(assertVisible([false, 'legendonly', true]))
+                    .then(click(0))
+                    .then(assertVisible([false, true, true]))
+                    .catch(fail).then(done);
+            });
+
+            it('clicking once toggles true -> legendonly', function(done) {
+                Promise.resolve()
+                    .then(assertVisible([false, 'legendonly', true]))
+                    .then(click(1))
+                    .then(assertVisible([false, 'legendonly', 'legendonly']))
+                    .catch(fail).then(done);
+            });
+
+            it('double-clicking isolates a visible trace ', function(done) {
+                Promise.resolve()
+                    .then(click(0))
+                    .then(assertVisible([false, true, true]))
+                    .then(click(0, 2))
+                    .then(assertVisible([false, true, 'legendonly']))
+                    .catch(fail).then(done);
+            });
+
+            it('double-clicking an isolated trace shows all non-hidden traces', function(done) {
+                Promise.resolve()
+                    .then(click(0, 2))
+                    .then(assertVisible([false, true, true]))
+                    .catch(fail).then(done);
+            });
+        });
+
+        describe('legendgroup visibility', function() {
+            beforeEach(function(done) {
+                Plotly.plot(gd, [{
+                    x: [1, 2],
+                    y: [3, 4],
+                    visible: false
+                }, {
+                    x: [1, 2, 3, 4],
+                    y: [0, 1, 2, 3],
+                    legendgroup: 'foo'
+                }, {
+                    x: [1, 2, 3, 4],
+                    y: [1, 3, 2, 4],
+                }, {
+                    x: [1, 2, 3, 4],
+                    y: [1, 3, 2, 4],
+                    legendgroup: 'foo'
+                }]).then(done);
+            });
+
+            it('toggles the visibility of legendgroups as a whole', function(done) {
+                Promise.resolve()
+                    .then(click(1))
+                    .then(assertVisible([false, 'legendonly', true, 'legendonly']))
+                    .then(click(1))
+                    .then(assertVisible([false, true, true, true]))
+                    .catch(fail).then(done);
+            });
+
+            it('isolates legendgroups as a whole', function(done) {
+                Promise.resolve()
+                    .then(click(1, 2))
+                    .then(assertVisible([false, true, 'legendonly', true]))
+                    .then(click(1, 2))
+                    .then(assertVisible([false, true, true, true]))
+                    .catch(fail).then(done);
+            });
+        });
+
+        describe('legend visibility toggles with groupby', function() {
+            beforeEach(function(done) {
+                Plotly.plot(gd, [{
+                    x: [1, 2],
+                    y: [3, 4],
+                    visible: false
+                }, {
+                    x: [1, 2, 3, 4],
+                    y: [0, 1, 2, 3]
+                }, {
+                    x: [1, 2, 3, 4],
+                    y: [1, 3, 2, 4],
+                    transforms: [{
+                        type: 'groupby',
+                        groups: ['a', 'b', 'c', 'c']
+                    }]
+                }, {
+                    x: [1, 2, 3, 4],
+                    y: [1, 3, 2, 4],
+                    transforms: [{
+                        type: 'groupby',
+                        groups: ['a', 'b', 'c', 'c']
+                    }]
+                }]).then(done);
+            });
+
+            it('computes the initial visibility correctly', function(done) {
+                Promise.resolve()
+                    .then(assertVisible([false, true, true, true, true, true, true, true]))
+                    .catch(fail).then(done);
+            });
+
+            it('toggles the visibility of a non-groupby trace in the presence of groupby traces', function(done) {
+                Promise.resolve()
+                    .then(click(1))
+                    .then(assertVisible([false, true, 'legendonly', true, true, true, true, true]))
+                    .then(click(1))
+                    .then(assertVisible([false, true, true, true, true, true, true, true]))
+                    .catch(fail).then(done);
+            });
+
+            it('toggles the visibility of the first group in a groupby trace', function(done) {
+                Promise.resolve()
+                    .then(click(0))
+                    .then(assertVisible([false, 'legendonly', true, true, true, true, true, true]))
+                    .then(click(0))
+                    .then(assertVisible([false, true, true, true, true, true, true, true]))
+                    .catch(fail).then(done);
+            });
+
+            it('toggles the visibility of the third group in a groupby trace', function(done) {
+                Promise.resolve()
+                    .then(click(3))
+                    .then(assertVisible([false, true, true, true, 'legendonly', true, true, true]))
+                    .then(click(3))
+                    .then(assertVisible([false, true, true, true, true, true, true, true]))
+                    .catch(fail).then(done);
+            });
+
+            it('double-clicking isolates a non-groupby trace', function(done) {
+                Promise.resolve()
+                    .then(click(0, 2))
+                    .then(assertVisible([false, true, 'legendonly', 'legendonly', 'legendonly', 'legendonly', 'legendonly', 'legendonly']))
+                    .then(click(0, 2))
+                    .then(assertVisible([false, true, true, true, true, true, true, true]))
+                    .catch(fail).then(done);
+            });
         });
     });
 });

@@ -480,18 +480,67 @@ function setupTraceToggle(g, gd) {
 
 function handleClick(g, gd, numClicks) {
     if(gd._dragged || gd._editing) return;
+
     var hiddenSlices = gd._fullLayout.hiddenlabels ?
         gd._fullLayout.hiddenlabels.slice() :
         [];
 
-    var legendItem = g.data()[0][0],
-        fullData = gd._fullData,
-        trace = legendItem.trace,
-        legendgroup = trace.legendgroup,
-        traceIndicesInGroup = [],
-        tracei,
-        newVisible;
+    var legendItem = g.data()[0][0];
+    var fullData = gd._fullData;
+    var fullTrace = legendItem.trace;
+    var legendgroup = fullTrace.legendgroup;
 
+    var i, j, carr, key, keys, val;
+    var attrUpdate = {};
+    var attrIndices = [];
+    var carrs = [];
+    var carrIdx = [];
+
+    function insertUpdate(traceIndex, key, value) {
+        var attrIndex = attrIndices.indexOf(traceIndex);
+        var valueArray = attrUpdate[key];
+        if(!valueArray) {
+            valueArray = attrUpdate[key] = [];
+        }
+
+        if(attrIndices.indexOf(traceIndex) === -1) {
+            attrIndices.push(traceIndex);
+            attrIndex = attrIndices.length - 1;
+        }
+
+        valueArray[attrIndex] = value;
+
+        return attrIndex;
+    }
+
+    function setVisibility(fullTrace, visibility) {
+        var fullInput = fullTrace._fullInput;
+        if(Registry.hasTransform(fullInput, 'groupby')) {
+            var carr = carrs[fullInput.index];
+            if(!carr) {
+                var groupbyIndices = Registry.getTransformIndices(fullInput, 'groupby');
+                var lastGroupbyIndex = groupbyIndices[groupbyIndices.length - 1];
+                carr = Lib.keyedContainer(fullInput, 'transforms[' + lastGroupbyIndex + '].styles', 'target', 'value.visible');
+                carrs[fullInput.index] = carr;
+            }
+
+            // If not specified, assume visible:
+            var curState = carr.get(fullTrace._group) || true;
+
+            if(curState !== false) {
+                // true -> legendonly. All others toggle to true:
+                carr.set(fullTrace._group, visibility);
+            }
+            carrIdx[fullInput.index] = insertUpdate(fullInput.index, 'visible', fullInput.visible === false ? false : true);
+        } else {
+            // false -> false (not possible since will not be visible in legend)
+            // true -> legendonly
+            // legendonly -> true
+            var nextVisibility = fullInput.visible === false ? false : visibility;
+
+            insertUpdate(fullInput.index, 'visible', nextVisibility);
+        }
+    }
 
     if(numClicks === 1 && SHOWISOLATETIP && gd.data && gd._context.showTips) {
         Lib.notifier('Double click on legend to isolate individual trace', 'long');
@@ -499,7 +548,8 @@ function handleClick(g, gd, numClicks) {
     } else {
         SHOWISOLATETIP = false;
     }
-    if(Registry.traceIs(trace, 'pie')) {
+
+    if(Registry.traceIs(fullTrace, 'pie')) {
         var thisLabel = legendItem.label,
             thisLabelIndex = hiddenSlices.indexOf(thisLabel);
 
@@ -520,52 +570,116 @@ function handleClick(g, gd, numClicks) {
 
         Plotly.relayout(gd, 'hiddenlabels', hiddenSlices);
     } else {
-        var allTraces = [],
-            traceVisibility = [],
-            i;
-
-        for(i = 0; i < fullData.length; i++) {
-            allTraces.push(i);
-            // Allow the legendonly state through for *all* trace types (including
-            // carpet for which it's overridden with true/false in supplyDefaults)
-            traceVisibility.push(
-                Registry.traceIs(fullData[i], 'notLegendIsolatable') ? true : 'legendonly'
-            );
-        }
-
-        if(legendgroup === '') {
-            traceIndicesInGroup = [trace.index];
-            traceVisibility[trace.index] = true;
-        } else {
-            for(i = 0; i < fullData.length; i++) {
+        var hasLegendgroup = legendgroup && legendgroup.length;
+        var traceIndicesInGroup = [];
+        var tracei;
+        if (hasLegendgroup) {
+            for (i = 0; i < fullData.length; i++) {
                 tracei = fullData[i];
-                if(tracei.legendgroup === legendgroup) {
-                    traceIndicesInGroup.push(tracei.index);
-                    traceVisibility[allTraces.indexOf(i)] = true;
+                if (!tracei.visible) continue;
+                if (tracei.legendgroup === legendgroup) {
+                    traceIndicesInGroup.push(i);
                 }
             }
         }
 
         if(numClicks === 1) {
-            newVisible = trace.visible === true ? 'legendonly' : true;
-            Plotly.restyle(gd, 'visible', newVisible, traceIndicesInGroup);
+            var nextVisibility;
+
+            switch(fullTrace.visible) {
+                case true:
+                    nextVisibility = 'legendonly';
+                    break;
+                case false:
+                    nextVisibility = false;
+                    break;
+                default:
+                case 'legendonly':
+                    nextVisibility = true;
+                    break;
+            }
+
+            if (hasLegendgroup) {
+                for (i = 0; i < fullData.length; i++) {
+                    if (fullData[i].visible && fullData[i].legendgroup === legendgroup) {
+                        setVisibility(fullData[i], nextVisibility);
+                    }
+                }
+            } else {
+                setVisibility(fullTrace, nextVisibility);
+            }
         } else if(numClicks === 2) {
-            var sameAsLast = true;
+            // Compute the clicked index. expandedIndex does what we want for expanded traces
+            // but also culls hidden traces. That means we have some work to do.
+            var clickedIndex;
+            for(clickedIndex = 0; clickedIndex < fullData.length; clickedIndex++) {
+                if(fullData[clickedIndex] === fullTrace) break;
+            }
+
+            var isIsolated = true;
             for(i = 0; i < fullData.length; i++) {
-                if(fullData[i].visible !== traceVisibility[i]) {
-                    sameAsLast = false;
+                var isClicked = fullData[i] === fullTrace;
+                if (isClicked) continue;
+
+                var isInGroup = (hasLegendgroup && fullData[i].legendgroup === legendgroup);
+
+                if(!isInGroup && fullData[i].visible === true && !Registry.traceIs(fullData[i], 'notLegendIsolatable')) {
+                    isIsolated = false;
                     break;
                 }
             }
-            if(sameAsLast) {
-                traceVisibility = true;
-            }
-            var visibilityUpdates = [];
+
             for(i = 0; i < fullData.length; i++) {
-                visibilityUpdates.push(allTraces[i]);
+                // False is sticky; we don't change it.
+                if(fullData[i].visible === false) continue;
+
+                if(Registry.traceIs(fullData[i], 'notLegendIsolatable')) {
+                    continue;
+                }
+
+                switch(fullTrace.visible) {
+                    case 'legendonly':
+                        setVisibility(fullData[i], true);
+                        break;
+                    case true:
+                        var otherState = isIsolated ? true : 'legendonly';
+                        var isClicked = fullData[i] === fullTrace;
+                        var isInGroup = isClicked || (hasLegendgroup && fullData[i].legendgroup === legendgroup);
+                        setVisibility(fullData[i], isInGroup ? true : otherState);
+                        break;
+                }
             }
-            Plotly.restyle(gd, 'visible', traceVisibility, visibilityUpdates);
         }
+
+        for(i = 0; i < carrs.length; i++) {
+            carr = carrs[i];
+            if(!carr) continue;
+            var update = carr.constructUpdate();
+
+            var updateKeys = Object.keys(update);
+            for(j = 0; j < updateKeys.length; j++) {
+                key = updateKeys[j];
+                val = attrUpdate[key] = attrUpdate[key] || [];
+                val[carrIdx[i]] = update[key];
+            }
+        }
+
+        // The length of the value arrays should be equal and any unspecified
+        // values should be explicitly undefined for them to get properly culled
+        // as updates and not accidentally reset to the default value. This fills
+        // out sparse arrays with the required number of undefined values:
+        keys = Object.keys(attrUpdate);
+        for(i = 0; i < keys.length; i++) {
+            key = keys[i];
+            for(j = 0; j < attrIndices.length; j++) {
+                // Use hasOwnPropety to protect against falsey values:
+                if(!attrUpdate[key].hasOwnProperty(j)) {
+                    attrUpdate[key][j] = undefined;
+                }
+            }
+        }
+
+        Plotly.restyle(gd, attrUpdate, attrIndices);
     }
 }
 
