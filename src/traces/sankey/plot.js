@@ -145,7 +145,7 @@ module.exports = function plot(gd, calcData) {
             y: hoverCenterY - rootBBox.top,
             name: d3.format(d.valueFormat)(d.link.value) + d.valueSuffix,
             text: [
-                d.link.label,
+                d.link.label || '',
                 ['Source:', d.link.source.label].join(' '),
                 ['Target:', d.link.target.label].join(' ')
             ].filter(renderableValuePresent).join('<br>'),
