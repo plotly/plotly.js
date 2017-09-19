@@ -182,7 +182,7 @@ function nodeModel(uniqueKeys, d, n) {
         zoneThicknessPad = c.nodePadAcross,
         zoneLengthPad = d.nodePad / 2,
         visibleThickness = n.dx,
-        visibleLength = Math.max(1, n.dy);
+        visibleLength = Math.max(0.5, n.dy);
 
     var basicKey = n.label;
     var foundKey = uniqueKeys[basicKey];
@@ -413,7 +413,6 @@ function snappingForce(sankeyNode, forceKey, nodes, d) {
 }
 
 // scene graph
-
 module.exports = function(svg, styledData, layout, callbacks) {
     var sankey = svg.selectAll('.sankey')
         .data(styledData
