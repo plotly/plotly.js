@@ -1142,6 +1142,46 @@ describe('Test plot api', function() {
             .catch(fail)
             .then(done);
         });
+
+        it('updates colorbars when editing bar charts', function(done) {
+            var mock = require('@mocks/bar-colorbar-colorscale.json');
+
+            Plotly.newPlot(gd, mock.data, mock.layout)
+            .then(function() {
+                expect(d3.select('.cbaxis text').style('fill')).not.toBe('rgb(255, 0, 0)');
+
+                return Plotly.restyle(gd, {'marker.colorbar.tickfont.color': 'rgb(255, 0, 0)'});
+            })
+            .then(function() {
+                expect(d3.select('.cbaxis text').style('fill')).toBe('rgb(255, 0, 0)');
+
+                return Plotly.restyle(gd, {'marker.showscale': false});
+            })
+            .then(function() {
+                expect(d3.select('.cbaxis').size()).toBe(0);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('updates colorbars when editing gl3d plots', function(done) {
+            Plotly.newPlot(gd, [{z: [[1, 2], [3, 6]], type: 'surface'}])
+            .then(function() {
+                expect(d3.select('.cbaxis text').style('fill')).not.toBe('rgb(255, 0, 0)');
+
+                return Plotly.restyle(gd, {'colorbar.tickfont.color': 'rgb(255, 0, 0)'});
+            })
+            .then(function() {
+                expect(d3.select('.cbaxis text').style('fill')).toBe('rgb(255, 0, 0)');
+
+                return Plotly.restyle(gd, {'showscale': false});
+            })
+            .then(function() {
+                expect(d3.select('.cbaxis').size()).toBe(0);
+            })
+            .catch(fail)
+            .then(done);
+        });
     });
 
     describe('Plotly.deleteTraces', function() {
