@@ -14,14 +14,14 @@ var barAttrs = require('../bar/attributes');
 module.exports = {
     x: {
         valType: 'data_array',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the sample data to be binned on the x axis.'
         ].join(' ')
     },
     y: {
         valType: 'data_array',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the sample data to be binned on the y axis.'
         ].join(' ')

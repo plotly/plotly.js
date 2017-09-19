@@ -1282,8 +1282,9 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     var specs = _restyle(gd, aobj, traces),
         flags = specs.flags;
 
-    // clear calcdata if required
+    // clear calcdata and/or axis types if required so they get regenerated
     if(flags.clearCalc) gd.calcdata = undefined;
+    if(flags.clearAxisTypes) clearAxisTypes(gd, traces, {});
 
     // fill in redraw sequence
     var seq = [];
@@ -1339,12 +1340,6 @@ function _restyle(gd, aobj, _traces) {
         undoit = {},
         axlist,
         flagAxForDelete = {};
-
-    // these ones may alter the axis type
-    // (at least if the first trace is involved)
-    var axtypeAttrs = [
-        'type', 'x', 'y', 'x0', 'y0', 'orientation', 'xaxis', 'yaxis'
-    ];
 
     // make a new empty vals array for undoit
     function a0() { return traces.map(function() { return undefined; }); }
@@ -1555,11 +1550,6 @@ function _restyle(gd, aobj, _traces) {
             } else if(hovermode.get() === 'y') {
                 hovermode.set('x');
             }
-        }
-
-        // check if we need to call axis type
-        if((traces.indexOf(0) !== -1) && (axtypeAttrs.indexOf(ai) !== -1)) {
-            Plotly.Axes.clearTypes(gd, traces);
         }
 
         // major enough changes deserve autoscale, autobin, and
@@ -2101,8 +2091,9 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, traces) {
     var relayoutSpecs = _relayout(gd, Lib.extendFlat({}, layoutUpdate)),
         relayoutFlags = relayoutSpecs.flags;
 
-    // clear calcdata if required
+    // clear calcdata and/or axis types if required
     if(restyleFlags.clearCalc || relayoutFlags.calc) gd.calcdata = undefined;
+    if(restyleFlags.clearAxisTypes) clearAxisTypes(gd, traces, layoutUpdate);
 
     // fill in redraw sequence
     var seq = [];
@@ -2156,6 +2147,37 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, traces) {
         return gd;
     });
 };
+
+// empty out types for all axes containing these traces
+// so we auto-set them again
+var axLetters = ['x', 'y', 'z'];
+function clearAxisTypes(gd, traces, layoutUpdate) {
+    if(typeof traces === 'number') traces = [traces];
+    else if(!Array.isArray(traces) || !traces.length) {
+        traces = (gd._fullData).map(function(d, i) { return i; });
+    }
+    for(var i = 0; i < traces.length; i++) {
+        var trace = gd._fullData[i];
+        for(var j = 0; j < 3; j++) {
+            var ax = Plotly.Axes.getFromTrace(gd, trace, axLetters[j]);
+
+            // do not clear log type - that's never an auto result so must have been intentional
+            if(ax && ax.type !== 'log') {
+                var axAttr = ax._name;
+                var sceneName = ax._id.substr(1);
+                if(sceneName.substr(0, 5) === 'scene') {
+                    if(layoutUpdate[sceneName] !== undefined) continue;
+                    axAttr = sceneName + '.' + axAttr;
+                }
+                var typeAttr = axAttr + '.type';
+
+                if(layoutUpdate[axAttr] === undefined && layoutUpdate[typeAttr] === undefined) {
+                    Lib.nestedProperty(gd.layout, typeAttr).set(null);
+                }
+            }
+        }
+    }
+}
 
 /**
  * Animate to a frame, sequence of frame, frame group, or frame definition

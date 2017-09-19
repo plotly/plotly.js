@@ -99,7 +99,7 @@ module.exports = {
         valType: 'enumerated',
         role: 'info',
         values: ['v', 'h'],
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the orientation of the bars.',
             'With *v* (*h*), the value of the each bar spans',

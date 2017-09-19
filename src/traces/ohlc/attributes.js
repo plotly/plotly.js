@@ -55,7 +55,7 @@ module.exports = {
 
     x: {
         valType: 'data_array',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the x coordinates.',
             'If absent, linear coordinate will be generated.'

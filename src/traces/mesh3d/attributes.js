@@ -19,7 +19,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 module.exports = extendFlat(colorAttrs('', 'calc', false), {
     x: {
         valType: 'data_array',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the X coordinates of the vertices. The nth element of vectors `x`, `y` and `z`',
             'jointly represent the X, Y and Z coordinates of the nth vertex.'
@@ -27,7 +27,7 @@ module.exports = extendFlat(colorAttrs('', 'calc', false), {
     },
     y: {
         valType: 'data_array',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the Y coordinates of the vertices. The nth element of vectors `x`, `y` and `z`',
             'jointly represent the X, Y and Z coordinates of the nth vertex.'
@@ -35,7 +35,7 @@ module.exports = extendFlat(colorAttrs('', 'calc', false), {
     },
     z: {
         valType: 'data_array',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the Z coordinates of the vertices. The nth element of vectors `x`, `y` and `z`',
             'jointly represent the X, Y and Z coordinates of the nth vertex.'

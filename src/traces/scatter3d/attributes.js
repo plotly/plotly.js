@@ -54,7 +54,7 @@ function makeProjectionAttr(axLetter) {
     };
 }
 
-module.exports = overrideAll({
+var attrs = module.exports = overrideAll({
     x: scatterAttrs.x,
     y: scatterAttrs.y,
     z: {
@@ -172,3 +172,5 @@ module.exports = overrideAll({
     error_y: errorBarAttrs,
     error_z: errorBarAttrs,
 }, 'calc', 'nested');
+
+attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';

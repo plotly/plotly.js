@@ -15,13 +15,16 @@ var isPlainObject = Lib.isPlainObject;
 var traceOpts = {
     valType: 'flaglist',
     extras: ['none'],
-    flags: ['calc', 'calcIfAutorange', 'plot', 'style', 'colorbars'],
+    flags: ['calc', 'calcIfAutorange', 'clearAxisTypes', 'plot', 'style', 'colorbars'],
     description: [
         'trace attributes should include an `editType` string matching this flaglist.',
         '*calc* is the most extensive: a full `Plotly.plot` starting by clearing `gd.calcdata`',
         'to force it to be regenerated',
         '*calcIfAutorange* does a full `Plotly.plot`, but only clears and redoes `gd.calcdata`',
         'if there is at least one autoranged axis.',
+        '*clearAxisTypes* resets the types of the axes this trace is on, because new data could',
+        'cause the automatic axis type detection to change. Log type will not be cleared, as that',
+        'is never automatically chosen so must have been user-specified.',
         '*plot* calls `Plotly.plot` but without first clearing `gd.calcdata`.',
         '*style* only calls `module.style` for all trace modules and redraws the legend.',
         '*colorbars* only redraws colorbars.'

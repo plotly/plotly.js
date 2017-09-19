@@ -43,7 +43,7 @@ module.exports = extendFlat({}, {
         valType: 'enumerated',
         values: ['array', 'scaled'],
         role: 'info',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: [
             'If *array*, the heatmap\'s x coordinates are given by *x*',
             '(the default behavior when `x` is provided).',
@@ -55,7 +55,7 @@ module.exports = extendFlat({}, {
         valType: 'enumerated',
         values: ['array', 'scaled'],
         role: 'info',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: [
             'If *array*, the heatmap\'s y coordinates are given by *y*',
             '(the default behavior when `y` is provided)',

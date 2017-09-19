@@ -21,14 +21,14 @@ var extendFlat = require('../../lib/extend').extendFlat;
 module.exports = {
     x: {
         valType: 'data_array',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: 'Sets the x coordinates.'
     },
     x0: {
         valType: 'any',
         dflt: 0,
         role: 'info',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Alternate to `x`.',
             'Builds a linear space of x coordinates.',
@@ -48,14 +48,14 @@ module.exports = {
     },
     y: {
         valType: 'data_array',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: 'Sets the y coordinates.'
     },
     y0: {
         valType: 'any',
         dflt: 0,
         role: 'info',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Alternate to `y`.',
             'Builds a linear space of y coordinates.',

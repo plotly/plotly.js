@@ -34,7 +34,7 @@ module.exports = {
     },
     x: {
         valType: 'data_array',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: [
             'A two dimensional array of x coordinates at each carpet point.',
             'If ommitted, the plot is a cheater plot and the xaxis is hidden',
@@ -43,7 +43,7 @@ module.exports = {
     },
     y: {
         valType: 'data_array',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: 'A two dimensional array of y coordinates at each carpet point.'
     },
     a: {

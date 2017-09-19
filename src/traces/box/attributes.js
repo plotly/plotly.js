@@ -19,7 +19,7 @@ var scatterMarkerAttrs = scatterAttrs.marker,
 module.exports = {
     y: {
         valType: 'data_array',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the y sample data or coordinates.',
             'See overview for more info.'
@@ -27,7 +27,7 @@ module.exports = {
     },
     x: {
         valType: 'data_array',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the x sample data or coordinates.',
             'See overview for more info.'
@@ -36,7 +36,7 @@ module.exports = {
     x0: {
         valType: 'any',
         role: 'info',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the x coordinate of the box.',
             'See overview for more info.'
@@ -45,7 +45,7 @@ module.exports = {
     y0: {
         valType: 'any',
         role: 'info',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the y coordinate of the box.',
             'See overview for more info.'
@@ -54,7 +54,7 @@ module.exports = {
     name: {
         valType: 'string',
         role: 'info',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the trace name.',
             'The trace name appear as the legend item and on hover.',
@@ -134,7 +134,7 @@ module.exports = {
         valType: 'enumerated',
         values: ['v', 'h'],
         role: 'style',
-        editType: 'calc',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the orientation of the box(es).',
             'If *v* (*h*), the distribution is visualized along',

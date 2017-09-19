@@ -97,7 +97,7 @@ function makeContourAttr(axLetter) {
     };
 }
 
-module.exports = overrideAll({
+var attrs = module.exports = overrideAll({
     z: {
         valType: 'data_array',
         description: 'Sets the z coordinates.'
@@ -244,3 +244,5 @@ module.exports = overrideAll({
         })
     }
 }, 'calc', 'nested');
+
+attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';

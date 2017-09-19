@@ -1144,7 +1144,7 @@ describe('Test plot api', function() {
         });
 
         it('updates colorbars when editing bar charts', function(done) {
-            var mock = require('@mocks/bar-colorbar-colorscale.json');
+            var mock = require('@mocks/bar-colorscale-colorbar.json');
 
             Plotly.newPlot(gd, mock.data, mock.layout)
             .then(function() {
@@ -1178,6 +1178,52 @@ describe('Test plot api', function() {
             })
             .then(function() {
                 expect(d3.select('.cbaxis').size()).toBe(0);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('updates box position and axis type when it falls back to name', function(done) {
+            function checkXTicks(vals, msg) {
+                var selection = d3.selectAll('.xtick');
+                expect(selection.size()).toBe(vals.length);
+                selection.each(function(d, i) {
+                    expect(d3.select(this).text()).toBe(vals[i], msg + ': ' + i);
+                });
+            }
+
+            Plotly.newPlot(gd, [{name: 'A', y: [1, 2, 3, 4, 5], type: 'box'}],
+                {width: 400, height: 400, xaxis: {nticks: 3}}
+            )
+            .then(function() {
+                checkXTicks(['A'], 'initial');
+                expect(gd._fullLayout.xaxis.type).toBe('category');
+
+                return Plotly.restyle(gd, {name: 'B'});
+            })
+            .then(function() {
+                checkXTicks(['B'], 'changed category');
+                expect(gd._fullLayout.xaxis.type).toBe('category');
+
+                return Plotly.restyle(gd, {x0: 12.3});
+            })
+            .then(function() {
+                checkXTicks(['12', '12.5'], 'switched to numeric');
+                expect(gd._fullLayout.xaxis.type).toBe('linear');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('updates scene axis types automatically', function(done) {
+            Plotly.newPlot(gd, [{x: [1, 2], y: [1, 2], z: [1, 2], type: 'scatter3d'}])
+            .then(function() {
+                expect(gd._fullLayout.scene.xaxis.type).toBe('linear');
+
+                return Plotly.restyle(gd, {z: [['a', 'b']]});
+            })
+            .then(function() {
+                expect(gd._fullLayout.scene.zaxis.type).toBe('category');
             })
             .catch(fail)
             .then(done);
