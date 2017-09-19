@@ -112,6 +112,8 @@ describe('sankey tests', function() {
                 expect(fullTrace.link.target)
                     .toEqual([], 'presence of link target array is guaranteed');
 
+                expect(fullTrace.link.label)
+                    .toEqual([], 'presence of link target array is guaranteed');
             });
 
         it('\'Sankey\' specification should have proper types',
@@ -179,6 +181,40 @@ describe('sankey tests', function() {
 
         });
 
+        it('does not fill \'link\' labels even if not specified', function() {
+
+            var fullTrace = _supply({
+                node: {
+                    label: ['a', 'b']
+                },
+                link: {
+                    source: [0, 1],
+                    target: [1, 0],
+                    value: [1, 2]
+                }
+            });
+
+            expect(Lib.isArray(fullTrace.link.label)).toBe(true, 'must be an array');
+            expect(fullTrace.link.label).toEqual([], 'an array of empty strings');
+        });
+
+        it('preserves \'link\' labels if  specified', function() {
+
+            var fullTrace = _supply({
+                node: {
+                    label: ['a', 'b']
+                },
+                link: {
+                    source: [0, 1],
+                    target: [1, 0],
+                    value: [1, 2],
+                    label: ['a', 'b']
+                }
+            });
+
+            expect(Lib.isArray(fullTrace.link.label)).toBe(true, 'must be an array');
+            expect(fullTrace.link.label).toEqual(['a', 'b'], 'an array of the supplied values');
+        });
     });
 
     describe('sankey calc', function() {
@@ -316,29 +352,6 @@ describe('sankey tests', function() {
     describe('Test hover/click interactions:', function() {
         afterEach(destroyGraphDiv);
 
-        function assertLabel(content, style) {
-            var g = d3.selectAll('.hovertext');
-            var lines = g.selectAll('.nums .line');
-            var name = g.selectAll('.name');
-
-            expect(lines.size()).toBe(content.length - 1);
-
-            lines.each(function(_, i) {
-                expect(d3.select(this).text()).toBe(content[i]);
-            });
-
-            expect(name.text()).toBe(content[content.length - 1]);
-
-            var path = g.select('path');
-            expect(path.style('fill')).toEqual(style[0], 'bgcolor');
-            expect(path.style('stroke')).toEqual(style[1], 'bordercolor');
-
-            var text = g.select('text.nums');
-            expect(parseInt(text.style('font-size'))).toEqual(style[2], 'font.size');
-            expect(text.style('font-family').split(',')[0]).toEqual(style[3], 'font.family');
-            expect(text.style('fill')).toEqual(style[4], 'font.color');
-        }
-
         it('should shows the correct hover labels', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
@@ -408,6 +421,30 @@ describe('sankey tests', function() {
             })
             .catch(fail)
             .then(done);
+        });
+
+        it('should show correct hover labels even if there is no link.label supplied', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+            delete mockCopy.data[0].link.label;
+
+            function _hover(px, py) {
+                mouseEvent('mousemove', px, py);
+                mouseEvent('mouseover', px, py);
+                delete gd._lastHoverTime;
+            }
+
+            Plotly.plot(gd, mockCopy)
+                .then(function() {
+                    _hover(450, 300);
+
+                    assertLabel(
+                        ['Source: Solid', 'Target: Industry', '46TWh'],
+                        ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
+                    );
+                })
+                .catch(fail)
+                .then(done);
         });
     });
 
@@ -520,3 +557,31 @@ describe('sankey tests', function() {
         });
     });
 });
+
+function assertLabel(content, style) {
+    var g = d3.selectAll('.hovertext');
+    var lines = g.selectAll('.nums .line');
+    var name = g.selectAll('.name');
+    var tooltipBoundingBox = g.node().getBoundingClientRect();
+    var nameBoundingBox = name.node().getBoundingClientRect();
+
+    expect(tooltipBoundingBox.top <= nameBoundingBox.top);
+    expect(tooltipBoundingBox.bottom >= nameBoundingBox.bottom);
+
+    expect(lines.size()).toBe(content.length - 1);
+
+    lines.each(function(_, i) {
+        expect(d3.select(this).text()).toBe(content[i]);
+    });
+
+    expect(name.text()).toBe(content[content.length - 1]);
+
+    var path = g.select('path');
+    expect(path.style('fill')).toEqual(style[0], 'bgcolor');
+    expect(path.style('stroke')).toEqual(style[1], 'bordercolor');
+
+    var text = g.select('text.nums');
+    expect(parseInt(text.style('font-size'))).toEqual(style[2], 'font.size');
+    expect(text.style('font-family').split(',')[0]).toEqual(style[3], 'font.family');
+    expect(text.style('fill')).toEqual(style[4], 'font.color');
+}
