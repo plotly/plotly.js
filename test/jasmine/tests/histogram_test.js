@@ -463,6 +463,10 @@ describe('Test histogram', function() {
     describe('plot / restyle', function() {
         var gd;
 
+        beforeAll(function() {
+            jasmine.addMatchers(customMatchers);
+        });
+
         beforeEach(function() {
             gd = createGraphDiv();
         });
@@ -512,6 +516,19 @@ describe('Test histogram', function() {
             Plotly.restyle(gd, 'x', [data2]);
             expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
             expect(gd._fullData[0].autobinx).toBe(false);
+        });
+
+        it('allows changing axis type with new x data', function() {
+            var x1 = [1, 1, 1, 1, 2, 2, 2, 3, 3, 4];
+            var x2 = ['2017-01-01', '2017-01-01', '2017-01-01', '2017-01-02', '2017-01-02', '2017-01-03'];
+
+            Plotly.newPlot(gd, [{x: x1, type: 'histogram'}]);
+            expect(gd._fullLayout.xaxis.type).toBe('linear');
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.5, 4.5], 3);
+
+            Plotly.restyle(gd, {x: [x2]});
+            expect(gd._fullLayout.xaxis.type).toBe('date');
+            expect(gd._fullLayout.xaxis.range).toEqual(['2016-12-31 12:00', '2017-01-03 12:00']);
         });
     });
 });
