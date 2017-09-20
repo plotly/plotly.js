@@ -135,7 +135,7 @@ module.exports = function calc(gd, trace) {
             break;
         }
     }
-    for(i = seriesLen - 1; i > firstNonzero; i--) {
+    for(i = seriesLen - 1; i >= firstNonzero; i--) {
         if(size[i]) {
             lastNonzero = i;
             break;
@@ -147,6 +147,12 @@ module.exports = function calc(gd, trace) {
         if((isNumeric(pos[i]) && isNumeric(size[i]))) {
             cd.push({p: pos[i], s: size[i], b: 0});
         }
+    }
+
+    if(cd.length === 1) {
+        // when we collapse to a single bin, calcdata no longer describes bin size
+        // so we need to explicitly specify it
+        cd[0].width1 = Axes.tickIncrement(cd[0].p, binSpec.size, false, calendar) - cd[0].p;
     }
 
     arraysToCalcdata(cd, trace);

@@ -269,6 +269,17 @@ describe('Test histogram', function() {
             expect(out.length).toEqual(9001);
         });
 
+        it('handles single-bin data without extra bins', function() {
+            var out = _calc({
+                x: [2.1, 3, 3.9],
+                xbins: {start: 0, end: 10, size: 2}
+            });
+
+            expect(out).toEqual([
+                {b: 0, p: 3, s: 3, width1: 2}
+            ]);
+        });
+
         function calcPositions(opts, extraTraces) {
             return _calc(opts, extraTraces).map(function(v) { return v.p; });
         }
@@ -550,6 +561,19 @@ describe('Test histogram', function() {
                 gd._fullData.forEach(function(trace, i) {
                     expect(trace._autoBinFinished).toBeUndefined(i);
                 });
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('give the right bar width for single-bin histograms', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'histogram',
+                x: [3, 3, 3],
+                xbins: {start: 0, end: 10, size: 2}
+            }])
+            .then(function() {
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([2, 4], 3);
             })
             .catch(fail)
             .then(done);
