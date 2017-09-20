@@ -618,12 +618,8 @@ function handleClick(g, gd, numClicks) {
         } else if(numClicks === 2) {
             // Compute the clicked index. expandedIndex does what we want for expanded traces
             // but also culls hidden traces. That means we have some work to do.
-            var clickedIndex, isIsolated, isClicked, isInGroup, otherState;
-            for(clickedIndex = 0; clickedIndex < fullData.length; clickedIndex++) {
-                if(fullData[clickedIndex] === fullTrace) break;
-            }
-
-            isIsolated = true;
+            var isClicked, isInGroup, otherState;
+            var isIsolated = true;
             for(i = 0; i < fullData.length; i++) {
                 isClicked = fullData[i] === fullTrace;
                 if(isClicked) continue;
