@@ -8,7 +8,6 @@ var ScatterGeo = require('@src/traces/scattergeo');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 var mouseEvent = require('../assets/mouse_event');
 
 describe('Test scattergeo defaults', function() {
@@ -237,10 +236,6 @@ describe('Test scattergeo hover', function() {
     // we can't mock ScatterGeo.hoverPoints
     // because geo hover relies on mouse event
     // to set the c2p conversion functions
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     beforeEach(function(done) {
         gd = createGraphDiv();

@@ -9,7 +9,6 @@ var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
 var DBLCLICKDELAY = require('@src/constants/interactions').DBLCLICKDELAY;
 
 var d3 = require('d3');
-var customMatchers = require('../assets/custom_matchers');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -561,10 +560,6 @@ describe('annotations autorange', function() {
     var mock;
     var gd;
 
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
-
     beforeEach(function() {
         gd = createGraphDiv();
         mock = Lib.extendDeep({}, require('@mocks/annotations-autorange.json'));
@@ -907,10 +902,6 @@ describe('annotation effects', function() {
     function textDrag() { return gd.querySelector('.annotation-text-g>g'); }
     function arrowDrag() { return gd.querySelector('.annotation-arrow-g>.anndrag'); }
     function textBox() { return gd.querySelector('.annotation-text-g'); }
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     function makePlot(annotations, config) {
         gd = createGraphDiv();

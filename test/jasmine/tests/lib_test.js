@@ -9,7 +9,6 @@ var PlotlyInternal = require('@src/plotly');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var Plots = PlotlyInternal.Plots;
-var customMatchers = require('../assets/custom_matchers');
 var failTest = require('../assets/fail_test');
 
 describe('Test lib.js:', function() {
@@ -471,10 +470,6 @@ describe('Test lib.js:', function() {
     });
 
     describe('expandObjectPaths', function() {
-        beforeAll(function() {
-            jasmine.addMatchers(customMatchers);
-        });
-
         it('returns the original object', function() {
             var x = {};
             expect(Lib.expandObjectPaths(x)).toBe(x);

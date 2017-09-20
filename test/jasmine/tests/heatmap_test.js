@@ -9,7 +9,6 @@ var Heatmap = require('@src/traces/heatmap');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 
 
 describe('heatmap supplyDefaults', function() {
@@ -293,10 +292,6 @@ describe('heatmap convertColumnXYZ', function() {
 
 describe('heatmap calc', function() {
     'use strict';
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     function _calc(opts) {
         var base = { type: 'heatmap' },
@@ -598,10 +593,6 @@ describe('heatmap hover', function() {
     'use strict';
 
     var gd;
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     function _hover(gd, xval, yval) {
         var fullLayout = gd._fullLayout,

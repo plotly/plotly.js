@@ -10,9 +10,7 @@ var Axes = require('@src/plots/cartesian/axes');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
-var customMatchers = require('../assets/custom_matchers');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
-var negateIf = require('../assets/negate_if');
 
 var d3 = require('d3');
 
@@ -154,10 +152,6 @@ describe('Bar.supplyDefaults', function() {
 describe('bar calc / setPositions', function() {
     'use strict';
 
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
-
     it('should fill in calc pt fields (stack case)', function() {
         var gd = mockBarPlot([{
             y: [2, 1, 2]
@@ -269,10 +263,6 @@ describe('bar calc / setPositions', function() {
 describe('Bar.calc', function() {
     'use strict';
 
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
-
     it('should guard against invalid base items', function() {
         var gd = mockBarPlot([{
             base: [null, 1, 2],
@@ -327,10 +317,6 @@ describe('Bar.calc', function() {
 
 describe('Bar.setPositions', function() {
     'use strict';
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     it('should guard against invalid offset items', function() {
         var gd = mockBarPlot([{
@@ -768,10 +754,6 @@ describe('A bar plot', function() {
 
     var gd;
 
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
-
     beforeEach(function() {
         gd = createGraphDiv();
     });
@@ -1205,7 +1187,7 @@ describe('A bar plot', function() {
                 if(!i) return;
                 var bbox = this.getBoundingClientRect();
                 ['left', 'right', 'top', 'bottom', 'width', 'height'].forEach(function(dim) {
-                    negateIf(expect(bbox[dim]), dims.indexOf(dim) === -1)
+                    expect(bbox[dim]).negateIf(dims.indexOf(dim) === -1)
                         .toBeWithin(bbox1[dim], 0.1, msg + ' (' + i + '): ' + dim);
                 });
             });
@@ -1268,10 +1250,6 @@ describe('bar hover', function() {
     'use strict';
 
     var gd;
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     afterEach(destroyGraphDiv);
 
@@ -1532,8 +1510,6 @@ function mockBarPlot(dataWithoutTraceType, layout) {
 }
 
 function assertArrayField(calcData, prop, expectation) {
-    // Note that this functions requires to add `customMatchers` to jasmine
-    // matchers; i.e: `jasmine.addMatchers(customMatchers);`.
     var values = Lib.nestedProperty(calcData, prop).get();
     if(!Array.isArray(values)) values = [values];
 
@@ -1541,8 +1517,6 @@ function assertArrayField(calcData, prop, expectation) {
 }
 
 function assertPointField(calcData, prop, expectation) {
-    // Note that this functions requires to add `customMatchers` to jasmine
-    // matchers; i.e: `jasmine.addMatchers(customMatchers);`.
     var values = [];
 
     calcData.forEach(function(calcTrace) {
@@ -1557,8 +1531,6 @@ function assertPointField(calcData, prop, expectation) {
 }
 
 function assertTraceField(calcData, prop, expectation) {
-    // Note that this functions requires to add `customMatchers` to jasmine
-    // matchers; i.e: `jasmine.addMatchers(customMatchers);`.
     var values = calcData.map(function(calcTrace) {
         return Lib.nestedProperty(calcTrace[0], prop).get();
     });

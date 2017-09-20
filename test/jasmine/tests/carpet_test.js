@@ -7,7 +7,6 @@ var smoothFill2D = require('@src/traces/carpet/smooth_fill_2d_array');
 var smoothFill = require('@src/traces/carpet/smooth_fill_array');
 
 var d3 = require('d3');
-var customMatchers = require('../assets/custom_matchers');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
@@ -215,8 +214,6 @@ describe('supplyDefaults visibility check', function() {
 describe('carpet smooth_fill_2d_array', function() {
     var _;
 
-    beforeAll(function() { jasmine.addMatchers(customMatchers); });
-
     it('fills in all points trivially', function() {
         // Given only corners, should just propagate the constant throughout:
         expect(smoothFill2D(
@@ -380,8 +377,6 @@ describe('carpet smooth_fill_2d_array', function() {
 
 describe('smooth_fill_array', function() {
     var _;
-
-    beforeAll(function() { jasmine.addMatchers(customMatchers); });
 
     it('fills in via linear interplation', function() {
         expect(smoothFill([_, _, 2, 3, _, _, 6, 7, _, _, 10, 11, _]))

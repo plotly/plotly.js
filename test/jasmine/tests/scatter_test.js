@@ -7,7 +7,6 @@ var Lib = require('@src/lib');
 var Plotly = require('@lib/index');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 var customAssertions = require('../assets/custom_assertions');
 var fail = require('../assets/fail_test');
 
@@ -603,10 +602,6 @@ describe('end-to-end scatter tests', function() {
 });
 
 describe('scatter hoverPoints', function() {
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     afterEach(destroyGraphDiv);
 

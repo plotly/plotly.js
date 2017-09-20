@@ -4,7 +4,6 @@ var Lib = require('@src/lib');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 var fail = require('../assets/fail_test.js');
 
 // cartesian click events events use the hover data
@@ -195,10 +194,6 @@ describe('Test hover and click interactions', function() {
                 });
         };
     }
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     beforeEach(function() {
         gd = createGraphDiv();

@@ -10,7 +10,6 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var selectButton = require('../assets/modebar_button');
-var customMatchers = require('../assets/custom_matchers');
 var delay = require('../assets/delay');
 
 function countCanvases() {
@@ -431,10 +430,6 @@ describe('Test gl3d modebar handlers', function() {
         expect(camera.eye.z).toBeCloseTo(eyeZ);
     }
 
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
-
     beforeEach(function(done) {
         gd = createGraphDiv();
 
@@ -828,10 +823,6 @@ describe('Test gl2d plots', function() {
     var gd;
 
     var mock = require('@mocks/gl2d_10.json');
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     beforeEach(function() {
         gd = createGraphDiv();
@@ -1308,10 +1299,6 @@ describe('Test gl plot side effects', function() {
 describe('Test gl2d interactions', function() {
     var gd;
 
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
-
     beforeEach(function() {
         gd = createGraphDiv();
     });
@@ -1369,10 +1356,6 @@ describe('Test gl2d interactions', function() {
 
 describe('Test gl3d annotations', function() {
     var gd;
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     beforeEach(function() {
         gd = createGraphDiv();

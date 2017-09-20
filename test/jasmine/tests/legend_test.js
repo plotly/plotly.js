@@ -13,7 +13,6 @@ var fail = require('../assets/fail_test');
 var delay = require('../assets/delay');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 
 
 describe('legend defaults', function() {
@@ -599,10 +598,6 @@ describe('legend orientation change:', function() {
 
 describe('legend restyle update', function() {
     'use strict';
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     afterEach(destroyGraphDiv);
 

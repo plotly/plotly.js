@@ -2,7 +2,6 @@ var d3 = require('d3');
 
 var createModeBar = require('@src/components/modebar/modebar');
 var manageModeBar = require('@src/components/modebar/manage');
-var customMatchers = require('../assets/custom_matchers');
 
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
@@ -651,10 +650,6 @@ describe('ModeBar', function() {
 
     describe('modebar on clicks', function() {
         var gd, modeBar, buttonClosest, buttonCompare, buttonToggle, hovermodeButtons;
-
-        beforeAll(function() {
-            jasmine.addMatchers(customMatchers);
-        });
 
         afterEach(destroyGraphDiv);
 

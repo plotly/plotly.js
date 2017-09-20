@@ -12,12 +12,10 @@ var helpers = require('@src/plot_api/helpers');
 var editTypes = require('@src/plot_api/edit_types');
 
 var d3 = require('d3');
-var customMatchers = require('../assets/custom_matchers');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
-var negateIf = require('../assets/negate_if');
 
 
 describe('Test plot api', function() {
@@ -109,10 +107,6 @@ describe('Test plot api', function() {
 
     describe('Plotly.relayout', function() {
         var gd;
-
-        beforeAll(function() {
-            jasmine.addMatchers(customMatchers);
-        });
 
         beforeEach(function() {
             gd = createGraphDiv();
@@ -914,9 +908,9 @@ describe('Test plot api', function() {
             var zmax1 = 10;
 
             function check(auto, msg) {
-                negateIf(expect(gd.data[0].zmin), auto).toBe(zmin0, msg);
+                expect(gd.data[0].zmin).negateIf(auto).toBe(zmin0, msg);
                 expect(gd.data[0].zauto).toBe(auto, msg);
-                negateIf(expect(gd.data[1].zmax), auto).toBe(zmax1, msg);
+                expect(gd.data[1].zmax).negateIf(auto).toBe(zmax1, msg);
                 expect(gd.data[1].zauto).toBe(auto, msg);
             }
 
@@ -956,11 +950,11 @@ describe('Test plot api', function() {
 
             function check(auto, msg) {
                 expect(gd.data[0].marker.cauto).toBe(auto, msg);
-                negateIf(expect(gd.data[0].marker.cmin), auto).toBe(mcmin0);
+                expect(gd.data[0].marker.cmin).negateIf(auto).toBe(mcmin0);
                 expect(gd._fullData[0].marker.autocolorscale).toBe(auto, msg);
                 expect(gd.data[0].marker.colorscale).toEqual(auto ? autocscale : mcscl0);
                 expect(gd.data[1].marker.line.cauto).toBe(auto, msg);
-                negateIf(expect(gd.data[1].marker.line.cmax), auto).toBe(mlcmax1);
+                expect(gd.data[1].marker.line.cmax).negateIf(auto).toBe(mlcmax1);
                 expect(gd._fullData[1].marker.line.autocolorscale).toBe(auto, msg);
                 expect(gd.data[1].marker.line.colorscale).toEqual(auto ? autocscale : mlcscl1);
             }
@@ -1004,11 +998,11 @@ describe('Test plot api', function() {
 
             function check(auto, msg) {
                 expect(gd.data[0].autobinx).toBe(auto, msg);
-                negateIf(expect(gd.data[0].xbins.start), auto).toBe(start0, msg);
+                expect(gd.data[0].xbins.start).negateIf(auto).toBe(start0, msg);
                 expect(gd.data[1].autobinx).toBe(auto, msg);
                 expect(gd.data[1].autobiny).toBe(auto, msg);
-                negateIf(expect(gd.data[1].xbins.end), auto).toBe(end1, msg);
-                negateIf(expect(gd.data[1].ybins.size), auto).toBe(size1, msg);
+                expect(gd.data[1].xbins.end).negateIf(auto).toBe(end1, msg);
+                expect(gd.data[1].ybins.size).negateIf(auto).toBe(size1, msg);
             }
 
             Plotly.plot(gd, [
@@ -1044,8 +1038,8 @@ describe('Test plot api', function() {
             function check(auto, msg) {
                 expect(gd.data[0].autocontour).toBe(auto, msg);
                 expect(gd.data[1].autocontour).toBe(auto, msg);
-                negateIf(expect(gd.data[0].contours.start), auto).toBe(start0, msg);
-                negateIf(expect(gd.data[1].contours.size), auto).toBe(size1, msg);
+                expect(gd.data[0].contours.start).negateIf(auto).toBe(start0, msg);
+                expect(gd.data[1].contours.size).negateIf(auto).toBe(size1, msg);
             }
 
             Plotly.plot(gd, [
@@ -1079,9 +1073,9 @@ describe('Test plot api', function() {
             var dy = 5;
 
             function check(scaled, msg) {
-                negateIf(expect(gd.data[0].x0), !scaled).toBe(x0, msg);
+                expect(gd.data[0].x0).negateIf(!scaled).toBe(x0, msg);
                 expect(gd.data[0].xtype).toBe(scaled ? 'scaled' : undefined, msg);
-                negateIf(expect(gd.data[0].dy), !scaled).toBe(dy, msg);
+                expect(gd.data[0].dy).negateIf(!scaled).toBe(dy, msg);
                 expect(gd.data[0].ytype).toBe(scaled ? 'scaled' : undefined, msg);
             }
 
@@ -1108,9 +1102,9 @@ describe('Test plot api', function() {
             var dtick1 = 0.8;
 
             function check(auto, msg) {
-                negateIf(expect(gd._fullData[0].colorbar.tick0), auto).toBe(tick00, msg);
+                expect(gd._fullData[0].colorbar.tick0).negateIf(auto).toBe(tick00, msg);
                 expect(gd._fullData[0].colorbar.tickmode).toBe(auto ? 'auto' : 'linear', msg);
-                negateIf(expect(gd._fullData[1].colorbar.dtick), auto).toBe(dtick1, msg);
+                expect(gd._fullData[1].colorbar.dtick).negateIf(auto).toBe(dtick1, msg);
                 expect(gd._fullData[1].colorbar.tickmode).toBe(auto ? 'auto' : 'linear', msg);
             }
 

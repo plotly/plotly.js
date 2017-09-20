@@ -7,7 +7,6 @@ var calc = require('@src/traces/histogram/calc');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 
 
 describe('Test histogram', function() {
@@ -163,10 +162,6 @@ describe('Test histogram', function() {
 
 
     describe('calc', function() {
-        beforeAll(function() {
-            jasmine.addMatchers(customMatchers);
-        });
-
         function _calc(opts, extraTraces) {
             var base = { type: 'histogram' };
             var trace = Lib.extendFlat({}, base, opts);
@@ -462,10 +457,6 @@ describe('Test histogram', function() {
 
     describe('plot / restyle', function() {
         var gd;
-
-        beforeAll(function() {
-            jasmine.addMatchers(customMatchers);
-        });
 
         beforeEach(function() {
             gd = createGraphDiv();

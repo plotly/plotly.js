@@ -7,7 +7,6 @@ var convert = require('@src/traces/scattermapbox/convert');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
@@ -109,10 +108,6 @@ describe('scattermapbox defaults', function() {
 
 describe('scattermapbox convert', function() {
     'use strict';
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     function _convert(trace, selected) {
         var gd = { data: [trace] };
@@ -437,8 +432,6 @@ describe('@noCI scattermapbox hover', function() {
     var gd;
 
     beforeAll(function(done) {
-        jasmine.addMatchers(customMatchers);
-
         Plotly.setPlotConfig({
             mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
         });
@@ -637,8 +630,6 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
     }
 
     beforeAll(function(done) {
-        jasmine.addMatchers(customMatchers);
-
         Plotly.setPlotConfig({
             mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
         });

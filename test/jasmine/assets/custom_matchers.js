@@ -1,10 +1,24 @@
+/*
+ * custom_matchers - to be included in karma.conf.js, so it can
+ * add these matchers to jasmine globally and all suites have access.
+ *
+ * Also adds `.negateIf` which is not a matcher but a conditional `.not`:
+ *
+ *     expect(x).negateIf(condition).toBe(0);
+ *
+ * is equivalent to:
+ *
+ *     if(condition) expect(x).toBe(0);
+ *     else expect(x).not.toBe(0);
+ */
+
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
 var Lib = require('../../../src/lib');
 var deepEqual = require('deep-equal');
 
-module.exports = {
+var matchers = {
     // toEqual except with sparse arrays populated. This arises because:
     //
     //   var x = new Array(2)
@@ -165,3 +179,12 @@ function coercePosition(precision) {
 function arrayToStr(array) {
     return '[ ' + array.join(', ') + ' ]';
 }
+
+beforeAll(function() {
+    jasmine.addMatchers(matchers);
+
+    jasmine.Expectation.prototype.negateIf = function(negate) {
+        if(negate) return this.not;
+        return this;
+    };
+});

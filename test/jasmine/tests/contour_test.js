@@ -9,7 +9,6 @@ var colorScales = require('@src/components/colorscale/scales');
 var fail = require('../assets/fail_test');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
 
 
@@ -177,10 +176,6 @@ describe('contour makeColorMap', function() {
 
 describe('contour calc', function() {
     'use strict';
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     function _calc(opts) {
         var base = { type: 'contour' },

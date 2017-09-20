@@ -9,7 +9,6 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
-var customMatchers = require('../assets/custom_matchers');
 var failTest = require('../assets/fail_test');
 
 var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
@@ -294,10 +293,6 @@ describe('@noCI, mapbox plots', function() {
 
     var pointPos = [579, 276],
         blankPos = [650, 120];
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     beforeEach(function(done) {
         gd = createGraphDiv();
