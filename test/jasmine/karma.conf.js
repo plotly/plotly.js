@@ -229,10 +229,13 @@ if(isFullSuite) {
 } else if(isBundleTest) {
     switch(basename(testFileGlob)) {
         case 'requirejs':
-            func.defaultConfig.files.push(
+            // browserified custom_matchers doesn't work with this route
+            // so clear them out of the files and preprocessors
+            func.defaultConfig.files = [
                 constants.pathToRequireJS,
                 constants.pathToRequireJSFixture
-            );
+            ];
+            delete func.defaultConfig.preprocessors[pathToCustomMatchers];
             break;
         case 'ie9':
             // load ie9_mock.js before plotly.js+test bundle

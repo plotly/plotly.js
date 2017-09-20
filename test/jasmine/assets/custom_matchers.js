@@ -15,7 +15,8 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var Lib = require('../../../src/lib');
+var isPlainObject = require('../../../src/lib/is_plain_object');
+var extendDeep = require('../../../src/lib/extend').extendDeep;
 var deepEqual = require('deep-equal');
 
 var matchers = {
@@ -35,7 +36,7 @@ var matchers = {
                 for(i = 0; i < x.length; i++) {
                     x[i] = x[i];
                 }
-            } else if(Lib.isPlainObject(x)) {
+            } else if(isPlainObject(x)) {
                 var keys = Object.keys(x);
                 for(i = 0; i < keys.length; i++) {
                     populateUndefinedArrayEls(x[keys[i]]);
@@ -46,8 +47,8 @@ var matchers = {
 
         return {
             compare: function(actual, expected, msgExtra) {
-                var actualExpanded = populateUndefinedArrayEls(Lib.extendDeep({}, actual));
-                var expectedExpanded = populateUndefinedArrayEls(Lib.extendDeep({}, expected));
+                var actualExpanded = populateUndefinedArrayEls(extendDeep({}, actual));
+                var expectedExpanded = populateUndefinedArrayEls(extendDeep({}, expected));
 
                 var passed = deepEqual(actualExpanded, expectedExpanded);
 
