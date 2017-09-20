@@ -530,5 +530,38 @@ describe('Test histogram', function() {
             expect(gd._fullLayout.xaxis.type).toBe('date');
             expect(gd._fullLayout.xaxis.range).toEqual(['2016-12-31 12:00', '2017-01-03 12:00']);
         });
+
+        it('can resize a plot with several histograms', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'histogram',
+                x: [1, 1, 1, 1, 2, 2, 2, 3, 3, 4]
+            }, {
+                type: 'histogram',
+                x: [1, 1, 1, 1, 2, 2, 2, 3, 3, 4]
+            }], {
+                width: 400,
+                height: 400
+            })
+            .then(function() {
+                expect(gd._fullLayout.width).toBe(400);
+                expect(gd._fullLayout.height).toBe(400);
+
+                gd._fullData.forEach(function(trace, i) {
+                    expect(trace._autoBinFinished).toBeUndefined(i);
+                });
+
+                return Plotly.relayout(gd, {width: 500, height: 500});
+            })
+            .then(function() {
+                expect(gd._fullLayout.width).toBe(500);
+                expect(gd._fullLayout.height).toBe(500);
+
+                gd._fullData.forEach(function(trace, i) {
+                    expect(trace._autoBinFinished).toBeUndefined(i);
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
     });
 });
