@@ -190,6 +190,26 @@ describe('aggregate', function() {
         expect(traceOut.marker.size).toEqual([10, 20]);
     });
 
+    // Regression test - throws before fix:
+    // https://github.com/plotly/plotly.js/issues/2024
+    it('can handle case where aggregation array is missing', function() {
+        Plotly.newPlot(gd, [{
+            x: [1, 2, 3, 4, 5],
+            y: [2, 4, 6, 8, 10],
+            marker: {size: [10, 10, 20, 20, 10]},
+            transforms: [{
+                type: 'aggregate',
+                groups: 'marker.size'
+            }]
+        }]);
+
+        var traceOut = gd._fullData[0];
+
+        expect(traceOut.x).toEqual([1, 3]);
+        expect(traceOut.y).toEqual([2, 6]);
+        expect(traceOut.marker.size).toEqual([10, 20]);
+    });
+
     it('handles median, mode, rms, & stddev for numeric data', function() {
         // again, nothing is going to barf with non-numeric data, but sometimes it
         // won't make much sense.
