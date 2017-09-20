@@ -366,7 +366,7 @@ describe('sankey tests', function() {
                 .then(function() {
                     expect(d3.selectAll('.sankey .nodeRect')[0].reduce(function(prevMin, rect) {
                         return Math.min(prevMin, d3.select(rect).attr('height'));
-                    }, Infinity)).toEqual(1);
+                    }, Infinity)).toEqual(0.5);
                     done();
                 });
         });
@@ -375,7 +375,7 @@ describe('sankey tests', function() {
     describe('Test hover/click interactions:', function() {
         afterEach(destroyGraphDiv);
 
-        it('should shows the correct hover labels', function(done) {
+        it('should show the correct hover labels', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
 
@@ -386,7 +386,7 @@ describe('sankey tests', function() {
             }
 
             Plotly.plot(gd, mockCopy).then(function() {
-                _hover(400, 300);
+                _hover(404, 302);
 
                 assertLabel(
                     ['Solid', 'Incoming flow count: 4', 'Outgoing flow count: 3', '447TWh'],
@@ -404,7 +404,7 @@ describe('sankey tests', function() {
                 return Plotly.relayout(gd, 'hoverlabel.font.family', 'Roboto');
             })
             .then(function() {
-                _hover(400, 300);
+                _hover(404, 302);
 
                 assertLabel(
                     ['Solid', 'Incoming flow count: 4', 'Outgoing flow count: 3', '447TWh'],
@@ -427,7 +427,7 @@ describe('sankey tests', function() {
                 });
             })
             .then(function() {
-                _hover(400, 300);
+                _hover(404, 302);
 
                 assertLabel(
                     ['Solid', 'Incoming flow count: 4', 'Outgoing flow count: 3', '447TWh'],
@@ -482,7 +482,7 @@ describe('sankey tests', function() {
 
         function _makeWrapper(eventType, mouseFn) {
             var posByElementType = {
-                node: [400, 300],
+                node: [404, 302],
                 link: [450, 300]
             };
 

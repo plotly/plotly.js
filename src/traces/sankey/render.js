@@ -181,8 +181,8 @@ function nodeModel(uniqueKeys, d, n) {
     var tc = tinycolor(n.color),
         zoneThicknessPad = c.nodePadAcross,
         zoneLengthPad = d.nodePad / 2,
-        visibleThickness = n.dx + 0.5,
-        visibleLength = Math.max(1, n.dy - 0.5);
+        visibleThickness = n.dx,
+        visibleLength = Math.max(0.5, n.dy);
 
     var basicKey = n.label;
     var foundKey = uniqueKeys[basicKey];
@@ -203,7 +203,7 @@ function nodeModel(uniqueKeys, d, n) {
         textFont: d.textFont,
         size: d.horizontal ? d.height : d.width,
         visibleWidth: Math.ceil(visibleThickness),
-        visibleHeight: Math.ceil(visibleLength),
+        visibleHeight: visibleLength,
         zoneX: -zoneThicknessPad,
         zoneY: -zoneLengthPad,
         zoneWidth: visibleThickness + 2 * zoneThicknessPad,
@@ -227,14 +227,10 @@ function nodeModel(uniqueKeys, d, n) {
 
 // rendering snippets
 
-function crispLinesOnEnd(sankeyNode) {
-    d3.select(sankeyNode.node().parentNode).style('shape-rendering', 'crispEdges');
-}
-
 function updateNodePositions(sankeyNode) {
     sankeyNode
         .attr('transform', function(d) {
-            return 'translate(' + (d.node.x - 0.5) + ', ' + (d.node.y - d.node.dy / 2 + 0.5) + ')';
+            return 'translate(' + d.node.x.toFixed(3) + ', ' + (d.node.y - d.node.dy / 2).toFixed(3) + ')';
         });
 }
 
@@ -247,7 +243,6 @@ function linkPath(d) {
 }
 
 function updateNodeShapes(sankeyNode) {
-    d3.select(sankeyNode.node().parentNode).style('shape-rendering', 'optimizeSpeed');
     sankeyNode.call(updateNodePositions);
 }
 
@@ -360,7 +355,6 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
             if(d.arrangement !== 'snap') {
                 d.sankey.relayout();
                 updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink);
-                sankeyNode.call(crispLinesOnEnd);
             }
         })
 
@@ -414,15 +408,11 @@ function snappingForce(sankeyNode, forceKey, nodes, d) {
         }
         if(!d.interactionState.dragInProgress && maxVelocity < 0.1 && d.forceLayouts[forceKey].alpha() > 0) {
             d.forceLayouts[forceKey].alpha(0);
-            window.setTimeout(function() {
-                sankeyNode.call(crispLinesOnEnd);
-            }, 30); // geome on move, crisp when static
         }
     };
 }
 
 // scene graph
-
 module.exports = function(svg, styledData, layout, callbacks) {
     var sankey = svg.selectAll('.sankey')
         .data(styledData
@@ -495,7 +485,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     sankeyNodeSet.enter()
         .append('g')
-        .style('shape-rendering', 'geometricPrecision')
         .classed('sankeyNodeSet', true);
 
     sankeyNodeSet
