@@ -11,7 +11,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var customMatchers = require('../assets/custom_matchers');
-var checkTicks = require('../assets/check_ticks');
+var checkTicks = require('../assets/custom_assertions').checkTicks;
 var negateIf = require('../assets/negate_if');
 
 var d3 = require('d3');
