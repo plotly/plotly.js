@@ -2,7 +2,6 @@ var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
 var d3 = require('d3');
-var customMatchers = require('../assets/custom_matchers');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -352,8 +351,6 @@ describe('Test event property of interactions on a pie plot:', function() {
         pointPos;
 
     beforeAll(function(done) {
-        jasmine.addMatchers(customMatchers);
-
         gd = createGraphDiv();
         mockCopy = Lib.extendDeep({}, mock);
         Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {

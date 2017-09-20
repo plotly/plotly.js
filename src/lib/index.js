@@ -20,6 +20,7 @@ var lib = module.exports = {};
 
 lib.nestedProperty = require('./nested_property');
 lib.keyedContainer = require('./keyed_container');
+lib.relativeAttr = require('./relative_attr');
 lib.isPlainObject = require('./is_plain_object');
 lib.isArray = require('./is_array');
 lib.mod = require('./mod');
@@ -28,7 +29,7 @@ lib.relinkPrivateKeys = require('./relink_private');
 lib.ensureArray = require('./ensure_array');
 
 var coerceModule = require('./coerce');
-lib.valObjects = coerceModule.valObjects;
+lib.valObjectMeta = coerceModule.valObjectMeta;
 lib.coerce = coerceModule.coerce;
 lib.coerce2 = coerceModule.coerce2;
 lib.coerceFont = coerceModule.coerceFont;
@@ -92,6 +93,9 @@ var loggersModule = require('./loggers');
 lib.log = loggersModule.log;
 lib.warn = loggersModule.warn;
 lib.error = loggersModule.error;
+
+var regexModule = require('./regex');
+lib.counterRegex = regexModule.counter;
 
 lib.notifier = require('./notifier');
 

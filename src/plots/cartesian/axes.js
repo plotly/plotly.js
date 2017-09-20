@@ -175,19 +175,6 @@ axes.getDataToCoordFunc = function(gd, trace, target, targetArray) {
     return getDataConversions(gd, trace, target, targetArray).d2c;
 };
 
-// empty out types for all axes containing these traces
-// so we auto-set them again
-axes.clearTypes = function(gd, traces) {
-    if(!Array.isArray(traces) || !traces.length) {
-        traces = (gd._fullData).map(function(d, i) { return i; });
-    }
-    traces.forEach(function(tracenum) {
-        var trace = gd.data[tracenum];
-        delete (axes.getFromId(gd, trace.xaxis) || {}).type;
-        delete (axes.getFromId(gd, trace.yaxis) || {}).type;
-    });
-};
-
 // get counteraxis letter for this axis (name or id)
 // this can also be used as the id for default counter axis
 axes.counterLetter = function(id) {

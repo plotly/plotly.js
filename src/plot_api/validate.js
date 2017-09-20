@@ -350,15 +350,14 @@ function getNestedSchema(schema, key) {
     return schema[parts.keyMinusId];
 }
 
-function splitKey(key) {
-    var idRegex = /([2-9]|[1-9][0-9]+)$/;
+var idRegex = Lib.counterRegex('([a-z]+)');
 
-    var keyMinusId = key.split(idRegex)[0],
-        id = key.substr(keyMinusId.length, key.length);
+function splitKey(key) {
+    var idMatch = key.match(idRegex);
 
     return {
-        keyMinusId: keyMinusId,
-        id: id
+        keyMinusId: idMatch && idMatch[1],
+        id: idMatch && idMatch[2]
     };
 }
 

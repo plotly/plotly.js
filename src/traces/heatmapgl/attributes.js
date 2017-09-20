@@ -14,6 +14,8 @@ var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
+
 
 var commonList = [
     'z',
@@ -37,4 +39,4 @@ extendFlat(
     { colorbar: colorbarAttrs }
 );
 
-module.exports = attrs;
+module.exports = overrideAll(attrs, 'calc', 'nested');

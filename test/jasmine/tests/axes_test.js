@@ -10,7 +10,6 @@ var Axes = require('@src/plots/cartesian/axes');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 var failTest = require('../assets/fail_test');
 
 
@@ -577,7 +576,6 @@ describe('Test axes', function() {
 
         beforeEach(function() {
             gd = createGraphDiv();
-            jasmine.addMatchers(customMatchers);
         });
 
         afterEach(destroyGraphDiv);

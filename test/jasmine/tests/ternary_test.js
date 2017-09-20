@@ -10,15 +10,10 @@ var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 var doubleClick = require('../assets/double_click');
-var customMatchers = require('../assets/custom_matchers');
 var getClientPosition = require('../assets/get_client_position');
 
 describe('ternary plots', function() {
     'use strict';
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     afterEach(destroyGraphDiv);
 
@@ -434,8 +429,6 @@ describe('Test event property of interactions on a ternary plot:', function() {
         pointPos;
 
     beforeAll(function(done) {
-        jasmine.addMatchers(customMatchers);
-
         gd = createGraphDiv();
         mockCopy = Lib.extendDeep({}, mock);
         Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {

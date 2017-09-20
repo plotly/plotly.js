@@ -232,7 +232,7 @@ function calcAllAutoBins(gd, trace, pa, mainData) {
             maxEnd = Math.max(maxEnd, pa.r2c(binSpec.end, 0, calendar));
 
             // add the flag that lets us abort autobin on later traces
-            if(i) trace._autoBinFinished = 1;
+            if(i) tracei._autoBinFinished = 1;
         }
 
         // do what we can to match the auto bins to the first manual bins

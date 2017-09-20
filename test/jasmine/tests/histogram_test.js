@@ -7,7 +7,6 @@ var calc = require('@src/traces/histogram/calc');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 
 
 describe('Test histogram', function() {
@@ -163,10 +162,6 @@ describe('Test histogram', function() {
 
 
     describe('calc', function() {
-        beforeAll(function() {
-            jasmine.addMatchers(customMatchers);
-        });
-
         function _calc(opts, extraTraces) {
             var base = { type: 'histogram' };
             var trace = Lib.extendFlat({}, base, opts);
@@ -512,6 +507,52 @@ describe('Test histogram', function() {
             Plotly.restyle(gd, 'x', [data2]);
             expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
             expect(gd._fullData[0].autobinx).toBe(false);
+        });
+
+        it('allows changing axis type with new x data', function() {
+            var x1 = [1, 1, 1, 1, 2, 2, 2, 3, 3, 4];
+            var x2 = ['2017-01-01', '2017-01-01', '2017-01-01', '2017-01-02', '2017-01-02', '2017-01-03'];
+
+            Plotly.newPlot(gd, [{x: x1, type: 'histogram'}]);
+            expect(gd._fullLayout.xaxis.type).toBe('linear');
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.5, 4.5], 3);
+
+            Plotly.restyle(gd, {x: [x2]});
+            expect(gd._fullLayout.xaxis.type).toBe('date');
+            expect(gd._fullLayout.xaxis.range).toEqual(['2016-12-31 12:00', '2017-01-03 12:00']);
+        });
+
+        it('can resize a plot with several histograms', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'histogram',
+                x: [1, 1, 1, 1, 2, 2, 2, 3, 3, 4]
+            }, {
+                type: 'histogram',
+                x: [1, 1, 1, 1, 2, 2, 2, 3, 3, 4]
+            }], {
+                width: 400,
+                height: 400
+            })
+            .then(function() {
+                expect(gd._fullLayout.width).toBe(400);
+                expect(gd._fullLayout.height).toBe(400);
+
+                gd._fullData.forEach(function(trace, i) {
+                    expect(trace._autoBinFinished).toBeUndefined(i);
+                });
+
+                return Plotly.relayout(gd, {width: 500, height: 500});
+            })
+            .then(function() {
+                expect(gd._fullLayout.width).toBe(500);
+                expect(gd._fullLayout.height).toBe(500);
+
+                gd._fullData.forEach(function(trace, i) {
+                    expect(trace._autoBinFinished).toBeUndefined(i);
+                });
+            })
+            .catch(fail)
+            .then(done);
         });
     });
 });

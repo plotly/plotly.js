@@ -14,6 +14,7 @@ module.exports = {
         valType: 'subplotid',
         role: 'info',
         dflt: 'scene',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets a reference between this trace\'s 3D coordinate system and',
             'a 3D scene.',

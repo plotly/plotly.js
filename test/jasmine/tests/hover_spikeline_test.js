@@ -7,14 +7,9 @@ var Lib = require('@src/lib');
 var fail = require('../assets/fail_test');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 
 describe('spikeline', function() {
     'use strict';
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     afterEach(destroyGraphDiv);
 

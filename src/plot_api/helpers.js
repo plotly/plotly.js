@@ -536,3 +536,36 @@ exports.hasParent = function(aobj, attr) {
     }
     return false;
 };
+
+/**
+ * Empty out types for all axes containing these traces so we auto-set them again
+ *
+ * @param {object} gd
+ * @param {[integer]} traces: trace indices to search for axes to clear the types of
+ * @param {object} layoutUpdate: any update being done concurrently to the layout,
+ *   which may supercede clearing the axis types
+ */
+var axLetters = ['x', 'y', 'z'];
+exports.clearAxisTypes = function(gd, traces, layoutUpdate) {
+    for(var i = 0; i < traces.length; i++) {
+        var trace = gd._fullData[i];
+        for(var j = 0; j < 3; j++) {
+            var ax = Axes.getFromTrace(gd, trace, axLetters[j]);
+
+            // do not clear log type - that's never an auto result so must have been intentional
+            if(ax && ax.type !== 'log') {
+                var axAttr = ax._name;
+                var sceneName = ax._id.substr(1);
+                if(sceneName.substr(0, 5) === 'scene') {
+                    if(layoutUpdate[sceneName] !== undefined) continue;
+                    axAttr = sceneName + '.' + axAttr;
+                }
+                var typeAttr = axAttr + '.type';
+
+                if(layoutUpdate[axAttr] === undefined && layoutUpdate[typeAttr] === undefined) {
+                    Lib.nestedProperty(gd.layout, typeAttr).set(null);
+                }
+            }
+        }
+    }
+};

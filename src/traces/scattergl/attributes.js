@@ -14,13 +14,13 @@ var colorAttributes = require('../../components/colorscale/color_attributes');
 var DASHES = require('../../constants/gl2d_dashes');
 var MARKERS = require('../../constants/gl2d_markers');
 var extendFlat = require('../../lib/extend').extendFlat;
-var extendDeep = require('../../lib/extend').extendDeep;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
 var scatterLineAttrs = scatterAttrs.line,
     scatterMarkerAttrs = scatterAttrs.marker,
     scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
-module.exports = {
+var attrs = module.exports = overrideAll({
     x: scatterAttrs.x,
     x0: scatterAttrs.x0,
     dx: scatterAttrs.dx,
@@ -57,7 +57,7 @@ module.exports = {
             description: 'Sets the style of the lines.'
         }
     },
-    marker: extendDeep({}, colorAttributes('marker'), {
+    marker: extendFlat({}, colorAttributes('marker'), {
         symbol: {
             valType: 'enumerated',
             values: Object.keys(MARKERS),
@@ -73,7 +73,7 @@ module.exports = {
         opacity: scatterMarkerAttrs.opacity,
         showscale: scatterMarkerAttrs.showscale,
         colorbar: scatterMarkerAttrs.colorbar,
-        line: extendDeep({}, colorAttributes('marker.line'), {
+        line: extendFlat({}, colorAttributes('marker.line'), {
             width: scatterMarkerLineAttrs.width
         })
     }),
@@ -85,4 +85,6 @@ module.exports = {
 
     error_y: scatterAttrs.error_y,
     error_x: scatterAttrs.error_x
-};
+}, 'calc', 'nested');
+
+attrs.x.editType = attrs.y.editType = attrs.x0.editType = attrs.y0.editType = 'calc+clearAxisTypes';

@@ -15,7 +15,7 @@ var Plotly = require('../../plotly');
 var Registry = require('../../registry');
 var Drawing = require('../../components/drawing');
 var Axes = require('./axes');
-var axisRegex = /((x|y)([2-9]|[1-9][0-9]+)?)axis$/;
+var axisRegex = require('./constants').attrRegex;
 
 module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
@@ -29,8 +29,8 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
             attrList = ai.split('.');
             match = attrList[0].match(axisRegex);
             if(match) {
-                var axisLetter = match[1];
-                var axisName = axisLetter + 'axis';
+                var axisLetter = ai.charAt(0);
+                var axisName = attrList[0];
                 axis = fullLayout[axisName];
                 update = {};
 

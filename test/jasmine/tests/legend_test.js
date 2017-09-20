@@ -13,7 +13,6 @@ var fail = require('../assets/fail_test');
 var delay = require('../assets/delay');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 
 
 describe('legend defaults', function() {
@@ -510,13 +509,34 @@ describe('legend anchor utils:', function() {
 
 describe('legend relayout update', function() {
     'use strict';
+    var gd;
+    var mock = require('@mocks/0.json');
 
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
     afterEach(destroyGraphDiv);
 
+    it('should hide and show the legend', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock);
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
+        .then(function() {
+            expect(d3.selectAll('g.legend').size()).toBe(1);
+            return Plotly.relayout(gd, {showlegend: false});
+        })
+        .then(function() {
+            expect(d3.selectAll('g.legend').size()).toBe(0);
+            return Plotly.relayout(gd, {showlegend: true});
+        })
+        .then(function() {
+            expect(d3.selectAll('g.legend').size()).toBe(1);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
     it('should update border styling', function(done) {
-        var mock = require('@mocks/0.json'),
-            mockCopy = Lib.extendDeep({}, mock),
-            gd = createGraphDiv();
+        var mockCopy = Lib.extendDeep({}, mock);
 
         function assertLegendStyle(bgColor, borderColor, borderWidth) {
             var node = d3.select('g.legend').select('rect');
@@ -547,9 +567,9 @@ describe('legend relayout update', function() {
             return Plotly.relayout(gd, 'paper_bgcolor', 'blue');
         }).then(function() {
             assertLegendStyle('rgb(0, 0, 255)', 'rgb(255, 0, 0)', 10);
-
-            done();
-        });
+        })
+        .catch(fail)
+        .then(done);
     });
 });
 
@@ -578,10 +598,6 @@ describe('legend orientation change:', function() {
 
 describe('legend restyle update', function() {
     'use strict';
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     afterEach(destroyGraphDiv);
 

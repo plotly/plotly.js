@@ -9,7 +9,6 @@ var PlotlyInternal = require('@src/plotly');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var Plots = PlotlyInternal.Plots;
-var customMatchers = require('../assets/custom_matchers');
 var failTest = require('../assets/fail_test');
 
 describe('Test lib.js:', function() {
@@ -471,10 +470,6 @@ describe('Test lib.js:', function() {
     });
 
     describe('expandObjectPaths', function() {
-        beforeAll(function() {
-            jasmine.addMatchers(customMatchers);
-        });
-
         it('returns the original object', function() {
             var x = {};
             expect(Lib.expandObjectPaths(x)).toBe(x);
@@ -846,7 +841,7 @@ describe('Test lib.js:', function() {
     });
 
     describe('coerceFont', function() {
-        var fontAttrs = Plots.fontAttrs,
+        var fontAttrs = Plots.fontAttrs({}),
             extendFlat = Lib.extendFlat,
             coerceFont = Lib.coerceFont;
 
@@ -1936,6 +1931,34 @@ describe('Test lib.js:', function() {
             expect(Lib.templateString('foo %{} %{}', {})).toEqual('foo  ');
         });
     });
+
+    describe('relativeAttr()', function() {
+        it('replaces the last part always', function() {
+            expect(Lib.relativeAttr('annotations[3].x', 'y')).toBe('annotations[3].y');
+            expect(Lib.relativeAttr('x', 'z')).toBe('z');
+            expect(Lib.relativeAttr('marker.line.width', 'colorbar.x')).toBe('marker.line.colorbar.x');
+        });
+
+        it('ascends with ^', function() {
+            expect(Lib.relativeAttr('annotations[3].x', '^[2].z')).toBe('annotations[2].z');
+            expect(Lib.relativeAttr('annotations[3].x', '^^margin')).toBe('margin');
+            expect(Lib.relativeAttr('annotations[3].x', '^^margin.r')).toBe('margin.r');
+            expect(Lib.relativeAttr('marker.line.width', '^colorbar.x')).toBe('marker.colorbar.x');
+        });
+
+        it('fails on ascending too far', function() {
+            expect(function() { return Lib.relativeAttr('x', '^y'); }).toThrow();
+            expect(function() { return Lib.relativeAttr('marker.line.width', '^^^colorbar.x'); }).toThrow();
+        });
+
+        it('fails with malformed baseAttr', function() {
+            expect(function() { return Lib.relativeAttr('x[]', 'z'); }).toThrow();
+            expect(function() { return Lib.relativeAttr('x.a]', 'z'); }).toThrow();
+            expect(function() { return Lib.relativeAttr('x[a]', 'z'); }).toThrow();
+            expect(function() { return Lib.relativeAttr('x[3].', 'z'); }).toThrow();
+            expect(function() { return Lib.relativeAttr('x.y.', 'z'); }).toThrow();
+        });
+    });
 });
 
 describe('Queue', function() {
@@ -1985,14 +2008,14 @@ describe('Queue', function() {
         })
         .then(function() {
             expect(gd.undoQueue.index).toEqual(1);
-            expect(gd.undoQueue.queue[0].undo.args[0][1]['marker.color']).toEqual([undefined]);
+            expect(gd.undoQueue.queue[0].undo.args[0][1]['marker.color']).toEqual([null]);
             expect(gd.undoQueue.queue[0].redo.args[0][1]['marker.color']).toEqual('red');
 
             return Plotly.relayout(gd, 'title', 'A title');
         })
         .then(function() {
             expect(gd.undoQueue.index).toEqual(2);
-            expect(gd.undoQueue.queue[1].undo.args[0][1].title).toEqual(undefined);
+            expect(gd.undoQueue.queue[1].undo.args[0][1].title).toEqual(null);
             expect(gd.undoQueue.queue[1].redo.args[0][1].title).toEqual('A title');
 
             return Plotly.restyle(gd, 'mode', 'markers');
@@ -2001,10 +2024,10 @@ describe('Queue', function() {
             expect(gd.undoQueue.index).toEqual(2);
             expect(gd.undoQueue.queue[2]).toBeUndefined();
 
-            expect(gd.undoQueue.queue[1].undo.args[0][1].mode).toEqual([undefined]);
+            expect(gd.undoQueue.queue[1].undo.args[0][1].mode).toEqual([null]);
             expect(gd.undoQueue.queue[1].redo.args[0][1].mode).toEqual('markers');
 
-            expect(gd.undoQueue.queue[0].undo.args[0][1].title).toEqual(undefined);
+            expect(gd.undoQueue.queue[0].undo.args[0][1].title).toEqual(null);
             expect(gd.undoQueue.queue[0].redo.args[0][1].title).toEqual('A title');
 
             return Plotly.restyle(gd, 'transforms[0]', { type: 'filter' });

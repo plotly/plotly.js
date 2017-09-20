@@ -8,7 +8,6 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 var failTest = require('../assets/fail_test');
-var customMatchers = require('../assets/custom_matchers');
 var selectButton = require('../assets/modebar_button');
 var drag = require('../assets/drag');
 var doubleClick = require('../assets/double_click');
@@ -84,8 +83,6 @@ describe('main plot pan', function() {
     afterEach(destroyGraphDiv);
 
     it('should respond to pan interactions', function(done) {
-
-        jasmine.addMatchers(customMatchers);
 
         var precision = 5;
 
@@ -181,10 +178,6 @@ describe('main plot pan', function() {
 
 describe('axis zoom/pan and main plot zoom', function() {
     var gd;
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     beforeEach(function() {
         gd = createGraphDiv();

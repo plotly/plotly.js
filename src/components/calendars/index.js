@@ -20,6 +20,7 @@ var attributes = {
     valType: 'enumerated',
     values: Object.keys(calendars.calendars),
     role: 'info',
+    editType: 'calc',
     dflt: 'gregorian'
 };
 
@@ -205,6 +206,7 @@ module.exports = {
         traces: {
             scatter: xyAttrs,
             bar: xyAttrs,
+            box: xyAttrs,
             heatmap: xyAttrs,
             contour: xyAttrs,
             histogram: xyAttrs,
@@ -221,12 +223,22 @@ module.exports = {
             calendar: makeAttrs([
                 'Sets the default calendar system to use for interpreting and',
                 'displaying dates throughout the plot.'
-            ].join(' ')),
-            'xaxis.calendar': axisAttrs,
-            'yaxis.calendar': axisAttrs,
-            'scene.xaxis.calendar': axisAttrs,
-            'scene.yaxis.calendar': axisAttrs,
-            'scene.zaxis.calendar': axisAttrs
+            ].join(' '))
+        },
+        subplots: {
+            xaxis: {calendar: axisAttrs},
+            yaxis: {calendar: axisAttrs},
+            scene: {
+                xaxis: {calendar: axisAttrs},
+                // TODO: it's actually redundant to include yaxis and zaxis here
+                // because in the scene attributes these are the same object so merging
+                // into one merges into them all. However, I left them in for parity with
+                // cartesian, where yaxis is unused until we Plotschema.get() when we
+                // use its presence or absence to determine whether to delete attributes
+                // from yaxis if they only apply to x (rangeselector/rangeslider)
+                yaxis: {calendar: axisAttrs},
+                zaxis: {calendar: axisAttrs}
+            }
         },
         transforms: {
             filter: {

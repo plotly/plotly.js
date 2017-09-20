@@ -8,12 +8,18 @@
 
 'use strict';
 
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var Plots = require('../../plots/plots');
 var plot = require('./plot');
+var fxAttrs = require('../../components/fx/layout_attributes');
 
 exports.name = 'sankey';
 
 exports.attr = 'type';
+
+exports.baseLayoutAttrOverrides = overrideAll({
+    hoverlabel: fxAttrs.hoverlabel
+}, 'plot', 'nested');
 
 exports.plot = function(gd) {
     var calcData = Plots.getSubplotCalcData(gd.calcdata, 'sankey', 'sankey');

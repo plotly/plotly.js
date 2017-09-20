@@ -11,6 +11,7 @@
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var padAttrs = require('../../plots/pad_attributes');
 
 var buttonsAttrs = {
@@ -34,9 +35,9 @@ var buttonsAttrs = {
         role: 'info',
         freeLength: true,
         items: [
-            { valType: 'any' },
-            { valType: 'any' },
-            { valType: 'any' }
+            {valType: 'any'},
+            {valType: 'any'},
+            {valType: 'any'}
         ],
         description: [
             'Sets the arguments values to be passed to the Plotly',
@@ -63,7 +64,7 @@ var buttonsAttrs = {
     }
 };
 
-module.exports = {
+module.exports = overrideAll({
     _isLinkedToArray: 'updatemenu',
     _arrayAttrRegexps: [/^updatemenus\[(0|[1-9][0-9]+)\]\.buttons/],
 
@@ -162,7 +163,7 @@ module.exports = {
         description: 'Sets the padding around the buttons or dropdown menu.'
     }),
 
-    font: extendFlat({}, fontAttrs, {
+    font: fontAttrs({
         description: 'Sets the font of the update menu button text.'
     }),
 
@@ -182,6 +183,7 @@ module.exports = {
         min: 0,
         dflt: 1,
         role: 'style',
+        editType: 'arraydraw',
         description: 'Sets the width (in px) of the border enclosing the update menu.'
     }
-};
+}, 'arraydraw', 'from-root');

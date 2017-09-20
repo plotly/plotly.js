@@ -1077,13 +1077,13 @@ describe('Test hover label custom styling:', function() {
             expect(g.size()).toBe(0);
         } else {
             var path = g.select('path');
-            expect(path.style('fill')).toEqual(expectation.path[0], 'bgcolor');
-            expect(path.style('stroke')).toEqual(expectation.path[1], 'bordercolor');
+            expect(path.style('fill')).toBe(expectation.path[0], 'bgcolor');
+            expect(path.style('stroke')).toBe(expectation.path[1], 'bordercolor');
 
             var text = g.select({hovertext: 'text.nums', axistext: 'text'}[className]);
-            expect(parseInt(text.style('font-size'))).toEqual(expectation.text[0], 'font.size');
-            expect(text.style('font-family').split(',')[0]).toEqual(expectation.text[1], 'font.family');
-            expect(text.style('fill')).toEqual(expectation.text[2], 'font.color');
+            expect(parseInt(text.style('font-size'))).toBe(expectation.text[0], 'font.size');
+            expect(text.style('font-family').split(',')[0]).toBe(expectation.text[1], 'font.family');
+            expect(text.style('fill')).toBe(expectation.text[2], 'font.color');
         }
     }
 

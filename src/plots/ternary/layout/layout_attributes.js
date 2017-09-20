@@ -10,9 +10,10 @@
 
 var colorAttrs = require('../../../components/color/attributes');
 var ternaryAxesAttrs = require('./axis_attributes');
+var overrideAll = require('../../../plot_api/edit_types').overrideAll;
 
 
-module.exports = {
+module.exports = overrideAll({
     domain: {
         x: {
             valType: 'info_array',
@@ -60,4 +61,4 @@ module.exports = {
     aaxis: ternaryAxesAttrs,
     baxis: ternaryAxesAttrs,
     caxis: ternaryAxesAttrs
-};
+}, 'plot', 'from-root');

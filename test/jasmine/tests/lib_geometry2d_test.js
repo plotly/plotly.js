@@ -1,5 +1,4 @@
 var geom2d = require('@src/lib/geometry2d');
-var customMatchers = require('../assets/custom_matchers');
 var Drawing = require('@src/components/drawing');
 
 // various reversals of segments and endpoints that should all give identical results
@@ -15,10 +14,6 @@ function permute(_inner, x1, y1, x2, y2, x3, y3, x4, y4, expected) {
 }
 
 describe('segmentsIntersect', function() {
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
-
     function check(x1, y1, x2, y2, x3, y3, x4, y4, expected) {
         // test swapping x/y
         var result1 = geom2d.segmentsIntersect(x1, y1, x2, y2, x3, y3, x4, y4);
@@ -58,10 +53,6 @@ describe('segmentsIntersect', function() {
 });
 
 describe('segmentDistance', function() {
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
-
     function check(x1, y1, x2, y2, x3, y3, x4, y4, expected) {
         var result1 = geom2d.segmentDistance(x1, y1, x2, y2, x3, y3, x4, y4);
         var result2 = geom2d.segmentDistance(y1, x1, y2, x2, y3, x3, y4, x4);
@@ -97,7 +88,6 @@ describe('segmentDistance', function() {
 describe('getVisibleSegment', function() {
     beforeAll(function() {
         Drawing.makeTester();
-        jasmine.addMatchers(customMatchers);
     });
 
     var path;

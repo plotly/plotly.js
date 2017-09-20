@@ -73,3 +73,11 @@ exports.assertNodeDisplay = function(sel, expectation, msg) {
             .toBe(expectation[i], msg + ' display ' + '(item ' + i + ')');
     });
 };
+
+exports.checkTicks = function(axLetter, vals, msg) {
+    var selection = d3.selectAll('.' + axLetter + 'tick text');
+    expect(selection.size()).toBe(vals.length);
+    selection.each(function(d, i) {
+        expect(d3.select(this).text()).toBe(vals[i], msg + ': ' + i);
+    });
+};

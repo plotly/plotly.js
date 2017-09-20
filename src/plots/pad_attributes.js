@@ -8,29 +8,37 @@
 
 'use strict';
 
+// This is used exclusively by components inside component arrays,
+// hence the 'arraydraw' editType. If this ever gets used elsewhere
+// we could generalize it as a function ala font_attributes
 module.exports = {
     t: {
         valType: 'number',
         dflt: 0,
         role: 'style',
+        editType: 'arraydraw',
         description: 'The amount of padding (in px) along the top of the component.'
     },
     r: {
         valType: 'number',
         dflt: 0,
         role: 'style',
+        editType: 'arraydraw',
         description: 'The amount of padding (in px) on the right side of the component.'
     },
     b: {
         valType: 'number',
         dflt: 0,
         role: 'style',
+        editType: 'arraydraw',
         description: 'The amount of padding (in px) along the bottom of the component.'
     },
     l: {
         valType: 'number',
         dflt: 0,
         role: 'style',
+        editType: 'arraydraw',
         description: 'The amount of padding (in px) on the left side of the component.'
-    }
+    },
+    editType: 'arraydraw'
 };

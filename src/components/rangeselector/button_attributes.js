@@ -15,6 +15,7 @@ module.exports = {
         role: 'info',
         values: ['month', 'year', 'day', 'hour', 'minute', 'second', 'all'],
         dflt: 'month',
+        editType: 'plot',
         description: [
             'The unit of measurement that the `count` value will set the range by.'
         ].join(' ')
@@ -24,6 +25,7 @@ module.exports = {
         role: 'info',
         values: ['backward', 'todate'],
         dflt: 'backward',
+        editType: 'plot',
         description: [
             'Sets the range update mode.',
             'If *backward*, the range update shifts the start of range',
@@ -43,6 +45,7 @@ module.exports = {
         role: 'info',
         min: 0,
         dflt: 1,
+        editType: 'plot',
         description: [
             'Sets the number of steps to take to update the range.',
             'Use with `step` to specify the update interval.'
@@ -51,6 +54,8 @@ module.exports = {
     label: {
         valType: 'string',
         role: 'info',
+        editType: 'plot',
         description: 'Sets the text label to appear on the button.'
-    }
+    },
+    editType: 'plot'
 };

@@ -22,13 +22,16 @@ module.exports = extendFlat({},
 
         z: {
             valType: 'data_array',
+            editType: 'calc',
             description: 'Sets the aggregation data.'
         },
         marker: {
             color: {
                 valType: 'data_array',
+                editType: 'calc',
                 description: 'Sets the aggregation data.'
-            }
+            },
+            editType: 'calc'
         },
 
         histnorm: histogramAttrs.histnorm,

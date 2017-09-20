@@ -15,6 +15,7 @@ module.exports = {
     y: scatterglAttrs.y,
     xy: {
         valType: 'data_array',
+        editType: 'calc',
         description: [
             'Faster alternative to specifying `x` and `y` separately.',
             'If supplied, it must be a typed `Float32Array` array that',
@@ -23,6 +24,7 @@ module.exports = {
     },
     indices: {
         valType: 'data_array',
+        editType: 'calc',
         description: [
             'A sequential value, 0..n, supply it to avoid creating this array inside plotting.',
             'If specified, it must be a typed `Int32Array` array.',
@@ -34,6 +36,7 @@ module.exports = {
     },
     xbounds: {
         valType: 'data_array',
+        editType: 'calc',
         description: [
             'Specify `xbounds` in the shape of `[xMin, xMax] to avoid looping through',
             'the `xy` typed array. Use it in conjunction with `xy` and `ybounds` for the performance benefits.'
@@ -41,6 +44,7 @@ module.exports = {
     },
     ybounds: {
         valType: 'data_array',
+        editType: 'calc',
         description: [
             'Specify `ybounds` in the shape of `[yMin, yMax] to avoid looping through',
             'the `xy` typed array. Use it in conjunction with `xy` and `xbounds` for the performance benefits.'
@@ -52,6 +56,7 @@ module.exports = {
             valType: 'color',
             arrayOk: false,
             role: 'style',
+            editType: 'calc',
             description: [
                 'Sets the marker fill color. It accepts a specific color.',
                 'If the color is not fully opaque and there are hundreds of thousands',
@@ -65,6 +70,7 @@ module.exports = {
             dflt: 1,
             arrayOk: false,
             role: 'style',
+            editType: 'calc',
             description: [
                 'Sets the marker opacity. The default value is `1` (fully opaque).',
                 'If the markers are not fully opaque and there are hundreds of thousands',
@@ -77,6 +83,7 @@ module.exports = {
             valType: 'boolean',
             dflt: null,
             role: 'style',
+            editType: 'calc',
             description: [
                 'Determines if colors are blended together for a translucency effect',
                 'in case `opacity` is specified as a value less then `1`.',
@@ -90,6 +97,7 @@ module.exports = {
             max: 2,
             dflt: 0.5,
             role: 'style',
+            editType: 'calc',
             description: [
                 'Sets the minimum size (in px) of the rendered marker points, effective when',
                 'the `pointcloud` shows a million or more points.'
@@ -100,6 +108,7 @@ module.exports = {
             min: 0.1,
             dflt: 20,
             role: 'style',
+            editType: 'calc',
             description: [
                 'Sets the maximum size (in px) of the rendered marker points.',
                 'Effective when the `pointcloud` shows only few points.'
@@ -110,6 +119,7 @@ module.exports = {
                 valType: 'color',
                 arrayOk: false,
                 role: 'style',
+                editType: 'calc',
                 description: [
                     'Sets the stroke color. It accepts a specific color.',
                     'If the color is not fully opaque and there are hundreds of thousands',
@@ -122,11 +132,14 @@ module.exports = {
                 max: 1,
                 dflt: 0,
                 role: 'style',
+                editType: 'calc',
                 description: [
                     'Specifies what fraction of the marker area is covered with the',
                     'border.'
                 ].join(' ')
-            }
-        }
+            },
+            editType: 'calc'
+        },
+        editType: 'calc'
     }
 };

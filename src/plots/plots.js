@@ -103,14 +103,14 @@ plots.getSubplotIds = function getSubplotIds(layout, type) {
         return Object.keys(layout._plots || {});
     }
 
-    var idRegex = _module.idRegex,
+    var attrRegex = _module.attrRegex,
         layoutKeys = Object.keys(layout),
         subplotIds = [];
 
     for(var i = 0; i < layoutKeys.length; i++) {
         var layoutKey = layoutKeys[i];
 
-        if(idRegex.test(layoutKey)) subplotIds.push(layoutKey);
+        if(attrRegex.test(layoutKey)) subplotIds.push(layoutKey);
     }
 
     // order the ids

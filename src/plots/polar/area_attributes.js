@@ -18,6 +18,7 @@ module.exports = {
         color: scatterMarkerAttrs.color,
         size: scatterMarkerAttrs.size,
         symbol: scatterMarkerAttrs.symbol,
-        opacity: scatterMarkerAttrs.opacity
+        opacity: scatterMarkerAttrs.opacity,
+        editType: 'calc'
     }
 };

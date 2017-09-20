@@ -9,14 +9,13 @@
 'use strict';
 
 /**
- * centerx is a center of scaling tuned for maximum scalability of
- * the arrowhead ie throughout mag=0.3..3 the head is joined smoothly
- * to the line, but the endpoint moves.
- * backoff is the distance to move the arrowhead, and the end of the
- * line, in order to end at the right place
- *
- * TODO: option to have the pointed-to  point a little in front of the
- * end of the line, as people tend to want a bit of a gap there...
+ * All paths are tuned for maximum scalability of the arrowhead,
+ * ie throughout arrowwidth=0.3..3 the head is joined smoothly
+ * to the line, with the line coming from the left and ending at (0, 0).
+ * `backoff` is the distance to move the arrowhead and the end of the line,
+ * in order that the arrowhead points to the desired place, either at
+ * the tip of the arrow or (in the case of circle or square)
+ * the center of the symbol.
  */
 
 module.exports = [

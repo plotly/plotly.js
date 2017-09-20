@@ -19,6 +19,7 @@ var scatterMarkerAttrs = scatterAttrs.marker,
 module.exports = {
     y: {
         valType: 'data_array',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the y sample data or coordinates.',
             'See overview for more info.'
@@ -26,6 +27,7 @@ module.exports = {
     },
     x: {
         valType: 'data_array',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the x sample data or coordinates.',
             'See overview for more info.'
@@ -34,6 +36,7 @@ module.exports = {
     x0: {
         valType: 'any',
         role: 'info',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the x coordinate of the box.',
             'See overview for more info.'
@@ -42,19 +45,31 @@ module.exports = {
     y0: {
         valType: 'any',
         role: 'info',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the y coordinate of the box.',
             'See overview for more info.'
         ].join(' ')
     },
-    xcalendar: scatterAttrs.xcalendar,
-    ycalendar: scatterAttrs.ycalendar,
+    name: {
+        valType: 'string',
+        role: 'info',
+        editType: 'calc+clearAxisTypes',
+        description: [
+            'Sets the trace name.',
+            'The trace name appear as the legend item and on hover.',
+            'For box traces, the name will also be used for the position',
+            'coordinate, if `x` and `x0` (`y` and `y0` if horizontal) are',
+            'missing and the position axis is categorical'
+        ].join(' ')
+    },
     whiskerwidth: {
         valType: 'number',
         min: 0,
         max: 1,
         dflt: 0.5,
         role: 'style',
+        editType: 'calcIfAutorange',
         description: [
             'Sets the width of the whiskers relative to',
             'the box\' width.',
@@ -66,6 +81,7 @@ module.exports = {
         values: ['all', 'outliers', 'suspectedoutliers', false],
         dflt: 'outliers',
         role: 'style',
+        editType: 'calcIfAutorange',
         description: [
             'If *outliers*, only the sample points lying outside the whiskers',
             'are shown',
@@ -81,6 +97,7 @@ module.exports = {
         values: [true, 'sd', false],
         dflt: false,
         role: 'style',
+        editType: 'calcIfAutorange',
         description: [
             'If *true*, the mean of the box(es)\' underlying distribution is',
             'drawn as a dashed line inside the box(es).',
@@ -92,6 +109,7 @@ module.exports = {
         min: 0,
         max: 1,
         role: 'style',
+        editType: 'calcIfAutorange',
         description: [
             'Sets the amount of jitter in the sample points drawn.',
             'If *0*, the sample points align along the distribution axis.',
@@ -104,6 +122,7 @@ module.exports = {
         min: -2,
         max: 2,
         role: 'style',
+        editType: 'calcIfAutorange',
         description: [
             'Sets the position of the sample points in relation to the box(es).',
             'If *0*, the sample points are places over the center of the box(es).',
@@ -115,6 +134,7 @@ module.exports = {
         valType: 'enumerated',
         values: ['v', 'h'],
         role: 'style',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the orientation of the box(es).',
             'If *v* (*h*), the distribution is visualized along',
@@ -126,24 +146,26 @@ module.exports = {
             valType: 'color',
             dflt: 'rgba(0, 0, 0, 0)',
             role: 'style',
+            editType: 'style',
             description: 'Sets the color of the outlier sample points.'
         },
         symbol: extendFlat({}, scatterMarkerAttrs.symbol,
-            {arrayOk: false}),
+            {arrayOk: false, editType: 'plot'}),
         opacity: extendFlat({}, scatterMarkerAttrs.opacity,
-            {arrayOk: false, dflt: 1}),
+            {arrayOk: false, dflt: 1, editType: 'style'}),
         size: extendFlat({}, scatterMarkerAttrs.size,
-            {arrayOk: false}),
+            {arrayOk: false, editType: 'calcIfAutorange'}),
         color: extendFlat({}, scatterMarkerAttrs.color,
-            {arrayOk: false}),
+            {arrayOk: false, editType: 'style'}),
         line: {
             color: extendFlat({}, scatterMarkerLineAttrs.color,
-                {arrayOk: false, dflt: colorAttrs.defaultLine}),
+                {arrayOk: false, dflt: colorAttrs.defaultLine, editType: 'style'}),
             width: extendFlat({}, scatterMarkerLineAttrs.width,
-                {arrayOk: false, dflt: 0}),
+                {arrayOk: false, dflt: 0, editType: 'style'}),
             outliercolor: {
                 valType: 'color',
                 role: 'style',
+                editType: 'style',
                 description: [
                     'Sets the border line color of the outlier sample points.',
                     'Defaults to marker.color'
@@ -154,16 +176,20 @@ module.exports = {
                 min: 0,
                 dflt: 1,
                 role: 'style',
+                editType: 'style',
                 description: [
                     'Sets the border line width (in px) of the outlier sample points.'
                 ].join(' ')
-            }
-        }
+            },
+            editType: 'style'
+        },
+        editType: 'plot'
     },
     line: {
         color: {
             valType: 'color',
             role: 'style',
+            editType: 'style',
             description: 'Sets the color of line bounding the box(es).'
         },
         width: {
@@ -171,8 +197,10 @@ module.exports = {
             role: 'style',
             min: 0,
             dflt: 2,
+            editType: 'style',
             description: 'Sets the width (in px) of line bounding the box(es).'
-        }
+        },
+        editType: 'plot'
     },
     fillcolor: scatterAttrs.fillcolor
 };

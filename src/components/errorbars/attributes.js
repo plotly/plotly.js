@@ -13,6 +13,7 @@ module.exports = {
     visible: {
         valType: 'boolean',
         role: 'info',
+        editType: 'calc',
         description: [
             'Determines whether or not this set of error bars is visible.'
         ].join(' ')
@@ -21,6 +22,7 @@ module.exports = {
         valType: 'enumerated',
         values: ['percent', 'constant', 'sqrt', 'data'],
         role: 'info',
+        editType: 'calc',
         description: [
             'Determines the rule used to generate the error bars.',
 
@@ -39,6 +41,7 @@ module.exports = {
     symmetric: {
         valType: 'boolean',
         role: 'info',
+        editType: 'calc',
         description: [
             'Determines whether or not the error bars have the same length',
             'in both direction',
@@ -47,6 +50,7 @@ module.exports = {
     },
     array: {
         valType: 'data_array',
+        editType: 'calc',
         description: [
             'Sets the data corresponding the length of each error bar.',
             'Values are plotted relative to the underlying data.'
@@ -54,6 +58,7 @@ module.exports = {
     },
     arrayminus: {
         valType: 'data_array',
+        editType: 'calc',
         description: [
             'Sets the data corresponding the length of each error bar in the',
             'bottom (left) direction for vertical (horizontal) bars',
@@ -65,6 +70,7 @@ module.exports = {
         min: 0,
         dflt: 10,
         role: 'info',
+        editType: 'calc',
         description: [
             'Sets the value of either the percentage',
             '(if `type` is set to *percent*) or the constant',
@@ -77,6 +83,7 @@ module.exports = {
         min: 0,
         dflt: 10,
         role: 'info',
+        editType: 'calc',
         description: [
             'Sets the value of either the percentage',
             '(if `type` is set to *percent*) or the constant',
@@ -89,25 +96,30 @@ module.exports = {
         valType: 'integer',
         min: 0,
         dflt: 0,
-        role: 'info'
+        role: 'info',
+        editType: 'style'
     },
     tracerefminus: {
         valType: 'integer',
         min: 0,
         dflt: 0,
-        role: 'info'
+        role: 'info',
+        editType: 'style'
     },
     copy_ystyle: {
         valType: 'boolean',
-        role: 'style'
+        role: 'style',
+        editType: 'plot'
     },
     copy_zstyle: {
         valType: 'boolean',
-        role: 'style'
+        role: 'style',
+        editType: 'style'
     },
     color: {
         valType: 'color',
         role: 'style',
+        editType: 'style',
         description: 'Sets the stoke color of the error bars.'
     },
     thickness: {
@@ -115,22 +127,26 @@ module.exports = {
         min: 0,
         dflt: 2,
         role: 'style',
+        editType: 'style',
         description: 'Sets the thickness (in px) of the error bars.'
     },
     width: {
         valType: 'number',
         min: 0,
         role: 'style',
+        editType: 'plot',
         description: [
             'Sets the width (in px) of the cross-bar at both ends',
             'of the error bars.'
         ].join(' ')
     },
+    editType: 'calc',
 
     _deprecated: {
         opacity: {
             valType: 'number',
             role: 'style',
+            editType: 'style',
             description: [
                 'Obsolete.',
                 'Use the alpha channel in error bar `color` to set the opacity.'

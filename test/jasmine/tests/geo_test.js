@@ -11,7 +11,6 @@ var topojsonUtils = require('@src/lib/topojson_utils');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 var getClientPosition = require('../assets/get_client_position');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
@@ -1060,8 +1059,6 @@ describe('Test event property of interactions on a geo plot:', function() {
         nearPos;
 
     beforeAll(function(done) {
-        jasmine.addMatchers(customMatchers);
-
         gd = createGraphDiv();
         mockCopy = Lib.extendDeep({}, mock);
         Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {

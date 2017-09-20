@@ -14,10 +14,16 @@ var plotAttrs = require('../../plots/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
+var textFontAttrs = fontAttrs({
+    editType: 'calc',
+    colorEditType: 'style',
+    description: 'Sets the font used for `textinfo`.'
+});
 
 module.exports = {
     labels: {
         valType: 'data_array',
+        editType: 'calc',
         description: 'Sets the sector labels.'
     },
     // equivalent of x0 and dx, if label is missing
@@ -25,6 +31,7 @@ module.exports = {
         valType: 'number',
         role: 'info',
         dflt: 0,
+        editType: 'calc',
         description: [
             'Alternate to `labels`.',
             'Builds a numeric set of labels.',
@@ -36,17 +43,20 @@ module.exports = {
         valType: 'number',
         role: 'info',
         dflt: 1,
+        editType: 'calc',
         description: 'Sets the label step. See `label0` for more info.'
     },
 
     values: {
         valType: 'data_array',
+        editType: 'calc',
         description: 'Sets the values of the sectors of this pie chart.'
     },
 
     marker: {
         colors: {
             valType: 'data_array',  // TODO 'color_array' ?
+            editType: 'calc',
             description: [
                 'Sets the color of each sector of this pie chart.',
                 'If not specified, the default trace color set is used',
@@ -60,6 +70,7 @@ module.exports = {
                 role: 'style',
                 dflt: colorAttrs.defaultLine,
                 arrayOk: true,
+                editType: 'style',
                 description: [
                     'Sets the color of the line enclosing each sector.'
                 ].join(' ')
@@ -70,15 +81,19 @@ module.exports = {
                 min: 0,
                 dflt: 0,
                 arrayOk: true,
+                editType: 'style',
                 description: [
                     'Sets the width (in px) of the line enclosing each sector.'
                 ].join(' ')
-            }
-        }
+            },
+            editType: 'calc'
+        },
+        editType: 'calc'
     },
 
     text: {
         valType: 'data_array',
+        editType: 'calc',
         description: [
             'Sets text elements associated with each sector.',
             'If trace `textinfo` contains a *text* flag, these elements will seen',
@@ -92,6 +107,7 @@ module.exports = {
         role: 'info',
         dflt: '',
         arrayOk: true,
+        editType: 'style',
         description: [
             'Sets hover text elements associated with each sector.',
             'If a single string, the same string appears for',
@@ -110,6 +126,7 @@ module.exports = {
         valType: 'string',
         role: 'info',
         dflt: '',
+        editType: 'calc',
         description: [
             'If there are multiple pies that should be sized according to',
             'their totals, link them by providing a non-empty group id here',
@@ -123,6 +140,7 @@ module.exports = {
         role: 'info',
         flags: ['label', 'text', 'value', 'percent'],
         extras: ['none'],
+        editType: 'calc',
         description: [
             'Determines which trace information appear on the graph.'
         ].join(' ')
@@ -136,18 +154,19 @@ module.exports = {
         values: ['inside', 'outside', 'auto', 'none'],
         dflt: 'auto',
         arrayOk: true,
+        editType: 'calc',
         description: [
             'Specifies the location of the `textinfo`.'
         ].join(' ')
     },
     // TODO make those arrayOk?
-    textfont: extendFlat({}, fontAttrs, {
+    textfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `textinfo`.'
     }),
-    insidetextfont: extendFlat({}, fontAttrs, {
+    insidetextfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `textinfo` lying inside the pie.'
     }),
-    outsidetextfont: extendFlat({}, fontAttrs, {
+    outsidetextfont: extendFlat({}, textFontAttrs, {
         description: 'Sets the font used for `textinfo` lying outside the pie.'
     }),
 
@@ -157,10 +176,11 @@ module.exports = {
             valType: 'info_array',
             role: 'info',
             items: [
-                {valType: 'number', min: 0, max: 1},
-                {valType: 'number', min: 0, max: 1}
+                {valType: 'number', min: 0, max: 1, editType: 'calc'},
+                {valType: 'number', min: 0, max: 1, editType: 'calc'}
             ],
             dflt: [0, 1],
+            editType: 'calc',
             description: [
                 'Sets the horizontal domain of this pie trace',
                 '(in plot fraction).'
@@ -170,15 +190,17 @@ module.exports = {
             valType: 'info_array',
             role: 'info',
             items: [
-                {valType: 'number', min: 0, max: 1},
-                {valType: 'number', min: 0, max: 1}
+                {valType: 'number', min: 0, max: 1, editType: 'calc'},
+                {valType: 'number', min: 0, max: 1, editType: 'calc'}
             ],
             dflt: [0, 1],
+            editType: 'calc',
             description: [
                 'Sets the vertical domain of this pie trace',
                 '(in plot fraction).'
             ].join(' ')
-        }
+        },
+        editType: 'calc'
     },
     hole: {
         valType: 'number',
@@ -186,6 +208,7 @@ module.exports = {
         min: 0,
         max: 1,
         dflt: 0,
+        editType: 'calc',
         description: [
             'Sets the fraction of the radius to cut out of the pie.',
             'Use this to make a donut chart.'
@@ -197,6 +220,7 @@ module.exports = {
         valType: 'boolean',
         role: 'style',
         dflt: true,
+        editType: 'calc',
         description: [
             'Determines whether or not the sectors are reordered',
             'from largest to smallest.'
@@ -214,6 +238,7 @@ module.exports = {
         values: ['clockwise', 'counterclockwise'],
         role: 'style',
         dflt: 'counterclockwise',
+        editType: 'calc',
         description: [
             'Specifies the direction at which succeeding sectors follow',
             'one another.'
@@ -225,6 +250,7 @@ module.exports = {
         min: -360,
         max: 360,
         dflt: 0,
+        editType: 'calc',
         description: [
             'Instead of the first slice starting at 12 o\'clock,',
             'rotate to some other angle.'
@@ -238,6 +264,7 @@ module.exports = {
         max: 1,
         dflt: 0,
         arrayOk: true,
+        editType: 'calc',
         description: [
             'Sets the fraction of larger radius to pull the sectors',
             'out from the center. This can be a constant',

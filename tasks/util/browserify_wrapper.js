@@ -50,6 +50,9 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts) {
 
     bundleWriteStream.on('finish', function() {
         logger(pathToBundle);
+        if(opts.then) {
+            opts.then();
+        }
     });
 
     b.bundle(function(err, buf) {

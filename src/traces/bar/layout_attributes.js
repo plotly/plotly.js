@@ -15,6 +15,7 @@ module.exports = {
         values: ['stack', 'group', 'overlay', 'relative'],
         dflt: 'group',
         role: 'info',
+        editType: 'calc',
         description: [
             'Determines how bars at the same location coordinate',
             'are displayed on the graph.',
@@ -32,6 +33,7 @@ module.exports = {
         values: ['', 'fraction', 'percent'],
         dflt: '',
         role: 'info',
+        editType: 'calc',
         description: [
             'Sets the normalization for bar traces on the graph.',
             'With *fraction*, the value of each bar is divide by the sum of the',
@@ -44,6 +46,7 @@ module.exports = {
         min: 0,
         max: 1,
         role: 'style',
+        editType: 'calc',
         description: [
             'Sets the gap (in plot fraction) between bars of',
             'adjacent location coordinates.'
@@ -55,6 +58,7 @@ module.exports = {
         max: 1,
         dflt: 0,
         role: 'style',
+        editType: 'calc',
         description: [
             'Sets the gap (in plot fraction) between bars of',
             'the same location coordinate.'

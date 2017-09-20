@@ -8,7 +8,6 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 var getRectCenter = require('../assets/get_rect_center');
-var customMatchers = require('../assets/custom_matchers');
 
 // cartesian click events events use the hover data
 // from the mousemove events and then simulate
@@ -51,10 +50,6 @@ describe('Test click interactions:', function() {
 
     var autoRangeX = [-3.011967491973726, 2.1561305597186564],
         autoRangeY = [-0.9910086301469277, 1.389382716298284];
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     beforeEach(function() {
         gd = createGraphDiv();

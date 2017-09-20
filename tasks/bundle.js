@@ -1,7 +1,7 @@
 var constants = require('./util/constants');
 var common = require('./util/common');
 var _bundle = require('./util/browserify_wrapper');
-
+var makeSchema = require('./util/make_schema');
 /*
  * This script takes one argument
  *
@@ -41,7 +41,8 @@ _bundle(constants.pathToPlotlyGeoAssetsSrc, constants.pathToPlotlyGeoAssetsDist,
 // Browserify the plotly.js with meta
 _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDistWithMeta, {
     standalone: 'Plotly',
-    debug: DEV
+    debug: DEV,
+    then: makeSchema(constants.pathToPlotlyDistWithMeta, constants.pathToSchema)
 });
 
 // Browserify the plotly.js partial bundles

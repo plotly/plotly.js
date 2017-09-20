@@ -4,7 +4,6 @@ var Lib = require('@src/lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
-var customMatchers = require('../assets/custom_matchers');
 var subplotMock = require('@mocks/multiple_subplots.json');
 
 var FORMATS = ['png', 'jpeg', 'webp', 'svg'];
@@ -13,10 +12,6 @@ describe('Plotly.toImage', function() {
     'use strict';
 
     var gd;
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     beforeEach(function() {
         gd = createGraphDiv();

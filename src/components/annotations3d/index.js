@@ -13,8 +13,8 @@ module.exports = {
     name: 'annotations3d',
 
     schema: {
-        layout: {
-            'scene.annotations': require('./attributes')
+        subplots: {
+            scene: {annotations: require('./attributes')}
         }
     },
 

@@ -2,12 +2,9 @@ var Plotly = require('@lib/index');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 
 describe('aggregate', function() {
     var gd;
-
-    beforeAll(function() { jasmine.addMatchers(customMatchers);});
 
     beforeEach(function() { gd = createGraphDiv(); });
 

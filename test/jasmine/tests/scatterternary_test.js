@@ -7,7 +7,6 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
-var customMatchers = require('../assets/custom_matchers');
 var customAssertions = require('../assets/custom_assertions');
 
 var assertClip = customAssertions.assertClip;
@@ -207,10 +206,6 @@ describe('scatterternary calc', function() {
     'use strict';
 
     var calc = ScatterTernary.calc;
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     var gd, trace, cd;
 
