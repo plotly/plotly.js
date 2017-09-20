@@ -485,7 +485,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     sankeyNodeSet.enter()
         .append('g')
-        .style('shape-rendering', 'crispEdges')
         .classed('sankeyNodeSet', true);
 
     sankeyNodeSet
