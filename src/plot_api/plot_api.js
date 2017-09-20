@@ -1499,7 +1499,13 @@ function _restyle(gd, aobj, traces) {
                 // before we swap everything else
                 if(ai === 'orientation') {
                     param.set(newVal);
-                    if(param.get() === undoit[ai][i]) continue;
+                    // obnoxious that we need this level of coupling... but in order to
+                    // properly handle setting orientation to `null` we need to mimic
+                    // the logic inside Bars.supplyDefaults for default orientation
+                    var defaultOrientation = (cont.x && !cont.y) ? 'h' : 'v';
+                    if((param.get() || defaultOrientation) === contFull.orientation) {
+                        continue;
+                    }
                 }
                 // orientationaxes has no value,
                 // it flips everything and the axes
@@ -1508,6 +1514,7 @@ function _restyle(gd, aobj, traces) {
                         {v: 'h', h: 'v'}[contFull.orientation];
                 }
                 helpers.swapXYData(cont);
+                flags.calc = flags.clearAxisTypes = true;
             }
             else if(Plots.dataArrayContainers.indexOf(param.parts[0]) !== -1) {
                 // TODO: use manageArrays.applyContainerArrayChanges here too

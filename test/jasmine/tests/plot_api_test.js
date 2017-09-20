@@ -16,6 +16,8 @@ var customMatchers = require('../assets/custom_matchers');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
+var checkTicks = require('../assets/check_ticks');
+var negateIf = require('../assets/negate_if');
 
 
 describe('Test plot api', function() {
@@ -907,11 +909,6 @@ describe('Test plot api', function() {
                 .then(done);
         });
 
-        function negateIf(condition, negate) {
-            if(negate) return condition.not;
-            return condition;
-        }
-
         it('turns off zauto when you edit zmin or zmax', function(done) {
             var zmin0 = 2;
             var zmax1 = 10;
@@ -1184,31 +1181,23 @@ describe('Test plot api', function() {
         });
 
         it('updates box position and axis type when it falls back to name', function(done) {
-            function checkXTicks(vals, msg) {
-                var selection = d3.selectAll('.xtick');
-                expect(selection.size()).toBe(vals.length);
-                selection.each(function(d, i) {
-                    expect(d3.select(this).text()).toBe(vals[i], msg + ': ' + i);
-                });
-            }
-
             Plotly.newPlot(gd, [{name: 'A', y: [1, 2, 3, 4, 5], type: 'box'}],
                 {width: 400, height: 400, xaxis: {nticks: 3}}
             )
             .then(function() {
-                checkXTicks(['A'], 'initial');
+                checkTicks('x', ['A'], 'initial');
                 expect(gd._fullLayout.xaxis.type).toBe('category');
 
                 return Plotly.restyle(gd, {name: 'B'});
             })
             .then(function() {
-                checkXTicks(['B'], 'changed category');
+                checkTicks('x', ['B'], 'changed category');
                 expect(gd._fullLayout.xaxis.type).toBe('category');
 
                 return Plotly.restyle(gd, {x0: 12.3});
             })
             .then(function() {
-                checkXTicks(['12', '12.5'], 'switched to numeric');
+                checkTicks('x', ['12', '12.5'], 'switched to numeric');
                 expect(gd._fullLayout.xaxis.type).toBe('linear');
             })
             .catch(fail)

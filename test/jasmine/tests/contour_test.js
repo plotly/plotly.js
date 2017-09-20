@@ -10,6 +10,7 @@ var fail = require('../assets/fail_test');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customMatchers = require('../assets/custom_matchers');
+var checkTicks = require('../assets/check_ticks');
 
 var d3 = require('d3');
 
@@ -358,14 +359,6 @@ describe('contour edits', function() {
         gd = createGraphDiv();
     });
     afterEach(destroyGraphDiv);
-
-    function checkTicks(axLetter, vals, msg) {
-        var selection = d3.selectAll('.' + axLetter + 'tick text');
-        expect(selection.size()).toBe(vals.length);
-        selection.each(function(d, i) {
-            expect(d3.select(this).text()).toBe(vals[i], msg + ': ' + i);
-        });
-    }
 
     it('can restyle x/y to different types', function(done) {
         Plotly.newPlot(gd, [{

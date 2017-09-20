@@ -11,6 +11,10 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var customMatchers = require('../assets/custom_matchers');
+var checkTicks = require('../assets/check_ticks');
+var negateIf = require('../assets/negate_if');
+
+var d3 = require('d3');
 
 describe('Bar.supplyDefaults', function() {
     'use strict';
@@ -762,8 +766,14 @@ describe('Bar.setPositions', function() {
 describe('A bar plot', function() {
     'use strict';
 
+    var gd;
+
     beforeAll(function() {
         jasmine.addMatchers(customMatchers);
+    });
+
+    beforeEach(function() {
+        gd = createGraphDiv();
     });
 
     afterEach(destroyGraphDiv);
@@ -830,15 +840,13 @@ describe('A bar plot', function() {
     }
 
     it('should show bar texts (inside case)', function(done) {
-        var gd = createGraphDiv(),
-            data = [{
-                y: [10, 20, 30],
-                type: 'bar',
-                text: ['1', 'Very very very very very long bar text'],
-                textposition: 'inside',
-            }],
-            layout = {
-            };
+        var data = [{
+            y: [10, 20, 30],
+            type: 'bar',
+            text: ['1', 'Very very very very very long bar text'],
+            textposition: 'inside',
+        }];
+        var layout = {};
 
         Plotly.plot(gd, data, layout).then(function() {
             var traceNodes = getAllTraceNodes(gd),
@@ -862,16 +870,15 @@ describe('A bar plot', function() {
     });
 
     it('should show bar texts (outside case)', function(done) {
-        var gd = createGraphDiv(),
-            data = [{
-                y: [10, -20, 30],
-                type: 'bar',
-                text: ['1', 'Very very very very very long bar text'],
-                textposition: 'outside',
-            }],
-            layout = {
-                barmode: 'relative'
-            };
+        var data = [{
+            y: [10, -20, 30],
+            type: 'bar',
+            text: ['1', 'Very very very very very long bar text'],
+            textposition: 'outside',
+        }];
+        var layout = {
+            barmode: 'relative'
+        };
 
         Plotly.plot(gd, data, layout).then(function() {
             var traceNodes = getAllTraceNodes(gd),
@@ -896,15 +903,13 @@ describe('A bar plot', function() {
     });
 
     it('should show bar texts (horizontal case)', function(done) {
-        var gd = createGraphDiv(),
-            data = [{
-                x: [10, -20, 30],
-                type: 'bar',
-                text: ['Very very very very very long bar text', -20],
-                textposition: 'outside',
-            }],
-            layout = {
-            };
+        var data = [{
+            x: [10, -20, 30],
+            type: 'bar',
+            text: ['Very very very very very long bar text', -20],
+            textposition: 'outside',
+        }];
+        var layout = {};
 
         Plotly.plot(gd, data, layout).then(function() {
             var traceNodes = getAllTraceNodes(gd),
@@ -929,17 +934,16 @@ describe('A bar plot', function() {
     });
 
     it('should show bar texts (barnorm case)', function(done) {
-        var gd = createGraphDiv(),
-            data = [{
-                x: [100, -100, 100],
-                type: 'bar',
-                text: [100, -100, 100],
-                textposition: 'outside',
-            }],
-            layout = {
-                barmode: 'relative',
-                barnorm: 'percent'
-            };
+        var data = [{
+            x: [100, -100, 100],
+            type: 'bar',
+            text: [100, -100, 100],
+            textposition: 'outside',
+        }];
+        var layout = {
+            barmode: 'relative',
+            barnorm: 'percent'
+        };
 
         Plotly.plot(gd, data, layout).then(function() {
             var traceNodes = getAllTraceNodes(gd),
@@ -964,8 +968,7 @@ describe('A bar plot', function() {
     });
 
     it('should be able to restyle', function(done) {
-        var gd = createGraphDiv(),
-            mock = Lib.extendDeep({}, require('@mocks/bar_attrs_relative'));
+        var mock = Lib.extendDeep({}, require('@mocks/bar_attrs_relative'));
 
         Plotly.plot(gd, mock.data, mock.layout).then(function() {
             var cd = gd.calcdata;
@@ -1114,27 +1117,26 @@ describe('A bar plot', function() {
     });
 
     it('should coerce text-related attributes', function(done) {
-        var gd = createGraphDiv(),
-            data = [{
-                y: [10, 20, 30, 40],
-                type: 'bar',
-                text: ['T1P1', 'T1P2', 13, 14],
-                textposition: ['inside', 'outside', 'auto', 'BADVALUE'],
-                textfont: {
-                    family: ['"comic sans"'],
-                    color: ['red', 'green'],
-                },
-                insidetextfont: {
-                    size: [8, 12, 16],
-                    color: ['black'],
-                },
-                outsidetextfont: {
-                    size: [null, 24, 32]
-                }
-            }],
-            layout = {
-                font: {family: 'arial', color: 'blue', size: 13}
-            };
+        var data = [{
+            y: [10, 20, 30, 40],
+            type: 'bar',
+            text: ['T1P1', 'T1P2', 13, 14],
+            textposition: ['inside', 'outside', 'auto', 'BADVALUE'],
+            textfont: {
+                family: ['"comic sans"'],
+                color: ['red', 'green'],
+            },
+            insidetextfont: {
+                size: [8, 12, 16],
+                color: ['black'],
+            },
+            outsidetextfont: {
+                size: [null, 24, 32]
+            }
+        }];
+        var layout = {
+            font: {family: 'arial', color: 'blue', size: 13}
+        };
 
         var expected = {
             y: [10, 20, 30, 40],
@@ -1190,6 +1192,72 @@ describe('A bar plot', function() {
             assertTextFont(textNodes[0], expected.insidetextfont, 0);
             assertTextFont(textNodes[1], expected.outsidetextfont, 1);
             assertTextFont(textNodes[2], expected.insidetextfont, 2);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('can change orientation and correctly sets axis types', function(done) {
+        function checkBarsMatch(dims, msg) {
+            var bars = d3.selectAll('.bars .point');
+            var bbox1 = bars.node().getBoundingClientRect();
+            bars.each(function(d, i) {
+                if(!i) return;
+                var bbox = this.getBoundingClientRect();
+                ['left', 'right', 'top', 'bottom', 'width', 'height'].forEach(function(dim) {
+                    negateIf(expect(bbox[dim]), dims.indexOf(dim) === -1)
+                        .toBeWithin(bbox1[dim], 0.1, msg + ' (' + i + '): ' + dim);
+                });
+            });
+        }
+
+        Plotly.newPlot(gd, [{
+            x: ['a', 'b', 'c'],
+            y: [1, 2, 3],
+            type: 'bar'
+        }], {
+            width: 400, height: 400
+        })
+        .then(function() {
+            checkTicks('x', ['a', 'b', 'c'], 'initial x');
+            checkTicks('y', ['0', '0.5', '1', '1.5', '2', '2.5', '3'], 'initial y');
+
+            checkBarsMatch(['bottom', 'width'], 'initial');
+
+            // turn implicit "v" into explicit "v" - a noop but specifically
+            // for orientation this was broken at one point...
+            return Plotly.restyle(gd, {orientation: 'v'});
+        })
+        .then(function() {
+            checkTicks('x', ['a', 'b', 'c'], 'explicit v x');
+            checkTicks('y', ['0', '0.5', '1', '1.5', '2', '2.5', '3'], 'explicit v y');
+
+            checkBarsMatch(['bottom', 'width'], 'explicit v');
+
+            // back to implicit v
+            return Plotly.restyle(gd, {orientation: null});
+        })
+        .then(function() {
+            checkTicks('x', ['a', 'b', 'c'], 'implicit v x');
+            checkTicks('y', ['0', '0.5', '1', '1.5', '2', '2.5', '3'], 'implicit v y');
+
+            checkBarsMatch(['bottom', 'width'], 'implicit v');
+
+            return Plotly.restyle(gd, {orientation: 'h'});
+        })
+        .then(function() {
+            checkTicks('x', ['0', '1', '2', '3'], 'h x');
+            checkTicks('y', ['a', 'b', 'c'], 'h y');
+
+            checkBarsMatch(['left', 'height'], 'initial');
+
+            return Plotly.restyle(gd, {orientation: 'v'});
+        })
+        .then(function() {
+            checkTicks('x', ['a', 'b', 'c'], 'final x');
+            checkTicks('y', ['0', '0.5', '1', '1.5', '2', '2.5', '3'], 'final y');
+
+            checkBarsMatch(['bottom', 'width'], 'final');
         })
         .catch(fail)
         .then(done);
