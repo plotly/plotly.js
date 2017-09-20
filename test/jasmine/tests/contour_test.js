@@ -12,8 +12,6 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customMatchers = require('../assets/custom_matchers');
 var checkTicks = require('../assets/check_ticks');
 
-var d3 = require('d3');
-
 
 describe('contour defaults', function() {
     'use strict';
