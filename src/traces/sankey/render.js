@@ -182,7 +182,7 @@ function nodeModel(uniqueKeys, d, n) {
         zoneThicknessPad = c.nodePadAcross,
         zoneLengthPad = d.nodePad / 2,
         visibleThickness = n.dx + 0.5,
-        visibleLength = n.dy - 0.5;
+        visibleLength = Math.max(1, n.dy - 0.5);
 
     var basicKey = n.label;
     var foundKey = uniqueKeys[basicKey];
