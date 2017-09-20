@@ -18,7 +18,6 @@ var extendDeep = require('../../lib/extend').extendDeep;
 var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = {
-
     domain: {
         x: {
             valType: 'info_array',
@@ -120,36 +119,26 @@ module.exports = {
         description: 'The dimensions (variables) of the parallel coordinates chart. 2..60 dimensions are supported.'
     },
 
-    line: extendFlat({},
-
+    line: extendFlat(
         // the default autocolorscale isn't quite usable for parcoords due to context ambiguity around 0 (grey, off-white)
-        // autocolorscale therefore defaults to false too, to avoid being overridden by the  blue-white-red autocolor palette
+        // autocolorscale therefore defaults to false too, to avoid being overridden by the blue-white-red autocolor palette
         extendDeep(
-            {},
             colorAttributes('line'),
             {
-                colorscale: extendDeep(
-                    {},
-                    colorAttributes('line').colorscale,
-                    {dflt: colorscales.Viridis}
-                ),
-                autocolorscale: extendDeep(
-                    {},
-                    colorAttributes('line').autocolorscale,
-                    {
-                        dflt: false,
-                        description: [
-                            'Has an effect only if line.color` is set to a numerical array.',
-                            'Determines whether the colorscale is a default palette (`autocolorscale: true`)',
-                            'or the palette determined by `line.colorscale`.',
-                            'In case `colorscale` is unspecified or `autocolorscale` is true, the default ',
-                            'palette will be chosen according to whether numbers in the `color` array are',
-                            'all positive, all negative or mixed.',
-                            'The default value is false, so that `parcoords` colorscale can default to `Viridis`.'
-                        ].join(' ')
-                    }
-                )
 
+                colorscale: {dflt: colorscales.Viridis},
+                autocolorscale: {
+                    dflt: false,
+                    description: [
+                        'Has an effect only if line.color` is set to a numerical array.',
+                        'Determines whether the colorscale is a default palette (`autocolorscale: true`)',
+                        'or the palette determined by `line.colorscale`.',
+                        'In case `colorscale` is unspecified or `autocolorscale` is true, the default ',
+                        'palette will be chosen according to whether numbers in the `color` array are',
+                        'all positive, all negative or mixed.',
+                        'The default value is false, so that `parcoords` colorscale can default to `Viridis`.'
+                    ].join(' ')
+                }
             }
         ),
 

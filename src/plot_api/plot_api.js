@@ -3029,9 +3029,41 @@ function makePlotFramework(gd) {
     // TODO: sort out all the ordering so we don't have to
     // explicitly delete anything
     fullLayout._glcontainer = fullLayout._paperdiv.selectAll('.gl-container')
-        .data([0]);
-    fullLayout._glcontainer.enter().append('div')
-        .classed('gl-container', true);
+        .data([{}]);
+
+    // FIXME: bring this constant to some plotly constants module
+    // it is taken from parcoords lineLayerModel
+    fullLayout._glcanvas = fullLayout._glcontainer.enter().append('div')
+        .classed('gl-container', true)
+        .selectAll('.gl-canvas')
+        .data([{
+            key: 'contextLayer'
+        }, {
+            key: 'focusLayer'
+        }, {
+            key: 'pickLayer'
+        }]);
+
+    // create canvases only in case if there is at least one regl component
+    // FIXME: probably there is a better d3 way of doing so
+    for(var i = 0; i < fullLayout._modules.length; i++) {
+        var module = fullLayout._modules[i];
+        if(module.categories && module.categories.indexOf('gl') >= 0) {
+            fullLayout._glcanvas.enter().append('canvas')
+                .attr('class', function(d) {
+                    return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
+                })
+                .attr('width', fullLayout.width)
+                .attr('height', fullLayout.height)
+                .style('position', 'absolute')
+                .style('top', 0)
+                .style('left', 0)
+                .style('pointer-events', 'none')
+                .style('overflow', 'visible');
+
+            break;
+        }
+    }
 
     fullLayout._paperdiv.selectAll('.main-svg').remove();
 
