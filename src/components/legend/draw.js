@@ -413,15 +413,15 @@ function drawTexts(g, gd) {
                     var groupbyIndices = Registry.getTransformIndices(fullInput, 'groupby');
                     var index = groupbyIndices[groupbyIndices.length - 1];
 
-                    var carr = Lib.keyedContainer(fullInput, 'transforms[' + index + '].styles', 'target', 'value.name');
+                    var kcont = Lib.keyedContainer(fullInput, 'transforms[' + index + '].styles', 'target', 'value.name');
 
                     if(origText === '') {
-                        carr.remove(legendItem.trace._group);
+                        kcont.remove(legendItem.trace._group);
                     } else {
-                        carr.set(legendItem.trace._group, text);
+                        kcont.set(legendItem.trace._group, text);
                     }
 
-                    update = carr.constructUpdate();
+                    update = kcont.constructUpdate();
                 } else {
                     update.name = text;
                 }
@@ -490,7 +490,7 @@ function handleClick(g, gd, numClicks) {
     var fullTrace = legendItem.trace;
     var legendgroup = fullTrace.legendgroup;
 
-    var i, j, carr, key, keys, val;
+    var i, j, kcont, key, keys, val;
     var attrUpdate = {};
     var attrIndices = [];
     var carrs = [];
@@ -516,20 +516,28 @@ function handleClick(g, gd, numClicks) {
     function setVisibility(fullTrace, visibility) {
         var fullInput = fullTrace._fullInput;
         if(Registry.hasTransform(fullInput, 'groupby')) {
-            var carr = carrs[fullInput.index];
-            if(!carr) {
+            var kcont = carrs[fullInput.index];
+            if(!kcont) {
                 var groupbyIndices = Registry.getTransformIndices(fullInput, 'groupby');
                 var lastGroupbyIndex = groupbyIndices[groupbyIndices.length - 1];
-                carr = Lib.keyedContainer(fullInput, 'transforms[' + lastGroupbyIndex + '].styles', 'target', 'value.visible');
-                carrs[fullInput.index] = carr;
+                kcont = Lib.keyedContainer(fullInput, 'transforms[' + lastGroupbyIndex + '].styles', 'target', 'value.visible');
+                carrs[fullInput.index] = kcont;
             }
 
-            // If not specified, assume visible:
-            var curState = carr.get(fullTrace._group) || true;
+            var curState = kcont.get(fullTrace._group);
+
+            // If not specified, assume visible. This happens if there are other style
+            // properties set for a group but not the visibility. There are many similar
+            // ways to do this (e.g. why not just `curState = fullTrace.visible`??? The
+            // answer is: because it breaks other things like groupby trace names in
+            // subtle ways.)
+            if(curState === undefined) {
+                curState = true;
+            }
 
             if(curState !== false) {
                 // true -> legendonly. All others toggle to true:
-                carr.set(fullTrace._group, visibility);
+                kcont.set(fullTrace._group, visibility);
             }
             carrIdx[fullInput.index] = insertUpdate(fullInput.index, 'visible', fullInput.visible === false ? false : true);
         } else {
@@ -593,7 +601,6 @@ function handleClick(g, gd, numClicks) {
                 case false:
                     nextVisibility = false;
                     break;
-                default:
                 case 'legendonly':
                     nextVisibility = true;
                     break;
@@ -601,7 +608,7 @@ function handleClick(g, gd, numClicks) {
 
             if(hasLegendgroup) {
                 for(i = 0; i < fullData.length; i++) {
-                    if(fullData[i].visible && fullData[i].legendgroup === legendgroup) {
+                    if(fullData[i].visible !== false && fullData[i].legendgroup === legendgroup) {
                         setVisibility(fullData[i], nextVisibility);
                     }
                 }
@@ -652,9 +659,9 @@ function handleClick(g, gd, numClicks) {
         }
 
         for(i = 0; i < carrs.length; i++) {
-            carr = carrs[i];
-            if(!carr) continue;
-            var update = carr.constructUpdate();
+            kcont = carrs[i];
+            if(!kcont) continue;
+            var update = kcont.constructUpdate();
 
             var updateKeys = Object.keys(update);
             for(j = 0; j < updateKeys.length; j++) {
