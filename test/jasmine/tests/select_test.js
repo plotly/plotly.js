@@ -703,4 +703,45 @@ describe('Test select box and lasso per trace:', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
+    it('should work on choropleth traces', function(done) {
+        gd = createGraphDiv();
+
+        var assertPoints = makeAssertPoints(['location', 'z']);
+        var assertRanges = makeAssertRanges('geo', -0.5);
+        var assertLassoPoints = makeAssertLassoPoints('geo', -0.5);
+
+        var fig = Lib.extendDeep({}, require('@mocks/geo_choropleth-text'));
+        fig.layout.width = 870;
+        fig.layout.height = 450;
+        fig.layout.dragmode = 'select';
+        fig.layout.geo.scope = 'europe';
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            return _run([[350, 200], [400, 250]], function() {
+                assertPoints([['GBR', 26.507354205352502], ['IRL', 86.4125147625692]]);
+                assertRanges([[-19.11, 63.06], [7.31, 53.72]]);
+            }, [280, 190]);
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        })
+        .then(function() {
+            return _run([[350, 200], [400, 200], [400, 250], [350, 250], [350, 200]], function() {
+                assertPoints([['GBR', 26.507354205352502], ['IRL', 86.4125147625692]]);
+                assertLassoPoints([
+                    [-19.11, 63.06], [5.50, 65.25], [7.31, 53.72], [-12.90, 51.70], [-19.11, 63.06]
+                ]);
+            }, [280, 190]);
+        })
+        .then(function() {
+            // make selection handlers don't get called in 'pan' dragmode
+            return Plotly.relayout(gd, 'dragmode', 'pan');
+        })
+        .then(function() {
+            return _runNoSelect([[370, 120], [500, 200]]);
+        })
+        .catch(fail)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
 });
