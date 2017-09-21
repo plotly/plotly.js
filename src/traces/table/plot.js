@@ -305,7 +305,7 @@ function renderCellText(cellText, allColumnBlock, columnCell) {
             Drawing.font(selection, d.font);
             setCellHeightAndPositionY(columnCell);
 
-            var renderCallback = d.wrappingNeeded ? wrapText : finalizeYPositionMaker;
+            var renderCallback = d.wrappingNeeded ? wrapTextMaker : finalizeYPositionMaker;
             svgUtil.convertToTspans(selection, gd, renderCallback(allColumnBlock, element, d));
         });
 }
@@ -478,9 +478,9 @@ function conditionalPanelRerender(cellsColumnBlock, pages, prevPages, d, revolve
     }
 }
 
-function wrapText(columnBlock, element, d) {
+function wrapTextMaker(columnBlock, element, d) {
     var nextRenderCallback = finalizeYPositionMaker(columnBlock, element, d);
-    return function finalizeYPosition() {
+    return function wrapText() {
         var cellTextHolder = d3.select(element.parentNode);
         cellTextHolder
             .each(function(d) {
@@ -494,7 +494,7 @@ function wrapText(columnBlock, element, d) {
                 var currentRow = [];
                 var currentAddition, currentAdditionLength;
                 var currentRowLength = 0;
-                var rowLengthLimit = d.column.columnWidth;
+                var rowLengthLimit = d.column.columnWidth - 2 * c.cellPad;
                 d.value = "";
                 while(rest.length) {
                     currentAddition = rest.shift();
@@ -548,9 +548,11 @@ function finalizeYPositionMaker(columnBlock, element, d) {
         cellTextHolder
             .attr('transform', function () {
                 var element = this;
-                var box = element.parentNode.getBoundingClientRect();
+                var columnCellElement = element.parentNode;
+                var box = columnCellElement.parentNode.getBoundingClientRect();
                 var rectBox = d3.select(element.parentNode).select('.cellRect').node().getBoundingClientRect();
-                var yPosition = (rectBox.top - box.top + c.cellPad);
+                var currentTransform = element.transform.baseVal.consolidate();
+                var yPosition = rectBox.top - box.top + (currentTransform ? currentTransform.matrix.f : c.cellPad);
                 return 'translate(' + c.cellPad + ' ' + yPosition + ')';
             });
     };

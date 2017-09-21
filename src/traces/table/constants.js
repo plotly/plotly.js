@@ -11,7 +11,7 @@
 module.exports = {
     maxDimensionCount: 60,
     overdrag: 45,
-    cellPad: 4,
+    cellPad: 8,
     latexMark: '$',
     wrapSplitCharacter: ' ',
     wrapSpacer: ' ',
