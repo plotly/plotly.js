@@ -48,7 +48,7 @@ function Sieve(traces, separateNegativeValues, dontMergeOverlappingData) {
 
     var dv = Lib.distinctVals(positions);
     this.distinctPositions = dv.vals;
-    if(dv.vals.length === 1 && width1) this.minDiff = width1;
+    if(dv.vals.length === 1 && width1 !== Infinity) this.minDiff = width1;
     else this.minDiff = Math.min(dv.minDiff, width1);
 
     this.binWidth = this.minDiff;
