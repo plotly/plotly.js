@@ -563,4 +563,3 @@ function rowsHeight(rowBlock, key) {
 
 function getBlock(d) {return d.rowBlocks[d.page];}
 function getRow(l, i) {return l.rows[i - l.firstRowIndex];}
-
