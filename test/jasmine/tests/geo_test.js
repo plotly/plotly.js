@@ -1352,6 +1352,68 @@ describe('Test event property of interactions on a geo plot:', function() {
     });
 });
 
+describe('Test geo base layers', function() {
+    afterEach(destroyGraphDiv);
+
+    it('should clear obsolete features and layers on *geo.scope* relayout calls', function(done) {
+        var gd = createGraphDiv();
+
+        function _assert(geojson, layers) {
+            var cd0 = gd.calcdata[0];
+            var subplot = gd._fullLayout.geo._subplot;
+
+            expect(cd0[0].geojson).negateIf(geojson[0]).toBe(null);
+            expect(cd0[1].geojson).negateIf(geojson[1]).toBe(null);
+
+            expect(Object.keys(subplot.layers).length).toEqual(layers.length, '# of layers');
+
+            d3.select(gd).selectAll('.geo > .layer').each(function(d, i) {
+                expect(d).toBe(layers[i], 'layer ' + d + ' at position ' + i);
+            });
+        }
+
+        Plotly.plot(gd, [{
+            type: 'choropleth',
+            locations: ['CAN', 'FRA'],
+            z: [10, 20]
+        }], {
+            geo: {showframe: true}
+        })
+        .then(function() {
+            _assert(
+                [true, true],
+                ['bg', 'coastlines', 'frame', 'backplot', 'frontplot']
+            );
+            return Plotly.relayout(gd, 'geo.scope', 'europe');
+        })
+        .then(function() {
+            _assert(
+                // 'CAN' is not drawn on 'europe' scope
+                [false, true],
+                // 'frame' is not drawn on scoped maps
+                // 'countries' are there by default on scoped maps
+                ['bg', 'countries', 'backplot', 'frontplot']
+            );
+            return Plotly.relayout(gd, 'geo.scope', 'africa');
+        })
+        .then(function() {
+            _assert(
+                [false, false],
+                ['bg', 'countries', 'backplot', 'frontplot']
+            );
+            return Plotly.relayout(gd, 'geo.scope', 'world');
+        })
+        .then(function() {
+            _assert(
+                [true, true],
+                ['bg', 'coastlines', 'frame', 'backplot', 'frontplot']
+            );
+        })
+        .catch(fail)
+        .then(done);
+    });
+});
+
 describe('Test geo zoom/pan/drag interactions:', function() {
     var gd;
     var eventData;
