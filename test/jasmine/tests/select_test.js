@@ -653,4 +653,54 @@ describe('Test select box and lasso per trace:', function() {
         .catch(fail)
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
+
+    it('should work on scattergeo traces', function(done) {
+        gd = createGraphDiv();
+
+        var assertPoints = makeAssertPoints(['lon', 'lat']);
+        var assertRanges = makeAssertRanges('geo');
+        var assertLassoPoints = makeAssertLassoPoints('geo');
+
+        Plotly.plot(gd, [{
+            type: 'scattergeo',
+            lon: [10, 20, 30],
+            lat: [10, 20, 30]
+        }, {
+            type: 'scattergeo',
+            lon: [-10, -20, -30],
+            lat: [10, 20, 30]
+        }], {
+            showlegend: false,
+            dragmode: 'select',
+            width: 800,
+            height: 600
+        })
+        .then(function() {
+            return _run([[350, 200], [450, 400]], function() {
+                assertPoints([[10, 10], [20, 20], [-10, 10], [-20, 20]]);
+                assertRanges([[-28.13, 61.88], [28.13, -50.64]]);
+            });
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        })
+        .then(function() {
+            return _run([[300, 200], [300, 300], [400, 300], [400, 200], [300, 200]], function() {
+                assertPoints([[-10, 10], [-20, 20], [-30, 30]]);
+                assertLassoPoints([
+                    [-56.25, 61.88], [-56.24, 5.63], [0, 5.63], [0, 61.88], [-56.25, 61.88]
+                ]);
+            });
+        })
+        .then(function() {
+            // make selection handlers don't get called in 'pan' dragmode
+            return Plotly.relayout(gd, 'dragmode', 'pan');
+        })
+        .then(function() {
+            return _runNoSelect([[370, 120], [500, 200]]);
+        })
+        .catch(fail)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
 });
