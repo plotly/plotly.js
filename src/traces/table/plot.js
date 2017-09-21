@@ -125,7 +125,7 @@ module.exports = function plot(gd, calcdata) {
                 d3.event.stopPropagation();
                 return d;
             })
-            .on('drag', makeDragRow(cellsColumnBlock))
+            .on('drag', makeDragRow(gd, cellsColumnBlock))
             .on('dragend', function(d) {
                 // fixme emit plotly notification
             })
@@ -270,10 +270,10 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
         .classed('cellText', true);
 
     cellText
-        .call(renderCellText, allColumnBlock, columnCell);
+        .call(renderCellText, allColumnBlock, columnCell, gd);
 }
 
-function renderCellText(cellText, allColumnBlock, columnCell) {
+function renderCellText(cellText, allColumnBlock, columnCell, gd) {
     cellText
         .text(function(d) {
             var col = d.column.specIndex;
@@ -412,7 +412,7 @@ function overlap(a, b) {
     return a[0] < b[1] && a[1] > b[0];
 }
 
-function makeDragRow(cellsColumnBlock) {
+function makeDragRow(gd, cellsColumnBlock) {
     var d = cellsColumnBlock[0][0].__data__;
     var blocks = d.rowBlocks;
     var calcdata = d.calcdata;
@@ -459,12 +459,12 @@ function makeDragRow(cellsColumnBlock) {
             });
 
         // conditionally rerendering panel 0 and 1
-        conditionalPanelRerender(cellsColumnBlock, pages, prevPages, d, 0);
-        conditionalPanelRerender(cellsColumnBlock, pages, prevPages, d, 1);
+        conditionalPanelRerender(gd, cellsColumnBlock, pages, prevPages, d, 0);
+        conditionalPanelRerender(gd, cellsColumnBlock, pages, prevPages, d, 1);
     }
 }
 
-function conditionalPanelRerender(cellsColumnBlock, pages, prevPages, d, revolverIndex) {
+function conditionalPanelRerender(gd, cellsColumnBlock, pages, prevPages, d, revolverIndex) {
     var shouldComponentUpdate = pages[revolverIndex] !== prevPages[revolverIndex];
     if(shouldComponentUpdate) {
         window.clearTimeout(d.currentRepaint[revolverIndex]);
