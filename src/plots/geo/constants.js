@@ -75,7 +75,7 @@ params.scopeDefaults = {
     },
     europe: {
         lonaxisRange: [-30, 60],
-        lataxisRange: [30, 80],
+        lataxisRange: [30, 85],
         projType: 'conic conformal',
         projRotate: [15, 0, 0],
         projParallels: [0, 60]

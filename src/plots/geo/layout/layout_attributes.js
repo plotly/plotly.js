@@ -22,6 +22,7 @@ var geoAxesAttrs = {
         ],
         description: [
             'Sets the range of this axis (in degrees),',
+            'sets the map\'s clipped coordinates.'
         ].join(' ')
     },
     showgrid: {
@@ -74,8 +75,11 @@ module.exports = overrideAll({
             ],
             dflt: [0, 1],
             description: [
-                'Sets the horizontal domain of this map',
-                '(in plot fraction).'
+                'Sets the maximum horizontal domain of this map',
+                '(in plot fraction).',
+                'Note that geo subplots are constrained by domain.',
+                'In general, when `projection.scale` is set to 1.',
+                'a map will fit either its x or y domain, but not both. '
             ].join(' ')
         },
         y: {
@@ -87,8 +91,11 @@ module.exports = overrideAll({
             ],
             dflt: [0, 1],
             description: [
-                'Sets the vertical domain of this map',
-                '(in plot fraction).'
+                'Sets the maximum vertical domain of this map',
+                '(in plot fraction).',
+                'Note that geo subplots are constrained by domain.',
+                'In general, when `projection.scale` is set to 1.',
+                'a map will fit either its x or y domain, but not both. '
             ].join(' ')
         }
     },
@@ -124,7 +131,8 @@ module.exports = overrideAll({
                 role: 'info',
                 description: [
                     'Rotates the map along parallels',
-                    '(in degrees East).'
+                    '(in degrees East).',
+                    'Defaults to the center of the `lonaxis.range` values.'
                 ].join(' ')
             },
             lat: {
@@ -161,9 +169,32 @@ module.exports = overrideAll({
             valType: 'number',
             role: 'info',
             min: 0,
-            max: 10,
             dflt: 1,
-            description: 'Zooms in or out on the map view.'
+            description: [
+                'Zooms in or out on the map view.',
+                'A scale of *1* corresponds to the largest zoom level',
+                'that fits the map\'s lon and lat ranges. '
+            ].join(' ')
+        },
+    },
+    center: {
+        lon: {
+            valType: 'number',
+            role: 'info',
+            description: [
+                'Sets the longitude of the map\'s center.',
+                'By default, the map\'s longitude center lies at the middle of the longitude range',
+                'for scoped projection and above `projection.rotation.lon` otherwise.'
+            ].join(' ')
+        },
+        lat: {
+            valType: 'number',
+            role: 'info',
+            description: [
+                'Sets the latitude of the map\'s center.',
+                'For all projection types, the map\'s latitude center lies',
+                'at the middle of the latitude range by default.'
+            ].join(' ')
         }
     },
     showcoastlines: {
