@@ -62,6 +62,7 @@ module.exports = function plot(geo, calcData) {
                 .data([{geojson: lineData, trace: trace}])
               .enter().append('path')
                 .classed('js-line', true)
+                .style('stroke-miterlimit', 2);
         }
 
         if(subTypes.hasMarkers(trace)) {
