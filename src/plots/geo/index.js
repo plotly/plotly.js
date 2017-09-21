@@ -9,13 +9,11 @@
 
 'use strict';
 
-var Geo = require('./geo');
-
+var createGeo = require('./geo2');
 var Plots = require('../../plots/plots');
 var counterRegex = require('../../lib').counterRegex;
 
 var GEO = 'geo';
-
 
 exports.name = GEO;
 
@@ -32,29 +30,31 @@ exports.layoutAttributes = require('./layout/layout_attributes');
 exports.supplyLayoutDefaults = require('./layout/defaults');
 
 exports.plot = function plotGeo(gd) {
-    var fullLayout = gd._fullLayout,
-        calcData = gd.calcdata,
-        geoIds = Plots.getSubplotIds(fullLayout, GEO);
+    var fullLayout = gd._fullLayout;
+    var calcData = gd.calcdata;
+    var geoIds = Plots.getSubplotIds(fullLayout, GEO);
 
     /**
      * If 'plotly-geo-assets.js' is not included,
      * initialize object to keep reference to every loaded topojson
      */
     if(window.PlotlyGeoAssets === undefined) {
-        window.PlotlyGeoAssets = { topojson: {} };
+        window.PlotlyGeoAssets = {topojson: {}};
     }
 
     for(var i = 0; i < geoIds.length; i++) {
-        var geoId = geoIds[i],
-            geoCalcData = Plots.getSubplotCalcData(calcData, GEO, geoId),
-            geo = fullLayout[geoId]._subplot;
+        var geoId = geoIds[i];
+        var geoCalcData = Plots.getSubplotCalcData(calcData, GEO, geoId);
+        var geoLayout = fullLayout[geoId];
+        var geo = geoLayout._subplot;
 
         if(!geo) {
-            geo = new Geo({
+            geo = createGeo({
                 id: geoId,
                 graphDiv: gd,
                 container: fullLayout._geolayer.node(),
-                topojsonURL: gd._context.topojsonURL
+                topojsonURL: gd._context.topojsonURL,
+                staticPlot: gd._context.staticPlot
             });
 
             fullLayout[geoId]._subplot = geo;
