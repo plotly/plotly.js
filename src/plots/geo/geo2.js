@@ -19,6 +19,8 @@ var Drawing = require('../../components/drawing');
 var Fx = require('../../components/fx');
 var Plots = require('../plots');
 var Axes = require('../cartesian/axes');
+var dragElement = require('../../components/dragelement');
+var prepSelect = require('../cartesian/select');
 
 var createGeoZoom = require('./zoom');
 var constants = require('./constants');
@@ -350,6 +352,51 @@ proto.updateFx = function(fullLayout, geoLayout) {
         _this.bgRect.node().onmousedown = null;
         framework.call(createGeoZoom(_this, geoLayout));
         framework.on('dblclick.zoom', zoomReset);
+    }
+    else if(dragMode === 'select' || dragMode === 'lasso') {
+        framework.on('.zoom', null);
+
+        var fillRangeItems;
+
+        if(dragMode === 'select') {
+            fillRangeItems = function(eventData, poly) {
+                var ranges = eventData.range = {};
+                ranges[_this.id] = [
+                    invert([poly.xmin, poly.ymin]),
+                    invert([poly.xmax, poly.ymax])
+                ];
+            };
+        } else if(dragMode === 'lasso') {
+            fillRangeItems = function(eventData, poly, pts) {
+                var dataPts = eventData.lassoPoints = {};
+                dataPts[_this.id] = pts.filtered.map(invert);
+            };
+        }
+
+        var dragOptions = {
+            element: _this.bgRect.node(),
+            gd: gd,
+            plotinfo: {
+                xaxis: _this.xaxis,
+                yaxis: _this.yaxis,
+                fillRangeItems: fillRangeItems
+            },
+            xaxes: [_this.xaxis],
+            yaxes: [_this.yaxis],
+            subplot: _this.id
+        };
+
+        dragOptions.prepFn = function(e, startX, startY) {
+            prepSelect(e, startX, startY, dragOptions, dragMode);
+        };
+
+        dragOptions.doneFn = function(dragged, numClicks) {
+            if(numClicks === 2) {
+                fullLayout._zoomlayer.selectAll('.select-outline').remove();
+            }
+        };
+
+        dragElement.init(dragOptions);
     }
 
     framework.on('mousemove', function() {

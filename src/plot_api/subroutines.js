@@ -490,7 +490,7 @@ exports.doTicksRelayout = function(gd) {
 
 exports.doModeBar = function(gd) {
     var fullLayout = gd._fullLayout;
-    var subplotIds, subplotObj, i;
+    var subplotIds, subplotLayout, subplotObj, i;
 
     ModeBar.manage(gd);
     initInteractions(gd);
@@ -511,6 +511,13 @@ exports.doModeBar = function(gd) {
     for(i = 0; i < subplotIds.length; i++) {
         subplotObj = fullLayout[subplotIds[i]]._subplot;
         subplotObj.updateFx(fullLayout);
+    }
+
+    subplotIds = Plots.getSubplotIds(fullLayout, 'geo');
+    for(i = 0; i < subplotIds.length; i++) {
+        subplotLayout = fullLayout[subplotIds[i]];
+        subplotObj = subplotLayout._subplot;
+        subplotObj.updateFx(fullLayout, subplotLayout);
     }
 
     return Plots.previousPromises(gd);

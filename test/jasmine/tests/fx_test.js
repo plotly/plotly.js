@@ -76,7 +76,7 @@ describe('Fx defaults', function() {
         .layout;
 
         expect(layoutOut.hovermode).toBe('closest', 'hovermode to closest');
-        expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
+        expect(layoutOut.dragmode).toBe('pan', 'dragmode to zoom');
     });
 
     it('should default (multi plot type version)', function() {
