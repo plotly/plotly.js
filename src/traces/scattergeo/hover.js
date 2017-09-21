@@ -17,32 +17,24 @@ var getTraceColor = require('../scatter/get_trace_color');
 var attributes = require('./attributes');
 
 
-module.exports = function hoverPoints(pointData) {
+module.exports = function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd,
         trace = cd[0].trace,
         xa = pointData.xa,
         ya = pointData.ya,
-        geo = pointData.subplot;
-
-    function c2p(lonlat) {
-        return geo.projection(lonlat);
-    }
+        geo = pointData.subplot,
+        projection = geo.projection;
 
     function distFn(d) {
         var lonlat = d.lonlat;
 
         if(lonlat[0] === BADNUM) return Infinity;
+        if(projection.isLonLatOverEdges(lonlat)) return Infinity;
 
-        if(geo.isLonLatOverEdges(lonlat)) return Infinity;
+        var dx = Math.abs(xa.c2p(lonlat) - xa.c2p([xval, lonlat[1]]));
+        var dy = Math.abs(ya.c2p(lonlat) - ya.c2p([lonlat[0], yval]));
 
-        var pos = c2p(lonlat);
-
-        var xPx = xa.c2p(),
-            yPx = ya.c2p();
-
-        var dx = Math.abs(xPx - pos[0]),
-            dy = Math.abs(yPx - pos[1]),
-            rad = Math.max(3, d.mrc || 0);
+        var rad = Math.max(3, d.mrc || 0);
 
         // N.B. d.mrc is the calculated marker radius
         // which is only set for trace with 'markers' mode.
@@ -57,7 +49,7 @@ module.exports = function hoverPoints(pointData) {
 
     var di = cd[pointData.index],
         lonlat = di.lonlat,
-        pos = c2p(lonlat),
+        pos = [xa.c2p(lonlat), ya.c2p(lonlat)],
         rad = di.mrc || 1;
 
     pointData.x0 = pos[0] - rad;

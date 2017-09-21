@@ -23,6 +23,9 @@ var subTypes = require('../scatter/subtypes');
 
 
 module.exports = function plot(geo, calcData) {
+    for(var i = 0; i < calcData.length; i++) {
+        calcGeoJSON(calcData[i], geo.topojson);
+    }
 
     function keyFunc(d) { return d[0].trace.uid; }
 
@@ -32,11 +35,7 @@ module.exports = function plot(geo, calcData) {
         }
     }
 
-    for(var i = 0; i < calcData.length; i++) {
-        fillLocationLonLat(calcData[i], geo.topojson);
-    }
-
-    var gScatterGeoTraces = geo.framework.select('.scattergeolayer')
+    var gScatterGeoTraces = geo.layers.frontplot.select('.scatterlayer')
         .selectAll('g.trace.scattergeo')
         .data(calcData, keyFunc);
 
@@ -49,20 +48,20 @@ module.exports = function plot(geo, calcData) {
     gScatterGeoTraces.selectAll('*').remove();
 
     gScatterGeoTraces.each(function(calcTrace) {
-        var s = d3.select(this);
+        var s = calcTrace[0].node3 = d3.select(this);
         var trace = calcTrace[0].trace;
 
         if(subTypes.hasLines(trace) || trace.fill !== 'none') {
             var lineCoords = geoJsonUtils.calcTraceToLineCoords(calcTrace);
 
             var lineData = (trace.fill !== 'none') ?
-                geoJsonUtils.makePolygon(lineCoords, trace) :
-                geoJsonUtils.makeLine(lineCoords, trace);
+                geoJsonUtils.makePolygon(lineCoords) :
+                geoJsonUtils.makeLine(lineCoords);
 
             s.selectAll('path.js-line')
-                .data([lineData])
+                .data([{geojson: lineData, trace: trace}])
               .enter().append('path')
-                .classed('js-line', true);
+                .classed('js-line', true)
         }
 
         if(subTypes.hasMarkers(trace)) {
@@ -86,7 +85,7 @@ module.exports = function plot(geo, calcData) {
     style(geo);
 };
 
-function fillLocationLonLat(calcTrace, topojson) {
+function calcGeoJSON(calcTrace, topojson) {
     var trace = calcTrace[0].trace;
 
     if(!Array.isArray(trace.locations)) return;
