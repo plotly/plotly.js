@@ -162,10 +162,12 @@ describe('Test histogram', function() {
 
 
     describe('calc', function() {
-        function _calc(opts, extraTraces) {
+        function _calc(opts, extraTraces, layout) {
             var base = { type: 'histogram' };
             var trace = Lib.extendFlat({}, base, opts);
             var gd = { data: [trace] };
+
+            if(layout) gd.layout = layout;
 
             if(Array.isArray(extraTraces)) {
                 extraTraces.forEach(function(extraTrace) {
@@ -277,6 +279,71 @@ describe('Test histogram', function() {
 
             expect(out).toEqual([
                 {b: 0, p: 3, s: 3, width1: 2}
+            ]);
+        });
+
+        it('handles single-value overlaid autobinned data with other manual bins', function() {
+            var out = _calc({x: [1.1, 1.1, 1.1]}, [
+                {x: [1, 2, 3, 4], xbins: {start: 0.5, end: 4.5, size: 2}},
+                {x: [10, 10.5, 11, 11.5], xbins: {start: 9.8, end: 11.8, size: 0.5}}
+            ], {
+                barmode: 'overlay'
+            });
+
+            expect(out).toEqual([
+                {b: 0, p: 1.1, s: 3, width1: 0.5}
+            ]);
+        });
+
+        it('handles single-value overlaid autobinned data with other auto bins', function() {
+            var out = _calc({x: ['', null, 17, '', 17]}, [
+                {x: [10, 20, 30, 40]},
+                {x: [100, 101, 102, 103]}
+            ], {
+                barmode: 'overlay'
+            });
+
+            expect(out).toEqual([
+                {b: 0, p: 17, s: 2, width1: 2}
+            ]);
+        });
+
+        it('handles multiple single-valued overlaid autobinned traces with different values', function() {
+            var out = _calc({x: [null, 13, '', 13]}, [
+                {x: [5]},
+                {x: [null, 29, 29, 29, null]}
+            ], {
+                barmode: 'overlay'
+            });
+
+            expect(out).toEqual([
+                {b: 0, p: 13, s: 2, width1: 8}
+            ]);
+        });
+
+        it('handles multiple single-date overlaid autobinned traces with different values', function() {
+            var out = _calc({x: [null, '2011-02-03', '', '2011-02-03']}, [
+                {x: ['2011-02-05']},
+                {x: [null, '2015-05-05', '2015-05-05', '2015-05-05', null]}
+            ], {
+                barmode: 'overlay'
+            });
+
+            expect(out).toEqual([
+                {b: 0, p: 1296691200000, s: 2, width1: 2 * 24 * 3600 * 1000}
+            ]);
+        });
+
+        it('handles several overlaid autobinned traces with only one value total', function() {
+            var out = _calc({x: [null, 97, '', 97]}, [
+                {x: [97]},
+                {x: [null, 97, 97, 97, null]}
+            ], {
+                barmode: 'overlay'
+            });
+
+            expect(out).toEqual([
+                {b: 0, p: 97, s: 2, width1: 1}
             ]);
         });
 
