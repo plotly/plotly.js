@@ -55,7 +55,7 @@ function createLineWithMarkers(container, plotinfo, cdscatter) {
     }
 
     container._fullData.forEach(function(data, i) {
-        scatter.update(data, cdscatter[i]);
+        scatter.update(cdscatter[i]);
     });
 
     return scatter;
@@ -158,8 +158,10 @@ proto.updateRange = function(range) {
 }
 
 
-proto.update = function(options, cdscatter) {
-     var container = this.container,
+proto.update = function(cdscatter) {
+    var options = cdscatter[0].trace;
+
+    var container = this.container,
         xaxis = Axes.getFromId(container, options.xaxis || 'x'),
         yaxis = Axes.getFromId(container, options.yaxis || 'y'),
         bounds = this.bounds,
