@@ -83,6 +83,9 @@
             "projection": {
                 "type": "conic equal area"
             },
+            "center": {
+                "lat": 35
+            },
             "showframe": false,
             "showrivers": true,
             "showlakes": true,
