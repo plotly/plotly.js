@@ -9,7 +9,7 @@
 
 'use strict';
 
-var createGeo = require('./geo2');
+var createGeo = require('./geo');
 var Plots = require('../../plots/plots');
 var counterRegex = require('../../lib').counterRegex;
 

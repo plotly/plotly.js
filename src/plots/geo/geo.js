@@ -6,297 +6,616 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 /* global PlotlyGeoAssets:false */
 
 var d3 = require('d3');
 
+var Plotly = require('../../plotly');
+var Lib = require('../../lib');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Fx = require('../../components/fx');
 var Plots = require('../plots');
 var Axes = require('../cartesian/axes');
+var dragElement = require('../../components/dragelement');
+var prepSelect = require('../cartesian/select');
 
-var addProjectionsToD3 = require('./projections');
-var createGeoScale = require('./set_scale');
 var createGeoZoom = require('./zoom');
-var createGeoZoomReset = require('./zoom_reset');
 var constants = require('./constants');
 
 var topojsonUtils = require('../../lib/topojson_utils');
 var topojsonFeature = require('topojson-client').feature;
 
-// add a few projection types to d3.geo
-addProjectionsToD3(d3);
+require('./projections')(d3);
 
-
-function Geo(options) {
-    this.id = options.id;
-    this.graphDiv = options.graphDiv;
-    this.container = options.container;
-    this.topojsonURL = options.topojsonURL;
+function Geo(opts) {
+    this.id = opts.id;
+    this.graphDiv = opts.graphDiv;
+    this.container = opts.container;
+    this.topojsonURL = opts.topojsonURL;
+    this.isStatic = opts.staticPlot;
 
     this.topojsonName = null;
     this.topojson = null;
 
-    this.projectionType = null;
     this.projection = null;
+    this.fitScale = null;
+    this.bounds = null;
+    this.midPt = null;
 
-    this.clipAngle = null;
-    this.setScale = null;
-    this.path = null;
+    this.hasChoropleth = false;
+    this.traceHash = {};
 
-    this.zoom = null;
-    this.zoomReset = null;
+    this.layers = {};
+    this.basePaths = {};
+    this.dataPaths = {};
+    this.dataPoints = {};
+
+    this.clipDef = null;
+    this.clipRect = null;
+    this.bgRect = null;
 
     this.makeFramework();
-
-    this.traceHash = {};
 }
-
-module.exports = Geo;
 
 var proto = Geo.prototype;
 
+module.exports = function createGeo(opts) {
+    return new Geo(opts);
+};
+
 proto.plot = function(geoCalcData, fullLayout, promises) {
-    var _this = this,
-        geoLayout = fullLayout[_this.id],
-        graphSize = fullLayout._size;
-
-    var topojsonNameNew, topojsonPath;
-
-    // N.B. 'geoLayout' is unambiguous, no need for 'user' geo layout here
-
-    // TODO don't reset projection on all graph edits
-    _this.projection = null;
-
-    _this.setScale = createGeoScale(geoLayout, graphSize);
-    _this.makeProjection(geoLayout);
-    _this.makePath();
-    _this.adjustLayout(geoLayout, graphSize);
-
-    _this.zoom = createGeoZoom(_this, geoLayout);
-    _this.zoomReset = createGeoZoomReset(_this, geoLayout);
-    _this.mockAxis = createMockAxis(fullLayout);
-
-    _this.framework
-        .call(_this.zoom)
-        .on('dblclick.zoom', _this.zoomReset);
-
-    _this.framework.on('mousemove', function() {
-        var mouse = d3.mouse(this),
-            lonlat = _this.projection.invert(mouse);
-
-        if(!lonlat || isNaN(lonlat[0]) || isNaN(lonlat[1])) return;
-
-        var evt = d3.event;
-        evt.xpx = mouse[0];
-        evt.ypx = mouse[1];
-
-        _this.xaxis.c2p = function() { return mouse[0]; };
-        _this.xaxis.p2c = function() { return lonlat[0]; };
-        _this.yaxis.c2p = function() { return mouse[1]; };
-        _this.yaxis.p2c = function() { return lonlat[1]; };
-
-        Fx.hover(_this.graphDiv, evt, _this.id);
-    });
-
-    _this.framework.on('mouseout', function() {
-        Fx.loneUnhover(fullLayout._toppaper);
-    });
-
-    _this.framework.on('click', function() {
-        Fx.click(_this.graphDiv, d3.event);
-    });
-
-    topojsonNameNew = topojsonUtils.getTopojsonName(geoLayout);
+    var _this = this;
+    var geoLayout = fullLayout[this.id];
+    var topojsonNameNew = topojsonUtils.getTopojsonName(geoLayout);
 
     if(_this.topojson === null || topojsonNameNew !== _this.topojsonName) {
         _this.topojsonName = topojsonNameNew;
 
-        if(PlotlyGeoAssets.topojson[_this.topojsonName] !== undefined) {
-            _this.topojson = PlotlyGeoAssets.topojson[_this.topojsonName];
-            _this.onceTopojsonIsLoaded(geoCalcData, geoLayout);
-        }
-        else {
-            topojsonPath = topojsonUtils.getTopojsonPath(
-                _this.topojsonURL,
-                _this.topojsonName
-            );
-
-            promises.push(new Promise(function(resolve, reject) {
-                d3.json(topojsonPath, function(error, topojson) {
-                    if(error) {
-                        if(error.status === 404) {
-                            reject(new Error([
-                                'plotly.js could not find topojson file at',
-                                topojsonPath, '.',
-                                'Make sure the *topojsonURL* plot config option',
-                                'is set properly.'
-                            ].join(' ')));
-                        }
-                        else {
-                            reject(new Error([
-                                'unexpected error while fetching topojson file at',
-                                topojsonPath
-                            ].join(' ')));
-                        }
-                        return;
-                    }
-
-                    _this.topojson = topojson;
-                    PlotlyGeoAssets.topojson[_this.topojsonName] = topojson;
-
-                    _this.onceTopojsonIsLoaded(geoCalcData, geoLayout);
-                    resolve();
-                });
+        if(PlotlyGeoAssets.topojson[_this.topojsonName] === undefined) {
+            promises.push(_this.fetchTopojson().then(function(topojson) {
+                PlotlyGeoAssets.topojson[_this.topojsonName] = topojson;
+                _this.topojson = topojson;
+                _this.update(geoCalcData, fullLayout);
             }));
+        } else {
+            _this.topojson = PlotlyGeoAssets.topojson[_this.topojsonName];
+            _this.update(geoCalcData, fullLayout);
         }
+    } else {
+        _this.update(geoCalcData, fullLayout);
     }
-    else _this.onceTopojsonIsLoaded(geoCalcData, geoLayout);
-
-    // TODO handle topojson-is-loading case
-    // to avoid making multiple request while streaming
 };
 
-proto.onceTopojsonIsLoaded = function(geoCalcData, geoLayout) {
-    this.drawLayout(geoLayout);
+proto.fetchTopojson = function() {
+    var topojsonPath = topojsonUtils.getTopojsonPath(
+        this.topojsonURL,
+        this.topojsonName
+    );
+    return new Promise(function(resolve, reject) {
+        d3.json(topojsonPath, function(err, topojson) {
+            if(err) {
+                if(err.status === 404) {
+                    return reject(new Error([
+                        'plotly.js could not find topojson file at',
+                        topojsonPath, '.',
+                        'Make sure the *topojsonURL* plot config option',
+                        'is set properly.'
+                    ].join(' ')));
+                } else {
+                    return reject(new Error([
+                        'unexpected error while fetching topojson file at',
+                        topojsonPath
+                    ].join(' ')));
+                }
+            }
+            resolve(topojson);
+        });
+    });
+};
+
+proto.update = function(geoCalcData, fullLayout) {
+    var geoLayout = fullLayout[this.id];
+
+    // important: maps with choropleth traces have a different layer order
+    this.hasChoropleth = false;
+    for(var i = 0; i < geoCalcData.length; i++) {
+        if(geoCalcData[i][0].trace.type === 'choropleth') {
+            this.hasChoropleth = true;
+            break;
+        }
+    }
+
+    this.updateProjection(fullLayout, geoLayout);
+    this.updateBaseLayers(fullLayout, geoLayout);
+    this.updateDims(fullLayout, geoLayout);
 
     Plots.generalUpdatePerTraceModule(this, geoCalcData, geoLayout);
 
+    var scatterLayer = this.layers.frontplot.select('.scatterlayer');
+    this.dataPoints.point = scatterLayer.selectAll('.point');
+    this.dataPoints.text = scatterLayer.selectAll('text');
+    this.dataPaths.line = scatterLayer.selectAll('.js-line');
+
+    var choroplethLayer = this.layers.backplot.select('.choroplethlayer');
+    this.dataPaths.choropleth = choroplethLayer.selectAll('path');
+
+    this.updateFx(fullLayout, geoLayout);
     this.render();
 };
 
-proto.makeProjection = function(geoLayout) {
-    var projLayout = geoLayout.projection,
-        projType = projLayout.type,
-        isNew = this.projection === null || projType !== this.projectionType,
-        projection;
+proto.updateProjection = function(fullLayout, geoLayout) {
+    var gs = fullLayout._size;
+    var domain = geoLayout.domain;
+    var projLayout = geoLayout.projection;
+    var rotation = projLayout.rotation || {};
+    var center = geoLayout.center || {};
 
-    if(isNew) {
-        this.projectionType = projType;
-        projection = this.projection = d3.geo[constants.projNames[projType]]();
-    }
-    else projection = this.projection;
+    var projection = this.projection = getProjection(geoLayout);
 
+    // set 'pre-fit' projection
     projection
-        .translate(projLayout._translate0)
-        .precision(constants.precision);
+        .center([center.lon - rotation.lon, center.lat - rotation.lat])
+        .rotate([-rotation.lon, -rotation.lat, rotation.roll])
+        .parallels(projLayout.parallels);
 
-    if(!geoLayout._isAlbersUsa) {
-        projection
-            .rotate(projLayout._rotate)
-            .center(projLayout._center);
+    // setup subplot extent [[x0,y0], [x1,y1]]
+    var extent = [[
+        gs.l + gs.w * domain.x[0],
+        gs.t + gs.h * (1 - domain.y[1])
+    ], [
+        gs.l + gs.w * domain.x[1],
+        gs.t + gs.h * (1 - domain.y[0])
+    ]];
+
+    var lonaxis = geoLayout.lonaxis;
+    var lataxis = geoLayout.lataxis;
+    var rangeBox = makeRangeBox(lonaxis.range, lataxis.range);
+
+    // fit projection 'scale' and 'translate' to set lon/lat ranges
+    projection.fitExtent(extent, rangeBox);
+
+    var b = this.bounds = projection.getBounds(rangeBox);
+    var s = this.fitScale = projection.scale();
+    var t = projection.translate();
+
+    if(
+        !isFinite(b[0][0]) || !isFinite(b[0][1]) ||
+        !isFinite(b[1][0]) || !isFinite(b[1][1]) ||
+        isNaN(t[0]) || isNaN(t[0])
+    ) {
+        Lib.warn('Invalid geo settings');
+
+        // TODO fallback to default ???
     }
 
-    if(geoLayout._clipAngle) {
-        this.clipAngle = geoLayout._clipAngle;  // needed in proto.render
-        projection
-            .clipAngle(geoLayout._clipAngle - constants.clipPad);
-    }
-    else this.clipAngle = null;  // for graph edits
+    // px coordinates of view mid-point,
+    // useful to update `geo.center` after interactions
+    var midPt = this.midPt = [
+        b[0][0] + (b[1][0] - b[0][0]) / 2,
+        b[0][1] + (b[1][1] - b[0][1]) / 2
+    ];
 
-    if(projLayout.parallels) {
-        projection
-            .parallels(projLayout.parallels);
-    }
-
-    if(isNew) this.setScale(projection);
-
+    // adjust projection to user setting
     projection
-        .translate(projLayout._translate)
-        .scale(projLayout._scale);
+        .scale(projLayout.scale * s)
+        .translate([t[0] + (midPt[0] - t[0]), t[1] + (midPt[1] - t[1])])
+        .clipExtent(b);
+
+    // the 'albers usa' projection does not expose a 'center' method
+    // so here's this hack to make it respond to 'geoLayout.center'
+    if(geoLayout._isAlbersUsa) {
+        var centerPx = projection([center.lon, center.lat]);
+        var tt = projection.translate();
+
+        projection.translate([
+            tt[0] - (centerPx[0] - tt[0]),
+            tt[1] - (centerPx[1] - tt[1])
+        ]);
+    }
 };
 
-proto.makePath = function() {
-    this.path = d3.geo.path().projection(this.projection);
+proto.updateBaseLayers = function(fullLayout, geoLayout) {
+    var _this = this;
+    var topojson = _this.topojson;
+    var layers = _this.layers;
+    var basePaths = _this.basePaths;
+
+    function isAxisLayer(d) {
+        return (d === 'lonaxis' || d === 'lataxis');
+    }
+
+    function isTopoLayer(d) {
+        return (
+            constants.fillLayers.indexOf(d) !== -1 ||
+            constants.lineLayers.indexOf(d) !== -1
+        );
+    }
+
+    var allLayers = this.hasChoropleth ?
+        constants.layersForChoropleth :
+        constants.layers;
+
+    var layerData = allLayers.filter(function(d) {
+        return isTopoLayer(d) ? geoLayout['show' + d] :
+            isAxisLayer(d) ? geoLayout[d].showgrid :
+            true;
+    });
+
+    var join = _this.framework.selectAll('.layer')
+        .data(layerData, String);
+
+    join.exit().each(function(d) {
+        delete layers[d];
+        delete basePaths[d];
+        d3.select(this).remove();
+    });
+
+    join.enter().append('g')
+        .attr('class', function(d) { return 'layer ' + d; })
+        .each(function(d) {
+            var layer = layers[d] = d3.select(this);
+
+            if(d === 'bg') {
+                _this.bgRect = layer.append('rect').style('pointer-events', 'all');
+            } else if(isAxisLayer(d)) {
+                basePaths[d] = layer.append('path');
+            } else if(d === 'backplot') {
+                layer.append('g').classed('choroplethlayer', true);
+            } else if(d === 'frontplot') {
+                layer.append('g').classed('scatterlayer', true);
+            } else if(isTopoLayer(d)) {
+                basePaths[d] = layer.append('path');
+            }
+        });
+
+    join.order();
+
+    join.each(function(d) {
+        var path = basePaths[d];
+        var adj = constants.layerNameToAdjective[d];
+
+        if(d === 'frame') {
+            path.datum(constants.sphereSVG);
+        } else if(isTopoLayer(d)) {
+            path.datum(topojsonFeature(topojson, topojson.objects[d]));
+        } else if(isAxisLayer(d)) {
+            path.datum(makeGraticule(d, geoLayout))
+                .attr('fill', 'none')
+                .call(Color.stroke, geoLayout[d].gridcolor)
+                .call(Drawing.dashLine, '', geoLayout[d].gridwidth);
+        }
+
+        if(constants.fillLayers.indexOf(d) !== -1) {
+            path.attr('stroke', 'none')
+                .call(Color.fill, geoLayout[adj + 'color']);
+        } else if(constants.lineLayers.indexOf(d) !== -1) {
+            path.attr('fill', 'none')
+                .call(Color.stroke, geoLayout[adj + 'color'])
+                .call(Drawing.dashLine, '', geoLayout[adj + 'width']);
+        }
+    });
+};
+
+proto.updateDims = function(fullLayout, geoLayout) {
+    var b = this.bounds;
+    var hFrameWidth = (geoLayout.framewidth || 0) / 2;
+
+    var l = b[0][0] - hFrameWidth;
+    var t = b[0][1] - hFrameWidth;
+    var w = b[1][0] - l + hFrameWidth;
+    var h = b[1][1] - t + hFrameWidth;
+
+    Drawing.setRect(this.clipRect, l, t, w, h);
+
+    this.bgRect
+        .call(Drawing.setRect, l, t, w, h)
+        .call(Color.fill, geoLayout.bgcolor);
+
+    this.xaxis._offset = l;
+    this.xaxis._length = w;
+
+    this.yaxis._offset = t;
+    this.yaxis._length = h;
+};
+
+proto.updateFx = function(fullLayout, geoLayout) {
+    var _this = this;
+    var framework = _this.framework;
+    var gd = _this.graphDiv;
+    var dragMode = fullLayout.dragmode;
+
+    if(_this.isStatic) return;
+
+    function zoomReset() {
+        var viewInitial = _this.viewInitial;
+        var updateObj = {};
+
+        for(var k in viewInitial) {
+            updateObj[_this.id + '.' + k] = viewInitial[k];
+        }
+
+        Plotly.relayout(gd, updateObj);
+        gd.emit('plotly_doubleclick', null);
+    }
+
+    function invert(lonlat) {
+        return _this.projection.invert([
+            lonlat[0] + _this.xaxis._offset,
+            lonlat[1] + _this.yaxis._offset
+        ]);
+    }
+
+    if(dragMode === 'pan') {
+        _this.bgRect.node().onmousedown = null;
+        framework.call(createGeoZoom(_this, geoLayout));
+        framework.on('dblclick.zoom', zoomReset);
+    }
+    else if(dragMode === 'select' || dragMode === 'lasso') {
+        framework.on('.zoom', null);
+
+        var fillRangeItems;
+
+        if(dragMode === 'select') {
+            fillRangeItems = function(eventData, poly) {
+                var ranges = eventData.range = {};
+                ranges[_this.id] = [
+                    invert([poly.xmin, poly.ymin]),
+                    invert([poly.xmax, poly.ymax])
+                ];
+            };
+        } else if(dragMode === 'lasso') {
+            fillRangeItems = function(eventData, poly, pts) {
+                var dataPts = eventData.lassoPoints = {};
+                dataPts[_this.id] = pts.filtered.map(invert);
+            };
+        }
+
+        var dragOptions = {
+            element: _this.bgRect.node(),
+            gd: gd,
+            plotinfo: {
+                xaxis: _this.xaxis,
+                yaxis: _this.yaxis,
+                fillRangeItems: fillRangeItems
+            },
+            xaxes: [_this.xaxis],
+            yaxes: [_this.yaxis],
+            subplot: _this.id
+        };
+
+        dragOptions.prepFn = function(e, startX, startY) {
+            prepSelect(e, startX, startY, dragOptions, dragMode);
+        };
+
+        dragOptions.doneFn = function(dragged, numClicks) {
+            if(numClicks === 2) {
+                fullLayout._zoomlayer.selectAll('.select-outline').remove();
+            }
+        };
+
+        dragElement.init(dragOptions);
+    }
+
+    framework.on('mousemove', function() {
+        var lonlat = _this.projection.invert(d3.mouse(this));
+
+        if(!lonlat || isNaN(lonlat[0]) || isNaN(lonlat[1])) return;
+
+        _this.xaxis.p2c = function() { return lonlat[0]; };
+        _this.yaxis.p2c = function() { return lonlat[1]; };
+
+        Fx.hover(gd, d3.event, _this.id);
+    });
+
+    framework.on('mouseout', function() {
+        Fx.loneUnhover(fullLayout._toppaper);
+    });
+
+    framework.on('click', function() {
+        Fx.click(gd, d3.event);
+    });
 };
 
 proto.makeFramework = function() {
-    var fullLayout = this.graphDiv._fullLayout;
-    var clipId = 'clip' + fullLayout._uid + this.id;
+    var _this = this;
+    var fullLayout = _this.graphDiv._fullLayout;
+    var clipId = 'clip' + fullLayout._uid + _this.id;
 
     var defGroup = fullLayout._defs.selectAll('g.clips')
         .data([0]);
     defGroup.enter().append('g')
         .classed('clips', true);
 
-    var clipDef = this.clipDef = defGroup.selectAll('#' + clipId)
-        .data([0]);
+    _this.clipDef = defGroup.append('clipPath')
+        .attr('id', clipId);
 
-    clipDef.enter().append('clipPath').attr('id', clipId)
-        .append('rect');
+    _this.clipRect = this.clipDef.append('rect');
 
-    var framework = this.framework = d3.select(this.container).append('g');
-
-    framework
-        .attr('class', 'geo ' + this.id)
-        .style('pointer-events', 'all')
+    _this.framework = d3.select(_this.container).append('g')
+        .attr('class', 'geo ' + _this.id)
         .call(Drawing.setClipUrl, clipId);
 
-    framework.append('g')
-        .attr('class', 'bglayer')
-        .append('rect');
-
-    framework.append('g').attr('class', 'baselayer');
-    framework.append('g').attr('class', 'choroplethlayer');
-    framework.append('g').attr('class', 'baselayeroverchoropleth');
-    framework.append('g').attr('class', 'scattergeolayer');
-
-    // N.B. disable dblclick zoom default
-    framework.on('dblclick.zoom', null);
-
-    this.xaxis = { _id: 'x' };
-    this.yaxis = { _id: 'y' };
-};
-
-proto.adjustLayout = function(geoLayout, graphSize) {
-    var domain = geoLayout.domain;
-
-    var left = graphSize.l + graphSize.w * domain.x[0] + geoLayout._marginX,
-        top = graphSize.t + graphSize.h * (1 - domain.y[1]) + geoLayout._marginY;
-
-    Drawing.setTranslate(this.framework, left, top);
-
-    var dimsAttrs = {
-        x: 0,
-        y: 0,
-        width: geoLayout._width,
-        height: geoLayout._height
+    _this.xaxis = {
+        _id: 'x',
+        c2p: function(v) {
+            return (_this.projection(v) || [])[0] - _this.xaxis._offset;
+        }
     };
 
-    this.clipDef.select('rect')
-        .attr(dimsAttrs);
+    _this.yaxis = {
+        _id: 'y',
+        c2p: function(v) {
+            return (_this.projection(v) || [])[1] - _this.yaxis._offset;
+        }
+    };
 
-    this.framework.select('.bglayer').select('rect')
-        .attr(dimsAttrs)
-        .call(Color.fill, geoLayout.bgcolor);
+    // mock axis for hover formatting
+    _this.mockAxis = {
+        type: 'linear',
+        showexponent: 'all',
+        exponentformat: 'B'
+    };
+    Axes.setConvert(_this.mockAxis, fullLayout);
 
-    this.xaxis._offset = left;
-    this.xaxis._length = geoLayout._width;
+    var geoLayout = fullLayout[_this.id];
+    var center = geoLayout.center || {};
+    var projLayout = geoLayout.projection;
+    var rotation = projLayout.rotation || {};
 
-    this.yaxis._offset = top;
-    this.yaxis._length = geoLayout._height;
+    if(geoLayout._isScoped) {
+        _this.viewInitial = {
+            'center.lon': center.lon,
+            'center.lat': center.lat,
+            'projection.scale': projLayout.scale
+        };
+    } else if(geoLayout._isClipped) {
+        _this.viewInitial = {
+            'projection.scale': projLayout.scale,
+            'projection.rotation.lon': rotation.lon,
+            'projection.rotation.lat': rotation.lat
+        };
+    } else {
+        _this.viewInitial = {
+            'center.lon': center.lon,
+            'center.lat': center.lat,
+            'projection.scale': projLayout.scale,
+            'projection.rotation.lon': rotation.lon
+        };
+    }
 };
 
-proto.drawTopo = function(selection, layerName, geoLayout) {
-    if(geoLayout['show' + layerName] !== true) return;
+// [hot code path] (re)draw all paths which depend on the projection
+proto.render = function() {
+    var projection = this.projection;
+    var pathFn = projection.getPath();
+    var k;
 
-    var topojson = this.topojson,
-        datum = layerName === 'frame' ?
-            constants.sphereSVG :
-            topojsonFeature(topojson, topojson.objects[layerName]);
+    function translatePoints(d) {
+        var lonlatPx = projection(d.lonlat);
+        return lonlatPx ?
+            'translate(' + lonlatPx[0] + ',' + lonlatPx[1] + ')' :
+             null;
+    }
 
-    selection.append('g')
-        .datum(datum)
-        .attr('class', layerName)
-          .append('path')
-            .attr('class', 'basepath');
+    function hideShowPoints(d) {
+        return projection.isLonLatOverEdges(d.lonlat) ? 'none' : null;
+    }
+
+    for(k in this.basePaths) {
+        this.basePaths[k].attr('d', pathFn);
+    }
+
+    for(k in this.dataPaths) {
+        this.dataPaths[k].attr('d', function(d) { return pathFn(d.geojson); });
+    }
+
+    for(k in this.dataPoints) {
+        this.dataPoints[k]
+            .attr('display', hideShowPoints)
+            .attr('transform', translatePoints);
+    }
 };
 
-function makeGraticule(lonaxisRange, lataxisRange, step) {
+// Helper that wraps d3.geo[/* projection name /*]() which:
+//
+// - adds 'fitExtent' (available in d3 v4)
+// - adds 'getPath', 'getBounds' convenience methods
+// - scopes logic related to 'clipAngle'
+// - adds 'isLonLatOverEdges' method
+// - sets projection precision
+// - sets methods that aren't always defined depending
+//   on the projection type to a dummy 'd3-esque' function,
+//
+// This wrapper alleviates subsequent code of (many) annoying if-statements.
+function getProjection(geoLayout) {
+    var projLayout = geoLayout.projection;
+    var projType = projLayout.type;
+
+    var projection = d3.geo[constants.projNames[projType]]();
+
+    var clipAngle = geoLayout._isClipped ?
+        constants.lonaxisSpan[projType] / 2 :
+        null;
+
+    var methods = ['center', 'rotate', 'parallels', 'clipExtent'];
+    var dummyFn = function(_) { return _ ? projection : []; };
+
+    for(var i = 0; i < methods.length; i++) {
+        var m = methods[i];
+        if(typeof projection[m] !== 'function') {
+            projection[m] = dummyFn;
+        }
+    }
+
+    projection.isLonLatOverEdges = function(lonlat) {
+        if(projection(lonlat) === null) {
+            return true;
+        }
+
+        if(clipAngle) {
+            var r = projection.rotate();
+            var angle = d3.geo.distance(lonlat, [-r[0], -r[1]]);
+            var maxAngle = clipAngle * Math.PI / 180;
+            return angle > maxAngle;
+        } else {
+            // TODO does this ever happen??
+            return false;
+        }
+    };
+
+    projection.getPath = function() {
+        return d3.geo.path().projection(projection);
+    };
+
+    projection.getBounds = function(object) {
+        return projection.getPath().bounds(object);
+    };
+
+    // adapted from d3 v4:
+    // https://github.com/d3/d3-geo/blob/master/src/projection/fit.js
+    projection.fitExtent = function(extent, object) {
+        var w = extent[1][0] - extent[0][0];
+        var h = extent[1][1] - extent[0][1];
+        var clip = projection.clipExtent && projection.clipExtent();
+
+        projection
+            .scale(150)
+            .translate([0, 0]);
+
+        if(clip) projection.clipExtent(null);
+
+        var b = projection.getBounds(object);
+        var k = Math.min(w / (b[1][0] - b[0][0]), h / (b[1][1] - b[0][1]));
+        var x = +extent[0][0] + (w - k * (b[1][0] + b[0][0])) / 2;
+        var y = +extent[0][1] + (h - k * (b[1][1] + b[0][1])) / 2;
+
+        if(clip) projection.clipExtent(clip);
+
+        return projection
+            .scale(k * 150)
+            .translate([x, y]);
+    };
+
+    projection.precision(constants.precision);
+
+    if(clipAngle) {
+        projection.clipAngle(clipAngle - constants.clipPad);
+    }
+
+    return projection;
+}
+
+function makeGraticule(axisName, geoLayout) {
+    var axisLayout = geoLayout[axisName];
+    var dtick = axisLayout.dtick;
+    var scopeDefaults = constants.scopeDefaults[geoLayout.scope];
+    var lonaxisRange = scopeDefaults.lonaxisRange;
+    var lataxisRange = scopeDefaults.lataxisRange;
+    var step = axisName === 'lonaxis' ? [dtick] : [0, dtick];
+
     return d3.geo.graticule()
         .extent([
             [lonaxisRange[0], lataxisRange[0]],
@@ -305,167 +624,36 @@ function makeGraticule(lonaxisRange, lataxisRange, step) {
         .step(step);
 }
 
-proto.drawGraticule = function(selection, axisName, geoLayout) {
-    var axisLayout = geoLayout[axisName];
+// Returns polygon GeoJSON corresponding to lon/lat range box
+// with well-defined direction
+//
+// Note that clipPad padding is added around range to avoid aliasing.
+function makeRangeBox(lon, lat) {
+    var clipPad = constants.clipPad;
+    var lon0 = lon[0] + clipPad;
+    var lon1 = lon[1] - clipPad;
+    var lat0 = lat[0] + clipPad;
+    var lat1 = lat[1] - clipPad;
 
-    if(axisLayout.showgrid !== true) return;
+    // to cross antimeridian w/o ambiguity
+    if(lon0 > 0 && lon1 < 0) lon1 += 360;
 
-    var scopeDefaults = constants.scopeDefaults[geoLayout.scope],
-        lonaxisRange = scopeDefaults.lonaxisRange,
-        lataxisRange = scopeDefaults.lataxisRange,
-        step = axisName === 'lonaxis' ?
-            [axisLayout.dtick] :
-            [0, axisLayout.dtick],
-        graticule = makeGraticule(lonaxisRange, lataxisRange, step);
+    var dlon4 = (lon1 - lon0) / 4;
 
-    selection.append('g')
-        .datum(graticule)
-        .attr('class', axisName + 'graticule')
-            .append('path')
-                .attr('class', 'graticulepath');
-};
-
-proto.drawLayout = function(geoLayout) {
-    var gBaseLayer = this.framework.select('g.baselayer'),
-        baseLayers = constants.baseLayers,
-        axesNames = constants.axesNames,
-        layerName;
-
-    // TODO move to more d3-idiomatic pattern (that's work on replot)
-    // N.B. html('') does not work in IE11
-    gBaseLayer.selectAll('*').remove();
-
-    for(var i = 0; i < baseLayers.length; i++) {
-        layerName = baseLayers[i];
-
-        if(axesNames.indexOf(layerName) !== -1) {
-            this.drawGraticule(gBaseLayer, layerName, geoLayout);
-        }
-        else this.drawTopo(gBaseLayer, layerName, geoLayout);
-    }
-
-    this.styleLayout(geoLayout);
-};
-
-function styleFillLayer(selection, layerName, geoLayout) {
-    var layerAdj = constants.layerNameToAdjective[layerName];
-
-    selection.select('.' + layerName)
-        .selectAll('path')
-            .attr('stroke', 'none')
-            .call(Color.fill, geoLayout[layerAdj + 'color']);
-}
-
-function styleLineLayer(selection, layerName, geoLayout) {
-    var layerAdj = constants.layerNameToAdjective[layerName];
-
-    selection.select('.' + layerName)
-        .selectAll('path')
-            .attr('fill', 'none')
-            .call(Color.stroke, geoLayout[layerAdj + 'color'])
-            .call(Drawing.dashLine, '', geoLayout[layerAdj + 'width']);
-}
-
-function styleGraticule(selection, axisName, geoLayout) {
-    selection.select('.' + axisName + 'graticule')
-        .selectAll('path')
-            .attr('fill', 'none')
-            .call(Color.stroke, geoLayout[axisName].gridcolor)
-            .call(Drawing.dashLine, '', geoLayout[axisName].gridwidth);
-}
-
-proto.styleLayer = function(selection, layerName, geoLayout) {
-    var fillLayers = constants.fillLayers,
-        lineLayers = constants.lineLayers;
-
-    if(fillLayers.indexOf(layerName) !== -1) {
-        styleFillLayer(selection, layerName, geoLayout);
-    }
-    else if(lineLayers.indexOf(layerName) !== -1) {
-        styleLineLayer(selection, layerName, geoLayout);
-    }
-};
-
-proto.styleLayout = function(geoLayout) {
-    var gBaseLayer = this.framework.select('g.baselayer'),
-        baseLayers = constants.baseLayers,
-        axesNames = constants.axesNames,
-        layerName;
-
-    for(var i = 0; i < baseLayers.length; i++) {
-        layerName = baseLayers[i];
-
-        if(axesNames.indexOf(layerName) !== -1) {
-            styleGraticule(gBaseLayer, layerName, geoLayout);
-        }
-        else this.styleLayer(gBaseLayer, layerName, geoLayout);
-    }
-};
-
-proto.isLonLatOverEdges = function(lonlat) {
-    var clipAngle = this.clipAngle;
-
-    if(clipAngle === null) return false;
-
-    var p = this.projection.rotate(),
-        angle = d3.geo.distance(lonlat, [-p[0], -p[1]]),
-        maxAngle = clipAngle * Math.PI / 180;
-
-    return angle > maxAngle;
-};
-
-// [hot code path] (re)draw all paths which depend on the projection
-proto.render = function() {
-    var _this = this,
-        framework = _this.framework,
-        gChoropleth = framework.select('g.choroplethlayer'),
-        gScatterGeo = framework.select('g.scattergeolayer'),
-        path = _this.path;
-
-    function translatePoints(d) {
-        var lonlatPx = _this.projection(d.lonlat);
-        if(!lonlatPx) return null;
-
-        return 'translate(' + lonlatPx[0] + ',' + lonlatPx[1] + ')';
-    }
-
-    // hide paths over edges of clipped projections
-    function hideShowPoints(d) {
-        return _this.isLonLatOverEdges(d.lonlat) ? '0' : '1.0';
-    }
-
-    framework.selectAll('path.basepath').attr('d', path);
-    framework.selectAll('path.graticulepath').attr('d', path);
-
-    gChoropleth.selectAll('path.choroplethlocation').attr('d', path);
-    gChoropleth.selectAll('path.basepath').attr('d', path);
-
-    gScatterGeo.selectAll('path.js-line').attr('d', path);
-
-    if(_this.clipAngle !== null) {
-        gScatterGeo.selectAll('path.point')
-            .style('opacity', hideShowPoints)
-            .attr('transform', translatePoints);
-        gScatterGeo.selectAll('text')
-            .style('opacity', hideShowPoints)
-            .attr('transform', translatePoints);
-    }
-    else {
-        gScatterGeo.selectAll('path.point')
-            .attr('transform', translatePoints);
-        gScatterGeo.selectAll('text')
-            .attr('transform', translatePoints);
-    }
-};
-
-// create a mock axis used to format hover text
-function createMockAxis(fullLayout) {
-    var mockAxis = {
-        type: 'linear',
-        showexponent: 'all',
-        exponentformat: Axes.layoutAttributes.exponentformat.dflt
+    return {
+        type: 'Polygon',
+        coordinates: [[
+            [lon0, lat0],
+            [lon0, lat1],
+            [lon0 + dlon4, lat1],
+            [lon0 + 2 * dlon4, lat1],
+            [lon0 + 3 * dlon4, lat1],
+            [lon1, lat1],
+            [lon1, lat0],
+            [lon1 - dlon4, lat0],
+            [lon1 - 2 * dlon4, lat0],
+            [lon1 - 3 * dlon4, lat0],
+            [lon0, lat0]
+        ]]
     };
-
-    Axes.setConvert(mockAxis, fullLayout);
-    return mockAxis;
 }
