@@ -2401,7 +2401,8 @@ describe('Test axes', function() {
             expect(out).toEqual({
                 start: -0.5,
                 end: 2.5,
-                size: 1
+                size: 1,
+                _count: 3
             });
         });
 
@@ -2414,7 +2415,8 @@ describe('Test axes', function() {
             expect(out).toEqual({
                 start: undefined,
                 end: undefined,
-                size: 2
+                size: 2,
+                _count: NaN
             });
         });
 
@@ -2427,7 +2429,8 @@ describe('Test axes', function() {
             expect(out).toEqual({
                 start: undefined,
                 end: undefined,
-                size: 2
+                size: 2,
+                _count: NaN
             });
         });
 
@@ -2440,7 +2443,8 @@ describe('Test axes', function() {
             expect(out).toEqual({
                 start: undefined,
                 end: undefined,
-                size: 2
+                size: 2,
+                _count: NaN
             });
         });
 
@@ -2453,7 +2457,8 @@ describe('Test axes', function() {
             expect(out).toEqual({
                 start: 0.5,
                 end: 4.5,
-                size: 1
+                size: 1,
+                _count: 4
             });
         });
 
@@ -2470,7 +2475,8 @@ describe('Test axes', function() {
             expect(out).toEqual({
                 start: -0.5,
                 end: 5.5,
-                size: 2
+                size: 2,
+                _count: 3
             });
         });
     });
