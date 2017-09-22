@@ -11,7 +11,6 @@
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
 var Plots = require('../../plots/plots');
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
@@ -594,7 +593,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                     },
                     doneFn: function(dragged) {
                         if(dragged) {
-                            Plotly.relayout(gd, update);
+                            gd._plotAPI.relayout(update);
                             var notesBox = document.querySelector('.js-notes-box-panel');
                             if(notesBox) notesBox.redraw(notesBox.selectedObj);
                         }
@@ -675,7 +674,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 doneFn: function(dragged) {
                     setCursor(annTextGroupInner);
                     if(dragged) {
-                        Plotly.relayout(gd, update);
+                        gd._plotAPI.relayout(update);
                         var notesBox = document.querySelector('.js-notes-box-panel');
                         if(notesBox) notesBox.redraw(notesBox.selectedObj);
                     }
@@ -701,7 +700,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                     update[ya._name + '.autorange'] = true;
                 }
 
-                Plotly.relayout(gd, update);
+                gd._plotAPI.relayout(update);
             });
     }
     else annText.call(textLayout);

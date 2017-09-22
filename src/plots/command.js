@@ -9,7 +9,6 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
 var Lib = require('../lib');
 
 /*
@@ -264,9 +263,9 @@ function bindingValueHasChanged(gd, binding, cache) {
 exports.executeAPICommand = function(gd, method, args) {
     if(method === 'skip') return Promise.resolve();
 
-    var apiMethod = Plotly[method];
+    var apiMethod = gd._plotAPI[method];
 
-    var allArgs = [gd];
+    var allArgs = [];
 
     if(!Array.isArray(args)) args = [];
 

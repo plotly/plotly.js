@@ -13,8 +13,8 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 var hasHover = require('has-hover');
+var defaultConfig = require('./plot_config');
 
-var Plotly = require('../plotly');
 var Lib = require('../lib');
 var Events = require('../lib/events');
 var Queue = require('../lib/queue');
@@ -23,6 +23,7 @@ var Registry = require('../registry');
 var PlotSchema = require('./plot_schema');
 var Plots = require('../plots/plots');
 var Polar = require('../plots/polar');
+var Axes = require('../plots/cartesian/axes');
 var initInteractions = require('../plots/cartesian/graph_interact');
 
 var Drawing = require('../components/drawing');
@@ -41,7 +42,13 @@ var axisConstraints = require('../plots/cartesian/constraints');
 var enforceAxisConstraints = axisConstraints.enforce;
 var cleanAxisConstraints = axisConstraints.clean;
 var axisIds = require('../plots/cartesian/axis_ids');
+var bindPlotAPI = require('./bind_plot_api');
 
+
+var Plotly = {};
+module.exports = Plotly;
+
+Plotly.purge = require('./purge');
 
 /**
  * Main plot-creation function
@@ -61,6 +68,7 @@ Plotly.plot = function(gd, data, layout, config) {
     var frames;
 
     gd = helpers.getGraphDiv(gd);
+    bindPlotAPI(gd, Plotly);
 
     // Events.init is idempotent and bails early if gd has already been init'd
     Events.init(gd);
@@ -85,7 +93,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
     function addFrames() {
         if(frames) {
-            return Plotly.addFrames(gd, frames);
+            return gd._plotAPI.addFrames(frames);
         }
     }
 
@@ -164,7 +172,7 @@ Plotly.plot = function(gd, data, layout, config) {
     Drawing.initGradients(gd);
 
     // save initial show spikes once per graph
-    if(graphWasEmpty) Plotly.Axes.saveShowSpikeInitial(gd);
+    if(graphWasEmpty) Axes.saveShowSpikeInitial(gd);
 
     // prepare the data and find the autorange
 
@@ -279,24 +287,24 @@ Plotly.plot = function(gd, data, layout, config) {
     function doAutoRangeAndConstraints() {
         if(gd._transitioning) return;
 
-        var axList = Plotly.Axes.list(gd, '', true);
+        var axList = Axes.list(gd, '', true);
         for(var i = 0; i < axList.length; i++) {
             var ax = axList[i];
             cleanAxisConstraints(gd, ax);
 
-            Plotly.Axes.doAutoRange(ax);
+            Axes.doAutoRange(ax);
         }
 
         enforceAxisConstraints(gd);
 
         // store initial ranges *after* enforcing constraints, otherwise
         // we will never look like we're at the initial ranges
-        if(graphWasEmpty) Plotly.Axes.saveRangeInitial(gd);
+        if(graphWasEmpty) Axes.saveRangeInitial(gd);
     }
 
     // draw ticks, titles, and calculate axis scaling (._b, ._m)
     function drawAxes() {
-        return Plotly.Axes.doTicks(gd, 'redraw');
+        return Axes.doTicks(gd, 'redraw');
     }
 
     // Now plot the data
@@ -414,7 +422,7 @@ function opaqueSetBackground(gd, bgColor) {
 }
 
 function setPlotContext(gd, config) {
-    if(!gd._context) gd._context = Lib.extendDeep({}, Plotly.defaultConfig);
+    if(!gd._context) gd._context = Lib.extendDeep({}, defaultConfig);
     var context = gd._context;
 
     var i, keys, key;
@@ -582,6 +590,7 @@ function plotPolar(gd, data, layout) {
 // convenience function to force a full redraw, mostly for use by plotly.js
 Plotly.redraw = function(gd) {
     gd = helpers.getGraphDiv(gd);
+    bindPlotAPI(gd, Plotly);
 
     if(!Lib.isPlotDiv(gd)) {
         throw new Error('This element is not a Plotly plot: ' + gd);
@@ -591,7 +600,7 @@ Plotly.redraw = function(gd) {
     helpers.cleanLayout(gd.layout);
 
     gd.calcdata = undefined;
-    return Plotly.plot(gd).then(function() {
+    return gd._plotAPI.plot().then(function() {
         gd.emit('plotly_redraw');
         return gd;
     });
@@ -607,12 +616,13 @@ Plotly.redraw = function(gd) {
  */
 Plotly.newPlot = function(gd, data, layout, config) {
     gd = helpers.getGraphDiv(gd);
+    bindPlotAPI(gd, Plotly);
 
     // remove gl contexts
     Plots.cleanPlot([], {}, gd._fullData || {}, gd._fullLayout || {});
 
     Plots.purge(gd);
-    return Plotly.plot(gd, data, layout, config);
+    return gd._plotAPI.plot(data, layout, config);
 };
 
 /**
@@ -960,6 +970,7 @@ function spliceTraces(gd, update, indices, maxPoints, lengthenArray, spliceArray
  */
 Plotly.extendTraces = function extendTraces(gd, update, indices, maxPoints) {
     gd = helpers.getGraphDiv(gd);
+    bindPlotAPI(gd, Plotly);
 
     var undo = spliceTraces(gd, update, indices, maxPoints,
 
@@ -977,16 +988,17 @@ Plotly.extendTraces = function extendTraces(gd, update, indices, maxPoints) {
                                 return target.splice(0, target.length - maxPoints);
                             });
 
-    var promise = Plotly.redraw(gd);
+    var promise = gd._plotAPI.redraw();
 
-    var undoArgs = [gd, undo.update, indices, undo.maxPoints];
-    Queue.add(gd, Plotly.prependTraces, undoArgs, extendTraces, arguments);
+    var undoArgs = [undo.update, indices, undo.maxPoints];
+    Queue.add(gd, gd._plotAPI.prependTraces, undoArgs, gd._plotAPI.extendTraces, Array.prototype.slice.call(arguments, 1));
 
     return promise;
 };
 
 Plotly.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
     gd = helpers.getGraphDiv(gd);
+    bindPlotAPI(gd, Plotly);
 
     var undo = spliceTraces(gd, update, indices, maxPoints,
 
@@ -1004,10 +1016,10 @@ Plotly.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
                                 return target.splice(maxPoints, target.length);
                             });
 
-    var promise = Plotly.redraw(gd);
+    var promise = gd._plotAPI.redraw();
 
-    var undoArgs = [gd, undo.update, indices, undo.maxPoints];
-    Queue.add(gd, Plotly.extendTraces, undoArgs, prependTraces, arguments);
+    var undoArgs = [undo.update, indices, undo.maxPoints];
+    Queue.add(gd, gd._plotAPI.extendTraces, undoArgs, gd._plotAPI.prependTraces, Array.prototype.slice.call(arguments, 1));
 
     return promise;
 };
@@ -1023,12 +1035,13 @@ Plotly.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
  */
 Plotly.addTraces = function addTraces(gd, traces, newIndices) {
     gd = helpers.getGraphDiv(gd);
+    bindPlotAPI(gd, Plotly);
 
     var currentIndices = [],
-        undoFunc = Plotly.deleteTraces,
-        redoFunc = addTraces,
-        undoArgs = [gd, currentIndices],
-        redoArgs = [gd, traces],  // no newIndices here
+        undoFunc = gd._plotAPI.deleteTraces,
+        redoFunc = gd._plotAPI.addTraces,
+        undoArgs = [currentIndices],
+        redoArgs = [traces],  // no newIndices here
         i,
         promise;
 
@@ -1060,7 +1073,7 @@ Plotly.addTraces = function addTraces(gd, traces, newIndices) {
     // if the user didn't define newIndices, they just want the traces appended
     // i.e., we can simply redraw and be done
     if(typeof newIndices === 'undefined') {
-        promise = Plotly.redraw(gd);
+        promise = gd._plotAPI.redraw();
         Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
         return promise;
     }
@@ -1086,7 +1099,7 @@ Plotly.addTraces = function addTraces(gd, traces, newIndices) {
     // this requires some extra work that moveTraces will do
     Queue.startSequence(gd);
     Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
-    promise = Plotly.moveTraces(gd, currentIndices, newIndices);
+    promise = gd._plotAPI.moveTraces(currentIndices, newIndices);
     Queue.stopSequence(gd);
     return promise;
 };
@@ -1100,12 +1113,13 @@ Plotly.addTraces = function addTraces(gd, traces, newIndices) {
  */
 Plotly.deleteTraces = function deleteTraces(gd, indices) {
     gd = helpers.getGraphDiv(gd);
+    bindPlotAPI(gd, Plotly);
 
     var traces = [],
-        undoFunc = Plotly.addTraces,
-        redoFunc = deleteTraces,
-        undoArgs = [gd, traces, indices],
-        redoArgs = [gd, indices],
+        undoFunc = gd._plotAPI.addTraces,
+        redoFunc = gd._plotAPI.deleteTraces,
+        undoArgs = [traces, indices],
+        redoArgs = [indices],
         i,
         deletedTrace;
 
@@ -1127,7 +1141,7 @@ Plotly.deleteTraces = function deleteTraces(gd, indices) {
         traces.push(deletedTrace);
     }
 
-    var promise = Plotly.redraw(gd);
+    var promise = gd._plotAPI.redraw();
     Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return promise;
@@ -1166,13 +1180,14 @@ Plotly.deleteTraces = function deleteTraces(gd, indices) {
  */
 Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
     gd = helpers.getGraphDiv(gd);
+    bindPlotAPI(gd, Plotly);
 
     var newData = [],
         movingTraceMap = [],
-        undoFunc = moveTraces,
-        redoFunc = moveTraces,
-        undoArgs = [gd, newIndices, currentIndices],
-        redoArgs = [gd, currentIndices, newIndices],
+        undoFunc = gd._plotAPI.moveTraces,
+        redoFunc = gd._plotAPI.moveTraces,
+        undoArgs = [newIndices, currentIndices],
+        redoArgs = [currentIndices, newIndices],
         i;
 
     // to reduce complexity here, check args elsewhere
@@ -1225,7 +1240,7 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
 
     gd.data = newData;
 
-    var promise = Plotly.redraw(gd);
+    var promise = gd._plotAPI.redraw();
     Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return promise;
@@ -1264,6 +1279,7 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
 Plotly.restyle = function restyle(gd, astr, val, _traces) {
     gd = helpers.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
+    bindPlotAPI(gd, Plotly);
 
     var aobj = {};
     if(typeof astr === 'string') aobj[astr] = val;
@@ -1292,7 +1308,7 @@ Plotly.restyle = function restyle(gd, astr, val, _traces) {
     var seq = [];
 
     if(flags.fullReplot) {
-        seq.push(Plotly.plot);
+        seq.push(function() { return gd._plotAPI.plot(); });
     } else {
         seq.push(Plots.previousPromises);
 
@@ -1305,8 +1321,8 @@ Plotly.restyle = function restyle(gd, astr, val, _traces) {
     seq.push(Plots.rehover);
 
     Queue.add(gd,
-        restyle, [gd, specs.undoit, specs.traces],
-        restyle, [gd, specs.redoit, specs.traces]
+        gd._plotAPI.restyle, [specs.undoit, specs.traces],
+        gd._plotAPI.restyle, [specs.redoit, specs.traces]
     );
 
     var plotDone = Lib.syncOrAsync(seq, gd);
@@ -1346,7 +1362,7 @@ function _restyle(gd, aobj, traces) {
 
     // for autoranging multiple axes
     function addToAxlist(axid) {
-        var axName = Plotly.Axes.id2name(axid);
+        var axName = Axes.id2name(axid);
         if(axlist.indexOf(axName) === -1) axlist.push(axName);
     }
 
@@ -1546,7 +1562,7 @@ function _restyle(gd, aobj, traces) {
 
         // swap the data attributes of the relevant x and y axes?
         if(['swapxyaxes', 'orientationaxes'].indexOf(ai) !== -1) {
-            Plotly.Axes.swap(gd, traces);
+            Axes.swap(gd, traces);
         }
 
         // swap hovermode if set to "compare x/y data"
@@ -1583,7 +1599,7 @@ function _restyle(gd, aobj, traces) {
 
     // do we need to force a recalc?
     var autorangeOn = false;
-    var axList = Plotly.Axes.list(gd);
+    var axList = Axes.list(gd);
     for(i = 0; i < axList.length; i++) {
         if(axList[i].autorange) {
             autorangeOn = true;
@@ -1608,7 +1624,7 @@ function _restyle(gd, aobj, traces) {
         }
 
         // no data on this axis - delete it.
-        doextra('LAYOUT' + Plotly.Axes.id2name(axId), null, 0);
+        doextra('LAYOUT' + Axes.id2name(axId), null, 0);
     }
 
     // combine a few flags together;
@@ -1651,6 +1667,7 @@ function _restyle(gd, aobj, traces) {
 Plotly.relayout = function relayout(gd, astr, val) {
     gd = helpers.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
+    bindPlotAPI(gd, Plotly);
 
     if(gd.framework && gd.framework.isPolar) {
         return Promise.resolve(gd);
@@ -1697,8 +1714,8 @@ Plotly.relayout = function relayout(gd, astr, val) {
     seq.push(Plots.rehover);
 
     Queue.add(gd,
-        relayout, [gd, specs.undoit],
-        relayout, [gd, specs.redoit]
+        gd._plotAPI.relayout, [specs.undoit],
+        gd._plotAPI.relayout, [specs.redoit]
     );
 
     var plotDone = Lib.syncOrAsync(seq, gd);
@@ -1714,7 +1731,7 @@ function _relayout(gd, aobj) {
     var layout = gd.layout,
         fullLayout = gd._fullLayout,
         keys = Object.keys(aobj),
-        axes = Plotly.Axes.list(gd),
+        axes = Axes.list(gd),
         arrayEdits = {},
         arrayStr,
         i,
@@ -1769,7 +1786,7 @@ function _relayout(gd, aobj) {
     function refAutorange(obj, axLetter) {
         if(!Lib.isPlainObject(obj)) return false;
         var axRef = obj[axLetter + 'ref'] || axLetter,
-            ax = Plotly.Axes.getFromId(gd, axRef);
+            ax = Axes.getFromId(gd, axRef);
 
         if(!ax && axRef.charAt(0) === axLetter) {
             // fall back on the primary axis in case we've referenced a
@@ -1779,7 +1796,7 @@ function _relayout(gd, aobj) {
             // The only thing this is used for is to determine whether to
             // do a full `recalc`, so the only ill effect of this error is
             // to waste some time.
-            ax = Plotly.Axes.getFromId(gd, axLetter);
+            ax = Axes.getFromId(gd, axLetter);
         }
         return (ax || {}).autorange;
     }
@@ -2081,6 +2098,7 @@ function _relayout(gd, aobj) {
 Plotly.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
     gd = helpers.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
+    bindPlotAPI(gd, Plotly);
 
     if(gd.framework && gd.framework.isPolar) {
         return Promise.resolve(gd);
@@ -2116,10 +2134,10 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
         gd.data = undefined;
         gd.layout = undefined;
 
-        seq.push(function() { return Plotly.plot(gd, data, layout); });
+        seq.push(function() { return gd._plotAPI.plot(data, layout); });
     }
     else if(restyleFlags.fullReplot) {
-        seq.push(Plotly.plot);
+        seq.push(function() { return gd._plotAPI.plot(); });
     }
     else if(relayoutFlags.layoutReplot) {
         seq.push(subroutines.layoutReplot);
@@ -2140,8 +2158,8 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
     seq.push(Plots.rehover);
 
     Queue.add(gd,
-        update, [gd, restyleSpecs.undoit, relayoutSpecs.undoit, restyleSpecs.traces],
-        update, [gd, restyleSpecs.redoit, relayoutSpecs.redoit, restyleSpecs.traces]
+        gd._plotAPI.update, [restyleSpecs.undoit, relayoutSpecs.undoit, restyleSpecs.traces],
+        gd._plotAPI.update, [restyleSpecs.redoit, relayoutSpecs.redoit, restyleSpecs.traces]
     );
 
     var plotDone = Lib.syncOrAsync(seq, gd);
@@ -2186,6 +2204,7 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
  */
 Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
     gd = helpers.getGraphDiv(gd);
+    bindPlotAPI(gd, Plotly);
 
     if(!Lib.isPlotDiv(gd)) {
         throw new Error(
@@ -2550,6 +2569,7 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
  */
 Plotly.addFrames = function(gd, frameList, indices) {
     gd = helpers.getGraphDiv(gd);
+    bindPlotAPI(gd, Plotly);
 
     var numericNameWarningCount = 0;
 
@@ -2674,6 +2694,7 @@ Plotly.addFrames = function(gd, frameList, indices) {
  */
 Plotly.deleteFrames = function(gd, frameList) {
     gd = helpers.getGraphDiv(gd);
+    bindPlotAPI(gd, Plotly);
 
     if(!Lib.isPlotDiv(gd)) {
         throw new Error('This element is not a Plotly plot: ' + gd);
@@ -2708,40 +2729,6 @@ Plotly.deleteFrames = function(gd, frameList) {
     if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return Plots.modifyFrames(gd, ops);
-};
-
-/**
- * Purge a graph container div back to its initial pre-Plotly.plot state
- *
- * @param {string id or DOM element} gd
- *      the id or DOM element of the graph container div
- */
-Plotly.purge = function purge(gd) {
-    gd = helpers.getGraphDiv(gd);
-
-    var fullLayout = gd._fullLayout || {},
-        fullData = gd._fullData || [];
-
-    // remove gl contexts
-    Plots.cleanPlot([], {}, fullData, fullLayout);
-
-    // purge properties
-    Plots.purge(gd);
-
-    // purge event emitter methods
-    Events.purge(gd);
-
-    // remove plot container
-    if(fullLayout._container) fullLayout._container.remove();
-
-    delete gd._context;
-    delete gd._replotPending;
-    delete gd._mouseDownTime;
-    delete gd._legendMouseDownTime;
-    delete gd._hmpixcount;
-    delete gd._hmlumcount;
-
-    return gd;
 };
 
 // -------------------------------------------------------

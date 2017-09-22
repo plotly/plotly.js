@@ -10,7 +10,6 @@
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
 var Plots = require('../../plots/plots');
 
 var Lib = require('../../lib');
@@ -247,7 +246,7 @@ function setDataRange(rangeSlider, gd, axisOpts, opts) {
         dataMax = clamp(opts.p2d(opts._pixelMax));
 
     window.requestAnimationFrame(function() {
-        Plotly.relayout(gd, axisOpts._name + '.range', [dataMin, dataMax]);
+        gd._plotAPI.relayout(axisOpts._name + '.range', [dataMin, dataMax]);
     });
 }
 

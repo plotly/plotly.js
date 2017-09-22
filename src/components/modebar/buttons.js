@@ -9,7 +9,6 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var Plots = require('../../plots/plots');
 var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
@@ -251,7 +250,7 @@ function handleCartesian(gd, ev) {
         aobj[astr] = val;
     }
 
-    Plotly.relayout(gd, aobj);
+    gd._plotAPI.relayout(aobj);
 }
 
 modeBarButtons.zoom3d = {
@@ -304,7 +303,7 @@ function handleDrag3d(gd, ev) {
         layoutUpdate[sceneIds[i] + '.' + parts[1]] = val;
     }
 
-    Plotly.relayout(gd, layoutUpdate);
+    gd._plotAPI.relayout(layoutUpdate);
 }
 
 modeBarButtons.resetCameraDefault3d = {
@@ -343,7 +342,7 @@ function handleCamera3d(gd, ev) {
         }
     }
 
-    Plotly.relayout(gd, aobj);
+    gd._plotAPI.relayout(aobj);
 }
 
 modeBarButtons.hoverClosest3d = {
@@ -404,7 +403,7 @@ function handleHover3d(gd, ev) {
         button._previousVal = Lib.extendDeep({}, currentSpikes);
     }
 
-    Plotly.relayout(gd, layoutUpdate);
+    gd._plotAPI.relayout(layoutUpdate);
 }
 
 modeBarButtons.zoomInGeo = {
@@ -498,7 +497,7 @@ function toggleHover(gd) {
 
     var newHover = gd._fullLayout.hovermode ? false : onHoverVal;
 
-    Plotly.relayout(gd, 'hovermode', newHover);
+    gd._plotAPI.relayout('hovermode', newHover);
 }
 
 // buttons when more then one plot types are present
@@ -555,7 +554,7 @@ modeBarButtons.toggleSpikelines = {
         var aobj = setSpikelineVisibility(gd);
 
         aobj.hovermode = 'closest';
-        Plotly.relayout(gd, aobj);
+        gd._plotAPI.relayout(aobj);
     }
 };
 
@@ -597,6 +596,6 @@ modeBarButtons.resetViewMapbox = {
             }
         }
 
-        Plotly.relayout(gd, aObj);
+        gd._plotAPI.relayout(aObj);
     }
 };

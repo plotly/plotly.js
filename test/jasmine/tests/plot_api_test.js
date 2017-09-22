@@ -10,6 +10,7 @@ var pkg = require('../../../package.json');
 var subroutines = require('@src/plot_api/subroutines');
 var helpers = require('@src/plot_api/helpers');
 var editTypes = require('@src/plot_api/edit_types');
+var bindPlotAPI = require('@src/plot_api/bind_plot_api');
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -17,6 +18,11 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
 
+function withoutAPI(gd) {
+    gd = Lib.extendFlat({}, gd);
+    delete gd._plotAPI;
+    return gd;
+}
 
 describe('Test plot api', function() {
     'use strict';
@@ -580,6 +586,7 @@ describe('Test plot api', function() {
             gd.calcdata = gd._fullData.map(function(trace) {
                 return [{x: 1, y: 1, trace: trace}];
             });
+            bindPlotAPI(gd, PlotlyInternal);
         }
 
         it('calls Scatter.arraysToCalcdata and Plots.style on scatter styling', function() {
@@ -1226,6 +1233,7 @@ describe('Test plot api', function() {
                 ]
             };
             spyOn(PlotlyInternal, 'redraw');
+            bindPlotAPI(gd, PlotlyInternal);
         });
 
         it('should throw an error when indices are omitted', function() {
@@ -1324,6 +1332,7 @@ describe('Test plot api', function() {
             gd = { data: [{'name': 'a'}, {'name': 'b'}] };
             spyOn(PlotlyInternal, 'redraw');
             spyOn(PlotlyInternal, 'moveTraces');
+            bindPlotAPI(gd, PlotlyInternal);
         });
 
         it('should throw an error when traces is not an object or an array of objects', function() {
@@ -1341,7 +1350,7 @@ describe('Test plot api', function() {
             }).toThrowError(Error, 'all values in traces array must be non-array objects');
 
             // make sure we didn't muck with gd.data if things failed!
-            expect(gd).toEqual(expected);
+            expect(withoutAPI(gd)).toEqual(withoutAPI(expected));
         });
 
         it('should throw an error when traces and newIndices arrays are unequal', function() {
@@ -1360,7 +1369,7 @@ describe('Test plot api', function() {
             }).toThrow(new Error('newIndices must be valid indices for gd.data.'));
 
             // make sure we didn't muck with gd.data if things failed!
-            expect(gd).toEqual(expected);
+            expect(withoutAPI(gd)).toEqual(withoutAPI(expected));
         });
 
         it('should work when newIndices is undefined', function() {
@@ -1429,6 +1438,7 @@ describe('Test plot api', function() {
                 ]
             };
             spyOn(PlotlyInternal, 'redraw');
+            bindPlotAPI(gd, PlotlyInternal);
         });
 
         it('throw an error when index arrays are unequal', function() {
@@ -1565,6 +1575,7 @@ describe('Test plot api', function() {
 
             spyOn(PlotlyInternal, 'redraw');
             spyOn(Plotly.Queue, 'add');
+            bindPlotAPI(gd, PlotlyInternal);
         });
 
         it('should throw an error when gd.data isn\'t an array.', function() {
@@ -1734,7 +1745,7 @@ describe('Test plot api', function() {
 
             var undoArgs = Plotly.Queue.add.calls.first().args[2];
 
-            Plotly.prependTraces.apply(null, undoArgs);
+            gd._plotAPI.prependTraces.apply(null, undoArgs);
 
             expect(gd.data).toEqual(cachedData);
         });
@@ -1752,7 +1763,7 @@ describe('Test plot api', function() {
 
             var undoArgs = Plotly.Queue.add.calls.first().args[2];
 
-            Plotly.extendTraces.apply(null, undoArgs);
+            gd._plotAPI.extendTraces.apply(null, undoArgs);
 
             expect(gd.data).toEqual(cachedData);
         });
@@ -1771,7 +1782,7 @@ describe('Test plot api', function() {
 
             var undoArgs = Plotly.Queue.add.calls.first().args[2];
 
-            Plotly.prependTraces.apply(null, undoArgs);
+            gd._plotAPI.prependTraces.apply(null, undoArgs);
 
             expect(gd.data).toEqual(cachedData);
         });

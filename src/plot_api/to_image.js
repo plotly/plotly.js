@@ -8,8 +8,8 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
 var Lib = require('../lib');
+var purge = require('./purge');
 
 var helpers = require('../snapshot/helpers');
 var toSVG = require('../snapshot/tosvg');
@@ -157,7 +157,7 @@ function toImage(gd, opts) {
             var width = clonedGd._fullLayout.width;
             var height = clonedGd._fullLayout.height;
 
-            Plotly.purge(clonedGd);
+            purge(clonedGd);
             document.body.removeChild(clonedGd);
 
             if(format === 'svg') {
@@ -198,7 +198,7 @@ function toImage(gd, opts) {
     }
 
     return new Promise(function(resolve, reject) {
-        Plotly.plot(clonedGd, data, layoutImage, configImage)
+        gd._plotAPI.plotWithGd(clonedGd, data, layoutImage, configImage)
             .then(redrawFunc)
             .then(wait)
             .then(convert)

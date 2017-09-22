@@ -12,7 +12,6 @@
 var mouseOffset = require('mouse-event-offset');
 var hasHover = require('has-hover');
 
-var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 
 var constants = require('../../plots/cartesian/constants');
@@ -216,7 +215,7 @@ dragElement.coverSlip = coverSlip;
 
 function finishDrag(gd) {
     gd._dragging = false;
-    if(gd._replotPending) Plotly.plot(gd);
+    if(gd._replotPending) gd._plotAPI.plot();
 }
 
 function pointerOffset(e) {

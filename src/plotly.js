@@ -19,14 +19,20 @@
  */
 
 // configuration
-exports.defaultConfig = require('./plot_api/plot_config');
+module.exports.defaultConfig = require('./plot_api/plot_config');
 
 // plots
-exports.Plots = require('./plots/plots');
-exports.Axes = require('./plots/cartesian/axes');
+module.exports.Plots = require('./plots/plots');
+module.exports.Axes = require('./plots/cartesian/axes');
 
 // components
-exports.ModeBar = require('./components/modebar');
+module.exports.ModeBar = require('./components/modebar');
 
 // plot api
-require('./plot_api/plot_api');
+var API = require('./plot_api/plot_api');
+
+for(var method in API) {
+    if(API.hasOwnProperty(method)) {
+        module.exports[method] = API[method];
+    }
+}

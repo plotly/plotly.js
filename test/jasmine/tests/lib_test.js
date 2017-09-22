@@ -2008,15 +2008,15 @@ describe('Queue', function() {
         })
         .then(function() {
             expect(gd.undoQueue.index).toEqual(1);
-            expect(gd.undoQueue.queue[0].undo.args[0][1]['marker.color']).toEqual([null]);
-            expect(gd.undoQueue.queue[0].redo.args[0][1]['marker.color']).toEqual('red');
+            expect(gd.undoQueue.queue[0].undo.args[0][0]['marker.color']).toEqual([null]);
+            expect(gd.undoQueue.queue[0].redo.args[0][0]['marker.color']).toEqual('red');
 
             return Plotly.relayout(gd, 'title', 'A title');
         })
         .then(function() {
             expect(gd.undoQueue.index).toEqual(2);
-            expect(gd.undoQueue.queue[1].undo.args[0][1].title).toEqual(null);
-            expect(gd.undoQueue.queue[1].redo.args[0][1].title).toEqual('A title');
+            expect(gd.undoQueue.queue[1].undo.args[0][0].title).toEqual(null);
+            expect(gd.undoQueue.queue[1].redo.args[0][0].title).toEqual('A title');
 
             return Plotly.restyle(gd, 'mode', 'markers');
         })
@@ -2024,43 +2024,43 @@ describe('Queue', function() {
             expect(gd.undoQueue.index).toEqual(2);
             expect(gd.undoQueue.queue[2]).toBeUndefined();
 
-            expect(gd.undoQueue.queue[1].undo.args[0][1].mode).toEqual([null]);
-            expect(gd.undoQueue.queue[1].redo.args[0][1].mode).toEqual('markers');
+            expect(gd.undoQueue.queue[1].undo.args[0][0].mode).toEqual([null]);
+            expect(gd.undoQueue.queue[1].redo.args[0][0].mode).toEqual('markers');
 
-            expect(gd.undoQueue.queue[0].undo.args[0][1].title).toEqual(null);
-            expect(gd.undoQueue.queue[0].redo.args[0][1].title).toEqual('A title');
+            expect(gd.undoQueue.queue[0].undo.args[0][0].title).toEqual(null);
+            expect(gd.undoQueue.queue[0].redo.args[0][0].title).toEqual('A title');
 
             return Plotly.restyle(gd, 'transforms[0]', { type: 'filter' });
         })
         .then(function() {
-            expect(gd.undoQueue.queue[1].undo.args[0][1])
+            expect(gd.undoQueue.queue[1].undo.args[0][0])
                 .toEqual({ 'transforms[0]': null });
-            expect(gd.undoQueue.queue[1].redo.args[0][1])
+            expect(gd.undoQueue.queue[1].redo.args[0][0])
                 .toEqual({ 'transforms[0]': { type: 'filter' } });
 
             return Plotly.relayout(gd, 'updatemenus[0]', { buttons: [] });
         })
         .then(function() {
-            expect(gd.undoQueue.queue[1].undo.args[0][1])
+            expect(gd.undoQueue.queue[1].undo.args[0][0])
                 .toEqual({ 'updatemenus[0]': null });
-            expect(gd.undoQueue.queue[1].redo.args[0][1])
+            expect(gd.undoQueue.queue[1].redo.args[0][0])
                 .toEqual({ 'updatemenus[0]': { buttons: [] } });
 
             return Plotly.relayout(gd, 'updatemenus[0]', null);
         })
         .then(function() {
             // buttons have been stripped out because it's an empty container array...
-            expect(gd.undoQueue.queue[1].undo.args[0][1])
+            expect(gd.undoQueue.queue[1].undo.args[0][0])
                 .toEqual({ 'updatemenus[0]': {} });
-            expect(gd.undoQueue.queue[1].redo.args[0][1])
+            expect(gd.undoQueue.queue[1].redo.args[0][0])
                 .toEqual({ 'updatemenus[0]': null });
 
             return Plotly.restyle(gd, 'transforms[0]', null);
         })
         .then(function() {
-            expect(gd.undoQueue.queue[1].undo.args[0][1])
+            expect(gd.undoQueue.queue[1].undo.args[0][0])
                 .toEqual({ 'transforms[0]': [ { type: 'filter' } ]});
-            expect(gd.undoQueue.queue[1].redo.args[0][1])
+            expect(gd.undoQueue.queue[1].redo.args[0][0])
                 .toEqual({ 'transforms[0]': null });
         })
         .catch(failTest)

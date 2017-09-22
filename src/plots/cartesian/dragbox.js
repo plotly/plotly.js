@@ -12,7 +12,6 @@
 var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 
-var Plotly = require('../../plotly');
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
@@ -332,7 +331,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     .on('edit', function(text) {
                         var v = ax.d2r(text);
                         if(v !== undefined) {
-                            Plotly.relayout(gd, attrStr, v);
+                            gd._contet.api.relayout(attrStr, v);
                         }
                     });
             }
@@ -646,7 +645,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
 
         gd.emit('plotly_doubleclick', null);
-        Plotly.relayout(gd, attrs);
+        gd._plotAPI.relayout(attrs);
     }
 
     // dragTail - finish a drag event with a redraw
@@ -662,7 +661,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // accumulated MathJax promises - wait for them before we relayout.
         Lib.syncOrAsync([
             Plots.previousPromises,
-            function() { Plotly.relayout(gd, updates); }
+            function() { gd._plotAPI.relayout(updates); }
         ], gd);
     }
 

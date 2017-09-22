@@ -9,8 +9,6 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
-
 
 module.exports = {
     hasClickToShow: hasClickToShow,
@@ -59,7 +57,7 @@ function onClick(gd, hoverData) {
         update['annotations[' + offSet[i] + '].visible'] = false;
     }
 
-    return Plotly.update(gd, {}, update);
+    return gd._plotAPI.update({}, update);
 }
 
 /*

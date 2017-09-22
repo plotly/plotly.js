@@ -1,5 +1,6 @@
 var Plotly = require('@lib/index');
 var PlotlyInternal = require('@src/plotly');
+var bindPlotAPI = require('@src/plot_api/bind_plot_api');
 var Plots = Plotly.Plots;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -13,6 +14,7 @@ describe('Plots.executeAPICommand', function() {
 
     beforeEach(function() {
         gd = createGraphDiv();
+        bindPlotAPI(gd, PlotlyInternal);
     });
 
     afterEach(function() {

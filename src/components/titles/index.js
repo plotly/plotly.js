@@ -12,8 +12,8 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
-var Plotly = require('../../plotly');
-var Plots = require('../../plots/plots');
+var previousPromises = require('../../plots/previous_promises');
+var fontWeight = require('../../plots/font_weight');
 var Lib = require('../../lib');
 var Drawing = require('../drawing');
 var Color = require('../color');
@@ -124,12 +124,12 @@ Titles.draw = function(gd, titleClass, options) {
             'font-size': d3.round(fontSize, 2) + 'px',
             fill: Color.rgb(fontColor),
             opacity: opacity * Color.opacity(fontColor),
-            'font-weight': Plots.fontWeight
+            'font-weight': fontWeight
         })
         .attr(attributes)
         .call(svgTextUtils.convertToTspans, gd);
 
-        return Plots.previousPromises(gd);
+        return previousPromises(gd);
     }
 
     function scootTitle(titleElIn) {
@@ -222,8 +222,8 @@ Titles.draw = function(gd, titleClass, options) {
 
         el.call(svgTextUtils.makeEditable, {gd: gd})
             .on('edit', function(text) {
-                if(traceIndex !== undefined) Plotly.restyle(gd, prop, text, traceIndex);
-                else Plotly.relayout(gd, prop, text);
+                if(traceIndex !== undefined) gd._plotAPI.restyle(prop, text, traceIndex);
+                else gd._plotAPI.relayout(prop, text);
             })
             .on('cancel', function() {
                 this.text(this.attr('data-unformatted'))
