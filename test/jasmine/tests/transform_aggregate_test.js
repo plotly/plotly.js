@@ -245,4 +245,40 @@ describe('aggregate', function() {
         expect(traceOut.marker.line.width).toBeCloseToArray([0.5, 0], 5);
         expect(traceOut.marker.color).toBeCloseToArray([Math.sqrt(1 / 3), 0], 5);
     });
+
+    it('links fullData aggregations to userData via _index', function() {
+        Plotly.newPlot(gd, [{
+            x: [1, 2, 3, 4, 5],
+            y: [2, 4, 6, 8, 10],
+            marker: {
+                size: [10, 10, 20, 20, 10],
+                color: ['red', 'green', 'blue', 'yellow', 'white']
+            },
+            transforms: [{
+                type: 'aggregate',
+                groups: 'marker.size',
+                aggregations: [
+                    {target: 'x', func: 'sum'},
+                    {target: 'x', func: 'avg'},
+                    {target: 'y', func: 'avg'},
+                ]
+            }]
+        }]);
+
+        var traceOut = gd._fullData[0];
+        var fullAggregation = traceOut.transforms[0];
+        var fullAggregations = fullAggregation.aggregations;
+        var enabledAggregations = fullAggregations.filter(function(agg) {
+            return agg.enabled;
+        });
+
+        expect(enabledAggregations[0].target).toEqual('x');
+        expect(enabledAggregations[0]._index).toEqual(0);
+
+        expect(enabledAggregations[1].target).toEqual('y');
+        expect(enabledAggregations[1]._index).toEqual(2);
+
+        expect(enabledAggregations[2].target).toEqual('marker.color');
+        expect(enabledAggregations[2]._index).toEqual(-1);
+    });
 });

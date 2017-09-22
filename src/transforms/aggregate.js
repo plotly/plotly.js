@@ -164,7 +164,7 @@ exports.supplyDefaults = function(transformIn, traceOut) {
     }
 
     for(i = 0; i < aggregationsIn.length; i++) {
-        aggregationOut = {};
+        aggregationOut = {_index: i};
         var target = coercei('target');
         var func = coercei('func');
         var enabledi = coercei('enabled');
@@ -177,7 +177,7 @@ exports.supplyDefaults = function(transformIn, traceOut) {
             arrayAttrs[target] = 0;
             aggregationsOut[i] = aggregationOut;
         }
-        else aggregationsOut[i] = {enabled: false};
+        else aggregationsOut[i] = {enabled: false, _index: i};
     }
 
     // any array attributes we haven't yet covered, fill them with the default aggregation
@@ -186,7 +186,8 @@ exports.supplyDefaults = function(transformIn, traceOut) {
             aggregationsOut.push({
                 target: arrayAttrArray[i],
                 func: aggAttrs.func.dflt,
-                enabled: true
+                enabled: true,
+                _index: -1
             });
         }
     }
