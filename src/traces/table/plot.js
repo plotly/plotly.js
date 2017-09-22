@@ -142,7 +142,7 @@ module.exports = function plot(gd, calcdata) {
     scrollAreaClip.enter()
         .append(c.clipView ? 'g' : 'clipPath')
         .classed('scrollAreaClip', true)
-        .attr('id', function(d) { return 'scrollAreaBottomClip_' + d.key;})
+        .attr('id', function(d) { return 'scrollAreaBottomClip_' + (c.clipView ? 'FirefoxSpoof_' : '') + d.key;})
 
     var scrollAreaClipRect = scrollAreaClip.selectAll('.scrollAreaClipRect')
         .data(gup.repeat, gup.keyFun);
@@ -177,7 +177,7 @@ module.exports = function plot(gd, calcdata) {
         .classed('columnBoundaryClippath', true);
 
     columnBoundaryClippath
-        .attr('id', function(d) {return 'columnBoundaryClippath_' + d.specIndex;});
+        .attr('id', function(d) {return 'columnBoundaryClippath_' + (c.clipView ? 'FirefoxSpoof_' : '') + d.specIndex;});
 
     var columnBoundaryRect = columnBoundaryClippath.selectAll('.columnBoundaryRect')
         .data(gup.repeat, gup.keyFun);
@@ -479,8 +479,10 @@ function conditionalPanelRerender(gd, cellsColumnBlock, pages, prevPages, d, rev
 }
 
 function wrapTextMaker(columnBlock, element, d) {
+    console.log(wrapTextMaker)
     var nextRenderCallback = finalizeYPositionMaker(columnBlock, element, d);
     return function wrapText() {
+        console.log(wrapText)
         var cellTextHolder = d3.select(element.parentNode);
         cellTextHolder
             .each(function(d) {
