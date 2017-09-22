@@ -56,7 +56,10 @@ module.exports = function plot(gd, calcdata) {
 
     tableControlView
         .attr('transform', function(d) {return 'translate(' + d.size.l + ' ' + d.size.t + ')';})
-        .attr('clip-path', function(d) {return 'url(#scrollAreaBottomClip_' + d.key + ')';});
+
+        if(!c.clipView) {
+            tableControlView.attr('clip-path', function (d) {return 'url(#scrollAreaBottomClip_' + d.key + ')';});
+        }
 
     var yColumn = tableControlView.selectAll('.yColumn')
         .data(function(vm) {return vm.columns;}, gup.keyFun);
@@ -67,7 +70,6 @@ module.exports = function plot(gd, calcdata) {
 
     yColumn
         .attr('transform', function(d) {return 'translate(' + d.x + ' 0)';})
-        .attr('clip-path', function(d) {return 'url(#columnBoundaryClippath_' + d.specIndex + ')';})
         .call(d3.behavior.drag()
             .origin(function(d) {
                 var movedColumn = d3.select(this);
@@ -102,6 +104,10 @@ module.exports = function plot(gd, calcdata) {
                 columnMoved(gd, calcdata, p.key, p.columns.map(function(dd) {return dd.xIndex;}));
             })
         );
+
+    if(!c.clipView) {
+        yColumn.attr('clip-path', function(d) {return 'url(#columnBoundaryClippath_' + d.specIndex + ')';});
+    }
 
     yColumn.exit()
         .remove();
@@ -142,7 +148,7 @@ module.exports = function plot(gd, calcdata) {
     scrollAreaClip.enter()
         .append(c.clipView ? 'g' : 'clipPath')
         .classed('scrollAreaClip', true)
-        .attr('id', function(d) { return 'scrollAreaBottomClip_' + (c.clipView ? 'FirefoxSpoof_' : '') + d.key;})
+        .attr('id', function(d) { return 'scrollAreaBottomClip_' + d.key;})
 
     var scrollAreaClipRect = scrollAreaClip.selectAll('.scrollAreaClipRect')
         .data(gup.repeat, gup.keyFun);
@@ -177,7 +183,7 @@ module.exports = function plot(gd, calcdata) {
         .classed('columnBoundaryClippath', true);
 
     columnBoundaryClippath
-        .attr('id', function(d) {return 'columnBoundaryClippath_' + (c.clipView ? 'FirefoxSpoof_' : '') + d.specIndex;});
+        .attr('id', function(d) {return 'columnBoundaryClippath_' + d.specIndex;});
 
     var columnBoundaryRect = columnBoundaryClippath.selectAll('.columnBoundaryRect')
         .data(gup.repeat, gup.keyFun);
