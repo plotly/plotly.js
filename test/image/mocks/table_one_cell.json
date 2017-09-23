@@ -1,7 +1,7 @@
 {
     "layout": {
         "width": 400,
-        "height": 230 + 380 - 150,
+        "height": 330 + 380 - 150,
         "title": "Widget parameters and cost",
         "margin": {"t": 0 || 280, "r": 60, "b": 54, "l": 60}
     },
@@ -20,7 +20,7 @@
 
         "header": {
 
-            "height": 0, // fixme for some reason it doesn't recognize arrays here
+            "height": 20, // fixme for some reason it doesn't recognize arrays here
 
             "values": [
                 ["Index"   , "#"],
@@ -69,12 +69,12 @@
                     "8A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
                 ].map(function(d, i) {return i}),
                 [
-                   "Try-hard bushwick irony humblebrag activated charcoal, thundercats air plant drinking vinegar knausgaard stumptown normcore readymade af prism. Master cleanse pork belly mumblecore, godard 8-bit wolf mlkshk dreamcatcher narwhal kickstarter williamsburg hoodie meh tumblr brunch." || "$\\begin{eqnarray*} 1*\\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
                     "Hello1",
+                    "Try-hard bushwick irony humblebrag activated charcoal, thundercats air plant drinking vinegar knausgaard stumptown normcore readymade af prism. Master cleanse pork belly mumblecore, godard 8-bit wolf mlkshk dreamcatcher narwhal kickstarter williamsburg hoodie meh tumblr brunch." || "$\\begin{eqnarray*} 1*\\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
                     "Hello2",
                     //"1A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
                     "$\\begin{eqnarray*} 2*\\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
-                    "2A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
+                    "2A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”>Plotly</a><br>C<sub>D</sub>",
                     "$\\begin{eqnarray*} 3*\\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
                     "3A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
                     "$\\begin{eqnarray*} 4*\\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
@@ -107,7 +107,7 @@
                     "x8A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
                 ].map(function(d, i) {return d})
 
-            ].map(function(a) {return [a[1], a[2]]}).slice(1, 2),
+            ].map(function(a) {return [a[4]]}).slice(1, 2),
 
             "format": [
                 null

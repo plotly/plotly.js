@@ -286,19 +286,24 @@ function renderCellText(cellText, allColumnBlock, columnCell, gd) {
             var row = d.rowNumber;
             var userSuppliedContent = d.value;
             var latex = latexEh(userSuppliedContent);
+            var userBrokenText = userSuppliedContent.match(/<br>/i);
             var prefix = latex ? '' : gridPick(d.calcdata.cells.prefix, col, row) || '';
             var suffix = latex ? '' : gridPick(d.calcdata.cells.suffix, col, row) || '';
             var format = latex ? null : gridPick(d.calcdata.cells.format, col, row) || null;
             var prefixSuffixedText = prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
             d.latex = latex;
-            d.wrappingNeeded = !d.wrapped && !latex;
-            var fragments = prefixSuffixedText.split(c.wrapSplitCharacter);
-            var textToRender = d.wrappingNeeded ? fragments.join(c.lineBreaker) + c.lineBreaker + c.wrapSpacer : d.value;
+            d.wrappingNeeded = !userBrokenText && !d.wrapped && !latex;
+            var textToRender;
             if(d.wrappingNeeded) {
-                d.fragments = fragments.map(function (f) {return {text: f, width: null};});
+                var hrefPreservedText = c.wrapSplitCharacter === ' ' ? prefixSuffixedText.replace(/<a href=/ig, '<a_href=') : prefixSuffixedText;
+                var fragments = hrefPreservedText.split(c.wrapSplitCharacter);
+                var hrefRestoredFragments = c.wrapSplitCharacter === ' ' ? fragments.map(function(frag) {return frag.replace(/<a_href=/ig, '<a href=')}) : fragments;
+                d.fragments = hrefRestoredFragments.map(function (f) {return {text: f, width: null};});
                 d.fragments.push({fragment: c.wrapSpacer, width: null});
+                textToRender = hrefRestoredFragments.join(c.lineBreaker) + c.lineBreaker + c.wrapSpacer;
             } else {
                 delete d.fragments;
+                textToRender = d.value;
             }
             return textToRender;
         })
