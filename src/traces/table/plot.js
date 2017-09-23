@@ -139,7 +139,7 @@ module.exports = function plot(gd, calcdata) {
 
     // initial rendering: header is rendered first, as it may may have async LaTeX (show header first)
     // but blocks are _entered_ the way they are due to painter's algo (header on top)
-    //renderColumnBlocks(gd, columnBlock.filter(headerBlock), columnBlock);
+    renderColumnBlocks(gd, columnBlock.filter(headerBlock), columnBlock);
     renderColumnBlocks(gd, columnBlock.filter(cellsBlock), columnBlock);
 
     var scrollAreaClip = tableControlView.selectAll('.scrollAreaClip')
@@ -394,7 +394,7 @@ function splitToPanels(d) {
         rowBlocks: d.calcdata.rowBlocks
     });
     // order due to SVG using painter's algo:
-    return [revolverPanel1/*, revolverPanel2, headerPanel*/];
+    return [revolverPanel1, revolverPanel2, headerPanel];
 }
 
 function splitToCells(d) {

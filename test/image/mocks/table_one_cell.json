@@ -1,7 +1,7 @@
 {
     "layout": {
         "width": 400,
-        "height": 330 + 380 - 150,
+        "height": 230 + 380 - 150,
         "title": "Widget parameters and cost",
         "margin": {"t": 0 || 280, "r": 60, "b": 54, "l": 60}
     },
@@ -76,7 +76,7 @@
                     "$\\begin{eqnarray*} 2*\\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
                     "2A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”>Plotly</a><br>C<sub>D</sub>",
                     "$\\begin{eqnarray*} 3*\\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
-                    "3A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
+                    "3A<sup><b>X</b></sup>B<a href=”https://plot.ly/”> Plotly</a>C<sub>D</sub>",
                     "$\\begin{eqnarray*} 4*\\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
                     "4A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
                     "$\\begin{eqnarray*} 5*\\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
@@ -107,7 +107,7 @@
                     "x8A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
                 ].map(function(d, i) {return d})
 
-            ].map(function(a) {return [a[4]]}).slice(1, 2),
+            ].map(function(a) {return a}).slice(1, 2),
 
             "format": [
                 null
@@ -116,7 +116,7 @@
             //"prefix": ["#"],
             //"suffix": ["cell"],
 
-            "height": 40,
+            "height": 20,
 
             "align": ["right"],
             "valign": ["bottom"],
