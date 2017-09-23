@@ -1,10 +1,12 @@
 var Plotly = require('@lib/index');
 var PlotlyInternal = require('@src/plotly');
+var bindPlotAPI = require('@src/plot_api/bind_plot_api');
 var Plots = Plotly.Plots;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var Lib = require('@src/lib');
+
 
 describe('Plots.executeAPICommand', function() {
     'use strict';
@@ -24,6 +26,7 @@ describe('Plots.executeAPICommand', function() {
             spyOn(PlotlyInternal, 'restyle').and.callFake(function() {
                 return Promise.resolve('resolution');
             });
+            bindPlotAPI(gd, PlotlyInternal);
         });
 
         it('calls the API method and resolves', function(done) {
@@ -44,6 +47,7 @@ describe('Plots.executeAPICommand', function() {
             spyOn(PlotlyInternal, 'restyle').and.callFake(function() {
                 return Promise.reject('rejection');
             });
+            bindPlotAPI(gd, PlotlyInternal);
         });
 
         it('calls the API method and rejects', function(done) {

@@ -25,6 +25,7 @@ exports.allTypes = [];
 exports.subplotsRegistry = {};
 exports.transformsRegistry = {};
 exports.componentsRegistry = {};
+exports.dataArrayContainers = ['transforms'];
 exports.layoutArrayContainers = [];
 exports.layoutArrayRegexes = [];
 exports.traceLayoutAttributes = {};

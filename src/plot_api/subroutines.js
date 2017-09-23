@@ -10,10 +10,10 @@
 'use strict';
 
 var d3 = require('d3');
-var Plotly = require('../plotly');
 var Registry = require('../registry');
 var Plots = require('../plots/plots');
 var Lib = require('../lib');
+var Axes = require('../plots/cartesian/axes');
 
 var Color = require('../components/color');
 var Drawing = require('../components/drawing');
@@ -45,7 +45,7 @@ exports.lsInner = function(gd) {
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
     var pad = gs.p;
-    var axList = Plotly.Axes.list(gd);
+    var axList = Axes.list(gd);
 
     // _has('cartesian') means SVG specifically, not GL2D - but GL2D
     // can still get here because it makes some of the SVG structure
@@ -343,7 +343,7 @@ exports.lsInner = function(gd) {
         if(showFreeY) freeFinished[ya._id] = 1;
     });
 
-    Plotly.Axes.makeClipPaths(gd);
+    Axes.makeClipPaths(gd);
     exports.drawMainTitle(gd);
     ModeBar.manage(gd);
 
@@ -474,7 +474,7 @@ exports.doColorBars = function(gd) {
 exports.layoutReplot = function(gd) {
     var layout = gd.layout;
     gd.layout = undefined;
-    return Plotly.plot(gd, '', layout);
+    return gd._plotAPI.plot('', layout);
 };
 
 exports.doLegend = function(gd) {
@@ -483,7 +483,7 @@ exports.doLegend = function(gd) {
 };
 
 exports.doTicksRelayout = function(gd) {
-    Plotly.Axes.doTicks(gd, 'redraw');
+    Axes.doTicks(gd, 'redraw');
     exports.drawMainTitle(gd);
     return Plots.previousPromises(gd);
 };

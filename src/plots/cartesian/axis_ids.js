@@ -9,10 +9,10 @@
 'use strict';
 
 var Registry = require('../../registry');
-var Plots = require('../plots');
 var Lib = require('../../lib');
 
 var constants = require('./constants');
+var getSubplotIds = require('../get_subplot_ids');
 
 
 // convert between axis names (xaxis, xaxis2, etc, elements of gd.layout)
@@ -65,7 +65,7 @@ function listNames(gd, axLetter, only2d) {
     var names = filterAxis(fullLayout, '');
     if(only2d) return names;
 
-    var sceneIds3D = Plots.getSubplotIds(fullLayout, 'gl3d') || [];
+    var sceneIds3D = getSubplotIds(fullLayout, 'gl3d') || [];
     for(var i = 0; i < sceneIds3D.length; i++) {
         var sceneId = sceneIds3D[i];
         names = names.concat(

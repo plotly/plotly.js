@@ -12,7 +12,6 @@
 var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 
-var Plotly = require('../../plotly');
 var Plots = require('../../plots/plots');
 var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
@@ -584,7 +583,7 @@ module.exports = function draw(gd, id) {
                     setCursor(container);
 
                     if(dragged && xf !== undefined && yf !== undefined) {
-                        Plotly.restyle(gd,
+                        gd._plotAPI.restyle(
                             {'colorbar.x': xf, 'colorbar.y': yf},
                             getTrace().index);
                     }

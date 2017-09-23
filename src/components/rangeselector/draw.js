@@ -11,7 +11,6 @@
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
 var Plots = require('../../plots/plots');
 var Color = require('../color');
 var Drawing = require('../drawing');
@@ -66,7 +65,7 @@ module.exports = function draw(gd) {
             button.on('click', function() {
                 if(gd._dragged) return;
 
-                Plotly.relayout(gd, update);
+                gd._plotAPI.relayout(update);
             });
 
             button.on('mouseover', function() {

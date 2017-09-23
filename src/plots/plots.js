@@ -12,12 +12,12 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
-var Plotly = require('../plotly');
 var PlotSchema = require('../plot_api/plot_schema');
 var Registry = require('../registry');
 var Lib = require('../lib');
 var Color = require('../components/color');
 var BADNUM = require('../constants/numerical').BADNUM;
+var Axes = require('./cartesian/axes');
 
 var plots = module.exports = {};
 
@@ -29,16 +29,16 @@ var relinkPrivateKeys = Lib.relinkPrivateKeys;
 // Expose registry methods on Plots for backward-compatibility
 Lib.extendFlat(plots, Registry);
 
+plots.previousPromises = require('./previous_promises');
 plots.attributes = require('./attributes');
 plots.attributes.type.values = plots.allTypes;
 plots.fontAttrs = require('./font_attributes');
 plots.layoutAttributes = require('./layout_attributes');
+plots.fontWeight = require('./font_weight');
+plots.getSubplotIds = require('./get_subplot_ids');
 
-// TODO make this a plot attribute?
-plots.fontWeight = 'normal';
-
-var subplotsRegistry = plots.subplotsRegistry;
-var transformsRegistry = plots.transformsRegistry;
+var subplotsRegistry = Registry.subplotsRegistry;
+var transformsRegistry = Registry.transformsRegistry;
 
 var ErrorBars = require('../components/errorbars');
 
@@ -67,59 +67,17 @@ plots.hasSimpleAPICommandBindings = commandModule.hasSimpleAPICommandBindings;
 plots.findSubplotIds = function findSubplotIds(data, type) {
     var subplotIds = [];
 
-    if(!plots.subplotsRegistry[type]) return subplotIds;
+    if(!subplotsRegistry[type]) return subplotIds;
 
-    var attr = plots.subplotsRegistry[type].attr;
+    var attr = subplotsRegistry[type].attr;
 
     for(var i = 0; i < data.length; i++) {
         var trace = data[i];
 
-        if(plots.traceIs(trace, type) && subplotIds.indexOf(trace[attr]) === -1) {
+        if(Registry.traceIs(trace, type) && subplotIds.indexOf(trace[attr]) === -1) {
             subplotIds.push(trace[attr]);
         }
     }
-
-    return subplotIds;
-};
-
-/**
- * Get the ids of the current subplots.
- *
- * @param {object} layout plotly full layout object.
- * @param {string} type subplot type to look for.
- *
- * @return {array} list of ordered subplot ids (strings).
- *
- */
-plots.getSubplotIds = function getSubplotIds(layout, type) {
-    var _module = plots.subplotsRegistry[type];
-
-    if(!_module) return [];
-
-    // layout must be 'fullLayout' here
-    if(type === 'cartesian' && (!layout._has || !layout._has('cartesian'))) return [];
-    if(type === 'gl2d' && (!layout._has || !layout._has('gl2d'))) return [];
-    if(type === 'cartesian' || type === 'gl2d') {
-        return Object.keys(layout._plots || {});
-    }
-
-    var attrRegex = _module.attrRegex,
-        layoutKeys = Object.keys(layout),
-        subplotIds = [];
-
-    for(var i = 0; i < layoutKeys.length; i++) {
-        var layoutKey = layoutKeys[i];
-
-        if(attrRegex.test(layoutKey)) subplotIds.push(layoutKey);
-    }
-
-    // order the ids
-    var idLen = _module.idRoot.length;
-    subplotIds.sort(function(a, b) {
-        var aNum = +(a.substr(idLen) || 1),
-            bNum = +(b.substr(idLen) || 1);
-        return aNum - bNum;
-    });
 
     return subplotIds;
 };
@@ -135,17 +93,17 @@ plots.getSubplotIds = function getSubplotIds(layout, type) {
  *
  */
 plots.getSubplotData = function getSubplotData(data, type, subplotId) {
-    if(!plots.subplotsRegistry[type]) return [];
+    if(!subplotsRegistry[type]) return [];
 
-    var attr = plots.subplotsRegistry[type].attr,
+    var attr = subplotsRegistry[type].attr,
         subplotData = [],
         trace;
 
     for(var i = 0; i < data.length; i++) {
         trace = data[i];
 
-        if(type === 'gl2d' && plots.traceIs(trace, 'gl2d')) {
-            var spmatch = Plotly.Axes.subplotMatch,
+        if(type === 'gl2d' && Registry.traceIs(trace, 'gl2d')) {
+            var spmatch = Axes.subplotMatch,
                 subplotX = 'x' + subplotId.match(spmatch)[1],
                 subplotY = 'y' + subplotId.match(spmatch)[2];
 
@@ -171,9 +129,9 @@ plots.getSubplotData = function getSubplotData(data, type, subplotId) {
  * @return {array} array of calcdata traces
  */
 plots.getSubplotCalcData = function(calcData, type, subplotId) {
-    if(!plots.subplotsRegistry[type]) return [];
+    if(!subplotsRegistry[type]) return [];
 
-    var attr = plots.subplotsRegistry[type].attr;
+    var attr = subplotsRegistry[type].attr;
     var subplotCalcData = [];
 
     for(var i = 0; i < calcData.length; i++) {
@@ -234,7 +192,7 @@ plots.resize = function(gd) {
             // nor should it be included in the undo queue
             gd.autoplay = true;
 
-            Plotly.relayout(gd, { autosize: true }).then(function() {
+            gd._plotAPI.relayout({ autosize: true }).then(function() {
                 gd.changed = oldchanged;
                 resolve(gd);
             });
@@ -242,15 +200,6 @@ plots.resize = function(gd) {
     });
 };
 
-
-// for use in Lib.syncOrAsync, check if there are any
-// pending promises in this plot and wait for them
-plots.previousPromises = function(gd) {
-    if((gd._promises || []).length) {
-        return Promise.all(gd._promises)
-            .then(function() { gd._promises = []; });
-    }
-};
 
 /**
  * Adds the 'Edit chart' link.
@@ -497,7 +446,7 @@ plots.supplyDefaults = function(gd) {
     plots.doAutoMargin(gd);
 
     // set scale after auto margin routine
-    var axList = Plotly.Axes.list(gd);
+    var axList = Axes.list(gd);
     for(i = 0; i < axList.length; i++) {
         var ax = axList[i];
         ax.setScale();
@@ -639,15 +588,15 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
         _fullLayout: newFullLayout
     };
 
-    var ids = Plotly.Axes.getSubplots(mockGd);
+    var ids = Axes.getSubplots(mockGd);
 
     var i;
 
     for(i = 0; i < ids.length; i++) {
         var id = ids[i];
         var oldSubplot = oldSubplots[id];
-        var xaxis = Plotly.Axes.getFromId(mockGd, id, 'x');
-        var yaxis = Plotly.Axes.getFromId(mockGd, id, 'y');
+        var xaxis = Axes.getFromId(mockGd, id, 'x');
+        var yaxis = Axes.getFromId(mockGd, id, 'y');
         var plotinfo;
 
         if(oldSubplot) {
@@ -696,13 +645,13 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
 
     // while we're at it, link overlaying axes to their main axes and
     // anchored axes to the axes they're anchored to
-    var axList = Plotly.Axes.list(mockGd, null, true);
+    var axList = Axes.list(mockGd, null, true);
     for(i = 0; i < axList.length; i++) {
         var ax = axList[i];
         var mainAx = null;
 
         if(ax.overlaying) {
-            mainAx = Plotly.Axes.getFromId(mockGd, ax.overlaying);
+            mainAx = Axes.getFromId(mockGd, ax.overlaying);
 
             // you cannot overlay an axis that's already overlaying another
             if(mainAx && mainAx.overlaying) {
@@ -724,7 +673,7 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
 
         ax._anchorAxis = ax.anchor === 'free' ?
             null :
-            Plotly.Axes.getFromId(mockGd, ax.anchor);
+            Axes.getFromId(mockGd, ax.anchor);
     }
 };
 
@@ -953,10 +902,10 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
     }
 
     function coerceSubplotAttr(subplotType, subplotAttr) {
-        if(!plots.traceIs(traceOut, subplotType)) return;
+        if(!Registry.traceIs(traceOut, subplotType)) return;
 
         return Lib.coerce(traceIn, traceOut,
-            plots.subplotsRegistry[subplotType].attributes, subplotAttr);
+            Registry.subplotsRegistry[subplotType].attributes, subplotAttr);
     }
 
     var visible = coerce('visible');
@@ -986,7 +935,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
         var _module = plots.getModule(traceOut);
         traceOut._module = _module;
 
-        if(plots.traceIs(traceOut, 'showLegend')) {
+        if(Registry.traceIs(traceOut, 'showLegend')) {
             coerce('showlegend');
             coerce('legendgroup');
         }
@@ -1003,7 +952,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
             Lib.coerceHoverinfo(traceIn, traceOut, layout);
         }
 
-        if(!plots.traceIs(traceOut, 'noOpacity')) coerce('opacity');
+        if(!Registry.traceIs(traceOut, 'noOpacity')) coerce('opacity');
 
         coerceSubplotAttr('cartesian', 'xaxis');
         coerceSubplotAttr('cartesian', 'yaxis');
@@ -1011,7 +960,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
         coerceSubplotAttr('gl2d', 'xaxis');
         coerceSubplotAttr('gl2d', 'yaxis');
 
-        if(plots.traceIs(traceOut, 'notLegendIsolatable')) {
+        if(Registry.traceIs(traceOut, 'notLegendIsolatable')) {
             // This clears out the legendonly state for traces like carpet that
             // cannot be isolated in the legend
             traceOut.visible = !!traceOut.visible;
@@ -1231,7 +1180,7 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
 
     // can't be be part of basePlotModules loop
     // in order to handle the orphan axes case
-    Plotly.Axes.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+    Axes.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
     // base plot module layout defaults
     var basePlotModules = layoutOut._basePlotModules;
@@ -1498,7 +1447,7 @@ plots.doAutoMargin = function(gd) {
     // if things changed and we're not already redrawing, trigger a redraw
     if(!fullLayout._replotting && oldmargins !== '{}' &&
             oldmargins !== JSON.stringify(fullLayout._size)) {
-        return Plotly.plot(gd);
+        return gd._plotAPI.plot();
     }
 };
 
@@ -1840,9 +1789,6 @@ plots.extendObjectWithContainers = function(dest, src, containerPaths) {
     return dest;
 };
 
-plots.dataArrayContainers = ['transforms'];
-plots.layoutArrayContainers = Registry.layoutArrayContainers;
-
 /*
  * Extend a trace definition. This method:
  *
@@ -1852,7 +1798,7 @@ plots.layoutArrayContainers = Registry.layoutArrayContainers;
  * The result is the original object reference with the new contents merged in.
  */
 plots.extendTrace = function(destTrace, srcTrace) {
-    return plots.extendObjectWithContainers(destTrace, srcTrace, plots.dataArrayContainers);
+    return plots.extendObjectWithContainers(destTrace, srcTrace, Registry.dataArrayContainers);
 };
 
 /*
@@ -1865,7 +1811,7 @@ plots.extendTrace = function(destTrace, srcTrace) {
  * The result is the original object reference with the new contents merged in.
  */
 plots.extendLayout = function(destLayout, srcLayout) {
-    return plots.extendObjectWithContainers(destLayout, srcLayout, plots.layoutArrayContainers);
+    return plots.extendObjectWithContainers(destLayout, srcLayout, Registry.layoutArrayContainers);
 };
 
 /**
@@ -1990,7 +1936,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
             if(frameOpts.redraw) {
                 gd._transitionData._interruptCallbacks.push(function() {
-                    return Plotly.redraw(gd);
+                    return gd._plotAPI.redraw();
                 });
             }
 
@@ -2062,7 +2008,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
         return Promise.resolve().then(function() {
             if(frameOpts.redraw) {
-                return Plotly.redraw(gd);
+                return gd._plotAPI.redraw();
             }
         }).then(function() {
             // Set transitioning false again once the redraw has occurred. This is used, for example,
@@ -2117,7 +2063,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 };
 
 plots.doCalcdata = function(gd, traces) {
-    var axList = Plotly.Axes.list(gd),
+    var axList = Axes.list(gd),
         fullData = gd._fullData,
         fullLayout = gd._fullLayout;
 

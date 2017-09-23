@@ -10,7 +10,6 @@
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 var Plots = require('../../plots/plots');
 var Registry = require('../../registry');
@@ -336,7 +335,7 @@ module.exports = function draw(gd) {
             },
             doneFn: function(dragged, numClicks, e) {
                 if(dragged && xf !== undefined && yf !== undefined) {
-                    Plotly.relayout(gd, {'legend.x': xf, 'legend.y': yf});
+                    gd._plotAPI.relayout({'legend.x': xf, 'legend.y': yf});
                 } else {
                     var clickedTrace =
                         fullLayout._infolayer.selectAll('g.traces').filter(function() {
@@ -425,7 +424,7 @@ function drawTexts(g, gd) {
                     update.name = text;
                 }
 
-                return Plotly.restyle(gd, update, traceIndex);
+                return gd._plotAPI.restyle(update, traceIndex);
             });
     } else {
         text.call(textLayout);

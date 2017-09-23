@@ -11,7 +11,6 @@
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
 var Registry = require('../../registry');
 var Drawing = require('../../components/drawing');
 var Axes = require('./axes');
@@ -275,7 +274,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
         // Signal that this transition has completed:
         onComplete && onComplete();
 
-        return Plotly.relayout(gd, aobj).then(function() {
+        return gd._plotAPI.relayout(aobj).then(function() {
             for(var i = 0; i < affectedSubplots.length; i++) {
                 unsetSubplotTransform(affectedSubplots[i]);
             }
@@ -292,7 +291,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
             axi.range = axi._r.slice();
         }
 
-        return Plotly.relayout(gd, aobj).then(function() {
+        return gd._plotAPI.relayout(aobj).then(function() {
             for(var i = 0; i < affectedSubplots.length; i++) {
                 unsetSubplotTransform(affectedSubplots[i]);
             }

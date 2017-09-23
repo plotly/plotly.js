@@ -415,7 +415,7 @@ describe('Test Plots', function() {
         it('should unset everything in the gd except _context', function() {
             var expectedKeys = [
                 '_ev', '_internalEv', 'on', 'once', 'removeListener', 'removeAllListeners',
-                '_internalOn', '_internalOnce', '_removeInternalListener',
+                '_internalOn', '_internalOnce', '_removeInternalListener', '_plotAPI',
                 '_removeAllInternalListeners', 'emit', '_context', '_replotPending',
                 '_hmpixcount', '_hmlumcount', '_mouseDownTime', '_legendMouseDownTime',
             ];
