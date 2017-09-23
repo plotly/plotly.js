@@ -291,7 +291,7 @@ function renderCellText(cellText, allColumnBlock, columnCell, gd) {
             var format = latex ? null : gridPick(d.calcdata.cells.format, col, row) || null;
             var prefixSuffixedText = prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
             d.latex = latex;
-            d.wrappingNeeded = false && !d.wrapped && !latex;
+            d.wrappingNeeded = !d.wrapped && !latex;
             var fragments = prefixSuffixedText.split(c.wrapSplitCharacter);
             var textToRender = d.wrappingNeeded ? fragments.join(c.lineBreaker) + c.lineBreaker + c.wrapSpacer : d.value;
             if(d.wrappingNeeded) {
@@ -552,7 +552,7 @@ function finalizeYPositionMaker(columnBlock, element, d) {
             .attr('transform', function () {
                 var element = this;
                 var columnCellElement = element.parentNode;
-                var box = columnCellElement.parentNode.getBoundingClientRect();
+                var box = columnCellElement.getBoundingClientRect();
                 var rectBox = d3.select(element.parentNode).select('.cellRect').node().getBoundingClientRect();
                 var currentTransform = element.transform.baseVal.consolidate();
                 var yPosition = rectBox.top - box.top + (currentTransform ? currentTransform.matrix.f : c.cellPad);
