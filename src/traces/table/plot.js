@@ -389,7 +389,7 @@ function splitToPanels(d) {
         rowBlocks: d.calcdata.rowBlocks
     });
     // order due to SVG using painter's algo:
-    return [revolverPanel1, revolverPanel2, headerPanel];
+    return [revolverPanel1/*, revolverPanel2, headerPanel*/];
 }
 
 function splitToCells(d) {
@@ -542,6 +542,7 @@ function finalizeYPositionMaker(columnBlock, element, d) {
         var finalHeight = Math.max(requiredHeight, l.rows[rowIndex].rowHeight);
         var increase = finalHeight - l.rows[rowIndex].rowHeight;
 
+        console.log('checking increase')
         if(increase) {
             // current row height increased
             l.rows[d.key - l.firstRowIndex].rowHeight = finalHeight;
