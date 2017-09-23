@@ -139,7 +139,7 @@ module.exports = function plot(gd, calcdata) {
 
     // initial rendering: header is rendered first, as it may may have async LaTeX (show header first)
     // but blocks are _entered_ the way they are due to painter's algo (header on top)
-    renderColumnBlocks(gd, columnBlock.filter(headerBlock), columnBlock);
+    //renderColumnBlocks(gd, columnBlock.filter(headerBlock), columnBlock);
     renderColumnBlocks(gd, columnBlock.filter(cellsBlock), columnBlock);
 
     var scrollAreaClip = tableControlView.selectAll('.scrollAreaClip')
@@ -484,8 +484,7 @@ function conditionalPanelRerender(gd, cellsColumnBlock, pages, prevPages, d, rev
     }
 }
 
-function wrapTextMaker(columnBlock, element, d) {
-    var nextRenderCallback = finalizeYPositionMaker(columnBlock, element, d);
+function wrapTextMaker(columnBlock, element) {
     return function wrapText() {
         var cellTextHolder = d3.select(element.parentNode);
         cellTextHolder
@@ -524,8 +523,6 @@ function wrapTextMaker(columnBlock, element, d) {
 
         // resupply text, now wrapped
         renderCellText(cellTextHolder.select('.cellText'), columnBlock, d3.select(element.parentNode.parentNode));
-
-        nextRenderCallback();
     };
 }
 
@@ -542,7 +539,6 @@ function finalizeYPositionMaker(columnBlock, element, d) {
         var finalHeight = Math.max(requiredHeight, l.rows[rowIndex].rowHeight);
         var increase = finalHeight - l.rows[rowIndex].rowHeight;
 
-        console.log('checking increase')
         if(increase) {
             // current row height increased
             l.rows[d.key - l.firstRowIndex].rowHeight = finalHeight;
