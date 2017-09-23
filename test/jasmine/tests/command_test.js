@@ -14,7 +14,6 @@ describe('Plots.executeAPICommand', function() {
 
     beforeEach(function() {
         gd = createGraphDiv();
-        bindPlotAPI(gd, PlotlyInternal);
     });
 
     afterEach(function() {
@@ -26,6 +25,7 @@ describe('Plots.executeAPICommand', function() {
             spyOn(PlotlyInternal, 'restyle').and.callFake(function() {
                 return Promise.resolve('resolution');
             });
+            bindPlotAPI(gd, PlotlyInternal);
         });
 
         it('calls the API method and resolves', function(done) {
@@ -46,6 +46,7 @@ describe('Plots.executeAPICommand', function() {
             spyOn(PlotlyInternal, 'restyle').and.callFake(function() {
                 return Promise.reject('rejection');
             });
+            bindPlotAPI(gd, PlotlyInternal);
         });
 
         it('calls the API method and rejects', function(done) {
