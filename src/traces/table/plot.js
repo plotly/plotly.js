@@ -291,7 +291,7 @@ function renderCellText(cellText, allColumnBlock, columnCell, gd) {
             var format = latex ? null : gridPick(d.calcdata.cells.format, col, row) || null;
             var prefixSuffixedText = prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
             d.latex = latex;
-            d.wrappingNeeded = !d.wrapped && !latex;
+            d.wrappingNeeded = false && !d.wrapped && !latex;
             var fragments = prefixSuffixedText.split(c.wrapSplitCharacter);
             var textToRender = d.wrappingNeeded ? fragments.join(c.lineBreaker) + c.lineBreaker + c.wrapSpacer : d.value;
             if(d.wrappingNeeded) {
