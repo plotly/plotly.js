@@ -286,7 +286,7 @@ function renderCellText(cellText, allColumnBlock, columnCell, gd) {
             var row = d.rowNumber;
             var userSuppliedContent = d.value;
             var latex = latexEh(userSuppliedContent);
-            var userBrokenText = userSuppliedContent.match(/<br>/i);
+            var userBrokenText = (typeof userSuppliedContent !== 'string') || userSuppliedContent.match(/<br>/i);
             var prefix = latex ? '' : gridPick(d.calcdata.cells.prefix, col, row) || '';
             var suffix = latex ? '' : gridPick(d.calcdata.cells.suffix, col, row) || '';
             var format = latex ? null : gridPick(d.calcdata.cells.format, col, row) || null;

@@ -26,7 +26,7 @@
                 ["Index"   , "#"],
                 ["Column 2"   , "ASDF<br>GHJKL<sub>WW</sub>" || "$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$" || "1A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>"],
                 ["Column 3"   , "$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1 \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$"]
-            ].map(function(r) {return r.slice(0, 1)}).slice(1, 2),
+            ].map(function(r) {return r.slice(0, 1)}).slice(0, 2),
 
             "align": ["right"],
             "valign": "middle",
@@ -107,7 +107,7 @@
                     "x8A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
                 ].map(function(d, i) {return d})
 
-            ].map(function(a) {return a}).slice(1, 2),
+            ].map(function(a) {return a}).slice(0, 2),
 
             "format": [
                 null
