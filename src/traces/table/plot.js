@@ -462,10 +462,15 @@ function makeDragRow(gd, cellsColumnBlock) {
         }
 
         cellsColumnBlock
-            .attr('transform', function (d, i) {
-                var dPage = pages[i];
-                d.page = dPage;
-                var yTranslate = firstRowAnchor(blocks, dPage) - scrollY;
+            .each(function (d, i) {
+                // these values will also be needed when a block is translated again due to growing cell height
+                d.page = pages[i];
+                d.scrollY = scrollY;
+            });
+
+        cellsColumnBlock
+            .attr('transform', function (d) {
+                var yTranslate = firstRowAnchor(d.rowBlocks, d.page) - d.scrollY;
                 return 'translate(0 ' + yTranslate + ')';
             });
 
