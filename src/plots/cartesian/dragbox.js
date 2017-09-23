@@ -331,7 +331,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     .on('edit', function(text) {
                         var v = ax.d2r(text);
                         if(v !== undefined) {
-                            gd._contet.api.relayout(attrStr, v);
+                            gd._plotAPI.relayout(attrStr, v);
                         }
                     });
             }
