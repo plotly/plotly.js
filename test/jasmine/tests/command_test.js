@@ -7,6 +7,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var Lib = require('@src/lib');
 
+
 describe('Plots.executeAPICommand', function() {
     'use strict';
 
