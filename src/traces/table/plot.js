@@ -423,64 +423,66 @@ function overlap(a, b) {
     return a[0] < b[1] && a[1] > b[0];
 }
 
-function makeDragRow(gd, cellsColumnBlock) {
+function magic(gd, cellsColumnBlock, prevPages, dy) {
+
     var d = cellsColumnBlock[0][0].__data__;
     var blocks = d.rowBlocks;
     var calcdata = d.calcdata;
     var headerBlocks = d.rowBlocks[0].auxiliaryBlocks;
 
-    var prevPages = [0, 0];
+    var direction = dy < 0 ? 'down' : dy > 0 ? 'up' : null;
+    if(!direction) return;
+    calcdata.scrollY -= dy;
+    var bottom = firstRowAnchor(blocks, blocks.length);
+    var headerHeight = headerBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
+    var scrollHeight = d.calcdata.groupHeight - headerHeight;
+    var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom - scrollHeight, calcdata.scrollY));
 
-    function magic(d, dy) {
-        var direction = dy < 0 ? 'down' : dy > 0 ? 'up' : null;
-        if(!direction) return;
-        calcdata.scrollY -= dy;
-        var bottom = firstRowAnchor(blocks, blocks.length);
-        var headerHeight = headerBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
-        var scrollHeight = d.calcdata.groupHeight - headerHeight;
-        var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom - scrollHeight, calcdata.scrollY));
-
-        var pages = [];
-        for(var p = 0; p < blocks.length; p++) {
-            var pTop = firstRowAnchor(blocks, p);
-            var pBottom = pTop + rowsHeight(blocks[p], Infinity);
-            if(overlap([scrollY, scrollY + scrollHeight], [pTop, pBottom])) {
-                pages.push(p);
-            }
+    var pages = [];
+    for(var p = 0; p < blocks.length; p++) {
+        var pTop = firstRowAnchor(blocks, p);
+        var pBottom = pTop + rowsHeight(blocks[p], Infinity);
+        if(overlap([scrollY, scrollY + scrollHeight], [pTop, pBottom])) {
+            pages.push(p);
         }
-        if(pages.length === 1) {
-            if(pages[0] === blocks.length - 1) {
-                pages.unshift(pages[0] - 1);
-            } else {
-                pages.push(pages[0] + 1);
-            }
+    }
+    if(pages.length === 1) {
+        if(pages[0] === blocks.length - 1) {
+            pages.unshift(pages[0] - 1);
+        } else {
+            pages.push(pages[0] + 1);
         }
-
-        // make phased out page jump by 2 while leaving stationary page intact
-        if(pages[0] % 2) {
-            pages.reverse();
-        }
-
-        cellsColumnBlock
-            .each(function (d, i) {
-                // these values will also be needed when a block is translated again due to growing cell height
-                d.page = pages[i];
-                d.scrollY = scrollY;
-            });
-
-        cellsColumnBlock
-            .attr('transform', function (d) {
-                var yTranslate = firstRowAnchor(d.rowBlocks, d.page) - d.scrollY;
-                return 'translate(0 ' + yTranslate + ')';
-            });
-
-        // conditionally rerendering panel 0 and 1
-        conditionalPanelRerender(gd, cellsColumnBlock, pages, prevPages, d, 0);
-        conditionalPanelRerender(gd, cellsColumnBlock, pages, prevPages, d, 1);
     }
 
-    return function dragRow (d) {
-        magic(d, d3.event.dy);
+    // make phased out page jump by 2 while leaving stationary page intact
+    if(pages[0] % 2) {
+        pages.reverse();
+    }
+
+    cellsColumnBlock
+        .each(function (d, i) {
+            // these values will also be needed when a block is translated again due to growing cell height
+            d.page = pages[i];
+            d.scrollY = scrollY;
+        });
+
+    cellsColumnBlock
+        .attr('transform', function (d) {
+            var yTranslate = firstRowAnchor(d.rowBlocks, d.page) - d.scrollY;
+            return 'translate(0 ' + yTranslate + ')';
+        });
+
+    // conditionally rerendering panel 0 and 1
+    conditionalPanelRerender(gd, cellsColumnBlock, pages, prevPages, d, 0);
+    conditionalPanelRerender(gd, cellsColumnBlock, pages, prevPages, d, 1);
+}
+
+function makeDragRow(gd, cellsColumnBlock) {
+
+    var prevPages = [0, 0];
+
+    return function dragRow () {
+        magic(gd, cellsColumnBlock, prevPages, d3.event.dy);
     }
 }
 
