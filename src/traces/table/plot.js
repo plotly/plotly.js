@@ -431,10 +431,10 @@ function makeDragRow(gd, cellsColumnBlock) {
 
     var prevPages = [0, 0];
 
-    return function dragRow (d) {
-        var direction = d3.event.dy < 0 ? 'down' : d3.event.dy > 0 ? 'up' : null;
+    function magic(d, dy) {
+        var direction = dy < 0 ? 'down' : dy > 0 ? 'up' : null;
         if(!direction) return;
-        calcdata.scrollY -= d3.event.dy;
+        calcdata.scrollY -= dy;
         var bottom = firstRowAnchor(blocks, blocks.length);
         var headerHeight = headerBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
         var scrollHeight = d.calcdata.groupHeight - headerHeight;
@@ -477,6 +477,10 @@ function makeDragRow(gd, cellsColumnBlock) {
         // conditionally rerendering panel 0 and 1
         conditionalPanelRerender(gd, cellsColumnBlock, pages, prevPages, d, 0);
         conditionalPanelRerender(gd, cellsColumnBlock, pages, prevPages, d, 1);
+    }
+
+    return function dragRow (d) {
+        magic(d, d3.event.dy);
     }
 }
 
