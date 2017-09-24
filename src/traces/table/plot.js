@@ -316,7 +316,7 @@ function renderCellText(cellText, allColumnBlock, columnCell, gd) {
             Drawing.font(selection, d.font);
             setCellHeightAndPositionY(columnCell);
 
-            var renderCallback = d.wrappingNeeded ? wrapTextMaker : finalizeYPositionMaker;
+            var renderCallback = d.wrappingNeeded ? wrapTextMaker : updateYPositionMaker;
             svgUtil.convertToTspans(selection, gd, renderCallback(allColumnBlock, element, d));
         });
 }
@@ -427,7 +427,7 @@ function overlap(a, b) {
     return a[0] < b[1] && a[1] > b[0];
 }
 
-function magic(gd, cellsColumnBlock, dy) {
+function updateBlockYPosition(gd, cellsColumnBlock, dy) {
 
     var d = cellsColumnBlock[0][0].__data__;
     var blocks = d.rowBlocks;
@@ -482,9 +482,8 @@ function magic(gd, cellsColumnBlock, dy) {
 }
 
 function makeDragRow(gd, cellsColumnBlock) {
-
     return function dragRow () {
-        magic(gd, cellsColumnBlock, d3.event.dy);
+        updateBlockYPosition(gd, cellsColumnBlock, d3.event.dy);
     }
 }
 
@@ -544,8 +543,8 @@ function wrapTextMaker(columnBlock, element) {
     };
 }
 
-function finalizeYPositionMaker(columnBlock, element, d) {
-    return function finalizeYPosition() {
+function updateYPositionMaker(columnBlock, element, d) {
+    return function updateYPosition() {
         var cellTextHolder = d3.select(element.parentNode);
         var l = getBlock(d);
         var rowIndex = d.key - l.firstRowIndex;
@@ -564,7 +563,7 @@ function finalizeYPositionMaker(columnBlock, element, d) {
             columnBlock
                 .selectAll('.columnCell')
                 .call(setCellHeightAndPositionY);
-            magic(null, columnBlock.filter(cellsBlock), 0);
+            updateBlockYPosition(null, columnBlock.filter(cellsBlock), 0);
         }
 
         cellTextHolder
