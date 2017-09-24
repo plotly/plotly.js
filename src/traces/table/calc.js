@@ -53,6 +53,7 @@ module.exports = function calc(gd, trace) {
         headerCells: trace.header,
         gdColumns: trace.header.values.map(function(d) {return d[0];}),
         gdColumnsOriginalOrder: trace.header.values.map(function(d) {return d[0];}),
+        prevPages: [0, 0],
         columns: trace.header.values.map(function(label, i) {
             var foundKey = uniqueKeys[label];
             uniqueKeys[label] = (foundKey || 0) + 1;

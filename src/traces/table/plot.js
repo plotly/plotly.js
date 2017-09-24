@@ -365,10 +365,12 @@ function headerBlock(d) {return d.type === 'header';}
  */
 
 function splitToPanels(d) {
+    var prevPages = [0, 0];
     var headerPanel = extendFlat({}, d, {
         key: 'header',
         type: 'header',
         page: 0,
+        prevPages: prevPages,
         currentRepaint: [null, null],
         dragHandle: true,
         values: d.calcdata.headerCells.values[d.specIndex],
@@ -379,6 +381,7 @@ function splitToPanels(d) {
         key: 'cells1',
         type: 'cells',
         page: 0,
+        prevPages: prevPages,
         currentRepaint: [null, null],
         dragHandle: false,
         values: d.calcdata.cells.values[d.specIndex],
@@ -388,6 +391,7 @@ function splitToPanels(d) {
         key: 'cells2',
         type: 'cells',
         page: 0,
+        prevPages: prevPages,
         currentRepaint: [null, null],
         dragHandle: false,
         values: d.calcdata.cells.values[d.specIndex],
@@ -423,7 +427,7 @@ function overlap(a, b) {
     return a[0] < b[1] && a[1] > b[0];
 }
 
-function magic(gd, cellsColumnBlock, prevPages, dy) {
+function magic(gd, cellsColumnBlock, dy) {
 
     var d = cellsColumnBlock[0][0].__data__;
     var blocks = d.rowBlocks;
@@ -473,16 +477,14 @@ function magic(gd, cellsColumnBlock, prevPages, dy) {
         });
 
     // conditionally rerendering panel 0 and 1
-    conditionalPanelRerender(gd, cellsColumnBlock, pages, prevPages, d, 0);
-    conditionalPanelRerender(gd, cellsColumnBlock, pages, prevPages, d, 1);
+    conditionalPanelRerender(gd, cellsColumnBlock, pages, d.prevPages, d, 0);
+    conditionalPanelRerender(gd, cellsColumnBlock, pages, d.prevPages, d, 1);
 }
 
 function makeDragRow(gd, cellsColumnBlock) {
 
-    var prevPages = [0, 0];
-
     return function dragRow () {
-        magic(gd, cellsColumnBlock, prevPages, d3.event.dy);
+        magic(gd, cellsColumnBlock, d3.event.dy);
     }
 }
 
