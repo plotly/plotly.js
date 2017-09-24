@@ -434,8 +434,6 @@ function magic(gd, cellsColumnBlock, dy) {
     var calcdata = d.calcdata;
     var headerBlocks = d.rowBlocks[0].auxiliaryBlocks;
 
-    var direction = dy < 0 ? 'down' : dy > 0 ? 'up' : null;
-    if(!direction) return;
     calcdata.scrollY -= dy;
     var bottom = firstRowAnchor(blocks, blocks.length);
     var headerHeight = headerBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
@@ -477,8 +475,10 @@ function magic(gd, cellsColumnBlock, dy) {
         });
 
     // conditionally rerendering panel 0 and 1
-    conditionalPanelRerender(gd, cellsColumnBlock, pages, d.prevPages, d, 0);
-    conditionalPanelRerender(gd, cellsColumnBlock, pages, d.prevPages, d, 1);
+    if(gd) {
+        conditionalPanelRerender(gd, cellsColumnBlock, pages, d.prevPages, d, 0);
+        conditionalPanelRerender(gd, cellsColumnBlock, pages, d.prevPages, d, 1);
+    }
 }
 
 function makeDragRow(gd, cellsColumnBlock) {
@@ -564,6 +564,7 @@ function finalizeYPositionMaker(columnBlock, element, d) {
             columnBlock
                 .selectAll('.columnCell')
                 .call(setCellHeightAndPositionY);
+            magic(null, columnBlock.filter(cellsBlock), 0);
         }
 
         cellTextHolder
