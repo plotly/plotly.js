@@ -56,7 +56,10 @@ module.exports = function plot(gd, calcdata) {
 
     tableControlView
         .attr('transform', function(d) {return 'translate(' + d.size.l + ' ' + d.size.t + ')';})
-        .attr('clip-path', function(d) {return 'url(#scrollAreaBottomClip_' + d.key + ')';});
+
+        if(!c.clipView) {
+            tableControlView.attr('clip-path', function (d) {return 'url(#scrollAreaBottomClip_' + d.key + ')';});
+        }
 
     var yColumn = tableControlView.selectAll('.yColumn')
         .data(function(vm) {return vm.columns;}, gup.keyFun);
@@ -67,7 +70,6 @@ module.exports = function plot(gd, calcdata) {
 
     yColumn
         .attr('transform', function(d) {return 'translate(' + d.x + ' 0)';})
-        .attr('clip-path', function(d) {return 'url(#columnBoundaryClippath_' + d.specIndex + ')';})
         .call(d3.behavior.drag()
             .origin(function(d) {
                 var movedColumn = d3.select(this);
@@ -103,6 +105,10 @@ module.exports = function plot(gd, calcdata) {
             })
         );
 
+    if(!c.clipView) {
+        yColumn.attr('clip-path', function(d) {return 'url(#columnBoundaryClippath_' + d.specIndex + ')';});
+    }
+
     yColumn.exit()
         .remove();
 
@@ -125,7 +131,7 @@ module.exports = function plot(gd, calcdata) {
                 d3.event.stopPropagation();
                 return d;
             })
-            .on('drag', makeDragRow(cellsColumnBlock))
+            .on('drag', makeDragRow(gd, cellsColumnBlock))
             .on('dragend', function(d) {
                 // fixme emit plotly notification
             })
@@ -270,26 +276,35 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
         .classed('cellText', true);
 
     cellText
-        .call(renderCellText, allColumnBlock, columnCell);
+        .call(renderCellText, allColumnBlock, columnCell, gd);
 }
 
-function renderCellText(cellText, allColumnBlock, columnCell) {
+function renderCellText(cellText, allColumnBlock, columnCell, gd) {
     cellText
         .text(function(d) {
             var col = d.column.specIndex;
             var row = d.rowNumber;
             var userSuppliedContent = d.value;
             var latex = latexEh(userSuppliedContent);
+            var userBrokenText = (typeof userSuppliedContent !== 'string') || userSuppliedContent.match(/<br>/i);
             var prefix = latex ? '' : gridPick(d.calcdata.cells.prefix, col, row) || '';
             var suffix = latex ? '' : gridPick(d.calcdata.cells.suffix, col, row) || '';
             var format = latex ? null : gridPick(d.calcdata.cells.format, col, row) || null;
             var prefixSuffixedText = prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
-            var fragments = prefixSuffixedText.split(c.wrapSplitCharacter);
-            var textToRender = fragments.join('<br>') + "<br> ";
             d.latex = latex;
-            d.wrappingNeeded = !d.wrapped && !latex;
-            d.fragments = fragments.map(function(f) {return {fragment:f, width: null};})
-            d.fragments.push({fragment: c.wrapSpacer, width: null})
+            d.wrappingNeeded = !userBrokenText && !d.wrapped && !latex;
+            var textToRender;
+            if(d.wrappingNeeded) {
+                var hrefPreservedText = c.wrapSplitCharacter === ' ' ? prefixSuffixedText.replace(/<a href=/ig, '<a_href=') : prefixSuffixedText;
+                var fragments = hrefPreservedText.split(c.wrapSplitCharacter);
+                var hrefRestoredFragments = c.wrapSplitCharacter === ' ' ? fragments.map(function(frag) {return frag.replace(/<a_href=/ig, '<a href=')}) : fragments;
+                d.fragments = hrefRestoredFragments.map(function (f) {return {text: f, width: null};});
+                d.fragments.push({fragment: c.wrapSpacer, width: null});
+                textToRender = hrefRestoredFragments.join(c.lineBreaker) + c.lineBreaker + c.wrapSpacer;
+            } else {
+                delete d.fragments;
+                textToRender = d.value;
+            }
             return textToRender;
         })
         .each(function(d) {
@@ -301,7 +316,7 @@ function renderCellText(cellText, allColumnBlock, columnCell) {
             Drawing.font(selection, d.font);
             setCellHeightAndPositionY(columnCell);
 
-            var renderCallback = d.wrappingNeeded ? wrapText : finalizeYPositionMaker;
+            var renderCallback = d.wrappingNeeded ? wrapTextMaker : finalizeYPositionMaker;
             svgUtil.convertToTspans(selection, gd, renderCallback(allColumnBlock, element, d));
         });
 }
@@ -350,10 +365,12 @@ function headerBlock(d) {return d.type === 'header';}
  */
 
 function splitToPanels(d) {
+    var prevPages = [0, 0];
     var headerPanel = extendFlat({}, d, {
         key: 'header',
         type: 'header',
         page: 0,
+        prevPages: prevPages,
         currentRepaint: [null, null],
         dragHandle: true,
         values: d.calcdata.headerCells.values[d.specIndex],
@@ -364,6 +381,7 @@ function splitToPanels(d) {
         key: 'cells1',
         type: 'cells',
         page: 0,
+        prevPages: prevPages,
         currentRepaint: [null, null],
         dragHandle: false,
         values: d.calcdata.cells.values[d.specIndex],
@@ -373,13 +391,14 @@ function splitToPanels(d) {
         key: 'cells2',
         type: 'cells',
         page: 0,
+        prevPages: prevPages,
         currentRepaint: [null, null],
         dragHandle: false,
         values: d.calcdata.cells.values[d.specIndex],
         rowBlocks: d.calcdata.rowBlocks
     });
     // order due to SVG using painter's algo:
-    return [revolverPanel1/*, revolverPanel2, headerPanel*/];
+    return [revolverPanel1, revolverPanel2, headerPanel];
 }
 
 function splitToCells(d) {
@@ -408,59 +427,68 @@ function overlap(a, b) {
     return a[0] < b[1] && a[1] > b[0];
 }
 
-function makeDragRow(cellsColumnBlock) {
+function magic(gd, cellsColumnBlock, dy) {
+
     var d = cellsColumnBlock[0][0].__data__;
     var blocks = d.rowBlocks;
     var calcdata = d.calcdata;
     var headerBlocks = d.rowBlocks[0].auxiliaryBlocks;
 
-    var prevPages = [0, 0];
+    calcdata.scrollY -= dy;
+    var bottom = firstRowAnchor(blocks, blocks.length);
+    var headerHeight = headerBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
+    var scrollHeight = d.calcdata.groupHeight - headerHeight;
+    var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom - scrollHeight, calcdata.scrollY));
 
-    return function dragRow (d) {
-        var direction = d3.event.dy < 0 ? 'down' : d3.event.dy > 0 ? 'up' : null;
-        if(!direction) return;
-        calcdata.scrollY -= d3.event.dy;
-        var bottom = firstRowAnchor(blocks, blocks.length);
-        var headerHeight = headerBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
-        var scrollHeight = d.calcdata.groupHeight - headerHeight;
-        var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom - scrollHeight, calcdata.scrollY));
-
-        var pages = [];
-        for(var p = 0; p < blocks.length; p++) {
-            var pTop = firstRowAnchor(blocks, p);
-            var pBottom = pTop + rowsHeight(blocks[p], Infinity);
-            if(overlap([scrollY, scrollY + scrollHeight], [pTop, pBottom])) {
-                pages.push(p);
-            }
+    var pages = [];
+    for(var p = 0; p < blocks.length; p++) {
+        var pTop = firstRowAnchor(blocks, p);
+        var pBottom = pTop + rowsHeight(blocks[p], Infinity);
+        if(overlap([scrollY, scrollY + scrollHeight], [pTop, pBottom])) {
+            pages.push(p);
         }
-        if(pages.length === 1) {
-            if(pages[0] === blocks.length - 1) {
-                pages.unshift(pages[0] - 1);
-            } else {
-                pages.push(pages[0] + 1);
-            }
+    }
+    if(pages.length === 1) {
+        if(pages[0] === blocks.length - 1) {
+            pages.unshift(pages[0] - 1);
+        } else {
+            pages.push(pages[0] + 1);
         }
+    }
 
-        // make phased out page jump by 2 while leaving stationary page intact
-        if(pages[0] % 2) {
-            pages.reverse();
-        }
+    // make phased out page jump by 2 while leaving stationary page intact
+    if(pages[0] % 2) {
+        pages.reverse();
+    }
 
-        cellsColumnBlock
-            .attr('transform', function (d, i) {
-                var dPage = pages[i];
-                d.page = dPage;
-                var yTranslate = firstRowAnchor(blocks, dPage) - scrollY;
-                return 'translate(0 ' + yTranslate + ')';
-            });
+    cellsColumnBlock
+        .each(function (d, i) {
+            // these values will also be needed when a block is translated again due to growing cell height
+            d.page = pages[i];
+            d.scrollY = scrollY;
+        });
 
-        // conditionally rerendering panel 0 and 1
-        conditionalPanelRerender(cellsColumnBlock, pages, prevPages, d, 0);
-        conditionalPanelRerender(cellsColumnBlock, pages, prevPages, d, 1);
+    cellsColumnBlock
+        .attr('transform', function (d) {
+            var yTranslate = firstRowAnchor(d.rowBlocks, d.page) - d.scrollY;
+            return 'translate(0 ' + yTranslate + ')';
+        });
+
+    // conditionally rerendering panel 0 and 1
+    if(gd) {
+        conditionalPanelRerender(gd, cellsColumnBlock, pages, d.prevPages, d, 0);
+        conditionalPanelRerender(gd, cellsColumnBlock, pages, d.prevPages, d, 1);
     }
 }
 
-function conditionalPanelRerender(cellsColumnBlock, pages, prevPages, d, revolverIndex) {
+function makeDragRow(gd, cellsColumnBlock) {
+
+    return function dragRow () {
+        magic(gd, cellsColumnBlock, d3.event.dy);
+    }
+}
+
+function conditionalPanelRerender(gd, cellsColumnBlock, pages, prevPages, d, revolverIndex) {
     var shouldComponentUpdate = pages[revolverIndex] !== prevPages[revolverIndex];
     if(shouldComponentUpdate) {
         window.clearTimeout(d.currentRepaint[revolverIndex]);
@@ -474,9 +502,8 @@ function conditionalPanelRerender(cellsColumnBlock, pages, prevPages, d, revolve
     }
 }
 
-function wrapText(columnBlock, element, d) {
-    var nextRenderCallback = finalizeYPositionMaker(columnBlock, element, d);
-    return function finalizeYPosition() {
+function wrapTextMaker(columnBlock, element) {
+    return function wrapText() {
         var cellTextHolder = d3.select(element.parentNode);
         cellTextHolder
             .each(function(d) {
@@ -484,7 +511,28 @@ function wrapText(columnBlock, element, d) {
                 cellTextHolder.selectAll('tspan.line').each(function(dd, i) {
                     fragments[i].width = this.getComputedTextLength();
                 });
-                d.value = 'kjhdlk<br>jkelrjlk<br>jkelrjlk<br>jkelrjlk<br>jkelrjlk<br>jkelrjlk<br>jkelrjlk<br>jkelrjlk';
+                // last element is only for measuring the separator character, so it's ignored:
+                var separatorLength = fragments[fragments.length - 1].width;
+                var rest = fragments.slice(0, -1);
+                var currentRow = [];
+                var currentAddition, currentAdditionLength;
+                var currentRowLength = 0;
+                var rowLengthLimit = d.column.columnWidth - 2 * c.cellPad;
+                d.value = "";
+                while(rest.length) {
+                    currentAddition = rest.shift();
+                    currentAdditionLength = currentAddition.width + separatorLength;
+                    if(currentRowLength + currentAdditionLength > rowLengthLimit) {
+                        d.value += currentRow.join(c.wrapSpacer) + c.lineBreaker;
+                        currentRow = [];
+                        currentRowLength = 0;
+                    }
+                    currentRow.push(currentAddition.text);
+                    currentRowLength += currentAdditionLength;
+                }
+                if(currentRowLength) {
+                    d.value += currentRow.join(c.wrapSpacer);
+                }
                 d.wrapped = true;
             });
 
@@ -493,8 +541,6 @@ function wrapText(columnBlock, element, d) {
 
         // resupply text, now wrapped
         renderCellText(cellTextHolder.select('.cellText'), columnBlock, d3.select(element.parentNode.parentNode));
-
-        nextRenderCallback();
     };
 }
 
@@ -518,14 +564,17 @@ function finalizeYPositionMaker(columnBlock, element, d) {
             columnBlock
                 .selectAll('.columnCell')
                 .call(setCellHeightAndPositionY);
+            magic(null, columnBlock.filter(cellsBlock), 0);
         }
 
         cellTextHolder
             .attr('transform', function () {
                 var element = this;
-                var box = element.parentNode.getBoundingClientRect();
+                var columnCellElement = element.parentNode;
+                var box = columnCellElement.getBoundingClientRect();
                 var rectBox = d3.select(element.parentNode).select('.cellRect').node().getBoundingClientRect();
-                var yPosition = (rectBox.top - box.top + c.cellPad);
+                var currentTransform = element.transform.baseVal.consolidate();
+                var yPosition = rectBox.top - box.top + (currentTransform ? currentTransform.matrix.f : c.cellPad);
                 return 'translate(' + c.cellPad + ' ' + yPosition + ')';
             });
     };
@@ -563,3 +612,4 @@ function rowsHeight(rowBlock, key) {
 
 function getBlock(d) {return d.rowBlocks[d.page];}
 function getRow(l, i) {return l.rows[i - l.firstRowIndex];}
+

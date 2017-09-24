@@ -1,9 +1,9 @@
 {
     "layout": {
-        "width": 300,
-        "height": 330 + 380 - 150,
+        "width": 600,
+        "height": 230 + 380 - 150,
         "title": "Widget parameters and cost",
-        "margin": {"t": 0 || 380, "r": 60, "b": 54, "l": 60}
+        "margin": {"t": 0 || 280, "r": 60, "b": 54, "l": 60}
     },
 
     "data": [{
@@ -20,13 +20,13 @@
 
         "header": {
 
-            "height": 60, // fixme for some reason it doesn't recognize arrays here
+            "height": 20, // fixme for some reason it doesn't recognize arrays here
 
             "values": [
                 ["Index"   , "#"],
                 ["Column 2"   , "ASDF<br>GHJKL<sub>WW</sub>" || "$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$" || "1A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>"],
                 ["Column 3"   , "$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1 \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$"]
-            ].map(function(r) {return r.slice(0, 1)}).slice(0, 1),
+            ].map(function(r) {return r.slice(0, 2)}).slice(0, 3),
 
             "align": ["right"],
             "valign": "middle",
@@ -69,12 +69,14 @@
                     "8A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
                 ].map(function(d, i) {return i}),
                 [
-                   "Try-hard bushwick irony humblebrag activated charcoal, thundercats air plant drinking vinegar knausgaard stumptown normcore readymade af prism. Master cleanse pork belly mumblecore, godard 8-bit wolf mlkshk dreamcatcher narwhal kickstarter williamsburg hoodie meh tumblr brunch." || "$\\begin{eqnarray*} 1*\\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
-                    "1A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
+                    "Hello1",
+                    "Try-hard bushwick irony humblebrag activated charcoal, thundercats air plant drinking vinegar knausgaard stumptown normcore readymade af prism. Master cleanse pork belly mumblecore, godard 8-bit wolf mlkshk dreamcatcher narwhal kickstarter williamsburg hoodie meh tumblr brunch." || "$\\begin{eqnarray*} 1*\\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
+                    "Hello2",
+                    //"1A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
                     "$\\begin{eqnarray*} 2*\\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
-                    "2A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
+                    "2A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”>Plotly</a><br>C<sub>D</sub>",
                     "$\\begin{eqnarray*} 3*\\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
-                    "3A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
+                    "3A<sup><b>X</b></sup>B<a href=”https://plot.ly/”> Plotly</a>C<sub>D</sub>",
                     "$\\begin{eqnarray*} 4*\\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
                     "4A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
                     "$\\begin{eqnarray*} 5*\\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
@@ -105,7 +107,7 @@
                     "x8A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
                 ].map(function(d, i) {return d})
 
-            ].map(function(a) {return a.slice(0, 1)}).slice(1, 2),
+            ].map(function(a) {return a.slice(0)}).slice(0, 3),
 
             "format": [
                 null
@@ -114,7 +116,7 @@
             //"prefix": ["#"],
             //"suffix": ["cell"],
 
-            "height": 60,
+            "height": 20,
 
             "align": ["right"],
             "valign": ["bottom"],

@@ -11,10 +11,11 @@
 module.exports = {
     maxDimensionCount: 60,
     overdrag: 45,
-    cellPad: 4,
+    cellPad: 8,
     latexMark: '$',
     wrapSplitCharacter: ' ',
     wrapSpacer: ' ',
+    lineBreaker: '<br>',
     uplift: 5,
     columnTitleOffset: 28,
     columnExtentOffset: 10,
