@@ -194,8 +194,8 @@ proto.updateProjection = function(fullLayout, geoLayout) {
     // px coordinates of view mid-point,
     // useful to update `geo.center` after interactions
     var midPt = this.midPt = [
-        b[0][0] + (b[1][0] - b[0][0]) / 2,
-        b[0][1] + (b[1][1] - b[0][1]) / 2
+        (b[0][0] + b[1][0]) / 2,
+        (b[0][1] + b[1][1]) / 2
     ];
 
     // adjust projection to user setting

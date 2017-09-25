@@ -1544,13 +1544,13 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             ], [
                 'geo.center.lat'
             ]);
-            return scroll([350, 250], [-200, -200]);
+            return scroll([200, 250], [-200, -200]);
         })
         .then(function() {
-                [-124.4, 0], [-124.4, 29.5], 1.3
             _assert('after off-center scroll', [
+                [-151.2, 0], [-151.2, 29.5], 1.3
             ], [
-                [124.4, 0], [350, 329.2], [0, 0], 134.4
+                [151.2, 0], [350, 329.2], [0, 0], 134.4
             ], [
                 'geo.projection.rotation.lon',
                 'geo.center.lon', 'geo.center.lat',
@@ -1559,8 +1559,8 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             return Plotly.relayout(gd, 'geo.showocean', false);
         })
         .then(function() {
-                [-124.4, 0], [-124.4, 29.5], 1.3
             _assert('after some relayout call that causes a replot', [
+                [-151.2, 0], [-151.2, 29.5], 1.3
             ], [
                 // converts translate (px) to center (lonlat)
                 [151.2, 0], [350, 260], [0, 29.5], 134.4

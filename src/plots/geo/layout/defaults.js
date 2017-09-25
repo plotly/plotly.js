@@ -78,7 +78,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
     var lon1 = lonRange[1];
     if(lon0 > 0 && lon1 < 0) lon1 += 360;
 
-    var centerLon = lon0 + (lon1 - lon0) / 2;
+    var centerLon = (lon0 + lon1) / 2;
     var projLon;
 
     if(!isAlbersUsa) {
@@ -109,7 +109,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
         centerLatDflt = 38.7;
     } else {
         centerLonDflt = isScoped ? centerLon : projLon;
-        centerLatDflt = latRange[0] + (latRange[1] - latRange[0]) / 2;
+        centerLatDflt = (latRange[0] + latRange[1]) / 2;
     }
 
     coerce('center.lon', centerLonDflt);
