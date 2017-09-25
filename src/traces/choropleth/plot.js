@@ -92,11 +92,12 @@ function calcGeoJSON(calcTrace, topojson) {
 }
 
 function style(geo) {
-    geo.framework.selectAll('g.trace.choropleth').each(function(calcTrace) {
-        var trace = calcTrace[0].trace,
-            s = d3.select(this),
-            marker = trace.marker || {},
-            markerLine = marker.line || {};
+    var gTraces = geo.layers.backplot.selectAll('.trace.choropleth');
+
+    gTraces.each(function(calcTrace) {
+        var trace = calcTrace[0].trace;
+        var marker = trace.marker || {};
+        var markerLine = marker.line || {};
 
         var sclFunc = Colorscale.makeColorScaleFunc(
             Colorscale.extractScale(
@@ -106,13 +107,11 @@ function style(geo) {
             )
         );
 
-        s.selectAll('path.choroplethlocation').each(function(_, i) {
-            var pt = calcTrace[i];
-
+        d3.select(this).selectAll('.choroplethlocation').each(function(d) {
             d3.select(this)
-                .attr('fill', sclFunc(pt.z))
-                .call(Color.stroke, pt.mlc || markerLine.color)
-                .call(Drawing.dashLine, '', pt.mlw || markerLine.width || 0);
+                .attr('fill', sclFunc(d.z))
+                .call(Color.stroke, d.mlc || markerLine.color)
+                .call(Drawing.dashLine, '', d.mlw || markerLine.width || 0);
         });
     });
 }
