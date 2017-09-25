@@ -273,7 +273,8 @@ proto.updateBaseLayers = function(fullLayout, geoLayout) {
                     .classed('scatterlayer', true);
             } else if(isLineLayer(d)) {
                 basePaths[d] = layer.append('path')
-                    .style('fill', 'none');
+                    .style('fill', 'none')
+                    .style('stroke-miterlimit', 2);
             } else if(isFillLayer(d)) {
                 basePaths[d] = layer.append('path')
                     .style('stroke', 'none');
