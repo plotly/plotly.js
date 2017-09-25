@@ -1150,8 +1150,21 @@ describe('Test geo interactions', function() {
                     done();
                 });
             });
-
         });
+    });
+
+    it('should not throw during hover when out-of-range pts are present in *albers usa* map', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/geo_scattergeo-out-of-usa.json'));
+        fig.layout.width = 700;
+        fig.layout.height = 500;
+
+        Plotly.plot(gd, fig).then(function() {
+            mouseEvent('mousemove', 350, 250);
+            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
+        })
+        .catch(fail)
+        .then(done);
     });
 });
 
