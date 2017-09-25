@@ -17,7 +17,6 @@ var svgUtil = require('../../lib/svg_text_utils');
 var raiseToTop = require('../../lib').raiseToTop;
 var cancelEeaseColumn = require('../../lib').cancelTransition;
 
-
 module.exports = function plot(gd, calcdata) {
 
     if(c.clipView) {
@@ -53,7 +52,8 @@ module.exports = function plot(gd, calcdata) {
     tableControlView.enter()
         .append('g')
         .classed('tableControlView', true)
-        .style('box-sizing', 'content-box');
+        .style('box-sizing', 'content-box')
+        .call(renderScrollbarKit);
 
     tableControlView
         .attr('transform', function(d) {return 'translate(' + d.size.l + ' ' + d.size.t + ')';})
@@ -149,7 +149,7 @@ module.exports = function plot(gd, calcdata) {
     scrollAreaClip.enter()
         .append(c.clipView ? 'g' : 'clipPath')
         .classed('scrollAreaClip', true)
-        .attr('id', function(d) { return 'scrollAreaBottomClip_' + d.key;})
+        .attr('id', function(d) { return 'scrollAreaBottomClip_' + d.key;});
 
     var scrollAreaClipRect = scrollAreaClip.selectAll('.scrollAreaClipRect')
         .data(gup.repeat, gup.keyFun);
@@ -201,6 +201,40 @@ module.exports = function plot(gd, calcdata) {
         .attr('width', function(d) {return d.columnWidth;})
         .attr('height', function(d) {return d.calcdata.height + c.uplift;});
 };
+
+function renderScrollbarKit(tableControlView) {
+
+    var scrollbarKit = tableControlView.selectAll('.scrollbarKit')
+        .data(gup.repeat, gup.keyFun);
+
+    scrollbarKit.enter()
+        .append('g')
+        .classed('scrollbarKit', true)
+        .attr('transform', function(d) {return 'translate(' + (d.width + c.scrollbarWidth) + ' 0)';});
+
+    var scrollbar = scrollbarKit.selectAll('.scrollbar')
+        .data(gup.repeat, gup.keyFun);
+
+    scrollbar.enter()
+        .append('g')
+        .classed('scrollbar', true);
+
+
+    var scrollbarGlyph = scrollbar.selectAll('.scrollbarGlyph')
+        .data(gup.repeat, gup.keyFun);
+
+    scrollbarGlyph.enter()
+        .append('line')
+        .classed('scrollbarGlyph', true)
+        .attr('stroke', 'black')
+        .attr('stroke-opacity', 0.4)
+        .attr('stroke-width', c.scrollbarWidth)
+        .attr('stroke-linecap', 'round');
+
+    scrollbarGlyph
+        .attr('y1', 100)
+        .attr('y2', 250);
+}
 
 function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
     // this is performance critical code as scrolling calls it on every revolver switch
