@@ -490,35 +490,15 @@ exports.doTicksRelayout = function(gd) {
 
 exports.doModeBar = function(gd) {
     var fullLayout = gd._fullLayout;
-    var subplotIds, subplotLayout, subplotObj, i;
 
     ModeBar.manage(gd);
     initInteractions(gd);
 
-    subplotIds = Plots.getSubplotIds(fullLayout, 'gl3d');
-    for(i = 0; i < subplotIds.length; i++) {
-        subplotObj = fullLayout[subplotIds[i]]._scene;
-        subplotObj.updateFx(fullLayout.dragmode, fullLayout.hovermode);
+    for(var i = 0; i < fullLayout._basePlotModules.length; i++) {
+        var updateFx = fullLayout._basePlotModules[i].updateFx;
+        if(updateFx) updateFx(fullLayout);
     }
 
-    subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d');
-    for(i = 0; i < subplotIds.length; i++) {
-        subplotObj = fullLayout._plots[subplotIds[i]]._scene2d;
-        subplotObj.updateFx(fullLayout.dragmode);
-    }
-
-    subplotIds = Plots.getSubplotIds(fullLayout, 'mapbox');
-    for(i = 0; i < subplotIds.length; i++) {
-        subplotObj = fullLayout[subplotIds[i]]._subplot;
-        subplotObj.updateFx(fullLayout);
-    }
-
-    subplotIds = Plots.getSubplotIds(fullLayout, 'geo');
-    for(i = 0; i < subplotIds.length; i++) {
-        subplotLayout = fullLayout[subplotIds[i]];
-        subplotObj = subplotLayout._subplot;
-        subplotObj.updateFx(fullLayout, subplotLayout);
-    }
 
     return Plots.previousPromises(gd);
 };

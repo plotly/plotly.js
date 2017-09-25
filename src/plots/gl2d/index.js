@@ -130,3 +130,12 @@ exports.toSVG = function(gd) {
         scene.destroy();
     }
 };
+
+exports.updateFx = function(fullLayout) {
+    var subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d');
+
+    for(var i = 0; i < subplotIds.length; i++) {
+        var subplotObj = fullLayout._plots[subplotIds[i]]._scene2d;
+        subplotObj.updateFx(fullLayout.dragmode);
+    }
+};

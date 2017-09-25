@@ -155,3 +155,12 @@ function findAccessToken(gd, mapboxIds) {
 
     return accessToken;
 }
+
+exports.updateFx = function(fullLayout) {
+    var subplotIds = Plots.getSubplotIds(fullLayout, MAPBOX);
+
+    for(var i = 0; i < subplotIds.length; i++) {
+        var subplotObj = fullLayout[subplotIds[i]]._subplot;
+        subplotObj.updateFx(fullLayout);
+    }
+};

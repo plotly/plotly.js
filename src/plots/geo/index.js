@@ -77,3 +77,13 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         }
     }
 };
+
+exports.updateFx = function(fullLayout) {
+    var subplotIds = Plots.getSubplotIds(fullLayout, GEO);
+
+    for(var i = 0; i < subplotIds.length; i++) {
+        var subplotLayout = fullLayout[subplotIds[i]];
+        var subplotObj = subplotLayout._subplot;
+        subplotObj.updateFx(fullLayout, subplotLayout);
+    }
+};
