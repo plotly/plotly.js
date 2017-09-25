@@ -210,7 +210,7 @@ function renderScrollbarKit(tableControlView) {
     scrollbarKit.enter()
         .append('g')
         .classed('scrollbarKit', true)
-        .attr('transform', function(d) {return 'translate(' + (d.width + c.scrollbarWidth) + ' 0)';});
+        .attr('transform', function(d) {return 'translate(' + (d.width + c.scrollbarWidth / 2 + c.scrollbarOffset) + ' 0)';});
 
     var scrollbar = scrollbarKit.selectAll('.scrollbar')
         .data(gup.repeat, gup.keyFun);
@@ -218,7 +218,6 @@ function renderScrollbarKit(tableControlView) {
     scrollbar.enter()
         .append('g')
         .classed('scrollbar', true);
-
 
     var scrollbarGlyph = scrollbar.selectAll('.scrollbarGlyph')
         .data(gup.repeat, gup.keyFun);
