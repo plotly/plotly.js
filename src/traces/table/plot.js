@@ -231,8 +231,12 @@ function renderScrollbarKit(tableControlView) {
         .attr('stroke-linecap', 'round');
 
     scrollbarGlyph
-        .attr('y1', function(d) {return 100})
-        .attr('y2', 120 + Math.random() * 150);
+        .attr('y1', function(d) {
+            return headerHeight(d) + c.scrollbarWidth / 2;
+        })
+        .attr('y2', function(d) {
+            return d.groupHeight - c.scrollbarWidth / 2;
+        });
 }
 
 function renderColumnBlocks(gd, tableControlView, columnBlock, allColumnBlock) {
@@ -461,17 +465,20 @@ function overlap(a, b) {
     return a[0] < b[1] && a[1] > b[0];
 }
 
+function headerHeight(d) {
+    var headerBlocks = d.rowBlocks[0].auxiliaryBlocks;
+    return headerBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
+}
+
 function updateBlockYPosition(gd, cellsColumnBlock, dy) {
 
     var d = cellsColumnBlock[0][0].__data__;
     var blocks = d.rowBlocks;
     var calcdata = d.calcdata;
-    var headerBlocks = d.rowBlocks[0].auxiliaryBlocks;
 
     calcdata.scrollY -= dy;
     var bottom = firstRowAnchor(blocks, blocks.length);
-    var headerHeight = headerBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
-    var scrollHeight = d.calcdata.groupHeight - headerHeight;
+    var scrollHeight = d.calcdata.groupHeight - headerHeight(d);
     var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom - scrollHeight, calcdata.scrollY));
 
     var pages = [];
