@@ -1430,22 +1430,21 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         });
     }
 
-    function assertEventData(eventKeys) {
+    function assertEventData(msg, eventKeys) {
         if(eventKeys === 'dblclick') {
-            expect(dblClickCnt).toBe(1, 'double click got fired');
-            expect(eventData).toBeDefined('relayout is fired on double clicks');
-        }
-        else {
+            expect(dblClickCnt).toBe(1, msg + 'double click got fired');
+            expect(eventData).toBeDefined(msg + 'relayout is fired on double clicks');
+        } else {
             expect(dblClickCnt).toBe(0, 'double click not fired');
 
             if(Array.isArray(eventKeys)) {
                 expect(Object.keys(eventData || {}).length)
-                    .toBe(Object.keys(eventKeys).length, '# of event data keys');
+                    .toBe(Object.keys(eventKeys).length, msg + '# of event data keys');
                 eventKeys.forEach(function(k) {
-                    expect((eventData || {})[k]).toBeDefined('event data key ' + k);
+                    expect((eventData || {})[k]).toBeDefined(msg + 'event data key ' + k);
                 });
             } else {
-                expect(eventData).toBeUndefined();
+                expect(eventData).toBeUndefined(msg + 'relayout not fired');
             }
         }
 
@@ -1488,17 +1487,19 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         fig.layout.height = 500;
         fig.layout.dragmode = 'pan';
 
-        function _assert(attr, proj, eventKeys) {
+        function _assert(step, attr, proj, eventKeys) {
+            var msg = '[' + step + '] ';
+
             var geoLayout = gd._fullLayout.geo;
             var rotation = geoLayout.projection.rotation;
             var center = geoLayout.center;
             var scale = geoLayout.projection.scale;
 
-            expect(rotation.lon).toBeCloseTo(attr[0][0], 1, 'rotation.lon');
-            expect(rotation.lat).toBeCloseTo(attr[0][1], 1, 'rotation.lat');
-            expect(center.lon).toBeCloseTo(attr[1][0], 1, 'center.lon');
-            expect(center.lat).toBeCloseTo(attr[1][1], 1, 'center.lat');
-            expect(scale).toBeCloseTo(attr[2], 1, 'zoom');
+            expect(rotation.lon).toBeCloseTo(attr[0][0], 1, msg + 'rotation.lon');
+            expect(rotation.lat).toBeCloseTo(attr[0][1], 1, msg + 'rotation.lat');
+            expect(center.lon).toBeCloseTo(attr[1][0], 1, msg + 'center.lon');
+            expect(center.lat).toBeCloseTo(attr[1][1], 1, msg + 'center.lat');
+            expect(scale).toBeCloseTo(attr[2], 1, msg + 'zoom');
 
             var geo = geoLayout._subplot;
             var rotate = geo.projection.rotate();
@@ -1506,19 +1507,19 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             var _center = geo.projection.center();
             var _scale = geo.projection.scale();
 
-            expect(rotate[0]).toBeCloseTo(proj[0][0], 0, 'rotate[0]');
-            expect(rotate[1]).toBeCloseTo(proj[0][1], 0, 'rotate[1]');
-            expect(translate[0]).toBeCloseTo(proj[1][0], 0, 'translate[0]');
-            expect(translate[1]).toBeCloseTo(proj[1][1], 0, 'translate[1]');
-            expect(_center[0]).toBeCloseTo(proj[2][0], 0, 'center[0]');
-            expect(_center[1]).toBeCloseTo(proj[2][1], 0, 'center[1]');
-            expect(_scale).toBeCloseTo(proj[3], 0, 'scale');
+            expect(rotate[0]).toBeCloseTo(proj[0][0], 0, msg + 'rotate[0]');
+            expect(rotate[1]).toBeCloseTo(proj[0][1], 0, msg + 'rotate[1]');
+            expect(translate[0]).toBeCloseTo(proj[1][0], 0, msg + 'translate[0]');
+            expect(translate[1]).toBeCloseTo(proj[1][1], 0, msg + 'translate[1]');
+            expect(_center[0]).toBeCloseTo(proj[2][0], 0, msg + 'center[0]');
+            expect(_center[1]).toBeCloseTo(proj[2][1], 0, msg + 'center[1]');
+            expect(_scale).toBeCloseTo(proj[3], 0, msg + 'scale');
 
-            assertEventData(eventKeys);
+            assertEventData(msg, eventKeys);
         }
 
         plot(fig).then(function() {
-            _assert([
+            _assert('base', [
                 [-90, 0], [-90, 0], 1
             ], [
                 [90, 0], [350, 260], [0, 0], 101.9
@@ -1526,7 +1527,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             return drag([[350, 250], [400, 250]]);
         })
         .then(function() {
-            _assert([
+            _assert('after east-west drag', [
                 [-124.4, 0], [-124.4, 0], 1
             ], [
                 [124.4, 0], [350, 260], [0, 0], 101.9
@@ -1536,7 +1537,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             return drag([[400, 250], [400, 300]]);
         })
         .then(function() {
-            _assert([
+            _assert('after north-south drag', [
                 [-124.4, 0], [-124.4, 28.1], 1
             ], [
                 [124.4, 0], [350, 310], [0, 0], 101.9
@@ -1546,8 +1547,8 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             return scroll([350, 250], [-200, -200]);
         })
         .then(function() {
-            _assert([
                 [-124.4, 0], [-124.4, 29.5], 1.3
+            _assert('after off-center scroll', [
             ], [
                 [124.4, 0], [350, 329.2], [0, 0], 134.4
             ], [
@@ -1555,15 +1556,14 @@ describe('Test geo zoom/pan/drag interactions:', function() {
                 'geo.center.lon', 'geo.center.lat',
                 'geo.projection.scale'
             ]);
-            // something that causes a replot
             return Plotly.relayout(gd, 'geo.showocean', false);
         })
         .then(function() {
-            _assert([
                 [-124.4, 0], [-124.4, 29.5], 1.3
+            _assert('after some relayout call that causes a replot', [
             ], [
                 // converts translate (px) to center (lonlat)
-                [124.4, 0], [350, 260], [0, 29.5], 134.4
+                [151.2, 0], [350, 260], [0, 29.5], 134.4
             ], [
                 'geo.showocean'
             ]);
@@ -1571,7 +1571,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         })
         .then(function() {
             // resets to initial view
-            _assert([
+            _assert('after double click', [
                 [-90, 0], [-90, 0], 1
             ], [
                 [90, 0], [350, 260], [0, 0], 101.9
@@ -1587,28 +1587,30 @@ describe('Test geo zoom/pan/drag interactions:', function() {
 
         // of layout width = height = 500
 
-        function _assert(attr, proj, eventKeys) {
+        function _assert(step, attr, proj, eventKeys) {
+            var msg = '[' + step + '] ';
+
             var geoLayout = gd._fullLayout.geo;
             var rotation = geoLayout.projection.rotation;
             var scale = geoLayout.projection.scale;
 
-            expect(rotation.lon).toBeCloseTo(attr[0][0], 0, 'rotation.lon');
-            expect(rotation.lat).toBeCloseTo(attr[0][1], 0, 'rotation.lat');
-            expect(scale).toBeCloseTo(attr[1], 1, 'zoom');
+            expect(rotation.lon).toBeCloseTo(attr[0][0], 0, msg + 'rotation.lon');
+            expect(rotation.lat).toBeCloseTo(attr[0][1], 0, msg + 'rotation.lat');
+            expect(scale).toBeCloseTo(attr[1], 1, msg + 'zoom');
 
             var geo = geoLayout._subplot;
             var rotate = geo.projection.rotate();
             var _scale = geo.projection.scale();
 
-            expect(rotate[0]).toBeCloseTo(proj[0][0], 0, 'rotate[0]');
-            expect(rotate[1]).toBeCloseTo(proj[0][1], 0, 'rotate[1]');
-            expect(_scale).toBeCloseTo(proj[1], 0, 'scale');
+            expect(rotate[0]).toBeCloseTo(proj[0][0], 0, msg + 'rotate[0]');
+            expect(rotate[1]).toBeCloseTo(proj[0][1], 0, msg + 'rotate[1]');
+            expect(_scale).toBeCloseTo(proj[1], 0, msg + 'scale');
 
-            assertEventData(eventKeys);
+            assertEventData(msg, eventKeys);
         }
 
         plot(fig).then(function() {
-            _assert([
+            _assert('base', [
                 [-75, 45], 1
             ], [
                 [75, -45], 160
@@ -1616,7 +1618,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             return drag([[250, 250], [300, 250]]);
         })
         .then(function() {
-            _assert([
+            _assert('after east-west drag', [
                 [-103.7, 49.3], 1
             ], [
                 [103.7, -49.3], 160
@@ -1626,7 +1628,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             return drag([[250, 250], [300, 300]]);
         })
         .then(function() {
-            _assert([
+            _assert('after NW-SE drag', [
                 [-135.5, 73.8], 1
             ], [
                 [135.5, -73.8], 160
@@ -1636,7 +1638,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             return scroll([300, 300], [-200, -200]);
         })
         .then(function() {
-            _assert([
+            _assert('after scroll', [
                 [-126.2, 67.1], 1.3
             ], [
                 [126.2, -67.1], 211.1
@@ -1644,11 +1646,10 @@ describe('Test geo zoom/pan/drag interactions:', function() {
                 'geo.projection.rotation.lon', 'geo.projection.rotation.lat',
                 'geo.projection.scale'
             ]);
-            // something that causes a replot
             return Plotly.relayout(gd, 'geo.showocean', false);
         })
         .then(function() {
-            _assert([
+            _assert('after some relayout call that causes a replot', [
                 [-126.2, 67.1], 1.3
             ], [
                 [126.2, -67.1], 211.1
@@ -1659,7 +1660,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         })
         .then(function() {
             // resets to initial view
-            _assert([
+            _assert('after double click', [
                 [-75, 45], 1
             ], [
                 [75, -45], 160
@@ -1676,31 +1677,33 @@ describe('Test geo zoom/pan/drag interactions:', function() {
 
         // of layout width = height = 500
 
-        function _assert(attr, proj, eventKeys) {
+        function _assert(step, attr, proj, eventKeys) {
+            var msg = '[' + step + '] ';
+
             var geoLayout = gd._fullLayout.geo;
             var center = geoLayout.center;
             var scale = geoLayout.projection.scale;
 
-            expect(center.lon).toBeCloseTo(attr[0][0], -0.5, 'center.lon');
-            expect(center.lat).toBeCloseTo(attr[0][1], -0.5, 'center.lat');
-            expect(scale).toBeCloseTo(attr[1], 1, 'zoom');
+            expect(center.lon).toBeCloseTo(attr[0][0], -0.5, msg + 'center.lon');
+            expect(center.lat).toBeCloseTo(attr[0][1], -0.5, msg + 'center.lat');
+            expect(scale).toBeCloseTo(attr[1], 1, msg + 'zoom');
 
             var geo = geoLayout._subplot;
             var translate = geo.projection.translate();
             var _center = geo.projection.center();
             var _scale = geo.projection.scale();
 
-            expect(translate[0]).toBeCloseTo(proj[0][0], -0.75, 'translate[0]');
-            expect(translate[1]).toBeCloseTo(proj[0][1], -0.75, 'translate[1]');
-            expect(_center[0]).toBeCloseTo(proj[1][0], -0.5, 'center[0]');
-            expect(_center[1]).toBeCloseTo(proj[1][1], -0.5, 'center[1]');
-            expect(_scale).toBeCloseTo(proj[2], -1, 'scale');
+            expect(translate[0]).toBeCloseTo(proj[0][0], -0.75, msg + 'translate[0]');
+            expect(translate[1]).toBeCloseTo(proj[0][1], -0.75, msg + 'translate[1]');
+            expect(_center[0]).toBeCloseTo(proj[1][0], -0.5, msg + 'center[0]');
+            expect(_center[1]).toBeCloseTo(proj[1][1], -0.5, msg + 'center[1]');
+            expect(_scale).toBeCloseTo(proj[2], -1, msg + 'scale');
 
-            assertEventData(eventKeys);
+            assertEventData(msg, eventKeys);
         }
 
         plot(fig).then(function() {
-            _assert([
+            _assert('base', [
                 [15, 57.5], 1,
             ], [
                 [247, 260], [0, 57.5], 292.2
@@ -1708,7 +1711,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             return drag([[250, 250], [200, 200]]);
         })
         .then(function() {
-            _assert([
+            _assert('after SW-NE drag', [
                 [30.9, 46.2], 1
             ], [
                 // changes translate(), but not center()
@@ -1719,18 +1722,17 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             return scroll([300, 300], [-200, -200]);
         })
         .then(function() {
-            _assert([
+            _assert('after scroll', [
                 [34.3, 43.6], 1.3
             ], [
                 [164.1, 181.2], [0, 57.5], 385.5
             ], [
                 'geo.center.lon', 'geo.center.lon', 'geo.projection.scale'
             ]);
-            // something that causes a replot
             return Plotly.relayout(gd, 'geo.showlakes', true);
         })
         .then(function() {
-            _assert([
+            _assert('after some relayout call that causes a replot', [
                 [34.3, 43.6], 1.3
             ], [
                 // changes are now reflected in 'center'
@@ -1741,7 +1743,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             return dblClick([250, 250]);
         })
         .then(function() {
-            _assert([
+            _assert('after double click', [
                 [15, 57.5], 1,
             ], [
                 [247, 260], [0, 57.5], 292.2
@@ -1758,29 +1760,31 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         // layout width = 870
         // layout height = 598
 
-        function _assert(attr, proj, eventKeys) {
+        function _assert(step, attr, proj, eventKeys) {
+            var msg = '[' + step + '] ';
+
             var geoLayout = gd._fullLayout.geo;
             var center = geoLayout.center;
             var scale = geoLayout.projection.scale;
 
-            expect(center.lon).toBeCloseTo(attr[0][0], 1, 'center.lon');
-            expect(center.lat).toBeCloseTo(attr[0][1], 1, 'center.lat');
-            expect(scale).toBeCloseTo(attr[1], 1, 'zoom');
+            expect(center.lon).toBeCloseTo(attr[0][0], 1, msg + 'center.lon');
+            expect(center.lat).toBeCloseTo(attr[0][1], 1, msg + 'center.lat');
+            expect(scale).toBeCloseTo(attr[1], 1, msg + 'zoom');
 
             // albersUsa projection does not have a center() method
             var geo = geoLayout._subplot;
             var translate = geo.projection.translate();
             var _scale = geo.projection.scale();
 
-            expect(translate[0]).toBeCloseTo(proj[0][0], -1, 'translate[0]');
-            expect(translate[1]).toBeCloseTo(proj[0][1], -1, 'translate[1]');
-            expect(_scale).toBeCloseTo(proj[1], -1.5, 'scale');
+            expect(translate[0]).toBeCloseTo(proj[0][0], -1, msg + 'translate[0]');
+            expect(translate[1]).toBeCloseTo(proj[0][1], -1, msg + 'translate[1]');
+            expect(_scale).toBeCloseTo(proj[1], -1.5, msg + 'scale');
 
-            assertEventData(eventKeys);
+            assertEventData(msg, eventKeys);
         }
 
         plot(fig).then(function() {
-            _assert([
+            _assert('base', [
                 [-96.6, 38.7], 1,
             ], [
                 [416, 309], 738.5
@@ -1788,7 +1792,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             return drag([[250, 250], [200, 200]]);
         })
         .then(function() {
-            _assert([
+            _assert('after NW-SE drag', [
                 [-91.8, 34.8], 1,
             ], [
                 [366, 259], 738.5
@@ -1798,18 +1802,17 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             return scroll([300, 300], [-200, -200]);
         })
         .then(function() {
-            _assert([
+            _assert('after scroll', [
                 [-94.5, 35.0], 1.3
             ], [
                 [387.1, 245.9], 974.4
             ], [
                 'geo.center.lon', 'geo.center.lon', 'geo.projection.scale'
             ]);
-            // something that causes a replot
             return Plotly.relayout(gd, 'geo.showlakes', true);
         })
         .then(function() {
-            _assert([
+            _assert('after some relayout call that causes a replot', [
                 [-94.5, 35.0], 1.3
             ], [
                 // new center values are reflected in translate()
@@ -1820,7 +1823,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             return dblClick([250, 250]);
         })
         .then(function() {
-            _assert([
+            _assert('after double click', [
                 [-96.6, 38.7], 1,
             ], [
                 [416, 309], 738.5
