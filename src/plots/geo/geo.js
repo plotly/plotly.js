@@ -227,11 +227,12 @@ proto.updateBaseLayers = function(fullLayout, geoLayout) {
         return (d === 'lonaxis' || d === 'lataxis');
     }
 
-    function isTopoLayer(d) {
-        return (
-            constants.fillLayers.indexOf(d) !== -1 ||
-            constants.lineLayers.indexOf(d) !== -1
-        );
+    function isLineLayer(d) {
+        return Boolean(constants.lineLayers[d]);
+    }
+
+    function isFillLayer(d) {
+        return Boolean(constants.fillLayers[d]);
     }
 
     var allLayers = this.hasChoropleth ?
@@ -239,7 +240,7 @@ proto.updateBaseLayers = function(fullLayout, geoLayout) {
         constants.layers;
 
     var layerData = allLayers.filter(function(d) {
-        return isTopoLayer(d) ? geoLayout['show' + d] :
+        return (isLineLayer(d) || isFillLayer(d)) ? geoLayout['show' + d] :
             isAxisLayer(d) ? geoLayout[d].showgrid :
             true;
     });
@@ -259,15 +260,23 @@ proto.updateBaseLayers = function(fullLayout, geoLayout) {
             var layer = layers[d] = d3.select(this);
 
             if(d === 'bg') {
-                _this.bgRect = layer.append('rect').style('pointer-events', 'all');
+                _this.bgRect = layer.append('rect')
+                    .style('pointer-events', 'all');
             } else if(isAxisLayer(d)) {
-                basePaths[d] = layer.append('path');
+                basePaths[d] = layer.append('path')
+                    .style('fill', 'none');
             } else if(d === 'backplot') {
-                layer.append('g').classed('choroplethlayer', true);
+                layer.append('g')
+                    .classed('choroplethlayer', true);
             } else if(d === 'frontplot') {
-                layer.append('g').classed('scatterlayer', true);
-            } else if(isTopoLayer(d)) {
-                basePaths[d] = layer.append('path');
+                layer.append('g')
+                    .classed('scatterlayer', true);
+            } else if(isLineLayer(d)) {
+                basePaths[d] = layer.append('path')
+                    .style('fill', 'none');
+            } else if(isFillLayer(d)) {
+                basePaths[d] = layer.append('path')
+                    .style('stroke', 'none');
             }
         });
 
@@ -279,22 +288,19 @@ proto.updateBaseLayers = function(fullLayout, geoLayout) {
 
         if(d === 'frame') {
             path.datum(constants.sphereSVG);
-        } else if(isTopoLayer(d)) {
+        } else if(isLineLayer(d) || isFillLayer(d)) {
             path.datum(topojsonFeature(topojson, topojson.objects[d]));
         } else if(isAxisLayer(d)) {
             path.datum(makeGraticule(d, geoLayout))
-                .attr('fill', 'none')
                 .call(Color.stroke, geoLayout[d].gridcolor)
                 .call(Drawing.dashLine, '', geoLayout[d].gridwidth);
         }
 
-        if(constants.fillLayers.indexOf(d) !== -1) {
-            path.attr('stroke', 'none')
-                .call(Color.fill, geoLayout[adj + 'color']);
-        } else if(constants.lineLayers.indexOf(d) !== -1) {
-            path.attr('fill', 'none')
-                .call(Color.stroke, geoLayout[adj + 'color'])
+        if(isLineLayer(d)) {
+            path.call(Color.stroke, geoLayout[adj + 'color'])
                 .call(Drawing.dashLine, '', geoLayout[adj + 'width']);
+        } else if(isFillLayer(d)) {
+            path.call(Color.fill, geoLayout[adj + 'color']);
         }
     });
 };

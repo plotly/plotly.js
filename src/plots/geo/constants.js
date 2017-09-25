@@ -127,10 +127,20 @@ exports.sphereSVG = {type: 'Sphere'};
 // N.B. base layer names must be the same as in the topojson files
 
 // base layer with a fill color
-exports.fillLayers = ['ocean', 'land', 'lakes'];
+exports.fillLayers = {
+    ocean: 1,
+    land: 1,
+    lakes: 1
+};
 
 // base layer with a only a line color
-exports.lineLayers = ['subunits', 'countries', 'coastlines', 'rivers', 'frame'];
+exports.lineLayers = {
+    subunits: 1,
+    countries: 1,
+    coastlines: 1,
+    rivers: 1,
+    frame: 1
+};
 
 exports.layers = [
     'bg',
