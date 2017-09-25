@@ -140,8 +140,8 @@ module.exports = function plot(gd, calcdata) {
 
     // initial rendering: header is rendered first, as it may may have async LaTeX (show header first)
     // but blocks are _entered_ the way they are due to painter's algo (header on top)
-    renderColumnBlocks(gd, columnBlock.filter(headerBlock), columnBlock);
-    renderColumnBlocks(gd, columnBlock.filter(cellsBlock), columnBlock);
+    renderColumnBlocks(gd, tableControlView, columnBlock.filter(headerBlock), columnBlock);
+    renderColumnBlocks(gd, tableControlView, columnBlock.filter(cellsBlock), columnBlock);
 
     var scrollAreaClip = tableControlView.selectAll('.scrollAreaClip')
         .data(gup.repeat, gup.keyFun);
@@ -231,11 +231,11 @@ function renderScrollbarKit(tableControlView) {
         .attr('stroke-linecap', 'round');
 
     scrollbarGlyph
-        .attr('y1', 100)
-        .attr('y2', 250);
+        .attr('y1', function(d) {return 100})
+        .attr('y2', 120 + Math.random() * 150);
 }
 
-function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
+function renderColumnBlocks(gd, tableControlView, columnBlock, allColumnBlock) {
     // this is performance critical code as scrolling calls it on every revolver switch
     // it appears sufficiently fast but there are plenty of low-hanging fruits for performance optimization
 
@@ -310,10 +310,10 @@ function renderColumnBlocks(gd, columnBlock, allColumnBlock) {
         .classed('cellText', true);
 
     cellText
-        .call(renderCellText, allColumnBlock, columnCell, gd);
+        .call(renderCellText, tableControlView, allColumnBlock, columnCell, gd);
 }
 
-function renderCellText(cellText, allColumnBlock, columnCell, gd) {
+function renderCellText(cellText, tableControlView, allColumnBlock, columnCell, gd) {
     cellText
         .text(function(d) {
             var col = d.column.specIndex;
@@ -351,7 +351,7 @@ function renderCellText(cellText, allColumnBlock, columnCell, gd) {
             setCellHeightAndPositionY(columnCell);
 
             var renderCallback = d.wrappingNeeded ? wrapTextMaker : updateYPositionMaker;
-            svgUtil.convertToTspans(selection, gd, renderCallback(allColumnBlock, element, d));
+            svgUtil.convertToTspans(selection, gd, renderCallback(allColumnBlock, element, tableControlView, d));
         });
 }
 
@@ -535,7 +535,7 @@ function conditionalPanelRerender(gd, cellsColumnBlock, pages, prevPages, d, rev
     }
 }
 
-function wrapTextMaker(columnBlock, element) {
+function wrapTextMaker(columnBlock, element, tableControlView) {
     return function wrapText() {
         var cellTextHolder = d3.select(element.parentNode);
         cellTextHolder
@@ -573,11 +573,11 @@ function wrapTextMaker(columnBlock, element) {
         cellTextHolder.selectAll('tspan.line').remove();
 
         // resupply text, now wrapped
-        renderCellText(cellTextHolder.select('.cellText'), columnBlock, d3.select(element.parentNode.parentNode));
+        renderCellText(cellTextHolder.select('.cellText'), tableControlView, columnBlock, d3.select(element.parentNode.parentNode));
     };
 }
 
-function updateYPositionMaker(columnBlock, element, d) {
+function updateYPositionMaker(columnBlock, element, tableControlView, d) {
     return function updateYPosition() {
         var cellTextHolder = d3.select(element.parentNode);
         var l = getBlock(d);
@@ -597,6 +597,10 @@ function updateYPositionMaker(columnBlock, element, d) {
             columnBlock
                 .selectAll('.columnCell')
                 .call(setCellHeightAndPositionY);
+            if(d.column.key === 'header') {
+                // if the header increased in height, the scrollbar has to be pushed downward to the scrollable area
+                renderScrollbarKit(tableControlView);
+            }
             updateBlockYPosition(null, columnBlock.filter(cellsBlock), 0);
         }
 
