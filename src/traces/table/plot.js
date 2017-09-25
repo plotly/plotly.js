@@ -17,6 +17,7 @@ var svgUtil = require('../../lib/svg_text_utils');
 var raiseToTop = require('../../lib').raiseToTop;
 var cancelEeaseColumn = require('../../lib').cancelTransition;
 
+
 module.exports = function plot(gd, calcdata) {
 
     if(c.clipView) {
