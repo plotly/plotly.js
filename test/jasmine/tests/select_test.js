@@ -434,6 +434,10 @@ describe('Test select box and lasso per trace:', function() {
     var gd;
     var eventData;
 
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
     afterEach(destroyGraphDiv);
 
     function makeAssertPoints(keys) {
@@ -554,8 +558,6 @@ describe('Test select box and lasso per trace:', function() {
     }
 
     it('should work on scatterternary traces', function(done) {
-        gd = createGraphDiv();
-
         var assertPoints = makeAssertPoints(['a', 'b', 'c']);
 
         var fig = Lib.extendDeep({}, require('@mocks/ternary_simple'));
@@ -589,8 +591,6 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     it('should work on scattercarpet traces', function(done) {
-        gd = createGraphDiv();
-
         var assertPoints = makeAssertPoints(['a', 'b']);
 
         var fig = Lib.extendDeep({}, require('@mocks/scattercarpet'));
@@ -614,8 +614,6 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     it('@noCI should work on scattermapbox traces', function(done) {
-        gd = createGraphDiv();
-
         var assertPoints = makeAssertPoints(['lon', 'lat']);
         var assertRanges = makeAssertRanges('mapbox');
         var assertLassoPoints = makeAssertLassoPoints('mapbox');
@@ -655,8 +653,6 @@ describe('Test select box and lasso per trace:', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should work on scattergeo traces', function(done) {
-        gd = createGraphDiv();
-
         var assertPoints = makeAssertPoints(['lon', 'lat']);
         var assertRanges = makeAssertRanges('geo');
         var assertLassoPoints = makeAssertLassoPoints('geo');
@@ -704,8 +700,6 @@ describe('Test select box and lasso per trace:', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     it('should work on choropleth traces', function(done) {
-        gd = createGraphDiv();
-
         var assertPoints = makeAssertPoints(['location', 'z']);
         var assertRanges = makeAssertRanges('geo', -0.5);
         var assertLassoPoints = makeAssertLassoPoints('geo', -0.5);
