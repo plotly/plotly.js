@@ -2,6 +2,7 @@
     "data": [
         {
             "type": "scattergeo",
+            "mode": "markers+lines",
             "lon": [170, 180, -180, -170],
             "lat": [-50, -45, -10, -20.5],
             "marker": { "size": 20 }
@@ -14,10 +15,23 @@
         },
         {
             "type": "scattergeo",
-            "lon": [170, 180, -180, -170],
-            "lat": [-50, -45, -10, -20.5],
+            "mode": "markers+lines",
+            "lon": [-170, 170],
+            "lat": [-50, -20.5],
             "marker": { "size": 20 },
-            "geo": "geo2"
+            "line": { "width": 5 },
+            "geo": "geo2",
+            "name": "west to east"
+        },
+        {
+            "type": "scattergeo",
+            "mode": "markers+lines",
+            "lon": [170, -170],
+            "lat": [-50, -20.5],
+            "marker": { "size": 20 },
+            "line": { "width": 5 },
+            "geo": "geo2",
+            "name": "east to west"
         },
         {
             "type": "choropleth",
