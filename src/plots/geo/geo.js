@@ -41,6 +41,7 @@ function Geo(opts) {
     this.topojson = null;
 
     this.projection = null;
+    this.viewInitial = null;
     this.fitScale = null;
     this.bounds = null;
     this.midPt = null;
@@ -119,6 +120,9 @@ proto.fetchTopojson = function() {
 proto.update = function(geoCalcData, fullLayout) {
     var geoLayout = fullLayout[this.id];
 
+    var hasInvalidBounds = this.updateProjection(fullLayout, geoLayout);
+    if(hasInvalidBounds) return;
+
     // important: maps with choropleth traces have a different layer order
     this.hasChoropleth = false;
     for(var i = 0; i < geoCalcData.length; i++) {
@@ -128,9 +132,13 @@ proto.update = function(geoCalcData, fullLayout) {
         }
     }
 
-    this.updateProjection(fullLayout, geoLayout);
+    if(!this.viewInitial) {
+        this.saveViewInitial(geoLayout);
+    }
+
     this.updateBaseLayers(fullLayout, geoLayout);
     this.updateDims(fullLayout, geoLayout);
+    this.updateFx(fullLayout, geoLayout);
 
     Plots.generalUpdatePerTraceModule(this, geoCalcData, geoLayout);
 
@@ -142,7 +150,6 @@ proto.update = function(geoCalcData, fullLayout) {
     var choroplethLayer = this.layers.backplot.select('.choroplethlayer');
     this.dataPaths.choropleth = choroplethLayer.selectAll('path');
 
-    this.updateFx(fullLayout, geoLayout);
     this.render();
 };
 
@@ -186,9 +193,23 @@ proto.updateProjection = function(fullLayout, geoLayout) {
         !isFinite(b[1][0]) || !isFinite(b[1][1]) ||
         isNaN(t[0]) || isNaN(t[0])
     ) {
-        Lib.warn('Invalid geo settings');
+        var gd = this.graphDiv;
+        var attrToUnset = ['projection.rotation', 'center', 'lonaxis.range', 'lataxis.range'];
+        var msg = 'Invalid geo settings, relayout\'ing to default view.';
+        var updateObj = {};
 
-        // TODO fallback to default ???
+        // clear all attribute that could cause invalid bounds,
+        // clear viewInitial to update reset-view behavior
+
+        for(var i = 0; i < attrToUnset.length; i++) {
+            updateObj[this.id + '.' + attrToUnset[i]] = null;
+        }
+
+        this.viewInitial = null;
+
+        Lib.warn(msg);
+        gd._promises.push(Plotly.relayout(gd, updateObj));
+        return msg;
     }
 
     // px coordinates of view mid-point,
@@ -472,26 +493,27 @@ proto.makeFramework = function() {
         exponentformat: 'B'
     };
     Axes.setConvert(_this.mockAxis, fullLayout);
+};
 
-    var geoLayout = fullLayout[_this.id];
+proto.saveViewInitial = function(geoLayout) {
     var center = geoLayout.center || {};
     var projLayout = geoLayout.projection;
     var rotation = projLayout.rotation || {};
 
     if(geoLayout._isScoped) {
-        _this.viewInitial = {
+        this.viewInitial = {
             'center.lon': center.lon,
             'center.lat': center.lat,
             'projection.scale': projLayout.scale
         };
     } else if(geoLayout._isClipped) {
-        _this.viewInitial = {
+        this.viewInitial = {
             'projection.scale': projLayout.scale,
             'projection.rotation.lon': rotation.lon,
             'projection.rotation.lat': rotation.lat
         };
     } else {
-        _this.viewInitial = {
+        this.viewInitial = {
             'center.lon': center.lon,
             'center.lat': center.lat,
             'projection.scale': projLayout.scale,
@@ -574,7 +596,6 @@ function getProjection(geoLayout) {
             var maxAngle = clipAngle * Math.PI / 180;
             return angle > maxAngle;
         } else {
-            // TODO does this ever happen??
             return false;
         }
     };
