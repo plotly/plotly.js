@@ -24,8 +24,9 @@ module.exports = {
     releaseTransitionEase: 'elastic',
     releaseTransitionDuration: 300,
     scrollbarWidth: 8,
+    scrollbarCaptureWidth: 18,
     scrollbarOffset: 5,
     scrollbarHideDelay: 1000,
     scrollbarHideDuration: 1000,
-    clipView: false
+    clipView: true
 };

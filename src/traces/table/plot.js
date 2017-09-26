@@ -256,16 +256,14 @@ function renderScrollbarKit(tableControlView) {
         .classed('scrollbarGlyph', true)
         .attr('stroke', 'black')
         .attr('stroke-width', c.scrollbarWidth)
-        .attr('stroke-linecap', 'round');
+        .attr('stroke-linecap', 'round')
+        .attr('y1', c.scrollbarWidth / 2);
 
     scrollbarGlyph
-        .attr('y1', function(d) {
-            return c.scrollbarWidth / 2;
-        })
         .attr('y2', function(d) {
             return d.scrollbarState.barLength - c.scrollbarWidth / 2;
         })
-        .attr('stroke-opacity', 0.4)
+        .attr('stroke-opacity', 0.4);
 
     // cancel transition: possible pending (also, delayed) transition
     scrollbarGlyph
@@ -274,6 +272,23 @@ function renderScrollbarKit(tableControlView) {
     scrollbarGlyph
         .transition().delay(c.scrollbarHideDelay).duration(c.scrollbarHideDuration)
         .attr('stroke-opacity', 0);
+
+    var scrollbarCaptureZone = scrollbarSlider.selectAll('.scrollbarCaptureZone')
+        .data(gup.repeat, gup.keyFun);
+
+    scrollbarCaptureZone.enter()
+        .append('line')
+        .classed('scrollbarCaptureZone', true)
+        .attr('stroke', 'red')
+        .attr('stroke-width', c.scrollbarCaptureWidth)
+        .attr('stroke-linecap', 'square')
+        .attr('stroke-opacity', c.clipView ? 0.5 : 0)
+        .attr('y1', c.scrollbarCaptureWidth / 2);
+
+    scrollbarCaptureZone
+        .attr('y2', function(d) {
+            return d.scrollbarState.barLength - c.scrollbarCaptureWidth / 2;
+        });
 }
 
 function renderColumnBlocks(gd, tableControlView, columnBlock, allColumnBlock) {
