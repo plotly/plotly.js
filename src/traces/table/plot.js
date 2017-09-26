@@ -292,25 +292,13 @@ function renderScrollbarKit(tableControlView) {
         .attr('y1', 0)
         .call(d3.behavior.drag()
             .origin(function(d) {
-                console.log('drag started')
                 d3.event.stopPropagation();
                 d.scrollbarState.scrollbarScrollInProgress = true;
-                return d;
-                var movedColumn = d3.select(this);
-                easeColumn(movedColumn, d, -c.uplift);
-                raiseToTop(this);
                 return d;
             })
             .on('drag', makeDragRow(gd, tableControlView))
             .on('dragend', function(d) {
-                console.log('drag ended')
-                d.scrollbarState.scrollbarScrollInProgress = false;
-                return
-                var movedColumn = d3.select(this);
-                var p = d.calcdata;
-                d.x = d.xScale(d);
-                easeColumn(movedColumn, d, 0);
-                columnMoved(gd, calcdata, p.key, p.columns.map(function(dd) {return dd.xIndex;}));
+                // fixme emit Plotly event
             })
         );
 
