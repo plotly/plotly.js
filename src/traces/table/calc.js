@@ -54,6 +54,7 @@ module.exports = function calc(gd, trace) {
         gdColumns: trace.header.values.map(function(d) {return d[0];}),
         gdColumnsOriginalOrder: trace.header.values.map(function(d) {return d[0];}),
         prevPages: [0, 0],
+        scrollbarState: {},
         columns: trace.header.values.map(function(label, i) {
             var foundKey = uniqueKeys[label];
             uniqueKeys[label] = (foundKey || 0) + 1;
