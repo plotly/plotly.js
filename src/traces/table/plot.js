@@ -283,7 +283,47 @@ function renderScrollbarKit(tableControlView) {
         .attr('stroke-width', c.scrollbarCaptureWidth)
         .attr('stroke-linecap', 'square')
         .attr('stroke-opacity', c.clipView ? 0.5 : 0)
-        .attr('y1', c.scrollbarCaptureWidth / 2);
+        .attr('y1', c.scrollbarCaptureWidth / 2)
+        .call(d3.behavior.drag()
+            .origin(function(d) {
+                console.log('drag started')
+                return d;
+                var movedColumn = d3.select(this);
+                easeColumn(movedColumn, d, -c.uplift);
+                raiseToTop(this);
+                return d;
+            })
+            .on('drag', function(d) {
+                console.log('drag')
+                return
+                var movedColumn = d3.select(this);
+                var getter = function(dd) {return  (d === dd ? d3.event.x : dd.x) + dd.columnWidth / 2;}
+                d.x = Math.max(-c.overdrag, Math.min(d.calcdata.width + c.overdrag - d.columnWidth, d3.event.x));
+                var newOrder = yColumn.data().sort(function(a, b) {return getter(a) - getter(b);});
+                newOrder.forEach(function(dd, i) {
+                    dd.xIndex = i;
+                    dd.x = d === dd ? dd.x : dd.xScale(dd);
+                })
+
+                yColumn.filter(function(dd) {return d !== dd;})
+                    .transition()
+                    .ease(c.transitionEase)
+                    .duration(c.transitionDuration)
+                    .attr('transform', function(d) {return 'translate(' + d.x + ' 0)';});
+                movedColumn
+                    .call(cancelEeaseColumn)
+                    .attr('transform', 'translate(' + d.x + ' -' + c.uplift + ' )');
+            })
+            .on('dragend', function(d) {
+                console.log('drag ended')
+                return
+                var movedColumn = d3.select(this);
+                var p = d.calcdata;
+                d.x = d.xScale(d);
+                easeColumn(movedColumn, d, 0);
+                columnMoved(gd, calcdata, p.key, p.columns.map(function(dd) {return dd.xIndex;}));
+            })
+        );
 
     scrollbarCaptureZone
         .attr('y2', function(d) {
