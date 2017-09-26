@@ -227,7 +227,7 @@ function renderScrollbarKit(tableControlView) {
             s.barWiggleRoom = s.currentlyVisibleHeight - s.barLength;
             s.wiggleRoom = s.totalHeight - s.scrollableAreaHeight;
             s.topY = (d.scrollY / s.wiggleRoom) * s.barWiggleRoom;
-            s.dragMultiplier = 5.5;
+            s.dragMultiplier = s.wiggleRoom / s.barWiggleRoom;
         })
         .attr('transform', function(d) {
             var xPosition = d.width + c.scrollbarWidth / 2 + c.scrollbarOffset;
