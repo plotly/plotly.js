@@ -227,11 +227,11 @@ function renderScrollbarKit(tableControlView) {
             s.barWiggleRoom = s.currentlyVisibleHeight - s.barLength;
             s.wiggleRoom = s.totalHeight - s.scrollableAreaHeight;
             s.topY = (d.scrollY / s.wiggleRoom) * s.barWiggleRoom;
-            s.yPosition = headerHeight(d) + s.topY;
+            s.dragMultiplier = 5.5;
         })
         .attr('transform', function(d) {
             var xPosition = d.width + c.scrollbarWidth / 2 + c.scrollbarOffset;
-            return 'translate(' + xPosition + ' ' + d.scrollbarState.yPosition + ')';
+            return 'translate(' + xPosition + ' ' + headerHeight(d) + ')';
         });
 
     var scrollbar = scrollbarKit.selectAll('.scrollbar')
@@ -247,6 +247,11 @@ function renderScrollbarKit(tableControlView) {
     scrollbarSlider.enter()
         .append('g')
         .classed('scrollbarSlider', true);
+
+    scrollbarSlider
+        .attr('transform', function(d) {
+            return 'translate(0 ' + d.scrollbarState.topY + ')';
+        });
 
     var scrollbarGlyph = scrollbarSlider.selectAll('.scrollbarGlyph')
         .data(gup.repeat, gup.keyFun);
@@ -273,7 +278,7 @@ function renderScrollbarKit(tableControlView) {
         .transition().delay(c.scrollbarHideDelay).duration(c.scrollbarHideDuration)
         .attr('stroke-opacity', 0);
 
-    var scrollbarCaptureZone = scrollbarSlider.selectAll('.scrollbarCaptureZone')
+    var scrollbarCaptureZone = scrollbar.selectAll('.scrollbarCaptureZone')
         .data(gup.repeat, gup.keyFun);
 
     scrollbarCaptureZone.enter()
@@ -283,7 +288,7 @@ function renderScrollbarKit(tableControlView) {
         .attr('stroke-width', c.scrollbarCaptureWidth)
         .attr('stroke-linecap', 'square')
         .attr('stroke-opacity', c.clipView ? 0.5 : 0)
-        .attr('y1', c.scrollbarCaptureWidth / 2)
+        .attr('y1', 0)
         .call(d3.behavior.drag()
             .origin(function(d) {
                 console.log('drag started')
@@ -295,7 +300,7 @@ function renderScrollbarKit(tableControlView) {
                 raiseToTop(this);
                 return d;
             })
-            .on('drag', makeDragRow(gd, tableControlView, 7))
+            .on('drag', makeDragRow(gd, tableControlView))
             .on('dragend', function(d) {
                 console.log('drag ended')
                 d.scrollbarState.scrollbarScrollInProgress = false;
@@ -310,7 +315,7 @@ function renderScrollbarKit(tableControlView) {
 
     scrollbarCaptureZone
         .attr('y2', function(d) {
-            return d.scrollbarState.barLength - c.scrollbarCaptureWidth / 2;
+            return d.scrollbarState.scrollableAreaHeight;
         });
 }
 
@@ -598,8 +603,9 @@ function updateBlockYPosition(gd, cellsColumnBlock, dy, tableControlView) {
     }
 }
 
-function makeDragRow(gd, tableControlView, multiplier) {
+function makeDragRow(gd, tableControlView, optionalMultiplier) {
     return function dragRow () {
+        var multiplier = optionalMultiplier || tableControlView.node().__data__.scrollbarState.dragMultiplier
         var cellsColumnBlock = tableControlView.selectAll('.columnBlock').filter(cellsBlock);
         updateBlockYPosition(gd, cellsColumnBlock, multiplier * d3.event.dy, tableControlView);
     }
