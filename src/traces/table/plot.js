@@ -132,7 +132,7 @@ module.exports = function plot(gd, calcdata) {
                 d3.event.stopPropagation();
                 return d;
             })
-            .on('drag', makeDragRow(gd, cellsColumnBlock))
+            .on('drag', makeDragRow(gd, tableControlView, cellsColumnBlock))
             .on('dragend', function(d) {
                 // fixme emit plotly notification
             })
@@ -204,6 +204,11 @@ module.exports = function plot(gd, calcdata) {
 
 function renderScrollbarKit(tableControlView) {
 
+    function calcTotalHeight(d) {
+        var blocks = d.rowBlocks;
+        return firstRowAnchor2(blocks, blocks.length) + rowsHeight(blocks[blocks.length - 1], Infinity);
+    }
+
     var scrollbarKit = tableControlView.selectAll('.scrollbarKit')
         .data(gup.repeat, gup.keyFun);
 
@@ -213,7 +218,20 @@ function renderScrollbarKit(tableControlView) {
 
     scrollbarKit
         .attr('transform', function(d) {
-            return 'translate(' + (d.width + c.scrollbarWidth / 2 + c.scrollbarOffset) + ' ' + headerHeight(d) + ')';
+            var scrollY = d.scrollY;
+
+            var totalHeight = calcTotalHeight(d);
+            var scrollableAreaHeight = d.groupHeight - headerHeight(d);
+            var currentlyVisibleHeight = Math.min(totalHeight, scrollableAreaHeight);
+            var ratio = currentlyVisibleHeight / totalHeight;
+            var barLength = ratio * currentlyVisibleHeight;
+
+            var effectiveScrollBarWiggleRoom = currentlyVisibleHeight - barLength;
+            var effectiveScrollWiggleRoom = totalHeight - scrollableAreaHeight;
+            var topY = (scrollY / effectiveScrollWiggleRoom) * effectiveScrollBarWiggleRoom;
+
+            var yPosition = headerHeight(d) + topY;
+            return 'translate(' + (d.width + c.scrollbarWidth / 2 + c.scrollbarOffset) + ' ' + yPosition + ')';
         });
 
     var scrollbar = scrollbarKit.selectAll('.scrollbar')
@@ -237,7 +255,6 @@ function renderScrollbarKit(tableControlView) {
         .append('line')
         .classed('scrollbarGlyph', true)
         .attr('stroke', 'black')
-        .attr('stroke-opacity', 0.4)
         .attr('stroke-width', c.scrollbarWidth)
         .attr('stroke-linecap', 'round');
 
@@ -246,13 +263,22 @@ function renderScrollbarKit(tableControlView) {
             return c.scrollbarWidth / 2;
         })
         .attr('y2', function(d) {
-            var blocks = d.rowBlocks;
-            var totalHeight = firstRowAnchor2(blocks, blocks.length) + rowsHeight(blocks[blocks.length - 1], Infinity);
+            var totalHeight = calcTotalHeight(d);
             var scrollableAreaHeight = d.groupHeight - headerHeight(d);
             var currentlyVisibleHeight = Math.min(totalHeight, scrollableAreaHeight);
             var ratio = currentlyVisibleHeight / totalHeight;
-            return ratio * (currentlyVisibleHeight - c.scrollbarWidth / 2);
-        });
+            var barLength = ratio * currentlyVisibleHeight;
+            return barLength - c.scrollbarWidth / 2;
+        })
+        .attr('stroke-opacity', 0.4)
+
+    // cancel transition: possible pending (also, delayed) transition
+    scrollbarGlyph
+        .transition().delay(0).duration(0);
+
+    scrollbarGlyph
+        .transition().delay(c.scrollbarHideDelay).duration(c.scrollbarHideDuration)
+        .attr('stroke-opacity', 0);
 }
 
 function renderColumnBlocks(gd, tableControlView, columnBlock, allColumnBlock) {
@@ -486,7 +512,7 @@ function headerHeight(d) {
     return headerBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
 }
 
-function updateBlockYPosition(gd, cellsColumnBlock, dy) {
+function updateBlockYPosition(gd, cellsColumnBlock, dy, tableControlView) {
 
     var d = cellsColumnBlock[0][0].__data__;
     var blocks = d.rowBlocks;
@@ -535,12 +561,13 @@ function updateBlockYPosition(gd, cellsColumnBlock, dy) {
     if(gd) {
         conditionalPanelRerender(gd, cellsColumnBlock, pages, d.prevPages, d, 0);
         conditionalPanelRerender(gd, cellsColumnBlock, pages, d.prevPages, d, 1);
+        renderScrollbarKit(tableControlView);
     }
 }
 
-function makeDragRow(gd, cellsColumnBlock) {
+function makeDragRow(gd, tableControlView, cellsColumnBlock) {
     return function dragRow () {
-        updateBlockYPosition(gd, cellsColumnBlock, d3.event.dy);
+        updateBlockYPosition(gd, cellsColumnBlock, d3.event.dy, tableControlView);
     }
 }
 
