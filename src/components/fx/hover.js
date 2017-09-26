@@ -67,7 +67,7 @@ var HOVERTEXTPAD = constants.HOVERTEXTPAD;
 // We wrap the hovers in a timer, to limit their frequency.
 // The actual rendering is done by private function _hover.
 exports.hover = function hover(gd, evt, subplot, noHoverEvent) {
-    if(typeof gd === 'string') gd = document.getElementById(gd);
+    gd = Lib.getGraphDiv(gd);
 
     Lib.throttle(
         function() { _hover(gd, evt, subplot, noHoverEvent); },
