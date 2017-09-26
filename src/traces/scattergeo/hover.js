@@ -18,22 +18,25 @@ var attributes = require('./attributes');
 
 
 module.exports = function hoverPoints(pointData, xval, yval) {
-    var cd = pointData.cd,
-        trace = cd[0].trace,
-        xa = pointData.xa,
-        ya = pointData.ya,
-        geo = pointData.subplot,
-        projection = geo.projection;
+    var cd = pointData.cd;
+    var trace = cd[0].trace;
+    var xa = pointData.xa;
+    var ya = pointData.ya;
+    var geo = pointData.subplot;
+
+    var isLonLatOverEdges = geo.projection.isLonLatOverEdges;
+    var project = geo.project;
 
     function distFn(d) {
         var lonlat = d.lonlat;
 
         if(lonlat[0] === BADNUM) return Infinity;
-        if(projection.isLonLatOverEdges(lonlat)) return Infinity;
+        if(isLonLatOverEdges(lonlat)) return Infinity;
 
-        var dx = Math.abs(xa.c2p(lonlat) - xa.c2p([xval, lonlat[1]]));
-        var dy = Math.abs(ya.c2p(lonlat) - ya.c2p([lonlat[0], yval]));
-
+        var pt = project(lonlat);
+        var px = project([xval, yval]);
+        var dx = Math.abs(pt[0] - px[0]);
+        var dy = Math.abs(pt[1] - px[1]);
         var rad = Math.max(3, d.mrc || 0);
 
         // N.B. d.mrc is the calculated marker radius
@@ -47,10 +50,10 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     // skip the rest (for this trace) if we didn't find a close point
     if(pointData.index === false) return;
 
-    var di = cd[pointData.index],
-        lonlat = di.lonlat,
-        pos = [xa.c2p(lonlat), ya.c2p(lonlat)],
-        rad = di.mrc || 1;
+    var di = cd[pointData.index];
+    var lonlat = di.lonlat;
+    var pos = [xa.c2p(lonlat), ya.c2p(lonlat)];
+    var rad = di.mrc || 1;
 
     pointData.x0 = pos[0] - rad;
     pointData.x1 = pos[0] + rad;

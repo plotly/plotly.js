@@ -447,18 +447,22 @@ proto.makeFramework = function() {
         .attr('class', 'geo ' + _this.id)
         .call(Drawing.setClipUrl, clipId);
 
+    // sane lonlat to px
+    _this.project = function(v) {
+        var px = _this.projection(v);
+        return px ?
+            [px[0] - _this.xaxis._offset, px[1] - _this.yaxis._offset] :
+            [null, null];
+    };
+
     _this.xaxis = {
         _id: 'x',
-        c2p: function(v) {
-            return (_this.projection(v) || [])[0] - _this.xaxis._offset;
-        }
+        c2p: function(v) { return _this.project(v)[0]; }
     };
 
     _this.yaxis = {
         _id: 'y',
-        c2p: function(v) {
-            return (_this.projection(v) || [])[1] - _this.yaxis._offset;
-        }
+        c2p: function(v) { return _this.project(v)[1]; }
     };
 
     // mock axis for hover formatting

@@ -1202,6 +1202,35 @@ describe('Test geo interactions', function() {
         .then(done);
     });
 
+    it('should not confuse positions on either side of the globe', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/geo_orthographic.json'));
+
+        fig.data[0].visible = false;
+        fig.layout.geo.projection.rotation = {lon: -75, lat: 90};
+
+        function check(p, hoverLabelCnt) {
+            mouseEvent('mousemove', p[0], p[1]);
+
+            var invert = gd._fullLayout.geo._subplot.projection.invert;
+            var lonlat = invert(p);
+
+            expect(d3.selectAll('g.hovertext').size())
+                .toBe(hoverLabelCnt, 'for ' + lonlat);
+
+            delete gd._lastHoverTime;
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            var px = 255;
+
+            check([px, 163], 0);
+            check([px, 360], 1);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
 });
 
 describe('Test event property of interactions on a geo plot:', function() {
