@@ -217,21 +217,21 @@ function renderScrollbarKit(tableControlView) {
         .classed('scrollbarKit', true)
 
     scrollbarKit
+        .each(function(d) {
+            var s = d.scrollbarState;
+            s.totalHeight = calcTotalHeight(d);
+            s.scrollableAreaHeight = d.groupHeight - headerHeight(d);
+            s.currentlyVisibleHeight = Math.min(s.totalHeight, s.scrollableAreaHeight);
+            s.ratio = s.currentlyVisibleHeight / s.totalHeight;
+            s.barLength = s.ratio * s.currentlyVisibleHeight;
+            s.barWiggleRoom = s.currentlyVisibleHeight - s.barLength;
+            s.wiggleRoom = s.totalHeight - s.scrollableAreaHeight;
+            s.topY = (d.scrollY / s.wiggleRoom) * s.barWiggleRoom;
+            s.yPosition = headerHeight(d) + s.topY;
+        })
         .attr('transform', function(d) {
-            var scrollY = d.scrollY;
-
-            var totalHeight = calcTotalHeight(d);
-            var scrollableAreaHeight = d.groupHeight - headerHeight(d);
-            var currentlyVisibleHeight = Math.min(totalHeight, scrollableAreaHeight);
-            var ratio = currentlyVisibleHeight / totalHeight;
-            var barLength = ratio * currentlyVisibleHeight;
-
-            var effectiveScrollBarWiggleRoom = currentlyVisibleHeight - barLength;
-            var effectiveScrollWiggleRoom = totalHeight - scrollableAreaHeight;
-            var topY = (scrollY / effectiveScrollWiggleRoom) * effectiveScrollBarWiggleRoom;
-
-            var yPosition = headerHeight(d) + topY;
-            return 'translate(' + (d.width + c.scrollbarWidth / 2 + c.scrollbarOffset) + ' ' + yPosition + ')';
+            var xPosition = d.width + c.scrollbarWidth / 2 + c.scrollbarOffset;
+            return 'translate(' + xPosition + ' ' + d.scrollbarState.yPosition + ')';
         });
 
     var scrollbar = scrollbarKit.selectAll('.scrollbar')
@@ -263,12 +263,7 @@ function renderScrollbarKit(tableControlView) {
             return c.scrollbarWidth / 2;
         })
         .attr('y2', function(d) {
-            var totalHeight = calcTotalHeight(d);
-            var scrollableAreaHeight = d.groupHeight - headerHeight(d);
-            var currentlyVisibleHeight = Math.min(totalHeight, scrollableAreaHeight);
-            var ratio = currentlyVisibleHeight / totalHeight;
-            var barLength = ratio * currentlyVisibleHeight;
-            return barLength - c.scrollbarWidth / 2;
+            return d.scrollbarState.barLength - c.scrollbarWidth / 2;
         })
         .attr('stroke-opacity', 0.4)
 
