@@ -210,7 +210,11 @@ function renderScrollbarKit(tableControlView) {
     scrollbarKit.enter()
         .append('g')
         .classed('scrollbarKit', true)
-        .attr('transform', function(d) {return 'translate(' + (d.width + c.scrollbarWidth / 2 + c.scrollbarOffset) + ' 0)';});
+
+    scrollbarKit
+        .attr('transform', function(d) {
+            return 'translate(' + (d.width + c.scrollbarWidth / 2 + c.scrollbarOffset) + ' ' + headerHeight(d) + ')';
+        });
 
     var scrollbar = scrollbarKit.selectAll('.scrollbar')
         .data(gup.repeat, gup.keyFun);
@@ -219,7 +223,14 @@ function renderScrollbarKit(tableControlView) {
         .append('g')
         .classed('scrollbar', true);
 
-    var scrollbarGlyph = scrollbar.selectAll('.scrollbarGlyph')
+    var scrollbarSlider = scrollbar.selectAll('.scrollbarSlider')
+        .data(gup.repeat, gup.keyFun);
+
+    scrollbarSlider.enter()
+        .append('g')
+        .classed('scrollbarSlider', true);
+
+    var scrollbarGlyph = scrollbarSlider.selectAll('.scrollbarGlyph')
         .data(gup.repeat, gup.keyFun);
 
     scrollbarGlyph.enter()
@@ -232,10 +243,15 @@ function renderScrollbarKit(tableControlView) {
 
     scrollbarGlyph
         .attr('y1', function(d) {
-            return headerHeight(d) + c.scrollbarWidth / 2;
+            return c.scrollbarWidth / 2;
         })
         .attr('y2', function(d) {
-            return d.groupHeight - c.scrollbarWidth / 2;
+            var blocks = d.rowBlocks;
+            var totalHeight = firstRowAnchor2(blocks, blocks.length) + rowsHeight(blocks[blocks.length - 1], Infinity);
+            var scrollableAreaHeight = d.groupHeight - headerHeight(d);
+            var currentlyVisibleHeight = Math.min(totalHeight, scrollableAreaHeight);
+            var ratio = currentlyVisibleHeight / totalHeight;
+            return ratio * (currentlyVisibleHeight - c.scrollbarWidth / 2);
         });
 }
 
@@ -604,11 +620,13 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
             columnBlock
                 .selectAll('.columnCell')
                 .call(setCellHeightAndPositionY);
-            if(d.column.key === 'header') {
-                // if the header increased in height, the scrollbar has to be pushed downward to the scrollable area
-                renderScrollbarKit(tableControlView);
-            }
+
             updateBlockYPosition(null, columnBlock.filter(cellsBlock), 0);
+
+            // if d.column.type === 'header', then the scrollbar has to be pushed downward to the scrollable area
+            // if d.column.type === 'cells', it can still be relevant if total scrolling content height is less than the
+            //                               scrollable window, as increases to row heights may need scrollbar updates
+            renderScrollbarKit(tableControlView);
         }
 
         cellTextHolder
@@ -641,6 +659,14 @@ function setCellHeightAndPositionY(columnCell) {
 function firstRowAnchor(rowBlocks, page) {
     var total = 0;
     for(var i = 0; i <= page - 1; i++) {
+        total += rowsHeight(rowBlocks[i], Infinity);
+    }
+    return total;
+}
+
+function firstRowAnchor2(rowBlocks, page) {
+    var total = 0;
+    for(var i = 0; i < page - 1; i++) {
         total += rowsHeight(rowBlocks[i], Infinity);
     }
     return total;

@@ -107,7 +107,7 @@
                     "x8A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
                 ].map(function(d, i) {return d})
 
-            ].map(function(a) {return a.slice(0)}).slice(0, 3),
+            ].map(function(a) {return a.slice(0, 20)}).slice(0, 3),
 
             "format": [
                 null
