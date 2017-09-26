@@ -241,7 +241,7 @@ describe('pie hovering', function() {
 
         function _hover() {
             mouseEvent('mouseover', 223, 143);
-            delete gd._lastHoverTime;
+            Lib.clearThrottle();
         }
 
         function assertLabel(content, style) {

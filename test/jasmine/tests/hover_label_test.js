@@ -470,7 +470,7 @@ describe('hover info', function() {
     describe('\'hover info for x/y/z traces', function() {
         function _hover(gd, xpx, ypx) {
             Fx.hover(gd, { xpx: xpx, ypx: ypx }, 'xy');
-            delete gd._lastHoverTime;
+            Lib.clearThrottle();
         }
 
         function _assert(nameLabel, lines) {
@@ -811,7 +811,7 @@ describe('hover after resizing', function() {
     }
 
     function assertLabelCount(pos, cnt, msg) {
-        delete gd._lastHoverTime;
+        Lib.clearThrottle();
         mouseEvent('mousemove', pos[0], pos[1]);
 
         var hoverText = d3.selectAll('g.hovertext');
@@ -1097,7 +1097,7 @@ describe('Test hover label custom styling:', function() {
 
     function _hover(gd, opts) {
         Fx.hover(gd, opts);
-        delete gd._lastHoverTime;
+        Lib.clearThrottle();
     }
 
     it('should work for x/y cartesian traces', function(done) {

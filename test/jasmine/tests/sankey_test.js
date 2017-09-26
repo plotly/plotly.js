@@ -382,7 +382,7 @@ describe('sankey tests', function() {
             function _hover(px, py) {
                 mouseEvent('mousemove', px, py);
                 mouseEvent('mouseover', px, py);
-                delete gd._lastHoverTime;
+                Lib.clearThrottle();
             }
 
             Plotly.plot(gd, mockCopy).then(function() {
@@ -454,7 +454,7 @@ describe('sankey tests', function() {
             function _hover(px, py) {
                 mouseEvent('mousemove', px, py);
                 mouseEvent('mouseover', px, py);
-                delete gd._lastHoverTime;
+                Lib.clearThrottle();
             }
 
             Plotly.plot(gd, mockCopy)
@@ -489,7 +489,7 @@ describe('sankey tests', function() {
             return function(elType) {
                 return new Promise(function(resolve, reject) {
                     gd.once(eventType, function(d) {
-                        delete gd._lastHoverTime;
+                        Lib.clearThrottle();
                         resolve(d);
                     });
 
