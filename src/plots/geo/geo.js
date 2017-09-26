@@ -330,8 +330,8 @@ proto.updateDims = function(fullLayout, geoLayout) {
 
 proto.updateFx = function(fullLayout, geoLayout) {
     var _this = this;
-    var framework = _this.framework;
     var gd = _this.graphDiv;
+    var bgRect = _this.bgRect;
     var dragMode = fullLayout.dragmode;
 
     if(_this.isStatic) return;
@@ -356,12 +356,12 @@ proto.updateFx = function(fullLayout, geoLayout) {
     }
 
     if(dragMode === 'pan') {
-        _this.bgRect.node().onmousedown = null;
-        framework.call(createGeoZoom(_this, geoLayout));
-        framework.on('dblclick.zoom', zoomReset);
+        bgRect.node().onmousedown = null;
+        bgRect.call(createGeoZoom(_this, geoLayout));
+        bgRect.on('dblclick.zoom', zoomReset);
     }
     else if(dragMode === 'select' || dragMode === 'lasso') {
-        framework.on('.zoom', null);
+        bgRect.on('.zoom', null);
 
         var fillRangeItems;
 
@@ -406,10 +406,12 @@ proto.updateFx = function(fullLayout, geoLayout) {
         dragElement.init(dragOptions);
     }
 
-    framework.on('mousemove', function() {
+    bgRect.on('mousemove', function() {
         var lonlat = _this.projection.invert(d3.mouse(this));
 
-        if(!lonlat || isNaN(lonlat[0]) || isNaN(lonlat[1])) return;
+        if(!lonlat || isNaN(lonlat[0]) || isNaN(lonlat[1])) {
+            return dragElement.unhover(gd, d3.event);
+        }
 
         _this.xaxis.p2c = function() { return lonlat[0]; };
         _this.yaxis.p2c = function() { return lonlat[1]; };
@@ -417,11 +419,11 @@ proto.updateFx = function(fullLayout, geoLayout) {
         Fx.hover(gd, d3.event, _this.id);
     });
 
-    framework.on('mouseout', function() {
-        Fx.loneUnhover(fullLayout._toppaper);
+    bgRect.on('mouseout', function() {
+        dragElement.unhover(gd, d3.event);
     });
 
-    framework.on('click', function() {
+    bgRect.on('click', function() {
         Fx.click(gd, d3.event);
     });
 };

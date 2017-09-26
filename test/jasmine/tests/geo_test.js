@@ -30,8 +30,6 @@ function move(fromX, fromY, toX, toY, delay) {
 }
 
 describe('Test Geo layout defaults', function() {
-    'use strict';
-
     var layoutAttributes = Geo.layoutAttributes;
     var supplyLayoutDefaults = Geo.supplyLayoutDefaults;
 
@@ -461,8 +459,6 @@ describe('Test Geo layout defaults', function() {
 });
 
 describe('geojson / topojson utils', function() {
-    'use strict';
-
     function _locationToFeature(topojson, loc, locationmode) {
         var trace = { locationmode: locationmode };
         var features = topojsonUtils.getTopojsonFeatures(trace, topojson);
@@ -523,8 +519,6 @@ describe('geojson / topojson utils', function() {
 });
 
 describe('Test geo interactions', function() {
-    'use strict';
-
     afterEach(destroyGraphDiv);
 
     describe('mock geo_first.json', function() {
@@ -1166,8 +1160,49 @@ describe('Test geo interactions', function() {
         .catch(fail)
         .then(done);
     });
-});
 
+    it('@noCI should clear hover label when cursor slips off subplot', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/geo_orthographic.json'));
+
+        function _assert(msg, hoverLabelCnt) {
+            expect(d3.selectAll('g.hovertext').size())
+                .toBe(hoverLabelCnt, msg);
+        }
+
+        var px = 390;
+        var py = 290;
+        var cnt = 0;
+
+        Plotly.plot(gd, fig).then(function() {
+            gd.on('plotly_unhover', function() { cnt++; });
+
+            mouseEvent('mousemove', px, py);
+            _assert('base state', 1);
+
+            return new Promise(function(resolve) {
+                var interval = setInterval(function() {
+                    px += 2;
+                    mouseEvent('mousemove', px, py);
+
+                    if(px < 402) {
+                        _assert('- px ' + px, 1);
+                        expect(cnt).toBe(0, 'no plotly_unhover event so far');
+                    } else {
+                        _assert('- px ' + px, 0);
+                        expect(cnt).toBe(1, 'plotly_unhover event count');
+
+                        clearInterval(interval);
+                        resolve();
+                    }
+                }, 100);
+            });
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+});
 
 describe('Test event property of interactions on a geo plot:', function() {
     var mock = require('@mocks/geo_scattergeo-locations.json');
