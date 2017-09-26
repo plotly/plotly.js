@@ -132,7 +132,7 @@ module.exports = function plot(gd, calcdata) {
                 d3.event.stopPropagation();
                 return d;
             })
-            .on('drag', makeDragRow(gd, tableControlView, cellsColumnBlock))
+            .on('drag', makeDragRow(gd, tableControlView, -1))
             .on('dragend', function(d) {
                 // fixme emit plotly notification
             })
@@ -287,35 +287,18 @@ function renderScrollbarKit(tableControlView) {
         .call(d3.behavior.drag()
             .origin(function(d) {
                 console.log('drag started')
+                d3.event.stopPropagation();
+                d.scrollbarState.scrollbarScrollInProgress = true;
                 return d;
                 var movedColumn = d3.select(this);
                 easeColumn(movedColumn, d, -c.uplift);
                 raiseToTop(this);
                 return d;
             })
-            .on('drag', function(d) {
-                console.log('drag')
-                return
-                var movedColumn = d3.select(this);
-                var getter = function(dd) {return  (d === dd ? d3.event.x : dd.x) + dd.columnWidth / 2;}
-                d.x = Math.max(-c.overdrag, Math.min(d.calcdata.width + c.overdrag - d.columnWidth, d3.event.x));
-                var newOrder = yColumn.data().sort(function(a, b) {return getter(a) - getter(b);});
-                newOrder.forEach(function(dd, i) {
-                    dd.xIndex = i;
-                    dd.x = d === dd ? dd.x : dd.xScale(dd);
-                })
-
-                yColumn.filter(function(dd) {return d !== dd;})
-                    .transition()
-                    .ease(c.transitionEase)
-                    .duration(c.transitionDuration)
-                    .attr('transform', function(d) {return 'translate(' + d.x + ' 0)';});
-                movedColumn
-                    .call(cancelEeaseColumn)
-                    .attr('transform', 'translate(' + d.x + ' -' + c.uplift + ' )');
-            })
+            .on('drag', makeDragRow(gd, tableControlView, 7))
             .on('dragend', function(d) {
                 console.log('drag ended')
+                d.scrollbarState.scrollbarScrollInProgress = false;
                 return
                 var movedColumn = d3.select(this);
                 var p = d.calcdata;
@@ -568,7 +551,7 @@ function updateBlockYPosition(gd, cellsColumnBlock, dy, tableControlView) {
     var blocks = d.rowBlocks;
     var calcdata = d.calcdata;
 
-    calcdata.scrollY -= dy;
+    calcdata.scrollY += dy;
     var bottom = firstRowAnchor(blocks, blocks.length);
     var scrollHeight = d.calcdata.groupHeight - headerHeight(d);
     var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom - scrollHeight, calcdata.scrollY));
@@ -615,9 +598,10 @@ function updateBlockYPosition(gd, cellsColumnBlock, dy, tableControlView) {
     }
 }
 
-function makeDragRow(gd, tableControlView, cellsColumnBlock) {
+function makeDragRow(gd, tableControlView, multiplier) {
     return function dragRow () {
-        updateBlockYPosition(gd, cellsColumnBlock, d3.event.dy, tableControlView);
+        var cellsColumnBlock = tableControlView.selectAll('.columnBlock').filter(cellsBlock);
+        updateBlockYPosition(gd, cellsColumnBlock, multiplier * d3.event.dy, tableControlView);
     }
 }
 
