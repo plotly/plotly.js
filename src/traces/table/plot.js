@@ -53,6 +53,7 @@ module.exports = function plot(gd, calcdata) {
         .append('g')
         .classed('tableControlView', true)
         .style('box-sizing', 'content-box')
+        .on('mousemove', function() {tableControlView.call(renderScrollbarKit);})
         .call(renderScrollbarKit);
 
     tableControlView
