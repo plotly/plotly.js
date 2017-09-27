@@ -55,7 +55,7 @@ function calcGeoJSON(calcTrace, topojson) {
     var trace = calcTrace[0].trace;
     var len = calcTrace.length;
     var features = getTopojsonFeatures(trace, topojson);
-    var i, j, k;
+    var i, j, k, m;
 
     for(i = 0; i < len; i++) {
         var calcPt = calcTrace[i];
@@ -73,6 +73,25 @@ function calcGeoJSON(calcTrace, topojson) {
         var geometry = feature.geometry;
         var coords = geometry.coordinates;
         calcPt._polygons = [];
+
+        // Russia and Fiji have landmasses that cross the antimeridian,
+        // we need to add +360 to their longitude coordinates, so that
+        // polygon 'contains' doesn't get confused when crossing the antimeridian.
+        //
+        // Note that other countries have polygons on either side of the antimeridian
+        // (e.g. some Aleutian island for the USA), but those don't confuse
+        // the 'contains' method; these are skipped here.
+        if(calcPt.loc === 'RUS' || calcPt.loc === 'FJI') {
+            for(j = 0; j < coords.length; j++) {
+                for(k = 0; k < coords[j].length; k++) {
+                    for(m = 0; m < coords[j][k].length; m++) {
+                        if(coords[j][k][m][0] < 0) {
+                            coords[j][k][m][0] += 360;
+                        }
+                    }
+                }
+            }
+        }
 
         switch(geometry.type) {
             case 'MultiPolygon':

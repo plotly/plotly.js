@@ -1290,6 +1290,46 @@ describe('Test geo interactions', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('should get hover right for choropleths involving landmasses that cross antimeridian', function(done) {
+        var gd = createGraphDiv();
+
+        function check(lonlat, hoverLabelCnt, msg) {
+            var projection = gd._fullLayout.geo._subplot.projection;
+            var px = projection(lonlat);
+
+            mouseEvent('mousemove', px[0], px[1]);
+            expect(d3.selectAll('g.hovertext').size()).toBe(hoverLabelCnt, msg);
+
+            delete gd._lastHoverTime;
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'choropleth',
+            locations: ['RUS', 'FJI'],
+            z: [0, 1]
+        }])
+        .then(function() {
+            check([81, 66], 1, 'spot in north-central Russia that polygon.contains gets wrong before +360 shift');
+            check([-80, 66], 0, 'spot north of Hudson bay that polygon.contains believe is in Russia before before +360 shift');
+
+            return Plotly.relayout(gd, 'geo.projection.rotation.lon', 180);
+        })
+        .then(function() {
+            check([-174, 65], 1, 'spot in Russia mainland beyond antimeridian');
+
+            return Plotly.relayout(gd, {
+                'geo.center.lat': -16,
+                'geo.projection.scale': 17
+            });
+        })
+        .then(function() {
+            check([179, -16.6], 1, 'spot on Fiji island that cross antimeridian west of antimeridian');
+            check([-179.9, -16.2], 1, 'spot on Fiji island that cross antimeridian east of antimeridian');
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
 
 describe('Test event property of interactions on a geo plot:', function() {

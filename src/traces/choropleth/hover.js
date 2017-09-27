@@ -28,6 +28,10 @@ module.exports = function hoverPoints(pointData, xval, yval) {
                 if(pt._polygons[j].contains([xval, yval])) {
                     isInside = !isInside;
                 }
+                // for polygons that cross antimeridian as xval is in [-180, 180]
+                if(pt._polygons[j].contains([xval + 360, yval])) {
+                    isInside = !isInside;
+                }
             }
 
             if(isInside) break;
