@@ -47,6 +47,12 @@ module.exports = {
     // delay before a redraw (relayout) after smooth panning and zooming
     REDRAWDELAY: 50,
 
+    // throttling limit (ms) for selectPoints calls
+    SELECTDELAY: 100,
+
+    // cache ID suffix for throttle
+    SELECTID: '-select',
+
     // last resort axis ranges for x and y axes if we have no data
     DFLTRANGEX: [-1, 6],
     DFLTRANGEY: [-1, 4],

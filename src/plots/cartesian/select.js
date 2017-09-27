@@ -10,6 +10,7 @@
 'use strict';
 
 var polygon = require('../../lib/polygon');
+var throttle = require('../../lib/throttle');
 var color = require('../../components/color');
 var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
 
@@ -64,14 +65,11 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
 
 
     // find the traces to search for selection points
-    var searchTraces = [],
-        gd = dragOptions.gd,
-        i,
-        cd,
-        trace,
-        searchInfo,
-        selection = [],
-        eventData;
+    var searchTraces = [];
+    var gd = dragOptions.gd;
+    var throttleID = gd._fullLayout._uid + constants.SELECTID;
+    var selection = [];
+    var i, cd, trace, searchInfo, eventData;
 
     for(i = 0; i < gd.calcdata.length; i++) {
         cd = gd.calcdata[i];
@@ -183,27 +181,35 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             outlines.attr('d', 'M' + pts.filtered.join('L') + 'Z');
         }
 
-        selection = [];
-        for(i = 0; i < searchTraces.length; i++) {
-            searchInfo = searchTraces[i];
-            var thisSelection = fillSelectionItem(
-                searchInfo.selectPoints(searchInfo, poly), searchInfo
-            );
-            if(selection.length) {
-                for(var j = 0; j < thisSelection.length; j++) {
-                    selection.push(thisSelection[j]);
+        throttle.throttle(
+            function() {
+                selection = [];
+                for(i = 0; i < searchTraces.length; i++) {
+                    searchInfo = searchTraces[i];
+                    var thisSelection = fillSelectionItem(
+                        searchInfo.selectPoints(searchInfo, poly), searchInfo
+                    );
+                    if(selection.length) {
+                        for(var j = 0; j < thisSelection.length; j++) {
+                            selection.push(thisSelection[j]);
+                        }
+                    }
+                    else selection = thisSelection;
                 }
-            }
-            else selection = thisSelection;
-        }
 
-        eventData = {points: selection};
-        fillRangeItems(eventData, poly, pts);
-        dragOptions.gd.emit('plotly_selecting', eventData);
+                eventData = {points: selection};
+                fillRangeItems(eventData, poly, pts);
+                dragOptions.gd.emit('plotly_selecting', eventData);
+            },
+            constants.SELECTDELAY,
+            throttleID
+        );
     };
 
     dragOptions.doneFn = function(dragged, numclicks) {
         corners.remove();
+        throttle.clear(throttleID);
+
         if(!dragged && numclicks === 2) {
             // clear selection on doubleclick
             outlines.remove();
