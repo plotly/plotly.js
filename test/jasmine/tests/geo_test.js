@@ -1306,8 +1306,8 @@ describe('Test geo interactions', function() {
 
         Plotly.newPlot(gd, [{
             type: 'choropleth',
-            locations: ['RUS', 'FJI'],
-            z: [0, 1]
+            locations: ['RUS', 'FJI', 'ATA'],
+            z: [0, 1, 2]
         }])
         .then(function() {
             check([81, 66], 1, 'spot in north-central Russia that polygon.contains gets wrong before +360 shift');
@@ -1326,6 +1326,17 @@ describe('Test geo interactions', function() {
         .then(function() {
             check([179, -16.6], 1, 'spot on Fiji island that cross antimeridian west of antimeridian');
             check([-179.9, -16.2], 1, 'spot on Fiji island that cross antimeridian east of antimeridian');
+
+            return Plotly.relayout(gd, {
+                'geo.center.lat': null,
+                'geo.projection': {
+                    type: 'orthographic',
+                    rotation: {lat: -90}
+                }
+            });
+        })
+        .then(function() {
+            check([-150, -89], 1, 'spot in Antarctica that requires *stitching*');
         })
         .catch(fail)
         .then(done);
