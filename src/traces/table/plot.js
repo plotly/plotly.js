@@ -228,6 +228,7 @@ function renderScrollbarKit(tableControlView) {
             s.barWiggleRoom = s.currentlyVisibleHeight - s.barLength;
             s.wiggleRoom = s.totalHeight - s.scrollableAreaHeight;
             s.topY = (d.scrollY / s.wiggleRoom) * s.barWiggleRoom;
+            s.bottomY = s.topY + s.barLength;
             s.dragMultiplier = s.wiggleRoom / s.barWiggleRoom;
         })
         .attr('transform', function(d) {
@@ -287,17 +288,32 @@ function renderScrollbarKit(tableControlView) {
         .classed('scrollbarCaptureZone', true)
         .attr('stroke', 'red')
         .attr('stroke-width', c.scrollbarCaptureWidth)
-        .attr('stroke-linecap', 'square')
+        .attr('stroke-linecap', 'butt')
         .attr('stroke-opacity', c.clipView ? 0.5 : 0)
         .attr('y1', 0)
+        .on('mousedown', function(d) {
+            var y = d3.event.y;
+            var bbox = this.getBoundingClientRect();
+            var s = d.scrollbarState;
+            var pixelVal = y - bbox.top;
+            if(s.topY <= pixelVal && pixelVal <= s.bottomY) {
+                console.log('on glyph!')
+            } else {
+                console.log('should jump!')
+                makeDragRow(gd, tableControlView) // now makeDragRow depends on d3.event.y and multiplier; move these out
+            }
+            //console.log('mousedown', bbox.top, bbox.bottom, y, scale(y))
+        })
         .call(d3.behavior.drag()
             .origin(function(d) {
+                //console.log('drag started')
                 d3.event.stopPropagation();
                 d.scrollbarState.scrollbarScrollInProgress = true;
                 return d;
             })
             .on('drag', makeDragRow(gd, tableControlView))
             .on('dragend', function(d) {
+                //console.log('drag ended')
                 // fixme emit Plotly event
             })
         );
