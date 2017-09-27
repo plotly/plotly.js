@@ -454,15 +454,10 @@ proto.makeFramework = function() {
     var fullLayout = _this.graphDiv._fullLayout;
     var clipId = 'clip' + fullLayout._uid + _this.id;
 
-    var defGroup = fullLayout._defs.selectAll('g.clips')
-        .data([0]);
-    defGroup.enter().append('g')
-        .classed('clips', true);
-
-    _this.clipDef = defGroup.append('clipPath')
+    _this.clipDef = fullLayout._clips.append('clipPath')
         .attr('id', clipId);
 
-    _this.clipRect = this.clipDef.append('rect');
+    _this.clipRect = _this.clipDef.append('rect');
 
     _this.framework = d3.select(_this.container).append('g')
         .attr('class', 'geo ' + _this.id)

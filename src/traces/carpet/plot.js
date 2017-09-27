@@ -38,7 +38,7 @@ function plotOne(gd, plotinfo, cd) {
         fullLayout = gd._fullLayout;
 
     var gridLayer = plotinfo.plot.selectAll('.carpetlayer');
-    var clipLayer = makeg(fullLayout._defs, 'g', 'clips');
+    var clipLayer = fullLayout._clips;
 
     var axisLayer = makeg(gridLayer, 'g', 'carpet' + trace.uid).classed('trace', true);
     var minorLayer = makeg(axisLayer, 'g', 'minorlayer');

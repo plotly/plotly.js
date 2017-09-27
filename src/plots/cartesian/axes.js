@@ -1620,16 +1620,10 @@ axes.makeClipPaths = function(gd) {
         }
     }
 
-    var defGroup = defs.selectAll('g.clips')
-        .data([0]);
-
-    defGroup.enter().append('g')
-        .classed('clips', true);
-
     // selectors don't work right with camelCase tags,
     // have to use class instead
     // https://groups.google.com/forum/#!topic/d3-js/6EpAzQ2gU9I
-    var axClips = defGroup.selectAll('.axesclip')
+    var axClips = fullLayout._clips.selectAll('.axesclip')
         .data(clipList, function(d) { return d.x._id + d.y._id; });
 
     axClips.enter().append('clipPath')

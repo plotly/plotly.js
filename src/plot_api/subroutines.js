@@ -151,8 +151,7 @@ exports.lsInner = function(gd) {
         // Clip so that data only shows up on the plot area.
         plotinfo.clipId = 'clip' + fullLayout._uid + subplot + 'plot';
 
-        var plotClip = fullLayout._defs.selectAll('g.clips')
-            .selectAll('#' + plotinfo.clipId)
+        var plotClip = fullLayout._clips.selectAll('#' + plotinfo.clipId)
             .data([0]);
 
         plotClip.enter().append('clipPath')

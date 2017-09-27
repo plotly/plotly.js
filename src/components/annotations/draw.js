@@ -194,7 +194,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
     var isSizeConstrained = options.width || options.height;
 
-    var annTextClip = fullLayout._defs.select('.clips')
+    var annTextClip = fullLayout._topclips
         .selectAll('#' + annClipID)
         .data(isSizeConstrained ? [0] : []);
 

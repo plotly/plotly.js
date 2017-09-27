@@ -70,22 +70,17 @@ proto.plot = function(ternaryCalcData, fullLayout) {
 proto.makeFramework = function(fullLayout) {
     var _this = this;
     var ternaryLayout = fullLayout[_this.id];
-
-    var defGroup = _this.defs.selectAll('g.clips')
-        .data([0]);
-    defGroup.enter().append('g')
-        .classed('clips', true);
+    var clipId = _this.clipId = 'clip' + _this.layoutId + _this.id;
 
     // clippath for this ternary subplot
-    var clipId = _this.clipId = 'clip' + _this.layoutId + _this.id;
-    _this.clipDef = defGroup.selectAll('#' + clipId)
+    _this.clipDef = fullLayout._clips.selectAll('#' + clipId)
         .data([0]);
     _this.clipDef.enter().append('clipPath').attr('id', clipId)
         .append('path').attr('d', 'M0,0Z');
 
     // 'relative' clippath (i.e. no translation) for this ternary subplot
     var clipIdRelative = _this.clipIdRelative = 'clip-relative' + _this.layoutId + _this.id;
-    _this.clipDefRelative = defGroup.selectAll('#' + clipIdRelative)
+    _this.clipDefRelative = fullLayout._clips.selectAll('#' + clipIdRelative)
         .data([0]);
     _this.clipDefRelative.enter().append('clipPath').attr('id', clipIdRelative)
         .append('path').attr('d', 'M0,0Z');
