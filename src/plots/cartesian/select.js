@@ -186,9 +186,15 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         selection = [];
         for(i = 0; i < searchTraces.length; i++) {
             searchInfo = searchTraces[i];
-            [].push.apply(selection, fillSelectionItem(
+            var thisSelection = fillSelectionItem(
                 searchInfo.selectPoints(searchInfo, poly), searchInfo
-            ));
+            );
+            if(selection.length) {
+                for(var j = 0; j < thisSelection.length; j++) {
+                    selection.push(thisSelection[j]);
+                }
+            }
+            else selection = thisSelection;
         }
 
         eventData = {points: selection};
