@@ -296,11 +296,11 @@ function renderScrollbarKit(tableControlView) {
             var bbox = this.getBoundingClientRect();
             var s = d.scrollbarState;
             var pixelVal = y - bbox.top;
+            var inverseScale = d3.scale.linear().domain([0, s.scrollableAreaHeight]).range([0, s.totalHeight]).clamp(true);
             if(s.topY <= pixelVal && pixelVal <= s.bottomY) {
-                console.log('on glyph!')
+                //console.log('on glyph!')
             } else {
-                console.log('should jump!')
-                makeDragRow(gd, tableControlView) // now makeDragRow depends on d3.event.y and multiplier; move these out
+                makeDragRow(gd, tableControlView, null, inverseScale(pixelVal - s.barLength / 2))(d);
             }
             //console.log('mousedown', bbox.top, bbox.bottom, y, scale(y))
         })
@@ -461,7 +461,7 @@ function columnMoved(gd, calcdata, i, indices) {
 
 function gridPick(spec, col, row) {
     if(Array.isArray(spec)) {
-        const column = spec[Math.min(col, spec.length - 1)];
+        var column = spec[Math.min(col, spec.length - 1)];
         if(Array.isArray(column)) {
             return column[Math.min(row, column.length - 1)];
         } else {
@@ -555,13 +555,12 @@ function headerHeight(d) {
     return headerBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
 }
 
-function updateBlockYPosition(gd, cellsColumnBlock, dy, tableControlView) {
+function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
 
     var d = cellsColumnBlock[0][0].__data__;
     var blocks = d.rowBlocks;
     var calcdata = d.calcdata;
 
-    calcdata.scrollY += dy;
     var bottom = firstRowAnchor(blocks, blocks.length);
     var scrollHeight = d.calcdata.groupHeight - headerHeight(d);
     var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom - scrollHeight, calcdata.scrollY));
@@ -608,11 +607,13 @@ function updateBlockYPosition(gd, cellsColumnBlock, dy, tableControlView) {
     }
 }
 
-function makeDragRow(gd, tableControlView, optionalMultiplier) {
+function makeDragRow(gd, tableControlView, optionalMultiplier, optionalPosition) {
     return function dragRow () {
-        var multiplier = optionalMultiplier || tableControlView.node().__data__.scrollbarState.dragMultiplier
+        var d = tableControlView.node().__data__;
+        var multiplier = optionalMultiplier || d.scrollbarState.dragMultiplier;
+        d.scrollY = optionalPosition === void(0) ? d.scrollY + multiplier * d3.event.dy : optionalPosition;
         var cellsColumnBlock = tableControlView.selectAll('.columnBlock').filter(cellsBlock);
-        updateBlockYPosition(gd, cellsColumnBlock, multiplier * d3.event.dy, tableControlView);
+        updateBlockYPosition(gd, cellsColumnBlock, tableControlView);
     }
 }
 
