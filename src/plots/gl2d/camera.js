@@ -256,7 +256,7 @@ function createCamera(scene) {
     }
 
     result.wheelListener = mouseWheel(element, function(dx, dy) {
-        if (!scene.scrollZoom) return false;
+        if(!scene.scrollZoom) return false;
 
         var dataBox = scene.calcDataBox(),
             viewBox = plot.viewBox;
