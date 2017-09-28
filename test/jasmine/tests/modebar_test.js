@@ -173,10 +173,10 @@ describe('ModeBar', function() {
                 expectedButtonCount += group.length;
             });
 
-            expect(modeBar.hasButtons(buttons)).toBe(true);
-            expect(countGroups(modeBar)).toEqual(expectedGroupCount);
-            expect(countButtons(modeBar)).toEqual(expectedButtonCount);
-            expect(countLogo(modeBar)).toEqual(1);
+            expect(modeBar.hasButtons(buttons)).toBe(true, 'modeBar.hasButtons');
+            expect(countGroups(modeBar)).toEqual(expectedGroupCount, 'correct group count');
+            expect(countButtons(modeBar)).toEqual(expectedButtonCount, 'correct button count');
+            expect(countLogo(modeBar)).toEqual(1, 'correct logo count');
         }
 
         it('creates mode bar (unselectable cartesian version)', function() {
@@ -256,12 +256,36 @@ describe('ModeBar', function() {
         it('creates mode bar (geo version)', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
+                ['pan2d'],
                 ['zoomInGeo', 'zoomOutGeo', 'resetGeo'],
                 ['hoverClosestGeo']
             ]);
 
             var gd = getMockGraphInfo();
             gd._fullLayout._basePlotModules = [{ name: 'geo' }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (geo + selected version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['pan2d', 'select2d', 'lasso2d'],
+                ['zoomInGeo', 'zoomOutGeo', 'resetGeo'],
+                ['hoverClosestGeo']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._basePlotModules = [{ name: 'geo' }];
+            gd._fullData = [{
+                type: 'scattergeo',
+                visible: true,
+                mode: 'markers',
+                _module: {selectPoints: true}
+            }];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;

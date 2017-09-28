@@ -446,23 +446,24 @@ modeBarButtons.hoverClosestGeo = {
 };
 
 function handleGeo(gd, ev) {
-    var button = ev.currentTarget,
-        attr = button.getAttribute('data-attr'),
-        val = button.getAttribute('data-val') || true,
-        fullLayout = gd._fullLayout,
-        geoIds = Plots.getSubplotIds(fullLayout, 'geo');
+    var button = ev.currentTarget;
+    var attr = button.getAttribute('data-attr');
+    var val = button.getAttribute('data-val') || true;
+    var fullLayout = gd._fullLayout;
+    var geoIds = Plots.getSubplotIds(fullLayout, 'geo');
 
     for(var i = 0; i < geoIds.length; i++) {
-        var geo = fullLayout[geoIds[i]]._subplot;
+        var id = geoIds[i];
+        var geoLayout = fullLayout[id];
 
         if(attr === 'zoom') {
-            var scale = geo.projection.scale();
+            var scale = geoLayout.projection.scale;
             var newScale = (val === 'in') ? 2 * scale : 0.5 * scale;
-            geo.projection.scale(newScale);
-            geo.zoom.scale(newScale);
-            geo.render();
+
+            Plotly.relayout(gd, id + '.projection.scale', newScale);
+        } else if(attr === 'reset') {
+            resetView(gd, 'geo');
         }
-        else if(attr === 'reset') geo.zoomReset();
     }
 }
 
@@ -535,8 +536,8 @@ modeBarButtons.resetViews = {
         button.setAttribute('data-attr', 'resetLastSave');
         handleCamera3d(gd, ev);
 
-        // N.B handleCamera3d also triggers a replot for
-        // geo subplots.
+        resetView(gd, 'geo');
+        resetView(gd, 'mapbox');
     }
 };
 
@@ -581,22 +582,26 @@ modeBarButtons.resetViewMapbox = {
     attr: 'reset',
     icon: Icons.home,
     click: function(gd) {
-        var fullLayout = gd._fullLayout;
-        var subplotIds = Plots.getSubplotIds(fullLayout, 'mapbox');
-        var aObj = {};
-
-        for(var i = 0; i < subplotIds.length; i++) {
-            var id = subplotIds[i];
-            var subplotObj = fullLayout[id]._subplot;
-            var viewInitial = subplotObj.viewInitial;
-            var viewKeys = Object.keys(viewInitial);
-
-            for(var j = 0; j < viewKeys.length; j++) {
-                var key = viewKeys[j];
-                aObj[id + '.' + key] = viewInitial[key];
-            }
-        }
-
-        Plotly.relayout(gd, aObj);
+        resetView(gd, 'mapbox');
     }
 };
+
+function resetView(gd, subplotType) {
+    var fullLayout = gd._fullLayout;
+    var subplotIds = Plots.getSubplotIds(fullLayout, subplotType);
+    var aObj = {};
+
+    for(var i = 0; i < subplotIds.length; i++) {
+        var id = subplotIds[i];
+        var subplotObj = fullLayout[id]._subplot;
+        var viewInitial = subplotObj.viewInitial;
+        var viewKeys = Object.keys(viewInitial);
+
+        for(var j = 0; j < viewKeys.length; j++) {
+            var key = viewKeys[j];
+            aObj[id + '.' + key] = viewInitial[key];
+        }
+    }
+
+    Plotly.relayout(gd, aObj);
+}

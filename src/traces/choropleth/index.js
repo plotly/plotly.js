@@ -18,6 +18,7 @@ Choropleth.calc = require('./calc');
 Choropleth.plot = require('./plot');
 Choropleth.hoverPoints = require('./hover');
 Choropleth.eventData = require('./event_data');
+Choropleth.selectPoints = require('./select');
 
 Choropleth.moduleType = 'trace';
 Choropleth.name = 'choropleth';
