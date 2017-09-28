@@ -18,12 +18,13 @@ var timerCache = {};
  * So the first and last events in a train are always executed (eventually)
  * but some of the events in the middle can be dropped.
  *
- * @param {function} callback: the function to throttle
  * @param {string} id: an identifier to mark events to throttle together
  * @param {number} minInterval: minimum time, in milliseconds, between
  *   invocations of `callback`
+ * @param {function} callback: the function to throttle. `callback` itself
+ *   should be a purely synchronous function.
  */
-exports.throttle = function throttle(callback, minInterval, id) {
+exports.throttle = function throttle(id, minInterval, callback) {
     var cache = timerCache[id];
     var now = Date.now();
 

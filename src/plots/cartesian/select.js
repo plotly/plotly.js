@@ -184,6 +184,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         }
 
         throttle.throttle(
+            throttleID,
+            constants.SELECTDELAY,
             function() {
                 selection = [];
                 for(i = 0; i < searchTraces.length; i++) {
@@ -202,9 +204,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 eventData = {points: selection};
                 fillRangeItems(eventData, poly, pts);
                 dragOptions.gd.emit('plotly_selecting', eventData);
-            },
-            constants.SELECTDELAY,
-            throttleID
+            }
         );
     };
 

@@ -70,9 +70,9 @@ exports.hover = function hover(gd, evt, subplot, noHoverEvent) {
     gd = Lib.getGraphDiv(gd);
 
     Lib.throttle(
-        function() { _hover(gd, evt, subplot, noHoverEvent); },
+        gd._fullLayout._uid + constants.HOVERID,
         constants.HOVERMINTIME,
-        gd._fullLayout._uid + constants.HOVERID
+        function() { _hover(gd, evt, subplot, noHoverEvent); }
     );
 };
 
