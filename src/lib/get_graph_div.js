@@ -10,15 +10,12 @@
 
 /**
  * Allow referencing a graph DOM element either directly
- * or its id string
+ * or by its id string
  *
  * @param {HTMLDivElement|string} gd: a graph element or its id
  *
  * @returns {HTMLDivElement} the DOM element of the graph
  */
-// Get the container div: we store all variables for this plot as
-// properties of this div
-// some callers send this in by DOM element, others by id (string)
 module.exports = function(gd) {
     var gdElement;
 
