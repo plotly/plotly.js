@@ -43,17 +43,38 @@ exports.throttle = function throttle(callback, minInterval, id) {
 
     _clearTimeout(cache);
 
-    if(now > cache.ts + minInterval) {
+    function exec() {
         callback();
-        cache.ts = now;
+        cache.ts = Date.now();
+        if(cache.onDone) {
+            cache.onDone();
+            cache.onDone = null;
+        }
+    }
+
+    if(now > cache.ts + minInterval) {
+        exec();
         return;
     }
 
     cache.timer = setTimeout(function() {
-        callback();
-        cache.ts = Date.now();
+        exec();
         cache.timer = null;
     }, minInterval);
+};
+
+exports.done = function(id) {
+    var cache = timerCache[id];
+    if(!cache || !cache.timer) return Promise.resolve();
+
+    return new Promise(function(resolve) {
+        var previousOnDone = cache.onDone;
+        cache.onDone = function onDone() {
+            if(previousOnDone) previousOnDone();
+            resolve();
+            cache.onDone = null;
+        };
+    });
 };
 
 /**
