@@ -205,7 +205,6 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
             center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
             eye: [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
             up: [cameraData.up.x, cameraData.up.y, cameraData.up.z],
-            zoomSpeed: fullLayout.zoomspeed,
             zoomMin: 0.1,
             zoomMax: 100,
             mode: 'orbit'

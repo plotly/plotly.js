@@ -31,17 +31,6 @@ module.exports = {
             '3D scenes.'
         ].join(' ')
     },
-    zoomspeed: {
-        valType: 'number',
-        role: 'info',
-        dflt: 1,
-        min: 0,
-        editType: 'none',
-        description: [
-            'Sets the speed at which the mouse wheel zooms the plot. Larger',
-            'values are faster.'
-        ].join(' ')
-    },
     hovermode: {
         valType: 'enumerated',
         role: 'info',
