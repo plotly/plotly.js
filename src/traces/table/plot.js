@@ -608,8 +608,8 @@ function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
 
     // conditionally rerendering panel 0 and 1
     if(gd) {
-        conditionalPanelRerender(gd, cellsColumnBlock, pages, d.prevPages, d, 0);
-        conditionalPanelRerender(gd, cellsColumnBlock, pages, d.prevPages, d, 1);
+        conditionalPanelRerender(gd, tableControlView, cellsColumnBlock, pages, d.prevPages, d, 0);
+        conditionalPanelRerender(gd, tableControlView, cellsColumnBlock, pages, d.prevPages, d, 1);
         renderScrollbarKit(tableControlView);
     }
 }
@@ -619,22 +619,22 @@ function makeDragRow(gd, tableControlView, optionalMultiplier, optionalPosition)
         var d = tableControlView.node().__data__;
         var multiplier = optionalMultiplier || d.scrollbarState.dragMultiplier;
         d.scrollY = optionalPosition === void(0) ? d.scrollY + multiplier * d3.event.dy : optionalPosition;
-        var cellsColumnBlock = tableControlView.selectAll('.columnBlock').filter(cellsBlock);
+        var cellsColumnBlock = tableControlView.selectAll('.yColumn').selectAll('.columnBlock').filter(cellsBlock);
         updateBlockYPosition(gd, cellsColumnBlock, tableControlView);
     }
 }
 
-function conditionalPanelRerender(gd, cellsColumnBlock, pages, prevPages, d, revolverIndex) {
+function conditionalPanelRerender(gd, tableControlView, cellsColumnBlock, pages, prevPages, d, revolverIndex) {
     var shouldComponentUpdate = pages[revolverIndex] !== prevPages[revolverIndex];
     if(shouldComponentUpdate) {
-        window.clearTimeout(d.currentRepaint[revolverIndex]);
-        d.currentRepaint[revolverIndex] = window.setTimeout(function () {
+        //window.clearTimeout(d.currentRepaint[revolverIndex]);
+        //d.currentRepaint[revolverIndex] = window.setTimeout(function () {
             // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
             // some repaints invisible ie. wasteful (DOM work blocks the main thread)
             var toRerender = cellsColumnBlock.filter(function (d, i) {return i === revolverIndex && pages[i] !== prevPages[i];});
-            renderColumnBlocks(gd, toRerender, toRerender);
+            renderColumnBlocks(gd, tableControlView, toRerender, toRerender);
             prevPages[revolverIndex] = pages[revolverIndex];
-        });
+        //});
     }
 }
 
