@@ -36,6 +36,7 @@ function Scene2D(options, fullLayout) {
     this.pixelRatio = options.plotGlPixelRatio || window.devicePixelRatio;
     this.id = options.id;
     this.staticPlot = !!options.staticPlot;
+    this.scrollZoom = this.graphDiv._context.scrollZoom;
 
     this.fullData = null;
     this.updateRefs(fullLayout);

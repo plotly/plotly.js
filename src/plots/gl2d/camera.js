@@ -256,13 +256,15 @@ function createCamera(scene) {
     }
 
     result.wheelListener = mouseWheel(element, function(dx, dy) {
+        if (!scene.scrollZoom) return false;
+
         var dataBox = scene.calcDataBox(),
             viewBox = plot.viewBox;
 
         var lastX = result.lastPos[0],
             lastY = result.lastPos[1];
 
-        var scale = Math.exp(10.0 * dy / (viewBox[3] - viewBox[1]));
+        var scale = Math.exp(5.0 * dy / (viewBox[3] - viewBox[1]));
 
         var cx = lastX /
                 (viewBox[2] - viewBox[0]) * (dataBox[2] - dataBox[0]) +
