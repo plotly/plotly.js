@@ -181,12 +181,18 @@ proto.updateProjection = function(fullLayout, geoLayout) {
     var lataxis = geoLayout.lataxis;
     var rangeBox = makeRangeBox(lonaxis.range, lataxis.range);
 
+
+    this.rangeBox = rangeBox;
+
     // fit projection 'scale' and 'translate' to set lon/lat ranges
     projection.fitExtent(extent, rangeBox);
 
     var b = this.bounds = projection.getBounds(rangeBox);
     var s = this.fitScale = projection.scale();
     var t = projection.translate();
+
+    console.log('range', lonaxis.range, lataxis.range)
+    console.log('bounds', b[0], b[1])
 
     if(
         !isFinite(b[0][0]) || !isFinite(b[0][1]) ||
@@ -249,7 +255,7 @@ proto.updateBaseLayers = function(fullLayout, geoLayout) {
     }
 
     function isLineLayer(d) {
-        return Boolean(constants.lineLayers[d]);
+        return Boolean(constants.lineLayers[d]) || d === 'rangebox';
     }
 
     function isFillLayer(d) {
@@ -265,6 +271,8 @@ proto.updateBaseLayers = function(fullLayout, geoLayout) {
             isAxisLayer(d) ? geoLayout[d].showgrid :
             true;
     });
+
+//     layerData.push('rangebox');
 
     var join = _this.framework.selectAll('.layer')
         .data(layerData, String);
@@ -307,6 +315,13 @@ proto.updateBaseLayers = function(fullLayout, geoLayout) {
     join.each(function(d) {
         var path = basePaths[d];
         var adj = constants.layerNameToAdjective[d];
+
+        if(d === 'rangebox') {
+            path.datum(_this.rangeBox)
+                .style('stroke', 'red')
+                .style('stroke-width', '4px')
+            return;
+        }
 
         if(d === 'frame') {
             path.datum(constants.sphereSVG);
