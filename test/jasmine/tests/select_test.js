@@ -62,6 +62,11 @@ function resetEvents(gd) {
 
     selectedPromise = new Promise(function(resolve) {
         gd.on('plotly_selecting', function(data) {
+            // note that since all of these events test node counts,
+            // and all of the other tests at some point check that each of
+            // these event handlers was called (via assertEventCounts),
+            // we no longer need separate tests that these nodes are created
+            // and this way *all* subplot variants get the test.
             assertSelectionNodes(1, 2);
             selectingCnt++;
             selectingData = data;
@@ -129,88 +134,6 @@ describe('Test select box and lasso in general:', function() {
             });
         });
     }
-
-    describe('select elements', function() {
-        var mockCopy = Lib.extendDeep({}, mock);
-        mockCopy.layout.dragmode = 'select';
-
-        var gd;
-        beforeEach(function(done) {
-            gd = createGraphDiv();
-
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
-                .then(done);
-        });
-
-        it('should be appended to the zoom layer', function(done) {
-            var x0 = 100,
-                y0 = 200,
-                x1 = 150,
-                y1 = 250,
-                x2 = 50,
-                y2 = 50;
-
-            gd.once('plotly_selecting', function() {
-                assertSelectionNodes(1, 2);
-            });
-
-            gd.once('plotly_selected', function() {
-                assertSelectionNodes(0, 2);
-            });
-
-            gd.once('plotly_deselect', function() {
-                assertSelectionNodes(0, 0);
-            });
-
-            Lib.clearThrottle();
-            mouseEvent('mousemove', x0, y0);
-            assertSelectionNodes(0, 0);
-
-            drag([[x0, y0], [x1, y1]]);
-            doubleClick(x2, y2).then(done);
-        });
-    });
-
-    describe('lasso elements', function() {
-        var mockCopy = Lib.extendDeep({}, mock);
-        mockCopy.layout.dragmode = 'lasso';
-
-        var gd;
-        beforeEach(function(done) {
-            gd = createGraphDiv();
-
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
-                .then(done);
-        });
-
-        it('should be appended to the zoom layer', function(done) {
-            var x0 = 100,
-                y0 = 200,
-                x1 = 150,
-                y1 = 250,
-                x2 = 50,
-                y2 = 50;
-
-            gd.once('plotly_selecting', function() {
-                assertSelectionNodes(1, 2);
-            });
-
-            gd.once('plotly_selected', function() {
-                assertSelectionNodes(0, 2);
-            });
-
-            gd.once('plotly_deselect', function() {
-                assertSelectionNodes(0, 0);
-            });
-
-            Lib.clearThrottle();
-            mouseEvent('mousemove', x0, y0);
-            assertSelectionNodes(0, 0);
-
-            drag([[x0, y0], [x1, y1]]);
-            doubleClick(x2, y2).then(done);
-        });
-    });
 
     describe('select events', function() {
         var mockCopy = Lib.extendDeep({}, mock);
