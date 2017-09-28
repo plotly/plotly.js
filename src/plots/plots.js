@@ -1332,6 +1332,7 @@ plots.purge = function(gd) {
     delete gd._transitionData;
     delete gd._transitioning;
     delete gd._initialAutoSize;
+    delete gd._transitioningWithDuration;
 
     // remove all event listeners
     if(gd.removeAllListeners) gd.removeAllListeners();
