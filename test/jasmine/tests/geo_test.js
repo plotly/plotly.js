@@ -1341,6 +1341,29 @@ describe('Test geo interactions', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('relayout bounds edge case', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/geo_orthographic.json'));
+
+        Plotly.plot(gd, fig).then(function() {
+            expect(gd._fullLayout.geo._subplot.bounds).toBeCloseTo2DArray([
+                [84, 100], [404, 420]
+            ]);
+
+            return Plotly.relayout(gd, {
+                'geo.projection.rotation.lon': -73,
+                'geo.projection.rotation.lat': 42
+            });
+        })
+        .then(function() {
+            expect(gd._fullLayout.geo._subplot.bounds).toBeCloseTo2DArray([
+                [84, 100], [404, 420]
+            ]);
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
 
 describe('Test event property of interactions on a geo plot:', function() {
