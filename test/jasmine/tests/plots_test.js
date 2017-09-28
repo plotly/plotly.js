@@ -424,8 +424,7 @@ describe('Test Plots', function() {
                 'data', 'layout', '_fullData', '_fullLayout', 'calcdata', 'framework',
                 'empty', 'fid', 'undoqueue', 'undonum', 'autoplay', 'changed',
                 '_promises', '_redrawTimer', 'firstscatter', 'hmlumcount', 'hmpixcount',
-                'numboxes', '_hoverTimer', '_lastHoverTime', '_transitionData',
-                '_transitioning'
+                'numboxes', '_transitionData', '_transitioning'
             ];
 
             Plots.purge(gd);

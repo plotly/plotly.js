@@ -122,7 +122,7 @@ describe('ternary plots', function() {
                 'hoverlabel.font.family': [['Gravitas', 'Arial', 'Roboto']]
             })
             .then(function() {
-                delete gd._lastHoverTime;
+                Lib.clearThrottle();
                 mouseEvent('mousemove', pointPos[0], pointPos[1]);
 
                 var path = d3.select('g.hovertext').select('path');

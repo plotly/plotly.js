@@ -1218,7 +1218,7 @@ describe('Test geo interactions', function() {
             expect(d3.selectAll('g.hovertext').size())
                 .toBe(hoverLabelCnt, 'for ' + lonlat);
 
-            delete gd._lastHoverTime;
+            Lib.clearThrottle();
         }
 
         Plotly.plot(gd, fig).then(function() {
@@ -1301,7 +1301,7 @@ describe('Test geo interactions', function() {
             mouseEvent('mousemove', px[0], px[1]);
             expect(d3.selectAll('g.hovertext').size()).toBe(hoverLabelCnt, msg);
 
-            delete gd._lastHoverTime;
+            Lib.clearThrottle();
         }
 
         Plotly.newPlot(gd, [{
@@ -1954,8 +1954,8 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             var center = geoLayout.center;
             var scale = geoLayout.projection.scale;
 
-            expect(center.lon).toBeCloseTo(attr[0][0], 1, msg + 'center.lon');
-            expect(center.lat).toBeCloseTo(attr[0][1], 1, msg + 'center.lat');
+            expect(center.lon).toBeCloseTo(attr[0][0], 0.5, msg + 'center.lon');
+            expect(center.lat).toBeCloseTo(attr[0][1], 0.5, msg + 'center.lat');
             expect(scale).toBeCloseTo(attr[1], 1, msg + 'zoom');
 
             // albersUsa projection does not have a center() method

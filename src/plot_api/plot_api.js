@@ -60,7 +60,7 @@ var axisIds = require('../plots/cartesian/axis_ids');
 Plotly.plot = function(gd, data, layout, config) {
     var frames;
 
-    gd = helpers.getGraphDiv(gd);
+    gd = Lib.getGraphDiv(gd);
 
     // Events.init is idempotent and bails early if gd has already been init'd
     Events.init(gd);
@@ -581,7 +581,7 @@ function plotPolar(gd, data, layout) {
 
 // convenience function to force a full redraw, mostly for use by plotly.js
 Plotly.redraw = function(gd) {
-    gd = helpers.getGraphDiv(gd);
+    gd = Lib.getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
         throw new Error('This element is not a Plotly plot: ' + gd);
@@ -606,7 +606,7 @@ Plotly.redraw = function(gd) {
  * @param {Object} config
  */
 Plotly.newPlot = function(gd, data, layout, config) {
-    gd = helpers.getGraphDiv(gd);
+    gd = Lib.getGraphDiv(gd);
 
     // remove gl contexts
     Plots.cleanPlot([], {}, gd._fullData || {}, gd._fullLayout || {});
@@ -959,7 +959,7 @@ function spliceTraces(gd, update, indices, maxPoints, lengthenArray, spliceArray
  *
  */
 Plotly.extendTraces = function extendTraces(gd, update, indices, maxPoints) {
-    gd = helpers.getGraphDiv(gd);
+    gd = Lib.getGraphDiv(gd);
 
     var undo = spliceTraces(gd, update, indices, maxPoints,
 
@@ -986,7 +986,7 @@ Plotly.extendTraces = function extendTraces(gd, update, indices, maxPoints) {
 };
 
 Plotly.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
-    gd = helpers.getGraphDiv(gd);
+    gd = Lib.getGraphDiv(gd);
 
     var undo = spliceTraces(gd, update, indices, maxPoints,
 
@@ -1022,7 +1022,7 @@ Plotly.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
  *
  */
 Plotly.addTraces = function addTraces(gd, traces, newIndices) {
-    gd = helpers.getGraphDiv(gd);
+    gd = Lib.getGraphDiv(gd);
 
     var currentIndices = [],
         undoFunc = Plotly.deleteTraces,
@@ -1099,7 +1099,7 @@ Plotly.addTraces = function addTraces(gd, traces, newIndices) {
  * @param {Number|Number[]} indices The indices
  */
 Plotly.deleteTraces = function deleteTraces(gd, indices) {
-    gd = helpers.getGraphDiv(gd);
+    gd = Lib.getGraphDiv(gd);
 
     var traces = [],
         undoFunc = Plotly.addTraces,
@@ -1165,7 +1165,7 @@ Plotly.deleteTraces = function deleteTraces(gd, indices) {
  *      Plotly.moveTraces(gd, [b, d, e, a, c])  // same as 'move to end'
  */
 Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
-    gd = helpers.getGraphDiv(gd);
+    gd = Lib.getGraphDiv(gd);
 
     var newData = [],
         movingTraceMap = [],
@@ -1262,7 +1262,7 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
  * style files that want to specify cyclical default values).
  */
 Plotly.restyle = function restyle(gd, astr, val, _traces) {
-    gd = helpers.getGraphDiv(gd);
+    gd = Lib.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
     var aobj = {};
@@ -1649,7 +1649,7 @@ function _restyle(gd, aobj, traces) {
  *  allows setting multiple attributes simultaneously
  */
 Plotly.relayout = function relayout(gd, astr, val) {
-    gd = helpers.getGraphDiv(gd);
+    gd = Lib.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
     if(gd.framework && gd.framework.isPolar) {
@@ -2079,7 +2079,7 @@ function _relayout(gd, aobj) {
  *
  */
 Plotly.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
-    gd = helpers.getGraphDiv(gd);
+    gd = Lib.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
     if(gd.framework && gd.framework.isPolar) {
@@ -2185,7 +2185,7 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
  *      configuration for the animation
  */
 Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
-    gd = helpers.getGraphDiv(gd);
+    gd = Lib.getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
         throw new Error(
@@ -2549,7 +2549,7 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
  *      will be overwritten.
  */
 Plotly.addFrames = function(gd, frameList, indices) {
-    gd = helpers.getGraphDiv(gd);
+    gd = Lib.getGraphDiv(gd);
 
     var numericNameWarningCount = 0;
 
@@ -2673,7 +2673,7 @@ Plotly.addFrames = function(gd, frameList, indices) {
  *      list of integer indices of frames to be deleted
  */
 Plotly.deleteFrames = function(gd, frameList) {
-    gd = helpers.getGraphDiv(gd);
+    gd = Lib.getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
         throw new Error('This element is not a Plotly plot: ' + gd);
@@ -2717,7 +2717,7 @@ Plotly.deleteFrames = function(gd, frameList) {
  *      the id or DOM element of the graph container div
  */
 Plotly.purge = function purge(gd) {
-    gd = helpers.getGraphDiv(gd);
+    gd = Lib.getGraphDiv(gd);
 
     var fullLayout = gd._fullLayout || {},
         fullData = gd._fullData || [];

@@ -30,7 +30,7 @@ describe('spikeline', function() {
 
         function _hover(evt, subplot) {
             Fx.hover(gd, evt, subplot);
-            delete gd._lastHoverTime;
+            Lib.clearThrottle();
         }
 
         function _assert(lineExpect, circleExpect) {

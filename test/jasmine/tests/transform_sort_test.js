@@ -275,7 +275,7 @@ describe('Test sort transform interactions:', function() {
         function hover(gd, id) {
             return new Promise(function(resolve, reject) {
                 gd.once('plotly_hover', function(eventData) {
-                    delete gd._lastHoverTime;
+                    Lib.clearThrottle();
                     resolve(eventData);
                 });
 

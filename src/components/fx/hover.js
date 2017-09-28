@@ -67,27 +67,13 @@ var HOVERTEXTPAD = constants.HOVERTEXTPAD;
 // We wrap the hovers in a timer, to limit their frequency.
 // The actual rendering is done by private function _hover.
 exports.hover = function hover(gd, evt, subplot, noHoverEvent) {
-    if(typeof gd === 'string') gd = document.getElementById(gd);
-    if(gd._lastHoverTime === undefined) gd._lastHoverTime = 0;
+    gd = Lib.getGraphDiv(gd);
 
-    // If we have an update queued, discard it now
-    if(gd._hoverTimer !== undefined) {
-        clearTimeout(gd._hoverTimer);
-        gd._hoverTimer = undefined;
-    }
-    // Is it more than 100ms since the last update?  If so, force
-    // an update now (synchronously) and exit
-    if(Date.now() > gd._lastHoverTime + constants.HOVERMINTIME) {
-        _hover(gd, evt, subplot, noHoverEvent);
-        gd._lastHoverTime = Date.now();
-        return;
-    }
-    // Queue up the next hover for 100ms from now (if no further events)
-    gd._hoverTimer = setTimeout(function() {
-        _hover(gd, evt, subplot, noHoverEvent);
-        gd._lastHoverTime = Date.now();
-        gd._hoverTimer = undefined;
-    }, constants.HOVERMINTIME);
+    Lib.throttle(
+        gd._fullLayout._uid + constants.HOVERID,
+        constants.HOVERMINTIME,
+        function() { _hover(gd, evt, subplot, noHoverEvent); }
+    );
 };
 
 /*

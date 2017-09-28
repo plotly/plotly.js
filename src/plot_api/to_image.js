@@ -15,8 +15,6 @@ var helpers = require('../snapshot/helpers');
 var toSVG = require('../snapshot/tosvg');
 var svgToImg = require('../snapshot/svgtoimg');
 
-var getGraphDiv = require('./helpers').getGraphDiv;
-
 var attrs = {
     format: {
         valType: 'enumerated',
@@ -95,7 +93,7 @@ function toImage(gd, opts) {
         layout = gd.layout || {};
         config = gd.config || {};
     } else {
-        gd = getGraphDiv(gd);
+        gd = Lib.getGraphDiv(gd);
         data = Lib.extendDeep([], gd.data);
         layout = Lib.extendDeep({}, gd.layout);
         config = gd._context;

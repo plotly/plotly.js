@@ -446,7 +446,7 @@ describe('Event data:', function() {
     function _hover(px, py) {
         return new Promise(function(resolve, reject) {
             gd.once('plotly_hover', function(d) {
-                delete gd._lastHoverTime;
+                Lib.clearThrottle();
                 resolve(d);
             });
 

@@ -97,6 +97,13 @@ lib.error = loggersModule.error;
 var regexModule = require('./regex');
 lib.counterRegex = regexModule.counter;
 
+var throttleModule = require('./throttle');
+lib.throttle = throttleModule.throttle;
+lib.throttleDone = throttleModule.done;
+lib.clearThrottle = throttleModule.clear;
+
+lib.getGraphDiv = require('./get_graph_div');
+
 lib.notifier = require('./notifier');
 
 lib.filterUnique = require('./filter_unique');
