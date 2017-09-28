@@ -674,6 +674,8 @@ function makeGraticule(axisName, geoLayout) {
 // Note that clipPad padding is added around range to avoid aliasing.
 function makeRangeBox(lon, lat) {
     var clipPad = constants.clipPad;
+    clipPad = 1e-2;
+
     var lon0 = lon[0] + clipPad;
     var lon1 = lon[1] - clipPad;
     var lat0 = lat[0] + clipPad;
