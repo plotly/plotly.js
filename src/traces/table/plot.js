@@ -54,6 +54,10 @@ module.exports = function plot(gd, calcdata) {
         .classed('tableControlView', true)
         .style('box-sizing', 'content-box')
         .on('mousemove', function() {tableControlView.call(renderScrollbarKit);})
+        .on('mousewheel', function(d) {
+            d3.event.preventDefault();
+            makeDragRow(gd, tableControlView, null, d.scrollY + d3.event.deltaY)(d);
+        })
         .call(renderScrollbarKit);
 
     tableControlView
@@ -77,6 +81,8 @@ module.exports = function plot(gd, calcdata) {
                 var movedColumn = d3.select(this);
                 easeColumn(movedColumn, d, -c.uplift);
                 raiseToTop(this);
+                d.calcdata.columnDragInProgress = true;
+                renderScrollbarKit(tableControlView);
                 return d;
             })
             .on('drag', function(d) {
@@ -102,6 +108,7 @@ module.exports = function plot(gd, calcdata) {
                 var movedColumn = d3.select(this);
                 var p = d.calcdata;
                 d.x = d.xScale(d);
+                d.calcdata.columnDragInProgress = false;
                 easeColumn(movedColumn, d, 0);
                 columnMoved(gd, calcdata, p.key, p.columns.map(function(dd) {return dd.xIndex;}));
             })
@@ -270,7 +277,7 @@ function renderScrollbarKit(tableControlView) {
         .attr('y2', function(d) {
             return d.scrollbarState.barLength - c.scrollbarWidth / 2;
         })
-        .attr('stroke-opacity', 0.4);
+        .attr('stroke-opacity', function(d) {return d.columnDragInProgress ? 0 : 0.4});
 
     // cancel transition: possible pending (also, delayed) transition
     scrollbarGlyph
