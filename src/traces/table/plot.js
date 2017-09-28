@@ -231,10 +231,10 @@ function renderScrollbarKit(tableControlView) {
             s.scrollableAreaHeight = d.groupHeight - headerHeight(d);
             s.currentlyVisibleHeight = Math.min(s.totalHeight, s.scrollableAreaHeight);
             s.ratio = s.currentlyVisibleHeight / s.totalHeight;
-            s.barLength = s.ratio * s.currentlyVisibleHeight;
+            s.barLength = Math.max(s.ratio * s.currentlyVisibleHeight, c.goldenRatio * c.scrollbarWidth);
             s.barWiggleRoom = s.currentlyVisibleHeight - s.barLength;
             s.wiggleRoom = s.totalHeight - s.scrollableAreaHeight;
-            s.topY = (d.scrollY / s.wiggleRoom) * s.barWiggleRoom;
+            s.topY = (d.scrollY / s.wiggleRoom) * s.barWiggleRoom ;
             s.bottomY = s.topY + s.barLength;
             s.dragMultiplier = s.wiggleRoom / s.barWiggleRoom;
         })

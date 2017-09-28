@@ -17,6 +17,7 @@ module.exports = {
     wrapSpacer: ' ',
     lineBreaker: '<br>',
     uplift: 5,
+    goldenRatio: 1.618,
     columnTitleOffset: 28,
     columnExtentOffset: 10,
     transitionEase: 'cubic-out',
