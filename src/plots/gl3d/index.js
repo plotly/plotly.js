@@ -128,3 +128,12 @@ exports.cleanId = function cleanId(id) {
 
     return SCENE + sceneNum;
 };
+
+exports.updateFx = function(fullLayout) {
+    var subplotIds = Plots.getSubplotIds(fullLayout, GL3D);
+
+    for(var i = 0; i < subplotIds.length; i++) {
+        var subplotObj = fullLayout[subplotIds[i]]._scene;
+        subplotObj.updateFx(fullLayout.dragmode, fullLayout.hovermode);
+    }
+};

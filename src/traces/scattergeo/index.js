@@ -18,11 +18,12 @@ ScatterGeo.calc = require('./calc');
 ScatterGeo.plot = require('./plot');
 ScatterGeo.hoverPoints = require('./hover');
 ScatterGeo.eventData = require('./event_data');
+ScatterGeo.selectPoints = require('./select');
 
 ScatterGeo.moduleType = 'trace';
 ScatterGeo.name = 'scattergeo';
 ScatterGeo.basePlotModule = require('../../plots/geo');
-ScatterGeo.categories = ['geo', 'symbols', 'markerColorscale', 'showLegend'];
+ScatterGeo.categories = ['geo', 'symbols', 'markerColorscale', 'showLegend', 'scatter-like'];
 ScatterGeo.meta = {
     hrName: 'scatter_geo',
     description: [

@@ -12,23 +12,39 @@
 var Axes = require('../../plots/cartesian/axes');
 var attributes = require('./attributes');
 
-module.exports = function hoverPoints(pointData) {
+module.exports = function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var geo = pointData.subplot;
 
-    // set on choropleth paths 'mouseover'
-    var pt = geo.choroplethHoverPt;
+    var pt, i, j, isInside;
 
-    if(!pt) return;
+    for(i = 0; i < cd.length; i++) {
+        pt = cd[i];
+        isInside = false;
 
-    var centroid = geo.projection(pt.properties.ct);
+        if(pt._polygons) {
+            for(j = 0; j < pt._polygons.length; j++) {
+                if(pt._polygons[j].contains([xval, yval])) {
+                    isInside = !isInside;
+                }
+                // for polygons that cross antimeridian as xval is in [-180, 180]
+                if(pt._polygons[j].contains([xval + 360, yval])) {
+                    isInside = !isInside;
+                }
+            }
 
-    pointData.x0 = pointData.x1 = centroid[0];
-    pointData.y0 = pointData.y1 = centroid[1];
+            if(isInside) break;
+        }
+    }
+
+    if(!isInside || !pt) return;
+
+    pointData.x0 = pointData.x1 = pointData.xa.c2p(pt.ct);
+    pointData.y0 = pointData.y1 = pointData.ya.c2p(pt.ct);
 
     pointData.index = pt.index;
-    pointData.location = pt.id;
+    pointData.location = pt.loc;
     pointData.z = pt.z;
 
     makeHoverInfo(pointData, trace, pt, geo.mockAxis);
@@ -55,10 +71,11 @@ function makeHoverInfo(pointData, trace, pt, axis) {
         return Axes.tickText(axis, axis.c2l(val), 'hover').text;
     }
 
-    if(hasIdAsNameLabel) pointData.nameOverride = pt.id;
-    else {
+    if(hasIdAsNameLabel) {
+        pointData.nameOverride = pt.loc;
+    } else {
         if(hasName) pointData.nameOverride = trace.name;
-        if(hasLocation) text.push(pt.id);
+        if(hasLocation) text.push(pt.loc);
     }
 
     if(hasZ) text.push(formatter(pt.z));
