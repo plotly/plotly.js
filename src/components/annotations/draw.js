@@ -520,7 +520,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 .style('stroke-width', strokewidth + 'px')
                 .call(Color.stroke, Color.rgb(arrowColor));
 
-            drawArrowHead(arrow, options.arrowhead, 'end', options.arrowsize, options.standoff);
+            drawArrowHead(arrow, 'end', options);
 
             // the arrow dragger is a small square right at the head, then a line to the tail,
             // all expanded by a stroke width of 6px plus the arrow line width

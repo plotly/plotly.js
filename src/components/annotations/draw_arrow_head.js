@@ -10,31 +10,34 @@
 'use strict';
 
 var d3 = require('d3');
-var isNumeric = require('fast-isnumeric');
 
 var Color = require('../color');
 var Drawing = require('../drawing');
 
 var ARROWPATHS = require('./arrow_paths');
 
-// add arrowhead(s) to a path or line d3 element el3
-// style: 1-6, first 5 are pointers, 6 is circle, 7 is square, 8 is none
-// ends is 'start', 'end' (default), 'start+end'
-// mag is magnification vs. default (default 1)
-
-module.exports = function drawArrowHead(el3, style, ends, mag, standoff) {
-    if(!isNumeric(mag)) mag = 1;
+/**
+ * Add arrowhead(s) to a path or line element
+ *
+ * @param {d3.selection} el3: a d3-selected line or path element
+ *
+ * @param {string} ends: 'start', 'end', or 'start+end' for which ends get arrowheads
+ *
+ * @param {object} options: style information. Must have all the following:
+ * @param {number} options.arrowhead: head style - see ./arrow_paths
+ * @param {number} options.arrowsize: relative size of the head vs line width
+ * @param {number} options.standoff: distance in px to move the arrow point from its target
+ */
+module.exports = function drawArrowHead(el3, ends, options) {
     var el = el3.node(),
-        headStyle = ARROWPATHS[style||0];
+        headStyle = ARROWPATHS[options.arrowhead || 0];
 
-    if(typeof ends !== 'string' || !ends) ends = 'end';
-
-    var scale = (Drawing.getPx(el3, 'stroke-width') || 1) * mag,
+    var scale = (Drawing.getPx(el3, 'stroke-width') || 1) * options.arrowsize,
         stroke = el3.style('stroke') || Color.defaultLine,
         opacity = el3.style('stroke-opacity') || 1,
         doStart = ends.indexOf('start') >= 0,
         doEnd = ends.indexOf('end') >= 0,
-        backOff = headStyle.backoff * scale + standoff,
+        backOff = headStyle.backoff * scale + options.standoff,
         start,
         end,
         startRot,
@@ -110,7 +113,7 @@ module.exports = function drawArrowHead(el3, style, ends, mag, standoff) {
 
     function drawhead(p, rot) {
         if(!headStyle.path) return;
-        if(style > 5) rot = 0; // don't rotate square or circle
+        if(options.arrowhead > 5) rot = 0; // don't rotate square or circle
         d3.select(el.parentNode).append('path')
             .attr({
                 'class': el3.attr('class'),
