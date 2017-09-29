@@ -367,21 +367,21 @@ describe('axis zoom/pan and main plot zoom', function() {
             mouseEvent('scroll', mainDragCoords.x, mainDragCoords.y, {deltaY: 20, element: mainDrag});
         })
         .then(delay(constants.REDRAWDELAY + 10))
-        .then(checkRanges({xaxis: [-0.4428, 2], yaxis: [0, 2.4428]}, 'xy main scroll'))
+        .then(checkRanges({xaxis: [-0.2103, 2], yaxis: [0, 2.2103]}, 'xy main scroll'))
         .then(function() {
             var ewDrag = getDragger('xy', 'ew');
             var ewDragCoords = getNodeCoords(ewDrag);
             mouseEvent('scroll', ewDragCoords.x - 50, ewDragCoords.y, {deltaY: -20, element: ewDrag});
         })
         .then(delay(constants.REDRAWDELAY + 10))
-        .then(checkRanges({xaxis: [-0.3321, 1.6679], yaxis: [0, 2.4428]}, 'x scroll'))
+        .then(checkRanges({xaxis: [-0.1578, 1.8422], yaxis: [0, 2.2103]}, 'x scroll'))
         .then(function() {
             var nsDrag = getDragger('xy', 'ns');
             var nsDragCoords = getNodeCoords(nsDrag);
             mouseEvent('scroll', nsDragCoords.x, nsDragCoords.y - 50, {deltaY: -20, element: nsDrag});
         })
         .then(delay(constants.REDRAWDELAY + 10))
-        .then(checkRanges({xaxis: [-0.3321, 1.6679], yaxis: [0.3321, 2.3321]}, 'y scroll'))
+        .then(checkRanges({xaxis: [-0.1578, 1.8422], yaxis: [0.1578, 2.1578]}, 'y scroll'))
         .catch(failTest)
         .then(done);
     });
@@ -420,7 +420,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             mouseEvent('scroll', mainDragCoords.x, mainDragCoords.y, {deltaY: 20, element: mainDrag});
         })
         .then(delay(constants.REDRAWDELAY + 10))
-        .then(checkRanges({xaxis: [-0.4428, 2], yaxis: [0, 2.4428], xaxis2: [-0.2214, 2.2214], yaxis2: [-0.2214, 2.2214]},
+        .then(checkRanges({xaxis: [-0.2103, 2], yaxis: [0, 2.2103], xaxis2: [-0.1052, 2.1052], yaxis2: [-0.1052, 2.1052]},
             'scroll xy'))
         .then(function() {
             var ewDrag = getDragger('xy', 'ew');
@@ -428,7 +428,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             mouseEvent('scroll', ewDragCoords.x - 50, ewDragCoords.y, {deltaY: -20, element: ewDrag});
         })
         .then(delay(constants.REDRAWDELAY + 10))
-        .then(checkRanges({xaxis: [-0.3321, 1.6679], yaxis: [0.2214, 2.2214]}, 'scroll x'))
+        .then(checkRanges({xaxis: [-0.1578, 1.8422], yaxis: [0.1052, 2.1052]}, 'scroll x'))
         .catch(failTest)
         .then(done);
     });

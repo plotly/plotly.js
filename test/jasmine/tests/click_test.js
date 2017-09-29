@@ -866,8 +866,8 @@ describe('Test click interactions:', function() {
             var translate = Drawing.getTranslate(mockEl),
                 scale = Drawing.getScale(mockEl);
 
-            expect([translate.x, translate.y]).toBeCloseToArray([-25.941, 43.911]);
-            expect([scale.x, scale.y]).toBeCloseToArray([1.221, 1.221]);
+            expect([translate.x, translate.y]).toBeCloseToArray([13.93, 62.86]);
+            expect([scale.x, scale.y]).toBeCloseToArray([1.105, 1.105]);
         });
     });
 
