@@ -738,6 +738,7 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
             renderScrollbarKit(tableControlView);
         }
 
+        // fixme speed bottleneck esp. the getBoundingClientRect 66%
         cellTextHolder
             .attr('transform', function () {
                 var element = this;
@@ -754,6 +755,8 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
 }
 
 function setCellHeightAndPositionY(columnCell) {
+    // fixme speed bottleneck esp. the getBoundingClientRect 15%
+    // fixme also, initial load is freaking slow
     columnCell
         .attr('transform', function(d) {
             var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + rowsHeight(n, Infinity)}, 0);
