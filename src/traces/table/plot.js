@@ -388,7 +388,7 @@ function renderColumnBlocks(gd, tableControlView, columnBlock, allColumnBlock) {
                 gridPick(d.calcdata.cells.line.color, d.column.specIndex, d.rowNumber);
         })
         .attr('fill', function(d) {
-            return gridPick(d.calcdata.cells.fill.color, d.column.specIndex, d.rowNumber);
+            return d.calcdata.cells.fill ? gridPick(d.calcdata.cells.fill.color, d.column.specIndex, d.rowNumber) : 'none';
         });
 
     var cellTextHolder = columnCell.selectAll('.cellTextHolder')
@@ -444,10 +444,10 @@ function renderCellText(cellText, tableControlView, allColumnBlock, columnCell, 
 
             // finalize what's in the DOM
             Drawing.font(selection, d.font);
-            setCellHeightAndPositionY(columnCell);
+            setCellHeightAndPositionY(columnCell); // fixme this is first perf bottleneck
 
             var renderCallback = d.wrappingNeeded ? wrapTextMaker : updateYPositionMaker;
-            svgUtil.convertToTspans(selection, gd, renderCallback(allColumnBlock, element, tableControlView, d));
+            svgUtil.convertToTspans(selection, gd, renderCallback(allColumnBlock, element, tableControlView, d)); // fixme (not) this is third perf bottleneck
         });
 }
 
@@ -562,16 +562,8 @@ function headerHeight(d) {
     return headerBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
 }
 
-function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
-
-    var d = cellsColumnBlock[0][0].__data__;
-    var blocks = d.rowBlocks;
-    var calcdata = d.calcdata;
-
-    var bottom = firstRowAnchor(blocks, blocks.length);
-    var scrollHeight = d.calcdata.groupHeight - headerHeight(d);
-    var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom - scrollHeight, calcdata.scrollY));
-
+function heavy(blocks, scrollY, scrollHeight) {
+    // fixme this is the first perf bottleneck
     var pages = [];
     for(var p = 0; p < blocks.length; p++) {
         var pTop = firstRowAnchor(blocks, p);
@@ -580,6 +572,21 @@ function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
             pages.push(p);
         }
     }
+
+    return pages;
+}
+
+function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
+    // fixme this function is THE performance hotspot
+    var d = cellsColumnBlock[0][0].__data__;
+    var blocks = d.rowBlocks;
+    var calcdata = d.calcdata;
+
+    var bottom = firstRowAnchor(blocks, blocks.length);
+    var scrollHeight = d.calcdata.groupHeight - headerHeight(d);
+    var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom - scrollHeight, calcdata.scrollY));
+
+    var pages = heavy(blocks, scrollY, scrollHeight);
     if(pages.length === 1) {
         if(pages[0] === blocks.length - 1) {
             pages.unshift(pages[0] - 1);
@@ -627,14 +634,14 @@ function makeDragRow(gd, tableControlView, optionalMultiplier, optionalPosition)
 function conditionalPanelRerender(gd, tableControlView, cellsColumnBlock, pages, prevPages, d, revolverIndex) {
     var shouldComponentUpdate = pages[revolverIndex] !== prevPages[revolverIndex];
     if(shouldComponentUpdate) {
-        //window.clearTimeout(d.currentRepaint[revolverIndex]);
-        //d.currentRepaint[revolverIndex] = window.setTimeout(function () {
+        window.clearTimeout(d.currentRepaint[revolverIndex]);
+        d.currentRepaint[revolverIndex] = window.setTimeout(function () {
             // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
             // some repaints invisible ie. wasteful (DOM work blocks the main thread)
             var toRerender = cellsColumnBlock.filter(function (d, i) {return i === revolverIndex && pages[i] !== prevPages[i];});
             renderColumnBlocks(gd, tableControlView, toRerender, toRerender);
             prevPages[revolverIndex] = pages[revolverIndex];
-        //});
+        });
     }
 }
 
@@ -682,6 +689,7 @@ function wrapTextMaker(columnBlock, element, tableControlView) {
 
 function updateYPositionMaker(columnBlock, element, tableControlView, d) {
     return function updateYPosition() {
+        if(d.settledY) return;
         var cellTextHolder = d3.select(element.parentNode);
         var l = getBlock(d);
         var rowIndex = d.key - l.firstRowIndex;
@@ -719,6 +727,8 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
                 var yPosition = rectBox.top - box.top + (currentTransform ? currentTransform.matrix.f : c.cellPad);
                 return 'translate(' + c.cellPad + ' ' + yPosition + ')';
             });
+
+        d.settledY = true;
     };
 }
 
