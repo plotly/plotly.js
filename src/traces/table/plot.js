@@ -750,26 +750,25 @@ function setCellHeightAndPositionY(columnCell) {
             var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + rowsHeight(n, Infinity)}, 0);
             var l = getBlock(d);
             var rowAnchor = rowsHeight(l, d.key);
-            var rowOffset = firstRowAnchor(d.rowBlocks, l.key) + rowAnchor - firstRowAnchor(d.rowBlocks, d.page);
-            var yOffset = rowOffset + headerHeight;
+            var yOffset = rowAnchor + headerHeight;
             return 'translate(0 ' + yOffset + ')';
         })
         .select('.cellRect')
         .attr('height', function(d) {return getRow(getBlock(d), d.key).rowHeight;});
 }
 
-function firstRowAnchor(blocks, p) {
-    var pTop = 0;
-    for(var i = 0; i < p; i++) {
-        pTop += rowsHeight(blocks[i], Infinity);
+function firstRowAnchor(blocks, page) {
+    var total = 0;
+    for(var i = 0; i < page; i++) {
+        total += rowsHeight(blocks[i], Infinity);
     }
-    return pTop;
+    return total;
 }
 
-function firstRowAnchor2(rowBlocks, page) {
+function firstRowAnchor2(blocks, page) {
     var total = 0;
     for(var i = 0; i < page - 1; i++) {
-        total += rowsHeight(rowBlocks[i], Infinity);
+        total += rowsHeight(blocks[i], Infinity);
     }
     return total;
 }
