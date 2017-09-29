@@ -566,23 +566,20 @@ function heavy(blocks, scrollY, scrollHeight) {
     // fixme this is the first perf bottleneck
 
     var pages = [];
+    var pTop = 0;
     for(var blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
 
-        var pTop = 0;
-        for(var j = 0; j < blockIndex; j++) {
-
-            var rowsHeight = 0;
-            var rowBlock = blocks[j];
-            for(var i = 0; i < rowBlock.rows.length; i++) {
-                rowsHeight += rowBlock.rows[i].rowHeight;
+        if(blockIndex) {
+            var pastBlockRows = blocks[blockIndex - 1].rows;
+            for(var i = 0; i < pastBlockRows.length; i++) {
+                pTop += pastBlockRows[i].rowHeight;
             }
-            pTop += rowsHeight;
         }
 
-        rowBlock = blocks[blockIndex];
-        rowsHeight = 0;
-        for(i = 0; i < rowBlock.rows.length; i++) {
-            rowsHeight += rowBlock.rows[i].rowHeight;
+        var blockRows = blocks[blockIndex].rows;
+        var rowsHeight = 0;
+        for(i = 0; i < blockRows.length; i++) {
+            rowsHeight += blockRows[i].rowHeight;
         }
 
         var pBottom = pTop + rowsHeight;
@@ -591,7 +588,7 @@ function heavy(blocks, scrollY, scrollHeight) {
         if(windowTop < pBottom && windowBottom > pTop) {
             pages.push(blockIndex);
         }
-        //if(pages.length > 1) break; // fixme uncomment this nice final optimization
+        //if(pages.length > 1) break; // fixme uncomment this nice final optimization; put it in `for` condition
     }
 
     return pages;
