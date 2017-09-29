@@ -444,10 +444,10 @@ function renderCellText(cellText, tableControlView, allColumnBlock, columnCell, 
 
             // finalize what's in the DOM
             Drawing.font(selection, d.font);
-            setCellHeightAndPositionY(columnCell); // fixme this is first perf bottleneck
+            setCellHeightAndPositionY(columnCell);
 
             var renderCallback = d.wrappingNeeded ? wrapTextMaker : updateYPositionMaker;
-            svgUtil.convertToTspans(selection, gd, renderCallback(allColumnBlock, element, tableControlView, d)); // fixme (not) this is third perf bottleneck
+            svgUtil.convertToTspans(selection, gd, renderCallback(allColumnBlock, element, tableControlView, d));
         });
 }
 
@@ -710,6 +710,8 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
         var cellTextHolder = d3.select(element.parentNode);
         var l = getBlock(d);
         var rowIndex = d.key - l.firstRowIndex;
+
+        // fixme perf bottleneck
         var box = element.parentNode.getBoundingClientRect();
 
         var renderedHeight = box.height;
