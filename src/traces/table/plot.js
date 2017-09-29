@@ -745,13 +745,12 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
 }
 
 function setCellHeightAndPositionY(columnCell) {
-    // fixme second perf bottleneck
     columnCell
         .attr('transform', function(d) {
+            var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + rowsHeight(n, Infinity)}, 0);
             var l = getBlock(d);
             var rowAnchor = rowsHeight(l, d.key);
             var rowOffset = firstRowAnchor(d.rowBlocks, l.key) + rowAnchor - firstRowAnchor(d.rowBlocks, d.page);
-            var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + rowsHeight(n, Infinity)}, 0);
             var yOffset = rowOffset + headerHeight;
             return 'translate(0 ' + yOffset + ')';
         })
@@ -761,7 +760,7 @@ function setCellHeightAndPositionY(columnCell) {
 
 function firstRowAnchor(blocks, p) {
     var pTop = 0;
-    for(var i = 0; i <= p - 1; i++) {
+    for(var i = 0; i < p; i++) {
         pTop += rowsHeight(blocks[i], Infinity);
     }
     return pTop;
