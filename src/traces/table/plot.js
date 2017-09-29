@@ -564,10 +564,16 @@ function headerHeight(d) {
 
 function heavy(blocks, scrollY, scrollHeight) {
     // fixme this is the first perf bottleneck
+
     var pages = [];
     for(var p = 0; p < blocks.length; p++) {
         var pTop = firstRowAnchor(blocks, p);
-        var pBottom = pTop + rowsHeight(blocks[p], Infinity);
+        var rowBlock = blocks[p];
+        var rowsHeight = 0;
+        for(var i = 0; i < rowBlock.rows.length; i++) {
+            rowsHeight += rowBlock.rows[i].rowHeight;
+        }
+        var pBottom = pTop + rowsHeight;
         if(overlap([scrollY, scrollY + scrollHeight], [pTop, pBottom])) {
             pages.push(p);
         }
@@ -733,6 +739,7 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
 }
 
 function setCellHeightAndPositionY(columnCell) {
+    // fixme second perf bottleneck
     columnCell
         .attr('transform', function(d) {
             var l = getBlock(d);
