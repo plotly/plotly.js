@@ -29,26 +29,23 @@ var ARROWPATHS = require('./arrow_paths');
  * @param {number} options.standoff: distance in px to move the arrow point from its target
  */
 module.exports = function drawArrowHead(el3, ends, options) {
-    var el = el3.node(),
-        headStyle = ARROWPATHS[options.arrowhead || 0];
+    var el = el3.node();
+    var headStyle = ARROWPATHS[options.arrowhead || 0];
+    var scale = (Drawing.getPx(el3, 'stroke-width') || 1) * options.arrowsize;
+    var stroke = el3.style('stroke') || Color.defaultLine;
+    var opacity = el3.style('stroke-opacity') || 1;
+    var doStart = ends.indexOf('start') >= 0;
+    var doEnd = ends.indexOf('end') >= 0;
+    var backOff = headStyle.backoff * scale + options.standoff;
 
-    var scale = (Drawing.getPx(el3, 'stroke-width') || 1) * options.arrowsize,
-        stroke = el3.style('stroke') || Color.defaultLine,
-        opacity = el3.style('stroke-opacity') || 1,
-        doStart = ends.indexOf('start') >= 0,
-        doEnd = ends.indexOf('end') >= 0,
-        backOff = headStyle.backoff * scale + options.standoff,
-        start,
-        end,
-        startRot,
-        endRot;
+    var start, end, startRot, endRot;
 
     if(el.nodeName === 'line') {
         start = {x: +el3.attr('x1'), y: +el3.attr('y1')};
         end = {x: +el3.attr('x2'), y: +el3.attr('y2')};
 
-        var dx = start.x - end.x,
-            dy = start.y - end.y;
+        var dx = start.x - end.x;
+        var dy = start.y - end.y;
 
         startRot = Math.atan2(dy, dx);
         endRot = startRot + Math.PI;
@@ -86,16 +83,19 @@ module.exports = function drawArrowHead(el3, ends, options) {
         }
 
         if(doStart) {
-            var start0 = el.getPointAtLength(0),
-                dstart = el.getPointAtLength(0.1);
+            var start0 = el.getPointAtLength(0);
+            var dstart = el.getPointAtLength(0.1);
+
             startRot = Math.atan2(start0.y - dstart.y, start0.x - dstart.x);
             start = el.getPointAtLength(Math.min(backOff, pathlen));
+
             if(backOff) dashArray = '0px,' + backOff + 'px,';
         }
 
         if(doEnd) {
-            var end0 = el.getPointAtLength(pathlen),
-                dend = el.getPointAtLength(pathlen - 0.1);
+            var end0 = el.getPointAtLength(pathlen);
+            var dend = el.getPointAtLength(pathlen - 0.1);
+
             endRot = Math.atan2(end0.y - dend.y, end0.x - dend.x);
             end = el.getPointAtLength(Math.max(0, pathlen - backOff));
 
@@ -114,6 +114,7 @@ module.exports = function drawArrowHead(el3, ends, options) {
     function drawhead(p, rot) {
         if(!headStyle.path) return;
         if(options.arrowhead > 5) rot = 0; // don't rotate square or circle
+
         d3.select(el.parentNode).append('path')
             .attr({
                 'class': el3.attr('class'),
