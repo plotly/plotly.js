@@ -428,11 +428,18 @@ describe('Test select box and lasso per trace:', function() {
         var callNumber = 0;
 
         return function(expected) {
-            var msg = '(call #' + callNumber + ') ';
-            var ranges = (selectedData.range || {})[subplot] || [];
+            var msg = '(call #' + callNumber + ') select box range ';
+            var ranges = selectedData.range || {};
 
-            expect(ranges)
-                .toBeCloseTo2DArray(expected, tol, msg + 'select box range for ' + subplot);
+            if(subplot) {
+                expect(ranges[subplot] || [])
+                    .toBeCloseTo2DArray(expected, tol, msg + 'for ' + subplot);
+            } else {
+                expect(ranges.x || [])
+                    .toBeCloseToArray(expected[0], tol, msg + 'x coords');
+                expect(ranges.y || [])
+                    .toBeCloseToArray(expected[1], tol, msg + 'y coords');
+            }
 
             callNumber++;
         };
@@ -443,11 +450,18 @@ describe('Test select box and lasso per trace:', function() {
         var callNumber = 0;
 
         return function(expected) {
-            var msg = '(call #' + callNumber + ') ';
-            var lassoPoints = (selectedData.lassoPoints || {})[subplot] || [];
+            var msg = '(call #' + callNumber + ') lasso points ';
+            var lassoPoints = selectedData.lassoPoints || {};
 
-            expect(lassoPoints)
-                .toBeCloseTo2DArray(expected, tol, msg + 'lasso points for ' + subplot);
+            if(subplot) {
+                expect(lassoPoints[subplot] || [])
+                    .toBeCloseTo2DArray(expected, tol, msg + 'for ' + subplot);
+            } else {
+                expect(lassoPoints.x || [])
+                    .toBeCloseToArray(expected[0], tol, msg + 'x coords');
+                expect(lassoPoints.y || [])
+                    .toBeCloseToArray(expected[1], tol, msg + 'y coords');
+            }
 
             callNumber++;
         };
@@ -708,4 +722,55 @@ describe('Test select box and lasso per trace:', function() {
         .catch(fail)
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
+
+    it('should work for bar traces', function(done) {
+        var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
+        var assertRanges = makeAssertRanges();
+        var assertLassoPoints = makeAssertLassoPoints();
+
+        var fig = Lib.extendDeep({}, require('@mocks/0'));
+        fig.layout.dragmode = 'lasso';
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            return _run(
+                [[350, 200], [400, 200], [400, 250], [350, 250], [350, 200]],
+                function() {
+                    assertPoints([
+                        [0, 4.9, 0.371], [0, 5, 0.368], [0, 5.1, 0.356], [0, 5.2, 0.336],
+                        [0, 5.3, 0.309], [0, 5.4, 0.275], [0, 5.5, 0.235], [0, 5.6, 0.192],
+                        [0, 5.7, 0.145],
+                        [1, 5.1, 0.485], [1, 5.2, 0.40900000000000003], [1, 5.3, 0.327],
+                        [1, 5.4, 0.24000000000000002], [1, 5.5, 0.149], [1, 5.6, 0.059],
+                        [2, 4.9, 0.473], [2, 5, 0.36800000000000005], [2, 5.1, 0.258],
+                        [2, 5.2, 0.14600000000000002], [2, 5.3, 0.03600000000000003]
+                    ]);
+                    assertLassoPoints([
+                        [4.87, 5.74, 5.74, 4.87, 4.87],
+                        [0.53, 0.53, -0.02, -0.02, 0.53]
+                    ]);
+                },
+                null, LASSOEVENTS, 'bar lasso'
+            );
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'select');
+        })
+        .then(function() {
+            return _run(
+                [[350, 200], [370, 220]],
+                function() {
+                    assertPoints([
+                        [0, 4.9, 0.371], [0, 5, 0.368], [0, 5.1, 0.356], [0, 5.2, 0.336],
+                        [1, 5.1, 0.485], [1, 5.2, 0.40900000000000003],
+                        [2, 4.9, 0.473], [2, 5, 0.36800000000000005]
+                    ]);
+                    assertRanges([[4.87, 5.22], [0.31, 0.53]]);
+                },
+                null, BOXEVENTS, 'bar select'
+            );
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
