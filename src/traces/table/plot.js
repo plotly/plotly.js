@@ -417,12 +417,17 @@ function renderCellText(cellText, tableControlView, allColumnBlock, columnCell, 
             var userSuppliedContent = d.value;
             var latex = latexEh(userSuppliedContent);
             var userBrokenText = (typeof userSuppliedContent !== 'string') || userSuppliedContent.match(/<br>/i);
+            var userBrokenText2 = (typeof userSuppliedContent === 'string') && userSuppliedContent.match(/<br>/i);
             var prefix = latex ? '' : gridPick(d.calcdata.cells.prefix, col, row) || '';
             var suffix = latex ? '' : gridPick(d.calcdata.cells.suffix, col, row) || '';
             var format = latex ? null : gridPick(d.calcdata.cells.format, col, row) || null;
             var prefixSuffixedText = prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
             d.latex = latex;
-            d.wrappingNeeded = !userBrokenText && !d.wrapped && !latex && prefixSuffixedText.indexOf(c.wrapSplitCharacter) !== -1;
+            var hasWrapSplitCharacter;
+            var hwsc = function(prefixSuffixedText) {return prefixSuffixedText.indexOf(c.wrapSplitCharacter) !== -1;};
+            d.wrappingNeeded = !d.wrapped && !userBrokenText && !latex && (hasWrapSplitCharacter = hwsc(prefixSuffixedText));
+            d.cellHeightMayIncrease = !d.wrapped && (userBrokenText2 || latex || (hasWrapSplitCharacter === void(0) ? hwsc(prefixSuffixedText) : hasWrapSplitCharacter));
+            if(d.cellHeightMayIncrease) debugger
             var textToRender;
             if(d.wrappingNeeded) {
                 var hrefPreservedText = c.wrapSplitCharacter === ' ' ? prefixSuffixedText.replace(/<a href=/ig, '<a_href=') : prefixSuffixedText;
@@ -703,7 +708,7 @@ function wrapTextMaker(columnBlock, element, tableControlView) {
         renderCellText(cellTextHolder.select('.cellText'), tableControlView, columnBlock, d3.select(element.parentNode.parentNode));
     };
 }
-
+window.monfera = 0
 function updateYPositionMaker(columnBlock, element, tableControlView, d) {
     return function updateYPosition() {
         if(d.settledY) return;
@@ -711,18 +716,15 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
         var l = getBlock(d);
         var rowIndex = d.key - l.firstRowIndex;
 
-        // fixme perf bottleneck
-        var box = element.parentNode.getBoundingClientRect();
+        var declaredRowHeight = l.rows[rowIndex].rowHeight;
 
-        var renderedHeight = box.height;
-
-        var requiredHeight = renderedHeight + 2 * c.cellPad;
-        var finalHeight = Math.max(requiredHeight, l.rows[rowIndex].rowHeight);
+        var requiredHeight = d.cellHeightMayIncrease ? element.parentNode.getBoundingClientRect().height + 2 * c.cellPad : declaredRowHeight;
+        var finalHeight = Math.max(requiredHeight, declaredRowHeight);
         var increase = finalHeight - l.rows[rowIndex].rowHeight;
 
         if(increase) {
             // current row height increased
-            l.rows[d.key - l.firstRowIndex].rowHeight = finalHeight;
+            l.rows[rowIndex].rowHeight = finalHeight;
 
             columnBlock
                 .selectAll('.columnCell')

@@ -20,7 +20,7 @@
 
         "header": {
 
-            "height": 20, // fixme for some reason it doesn't recognize arrays here
+            "height": 30, // fixme for some reason it doesn't recognize arrays here
 
             "values": [
                 ["C0"   , "#"],
@@ -56,7 +56,7 @@
 
         "cells": {
 
-            "values": [Array.from(Array(1000000).keys()),Array.from(Array(1000000).keys()),Array.from(Array(1000000).keys()),Array.from(Array(1000000).keys()),Array.from(Array(1000000).keys()),Array.from(Array(1000000).keys()),Array.from(Array(1000000).keys()),Array.from(Array(1000000).keys()),Array.from(Array(1000000).keys()),Array.from(Array(1000000).keys())] || [
+            "values": [Array.from(Array(1000).keys()),Array.from(Array(1000).keys()),Array.from(Array(1000).keys()),Array.from(Array(1000).keys()),Array.from(Array(1000).keys()),Array.from(Array(1000).keys()),Array.from(Array(1000).keys()),Array.from(Array(1000).keys()),Array.from(Array(1000).keys()),Array.from(Array(1000).keys())] || [
                 [
                     "$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
                     "1A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
