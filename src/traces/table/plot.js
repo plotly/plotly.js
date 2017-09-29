@@ -569,16 +569,9 @@ function heavy(blocks, scrollY, scrollHeight) {
     var pTop = 0;
     for(var blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
 
-        if(blockIndex) {
-            var pastBlockRows = blocks[blockIndex - 1].rows;
-            for(var i = 0; i < pastBlockRows.length; i++) {
-                pTop += pastBlockRows[i].rowHeight;
-            }
-        }
-
         var blockRows = blocks[blockIndex].rows;
         var rowsHeight = 0;
-        for(i = 0; i < blockRows.length; i++) {
+        for(var i = 0; i < blockRows.length; i++) {
             rowsHeight += blockRows[i].rowHeight;
         }
 
@@ -588,6 +581,7 @@ function heavy(blocks, scrollY, scrollHeight) {
         if(windowTop < pBottom && windowBottom > pTop) {
             pages.push(blockIndex);
         }
+        pTop += rowsHeight;
         //if(pages.length > 1) break; // fixme uncomment this nice final optimization; put it in `for` condition
     }
 
