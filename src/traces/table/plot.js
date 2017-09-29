@@ -759,7 +759,7 @@ function setCellHeightAndPositionY(columnCell) {
 
 function firstRowAnchor(blocks, page) {
     var total = 0;
-    for(var i = 0; i < page; i++) {
+    for(var i = page - 1; i >=0 ; i--) {
         total += rowsHeight(blocks[i], Infinity);
     }
     return total;
