@@ -553,27 +553,29 @@ function rowFromTo(d) {
     return [rowFrom, rowTo];
 }
 
-function overlap(a, b) {
-    return a[0] < b[1] && a[1] > b[0];
-}
-
 function headerHeight(d) {
     var headerBlocks = d.rowBlocks[0].auxiliaryBlocks;
     return headerBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
 }
 
-function heavy(blocks, scrollY, scrollHeight) {
-    // fixme this is the first perf bottleneck
+function paginate(blocks, scrollY, scrollHeight) {
 
     var pages = [];
     var pTop = 0;
+
     for(var blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
 
-        var blockRows = blocks[blockIndex].rows;
+        var block = blocks[blockIndex];
+        //block.allRowsHeight = undefined;
+        var blockRows = block.rows;
         var rowsHeight = 0;
         for(var i = 0; i < blockRows.length; i++) {
             rowsHeight += blockRows[i].rowHeight;
         }
+
+        // caching allRowsHeight on the block - it's safe as this function is always called from within the code part
+        // that handles increases to row heights
+        block.allRowsHeight = rowsHeight;
 
         var pBottom = pTop + rowsHeight;
         var windowTop = scrollY;
@@ -582,7 +584,10 @@ function heavy(blocks, scrollY, scrollHeight) {
             pages.push(blockIndex);
         }
         pTop += rowsHeight;
-        //if(pages.length > 1) break; // fixme uncomment this nice final optimization; put it in `for` condition
+
+        // fixme uncomment this nice final optimization; put it in `for` condition - caveat, currently the
+        // block.allRowsHeight relies on being invalidated, so enabling this opt may not be safe
+        //if(pages.length > 1) break;
     }
 
     return pages;
@@ -598,7 +603,7 @@ function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
     var scrollHeight = d.calcdata.groupHeight - headerHeight(d);
     var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom - scrollHeight, calcdata.scrollY));
 
-    var pages = heavy(blocks, scrollY, scrollHeight);
+    var pages = paginate(blocks, scrollY, scrollHeight);
     if(pages.length === 1) {
         if(pages[0] === blocks.length - 1) {
             pages.unshift(pages[0] - 1);
@@ -760,7 +765,7 @@ function setCellHeightAndPositionY(columnCell) {
 function firstRowAnchor(blocks, page) {
     var total = 0;
     for(var i = page - 1; i >=0 ; i--) {
-        total += rowsHeight(blocks[i], Infinity);
+        total += allRowsHeight(blocks[i]);
     }
     return total;
 }
@@ -770,6 +775,19 @@ function rowsHeight(rowBlock, key) {
     for(var i = 0; i < rowBlock.rows.length && rowBlock.rows[i].rowIndex < key; i++) {
         total += rowBlock.rows[i].rowHeight;
     }
+    return total;
+}
+
+function allRowsHeight(rowBlock) {
+    var cached = rowBlock.allRowsHeight;
+    if(cached !== void(0)) {
+        return cached;
+    }
+    var total = 0;
+    for(var i = 0; i < rowBlock.rows.length; i++) {
+        total += rowBlock.rows[i].rowHeight;
+    }
+    rowBlock.allRowsHeight = total;
     return total;
 }
 
