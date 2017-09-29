@@ -567,16 +567,29 @@ function heavy(blocks, scrollY, scrollHeight) {
 
     var pages = [];
     for(var p = 0; p < blocks.length; p++) {
-        var pTop = firstRowAnchor(blocks, p);
-        var rowBlock = blocks[p];
-        var rowsHeight = 0;
-        for(var i = 0; i < rowBlock.rows.length; i++) {
+        var pTop = 0;
+        for(var j = 0; j <= p - 1; j++) {
+
+            var rowsHeight = 0;
+            var rowBlock = blocks[j];
+            for(var i = 0; i < rowBlock.rows.length; i++) {
+                rowsHeight += rowBlock.rows[i].rowHeight;
+            }
+
+            pTop += rowsHeight;
+        }
+        rowBlock = blocks[p];
+        rowsHeight = 0;
+        for(i = 0; i < rowBlock.rows.length; i++) {
             rowsHeight += rowBlock.rows[i].rowHeight;
         }
         var pBottom = pTop + rowsHeight;
-        if(overlap([scrollY, scrollY + scrollHeight], [pTop, pBottom])) {
+        var windowTop = scrollY;
+        var windowBottom = windowTop + scrollHeight;
+        if(windowTop < pBottom && windowBottom > pTop) {
             pages.push(p);
         }
+        //if(pages.length > 1) break; // fixme uncomment this nice final optimization
     }
 
     return pages;
@@ -753,12 +766,12 @@ function setCellHeightAndPositionY(columnCell) {
         .attr('height', function(d) {return getRow(getBlock(d), d.key).rowHeight;});
 }
 
-function firstRowAnchor(rowBlocks, page) {
-    var total = 0;
-    for(var i = 0; i <= page - 1; i++) {
-        total += rowsHeight(rowBlocks[i], Infinity);
+function firstRowAnchor(blocks, p) {
+    var pTop = 0;
+    for(var i = 0; i <= p - 1; i++) {
+        pTop += rowsHeight(blocks[i], Infinity);
     }
-    return total;
+    return pTop;
 }
 
 function firstRowAnchor2(rowBlocks, page) {
