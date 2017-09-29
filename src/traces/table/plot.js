@@ -214,7 +214,7 @@ function renderScrollbarKit(tableControlView) {
 
     function calcTotalHeight(d) {
         var blocks = d.rowBlocks;
-        return firstRowAnchor2(blocks, blocks.length) + rowsHeight(blocks[blocks.length - 1], Infinity);
+        return firstRowAnchor(blocks, blocks.length - 1) + rowsHeight(blocks[blocks.length - 1], Infinity);
     }
 
     var scrollbarKit = tableControlView.selectAll('.scrollbarKit')
@@ -760,14 +760,6 @@ function setCellHeightAndPositionY(columnCell) {
 function firstRowAnchor(blocks, page) {
     var total = 0;
     for(var i = 0; i < page; i++) {
-        total += rowsHeight(blocks[i], Infinity);
-    }
-    return total;
-}
-
-function firstRowAnchor2(blocks, page) {
-    var total = 0;
-    for(var i = 0; i < page - 1; i++) {
         total += rowsHeight(blocks[i], Infinity);
     }
     return total;
