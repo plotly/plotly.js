@@ -1,6 +1,6 @@
 {
     "layout": {
-        "width": 600,
+        "width": 800,
         "height":  550 + 380 - 150,
         "title": "Widget parameters and cost",
         "margin": {"t": 0|| 280, "r": 60, "b": 54, "l": 60}
@@ -15,18 +15,25 @@
             "y": [0, 1]
         },
 
-        "columnwidth": [20, 50, 50],
-        "columnorder": [0, 1, 2],
+        "columnwidth": [30],
+        "columnorder": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
 
         "header": {
 
             "height": 20, // fixme for some reason it doesn't recognize arrays here
 
             "values": [
-                ["Index"   , "#"],
-                ["Column 2"   , "ASDF<br>GHJKL<sub>WW</sub>" || "$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$" || "1A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>"],
-                ["Column 3"   , "$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1 \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$"]
-            ].map(function(r) {return r.slice(0, 2)}).slice(0, 1),
+                ["C0"   , "#"],
+                ["C1"   , "#" || "ASDF<br>GHJKL<sub>WW</sub>" || "$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$" || "1A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>"],
+                ["C2"   , "#" || "$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1 \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$"],
+                ["C3"   , "#" || "#"],
+                ["C4"   , "#" || "ASDF<br>GHJKL<sub>WW</sub>" || "$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$" || "1A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>"],
+                ["C5"   , "#" || "$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1 \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$"],
+                ["C6"   , "#" || "#"],
+                ["C7"   , "#" || "ASDF<br>GHJKL<sub>WW</sub>" || "$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$" || "1A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>"],
+                ["C8"   , "#" || "$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1 \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$"],
+                ["C9"   , "#" || "#"]
+            ].map(function(r) {return r.slice(0, 2)}).slice(0, 10),
 
             "align": ["right"],
             "valign": "middle",
@@ -49,7 +56,7 @@
 
         "cells": {
 
-            "values": [Array.from(Array(1000000).keys())] || [
+            "values": [Array.from(Array(1000000).keys()),Array.from(Array(1000000).keys()),Array.from(Array(1000000).keys()),Array.from(Array(1000000).keys()),Array.from(Array(1000000).keys()),Array.from(Array(1000000).keys()),Array.from(Array(1000000).keys()),Array.from(Array(1000000).keys()),Array.from(Array(1000000).keys()),Array.from(Array(1000000).keys())] || [
                 [
                     "$\\begin{eqnarray*} \\cos 2\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
                     "1A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",

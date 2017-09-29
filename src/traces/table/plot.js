@@ -422,7 +422,7 @@ function renderCellText(cellText, tableControlView, allColumnBlock, columnCell, 
             var format = latex ? null : gridPick(d.calcdata.cells.format, col, row) || null;
             var prefixSuffixedText = prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
             d.latex = latex;
-            d.wrappingNeeded = !userBrokenText && !d.wrapped && !latex;
+            d.wrappingNeeded = !userBrokenText && !d.wrapped && !latex && prefixSuffixedText.indexOf(c.wrapSplitCharacter) !== -1;
             var textToRender;
             if(d.wrappingNeeded) {
                 var hrefPreservedText = c.wrapSplitCharacter === ' ' ? prefixSuffixedText.replace(/<a href=/ig, '<a_href=') : prefixSuffixedText;
@@ -780,14 +780,23 @@ function rowsHeight(rowBlock, key) {
 
 function allRowsHeight(rowBlock) {
     var cached = rowBlock.allRowsHeight;
+
     if(cached !== void(0)) {
         return cached;
     }
+
     var total = 0;
     for(var i = 0; i < rowBlock.rows.length; i++) {
         total += rowBlock.rows[i].rowHeight;
     }
     rowBlock.allRowsHeight = total;
+/*
+    if(cached !== void(0)) {
+        if(cached !== total) console.log('allRowsHeight mismatch');
+    } else {
+        //console.log('cache miss')
+    }
+*/
     return total;
 }
 
