@@ -35,6 +35,7 @@ Histogram.plot = require('../bar/plot');
 Histogram.style = require('../bar/style');
 Histogram.colorbar = require('../scatter/colorbar');
 Histogram.hoverPoints = require('../bar/hover');
+Histogram.selectPoints = require('../bar/select');
 
 Histogram.moduleType = 'trace';
 Histogram.name = 'histogram';

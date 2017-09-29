@@ -773,4 +773,49 @@ describe('Test select box and lasso per trace:', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('should work for histogram traces', function(done) {
+        var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
+        var assertRanges = makeAssertRanges();
+        var assertLassoPoints = makeAssertLassoPoints();
+
+        var fig = Lib.extendDeep({}, require('@mocks/hist_grouped'));
+        fig.layout.dragmode = 'lasso';
+        fig.layout.width = 600;
+        fig.layout.height = 500;
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            return _run(
+                [[200, 200], [400, 200], [400, 350], [200, 350], [200, 200]],
+                function() {
+                    assertPoints([
+                        [0, 1.8, 2], [1, 2.2, 1], [1, 3.2, 1]
+                    ]);
+                    assertLassoPoints([
+                        [1.66, 3.59, 3.59, 1.66, 1.66],
+                        [2.17, 2.17, 0.69, 0.69, 2.17]
+                    ]);
+                },
+                null, LASSOEVENTS, 'histogram lasso'
+            );
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'select');
+        })
+        .then(function() {
+            return _run(
+                [[200, 200], [400, 350]],
+                function() {
+                    assertPoints([
+                        [0, 1.8, 2], [1, 2.2, 1], [1, 3.2, 1]
+                    ]);
+                    assertRanges([[1.66, 3.59], [0.69, 2.17]]);
+                },
+                null, BOXEVENTS, 'bar select'
+            );
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
