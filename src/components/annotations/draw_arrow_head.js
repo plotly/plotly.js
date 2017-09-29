@@ -12,7 +12,6 @@
 var d3 = require('d3');
 
 var Color = require('../color');
-var Drawing = require('../drawing');
 
 var ARROWPATHS = require('./arrow_paths');
 
@@ -27,13 +26,16 @@ var ARROWPATHS = require('./arrow_paths');
  * @param {number} options.arrowhead: head style - see ./arrow_paths
  * @param {number} options.arrowsize: relative size of the head vs line width
  * @param {number} options.standoff: distance in px to move the arrow point from its target
+ * @param {number} options.arrowwidth: width of the arrow line
+ * @param {string} options.arrowcolor: color of the arrow line, for the head to match
+ *     Note that the opacity of this color is ignored, as it's assumed the container
+ *     of both the line and head has opacity applied to it so there isn't greater opacity
+ *     where they overlap.
  */
 module.exports = function drawArrowHead(el3, ends, options) {
     var el = el3.node();
     var headStyle = ARROWPATHS[options.arrowhead || 0];
-    var scale = (Drawing.getPx(el3, 'stroke-width') || 1) * options.arrowsize;
-    var stroke = el3.style('stroke') || Color.defaultLine;
-    var opacity = el3.style('stroke-opacity') || 1;
+    var scale = (options.arrowwidth || 1) * options.arrowsize;
     var doStart = ends.indexOf('start') >= 0;
     var doEnd = ends.indexOf('end') >= 0;
     var backOff = headStyle.backoff * scale + options.standoff;
@@ -125,8 +127,7 @@ module.exports = function drawArrowHead(el3, ends, options) {
                     'scale(' + scale + ')'
             })
             .style({
-                fill: stroke,
-                opacity: opacity,
+                fill: Color.rgb(options.arrowcolor),
                 'stroke-width': 0
             });
     }
