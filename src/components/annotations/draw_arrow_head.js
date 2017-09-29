@@ -113,7 +113,7 @@ module.exports = function drawArrowHead(el3, ends, options) {
 
     function drawhead(p, rot) {
         if(!headStyle.path) return;
-        if(options.arrowhead > 5) rot = 0; // don't rotate square or circle
+        if(headStyle.noRotate) rot = 0;
 
         d3.select(el.parentNode).append('path')
             .attr({
@@ -121,7 +121,7 @@ module.exports = function drawArrowHead(el3, ends, options) {
                 d: headStyle.path,
                 transform:
                     'translate(' + p.x + ',' + p.y + ')' +
-                    'rotate(' + (rot * 180 / Math.PI) + ')' +
+                    (rot ? 'rotate(' + (rot * 180 / Math.PI) + ')' : '') +
                     'scale(' + scale + ')'
             })
             .style({
