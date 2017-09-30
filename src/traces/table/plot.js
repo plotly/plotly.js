@@ -429,6 +429,7 @@ function renderCellText(cellText, tableControlView, allColumnBlock, columnCell, 
             var format = latex ? null : gridPick(d.calcdata.cells.format, col, row) || null;
             var prefixSuffixedText = prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
             d.latex = latex;
+            d.mayHaveMarkup = (typeof userSuppliedContent === 'string') && userSuppliedContent.match(/[<>]/);
             var hasWrapSplitCharacter;
             var hwsc = function(prefixSuffixedText) {return prefixSuffixedText.indexOf(c.wrapSplitCharacter) !== -1;};
             d.wrappingNeeded = !d.wrapped && !userBrokenText && !latex && (hasWrapSplitCharacter = hwsc(prefixSuffixedText));
@@ -460,7 +461,11 @@ function renderCellText(cellText, tableControlView, allColumnBlock, columnCell, 
             Drawing.font(selection, d.font);
 
             var renderCallback = d.wrappingNeeded ? wrapTextMaker : updateYPositionMaker;
-            svgUtil.convertToTspans(selection, gd, renderCallback(allColumnBlock, element, tableControlView, d));
+            if(d.mayHaveMarkup || d.wrappingNeeded || d.latex) {
+                svgUtil.convertToTspans(selection, gd, renderCallback(allColumnBlock, element, tableControlView, d));
+            } else {
+                // renderCallback(allColumnBlock, element, tableControlView, d);
+            }
         })
         columnCell.call(setCellHeightAndPositionY);
 }
