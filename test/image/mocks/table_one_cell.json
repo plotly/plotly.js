@@ -59,7 +59,7 @@
 
             "font": {
                 "family": "Arial",
-                "size": 12,
+                "size": 18,
                 "color": "white"
             }
         },
@@ -163,8 +163,8 @@
             },
 
             "font": {
-                "family": "verdana",
-                "size": 12,
+                "family": "Courier",
+                "size": 15,
                 "color": ["black"]
             }
         }

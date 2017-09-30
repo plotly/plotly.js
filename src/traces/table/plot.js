@@ -469,7 +469,6 @@ function renderCellText(cellText, tableControlView, allColumnBlock, columnCell, 
             var selection = d3.select(element);
 
             // finalize what's in the DOM
-            Drawing.font(selection, d.font);
 
             var renderCallback = d.wrappingNeeded ? wrapTextMaker : updateYPositionMaker;
             if(d.mayHaveMarkup || d.wrappingNeeded || d.latex) {
