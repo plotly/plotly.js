@@ -130,7 +130,9 @@ module.exports = function plot(gd, calcdata) {
         .style('user-select', 'none');
 
     columnBlock
-        .style('cursor', function(d) {return d.dragHandle ? 'ew-resize' : 'ns-resize';});
+        .style('cursor', function(d) {
+            return d.dragHandle ? 'ew-resize' : d.calcdata.scrollbarState.barWiggleRoom ? 'ns-resize' : 'default';
+        });
 
     var cellsColumnBlock = columnBlock.filter(cellsBlock);
 
@@ -235,8 +237,8 @@ function renderScrollbarKit(tableControlView) {
             s.ratio = s.currentlyVisibleHeight / s.totalHeight;
             s.barLength = Math.max(s.ratio * s.currentlyVisibleHeight, c.goldenRatio * c.scrollbarWidth);
             s.barWiggleRoom = s.currentlyVisibleHeight - s.barLength;
-            s.wiggleRoom = s.totalHeight - s.scrollableAreaHeight;
-            s.topY = (d.scrollY / s.wiggleRoom) * s.barWiggleRoom ;
+            s.wiggleRoom = Math.max(0, s.totalHeight - s.scrollableAreaHeight);
+            s.topY = s.barWiggleRoom === 0 ? 0 : (d.scrollY / s.wiggleRoom) * s.barWiggleRoom;
             s.bottomY = s.topY + s.barLength;
             s.dragMultiplier = s.wiggleRoom / s.barWiggleRoom;
         })
@@ -279,7 +281,9 @@ function renderScrollbarKit(tableControlView) {
         .attr('y2', function(d) {
             return d.scrollbarState.barLength - c.scrollbarWidth / 2;
         })
-        .attr('stroke-opacity', function(d) {return d.columnDragInProgress ? 0 : 0.4});
+        .attr('stroke-opacity', function(d) {
+            return d.columnDragInProgress || !d.scrollbarState.barWiggleRoom ? 0 : 0.4
+        });
 
     // cancel transition: possible pending (also, delayed) transition
     scrollbarGlyph
