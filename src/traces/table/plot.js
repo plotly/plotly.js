@@ -354,12 +354,7 @@ function renderColumnCellTree(gd, tableControlView, columnBlock, allColumnBlock)
 
     var cellTextHolder = renderCellTextHolder(columnCell);
 
-    var cellText = cellTextHolder.selectAll('.cellText')
-        .data(gup.repeat, gup.keyFun);
-
-    cellText.enter()
-        .append('text')
-        .classed('cellText', true);
+    var cellText = renderCellText(cellTextHolder);
 
     populateCellText(cellText, tableControlView, allColumnBlock, gd);
 
@@ -406,6 +401,18 @@ function renderCellRect(columnCell) {
         .classed('cellRect', true);
 
     return cellRect;
+}
+
+function renderCellText(cellTextHolder) {
+
+    var cellText = cellTextHolder.selectAll('.cellText')
+        .data(gup.repeat, gup.keyFun);
+
+    cellText.enter()
+        .append('text')
+        .classed('cellText', true);
+
+    return cellText;
 }
 
 function renderCellTextHolder(columnCell) {
