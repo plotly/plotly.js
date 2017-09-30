@@ -361,8 +361,7 @@ function renderColumnBlocks(gd, tableControlView, columnBlock, allColumnBlock) {
 
     columnCell.exit().remove();
 
-    columnCell
-        .call(setFont);
+    setFont(columnCell);
 
     var cellRect = columnCell.selectAll('.cellRect')
         .data(gup.repeat, gup.keyFun);
@@ -371,8 +370,7 @@ function renderColumnBlocks(gd, tableControlView, columnBlock, allColumnBlock) {
         .append('rect')
         .classed('cellRect', true);
 
-    cellRect
-        .call(renderRect);
+    renderRect(cellRect);
 
     var cellTextHolder = columnCell.selectAll('.cellTextHolder')
         .data(gup.repeat, gup.keyFun);
@@ -388,11 +386,10 @@ function renderColumnBlocks(gd, tableControlView, columnBlock, allColumnBlock) {
         .append('text')
         .classed('cellText', true);
 
-    cellText
-        .call(renderCellText, tableControlView, allColumnBlock, gd);
+    renderCellText(cellText, tableControlView, allColumnBlock, gd);
 
     // doing this at the end when text, and text stlying are set
-    columnCell.call(setCellHeightAndPositionY);
+    setCellHeightAndPositionY(columnCell);
 }
 
 function setFont(columnCell) {
