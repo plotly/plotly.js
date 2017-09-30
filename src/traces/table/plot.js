@@ -740,16 +740,18 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
 
         // fixme speed bottleneck esp. the getBoundingClientRect 66%
         cellTextHolder
-            .attr('transform', function () {
-                var element = this;
-                var columnCellElement = element.parentNode;
-                var box = columnCellElement.getBoundingClientRect();
-                window.monfera++
-                var rectBox = d3.select(element.parentNode).select('.cellRect').node().getBoundingClientRect();
-                window.monfera++
-                var currentTransform = element.transform.baseVal.consolidate();
-                var yPosition = rectBox.top - box.top + (currentTransform ? currentTransform.matrix.f : c.cellPad);
-                return 'translate(' + c.cellPad + ' ' + yPosition + ')';
+            .attr('transform', function (d) {
+                if(d.cellHeightMayIncrease) {
+                    var element = this;
+                    var columnCellElement = element.parentNode;
+                    var box = columnCellElement.getBoundingClientRect();
+                    var rectBox = d3.select(element.parentNode).select('.cellRect').node().getBoundingClientRect();
+                    var currentTransform = element.transform.baseVal.consolidate();
+                    var yPosition = rectBox.top - box.top + (currentTransform ? currentTransform.matrix.f : c.cellPad);
+                    return 'translate(' + c.cellPad + ' ' + yPosition + ')';
+                } else {
+                    return 'translate(' + c.cellPad + ' ' + -c.cellPad + ')';
+                }
             });
 
         d.settledY = true;
