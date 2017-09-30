@@ -362,22 +362,7 @@ function renderColumnBlocks(gd, tableControlView, columnBlock, allColumnBlock) {
     columnCell.exit().remove();
 
     columnCell
-        .each(function(d, i) {
-            var spec = d.calcdata.cells.font;
-            var col = d.column.specIndex;
-            var font = {
-                size: gridPick(spec.size, col, i),
-                color: gridPick(spec.color, col, i),
-                family: gridPick(spec.family, col, i)
-            };
-            Drawing.font(d3.select(this), font);
-
-            d.rowNumber = d.key;
-            d.align = gridPick(d.calcdata.cells.align, col, i);
-            d.valign = gridPick(d.calcdata.cells.valign, col, i);
-            d.cellBorderWidth = gridPick(d.calcdata.cells.line.width, col, i)
-            d.font = font;
-        });
+        .call(setFont);
 
     var cellRect = columnCell.selectAll('.cellRect')
         .data(gup.repeat, gup.keyFun);
@@ -387,16 +372,7 @@ function renderColumnBlocks(gd, tableControlView, columnBlock, allColumnBlock) {
         .classed('cellRect', true);
 
     cellRect
-        .attr('width', function(d) {return d.column.columnWidth;})
-        .attr('stroke-width', function(d) {return d.cellBorderWidth;})
-        .attr('stroke', function(d) {
-            return c.clipView ?
-                ({header: 'blue', cells1: 'red', cells2: 'green'})[d.column.key] :
-                gridPick(d.calcdata.cells.line.color, d.column.specIndex, d.rowNumber);
-        })
-        .attr('fill', function(d) {
-            return d.calcdata.cells.fill ? gridPick(d.calcdata.cells.fill.color, d.column.specIndex, d.rowNumber) : 'none';
-        });
+        .call(renderRect);
 
     var cellTextHolder = columnCell.selectAll('.cellTextHolder')
         .data(gup.repeat, gup.keyFun);
@@ -414,6 +390,40 @@ function renderColumnBlocks(gd, tableControlView, columnBlock, allColumnBlock) {
 
     cellText
         .call(renderCellText, tableControlView, allColumnBlock, columnCell, gd);
+}
+
+function setFont(columnCell) {
+    columnCell
+        .each(function(d, i) {
+            var spec = d.calcdata.cells.font;
+            var col = d.column.specIndex;
+            var font = {
+                size: gridPick(spec.size, col, i),
+                color: gridPick(spec.color, col, i),
+                family: gridPick(spec.family, col, i)
+            };
+            Drawing.font(d3.select(this), font);
+
+            d.rowNumber = d.key;
+            d.align = gridPick(d.calcdata.cells.align, col, i);
+            d.valign = gridPick(d.calcdata.cells.valign, col, i);
+            d.cellBorderWidth = gridPick(d.calcdata.cells.line.width, col, i)
+            d.font = font;
+        });
+}
+
+function renderRect(cellRect) {
+    cellRect
+        .attr('width', function(d) {return d.column.columnWidth;})
+        .attr('stroke-width', function(d) {return d.cellBorderWidth;})
+        .attr('stroke', function(d) {
+            return c.clipView ?
+                ({header: 'blue', cells1: 'red', cells2: 'green'})[d.column.key] :
+                gridPick(d.calcdata.cells.line.color, d.column.specIndex, d.rowNumber);
+        })
+        .attr('fill', function(d) {
+            return d.calcdata.cells.fill ? gridPick(d.calcdata.cells.fill.color, d.column.specIndex, d.rowNumber) : 'none';
+        });
 }
 
 function renderCellText(cellText, tableControlView, allColumnBlock, columnCell, gd) {
