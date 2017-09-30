@@ -338,6 +338,7 @@ function renderScrollbarKit(tableControlView) {
 }
 
 function renderColumnBlocks(gd, tableControlView, columnBlock, allColumnBlock) {
+    // fixme this perf hotspot
     // this is performance critical code as scrolling calls it on every revolver switch
     // it appears sufficiently fast but there are plenty of low-hanging fruits for performance optimization
 
