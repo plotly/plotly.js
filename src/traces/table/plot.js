@@ -150,8 +150,8 @@ module.exports = function plot(gd, calcdata) {
 
     // initial rendering: header is rendered first, as it may may have async LaTeX (show header first)
     // but blocks are _entered_ the way they are due to painter's algo (header on top)
-    renderColumnBlocks(gd, tableControlView, columnBlock.filter(headerBlock), columnBlock);
-    renderColumnBlocks(gd, tableControlView, columnBlock.filter(cellsBlock), columnBlock);
+    renderColumnCellTree(gd, tableControlView, columnBlock.filter(headerBlock), columnBlock);
+    renderColumnCellTree(gd, tableControlView, columnBlock.filter(cellsBlock), columnBlock);
 
     var scrollAreaClip = tableControlView.selectAll('.scrollAreaClip')
         .data(gup.repeat, gup.keyFun);
@@ -337,7 +337,7 @@ function renderScrollbarKit(tableControlView) {
         });
 }
 
-function renderColumnBlocks(gd, tableControlView, columnBlock, allColumnBlock) {
+function renderColumnCellTree(gd, tableControlView, columnBlock, allColumnBlock) {
     // fixme this perf hotspot
     // this is performance critical code as scrolling calls it on every revolver switch
     // it appears sufficiently fast but there are plenty of low-hanging fruits for performance optimization
@@ -684,7 +684,7 @@ function conditionalPanelRerender(gd, tableControlView, cellsColumnBlock, pages,
             // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
             // some repaints invisible ie. wasteful (DOM work blocks the main thread)
             var toRerender = cellsColumnBlock.filter(function (d, i) {return i === revolverIndex && pages[i] !== prevPages[i];});
-            renderColumnBlocks(gd, tableControlView, toRerender, toRerender);
+            renderColumnCellTree(gd, tableControlView, toRerender, toRerender);
             prevPages[revolverIndex] = pages[revolverIndex];
         });
     }
