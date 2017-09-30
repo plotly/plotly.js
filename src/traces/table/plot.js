@@ -458,11 +458,11 @@ function renderCellText(cellText, tableControlView, allColumnBlock, columnCell, 
 
             // finalize what's in the DOM
             Drawing.font(selection, d.font);
-            setCellHeightAndPositionY(columnCell);
 
             var renderCallback = d.wrappingNeeded ? wrapTextMaker : updateYPositionMaker;
             svgUtil.convertToTspans(selection, gd, renderCallback(allColumnBlock, element, tableControlView, d));
-        });
+        })
+        columnCell.call(setCellHeightAndPositionY);
 }
 
 function latexEh(content) {
@@ -768,6 +768,7 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
 
 function setCellHeightAndPositionY(columnCell) {
     // fixme speed bottleneck 15%
+    window.monfera++
     columnCell
         .attr('transform', function(d) {
             var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + rowsHeight(n, Infinity)}, 0);
@@ -776,7 +777,7 @@ function setCellHeightAndPositionY(columnCell) {
             var yOffset = rowAnchor + headerHeight;
             return 'translate(0 ' + yOffset + ')';
         })
-        .select('.cellRect')
+        .selectAll('.cellRect')
         .attr('height', function(d) {return getRow(getBlock(d), d.key).rowHeight;});
 }
 
