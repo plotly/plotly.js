@@ -342,6 +342,33 @@ function renderColumnCellTree(gd, tableControlView, columnBlock, allColumnBlock)
     // this is performance critical code as scrolling calls it on every revolver switch
     // it appears sufficiently fast but there are plenty of low-hanging fruits for performance optimization
 
+    var columnCells = renderColumnCells(columnBlock);
+
+    var columnCell = renderColumnCell(columnCells);
+
+    setFont(columnCell);
+
+    var cellRect = renderCellRect(columnCell);
+
+    renderRect(cellRect);
+
+    var cellTextHolder = renderCellTextHolder(columnCell);
+
+    var cellText = cellTextHolder.selectAll('.cellText')
+        .data(gup.repeat, gup.keyFun);
+
+    cellText.enter()
+        .append('text')
+        .classed('cellText', true);
+
+    populateCellText(cellText, tableControlView, allColumnBlock, gd);
+
+    // doing this at the end when text, and text stlying are set
+    setCellHeightAndPositionY(columnCell);
+}
+
+function renderColumnCells(columnBlock) {
+
     var columnCells = columnBlock.selectAll('.columnCells')
         .data(gup.repeat, gup.keyFun);
 
@@ -352,6 +379,11 @@ function renderColumnCellTree(gd, tableControlView, columnBlock, allColumnBlock)
     columnCells.exit()
         .remove();
 
+    return columnCells;
+}
+
+function renderColumnCell(columnCells) {
+
     var columnCell = columnCells.selectAll('.columnCell')
         .data(splitToCells, gup.keyFun);
 
@@ -361,7 +393,10 @@ function renderColumnCellTree(gd, tableControlView, columnBlock, allColumnBlock)
 
     columnCell.exit().remove();
 
-    setFont(columnCell);
+    return columnCell;
+}
+
+function renderCellRect(columnCell) {
 
     var cellRect = columnCell.selectAll('.cellRect')
         .data(gup.repeat, gup.keyFun);
@@ -370,7 +405,10 @@ function renderColumnCellTree(gd, tableControlView, columnBlock, allColumnBlock)
         .append('rect')
         .classed('cellRect', true);
 
-    renderRect(cellRect);
+    return cellRect;
+}
+
+function renderCellTextHolder(columnCell) {
 
     var cellTextHolder = columnCell.selectAll('.cellTextHolder')
         .data(gup.repeat, gup.keyFun);
@@ -379,17 +417,7 @@ function renderColumnCellTree(gd, tableControlView, columnBlock, allColumnBlock)
         .append('g')
         .classed('cellTextHolder', true);
 
-    var cellText = cellTextHolder.selectAll('.cellText')
-        .data(gup.repeat, gup.keyFun);
-
-    cellText.enter()
-        .append('text')
-        .classed('cellText', true);
-
-    renderCellText(cellText, tableControlView, allColumnBlock, gd);
-
-    // doing this at the end when text, and text stlying are set
-    setCellHeightAndPositionY(columnCell);
+    return cellTextHolder;
 }
 
 function setFont(columnCell) {
@@ -426,7 +454,7 @@ function renderRect(cellRect) {
         });
 }
 
-function renderCellText(cellText, tableControlView, allColumnBlock, gd) {
+function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
     cellText
         .text(function(d) {
             var col = d.column.specIndex;
@@ -728,7 +756,7 @@ function wrapTextMaker(columnBlock, element, tableControlView) {
         cellTextHolder.selectAll('tspan.line').remove();
 
         // resupply text, now wrapped
-        renderCellText(cellTextHolder.select('.cellText'), tableControlView, columnBlock);
+        populateCellText(cellTextHolder.select('.cellText'), tableControlView, columnBlock);
         d3.select(element.parentNode.parentNode).call(setCellHeightAndPositionY);
     };
 }
