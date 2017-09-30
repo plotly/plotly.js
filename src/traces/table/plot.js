@@ -744,7 +744,9 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
                 var element = this;
                 var columnCellElement = element.parentNode;
                 var box = columnCellElement.getBoundingClientRect();
+                window.monfera++
                 var rectBox = d3.select(element.parentNode).select('.cellRect').node().getBoundingClientRect();
+                window.monfera++
                 var currentTransform = element.transform.baseVal.consolidate();
                 var yPosition = rectBox.top - box.top + (currentTransform ? currentTransform.matrix.f : c.cellPad);
                 return 'translate(' + c.cellPad + ' ' + yPosition + ')';
@@ -755,7 +757,7 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
 }
 
 function setCellHeightAndPositionY(columnCell) {
-    // fixme speed bottleneck esp. the getBoundingClientRect 15%
+    // fixme speed bottleneck 15%
     // fixme also, initial load is freaking slow
     columnCell
         .attr('transform', function(d) {
