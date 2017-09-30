@@ -389,7 +389,10 @@ function renderColumnBlocks(gd, tableControlView, columnBlock, allColumnBlock) {
         .classed('cellText', true);
 
     cellText
-        .call(renderCellText, tableControlView, allColumnBlock, columnCell, gd);
+        .call(renderCellText, tableControlView, allColumnBlock, gd);
+
+    // doing this at the end when text, and text stlying are set
+    columnCell.call(setCellHeightAndPositionY);
 }
 
 function setFont(columnCell) {
@@ -426,7 +429,7 @@ function renderRect(cellRect) {
         });
 }
 
-function renderCellText(cellText, tableControlView, allColumnBlock, columnCell, gd) {
+function renderCellText(cellText, tableControlView, allColumnBlock, gd) {
     cellText
         .text(function(d) {
             var col = d.column.specIndex;
@@ -476,8 +479,7 @@ function renderCellText(cellText, tableControlView, allColumnBlock, columnCell, 
             } else {
                 // renderCallback(allColumnBlock, element, tableControlView, d);
             }
-        })
-        columnCell.call(setCellHeightAndPositionY);
+        });
 }
 
 function latexEh(content) {
@@ -729,7 +731,8 @@ function wrapTextMaker(columnBlock, element, tableControlView) {
         cellTextHolder.selectAll('tspan.line').remove();
 
         // resupply text, now wrapped
-        renderCellText(cellTextHolder.select('.cellText'), tableControlView, columnBlock, d3.select(element.parentNode.parentNode));
+        renderCellText(cellTextHolder.select('.cellText'), tableControlView, columnBlock);
+        d3.select(element.parentNode.parentNode).call(setCellHeightAndPositionY);
     };
 }
 window.monfera = 0
