@@ -208,6 +208,8 @@ module.exports = function plot(gd, calcdata) {
     columnBoundaryRect
         .attr('width', function(d) {return d.columnWidth;})
         .attr('height', function(d) {return d.calcdata.height + c.uplift;});
+
+    updateBlockYPosition(gd, cellsColumnBlock, tableControlView);
 };
 
 function renderScrollbarKit(tableControlView) {
@@ -442,6 +444,9 @@ function renderCellText(cellText, tableControlView, allColumnBlock, columnCell, 
             }
             return textToRender;
         })
+        .attr('alignment-baseline', function(d) {
+            return d.cellHeightMayIncrease ? null : 'hanging';
+        })
         .each(function(d) {
 
             var element = this;
@@ -525,7 +530,7 @@ function splitToPanels(d) {
     var revolverPanel2 = extendFlat({}, d, {
         key: 'cells2',
         type: 'cells',
-        page: 0,
+        page: 1,
         prevPages: prevPages,
         currentRepaint: [null, null],
         dragHandle: false,
@@ -563,7 +568,7 @@ function headerHeight(d) {
     return headerBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
 }
 
-function paginate(blocks, scrollY, scrollHeight) {
+function findPagesAndCacheHeights(blocks, scrollY, scrollHeight) {
 
     var pages = [];
     var pTop = 0;
@@ -608,7 +613,7 @@ function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
     var scrollHeight = d.calcdata.groupHeight - headerHeight(d);
     var scrollY = calcdata.scrollY = Math.max(0, Math.min(bottom - scrollHeight, calcdata.scrollY));
 
-    var pages = paginate(blocks, scrollY, scrollHeight);
+    var pages = findPagesAndCacheHeights(blocks, scrollY, scrollHeight);
     if(pages.length === 1) {
         if(pages[0] === blocks.length - 1) {
             pages.unshift(pages[0] - 1);
@@ -750,7 +755,7 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
                     var yPosition = rectBox.top - box.top + (currentTransform ? currentTransform.matrix.f : c.cellPad);
                     return 'translate(' + c.cellPad + ' ' + yPosition + ')';
                 } else {
-                    return 'translate(' + c.cellPad + ' ' + -c.cellPad + ')';
+                    return 'translate(' + c.cellPad + ' ' + c.cellPad + ')';
                 }
             });
 
