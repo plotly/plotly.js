@@ -350,7 +350,7 @@ function renderColumnCellTree(gd, tableControlView, columnBlock, allColumnBlock)
 
     var cellRect = renderCellRect(columnCell);
 
-    renderRect(cellRect);
+    sizeAndStyleRect(cellRect);
 
     var cellTextHolder = renderCellTextHolder(columnCell);
 
@@ -440,7 +440,7 @@ function setFont(columnCell) {
         });
 }
 
-function renderRect(cellRect) {
+function sizeAndStyleRect(cellRect) {
     cellRect
         .attr('width', function(d) {return d.column.columnWidth;})
         .attr('stroke-width', function(d) {return d.cellBorderWidth;})
