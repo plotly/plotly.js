@@ -624,7 +624,6 @@ function findPagesAndCacheHeights(blocks, scrollY, scrollHeight) {
     for(var blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
 
         var block = blocks[blockIndex];
-        //block.allRowsHeight = undefined;
         var blockRows = block.rows;
         var rowsHeight = 0;
         for(var i = 0; i < blockRows.length; i++) {
