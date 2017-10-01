@@ -118,8 +118,7 @@ module.exports = function plot(gd, calcdata) {
         yColumn.attr('clip-path', function(d) {return 'url(#columnBoundaryClippath_' + d.specIndex + ')';});
     }
 
-    yColumn.exit()
-        .remove();
+    //yColumn.exit().remove();
 
     var columnBlock = yColumn.selectAll('.columnBlock')
         .data(splitToPanels, gup.keyFun);
@@ -371,22 +370,17 @@ function renderColumnCells(columnBlock) {
         .append('g')
         .classed('columnCells', true);
 
-    columnCells.exit()
-        .remove();
-
     return columnCells;
 }
 
 function renderColumnCell(columnCells) {
 
     var columnCell = columnCells.selectAll('.columnCell')
-        .data(splitToCells, gup.keyFun);
+        .data(splitToCells, function(d) {return d.keyWithinBlock;});
 
     columnCell.enter()
         .append('g')
         .classed('columnCell', true);
-
-    columnCell.exit().remove();
 
     return columnCell;
 }
@@ -394,7 +388,7 @@ function renderColumnCell(columnCells) {
 function renderCellRect(columnCell) {
 
     var cellRect = columnCell.selectAll('.cellRect')
-        .data(gup.repeat, gup.keyFun);
+        .data(gup.repeat, function(d) {return d.keyWithinBlock;});
 
     cellRect.enter()
         .append('rect')
@@ -406,7 +400,7 @@ function renderCellRect(columnCell) {
 function renderCellText(cellTextHolder) {
 
     var cellText = cellTextHolder.selectAll('.cellText')
-        .data(gup.repeat, gup.keyFun);
+        .data(gup.repeat, function(d) {return d.keyWithinBlock;});
 
     cellText.enter()
         .append('text')
@@ -418,7 +412,7 @@ function renderCellText(cellTextHolder) {
 function renderCellTextHolder(columnCell) {
 
     var cellTextHolder = columnCell.selectAll('.cellTextHolder')
-        .data(gup.repeat, gup.keyFun);
+        .data(gup.repeat, function(d) {return d.keyWithinBlock;});
 
     cellTextHolder.enter()
         .append('g')
@@ -598,6 +592,7 @@ function splitToCells(d) {
     var fromTo = rowFromTo(d);
     return d.values.slice(fromTo[0], fromTo[1]).map(function(v, i) {
         return {
+            keyWithinBlock: /*fromTo[0] + */i,
             key: fromTo[0] + i,
             column: d,
             calcdata: d.calcdata,
@@ -817,8 +812,6 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
 }
 
 function setCellHeightAndPositionY(columnCell) {
-    // fixme speed bottleneck 15%
-    window.monfera++
     columnCell
         .attr('transform', function(d) {
             var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + rowsHeight(n, Infinity)}, 0);
