@@ -707,6 +707,34 @@ describe('Bar.setPositions', function() {
         expect(Axes.getAutoRange(ya)).toBeCloseToArray([-1.11, 1.11], undefined, '(ya.range)');
     });
 
+    it('should include explicit base in size axis range', function() {
+        var barmodes = ['stack', 'group', 'overlay'];
+        barmodes.forEach(function(barmode) {
+            var gd = mockBarPlot([
+                {y: [3, 4, -5], base: [-1, -2, 7]}
+            ], {
+                barmode: barmode
+            });
+
+            var ya = gd._fullLayout.yaxis;
+            expect(Axes.getAutoRange(ya)).toBeCloseToArray([-2.5, 7.5]);
+        });
+    });
+
+    it('should not include date zero (1970) in date axis range', function() {
+        var barmodes = ['stack', 'group', 'overlay'];
+        barmodes.forEach(function(barmode) {
+            var gd = mockBarPlot([
+                {y: ['2017-01-01', '2017-01-03', '2017-01-19']}
+            ], {
+                barmode: barmode
+            });
+
+            var ya = gd._fullLayout.yaxis;
+            expect(Axes.getAutoRange(ya)).toEqual(['2016-12-31', '2017-01-20']);
+        });
+    });
+
     it('works with log axes (grouped bars)', function() {
         var gd = mockBarPlot([
             {y: [1, 10, 1e10, -1]},

@@ -63,7 +63,11 @@ module.exports = function calc(gd, trace) {
     if(Array.isArray(base)) {
         for(i = 0; i < Math.min(base.length, cd.length); i++) {
             b = sa.d2c(base[i], 0, scalendar);
-            cd[i].b = (isNumeric(b)) ? b : 0;
+            if(isNumeric(b)) {
+                cd[i].b = +b;
+                cd[i].hasB = 1;
+            }
+            else cd[i].b = 0;
         }
         for(; i < cd.length; i++) {
             cd[i].b = 0;
@@ -71,9 +75,11 @@ module.exports = function calc(gd, trace) {
     }
     else {
         b = sa.d2c(base, 0, scalendar);
-        b = (isNumeric(b)) ? b : 0;
+        var hasBase = isNumeric(b);
+        b = hasBase ? b : 0;
         for(i = 0; i < cd.length; i++) {
             cd[i].b = b;
+            if(hasBase) cd[i].hasB = 1;
         }
     }
 
