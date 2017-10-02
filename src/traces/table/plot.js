@@ -55,8 +55,12 @@ module.exports = function plot(gd, calcdata) {
         .style('box-sizing', 'content-box')
         .on('mousemove', function() {tableControlView.call(renderScrollbarKit);})
         .on('mousewheel', function(d) {
+            if(d.scrollbarState.wheeling) return;
+            d.scrollbarState.wheeling = true;
+            d3.event.stopPropagation();
             d3.event.preventDefault();
             makeDragRow(gd, tableControlView, null, d.scrollY + d3.event.deltaY)(d);
+            d.scrollbarState.wheeling = false;
         })
         .call(renderScrollbarKit);
 
@@ -779,7 +783,7 @@ function wrapTextMaker(columnBlock, element, tableControlView) {
         d3.select(element.parentNode.parentNode).call(setCellHeightAndPositionY);
     };
 }
-window.monfera = 0
+
 function updateYPositionMaker(columnBlock, element, tableControlView, d) {
     return function updateYPosition() {
         if(d.settledY) return;
