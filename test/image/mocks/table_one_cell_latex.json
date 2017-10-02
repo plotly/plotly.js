@@ -1,7 +1,7 @@
 {
     "layout": {
         "width": 800,
-        "height":  0.2 * 750 + 380 - 150,
+        "height":  0 * 750 + 380 - 210,
         "title": "Widget parameters and cost",
         "margin": {"t": 0|| 80, "r": 60, "b": 54, "l": 60}
     },
@@ -20,7 +20,7 @@
 
         "header": {
 
-            "height": 30, // fixme for some reason it doesn't recognize arrays here
+            "height": 0, // fixme for some reason it doesn't recognize arrays here
 
             "values": [
                 ["C00"   , "#"],
@@ -130,7 +130,7 @@
                     "$\\begin{eqnarray*} \\cos 15\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
                     "$\\begin{eqnarray*} \\cos 16\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
                     //"x8A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
-                ].map(function(d, i) {return d})
+                ].map(function(d, i) {return d}).filter(function(d, i) {return i < 2;})
 
             ].filter(function(d,i) {return i === 2}),
 
@@ -141,7 +141,7 @@
             //"prefix": ["#"],
             //"suffix": ["cell"],
 
-            "height": 40,
+            "height": 46,
 
             "align": ["right"],
             "valign": ["bottom"],
