@@ -598,9 +598,16 @@ function splitToPanels(d) {
 function splitToCells(d) {
     var fromTo = rowFromTo(d);
     return d.values.slice(fromTo[0], fromTo[1]).map(function(v, i) {
+        // By keeping identical key, a DOM node removal, creation and addition is spared, important when visible
+        // grid has a lot of elements (quadratic with xcol/ycol count).
+        // But it has to be busted when `svgUtil.convertToTspans` is used as it reshapes cell subtrees asynchronously,
+        // and by that time the user may have scrolled away, resulting in stale overwrites. The real solution will be
+        // to turn `svgUtil.convertToTspans` into a cancelable request, in which case no key busting is needed.
+        var buster = (typeof v === 'string') && v.match(/[<$>]/) ? '_keybuster_' + Math.random() : '';
         return {
-            keyWithinBlock: /*fromTo[0] + */i,
-            //keyWithinBlock: fromTo[0] + i,
+            // keyWithinBlock: /*fromTo[0] + */i, // optimized future version - no busting
+            // keyWithinBlock: fromTo[0] + i, // initial always-unoptimized version - janky scrolling with 5+ columns
+            keyWithinBlock: i + buster, // current compromise: regular content is very fast; async content is possible
             key: fromTo[0] + i,
             column: d,
             calcdata: d.calcdata,
