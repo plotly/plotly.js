@@ -474,7 +474,7 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
             var hwsc = function(prefixSuffixedText) {return prefixSuffixedText.indexOf(c.wrapSplitCharacter) !== -1;};
             d.wrappingNeeded = !d.wrapped && !userBrokenText && !latex && (hasWrapSplitCharacter = hwsc(prefixSuffixedText));
             d.cellHeightMayIncrease = !d.wrapped && (userBrokenText2 || latex || (hasWrapSplitCharacter === void(0) ? hwsc(prefixSuffixedText) : hasWrapSplitCharacter));
-            if(d.cellHeightMayIncrease) debugger
+            //if(d.cellHeightMayIncrease) debugger
             var textToRender;
             if(d.wrappingNeeded) {
                 var hrefPreservedText = c.wrapSplitCharacter === ' ' ? prefixSuffixedText.replace(/<a href=/ig, '<a_href=') : prefixSuffixedText;
@@ -776,6 +776,7 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
         var increase = finalHeight - l.rows[rowIndex].rowHeight;
 
         if(increase) {
+
             // current row height increased
             l.rows[rowIndex].rowHeight = finalHeight;
 
