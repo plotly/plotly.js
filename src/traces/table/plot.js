@@ -820,7 +820,6 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
                 var rectBox = d3.select(element.parentNode).select('.cellRect').node().getBoundingClientRect();
                 var currentTransform = element.transform.baseVal.consolidate();
                 var yPosition = rectBox.top - box.top + (currentTransform ? currentTransform.matrix.f : c.cellPad);
-                //if(box.width !== rectBox.width) debugger;
                 return 'translate(' + xPosition(d, box.width) + ' ' + yPosition + ')';
             });
 
@@ -829,12 +828,12 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
 }
 
 function xPosition(d, optionalWidth) {
-    // fixme optimize
-    return ({
-        left: c.cellPad,
-        center: (d.column.columnWidth - (optionalWidth || 0)) / 2,
-        right: d.column.columnWidth - (optionalWidth || 0) - c.cellPad
-    })[d.align];
+    switch(d.align) {
+        case 'left': return c.cellPad;
+        case 'right': return d.column.columnWidth - (optionalWidth || 0) - c.cellPad;
+        case 'center': return (d.column.columnWidth - (optionalWidth || 0)) / 2;
+        default: return c.cellPad;
+    }
 }
 
 function setCellHeightAndPositionY(columnCell) {

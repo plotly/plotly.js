@@ -146,7 +146,7 @@
 
             "height": 40,
 
-            "align": ["right"],
+            "align": [["center", "right"], "left", "center", "right"],
             "valign": ["bottom"],
 
             "line": {
