@@ -53,7 +53,7 @@ module.exports = function plot(gd, calcdata) {
         .append('g')
         .classed('tableControlView', true)
         .style('box-sizing', 'content-box')
-        .on('mousemove', function() {tableControlView.call(renderScrollbarKit);})
+        .on('mousemove', function() {tableControlView.call(renderScrollbarKit, gd);})
         .on('mousewheel', function(d) {
             if(d.scrollbarState.wheeling) return;
             d.scrollbarState.wheeling = true;
@@ -62,7 +62,7 @@ module.exports = function plot(gd, calcdata) {
             makeDragRow(gd, tableControlView, null, d.scrollY + d3.event.deltaY)(d);
             d.scrollbarState.wheeling = false;
         })
-        .call(renderScrollbarKit);
+        .call(renderScrollbarKit, gd);
 
     tableControlView
         .attr('transform', function(d) {return 'translate(' + d.size.l + ' ' + d.size.t + ')';});
@@ -86,7 +86,7 @@ module.exports = function plot(gd, calcdata) {
                 easeColumn(movedColumn, d, -c.uplift);
                 raiseToTop(this);
                 d.calcdata.columnDragInProgress = true;
-                renderScrollbarKit(tableControlView);
+                renderScrollbarKit(tableControlView, gd);
                 return d;
             })
             .on('drag', function(d) {
@@ -216,7 +216,7 @@ module.exports = function plot(gd, calcdata) {
     updateBlockYPosition(null, cellsColumnBlock, tableControlView);
 };
 
-function renderScrollbarKit(tableControlView) {
+function renderScrollbarKit(tableControlView, gd) {
 
     function calcTotalHeight(d) {
         var blocks = d.rowBlocks;
@@ -504,7 +504,7 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
 
             var renderCallback = d.wrappingNeeded ? wrapTextMaker : updateYPositionMaker;
             if(d.mayHaveMarkup || d.wrappingNeeded || d.latex) {
-                svgUtil.convertToTspans(selection, gd, renderCallback(allColumnBlock, element, tableControlView, d));
+                svgUtil.convertToTspans(selection, gd, renderCallback(allColumnBlock, element, tableControlView, gd, d));
             } else {
                 d3.select(element.parentNode)
                     // basic cell adjustment - compliance with `cellPad`
@@ -711,7 +711,7 @@ function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
     if(gd) {
         conditionalPanelRerender(gd, tableControlView, cellsColumnBlock, pages, d.prevPages, d, 0);
         conditionalPanelRerender(gd, tableControlView, cellsColumnBlock, pages, d.prevPages, d, 1);
-        renderScrollbarKit(tableControlView);
+        renderScrollbarKit(tableControlView, gd);
     }
 }
 
@@ -782,7 +782,7 @@ function wrapTextMaker(columnBlock, element, tableControlView) {
     };
 }
 
-function updateYPositionMaker(columnBlock, element, tableControlView, d) {
+function updateYPositionMaker(columnBlock, element, tableControlView, gd, d) {
     return function updateYPosition() {
         if(d.settledY) return;
         var cellTextHolder = d3.select(element.parentNode);
@@ -810,7 +810,7 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
             // if d.column.type === 'header', then the scrollbar has to be pushed downward to the scrollable area
             // if d.column.type === 'cells', it can still be relevant if total scrolling content height is less than the
             //                               scrollable window, as increases to row heights may need scrollbar updates
-            renderScrollbarKit(tableControlView);
+            renderScrollbarKit(tableControlView, gd);
         }
 
         cellTextHolder
