@@ -166,7 +166,7 @@ exports.supplyDefaults = function(transformIn, traceOut) {
         arrayAttrs[groups] = 0;
     }
 
-    var aggregationsIn = transformIn.aggregations;
+    var aggregationsIn = transformIn.aggregations || [];
     var aggregationsOut = transformOut.aggregations = new Array(aggregationsIn.length);
     var aggregationOut;
 
@@ -174,23 +174,21 @@ exports.supplyDefaults = function(transformIn, traceOut) {
         return Lib.coerce(aggregationsIn[i], aggregationOut, aggAttrs, attr, dflt);
     }
 
-    if(aggregationsIn) {
-        for(i = 0; i < aggregationsIn.length; i++) {
-            aggregationOut = {};
-            var target = coercei('target');
-            var func = coercei('func');
-            var enabledi = coercei('enabled');
+    for(i = 0; i < aggregationsIn.length; i++) {
+        aggregationOut = {_index: i};
+        var target = coercei('target');
+        var func = coercei('func');
+        var enabledi = coercei('enabled');
 
-            // add this aggregation to the output only if it's the first instance
-            // of a valid target attribute - or an unused target attribute with "count"
-            if(enabledi && target && (arrayAttrs[target] || (func === 'count' && arrayAttrs[target] === undefined))) {
-                if(func === 'stddev') coercei('funcmode');
+        // add this aggregation to the output only if it's the first instance
+        // of a valid target attribute - or an unused target attribute with "count"
+        if(enabledi && target && (arrayAttrs[target] || (func === 'count' && arrayAttrs[target] === undefined))) {
+            if(func === 'stddev') coercei('funcmode');
 
-                arrayAttrs[target] = 0;
-                aggregationsOut[i] = aggregationOut;
-            }
-            else aggregationsOut[i] = {enabled: false};
+            arrayAttrs[target] = 0;
+            aggregationsOut[i] = aggregationOut;
         }
+        else aggregationsOut[i] = {enabled: false, _index: i};
     }
 
     // any array attributes we haven't yet covered, fill them with the default aggregation
@@ -199,7 +197,8 @@ exports.supplyDefaults = function(transformIn, traceOut) {
             aggregationsOut.push({
                 target: arrayAttrArray[i],
                 func: aggAttrs.func.dflt,
-                enabled: true
+                enabled: true,
+                _index: -1
             });
         }
     }
