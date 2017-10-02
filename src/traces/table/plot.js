@@ -506,7 +506,7 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
             } else {
                 d3.select(element.parentNode)
                     // basic cell adjustment - compliance with `cellPad`
-                    .attr('transform', function (d) {return 'translate(' + c.cellPad + ' ' + c.cellPad + ')';});
+                    .attr('transform', function (d) {return 'translate(' + xPosition(d) + ' ' + c.cellPad + ')';});
             }
         });
 }
@@ -805,20 +805,24 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
         }
 
         cellTextHolder
-            .attr('transform', function (d) {
-                if(d.cellHeightMayIncrease) {
-                    var element = this;
-                    var columnCellElement = element.parentNode;
-                    var box = columnCellElement.getBoundingClientRect();
-                    var rectBox = d3.select(element.parentNode).select('.cellRect').node().getBoundingClientRect();
-                    var currentTransform = element.transform.baseVal.consolidate();
-                    var yPosition = rectBox.top - box.top + (currentTransform ? currentTransform.matrix.f : c.cellPad);
-                    return 'translate(' + c.cellPad + ' ' + yPosition + ')';
-                }
+            .attr('transform', function () {
+                // this code block is only invoked for items where d.cellHeightMayIncrease is truthy
+                var element = this;
+                var columnCellElement = element.parentNode;
+                var box = columnCellElement.getBoundingClientRect();
+                var rectBox = d3.select(element.parentNode).select('.cellRect').node().getBoundingClientRect();
+                var currentTransform = element.transform.baseVal.consolidate();
+                var yPosition = rectBox.top - box.top + (currentTransform ? currentTransform.matrix.f : c.cellPad);
+                return 'translate(' + xPosition(d) + ' ' + yPosition + ')';
             });
 
         d.settledY = true;
     };
+}
+
+function xPosition(d) {
+    //debugger
+    return c.cellPad;
 }
 
 function setCellHeightAndPositionY(columnCell) {
