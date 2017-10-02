@@ -126,6 +126,7 @@ module.exports = function plot(gd, calcdata) {
     columnBlock.enter()
         .append('g')
         .classed('columnBlock', true)
+        .attr('id', function(d) {return d.key;})
         .style('user-select', 'none');
 
     columnBlock
