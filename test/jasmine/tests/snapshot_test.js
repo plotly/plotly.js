@@ -230,8 +230,9 @@ describe('Plotly.Snapshot', function() {
             Plotly.plot(gd, subplotMock.data, subplotMock.layout).then(function() {
 
                 d3.select(gd).selectAll('text').each(function() {
-                    expect(d3.select(this).style('visibility')).toEqual('visible');
-                    expect(d3.select(this).style('display')).toEqual('block');
+                    var thisStyle = window.getComputedStyle(this);
+                    expect(thisStyle.visibility).toEqual('visible');
+                    expect(thisStyle.display).toEqual('block');
                 });
 
                 return Plotly.Snapshot.toSVG(gd);
@@ -265,13 +266,11 @@ describe('Plotly.Snapshot', function() {
             })
             .then(function() {
                 d3.selectAll('text').each(function() {
-                    var tx = d3.select(this);
-                    expect(tx.style('font-family')).toEqual('\"Times New Roman\"');
+                    expect(this.style.fontFamily).toEqual('\"Times New Roman\"');
                 });
 
                 d3.selectAll('.point,.scatterpts').each(function() {
-                    var pt = d3.select(this);
-                    expect(pt.style('fill').substr(0, 6)).toEqual('url(\"#');
+                    expect(this.style.fill.substr(0, 6)).toEqual('url(\"#');
                 });
 
                 return Plotly.Snapshot.toSVG(gd);
@@ -284,7 +283,7 @@ describe('Plotly.Snapshot', function() {
                 expect(textElements.length).toEqual(12);
 
                 for(i = 0; i < textElements.length; i++) {
-                    expect(textElements[i].style['font-family']).toEqual('\"Times New Roman\"');
+                    expect(textElements[i].style.fontFamily).toEqual('\"Times New Roman\"');
                 }
 
                 var pointElements = svgDOM.getElementsByClassName('point');

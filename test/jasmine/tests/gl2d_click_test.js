@@ -5,6 +5,7 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test.js');
+var assertHoverLabelStyle = require('../assets/custom_assertions').assertHoverLabelStyle;
 
 // cartesian click events events use the hover data
 // from the mousemove events and then simulate
@@ -130,22 +131,6 @@ describe('Test hover and click interactions', function() {
         expect(String(pt.pointNumber)).toBe(String(expected.pointNumber), msg + ' - point number');
     }
 
-    function assertHoverLabelStyle(sel, expected, msg) {
-        if(sel.node() === null) {
-            expect(expected.noHoverLabel).toBe(true);
-            return;
-        }
-
-        var path = sel.select('path');
-        expect(path.style('fill')).toBe(expected.bgColor, msg + ' - bgcolor');
-        expect(path.style('stroke')).toBe(expected.borderColor, msg + ' - bordercolor');
-
-        var text = sel.select('text.nums');
-        expect(parseInt(text.style('font-size'))).toBe(expected.fontSize, msg + ' - font.size');
-        expect(text.style('font-family').split(',')[0]).toBe(expected.fontFamily, msg + ' - font.family');
-        expect(text.style('fill')).toBe(expected.fontColor, msg + ' - font.color');
-    }
-
     function assertHoveLabelContent(expected) {
         var label = expected.label;
 
@@ -181,7 +166,11 @@ describe('Test hover and click interactions', function() {
                 .then(_hover)
                 .then(function(eventData) {
                     assertEventData(eventData, expected);
-                    assertHoverLabelStyle(d3.select('g.hovertext'), expected, opts.msg);
+                    var g = d3.select('g.hovertext');
+                    if(g.node() === null) {
+                        expect(expected.noHoverLabel).toBe(true);
+                    }
+                    else assertHoverLabelStyle(g, expected, opts.msg);
                     assertHoveLabelContent(expected);
                 })
                 .then(_click)
@@ -225,8 +214,8 @@ describe('Test hover and click interactions', function() {
             label: ['0.387'],
             curveNumber: 0,
             pointNumber: 33,
-            bgColor: 'rgb(0, 0, 255)',
-            borderColor: 'rgb(255, 0, 0)',
+            bgcolor: 'rgb(0, 0, 255)',
+            bordercolor: 'rgb(255, 0, 0)',
             fontSize: 20,
             fontFamily: 'Arial',
             fontColor: 'rgb(255, 255, 0)'
@@ -273,8 +262,8 @@ describe('Test hover and click interactions', function() {
             y: 9,
             curveNumber: 2,
             pointNumber: 1,
-            bgColor: 'rgb(0, 128, 0)',
-            borderColor: 'rgb(255, 255, 255)',
+            bgcolor: 'rgb(0, 128, 0)',
+            bordercolor: 'rgb(255, 255, 255)',
             fontSize: 8,
             fontFamily: 'Arial',
             fontColor: 'rgb(255, 255, 255)'
@@ -305,8 +294,8 @@ describe('Test hover and click interactions', function() {
             y: 3,
             curveNumber: 0,
             pointNumber: [3, 3],
-            bgColor: 'rgb(68, 68, 68)',
-            borderColor: 'rgb(255, 255, 255)',
+            bgcolor: 'rgb(68, 68, 68)',
+            bordercolor: 'rgb(255, 255, 255)',
             fontSize: 20,
             fontFamily: 'Roboto',
             fontColor: 'rgb(255, 255, 255)'
@@ -338,8 +327,8 @@ describe('Test hover and click interactions', function() {
             y: 1,
             curveNumber: 0,
             pointNumber: [1, 2],
-            bgColor: 'rgb(0, 0, 0)',
-            borderColor: 'rgb(255, 255, 255)',
+            bgcolor: 'rgb(0, 0, 0)',
+            bordercolor: 'rgb(255, 255, 255)',
             fontSize: 13,
             fontFamily: 'Arial',
             fontColor: 'rgb(255, 255, 255)'
@@ -362,8 +351,8 @@ describe('Test hover and click interactions', function() {
             y: 18,
             curveNumber: 2,
             pointNumber: 0,
-            bgColor: 'rgb(44, 160, 44)',
-            borderColor: 'rgb(255, 255, 255)',
+            bgcolor: 'rgb(44, 160, 44)',
+            bordercolor: 'rgb(255, 255, 255)',
             fontSize: 13,
             fontFamily: 'Arial',
             fontColor: 'rgb(255, 255, 255)'
@@ -377,8 +366,8 @@ describe('Test hover and click interactions', function() {
             y: 18,
             curveNumber: 2,
             pointNumber: 0,
-            bgColor: 'rgb(255, 127, 14)',
-            borderColor: 'rgb(68, 68, 68)',
+            bgcolor: 'rgb(255, 127, 14)',
+            bordercolor: 'rgb(68, 68, 68)',
             fontSize: 13,
             fontFamily: 'Arial',
             fontColor: 'rgb(68, 68, 68)'
@@ -407,8 +396,8 @@ describe('Test hover and click interactions', function() {
             y: 18,
             curveNumber: 2,
             pointNumber: 0,
-            bgColor: 'rgb(44, 160, 44)',
-            borderColor: 'rgb(255, 255, 255)',
+            bgcolor: 'rgb(44, 160, 44)',
+            bordercolor: 'rgb(255, 255, 255)',
             fontSize: 13,
             fontFamily: 'Arial',
             fontColor: 'rgb(255, 255, 255)'
@@ -425,8 +414,8 @@ describe('Test hover and click interactions', function() {
             y: 18,
             curveNumber: 2,
             pointNumber: 0,
-            bgColor: 'rgb(255, 127, 14)',
-            borderColor: 'rgb(68, 68, 68)',
+            bgcolor: 'rgb(255, 127, 14)',
+            bordercolor: 'rgb(68, 68, 68)',
             fontSize: 13,
             fontFamily: 'Arial',
             fontColor: 'rgb(68, 68, 68)'
@@ -456,8 +445,8 @@ describe('Test hover and click interactions', function() {
             y: 3,
             curveNumber: 0,
             pointNumber: [3, 3],
-            bgColor: 'rgb(68, 68, 68)',
-            borderColor: 'rgb(255, 255, 255)',
+            bgcolor: 'rgb(68, 68, 68)',
+            bordercolor: 'rgb(255, 255, 255)',
             fontSize: 20,
             fontFamily: 'Arial',
             fontColor: 'rgb(255, 255, 255)'

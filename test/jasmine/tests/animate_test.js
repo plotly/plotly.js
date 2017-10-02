@@ -804,13 +804,14 @@ describe('animating scatter traces', function() {
             opacity: 1
         }]).then(function() {
             trace = Plotly.d3.selectAll('g.scatter.trace');
-            expect(trace.style('opacity')).toEqual('1');
+            // d3 style getter is disallowed by strict-d3
+            expect(trace.node().style.opacity).toEqual('1');
 
             return Plotly.animate(gd, [{
                 data: [{opacity: 0.1}]
             }], {transition: {duration: 0}, frame: {duration: 0, redraw: false}});
         }).then(function() {
-            expect(trace.style('opacity')).toEqual('0.1');
+            expect(trace.node().style.opacity).toEqual('0.1');
         }).catch(fail).then(done);
     });
 

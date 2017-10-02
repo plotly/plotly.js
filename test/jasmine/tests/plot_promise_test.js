@@ -470,9 +470,11 @@ describe('Plotly.___ methods', function() {
         });
 
         it('should return a rejected promise with no argument', function(done) {
-            Plotly.Plots.resize().then(null, function(err) {
+            Plotly.Plots.resize().then(function() {
+                expect(1).toBe(0, 'We were supposed to get an error.');
+            }, function(err) {
                 expect(err).toBeDefined();
-                expect(err.message).toBe('Resize must be passed a plot div element.');
+                expect(err.message).toBe('Resize must be passed a displayed plot div element.');
             }).then(done);
         });
     });

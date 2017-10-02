@@ -204,7 +204,7 @@ describe('relayout', function() {
                 node = mainDrag.node();
 
             expect(mainDrag.classed('cursor-' + cursor)).toBe(true, 'cursor ' + cursor);
-            expect(mainDrag.style('pointer-events')).toEqual('all', 'pointer event');
+            expect(node.style.pointerEvents).toEqual('all', 'pointer event');
             expect(!!node.onmousedown).toBe(isActive, 'mousedown handler');
         }
 

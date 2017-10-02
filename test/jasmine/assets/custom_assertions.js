@@ -37,14 +37,26 @@ exports.assertStyle = function(dims, color, opacity) {
             .toEqual(dims[i], 'to have correct number of pts in trace ' + i);
 
         points.each(function() {
-            var point = d3.select(this);
-
-            expect(point.style('fill'))
+            expect(this.style.fill)
                 .toEqual(color[i], 'to have correct pt color');
-            expect(+point.style('opacity'))
+            var op = this.style.opacity;
+            expect(op === undefined ? 1 : +op)
                 .toEqual(opacity[i], 'to have correct pt opacity');
         });
     });
+};
+
+exports.assertHoverLabelStyle = function(g, expectation, msg, textSelector) {
+    if(!msg) msg = '';
+
+    var pathStyle = window.getComputedStyle(g.select('path').node());
+    expect(pathStyle.fill).toBe(expectation.bgcolor, msg + ': bgcolor');
+    expect(pathStyle.stroke).toBe(expectation.bordercolor, msg + ': bordercolor');
+
+    var textStyle = window.getComputedStyle(g.select(textSelector || 'text.nums').node());
+    expect(textStyle.fontFamily.split(',')[0]).toBe(expectation.fontFamily, msg + ': font.family');
+    expect(parseInt(textStyle.fontSize)).toBe(expectation.fontSize, msg + ': font.size');
+    expect(textStyle.fill).toBe(expectation.fontColor, msg + ': font.color');
 };
 
 exports.assertClip = function(sel, isClipped, size, msg) {

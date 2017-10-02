@@ -23,7 +23,7 @@ describe('editable titles', function() {
     function checkTitle(letter, text, opacityOut, opacityIn) {
         var titleEl = d3.select('.' + letter + 'title');
         expect(titleEl.text()).toBe(text);
-        expect(+titleEl.style('opacity')).toBe(opacityOut);
+        expect(+(titleEl.node().style.opacity || 1)).toBe(opacityOut);
 
         var bb = titleEl.node().getBoundingClientRect(),
             xCenter = (bb.left + bb.right) / 2,
@@ -33,11 +33,11 @@ describe('editable titles', function() {
 
         mouseEvent('mouseover', xCenter, yCenter);
         setTimeout(function() {
-            expect(+titleEl.style('opacity')).toBe(opacityIn);
+            expect(+(titleEl.node().style.opacity || 1)).toBe(opacityIn);
 
             mouseEvent('mouseout', xCenter, yCenter);
             setTimeout(function() {
-                expect(+titleEl.style('opacity')).toBe(opacityOut);
+                expect(+(titleEl.node().style.opacity || 1)).toBe(opacityOut);
                 done();
             }, interactConstants.HIDE_PLACEHOLDER + 50);
         }, interactConstants.SHOW_PLACEHOLDER + 50);

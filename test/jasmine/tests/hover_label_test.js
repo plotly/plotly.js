@@ -12,6 +12,7 @@ var click = require('../assets/click');
 var delay = require('../assets/delay');
 var doubleClick = require('../assets/double_click');
 var fail = require('../assets/fail_test');
+var assertHoverLabelStyle = require('../assets/custom_assertions').assertHoverLabelStyle;
 
 describe('hover info', function() {
     'use strict';
@@ -1076,14 +1077,15 @@ describe('Test hover label custom styling:', function() {
         if(expectation === null) {
             expect(g.size()).toBe(0);
         } else {
-            var path = g.select('path');
-            expect(path.style('fill')).toBe(expectation.path[0], 'bgcolor');
-            expect(path.style('stroke')).toBe(expectation.path[1], 'bordercolor');
-
-            var text = g.select({hovertext: 'text.nums', axistext: 'text'}[className]);
-            expect(parseInt(text.style('font-size'))).toBe(expectation.text[0], 'font.size');
-            expect(text.style('font-family').split(',')[0]).toBe(expectation.text[1], 'font.family');
-            expect(text.style('fill')).toBe(expectation.text[2], 'font.color');
+            assertHoverLabelStyle(g, {
+                bgcolor: expectation.path[0],
+                bordercolor: expectation.path[1],
+                fontSize: expectation.text[0],
+                fontFamily: expectation.text[1],
+                fontColor: expectation.text[2]
+            },
+            '',
+            {hovertext: 'text.nums', axistext: 'text'}[className]);
         }
     }
 

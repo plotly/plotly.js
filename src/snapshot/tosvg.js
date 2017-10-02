@@ -97,7 +97,7 @@ module.exports = function toSVG(gd, format, scale) {
             // but in a static plot it's useless and it can confuse batik
             // we've tried to standardize on display:none but make sure we still
             // catch visibility:hidden if it ever arises
-            if(txt.style('visibility') === 'hidden' || txt.style('display') === 'none') {
+            if(this.style.visibility === 'hidden' || this.style.display === 'none') {
                 txt.remove();
                 return;
             }
@@ -110,7 +110,7 @@ module.exports = function toSVG(gd, format, scale) {
             // Font family styles break things because of quotation marks,
             // so we must remove them *after* the SVG DOM has been serialized
             // to a string (browsers convert singles back)
-            var ff = txt.style('font-family');
+            var ff = this.style.fontFamily;
             if(ff && ff.indexOf('"') !== -1) {
                 txt.style('font-family', ff.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
             }
@@ -118,7 +118,7 @@ module.exports = function toSVG(gd, format, scale) {
 
     svg.selectAll('.point,.scatterpts').each(function() {
         var pt = d3.select(this);
-        var fill = pt.style('fill');
+        var fill = this.style.fill;
 
         // similar to font family styles above,
         // we must remove " after the SVG DOM has been serialized

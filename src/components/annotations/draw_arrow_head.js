@@ -10,42 +10,44 @@
 'use strict';
 
 var d3 = require('d3');
-var isNumeric = require('fast-isnumeric');
 
 var Color = require('../color');
-var Drawing = require('../drawing');
 
 var ARROWPATHS = require('./arrow_paths');
 
-// add arrowhead(s) to a path or line d3 element el3
-// style: 1-6, first 5 are pointers, 6 is circle, 7 is square, 8 is none
-// ends is 'start', 'end' (default), 'start+end'
-// mag is magnification vs. default (default 1)
+/**
+ * Add arrowhead(s) to a path or line element
+ *
+ * @param {d3.selection} el3: a d3-selected line or path element
+ *
+ * @param {string} ends: 'start', 'end', or 'start+end' for which ends get arrowheads
+ *
+ * @param {object} options: style information. Must have all the following:
+ * @param {number} options.arrowhead: head style - see ./arrow_paths
+ * @param {number} options.arrowsize: relative size of the head vs line width
+ * @param {number} options.standoff: distance in px to move the arrow point from its target
+ * @param {number} options.arrowwidth: width of the arrow line
+ * @param {string} options.arrowcolor: color of the arrow line, for the head to match
+ *     Note that the opacity of this color is ignored, as it's assumed the container
+ *     of both the line and head has opacity applied to it so there isn't greater opacity
+ *     where they overlap.
+ */
+module.exports = function drawArrowHead(el3, ends, options) {
+    var el = el3.node();
+    var headStyle = ARROWPATHS[options.arrowhead || 0];
+    var scale = (options.arrowwidth || 1) * options.arrowsize;
+    var doStart = ends.indexOf('start') >= 0;
+    var doEnd = ends.indexOf('end') >= 0;
+    var backOff = headStyle.backoff * scale + options.standoff;
 
-module.exports = function drawArrowHead(el3, style, ends, mag, standoff) {
-    if(!isNumeric(mag)) mag = 1;
-    var el = el3.node(),
-        headStyle = ARROWPATHS[style||0];
-
-    if(typeof ends !== 'string' || !ends) ends = 'end';
-
-    var scale = (Drawing.getPx(el3, 'stroke-width') || 1) * mag,
-        stroke = el3.style('stroke') || Color.defaultLine,
-        opacity = el3.style('stroke-opacity') || 1,
-        doStart = ends.indexOf('start') >= 0,
-        doEnd = ends.indexOf('end') >= 0,
-        backOff = headStyle.backoff * scale + standoff,
-        start,
-        end,
-        startRot,
-        endRot;
+    var start, end, startRot, endRot;
 
     if(el.nodeName === 'line') {
         start = {x: +el3.attr('x1'), y: +el3.attr('y1')};
         end = {x: +el3.attr('x2'), y: +el3.attr('y2')};
 
-        var dx = start.x - end.x,
-            dy = start.y - end.y;
+        var dx = start.x - end.x;
+        var dy = start.y - end.y;
 
         startRot = Math.atan2(dy, dx);
         endRot = startRot + Math.PI;
@@ -83,16 +85,19 @@ module.exports = function drawArrowHead(el3, style, ends, mag, standoff) {
         }
 
         if(doStart) {
-            var start0 = el.getPointAtLength(0),
-                dstart = el.getPointAtLength(0.1);
+            var start0 = el.getPointAtLength(0);
+            var dstart = el.getPointAtLength(0.1);
+
             startRot = Math.atan2(start0.y - dstart.y, start0.x - dstart.x);
             start = el.getPointAtLength(Math.min(backOff, pathlen));
+
             if(backOff) dashArray = '0px,' + backOff + 'px,';
         }
 
         if(doEnd) {
-            var end0 = el.getPointAtLength(pathlen),
-                dend = el.getPointAtLength(pathlen - 0.1);
+            var end0 = el.getPointAtLength(pathlen);
+            var dend = el.getPointAtLength(pathlen - 0.1);
+
             endRot = Math.atan2(end0.y - dend.y, end0.x - dend.x);
             end = el.getPointAtLength(Math.max(0, pathlen - backOff));
 
@@ -110,19 +115,19 @@ module.exports = function drawArrowHead(el3, style, ends, mag, standoff) {
 
     function drawhead(p, rot) {
         if(!headStyle.path) return;
-        if(style > 5) rot = 0; // don't rotate square or circle
+        if(headStyle.noRotate) rot = 0;
+
         d3.select(el.parentNode).append('path')
             .attr({
                 'class': el3.attr('class'),
                 d: headStyle.path,
                 transform:
                     'translate(' + p.x + ',' + p.y + ')' +
-                    'rotate(' + (rot * 180 / Math.PI) + ')' +
+                    (rot ? 'rotate(' + (rot * 180 / Math.PI) + ')' : '') +
                     'scale(' + scale + ')'
             })
             .style({
-                fill: stroke,
-                opacity: opacity,
+                fill: Color.rgb(options.arrowcolor),
                 'stroke-width': 0
             });
     }
