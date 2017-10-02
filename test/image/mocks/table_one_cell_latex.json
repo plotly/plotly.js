@@ -130,7 +130,7 @@
                     "$\\begin{eqnarray*} \\cos 15\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
                     "$\\begin{eqnarray*} \\cos 16\\theta & = & \\cos^2 \\theta - \\sin^2 \\theta \\\\ & = & 2 \\cos^2 \\theta - 1. \\end{eqnarray*}$",
                     //"x8A<sup><b>X</b></sup><br>B<br><a href=”https://plot.ly/”> Plotly</a><br>C<sub>D</sub>",
-                ].map(function(d, i) {return d}).filter(function(d, i) {return i < 2;})
+                ].map(function(d, i) {return d}).filter(function(d, i) {return i < 4;})
 
             ].filter(function(d,i) {return i === 2}),
 
@@ -141,7 +141,7 @@
             //"prefix": ["#"],
             //"suffix": ["cell"],
 
-            "height": 46,
+            "height": 30,
 
             "align": ["right"],
             "valign": ["bottom"],
