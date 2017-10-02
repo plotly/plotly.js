@@ -143,7 +143,7 @@
 
             "height": 20,
 
-            "align": ["right"],
+            "align": ["center"],
             "valign": ["bottom"],
 
             "line": {

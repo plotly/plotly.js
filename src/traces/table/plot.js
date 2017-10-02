@@ -820,7 +820,7 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
                 var rectBox = d3.select(element.parentNode).select('.cellRect').node().getBoundingClientRect();
                 var currentTransform = element.transform.baseVal.consolidate();
                 var yPosition = rectBox.top - box.top + (currentTransform ? currentTransform.matrix.f : c.cellPad);
-                return 'translate(' + xPosition(d, box.width) + ' ' + yPosition + ')';
+                return 'translate(' + xPosition(d, d3.select(element.parentNode).select('.cellTextHolder').node().getBoundingClientRect().width) + ' ' + yPosition + ')';
             });
 
         d.settledY = true;
