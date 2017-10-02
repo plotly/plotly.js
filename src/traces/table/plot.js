@@ -480,8 +480,7 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
             var hasWrapSplitCharacter;
             var hwsc = function(prefixSuffixedText) {return prefixSuffixedText.indexOf(c.wrapSplitCharacter) !== -1;};
             d.wrappingNeeded = !d.wrapped && !userBrokenText && !latex && (hasWrapSplitCharacter = hwsc(prefixSuffixedText));
-            d.cellHeightMayIncrease = !d.wrapped && (userBrokenText2 || latex || (hasWrapSplitCharacter === void(0) ? hwsc(prefixSuffixedText) : hasWrapSplitCharacter));
-            //if(d.cellHeightMayIncrease) debugger
+            d.cellHeightMayIncrease = userBrokenText2 || latex || d.mayHaveMarkup || (hasWrapSplitCharacter === void(0) ? hwsc(prefixSuffixedText) : hasWrapSplitCharacter);
             var textToRender;
             if(d.wrappingNeeded) {
                 var hrefPreservedText = c.wrapSplitCharacter === ' ' ? prefixSuffixedText.replace(/<a href=/ig, '<a_href=') : prefixSuffixedText;
@@ -787,6 +786,7 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
         var declaredRowHeight = l.rows[rowIndex].rowHeight;
 
         var requiredHeight = d.cellHeightMayIncrease ? element.parentNode.getBoundingClientRect().height + 2 * c.cellPad : declaredRowHeight;
+
         var finalHeight = Math.max(requiredHeight, declaredRowHeight);
         var increase = finalHeight - l.rows[rowIndex].rowHeight;
 
