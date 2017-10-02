@@ -3,7 +3,7 @@
         "width": 1400,
         "height":  750 + 380 - 150,
         "title": "Widget parameters and cost",
-        "margin": {"t": 0|| 80, "r": 60, "b": 54, "l": 60}
+        "margin": {"t": 0|| 80, "r": 20, "b": 54, "l": 20}
     },
 
     "data": [{
@@ -11,7 +11,7 @@
         "type": "table",
 
         "domain": {
-            "x": [0.05, 0.95],
+            "x": [0, 1],
             "y": [0, 1]
         },
 

@@ -506,7 +506,14 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
             } else {
                 d3.select(element.parentNode)
                     // basic cell adjustment - compliance with `cellPad`
-                    .attr('transform', function (d) {return 'translate(' + xPosition(d) + ' ' + c.cellPad + ')';});
+                    .attr('transform', function (d) {return 'translate(' + xPosition(d) + ' ' + c.cellPad + ')';})
+                    .attr('text-anchor', function(d) {
+                        return ({
+                            left: 'start',
+                            center: 'middle',
+                            right: 'end'
+                        })[d.align];
+                    });
             }
         });
 }
@@ -813,16 +820,21 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
                 var rectBox = d3.select(element.parentNode).select('.cellRect').node().getBoundingClientRect();
                 var currentTransform = element.transform.baseVal.consolidate();
                 var yPosition = rectBox.top - box.top + (currentTransform ? currentTransform.matrix.f : c.cellPad);
-                return 'translate(' + xPosition(d) + ' ' + yPosition + ')';
+                //if(box.width !== rectBox.width) debugger;
+                return 'translate(' + xPosition(d, box.width) + ' ' + yPosition + ')';
             });
 
         d.settledY = true;
     };
 }
 
-function xPosition(d) {
-    //debugger
-    return c.cellPad;
+function xPosition(d, optionalWidth) {
+    // fixme optimize
+    return ({
+        left: c.cellPad,
+        center: (d.column.columnWidth - (optionalWidth || 0)) / 2,
+        right: d.column.columnWidth - (optionalWidth || 0) - c.cellPad
+    })[d.align];
 }
 
 function setCellHeightAndPositionY(columnCell) {
