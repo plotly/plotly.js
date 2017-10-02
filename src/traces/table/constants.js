@@ -12,7 +12,7 @@ module.exports = {
     maxDimensionCount: 60,
     overdrag: 45,
     cellPad: 8,
-    latexMark: '$',
+    latexCheck: /^\$.*\$$/,
     wrapSplitCharacter: ' ',
     wrapSpacer: ' ',
     lineBreaker: '<br>',

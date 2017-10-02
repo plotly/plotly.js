@@ -463,7 +463,7 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
             var col = d.column.specIndex;
             var row = d.rowNumber;
             var userSuppliedContent = d.value;
-            var latex = latexEh(userSuppliedContent);
+            var latex = isLatex(userSuppliedContent);
             var userBrokenText = (typeof userSuppliedContent !== 'string') || userSuppliedContent.match(/<br>/i);
             var userBrokenText2 = (typeof userSuppliedContent === 'string') && userSuppliedContent.match(/<br>/i);
             var prefix = latex ? '' : gridPick(d.calcdata.cells.prefix, col, row) || '';
@@ -511,8 +511,8 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
         });
 }
 
-function latexEh(content) {
-    return typeof content === 'string' && content[0] === c.latexMark && content[content.length - 1] === c.latexMark;
+function isLatex(content) {
+    return typeof content === 'string' && content.match(c.latexCheck);
 }
 
 function columnMoved(gd, calcdata, i, indices) {
