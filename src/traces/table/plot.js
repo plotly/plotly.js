@@ -211,7 +211,7 @@ module.exports = function plot(gd, calcdata) {
         .attr('width', function(d) {return d.columnWidth;})
         .attr('height', function(d) {return d.calcdata.height + c.uplift;});
 
-    updateBlockYPosition(gd, cellsColumnBlock, tableControlView);
+    updateBlockYPosition(null, cellsColumnBlock, tableControlView);
 };
 
 function renderScrollbarKit(tableControlView) {
@@ -371,6 +371,9 @@ function renderColumnCells(columnBlock) {
         .append('g')
         .classed('columnCells', true);
 
+    columnCells.exit()
+        .remove();
+
     return columnCells;
 }
 
@@ -382,6 +385,9 @@ function renderColumnCell(columnCells) {
     columnCell.enter()
         .append('g')
         .classed('columnCell', true);
+
+    columnCell.exit()
+        .remove();
 
     return columnCell;
 }
@@ -594,6 +600,7 @@ function splitToCells(d) {
     return d.values.slice(fromTo[0], fromTo[1]).map(function(v, i) {
         return {
             keyWithinBlock: /*fromTo[0] + */i,
+            //keyWithinBlock: fromTo[0] + i,
             key: fromTo[0] + i,
             column: d,
             calcdata: d.calcdata,

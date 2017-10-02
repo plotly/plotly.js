@@ -29,5 +29,5 @@ module.exports = {
     scrollbarOffset: 5,
     scrollbarHideDelay: 1000,
     scrollbarHideDuration: 1000,
-    clipView: true
+    clipView: false
 };
