@@ -310,23 +310,18 @@ function renderScrollbarKit(tableControlView) {
             var s = d.scrollbarState;
             var pixelVal = y - bbox.top;
             var inverseScale = d3.scale.linear().domain([0, s.scrollableAreaHeight]).range([0, s.totalHeight]).clamp(true);
-            if(s.topY <= pixelVal && pixelVal <= s.bottomY) {
-                //console.log('on glyph!')
-            } else {
+            if(!(s.topY <= pixelVal && pixelVal <= s.bottomY)) {
                 makeDragRow(gd, tableControlView, null, inverseScale(pixelVal - s.barLength / 2))(d);
             }
-            //console.log('mousedown', bbox.top, bbox.bottom, y, scale(y))
         })
         .call(d3.behavior.drag()
             .origin(function(d) {
-                //console.log('drag started')
                 d3.event.stopPropagation();
                 d.scrollbarState.scrollbarScrollInProgress = true;
                 return d;
             })
             .on('drag', makeDragRow(gd, tableControlView))
             .on('dragend', function(d) {
-                //console.log('drag ended')
                 // fixme emit Plotly event
             })
         );
@@ -509,7 +504,9 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
             if(d.mayHaveMarkup || d.wrappingNeeded || d.latex) {
                 svgUtil.convertToTspans(selection, gd, renderCallback(allColumnBlock, element, tableControlView, d));
             } else {
-                // renderCallback(allColumnBlock, element, tableControlView, d);
+                d3.select(element.parentNode)
+                    // basic cell adjustment - compliance with `cellPad`
+                    .attr('transform', function (d) {return 'translate(' + c.cellPad + ' ' + c.cellPad + ')';});
             }
         });
 }
@@ -817,8 +814,6 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
                     var currentTransform = element.transform.baseVal.consolidate();
                     var yPosition = rectBox.top - box.top + (currentTransform ? currentTransform.matrix.f : c.cellPad);
                     return 'translate(' + c.cellPad + ' ' + yPosition + ')';
-                } else {
-                    return 'translate(' + c.cellPad + ' ' + c.cellPad + ')';
                 }
             });
 
@@ -867,13 +862,7 @@ function allRowsHeight(rowBlock) {
         total += rowBlock.rows[i].rowHeight;
     }
     rowBlock.allRowsHeight = total;
-/*
-    if(cached !== void(0)) {
-        if(cached !== total) console.log('allRowsHeight mismatch');
-    } else {
-        //console.log('cache miss')
-    }
-*/
+
     return total;
 }
 
