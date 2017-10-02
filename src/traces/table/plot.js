@@ -592,7 +592,7 @@ function splitToPanels(d) {
         rowBlocks: d.calcdata.rowBlocks
     });
     // order due to SVG using painter's algo:
-    return [revolverPanel1, revolverPanel2/*, headerPanel*/];
+    return [revolverPanel1, revolverPanel2, headerPanel];
 }
 
 function splitToCells(d) {
