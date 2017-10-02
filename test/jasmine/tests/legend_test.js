@@ -539,11 +539,11 @@ describe('legend relayout update', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
         function assertLegendStyle(bgColor, borderColor, borderWidth) {
-            var node = d3.select('g.legend').select('rect');
+            var node = d3.select('g.legend').select('rect').node();
 
-            expect(node.style('fill')).toEqual(bgColor);
-            expect(node.style('stroke')).toEqual(borderColor);
-            expect(node.style('stroke-width')).toEqual(borderWidth + 'px');
+            expect(node.style.fill).toEqual(bgColor);
+            expect(node.style.stroke).toEqual(borderColor);
+            expect(node.style.strokeWidth).toEqual(borderWidth + 'px');
         }
 
         Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {

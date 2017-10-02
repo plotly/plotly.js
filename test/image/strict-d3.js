@@ -34,7 +34,8 @@ selProto.style = function() {
         if(typeof obj === 'string') {
             if(arguments.length === 1) {
                 throw new Error('d3 selection.style called as getter: ' +
-                    'disallowed as it can fail for unattached elements');
+                    'disallowed as it can fail for unattached elements. ' +
+                    'Use node.style.attribute instead.');
             }
             checkStyleVal(sel, obj, arguments[1]);
         } else {

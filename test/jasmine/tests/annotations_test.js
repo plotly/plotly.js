@@ -1321,7 +1321,7 @@ describe('annotation effects', function() {
             }
 
             function checkLink(link) {
-                expect(link.style('cursor')).toBe('pointer');
+                expect(link.node().style.cursor).toBe('pointer');
                 expect(link.attr('xlink:href')).toBe('https://plot.ly');
                 expect(link.attr('xlink:show')).toBe('new');
             }
@@ -1349,7 +1349,7 @@ describe('animating annotations', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('updates annoations when no axis update present', function(done) {
+    it('updates annotations when no axis update present', function(done) {
 
         function assertAnnotations(expected) {
             var texts = Plotly.d3.select(gd).selectAll('.annotation .annotation-text');
@@ -1366,7 +1366,7 @@ describe('animating annotations', function() {
             expect(expected.length).toEqual(paths.size());
 
             paths.each(function(d, i) {
-                expect(Plotly.d3.select(this).style('fill')).toEqual(expected[i]);
+                expect(this.style.fill).toEqual(expected[i]);
             });
         }
 

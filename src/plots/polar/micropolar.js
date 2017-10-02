@@ -432,13 +432,13 @@ var µ = module.exports = { version: '0.2.2' };
             });
             svg.selectAll('.geometry-group .mark').on('mouseover.tooltip', function(d, i) {
                 var el = d3.select(this);
-                var color = el.style('fill');
+                var color = this.style.fill;
                 var newColor = 'black';
-                var opacity = el.style('opacity') || 1;
+                var opacity = this.style.opacity || 1;
                 el.attr({
                     'data-opacity': opacity
                 });
-                if (color != 'none') {
+                if (color && color !== 'none') {
                     el.attr({
                         'data-fill': color
                     });
@@ -461,7 +461,7 @@ var µ = module.exports = { version: '0.2.2' };
                     }).text(text);
                     geometryTooltip.move(pos);
                 } else {
-                    color = el.style('stroke');
+                    color = this.style.stroke || 'black';
                     el.attr({
                         'data-stroke': color
                     });

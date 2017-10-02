@@ -449,7 +449,7 @@ describe('end-to-end scatter tests', function() {
         expect(txs.size()).toEqual(txContent.length);
 
         pts.each(function(_, i) {
-            expect(d3.select(this).style('fill')).toEqual(ptStyle[i], 'pt ' + i);
+            expect(this.style.fill).toEqual(ptStyle[i], 'pt ' + i);
         });
 
         txs.each(function(_, i) {

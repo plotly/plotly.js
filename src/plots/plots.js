@@ -212,7 +212,12 @@ plots.redrawText = function(gd) {
 plots.resize = function(gd) {
     return new Promise(function(resolve, reject) {
 
-        if(!gd || d3.select(gd).style('display') === 'none') {
+        function isHidden(gd) {
+            var display = getComputedStyle(gd).display;
+            return !display || display === 'none';
+        }
+
+        if(!gd || isHidden(gd)) {
             reject(new Error('Resize must be passed a plot div element.'));
         }
 

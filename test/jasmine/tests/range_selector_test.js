@@ -480,7 +480,7 @@ describe('range selector interactions:', function() {
         d3.selectAll('.button').each(function(d) {
             var rect = d3.select(this).select('rect');
 
-            expect(rect.style('fill')).toEqual(
+            expect(rect.node().style.fill).toEqual(
                 d.isActive ? activeColor : bgColor
             );
         });
@@ -559,13 +559,13 @@ describe('range selector interactions:', function() {
         var fillColor = Color.rgb(gd._fullLayout.xaxis.rangeselector.bgcolor);
         var activeColor = 'rgb(212, 212, 212)';
 
-        expect(button.style('fill')).toEqual(fillColor);
+        expect(button.node().style.fill).toEqual(fillColor);
 
         mouseEvent('mouseover', pos[0], pos[1]);
-        expect(button.style('fill')).toEqual(activeColor);
+        expect(button.node().style.fill).toEqual(activeColor);
 
         mouseEvent('mouseout', pos[0], pos[1]);
-        expect(button.style('fill')).toEqual(fillColor);
+        expect(button.node().style.fill).toEqual(fillColor);
     });
 
     it('should update is active relayout calls', function(done) {

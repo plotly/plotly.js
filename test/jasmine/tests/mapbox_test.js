@@ -724,11 +724,11 @@ describe('@noCI, mapbox plots', function() {
             return assertMouseMove(pointPos, 1);
         })
         .then(function() {
-            var path = d3.select('g.hovertext').select('path');
-            var text = d3.select('g.hovertext').select('text.nums');
+            var path = d3.select('g.hovertext').select('path').node();
+            var text = d3.select('g.hovertext').select('text.nums').node();
 
-            expect(path.style('fill')).toEqual('rgb(255, 255, 0)', 'bgcolor');
-            expect(text.style('font-size')).toEqual('20px', 'font.size[0]');
+            expect(path.style.fill).toEqual('rgb(255, 255, 0)', 'bgcolor');
+            expect(text.style.fontSize).toEqual('20px', 'font.size[0]');
         })
         .catch(failTest)
         .then(done);

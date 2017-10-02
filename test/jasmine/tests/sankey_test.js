@@ -11,6 +11,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
+var assertHoverLabelStyle = require('../assets/custom_assertions').assertHoverLabelStyle;
 
 describe('sankey tests', function() {
 
@@ -599,12 +600,11 @@ function assertLabel(content, style) {
 
     expect(name.text()).toBe(content[content.length - 1]);
 
-    var path = g.select('path');
-    expect(path.style('fill')).toEqual(style[0], 'bgcolor');
-    expect(path.style('stroke')).toEqual(style[1], 'bordercolor');
-
-    var text = g.select('text.nums');
-    expect(parseInt(text.style('font-size'))).toEqual(style[2], 'font.size');
-    expect(text.style('font-family').split(',')[0]).toEqual(style[3], 'font.family');
-    expect(text.style('fill')).toEqual(style[4], 'font.color');
+    assertHoverLabelStyle(g, {
+        bgcolor: style[0],
+        bordercolor: style[1],
+        fontSize: style[2],
+        fontFamily: style[3],
+        fontColor: style[4]
+    });
 }
