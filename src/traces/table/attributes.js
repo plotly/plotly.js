@@ -9,7 +9,6 @@
 'use strict';
 
 var annAttrs = require('../../components/annotations/attributes');
-var fontAttrs = require('../../plots/font_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = {

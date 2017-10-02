@@ -80,9 +80,9 @@ module.exports = function calc(gd, trace) {
     return wrap(calcdata);
 };
 
-var xScale = function (d) {
+function xScale(d) {
     return d.calcdata.columns.reduce(function(prev, next) {
-        return next.xIndex < d.xIndex ? prev + next.columnWidth : prev
+        return next.xIndex < d.xIndex ? prev + next.columnWidth : prev;
     }, 0);
 }
 

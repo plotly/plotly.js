@@ -65,11 +65,11 @@ module.exports = function plot(gd, calcdata) {
         .call(renderScrollbarKit);
 
     tableControlView
-        .attr('transform', function(d) {return 'translate(' + d.size.l + ' ' + d.size.t + ')';})
+        .attr('transform', function(d) {return 'translate(' + d.size.l + ' ' + d.size.t + ')';});
 
-        if(!c.clipView) {
-            tableControlView.attr('clip-path', function (d) {return 'url(#scrollAreaBottomClip_' + d.key + ')';});
-        }
+    if(!c.clipView) {
+        tableControlView.attr('clip-path', function(d) {return 'url(#scrollAreaBottomClip_' + d.key + ')';});
+    }
 
     var yColumn = tableControlView.selectAll('.yColumn')
         .data(function(vm) {return vm.columns;}, gup.keyFun);
@@ -91,13 +91,13 @@ module.exports = function plot(gd, calcdata) {
             })
             .on('drag', function(d) {
                 var movedColumn = d3.select(this);
-                var getter = function(dd) {return  (d === dd ? d3.event.x : dd.x) + dd.columnWidth / 2;}
+                var getter = function(dd) {return (d === dd ? d3.event.x : dd.x) + dd.columnWidth / 2;};
                 d.x = Math.max(-c.overdrag, Math.min(d.calcdata.width + c.overdrag - d.columnWidth, d3.event.x));
                 var newOrder = yColumn.data().sort(function(a, b) {return getter(a) - getter(b);});
                 newOrder.forEach(function(dd, i) {
                     dd.xIndex = i;
                     dd.x = d === dd ? dd.x : dd.xScale(dd);
-                })
+                });
 
                 yColumn.filter(function(dd) {return d !== dd;})
                     .transition()
@@ -122,8 +122,6 @@ module.exports = function plot(gd, calcdata) {
         yColumn.attr('clip-path', function(d) {return 'url(#columnBoundaryClippath_' + d.specIndex + ')';});
     }
 
-    //yColumn.exit().remove();
-
     var columnBlock = yColumn.selectAll('.columnBlock')
         .data(splitToPanels, gup.keyFun);
 
@@ -147,7 +145,7 @@ module.exports = function plot(gd, calcdata) {
                 return d;
             })
             .on('drag', makeDragRow(gd, tableControlView, -1))
-            .on('dragend', function(d) {
+            .on('dragend', function() {
                 // fixme emit plotly notification
             })
         );
@@ -230,7 +228,7 @@ function renderScrollbarKit(tableControlView) {
 
     scrollbarKit.enter()
         .append('g')
-        .classed('scrollbarKit', true)
+        .classed('scrollbarKit', true);
 
     scrollbarKit
         .each(function(d) {
@@ -286,7 +284,7 @@ function renderScrollbarKit(tableControlView) {
             return d.scrollbarState.barLength - c.scrollbarWidth / 2;
         })
         .attr('stroke-opacity', function(d) {
-            return d.columnDragInProgress || !d.scrollbarState.barWiggleRoom ? 0 : 0.4
+            return d.columnDragInProgress || !d.scrollbarState.barWiggleRoom ? 0 : 0.4;
         });
 
     // cancel transition: possible pending (also, delayed) transition
@@ -325,7 +323,7 @@ function renderScrollbarKit(tableControlView) {
                 return d;
             })
             .on('drag', makeDragRow(gd, tableControlView))
-            .on('dragend', function(d) {
+            .on('dragend', function() {
                 // fixme emit Plotly event
             })
         );
@@ -442,7 +440,7 @@ function setFont(columnCell) {
             d.rowNumber = d.key;
             d.align = gridPick(d.calcdata.cells.align, col, i);
             d.valign = gridPick(d.calcdata.cells.valign, col, i);
-            d.cellBorderWidth = gridPick(d.calcdata.cells.line.width, col, i)
+            d.cellBorderWidth = gridPick(d.calcdata.cells.line.width, col, i);
             d.font = font;
         });
 }
@@ -484,8 +482,8 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
             if(d.wrappingNeeded) {
                 var hrefPreservedText = c.wrapSplitCharacter === ' ' ? prefixSuffixedText.replace(/<a href=/ig, '<a_href=') : prefixSuffixedText;
                 var fragments = hrefPreservedText.split(c.wrapSplitCharacter);
-                var hrefRestoredFragments = c.wrapSplitCharacter === ' ' ? fragments.map(function(frag) {return frag.replace(/<a_href=/ig, '<a href=')}) : fragments;
-                d.fragments = hrefRestoredFragments.map(function (f) {return {text: f, width: null};});
+                var hrefRestoredFragments = c.wrapSplitCharacter === ' ' ? fragments.map(function(frag) {return frag.replace(/<a_href=/ig, '<a href=');}) : fragments;
+                d.fragments = hrefRestoredFragments.map(function(f) {return {text: f, width: null};});
                 d.fragments.push({fragment: c.wrapSpacer, width: null});
                 textToRender = hrefRestoredFragments.join(c.lineBreaker) + c.lineBreaker + c.wrapSpacer;
             } else {
@@ -510,7 +508,7 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
             } else {
                 d3.select(element.parentNode)
                     // basic cell adjustment - compliance with `cellPad`
-                    .attr('transform', function (d) {return 'translate(' + xPosition(d) + ' ' + c.cellPad + ')';})
+                    .attr('transform', function(d) {return 'translate(' + xPosition(d) + ' ' + c.cellPad + ')';})
                     .attr('text-anchor', function(d) {
                         return ({
                             left: 'start',
@@ -528,7 +526,7 @@ function isLatex(content) {
 
 function columnMoved(gd, calcdata, i, indices) {
     var o = calcdata[i][0].gdColumnsOriginalOrder;
-    calcdata[i][0].gdColumns.sort(function (a, b) {
+    calcdata[i][0].gdColumns.sort(function(a, b) {
         return indices[o.indexOf(a)] - indices[o.indexOf(b)];
     });
 
@@ -553,7 +551,7 @@ function gridPick(spec, col, row) {
 function easeColumn(selection, d, y) {
     selection
         .transition()
-        .ease(c.releaseTransitionEase, 1, .75)
+        .ease(c.releaseTransitionEase, 1, 0.75)
         .duration(c.releaseTransitionDuration)
         .attr('transform', 'translate(' + d.x + ' ' + y + ')');
 }
@@ -635,7 +633,7 @@ function rowFromTo(d) {
 
 function headerHeight(d) {
     var headerBlocks = d.rowBlocks[0].auxiliaryBlocks;
-    return headerBlocks.reduce(function (p, n) {return p + rowsHeight(n, Infinity)}, 0);
+    return headerBlocks.reduce(function(p, n) {return p + rowsHeight(n, Infinity);}, 0);
 }
 
 function findPagesAndCacheHeights(blocks, scrollY, scrollHeight) {
@@ -664,9 +662,9 @@ function findPagesAndCacheHeights(blocks, scrollY, scrollHeight) {
         }
         pTop += rowsHeight;
 
-        // fixme uncomment this nice final optimization; put it in `for` condition - caveat, currently the
+        // consider this nice final optimization; put it in `for` condition - caveat, currently the
         // block.allRowsHeight relies on being invalidated, so enabling this opt may not be safe
-        //if(pages.length > 1) break;
+        // if(pages.length > 1) break;
     }
 
     return pages;
@@ -697,14 +695,14 @@ function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
     }
 
     cellsColumnBlock
-        .each(function (d, i) {
+        .each(function(d, i) {
             // these values will also be needed when a block is translated again due to growing cell height
             d.page = pages[i];
             d.scrollY = scrollY;
         });
 
     cellsColumnBlock
-        .attr('transform', function (d) {
+        .attr('transform', function(d) {
             var yTranslate = firstRowAnchor(d.rowBlocks, d.page) - d.scrollY;
             return 'translate(0 ' + yTranslate + ')';
         });
@@ -718,23 +716,23 @@ function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
 }
 
 function makeDragRow(gd, tableControlView, optionalMultiplier, optionalPosition) {
-    return function dragRow () {
+    return function dragRow() {
         var d = tableControlView.node().__data__;
         var multiplier = optionalMultiplier || d.scrollbarState.dragMultiplier;
         d.scrollY = optionalPosition === void(0) ? d.scrollY + multiplier * d3.event.dy : optionalPosition;
         var cellsColumnBlock = tableControlView.selectAll('.yColumn').selectAll('.columnBlock').filter(cellsBlock);
         updateBlockYPosition(gd, cellsColumnBlock, tableControlView);
-    }
+    };
 }
 
 function conditionalPanelRerender(gd, tableControlView, cellsColumnBlock, pages, prevPages, d, revolverIndex) {
     var shouldComponentUpdate = pages[revolverIndex] !== prevPages[revolverIndex];
     if(shouldComponentUpdate) {
         window.clearTimeout(d.currentRepaint[revolverIndex]);
-        d.currentRepaint[revolverIndex] = window.setTimeout(function () {
+        d.currentRepaint[revolverIndex] = window.setTimeout(function() {
             // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
             // some repaints invisible ie. wasteful (DOM work blocks the main thread)
-            var toRerender = cellsColumnBlock.filter(function (d, i) {return i === revolverIndex && pages[i] !== prevPages[i];});
+            var toRerender = cellsColumnBlock.filter(function(d, i) {return i === revolverIndex && pages[i] !== prevPages[i];});
             renderColumnCellTree(gd, tableControlView, toRerender, toRerender);
             prevPages[revolverIndex] = pages[revolverIndex];
         });
@@ -757,7 +755,7 @@ function wrapTextMaker(columnBlock, element, tableControlView) {
                 var currentAddition, currentAdditionLength;
                 var currentRowLength = 0;
                 var rowLengthLimit = d.column.columnWidth - 2 * c.cellPad;
-                d.value = "";
+                d.value = '';
                 while(rest.length) {
                     currentAddition = rest.shift();
                     currentAdditionLength = currentAddition.width + separatorLength;
@@ -816,7 +814,7 @@ function updateYPositionMaker(columnBlock, element, tableControlView, d) {
         }
 
         cellTextHolder
-            .attr('transform', function () {
+            .attr('transform', function() {
                 // this code block is only invoked for items where d.cellHeightMayIncrease is truthy
                 var element = this;
                 var columnCellElement = element.parentNode;
@@ -843,7 +841,7 @@ function xPosition(d, optionalWidth) {
 function setCellHeightAndPositionY(columnCell) {
     columnCell
         .attr('transform', function(d) {
-            var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + rowsHeight(n, Infinity)}, 0);
+            var headerHeight = d.rowBlocks[0].auxiliaryBlocks.reduce(function(p, n) {return p + rowsHeight(n, Infinity);}, 0);
             var l = getBlock(d);
             var rowAnchor = rowsHeight(l, d.key);
             var yOffset = rowAnchor + headerHeight;
@@ -855,7 +853,7 @@ function setCellHeightAndPositionY(columnCell) {
 
 function firstRowAnchor(blocks, page) {
     var total = 0;
-    for(var i = page - 1; i >=0 ; i--) {
+    for(var i = page - 1; i >= 0; i--) {
         total += allRowsHeight(blocks[i]);
     }
     return total;
@@ -887,4 +885,3 @@ function allRowsHeight(rowBlock) {
 
 function getBlock(d) {return d.rowBlocks[d.page];}
 function getRow(l, i) {return l.rows[i - l.firstRowIndex];}
-

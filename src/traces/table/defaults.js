@@ -21,7 +21,7 @@ function defaultColumnOrder(traceIn, coerce) {
         oneStepped.push(i);
     }
     coerce('columnorder', oneStepped);
-};
+}
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {

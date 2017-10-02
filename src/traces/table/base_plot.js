@@ -8,7 +8,6 @@
 
 'use strict';
 
-var d3 = require('d3');
 var Plots = require('../../plots/plots');
 var tablePlot = require('./plot');
 
