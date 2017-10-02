@@ -213,12 +213,12 @@ plots.resize = function(gd) {
     return new Promise(function(resolve, reject) {
 
         function isHidden(gd) {
-            var display = getComputedStyle(gd).display;
+            var display = window.getComputedStyle(gd).display;
             return !display || display === 'none';
         }
 
         if(!gd || isHidden(gd)) {
-            reject(new Error('Resize must be passed a plot div element.'));
+            reject(new Error('Resize must be passed a displayed plot div element.'));
         }
 
         if(gd._redrawTimer) clearTimeout(gd._redrawTimer);

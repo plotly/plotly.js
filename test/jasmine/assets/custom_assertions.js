@@ -49,14 +49,14 @@ exports.assertStyle = function(dims, color, opacity) {
 exports.assertHoverLabelStyle = function(g, expectation, msg, textSelector) {
     if(!msg) msg = '';
 
-    var path = g.select('path').node();
-    expect(getComputedStyle(path).fill).toBe(expectation.bgcolor, msg + ': bgcolor');
-    expect(getComputedStyle(path).stroke).toBe(expectation.bordercolor, msg + ': bordercolor');
+    var pathStyle = window.getComputedStyle(g.select('path').node());
+    expect(pathStyle.fill).toBe(expectation.bgcolor, msg + ': bgcolor');
+    expect(pathStyle.stroke).toBe(expectation.bordercolor, msg + ': bordercolor');
 
-    var text = g.select(textSelector || 'text.nums').node();
-    expect(getComputedStyle(text).fontFamily.split(',')[0]).toBe(expectation.fontFamily, msg + ': font.family');
-    expect(parseInt(getComputedStyle(text).fontSize)).toBe(expectation.fontSize, msg + ': font.size');
-    expect(getComputedStyle(text).fill).toBe(expectation.fontColor, msg + ': font.color');
+    var textStyle = window.getComputedStyle(g.select(textSelector || 'text.nums').node());
+    expect(textStyle.fontFamily.split(',')[0]).toBe(expectation.fontFamily, msg + ': font.family');
+    expect(parseInt(textStyle.fontSize)).toBe(expectation.fontSize, msg + ': font.size');
+    expect(textStyle.fill).toBe(expectation.fontColor, msg + ': font.color');
 };
 
 exports.assertClip = function(sel, isClipped, size, msg) {

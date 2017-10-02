@@ -125,11 +125,11 @@ describe('ternary plots', function() {
                 Lib.clearThrottle();
                 mouseEvent('mousemove', pointPos[0], pointPos[1]);
 
-                var path = d3.select('g.hovertext').select('path').node();
-                var text = d3.select('g.hovertext').select('text.nums').node();
+                var pathStyle = window.getComputedStyle(d3.select('g.hovertext path').node());
+                var textStyle = window.getComputedStyle(d3.select('g.hovertext text.nums').node());
 
-                expect(getComputedStyle(path).stroke).toEqual('rgb(0, 0, 255)', 'bordercolor');
-                expect(getComputedStyle(text).fontFamily).toEqual('Gravitas', 'font.family[0]');
+                expect(pathStyle.stroke).toEqual('rgb(0, 0, 255)', 'bordercolor');
+                expect(textStyle.fontFamily).toEqual('Gravitas', 'font.family[0]');
             })
             .then(done);
         });

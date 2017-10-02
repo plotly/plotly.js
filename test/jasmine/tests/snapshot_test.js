@@ -230,8 +230,9 @@ describe('Plotly.Snapshot', function() {
             Plotly.plot(gd, subplotMock.data, subplotMock.layout).then(function() {
 
                 d3.select(gd).selectAll('text').each(function() {
-                    expect(getComputedStyle(this).visibility).toEqual('visible');
-                    expect(getComputedStyle(this).display).toEqual('block');
+                    var thisStyle = window.getComputedStyle(this);
+                    expect(thisStyle.visibility).toEqual('visible');
+                    expect(thisStyle.display).toEqual('block');
                 });
 
                 return Plotly.Snapshot.toSVG(gd);

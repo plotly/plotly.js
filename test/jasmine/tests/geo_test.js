@@ -611,9 +611,9 @@ describe('Test geo interactions', function() {
                 .then(function() {
                     mouseEventScatterGeo('mousemove');
 
-                    var path = d3.selectAll('g.hovertext').select('path').node();
-                    expect(getComputedStyle(path).fill).toEqual('rgb(255, 0, 0)', 'bgcolor');
-                    expect(getComputedStyle(path).stroke).toEqual('rgb(0, 0, 255)', 'bordecolor[0]');
+                    var pathStyle = window.getComputedStyle(d3.select('g.hovertext path').node());
+                    expect(pathStyle.fill).toEqual('rgb(255, 0, 0)', 'bgcolor');
+                    expect(pathStyle.stroke).toEqual('rgb(0, 0, 255)', 'bordecolor[0]');
                 })
                 .then(done);
             });
