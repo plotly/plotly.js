@@ -12,7 +12,10 @@ var click = require('../assets/click');
 var delay = require('../assets/delay');
 var doubleClick = require('../assets/double_click');
 var fail = require('../assets/fail_test');
-var assertHoverLabelStyle = require('../assets/custom_assertions').assertHoverLabelStyle;
+
+var customAssertions = require('../assets/custom_assertions');
+var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 describe('hover info', function() {
     'use strict';
@@ -40,10 +43,10 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
-            expect(d3.selectAll('g.hovertext').select('text').html()).toEqual('1');
+            assertHoverLabelContent([
+                ['1', null],
+                '0.388'
+            ]);
         });
     });
 
@@ -67,9 +70,10 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(0);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
+            assertHoverLabelContent([
+                null,
+                '0.388'
+            ]);
         });
     });
 
@@ -93,9 +97,10 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(0);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').select('text').html()).toEqual('1');
+            assertHoverLabelContent([
+                ['1', null],
+                null
+            ]);
         });
     });
 
@@ -123,10 +128,10 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(0);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').select('text').html())
-                .toEqual('hover text  with spaces  not newlines');
+            assertHoverLabelContent([
+                ['hover text  with spaces  not newlines', null],
+                null
+            ]);
         });
     });
 
@@ -152,12 +157,10 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
-            expect(d3.selectAll('g.hovertext').select('text.nums').selectAll('tspan').size()).toEqual(2);
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('1');
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('hover text');
+            assertHoverLabelContent([
+                [['1', 'hover text'], 'PV learning ...'],
+                '0.388'
+            ]);
         });
     });
 
@@ -190,13 +193,10 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
-            expect(d3.selectAll('g.hovertext').select('text.nums').selectAll('tspan').size()).toEqual(2);
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('1');
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('hover text');
-            expect(d3.selectAll('g.hovertext').selectAll('text.name').node().innerHTML).toEqual('&lt;img src=x o...');
+            assertHoverLabelContent([
+                [['1', 'hover text'], '&lt;img src=x o...'],
+                '0.388'
+            ]);
         });
     });
 
@@ -213,10 +213,13 @@ describe('hover info', function() {
             Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
-        it('responds to hover y+text', function() {
+        it('responds to hover y', function() {
             Fx.hover('graph', evt, 'xy');
 
-            expect(d3.selectAll('g.hovertext').selectAll('text.nums').node().innerHTML).toEqual('1e+9');
+            assertHoverLabelContent([
+                ['1e+9', null],
+                null
+            ]);
         });
     });
 
@@ -242,11 +245,10 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(0);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').selectAll('tspan').size()).toEqual(2);
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('1');
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('hover text');
+            assertHoverLabelContent([
+                [['1', 'hover text'], null],
+                null
+            ]);
         });
     });
 
@@ -272,10 +274,10 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
-            expect(d3.selectAll('g.hovertext').select('text').html()).toEqual('hover text');
+            assertHoverLabelContent([
+                ['hover text', null],
+                '0.388'
+            ]);
         });
     });
 
@@ -292,8 +294,10 @@ describe('hover info', function() {
         it('responds to hover x+text', function() {
             Fx.hover('graph', evt, 'xy');
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388 ± 1');
+            assertHoverLabelContent([
+                ['1', null],
+                '0.388 ± 1'
+            ]);
         });
     });
 
@@ -310,8 +314,10 @@ describe('hover info', function() {
         it('responds to hover x+text', function() {
             Fx.hover('graph', evt, 'xy');
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
+            assertHoverLabelContent([
+                ['1', null],
+                '0.388'
+            ]);
         });
     });
 
@@ -328,8 +334,10 @@ describe('hover info', function() {
         it('responds to hover x+text', function() {
             Fx.hover('graph', evt, 'xy');
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
+            assertHoverLabelContent([
+                ['1', null],
+                '0.388'
+            ]);
         });
     });
 
@@ -355,11 +363,10 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(0);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('hover');
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('text');
-            expect(d3.selectAll('g.hovertext').select('text').selectAll('tspan').size()).toEqual(2);
+            assertHoverLabelContent([
+                [['hover', 'text'], null],
+                null
+            ]);
         });
     });
 
@@ -377,6 +384,7 @@ describe('hover info', function() {
             Fx.hover('graph', evt, 'xy');
 
             expect(gd._hoverdata, undefined);
+            assertHoverLabelContent([null, null]);
         });
     });
 
@@ -400,8 +408,7 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(0);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(0);
+            assertHoverLabelContent([null, null]);
         });
     });
 
@@ -432,13 +439,10 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.33);
             expect(hoverTrace.y).toEqual(1.25);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(0);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-
-            var expectations = ['PV learning ...', '(0.33, 1.25)'];
-            d3.selectAll('g.hovertext').selectAll('text').each(function(_, i) {
-                expect(d3.select(this).html()).toEqual(expectations[i]);
-            });
+            assertHoverLabelContent([
+                ['(0.33, 1.25)', 'PV learning ...'],
+                null
+            ]);
         });
 
         it('render only non-hoverinfo \'none\' hover labels', function(done) {
@@ -456,15 +460,12 @@ describe('hover info', function() {
                 expect(hoverTrace.x).toEqual(0.33);
                 expect(hoverTrace.y).toEqual(1.25);
 
-                expect(d3.selectAll('g.axistext').size()).toEqual(0);
-                expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-
-                var text = d3.selectAll('g.hovertext').select('text');
-                expect(text.size()).toEqual(1);
-                expect(text.html()).toEqual('PV learning ...');
-
-                done();
-            });
+                assertHoverLabelContent([
+                    ['PV learning ...', null],
+                    null
+                ]);
+            })
+            .then(done);
         });
     });
 
@@ -472,16 +473,6 @@ describe('hover info', function() {
         function _hover(gd, xpx, ypx) {
             Fx.hover(gd, { xpx: xpx, ypx: ypx }, 'xy');
             Lib.clearThrottle();
-        }
-
-        function _assert(nameLabel, lines) {
-            expect(d3.select('g.axistext').size()).toEqual(0, 'no common label');
-
-            var sel = d3.select('g.hovertext');
-            expect(sel.select('text.name').html()).toEqual(nameLabel, 'name label');
-            sel.select('text.nums').selectAll('tspan').each(function(_, i) {
-                expect(d3.select(this).html()).toEqual(lines[i], 'lines ' + i);
-            });
         }
 
         it('should display correct label content', function(done) {
@@ -504,11 +495,17 @@ describe('hover info', function() {
             })
             .then(function() {
                 _hover(gd, 250, 100);
-                _assert('two', ['x: 1', 'y: 3', 'z: 2']);
+                assertHoverLabelContent([
+                    [['x: 1', 'y: 3', 'z: 2'], 'two'],
+                    null
+                ]);
             })
             .then(function() {
                 _hover(gd, 250, 300);
-                _assert('one', ['x: 1', 'y: 1', 'z: 2']);
+                assertHoverLabelContent([
+                    [['x: 1', 'y: 1', 'z: 2'], 'one'],
+                    null
+                ]);
             })
             .catch(fail)
             .then(done);
@@ -516,7 +513,6 @@ describe('hover info', function() {
     });
 
     describe('hoverformat', function() {
-
         var data = [{
                 x: [1, 2, 3],
                 y: [0.12345, 0.23456, 0.34567]
@@ -535,10 +531,10 @@ describe('hover info', function() {
             Plotly.plot(this.gd, data, layout);
             mouseEvent('mousemove', 303, 213);
 
-            var hovers = d3.selectAll('g.hovertext');
-
-            expect(hovers.size()).toEqual(1);
-            expect(hovers.select('text')[0][0].textContent).toEqual('0.23');
+            assertHoverLabelContent([
+                ['0.23', null],
+                '2'
+            ]);
         });
 
         it('should display the correct format when ticklabels false', function() {
@@ -546,15 +542,14 @@ describe('hover info', function() {
             Plotly.plot(this.gd, data, layout);
             mouseEvent('mousemove', 303, 213);
 
-            var hovers = d3.selectAll('g.hovertext');
-
-            expect(hovers.size()).toEqual(1);
-            expect(hovers.select('text')[0][0].textContent).toEqual('0.23');
+            assertHoverLabelContent([
+                ['0.23', null],
+                '2'
+            ]);
         });
     });
 
     describe('textmode', function() {
-
         var data = [{
                 x: [1, 2, 3, 4],
                 y: [2, 3, 4, 5],
@@ -573,28 +568,28 @@ describe('hover info', function() {
 
         it('should show text labels', function() {
             mouseEvent('mousemove', 108, 303);
-            var hovers = d3.selectAll('g.hovertext');
-            expect(hovers.size()).toEqual(1);
-            expect(hovers.select('text')[0][0].textContent).toEqual('test');
+            assertHoverLabelContent([
+                ['test', null],
+                null
+            ]);
         });
 
         it('should show number labels', function() {
             mouseEvent('mousemove', 363, 173);
-            var hovers = d3.selectAll('g.hovertext');
-            expect(hovers.size()).toEqual(1);
-            expect(hovers.select('text')[0][0].textContent).toEqual('42');
+            assertHoverLabelContent([
+                ['42', null],
+                null
+            ]);
         });
 
         it('should not show null text labels', function() {
             mouseEvent('mousemove', 229, 239);
-            var hovers = d3.selectAll('g.hovertext');
-            expect(hovers.size()).toEqual(0);
+            assertHoverLabelContent([null, null]);
         });
 
         it('should not show undefined text labels', function() {
             mouseEvent('mousemove', 493, 108);
-            var hovers = d3.selectAll('g.hovertext');
-            expect(hovers.size()).toEqual(0);
+            assertHoverLabelContent([null, null]);
         });
     });
 
@@ -688,18 +683,13 @@ describe('hover info on stacked subplots', function() {
                     y: 1000
                 }));
 
-            // There should be a single label on the x-axis with the shared x value, 3.
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('3');
-
-            // There should be two points being hovered over, in two different traces, one in each plot.
-            expect(d3.selectAll('g.hovertext').size()).toEqual(2);
-            var textNodes = d3.selectAll('g.hovertext').selectAll('text');
-
-            expect(textNodes[0][0].innerHTML).toEqual('trace 1');
-            expect(textNodes[0][1].innerHTML).toEqual('110');
-            expect(textNodes[1][0].innerHTML).toEqual('trace 2');
-            expect(textNodes[1][1].innerHTML).toEqual('1000');
+            assertHoverLabelContent([
+                // There should be 2 pts being hovered over,
+                // in two different traces, one in each plot.
+                [['110', 'trace 1'], ['1000', 'trace 2']],
+                // There should be a single label on the x-axis with the shared x value, 3'
+                '3'
+            ]);
         });
     });
 
@@ -796,7 +786,6 @@ describe('hover info on overlaid subplots', function() {
 });
 
 describe('hover after resizing', function() {
-    'use strict';
 
     var gd;
     afterEach(destroyGraphDiv);
@@ -811,51 +800,48 @@ describe('hover after resizing', function() {
         });
     }
 
-    function assertLabelCount(pos, cnt, msg) {
+    function check(pos, expectation, msg) {
         Lib.clearThrottle();
         mouseEvent('mousemove', pos[0], pos[1]);
-
-        var hoverText = d3.selectAll('g.hovertext');
-        expect(hoverText.size()).toBe(cnt, msg);
+        assertHoverLabelContent(expectation, msg);
     }
 
     it('should work', function(done) {
-        var data = [{ y: [2, 1, 2] }],
-            layout = { width: 600, height: 500 };
         gd = createGraphDiv();
 
-        var pos0 = [305, 403],
-            pos1 = [401, 122];
+        var data = [{ y: [2, 1, 2] }];
+        var layout = { width: 600, height: 500 };
+
+        var pos0 = [305, 403];
+        var pos1 = [401, 122];
 
         Plotly.plot(gd, data, layout).then(function() {
-
             // to test https://github.com/plotly/plotly.js/issues/1044
-
             return _click(pos0);
         })
         .then(function() {
-            return assertLabelCount(pos0, 1, 'before resize, showing pt label');
+            return check(pos0, [['1', null], '1'], 'before resize, showing pt label');
         })
         .then(function() {
-            return assertLabelCount(pos1, 0, 'before resize, not showing blank spot');
+            return check(pos1, [null, null], 'before resize, not showing blank spot');
         })
         .then(function() {
             return Plotly.relayout(gd, 'width', 500);
         })
         .then(function() {
-            return assertLabelCount(pos0, 0, 'after resize, not showing blank spot');
+            return check(pos0, [null, null], 'after resize, not showing blank spot');
         })
         .then(function() {
-            return assertLabelCount(pos1, 1, 'after resize, showing pt label');
+            return check(pos1, [['2', null], '2'], 'after resize, showing pt label');
         })
         .then(function() {
             return Plotly.relayout(gd, 'width', 600);
         })
         .then(function() {
-            return assertLabelCount(pos0, 1, 'back to initial, showing pt label');
+            return check(pos0, [['1', null], '1'], 'back to initial, showing pt label');
         })
         .then(function() {
-            return assertLabelCount(pos1, 0, 'back to initial, not showing blank spot');
+            return check(pos1, [null, null], 'back to initial, not showing blank spot');
         })
         .then(done);
     });

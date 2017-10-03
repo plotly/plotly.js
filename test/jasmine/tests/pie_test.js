@@ -8,7 +8,10 @@ var failTest = require('../assets/fail_test');
 var click = require('../assets/click');
 var getClientPosition = require('../assets/get_client_position');
 var mouseEvent = require('../assets/mouse_event');
-var assertHoverLabelStyle = require('../assets/custom_assertions').assertHoverLabelStyle;
+
+var customAssertions = require('../assets/custom_assertions');
+var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 describe('Pie traces:', function() {
     'use strict';
@@ -245,17 +248,13 @@ describe('pie hovering', function() {
         }
 
         function assertLabel(content, style, msg) {
-            var g = d3.selectAll('.hovertext');
-            var lines = g.selectAll('.nums .line');
-
-            expect(lines.size()).toBe(content.length);
-
-            lines.each(function(_, i) {
-                expect(d3.select(this).text()).toBe(content[i]);
-            });
+            assertHoverLabelContent([
+                [content, null],
+                null
+            ], msg);
 
             if(style) {
-                assertHoverLabelStyle(g, {
+                assertHoverLabelStyle(d3.select('.hovertext'), {
                     bgcolor: style[0],
                     bordercolor: style[1],
                     fontSize: style[2],
