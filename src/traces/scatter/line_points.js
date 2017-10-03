@@ -10,6 +10,7 @@
 'use strict';
 
 var BADNUM = require('../../constants/numerical').BADNUM;
+var segmentsIntersect = require('../../lib/geometry2d').segmentsIntersect;
 
 
 module.exports = function linePoints(d, opts) {
@@ -62,8 +63,8 @@ module.exports = function linePoints(d, opts) {
 
     // if we're off-screen, increase tolerance over baseTolerance
     function getTolerance(pt) {
-        var xFrac = pt[0] / xa._length,
-            yFrac = pt[1] / ya._length;
+        var xFrac = pt[0] / xa._length;
+        var yFrac = pt[1] / ya._length;
         return (1 + 10 * Math.max(0, -xFrac, xFrac - 1, -yFrac, yFrac - 1)) * baseTolerance;
     }
 
@@ -73,13 +74,176 @@ module.exports = function linePoints(d, opts) {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
+    // last bit of filtering: clip paths that are VERY far off-screen
+    // so we don't get near the browser's hard limit (+/- 2^29 px in Chrome and FF)
+
+    // maximum multiple of the screen size to use
+    var maxScreensAway = 20;
+
+    // find the intersections between the segment from pt1 to pt2
+    // and the large rectangle maxScreensAway around the viewport
+    // if one of pt1 and pt2 is inside and the other outside, there
+    // will be only one intersection.
+    // if both are outside there will be 0 or 2 intersections
+    // (or 1 if it's right at a corner - we'll treat that like 0)
+    // returns an array of intersection pts
+    var xEdge0 = -xa._length * maxScreensAway;
+    var xEdge1 = xa._length * (1 + maxScreensAway);
+    var yEdge0 = -ya._length * maxScreensAway;
+    var yEdge1 = ya._length * (1 + maxScreensAway);
+    var edges = [
+        [xEdge0, yEdge0, xEdge1, yEdge0],
+        [xEdge1, yEdge0, xEdge1, yEdge1],
+        [xEdge1, yEdge1, xEdge0, yEdge1],
+        [xEdge0, yEdge1, xEdge0, yEdge0]
+    ];
+    var xEdge, yEdge, lastXEdge, lastYEdge, lastFarPt, edgePt;
+
+    function getEdgeIntersections(pt1, pt2) {
+        var out = [];
+        var ptCount = 0;
+        for(var i = 0; i < 4; i++) {
+            var edge = edges[i];
+            var ptInt = segmentsIntersect(pt1[0], pt1[1], pt2[0], pt2[1],
+                edge[0], edge[1], edge[2], edge[3]);
+            if(ptInt && (!ptCount ||
+                Math.abs(ptInt.x - out[0][0]) > 1 ||
+                Math.abs(ptInt.y - out[0][1]) > 1
+            )) {
+                ptInt = [ptInt.x, ptInt.y];
+                // if we have 2 intersections, make sure the closest one to pt1 comes first
+                if(ptCount && ptDist(ptInt, pt1) < ptDist(out[0], pt1)) out.unshift(ptInt);
+                else out.push(ptInt);
+                ptCount++;
+            }
+        }
+        return out;
+    }
+
+    // a segment pt1->pt2 entirely outside the nearby region:
+    // find the corner it gets closest to touching
+    function getClosestCorner(pt1, pt2) {
+        var dx = pt2[0] - pt1[0];
+        var m = (pt2[1] - pt1[1]) / dx;
+        var b = (pt1[1] * pt2[0] - pt2[1] * pt1[0]) / dx;
+
+        if(b > 0) return [m > 0 ? xEdge0 : xEdge1, yEdge1];
+        else return [m > 0 ? xEdge1 : xEdge0, yEdge0];
+    }
+
+    function updateEdge(pt) {
+        var x = pt[0];
+        var y = pt[1];
+        var xSame = x === pts[pti - 1][0];
+        var ySame = y === pts[pti - 1][1];
+        // duplicate point?
+        if(xSame && ySame) return;
+        if(pti > 1) {
+            // backtracking along an edge?
+            var xSame2 = x === pts[pti - 2][0];
+            var ySame2 = y === pts[pti - 2][1];
+            if(xSame && (x === xEdge0 || x === xEdge1) && xSame2) {
+                if(ySame2) pti--; // backtracking exactly - drop prev pt and don't add
+                else pts[pti - 1] = pt; // not exact: replace the prev pt
+            }
+            else if(ySame && (y === yEdge0 || y === yEdge1) && ySame2) {
+                if(xSame2) pti--;
+                else pts[pti - 1] = pt;
+            }
+            else pts[pti++] = pt;
+        }
+        else pts[pti++] = pt;
+    }
+
+    function updateEdgesForReentry(pt) {
+        // if we're outside the nearby region and going back in,
+        // we may need to loop around a corner point
+        if(pts[pti - 1][0] !== pt[0] && pts[pti - 1][1] !== pt[1]) {
+            updateEdge([lastXEdge, lastYEdge]);
+        }
+        updateEdge(pt);
+        lastFarPt = null;
+        lastXEdge = lastYEdge = 0;
+    }
+
+    function addPt(pt) {
+        // Are we more than maxScreensAway off-screen any direction?
+        // if so, clip to this box, but in such a way that on-screen
+        // drawing is unchanged
+        xEdge = (pt[0] < xEdge0) ? xEdge0 : (pt[0] > xEdge1) ? xEdge1 : 0;
+        yEdge = (pt[1] < yEdge0) ? yEdge0 : (pt[1] > yEdge1) ? yEdge1 : 0;
+        if(xEdge || yEdge) {
+            // to get fills right - if first point is far, push it toward the
+            // screen in whichever direction(s) are far
+            if(!pti) {
+                pts[pti++] = [xEdge || pt[0], yEdge || pt[1]];
+            }
+            else if(lastFarPt) {
+                // both this point and the last are outside the nearby region
+                // check if we're crossing the nearby region
+                var intersections = getEdgeIntersections(lastFarPt, pt);
+                if(intersections.length > 1) {
+                    updateEdgesForReentry(intersections[0]);
+                    pts[pti++] = intersections[1];
+                }
+            }
+            // we're leaving the nearby region - add the point where we left it
+            else {
+                edgePt = getEdgeIntersections(pts[pti - 1], pt)[0];
+                pts[pti++] = edgePt;
+            }
+
+            var lastPt = pts[pti - 1];
+            if(xEdge && yEdge && (lastPt[0] !== xEdge || lastPt[1] !== yEdge)) {
+                // we've gone out beyond a new corner: add the corner too
+                // so that the next point will take the right winding
+                if(lastFarPt) {
+                    if(lastXEdge !== xEdge && lastYEdge !== yEdge) {
+                        if(lastXEdge && lastYEdge) {
+                            // we've gone around to an opposite corner - we
+                            // need to add the correct extra corner
+                            // in order to get the right winding
+                            updateEdge(getClosestCorner(lastFarPt, pt));
+                        }
+                        else {
+                            // we're coming from a far edge - the extra corner
+                            // we need is determined uniquely by the sectors
+                            updateEdge([lastXEdge || xEdge, lastYEdge || yEdge]);
+                        }
+                    }
+                    else if(lastXEdge && lastYEdge) {
+                        updateEdge([lastXEdge, lastYEdge]);
+                    }
+                }
+                updateEdge([xEdge, yEdge]);
+            }
+            else if((lastXEdge - xEdge) && (lastYEdge - yEdge)) {
+                // we're coming from an edge or far corner to an edge - again the
+                // extra corner we need is uniquely determined by the sectors
+                updateEdge([xEdge || lastXEdge, yEdge || lastYEdge]);
+            }
+            lastFarPt = pt;
+            lastXEdge = xEdge;
+            lastYEdge = yEdge;
+        }
+        else {
+            if(lastFarPt) {
+                // this point is in range but the previous wasn't: add its entry pt first
+                updateEdgesForReentry(getEdgeIntersections(lastFarPt, pt)[0]);
+            }
+
+            pts[pti++] = pt;
+        }
+    }
+
     // loop over ALL points in this trace
     for(i = 0; i < d.length; i++) {
         clusterStartPt = getPt(i);
         if(!clusterStartPt) continue;
 
         pti = 0;
-        pts[pti++] = clusterStartPt;
+        lastFarPt = null;
+        addPt(clusterStartPt);
 
         // loop over one segment of the trace
         for(i++; i < d.length; i++) {
@@ -93,7 +257,7 @@ module.exports = function linePoints(d, opts) {
             // TODO: we *could* decimate [hv]{2,3} shapes if we restricted clusters to horz or vert again
             // but spline would be verrry awkward to decimate
             if(!linear) {
-                pts[pti++] = clusterHighPt;
+                addPt(clusterHighPt);
                 continue;
             }
 
@@ -147,22 +311,25 @@ module.exports = function linePoints(d, opts) {
             // insert this cluster into pts
             // we've already inserted the start pt, now check if we have high and low pts
             if(clusterHighFirst) {
-                pts[pti++] = clusterHighPt;
-                if(clusterEndPt !== clusterLowPt) pts[pti++] = clusterLowPt;
+                addPt(clusterHighPt);
+                if(clusterEndPt !== clusterLowPt) addPt(clusterLowPt);
             } else {
-                if(clusterLowPt !== clusterStartPt) pts[pti++] = clusterLowPt;
-                if(clusterEndPt !== clusterHighPt) pts[pti++] = clusterHighPt;
+                if(clusterLowPt !== clusterStartPt) addPt(clusterLowPt);
+                if(clusterEndPt !== clusterHighPt) addPt(clusterHighPt);
             }
             // and finally insert the end pt
-            pts[pti++] = clusterEndPt;
+            addPt(clusterEndPt);
 
             // have we reached the end of this segment?
             if(i >= d.length || !thisPt) break;
 
             // otherwise we have an out-of-cluster point to insert as next clusterStartPt
-            pts[pti++] = thisPt;
+            addPt(thisPt);
             clusterStartPt = thisPt;
         }
+
+        // to get fills right - repeat what we did at the start
+        if(lastFarPt) updateEdge([lastXEdge || lastFarPt[0], lastYEdge || lastFarPt[1]]);
 
         segments.push(pts.slice(0, pti));
     }
