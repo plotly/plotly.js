@@ -473,7 +473,7 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
             var format = latex ? null : gridPick(d.calcdata.cells.format, col, row) || null;
             var prefixSuffixedText = prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
             d.latex = latex;
-            d.mayHaveMarkup = (typeof userSuppliedContent === 'string') && userSuppliedContent.match(/[<>]/);
+            d.mayHaveMarkup = (typeof userSuppliedContent === 'string') && userSuppliedContent.match(/[<&>]/);
             var hasWrapSplitCharacter;
             var hwsc = function(prefixSuffixedText) {return prefixSuffixedText.indexOf(c.wrapSplitCharacter) !== -1;};
             d.wrappingNeeded = !d.wrapped && !userBrokenText && !latex && (hasWrapSplitCharacter = hwsc(prefixSuffixedText));
@@ -488,7 +488,7 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
                 textToRender = hrefRestoredFragments.join(c.lineBreaker) + c.lineBreaker + c.wrapSpacer;
             } else {
                 delete d.fragments;
-                textToRender = d.value;
+                textToRender = prefixSuffixedText;
             }
             return textToRender;
         })
@@ -608,7 +608,7 @@ function splitToCells(d) {
         // But it has to be busted when `svgUtil.convertToTspans` is used as it reshapes cell subtrees asynchronously,
         // and by that time the user may have scrolled away, resulting in stale overwrites. The real solution will be
         // to turn `svgUtil.convertToTspans` into a cancelable request, in which case no key busting is needed.
-        var buster = (typeof v === 'string') && v.match(/[<$>]/) ? '_keybuster_' + Math.random() : '';
+        var buster = (typeof v === 'string') && v.match(/[<$&>]/) ? '_keybuster_' + Math.random() : '';
         return {
             // keyWithinBlock: /*fromTo[0] + */i, // optimized future version - no busting
             // keyWithinBlock: fromTo[0] + i, // initial always-unoptimized version - janky scrolling with 5+ columns
@@ -824,6 +824,11 @@ function updateYPositionMaker(columnBlock, element, tableControlView, gd, d) {
                 var yPosition = rectBox.top - box.top + (currentTransform ? currentTransform.matrix.f : c.cellPad);
                 return 'translate(' + xPosition(d, d3.select(element.parentNode).select('.cellTextHolder').node().getBoundingClientRect().width) + ' ' + yPosition + ')';
             });
+
+        // MathJax styling has to be killed for HTML DOM color specifications to seep through
+        cellTextHolder.selectAll('svg').selectAll('*')
+            .attr('fill', null)
+            .attr('stroke', null);
 
         d.settledY = true;
     };
