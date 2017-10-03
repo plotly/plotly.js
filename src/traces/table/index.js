@@ -21,9 +21,9 @@ Table.basePlotModule = require('./base_plot');
 Table.categories = [];
 Table.meta = {
     description: [
-        'Table view for multidimensional exploratory data analysis.',
-        'The samples are specified in `dimensions`.',
-        'The colors are set in `line.color`.'
+        'Table view for detailed data viewing.',
+        'The data are arranged in a grid of rows and columns.',
+        'Most styling can be specified for columns, rows or individual cells.'
     ].join(' ')
 };
 
