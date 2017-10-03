@@ -729,8 +729,8 @@ function makeDragRow(gd, tableControlView, optionalMultiplier, optionalPosition)
 function conditionalPanelRerender(gd, tableControlView, cellsColumnBlock, pages, prevPages, d, revolverIndex) {
     var shouldComponentUpdate = pages[revolverIndex] !== prevPages[revolverIndex];
     if(shouldComponentUpdate) {
-        window.clearTimeout(d.currentRepaint[revolverIndex]);
-        d.currentRepaint[revolverIndex] = window.setTimeout(function() {
+        clearTimeout(d.currentRepaint[revolverIndex]);
+        d.currentRepaint[revolverIndex] = setTimeout(function() {
             // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
             // some repaints invisible ie. wasteful (DOM work blocks the main thread)
             var toRerender = cellsColumnBlock.filter(function(d, i) {return i === revolverIndex && pages[i] !== prevPages[i];});
