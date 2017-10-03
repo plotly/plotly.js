@@ -61,7 +61,7 @@
             "prefix": null,
             "suffix": [".", null, "°", "°", null],
 
-            "height": 32,
+            "height": 26,
 
             "align": ["right", "left", "right", "right", "left", "left", "left"],
             "valign": ["top"],

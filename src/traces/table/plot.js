@@ -228,7 +228,8 @@ function renderScrollbarKit(tableControlView, gd) {
 
     scrollbarKit.enter()
         .append('g')
-        .classed('scrollbarKit', true);
+        .classed('scrollbarKit', true)
+        .style('shape-rendering', 'geometricPrecision');
 
     scrollbarKit
         .each(function(d) {
@@ -420,7 +421,8 @@ function renderCellTextHolder(columnCell) {
 
     cellTextHolder.enter()
         .append('g')
-        .classed('cellTextHolder', true);
+        .classed('cellTextHolder', true)
+        .style('shape-rendering', 'geometricPrecision');
 
     return cellTextHolder;
 }
