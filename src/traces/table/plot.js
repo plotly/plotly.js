@@ -553,7 +553,7 @@ function gridPick(spec, col, row) {
 function easeColumn(selection, d, y) {
     selection
         .transition()
-        .ease(c.releaseTransitionEase, 1, 0.75)
+        .ease(c.releaseTransitionEase)
         .duration(c.releaseTransitionDuration)
         .attr('transform', 'translate(' + d.x + ' ' + y + ')');
 }
