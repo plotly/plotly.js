@@ -16,7 +16,6 @@ var str2RGBArray = require('../../lib/str2rgbarray');
 var formatColor = require('../../lib/gl_format_color');
 var subTypes = require('../scatter/subtypes');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
-var getTraceColor = require('../scatter/get_trace_color');
 var DASHES = require('../../constants/gl2d_dashes');
 var createScatter = require('regl-scatter2d');
 var createLine = require('regl-line2d');
@@ -54,7 +53,7 @@ function createLineWithMarkers(container, plotinfo, cdata) {
         scatter = subplotObj._scattergl = new ScatterScene(container);
     }
 
-    scatter.update(cdata)
+    scatter.update(cdata);
 
     return scatter;
 }
@@ -84,9 +83,10 @@ function ScatterScene(container) {
         color: [0, 0, 0, 1],
         thickness: 1,
         miterLimit: 2,
-        overlap: true,
         dashes: [1]
     });
+
+    this.count = 0;
 
     return this;
 }
@@ -95,32 +95,55 @@ var proto = ScatterScene.prototype;
 
 
 proto.updateRange = function(range) {
-    // this.range = this.scatterOptions.range = this.lineOptions.range = range;
+    var batch = [];
 
-    // this.scatter({
-    //     range: range
-    // });
-    // this.line({
-    //     range: range
-    // });
-    throw 'Unimplemented';
-}
+    for(var i = 0; i < this.count; i++) {
+        batch.push({
+            line: {range: range},
+            scatter: {range: range}
+        });
+    }
+
+    this.updateBatch(batch);
+};
+
+
+proto.updateBatch = function(batch) {
+    // update options of line and scatter components directly
+    var lineBatch = [];
+    var scatterBatch = [];
+    for(var i = 0; i < batch.length; i++) {
+        lineBatch.push(batch[i].line || null);
+        scatterBatch.push(batch[i].scatter || null);
+    }
+
+    this.line.update(lineBatch);
+    // this.scatter.update(scatterBatch)
+
+    // rendering requires preserving order of line/scatter layers
+    for(var i = 0; i < batch.length; i++) {
+        var lineBatch = Array(batch.length);
+        var scatterBatch = Array(batch.length);
+        for(var j = 0; j < batch.length; j++) {
+            lineBatch[j] = i === j;
+        }
+        this.line.draw(lineBatch);
+        // this.scatter.draw(scatterBatch)
+    }
+
+    this.count = batch.length;
+};
 
 
 proto.update = function(cdscatters) {
-    var container = this.container
+    var container = this.container;
 
-    var batch = []
+    var batch = [];
 
-    cdscatters.forEach(function (cdscatter) {
-        if (!cdscatter) return;
+    cdscatters.forEach(function(cdscatter) {
+        if(!cdscatter) return;
 
-        var lineOptions = {}
-        var scatterOptions = {}
-        batch.push({
-            line: lineOptions,
-            scatter: scatterOptions
-        })
+        var lineOptions, scatterOptions;
 
         var options = cdscatter[0].trace;
         var xaxis = Axes.getFromId(container, options.xaxis || 'x'),
@@ -208,13 +231,15 @@ proto.update = function(cdscatters) {
             ey1 = errorsY[ptrY++] = errorVals[i].yh - yy || 0;
         }
 
-        //update lines
+        // update lines
         if(hasLines) {
+            lineOptions = {};
             lineOptions.positions = positions,
             lineOptions.thickness = options.line.width,
             lineOptions.color = options.line.color,
             lineOptions.opacity = options.opacity,
-            lineOptions.join = 'round'
+            lineOptions.join = options.opacity === 1.0 ? 'rect' : 'round';
+            lineOptions.overlay = true;
 
             var lineWidth = lineOptions.thickness,
                 dashes = (DASHES[options.line.dash] || [1]).slice();
@@ -238,8 +263,8 @@ proto.update = function(cdscatters) {
             lineOptions.dashes = dashes;
             // lineOptions.fillColor = [fillColor, fillColor, fillColor, fillColor];
 
-            lineOptions.viewport = viewport
-            lineOptions.range = range
+            lineOptions.viewport = viewport;
+            lineOptions.range = range;
         }
 
 
@@ -256,6 +281,7 @@ proto.update = function(cdscatters) {
         }
 
         if(hasMarkers) {
+            scatterOptions = {};
             scatterOptions.positions = positions;
 
             // TODO rewrite convert function so that
@@ -356,38 +382,27 @@ proto.update = function(cdscatters) {
                 scatterOptions.borderColors[i][3] = dim * _borderColors[4 * i + 3] * 255;
             }
 
-            scatterOptions.viewport = viewport
-            scatterOptions.range = range
+            scatterOptions.viewport = viewport;
+            scatterOptions.range = range;
         }
+
+        batch.push({
+            scatter: scatterOptions,
+            line: lineOptions
+        });
 
         // add item for autorange routine
         // former expandAxesFancy
         Axes.expand(xaxis, x, {padded: true, ppad: sizes});
         Axes.expand(yaxis, y, {padded: true, ppad: sizes});
 
-        // sort objects so that order is preserve on updates:
-        // - lines
-        // - errorX
-        // - errorY
-        // - markers
-        // this.container.glplot.objects.sort(function(a, b) {
-        //     return a._index - b._index;
-        // });
-
-        // not quite on-par with 'scatter', but close enough for now
-        // does not handle the colorscale case
-        // this.color = getTraceColor(options, {});
-
         // provide reference for selecting points
         if(!cdscatter[0].glTrace) {
             cdscatter[0].glTrace = this;
         }
-    })
+    });
 
-    for (var i = 0; i < batch.length; i++) {
-        this.scatter(batch[i].scatter)
-        this.line(batch[i].line)
-    }
+    this.updateBatch(batch);
 };
 
 
