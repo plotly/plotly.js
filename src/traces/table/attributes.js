@@ -67,9 +67,9 @@ module.exports = {
             role: 'info',
             dflt: [],
             description: [
-                'Dimension values. `values[n]` represents the value of the `n`th point in the dataset,',
-                'therefore the `values` vector for all dimensions must be the same (longer vectors',
-                'will be truncated). Each value must be a finite number.'
+                'Header cell values. `values[m][n]` represents the value of the `n`th point in column `m`,',
+                'therefore the `values[m]` vector length for all columns must be the same (longer vectors',
+                'will be truncated). Each value must be a finite number or a string.'
             ].join(' ')
         },
 
@@ -175,9 +175,9 @@ module.exports = {
             role: 'info',
             dflt: [],
             description: [
-                'Dimension values. `values[n]` represents the value of the `n`th point in the dataset,',
-                'therefore the `values` vector for all dimensions must be the same (longer vectors',
-                'will be truncated). Each value must be a finite number.'
+                'Cell values. `values[m][n]` represents the value of the `n`th point in column `m`,',
+                'therefore the `values[m]` vector length for all columns must be the same (longer vectors',
+                'will be truncated). Each value must be a finite number or a string.'
             ].join(' ')
         },
 
