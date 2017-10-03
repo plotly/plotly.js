@@ -40,7 +40,7 @@ module.exports = function calc(gd, trace) {
     var calcdata = {
         key: trace.index,
         translateX: domain.x[0] * gd._fullLayout._size.w,
-        translateY: gd._fullLayout._size.h - domain.y[1] * gd._fullLayout._size.h,
+        translateY: gd._fullLayout._size.h * (1 - domain.y[1]),
         size: gd._fullLayout._size,
         width: groupWidth,
         height: groupHeight,
