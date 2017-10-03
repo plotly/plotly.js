@@ -673,8 +673,7 @@ function findPagesAndCacheHeights(blocks, scrollY, scrollHeight) {
 }
 
 function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
-    // fixme this function is THE performance hotspot
-    var d = cellsColumnBlock[0][0].__data__;
+    var d = cellsColumnBlock.data()[0];
     var blocks = d.rowBlocks;
     var calcdata = d.calcdata;
 
