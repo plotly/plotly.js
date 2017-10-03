@@ -79,7 +79,14 @@ function makeHoverInfo(pointData, trace, pt, axis) {
     }
 
     if(hasZ) text.push(formatter(pt.z));
-    if(hasText) text.push(pt.tx);
+    if(hasText) {
+        var tx;
+
+        if(pt.tx) tx = pt.tx;
+        else if(trace.text) tx = trace.text;
+
+        if(!Array.isArray(tx)) text.push(tx);
+    }
 
     pointData.extraText = text.join('<br>');
 }

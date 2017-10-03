@@ -93,6 +93,19 @@ describe('Test choropleth hover:', function() {
         .then(done);
     });
 
+    it('should generate hover label info (\'text\' single value case)', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+        fig.data[1].text = 'tExT';
+        fig.data[1].hoverinfo = 'text';
+
+        run(
+            [400, 160],
+            fig,
+            ['tExT', null]
+        )
+        .then(done);
+    });
+
     it('should generate hover label info (\'text\' array case)', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
         fig.data[1].text = ['tExT', 'TeXt', '-text-'];
