@@ -23,7 +23,8 @@ Table.meta = {
     description: [
         'Table view for detailed data viewing.',
         'The data are arranged in a grid of rows and columns.',
-        'Most styling can be specified for columns, rows or individual cells.'
+        'Most styling can be specified for columns, rows or individual cells.',
+        'Table is using a column-major order, ie. the grid is represented as a vector of column vectors.'
     ].join(' ')
 };
 
