@@ -59,6 +59,92 @@ exports.assertHoverLabelStyle = function(g, expectation, msg, textSelector) {
     expect(textStyle.fill).toBe(expectation.fontColor, msg + ': font.color');
 };
 
+function assertLabelContent(label, expectation, msg) {
+    var lines = label.selectAll('tspan');
+    var lineCnt = lines.size();
+    var expectMultiLine = Array.isArray(expectation);
+
+    function extract(sel) {
+        return sel.node() ? sel.html() : null;
+    }
+
+    if(lineCnt > 0) {
+        if(expectMultiLine) {
+            expect(lines.size()).toBe(expectation.length, msg + ': # of lines');
+            lines.each(function(_, i) {
+                var l = d3.select(this);
+                expect(extract(l)).toBe(expectation[i], msg + ': tspan line ' + i);
+            });
+        } else {
+            fail('Expected a single-line label, found multiple lines');
+        }
+    } else {
+        if(!expectMultiLine) {
+            expect(extract(label)).toBe(expectation, msg + ': text content');
+        } else {
+            fail('Expected a multi-line label, found single');
+        }
+    }
+}
+
+function count(selector) {
+    return d3.selectAll(selector).size();
+}
+
+exports.assertHoverLabelContent = function(expectation, msg) {
+    if(!msg) msg = '';
+
+    var ptSelector = 'g.hovertext';
+    var ptExpectation = expectation[0];
+    var ptMsg = msg + ' point hover label';
+    var ptCnt = count(ptSelector);
+
+    var axSelector = 'g.axistext';
+    var axExpectation = expectation[1];
+    var axMsg = 'common axis hover label';
+    var axCnt = count(axSelector);
+
+    if(ptCnt === 1) {
+        assertLabelContent(
+            d3.select(ptSelector + '> text.nums'),
+            ptExpectation[0],
+            ptMsg + ' (nums)'
+        );
+        assertLabelContent(
+            d3.select(ptSelector + '> text.name'),
+            ptExpectation[1],
+            ptMsg + ' (name)'
+        );
+    } else if(ptCnt > 1) {
+        expect(ptCnt).toBe(ptExpectation.length, ptMsg + ' # of visible nodes');
+
+        d3.selectAll(ptSelector).each(function(_, i) {
+            assertLabelContent(
+                d3.select(this).select('text.nums'),
+                ptExpectation[i][0],
+                ptMsg + ' (nums ' + i + ')'
+            );
+            assertLabelContent(
+                d3.select(this).select('text.name'),
+                ptExpectation[i][1],
+                ptMsg + ' (name ' + i + ')'
+            );
+        });
+    } else {
+        expect(ptExpectation).toBe(null, ptMsg + ' should not be displayed');
+    }
+
+    if(axCnt > 0) {
+        assertLabelContent(
+            d3.select(axSelector + '> text'),
+            axExpectation,
+            axMsg
+        );
+    } else {
+        expect(axExpectation).toBe(null, axMsg + ' should not be displayed');
+    }
+};
+
 exports.assertClip = function(sel, isClipped, size, msg) {
     expect(sel.size()).toBe(size, msg + ' clip path (selection size)');
 
