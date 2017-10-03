@@ -270,6 +270,13 @@ describe('Test scattergeo hover', function() {
         check([381, 221], [['(10°, 10°)', 'A'], null]);
     });
 
+    it('should generate hover label info (with trace name)', function(done) {
+        Plotly.restyle(gd, 'hoverinfo', 'lon+lat+text+name').then(function() {
+            check([381, 221], [['(10°, 10°)', 'A'], 'trace 0']);
+        })
+        .then(done);
+    });
+
     it('should generate hover label info (\'text\' single value case)', function(done) {
         Plotly.restyle(gd, 'text', 'text').then(function() {
             check([381, 221], [['(10°, 10°)', 'text'], null]);
@@ -290,4 +297,22 @@ describe('Test scattergeo hover', function() {
         })
         .then(done);
     });
+
+    it('should generate hover label with custom styling', function(done) {
+        Plotly.restyle(gd, {
+            'hoverlabel.bgcolor': 'red',
+            'hoverlabel.bordercolor': [['blue', 'black', 'green']]
+        })
+        .then(function() {
+            check([381, 221], [['(10°, 10°)', 'A'], null], {
+                bgcolor: 'rgb(255, 0, 0)',
+                bordercolor: 'rgb(0, 0, 255)',
+                fontColor: 'rgb(0, 0, 255)',
+                fontSize: 13,
+                fontFamily: 'Arial'
+            });
+        })
+        .then(done);
+    });
+
 });
