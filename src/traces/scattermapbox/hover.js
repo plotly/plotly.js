@@ -66,13 +66,14 @@ module.exports = function hoverPoints(pointData, xval, yval) {
 };
 
 function getExtraText(trace, di) {
-    var hoverinfo = trace.hoverinfo.split('+'),
-        isAll = (hoverinfo.indexOf('all') !== -1),
-        hasLon = (hoverinfo.indexOf('lon') !== -1),
-        hasLat = (hoverinfo.indexOf('lat') !== -1);
+    var hoverinfo = di.hi || trace.hoverinfo;
+    var parts = hoverinfo.split('+');
+    var isAll = parts.indexOf('all') !== -1;
+    var hasLon = parts.indexOf('lon') !== -1;
+    var hasLat = parts.indexOf('lat') !== -1;
 
-    var lonlat = di.lonlat,
-        text = [];
+    var lonlat = di.lonlat;
+    var text = [];
 
     // TODO should we use a mock axis to format hover?
     // If so, we'll need to make precision be zoom-level dependent
@@ -82,11 +83,13 @@ function getExtraText(trace, di) {
 
     if(isAll || (hasLon && hasLat)) {
         text.push('(' + format(lonlat[0]) + ', ' + format(lonlat[1]) + ')');
+    } else if(hasLon) {
+        text.push('lon: ' + format(lonlat[0]));
+    } else if(hasLat) {
+        text.push('lat: ' + format(lonlat[1]));
     }
-    else if(hasLon) text.push('lon: ' + format(lonlat[0]));
-    else if(hasLat) text.push('lat: ' + format(lonlat[1]));
 
-    if(isAll || hoverinfo.indexOf('text') !== -1) {
+    if(isAll || parts.indexOf('text') !== -1) {
         var tx;
 
         if(di.htx) tx = di.htx;

@@ -145,6 +145,17 @@ describe('ternary plots', function() {
                     fontSize: 13,
                     fontFamily: 'Gravitas'
                 }, 'after hoverlabel styling restyle call');
+
+                return Plotly.restyle(gd, 'hoverinfo', [['a', 'b+c', 'b']]);
+            })
+            .then(function() {
+                check('Component A: 0.5', {
+                    bgcolor: 'rgb(31, 119, 180)',
+                    bordercolor: 'rgb(0, 0, 255)',
+                    fontColor: 'rgb(0, 0, 255)',
+                    fontSize: 13,
+                    fontFamily: 'Gravitas'
+                }, 'after hoverlabel styling restyle call');
             })
             .catch(fail)
             .then(done);

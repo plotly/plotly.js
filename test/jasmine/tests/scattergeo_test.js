@@ -315,4 +315,10 @@ describe('Test scattergeo hover', function() {
         .then(done);
     });
 
+    it('should generate hover label with arrayOk \'hoverinfo\' settings', function(done) {
+        Plotly.restyle(gd, 'hoverinfo', [['lon', null, 'lat+name']]).then(function() {
+            check([381, 221], ['lon: 10°', null]);
+        })
+        .then(done);
+    });
 });

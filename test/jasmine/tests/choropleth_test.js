@@ -128,4 +128,16 @@ describe('Test choropleth hover:', function() {
         )
         .then(done);
     });
+
+    it('should generate hover label with arrayOk \'hoverinfo\' settings', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+        fig.data[1].hoverinfo = ['location', 'z', 'location+name'];
+
+        run(
+            [400, 160],
+            fig,
+            ['RUS', 'trace 1']
+        )
+        .then(done);
+    });
 });

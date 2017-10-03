@@ -603,4 +603,15 @@ describe('scattercarpet hover labels', function() {
         )
         .then(done);
     });
+
+    it('should generate hover label with arrayOk \'hoverinfo\' settings', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/scattercarpet.json'));
+        fig.data[5].hoverinfo = ['a+b', 'a+b', 'a+b', 'b+y'];
+
+        run(
+            [200, 200], fig,
+            [['b = 3.500', 'y = 2.900'], null]
+        )
+        .then(done);
+    });
 });
