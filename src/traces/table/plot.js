@@ -53,7 +53,7 @@ module.exports = function plot(gd, calcdata) {
         .append('g')
         .classed('tableControlView', true)
         .style('box-sizing', 'content-box')
-        .on('mousemove', function() {tableControlView.call(renderScrollbarKit, gd);})
+        .on('mousemove', function(d) {tableControlView.filter(function(dd) {return d === dd;}).call(renderScrollbarKit, gd);})
         .on('mousewheel', function(d) {
             if(d.scrollbarState.wheeling) return;
             d.scrollbarState.wheeling = true;
@@ -100,7 +100,7 @@ module.exports = function plot(gd, calcdata) {
                 easeColumn(movedColumn, d, -c.uplift);
                 raiseToTop(this);
                 d.calcdata.columnDragInProgress = true;
-                renderScrollbarKit(tableControlView, gd);
+                renderScrollbarKit(tableControlView.filter(function(dd) {return d.calcdata.key === dd.key;}), gd);
                 return d;
             })
             .on('drag', function(d) {
@@ -704,7 +704,7 @@ function findPagesAndCacheHeights(blocks, scrollY, scrollHeight) {
 }
 
 function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
-    var d = cellsColumnBlock.data()[0];
+    var d = flatData(cellsColumnBlock)[0];
     var blocks = d.rowBlocks;
     var calcdata = d.calcdata;
 
@@ -736,6 +736,7 @@ function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
     cellsColumnBlock
         .attr('transform', function(d) {
             var yTranslate = firstRowAnchor(d.rowBlocks, d.page) - d.scrollY;
+            //console.log(d.scrollY, Math.round(yTranslate))
             return 'translate(0 ' + yTranslate + ')';
         });
 
@@ -747,8 +748,11 @@ function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
     }
 }
 
-function makeDragRow(gd, tableControlView, optionalMultiplier, optionalPosition) {
-    return function dragRow(d) {
+function makeDragRow(gd, allTableControlView, optionalMultiplier, optionalPosition) {
+    return function dragRow(eventD) {
+        // may come from whicever DOM event target: drag, wheel, bar... eventD corresponds to event target
+        var d = eventD.calcdata ? eventD.calcdata : eventD;
+        var tableControlView = allTableControlView.filter(function(dd) {return d.key === dd.key;})
         var multiplier = optionalMultiplier || d.scrollbarState.dragMultiplier;
         d.scrollY = optionalPosition === void(0) ? d.scrollY + multiplier * d3.event.dy : optionalPosition;
         var cellsColumnBlock = tableControlView.selectAll('.yColumn').selectAll('.columnBlock').filter(cellsBlock);
