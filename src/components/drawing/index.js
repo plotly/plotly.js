@@ -887,6 +887,9 @@ drawing.setTextPointsScale = function(selection, xScale, yScale) {
         var transforms;
         var el = d3.select(this);
         var text = el.select('text');
+
+        if(!text.node()) return;
+
         var x = parseFloat(text.attr('x') || 0);
         var y = parseFloat(text.attr('y') || 0);
 
