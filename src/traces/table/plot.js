@@ -67,6 +67,20 @@ module.exports = function plot(gd, calcdata) {
     tableControlView
         .attr('transform', function(d) {return 'translate(' + d.size.l + ' ' + d.size.t + ')';});
 
+    // scrollBackground merely ensures that mouse events are captured even on crazy fast scrollwheeling
+    // otherwise rendering glitches may occur
+    var scrollBackground = tableControlView.selectAll('.scrollBackground')
+        .data(gup.repeat, gup.keyFun);
+
+    scrollBackground.enter()
+        .append('rect')
+        .classed('scrollBackground', true)
+        .attr('fill', 'none');
+
+    scrollBackground
+        .attr('width', function(d) {return d.width;})
+        .attr('height', function(d) {return d.height;});
+
     if(!c.clipView) {
         tableControlView.attr('clip-path', function(d) {return 'url(#scrollAreaBottomClip_' + d.key + ')';});
     }
