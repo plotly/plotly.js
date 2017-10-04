@@ -9,6 +9,7 @@
 
 'use strict';
 
+var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 var attributes = require('./attributes');
 
@@ -80,12 +81,8 @@ function makeHoverInfo(pointData, trace, pt, axis) {
 
     if(hasZ) text.push(formatter(pt.z));
     if(hasText) {
-        var tx;
-
-        if(pt.tx) tx = pt.tx;
-        else if(trace.text) tx = trace.text;
-
-        if(!Array.isArray(tx)) text.push(tx);
+        var tx = Lib.extractOption(pt, trace, 'tx', 'text');
+        if(tx && tx !== '') text.push(tx);
     }
 
     pointData.extraText = text.join('<br>');
