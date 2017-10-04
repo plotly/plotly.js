@@ -108,9 +108,7 @@ module.exports = function plot(gd, calcdata) {
                 var getter = function(dd) {return (d === dd ? d3.event.x : dd.x) + dd.columnWidth / 2;};
                 d.x = Math.max(-c.overdrag, Math.min(d.calcdata.width + c.overdrag - d.columnWidth, d3.event.x));
 
-                var sortableColumns = [].concat.apply([], yColumn.map(function(g) {return g;}))
-                    .map(function(g) {return g.__data__})
-                    .filter(function(dd) {return dd.calcdata.key === d.calcdata.key});
+                var sortableColumns = flatData(yColumn).filter(function(dd) {return dd.calcdata.key === d.calcdata.key});
                 var newOrder = sortableColumns.sort(function(a, b) {return getter(a) - getter(b);});
                 newOrder.forEach(function(dd, i) {
                     dd.xIndex = i;
@@ -233,6 +231,11 @@ module.exports = function plot(gd, calcdata) {
 
     updateBlockYPosition(null, cellsColumnBlock, tableControlView);
 };
+
+function flatData(selection) {
+    return [].concat.apply([], selection.map(function(g) {return g;}))
+        .map(function(g) {return g.__data__});
+}
 
 function renderScrollbarKit(tableControlView, gd) {
 
@@ -745,8 +748,7 @@ function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
 }
 
 function makeDragRow(gd, tableControlView, optionalMultiplier, optionalPosition) {
-    return function dragRow() {
-        var d = tableControlView.node().__data__;
+    return function dragRow(d) {
         var multiplier = optionalMultiplier || d.scrollbarState.dragMultiplier;
         d.scrollY = optionalPosition === void(0) ? d.scrollY + multiplier * d3.event.dy : optionalPosition;
         var cellsColumnBlock = tableControlView.selectAll('.yColumn').selectAll('.columnBlock').filter(cellsBlock);
