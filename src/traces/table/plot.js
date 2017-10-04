@@ -463,22 +463,30 @@ function sizeAndStyleRect(cellRect) {
 function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
     cellText
         .text(function(d) {
+
             var col = d.column.specIndex;
             var row = d.rowNumber;
+
             var userSuppliedContent = d.value;
+            var stringSupplied = (typeof userSuppliedContent === 'string');
+            var hasBreaks = stringSupplied && userSuppliedContent.match(/<br>/i);
+            var userBrokenText = !stringSupplied || hasBreaks;
+            d.mayHaveMarkup = stringSupplied && userSuppliedContent.match(/[<&>]/);
+
             var latex = isLatex(userSuppliedContent);
-            var userBrokenText = (typeof userSuppliedContent !== 'string') || userSuppliedContent.match(/<br>/i);
-            var userBrokenText2 = (typeof userSuppliedContent === 'string') && userSuppliedContent.match(/<br>/i);
+            d.latex = latex;
+
             var prefix = latex ? '' : gridPick(d.calcdata.cells.prefix, col, row) || '';
             var suffix = latex ? '' : gridPick(d.calcdata.cells.suffix, col, row) || '';
             var format = latex ? null : gridPick(d.calcdata.cells.format, col, row) || null;
+
             var prefixSuffixedText = prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
-            d.latex = latex;
-            d.mayHaveMarkup = (typeof userSuppliedContent === 'string') && userSuppliedContent.match(/[<&>]/);
+
             var hasWrapSplitCharacter;
-            var hwsc = function(prefixSuffixedText) {return prefixSuffixedText.indexOf(c.wrapSplitCharacter) !== -1;};
-            d.wrappingNeeded = !d.wrapped && !userBrokenText && !latex && (hasWrapSplitCharacter = hwsc(prefixSuffixedText));
-            d.cellHeightMayIncrease = userBrokenText2 || latex || d.mayHaveMarkup || (hasWrapSplitCharacter === void(0) ? hwsc(prefixSuffixedText) : hasWrapSplitCharacter);
+            d.wrappingNeeded = !d.wrapped && !userBrokenText && !latex && (hasWrapSplitCharacter = hasWrapCharacter(prefixSuffixedText));
+            d.cellHeightMayIncrease = hasBreaks || latex || d.mayHaveMarkup || (hasWrapSplitCharacter === void(0) ? hasWrapCharacter(prefixSuffixedText) : hasWrapSplitCharacter);
+            d.needsConvertToTspans = d.mayHaveMarkup || d.wrappingNeeded || d.latex;
+
             var textToRender;
             if(d.wrappingNeeded) {
                 var hrefPreservedText = c.wrapSplitCharacter === ' ' ? prefixSuffixedText.replace(/<a href=/ig, '<a_href=') : prefixSuffixedText;
@@ -494,7 +502,7 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
             return textToRender;
         })
         .attr('alignment-baseline', function(d) {
-            return d.cellHeightMayIncrease ? null : 'hanging';
+            return d.needsConvertToTspans ? null : 'hanging';
         })
         .each(function(d) {
 
@@ -504,7 +512,7 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
             // finalize what's in the DOM
 
             var renderCallback = d.wrappingNeeded ? wrapTextMaker : updateYPositionMaker;
-            if(d.mayHaveMarkup || d.wrappingNeeded || d.latex) {
+            if(d.needsConvertToTspans) {
                 svgUtil.convertToTspans(selection, gd, renderCallback(allColumnBlock, element, tableControlView, gd, d));
             } else {
                 d3.select(element.parentNode)
@@ -524,6 +532,8 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
 function isLatex(content) {
     return typeof content === 'string' && content.match(c.latexCheck);
 }
+
+function hasWrapCharacter(text) {return text.indexOf(c.wrapSplitCharacter) !== -1;}
 
 function columnMoved(gd, calcdata, i, indices) {
     var o = calcdata[i][0].gdColumnsOriginalOrder;
@@ -609,7 +619,7 @@ function splitToCells(d) {
         // But it has to be busted when `svgUtil.convertToTspans` is used as it reshapes cell subtrees asynchronously,
         // and by that time the user may have scrolled away, resulting in stale overwrites. The real solution will be
         // to turn `svgUtil.convertToTspans` into a cancelable request, in which case no key busting is needed.
-        var buster = (typeof v === 'string') && v.match(/[<$&>]/) ? '_keybuster_' + Math.random() : '';
+        var buster = (typeof v === 'string') && v.match(/[<$&> ]/) ? '_keybuster_' + Math.random() : '';
         return {
             // keyWithinBlock: /*fromTo[0] + */i, // optimized future version - no busting
             // keyWithinBlock: fromTo[0] + i, // initial always-unoptimized version - janky scrolling with 5+ columns
