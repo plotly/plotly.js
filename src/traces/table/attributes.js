@@ -108,7 +108,6 @@ module.exports = {
         },
 
         align: extendFlat({}, annAttrs.align, {arrayOk: true}),
-        valign: extendFlat({}, annAttrs.valign, {arrayOk: true}),
 
         line: {
             width: {
@@ -216,7 +215,6 @@ module.exports = {
         },
 
         align: extendFlat({}, annAttrs.align, {arrayOk: true}),
-        valign: extendFlat({}, annAttrs.valign, {arrayOk: true}),
 
         line: {
             width: {

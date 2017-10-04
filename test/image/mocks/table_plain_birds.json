@@ -24,7 +24,6 @@
             "values": [["<b>#</b>", ""], ["<b>Species</b>", ""], ["Latitude", "$\\phi °$"], ["Longitude", "$\\lambda °$"], ["Exposure", ""], ["Condition", "<i>Live / Dead</i>"], ["Date", "<i>yyyy-mm-dd</i>"]],
 
             "align": ["right", "left", "right", "right", "left", "left", "left"],
-            "valign": "middle",
 
             "line": {
                 "color": "lightgray",
@@ -64,7 +63,6 @@
             "height": 26,
 
             "align": ["right", "left", "right", "right", "left", "left", "left"],
-            "valign": ["top"],
 
             "line": {
                 "color": [

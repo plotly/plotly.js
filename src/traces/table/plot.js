@@ -441,7 +441,6 @@ function setFont(columnCell) {
 
             d.rowNumber = d.key;
             d.align = gridPick(d.calcdata.cells.align, col, i);
-            d.valign = gridPick(d.calcdata.cells.valign, col, i);
             d.cellBorderWidth = gridPick(d.calcdata.cells.line.width, col, i);
             d.font = font;
         });

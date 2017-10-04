@@ -43,7 +43,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('cells.values');
     coerce('cells.format');
     coerce('cells.align');
-    coerce('cells.valign');
     coerce('cells.prefix');
     coerce('cells.suffix');
     coerce('cells.height');
@@ -55,7 +54,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('header.values');
     coerce('header.format');
     coerce('header.align');
-    coerce('header.valign');
+
     coerce('header.prefix');
     coerce('header.suffix');
     coerce('header.height');
