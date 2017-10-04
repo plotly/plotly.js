@@ -11,43 +11,45 @@
 
 var BADNUM = require('../../constants/numerical').BADNUM;
 var segmentsIntersect = require('../../lib/geometry2d').segmentsIntersect;
+var constants = require('./constants');
 
 
 module.exports = function linePoints(d, opts) {
-    var xa = opts.xaxis,
-        ya = opts.yaxis,
-        simplify = opts.simplify,
-        connectGaps = opts.connectGaps,
-        baseTolerance = opts.baseTolerance,
-        linear = opts.linear,
-        segments = [],
-        minTolerance = 0.2, // fraction of tolerance "so close we don't even consider it a new point"
-        pts = new Array(d.length),
-        pti = 0,
-        i,
+    var xa = opts.xaxis;
+    var ya = opts.yaxis;
+    var simplify = opts.simplify;
+    var connectGaps = opts.connectGaps;
+    var baseTolerance = opts.baseTolerance;
+    var linear = opts.linear;
+    var segments = [];
+    var minTolerance = constants.minTolerance;
+    var pts = new Array(d.length);
+    var pti = 0;
 
-        // pt variables are pixel coordinates [x,y] of one point
-        clusterStartPt, // these four are the outputs of clustering on a line
-        clusterEndPt,
-        clusterHighPt,
-        clusterLowPt,
-        thisPt, // "this" is the next point we're considering adding to the cluster
+    var i;
 
-        clusterRefDist,
-        clusterHighFirst, // did we encounter the high point first, then a low point, or vice versa?
-        clusterUnitVector, // the first two points in the cluster determine its unit vector
-                           // so the second is always in the "High" direction
-        thisVector, // the pixel delta from clusterStartPt
+    // pt variables are pixel coordinates [x,y] of one point
+    // these four are the outputs of clustering on a line
+    var clusterStartPt, clusterEndPt, clusterHighPt, clusterLowPt;
 
-        // val variables are (signed) pixel distances along the cluster vector
-        clusterHighVal,
-        clusterLowVal,
-        thisVal,
+    // "this" is the next point we're considering adding to the cluster
+    var thisPt;
 
-        // deviation variables are (signed) pixel distances normal to the cluster vector
-        clusterMinDeviation,
-        clusterMaxDeviation,
-        thisDeviation;
+    // did we encounter the high point first, then a low point, or vice versa?
+    var clusterHighFirst;
+
+    // the first two points in the cluster determine its unit vector
+    // so the second is always in the "High" direction
+    var clusterUnitVector;
+
+    // the pixel delta from clusterStartPt
+    var thisVector;
+
+    // val variables are (signed) pixel distances along the cluster vector
+    var clusterRefDist, clusterHighVal, clusterLowVal, thisVal;
+
+    // deviation variables are (signed) pixel distances normal to the cluster vector
+    var clusterMinDeviation, clusterMaxDeviation, thisDeviation;
 
     if(!simplify) {
         baseTolerance = minTolerance = -1;
@@ -55,8 +57,8 @@ module.exports = function linePoints(d, opts) {
 
     // turn one calcdata point into pixel coordinates
     function getPt(index) {
-        var x = xa.c2p(d[index].x),
-            y = ya.c2p(d[index].y);
+        var x = xa.c2p(d[index].x);
+        var y = ya.c2p(d[index].y);
         if(x === BADNUM || y === BADNUM) return false;
         return [x, y];
     }
@@ -65,20 +67,19 @@ module.exports = function linePoints(d, opts) {
     function getTolerance(pt) {
         var xFrac = pt[0] / xa._length;
         var yFrac = pt[1] / ya._length;
-        return (1 + 10 * Math.max(0, -xFrac, xFrac - 1, -yFrac, yFrac - 1)) * baseTolerance;
+        return (1 + constants.toleranceGrowth * Math.max(0, -xFrac, xFrac - 1, -yFrac, yFrac - 1)) * baseTolerance;
     }
 
     function ptDist(pt1, pt2) {
-        var dx = pt1[0] - pt2[0],
-            dy = pt1[1] - pt2[1];
+        var dx = pt1[0] - pt2[0];
+        var dy = pt1[1] - pt2[1];
         return Math.sqrt(dx * dx + dy * dy);
     }
 
     // last bit of filtering: clip paths that are VERY far off-screen
     // so we don't get near the browser's hard limit (+/- 2^29 px in Chrome and FF)
 
-    // maximum multiple of the screen size to use
-    var maxScreensAway = 20;
+    var maxScreensAway = constants.maxScreensAway;
 
     // find the intersections between the segment from pt1 to pt2
     // and the large rectangle maxScreensAway around the viewport

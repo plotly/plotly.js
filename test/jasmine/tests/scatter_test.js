@@ -391,13 +391,13 @@ describe('Test scatter', function() {
             function reverseXY(v) { return [v[1], v[0]]; }
 
             ptsIn.forEach(function(ptsIni, i) {
-                // baseTolerance: disable clustering for this test
-                var ptsOut = callLinePoints(ptsIni, {baseTolerance: 0});
+                // disable clustering for these tests
+                var ptsOut = callLinePoints(ptsIni, {simplify: false});
                 expect(ptsOut.length).toBe(1, i);
                 expect(ptsOut[0]).toBeCloseTo2DArray(ptsExpected[i], 1, i);
 
                 // swap X and Y and all should work identically
-                var ptsOut2 = callLinePoints(ptsIni.map(reverseXY), {baseTolerance: 0});
+                var ptsOut2 = callLinePoints(ptsIni.map(reverseXY), {simplify: false});
                 expect(ptsOut2.length).toBe(1, i);
                 expect(ptsOut2[0]).toBeCloseTo2DArray(ptsExpected[i].map(reverseXY), 1, i);
             });
