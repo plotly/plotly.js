@@ -11,6 +11,7 @@
 
 var Fx = require('../../components/fx');
 var getTraceColor = require('../scatter/get_trace_color');
+var fillHoverText = require('../scatter/fill_hover_text');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function hoverPoints(pointData, xval, yval) {
@@ -90,14 +91,7 @@ function getExtraText(trace, di) {
     }
 
     if(isAll || parts.indexOf('text') !== -1) {
-        var tx;
-
-        if(di.htx) tx = di.htx;
-        else if(trace.hovertext) tx = trace.hovertext;
-        else if(di.tx) tx = di.tx;
-        else if(trace.text) tx = trace.text;
-
-        if(!Array.isArray(tx)) text.push(tx);
+        fillHoverText(di, trace, text);
     }
 
     return text.join('<br>');
