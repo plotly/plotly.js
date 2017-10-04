@@ -108,7 +108,7 @@ module.exports = function plot(gd, calcdata) {
                 var getter = function(dd) {return (d === dd ? d3.event.x : dd.x) + dd.columnWidth / 2;};
                 d.x = Math.max(-c.overdrag, Math.min(d.calcdata.width + c.overdrag - d.columnWidth, d3.event.x));
 
-                var sortableColumns = flatData(yColumn).filter(function(dd) {return dd.calcdata.key === d.calcdata.key});
+                var sortableColumns = flatData(yColumn).filter(function(dd) {return dd.calcdata.key === d.calcdata.key;});
                 var newOrder = sortableColumns.sort(function(a, b) {return getter(a) - getter(b);});
                 newOrder.forEach(function(dd, i) {
                     dd.xIndex = i;
@@ -135,7 +135,7 @@ module.exports = function plot(gd, calcdata) {
         );
 
     if(!c.clipView) {
-        yColumn.attr('clip-path', function(d) {return 'url(#columnBoundaryClippath_' + d.specIndex + ')';});
+        yColumn.attr('clip-path', function(d) {return 'url(#columnBoundaryClippath_' + d.calcdata.key + '_' + d.specIndex + ')';});
     }
 
     var columnBlock = yColumn.selectAll('.columnBlock')
@@ -212,7 +212,7 @@ module.exports = function plot(gd, calcdata) {
         .classed('columnBoundaryClippath', true);
 
     columnBoundaryClippath
-        .attr('id', function(d) {return 'columnBoundaryClippath_' + d.specIndex;});
+        .attr('id', function(d) {return 'columnBoundaryClippath_' + d.calcdata.key + '_' + d.specIndex;});
 
     var columnBoundaryRect = columnBoundaryClippath.selectAll('.columnBoundaryRect')
         .data(gup.repeat, gup.keyFun);
@@ -234,7 +234,7 @@ module.exports = function plot(gd, calcdata) {
 
 function flatData(selection) {
     return [].concat.apply([], selection.map(function(g) {return g;}))
-        .map(function(g) {return g.__data__});
+        .map(function(g) {return g.__data__;});
 }
 
 function renderScrollbarKit(tableControlView, gd) {
@@ -736,7 +736,6 @@ function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
     cellsColumnBlock
         .attr('transform', function(d) {
             var yTranslate = firstRowAnchor(d.rowBlocks, d.page) - d.scrollY;
-            //console.log(d.scrollY, Math.round(yTranslate))
             return 'translate(0 ' + yTranslate + ')';
         });
 
@@ -752,7 +751,7 @@ function makeDragRow(gd, allTableControlView, optionalMultiplier, optionalPositi
     return function dragRow(eventD) {
         // may come from whicever DOM event target: drag, wheel, bar... eventD corresponds to event target
         var d = eventD.calcdata ? eventD.calcdata : eventD;
-        var tableControlView = allTableControlView.filter(function(dd) {return d.key === dd.key;})
+        var tableControlView = allTableControlView.filter(function(dd) {return d.key === dd.key;});
         var multiplier = optionalMultiplier || d.scrollbarState.dragMultiplier;
         d.scrollY = optionalPosition === void(0) ? d.scrollY + multiplier * d3.event.dy : optionalPosition;
         var cellsColumnBlock = tableControlView.selectAll('.yColumn').selectAll('.columnBlock').filter(cellsBlock);
