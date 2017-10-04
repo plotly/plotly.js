@@ -53,7 +53,15 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var text = [];
 
     function textPart(ax, val) {
-        text.push(((ax.labelprefix && ax.labelprefix.length > 0) ? ax.labelprefix : (ax._hovertitle + ': ')) + val.toFixed(3) + ax.labelsuffix);
+        var prefix;
+
+        if(ax.labelprefix && ax.labelprefix.length > 0) {
+            prefix = ax.labelprefix.replace(/ = $/, '');
+        } else {
+            prefix = ax._hovertitle;
+        }
+
+        text.push(prefix + ': ' + val.toFixed(3) + ax.labelsuffix);
     }
 
     if(parts.indexOf('all') !== -1) parts = ['a', 'b'];
@@ -68,7 +76,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var tj = ij[1] - j0;
 
     var xy = carpet.evalxy([], i0, j0, ti, tj);
-    text.push('y = ' + xy[1].toFixed(3));
+    text.push('y: ' + xy[1].toFixed(3));
 
     newPointData.extraText = text.join('<br>');
 
