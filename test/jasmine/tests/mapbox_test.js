@@ -735,9 +735,10 @@ describe('@noCI, mapbox plots', function() {
                 fontFamily: 'Arial',
                 fontColor: 'rgb(68, 68, 68)'
             });
-            assertHoverLabelContent([
-                [['(10°, 10°)', ''], 'trace 0'], null
-            ]);
+            assertHoverLabelContent({
+                nums: '(10°, 10°)',
+                name: 'trace 0'
+            });
         })
         .catch(failTest)
         .then(done);

@@ -113,7 +113,7 @@ describe('ternary plots', function() {
                 Lib.clearThrottle();
                 mouseEvent('mousemove', pointPos[0], pointPos[1]);
 
-                assertHoverLabelContent([[content, null], null], msg);
+                assertHoverLabelContent({nums: content}, msg);
                 assertHoverLabelStyle(d3.select('g.hovertext'), style, msg);
             }
 
@@ -121,7 +121,7 @@ describe('ternary plots', function() {
                 'Component A: 0.5',
                 'B: 0.25',
                 'Component C: 0.25'
-            ], {
+            ].join('\n'), {
                 bgcolor: 'rgb(31, 119, 180)',
                 bordercolor: 'rgb(255, 255, 255)',
                 fontColor: 'rgb(255, 255, 255)',
@@ -138,7 +138,7 @@ describe('ternary plots', function() {
                     'Component A: 0.5',
                     'B: 0.25',
                     'Component C: 0.25'
-                ], {
+                ].join('\n'), {
                     bgcolor: 'rgb(31, 119, 180)',
                     bordercolor: 'rgb(0, 0, 255)',
                     fontColor: 'rgb(0, 0, 255)',

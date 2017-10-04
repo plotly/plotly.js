@@ -77,8 +77,14 @@ describe('Test choropleth hover:', function() {
 
         return Plotly.plot(gd, fig).then(function() {
             mouseEvent('mousemove', pos[0], pos[1]);
-            assertHoverLabelContent([content, null]);
-            assertHoverLabelStyle(d3.select('g.hovertext'), style);
+            assertHoverLabelContent({
+                nums: content[0],
+                name: content[1]
+            });
+            assertHoverLabelStyle(
+                d3.select('g.hovertext'),
+                style
+            );
         });
     }
 
@@ -88,7 +94,7 @@ describe('Test choropleth hover:', function() {
         run(
             [400, 160],
             fig,
-            [['RUS', '10', ''], 'trace 1']
+            ['RUS\n10', 'trace 1']
         )
         .then(done);
     });
@@ -130,7 +136,7 @@ describe('Test choropleth hover:', function() {
         run(
             [400, 160],
             fig,
-            [['RUS', '10', ''], 'trace 1'],
+            ['RUS\n10', 'trace 1'],
             {
                 bgcolor: 'rgb(255, 0, 0)',
                 bordercolor: 'rgb(0, 128, 0)',

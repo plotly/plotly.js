@@ -38,7 +38,7 @@ describe('Test gl3d plots', function() {
     function assertHoverText(xLabel, yLabel, zLabel, textLabel) {
         var content = [xLabel, yLabel, zLabel];
         if(textLabel) content.push(textLabel);
-        assertHoverLabelContent([[content, null], null]);
+        assertHoverLabelContent({nums: content.join('\n')});
     }
 
     function assertEventData(x, y, z, curveNumber, pointNumber, extra) {

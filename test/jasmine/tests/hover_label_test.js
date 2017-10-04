@@ -43,10 +43,10 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            assertHoverLabelContent([
-                ['1', null],
-                '0.388'
-            ]);
+            assertHoverLabelContent({
+                nums: '1',
+                axis: '0.388'
+            });
         });
     });
 
@@ -70,10 +70,7 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            assertHoverLabelContent([
-                null,
-                '0.388'
-            ]);
+            assertHoverLabelContent({axis: '0.388'});
         });
     });
 
@@ -97,10 +94,7 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            assertHoverLabelContent([
-                ['1', null],
-                null
-            ]);
+            assertHoverLabelContent({nums: '1'});
         });
     });
 
@@ -128,10 +122,9 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            assertHoverLabelContent([
-                ['hover text  with spaces  not newlines', null],
-                null
-            ]);
+            assertHoverLabelContent({
+                nums: 'hover text  with spaces  not newlines'
+            });
         });
     });
 
@@ -157,10 +150,11 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            assertHoverLabelContent([
-                [['1', 'hover text'], 'PV learning ...'],
-                '0.388'
-            ]);
+            assertHoverLabelContent({
+                nums: '1\nhover text',
+                name: 'PV learning ...',
+                axis: '0.388'
+            });
         });
     });
 
@@ -193,10 +187,11 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            assertHoverLabelContent([
-                [['1', 'hover text'], '&lt;img src=x o...'],
-                '0.388'
-            ]);
+            assertHoverLabelContent({
+                nums: '1\nhover text',
+                name: '&lt;img src=x o...',
+                axis: '0.388'
+            });
         });
     });
 
@@ -216,10 +211,7 @@ describe('hover info', function() {
         it('responds to hover y', function() {
             Fx.hover('graph', evt, 'xy');
 
-            assertHoverLabelContent([
-                ['1e+9', null],
-                null
-            ]);
+            assertHoverLabelContent({nums: '1e+9'});
         });
     });
 
@@ -245,10 +237,9 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            assertHoverLabelContent([
-                [['1', 'hover text'], null],
-                null
-            ]);
+            assertHoverLabelContent({
+                nums: '1\nhover text'
+            });
         });
     });
 
@@ -274,10 +265,10 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            assertHoverLabelContent([
-                ['hover text', null],
-                '0.388'
-            ]);
+            assertHoverLabelContent({
+                nums: 'hover text',
+                axis: '0.388'
+            });
         });
     });
 
@@ -294,10 +285,10 @@ describe('hover info', function() {
         it('responds to hover x+text', function() {
             Fx.hover('graph', evt, 'xy');
 
-            assertHoverLabelContent([
-                ['1', null],
-                '0.388 ± 1'
-            ]);
+            assertHoverLabelContent({
+                nums: '1',
+                axis: '0.388 ± 1'
+            });
         });
     });
 
@@ -314,10 +305,10 @@ describe('hover info', function() {
         it('responds to hover x+text', function() {
             Fx.hover('graph', evt, 'xy');
 
-            assertHoverLabelContent([
-                ['1', null],
-                '0.388'
-            ]);
+            assertHoverLabelContent({
+                nums: '1',
+                axis: '0.388'
+            });
         });
     });
 
@@ -334,10 +325,10 @@ describe('hover info', function() {
         it('responds to hover x+text', function() {
             Fx.hover('graph', evt, 'xy');
 
-            assertHoverLabelContent([
-                ['1', null],
-                '0.388'
-            ]);
+            assertHoverLabelContent({
+                nums: '1',
+                axis: '0.388'
+            });
         });
     });
 
@@ -363,10 +354,9 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            assertHoverLabelContent([
-                [['hover', 'text'], null],
-                null
-            ]);
+            assertHoverLabelContent({
+                nums: 'hover\ntext'
+            });
         });
     });
 
@@ -384,7 +374,7 @@ describe('hover info', function() {
             Fx.hover('graph', evt, 'xy');
 
             expect(gd._hoverdata, undefined);
-            assertHoverLabelContent([null, null]);
+            assertHoverLabelContent({});
         });
     });
 
@@ -408,7 +398,7 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            assertHoverLabelContent([null, null]);
+            assertHoverLabelContent({});
         });
     });
 
@@ -439,10 +429,10 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.33);
             expect(hoverTrace.y).toEqual(1.25);
 
-            assertHoverLabelContent([
-                ['(0.33, 1.25)', 'PV learning ...'],
-                null
-            ]);
+            assertHoverLabelContent({
+                nums: '(0.33, 1.25)',
+                name: 'PV learning ...'
+            });
         });
 
         it('render only non-hoverinfo \'none\' hover labels', function(done) {
@@ -460,10 +450,9 @@ describe('hover info', function() {
                 expect(hoverTrace.x).toEqual(0.33);
                 expect(hoverTrace.y).toEqual(1.25);
 
-                assertHoverLabelContent([
-                    ['PV learning ...', null],
-                    null
-                ]);
+                assertHoverLabelContent({
+                    nums: 'PV learning ...'
+                });
             })
             .then(done);
         });
@@ -495,17 +484,17 @@ describe('hover info', function() {
             })
             .then(function() {
                 _hover(gd, 250, 100);
-                assertHoverLabelContent([
-                    [['x: 1', 'y: 3', 'z: 2'], 'two'],
-                    null
-                ]);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 3\nz: 2',
+                    name: 'two'
+                });
             })
             .then(function() {
                 _hover(gd, 250, 300);
-                assertHoverLabelContent([
-                    [['x: 1', 'y: 1', 'z: 2'], 'one'],
-                    null
-                ]);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 1\nz: 2',
+                    name: 'one'
+                });
             })
             .catch(fail)
             .then(done);
@@ -531,10 +520,10 @@ describe('hover info', function() {
             Plotly.plot(this.gd, data, layout);
             mouseEvent('mousemove', 303, 213);
 
-            assertHoverLabelContent([
-                ['0.23', null],
-                '2'
-            ]);
+            assertHoverLabelContent({
+                nums: '0.23',
+                axis: '2'
+            });
         });
 
         it('should display the correct format when ticklabels false', function() {
@@ -542,10 +531,10 @@ describe('hover info', function() {
             Plotly.plot(this.gd, data, layout);
             mouseEvent('mousemove', 303, 213);
 
-            assertHoverLabelContent([
-                ['0.23', null],
-                '2'
-            ]);
+            assertHoverLabelContent({
+                nums: '0.23',
+                axis: '2'
+            });
         });
     });
 
@@ -568,28 +557,26 @@ describe('hover info', function() {
 
         it('should show text labels', function() {
             mouseEvent('mousemove', 108, 303);
-            assertHoverLabelContent([
-                ['test', null],
-                null
-            ]);
+            assertHoverLabelContent({
+                nums: 'test'
+            });
         });
 
         it('should show number labels', function() {
             mouseEvent('mousemove', 363, 173);
-            assertHoverLabelContent([
-                ['42', null],
-                null
-            ]);
+            assertHoverLabelContent({
+                nums: '42'
+            });
         });
 
         it('should not show null text labels', function() {
             mouseEvent('mousemove', 229, 239);
-            assertHoverLabelContent([null, null]);
+            assertHoverLabelContent({});
         });
 
         it('should not show undefined text labels', function() {
             mouseEvent('mousemove', 493, 108);
-            assertHoverLabelContent([null, null]);
+            assertHoverLabelContent({});
         });
     });
 
@@ -683,13 +670,14 @@ describe('hover info on stacked subplots', function() {
                     y: 1000
                 }));
 
-            assertHoverLabelContent([
+            assertHoverLabelContent({
                 // There should be 2 pts being hovered over,
                 // in two different traces, one in each plot.
-                [['110', 'trace 1'], ['1000', 'trace 2']],
+                nums: ['110', '1000'],
+                name: ['trace 1', 'trace 2'],
                 // There should be a single label on the x-axis with the shared x value, 3'
-                '3'
-            ]);
+                axis: '3'
+            });
         });
     });
 
@@ -736,20 +724,15 @@ describe('hover info on stacked subplots', function() {
                     y: 0
                 }));
 
-            // There should be a single label on the y-axis with the shared y value, 0.
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0');
 
-            // There should be three points being hovered over, in three different traces, one in each plot.
-            expect(d3.selectAll('g.hovertext').size()).toEqual(3);
-            var textNodes = d3.selectAll('g.hovertext').selectAll('text');
-
-            expect(textNodes[0][0].innerHTML).toEqual('Who put the bomp in the bomp bah bomp bah bomp');
-            expect(textNodes[0][1].innerHTML).toEqual('1');
-            expect(textNodes[1][0].innerHTML).toEqual('Wh');
-            expect(textNodes[1][1].innerHTML).toEqual('2.1');
-            expect(textNodes[2][0].innerHTML).toEqual('Who put...');
-            expect(textNodes[2][1].innerHTML).toEqual('3');
+            assertHoverLabelContent({
+                // There should be three points being hovered over, in three different traces,
+                // one in each plot.
+                nums: ['1', '2.1', '3'],
+                name: ['Who put the bomp in the bomp bah bomp bah bomp', 'Wh', 'Who put...'],
+                // There should be a single label on the y-axis with the shared y value, 0.
+                axis: '0'
+            });
         });
     });
 });
@@ -766,22 +749,13 @@ describe('hover info on overlaid subplots', function() {
         Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(function() {
             mouseEvent('mousemove', 768, 345);
 
-            var axisText = d3.selectAll('g.axistext'),
-                hoverText = d3.selectAll('g.hovertext');
-
-            expect(axisText.size()).toEqual(1, 'with 1 label on axis');
-            expect(hoverText.size()).toEqual(2, 'with 2 labels on the overlaid pts');
-
-            expect(axisText.select('text').html()).toEqual('1', 'with correct axis label');
-
-            var textNodes = hoverText.selectAll('text');
-
-            expect(textNodes[0][0].innerHTML).toEqual('Take Rate', 'with correct hover labels');
-            expect(textNodes[0][1].innerHTML).toEqual('0.35', 'with correct hover labels');
-            expect(textNodes[1][0].innerHTML).toEqual('Revenue', 'with correct hover labels');
-            expect(textNodes[1][1].innerHTML).toEqual('2,352.5', 'with correct hover labels');
-
-        }).then(done);
+            assertHoverLabelContent({
+                nums: ['0.35', '2,352.5'],
+                name: ['Take Rate', 'Revenue'],
+                axis: '1'
+            });
+        })
+        .then(done);
     });
 });
 
@@ -803,7 +777,11 @@ describe('hover after resizing', function() {
     function check(pos, expectation, msg) {
         Lib.clearThrottle();
         mouseEvent('mousemove', pos[0], pos[1]);
-        assertHoverLabelContent(expectation, msg);
+        assertHoverLabelContent({
+            nums: expectation[0],
+            name: expectation[1],
+            axis: expectation[2]
+        }, msg);
     }
 
     it('should work', function(done) {
@@ -820,28 +798,28 @@ describe('hover after resizing', function() {
             return _click(pos0);
         })
         .then(function() {
-            return check(pos0, [['1', null], '1'], 'before resize, showing pt label');
+            return check(pos0, ['1', null, '1'], 'before resize, showing pt label');
         })
         .then(function() {
-            return check(pos1, [null, null], 'before resize, not showing blank spot');
+            return check(pos1, [null, null, null], 'before resize, not showing blank spot');
         })
         .then(function() {
             return Plotly.relayout(gd, 'width', 500);
         })
         .then(function() {
-            return check(pos0, [null, null], 'after resize, not showing blank spot');
+            return check(pos0, [null, null, null], 'after resize, not showing blank spot');
         })
         .then(function() {
-            return check(pos1, [['2', null], '2'], 'after resize, showing pt label');
+            return check(pos1, ['2', null, '2'], 'after resize, showing pt label');
         })
         .then(function() {
             return Plotly.relayout(gd, 'width', 600);
         })
         .then(function() {
-            return check(pos0, [['1', null], '1'], 'back to initial, showing pt label');
+            return check(pos0, ['1', null, '1'], 'back to initial, showing pt label');
         })
         .then(function() {
-            return check(pos1, [null, null], 'back to initial, not showing blank spot');
+            return check(pos1, [null, null, null], 'back to initial, not showing blank spot');
         })
         .then(done);
     });

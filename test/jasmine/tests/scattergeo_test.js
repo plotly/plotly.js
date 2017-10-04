@@ -262,38 +262,44 @@ describe('Test scattergeo hover', function() {
             fontFamily: 'Arial'
         };
 
-        assertHoverLabelContent([content, null]);
-        assertHoverLabelStyle(d3.select('g.hovertext'), style);
+        assertHoverLabelContent({
+            nums: content[0],
+            name: content[1]
+        });
+        assertHoverLabelStyle(
+            d3.select('g.hovertext'),
+            style
+        );
     }
 
     it('should generate hover label info (base case)', function() {
-        check([381, 221], [['(10°, 10°)', 'A'], null]);
+        check([381, 221], ['(10°, 10°)\nA', null]);
     });
 
     it('should generate hover label info (with trace name)', function(done) {
         Plotly.restyle(gd, 'hoverinfo', 'lon+lat+text+name').then(function() {
-            check([381, 221], [['(10°, 10°)', 'A'], 'trace 0']);
+            check([381, 221], ['(10°, 10°)\nA', 'trace 0']);
         })
         .then(done);
     });
 
     it('should generate hover label info (\'text\' single value case)', function(done) {
         Plotly.restyle(gd, 'text', 'text').then(function() {
-            check([381, 221], [['(10°, 10°)', 'text'], null]);
+            check([381, 221], ['(10°, 10°)\ntext', null]);
         })
         .then(done);
     });
 
     it('should generate hover label info (\'hovertext\' single value case)', function(done) {
         Plotly.restyle(gd, 'hovertext', 'hovertext').then(function() {
-            check([381, 221], [['(10°, 10°)', 'hovertext'], null]);
+            check([381, 221], ['(10°, 10°)\nhovertext', null]);
         })
         .then(done);
     });
 
     it('should generate hover label info (\'hovertext\' array case)', function(done) {
         Plotly.restyle(gd, 'hovertext', ['Apple', 'Banana', 'Orange']).then(function() {
-            check([381, 221], [['(10°, 10°)', 'Apple'], null]);
+            check([381, 221], ['(10°, 10°)\nApple', null]);
         })
         .then(done);
     });
@@ -304,7 +310,7 @@ describe('Test scattergeo hover', function() {
             'hoverlabel.bordercolor': [['blue', 'black', 'green']]
         })
         .then(function() {
-            check([381, 221], [['(10°, 10°)', 'A'], null], {
+            check([381, 221], ['(10°, 10°)\nA', null], {
                 bgcolor: 'rgb(255, 0, 0)',
                 bordercolor: 'rgb(0, 0, 255)',
                 fontColor: 'rgb(0, 0, 255)',

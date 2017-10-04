@@ -60,88 +60,99 @@ exports.assertHoverLabelStyle = function(g, expectation, msg, textSelector) {
 };
 
 function assertLabelContent(label, expectation, msg) {
-    var lines = label.selectAll('tspan');
-    var lineCnt = lines.size();
-    var expectMultiLine = Array.isArray(expectation);
+    if(!expectation) expectation = '';
 
-    function extract(sel) {
-        return sel.node() ? sel.html() : null;
+    var lines = label.selectAll('tspan.line');
+    var content = [];
+
+    function fill(sel) {
+        if(sel.node()) {
+            var html = sel.html();
+            if(html) content.push(html);
+        }
     }
 
-    if(lineCnt > 0) {
-        if(expectMultiLine) {
-            expect(lines.size()).toBe(expectation.length, msg + ': # of lines');
-            lines.each(function(_, i) {
-                var l = d3.select(this);
-                expect(extract(l)).toBe(expectation[i], msg + ': tspan line ' + i);
-            });
-        } else {
-            fail('Expected a single-line label, found multiple lines');
-        }
+    if(lines.size()) {
+        lines.each(function() { fill(d3.select(this)); });
     } else {
-        if(!expectMultiLine) {
-            expect(extract(label)).toBe(expectation, msg + ': text content');
-        } else {
-            fail('Expected a multi-line label, found single');
-        }
+        fill(label);
     }
+
+    expect(content.join('\n')).toBe(expectation, msg + ': text content');
 }
 
 function count(selector) {
     return d3.selectAll(selector).size();
 }
 
+/**
+ * @param {object} expectation
+ *  - nums {string || array of strings}
+ *  - name {string || array of strings}
+ *  - axis {string}
+ * @param {string} msg
+ */
 exports.assertHoverLabelContent = function(expectation, msg) {
     if(!msg) msg = '';
 
     var ptSelector = 'g.hovertext';
-    var ptExpectation = expectation[0];
     var ptMsg = msg + ' point hover label';
     var ptCnt = count(ptSelector);
 
     var axSelector = 'g.axistext';
-    var axExpectation = expectation[1];
     var axMsg = 'common axis hover label';
     var axCnt = count(axSelector);
 
     if(ptCnt === 1) {
         assertLabelContent(
             d3.select(ptSelector + '> text.nums'),
-            ptExpectation[0],
+            expectation.nums,
             ptMsg + ' (nums)'
         );
         assertLabelContent(
             d3.select(ptSelector + '> text.name'),
-            ptExpectation[1],
+            expectation.name,
             ptMsg + ' (name)'
         );
     } else if(ptCnt > 1) {
-        expect(ptCnt).toBe(ptExpectation.length, ptMsg + ' # of visible nodes');
+        if(!Array.isArray(expectation.nums) || !Array.isArray(expectation.name)) {
+            fail(ptMsg + ': expecting more than 1 labels.');
+        }
+
+        expect(ptCnt)
+            .toBe(expectation.name.length, ptMsg + ' # of visible labels');
 
         d3.selectAll(ptSelector).each(function(_, i) {
             assertLabelContent(
                 d3.select(this).select('text.nums'),
-                ptExpectation[i][0],
+                expectation.nums[i],
                 ptMsg + ' (nums ' + i + ')'
             );
             assertLabelContent(
                 d3.select(this).select('text.name'),
-                ptExpectation[i][1],
+                expectation.name[i],
                 ptMsg + ' (name ' + i + ')'
             );
         });
     } else {
-        expect(ptExpectation).toBe(null, ptMsg + ' should not be displayed');
+        if(expectation.nums) {
+            fail(ptMsg + ': expecting *nums* labels, did not find any.');
+        }
+        if(expectation.name) {
+            fail(ptMsg + ': expecting *nums* labels, did not find any.');
+        }
     }
 
-    if(axCnt > 0) {
+    if(axCnt) {
         assertLabelContent(
             d3.select(axSelector + '> text'),
-            axExpectation,
+            expectation.axis,
             axMsg
         );
     } else {
-        expect(axExpectation).toBe(null, axMsg + ' should not be displayed');
+        if(expectation.axis) {
+            fail(axMsg + ': expecting label, did not find any.');
+        }
     }
 };
 

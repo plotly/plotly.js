@@ -158,7 +158,10 @@ describe('Test hover and click interactions', function() {
                         assertHoverLabelStyle(g, expected, opts.msg);
                     }
                     if(expected.label) {
-                        assertHoverLabelContent([expected.label, null]);
+                        assertHoverLabelContent({
+                            nums: expected.label[0],
+                            name: expected.label[1]
+                        });
                     }
                 })
                 .then(_click)

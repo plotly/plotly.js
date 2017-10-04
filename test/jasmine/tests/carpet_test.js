@@ -579,7 +579,10 @@ describe('scattercarpet hover labels', function() {
 
         return Plotly.plot(gd, fig).then(function() {
             mouseEvent('mousemove', pos[0], pos[1]);
-            assertHoverLabelContent([content, null]);
+            assertHoverLabelContent({
+                nums: content[0].join('\n'),
+                name: content[1]
+            });
         });
     }
 
