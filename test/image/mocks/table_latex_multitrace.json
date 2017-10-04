@@ -1,0 +1,39 @@
+{
+    "layout": {
+        "width": 620,
+        "height":  550,
+        "title": "Half-Angle Formulas"
+    },
+
+    "data": [{
+
+        "type": "table",
+
+        "domain": {
+            "x": [0, 1],
+            "y": [0, 1]
+        },
+
+        "columnwidth": [30, 200, 200],
+        "columnorder": [0, 1, 2],
+
+        "header": {
+            "values": [["<b>#</b>"], ["Form"], ["Equivalent"]],
+            "align": ["right", "center", "center"],
+            "line": {"width": 0.0},
+            "fill": {"color": ["dimgray", "grey"]},
+            "font": {"family": "Arial", "size": 14, "color": "white"}
+        },
+
+        "cells": {
+            "values": [
+                ["1.", "2."],
+                ["$$\\cos^2\\theta=\\displaystyle\\frac{1+\\cos\\theta}{2}$$", "$$\\sin^2\\theta=\\displaystyle\\frac{1-\\cos\\theta}{2}$$"],
+                ["$$\\cos\\theta=\\pm\\sqrt{\\displaystyle\\frac{1+\\cos\\theta}{2}}$$", "$$\\sin\\theta=\\pm\\sqrt{\\displaystyle\\frac{1-\\cos\\theta}{2}}$$"]
+            ],
+            "align": ["right", "center", "center"],
+            "line": {"color": "grey", "width": 1},
+            "font": {"family": "Arial", "size": 12, "color": ["black"]}
+        }
+    }]
+}
