@@ -107,7 +107,11 @@ module.exports = function plot(gd, calcdata) {
                 var movedColumn = d3.select(this);
                 var getter = function(dd) {return (d === dd ? d3.event.x : dd.x) + dd.columnWidth / 2;};
                 d.x = Math.max(-c.overdrag, Math.min(d.calcdata.width + c.overdrag - d.columnWidth, d3.event.x));
-                var newOrder = yColumn.data().sort(function(a, b) {return getter(a) - getter(b);});
+
+                var sortableColumns = [].concat.apply([], yColumn.map(function(g) {return g;}))
+                    .map(function(g) {return g.__data__})
+                    .filter(function(dd) {return dd.calcdata.key === d.calcdata.key});
+                var newOrder = sortableColumns.sort(function(a, b) {return getter(a) - getter(b);});
                 newOrder.forEach(function(dd, i) {
                     dd.xIndex = i;
                     dd.x = d === dd ? dd.x : dd.xScale(dd);
