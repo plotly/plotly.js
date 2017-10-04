@@ -513,6 +513,7 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
                 delete d.fragments;
                 textToRender = prefixSuffixedText;
             }
+
             return textToRender;
         })
         .attr('alignment-baseline', function(d) {
