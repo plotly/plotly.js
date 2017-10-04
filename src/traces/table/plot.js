@@ -16,15 +16,20 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var svgUtil = require('../../lib/svg_text_utils');
 var raiseToTop = require('../../lib').raiseToTop;
 var cancelEeaseColumn = require('../../lib').cancelTransition;
+var prepareData = require('./data_preparation_helper');
 
-module.exports = function plot(gd, calcdata) {
+module.exports = function plot(gd, wrappedTraceHolders) {
 
     if(c.clipView) {
         gd._fullLayout._paper.attr('height', 2000);
     }
 
     var table = gd._fullLayout._paper.selectAll('.table')
-        .data(calcdata.map(gup.unwrap), gup.keyFun);
+        .data(wrappedTraceHolders.map(function(wrappedTraceHolder) {
+            var traceHolder = gup.unwrap(wrappedTraceHolder);
+            var trace = traceHolder.trace;
+            return prepareData(gd, trace);
+        }), gup.keyFun);
 
     table.exit().remove();
 
@@ -130,7 +135,7 @@ module.exports = function plot(gd, calcdata) {
                 d.x = d.xScale(d);
                 d.calcdata.columnDragInProgress = false;
                 easeColumn(movedColumn, d, 0);
-                columnMoved(gd, calcdata, p.key, p.columns.map(function(dd) {return dd.xIndex;}));
+                columnMoved(gd, p, p.columns.map(function(dd) {return dd.xIndex;}));
             })
         );
 
@@ -557,13 +562,13 @@ function isLatex(content) {
 
 function hasWrapCharacter(text) {return text.indexOf(c.wrapSplitCharacter) !== -1;}
 
-function columnMoved(gd, calcdata, i, indices) {
-    var o = calcdata[i][0].gdColumnsOriginalOrder;
-    calcdata[i][0].gdColumns.sort(function(a, b) {
+function columnMoved(gd, calcdata, indices) {
+    var o = calcdata.gdColumnsOriginalOrder;
+    calcdata.gdColumns.sort(function(a, b) {
         return indices[o.indexOf(a)] - indices[o.indexOf(b)];
     });
 
-    calcdata[i][0].columnorder = indices;
+    calcdata.columnorder = indices;
 
     gd.emit('plotly_restyle');
 }
