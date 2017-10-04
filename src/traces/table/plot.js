@@ -12,11 +12,11 @@ var c = require('./constants');
 var d3 = require('d3');
 var gup = require('../../lib/gup');
 var Drawing = require('../../components/drawing');
-var extendFlat = require('../../lib/extend').extendFlat;
 var svgUtil = require('../../lib/svg_text_utils');
 var raiseToTop = require('../../lib').raiseToTop;
 var cancelEeaseColumn = require('../../lib').cancelTransition;
 var prepareData = require('./data_preparation_helper');
+var splitData = require('./data_split_helpers');
 
 module.exports = function plot(gd, wrappedTraceHolders) {
 
@@ -144,7 +144,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
     }
 
     var columnBlock = yColumn.selectAll('.columnBlock')
-        .data(splitToPanels, gup.keyFun);
+        .data(splitData.splitToPanels, gup.keyFun);
 
     columnBlock.enter()
         .append('g')
@@ -404,7 +404,7 @@ function renderColumnCells(columnBlock) {
 function renderColumnCell(columnCells) {
 
     var columnCell = columnCells.selectAll('.columnCell')
-        .data(splitToCells, function(d) {return d.keyWithinBlock;});
+        .data(splitData.splitToCells, function(d) {return d.keyWithinBlock;});
 
     columnCell.enter()
         .append('g')
@@ -600,74 +600,6 @@ function headerBlock(d) {return d.type === 'header';}
 /**
  * Revolver panel and cell contents layouting
  */
-
-function splitToPanels(d) {
-    var prevPages = [0, 0];
-    var headerPanel = extendFlat({}, d, {
-        key: 'header',
-        type: 'header',
-        page: 0,
-        prevPages: prevPages,
-        currentRepaint: [null, null],
-        dragHandle: true,
-        values: d.calcdata.headerCells.values[d.specIndex],
-        rowBlocks: d.calcdata.headerRowBlocks,
-        calcdata: extendFlat({}, d.calcdata, {cells: d.calcdata.headerCells})
-    });
-    var revolverPanel1 = extendFlat({}, d, {
-        key: 'cells1',
-        type: 'cells',
-        page: 0,
-        prevPages: prevPages,
-        currentRepaint: [null, null],
-        dragHandle: false,
-        values: d.calcdata.cells.values[d.specIndex],
-        rowBlocks: d.calcdata.rowBlocks
-    });
-    var revolverPanel2 = extendFlat({}, d, {
-        key: 'cells2',
-        type: 'cells',
-        page: 1,
-        prevPages: prevPages,
-        currentRepaint: [null, null],
-        dragHandle: false,
-        values: d.calcdata.cells.values[d.specIndex],
-        rowBlocks: d.calcdata.rowBlocks
-    });
-    // order due to SVG using painter's algo:
-    return [revolverPanel1, revolverPanel2, headerPanel];
-}
-
-function splitToCells(d) {
-    var fromTo = rowFromTo(d);
-    return d.values.slice(fromTo[0], fromTo[1]).map(function(v, i) {
-        // By keeping identical key, a DOM node removal, creation and addition is spared, important when visible
-        // grid has a lot of elements (quadratic with xcol/ycol count).
-        // But it has to be busted when `svgUtil.convertToTspans` is used as it reshapes cell subtrees asynchronously,
-        // and by that time the user may have scrolled away, resulting in stale overwrites. The real solution will be
-        // to turn `svgUtil.convertToTspans` into a cancelable request, in which case no key busting is needed.
-        var buster = (typeof v === 'string') && v.match(/[<$&> ]/) ? '_keybuster_' + Math.random() : '';
-        return {
-            // keyWithinBlock: /*fromTo[0] + */i, // optimized future version - no busting
-            // keyWithinBlock: fromTo[0] + i, // initial always-unoptimized version - janky scrolling with 5+ columns
-            keyWithinBlock: i + buster, // current compromise: regular content is very fast; async content is possible
-            key: fromTo[0] + i,
-            column: d,
-            calcdata: d.calcdata,
-            page: d.page,
-            rowBlocks: d.rowBlocks,
-            value: v
-        };
-    });
-}
-
-function rowFromTo(d) {
-    var rowBlock = d.rowBlocks[d.page];
-    // fixme rowBlock truthiness check is due to ugly hack of placing 2nd panel as d.page = -1
-    var rowFrom = rowBlock ? rowBlock.rows[0].rowIndex : 0;
-    var rowTo = rowBlock ? rowFrom + rowBlock.rows.length : 0;
-    return [rowFrom, rowTo];
-}
 
 function headerHeight(d) {
     var headerBlocks = d.rowBlocks[0].auxiliaryBlocks;
