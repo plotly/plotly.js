@@ -1028,24 +1028,22 @@ function alignHoverText(hoverLabels, rotateLabels) {
 }
 
 function cleanPoint(d, hovermode) {
+    var index = d.index;
     var trace = d.trace || {};
     var cd0 = d.cd[0];
-    var cd = d.cd[d.index] || {};
+    var cd = d.cd[index] || {};
+
+    var getVal = Array.isArray(index) ?
+        function(calcKey, traceKey) {
+            return Lib.castOption(cd0, index, calcKey) ||
+                Lib.extractOption({}, trace, '', traceKey);
+        } :
+        function(calcKey, traceKey) {
+            return Lib.extractOption(cd, trace, calcKey, traceKey);
+        };
 
     function fill(key, calcKey, traceKey) {
-        var val;
-
-        if(cd[calcKey]) {
-            val = cd[calcKey];
-        } else if(cd0[calcKey]) {
-            var arr = cd0[calcKey];
-            if(Array.isArray(arr) && Array.isArray(arr[d.index[0]])) {
-                val = arr[d.index[0]][d.index[1]];
-            }
-        } else {
-            val = Lib.nestedProperty(trace, traceKey).get();
-        }
-
+        var val = getVal(calcKey, traceKey);
         if(val) d[key] = val;
     }
 
