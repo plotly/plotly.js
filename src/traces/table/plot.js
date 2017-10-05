@@ -141,12 +141,11 @@ module.exports = function plot(gd, wrappedTraceHolders) {
     columnBlock.enter()
         .append('g')
         .classed('columnBlock', true)
-        .attr('id', function(d) {return d.key;})
-        .style('user-select', 'none');
+        .attr('id', function(d) {return d.key;});
 
     columnBlock
         .style('cursor', function(d) {
-            return d.dragHandle ? 'ew-resize' : d.calcdata.scrollbarState.barWiggleRoom ? 'ns-resize' : 'default';
+            return d.dragHandle ? 'ew-resize' : 'auto';
         });
 
     var cellsColumnBlock = columnBlock.filter(cellsBlock);
