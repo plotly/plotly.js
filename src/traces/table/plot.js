@@ -82,7 +82,8 @@ module.exports = function plot(gd, wrappedTraceHolders) {
         .attr('width', function(d) {return d.width;})
         .attr('height', function(d) {return d.height;});
 
-    tableControlView.attr('clip-path', function(d) {return 'url(#scrollAreaBottomClip_' + d.key + ')';});
+    tableControlView
+        .each(function(d) {Drawing.setClipUrl(tableControlView, scrollAreaBottomClipKey(gd, d));});
 
     var yColumn = tableControlView.selectAll('.yColumn')
         .data(function(vm) {return vm.columns;}, gup.keyFun);
@@ -174,7 +175,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
     scrollAreaClip.enter()
         .append('clipPath')
         .classed('scrollAreaClip', true)
-        .attr('id', function(d) { return 'scrollAreaBottomClip_' + d.key;});
+        .attr('id', function(d) {return scrollAreaBottomClipKey(gd, d);});
 
     var scrollAreaClipRect = scrollAreaClip.selectAll('.scrollAreaClipRect')
         .data(gup.repeat, gup.keyFun);
@@ -224,6 +225,10 @@ module.exports = function plot(gd, wrappedTraceHolders) {
 
     updateBlockYPosition(null, cellsColumnBlock, tableControlView);
 };
+
+function scrollAreaBottomClipKey(gd, d) {
+    return 'clip' + gd._fullLayout._uid + '_scrollAreaBottomClip_' + d.key;
+}
 
 function flatData(selection) {
     return [].concat.apply([], selection.map(function(g) {return g;}))
