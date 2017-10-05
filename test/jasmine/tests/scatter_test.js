@@ -335,7 +335,6 @@ describe('Test scatter', function() {
         // TODO: test coarser decimation outside plot, and removing very near duplicates from the four of a cluster
 
         it('should clip extreme points without changing on-screen paths', function() {
-            // TODO
             var ptsIn = [
                 // first bunch: rays going in/out in many directions
                 // and a few random moves within faraway sectors, that should get dropped
