@@ -17,6 +17,7 @@ var raiseToTop = require('../../lib').raiseToTop;
 var cancelEeaseColumn = require('../../lib').cancelTransition;
 var prepareData = require('./data_preparation_helper');
 var splitData = require('./data_split_helpers');
+var Color = require('../../components/color');
 
 module.exports = function plot(gd, wrappedTraceHolders) {
 
@@ -477,11 +478,10 @@ function sizeAndStyleRect(cellRect) {
     cellRect
         .attr('width', function(d) {return d.column.columnWidth;})
         .attr('stroke-width', function(d) {return d.cellBorderWidth;})
-        .attr('stroke', function(d) {
-            return gridPick(d.calcdata.cells.line.color, d.column.specIndex, d.rowNumber);
-        })
-        .attr('fill', function(d) {
-            return gridPick(d.calcdata.cells.fill.color, d.column.specIndex, d.rowNumber);
+        .each(function(d) {
+            var atomicSelection = d3.select(this);
+            Color.stroke(atomicSelection, gridPick(d.calcdata.cells.line.color, d.column.specIndex, d.rowNumber));
+            Color.fill(atomicSelection, gridPick(d.calcdata.cells.fill.color, d.column.specIndex, d.rowNumber));
         });
 }
 
