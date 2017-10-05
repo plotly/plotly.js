@@ -161,6 +161,13 @@ lib.raiseToTop = function raiseToTop(elem) {
     elem.parentNode.appendChild(elem);
 };
 
+/**
+ * cancel a possibly pending transition; returned selection may be used by caller
+ */
+lib.cancelTransition = function(selection) {
+    return selection.transition().duration(0);
+};
+
 // constrain - restrict a number v to be between v0 and v1
 lib.constrain = function(v, v0, v1) {
     if(v0 > v1) return Math.max(v1, Math.min(v0, v));
