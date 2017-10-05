@@ -239,7 +239,7 @@ describe('Test scatter', function() {
                 yaxis: ax,
                 connectGaps: false,
                 baseTolerance: 1,
-                linear: true,
+                shape: 'linear',
                 simplify: true
             };
 

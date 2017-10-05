@@ -10,7 +10,9 @@
 'use strict';
 
 var BADNUM = require('../../constants/numerical').BADNUM;
-var segmentsIntersect = require('../../lib/geometry2d').segmentsIntersect;
+var Lib = require('../../lib');
+var segmentsIntersect = Lib.segmentsIntersect;
+var constrain = Lib.constrain;
 var constants = require('./constants');
 
 
@@ -20,7 +22,8 @@ module.exports = function linePoints(d, opts) {
     var simplify = opts.simplify;
     var connectGaps = opts.connectGaps;
     var baseTolerance = opts.baseTolerance;
-    var linear = opts.linear;
+    var shape = opts.shape;
+    var linear = shape === 'linear';
     var segments = [];
     var minTolerance = constants.minTolerance;
     var pts = new Array(d.length);
@@ -100,7 +103,10 @@ module.exports = function linePoints(d, opts) {
     ];
     var xEdge, yEdge, lastXEdge, lastYEdge, lastFarPt, edgePt;
 
-    function getEdgeIntersections(pt1, pt2) {
+    // for linear line shape, edge intersections should be linearly interpolated
+    // spline uses this too, which isn't precisely correct but is actually pretty
+    // good, because Catmull-Rom weights far-away points less in creating the curvature
+    function getLinearEdgeIntersections(pt1, pt2) {
         var out = [];
         var ptCount = 0;
         for(var i = 0; i < 4; i++) {
@@ -120,6 +126,70 @@ module.exports = function linePoints(d, opts) {
         }
         return out;
     }
+
+    function onlyConstrainedPoint(pt) {
+        if(pt[0] < xEdge0 || pt[0] > xEdge1 || pt[1] < yEdge0 || pt[1] > yEdge1) {
+            return [constrain(pt[0], xEdge0, xEdge1), constrain(pt[1], yEdge0, yEdge1)];
+        }
+    }
+
+    function sameEdge(pt1, pt2) {
+        if(pt1[0] === pt2[0] && (pt1[0] === xEdge0 || pt1[0] === xEdge1)) return true;
+        if(pt1[1] === pt2[1] && (pt1[1] === yEdge0 || pt1[1] === yEdge1)) return true;
+    }
+
+    // for line shapes hv and vh, movement in the two dimensions is decoupled,
+    // so all we need to do is constrain each dimension independently
+    function getHVEdgeIntersections(pt1, pt2) {
+        var out = [];
+        var ptInt1 = onlyConstrainedPoint(pt1);
+        var ptInt2 = onlyConstrainedPoint(pt2);
+        if(ptInt1 && ptInt2 && sameEdge(ptInt1, ptInt2)) return out;
+
+        if(ptInt1) out.push(ptInt1);
+        if(ptInt2) out.push(ptInt2);
+        return out;
+    }
+
+    // hvh and vhv we sometimes have to move one of the intersection points
+    // out BEYOND the clipping rect, by a maximum of a factor of 2, so that
+    // the midpoint line is drawn in the right place
+    function getABAEdgeIntersections(dim, limit0, limit1) {
+        return function(pt1, pt2) {
+            var ptInt1 = onlyConstrainedPoint(pt1);
+            var ptInt2 = onlyConstrainedPoint(pt2);
+
+            var out = [];
+            if(ptInt1 && ptInt2 && sameEdge(ptInt1, ptInt2)) return out;
+
+            if(ptInt1) out.push(ptInt1);
+            if(ptInt2) out.push(ptInt2);
+
+            var midShift = 2 * Lib.constrain((pt1[dim] + pt2[dim]) / 2, limit0, limit1) -
+                ((ptInt1 || pt1)[dim] + (ptInt2 || pt2)[dim]);
+            if(midShift) {
+                var ptToAlter;
+                if(ptInt1 && ptInt2) {
+                    ptToAlter = (midShift > 0 === ptInt1[dim] > ptInt2[dim]) ? ptInt1 : ptInt2;
+                }
+                else ptToAlter = ptInt1 || ptInt2;
+
+                ptToAlter[dim] += midShift;
+            }
+
+            return out;
+        };
+    }
+
+    var getEdgeIntersections;
+    if(shape === 'linear' || shape === 'spline') {
+        getEdgeIntersections = getLinearEdgeIntersections;
+    }
+    else if(shape === 'hv' || shape === 'vh') {
+        getEdgeIntersections = getHVEdgeIntersections;
+    }
+    else if(shape === 'hvh') getEdgeIntersections = getABAEdgeIntersections(0, xEdge0, xEdge1);
+    else if(shape === 'vhv') getEdgeIntersections = getABAEdgeIntersections(1, yEdge0, yEdge1);
 
     // a segment pt1->pt2 entirely outside the nearby region:
     // find the corner it gets closest to touching
