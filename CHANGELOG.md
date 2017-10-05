@@ -10,6 +10,45 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.31.0] -- 2017-10-05
+
+### Added
+- Add `table` trace type [#2030]
+- Add `geo.center` making geo views fully reproducible using layout attributes [#2030]
+- Add lasso and select-box drag modes to `scattergeo` and `choropleth` traces
+  [#2030]
+- Add lasso and select-box drag modes to `bar` and `histogram` traces [#2045]
+- Add `scale` option to `Plotly.toImage` and `Plotly.downloadImage` [#1979]
+- Add `plot-schema.json` to `dist/`[#1999]
+
+### Changed
+- Throttle lasso and select-box events for smoother behavior [#2040]
+- Harmonize gl3d and gl2d zoom speed with cartesian behavior [#2041]
+
+### Fixed
+- Fix numerous `restyle` and `relayout` bugs [#1999]
+- Fix handling of extreme off-plot data points in scatter lines [#2060]
+- Fix `hoverinfo` array support for `scattergeo`, `choropleth`,
+  `scatterternary` and `scattermapbox` traces [#2055]
+- Fix `Plotly.plot` MathJax promise chain resolution [#1991]
+- Fix legend double-click trace isolation behavior for graphs with
+  `visible: false` traces [#2019]
+- Fix legend visibility toggling for traces with `groupby` transforms [#2019]
+- Fix single-bin histogram edge case [#2028]
+- Fix autorange for bar with base zero [#2050]
+- Fix annotations arrow rendering when graph div is off the DOM [#2046]
+- Fix hover for graphs with `scattergeo` markers outside 'usa' scope [#2030]
+- Fix handling of cross anti-meridian geo `lonaxis` ranges [#2030]
+- Fix miter limit for lines on geo subplots [#2030]
+- Fix `marker.opacity` handling for `scattergeo` bubbles [#2030]
+- Fix layout animation of secondary axes [#1999]
+- Fix `sankey` hover text placement for empty `link.label` items [#2016]
+- Fix `sankey` rendering of nodes with very small values [#2017, #2021]
+- Fix `sankey` hover label positioning on pages that style the
+  'svg-container' div node [#2027]
+- Fix aggregation transforms restyle calls [#2031]
+
+
 ## [1.30.1] -- 2017-09-06
 
 ### Fixed
