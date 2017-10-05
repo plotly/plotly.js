@@ -150,6 +150,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
             return d.dragHandle ? 'ew-resize' : 'auto';
         });
 
+    var headerColumnBlock = columnBlock.filter(headerBlock);
     var cellsColumnBlock = columnBlock.filter(cellsBlock);
 
     cellsColumnBlock
@@ -166,8 +167,8 @@ module.exports = function plot(gd, wrappedTraceHolders) {
 
     // initial rendering: header is rendered first, as it may may have async LaTeX (show header first)
     // but blocks are _entered_ the way they are due to painter's algo (header on top)
-    renderColumnCellTree(gd, tableControlView, columnBlock.filter(headerBlock), columnBlock);
-    renderColumnCellTree(gd, tableControlView, columnBlock.filter(cellsBlock), columnBlock);
+    renderColumnCellTree(gd, tableControlView, headerColumnBlock, columnBlock);
+    renderColumnCellTree(gd, tableControlView, cellsColumnBlock, columnBlock);
 
     var scrollAreaClip = tableControlView.selectAll('.scrollAreaClip')
         .data(gup.repeat, gup.keyFun);
