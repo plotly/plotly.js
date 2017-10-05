@@ -215,9 +215,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
     columnBoundaryRect.enter()
         .append('rect')
         .classed('columnBoundaryRect', true)
-        .attr('fill', 'none')
-        .attr('stroke', 'magenta')
-        .attr('stroke-width', 2);
+        .attr('fill', 'none');
 
     columnBoundaryRect
         .attr('width', function(d) {return d.columnWidth;})
@@ -325,7 +323,8 @@ function renderScrollbarKit(tableControlView, gd) {
     scrollbarCaptureZone.enter()
         .append('line')
         .classed('scrollbarCaptureZone', true)
-        .attr('stroke', 'rgba(0,0,0,0.01)')
+        .attr('stroke', 'white')
+        .attr('stroke-opacity', 0.01) // some browser might get rid of a 0 opacity element
         .attr('stroke-width', c.scrollbarCaptureWidth)
         .attr('stroke-linecap', 'butt')
         .attr('y1', 0)
@@ -482,7 +481,7 @@ function sizeAndStyleRect(cellRect) {
             return gridPick(d.calcdata.cells.line.color, d.column.specIndex, d.rowNumber);
         })
         .attr('fill', function(d) {
-            return d.calcdata.cells.fill ? gridPick(d.calcdata.cells.fill.color, d.column.specIndex, d.rowNumber) : 'none';
+            return gridPick(d.calcdata.cells.fill.color, d.column.specIndex, d.rowNumber);
         });
 }
 
