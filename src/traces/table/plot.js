@@ -357,7 +357,7 @@ function renderColumnCellTree(gd, tableControlView, columnBlock, allColumnBlock)
 
     var columnCell = renderColumnCell(columnCells);
 
-    setFont(columnCell);
+    supplyStylingValues(columnCell);
 
     var cellRect = renderCellRect(columnCell);
 
@@ -367,6 +367,7 @@ function renderColumnCellTree(gd, tableControlView, columnBlock, allColumnBlock)
 
     var cellText = renderCellText(cellTextHolder);
 
+    setFont(cellText);
     populateCellText(cellText, tableControlView, allColumnBlock, gd);
 
     // doing this at the end when text, and text stlying are set
@@ -440,7 +441,7 @@ function renderCellTextHolder(columnCell) {
     return cellTextHolder;
 }
 
-function setFont(columnCell) {
+function supplyStylingValues(columnCell) {
     columnCell
         .each(function(d, i) {
             var spec = d.calcdata.cells.font;
@@ -450,12 +451,17 @@ function setFont(columnCell) {
                 color: gridPick(spec.color, col, i),
                 family: gridPick(spec.family, col, i)
             };
-            Drawing.font(d3.select(this), font);
-
             d.rowNumber = d.key;
             d.align = gridPick(d.calcdata.cells.align, col, i);
             d.cellBorderWidth = gridPick(d.calcdata.cells.line.width, col, i);
             d.font = font;
+        });
+}
+
+function setFont(cellText) {
+    cellText
+        .each(function(d) {
+            Drawing.font(d3.select(this), d.font);
         });
 }
 
@@ -780,11 +786,6 @@ function updateYPositionMaker(columnBlock, element, tableControlView, gd, d) {
                 var yPosition = rectBox.top - box.top + (currentTransform ? currentTransform.matrix.f : c.cellPad);
                 return 'translate(' + xPosition(d, d3.select(element.parentNode).select('.cellTextHolder').node().getBoundingClientRect().width) + ' ' + yPosition + ')';
             });
-
-        // MathJax styling has to be killed for HTML DOM color specifications to seep through
-        cellTextHolder.selectAll('svg').selectAll('*')
-            .attr('fill', null)
-            .attr('stroke', null);
 
         d.settledY = true;
     };

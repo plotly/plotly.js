@@ -138,6 +138,7 @@ module.exports = {
                 valType: 'color',
                 editType: 'calc',
                 arrayOk: true,
+                dflt: 'white',
                 role: 'style',
                 description: [
                     'Sets the cell fill color. It accepts either a specific color',
@@ -257,6 +258,7 @@ module.exports = {
                 editType: 'calc',
                 arrayOk: true,
                 role: 'style',
+                dflt: 'white',
                 description: [
                     'Sets the cell fill color. It accepts either a specific color',
                     ' or an array of colors.'
