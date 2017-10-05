@@ -64,7 +64,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
             makeDragRow(gd, tableControlView, null, d.scrollY + d3.event.deltaY)(d);
             d.scrollbarState.wheeling = false;
         })
-        .call(renderScrollbarKit, gd);
+        .call(renderScrollbarKit, gd, true);
 
     tableControlView
         .attr('transform', function(d) {return 'translate(' + d.size.l + ' ' + d.size.t + ')';});
@@ -238,7 +238,7 @@ function flatData(selection) {
         .map(function(g) {return g.__data__;});
 }
 
-function renderScrollbarKit(tableControlView, gd) {
+function renderScrollbarKit(tableControlView, gd, bypassVisibleBar) {
 
     function calcTotalHeight(d) {
         var blocks = d.rowBlocks;
@@ -307,7 +307,7 @@ function renderScrollbarKit(tableControlView, gd) {
             return d.scrollbarState.barLength - c.scrollbarWidth / 2;
         })
         .attr('stroke-opacity', function(d) {
-            return d.columnDragInProgress || !d.scrollbarState.barWiggleRoom ? 0 : 0.4;
+            return d.columnDragInProgress || !d.scrollbarState.barWiggleRoom || bypassVisibleBar ? 0 : 0.4;
         });
 
     // cancel transition: possible pending (also, delayed) transition
@@ -782,7 +782,7 @@ function updateYPositionMaker(columnBlock, element, tableControlView, gd, d) {
             // if d.column.type === 'header', then the scrollbar has to be pushed downward to the scrollable area
             // if d.column.type === 'cells', it can still be relevant if total scrolling content height is less than the
             //                               scrollable window, as increases to row heights may need scrollbar updates
-            renderScrollbarKit(tableControlView, gd);
+            renderScrollbarKit(tableControlView, gd, true);
         }
 
         cellTextHolder
