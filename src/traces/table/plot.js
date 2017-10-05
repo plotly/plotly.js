@@ -83,7 +83,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
         .attr('height', function(d) {return d.height;});
 
     tableControlView
-        .each(function(d) {Drawing.setClipUrl(tableControlView, scrollAreaBottomClipKey(gd, d));});
+        .each(function(d) {Drawing.setClipUrl(d3.select(this), scrollAreaBottomClipKey(gd, d));});
 
     var yColumn = tableControlView.selectAll('.yColumn')
         .data(function(vm) {return vm.columns;}, gup.keyFun);
@@ -134,7 +134,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
             })
         );
 
-    yColumn.attr('clip-path', function(d) {return 'url(#columnBoundaryClippath_' + d.calcdata.key + '_' + d.specIndex + ')';});
+    yColumn.each(function(d) {Drawing.setClipUrl(d3.select(this), columnBoundaryClipKey(gd, d));});
 
     var columnBlock = yColumn.selectAll('.columnBlock')
         .data(splitData.splitToPanels, gup.keyFun);
@@ -207,7 +207,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
         .classed('columnBoundaryClippath', true);
 
     columnBoundaryClippath
-        .attr('id', function(d) {return 'columnBoundaryClippath_' + d.calcdata.key + '_' + d.specIndex;});
+        .attr('id', function(d) {return columnBoundaryClipKey(gd, d);});
 
     var columnBoundaryRect = columnBoundaryClippath.selectAll('.columnBoundaryRect')
         .data(gup.repeat, gup.keyFun);
@@ -228,6 +228,10 @@ module.exports = function plot(gd, wrappedTraceHolders) {
 
 function scrollAreaBottomClipKey(gd, d) {
     return 'clip' + gd._fullLayout._uid + '_scrollAreaBottomClip_' + d.key;
+}
+
+function columnBoundaryClipKey(gd, d) {
+    return 'clip' + gd._fullLayout._uid + '_columnBoundaryClippath_' + d.calcdata.key + '_' + d.specIndex;
 }
 
 function flatData(selection) {
