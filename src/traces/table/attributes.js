@@ -10,13 +10,12 @@
 
 var annAttrs = require('../../components/annotations/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
-module.exports = {
-
+module.exports = overrideAll({
     domain: {
         x: {
             valType: 'info_array',
-            editType: 'calc',
             role: 'info',
             items: [
                 {valType: 'number', min: 0, max: 1},
@@ -30,7 +29,6 @@ module.exports = {
         },
         y: {
             valType: 'info_array',
-            editType: 'calc',
             role: 'info',
             items: [
                 {valType: 'number', min: 0, max: 1},
@@ -46,7 +44,6 @@ module.exports = {
 
     columnwidth: {
         valType: 'number',
-        editType: 'calc',
         arrayOk: true,
         dflt: null,
         role: 'style',
@@ -55,7 +52,6 @@ module.exports = {
 
     columnorder: {
         valType: 'data_array',
-        editType: 'calc',
         role: 'info',
         description: [
             'Specifies the rendered order of the data columns; for example, a value `2` at position `0`',
@@ -68,7 +64,6 @@ module.exports = {
 
         values: {
             valType: 'data_array',
-            editType: 'calc',
             role: 'info',
             dflt: [],
             description: [
@@ -80,7 +75,6 @@ module.exports = {
 
         format: {
             valType: 'data_array',
-            editType: 'calc',
             role: 'info',
             dflt: [],
             description: [
@@ -92,7 +86,6 @@ module.exports = {
 
         prefix: {
             valType: 'string',
-            editType: 'calc',
             arrayOk: true,
             dflt: null,
             role: 'style',
@@ -101,7 +94,6 @@ module.exports = {
 
         suffix: {
             valType: 'string',
-            editType: 'calc',
             arrayOk: true,
             dflt: null,
             role: 'style',
@@ -110,7 +102,6 @@ module.exports = {
 
         height: {
             valType: 'number',
-            editType: 'calc',
             dflt: 28,
             role: 'style',
             description: 'The height of cells.'
@@ -121,13 +112,11 @@ module.exports = {
         line: {
             width: {
                 valType: 'number',
-                editType: 'calc',
                 arrayOk: true,
                 role: 'style'
             },
             color: {
                 valType: 'color',
-                editType: 'calc',
                 arrayOk: true,
                 role: 'style'
             }
@@ -136,7 +125,6 @@ module.exports = {
         fill: {
             color: {
                 valType: 'color',
-                editType: 'calc',
                 arrayOk: true,
                 dflt: 'white',
                 role: 'style',
@@ -150,7 +138,6 @@ module.exports = {
         font: {
             family: {
                 valType: 'string',
-                editType: 'calc',
                 arrayOk: true,
                 role: 'style',
                 noBlank: true,
@@ -170,13 +157,11 @@ module.exports = {
             },
             size: {
                 valType: 'number',
-                editType: 'calc',
                 arrayOk: true,
                 role: 'style'
             },
             color: {
                 valType: 'color',
-                editType: 'calc',
                 arrayOk: true,
                 role: 'style'
             }
@@ -187,7 +172,6 @@ module.exports = {
 
         values: {
             valType: 'data_array',
-            editType: 'calc',
             role: 'info',
             dflt: [],
             description: [
@@ -199,7 +183,6 @@ module.exports = {
 
         format: {
             valType: 'data_array',
-            editType: 'calc',
             role: 'info',
             dflt: [],
             description: [
@@ -211,7 +194,6 @@ module.exports = {
 
         prefix: {
             valType: 'string',
-            editType: 'calc',
             arrayOk: true,
             dflt: null,
             role: 'style',
@@ -220,7 +202,6 @@ module.exports = {
 
         suffix: {
             valType: 'string',
-            editType: 'calc',
             arrayOk: true,
             dflt: null,
             role: 'style',
@@ -229,7 +210,6 @@ module.exports = {
 
         height: {
             valType: 'number',
-            editType: 'calc',
             dflt: 20,
             role: 'style',
             description: 'The height of cells.'
@@ -240,13 +220,11 @@ module.exports = {
         line: {
             width: {
                 valType: 'number',
-                editType: 'calc',
                 arrayOk: true,
                 role: 'style'
             },
             color: {
                 valType: 'color',
-                editType: 'calc',
                 arrayOk: true,
                 role: 'style'
             }
@@ -255,7 +233,6 @@ module.exports = {
         fill: {
             color: {
                 valType: 'color',
-                editType: 'calc',
                 arrayOk: true,
                 role: 'style',
                 dflt: 'white',
@@ -269,7 +246,6 @@ module.exports = {
         font: {
             family: {
                 valType: 'string',
-                editType: 'calc',
                 arrayOk: true,
                 role: 'style',
                 noBlank: true,
@@ -289,16 +265,14 @@ module.exports = {
             },
             size: {
                 valType: 'number',
-                editType: 'calc',
                 arrayOk: true,
                 role: 'style'
             },
             color: {
                 valType: 'color',
-                editType: 'calc',
                 arrayOk: true,
                 role: 'style'
             }
         }
     }
-};
+}, 'calc', 'from-root');
