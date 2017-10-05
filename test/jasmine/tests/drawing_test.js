@@ -345,6 +345,11 @@ describe('Drawing', function() {
             Drawing.setTextPointsScale(g, 4, 5);
             expect(g.attr('transform')).toEqual('translate(8,9) scale(4,5) translate(-8,-9) translate(1, 2)');
         });
+
+        it('should not break when <text> is not present', function() {
+            text.remove();
+            expect(function() { Drawing.setTextPointsScale(g, 4, 5); }).not.toThrow();
+        });
     });
 
     describe('bBox', function() {

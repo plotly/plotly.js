@@ -14,8 +14,8 @@ var Axes = require('../../plots/cartesian/axes');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 var getTraceColor = require('../scatter/get_trace_color');
+var fillHoverText = require('../scatter/fill_hover_text');
 var attributes = require('./attributes');
-
 
 module.exports = function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
@@ -71,39 +71,34 @@ module.exports = function hoverPoints(pointData, xval, yval) {
 };
 
 function getExtraText(trace, pt, axis) {
-    var hoverinfo = trace.hoverinfo;
+    var hoverinfo = pt.hi || trace.hoverinfo;
 
-    var parts = (hoverinfo === 'all') ?
+    var parts = hoverinfo === 'all' ?
         attributes.hoverinfo.flags :
         hoverinfo.split('+');
 
-    var hasLocation = parts.indexOf('location') !== -1 && Array.isArray(trace.locations),
-        hasLon = (parts.indexOf('lon') !== -1),
-        hasLat = (parts.indexOf('lat') !== -1),
-        hasText = (parts.indexOf('text') !== -1);
-
+    var hasLocation = parts.indexOf('location') !== -1 && Array.isArray(trace.locations);
+    var hasLon = (parts.indexOf('lon') !== -1);
+    var hasLat = (parts.indexOf('lat') !== -1);
+    var hasText = (parts.indexOf('text') !== -1);
     var text = [];
 
     function format(val) {
         return Axes.tickText(axis, axis.c2l(val), 'hover').text + '\u00B0';
     }
 
-    if(hasLocation) text.push(pt.loc);
-    else if(hasLon && hasLat) {
+    if(hasLocation) {
+        text.push(pt.loc);
+    } else if(hasLon && hasLat) {
         text.push('(' + format(pt.lonlat[0]) + ', ' + format(pt.lonlat[1]) + ')');
+    } else if(hasLon) {
+        text.push('lon: ' + format(pt.lonlat[0]));
+    } else if(hasLat) {
+        text.push('lat: ' + format(pt.lonlat[1]));
     }
-    else if(hasLon) text.push('lon: ' + format(pt.lonlat[0]));
-    else if(hasLat) text.push('lat: ' + format(pt.lonlat[1]));
 
     if(hasText) {
-        var tx;
-
-        if(pt.htx) tx = pt.htx;
-        else if(trace.hovertext) tx = trace.hovertext;
-        else if(pt.tx) tx = pt.tx;
-        else if(trace.text) tx = trace.text;
-
-        if(!Array.isArray(tx)) text.push(tx);
+        fillHoverText(pt, trace, text);
     }
 
     return text.join('<br>');

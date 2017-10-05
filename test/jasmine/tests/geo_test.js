@@ -553,72 +553,6 @@ describe('Test geo interactions', function() {
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
-        describe('scattergeo hover labels', function() {
-            it('should show one hover text group', function() {
-                mouseEventScatterGeo('mousemove');
-                expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            });
-
-            it('should show longitude and latitude values', function() {
-                mouseEventScatterGeo('mousemove');
-
-                var node = d3.selectAll('g.hovertext').selectAll('tspan')[0][0];
-                expect(node.innerHTML).toEqual('(0°, 0°)');
-            });
-
-            it('should show the trace name', function() {
-                mouseEventScatterGeo('mousemove');
-
-                var node = d3.selectAll('g.hovertext').selectAll('text')[0][0];
-                expect(node.innerHTML).toEqual('trace 0');
-            });
-
-            it('should show *text* (case 1)', function(done) {
-                Plotly.restyle(gd, 'text', [['A', 'B']]).then(function() {
-                    mouseEventScatterGeo('mousemove');
-
-                    var node = d3.selectAll('g.hovertext').selectAll('tspan')[0][1];
-                    expect(node.innerHTML).toEqual('A');
-                })
-                .then(done);
-            });
-
-            it('should show *text* (case 2)', function(done) {
-                Plotly.restyle(gd, 'text', [[null, 'B']]).then(function() {
-                    mouseEventScatterGeo('mousemove');
-
-                    var node = d3.selectAll('g.hovertext').selectAll('tspan')[0][1];
-                    expect(node).toBeUndefined();
-                })
-                .then(done);
-            });
-
-            it('should show *text* (case 3)', function(done) {
-                Plotly.restyle(gd, 'text', [['', 'B']]).then(function() {
-                    mouseEventScatterGeo('mousemove');
-
-                    var node = d3.selectAll('g.hovertext').selectAll('tspan')[0][1];
-                    expect(node).toBeUndefined();
-                })
-                .then(done);
-            });
-
-            it('should show custom \`hoverlabel\' settings', function(done) {
-                Plotly.restyle(gd, {
-                    'hoverlabel.bgcolor': 'red',
-                    'hoverlabel.bordercolor': [['blue', 'black', 'green']]
-                })
-                .then(function() {
-                    mouseEventScatterGeo('mousemove');
-
-                    var pathStyle = window.getComputedStyle(d3.select('g.hovertext path').node());
-                    expect(pathStyle.fill).toEqual('rgb(255, 0, 0)', 'bgcolor');
-                    expect(pathStyle.stroke).toEqual('rgb(0, 0, 255)', 'bordecolor[0]');
-                })
-                .then(done);
-            });
-        });
-
         describe('scattergeo hover events', function() {
             var ptData, cnt;
 
@@ -742,30 +676,6 @@ describe('Test geo interactions', function() {
                 expect(ptData.curveNumber).toEqual(0);
                 expect(ptData.pointNumber).toEqual(0);
                 expect(ptData['marker.size']).toEqual(20);
-            });
-        });
-
-        describe('choropleth hover labels', function() {
-            beforeEach(function() {
-                mouseEventChoropleth('mouseover');
-                mouseEventChoropleth('mousemove');
-            });
-
-            it('should show one hover text group', function() {
-                expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            });
-
-            it('should show location and z values', function() {
-                var node = d3.selectAll('g.hovertext').selectAll('tspan')[0];
-
-                expect(node[0].innerHTML).toEqual('RUS');
-                expect(node[1].innerHTML).toEqual('10');
-            });
-
-            it('should show the trace name', function() {
-                var node = d3.selectAll('g.hovertext').selectAll('text')[0][0];
-
-                expect(node.innerHTML).toEqual('trace 1');
             });
         });
 

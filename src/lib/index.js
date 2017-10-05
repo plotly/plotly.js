@@ -437,6 +437,26 @@ lib.castOption = function(trace, ptNumber, astr, fn) {
     }
 };
 
+/** Extract option from calcdata item, correctly falling back to
+ *  trace value if not found.
+ *
+ *  @param {object} calcPt : calcdata[i][j] item
+ *  @param {object} trace : (full) trace object
+ *  @param {string} calcKey : calcdata key
+ *  @param {string} traceKey : aka trace attribute string
+ *  @return {any}
+ */
+lib.extractOption = function(calcPt, trace, calcKey, traceKey) {
+    if(calcKey in calcPt) return calcPt[calcKey];
+
+    // fallback to trace value,
+    //   must check if value isn't itself an array
+    //   which means the trace attribute has a corresponding
+    //   calcdata key, but its value is falsy
+    var traceVal = lib.nestedProperty(trace, traceKey).get();
+    if(!Array.isArray(traceVal)) return traceVal;
+};
+
 /** Returns target as set by 'target' transform attribute
  *
  * @param {object} trace : full trace object

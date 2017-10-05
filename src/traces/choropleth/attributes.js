@@ -34,11 +34,9 @@ module.exports = extendFlat({
         editType: 'calc',
         description: 'Sets the color values.'
     },
-    text: {
-        valType: 'data_array',
-        editType: 'calc',
+    text: extendFlat({}, ScatterGeoAttrs.text, {
         description: 'Sets the text elements associated with each location.'
-    },
+    }),
     marker: {
         line: {
             color: ScatterGeoMarkerLineAttrs.color,

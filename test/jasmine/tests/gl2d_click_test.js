@@ -5,7 +5,10 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test.js');
-var assertHoverLabelStyle = require('../assets/custom_assertions').assertHoverLabelStyle;
+
+var customAssertions = require('../assets/custom_assertions');
+var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 // cartesian click events events use the hover data
 // from the mousemove events and then simulate
@@ -131,25 +134,6 @@ describe('Test hover and click interactions', function() {
         expect(String(pt.pointNumber)).toBe(String(expected.pointNumber), msg + ' - point number');
     }
 
-    function assertHoveLabelContent(expected) {
-        var label = expected.label;
-
-        if(label === undefined) return;
-
-        var g = d3.select('.hovertext');
-
-        if(label === null) {
-            expect(g.size()).toBe(0);
-        } else {
-            var lines = g.selectAll('text.nums');
-
-            expect(lines.size()).toBe(label.length);
-            lines.each(function(_, i) {
-                expect(d3.select(this).text()).toEqual(label[i]);
-            });
-        }
-    }
-
     // returns basic hover/click/unhover runner for one xy position
     function makeRunner(pos, expected, opts) {
         opts = opts || {};
@@ -166,12 +150,19 @@ describe('Test hover and click interactions', function() {
                 .then(_hover)
                 .then(function(eventData) {
                     assertEventData(eventData, expected);
+
                     var g = d3.select('g.hovertext');
                     if(g.node() === null) {
                         expect(expected.noHoverLabel).toBe(true);
+                    } else {
+                        assertHoverLabelStyle(g, expected, opts.msg);
                     }
-                    else assertHoverLabelStyle(g, expected, opts.msg);
-                    assertHoveLabelContent(expected);
+                    if(expected.label) {
+                        assertHoverLabelContent({
+                            nums: expected.label[0],
+                            name: expected.label[1]
+                        });
+                    }
                 })
                 .then(_click)
                 .then(function(eventData) {
@@ -211,7 +202,7 @@ describe('Test hover and click interactions', function() {
         var run = makeRunner([634, 321], {
             x: 15.772,
             y: 0.387,
-            label: ['0.387'],
+            label: ['0.387', null],
             curveNumber: 0,
             pointNumber: 33,
             bgcolor: 'rgb(0, 0, 255)',

@@ -443,12 +443,10 @@ drawing.tryColorscale = function(marker, prefix) {
 var TEXTOFFSETSIGN = {start: 1, end: -1, middle: 0, bottom: 1, top: -1};
 drawing.textPointStyle = function(s, trace, gd) {
     s.each(function(d) {
-        var p = d3.select(this),
-            text = d.tx || trace.text;
+        var p = d3.select(this);
+        var text = Lib.extractOption(d, trace, 'tx', 'text');
 
-        if(!text || Array.isArray(text)) {
-            // isArray test handles the case of (intentionally) missing
-            // or empty text within a text array
+        if(!text) {
             p.remove();
             return;
         }
@@ -889,6 +887,9 @@ drawing.setTextPointsScale = function(selection, xScale, yScale) {
         var transforms;
         var el = d3.select(this);
         var text = el.select('text');
+
+        if(!text.node()) return;
+
         var x = parseFloat(text.attr('x') || 0);
         var y = parseFloat(text.attr('y') || 0);
 

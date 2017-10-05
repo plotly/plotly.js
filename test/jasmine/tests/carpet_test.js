@@ -11,6 +11,9 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 
+var mouseEvent = require('../assets/mouse_event');
+var assertHoverLabelContent = require('../assets/custom_assertions').assertHoverLabelContent;
+
 describe('carpet supplyDefaults', function() {
     'use strict';
 
@@ -562,6 +565,56 @@ describe('scattercarpet array attributes', function() {
             }
         })
         .catch(fail)
+        .then(done);
+    });
+});
+
+describe('scattercarpet hover labels', function() {
+    var gd;
+
+    afterEach(destroyGraphDiv);
+
+    function run(pos, fig, content) {
+        gd = createGraphDiv();
+
+        return Plotly.plot(gd, fig).then(function() {
+            mouseEvent('mousemove', pos[0], pos[1]);
+            assertHoverLabelContent({
+                nums: content[0].join('\n'),
+                name: content[1]
+            });
+        });
+    }
+
+    it('should generate hover label (base)', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/scattercarpet.json'));
+
+        run(
+            [200, 200], fig,
+            [['a: 0.200', 'b: 3.500', 'y: 2.900'], 'a = 0.2']
+        )
+        .then(done);
+    });
+
+    it('should generate hover label with \'hoverinfo\' set', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/scattercarpet.json'));
+        fig.data[5].hoverinfo = 'a+y';
+
+        run(
+            [200, 200], fig,
+            [['a: 0.200', 'y: 2.900'], null]
+        )
+        .then(done);
+    });
+
+    it('should generate hover label with arrayOk \'hoverinfo\' settings', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/scattercarpet.json'));
+        fig.data[5].hoverinfo = ['a+b', 'a+b', 'a+b', 'b+y'];
+
+        run(
+            [200, 200], fig,
+            [['b: 3.500', 'y: 2.900'], null]
+        )
         .then(done);
     });
 });

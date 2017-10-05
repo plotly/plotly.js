@@ -11,6 +11,7 @@
 
 var Axes = require('../../plots/cartesian/axes');
 var attributes = require('./attributes');
+var fillHoverText = require('../scatter/fill_hover_text');
 
 module.exports = function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
@@ -53,17 +54,17 @@ module.exports = function hoverPoints(pointData, xval, yval) {
 };
 
 function makeHoverInfo(pointData, trace, pt, axis) {
-    var hoverinfo = trace.hoverinfo;
+    var hoverinfo = pt.hi || trace.hoverinfo;
 
     var parts = (hoverinfo === 'all') ?
         attributes.hoverinfo.flags :
         hoverinfo.split('+');
 
-    var hasName = (parts.indexOf('name') !== -1),
-        hasLocation = (parts.indexOf('location') !== -1),
-        hasZ = (parts.indexOf('z') !== -1),
-        hasText = (parts.indexOf('text') !== -1),
-        hasIdAsNameLabel = !hasName && hasLocation;
+    var hasName = (parts.indexOf('name') !== -1);
+    var hasLocation = (parts.indexOf('location') !== -1);
+    var hasZ = (parts.indexOf('z') !== -1);
+    var hasText = (parts.indexOf('text') !== -1);
+    var hasIdAsNameLabel = !hasName && hasLocation;
 
     var text = [];
 
@@ -79,7 +80,9 @@ function makeHoverInfo(pointData, trace, pt, axis) {
     }
 
     if(hasZ) text.push(formatter(pt.z));
-    if(hasText) text.push(pt.tx);
+    if(hasText) {
+        fillHoverText(pt, trace, text);
+    }
 
     pointData.extraText = text.join('<br>');
 }

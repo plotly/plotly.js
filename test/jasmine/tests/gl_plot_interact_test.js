@@ -11,7 +11,10 @@ var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var selectButton = require('../assets/modebar_button');
 var delay = require('../assets/delay');
-var assertHoverLabelStyle = require('../assets/custom_assertions').assertHoverLabelStyle;
+
+var customAssertions = require('../assets/custom_assertions');
+var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 function countCanvases() {
     return d3.selectAll('canvas').size();
@@ -33,17 +36,9 @@ describe('Test gl3d plots', function() {
     var mock3 = require('@mocks/gl3d_autocolorscale');
 
     function assertHoverText(xLabel, yLabel, zLabel, textLabel) {
-        var node = d3.selectAll('g.hovertext');
-        expect(node.size()).toEqual(1, 'hover text group');
-
-        var tspan = d3.selectAll('g.hovertext').selectAll('tspan')[0];
-        expect(tspan[0].innerHTML).toEqual(xLabel, 'x val');
-        expect(tspan[1].innerHTML).toEqual(yLabel, 'y val');
-        expect(tspan[2].innerHTML).toEqual(zLabel, 'z val');
-
-        if(textLabel) {
-            expect(tspan[3].innerHTML).toEqual(textLabel, 'text label');
-        }
+        var content = [xLabel, yLabel, zLabel];
+        if(textLabel) content.push(textLabel);
+        assertHoverLabelContent({nums: content.join('\n')});
     }
 
     function assertEventData(x, y, z, curveNumber, pointNumber, extra) {
