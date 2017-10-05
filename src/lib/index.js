@@ -447,8 +447,7 @@ lib.castOption = function(trace, ptNumber, astr, fn) {
  *  @return {any}
  */
 lib.extractOption = function(calcPt, trace, calcKey, traceKey) {
-    var calcVal = calcPt[calcKey];
-    if(calcVal || calcVal === 0) return calcVal;
+    if(calcKey in calcPt) return calcPt[calcKey];
 
     // fallback to trace value,
     //   must check if value isn't itself an array

@@ -9,9 +9,9 @@
 
 'use strict';
 
-var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 var attributes = require('./attributes');
+var fillHoverText = require('../scatter/fill_hover_text');
 
 module.exports = function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
@@ -81,8 +81,7 @@ function makeHoverInfo(pointData, trace, pt, axis) {
 
     if(hasZ) text.push(formatter(pt.z));
     if(hasText) {
-        var tx = Lib.extractOption(pt, trace, 'tx', 'text');
-        if(tx && tx !== '') text.push(tx);
+        fillHoverText(pt, trace, text);
     }
 
     pointData.extraText = text.join('<br>');

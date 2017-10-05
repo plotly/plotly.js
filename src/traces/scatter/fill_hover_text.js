@@ -29,8 +29,13 @@ module.exports = function fillHoverText(calcPt, trace, contOut) {
         function(v) { contOut.text = v; };
 
     var htx = Lib.extractOption(calcPt, trace, 'htx', 'hovertext');
-    if(htx && htx !== '') return fill(htx);
+    if(isValid(htx)) return fill(htx);
 
     var tx = Lib.extractOption(calcPt, trace, 'tx', 'text');
-    if(tx && tx !== '') return fill(tx);
+    if(isValid(tx)) return fill(tx);
 };
+
+// accept all truthy values and 0 (which gets cast to '0' in the hover labels)
+function isValid(v) {
+    return v || v === 0;
+}
