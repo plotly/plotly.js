@@ -147,7 +147,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
 
     columnBlock
         .style('cursor', function(d) {
-            return d.dragHandle ? 'ew-resize' : 'auto';
+            return d.dragHandle ? 'ew-resize' : d.calcdata.scrollbarState.barWiggleRoom ? 'ns-resize' : 'default';
         });
 
     var headerColumnBlock = columnBlock.filter(headerBlock);
@@ -432,7 +432,9 @@ function renderCellText(cellTextHolder) {
 
     cellText.enter()
         .append('text')
-        .classed('cellText', true);
+        .classed('cellText', true)
+        .style('cursor', function() {return 'auto';})
+        .on('mousedown', function() {d3.event.stopPropagation();});
 
     return cellText;
 }
