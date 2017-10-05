@@ -20,10 +20,6 @@ var splitData = require('./data_split_helpers');
 
 module.exports = function plot(gd, wrappedTraceHolders) {
 
-    if(c.clipView) {
-        gd._fullLayout._paper.attr('height', 2000);
-    }
-
     var table = gd._fullLayout._paper.selectAll('.table')
         .data(wrappedTraceHolders.map(function(wrappedTraceHolder) {
             var traceHolder = gup.unwrap(wrappedTraceHolder);
@@ -42,7 +38,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
         .style('left', 0)
         .style('overflow', 'visible')
         .style('shape-rendering', 'crispEdges')
-        .style('pointer-events', 'all'); // todo restore 'none'
+        .style('pointer-events', 'all');
 
     table
         .attr('width', function(d) {return d.width + d.size.l + d.size.r;})
@@ -86,9 +82,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
         .attr('width', function(d) {return d.width;})
         .attr('height', function(d) {return d.height;});
 
-    if(!c.clipView) {
-        tableControlView.attr('clip-path', function(d) {return 'url(#scrollAreaBottomClip_' + d.key + ')';});
-    }
+    tableControlView.attr('clip-path', function(d) {return 'url(#scrollAreaBottomClip_' + d.key + ')';});
 
     var yColumn = tableControlView.selectAll('.yColumn')
         .data(function(vm) {return vm.columns;}, gup.keyFun);
@@ -139,9 +133,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
             })
         );
 
-    if(!c.clipView) {
-        yColumn.attr('clip-path', function(d) {return 'url(#columnBoundaryClippath_' + d.calcdata.key + '_' + d.specIndex + ')';});
-    }
+    yColumn.attr('clip-path', function(d) {return 'url(#columnBoundaryClippath_' + d.calcdata.key + '_' + d.specIndex + ')';});
 
     var columnBlock = yColumn.selectAll('.columnBlock')
         .data(splitData.splitToPanels, gup.keyFun);
@@ -180,7 +172,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
         .data(gup.repeat, gup.keyFun);
 
     scrollAreaClip.enter()
-        .append(c.clipView ? 'g' : 'clipPath')
+        .append('clipPath')
         .classed('scrollAreaClip', true)
         .attr('id', function(d) { return 'scrollAreaBottomClip_' + d.key;});
 
@@ -192,10 +184,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
         .classed('scrollAreaClipRect', true)
         .attr('x', -c.overdrag)
         .attr('y', -c.uplift)
-        .attr('stroke', 'orange')
-        .attr('stroke-width', 2)
-        .attr('fill', 'none')
-        .style('pointer-events', 'stroke');
+        .attr('fill', 'none');
 
     scrollAreaClipRect
         .attr('width', function(d) {return d.width + 2 * c.overdrag;})
@@ -213,7 +202,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
 
     // SVG spec doesn't mandate wrapping into a <defs> and doesn't seem to cause a speed difference
     columnBoundaryClippath.enter()
-        .append(c.clipView ? 'g' : 'clipPath')
+        .append('clipPath')
         .classed('columnBoundaryClippath', true);
 
     columnBoundaryClippath
@@ -227,8 +216,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
         .classed('columnBoundaryRect', true)
         .attr('fill', 'none')
         .attr('stroke', 'magenta')
-        .attr('stroke-width', 2)
-        .style('pointer-events', 'stroke');
+        .attr('stroke-width', 2);
 
     columnBoundaryRect
         .attr('width', function(d) {return d.columnWidth;})
@@ -328,10 +316,9 @@ function renderScrollbarKit(tableControlView, gd) {
     scrollbarCaptureZone.enter()
         .append('line')
         .classed('scrollbarCaptureZone', true)
-        .attr('stroke', 'red')
+        .attr('stroke', 'rgba(0,0,0,0.01)')
         .attr('stroke-width', c.scrollbarCaptureWidth)
         .attr('stroke-linecap', 'butt')
-        .attr('stroke-opacity', c.clipView ? 0.5 : 0)
         .attr('y1', 0)
         .on('mousedown', function(d) {
             var y = d3.event.y;
@@ -477,9 +464,7 @@ function sizeAndStyleRect(cellRect) {
         .attr('width', function(d) {return d.column.columnWidth;})
         .attr('stroke-width', function(d) {return d.cellBorderWidth;})
         .attr('stroke', function(d) {
-            return c.clipView ?
-                ({header: 'blue', cells1: 'red', cells2: 'green'})[d.column.key] :
-                gridPick(d.calcdata.cells.line.color, d.column.specIndex, d.rowNumber);
+            return gridPick(d.calcdata.cells.line.color, d.column.specIndex, d.rowNumber);
         })
         .attr('fill', function(d) {
             return d.calcdata.cells.fill ? gridPick(d.calcdata.cells.fill.color, d.column.specIndex, d.rowNumber) : 'none';
