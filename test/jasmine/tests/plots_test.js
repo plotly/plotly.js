@@ -408,6 +408,19 @@ describe('Test Plots', function() {
         beforeEach(function(done) {
             gd = createGraphDiv();
             Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {}).then(done);
+
+            // hacky: simulate getting stuck with these flags due to an error
+            // see #2055 and commit 6a44a9a - before fixing that error, we would
+            // end up in an inconsistent state that prevented future Plotly.newPlot
+            // because _dragging and _dragged were not cleared by purge.
+            gd._dragging = true;
+            gd._dragged = true;
+            gd._hoverdata = true;
+            gd._snapshotInProgress = true;
+            gd._editing = true;
+            gd._replotPending = true;
+            gd._mouseDownTime = true;
+            gd._legendMouseDownTime = true;
         });
 
         afterEach(destroyGraphDiv);
@@ -416,15 +429,16 @@ describe('Test Plots', function() {
             var expectedKeys = [
                 '_ev', '_internalEv', 'on', 'once', 'removeListener', 'removeAllListeners',
                 '_internalOn', '_internalOnce', '_removeInternalListener',
-                '_removeAllInternalListeners', 'emit', '_context', '_replotPending',
-                '_hmpixcount', '_hmlumcount', '_mouseDownTime', '_legendMouseDownTime',
+                '_removeAllInternalListeners', 'emit', '_context'
             ];
 
             var expectedUndefined = [
                 'data', 'layout', '_fullData', '_fullLayout', 'calcdata', 'framework',
                 'empty', 'fid', 'undoqueue', 'undonum', 'autoplay', 'changed',
-                '_promises', '_redrawTimer', 'firstscatter', 'hmlumcount', 'hmpixcount',
-                'numboxes', '_transitionData', '_transitioning'
+                '_promises', '_redrawTimer', 'firstscatter', 'numboxes',
+                '_transitionData', '_transitioning', '_hmpixcount', '_hmlumcount',
+                '_dragging', '_dragged', '_hoverdata', '_snapshotInProgress', '_editing',
+                '_replotPending', '_mouseDownTime', '_legendMouseDownTime'
             ];
 
             Plots.purge(gd);

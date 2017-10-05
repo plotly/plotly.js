@@ -239,7 +239,7 @@ describe('Test scatter', function() {
                 yaxis: ax,
                 connectGaps: false,
                 baseTolerance: 1,
-                linear: true,
+                shape: 'linear',
                 simplify: true
             };
 
@@ -333,6 +333,74 @@ describe('Test scatter', function() {
         });
 
         // TODO: test coarser decimation outside plot, and removing very near duplicates from the four of a cluster
+
+        it('should clip extreme points without changing on-screen paths', function() {
+            var ptsIn = [
+                // first bunch: rays going in/out in many directions
+                // and a few random moves within faraway sectors, that should get dropped
+                // for simplicity of calculation all are 45 degree multiples, but not exactly on corners
+                [[40, 70], [40, 1000000], [-100, 2000000], [200, 2000000], [60, 3000000], [60, 70]],
+                // back and forth across the diagonal
+                [[60, 70], [1000060, 1000070], [-2000070, -2000060], [-3000060, -3000070], [10000070, 10000060], [70, 60]],
+                [[70, 60], [1000000, 60], [100000, 50], [60, 50]],
+                [[60, 50], [1000110, -1000000], [10000100, -10000010], [50, 40]],
+                // back and forth across the vertical
+                [[50, 40], [50, -3000000], [49, -3000000], [49, 4000000], [48, 3000000], [48, -4000000], [40, -1000000], [40, 30]],
+                [[40, 30], [-1000000, -1000010], [-2000010, -2000000], [30, 40]],
+                // back and forth across the horizontal
+                [[30, 40], [-5000000, 40], [-900000, -500], [-1000000, 50], [1000000, 50], [-2000000, 50], [40, 50]],
+                [[40, 50], [-1000010, 1000100], [-2000000, 2000100], [50, 60]],
+
+                // some paths crossing the nearby region in various ways
+                [[0, 3100], [-20000, -36900], [20000, -36900], [0, 3100]],
+                [[0, -3000], [-20000, 37000], [20000, 37000], [0, -3000]],
+
+                // loops around the outside
+                [[55, 1000000], [2000000, 23], [444, -3000000], [-4000000, 432], [-22, 5000000]],
+                [[12, 1000000], [2000000, 1000000], [3000000, -4000000], [-5000000, -6000000], [-7000000, 8000000], [-13, 9000000]],
+
+                // wound-unwound loop
+                [[55, -100000], [100000, 0], [0, 100000], [-100000, 0], [0, -100000], [-1000000, 100000], [1000000, 100000], [66, -100000]],
+
+                // outside kitty-corner
+                [[1e5, 1e6], [-1e6, -1e5], [-1e6, 1e5], [1e5, -1e6], [-1e5, -1e6], [1e6, 1e5]]
+            ];
+
+            var ptsExpected = [
+                [[40, 70], [40, 2100], [60, 2100], [60, 70]],
+                [[60, 70], [2090, 2100], [-2000, -1990], [-2000, -2000], [-1990, -2000], [2100, 2090], [70, 60]],
+                [[70, 60], [2100, 60], [2100, 50], [60, 50]],
+                [[60, 50], [2100, -1990], [2100, -2000], [2090, -2000], [50, 40]],
+                [[50, 40], [50, -2000], [49, -2000], [49, 2100], [48, 2100], [48, -2000], [40, -2000], [40, 30]],
+                [[40, 30], [-1990, -2000], [-2000, -2000], [-2000, -1990], [30, 40]],
+                [[30, 40], [-2000, 40], [-2000, 50], [2100, 50], [-2000, 50], [40, 50]],
+                [[40, 50], [-2000, 2090], [-2000, 2100], [-1990, 2100], [50, 60]],
+
+                [[0, 2100], [-500, 2100], [-2000, -900], [-2000, -2000], [2100, -2000], [2100, -1100], [500, 2100], [0, 2100]],
+                [[0, -2000], [-500, -2000], [-2000, 1000], [-2000, 2100], [2100, 2100], [2100, 1200], [500, -2000], [0, -2000]],
+
+                [[55, 2100], [2100, 2100], [2100, -2000], [-2000, -2000], [-2000, 2100], [-22, 2100]],
+                [[12, 2100], [2100, 2100], [2100, -2000], [-2000, -2000], [-2000, 2100], [-13, 2100]],
+
+                [[55, -2000], [66, -2000]],
+
+                [[2100, 2100], [-2000, 2100], [-2000, -2000], [2100, -2000], [2100, 2100]]
+            ];
+
+            function reverseXY(v) { return [v[1], v[0]]; }
+
+            ptsIn.forEach(function(ptsIni, i) {
+                // disable clustering for these tests
+                var ptsOut = callLinePoints(ptsIni, {simplify: false});
+                expect(ptsOut.length).toBe(1, i);
+                expect(ptsOut[0]).toBeCloseTo2DArray(ptsExpected[i], 1, i);
+
+                // swap X and Y and all should work identically
+                var ptsOut2 = callLinePoints(ptsIni.map(reverseXY), {simplify: false});
+                expect(ptsOut2.length).toBe(1, i);
+                expect(ptsOut2[0]).toBeCloseTo2DArray(ptsExpected[i].map(reverseXY), 1, i);
+            });
+        });
     });
 
 });

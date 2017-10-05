@@ -127,7 +127,7 @@ var matchers = {
                     'to be close to',
                     arrayToStr(expected.map(arrayToStr)),
                     msgExtra
-                ].join(' ');
+                ].join('\n');
 
                 return {
                     pass: passed,
