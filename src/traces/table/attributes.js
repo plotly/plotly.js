@@ -11,6 +11,7 @@
 var annAttrs = require('../../components/annotations/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var fontAttrs = require('../../plots/font_attributes');
 
 module.exports = overrideAll({
     domain: {
@@ -135,37 +136,7 @@ module.exports = overrideAll({
             }
         },
 
-        font: {
-            family: {
-                valType: 'string',
-                arrayOk: true,
-                role: 'style',
-                noBlank: true,
-                strict: true,
-                description: [
-                    'HTML font family - the typeface that will be applied by the web browser.',
-                    'The web browser will only be able to apply a font if it is available on the system',
-                    'which it operates. Provide multiple font families, separated by commas, to indicate',
-                    'the preference in which to apply fonts if they aren\'t available on the system.',
-                    'The plotly service (at https://plot.ly or on-premise) generates images on a server,',
-                    'where only a select number of',
-                    'fonts are installed and supported.',
-                    'These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*,',
-                    '*Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*,',
-                    '*PT Sans Narrow*, *Raleway*, *Times New Roman*.'
-                ].join(' ')
-            },
-            size: {
-                valType: 'number',
-                arrayOk: true,
-                role: 'style'
-            },
-            color: {
-                valType: 'color',
-                arrayOk: true,
-                role: 'style'
-            }
-        }
+        font: extendFlat({}, fontAttrs({arrayOk: true}))
     },
 
     cells: {
