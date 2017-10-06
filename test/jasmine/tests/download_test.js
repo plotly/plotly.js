@@ -81,7 +81,7 @@ describe('Plotly.downloadImage', function() {
         var savedBlob;
         navigator.msSaveBlob = function(blob) { savedBlob = blob; };
 
-        var expectedStart = '<svg class=\'main-svg\' xmlns=\'http://www.w3.org/2000/svg\' xmlns:xlink=\'http://www.w3.org/1999/xlink\' width=\'300\' height=\'300\' style=\'\' viewBox=\'0 0 300 300\'>';
+        var expectedStart = '<svg class=\'main-svg\' xmlns=\'http://www.w3.org/2000/svg\' xmlns:xlink=\'http://www.w3.org/1999/xlink\'';
         var plotClip = /clip-path='url\("#clip[0-9a-f]{6}xyplot"\)/;
         var legendClip = /clip-path=\'url\("#legend[0-9a-f]{6}"\)/;
 
