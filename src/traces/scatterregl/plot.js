@@ -22,7 +22,6 @@ var createLine = require('regl-line2d');
 var Drawing = require('../../components/drawing');
 var svgSdf = require('svg-path-sdf');
 var createRegl = require('regl');
-var nanoraf = require('nanoraf');
 
 var DESELECTDIM = 0.2;
 var TRANSPARENT = [0, 0, 0, 0];
@@ -59,8 +58,6 @@ function createLineWithMarkers(container, plotinfo, cdata) {
 }
 
 function createScatterScene(container) {
-    var connectgaps = true;
-
     var canvas = container.querySelector('.gl-canvas-focus');
 
     var regl = createRegl({
@@ -97,13 +94,18 @@ function createScatterScene(container) {
         }
 
         updateBatch(batch);
-    };
+    }
 
     function updateBatch(batch) {
+        // make sure no old graphics on the canvas
+        regl.clear({
+            color: [0, 0, 0, 0]
+        });
+
+        var lineBatch = [], scatterBatch = [], i;
+
         // update options of line and scatter components directly
-        var lineBatch = [];
-        var scatterBatch = [];
-        for(var i = 0; i < batch.length; i++) {
+        for(i = 0; i < batch.length; i++) {
             lineBatch.push(batch[i].line || null);
             scatterBatch.push(batch[i].scatter || null);
         }
@@ -113,10 +115,10 @@ function createScatterScene(container) {
 
         count = batch.length;
 
-        //rendering requires proper batch sequence
-        for(var i = 0; i < count; i++) {
-            var lineBatch = Array(batch.length);
-            var scatterBatch = Array(batch.length);
+        // rendering requires proper batch sequence
+        for(i = 0; i < count; i++) {
+            lineBatch = Array(batch.length);
+            scatterBatch = Array(batch.length);
             for(var j = 0; j < batch.length; j++) {
                 lineBatch[j] = i === j;
                 scatterBatch[j] = i === j;
@@ -124,9 +126,9 @@ function createScatterScene(container) {
             line.draw(lineBatch);
             scatter.draw(scatterBatch);
         }
-    };
+    }
 
-    //update based on calc data
+    // update based on calc data
     function update(cdscatters) {
         var batch = [];
 
@@ -169,8 +171,6 @@ function createScatterScene(container) {
                 hasErrorY = options.error_y.visible === true;
                 hasMarkers = subTypes.hasMarkers(options);
             }
-
-            var connectgaps = !!options.connectgaps;
 
             // update viewport & range
             var viewport = [
@@ -393,7 +393,7 @@ function createScatterScene(container) {
         });
 
         updateBatch(batch);
-    };
+    }
 
 
     function updateError(axLetter, options, positions, errors) {
@@ -416,14 +416,12 @@ function createScatterScene(container) {
         else {
             errorObj.clear();
         }
-    };
+    }
 
     update.range = updateRange;
 
     return update;
 }
-
-
 
 
 convertNumber = convertArray.bind(null, function(x) { return +x; });

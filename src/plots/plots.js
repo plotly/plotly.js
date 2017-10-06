@@ -568,8 +568,9 @@ plots.createTransitionData = function(gd) {
 plots._hasPlotType = function(category) {
     // check plot
     var basePlotModules = this._basePlotModules || [];
+    var i;
 
-    for(var i = 0; i < basePlotModules.length; i++) {
+    for(i = 0; i < basePlotModules.length; i++) {
         var _module = basePlotModules[i];
 
         if(_module.name === category) return true;
@@ -578,7 +579,7 @@ plots._hasPlotType = function(category) {
     // check trace
     var modules = this._modules || [];
 
-    for(var i = 0; i < modules.length; i++) {
+    for(i = 0; i < modules.length; i++) {
         var _ = modules[i];
         if(_.categories && _.categories.indexOf(category) >= 0) {
             return true;
