@@ -772,7 +772,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 // FIXME: possibly we could update axis internal _r and _rl here
                 var xaRange = Lib.simpleMap(xa2.range, xa2.r2l),
                     yaRange = Lib.simpleMap(ya2.range, ya2.r2l);
-                subplot._scattergl.updateRange(
+                subplot._scattergl.range(
                     [xaRange[0], yaRange[0], xaRange[1], yaRange[1]]
                 );
             }

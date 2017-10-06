@@ -22,6 +22,7 @@ var createLine = require('regl-line2d');
 var Drawing = require('../../components/drawing');
 var svgSdf = require('svg-path-sdf');
 var createRegl = require('regl');
+var nanoraf = require('nanoraf');
 
 var DESELECTDIM = 0.2;
 var TRANSPARENT = [0, 0, 0, 0];
@@ -49,385 +50,380 @@ function createLineWithMarkers(container, plotinfo, cdata) {
     if(scatter === undefined) {
         // TODO: enhance picking
         // TODO: figure out if there is a way to detect only new passed options
-
-        scatter = subplotObj._scattergl = new ScatterScene(container);
+        scatter = subplotObj._scattergl = createScatterScene(container);
     }
 
-    scatter.update(cdata);
+    scatter(cdata);
 
     return scatter;
 }
 
-function ScatterScene(container) {
-    this.container = container;
-    this.type = 'scatterregl';
+function createScatterScene(container) {
+    var connectgaps = true;
 
-    this.connectgaps = true;
+    var canvas = container.querySelector('.gl-canvas-focus');
 
-    this.canvas = container.querySelector('.gl-canvas-focus');
-    this.regl = createRegl({
-        canvas: this.canvas,
+    var regl = createRegl({
+        canvas: canvas,
         extensions: ['ANGLE_instanced_arrays', 'OES_element_index_uint'],
         pixelRatio: container._context.plotGlPixelRatio || global.devicePixelRatio
     });
 
-    this.scatter = createScatter({
-        regl: this.regl,
+    var scatter = createScatter({
+        regl: regl,
         size: 12,
         color: [0, 0, 0, 1],
         borderSize: 1,
         borderColor: [0, 0, 0, 1]
     });
-    this.line = createLine({
-        regl: this.regl,
+    var line = createLine({
+        regl: regl,
         color: [0, 0, 0, 1],
         thickness: 1,
         miterLimit: 2,
         dashes: [1]
     });
 
-    this.count = 0;
+    var count = 0;
 
-    return this;
-}
+    function updateRange(range) {
+        var batch = [];
 
-var proto = ScatterScene.prototype;
-
-
-proto.updateRange = function(range) {
-    var batch = [];
-
-    for(var i = 0; i < this.count; i++) {
-        batch.push({
-            line: {range: range},
-            scatter: {range: range}
-        });
-    }
-
-    this.updateBatch(batch);
-};
-
-
-proto.updateBatch = function(batch) {
-    // update options of line and scatter components directly
-    var lineBatch = [];
-    var scatterBatch = [];
-    for(var i = 0; i < batch.length; i++) {
-        lineBatch.push(batch[i].line || null);
-        scatterBatch.push(batch[i].scatter || null);
-    }
-
-    this.line.update(lineBatch);
-    this.scatter.update(scatterBatch);
-
-    // rendering requires preserving order of line/scatter layers
-    for(var i = 0; i < batch.length; i++) {
-        var lineBatch = Array(batch.length);
-        var scatterBatch = Array(batch.length);
-        for(var j = 0; j < batch.length; j++) {
-            lineBatch[j] = i === j;
-            scatterBatch[j] = i === j;
-        }
-        this.line.draw(lineBatch);
-        this.scatter.draw(scatterBatch);
-    }
-
-    this.count = batch.length;
-};
-
-
-proto.update = function(cdscatters) {
-    var container = this.container;
-
-    var batch = [];
-
-    cdscatters.forEach(function(cdscatter) {
-        if(!cdscatter) return;
-
-        var lineOptions, scatterOptions;
-
-        var options = cdscatter[0].trace;
-        var xaxis = Axes.getFromId(container, options.xaxis || 'x'),
-            yaxis = Axes.getFromId(container, options.yaxis || 'y'),
-            selection = options.selection;
-        var vpSize = container._fullLayout._size,
-            width = container._fullLayout.width,
-            height = container._fullLayout.height;
-
-        // makeCalcdata runs d2c (data-to-coordinate) on every point
-        var x = options.x;
-        var y = options.y;
-        var xData = Array(x.length);
-        var yData = Array(y.length);
-
-        var isVisible = false;
-        var hasLines = false;
-        var hasErrorX = false;
-        var hasErrorY = false;
-        var hasMarkers = false;
-
-        if(options.visible !== true) {
-            isVisible = false;
-            hasLines = false;
-            hasErrorX = false;
-            hasErrorY = false;
-            hasMarkers = false;
-        }
-        else {
-            isVisible = true;
-            hasLines = subTypes.hasLines(options);
-            hasErrorX = options.error_x.visible === true;
-            hasErrorY = options.error_y.visible === true;
-            hasMarkers = subTypes.hasMarkers(options);
+        for(var i = 0; i < count; i++) {
+            batch.push({
+                line: {range: range},
+                scatter: {range: range}
+            });
         }
 
-        var connectgaps = !!options.connectgaps;
+        updateBatch(batch);
+    };
 
-        // update viewport & range
-        var viewport = [
-            vpSize.l + xaxis.domain[0] * vpSize.w,
-            vpSize.b + yaxis.domain[0] * vpSize.h,
-            (width - vpSize.r) - (1 - xaxis.domain[1]) * vpSize.w,
-            (height - vpSize.t) - (1 - yaxis.domain[1]) * vpSize.h
-        ];
-
-        var range = [
-            xaxis._rl[0], yaxis._rl[0], xaxis._rl[1], yaxis._rl[1]
-        ];
-
-        // get error values
-        var errorVals = ErrorBars.calcFromTrace(options, container._fullLayout);
-
-        var len = x.length,
-            positions = Array(2 * len),
-            errorsX = new Float64Array(4 * len),
-            errorsY = new Float64Array(4 * len),
-            pId = 0,
-            ptr = 0,
-            ptrX = 0,
-            ptrY = 0;
-
-        var getX = (xaxis.type === 'log') ? xaxis.d2l : function(x) { return x; };
-        var getY = (yaxis.type === 'log') ? yaxis.d2l : function(y) { return y; };
-
-        var i, xx, yy, ex0, ex1, ey0, ey1;
-
-        for(i = 0; i < len; ++i) {
-            xData[i] = xx = getX(x[i]);
-            yData[i] = yy = getY(y[i]);
-
-            // if(isNaN(xx) || isNaN(yy)) continue;
-
-            positions[ptr++] = parseFloat(xx);
-            positions[ptr++] = parseFloat(yy);
-
-            ex0 = errorsX[ptrX++] = xx - errorVals[i].xs || 0;
-            ex1 = errorsX[ptrX++] = errorVals[i].xh - xx || 0;
-            errorsX[ptrX++] = 0;
-            errorsX[ptrX++] = 0;
-
-            errorsY[ptrY++] = 0;
-            errorsY[ptrY++] = 0;
-            ey0 = errorsY[ptrY++] = yy - errorVals[i].ys || 0;
-            ey1 = errorsY[ptrY++] = errorVals[i].yh - yy || 0;
+    function updateBatch(batch) {
+        // update options of line and scatter components directly
+        var lineBatch = [];
+        var scatterBatch = [];
+        for(var i = 0; i < batch.length; i++) {
+            lineBatch.push(batch[i].line || null);
+            scatterBatch.push(batch[i].scatter || null);
         }
 
-        // update lines
-        if(hasLines) {
-            lineOptions = {};
-            lineOptions.positions = positions,
-            lineOptions.thickness = options.line.width,
-            lineOptions.color = options.line.color,
-            lineOptions.opacity = options.opacity,
-            lineOptions.join = options.opacity === 1.0 ? 'rect' : 'round';
-            lineOptions.overlay = true;
+        line.update(lineBatch);
+        scatter.update(scatterBatch);
 
-            var lineWidth = lineOptions.thickness,
-                dashes = (DASHES[options.line.dash] || [1]).slice();
+        count = batch.length;
 
-            for(i = 0; i < dashes.length; ++i) dashes[i] *= lineWidth;
-
-            // FIXME: make regl renderer for fills
-            switch(options.fill) {
-                case 'tozeroy':
-                    // lineOptions.fill = [false, true, false, false];
-                    break;
-                case 'tozerox':
-                    // lineOptions.fill = [true, false, false, false];
-                    break;
-                default:
-                    // lineOptions.fill = [false, false, false, false];
-                    break;
+        //rendering requires proper batch sequence
+        for(var i = 0; i < count; i++) {
+            var lineBatch = Array(batch.length);
+            var scatterBatch = Array(batch.length);
+            for(var j = 0; j < batch.length; j++) {
+                lineBatch[j] = i === j;
+                scatterBatch[j] = i === j;
             }
-            var fillColor = str2RGBArray(options.fillcolor);
-
-            lineOptions.dashes = dashes;
-            // lineOptions.fillColor = [fillColor, fillColor, fillColor, fillColor];
-
-            lineOptions.viewport = viewport;
-            lineOptions.range = range;
+            line.draw(lineBatch);
+            scatter.draw(scatterBatch);
         }
+    };
 
+    //update based on calc data
+    function update(cdscatters) {
+        var batch = [];
 
-        // updateError('X', options, positions, errorsX);
-        // updateError('Y', options, positions, errorsY);
+        cdscatters.forEach(function(cdscatter) {
+            if(!cdscatter) return;
 
-        var sizes, selIds;
+            var lineOptions, scatterOptions;
 
-        if(selection && selection.length) {
-            selIds = {};
-            for(i = 0; i < selection.length; i++) {
-                selIds[selection[i].pointNumber] = true;
+            var options = cdscatter[0].trace;
+            var xaxis = Axes.getFromId(container, options.xaxis || 'x'),
+                yaxis = Axes.getFromId(container, options.yaxis || 'y'),
+                selection = options.selection;
+            var vpSize = container._fullLayout._size,
+                width = container._fullLayout.width,
+                height = container._fullLayout.height;
+
+            // makeCalcdata runs d2c (data-to-coordinate) on every point
+            var x = options.x;
+            var y = options.y;
+            var xData = Array(x.length);
+            var yData = Array(y.length);
+
+            var isVisible = false;
+            var hasLines = false;
+            var hasErrorX = false;
+            var hasErrorY = false;
+            var hasMarkers = false;
+
+            if(options.visible !== true) {
+                isVisible = false;
+                hasLines = false;
+                hasErrorX = false;
+                hasErrorY = false;
+                hasMarkers = false;
             }
-        }
+            else {
+                isVisible = true;
+                hasLines = subTypes.hasLines(options);
+                hasErrorX = options.error_x.visible === true;
+                hasErrorY = options.error_y.visible === true;
+                hasMarkers = subTypes.hasMarkers(options);
+            }
 
-        if(hasMarkers) {
-            scatterOptions = {};
-            scatterOptions.positions = positions;
+            var connectgaps = !!options.connectgaps;
 
-            // TODO rewrite convert function so that
-            // we don't have to loop through the data another time
+            // update viewport & range
+            var viewport = [
+                vpSize.l + xaxis.domain[0] * vpSize.w,
+                vpSize.b + yaxis.domain[0] * vpSize.h,
+                (width - vpSize.r) - (1 - xaxis.domain[1]) * vpSize.w,
+                (height - vpSize.t) - (1 - yaxis.domain[1]) * vpSize.h
+            ];
 
-            scatterOptions.sizes = new Array(len);
-            scatterOptions.markers = new Array(len);
-            scatterOptions.borderSizes = new Array(len);
-            scatterOptions.colors = new Array(len);
-            scatterOptions.borderColors = new Array(len);
+            var range = [
+                xaxis._rl[0], yaxis._rl[0], xaxis._rl[1], yaxis._rl[1]
+            ];
 
-            var markerSizeFunc = makeBubbleSizeFn(options);
+            // get error values
+            var errorVals = ErrorBars.calcFromTrace(options, container._fullLayout);
 
-            var markerOpts = options.marker;
-            var markerOpacity = markerOpts.opacity;
-            var traceOpacity = options.opacity;
-            var symbols = markerOpts.symbol;
+            var len = x.length,
+                positions = Array(2 * len),
+                errorsX = new Float64Array(4 * len),
+                errorsY = new Float64Array(4 * len),
+                pId = 0,
+                ptr = 0,
+                ptrX = 0,
+                ptrY = 0;
 
-            var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len);
-            var borderSizes = convertNumber(markerOpts.line.width, len);
-            var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len);
-            var size, symbol, symbolNumber, isOpen, isDimmed, _colors, _borderColors, bw, symbolFunc, symbolNoDot, symbolSdf, symbolNoFill, symbolPath, isDot;
+            var getX = (xaxis.type === 'log') ? xaxis.d2l : function(x) { return x; };
+            var getY = (yaxis.type === 'log') ? yaxis.d2l : function(y) { return y; };
 
-            sizes = convertArray(markerSizeFunc, markerOpts.size, len);
+            var i, xx, yy, ex0, ex1, ey0, ey1;
 
             for(i = 0; i < len; ++i) {
-                symbol = Array.isArray(symbols) ? symbols[i] : symbols;
-                symbolNumber = Drawing.symbolNumber(symbol);
-                symbolFunc = Drawing.symbolFuncs[symbolNumber % 100];
-                symbolNoDot = !!Drawing.symbolNoDot[symbolNumber % 100];
-                symbolNoFill = !!Drawing.symbolNoFill[symbolNumber % 100];
+                xData[i] = xx = getX(x[i]);
+                yData[i] = yy = getY(y[i]);
 
-                isOpen = /-open/.test(symbol);
-                isDot = /-dot/.test(symbol);
-                isDimmed = selIds && !selIds[i];
+                // if(isNaN(xx) || isNaN(yy)) continue;
 
-                _colors = colors;
+                positions[ptr++] = parseFloat(xx);
+                positions[ptr++] = parseFloat(yy);
 
-                if(isOpen) {
-                    _borderColors = colors;
-                } else {
-                    _borderColors = borderColors;
-                }
+                ex0 = errorsX[ptrX++] = xx - errorVals[i].xs || 0;
+                ex1 = errorsX[ptrX++] = errorVals[i].xh - xx || 0;
+                errorsX[ptrX++] = 0;
+                errorsX[ptrX++] = 0;
 
-                // See  https://github.com/plotly/plotly.js/pull/1781#discussion_r121820798
-                // for more info on this logic
-                size = sizes[i];
-                bw = borderSizes[i];
-
-                scatterOptions.sizes[i] = size;
-
-                if(symbol === 'circle') {
-                    scatterOptions.markers[i] = null;
-                }
-                else {
-                    // get symbol sdf from cache or generate it
-                    if(SYMBOL_SDF[symbol]) {
-                        symbolSdf = SYMBOL_SDF[symbol];
-                    } else {
-                        if(isDot && !symbolNoDot) {
-                            symbolPath = symbolFunc(SYMBOL_SIZE * 1.1) + SYMBOL_SVG_CIRCLE;
-                        }
-                        else {
-                            symbolPath = symbolFunc(SYMBOL_SIZE);
-                        }
-
-                        symbolSdf = svgSdf(symbolPath, {
-                            w: SYMBOL_SDF_SIZE,
-                            h: SYMBOL_SDF_SIZE,
-                            viewBox: [-SYMBOL_SIZE, -SYMBOL_SIZE, SYMBOL_SIZE, SYMBOL_SIZE],
-                            stroke: symbolNoFill ? SYMBOL_STROKE : -SYMBOL_STROKE
-                        });
-                        SYMBOL_SDF[symbol] = symbolSdf;
-                    }
-
-                    scatterOptions.markers[i] = symbolSdf || null;
-                }
-                scatterOptions.borderSizes[i] = 0.5 * bw;
-
-                var optColors = scatterOptions.colors;
-                var dim = isDimmed ? DESELECTDIM : 1;
-                if(!optColors[i]) optColors[i] = [];
-                if(isOpen || symbolNoFill) {
-                    optColors[i][0] = TRANSPARENT[0];
-                    optColors[i][1] = TRANSPARENT[1];
-                    optColors[i][2] = TRANSPARENT[2];
-                    optColors[i][3] = TRANSPARENT[3];
-                } else {
-                    optColors[i][0] = _colors[4 * i + 0] * 255;
-                    optColors[i][1] = _colors[4 * i + 1] * 255;
-                    optColors[i][2] = _colors[4 * i + 2] * 255;
-                    optColors[i][3] = dim * _colors[4 * i + 3] * 255;
-                }
-                if(!scatterOptions.borderColors[i]) scatterOptions.borderColors[i] = [];
-                scatterOptions.borderColors[i][0] = _borderColors[4 * i + 0] * 255;
-                scatterOptions.borderColors[i][1] = _borderColors[4 * i + 1] * 255;
-                scatterOptions.borderColors[i][2] = _borderColors[4 * i + 2] * 255;
-                scatterOptions.borderColors[i][3] = dim * _borderColors[4 * i + 3] * 255;
+                errorsY[ptrY++] = 0;
+                errorsY[ptrY++] = 0;
+                ey0 = errorsY[ptrY++] = yy - errorVals[i].ys || 0;
+                ey1 = errorsY[ptrY++] = errorVals[i].yh - yy || 0;
             }
 
-            scatterOptions.viewport = viewport;
-            scatterOptions.range = range;
-        }
+            // update lines
+            if(hasLines) {
+                lineOptions = {};
+                lineOptions.positions = positions,
+                lineOptions.thickness = options.line.width,
+                lineOptions.color = options.line.color,
+                lineOptions.opacity = options.opacity,
+                lineOptions.join = options.opacity === 1.0 ? 'rect' : 'round';
+                lineOptions.overlay = true;
 
-        batch.push({
-            scatter: scatterOptions,
-            line: lineOptions
+                var lineWidth = lineOptions.thickness,
+                    dashes = (DASHES[options.line.dash] || [1]).slice();
+
+                for(i = 0; i < dashes.length; ++i) dashes[i] *= lineWidth;
+
+                // FIXME: make regl renderer for fills
+                switch(options.fill) {
+                    case 'tozeroy':
+                        // lineOptions.fill = [false, true, false, false];
+                        break;
+                    case 'tozerox':
+                        // lineOptions.fill = [true, false, false, false];
+                        break;
+                    default:
+                        // lineOptions.fill = [false, false, false, false];
+                        break;
+                }
+                var fillColor = str2RGBArray(options.fillcolor);
+
+                lineOptions.dashes = dashes;
+                // lineOptions.fillColor = [fillColor, fillColor, fillColor, fillColor];
+
+                lineOptions.viewport = viewport;
+                lineOptions.range = range;
+            }
+
+
+            // updateError('X', options, positions, errorsX);
+            // updateError('Y', options, positions, errorsY);
+
+            var sizes, selIds;
+
+            if(selection && selection.length) {
+                selIds = {};
+                for(i = 0; i < selection.length; i++) {
+                    selIds[selection[i].pointNumber] = true;
+                }
+            }
+
+            if(hasMarkers) {
+                scatterOptions = {};
+                scatterOptions.positions = positions;
+
+                // TODO rewrite convert function so that
+                // we don't have to loop through the data another time
+
+                scatterOptions.sizes = new Array(len);
+                scatterOptions.markers = new Array(len);
+                scatterOptions.borderSizes = new Array(len);
+                scatterOptions.colors = new Array(len);
+                scatterOptions.borderColors = new Array(len);
+
+                var markerSizeFunc = makeBubbleSizeFn(options);
+
+                var markerOpts = options.marker;
+                var markerOpacity = markerOpts.opacity;
+                var traceOpacity = options.opacity;
+                var symbols = markerOpts.symbol;
+
+                var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len);
+                var borderSizes = convertNumber(markerOpts.line.width, len);
+                var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len);
+                var size, symbol, symbolNumber, isOpen, isDimmed, _colors, _borderColors, bw, symbolFunc, symbolNoDot, symbolSdf, symbolNoFill, symbolPath, isDot;
+
+                sizes = convertArray(markerSizeFunc, markerOpts.size, len);
+
+                for(i = 0; i < len; ++i) {
+                    symbol = Array.isArray(symbols) ? symbols[i] : symbols;
+                    symbolNumber = Drawing.symbolNumber(symbol);
+                    symbolFunc = Drawing.symbolFuncs[symbolNumber % 100];
+                    symbolNoDot = !!Drawing.symbolNoDot[symbolNumber % 100];
+                    symbolNoFill = !!Drawing.symbolNoFill[symbolNumber % 100];
+
+                    isOpen = /-open/.test(symbol);
+                    isDot = /-dot/.test(symbol);
+                    isDimmed = selIds && !selIds[i];
+
+                    _colors = colors;
+
+                    if(isOpen) {
+                        _borderColors = colors;
+                    } else {
+                        _borderColors = borderColors;
+                    }
+
+                    // See  https://github.com/plotly/plotly.js/pull/1781#discussion_r121820798
+                    // for more info on this logic
+                    size = sizes[i];
+                    bw = borderSizes[i];
+
+                    scatterOptions.sizes[i] = size;
+
+                    if(symbol === 'circle') {
+                        scatterOptions.markers[i] = null;
+                    }
+                    else {
+                        // get symbol sdf from cache or generate it
+                        if(SYMBOL_SDF[symbol]) {
+                            symbolSdf = SYMBOL_SDF[symbol];
+                        } else {
+                            if(isDot && !symbolNoDot) {
+                                symbolPath = symbolFunc(SYMBOL_SIZE * 1.1) + SYMBOL_SVG_CIRCLE;
+                            }
+                            else {
+                                symbolPath = symbolFunc(SYMBOL_SIZE);
+                            }
+
+                            symbolSdf = svgSdf(symbolPath, {
+                                w: SYMBOL_SDF_SIZE,
+                                h: SYMBOL_SDF_SIZE,
+                                viewBox: [-SYMBOL_SIZE, -SYMBOL_SIZE, SYMBOL_SIZE, SYMBOL_SIZE],
+                                stroke: symbolNoFill ? SYMBOL_STROKE : -SYMBOL_STROKE
+                            });
+                            SYMBOL_SDF[symbol] = symbolSdf;
+                        }
+
+                        scatterOptions.markers[i] = symbolSdf || null;
+                    }
+                    scatterOptions.borderSizes[i] = 0.5 * bw;
+
+                    var optColors = scatterOptions.colors;
+                    var dim = isDimmed ? DESELECTDIM : 1;
+                    if(!optColors[i]) optColors[i] = [];
+                    if(isOpen || symbolNoFill) {
+                        optColors[i][0] = TRANSPARENT[0];
+                        optColors[i][1] = TRANSPARENT[1];
+                        optColors[i][2] = TRANSPARENT[2];
+                        optColors[i][3] = TRANSPARENT[3];
+                    } else {
+                        optColors[i][0] = _colors[4 * i + 0] * 255;
+                        optColors[i][1] = _colors[4 * i + 1] * 255;
+                        optColors[i][2] = _colors[4 * i + 2] * 255;
+                        optColors[i][3] = dim * _colors[4 * i + 3] * 255;
+                    }
+                    if(!scatterOptions.borderColors[i]) scatterOptions.borderColors[i] = [];
+                    scatterOptions.borderColors[i][0] = _borderColors[4 * i + 0] * 255;
+                    scatterOptions.borderColors[i][1] = _borderColors[4 * i + 1] * 255;
+                    scatterOptions.borderColors[i][2] = _borderColors[4 * i + 2] * 255;
+                    scatterOptions.borderColors[i][3] = dim * _borderColors[4 * i + 3] * 255;
+                }
+
+                scatterOptions.viewport = viewport;
+                scatterOptions.range = range;
+            }
+
+            batch.push({
+                scatter: scatterOptions,
+                line: lineOptions
+            });
+
+            // add item for autorange routine
+            // former expandAxesFancy
+            Axes.expand(xaxis, x, {padded: true, ppad: sizes});
+            Axes.expand(yaxis, y, {padded: true, ppad: sizes});
+
+            // provide reference for selecting points
+            if(!cdscatter[0].glTrace) {
+                cdscatter[0].glTrace = this;
+            }
         });
 
-        // add item for autorange routine
-        // former expandAxesFancy
-        Axes.expand(xaxis, x, {padded: true, ppad: sizes});
-        Axes.expand(yaxis, y, {padded: true, ppad: sizes});
+        updateBatch(batch);
+    };
 
-        // provide reference for selecting points
-        if(!cdscatter[0].glTrace) {
-            cdscatter[0].glTrace = this;
+
+    function updateError(axLetter, options, positions, errors) {
+        var errorObj = this['error' + axLetter],
+            errorOptions = options['error_' + axLetter.toLowerCase()];
+
+        if(axLetter.toLowerCase() === 'x' && errorOptions.copy_ystyle) {
+            errorOptions = options.error_y;
         }
-    });
 
-    this.updateBatch(batch);
-};
+        if(this['hasError' + axLetter]) {
+            errorObj.options.positions = positions;
+            errorObj.options.errors = errors;
+            errorObj.options.capSize = errorOptions.width;
+            errorObj.options.lineWidth = errorOptions.thickness;  // ballpark rescaling
+            errorObj.options.color = convertColor(errorOptions.color, 1, 1);
+
+            errorObj.update();
+        }
+        else {
+            errorObj.clear();
+        }
+    };
+
+    update.range = updateRange;
+
+    return update;
+}
 
 
-proto.updateError = function(axLetter, options, positions, errors) {
-    var errorObj = this['error' + axLetter],
-        errorOptions = options['error_' + axLetter.toLowerCase()];
-
-    if(axLetter.toLowerCase() === 'x' && errorOptions.copy_ystyle) {
-        errorOptions = options.error_y;
-    }
-
-    if(this['hasError' + axLetter]) {
-        errorObj.options.positions = positions;
-        errorObj.options.errors = errors;
-        errorObj.options.capSize = errorOptions.width;
-        errorObj.options.lineWidth = errorOptions.thickness;  // ballpark rescaling
-        errorObj.options.color = convertColor(errorOptions.color, 1, 1);
-
-        errorObj.update();
-    }
-    else {
-        errorObj.clear();
-    }
-};
 
 
 convertNumber = convertArray.bind(null, function(x) { return +x; });
