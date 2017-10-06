@@ -768,11 +768,11 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 .call(Drawing.hideOutsideRangePoints, subplot);
 
             // scattergl translate
-            if(subplot._scattergl) {
+            if(subplot._scene && subplot._scene.range) {
                 // FIXME: possibly we could update axis internal _r and _rl here
                 var xaRange = Lib.simpleMap(xa2.range, xa2.r2l),
                     yaRange = Lib.simpleMap(ya2.range, ya2.r2l);
-                subplot._scattergl.range(
+                subplot._scene.range(
                     [xaRange[0], yaRange[0], xaRange[1], yaRange[1]]
                 );
             }

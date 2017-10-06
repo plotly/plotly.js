@@ -501,12 +501,6 @@ exports.doModeBar = function(gd) {
         subplotObj.updateFx(fullLayout.dragmode, fullLayout.hovermode);
     }
 
-    subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d');
-    for(i = 0; i < subplotIds.length; i++) {
-        subplotObj = fullLayout._plots[subplotIds[i]]._scene2d;
-        subplotObj.updateFx(fullLayout.dragmode);
-    }
-
     subplotIds = Plots.getSubplotIds(fullLayout, 'mapbox');
     for(i = 0; i < subplotIds.length; i++) {
         subplotObj = fullLayout[subplotIds[i]]._subplot;

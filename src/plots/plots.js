@@ -458,7 +458,6 @@ plots.supplyDefaults = function(gd) {
 
     // attach helper method to check whether a plot type is present on graph
     newFullLayout._has = plots._hasPlotType.bind(newFullLayout);
-    newFullLayout._hasCategory = plots._hasCategory.bind(newFullLayout);
 
     // special cases that introduce interactions between traces
     var _modules = newFullLayout._modules;
@@ -565,7 +564,9 @@ plots.createTransitionData = function(gd) {
 
 // helper function to be bound to fullLayout to check
 // whether a certain plot type is present on plot
+// or trace has a category
 plots._hasPlotType = function(category) {
+    // check plot
     var basePlotModules = this._basePlotModules || [];
 
     for(var i = 0; i < basePlotModules.length; i++) {
@@ -574,14 +575,9 @@ plots._hasPlotType = function(category) {
         if(_module.name === category) return true;
     }
 
-    return false;
-};
-
-// check whether trace has a category
-plots._hasCategory = function(category) {
+    // check trace
     var modules = this._modules || [];
 
-    // create canvases only in case if there is at least one regl component
     for(var i = 0; i < modules.length; i++) {
         var _ = modules[i];
         if(_.categories && _.categories.indexOf(category) >= 0) {

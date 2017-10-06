@@ -194,7 +194,7 @@ Plotly.plot = function(gd, data, layout, config) {
             }
         }
 
-        fullLayout._glcanvas = fullLayout._glcontainer.selectAll('.gl-canvas').data(fullLayout._hasCategory('gl') ? [{
+        fullLayout._glcanvas = fullLayout._glcontainer.selectAll('.gl-canvas').data(fullLayout._has('gl') ? [{
             key: 'contextLayer'
         }, {
             key: 'focusLayer'

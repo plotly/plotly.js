@@ -44,13 +44,13 @@ function createLineWithMarkers(container, plotinfo, cdata) {
     var layout = container._fullLayout;
 
     var subplotObj = layout._plots.xy;
-    var scatter = subplotObj._scattergl;
+    var scatter = subplotObj._scene;
 
     // create regl-scatter, if not defined
     if(scatter === undefined) {
         // TODO: enhance picking
         // TODO: figure out if there is a way to detect only new passed options
-        scatter = subplotObj._scattergl = createScatterScene(container);
+        scatter = subplotObj._scene = createScatterScene(container);
     }
 
     scatter(cdata);
