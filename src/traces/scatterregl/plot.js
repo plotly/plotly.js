@@ -118,7 +118,7 @@ proto.updateBatch = function(batch) {
     }
 
     this.line.update(lineBatch);
-    // this.scatter.update(scatterBatch)
+    this.scatter.update(scatterBatch);
 
     // rendering requires preserving order of line/scatter layers
     for(var i = 0; i < batch.length; i++) {
@@ -126,9 +126,10 @@ proto.updateBatch = function(batch) {
         var scatterBatch = Array(batch.length);
         for(var j = 0; j < batch.length; j++) {
             lineBatch[j] = i === j;
+            scatterBatch[j] = i === j;
         }
         this.line.draw(lineBatch);
-        // this.scatter.draw(scatterBatch)
+        this.scatter.draw(scatterBatch);
     }
 
     this.count = batch.length;
