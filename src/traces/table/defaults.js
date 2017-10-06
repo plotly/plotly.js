@@ -52,6 +52,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     Lib.coerceFont(coerce, 'cells.font', fontDflt);
 
     coerce('header.values');
+    for(var i = 0; i < traceOut.header.values.length; i++) {
+        if(!Array.isArray(traceOut.header.values[i])) {
+            traceOut.header.values[i] = [traceOut.header.values[i]];
+        }
+    }
+
     coerce('header.format');
     coerce('header.align');
 

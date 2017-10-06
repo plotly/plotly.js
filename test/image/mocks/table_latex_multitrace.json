@@ -19,7 +19,7 @@
             "columnorder": [0, 1, 2],
 
             "header": {
-                "values": [["<b>#</b>"], ["Half-angle form"], ["Equivalent"]],
+                "values": ["<b>#</b>", "Half-angle form", "Equivalent"],
                 "align": ["right", "center", "center"],
                 "line": {"width": 0.0},
                 "fill": {"color": ["dimgray", "grey"]},
