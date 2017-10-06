@@ -365,7 +365,7 @@ describe('sankey tests', function() {
             }];
             Plotly.plot(gd, minimock)
                 .then(function() {
-                    expect(d3.selectAll('.sankey .nodeRect')[0].reduce(function(prevMin, rect) {
+                    expect(d3.selectAll('.sankey .node-rect')[0].reduce(function(prevMin, rect) {
                         return Math.min(prevMin, d3.select(rect).attr('height'));
                     }, Infinity)).toEqual(0.5);
                     done();

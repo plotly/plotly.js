@@ -28,5 +28,30 @@ module.exports = {
     scrollbarCaptureWidth: 18,
     scrollbarOffset: 5,
     scrollbarHideDelay: 1000,
-    scrollbarHideDuration: 1000
+    scrollbarHideDuration: 1000,
+    cn: {
+        // general class names
+        table: 'table',
+        tableControlView: 'table-control-view',
+        scrollBackground: 'scroll-background',
+        yColumn: 'y-column',
+        columnBlock: 'column-block',
+        scrollAreaClip: 'scroll-area-clip',
+        scrollAreaClipRect: 'scroll-area-clip-rect',
+        columnBoundary: 'column-boundary',
+        columnBoundaryClippath: 'column-boundary-clippath',
+        columnBoundaryRect: 'column-boundary-rect',
+        columnCells: 'column-cells',
+        columnCell: 'column-cell',
+        cellRect: 'cell-rect',
+        cellText: 'cell-text',
+        cellTextHolder: 'cell-text-holder',
+
+        // scroll related class names
+        scrollbarKit: 'scrollbar-kit',
+        scrollbar: 'scrollbar',
+        scrollbarSlider: 'scrollbar-slider',
+        scrollbarGlyph: 'scrollbar-glyph',
+        scrollbarCaptureZone: 'scrollbar-capture-zone'
+    }
 };
