@@ -31,5 +31,27 @@ module.exports = {
         handleheight: 16, // Height of the filter bar vertical resize areas on top and bottom
         handleopacity: 1, // Opacity of the filter bar vertical resize areas on top and bottom
         handleoverlap: 0 // A larger than 0 value causes overlaps with the filter bar, represented as pixels.'
+    },
+    cn: {
+        axisExtentText: 'axis-extent-text',
+        parcoordsLineLayers: 'parcoords-line-layers',
+        parcoordsLineLayer: 'parcoords-lines',
+        parcoords: 'parcoords',
+        parcoordsControlView: 'parcoords-control-view',
+        yAxis: 'y-axis',
+        axisOverlays: 'axis-overlays',
+        axis: 'axis',
+        axisHeading: 'axis-heading',
+        axisTitle: 'axis-title',
+        axisExtent: 'axis-extent',
+        axisExtentTop: 'axis-extent-top',
+        axisExtentTopText: 'axis-extent-top-text',
+        axisExtentBottom: 'axis-extent-bottom',
+        axisExtentBottomText: 'axis-extent-bottom-text',
+        axisBrush: 'axis-brush'
+    },
+    id: {
+        filterBarPattern: 'filter-bar-pattern'
+
     }
 };

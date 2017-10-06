@@ -247,7 +247,7 @@ function lineLayerModel(vm) {
 
 function styleExtentTexts(selection) {
     selection
-        .classed('axisExtentText', true)
+        .classed(c.cn.axisExtentText, true)
         .attr('text-anchor', 'middle')
         .style('cursor', 'default')
         .style('user-select', 'none');
@@ -265,12 +265,12 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         defs.enter()
             .append('defs');
 
-        var filterBarPattern = defs.selectAll('#filterBarPattern')
+        var filterBarPattern = defs.selectAll('#' + c.id.filterBarPattern)
             .data(repeat, keyFun);
 
         filterBarPattern.enter()
             .append('pattern')
-            .attr('id', 'filterBarPattern')
+            .attr('id', c.id.filterBarPattern)
             .attr('patternUnits', 'userSpaceOnUse');
 
         filterBarPattern
@@ -301,14 +301,14 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .map(model.bind(0, layout))
         .map(viewModel);
 
-    root.selectAll('.parcoords-line-layers').remove();
+    root.selectAll('.' + c.cn.parcoordsLineLayers).remove();
 
-    var parcoordsLineLayers = root.selectAll('.parcoords-line-layers')
+    var parcoordsLineLayers = root.selectAll('.' + c.cn.parcoordsLineLayers)
         .data(vm, keyFun);
 
     parcoordsLineLayers.enter()
         .insert('div', '.' + svg.attr('class').split(' ').join(' .')) // not hardcoding .main-svg
-        .classed('parcoords-line-layers', true)
+        .classed(c.cn.parcoordsLineLayers, true)
         .style('box-sizing', 'content-box');
 
     parcoordsLineLayers
@@ -316,7 +316,7 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
             return 'translate(' + (d.model.translateX - c.overdrag) + 'px,' + d.model.translateY + 'px)';
         });
 
-    var parcoordsLineLayer = parcoordsLineLayers.selectAll('.parcoords-lines')
+    var parcoordsLineLayer = parcoordsLineLayers.selectAll('.' + c.cn.parcoordsLineLayer)
         .data(lineLayerModel, keyFun);
 
     var tweakables = {renderers: [], dimensions: []};
@@ -325,13 +325,13 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
 
     parcoordsLineLayer.enter()
         .append('canvas')
-        .attr('class', function(d) {return 'parcoords-lines ' + (d.context ? 'context' : d.pick ? 'pick' : 'focus');})
+        .attr('class', function(d) {return c.cn.parcoordsLineLayer + ' ' + (d.context ? 'context' : d.pick ? 'pick' : 'focus');})
         .style('box-sizing', 'content-box')
         .style('float', 'left')
         .style('clear', 'both')
         .style('left', 0)
         .style('overflow', 'visible')
-        .style('position', function(d, i) {return i > 0 ? 'absolute' : 'absolute';})
+        .style('position', 'absolute')
         .filter(function(d) {return d.pick;})
         .on('mousemove', function(d) {
             if(linePickActive && d.lineLayer && callbacks && callbacks.hover) {
@@ -380,14 +380,14 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .style('opacity', function(d) {return d.pick ? 0.01 : 1;});
 
     svg.style('background', 'rgba(255, 255, 255, 0)');
-    var parcoordsControlOverlay = svg.selectAll('.parcoords')
+    var parcoordsControlOverlay = svg.selectAll('.' + c.cn.parcoords)
         .data(vm, keyFun);
 
     parcoordsControlOverlay.exit().remove();
 
     parcoordsControlOverlay.enter()
         .append('g')
-        .classed('parcoords', true)
+        .classed(c.cn.parcoords, true)
         .attr('overflow', 'visible')
         .style('box-sizing', 'content-box')
         .style('position', 'absolute')
@@ -404,18 +404,18 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
             return 'translate(' + d.model.translateX + ',' + d.model.translateY + ')';
         });
 
-    var parcoordsControlView = parcoordsControlOverlay.selectAll('.parcoordsControlView')
+    var parcoordsControlView = parcoordsControlOverlay.selectAll('.' + c.cn.parcoordsControlView)
         .data(repeat, keyFun);
 
     parcoordsControlView.enter()
         .append('g')
-        .classed('parcoordsControlView', true)
+        .classed(c.cn.parcoordsControlView, true)
         .style('box-sizing', 'content-box');
 
     parcoordsControlView
         .attr('transform', function(d) {return 'translate(' + d.model.pad.l + ',' + d.model.pad.t + ')';});
 
-    var yAxis = parcoordsControlView.selectAll('.yAxis')
+    var yAxis = parcoordsControlView.selectAll('.' + c.cn.yAxis)
         .data(function(vm) {return vm.dimensions;}, keyFun);
 
     function someFiltersActive(view) {
@@ -470,7 +470,7 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
 
     yAxis.enter()
         .append('g')
-        .classed('yAxis', true)
+        .classed(c.cn.yAxis, true)
         .each(function(d) {tweakables.dimensions.push(d);});
 
     parcoordsControlView.each(function(vm) {
@@ -543,21 +543,21 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
     yAxis.exit()
         .remove();
 
-    var axisOverlays = yAxis.selectAll('.axisOverlays')
+    var axisOverlays = yAxis.selectAll('.' + c.cn.axisOverlays)
         .data(repeat, keyFun);
 
     axisOverlays.enter()
         .append('g')
-        .classed('axisOverlays', true);
+        .classed(c.cn.axisOverlays, true);
 
-    axisOverlays.selectAll('.axis').remove();
+    axisOverlays.selectAll('.' + c.cn.axis).remove();
 
-    var axis = axisOverlays.selectAll('.axis')
+    var axis = axisOverlays.selectAll('.' + c.cn.axis)
         .data(repeat, keyFun);
 
     axis.enter()
         .append('g')
-        .classed('axis', true);
+        .classed(c.cn.axis, true);
 
     axis
         .each(function(d) {
@@ -591,19 +591,19 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .style('cursor', 'default')
         .style('user-select', 'none');
 
-    var axisHeading = axisOverlays.selectAll('.axisHeading')
+    var axisHeading = axisOverlays.selectAll('.' + c.cn.axisHeading)
         .data(repeat, keyFun);
 
     axisHeading.enter()
         .append('g')
-        .classed('axisHeading', true);
+        .classed(c.cn.axisHeading, true);
 
-    var axisTitle = axisHeading.selectAll('.axisTitle')
+    var axisTitle = axisHeading.selectAll('.' + c.cn.axisTitle)
         .data(repeat, keyFun);
 
     axisTitle.enter()
         .append('text')
-        .classed('axisTitle', true)
+        .classed(c.cn.axisTitle, true)
         .attr('text-anchor', 'middle')
         .style('cursor', 'ew-resize')
         .style('user-select', 'none')
@@ -614,24 +614,24 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .text(function(d) {return d.label;})
         .each(function(d) {Drawing.font(axisTitle, d.model.labelFont);});
 
-    var axisExtent = axisOverlays.selectAll('.axisExtent')
+    var axisExtent = axisOverlays.selectAll('.' + c.cn.axisExtent)
         .data(repeat, keyFun);
 
     axisExtent.enter()
         .append('g')
-        .classed('axisExtent', true);
+        .classed(c.cn.axisExtent, true);
 
-    var axisExtentTop = axisExtent.selectAll('.axisExtentTop')
+    var axisExtentTop = axisExtent.selectAll('.' + c.cn.axisExtentTop)
         .data(repeat, keyFun);
 
     axisExtentTop.enter()
         .append('g')
-        .classed('axisExtentTop', true);
+        .classed(c.cn.axisExtentTop, true);
 
     axisExtentTop
         .attr('transform', 'translate(' + 0 + ',' + -c.axisExtentOffset + ')');
 
-    var axisExtentTopText = axisExtentTop.selectAll('.axisExtentTopText')
+    var axisExtentTopText = axisExtentTop.selectAll('.' + c.cn.axisExtentTopText)
         .data(repeat, keyFun);
 
     function formatExtreme(d) {
@@ -640,7 +640,7 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
 
     axisExtentTopText.enter()
         .append('text')
-        .classed('axisExtentTopText', true)
+        .classed(c.cn.axisExtentTopText, true)
         .attr('alignment-baseline', 'after-edge')
         .call(styleExtentTexts);
 
@@ -648,22 +648,22 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .text(function(d) {return formatExtreme(d)(d.domainScale.domain().slice(-1)[0]);})
         .each(function(d) {Drawing.font(axisExtentTopText, d.model.rangeFont);});
 
-    var axisExtentBottom = axisExtent.selectAll('.axisExtentBottom')
+    var axisExtentBottom = axisExtent.selectAll('.' + c.cn.axisExtentBottom)
         .data(repeat, keyFun);
 
     axisExtentBottom.enter()
         .append('g')
-        .classed('axisExtentBottom', true);
+        .classed(c.cn.axisExtentBottom, true);
 
     axisExtentBottom
         .attr('transform', function(d) {return 'translate(' + 0 + ',' + (d.model.height + c.axisExtentOffset) + ')';});
 
-    var axisExtentBottomText = axisExtentBottom.selectAll('.axisExtentBottomText')
+    var axisExtentBottomText = axisExtentBottom.selectAll('.' + c.cn.axisExtentBottomText)
         .data(repeat, keyFun);
 
     axisExtentBottomText.enter()
         .append('text')
-        .classed('axisExtentBottomText', true)
+        .classed(c.cn.axisExtentBottomText, true)
         .attr('alignment-baseline', 'before-edge')
         .call(styleExtentTexts);
 
@@ -671,12 +671,12 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
         .text(function(d) {return formatExtreme(d)(d.domainScale.domain()[0]);})
         .each(function(d) {Drawing.font(axisExtentBottomText, d.model.rangeFont);});
 
-    var axisBrush = axisOverlays.selectAll('.axisBrush')
+    var axisBrush = axisOverlays.selectAll('.' + c.cn.axisBrush)
         .data(repeat, keyFun);
 
     var axisBrushEnter = axisBrush.enter()
         .append('g')
-        .classed('axisBrush', true);
+        .classed(c.cn.axisBrush, true);
 
     axisBrush
         .each(function(d) {
@@ -700,7 +700,7 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
 
     axisBrushEnter
         .selectAll('rect.extent')
-        .attr('fill', 'url(#filterBarPattern)')
+        .attr('fill', 'url(#' + c.id.filterBarPattern + ')')
         .style('cursor', 'ns-resize')
         .filter(function(d) {return d.filter[0] === 0 && d.filter[1] === 1;})
         .attr('y', -100); //  // zero-size rectangle pointer issue workaround
