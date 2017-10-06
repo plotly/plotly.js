@@ -13,10 +13,13 @@ var extendFlat = require('../../lib/extend').extendFlat;
 
 // pure functions, don't alter but passes on `gd` and parts of `trace` without deep copying
 module.exports = function calc(gd, trace) {
+    var headerValues = trace.header.values.map(function(c) {
+        return Array.isArray(c) ? c : [c];
+    });
     var domain = trace.domain;
     var groupWidth = Math.floor(gd._fullLayout._size.w * (domain.x[1] - domain.x[0]));
     var groupHeight = Math.floor(gd._fullLayout._size.h * (domain.y[1] - domain.y[0]));
-    var headerRowHeights = trace.header.values[0].map(function() {return trace.header.height;});
+    var headerRowHeights = headerValues[0].map(function() {return trace.header.height;});
     var rowHeights = trace.cells.values[0].map(function() {return trace.cells.height;});
     var headerHeight = headerRowHeights.reduce(function(a, b) {return a + b;}, 0);
     var scrollHeight = groupHeight - headerHeight;
@@ -27,7 +30,7 @@ module.exports = function calc(gd, trace) {
     var rowBlocks = makeRowBlock(anchorToRowBlock, headerRowBlocks);
     var uniqueKeys = {};
     var columnOrder = trace._fullInput.columnorder;
-    var columnWidths = trace.header.values.map(function(d, i) {
+    var columnWidths = headerValues.map(function(d, i) {
         return Array.isArray(trace.columnwidth) ?
             trace.columnwidth[Math.min(i, trace.columnwidth.length - 1)] :
             isFinite(trace.columnwidth) && trace.columnwidth !== null ? trace.columnwidth : 1;
@@ -50,12 +53,12 @@ module.exports = function calc(gd, trace) {
         headerRowBlocks: headerRowBlocks,
         scrollY: 0, // will be mutated on scroll
         cells: trace.cells,
-        headerCells: trace.header,
-        gdColumns: trace.header.values.map(function(d) {return d[0];}),
-        gdColumnsOriginalOrder: trace.header.values.map(function(d) {return d[0];}),
+        headerCells: extendFlat({}, trace.header, {values: headerValues}),
+        gdColumns: headerValues.map(function(d) {return d[0];}),
+        gdColumnsOriginalOrder: headerValues.map(function(d) {return d[0];}),
         prevPages: [0, 0],
         scrollbarState: {scrollbarScrollInProgress: false},
-        columns: trace.header.values.map(function(label, i) {
+        columns: headerValues.map(function(label, i) {
             var foundKey = uniqueKeys[label];
             uniqueKeys[label] = (foundKey || 0) + 1;
             var key = label + '__' + uniqueKeys[label];
