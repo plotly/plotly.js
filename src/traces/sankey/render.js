@@ -16,12 +16,11 @@ var Drawing = require('../../components/drawing');
 var d3sankey = require('@plotly/d3-sankey').sankey;
 var d3Force = require('d3-force');
 var Lib = require('../../lib');
+var keyFun = require('../../lib/gup').keyFun;
+var repeat = require('../../lib/gup').repeat;
+var unwrap = require('../../lib/gup').unwrap;
 
 // basic data utilities
-
-function keyFun(d) {return d.key;}
-function repeat(d) {return [d];} // d3 data binding convention
-function unwrap(d) {return d[0];} // plotly data structure convention
 
 function persistOriginalPlace(nodes) {
     var i, distinctLayerPositions = [];

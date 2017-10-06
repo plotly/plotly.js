@@ -13,10 +13,9 @@ var c = require('./constants');
 var Lib = require('../../lib');
 var d3 = require('d3');
 var Drawing = require('../../components/drawing');
-
-function keyFun(d) {return d.key;}
-
-function repeat(d) {return [d];}
+var keyFun = require('../../lib/gup').keyFun;
+var repeat = require('../../lib/gup').repeat;
+var unwrap = require('../../lib/gup').unwrap;
 
 function visible(dimension) {return !('visible' in dimension) || dimension.visible;}
 
@@ -124,10 +123,6 @@ function unitToColorScale(cscale) {
             return s(d);
         });
     };
-}
-
-function unwrap(d) {
-    return d[0]; // plotly data structure convention
 }
 
 function model(layout, d, i) {
