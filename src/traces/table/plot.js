@@ -705,7 +705,7 @@ function conditionalPanelRerender(gd, tableControlView, cellsColumnBlock, pages,
             // setTimeout might lag rendering but yields a smoother scroll, because fast scrolling makes
             // some repaints invisible ie. wasteful (DOM work blocks the main thread)
             var toRerender = cellsColumnBlock.filter(function(d, i) {return i === revolverIndex && pages[i] !== prevPages[i];});
-            renderColumnCellTree(gd, tableControlView, toRerender, toRerender);
+            renderColumnCellTree(gd, tableControlView, toRerender, cellsColumnBlock);
             prevPages[revolverIndex] = pages[revolverIndex];
         });
     }
