@@ -206,13 +206,15 @@ Plotly.plot = function(gd, data, layout, config) {
             .attr('class', function(d) {
                 return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
             })
-            .style('position', 'absolute')
-            .style('top', 0)
-            .style('left', 0)
-            .style('width', '100%')
-            .style('height', '100%')
-            .style('pointer-events', 'none')
-            .style('overflow', 'visible')
+            .style({
+                'position': 'absolute',
+                'top': 0,
+                'left': 0,
+                'width': '100%',
+                'height': '100%',
+                'pointer-events': 'none',
+                'overflow': 'visible'
+            })
             .attr('width', fullLayout.width)
             .attr('height', fullLayout.height);
 
