@@ -10,6 +10,7 @@
 
 var tarjan = require('strongly-connected-components');
 var Lib = require('../../lib');
+var wrap = require('../../lib/gup').wrap;
 
 function circularityPresent(nodeList, sources, targets) {
 
@@ -44,8 +45,8 @@ module.exports = function calc(gd, trace) {
         trace.node.color = [];
     }
 
-    return [{
+    return wrap({
         link: trace.link,
         node: trace.node
-    }];
+    });
 };

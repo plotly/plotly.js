@@ -11,7 +11,7 @@
 var hasColorscale = require('../../components/colorscale/has_colorscale');
 var calcColorscale = require('../../components/colorscale/calc');
 var Lib = require('../../lib');
-
+var wrap = require('../../lib/gup').wrap;
 
 module.exports = function calc(gd, trace) {
     var cs = !!trace.line.colorscale && Lib.isArray(trace.line.color);
@@ -22,8 +22,8 @@ module.exports = function calc(gd, trace) {
         calcColorscale(trace, trace.line.color, 'line', 'c');
     }
 
-    return [{
+    return wrap({
         lineColor: color,
         cscale: cscale
-    }];
+    });
 };
