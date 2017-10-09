@@ -83,8 +83,10 @@ function getShowAttrDflt(containerIn) {
 }
 
 function tickformatstopsDefaults(tickformatIn, tickformatOut) {
-    var valuesIn = tickformatIn.tickformatstops || [],
-        valuesOut = tickformatOut.tickformatstops = [];
+    var valuesIn = tickformatIn.tickformatstops;
+    var valuesOut = tickformatOut.tickformatstops = [];
+
+    if(!Array.isArray(valuesIn)) return;
 
     var valueIn, valueOut;
 
@@ -101,6 +103,4 @@ function tickformatstopsDefaults(tickformatIn, tickformatOut) {
 
         valuesOut.push(valueOut);
     }
-
-    return valuesOut;
 }

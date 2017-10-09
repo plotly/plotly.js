@@ -289,4 +289,19 @@ describe('Test tickformatstops:', function() {
         .then(done);
     });
 
+    it('doesn\'t fail on bad input', function(done) {
+        var promise = Plotly.plot(gd, mockCopy.data, mockCopy.layout);
+
+        [1, {a: 1, b: 2}, 'boo'].forEach(function(v) {
+            promise = promise.then(function() {
+                return Plotly.relayout(gd, {'xaxis.tickformatstops': v});
+            }).then(function() {
+                expect(gd._fullLayout.xaxis.tickformatstops).toEqual([]);
+            });
+        });
+
+        promise
+        .catch(fail)
+        .then(done);
+    });
 });
