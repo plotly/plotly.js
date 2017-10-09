@@ -1,7 +1,12 @@
+var Plotly = require('@lib/index');
 var Gl3d = require('@src/plots/gl3d');
 
 var tinycolor = require('tinycolor2');
 var Color = require('@src/components/color');
+
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
 
 
 describe('Test Gl3d layout defaults', function() {
@@ -227,7 +232,8 @@ describe('Test Gl3d layout defaults', function() {
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutIn.scene).toEqual({
-                aspectratio: { x: 1, y: 1, z: 1 }
+                aspectratio: { x: 1, y: 1, z: 1 },
+                aspectmode: 'auto'
             });
         });
 
@@ -261,4 +267,36 @@ describe('Test Gl3d layout defaults', function() {
                 .toEqual(tinycolor.mix('#444', bgColor, frac).toRgbString());
         });
     });
+});
+
+describe('Gl3d layout edge cases', function() {
+    var gd;
+
+    beforeEach(function() {gd = createGraphDiv(); });
+    afterEach(destroyGraphDiv);
+
+    it('should handle auto aspect ratio correctly on data changes', function(done) {
+        Plotly.plot(gd, [{x: [1, 2], y: [1, 3], z: [1, 4], type: 'scatter3d'}])
+        .then(function() {
+            var aspect = gd.layout.scene.aspectratio;
+            expect(aspect.x).toBeCloseTo(0.5503);
+            expect(aspect.y).toBeCloseTo(1.1006);
+            expect(aspect.z).toBeCloseTo(1.6510);
+
+            return Plotly.restyle(gd, 'x', [[1, 6]]);
+        })
+        .then(function() {
+            /*
+             * Check that now it's the same as if you had just made the plot with
+             * x: [1, 6] in the first place
+             */
+            var aspect = gd.layout.scene.aspectratio;
+            expect(aspect.x).toBeCloseTo(1.6091);
+            expect(aspect.y).toBeCloseTo(0.6437);
+            expect(aspect.z).toBeCloseTo(0.9655);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
 });

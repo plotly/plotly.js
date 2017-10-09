@@ -9,7 +9,6 @@ var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
 var DBLCLICKDELAY = require('@src/constants/interactions').DBLCLICKDELAY;
 
 var d3 = require('d3');
-var customMatchers = require('../assets/custom_matchers');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -561,10 +560,6 @@ describe('annotations autorange', function() {
     var mock;
     var gd;
 
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
-
     beforeEach(function() {
         gd = createGraphDiv();
         mock = Lib.extendDeep({}, require('@mocks/annotations-autorange.json'));
@@ -907,10 +902,6 @@ describe('annotation effects', function() {
     function textDrag() { return gd.querySelector('.annotation-text-g>g'); }
     function arrowDrag() { return gd.querySelector('.annotation-arrow-g>.anndrag'); }
     function textBox() { return gd.querySelector('.annotation-text-g'); }
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     function makePlot(annotations, config) {
         gd = createGraphDiv();
@@ -1330,7 +1321,7 @@ describe('annotation effects', function() {
             }
 
             function checkLink(link) {
-                expect(link.style('cursor')).toBe('pointer');
+                expect(link.node().style.cursor).toBe('pointer');
                 expect(link.attr('xlink:href')).toBe('https://plot.ly');
                 expect(link.attr('xlink:show')).toBe('new');
             }
@@ -1358,7 +1349,7 @@ describe('animating annotations', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('updates annoations when no axis update present', function(done) {
+    it('updates annotations when no axis update present', function(done) {
 
         function assertAnnotations(expected) {
             var texts = Plotly.d3.select(gd).selectAll('.annotation .annotation-text');
@@ -1375,7 +1366,7 @@ describe('animating annotations', function() {
             expect(expected.length).toEqual(paths.size());
 
             paths.each(function(d, i) {
-                expect(Plotly.d3.select(this).style('fill')).toEqual(expected[i]);
+                expect(this.style.fill).toEqual(expected[i]);
             });
         }
 

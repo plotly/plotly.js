@@ -10,7 +10,6 @@ var Plots = PlotlyInternal.Plots;
 var Axes = PlotlyInternal.Axes;
 
 var d3 = require('d3');
-var customMatchers = require('../assets/custom_matchers');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -19,10 +18,6 @@ var drag = require('../assets/drag');
 
 describe('Test shapes defaults:', function() {
     'use strict';
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     function _supply(layoutIn, layoutOut) {
         layoutOut = layoutOut || {};
@@ -469,10 +464,6 @@ describe('shapes edge cases', function() {
 
     var gd;
 
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
-
     beforeEach(function() { gd = createGraphDiv(); });
 
     afterEach(destroyGraphDiv);
@@ -511,10 +502,6 @@ describe('shapes autosize', function() {
     'use strict';
 
     var gd;
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     afterEach(destroyGraphDiv);
 
@@ -580,32 +567,54 @@ describe('Test shapes: a plot with shapes and an overlaid axis', function() {
         gd = createGraphDiv();
 
         data = [{
-            'y': [1934.5, 1932.3, 1930.3],
-            'x': ['1947-01-01', '1947-04-01', '1948-07-01'],
-            'type': 'scatter'
+            y: [1934.5, 1932.3, 1930.3],
+            x: ['1947-01-01', '1947-04-01', '1948-07-01'],
+            type: 'scatter'
         }];
 
         layout = {
-            'yaxis': {
-                'type': 'linear'
+            yaxis: {
+                type: 'linear'
             },
-            'xaxis': {
-                'type': 'date'
+            xaxis: {
+                type: 'date'
             },
-            'yaxis2': {
-                'side': 'right',
-                'overlaying': 'y'
+            yaxis2: {
+                side: 'right',
+                overlaying: 'y'
             },
-            'shapes': [{
-                'fillcolor': '#ccc',
-                'type': 'rect',
-                'x0': '1947-01-01',
-                'x1': '1947-04-01',
-                'xref': 'x',
-                'y0': 0,
-                'y1': 1,
-                'yref': 'paper',
-                'layer': 'below'
+            shapes: [{
+                fillcolor: '#ccc',
+                type: 'rect',
+                x0: '1947-01-01',
+                x1: '1947-04-01',
+                xref: 'x',
+                y0: 0,
+                y1: 1,
+                yref: 'paper',
+                layer: 'below'
+            }, {
+                type: 'path',
+                xref: 'x',
+                yref: 'y2',
+                path: 'M1947-01-01_12:00,2V4H1947-03-01Z'
+            }, {
+                type: 'rect',
+                xref: 'x',
+                yref: 'y2',
+                x0: '1947-02-01',
+                x1: '1947-03-01',
+                y0: 3,
+                y1: 5,
+                layer: 'below'
+            }, {
+                type: 'circle',
+                xref: 'x',
+                yref: 'y',
+                x0: '1947-01-15',
+                x1: '1947-02-15',
+                y0: 1931,
+                y1: 1934
             }]
         };
     });

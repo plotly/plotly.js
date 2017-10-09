@@ -12,7 +12,7 @@
 var Fx = require('../../components/fx');
 var ErrorBars = require('../../components/errorbars');
 var Color = require('../../components/color');
-
+var fillHoverText = require('../scatter/fill_hover_text');
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
@@ -99,11 +99,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         pointData.xLabelVal = di.p;
     }
 
-    if(di.htx) pointData.text = di.htx;
-    else if(trace.hovertext) pointData.text = trace.hovertext;
-    else if(di.tx) pointData.text = di.tx;
-    else if(trace.text) pointData.text = trace.text;
-
+    fillHoverText(di, trace, pointData);
     ErrorBars.hoverInfo(di, trace, pointData);
 
     return [pointData];

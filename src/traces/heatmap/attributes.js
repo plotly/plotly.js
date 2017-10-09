@@ -17,29 +17,33 @@ var extendFlat = require('../../lib/extend').extendFlat;
 module.exports = extendFlat({}, {
     z: {
         valType: 'data_array',
+        editType: 'calc',
         description: 'Sets the z data.'
     },
-    x: scatterAttrs.x,
-    x0: scatterAttrs.x0,
-    dx: scatterAttrs.dx,
-    y: scatterAttrs.y,
-    y0: scatterAttrs.y0,
-    dy: scatterAttrs.dy,
+    x: extendFlat({}, scatterAttrs.x, {impliedEdits: {xtype: 'array'}}),
+    x0: extendFlat({}, scatterAttrs.x0, {impliedEdits: {xtype: 'scaled'}}),
+    dx: extendFlat({}, scatterAttrs.dx, {impliedEdits: {xtype: 'scaled'}}),
+    y: extendFlat({}, scatterAttrs.y, {impliedEdits: {ytype: 'array'}}),
+    y0: extendFlat({}, scatterAttrs.y0, {impliedEdits: {ytype: 'scaled'}}),
+    dy: extendFlat({}, scatterAttrs.dy, {impliedEdits: {ytype: 'scaled'}}),
 
     text: {
         valType: 'data_array',
+        editType: 'calc',
         description: 'Sets the text elements associated with each z value.'
     },
     transpose: {
         valType: 'boolean',
         dflt: false,
         role: 'info',
+        editType: 'calc',
         description: 'Transposes the z data.'
     },
     xtype: {
         valType: 'enumerated',
         values: ['array', 'scaled'],
         role: 'info',
+        editType: 'calc+clearAxisTypes',
         description: [
             'If *array*, the heatmap\'s x coordinates are given by *x*',
             '(the default behavior when `x` is provided).',
@@ -51,6 +55,7 @@ module.exports = extendFlat({}, {
         valType: 'enumerated',
         values: ['array', 'scaled'],
         role: 'info',
+        editType: 'calc+clearAxisTypes',
         description: [
             'If *array*, the heatmap\'s y coordinates are given by *y*',
             '(the default behavior when `y` is provided)',
@@ -63,6 +68,7 @@ module.exports = extendFlat({}, {
         values: ['fast', 'best', false],
         dflt: false,
         role: 'style',
+        editType: 'calc',
         description: [
             'Picks a smoothing algorithm use to smooth `z` data.'
         ].join(' ')
@@ -71,6 +77,7 @@ module.exports = extendFlat({}, {
         valType: 'boolean',
         dflt: false,
         role: 'info',
+        editType: 'calc',
         description: [
             'Determines whether or not gaps',
             '(i.e. {nan} or missing values)',
@@ -82,6 +89,7 @@ module.exports = extendFlat({}, {
         dflt: 0,
         min: 0,
         role: 'style',
+        editType: 'plot',
         description: 'Sets the horizontal gap (in pixels) between bricks.'
     },
     ygap: {
@@ -89,6 +97,7 @@ module.exports = extendFlat({}, {
         dflt: 0,
         min: 0,
         role: 'style',
+        editType: 'plot',
         description: 'Sets the vertical gap (in pixels) between bricks.'
     },
 },

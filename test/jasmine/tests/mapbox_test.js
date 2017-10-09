@@ -9,8 +9,11 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
-var customMatchers = require('../assets/custom_matchers');
 var failTest = require('../assets/fail_test');
+
+var customAssertions = require('../assets/custom_assertions');
+var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
 var TRANSITION_DELAY = 500;
@@ -294,10 +297,6 @@ describe('@noCI, mapbox plots', function() {
 
     var pointPos = [579, 276],
         blankPos = [650, 120];
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     beforeEach(function(done) {
         gd = createGraphDiv();
@@ -729,11 +728,17 @@ describe('@noCI, mapbox plots', function() {
             return assertMouseMove(pointPos, 1);
         })
         .then(function() {
-            var path = d3.select('g.hovertext').select('path');
-            var text = d3.select('g.hovertext').select('text.nums');
-
-            expect(path.style('fill')).toEqual('rgb(255, 255, 0)', 'bgcolor');
-            expect(text.style('font-size')).toEqual('20px', 'font.size[0]');
+            assertHoverLabelStyle(d3.select('g.hovertext'), {
+                bgcolor: 'rgb(255, 255, 0)',
+                bordercolor: 'rgb(68, 68, 68)',
+                fontSize: 20,
+                fontFamily: 'Arial',
+                fontColor: 'rgb(68, 68, 68)'
+            });
+            assertHoverLabelContent({
+                nums: '(10°, 10°)',
+                name: 'trace 0'
+            });
         })
         .catch(failTest)
         .then(done);

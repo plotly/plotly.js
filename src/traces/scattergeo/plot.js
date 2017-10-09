@@ -21,8 +21,10 @@ var locationToFeature = require('../../lib/geo_location_utils').locationToFeatur
 var geoJsonUtils = require('../../lib/geojson_utils');
 var subTypes = require('../scatter/subtypes');
 
-
 module.exports = function plot(geo, calcData) {
+    for(var i = 0; i < calcData.length; i++) {
+        calcGeoJSON(calcData[i], geo.topojson);
+    }
 
     function keyFunc(d) { return d[0].trace.uid; }
 
@@ -32,37 +34,34 @@ module.exports = function plot(geo, calcData) {
         }
     }
 
-    for(var i = 0; i < calcData.length; i++) {
-        fillLocationLonLat(calcData[i], geo.topojson);
-    }
-
-    var gScatterGeoTraces = geo.framework.select('.scattergeolayer')
+    var gTraces = geo.layers.frontplot.select('.scatterlayer')
         .selectAll('g.trace.scattergeo')
         .data(calcData, keyFunc);
 
-    gScatterGeoTraces.enter().append('g')
+    gTraces.enter().append('g')
         .attr('class', 'trace scattergeo');
 
-    gScatterGeoTraces.exit().remove();
+    gTraces.exit().remove();
 
     // TODO find a way to order the inner nodes on update
-    gScatterGeoTraces.selectAll('*').remove();
+    gTraces.selectAll('*').remove();
 
-    gScatterGeoTraces.each(function(calcTrace) {
-        var s = d3.select(this);
+    gTraces.each(function(calcTrace) {
+        var s = calcTrace[0].node3 = d3.select(this);
         var trace = calcTrace[0].trace;
 
         if(subTypes.hasLines(trace) || trace.fill !== 'none') {
             var lineCoords = geoJsonUtils.calcTraceToLineCoords(calcTrace);
 
             var lineData = (trace.fill !== 'none') ?
-                geoJsonUtils.makePolygon(lineCoords, trace) :
-                geoJsonUtils.makeLine(lineCoords, trace);
+                geoJsonUtils.makePolygon(lineCoords) :
+                geoJsonUtils.makeLine(lineCoords);
 
             s.selectAll('path.js-line')
-                .data([lineData])
+                .data([{geojson: lineData, trace: trace}])
               .enter().append('path')
-                .classed('js-line', true);
+                .classed('js-line', true)
+                .style('stroke-miterlimit', 2);
         }
 
         if(subTypes.hasMarkers(trace)) {
@@ -86,7 +85,7 @@ module.exports = function plot(geo, calcData) {
     style(geo);
 };
 
-function fillLocationLonLat(calcTrace, topojson) {
+function calcGeoJSON(calcTrace, topojson) {
     var trace = calcTrace[0].trace;
 
     if(!Array.isArray(trace.locations)) return;
@@ -103,15 +102,15 @@ function fillLocationLonLat(calcTrace, topojson) {
 }
 
 function style(geo) {
-    var selection = geo.framework.selectAll('g.trace.scattergeo');
+    var gTraces = geo.layers.frontplot.selectAll('.trace.scattergeo');
 
-    selection.style('opacity', function(calcTrace) {
+    gTraces.style('opacity', function(calcTrace) {
         return calcTrace[0].trace.opacity;
     });
 
-    selection.each(function(calcTrace) {
-        var trace = calcTrace[0].trace,
-            group = d3.select(this);
+    gTraces.each(function(calcTrace) {
+        var trace = calcTrace[0].trace;
+        var group = d3.select(this);
 
         group.selectAll('path.point')
             .call(Drawing.pointStyle, trace, geo.graphDiv);
@@ -120,12 +119,12 @@ function style(geo) {
     });
 
     // this part is incompatible with Drawing.lineGroupStyle
-    selection.selectAll('path.js-line')
+    gTraces.selectAll('path.js-line')
         .style('fill', 'none')
         .each(function(d) {
-            var path = d3.select(this),
-                trace = d.trace,
-                line = trace.line || {};
+            var path = d3.select(this);
+            var trace = d.trace;
+            var line = trace.line || {};
 
             path.call(Color.stroke, line.color)
                 .call(Drawing.dashLine, line.dash || '', line.width || 0);

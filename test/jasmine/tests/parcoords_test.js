@@ -806,23 +806,23 @@ describe('@noCI parcoords', function() {
             Plotly.plot(gd, mockCopy)
                 .then(function() {
                     expect(gd.data.length).toEqual(1);
-                    expect(document.querySelectorAll('.yAxis').length).toEqual(10);
+                    expect(document.querySelectorAll('.y-axis').length).toEqual(10);
                     return Plotly.plot(gd, mockCopy2);
                 })
                 .then(function() {
                     expect(gd.data.length).toEqual(2);
-                    expect(document.querySelectorAll('.yAxis').length).toEqual(10 + 7);
+                    expect(document.querySelectorAll('.y-axis').length).toEqual(10 + 7);
                     return Plotly.deleteTraces(gd, [0]);
                 })
                 .then(function() {
                     expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(1);
-                    expect(document.querySelectorAll('.yAxis').length).toEqual(7);
+                    expect(document.querySelectorAll('.y-axis').length).toEqual(7);
                     expect(gd.data.length).toEqual(1);
                     return Plotly.deleteTraces(gd, 0);
                 })
                 .then(function() {
                     expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(0);
-                    expect(document.querySelectorAll('.yAxis').length).toEqual(0);
+                    expect(document.querySelectorAll('.y-axis').length).toEqual(0);
                     expect(gd.data.length).toEqual(0);
                     done();
                 });

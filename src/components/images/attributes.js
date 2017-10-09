@@ -18,6 +18,7 @@ module.exports = {
         valType: 'boolean',
         role: 'info',
         dflt: true,
+        editType: 'arraydraw',
         description: [
             'Determines whether or not this image is visible.'
         ].join(' ')
@@ -26,6 +27,7 @@ module.exports = {
     source: {
         valType: 'string',
         role: 'info',
+        editType: 'arraydraw',
         description: [
             'Specifies the URL of the image to be used.',
             'The URL must be accessible from the domain where the',
@@ -39,6 +41,7 @@ module.exports = {
         values: ['below', 'above'],
         dflt: 'above',
         role: 'info',
+        editType: 'arraydraw',
         description: [
             'Specifies whether images are drawn below or above traces.',
             'When `xref` and `yref` are both set to `paper`,',
@@ -50,6 +53,7 @@ module.exports = {
         valType: 'number',
         role: 'info',
         dflt: 0,
+        editType: 'arraydraw',
         description: [
             'Sets the image container size horizontally.',
             'The image will be sized based on the `position` value.',
@@ -62,6 +66,7 @@ module.exports = {
         valType: 'number',
         role: 'info',
         dflt: 0,
+        editType: 'arraydraw',
         description: [
             'Sets the image container size vertically.',
             'The image will be sized based on the `position` value.',
@@ -75,6 +80,7 @@ module.exports = {
         values: ['fill', 'contain', 'stretch'],
         dflt: 'contain',
         role: 'info',
+        editType: 'arraydraw',
         description: [
             'Specifies which dimension of the image to constrain.'
         ].join(' ')
@@ -86,6 +92,7 @@ module.exports = {
         min: 0,
         max: 1,
         dflt: 1,
+        editType: 'arraydraw',
         description: 'Sets the opacity of the image.'
     },
 
@@ -93,6 +100,7 @@ module.exports = {
         valType: 'any',
         role: 'info',
         dflt: 0,
+        editType: 'arraydraw',
         description: [
             'Sets the image\'s x position.',
             'When `xref` is set to `paper`, units are sized relative',
@@ -105,6 +113,7 @@ module.exports = {
         valType: 'any',
         role: 'info',
         dflt: 0,
+        editType: 'arraydraw',
         description: [
             'Sets the image\'s y position.',
             'When `yref` is set to `paper`, units are sized relative',
@@ -118,6 +127,7 @@ module.exports = {
         values: ['left', 'center', 'right'],
         dflt: 'left',
         role: 'info',
+        editType: 'arraydraw',
         description: 'Sets the anchor for the x position'
     },
 
@@ -126,6 +136,7 @@ module.exports = {
         values: ['top', 'middle', 'bottom'],
         dflt: 'top',
         role: 'info',
+        editType: 'arraydraw',
         description: 'Sets the anchor for the y position.'
     },
 
@@ -137,6 +148,7 @@ module.exports = {
         ],
         dflt: 'paper',
         role: 'info',
+        editType: 'arraydraw',
         description: [
             'Sets the images\'s x coordinate axis.',
             'If set to a x axis id (e.g. *x* or *x2*), the `x` position',
@@ -155,6 +167,7 @@ module.exports = {
         ],
         dflt: 'paper',
         role: 'info',
+        editType: 'arraydraw',
         description: [
             'Sets the images\'s y coordinate axis.',
             'If set to a y axis id (e.g. *y* or *y2*), the `y` position',
@@ -163,5 +176,6 @@ module.exports = {
             'the bottom of the plot in normalized coordinates',
             'where *0* (*1*) corresponds to the bottom (top).'
         ].join(' ')
-    }
+    },
+    editType: 'arraydraw'
 };

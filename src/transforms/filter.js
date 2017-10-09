@@ -24,6 +24,8 @@ exports.attributes = {
     enabled: {
         valType: 'boolean',
         dflt: true,
+        role: 'info',
+        editType: 'calc',
         description: [
             'Determines whether this filter transform is enabled or disabled.'
         ].join(' ')
@@ -34,6 +36,8 @@ exports.attributes = {
         noBlank: true,
         arrayOk: true,
         dflt: 'x',
+        role: 'info',
+        editType: 'calc',
         description: [
             'Sets the filter target by which the filter is applied.',
 
@@ -53,6 +57,8 @@ exports.attributes = {
             .concat(INTERVAL_OPS)
             .concat(SET_OPS),
         dflt: '=',
+        role: 'info',
+        editType: 'calc',
         description: [
             'Sets the filter operation.',
 
@@ -82,6 +88,8 @@ exports.attributes = {
     value: {
         valType: 'any',
         dflt: 0,
+        role: 'info',
+        editType: 'calc',
         description: [
             'Sets the value or values by which to filter.',
 
@@ -106,6 +114,8 @@ exports.attributes = {
     preservegaps: {
         valType: 'boolean',
         dflt: false,
+        role: 'info',
+        editType: 'calc',
         description: [
             'Determines whether or not gaps in data arrays produced by the filter operation',
             'are preserved.',
@@ -113,6 +123,7 @@ exports.attributes = {
             'with `connectgaps` set to *false*.'
         ].join(' ')
     },
+    editType: 'calc'
 };
 
 exports.supplyDefaults = function(transformIn) {

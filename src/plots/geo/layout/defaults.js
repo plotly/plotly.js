@@ -12,8 +12,8 @@
 var handleSubplotDefaults = require('../../subplot_defaults');
 var constants = require('../constants');
 var layoutAttributes = require('./layout_attributes');
-var supplyGeoAxisLayoutDefaults = require('./axis_defaults');
 
+var axesNames = constants.axesNames;
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     handleSubplotDefaults(layoutIn, layoutOut, fullData, {
@@ -27,24 +27,64 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
     var show;
 
+    var resolution = coerce('resolution');
     var scope = coerce('scope');
-    var isScoped = (scope !== 'world');
     var scopeParams = constants.scopeDefaults[scope];
 
-    var resolution = coerce('resolution');
-
     var projType = coerce('projection.type', scopeParams.projType);
-    var isAlbersUsa = projType === 'albers usa';
-    var isConic = projType.indexOf('conic') !== -1;
+    var isAlbersUsa = geoLayoutOut._isAlbersUsa = projType === 'albers usa';
 
-    if(isConic) {
-        var dfltProjParallels = scopeParams.projParallels || [0, 60];
-        coerce('projection.parallels', dfltProjParallels);
+    // no other scopes are allowed for 'albers usa' projection
+    if(isAlbersUsa) scope = geoLayoutOut.scope = 'usa';
+
+    var isScoped = geoLayoutOut._isScoped = (scope !== 'world');
+    var isConic = geoLayoutOut._isConic = projType.indexOf('conic') !== -1;
+    geoLayoutOut._isClipped = !!constants.lonaxisSpan[projType];
+
+    for(var i = 0; i < axesNames.length; i++) {
+        var axisName = axesNames[i];
+        var dtickDflt = [30, 10][i];
+        var rangeDflt;
+
+        if(isScoped) {
+            rangeDflt = scopeParams[axisName + 'Range'];
+        } else {
+            var dfltSpans = constants[axisName + 'Span'];
+            var hSpan = (dfltSpans[projType] || dfltSpans['*']) / 2;
+            var rot = coerce(
+                'projection.rotation.' + axisName.substr(0, 3),
+                scopeParams.projRotate[i]
+            );
+            rangeDflt = [rot - hSpan, rot + hSpan];
+        }
+
+        var range = coerce(axisName + '.range', rangeDflt);
+
+        coerce(axisName + '.tick0', range[0]);
+        coerce(axisName + '.dtick', dtickDflt);
+
+        show = coerce(axisName + '.showgrid');
+        if(show) {
+            coerce(axisName + '.gridcolor');
+            coerce(axisName + '.gridwidth');
+        }
     }
 
+    var lonRange = geoLayoutOut.lonaxis.range;
+    var latRange = geoLayoutOut.lataxis.range;
+
+    // to cross antimeridian w/o ambiguity
+    var lon0 = lonRange[0];
+    var lon1 = lonRange[1];
+    if(lon0 > 0 && lon1 < 0) lon1 += 360;
+
+    var centerLon = (lon0 + lon1) / 2;
+    var projLon;
+
     if(!isAlbersUsa) {
-        var dfltProjRotate = scopeParams.projRotate || [0, 0, 0];
-        coerce('projection.rotation.lon', dfltProjRotate[0]);
+        var dfltProjRotate = isScoped ? scopeParams.projRotate : [centerLon, 0, 0];
+
+        projLon = coerce('projection.rotation.lon', dfltProjRotate[0]);
         coerce('projection.rotation.lat', dfltProjRotate[1]);
         coerce('projection.rotation.roll', dfltProjRotate[2]);
 
@@ -57,7 +97,28 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
         show = coerce('showocean');
         if(show) coerce('oceancolor');
     }
-    else geoLayoutOut.scope = 'usa';
+
+    var centerLonDflt;
+    var centerLatDflt;
+
+    if(isAlbersUsa) {
+        // 'albers usa' does not have a 'center',
+        // these values were found using via:
+        //   projection.invert([geoLayout.center.lon, geoLayoutIn.center.lat])
+        centerLonDflt = -96.6;
+        centerLatDflt = 38.7;
+    } else {
+        centerLonDflt = isScoped ? centerLon : projLon;
+        centerLatDflt = (latRange[0] + latRange[1]) / 2;
+    }
+
+    coerce('center.lon', centerLonDflt);
+    coerce('center.lat', centerLatDflt);
+
+    if(isConic) {
+        var dfltProjParallels = scopeParams.projParallels || [0, 60];
+        coerce('projection.parallels', dfltProjParallels);
+    }
 
     coerce('projection.scale');
 
@@ -98,20 +159,4 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
     }
 
     coerce('bgcolor');
-
-    supplyGeoAxisLayoutDefaults(geoLayoutIn, geoLayoutOut);
-
-    // bind a few helper variables
-    geoLayoutOut._isHighRes = resolution === 50;
-    geoLayoutOut._clipAngle = constants.lonaxisSpan[projType] / 2;
-    geoLayoutOut._isAlbersUsa = isAlbersUsa;
-    geoLayoutOut._isConic = isConic;
-    geoLayoutOut._isScoped = isScoped;
-
-    var rotation = geoLayoutOut.projection.rotation || {};
-    geoLayoutOut.projection._rotate = [
-        -rotation.lon || 0,
-        -rotation.lat || 0,
-        rotation.roll || 0
-    ];
 }

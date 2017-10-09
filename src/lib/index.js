@@ -20,6 +20,7 @@ var lib = module.exports = {};
 
 lib.nestedProperty = require('./nested_property');
 lib.keyedContainer = require('./keyed_container');
+lib.relativeAttr = require('./relative_attr');
 lib.isPlainObject = require('./is_plain_object');
 lib.isArray = require('./is_array');
 lib.mod = require('./mod');
@@ -28,7 +29,7 @@ lib.relinkPrivateKeys = require('./relink_private');
 lib.ensureArray = require('./ensure_array');
 
 var coerceModule = require('./coerce');
-lib.valObjects = coerceModule.valObjects;
+lib.valObjectMeta = coerceModule.valObjectMeta;
 lib.coerce = coerceModule.coerce;
 lib.coerce2 = coerceModule.coerce2;
 lib.coerceFont = coerceModule.coerceFont;
@@ -93,6 +94,16 @@ lib.log = loggersModule.log;
 lib.warn = loggersModule.warn;
 lib.error = loggersModule.error;
 
+var regexModule = require('./regex');
+lib.counterRegex = regexModule.counter;
+
+var throttleModule = require('./throttle');
+lib.throttle = throttleModule.throttle;
+lib.throttleDone = throttleModule.done;
+lib.clearThrottle = throttleModule.clear;
+
+lib.getGraphDiv = require('./get_graph_div');
+
 lib.notifier = require('./notifier');
 
 lib.filterUnique = require('./filter_unique');
@@ -141,6 +152,20 @@ lib.pauseEvent = function(e) {
     if(e.preventDefault) e.preventDefault();
     e.cancelBubble = true;
     return false;
+};
+
+/**
+ * SVG painter's algo worked around with reinsertion
+ */
+lib.raiseToTop = function raiseToTop(elem) {
+    elem.parentNode.appendChild(elem);
+};
+
+/**
+ * cancel a possibly pending transition; returned selection may be used by caller
+ */
+lib.cancelTransition = function(selection) {
+    return selection.transition().duration(0);
 };
 
 // constrain - restrict a number v to be between v0 and v1
@@ -417,6 +442,26 @@ lib.castOption = function(trace, ptNumber, astr, fn) {
     } else {
         return val;
     }
+};
+
+/** Extract option from calcdata item, correctly falling back to
+ *  trace value if not found.
+ *
+ *  @param {object} calcPt : calcdata[i][j] item
+ *  @param {object} trace : (full) trace object
+ *  @param {string} calcKey : calcdata key
+ *  @param {string} traceKey : aka trace attribute string
+ *  @return {any}
+ */
+lib.extractOption = function(calcPt, trace, calcKey, traceKey) {
+    if(calcKey in calcPt) return calcPt[calcKey];
+
+    // fallback to trace value,
+    //   must check if value isn't itself an array
+    //   which means the trace attribute has a corresponding
+    //   calcdata key, but its value is falsy
+    var traceVal = lib.nestedProperty(trace, traceKey).get();
+    if(!Array.isArray(traceVal)) return traceVal;
 };
 
 /** Returns target as set by 'target' transform attribute

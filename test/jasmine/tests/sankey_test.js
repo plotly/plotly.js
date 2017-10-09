@@ -11,6 +11,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
+var assertHoverLabelStyle = require('../assets/custom_assertions').assertHoverLabelStyle;
 
 describe('sankey tests', function() {
 
@@ -112,6 +113,8 @@ describe('sankey tests', function() {
                 expect(fullTrace.link.target)
                     .toEqual([], 'presence of link target array is guaranteed');
 
+                expect(fullTrace.link.label)
+                    .toEqual([], 'presence of link target array is guaranteed');
             });
 
         it('\'Sankey\' specification should have proper types',
@@ -179,6 +182,40 @@ describe('sankey tests', function() {
 
         });
 
+        it('does not fill \'link\' labels even if not specified', function() {
+
+            var fullTrace = _supply({
+                node: {
+                    label: ['a', 'b']
+                },
+                link: {
+                    source: [0, 1],
+                    target: [1, 0],
+                    value: [1, 2]
+                }
+            });
+
+            expect(Lib.isArray(fullTrace.link.label)).toBe(true, 'must be an array');
+            expect(fullTrace.link.label).toEqual([], 'an array of empty strings');
+        });
+
+        it('preserves \'link\' labels if  specified', function() {
+
+            var fullTrace = _supply({
+                node: {
+                    label: ['a', 'b']
+                },
+                link: {
+                    source: [0, 1],
+                    target: [1, 0],
+                    value: [1, 2],
+                    label: ['a', 'b']
+                }
+            });
+
+            expect(Lib.isArray(fullTrace.link.label)).toBe(true, 'must be an array');
+            expect(fullTrace.link.label).toEqual(['a', 'b'], 'an array of the supplied values');
+        });
     });
 
     describe('sankey calc', function() {
@@ -311,46 +348,46 @@ describe('sankey tests', function() {
                     done();
                 });
         });
+
+        it('\'node\' remains visible even if \'value\' is very low', function(done) {
+
+            var gd = createGraphDiv();
+            var minimock = [{
+                type: 'sankey',
+                node: {
+                    label: ['a', 'b1', 'b2']
+                },
+                link: {
+                    source: [0, 0],
+                    target: [1, 2],
+                    value: [1000000, 0.001]
+                }
+            }];
+            Plotly.plot(gd, minimock)
+                .then(function() {
+                    expect(d3.selectAll('.sankey .node-rect')[0].reduce(function(prevMin, rect) {
+                        return Math.min(prevMin, d3.select(rect).attr('height'));
+                    }, Infinity)).toEqual(0.5);
+                    done();
+                });
+        });
     });
 
     describe('Test hover/click interactions:', function() {
         afterEach(destroyGraphDiv);
 
-        function assertLabel(content, style) {
-            var g = d3.selectAll('.hovertext');
-            var lines = g.selectAll('.nums .line');
-            var name = g.selectAll('.name');
-
-            expect(lines.size()).toBe(content.length - 1);
-
-            lines.each(function(_, i) {
-                expect(d3.select(this).text()).toBe(content[i]);
-            });
-
-            expect(name.text()).toBe(content[content.length - 1]);
-
-            var path = g.select('path');
-            expect(path.style('fill')).toEqual(style[0], 'bgcolor');
-            expect(path.style('stroke')).toEqual(style[1], 'bordercolor');
-
-            var text = g.select('text.nums');
-            expect(parseInt(text.style('font-size'))).toEqual(style[2], 'font.size');
-            expect(text.style('font-family').split(',')[0]).toEqual(style[3], 'font.family');
-            expect(text.style('fill')).toEqual(style[4], 'font.color');
-        }
-
-        it('should shows the correct hover labels', function(done) {
+        it('should show the correct hover labels', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
 
             function _hover(px, py) {
                 mouseEvent('mousemove', px, py);
                 mouseEvent('mouseover', px, py);
-                delete gd._lastHoverTime;
+                Lib.clearThrottle();
             }
 
             Plotly.plot(gd, mockCopy).then(function() {
-                _hover(400, 300);
+                _hover(404, 302);
 
                 assertLabel(
                     ['Solid', 'Incoming flow count: 4', 'Outgoing flow count: 3', '447TWh'],
@@ -368,7 +405,7 @@ describe('sankey tests', function() {
                 return Plotly.relayout(gd, 'hoverlabel.font.family', 'Roboto');
             })
             .then(function() {
-                _hover(400, 300);
+                _hover(404, 302);
 
                 assertLabel(
                     ['Solid', 'Incoming flow count: 4', 'Outgoing flow count: 3', '447TWh'],
@@ -391,7 +428,7 @@ describe('sankey tests', function() {
                 });
             })
             .then(function() {
-                _hover(400, 300);
+                _hover(404, 302);
 
                 assertLabel(
                     ['Solid', 'Incoming flow count: 4', 'Outgoing flow count: 3', '447TWh'],
@@ -409,6 +446,30 @@ describe('sankey tests', function() {
             .catch(fail)
             .then(done);
         });
+
+        it('should show correct hover labels even if there is no link.label supplied', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+            delete mockCopy.data[0].link.label;
+
+            function _hover(px, py) {
+                mouseEvent('mousemove', px, py);
+                mouseEvent('mouseover', px, py);
+                Lib.clearThrottle();
+            }
+
+            Plotly.plot(gd, mockCopy)
+                .then(function() {
+                    _hover(450, 300);
+
+                    assertLabel(
+                        ['Source: Solid', 'Target: Industry', '46TWh'],
+                        ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
+                    );
+                })
+                .catch(fail)
+                .then(done);
+        });
     });
 
     describe('Test hover/click event data:', function() {
@@ -422,14 +483,14 @@ describe('sankey tests', function() {
 
         function _makeWrapper(eventType, mouseFn) {
             var posByElementType = {
-                node: [400, 300],
+                node: [404, 302],
                 link: [450, 300]
             };
 
             return function(elType) {
                 return new Promise(function(resolve, reject) {
                     gd.once(eventType, function(d) {
-                        delete gd._lastHoverTime;
+                        Lib.clearThrottle();
                         resolve(d);
                     });
 
@@ -520,3 +581,30 @@ describe('sankey tests', function() {
         });
     });
 });
+
+function assertLabel(content, style) {
+    var g = d3.selectAll('.hovertext');
+    var lines = g.selectAll('.nums .line');
+    var name = g.selectAll('.name');
+    var tooltipBoundingBox = g.node().getBoundingClientRect();
+    var nameBoundingBox = name.node().getBoundingClientRect();
+
+    expect(tooltipBoundingBox.top <= nameBoundingBox.top);
+    expect(tooltipBoundingBox.bottom >= nameBoundingBox.bottom);
+
+    expect(lines.size()).toBe(content.length - 1);
+
+    lines.each(function(_, i) {
+        expect(d3.select(this).text()).toBe(content[i]);
+    });
+
+    expect(name.text()).toBe(content[content.length - 1]);
+
+    assertHoverLabelStyle(g, {
+        bgcolor: style[0],
+        bordercolor: style[1],
+        fontSize: style[2],
+        fontFamily: style[3],
+        fontColor: style[4]
+    });
+}

@@ -11,108 +11,179 @@
 
 var d3 = require('d3');
 
+var Lib = require('../../lib');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Colorscale = require('../../components/colorscale');
+var polygon = require('../../lib/polygon');
 
 var getTopojsonFeatures = require('../../lib/topojson_utils').getTopojsonFeatures;
 var locationToFeature = require('../../lib/geo_location_utils').locationToFeature;
-var arrayToCalcItem = require('../../lib/array_to_calc_item');
 
-var constants = require('../../plots/geo/constants');
-
-module.exports = function plot(geo, calcData, geoLayout) {
+module.exports = function plot(geo, calcData) {
+    for(var i = 0; i < calcData.length; i++) {
+        calcGeoJSON(calcData[i], geo.topojson);
+    }
 
     function keyFunc(d) { return d[0].trace.uid; }
 
-    var framework = geo.framework,
-        gChoropleth = framework.select('g.choroplethlayer'),
-        gBaseLayer = framework.select('g.baselayer'),
-        gBaseLayerOverChoropleth = framework.select('g.baselayeroverchoropleth'),
-        baseLayersOverChoropleth = constants.baseLayersOverChoropleth,
-        layerName;
-
-    var gChoroplethTraces = gChoropleth
+    var gTraces = geo.layers.backplot.select('.choroplethlayer')
         .selectAll('g.trace.choropleth')
         .data(calcData, keyFunc);
 
-    gChoroplethTraces.enter().append('g')
+    gTraces.enter().append('g')
         .attr('class', 'trace choropleth');
 
-    gChoroplethTraces.exit().remove();
+    gTraces.exit().remove();
 
-    gChoroplethTraces.each(function(calcTrace) {
-        var trace = calcTrace[0].trace,
-            cdi = calcGeoJSON(trace, geo.topojson);
+    gTraces.each(function(calcTrace) {
+        var sel = calcTrace[0].node3 = d3.select(this);
 
-        var paths = d3.select(this)
-            .selectAll('path.choroplethlocation')
-            .data(cdi);
+        var paths = sel.selectAll('path.choroplethlocation')
+            .data(Lib.identity);
 
         paths.enter().append('path')
-            .classed('choroplethlocation', true)
-            .on('mouseover', function(pt) {
-                geo.choroplethHoverPt = pt;
-            })
-            .on('mouseout', function() {
-                geo.choroplethHoverPt = null;
-            });
+            .classed('choroplethlocation', true);
 
         paths.exit().remove();
     });
 
-    // some baselayers are drawn over choropleth
-    gBaseLayerOverChoropleth.selectAll('*').remove();
-
-    for(var i = 0; i < baseLayersOverChoropleth.length; i++) {
-        layerName = baseLayersOverChoropleth[i];
-        gBaseLayer.select('g.' + layerName).remove();
-        geo.drawTopo(gBaseLayerOverChoropleth, layerName, geoLayout);
-        geo.styleLayer(gBaseLayerOverChoropleth, layerName, geoLayout);
-    }
-
     style(geo);
 };
 
-function calcGeoJSON(trace, topojson) {
-    var cdi = [],
-        locations = trace.locations,
-        len = locations.length,
-        features = getTopojsonFeatures(trace, topojson),
-        markerLine = (trace.marker || {}).line || {};
-
-    var feature;
+function calcGeoJSON(calcTrace, topojson) {
+    var trace = calcTrace[0].trace;
+    var len = calcTrace.length;
+    var features = getTopojsonFeatures(trace, topojson);
 
     for(var i = 0; i < len; i++) {
-        feature = locationToFeature(trace.locationmode, locations[i], features);
+        var calcPt = calcTrace[i];
+        var feature = locationToFeature(trace.locationmode, calcPt.loc, features);
 
-        if(!feature) continue;  // filter the blank features here
+        if(!feature) {
+            calcPt.geojson = null;
+            continue;
+        }
 
-        // 'data_array' attributes
-        feature.z = trace.z[i];
-        if(trace.text !== undefined) feature.tx = trace.text[i];
 
-        // 'arrayOk' attributes
-        arrayToCalcItem(markerLine.color, feature, 'mlc', i);
-        arrayToCalcItem(markerLine.width, feature, 'mlw', i);
+        calcPt.geojson = feature;
+        calcPt.ct = feature.properties.ct;
+        calcPt.index = i;
+        calcPt._polygons = feature2polygons(feature);
+    }
+}
 
-        // for event data
-        feature.index = i;
+function feature2polygons(feature) {
+    var geometry = feature.geometry;
+    var coords = geometry.coordinates;
+    var loc = feature.id;
 
-        cdi.push(feature);
+    var polygons = [];
+    var appendPolygon, j, k, m;
+
+    function doesCrossAntiMerdian(pts) {
+        for(var l = 0; l < pts.length - 1; l++) {
+            if(pts[l][0] > 0 && pts[l + 1][0] < 0) return l;
+        }
+        return null;
     }
 
-    if(cdi.length > 0) cdi[0].trace = trace;
+    if(loc === 'RUS' || loc === 'FJI') {
+        // Russia and Fiji have landmasses that cross the antimeridian,
+        // we need to add +360 to their longitude coordinates, so that
+        // polygon 'contains' doesn't get confused when crossing the antimeridian.
+        //
+        // Note that other countries have polygons on either side of the antimeridian
+        // (e.g. some Aleutian island for the USA), but those don't confuse
+        // the 'contains' method; these are skipped here.
+        appendPolygon = function(_pts) {
+            var pts;
 
-    return cdi;
+            if(doesCrossAntiMerdian(_pts) === null) {
+                pts = _pts;
+            } else {
+                pts = new Array(_pts.length);
+                for(m = 0; m < _pts.length; m++) {
+                    // do nut mutate calcdata[i][j].geojson !!
+                    pts[m] = [
+                        _pts[m][0] < 0 ? _pts[m][0] + 360 : _pts[m][0],
+                        _pts[m][1]
+                    ];
+                }
+            }
+
+            polygons.push(polygon.tester(pts));
+        };
+    } else if(loc === 'ATA') {
+        // Antarctica has a landmass that wraps around every longitudes which
+        // confuses the 'contains' methods.
+        appendPolygon = function(pts) {
+            var crossAntiMeridianIndex = doesCrossAntiMerdian(pts);
+
+            // polygon that do not cross anti-meridian need no special handling
+            if(crossAntiMeridianIndex === null) {
+                return polygons.push(polygon.tester(pts));
+            }
+
+            // stitch polygon by adding pt over South Pole,
+            // so that it covers the projected region covers all latitudes
+            //
+            // Note that the algorithm below only works for polygons that
+            // start and end on longitude -180 (like the ones built by
+            // https://github.com/etpinard/sane-topojson).
+            var stitch = new Array(pts.length + 1);
+            var si = 0;
+
+            for(m = 0; m < pts.length; m++) {
+                if(m > crossAntiMeridianIndex) {
+                    stitch[si++] = [pts[m][0] + 360, pts[m][1]];
+                } else if(m === crossAntiMeridianIndex) {
+                    stitch[si++] = pts[m];
+                    stitch[si++] = [pts[m][0], -90];
+                } else {
+                    stitch[si++] = pts[m];
+                }
+            }
+
+            // polygon.tester by default appends pt[0] to the points list,
+            // we must remove it here, to avoid a jump in longitude from 180 to -180,
+            // that would confuse the 'contains' method
+            var tester = polygon.tester(stitch);
+            tester.pts.pop();
+            polygons.push(tester);
+        };
+    } else {
+        // otherwise using same array ref is fine
+        appendPolygon = function(pts) {
+            polygons.push(polygon.tester(pts));
+        };
+    }
+
+    switch(geometry.type) {
+        case 'MultiPolygon':
+            for(j = 0; j < coords.length; j++) {
+                for(k = 0; k < coords[j].length; k++) {
+                    appendPolygon(coords[j][k]);
+                }
+            }
+            break;
+        case 'Polygon':
+            for(j = 0; j < coords.length; j++) {
+                appendPolygon(coords[j]);
+            }
+            break;
+    }
+
+    return polygons;
 }
 
 function style(geo) {
-    geo.framework.selectAll('g.trace.choropleth').each(function(calcTrace) {
-        var trace = calcTrace[0].trace,
-            s = d3.select(this),
-            marker = trace.marker || {},
-            markerLine = marker.line || {};
+    var gTraces = geo.layers.backplot.selectAll('.trace.choropleth');
+
+    gTraces.each(function(calcTrace) {
+        var trace = calcTrace[0].trace;
+        var marker = trace.marker || {};
+        var markerLine = marker.line || {};
 
         var sclFunc = Colorscale.makeColorScaleFunc(
             Colorscale.extractScale(
@@ -122,11 +193,11 @@ function style(geo) {
             )
         );
 
-        s.selectAll('path.choroplethlocation').each(function(pt) {
+        d3.select(this).selectAll('.choroplethlocation').each(function(d) {
             d3.select(this)
-                .attr('fill', function(pt) { return sclFunc(pt.z); })
-                .call(Color.stroke, pt.mlc || markerLine.color)
-                .call(Drawing.dashLine, '', pt.mlw || markerLine.width || 0);
+                .attr('fill', sclFunc(d.z))
+                .call(Color.stroke, d.mlc || markerLine.color)
+                .call(Drawing.dashLine, '', d.mlw || markerLine.width || 0);
         });
     });
 }

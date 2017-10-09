@@ -9,35 +9,44 @@
 
 'use strict';
 
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var fxAttrs = require('../../components/fx/layout_attributes');
+
 var Scene = require('./scene');
 var Plots = require('../plots');
 var Lib = require('../../lib');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
-exports.name = 'gl3d';
+var GL3D = 'gl3d';
+var SCENE = 'scene';
 
-exports.attr = 'scene';
 
-exports.idRoot = 'scene';
+exports.name = GL3D;
 
-exports.idRegex = /^scene([2-9]|[1-9][0-9]+)?$/;
+exports.attr = SCENE;
 
-exports.attrRegex = /^scene([2-9]|[1-9][0-9]+)?$/;
+exports.idRoot = SCENE;
+
+exports.idRegex = exports.attrRegex = Lib.counterRegex('scene');
 
 exports.attributes = require('./layout/attributes');
 
 exports.layoutAttributes = require('./layout/layout_attributes');
+
+exports.baseLayoutAttrOverrides = overrideAll({
+    hoverlabel: fxAttrs.hoverlabel
+}, 'plot', 'nested');
 
 exports.supplyLayoutDefaults = require('./layout/defaults');
 
 exports.plot = function plotGl3d(gd) {
     var fullLayout = gd._fullLayout,
         fullData = gd._fullData,
-        sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d');
+        sceneIds = Plots.getSubplotIds(fullLayout, GL3D);
 
     for(var i = 0; i < sceneIds.length; i++) {
         var sceneId = sceneIds[i],
-            fullSceneData = Plots.getSubplotData(fullData, 'gl3d', sceneId),
+            fullSceneData = Plots.getSubplotData(fullData, GL3D, sceneId),
             sceneLayout = fullLayout[sceneId],
             scene = sceneLayout._scene;
 
@@ -66,7 +75,7 @@ exports.plot = function plotGl3d(gd) {
 };
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    var oldSceneKeys = Plots.getSubplotIds(oldFullLayout, 'gl3d');
+    var oldSceneKeys = Plots.getSubplotIds(oldFullLayout, GL3D);
 
     for(var i = 0; i < oldSceneKeys.length; i++) {
         var oldSceneKey = oldSceneKeys[i];
@@ -85,7 +94,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 
 exports.toSVG = function(gd) {
     var fullLayout = gd._fullLayout,
-        sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d'),
+        sceneIds = Plots.getSubplotIds(fullLayout, GL3D),
         size = fullLayout._size;
 
     for(var i = 0; i < sceneIds.length; i++) {
@@ -117,5 +126,14 @@ exports.cleanId = function cleanId(id) {
     var sceneNum = id.substr(5);
     if(sceneNum === '1') sceneNum = '';
 
-    return 'scene' + sceneNum;
+    return SCENE + sceneNum;
+};
+
+exports.updateFx = function(fullLayout) {
+    var subplotIds = Plots.getSubplotIds(fullLayout, GL3D);
+
+    for(var i = 0; i < subplotIds.length; i++) {
+        var subplotObj = fullLayout[subplotIds[i]]._scene;
+        subplotObj.updateFx(fullLayout.dragmode, fullLayout.hovermode);
+    }
 };

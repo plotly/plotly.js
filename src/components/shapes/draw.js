@@ -77,7 +77,7 @@ function drawOne(gd, index) {
     else {
         var plotinfo = gd._fullLayout._plots[options.xref + options.yref];
         if(plotinfo) {
-            var mainPlot = plotinfo.mainplot || plotinfo;
+            var mainPlot = plotinfo.mainplotinfo || plotinfo;
             drawShape(mainPlot.shapelayer);
         }
         else {

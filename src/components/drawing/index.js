@@ -110,12 +110,6 @@ drawing.hideOutsideRangePoints = function(points, subplot) {
     });
 };
 
-drawing.getPx = function(s, styleAttr) {
-    // helper to pull out a px value from a style that may contain px units
-    // s is a d3 selection (will pull from the first one)
-    return Number(s.style(styleAttr).replace(/px$/, ''));
-};
-
 drawing.crispRound = function(gd, lineWidth, dflt) {
     // for lines that disable antialiasing we want to
     // make sure the width is an integer, and at least 1 if it's nonzero
@@ -449,12 +443,10 @@ drawing.tryColorscale = function(marker, prefix) {
 var TEXTOFFSETSIGN = {start: 1, end: -1, middle: 0, bottom: 1, top: -1};
 drawing.textPointStyle = function(s, trace, gd) {
     s.each(function(d) {
-        var p = d3.select(this),
-            text = d.tx || trace.text;
+        var p = d3.select(this);
+        var text = Lib.extractOption(d, trace, 'tx', 'text');
 
-        if(!text || Array.isArray(text)) {
-            // isArray test handles the case of (intentionally) missing
-            // or empty text within a text array
+        if(!text) {
             p.remove();
             return;
         }
@@ -895,6 +887,9 @@ drawing.setTextPointsScale = function(selection, xScale, yScale) {
         var transforms;
         var el = d3.select(this);
         var text = el.select('text');
+
+        if(!text.node()) return;
+
         var x = parseFloat(text.attr('x') || 0);
         var y = parseFloat(text.attr('y') || 0);
 

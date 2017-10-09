@@ -10,15 +10,14 @@ var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 var doubleClick = require('../assets/double_click');
-var customMatchers = require('../assets/custom_matchers');
 var getClientPosition = require('../assets/get_client_position');
+
+var customAssertions = require('../assets/custom_assertions');
+var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 describe('ternary plots', function() {
     'use strict';
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     afterEach(destroyGraphDiv);
 
@@ -107,35 +106,58 @@ describe('ternary plots', function() {
         });
 
         it('should display to hover labels', function(done) {
-            var hoverLabels;
-
             mouseEvent('mousemove', blankPos[0], blankPos[1]);
-            hoverLabels = findHoverLabels();
-            expect(hoverLabels.size()).toEqual(0, 'only on data points');
+            assertHoverLabelContent([null, null], 'only on data points');
 
-            mouseEvent('mousemove', pointPos[0], pointPos[1]);
-            hoverLabels = findHoverLabels();
-            expect(hoverLabels.size()).toEqual(1, 'one per data point');
+            function check(content, style, msg) {
+                Lib.clearThrottle();
+                mouseEvent('mousemove', pointPos[0], pointPos[1]);
 
-            var rows = hoverLabels.selectAll('tspan');
-            expect(rows[0][0].innerHTML).toEqual('Component A: 0.5', 'with correct text');
-            expect(rows[0][1].innerHTML).toEqual('B: 0.25', 'with correct text');
-            expect(rows[0][2].innerHTML).toEqual('Component C: 0.25', 'with correct text');
+                assertHoverLabelContent({nums: content}, msg);
+                assertHoverLabelStyle(d3.select('g.hovertext'), style, msg);
+            }
+
+            check([
+                'Component A: 0.5',
+                'B: 0.25',
+                'Component C: 0.25'
+            ].join('\n'), {
+                bgcolor: 'rgb(31, 119, 180)',
+                bordercolor: 'rgb(255, 255, 255)',
+                fontColor: 'rgb(255, 255, 255)',
+                fontSize: 13,
+                fontFamily: 'Arial'
+            }, 'one label per data pt');
 
             Plotly.restyle(gd, {
                 'hoverlabel.bordercolor': 'blue',
                 'hoverlabel.font.family': [['Gravitas', 'Arial', 'Roboto']]
             })
             .then(function() {
-                delete gd._lastHoverTime;
-                mouseEvent('mousemove', pointPos[0], pointPos[1]);
+                check([
+                    'Component A: 0.5',
+                    'B: 0.25',
+                    'Component C: 0.25'
+                ].join('\n'), {
+                    bgcolor: 'rgb(31, 119, 180)',
+                    bordercolor: 'rgb(0, 0, 255)',
+                    fontColor: 'rgb(0, 0, 255)',
+                    fontSize: 13,
+                    fontFamily: 'Gravitas'
+                }, 'after hoverlabel styling restyle call');
 
-                var path = d3.select('g.hovertext').select('path');
-                var text = d3.select('g.hovertext').select('text.nums');
-
-                expect(path.style('stroke')).toEqual('rgb(0, 0, 255)', 'bordercolor');
-                expect(text.style('font-family')).toEqual('Gravitas', 'font.family[0]');
+                return Plotly.restyle(gd, 'hoverinfo', [['a', 'b+c', 'b']]);
             })
+            .then(function() {
+                check('Component A: 0.5', {
+                    bgcolor: 'rgb(31, 119, 180)',
+                    bordercolor: 'rgb(0, 0, 255)',
+                    fontColor: 'rgb(0, 0, 255)',
+                    fontSize: 13,
+                    fontFamily: 'Gravitas'
+                }, 'after hoverlabel styling restyle call');
+            })
+            .catch(fail)
             .then(done);
         });
 
@@ -324,10 +346,6 @@ describe('ternary plots', function() {
         return d3.selectAll('.ternary').selectAll('g.trace.' + type).size();
     }
 
-    function findHoverLabels() {
-        return d3.select('.hoverlayer').selectAll('g');
-    }
-
     function drag(path) {
         var len = path.length;
 
@@ -434,8 +452,6 @@ describe('Test event property of interactions on a ternary plot:', function() {
         pointPos;
 
     beforeAll(function(done) {
-        jasmine.addMatchers(customMatchers);
-
         gd = createGraphDiv();
         mockCopy = Lib.extendDeep({}, mock);
         Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {

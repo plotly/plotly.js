@@ -11,7 +11,6 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
-var customMatchers = require('../assets/custom_matchers');
 
 var TOL = 6;
 
@@ -43,10 +42,6 @@ describe('the range slider', function() {
     }
 
     describe('when specified as visible', function() {
-
-        beforeAll(function() {
-            jasmine.addMatchers(customMatchers);
-        });
 
         beforeEach(function(done) {
             gd = createGraphDiv();
@@ -619,10 +614,6 @@ describe('the range slider', function() {
     });
 
     describe('in general', function() {
-
-        beforeAll(function() {
-            jasmine.addMatchers(customMatchers);
-        });
 
         beforeEach(function() {
             gd = createGraphDiv();

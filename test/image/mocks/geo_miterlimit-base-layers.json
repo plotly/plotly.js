@@ -1,0 +1,32 @@
+{
+    "data": [
+        {
+            "type": "scattergeo",
+            "lon": [-72],
+            "lat": [40],
+            "marker": {
+                "size": 20,
+                "color": "#d3d3d3"
+            }
+        }
+    ],
+    "layout": {
+        "geo": {
+            "projection": {
+                "type": "orthographic",
+                "rotation": {
+                    "lon": -72,
+                    "lat": 40
+                },
+                "scale": 15
+            },
+            "showcoastlines": true,
+            "showcountries": true,
+            "showland": true,
+            "showocean": true,
+            "countrywidth": 8
+        },
+        "width": 500,
+        "height": 500
+    }
+}

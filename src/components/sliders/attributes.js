@@ -10,8 +10,8 @@
 
 var fontAttrs = require('../../plots/font_attributes');
 var padAttrs = require('../../plots/pad_attributes');
-var extendFlat = require('../../lib/extend').extendFlat;
-var extendDeep = require('../../lib/extend').extendDeep;
+var extendDeepAll = require('../../lib/extend').extendDeepAll;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var animationAttrs = require('../../plots/animation_attributes');
 var constants = require('./constants');
 
@@ -72,7 +72,7 @@ var stepsAttrs = {
     }
 };
 
-module.exports = {
+module.exports = overrideAll({
     _isLinkedToArray: 'slider',
 
     visible: {
@@ -128,7 +128,7 @@ module.exports = {
         role: 'style',
         description: 'Sets the x position (in normalized coordinates) of the slider.'
     },
-    pad: extendDeep({}, padAttrs, {
+    pad: extendDeepAll({}, padAttrs, {
         description: 'Set the padding of the slider component along each side.'
     }, {t: {dflt: 20}}),
     xanchor: {
@@ -176,7 +176,7 @@ module.exports = {
             role: 'info',
             dflt: 'cubic-in-out',
             description: 'Sets the easing function of the slider transition'
-        },
+        }
     },
 
     currentvalue: {
@@ -221,12 +221,12 @@ module.exports = {
             description: 'When currentvalue.visible is true, this sets the suffix of the label.'
         },
 
-        font: extendFlat({}, fontAttrs, {
+        font: fontAttrs({
             description: 'Sets the font of the current value label text.'
-        }),
+        })
     },
 
-    font: extendFlat({}, fontAttrs, {
+    font: fontAttrs({
         description: 'Sets the font of the slider step labels.'
     }),
 
@@ -284,5 +284,5 @@ module.exports = {
         dflt: constants.minorTickLength,
         role: 'style',
         description: 'Sets the length in pixels of minor step tick marks'
-    },
-};
+    }
+}, 'arraydraw', 'from-root');

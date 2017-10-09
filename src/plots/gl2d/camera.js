@@ -256,40 +256,35 @@ function createCamera(scene) {
     }
 
     result.wheelListener = mouseWheel(element, function(dx, dy) {
+        if(!scene.scrollZoom) return false;
+
         var dataBox = scene.calcDataBox(),
             viewBox = plot.viewBox;
 
         var lastX = result.lastPos[0],
             lastY = result.lastPos[1];
 
-        switch(scene.fullLayout.dragmode) {
-            case 'zoom':
-                break;
+        var scale = Math.exp(5.0 * dy / (viewBox[3] - viewBox[1]));
 
-            case 'pan':
-                var scale = Math.exp(0.1 * dy / (viewBox[3] - viewBox[1]));
+        var cx = lastX /
+                (viewBox[2] - viewBox[0]) * (dataBox[2] - dataBox[0]) +
+            dataBox[0];
+        var cy = lastY /
+                (viewBox[3] - viewBox[1]) * (dataBox[3] - dataBox[1]) +
+            dataBox[1];
 
-                var cx = lastX /
-                        (viewBox[2] - viewBox[0]) * (dataBox[2] - dataBox[0]) +
-                    dataBox[0];
-                var cy = lastY /
-                        (viewBox[3] - viewBox[1]) * (dataBox[3] - dataBox[1]) +
-                    dataBox[1];
+        dataBox[0] = (dataBox[0] - cx) * scale + cx;
+        dataBox[2] = (dataBox[2] - cx) * scale + cx;
+        dataBox[1] = (dataBox[1] - cy) * scale + cy;
+        dataBox[3] = (dataBox[3] - cy) * scale + cy;
 
-                dataBox[0] = (dataBox[0] - cx) * scale + cx;
-                dataBox[2] = (dataBox[2] - cx) * scale + cx;
-                dataBox[1] = (dataBox[1] - cy) * scale + cy;
-                dataBox[3] = (dataBox[3] - cy) * scale + cy;
+        scene.setRanges(dataBox);
 
-                scene.setRanges(dataBox);
-
-                result.lastInputTime = Date.now();
-                unSetAutoRange();
-                scene.cameraChanged();
-                scene.handleAnnotations();
-                scene.relayoutCallback();
-                break;
-        }
+        result.lastInputTime = Date.now();
+        unSetAutoRange();
+        scene.cameraChanged();
+        scene.handleAnnotations();
+        scene.relayoutCallback();
 
         return true;
     });

@@ -46,18 +46,27 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     newPointData.yLabelVal = undefined;
     // TODO: nice formatting, and label by axis title, for a, b, and c?
 
-    var trace = newPointData.trace,
-        carpet = trace._carpet,
-        hoverinfo = trace.hoverinfo.split('+'),
-        text = [];
+    var trace = newPointData.trace;
+    var carpet = trace._carpet;
+    var hoverinfo = cdi.hi || trace.hoverinfo;
+    var parts = hoverinfo.split('+');
+    var text = [];
 
     function textPart(ax, val) {
-        text.push(((ax.labelprefix && ax.labelprefix.length > 0) ? ax.labelprefix : (ax._hovertitle + ': ')) + val.toFixed(3) + ax.labelsuffix);
+        var prefix;
+
+        if(ax.labelprefix && ax.labelprefix.length > 0) {
+            prefix = ax.labelprefix.replace(/ = $/, '');
+        } else {
+            prefix = ax._hovertitle;
+        }
+
+        text.push(prefix + ': ' + val.toFixed(3) + ax.labelsuffix);
     }
 
-    if(hoverinfo.indexOf('all') !== -1) hoverinfo = ['a', 'b'];
-    if(hoverinfo.indexOf('a') !== -1) textPart(carpet.aaxis, cdi.a);
-    if(hoverinfo.indexOf('b') !== -1) textPart(carpet.baxis, cdi.b);
+    if(parts.indexOf('all') !== -1) parts = ['a', 'b'];
+    if(parts.indexOf('a') !== -1) textPart(carpet.aaxis, cdi.a);
+    if(parts.indexOf('b') !== -1) textPart(carpet.baxis, cdi.b);
 
     var ij = carpet.ab2ij([cdi.a, cdi.b]);
     var i0 = Math.floor(ij[0]);
