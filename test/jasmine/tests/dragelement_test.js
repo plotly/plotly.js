@@ -77,7 +77,7 @@ describe('dragElement', function() {
         expect(args[2]).toBe(true);
     });
 
-    it('should pass dragged and numClicks to doneFn on mouseup & mouseout', function() {
+    it('should pass dragged and numClicks to doneFn on mouseup', function() {
         var args = [];
         var options = {
             element: this.element,
@@ -96,7 +96,7 @@ describe('dragElement', function() {
 
         mouseEvent('mousedown', this.x, this.y);
         mouseEvent('mousemove', this.x + 10, this.y + 10);
-        mouseEvent('mouseout', this.x, this.y);
+        mouseEvent('mouseup', this.x, this.y);
 
         expect(args[0]).toBe(true);
         expect(args[1]).toEqual(2);
@@ -118,7 +118,7 @@ describe('dragElement', function() {
         mouseEvent('mousemove', this.x + 10, this.y + 10);
         expect(countCoverSlip()).toEqual(1);
 
-        mouseEvent('mouseout', this.x, this.y);
+        mouseEvent('mouseup', this.x, this.y);
         expect(countCoverSlip()).toEqual(0);
     });
 
