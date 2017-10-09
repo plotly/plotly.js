@@ -6,6 +6,7 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var selectButton = require('../assets/modebar_button');
+var fail = require('../assets/fail_test');
 
 var mock = require('@mocks/tickformatstops.json');
 
@@ -22,6 +23,8 @@ function getFormatter(format) {
 }
 
 describe('Test Axes.getTickformat', function() {
+    'use strict';
+
     it('get proper tickformatstop for linear axis', function() {
         var lineartickformatstops = [
             {
@@ -197,6 +200,7 @@ describe('Test Axes.getTickformat', function() {
 });
 
 describe('Test tickformatstops:', function() {
+    'use strict';
 
     var mockCopy, gd;
 
@@ -207,101 +211,82 @@ describe('Test tickformatstops:', function() {
 
     afterEach(destroyGraphDiv);
 
-    describe('Zooming-in until milliseconds zoom level', function() {
-        it('Zoom in', function(done) {
-            var promise = Plotly.plot(gd, mockCopy.data, mockCopy.layout);
+    it('handles zooming-in until milliseconds zoom level', function(done) {
+        var promise = Plotly.plot(gd, mockCopy.data, mockCopy.layout);
 
-            var testCount = 0;
+        var testCount = 0;
 
-            var zoomIn = function() {
-                promise = promise.then(function() {
-                    getZoomInButton(gd).click();
-                    var xLabels = Axes.calcTicks(gd._fullLayout.xaxis);
-                    var formatter = getFormatter(Axes.getTickFormat(gd._fullLayout.xaxis));
-                    var expectedLabels = xLabels.map(function(d) {return formatter(new Date(d.x));});
-                    var actualLabels = xLabels.map(function(d) {return d.text;});
-                    expect(expectedLabels).toEqual(actualLabels);
-                    testCount++;
+        var zoomIn = function() {
+            promise = promise.then(function() {
+                getZoomInButton(gd).click();
+                var xLabels = Axes.calcTicks(gd._fullLayout.xaxis);
+                var formatter = getFormatter(Axes.getTickFormat(gd._fullLayout.xaxis));
+                var expectedLabels = xLabels.map(function(d) {return formatter(new Date(d.x));});
+                var actualLabels = xLabels.map(function(d) {return d.text;});
+                expect(expectedLabels).toEqual(actualLabels);
+                testCount++;
 
-                    if(gd._fullLayout.xaxis.dtick > 1) {
-                        zoomIn();
-                    } else {
-                        // make sure we tested as many levels as we thought we would
-                        expect(testCount).toBe(32);
-                        done();
-                    }
-                });
-            };
-            zoomIn();
-        });
+                if(gd._fullLayout.xaxis.dtick > 1) {
+                    zoomIn();
+                } else {
+                    // make sure we tested as many levels as we thought we would
+                    expect(testCount).toBe(32);
+                    done();
+                }
+            });
+        };
+        zoomIn();
     });
 
-    describe('Zooming-out until years zoom level', function() {
-        it('Zoom out', function(done) {
-            var promise = Plotly.plot(gd, mockCopy.data, mockCopy.layout);
+    it('handles zooming-out until years zoom level', function(done) {
+        var promise = Plotly.plot(gd, mockCopy.data, mockCopy.layout);
 
-            var testCount = 0;
+        var testCount = 0;
 
-            var zoomOut = function() {
-                promise = promise.then(function() {
-                    getZoomOutButton(gd).click();
-                    var xLabels = Axes.calcTicks(gd._fullLayout.xaxis);
-                    var formatter = getFormatter(Axes.getTickFormat(gd._fullLayout.xaxis));
-                    var expectedLabels = xLabels.map(function(d) {return formatter(new Date(d.x));});
-                    var actualLabels = xLabels.map(function(d) {return d.text;});
-                    expect(expectedLabels).toEqual(actualLabels);
-                    testCount++;
+        var zoomOut = function() {
+            promise = promise.then(function() {
+                getZoomOutButton(gd).click();
+                var xLabels = Axes.calcTicks(gd._fullLayout.xaxis);
+                var formatter = getFormatter(Axes.getTickFormat(gd._fullLayout.xaxis));
+                var expectedLabels = xLabels.map(function(d) {return formatter(new Date(d.x));});
+                var actualLabels = xLabels.map(function(d) {return d.text;});
+                expect(expectedLabels).toEqual(actualLabels);
+                testCount++;
 
-                    if(typeof gd._fullLayout.xaxis.dtick === 'number' ||
-                        typeof gd._fullLayout.xaxis.dtick === 'string' && parseInt(gd._fullLayout.xaxis.dtick.replace(/\D/g, '')) < 48) {
-                        zoomOut();
-                    } else {
-                        // make sure we tested as many levels as we thought we would
-                        expect(testCount).toBe(5);
-                        done();
-                    }
-                });
-            };
-            zoomOut();
-        });
+                if(typeof gd._fullLayout.xaxis.dtick === 'number' ||
+                    typeof gd._fullLayout.xaxis.dtick === 'string' && parseInt(gd._fullLayout.xaxis.dtick.replace(/\D/g, '')) < 48) {
+                    zoomOut();
+                } else {
+                    // make sure we tested as many levels as we thought we would
+                    expect(testCount).toBe(5);
+                    done();
+                }
+            });
+        };
+        zoomOut();
     });
 
-    describe('Check tickformatstops for hover', function() {
-        'use strict';
-
+    it('responds to hover', function(done) {
         var evt = { xpx: 270, ypx: 10 };
 
-        afterEach(destroyGraphDiv);
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Fx.hover(gd, evt, 'xy');
 
-        beforeEach(function() {
-            gd = createGraphDiv();
-            mockCopy = Lib.extendDeep({}, mock);
-        });
+            var hoverTrace = gd._hoverdata[0];
+            var formatter = getFormatter(Axes.getTickFormat(gd._fullLayout.xaxis));
 
-        describe('hover info', function() {
+            expect(hoverTrace.curveNumber).toEqual(0);
+            expect(hoverTrace.pointNumber).toEqual(3);
+            expect(hoverTrace.x).toEqual('2005-04-01');
+            expect(hoverTrace.y).toEqual(0);
 
-            it('responds to hover', function(done) {
-                var mockCopy = Lib.extendDeep({}, mock);
-
-                Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-                    Fx.hover(gd, evt, 'xy');
-
-                    var hoverTrace = gd._hoverdata[0];
-                    var formatter = getFormatter(Axes.getTickFormat(gd._fullLayout.xaxis));
-
-                    expect(hoverTrace.curveNumber).toEqual(0);
-                    expect(hoverTrace.pointNumber).toEqual(3);
-                    expect(hoverTrace.x).toEqual('2005-04-01');
-                    expect(hoverTrace.y).toEqual(0);
-
-                    expect(d3.selectAll('g.axistext').size()).toEqual(1);
-                    expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-                    expect(d3.selectAll('g.axistext').select('text').html()).toEqual(formatter(new Date(hoverTrace.x)));
-                    expect(d3.selectAll('g.hovertext').select('text').html()).toEqual('0');
-                    done();
-                });
-            });
-        });
+            expect(d3.selectAll('g.axistext').size()).toEqual(1);
+            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
+            expect(d3.selectAll('g.axistext').select('text').html()).toEqual(formatter(new Date(hoverTrace.x)));
+            expect(d3.selectAll('g.hovertext').select('text').html()).toEqual('0');
+        })
+        .catch(fail)
+        .then(done);
     });
 
 });
