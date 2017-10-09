@@ -529,7 +529,7 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
 
             return textToRender;
         })
-        .attr('alignment-baseline', function(d) {
+        .attr('dominant-baseline', function(d) {
             return d.needsConvertToTspans ? null : 'hanging';
         })
         .each(function(d) {
