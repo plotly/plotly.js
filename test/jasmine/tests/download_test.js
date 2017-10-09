@@ -32,7 +32,6 @@ describe('Plotly.downloadImage', function() {
 
     afterAll(function() {
         document.createElement = createElement;
-        navigator.msSaveBlob = msSaveBlob;
     });
 
     beforeEach(function() {
@@ -43,6 +42,7 @@ describe('Plotly.downloadImage', function() {
         destroyGraphDiv();
         Lib.isIE = isIE;
         slzProto.serializeToString = serializeToString;
+        navigator.msSaveBlob = msSaveBlob;
     });
 
     it('should be attached to Plotly', function() {
