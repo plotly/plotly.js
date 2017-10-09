@@ -210,6 +210,9 @@ describe('Test tickformatstops:', function() {
     describe('Zooming-in until milliseconds zoom level', function() {
         it('Zoom in', function(done) {
             var promise = Plotly.plot(gd, mockCopy.data, mockCopy.layout);
+
+            var testCount = 0;
+
             var zoomIn = function() {
                 promise = promise.then(function() {
                     getZoomInButton(gd).click();
@@ -218,9 +221,13 @@ describe('Test tickformatstops:', function() {
                     var expectedLabels = xLabels.map(function(d) {return formatter(new Date(d.x));});
                     var actualLabels = xLabels.map(function(d) {return d.text;});
                     expect(expectedLabels).toEqual(actualLabels);
+                    testCount++;
+
                     if(gd._fullLayout.xaxis.dtick > 1) {
                         zoomIn();
                     } else {
+                        // make sure we tested as many levels as we thought we would
+                        expect(testCount).toBe(32);
                         done();
                     }
                 });
@@ -233,6 +240,8 @@ describe('Test tickformatstops:', function() {
         it('Zoom out', function(done) {
             var promise = Plotly.plot(gd, mockCopy.data, mockCopy.layout);
 
+            var testCount = 0;
+
             var zoomOut = function() {
                 promise = promise.then(function() {
                     getZoomOutButton(gd).click();
@@ -241,10 +250,14 @@ describe('Test tickformatstops:', function() {
                     var expectedLabels = xLabels.map(function(d) {return formatter(new Date(d.x));});
                     var actualLabels = xLabels.map(function(d) {return d.text;});
                     expect(expectedLabels).toEqual(actualLabels);
+                    testCount++;
+
                     if(typeof gd._fullLayout.xaxis.dtick === 'number' ||
                         typeof gd._fullLayout.xaxis.dtick === 'string' && parseInt(gd._fullLayout.xaxis.dtick.replace(/\D/g, '')) < 48) {
                         zoomOut();
                     } else {
+                        // make sure we tested as many levels as we thought we would
+                        expect(testCount).toBe(5);
                         done();
                     }
                 });
