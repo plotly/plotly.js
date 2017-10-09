@@ -636,7 +636,7 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
     axisExtentTopText.enter()
         .append('text')
         .classed(c.cn.axisExtentTopText, true)
-        .attr('alignment-baseline', 'after-edge')
+        .attr('dominant-baseline', 'after-edge')
         .call(styleExtentTexts);
 
     axisExtentTopText
@@ -659,7 +659,7 @@ module.exports = function(root, svg, styledData, layout, callbacks) {
     axisExtentBottomText.enter()
         .append('text')
         .classed(c.cn.axisExtentBottomText, true)
-        .attr('alignment-baseline', 'before-edge')
+        .attr('dominant-baseline', 'hanging')
         .call(styleExtentTexts);
 
     axisExtentBottomText
