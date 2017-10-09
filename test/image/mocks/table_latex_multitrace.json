@@ -33,7 +33,6 @@
                     ["$$\\cos\\theta=\\pm\\sqrt{\\displaystyle\\frac{1+\\cos\\theta}{2}}$$", "$$\\sin\\theta=\\pm\\sqrt{\\displaystyle\\frac{1-\\cos\\theta}{2}}$$"]
                 ],
                 "align": ["right", "center", "center"],
-                "line": {"color": "grey", "width": 1},
                 "font": {"family": "Arial", "size": 12, "color": ["black"]}
             }
         },

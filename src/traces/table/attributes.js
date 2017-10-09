@@ -114,11 +114,13 @@ module.exports = overrideAll({
             width: {
                 valType: 'number',
                 arrayOk: true,
+                dflt: 1,
                 role: 'style'
             },
             color: {
                 valType: 'color',
                 arrayOk: true,
+                dflt: 'grey',
                 role: 'style'
             }
         },
@@ -192,11 +194,13 @@ module.exports = overrideAll({
             width: {
                 valType: 'number',
                 arrayOk: true,
+                dflt: 1,
                 role: 'style'
             },
             color: {
                 valType: 'color',
                 arrayOk: true,
+                dflt: 'grey',
                 role: 'style'
             }
         },
