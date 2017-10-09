@@ -499,9 +499,10 @@ module.exports = {
             valType: 'info_array',
             role: 'info',
             items: [
-                {valType: 'any'},
-                {valType: 'any'}
+                {valType: 'any', editType: 'ticks'},
+                {valType: 'any', editType: 'ticks'}
             ],
+            editType: 'ticks',
             description: [
                 'range [*min*, *max*], where *min*, *max* - dtick values',
                 'which describe some zoom level, it is possible to omit *min*',
@@ -512,10 +513,12 @@ module.exports = {
             valType: 'string',
             dflt: '',
             role: 'style',
+            editType: 'ticks',
             description: [
                 'string - dtickformat for described zoom level, the same as *tickformat*'
             ].join(' ')
-        }
+        },
+        editType: 'ticks'
     },
     hoverformat: {
         valType: 'string',
