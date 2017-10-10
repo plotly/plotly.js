@@ -1,78 +1,73 @@
 var fs = require('fs');
+var PNG = require('pngjs').PNG;
+var pixelmatch = require('pixelmatch');
+var parallel = require('run-parallel');
 
-var common = require('../../tasks/util/common');
+var run = require('./assets/run');
 var getMockList = require('./assets/get_mock_list');
-var getRequestOpts = require('./assets/get_image_request_options');
 var getImagePaths = require('./assets/get_image_paths');
 
-// packages inside the image server docker
-var test = require('tape');
-var request = require('request');
-var gm = require('gm');
+var argv = require('minimist')(process.argv.slice(2), {
+    'boolean': ['queue', 'help', 'debug'],
+    'string': ['parallel-limit', 'threshold'],
+    'alias': {
+        help: ['h', 'info']
+    },
+    'default': {
+        queue: false,
+        help: false,
+        debug: false,
+        threshold: 1e-6,
+        'parallel-limit': 4
+    }
+});
 
-// pixel comparison tolerance
-var TOLERANCE = 1e-6;
+var IS_CI = process.env.CIRCLECI;
 
-// wait time between each test batch
-var BATCH_WAIT = 500;
-
-// number of tests in each test batch
-var BATCH_SIZE = 5;
-
-// wait time between each test in test queue
-var QUEUE_WAIT = 10;
-
-/**
- *  Image pixel comparison test script.
- *
- *  Called by `tasks/test_image.sh in `npm run test-image`.
- *
- *  CLI arguments:
- *
- *  1. 'pattern' : glob determining which mock(s) are to be tested
- *  2. --queue : if sent, the image will be run in queue instead of in batch.
- *      Makes the test run significantly longer, but is recommended on weak hardware.
- *
- *  Examples:
- *
- *  Run all tests in batch:
- *
- *      npm run test-image
- *
- *  Run the 'contour_nolines' test:
- *
- *      npm run test-image -- contour_nolines
- *
- *  Run all gl3d image test in queue:
- *
- *      npm run test-image -- gl3d_* --queue
- */
-
-var pattern = process.argv[2];
-var mockList = getMockList(pattern);
-var isInQueue = (process.argv[3] === '--queue');
-var isCI = process.env.CIRCLECI;
-
-
-if(mockList.length === 0) {
-    throw new Error('No mocks found with pattern ' + pattern);
+if(argv.help) {
+    console.log([
+        'Image pixel comparison test script.',
+        '',
+        'CLI arguments:',
+        '',
+        '1. \'pattern\' : glob determining which mock(s) are to be tested',
+        '2. --queue : if sent, the image will be run in queue instead of in batch.',
+        '    Makes the test run significantly longer, but is recommended on weak hardware.',
+        '',
+        'Examples:',
+        '',
+        'Run all tests in batch:',
+        '',
+        '    npm run test-image',
+        '',
+        'Run the \'contour_nolines\' test:',
+        '',
+        '    npm run test-image -- contour_nolines',
+        '',
+        'Run all gl3d image test in queue:',
+        '',
+        '    npm run test-image -- gl3d_* --queue',
+        ''
+    ].join('\n'));
+    process.exit(0);
 }
 
-// filter out untestable mocks if no pattern is specified
-if(!pattern) {
+var mockList = getMockList(argv._);
+
+// filter out untestable mocks if no input is specified
+if(argv._.length === 0) {
     console.log('Filtering out untestable mocks:');
     mockList = mockList.filter(untestableFilter);
     console.log('\n');
 }
 
 // gl2d have limited image-test support
-if(pattern === 'gl2d_*') {
-
-    if(!isInQueue) {
+if(argv._.indexOf('gl2d_*') !== -1) {
+    if(!argv.queue) {
         console.log('WARN: Running gl2d image tests in batch may lead to unwanted results\n');
     }
 
-    if(isCI) {
+    if(IS_CI) {
         console.log('Filtering out multiple-subplot gl2d mocks:');
         mockList = mockList
             .filter(untestableGL2DonCIfilter)
@@ -81,13 +76,50 @@ if(pattern === 'gl2d_*') {
     }
 }
 
-// main
-if(isInQueue) {
-    runInQueue(mockList);
-}
-else {
-    runInBatch(mockList);
-}
+var input = mockList.map(function(m) { return getImagePaths(m).mock; });
+
+run(mockList, input, argv, function write(info, done) {
+    var mockName = mockList[info.itemIndex];
+    var paths = getImagePaths(mockName);
+    var imgData = info.body;
+
+    if(!fs.existsSync(paths.baseline)) {
+        return done('baseline image for ' + mockName + ' does not exist');
+    }
+
+    parallel([
+        function(cb) {
+            var img = fs.createReadStream(paths.baseline).pipe(new PNG());
+            img.on('parsed', function() { return cb(null, img); });
+            img.on('error', function(err) { return cb(err); });
+        },
+        function(cb) { (new PNG()).parse(imgData, cb); },
+        function(cb) { fs.writeFile(paths.test, imgData, cb); },
+    ], function(err, results) {
+        if(err) done(err);
+
+        var baseline = results[0];
+        var width = baseline.width;
+        var height = baseline.height;
+        var test = results[1];
+        var diff = new PNG({width: width, height: height});
+
+        var numDiffPixels = pixelmatch(
+            baseline.data, test.data, diff.data,
+            width, height,
+            {threshold: argv.threshold}
+        );
+
+        if(numDiffPixels) {
+            var diffStream = fs.createWriteStream(paths.diff).on('finish', function() {
+                done('(' + numDiffPixels + ' pixels differ with threshold ' + argv.threshold + ')');
+            });
+            diff.pack().pipe(diffStream);
+        } else {
+            done();
+        }
+    });
+});
 
 /* Test cases:
  *
@@ -153,138 +185,4 @@ function sortForGL2DonCI(a, b) {
     if(ai > bi) return -1;
 
     return 0;
-}
-
-function runInBatch(mockList) {
-    var running = 0;
-
-    test('testing mocks in batch', function(t) {
-        t.plan(mockList.length);
-
-        for(var i = 0; i < mockList.length; i++) {
-            run(mockList[i], t);
-        }
-    });
-
-    function run(mockName, t) {
-        if(running >= BATCH_SIZE) {
-            setTimeout(function() {
-                run(mockName, t);
-            }, BATCH_WAIT);
-            return;
-        }
-        running++;
-
-        // throttle the number of tests running concurrently
-
-        comparePixels(mockName, function(isEqual, mockName) {
-            running--;
-            t.ok(isEqual, mockName + ' should be pixel perfect');
-        });
-    }
-}
-
-function runInQueue(mockList) {
-    var index = 0;
-
-    test('testing mocks in queue', function(t) {
-        t.plan(mockList.length);
-
-        run(mockList[index], t);
-    });
-
-    function run(mockName, t) {
-        comparePixels(mockName, function(isEqual, mockName) {
-            t.ok(isEqual, mockName + ' should be pixel perfect');
-
-            index++;
-            if(index < mockList.length) {
-                setTimeout(function() {
-                    run(mockList[index], t);
-                }, QUEUE_WAIT);
-            }
-        });
-    }
-}
-
-function comparePixels(mockName, cb) {
-    var requestOpts = getRequestOpts({ mockName: mockName }),
-        imagePaths = getImagePaths(mockName),
-        saveImageStream = fs.createWriteStream(imagePaths.test);
-
-    function log(msg) {
-        process.stdout.write('Error for', mockName + ':', msg);
-    }
-
-    function checkImage() {
-
-        // baseline image must be generated first
-        if(!common.doesFileExist(imagePaths.baseline)) {
-            var err = new Error('baseline image not found');
-            return onEqualityCheck(err, false);
-        }
-
-        /*
-         * N.B. The non-zero tolerance was added in
-         * https://github.com/plotly/plotly.js/pull/243
-         * where some legend mocks started generating different png outputs
-         * on `npm run test-image` and `npm run test-image -- mock.json`.
-         *
-         * Note that the svg outputs for the problematic mocks were the same
-         * and playing around with the batch size and timeout durations
-         * did not seem to affect the results.
-         *
-         * With the above tolerance individual `npm run test-image` and
-         * `npm run test-image -- mock.json` give the same result.
-         *
-         * Further investigation is needed.
-         */
-
-        var gmOpts = {
-            file: imagePaths.diff,
-            highlightColor: 'purple',
-            tolerance: TOLERANCE
-        };
-
-        gm.compare(
-            imagePaths.test,
-            imagePaths.baseline,
-            gmOpts,
-            onEqualityCheck
-        );
-    }
-
-    function onEqualityCheck(err, isEqual) {
-        if(err) {
-            common.touch(imagePaths.diff);
-            log(err);
-            return cb(false, mockName);
-        }
-        if(isEqual) {
-            fs.unlinkSync(imagePaths.diff);
-        }
-
-        cb(isEqual, mockName);
-    }
-
-    // 525 means a plotly.js error
-    function onResponse(response) {
-        if(+response.statusCode === 525) {
-            log('plotly.js error');
-            return cb(false, mockName);
-        }
-    }
-
-    // this catches connection errors
-    // e.g. when the image server blows up
-    function onError(err) {
-        log(err);
-        return cb(false, mockName);
-    }
-
-    request(requestOpts)
-        .on('error', onError)
-        .on('response', onResponse)
-        .pipe(saveImageStream)
-        .on('close', checkImage);
 }
