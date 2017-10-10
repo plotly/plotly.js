@@ -50,7 +50,7 @@ describe('Test Axes.getTickformat', function() {
             type: 'linear',
             tickformatstops: lineartickformatstops,
             dtick: 1
-        })).toEqual(lineartickformatstops[1].value);
+        })).toEqual(lineartickformatstops[0].value);
 
         expect(Axes.getTickFormat({
             type: 'linear',
@@ -117,7 +117,7 @@ describe('Test Axes.getTickformat', function() {
             type: 'date',
             tickformatstops: datetickformatstops,
             dtick: 1000
-        })).toEqual(datetickformatstops[1].value); // second
+        })).toEqual(datetickformatstops[0].value); // millisecond
 
         expect(Axes.getTickFormat({
             type: 'date',
@@ -135,7 +135,7 @@ describe('Test Axes.getTickformat', function() {
             type: 'date',
             tickformatstops: datetickformatstops,
             dtick: 'M1'
-        })).toEqual(datetickformatstops[6].value); // month
+        })).toEqual(datetickformatstops[5].value); // week
 
         expect(Axes.getTickFormat({
             type: 'date',

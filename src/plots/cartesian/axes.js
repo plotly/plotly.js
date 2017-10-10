@@ -1503,13 +1503,6 @@ axes.getTickFormat = function(ax) {
     function convertToMs(dtick) {
         return typeof dtick !== 'string' ? dtick : Number(dtick.replace('M', '') * ONEAVGMONTH);
     }
-    function isProperStop(dtick, range, convert) {
-        var convertFn = convert || function(x) { return x;};
-        var leftDtick = range[0];
-        var rightDtick = range[1];
-        return ((!leftDtick && typeof leftDtick !== 'number') || convertFn(leftDtick) <= convertFn(dtick)) &&
-               ((!rightDtick && typeof rightDtick !== 'number') || convertFn(rightDtick) >= convertFn(dtick));
-    }
     function getRangeWidth(range, convert) {
         var convertFn = convert || function(x) { return x;};
         var left = range[0] || 0;
@@ -1534,31 +1527,41 @@ axes.getTickFormat = function(ax) {
             return typeof left === 'number' ? 1 : -1;
         }
     }
+    function isProperStop(dtick, range, convert) {
+        var convertFn = convert || function(x) { return x;};
+        var leftDtick = range[0];
+        var rightDtick = range[1];
+        return ((!leftDtick && typeof leftDtick !== 'number') || convertFn(leftDtick) <= convertFn(dtick)) &&
+               ((!rightDtick && typeof rightDtick !== 'number') || convertFn(rightDtick) >= convertFn(dtick));
+    }
+    function isProperLogStop(dtick, range){
+        var isLeftDtickNull = range[0] === null;
+        var isRightDtickNull = range[1] === null;
+        var isDtickInRangeLeft = compareLogTicks(dtick, range[0]) >= 0;
+        var isDtickInRangeRight = compareLogTicks(dtick, range[1]) <= 0;
+        return (isLeftDtickNull || isDtickInRangeLeft) && (isRightDtickNull || isDtickInRangeRight);
+    }
 
     var tickstop;
     if(ax.tickformatstops && ax.tickformatstops.length > 0) {
         switch(ax.type) {
-            case 'date': {
-                tickstop = ax.tickformatstops.find(function(stop) {
-                    return isProperStop(ax.dtick, stop.dtickrange, convertToMs)
-                });
-                break;
-            }
+            case 'date':
             case 'linear': {
-                tickstop = ax.tickformatstops.find(function(stop) {
-                    return isProperStop(ax.dtick, stop.dtickrange, convertToMs)
-                });
+                for(var i = 0; i < ax.tickformatstops.length; i++) {
+                    if (isProperStop(ax.dtick, ax.tickformatstops[i].dtickrange, convertToMs)){
+                        tickstop = ax.tickformatstops[i];
+                        break;
+                    }
+                }
                 break;
             }
             case 'log': {
-                tickstop = ax.tickformatstops.find(function(stop) {
-                    var left = stop.dtickrange[0], right = stop.dtickrange[1];
-                    var isLeftDtickNull = left === null;
-                    var isRightDtickNull = right === null;
-                    var isDtickInRangeLeft = compareLogTicks(ax.dtick, left) >= 0;
-                    var isDtickInRangeRight = compareLogTicks(ax.dtick, right) <= 0;
-                    return (isLeftDtickNull || isDtickInRangeLeft) && (isRightDtickNull || isDtickInRangeRight);
-                });
+                for(var i = 0; i < ax.tickformatstops.length; i++) {
+                    if (isProperLogStop(ax.dtick, ax.tickformatstops[i].dtickrange)) {
+                        tickstop = ax.tickformatstops[i];
+                        break;
+                    }
+                }
                 break;
             }
             default:
