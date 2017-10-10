@@ -774,7 +774,7 @@ describe('update menus interactions', function() {
 
     function assertItemColor(node, color) {
         var rect = node.select('rect');
-        expect(rect.style('fill')).toEqual(color);
+        expect(rect.node().style.fill).toEqual(color);
     }
 
     function assertItemDims(node, width, height) {

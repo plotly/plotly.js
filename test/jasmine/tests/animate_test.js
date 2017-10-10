@@ -707,6 +707,51 @@ describe('Animate API details', function() {
     });
 });
 
+describe('Animating multiple axes', function() {
+    'use strict';
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('updates ranges of secondary axes', function(done) {
+        Plotly.plot(gd, [
+            {y: [1, 2, 3]},
+            {y: [1, 2, 3], yaxis: 'y2'}
+        ], {
+            yaxis: {range: [0, 5]},
+            yaxis2: {range: [-1, 4]}
+        })
+        .then(function() {
+            expect(gd._fullLayout.yaxis.range).toEqual([0, 5]);
+            expect(gd._fullLayout.yaxis2.range).toEqual([-1, 4]);
+
+            return Plotly.animate(gd, [
+                {layout: {'yaxis.range': [2, 3]}},
+                {layout: {'yaxis2.range': [1, 2]}}
+            ], {
+                // TODO: if the durations are the same, yaxis.range gets some
+                // random endpoint, often close to what it's supposed to be but
+                // sometimes very far away.
+                frame: {redraw: false, duration: 60},
+                transition: {duration: 30}
+            });
+        })
+        .then(function() {
+            expect(gd._fullLayout.yaxis.range).toEqual([2, 3]);
+            expect(gd._fullLayout.yaxis2.range).toEqual([1, 2]);
+        })
+        .catch(fail)
+        .then(done);
+    });
+});
+
 describe('non-animatable fallback', function() {
     'use strict';
     var gd;
@@ -759,13 +804,14 @@ describe('animating scatter traces', function() {
             opacity: 1
         }]).then(function() {
             trace = Plotly.d3.selectAll('g.scatter.trace');
-            expect(trace.style('opacity')).toEqual('1');
+            // d3 style getter is disallowed by strict-d3
+            expect(trace.node().style.opacity).toEqual('1');
 
             return Plotly.animate(gd, [{
                 data: [{opacity: 0.1}]
             }], {transition: {duration: 0}, frame: {duration: 0, redraw: false}});
         }).then(function() {
-            expect(trace.style('opacity')).toEqual('0.1');
+            expect(trace.node().style.opacity).toEqual('0.1');
         }).catch(fail).then(done);
     });
 

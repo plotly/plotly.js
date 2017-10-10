@@ -85,7 +85,7 @@ function registerTransformModule(newModule) {
         Lib.log(prefix + ' registered without a *supplyDefaults* method.');
     }
 
-    Registry.transformsRegistry[newModule.name] = newModule;
+    Registry.registerTransform(newModule);
 }
 
 function registerComponentModule(newModule) {

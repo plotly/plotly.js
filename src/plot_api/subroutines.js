@@ -151,8 +151,7 @@ exports.lsInner = function(gd) {
         // Clip so that data only shows up on the plot area.
         plotinfo.clipId = 'clip' + fullLayout._uid + subplot + 'plot';
 
-        var plotClip = fullLayout._defs.selectAll('g.clips')
-            .selectAll('#' + plotinfo.clipId)
+        var plotClip = fullLayout._clips.selectAll('#' + plotinfo.clipId)
             .data([0]);
 
         plotClip.enter().append('clipPath')
@@ -490,28 +489,15 @@ exports.doTicksRelayout = function(gd) {
 
 exports.doModeBar = function(gd) {
     var fullLayout = gd._fullLayout;
-    var subplotIds, subplotObj, i;
 
     ModeBar.manage(gd);
     initInteractions(gd);
 
-    subplotIds = Plots.getSubplotIds(fullLayout, 'gl3d');
-    for(i = 0; i < subplotIds.length; i++) {
-        subplotObj = fullLayout[subplotIds[i]]._scene;
-        subplotObj.updateFx(fullLayout.dragmode, fullLayout.hovermode);
+    for(var i = 0; i < fullLayout._basePlotModules.length; i++) {
+        var updateFx = fullLayout._basePlotModules[i].updateFx;
+        if(updateFx) updateFx(fullLayout);
     }
 
-    subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d');
-    for(i = 0; i < subplotIds.length; i++) {
-        subplotObj = fullLayout._plots[subplotIds[i]]._scene2d;
-        subplotObj.updateFx(fullLayout.dragmode);
-    }
-
-    subplotIds = Plots.getSubplotIds(fullLayout, 'mapbox');
-    for(i = 0; i < subplotIds.length; i++) {
-        subplotObj = fullLayout[subplotIds[i]]._subplot;
-        subplotObj.updateFx(fullLayout);
-    }
 
     return Plots.previousPromises(gd);
 };

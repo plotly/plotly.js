@@ -2,13 +2,16 @@ var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
 var d3 = require('d3');
-var customMatchers = require('../assets/custom_matchers');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var click = require('../assets/click');
 var getClientPosition = require('../assets/get_client_position');
 var mouseEvent = require('../assets/mouse_event');
+
+var customAssertions = require('../assets/custom_assertions');
+var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 describe('Pie traces:', function() {
     'use strict';
@@ -45,12 +48,11 @@ describe('Pie traces:', function() {
             var opacities = [0.2, 0.3, 0.4, 0.5, 0.6];
 
             function checkPath(d, i) {
-                var path = d3.select(this);
                 // strip spaces (ie 'rgb(0, 0, 0)') so we're not dependent on browser specifics
-                expect(path.style('fill').replace(/\s/g, '')).toBe(colors[i]);
-                expect(path.style('fill-opacity')).toBe(String(opacities[i]));
-                expect(path.style('stroke').replace(/\s/g, '')).toBe('rgb(100,100,100)');
-                expect(path.style('stroke-opacity')).toBe('0.7');
+                expect(this.style.fill.replace(/\s/g, '')).toBe(colors[i]);
+                expect(this.style.fillOpacity).toBe(String(opacities[i]));
+                expect(this.style.stroke.replace(/\s/g, '')).toBe('rgb(100,100,100)');
+                expect(this.style.strokeOpacity).toBe('0.7');
             }
             var slices = d3.selectAll('.slice path');
             slices.each(checkPath);
@@ -242,28 +244,20 @@ describe('pie hovering', function() {
 
         function _hover() {
             mouseEvent('mouseover', 223, 143);
-            delete gd._lastHoverTime;
+            Lib.clearThrottle();
         }
 
-        function assertLabel(content, style) {
-            var g = d3.selectAll('.hovertext');
-            var lines = g.selectAll('.nums .line');
-
-            expect(lines.size()).toBe(content.length);
-
-            lines.each(function(_, i) {
-                expect(d3.select(this).text()).toBe(content[i]);
-            });
+        function assertLabel(content, style, msg) {
+            assertHoverLabelContent({nums: content}, msg);
 
             if(style) {
-                var path = g.select('path');
-                expect(path.style('fill')).toEqual(style[0], 'bgcolor');
-                expect(path.style('stroke')).toEqual(style[1], 'bordercolor');
-
-                var text = g.select('text.nums');
-                expect(parseInt(text.style('font-size'))).toEqual(style[2], 'font.size');
-                expect(text.style('font-family').split(',')[0]).toEqual(style[3], 'font.family');
-                expect(text.style('fill')).toEqual(style[4], 'font.color');
+                assertHoverLabelStyle(d3.select('.hovertext'), {
+                    bgcolor: style[0],
+                    bordercolor: style[1],
+                    fontSize: style[2],
+                    fontFamily: style[3],
+                    fontColor: style[4]
+                }, msg);
             }
         }
 
@@ -272,15 +266,20 @@ describe('pie hovering', function() {
             .then(_hover)
             .then(function() {
                 assertLabel(
-                    ['4', '5', '33.3%'],
-                    ['rgb(31, 119, 180)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
+                    ['4', '5', '33.3%'].join('\n'),
+                    ['rgb(31, 119, 180)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)'],
+                    'initial'
                 );
 
                 return Plotly.restyle(gd, 'text', [['A', 'B', 'C', 'D', 'E']]);
             })
             .then(_hover)
             .then(function() {
-                assertLabel(['4', 'E', '5', '33.3%']);
+                assertLabel(
+                    ['4', 'E', '5', '33.3%'].join('\n'),
+                    null,
+                    'added text'
+                );
 
                 return Plotly.restyle(gd, 'hovertext', [[
                     'Apple', 'Banana', 'Clementine', 'Dragon Fruit', 'Eggplant'
@@ -288,13 +287,21 @@ describe('pie hovering', function() {
             })
             .then(_hover)
             .then(function() {
-                assertLabel(['4', 'Eggplant', '5', '33.3%']);
+                assertLabel(
+                    ['4', 'Eggplant', '5', '33.3%'].join('\n'),
+                    null,
+                    'added hovertext'
+                );
 
                 return Plotly.restyle(gd, 'hovertext', 'SUP');
             })
             .then(_hover)
             .then(function() {
-                assertLabel(['4', 'SUP', '5', '33.3%']);
+                assertLabel(
+                    ['4', 'SUP', '5', '33.3%'].join('\n'),
+                    null,
+                    'constant hovertext'
+                );
 
                 return Plotly.restyle(gd, {
                     'hoverlabel.bgcolor': [['red', 'green', 'blue', 'yellow', 'red']],
@@ -307,21 +314,26 @@ describe('pie hovering', function() {
             .then(_hover)
             .then(function() {
                 assertLabel(
-                    ['4', 'SUP', '5', '33.3%'],
-                    ['rgb(255, 0, 0)', 'rgb(255, 255, 0)', 15, 'Roboto', 'rgb(0, 0, 255)']
+                    ['4', 'SUP', '5', '33.3%'].join('\n'),
+                    ['rgb(255, 0, 0)', 'rgb(255, 255, 0)', 15, 'Roboto', 'rgb(0, 0, 255)'],
+                    'new styles'
                 );
 
                 return Plotly.restyle(gd, 'hoverinfo', [[null, null, null, null, 'label+percent']]);
             })
             .then(_hover)
             .then(function() {
-                assertLabel(['4', '33.3%']);
+                assertLabel(['4', '33.3%'].join('\n'), null, 'new hoverinfo');
 
                 return Plotly.restyle(gd, 'hoverinfo', [[null, null, null, null, 'dont+know+what+im-doing']]);
             })
             .then(_hover)
             .then(function() {
-                assertLabel(['4', 'SUP', '5', '33.3%']);
+                assertLabel(
+                    ['4', 'SUP', '5', '33.3%'].join('\n'),
+                    null,
+                    'garbage hoverinfo'
+                );
             })
             .catch(fail)
             .then(done);
@@ -335,7 +347,7 @@ describe('pie hovering', function() {
             Plotly.plot(gd, mockCopy.data, mockCopy.layout)
             .then(_hover)
             .then(function() {
-                assertLabel(['0', '12|345|678@91', '99@9%']);
+                assertLabel('0\n12|345|678@91\n99@9%');
             })
             .then(done);
         });
@@ -352,8 +364,6 @@ describe('Test event property of interactions on a pie plot:', function() {
         pointPos;
 
     beforeAll(function(done) {
-        jasmine.addMatchers(customMatchers);
-
         gd = createGraphDiv();
         mockCopy = Lib.extendDeep({}, mock);
         Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {

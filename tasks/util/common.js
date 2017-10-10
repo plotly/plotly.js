@@ -45,7 +45,7 @@ exports.formatTime = function(date) {
     return [
         date.toLocaleDateString(),
         date.toLocaleTimeString(),
-        date.toString().match(/\(([A-Za-z\s].*)\)/)[1]
+        date.toString().match(/\(([A-Za-z\s\u4E00-\u9FCC].*)\)/)[1]  // fix Chinese datetime string error. #1630
     ].join(' ');
 };
 

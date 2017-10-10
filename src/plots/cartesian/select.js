@@ -10,6 +10,7 @@
 'use strict';
 
 var polygon = require('../../lib/polygon');
+var throttle = require('../../lib/throttle');
 var color = require('../../components/color');
 var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
 
@@ -64,14 +65,11 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
 
 
     // find the traces to search for selection points
-    var searchTraces = [],
-        gd = dragOptions.gd,
-        i,
-        cd,
-        trace,
-        searchInfo,
-        selection = [],
-        eventData;
+    var searchTraces = [];
+    var gd = dragOptions.gd;
+    var throttleID = gd._fullLayout._uid + constants.SELECTID;
+    var selection = [];
+    var i, cd, trace, searchInfo, eventData;
 
     for(i = 0; i < gd.calcdata.length; i++) {
         cd = gd.calcdata[i];
@@ -79,16 +77,18 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         if(!trace._module || !trace._module.selectPoints) continue;
 
         if(dragOptions.subplot) {
-            if(trace.subplot !== dragOptions.subplot) continue;
-
-            searchTraces.push({
-                selectPoints: trace._module.selectPoints,
-                cd: cd,
-                xaxis: dragOptions.xaxes[0],
-                yaxis: dragOptions.yaxes[0]
-            });
-        }
-        else {
+            if(
+                trace.subplot === dragOptions.subplot ||
+                trace.geo === dragOptions.subplot
+            ) {
+                searchTraces.push({
+                    selectPoints: trace._module.selectPoints,
+                    cd: cd,
+                    xaxis: dragOptions.xaxes[0],
+                    yaxis: dragOptions.yaxes[0]
+                });
+            }
+        } else {
             if(xAxisIds.indexOf(trace.xaxis) === -1) continue;
             if(yAxisIds.indexOf(trace.yaxis) === -1) continue;
 
@@ -183,34 +183,50 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             outlines.attr('d', 'M' + pts.filtered.join('L') + 'Z');
         }
 
-        selection = [];
-        for(i = 0; i < searchTraces.length; i++) {
-            searchInfo = searchTraces[i];
-            [].push.apply(selection, fillSelectionItem(
-                searchInfo.selectPoints(searchInfo, poly), searchInfo
-            ));
-        }
+        throttle.throttle(
+            throttleID,
+            constants.SELECTDELAY,
+            function() {
+                selection = [];
+                for(i = 0; i < searchTraces.length; i++) {
+                    searchInfo = searchTraces[i];
+                    var thisSelection = fillSelectionItem(
+                        searchInfo.selectPoints(searchInfo, poly), searchInfo
+                    );
+                    if(selection.length) {
+                        for(var j = 0; j < thisSelection.length; j++) {
+                            selection.push(thisSelection[j]);
+                        }
+                    }
+                    else selection = thisSelection;
+                }
 
-        eventData = {points: selection};
-        fillRangeItems(eventData, poly, pts);
-        dragOptions.gd.emit('plotly_selecting', eventData);
+                eventData = {points: selection};
+                fillRangeItems(eventData, poly, pts);
+                dragOptions.gd.emit('plotly_selecting', eventData);
+            }
+        );
     };
 
     dragOptions.doneFn = function(dragged, numclicks) {
         corners.remove();
-        if(!dragged && numclicks === 2) {
-            // clear selection on doubleclick
-            outlines.remove();
-            for(i = 0; i < searchTraces.length; i++) {
-                searchInfo = searchTraces[i];
-                searchInfo.selectPoints(searchInfo, false);
-            }
+        throttle.done(throttleID).then(function() {
+            throttle.clear(throttleID);
 
-            gd.emit('plotly_deselect', null);
-        }
-        else {
-            dragOptions.gd.emit('plotly_selected', eventData);
-        }
+            if(!dragged && numclicks === 2) {
+                // clear selection on doubleclick
+                outlines.remove();
+                for(i = 0; i < searchTraces.length; i++) {
+                    searchInfo = searchTraces[i];
+                    searchInfo.selectPoints(searchInfo, false);
+                }
+
+                gd.emit('plotly_deselect', null);
+            }
+            else {
+                dragOptions.gd.emit('plotly_selected', eventData);
+            }
+        });
     };
 };
 

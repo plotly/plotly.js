@@ -103,14 +103,14 @@ plots.getSubplotIds = function getSubplotIds(layout, type) {
         return Object.keys(layout._plots || {});
     }
 
-    var idRegex = _module.idRegex,
+    var attrRegex = _module.attrRegex,
         layoutKeys = Object.keys(layout),
         subplotIds = [];
 
     for(var i = 0; i < layoutKeys.length; i++) {
         var layoutKey = layoutKeys[i];
 
-        if(idRegex.test(layoutKey)) subplotIds.push(layoutKey);
+        if(attrRegex.test(layoutKey)) subplotIds.push(layoutKey);
     }
 
     // order the ids
@@ -212,8 +212,13 @@ plots.redrawText = function(gd) {
 plots.resize = function(gd) {
     return new Promise(function(resolve, reject) {
 
-        if(!gd || d3.select(gd).style('display') === 'none') {
-            reject(new Error('Resize must be passed a plot div element.'));
+        function isHidden(gd) {
+            var display = window.getComputedStyle(gd).display;
+            return !display || display === 'none';
+        }
+
+        if(!gd || isHidden(gd)) {
+            reject(new Error('Resize must be passed a displayed plot div element.'));
         }
 
         if(gd._redrawTimer) clearTimeout(gd._redrawTimer);
@@ -1039,9 +1044,21 @@ plots.supplyTransformDefaults = function(traceIn, traceOut, layout) {
             _module = transformsRegistry[type],
             transformOut;
 
+        /*
+         * Supply defaults may run twice. First pass runs all supply defaults steps
+         * and adds the _module to any output transforms.
+         * If transforms exist another pass is run so that any generated traces also
+         * go through supply defaults. This has the effect of rerunning
+         * supplyTransformDefaults. If the transform does not have a `transform`
+         * function it could not have generated any new traces and the second stage
+         * is unnecessary. We detect this case with the following variables.
+         */
+        var isFirstStage = !(transformIn._module && transformIn._module === _module),
+            doLaterStages = _module && typeof _module.transform === 'function';
+
         if(!_module) Lib.warn('Unrecognized transform type ' + type + '.');
 
-        if(_module && _module.supplyDefaults) {
+        if(_module && _module.supplyDefaults && (isFirstStage || doLaterStages)) {
             transformOut = _module.supplyDefaults(transformIn, traceOut, layout, traceIn);
             transformOut.type = type;
             transformOut._module = _module;
@@ -1324,14 +1341,24 @@ plots.purge = function(gd) {
     delete gd._promises;
     delete gd._redrawTimer;
     delete gd.firstscatter;
-    delete gd.hmlumcount;
-    delete gd.hmpixcount;
+    delete gd._hmlumcount;
+    delete gd._hmpixcount;
     delete gd.numboxes;
-    delete gd._hoverTimer;
-    delete gd._lastHoverTime;
     delete gd._transitionData;
     delete gd._transitioning;
     delete gd._initialAutoSize;
+    delete gd._transitioningWithDuration;
+
+    // created during certain events, that *should* clean them up
+    // themselves, but may not if there was an error
+    delete gd._dragging;
+    delete gd._dragged;
+    delete gd._hoverdata;
+    delete gd._snapshotInProgress;
+    delete gd._editing;
+    delete gd._replotPending;
+    delete gd._mouseDownTime;
+    delete gd._legendMouseDownTime;
 
     // remove all event listeners
     if(gd.removeAllListeners) gd.removeAllListeners();

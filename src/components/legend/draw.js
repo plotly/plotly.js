@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var d3 = require('d3');
@@ -19,6 +18,7 @@ var dragElement = require('../dragelement');
 var Drawing = require('../drawing');
 var Color = require('../color');
 var svgTextUtils = require('../../lib/svg_text_utils');
+var handleClick = require('./handle_click');
 
 var constants = require('./constants');
 var interactConstants = require('../../constants/interactions');
@@ -29,7 +29,6 @@ var style = require('./style');
 var helpers = require('./helpers');
 var anchorUtils = require('./anchor_utils');
 
-var SHOWISOLATETIP = true;
 var DBLCLICKDELAY = interactConstants.DBLCLICKDELAY;
 
 module.exports = function draw(gd) {
@@ -413,23 +412,24 @@ function drawTexts(g, gd) {
                     var groupbyIndices = Registry.getTransformIndices(fullInput, 'groupby');
                     var index = groupbyIndices[groupbyIndices.length - 1];
 
-                    var carr = Lib.keyedContainer(fullInput, 'transforms[' + index + '].styles', 'target', 'value.name');
+                    var kcont = Lib.keyedContainer(fullInput, 'transforms[' + index + '].styles', 'target', 'value.name');
 
                     if(origText === '') {
-                        carr.remove(legendItem.trace._group);
+                        kcont.remove(legendItem.trace._group);
                     } else {
-                        carr.set(legendItem.trace._group, text);
+                        kcont.set(legendItem.trace._group, text);
                     }
 
-                    update = carr.constructUpdate();
+                    update = kcont.constructUpdate();
                 } else {
                     update.name = text;
                 }
 
                 return Plotly.restyle(gd, update, traceIndex);
             });
+    } else {
+        text.call(textLayout);
     }
-    else text.call(textLayout);
 }
 
 function setupTraceToggle(g, gd) {
@@ -476,97 +476,6 @@ function setupTraceToggle(g, gd) {
             handleClick(g, gd, numClicks);
         }
     });
-}
-
-function handleClick(g, gd, numClicks) {
-    if(gd._dragged || gd._editing) return;
-    var hiddenSlices = gd._fullLayout.hiddenlabels ?
-        gd._fullLayout.hiddenlabels.slice() :
-        [];
-
-    var legendItem = g.data()[0][0],
-        fullData = gd._fullData,
-        trace = legendItem.trace,
-        legendgroup = trace.legendgroup,
-        traceIndicesInGroup = [],
-        tracei,
-        newVisible;
-
-
-    if(numClicks === 1 && SHOWISOLATETIP && gd.data && gd._context.showTips) {
-        Lib.notifier('Double click on legend to isolate individual trace', 'long');
-        SHOWISOLATETIP = false;
-    } else {
-        SHOWISOLATETIP = false;
-    }
-    if(Registry.traceIs(trace, 'pie')) {
-        var thisLabel = legendItem.label,
-            thisLabelIndex = hiddenSlices.indexOf(thisLabel);
-
-        if(numClicks === 1) {
-            if(thisLabelIndex === -1) hiddenSlices.push(thisLabel);
-            else hiddenSlices.splice(thisLabelIndex, 1);
-        } else if(numClicks === 2) {
-            hiddenSlices = [];
-            gd.calcdata[0].forEach(function(d) {
-                if(thisLabel !== d.label) {
-                    hiddenSlices.push(d.label);
-                }
-            });
-            if(gd._fullLayout.hiddenlabels && gd._fullLayout.hiddenlabels.length === hiddenSlices.length && thisLabelIndex === -1) {
-                hiddenSlices = [];
-            }
-        }
-
-        Plotly.relayout(gd, 'hiddenlabels', hiddenSlices);
-    } else {
-        var allTraces = [],
-            traceVisibility = [],
-            i;
-
-        for(i = 0; i < fullData.length; i++) {
-            allTraces.push(i);
-            // Allow the legendonly state through for *all* trace types (including
-            // carpet for which it's overridden with true/false in supplyDefaults)
-            traceVisibility.push(
-                Registry.traceIs(fullData[i], 'notLegendIsolatable') ? true : 'legendonly'
-            );
-        }
-
-        if(legendgroup === '') {
-            traceIndicesInGroup = [trace.index];
-            traceVisibility[trace.index] = true;
-        } else {
-            for(i = 0; i < fullData.length; i++) {
-                tracei = fullData[i];
-                if(tracei.legendgroup === legendgroup) {
-                    traceIndicesInGroup.push(tracei.index);
-                    traceVisibility[allTraces.indexOf(i)] = true;
-                }
-            }
-        }
-
-        if(numClicks === 1) {
-            newVisible = trace.visible === true ? 'legendonly' : true;
-            Plotly.restyle(gd, 'visible', newVisible, traceIndicesInGroup);
-        } else if(numClicks === 2) {
-            var sameAsLast = true;
-            for(i = 0; i < fullData.length; i++) {
-                if(fullData[i].visible !== traceVisibility[i]) {
-                    sameAsLast = false;
-                    break;
-                }
-            }
-            if(sameAsLast) {
-                traceVisibility = true;
-            }
-            var visibilityUpdates = [];
-            for(i = 0; i < fullData.length; i++) {
-                visibilityUpdates.push(allTraces[i]);
-            }
-            Plotly.restyle(gd, 'visible', traceVisibility, visibilityUpdates);
-        }
-    }
 }
 
 function computeTextDimensions(g, gd) {

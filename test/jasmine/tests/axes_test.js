@@ -10,7 +10,6 @@ var Axes = require('@src/plots/cartesian/axes');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 var failTest = require('../assets/fail_test');
 
 
@@ -577,7 +576,6 @@ describe('Test axes', function() {
 
         beforeEach(function() {
             gd = createGraphDiv();
-            jasmine.addMatchers(customMatchers);
         });
 
         afterEach(destroyGraphDiv);
@@ -2403,7 +2401,8 @@ describe('Test axes', function() {
             expect(out).toEqual({
                 start: -0.5,
                 end: 2.5,
-                size: 1
+                size: 1,
+                _count: 3
             });
         });
 
@@ -2416,7 +2415,8 @@ describe('Test axes', function() {
             expect(out).toEqual({
                 start: undefined,
                 end: undefined,
-                size: 2
+                size: 2,
+                _count: NaN
             });
         });
 
@@ -2429,7 +2429,8 @@ describe('Test axes', function() {
             expect(out).toEqual({
                 start: undefined,
                 end: undefined,
-                size: 2
+                size: 2,
+                _count: NaN
             });
         });
 
@@ -2442,7 +2443,8 @@ describe('Test axes', function() {
             expect(out).toEqual({
                 start: undefined,
                 end: undefined,
-                size: 2
+                size: 2,
+                _count: NaN
             });
         });
 
@@ -2455,7 +2457,8 @@ describe('Test axes', function() {
             expect(out).toEqual({
                 start: 0.5,
                 end: 4.5,
-                size: 1
+                size: 1,
+                _count: 4
             });
         });
 
@@ -2472,7 +2475,8 @@ describe('Test axes', function() {
             expect(out).toEqual({
                 start: -0.5,
                 end: 5.5,
-                size: 2
+                size: 2,
+                _count: 3
             });
         });
     });

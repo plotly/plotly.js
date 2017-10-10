@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "1.30.0",
+  "version": "1.31.0",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
@@ -121,6 +121,7 @@
     "image-exporter": "file:../image-exporter",
     "image-size": "^0.5.1",
     "jasmine-core": "^2.4.1",
+    "jsdom": "^11.2.0",
     "karma": "^1.5.0",
     "karma-browserify": "^5.1.1",
     "karma-chrome-launcher": "^2.0.0",

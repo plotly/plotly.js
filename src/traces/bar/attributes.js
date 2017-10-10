@@ -15,12 +15,12 @@ var colorbarAttrs = require('../../components/colorbar/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
-var extendDeep = require('../../lib/extend').extendDeep;
 
-var textFontAttrs = extendDeep({}, fontAttrs);
-textFontAttrs.family.arrayOk = true;
-textFontAttrs.size.arrayOk = true;
-textFontAttrs.color.arrayOk = true;
+var textFontAttrs = fontAttrs({
+    editType: 'calc',
+    arrayOk: true,
+    description: ''
+});
 
 var scatterMarkerAttrs = scatterAttrs.marker;
 var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
@@ -28,12 +28,14 @@ var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 var markerLineWidth = extendFlat({},
     scatterMarkerLineAttrs.width, { dflt: 0 });
 
-var markerLine = extendFlat({}, {
-    width: markerLineWidth
+var markerLine = extendFlat({
+    width: markerLineWidth,
+    editType: 'calc'
 }, colorAttributes('marker.line'));
 
-var marker = extendFlat({}, {
-    line: markerLine
+var marker = extendFlat({
+    line: markerLine,
+    editType: 'calc'
 }, colorAttributes('marker'), {
     showscale: scatterMarkerAttrs.showscale,
     colorbar: colorbarAttrs
@@ -57,6 +59,7 @@ module.exports = {
         values: ['inside', 'outside', 'auto', 'none'],
         dflt: 'none',
         arrayOk: true,
+        editType: 'calc',
         description: [
             'Specifies the location of the `text`.',
             '*inside* positions `text` inside, next to the bar end',
@@ -85,6 +88,7 @@ module.exports = {
         values: ['inside', 'outside', 'both', 'none'],
         role: 'info',
         dflt: 'both',
+        editType: 'calc',
         description: [
             'Constrain the size of text inside or outside a bar to be no',
             'larger than the bar itself.'
@@ -95,6 +99,7 @@ module.exports = {
         valType: 'enumerated',
         role: 'info',
         values: ['v', 'h'],
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the orientation of the bars.',
             'With *v* (*h*), the value of the each bar spans',
@@ -107,6 +112,7 @@ module.exports = {
         dflt: null,
         arrayOk: true,
         role: 'info',
+        editType: 'calc',
         description: [
             'Sets where the bar base is drawn (in position axis units).',
             'In *stack* or *relative* barmode,',
@@ -120,6 +126,7 @@ module.exports = {
         dflt: null,
         arrayOk: true,
         role: 'info',
+        editType: 'calc',
         description: [
             'Shifts the position where the bar is drawn',
             '(in position axis units).',
@@ -135,6 +142,7 @@ module.exports = {
         min: 0,
         arrayOk: true,
         role: 'info',
+        editType: 'calc',
         description: [
             'Sets the bar width (in position axis units).'
         ].join(' ')
@@ -152,6 +160,7 @@ module.exports = {
         bardir: {
             valType: 'enumerated',
             role: 'info',
+            editType: 'calc',
             values: ['v', 'h'],
             description: 'Renamed to `orientation`.'
         }

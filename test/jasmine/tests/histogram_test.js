@@ -7,7 +7,6 @@ var calc = require('@src/traces/histogram/calc');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 
 
 describe('Test histogram', function() {
@@ -163,14 +162,12 @@ describe('Test histogram', function() {
 
 
     describe('calc', function() {
-        beforeAll(function() {
-            jasmine.addMatchers(customMatchers);
-        });
-
-        function _calc(opts, extraTraces) {
+        function _calc(opts, extraTraces, layout) {
             var base = { type: 'histogram' };
             var trace = Lib.extendFlat({}, base, opts);
             var gd = { data: [trace] };
+
+            if(layout) gd.layout = layout;
 
             if(Array.isArray(extraTraces)) {
                 extraTraces.forEach(function(extraTrace) {
@@ -272,6 +269,82 @@ describe('Test histogram', function() {
             });
 
             expect(out.length).toEqual(9001);
+        });
+
+        it('handles single-bin data without extra bins', function() {
+            var out = _calc({
+                x: [2.1, 3, 3.9],
+                xbins: {start: 0, end: 10, size: 2}
+            });
+
+            expect(out).toEqual([
+                {b: 0, p: 3, s: 3, width1: 2}
+            ]);
+        });
+
+        it('handles single-value overlaid autobinned data with other manual bins', function() {
+            var out = _calc({x: [1.1, 1.1, 1.1]}, [
+                {x: [1, 2, 3, 4], xbins: {start: 0.5, end: 4.5, size: 2}},
+                {x: [10, 10.5, 11, 11.5], xbins: {start: 9.8, end: 11.8, size: 0.5}}
+            ], {
+                barmode: 'overlay'
+            });
+
+            expect(out).toEqual([
+                {b: 0, p: 1.1, s: 3, width1: 0.5}
+            ]);
+        });
+
+        it('handles single-value overlaid autobinned data with other auto bins', function() {
+            var out = _calc({x: ['', null, 17, '', 17]}, [
+                {x: [10, 20, 30, 40]},
+                {x: [100, 101, 102, 103]}
+            ], {
+                barmode: 'overlay'
+            });
+
+            expect(out).toEqual([
+                {b: 0, p: 17, s: 2, width1: 2}
+            ]);
+        });
+
+        it('handles multiple single-valued overlaid autobinned traces with different values', function() {
+            var out = _calc({x: [null, 13, '', 13]}, [
+                {x: [5]},
+                {x: [null, 29, 29, 29, null]}
+            ], {
+                barmode: 'overlay'
+            });
+
+            expect(out).toEqual([
+                {b: 0, p: 13, s: 2, width1: 8}
+            ]);
+        });
+
+        it('handles multiple single-date overlaid autobinned traces with different values', function() {
+            var out = _calc({x: [null, '2011-02-03', '', '2011-02-03']}, [
+                {x: ['2011-02-05']},
+                {x: [null, '2015-05-05', '2015-05-05', '2015-05-05', null]}
+            ], {
+                barmode: 'overlay'
+            });
+
+            expect(out).toEqual([
+                {b: 0, p: 1296691200000, s: 2, width1: 2 * 24 * 3600 * 1000}
+            ]);
+        });
+
+        it('handles several overlaid autobinned traces with only one value total', function() {
+            var out = _calc({x: [null, 97, '', 97]}, [
+                {x: [97]},
+                {x: [null, 97, 97, 97, null]}
+            ], {
+                barmode: 'overlay'
+            });
+
+            expect(out).toEqual([
+                {b: 0, p: 97, s: 2, width1: 1}
+            ]);
         });
 
         function calcPositions(opts, extraTraces) {
@@ -512,6 +585,65 @@ describe('Test histogram', function() {
             Plotly.restyle(gd, 'x', [data2]);
             expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
             expect(gd._fullData[0].autobinx).toBe(false);
+        });
+
+        it('allows changing axis type with new x data', function() {
+            var x1 = [1, 1, 1, 1, 2, 2, 2, 3, 3, 4];
+            var x2 = ['2017-01-01', '2017-01-01', '2017-01-01', '2017-01-02', '2017-01-02', '2017-01-03'];
+
+            Plotly.newPlot(gd, [{x: x1, type: 'histogram'}]);
+            expect(gd._fullLayout.xaxis.type).toBe('linear');
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.5, 4.5], 3);
+
+            Plotly.restyle(gd, {x: [x2]});
+            expect(gd._fullLayout.xaxis.type).toBe('date');
+            expect(gd._fullLayout.xaxis.range).toEqual(['2016-12-31 12:00', '2017-01-03 12:00']);
+        });
+
+        it('can resize a plot with several histograms', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'histogram',
+                x: [1, 1, 1, 1, 2, 2, 2, 3, 3, 4]
+            }, {
+                type: 'histogram',
+                x: [1, 1, 1, 1, 2, 2, 2, 3, 3, 4]
+            }], {
+                width: 400,
+                height: 400
+            })
+            .then(function() {
+                expect(gd._fullLayout.width).toBe(400);
+                expect(gd._fullLayout.height).toBe(400);
+
+                gd._fullData.forEach(function(trace, i) {
+                    expect(trace._autoBinFinished).toBeUndefined(i);
+                });
+
+                return Plotly.relayout(gd, {width: 500, height: 500});
+            })
+            .then(function() {
+                expect(gd._fullLayout.width).toBe(500);
+                expect(gd._fullLayout.height).toBe(500);
+
+                gd._fullData.forEach(function(trace, i) {
+                    expect(trace._autoBinFinished).toBeUndefined(i);
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('give the right bar width for single-bin histograms', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'histogram',
+                x: [3, 3, 3],
+                xbins: {start: 0, end: 10, size: 2}
+            }])
+            .then(function() {
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([2, 4], 3);
+            })
+            .catch(fail)
+            .then(done);
         });
     });
 });

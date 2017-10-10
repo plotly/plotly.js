@@ -21,6 +21,8 @@ var attrs = exports.attributes = {
     enabled: {
         valType: 'boolean',
         dflt: true,
+        role: 'info',
+        editType: 'calc',
         description: [
             'Determines whether this aggregate transform is enabled or disabled.'
         ].join(' ')
@@ -33,6 +35,8 @@ var attrs = exports.attributes = {
         noBlank: true,
         arrayOk: true,
         dflt: 'x',
+        role: 'info',
+        editType: 'calc',
         description: [
             'Sets the grouping target to which the aggregation is applied.',
             'Data points with matching group values will be coalesced into',
@@ -51,6 +55,7 @@ var attrs = exports.attributes = {
         target: {
             valType: 'string',
             role: 'info',
+            editType: 'calc',
             description: [
                 'A reference to the data array in the parent trace to aggregate.',
                 'To aggregate by nested variables, use *.* to access them.',
@@ -65,6 +70,7 @@ var attrs = exports.attributes = {
             values: ['count', 'sum', 'avg', 'median', 'mode', 'rms', 'stddev', 'min', 'max', 'first', 'last'],
             dflt: 'first',
             role: 'info',
+            editType: 'calc',
             description: [
                 'Sets the aggregation function.',
                 'All values from the linked `target`, corresponding to the same value',
@@ -87,6 +93,7 @@ var attrs = exports.attributes = {
             values: ['sample', 'population'],
             dflt: 'sample',
             role: 'info',
+            editType: 'calc',
             description: [
                 '*stddev* supports two formula variants: *sample* (normalize by N-1)',
                 'and *population* (normalize by N).'
@@ -95,11 +102,15 @@ var attrs = exports.attributes = {
         enabled: {
             valType: 'boolean',
             dflt: true,
+            role: 'info',
+            editType: 'calc',
             description: [
                 'Determines whether this aggregation function is enabled or disabled.'
             ].join(' ')
-        }
-    }
+        },
+        editType: 'calc'
+    },
+    editType: 'calc'
 };
 
 var aggAttrs = attrs.aggregations;
@@ -155,7 +166,7 @@ exports.supplyDefaults = function(transformIn, traceOut) {
         arrayAttrs[groups] = 0;
     }
 
-    var aggregationsIn = transformIn.aggregations;
+    var aggregationsIn = transformIn.aggregations || [];
     var aggregationsOut = transformOut.aggregations = new Array(aggregationsIn.length);
     var aggregationOut;
 
@@ -163,23 +174,21 @@ exports.supplyDefaults = function(transformIn, traceOut) {
         return Lib.coerce(aggregationsIn[i], aggregationOut, aggAttrs, attr, dflt);
     }
 
-    if(aggregationsIn) {
-        for(i = 0; i < aggregationsIn.length; i++) {
-            aggregationOut = {};
-            var target = coercei('target');
-            var func = coercei('func');
-            var enabledi = coercei('enabled');
+    for(i = 0; i < aggregationsIn.length; i++) {
+        aggregationOut = {_index: i};
+        var target = coercei('target');
+        var func = coercei('func');
+        var enabledi = coercei('enabled');
 
-            // add this aggregation to the output only if it's the first instance
-            // of a valid target attribute - or an unused target attribute with "count"
-            if(enabledi && target && (arrayAttrs[target] || (func === 'count' && arrayAttrs[target] === undefined))) {
-                if(func === 'stddev') coercei('funcmode');
+        // add this aggregation to the output only if it's the first instance
+        // of a valid target attribute - or an unused target attribute with "count"
+        if(enabledi && target && (arrayAttrs[target] || (func === 'count' && arrayAttrs[target] === undefined))) {
+            if(func === 'stddev') coercei('funcmode');
 
-                arrayAttrs[target] = 0;
-                aggregationsOut[i] = aggregationOut;
-            }
-            else aggregationsOut[i] = {enabled: false};
+            arrayAttrs[target] = 0;
+            aggregationsOut[i] = aggregationOut;
         }
+        else aggregationsOut[i] = {enabled: false, _index: i};
     }
 
     // any array attributes we haven't yet covered, fill them with the default aggregation
@@ -188,7 +197,8 @@ exports.supplyDefaults = function(transformIn, traceOut) {
             aggregationsOut.push({
                 target: arrayAttrArray[i],
                 func: aggAttrs.func.dflt,
-                enabled: true
+                enabled: true,
+                _index: -1
             });
         }
     }

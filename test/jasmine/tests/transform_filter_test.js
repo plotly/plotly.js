@@ -6,7 +6,6 @@ var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 var customAssertions = require('../assets/custom_assertions');
 
 var assertDims = customAssertions.assertDims;
@@ -997,10 +996,6 @@ describe('filter transforms calc:', function() {
 
 describe('filter transforms interactions', function() {
     'use strict';
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     var mockData0 = [{
         x: [-2, -1, -2, 0, 1, 2, 3],

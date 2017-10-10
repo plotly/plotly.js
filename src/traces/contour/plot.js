@@ -86,7 +86,7 @@ function plotOne(gd, plotinfo, cd) {
     makeBackground(plotGroup, perimeter, contours);
     makeFills(plotGroup, pathinfo, perimeter, contours);
     makeLinesAndLabels(plotGroup, pathinfo, gd, cd[0], contours, perimeter);
-    clipGaps(plotGroup, plotinfo, fullLayout._defs, cd[0], perimeter);
+    clipGaps(plotGroup, plotinfo, fullLayout._clips, cd[0], perimeter);
 }
 
 function emptyPathinfo(contours, plotinfo, cd0) {
@@ -281,7 +281,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
     var linegroup = exports.createLines(lineContainer, showLines || showLabels, pathinfo);
 
     var lineClip = exports.createLineClip(lineContainer, clipLinesForLabels,
-        gd._fullLayout._defs, cd0.trace.uid);
+        gd._fullLayout._clips, cd0.trace.uid);
 
     var labelGroup = plotgroup.selectAll('g.contourlabels')
         .data(showLabels ? [0] : []);
@@ -403,10 +403,10 @@ exports.createLines = function(lineContainer, makeLines, pathinfo) {
     return linegroup;
 };
 
-exports.createLineClip = function(lineContainer, clipLinesForLabels, defs, uid) {
+exports.createLineClip = function(lineContainer, clipLinesForLabels, clips, uid) {
     var clipId = clipLinesForLabels ? ('clipline' + uid) : null;
 
-    var lineClip = defs.select('.clips').selectAll('#' + clipId)
+    var lineClip = clips.selectAll('#' + clipId)
         .data(clipLinesForLabels ? [0] : []);
     lineClip.exit().remove();
 
@@ -630,10 +630,10 @@ exports.drawLabels = function(labelGroup, labelData, gd, lineClip, labelClipPath
     }
 };
 
-function clipGaps(plotGroup, plotinfo, defs, cd0, perimeter) {
+function clipGaps(plotGroup, plotinfo, clips, cd0, perimeter) {
     var clipId = 'clip' + cd0.trace.uid;
 
-    var clipPath = defs.select('.clips').selectAll('#' + clipId)
+    var clipPath = clips.selectAll('#' + clipId)
         .data(cd0.trace.connectgaps ? [] : [0]);
     clipPath.enter().append('clipPath')
         .classed('contourclip', true)

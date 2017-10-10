@@ -71,16 +71,16 @@ module.exports = function manageModeBar(gd) {
 
 // logic behind which buttons are displayed by default
 function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
-    var fullLayout = gd._fullLayout,
-        fullData = gd._fullData;
+    var fullLayout = gd._fullLayout;
+    var fullData = gd._fullData;
 
-    var hasCartesian = fullLayout._has('cartesian'),
-        hasGL3D = fullLayout._has('gl3d'),
-        hasGeo = fullLayout._has('geo'),
-        hasPie = fullLayout._has('pie'),
-        hasGL2D = fullLayout._has('gl2d'),
-        hasTernary = fullLayout._has('ternary'),
-        hasMapbox = fullLayout._has('mapbox');
+    var hasCartesian = fullLayout._has('cartesian');
+    var hasGL3D = fullLayout._has('gl3d');
+    var hasGeo = fullLayout._has('geo');
+    var hasPie = fullLayout._has('pie');
+    var hasGL2D = fullLayout._has('gl2d');
+    var hasTernary = fullLayout._has('ternary');
+    var hasMapbox = fullLayout._has('mapbox');
 
     var groups = [];
 
@@ -112,18 +112,13 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
         addGroup(['hoverClosest3d']);
     }
 
-    if(hasGeo) {
-        addGroup(['zoomInGeo', 'zoomOutGeo', 'resetGeo']);
-        addGroup(['hoverClosestGeo']);
-    }
-
     var allAxesFixed = areAllAxesFixed(fullLayout),
         dragModeGroup = [];
 
     if(((hasCartesian || hasGL2D) && !allAxesFixed) || hasTernary) {
         dragModeGroup = ['zoom2d', 'pan2d'];
     }
-    if(hasMapbox) {
+    if(hasMapbox || hasGeo) {
         dragModeGroup = ['pan2d'];
     }
     if(isSelectable(fullData)) {
@@ -138,18 +133,17 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
 
     if(hasCartesian && hasPie) {
         addGroup(['toggleHover']);
-    }
-    else if(hasGL2D) {
+    } else if(hasGL2D) {
         addGroup(['hoverClosestGl2d']);
-    }
-    else if(hasCartesian) {
+    } else if(hasCartesian) {
         addGroup(['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']);
-    }
-    else if(hasPie) {
+    } else if(hasPie) {
         addGroup(['hoverClosestPie']);
-    }
-    else if(hasMapbox) {
+    } else if(hasMapbox) {
         addGroup(['resetViewMapbox', 'toggleHover']);
+    } else if(hasGeo) {
+        addGroup(['zoomInGeo', 'zoomOutGeo', 'resetGeo']);
+        addGroup(['hoverClosestGeo']);
     }
 
     return appendButtonsToGroups(groups, buttonsToAdd);

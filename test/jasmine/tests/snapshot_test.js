@@ -230,8 +230,9 @@ describe('Plotly.Snapshot', function() {
             Plotly.plot(gd, subplotMock.data, subplotMock.layout).then(function() {
 
                 d3.select(gd).selectAll('text').each(function() {
-                    expect(d3.select(this).style('visibility')).toEqual('visible');
-                    expect(d3.select(this).style('display')).toEqual('block');
+                    var thisStyle = window.getComputedStyle(this);
+                    expect(thisStyle.visibility).toEqual('visible');
+                    expect(thisStyle.display).toEqual('block');
                 });
 
                 return Plotly.Snapshot.toSVG(gd);
@@ -265,13 +266,11 @@ describe('Plotly.Snapshot', function() {
             })
             .then(function() {
                 d3.selectAll('text').each(function() {
-                    var tx = d3.select(this);
-                    expect(tx.style('font-family')).toEqual('\"Times New Roman\"');
+                    expect(this.style.fontFamily).toEqual('\"Times New Roman\"');
                 });
 
                 d3.selectAll('.point,.scatterpts').each(function() {
-                    var pt = d3.select(this);
-                    expect(pt.style('fill').substr(0, 6)).toEqual('url(\"#');
+                    expect(this.style.fill.substr(0, 6)).toEqual('url(\"#');
                 });
 
                 return Plotly.Snapshot.toSVG(gd);
@@ -284,7 +283,7 @@ describe('Plotly.Snapshot', function() {
                 expect(textElements.length).toEqual(12);
 
                 for(i = 0; i < textElements.length; i++) {
-                    expect(textElements[i].style['font-family']).toEqual('\"Times New Roman\"');
+                    expect(textElements[i].style.fontFamily).toEqual('\"Times New Roman\"');
                 }
 
                 var pointElements = svgDOM.getElementsByClassName('point');
@@ -297,6 +296,26 @@ describe('Plotly.Snapshot', function() {
                 var legendPointElements = svgDOM.getElementsByClassName('scatterpts');
                 expect(legendPointElements.length).toEqual(1);
                 expect(legendPointElements[0].style.fill.substr(0, 6)).toEqual('url(\"#');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('should adapt *viewBox* attribute under *scale* option', function(done) {
+            Plotly.plot(gd, [{
+                y: [1, 2, 1]
+            }], {
+                width: 300,
+                height: 400
+            })
+            .then(function() {
+                var str = Plotly.Snapshot.toSVG(gd, 'svg', 2.5);
+                var dom = parser.parseFromString(str, 'image/svg+xml');
+                var el = dom.getElementsByTagName('svg')[0];
+
+                expect(el.getAttribute('width')).toBe('750', 'width');
+                expect(el.getAttribute('height')).toBe('1000', 'height');
+                expect(el.getAttribute('viewBox')).toBe('0 0 300 400', 'viewbox');
             })
             .catch(fail)
             .then(done);

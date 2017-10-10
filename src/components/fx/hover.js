@@ -67,27 +67,13 @@ var HOVERTEXTPAD = constants.HOVERTEXTPAD;
 // We wrap the hovers in a timer, to limit their frequency.
 // The actual rendering is done by private function _hover.
 exports.hover = function hover(gd, evt, subplot, noHoverEvent) {
-    if(typeof gd === 'string') gd = document.getElementById(gd);
-    if(gd._lastHoverTime === undefined) gd._lastHoverTime = 0;
+    gd = Lib.getGraphDiv(gd);
 
-    // If we have an update queued, discard it now
-    if(gd._hoverTimer !== undefined) {
-        clearTimeout(gd._hoverTimer);
-        gd._hoverTimer = undefined;
-    }
-    // Is it more than 100ms since the last update?  If so, force
-    // an update now (synchronously) and exit
-    if(Date.now() > gd._lastHoverTime + constants.HOVERMINTIME) {
-        _hover(gd, evt, subplot, noHoverEvent);
-        gd._lastHoverTime = Date.now();
-        return;
-    }
-    // Queue up the next hover for 100ms from now (if no further events)
-    gd._hoverTimer = setTimeout(function() {
-        _hover(gd, evt, subplot, noHoverEvent);
-        gd._lastHoverTime = Date.now();
-        gd._hoverTimer = undefined;
-    }, constants.HOVERMINTIME);
+    Lib.throttle(
+        gd._fullLayout._uid + constants.HOVERID,
+        constants.HOVERMINTIME,
+        function() { _hover(gd, evt, subplot, noHoverEvent); }
+    );
 };
 
 /*
@@ -580,24 +566,27 @@ function createHoverText(hoverData, opts, gd) {
             ltext = label.selectAll('text').data([0]);
 
         lpath.enter().append('path')
-            .style({
-                fill: commonLabelOpts.bgcolor || Color.defaultLine,
-                stroke: commonLabelOpts.bordercolor || Color.background,
-                'stroke-width': '1px'
-            });
+            .style({'stroke-width': '1px'});
+
+        lpath.style({
+            fill: commonLabelOpts.bgcolor || Color.defaultLine,
+            stroke: commonLabelOpts.bordercolor || Color.background,
+        });
+
         ltext.enter().append('text')
-            .call(Drawing.font,
-                commonLabelOpts.font.family || fontFamily,
-                commonLabelOpts.font.size || fontSize,
-                commonLabelOpts.font.color || Color.background
-             )
             // prohibit tex interpretation until we can handle
             // tex and regular text together
             .attr('data-notex', 1);
 
         ltext.text(t0)
+            .call(Drawing.font,
+                commonLabelOpts.font.family || fontFamily,
+                commonLabelOpts.font.size || fontSize,
+                commonLabelOpts.font.color || Color.background
+             )
             .call(svgTextUtils.positionText, 0, 0)
             .call(svgTextUtils.convertToTspans, gd);
+
         label.attr('transform', '');
 
         var tbb = ltext.node().getBoundingClientRect();
@@ -1039,24 +1028,22 @@ function alignHoverText(hoverLabels, rotateLabels) {
 }
 
 function cleanPoint(d, hovermode) {
+    var index = d.index;
     var trace = d.trace || {};
     var cd0 = d.cd[0];
-    var cd = d.cd[d.index] || {};
+    var cd = d.cd[index] || {};
+
+    var getVal = Array.isArray(index) ?
+        function(calcKey, traceKey) {
+            return Lib.castOption(cd0, index, calcKey) ||
+                Lib.extractOption({}, trace, '', traceKey);
+        } :
+        function(calcKey, traceKey) {
+            return Lib.extractOption(cd, trace, calcKey, traceKey);
+        };
 
     function fill(key, calcKey, traceKey) {
-        var val;
-
-        if(cd[calcKey]) {
-            val = cd[calcKey];
-        } else if(cd0[calcKey]) {
-            var arr = cd0[calcKey];
-            if(Array.isArray(arr) && Array.isArray(arr[d.index[0]])) {
-                val = arr[d.index[0]][d.index[1]];
-            }
-        } else {
-            val = Lib.nestedProperty(trace, traceKey).get();
-        }
-
+        var val = getVal(calcKey, traceKey);
         if(val) d[key] = val;
     }
 

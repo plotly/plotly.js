@@ -14,12 +14,14 @@ var barAttrs = require('../bar/attributes');
 module.exports = {
     x: {
         valType: 'data_array',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the sample data to be binned on the x axis.'
         ].join(' ')
     },
     y: {
         valType: 'data_array',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the sample data to be binned on the y axis.'
         ].join(' ')
@@ -33,6 +35,7 @@ module.exports = {
         values: ['count', 'sum', 'avg', 'min', 'max'],
         role: 'style',
         dflt: 'count',
+        editType: 'calc',
         description: [
             'Specifies the binning function used for this histogram trace.',
 
@@ -50,6 +53,7 @@ module.exports = {
         values: ['', 'percent', 'probability', 'density', 'probability density'],
         dflt: '',
         role: 'style',
+        editType: 'calc',
         description: [
             'Specifies the type of normalization used for this histogram trace.',
 
@@ -77,6 +81,7 @@ module.exports = {
             valType: 'boolean',
             dflt: false,
             role: 'info',
+            editType: 'calc',
             description: [
                 'If true, display the cumulative distribution by summing the',
                 'binned values. Use the `direction` and `centralbin` attributes',
@@ -94,6 +99,7 @@ module.exports = {
             values: ['increasing', 'decreasing'],
             dflt: 'increasing',
             role: 'info',
+            editType: 'calc',
             description: [
                 'Only applies if cumulative is enabled.',
                 'If *increasing* (default) we sum all prior bins, so the result',
@@ -107,6 +113,7 @@ module.exports = {
             values: ['include', 'exclude', 'half'],
             dflt: 'include',
             role: 'info',
+            editType: 'calc',
             description: [
                 'Only applies if cumulative is enabled.',
                 'Sets whether the current bin is included, excluded, or has half',
@@ -116,13 +123,20 @@ module.exports = {
                 '*exclude* makes the opposite half-bin bias, and *half* removes',
                 'it.'
             ].join(' ')
-        }
+        },
+        editType: 'calc'
     },
 
     autobinx: {
         valType: 'boolean',
         dflt: null,
         role: 'style',
+        editType: 'calc',
+        impliedEdits: {
+            'xbins.start': undefined,
+            'xbins.end': undefined,
+            'xbins.size': undefined
+        },
         description: [
             'Determines whether or not the x axis bin attributes are picked',
             'by an algorithm. Note that this should be set to false if you',
@@ -135,6 +149,7 @@ module.exports = {
         min: 0,
         dflt: 0,
         role: 'style',
+        editType: 'calc',
         description: [
             'Specifies the maximum number of desired bins. This value will be used',
             'in an algorithm that will decide the optimal bin size such that the',
@@ -147,6 +162,12 @@ module.exports = {
         valType: 'boolean',
         dflt: null,
         role: 'style',
+        editType: 'calc',
+        impliedEdits: {
+            'ybins.start': undefined,
+            'ybins.end': undefined,
+            'ybins.size': undefined
+        },
         description: [
             'Determines whether or not the y axis bin attributes are picked',
             'by an algorithm. Note that this should be set to false if you',
@@ -159,6 +180,7 @@ module.exports = {
         min: 0,
         dflt: 0,
         role: 'style',
+        editType: 'calc',
         description: [
             'Specifies the maximum number of desired bins. This value will be used',
             'in an algorithm that will decide the optimal bin size such that the',
@@ -178,11 +200,18 @@ module.exports = {
 };
 
 function makeBinsAttr(axLetter) {
+    var impliedEdits = {};
+    impliedEdits['autobin' + axLetter] = false;
+    var impliedEditsInner = {};
+    impliedEditsInner['^autobin' + axLetter] = false;
+
     return {
         start: {
             valType: 'any', // for date axes
             dflt: null,
             role: 'style',
+            editType: 'calc',
+            impliedEdits: impliedEditsInner,
             description: [
                 'Sets the starting value for the', axLetter,
                 'axis bins.'
@@ -192,6 +221,8 @@ function makeBinsAttr(axLetter) {
             valType: 'any', // for date axes
             dflt: null,
             role: 'style',
+            editType: 'calc',
+            impliedEdits: impliedEditsInner,
             description: [
                 'Sets the end value for the', axLetter,
                 'axis bins.'
@@ -201,10 +232,14 @@ function makeBinsAttr(axLetter) {
             valType: 'any', // for date axes
             dflt: null,
             role: 'style',
+            editType: 'calc',
+            impliedEdits: impliedEditsInner,
             description: [
                 'Sets the step in-between value each', axLetter,
                 'axis bin.'
             ].join(' ')
-        }
+        },
+        editType: 'calc',
+        impliedEdits: impliedEdits
     };
 }

@@ -6,13 +6,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var params = module.exports = {};
-
 // projection names to d3 function name
-params.projNames = {
+exports.projNames = {
     // d3.geo.projection
     'equirectangular': 'equirectangular',
     'mercator': 'mercator',
@@ -39,10 +36,10 @@ params.projNames = {
 };
 
 // name of the axes
-params.axesNames = ['lonaxis', 'lataxis'];
+exports.axesNames = ['lonaxis', 'lataxis'];
 
 // max longitudinal angular span (EXPERIMENTAL)
-params.lonaxisSpan = {
+exports.lonaxisSpan = {
     'orthographic': 180,
     'azimuthal equal area': 360,
     'azimuthal equidistant': 360,
@@ -54,14 +51,14 @@ params.lonaxisSpan = {
 };
 
 // max latitudinal angular span (EXPERIMENTAL)
-params.lataxisSpan = {
+exports.lataxisSpan = {
     'conic conformal': 150,
     'stereographic': 179.5,
     '*': 180
 };
 
 // defaults for each scope
-params.scopeDefaults = {
+exports.scopeDefaults = {
     world: {
         lonaxisRange: [-180, 180],
         lataxisRange: [-90, 90],
@@ -75,7 +72,7 @@ params.scopeDefaults = {
     },
     europe: {
         lonaxisRange: [-30, 60],
-        lataxisRange: [30, 80],
+        lataxisRange: [30, 85],
         projType: 'conic conformal',
         projRotate: [15, 0, 0],
         projParallels: [0, 60]
@@ -108,42 +105,63 @@ params.scopeDefaults = {
 };
 
 // angular pad to avoid rounding error around clip angles
-params.clipPad = 1e-3;
+exports.clipPad = 1e-3;
 
 // map projection precision
-params.precision = 0.1;
+exports.precision = 0.1;
 
 // default land and water fill colors
-params.landColor = '#F0DC82';
-params.waterColor = '#3399FF';
+exports.landColor = '#F0DC82';
+exports.waterColor = '#3399FF';
 
 // locationmode to layer name
-params.locationmodeToLayer = {
+exports.locationmodeToLayer = {
     'ISO-3': 'countries',
     'USA-states': 'subunits',
     'country names': 'countries'
 };
 
 // SVG element for a sphere (use to frame maps)
-params.sphereSVG = {type: 'Sphere'};
+exports.sphereSVG = {type: 'Sphere'};
 
 // N.B. base layer names must be the same as in the topojson files
 
 // base layer with a fill color
-params.fillLayers = ['ocean', 'land', 'lakes'];
+exports.fillLayers = {
+    ocean: 1,
+    land: 1,
+    lakes: 1
+};
 
 // base layer with a only a line color
-params.lineLayers = ['subunits', 'countries', 'coastlines', 'rivers', 'frame'];
+exports.lineLayers = {
+    subunits: 1,
+    countries: 1,
+    coastlines: 1,
+    rivers: 1,
+    frame: 1
+};
 
-// all base layers - in order
-params.baseLayers = [
+exports.layers = [
+    'bg',
     'ocean', 'land', 'lakes',
     'subunits', 'countries', 'coastlines', 'rivers',
-    'lataxis', 'lonaxis',
-    'frame'
+    'lataxis', 'lonaxis', 'frame',
+    'backplot',
+    'frontplot'
 ];
 
-params.layerNameToAdjective = {
+exports.layersForChoropleth = [
+    'bg',
+    'ocean', 'land',
+    'subunits', 'countries', 'coastlines',
+    'lataxis', 'lonaxis', 'frame',
+    'backplot',
+    'rivers', 'lakes',
+    'frontplot'
+];
+
+exports.layerNameToAdjective = {
     ocean: 'ocean',
     land: 'land',
     lakes: 'lake',
@@ -153,6 +171,3 @@ params.layerNameToAdjective = {
     rivers: 'river',
     frame: 'frame'
 };
-
-// base layers drawn over choropleth
-params.baseLayersOverChoropleth = ['rivers', 'lakes'];

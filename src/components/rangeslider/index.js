@@ -13,8 +13,8 @@ module.exports = {
     name: 'rangeslider',
 
     schema: {
-        layout: {
-            'xaxis.rangeslider': require('./attributes')
+        subplots: {
+            xaxis: {rangeslider: require('./attributes')}
         }
     },
 

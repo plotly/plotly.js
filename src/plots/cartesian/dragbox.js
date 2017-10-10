@@ -380,7 +380,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return;
         }
 
-        var zoom = Math.exp(-Math.min(Math.max(wheelDelta, -20), 20) / 100),
+        var zoom = Math.exp(-Math.min(Math.max(wheelDelta, -20), 20) / 200),
             gbb = mainplot.draglayer.select('.nsewdrag')
                 .node().getBoundingClientRect(),
             xfrac = (e.clientX - gbb.left) / gbb.width,

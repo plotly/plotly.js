@@ -5,7 +5,6 @@ var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
 
 // This suite is more of a test of the structure of interaction elements on
 // various plot types. Tests of actual mouse interactions on cartesian plots
@@ -121,8 +120,6 @@ describe('Test plot structure', function() {
             });
 
             it('should restore layout axes when they get deleted', function(done) {
-                jasmine.addMatchers(customMatchers);
-
                 expect(countScatterTraces()).toEqual(mock.data.length);
                 expect(countSubplots()).toEqual(1);
 

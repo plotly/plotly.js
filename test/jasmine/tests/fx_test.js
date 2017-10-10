@@ -76,7 +76,7 @@ describe('Fx defaults', function() {
         .layout;
 
         expect(layoutOut.hovermode).toBe('closest', 'hovermode to closest');
-        expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
+        expect(layoutOut.dragmode).toBe('pan', 'dragmode to zoom');
     });
 
     it('should default (multi plot type version)', function() {
@@ -204,7 +204,7 @@ describe('relayout', function() {
                 node = mainDrag.node();
 
             expect(mainDrag.classed('cursor-' + cursor)).toBe(true, 'cursor ' + cursor);
-            expect(mainDrag.style('pointer-events')).toEqual('all', 'pointer event');
+            expect(node.style.pointerEvents).toEqual('all', 'pointer event');
             expect(!!node.onmousedown).toBe(isActive, 'mousedown handler');
         }
 

@@ -54,32 +54,22 @@ exports.calcTraceToLineCoords = function(calcTrace) {
  *
  * @param {array} coords
  *  results form calcTraceToLineCoords
- * @param {object} trace
- *  (optional) full trace object to be added on to output
- *
  * @return {object} out
  *  GeoJSON object
  *
  */
-exports.makeLine = function(coords, trace) {
-    var out = {};
-
+exports.makeLine = function(coords) {
     if(coords.length === 1) {
-        out = {
+        return {
             type: 'LineString',
             coordinates: coords[0]
         };
-    }
-    else {
-        out = {
+    } else {
+        return {
             type: 'MultiLineString',
             coordinates: coords
         };
     }
-
-    if(trace) out.trace = trace;
-
-    return out;
 };
 
 /**
@@ -87,37 +77,27 @@ exports.makeLine = function(coords, trace) {
  *
  * @param {array} coords
  *  results form calcTraceToLineCoords
- * @param {object} trace
- *  (optional) full trace object to be added on to output
- *
  * @return {object} out
  *  GeoJSON object
  */
-exports.makePolygon = function(coords, trace) {
-    var out = {};
-
+exports.makePolygon = function(coords) {
     if(coords.length === 1) {
-        out = {
+        return {
             type: 'Polygon',
             coordinates: coords
         };
-    }
-    else {
+    } else {
         var _coords = new Array(coords.length);
 
         for(var i = 0; i < coords.length; i++) {
             _coords[i] = [coords[i]];
         }
 
-        out = {
+        return {
             type: 'MultiPolygon',
             coordinates: _coords
         };
     }
-
-    if(trace) out.trace = trace;
-
-    return out;
 };
 
 /**
