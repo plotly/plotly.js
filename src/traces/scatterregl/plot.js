@@ -54,6 +54,9 @@ function createScatterScene(container, plotinfo, cdata) {
 
     var regl = createRegl({
         canvas: canvas,
+        attributes: {
+            preserveDrawingBuffer: false
+        },
         extensions: ['ANGLE_instanced_arrays', 'OES_element_index_uint'],
         pixelRatio: container._context.plotGlPixelRatio || global.devicePixelRatio
     });
@@ -73,7 +76,7 @@ function createScatterScene(container, plotinfo, cdata) {
         dashes: [1]
     });
 
-    var count = 0;
+    var count = 0, viewport;
 
     function updateRange(range) {
         var batch = [];
@@ -90,9 +93,18 @@ function createScatterScene(container, plotinfo, cdata) {
 
     function updateBatch(batch) {
         // make sure no old graphics on the canvas
-        // regl.clear({
-        //     color: [0, 0, 0, 0]
-        // });
+        var gl = regl._gl;
+        gl.enable(gl.SCISSOR_TEST);
+        gl.scissor(
+            viewport[0] - 1,
+            viewport[1] - 1,
+            viewport[2] - viewport[0] + 2,
+            viewport[3] - viewport[1] + 2
+        );
+        gl.clearColor(0,0,0,0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        // FIXME: why ↓ does not suffice here? regl bug?
+        // regl.clear({color: [0, 0, 0, 0], depth: 1});
 
         var lineBatch = [], scatterBatch = [], i;
 
@@ -133,9 +145,9 @@ function createScatterScene(container, plotinfo, cdata) {
             var xaxis = Axes.getFromId(container, options.xaxis || 'x'),
                 yaxis = Axes.getFromId(container, options.yaxis || 'y'),
                 selection = options.selection;
-            var vpSize = container._fullLayout._size,
-                width = container._fullLayout.width,
-                height = container._fullLayout.height;
+            var vpSize = layout._size,
+                width = layout.width,
+                height = layout.height;
 
             // makeCalcdata runs d2c (data-to-coordinate) on every point
             var x = options.x;
@@ -165,7 +177,7 @@ function createScatterScene(container, plotinfo, cdata) {
             }
 
             // update viewport & range
-            var viewport = [
+            viewport = [
                 vpSize.l + xaxis.domain[0] * vpSize.w,
                 vpSize.b + yaxis.domain[0] * vpSize.h,
                 (width - vpSize.r) - (1 - xaxis.domain[1]) * vpSize.w,
@@ -177,7 +189,7 @@ function createScatterScene(container, plotinfo, cdata) {
             ];
 
             // get error values
-            var errorVals = ErrorBars.calcFromTrace(options, container._fullLayout);
+            var errorVals = ErrorBars.calcFromTrace(options, layout);
 
             var len = x.length,
                 positions = Array(2 * len),
