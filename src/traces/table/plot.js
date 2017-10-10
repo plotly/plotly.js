@@ -529,8 +529,8 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
 
             return textToRender;
         })
-        .attr('alignment-baseline', function(d) {
-            return d.needsConvertToTspans ? null : 'hanging';
+        .attr('dy', function(d) {
+            return d.needsConvertToTspans ? 0 : '0.75em';
         })
         .each(function(d) {
 
