@@ -1500,15 +1500,12 @@ function numFormat(v, ax, fmtoverride, hover) {
 }
 
 axes.getTickFormat = function(ax) {
+    var i;
+
     function convertToMs(dtick) {
-        return typeof dtick !== 'string' ? dtick : Number(dtick.replace('M', '') * ONEAVGMONTH);
+        return typeof dtick !== 'string' ? dtick : Number(dtick.replace('M', '')) * ONEAVGMONTH;
     }
-    function getRangeWidth(range, convert) {
-        var convertFn = convert || function(x) { return x;};
-        var left = range[0] || 0;
-        var right = range[1] || 0;
-        return Math.abs(convertFn(right) - convertFn(left));
-    }
+
     function compareLogTicks(left, right) {
         var priority = ['L', 'D'];
         if(typeof left === typeof right) {
@@ -1527,6 +1524,7 @@ axes.getTickFormat = function(ax) {
             return typeof left === 'number' ? 1 : -1;
         }
     }
+
     function isProperStop(dtick, range, convert) {
         var convertFn = convert || function(x) { return x;};
         var leftDtick = range[0];
@@ -1534,7 +1532,8 @@ axes.getTickFormat = function(ax) {
         return ((!leftDtick && typeof leftDtick !== 'number') || convertFn(leftDtick) <= convertFn(dtick)) &&
                ((!rightDtick && typeof rightDtick !== 'number') || convertFn(rightDtick) >= convertFn(dtick));
     }
-    function isProperLogStop(dtick, range){
+
+    function isProperLogStop(dtick, range) {
         var isLeftDtickNull = range[0] === null;
         var isRightDtickNull = range[1] === null;
         var isDtickInRangeLeft = compareLogTicks(dtick, range[0]) >= 0;
@@ -1547,8 +1546,8 @@ axes.getTickFormat = function(ax) {
         switch(ax.type) {
             case 'date':
             case 'linear': {
-                for(var i = 0; i < ax.tickformatstops.length; i++) {
-                    if (isProperStop(ax.dtick, ax.tickformatstops[i].dtickrange, convertToMs)){
+                for(i = 0; i < ax.tickformatstops.length; i++) {
+                    if(isProperStop(ax.dtick, ax.tickformatstops[i].dtickrange, convertToMs)) {
                         tickstop = ax.tickformatstops[i];
                         break;
                     }
@@ -1556,8 +1555,8 @@ axes.getTickFormat = function(ax) {
                 break;
             }
             case 'log': {
-                for(var i = 0; i < ax.tickformatstops.length; i++) {
-                    if (isProperLogStop(ax.dtick, ax.tickformatstops[i].dtickrange)) {
+                for(i = 0; i < ax.tickformatstops.length; i++) {
+                    if(isProperLogStop(ax.dtick, ax.tickformatstops[i].dtickrange)) {
                         tickstop = ax.tickformatstops[i];
                         break;
                     }
