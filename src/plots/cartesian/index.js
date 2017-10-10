@@ -48,6 +48,14 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
         }
     }
 
+    // clear gl frame, if any
+    for(var id in fullLayout._plots) {
+        var scatterScene = fullLayout._plots[id]._scene;
+        if(scatterScene && scatterScene.clear) {
+            scatterScene.clear();
+        }
+    }
+
     for(i = 0; i < subplots.length; i++) {
         var subplot = subplots[i],
             subplotInfo = fullLayout._plots[subplot];

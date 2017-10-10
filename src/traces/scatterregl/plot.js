@@ -36,10 +36,10 @@ var SYMBOL_SVG_CIRCLE = Drawing.symbolFuncs[0](SYMBOL_SIZE * 0.05);
 var convertNumber, convertColorBase;
 
 
-module.exports = createScatterScene;
+module.exports = plot;
 
 
-function createScatterScene(container, plotinfo, cdata) {
+function plot(container, plotinfo, cdata) {
     var layout = container._fullLayout;
     var subplotObj = layout._plots[plotinfo.id];
 
@@ -92,20 +92,6 @@ function createScatterScene(container, plotinfo, cdata) {
     }
 
     function updateBatch(batch) {
-        // make sure no old graphics on the canvas
-        var gl = regl._gl;
-        gl.enable(gl.SCISSOR_TEST);
-        gl.scissor(
-            viewport[0] - 1,
-            viewport[1] - 1,
-            viewport[2] - viewport[0] + 2,
-            viewport[3] - viewport[1] + 2
-        );
-        gl.clearColor(0,0,0,0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
-        // FIXME: why ↓ does not suffice here? regl bug?
-        // regl.clear({color: [0, 0, 0, 0], depth: 1});
-
         var lineBatch = [], scatterBatch = [], i;
 
         // update options of line and scatter components directly
@@ -422,7 +408,26 @@ function createScatterScene(container, plotinfo, cdata) {
         }
     }
 
+    function clear() {
+        if(!viewport) return;
+
+        // make sure no old graphics on the canvas
+        var gl = regl._gl;
+        gl.enable(gl.SCISSOR_TEST);
+        gl.scissor(
+            viewport[0] - 1,
+            viewport[1] - 1,
+            viewport[2] - viewport[0] + 2,
+            viewport[3] - viewport[1] + 2
+        );
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        // FIXME: why ↓ does not suffice here? regl bug?
+        // regl.clear({color: [0, 0, 0, 0], depth: 1});
+    }
+
     update.range = updateRange;
+    update.clear = clear;
 
     update(cdata);
 

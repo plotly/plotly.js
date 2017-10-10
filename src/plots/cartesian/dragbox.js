@@ -718,6 +718,16 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 editX2 = editX && !xa2.fixedrange && (xa.indexOf(xa2) !== -1),
                 editY2 = editY && !ya2.fixedrange && (ya.indexOf(ya2) !== -1);
 
+            // scattergl translate
+            if(subplot._scene && subplot._scene.range) {
+                // FIXME: possibly we could update axis internal _r and _rl here
+                var xaRange = Lib.simpleMap(xa2.range, xa2.r2l),
+                    yaRange = Lib.simpleMap(ya2.range, ya2.r2l);
+                subplot._scene.range(
+                    [xaRange[0], yaRange[0], xaRange[1], yaRange[1]]
+                );
+            }
+
             if(editX2) {
                 xScaleFactor2 = xScaleFactor;
                 clipDx = ew ? viewBox[0] : getShift(xa2, xScaleFactor2);
@@ -737,7 +747,9 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             }
 
             // don't scale at all if neither axis is scalable here
-            if(!xScaleFactor2 && !yScaleFactor2) continue;
+            if(!xScaleFactor2 && !yScaleFactor2) {
+                continue;
+            }
 
             // but if only one is, reset the other axis scaling
             if(!xScaleFactor2) xScaleFactor2 = 1;
@@ -766,16 +778,6 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             scatterPoints.selectAll('.textpoint')
                 .call(Drawing.setTextPointsScale, xScaleFactor2, yScaleFactor2)
                 .call(Drawing.hideOutsideRangePoints, subplot);
-
-            // scattergl translate
-            if(subplot._scene && subplot._scene.range) {
-                // FIXME: possibly we could update axis internal _r and _rl here
-                var xaRange = Lib.simpleMap(xa2.range, xa2.r2l),
-                    yaRange = Lib.simpleMap(ya2.range, ya2.r2l);
-                subplot._scene.range(
-                    [xaRange[0], yaRange[0], xaRange[1], yaRange[1]]
-                );
-            }
         }
     }
 
