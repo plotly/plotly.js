@@ -36,28 +36,20 @@ var SYMBOL_SVG_CIRCLE = Drawing.symbolFuncs[0](SYMBOL_SIZE * 0.05);
 var convertNumber, convertColorBase;
 
 
-module.exports = createLineWithMarkers;
+module.exports = createScatterScene;
 
 
-function createLineWithMarkers(container, plotinfo, cdata) {
+function createScatterScene(container, plotinfo, cdata) {
     var layout = container._fullLayout;
+    var subplotObj = layout._plots[plotinfo.id];
 
-    var subplotObj = layout._plots.xy;
-    var scatter = subplotObj._scene;
-
-    // create regl-scatter, if not defined
-    if(scatter === undefined) {
-        // TODO: enhance picking
-        // TODO: figure out if there is a way to detect only new passed options
-        scatter = subplotObj._scene = createScatterScene(container);
+    if(subplotObj._scene) {
+        subplotObj._scene(cdata);
+        return;
     }
 
-    scatter(cdata);
+    subplotObj._scene = update;
 
-    return scatter;
-}
-
-function createScatterScene(container) {
     var canvas = container.querySelector('.gl-canvas-focus');
 
     var regl = createRegl({
@@ -98,9 +90,9 @@ function createScatterScene(container) {
 
     function updateBatch(batch) {
         // make sure no old graphics on the canvas
-        regl.clear({
-            color: [0, 0, 0, 0]
-        });
+        // regl.clear({
+        //     color: [0, 0, 0, 0]
+        // });
 
         var lineBatch = [], scatterBatch = [], i;
 
@@ -419,6 +411,8 @@ function createScatterScene(container) {
     }
 
     update.range = updateRange;
+
+    update(cdata);
 
     return update;
 }
