@@ -1539,40 +1539,26 @@ axes.getTickFormat = function(ax) {
     if(ax.tickformatstops && ax.tickformatstops.length > 0) {
         switch(ax.type) {
             case 'date': {
-                tickstop = ax.tickformatstops.reduce(function(acc, stop) {
-                    if(!isProperStop(ax.dtick, stop.dtickrange, convertToMs)) {
-                        return acc;
-                    }
-                    if(!acc) {
-                        return stop;
-                    } else {
-                        return getRangeWidth(stop.dtickrange, convertToMs) > getRangeWidth(acc.dtickrange, convertToMs) ? stop : acc;
-                    }
-                }, null);
+                tickstop = ax.tickformatstops.find(function(stop) {
+                    return isProperStop(ax.dtick, stop.dtickrange, convertToMs)
+                });
                 break;
             }
             case 'linear': {
-                tickstop = ax.tickformatstops.reduce(function(acc, stop) {
-                    if(!isProperStop(ax.dtick, stop.dtickrange)) {
-                        return acc;
-                    }
-                    if(!acc) {
-                        return stop;
-                    } else {
-                        return getRangeWidth(stop.dtickrange) > getRangeWidth(acc.dtickrange) ? stop : acc;
-                    }
-                }, null);
+                tickstop = ax.tickformatstops.find(function(stop) {
+                    return isProperStop(ax.dtick, stop.dtickrange, convertToMs)
+                });
                 break;
             }
             case 'log': {
-                tickstop = ax.tickformatstops.filter(function(stop) {
+                tickstop = ax.tickformatstops.find(function(stop) {
                     var left = stop.dtickrange[0], right = stop.dtickrange[1];
                     var isLeftDtickNull = left === null;
                     var isRightDtickNull = right === null;
                     var isDtickInRangeLeft = compareLogTicks(ax.dtick, left) >= 0;
                     var isDtickInRangeRight = compareLogTicks(ax.dtick, right) <= 0;
                     return (isLeftDtickNull || isDtickInRangeLeft) && (isRightDtickNull || isDtickInRangeRight);
-                })[0];
+                });
                 break;
             }
             default:
