@@ -12,37 +12,27 @@ describe('Plotly.downloadImage', function() {
     'use strict';
     var gd;
 
-    // override click handler on createElement
-    //  so these tests will not actually
-    //  download an image each time they are run
-    //  full credit goes to @etpinard; thanks
     var createElement = document.createElement;
-    var msSaveBlob = navigator.msSaveBlob;
-    var isIE = Lib.isIE;
     var slzProto = (new window.XMLSerializer()).__proto__;
     var serializeToString = slzProto.serializeToString;
 
-    beforeAll(function() {
-        document.createElement = function(args) {
+    beforeEach(function() {
+        gd = createGraphDiv();
+
+        // override click handler on createElement
+        //  so these tests will not actually
+        //  download an image each time they are run
+        //  full credit goes to @etpinard; thanks
+        spyOn(document, 'createElement').and.callFake(function(args) {
             var el = createElement.call(document, args);
             el.click = function() {};
             return el;
-        };
-    });
-
-    afterAll(function() {
-        document.createElement = createElement;
-    });
-
-    beforeEach(function() {
-        gd = createGraphDiv();
+        });
     });
 
     afterEach(function() {
         destroyGraphDiv();
-        Lib.isIE = isIE;
-        slzProto.serializeToString = serializeToString;
-        navigator.msSaveBlob = msSaveBlob;
+        delete navigator.msSaveBlob;
     });
 
     it('should be attached to Plotly', function() {
@@ -73,11 +63,11 @@ describe('Plotly.downloadImage', function() {
 
     it('should produce the right SVG output in IE', function(done) {
         // mock up IE behavior
-        Lib.isIE = function() { return true; };
-        slzProto.serializeToString = function() {
+        spyOn(Lib, 'isIE').and.callFake(function() { return true; });
+        spyOn(slzProto, 'serializeToString').and.callFake(function() {
             return serializeToString.apply(this, arguments)
                 .replace(/(\(#)([^")]*)(\))/gi, '(\"#$2\")');
-        };
+        });
         var savedBlob;
         navigator.msSaveBlob = function(blob) { savedBlob = blob; };
 
@@ -96,8 +86,9 @@ describe('Plotly.downloadImage', function() {
             });
         })
         .then(function() {
-            expect(savedBlob).toBeDefined();
-            if(savedBlob === undefined) return;
+            if(savedBlob === undefined) {
+                fail('undefined saveBlob');
+            }
 
             return new Promise(function(resolve, reject) {
                 var reader = new FileReader();
