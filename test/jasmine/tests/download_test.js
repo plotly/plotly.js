@@ -2,6 +2,9 @@ var Plotly = require('@lib/index');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var textchartMock = require('@mocks/text_chart_arrays.json');
+var fail = require('../assets/fail_test');
+
+var Lib = require('@src/lib');
 
 var LONG_TIMEOUT_INTERVAL = 2 * jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
@@ -9,29 +12,27 @@ describe('Plotly.downloadImage', function() {
     'use strict';
     var gd;
 
-    // override click handler on createElement
-    //  so these tests will not actually
-    //  download an image each time they are run
-    //  full credit goes to @etpinard; thanks
     var createElement = document.createElement;
-    beforeAll(function() {
-        document.createElement = function(args) {
-            var el = createElement.call(document, args);
-            el.click = function() {};
-            return el;
-        };
-    });
-
-    afterAll(function() {
-        document.createElement = createElement;
-    });
+    var slzProto = (new window.XMLSerializer()).__proto__;
+    var serializeToString = slzProto.serializeToString;
 
     beforeEach(function() {
         gd = createGraphDiv();
+
+        // override click handler on createElement
+        //  so these tests will not actually
+        //  download an image each time they are run
+        //  full credit goes to @etpinard; thanks
+        spyOn(document, 'createElement').and.callFake(function(args) {
+            var el = createElement.call(document, args);
+            el.click = function() {};
+            return el;
+        });
     });
 
     afterEach(function() {
         destroyGraphDiv();
+        delete navigator.msSaveBlob;
     });
 
     it('should be attached to Plotly', function() {
@@ -59,8 +60,56 @@ describe('Plotly.downloadImage', function() {
     it('should create link, remove link, accept options', function(done) {
         downloadTest(gd, 'svg', done);
     }, LONG_TIMEOUT_INTERVAL);
-});
 
+    it('should produce the right SVG output in IE', function(done) {
+        // mock up IE behavior
+        spyOn(Lib, 'isIE').and.callFake(function() { return true; });
+        spyOn(slzProto, 'serializeToString').and.callFake(function() {
+            return serializeToString.apply(this, arguments)
+                .replace(/(\(#)([^")]*)(\))/gi, '(\"#$2\")');
+        });
+        var savedBlob;
+        navigator.msSaveBlob = function(blob) { savedBlob = blob; };
+
+        var expectedStart = '<svg class=\'main-svg\' xmlns=\'http://www.w3.org/2000/svg\' xmlns:xlink=\'http://www.w3.org/1999/xlink\'';
+        var plotClip = /clip-path='url\("#clip[0-9a-f]{6}xyplot"\)/;
+        var legendClip = /clip-path=\'url\("#legend[0-9a-f]{6}"\)/;
+
+        Plotly.plot(gd, textchartMock.data, textchartMock.layout)
+        .then(function(gd) {
+            savedBlob = undefined;
+            return Plotly.downloadImage(gd, {
+                format: 'svg',
+                height: 300,
+                width: 300,
+                filename: 'plotly_download'
+            });
+        })
+        .then(function() {
+            if(savedBlob === undefined) {
+                fail('undefined saveBlob');
+            }
+
+            return new Promise(function(resolve, reject) {
+                var reader = new FileReader();
+                reader.onloadend = function() {
+                    var res = reader.result;
+
+                    expect(res.substr(0, expectedStart.length)).toBe(expectedStart);
+                    expect(res.match(plotClip)).not.toBe(null);
+                    expect(res.match(legendClip)).not.toBe(null);
+
+                    resolve();
+                };
+                reader.onerror = function(e) { reject(e); };
+
+                reader.readAsText(savedBlob);
+            });
+        })
+        .catch(fail)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+});
 
 function downloadTest(gd, format, done) {
     // use MutationObserver to monitor the DOM
