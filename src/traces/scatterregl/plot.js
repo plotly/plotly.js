@@ -106,15 +106,11 @@ function plot(container, plotinfo, cdata) {
         count = batch.length;
 
         // rendering requires proper batch sequence
+        //FIXME: add id/batch sequencing here
+        var last = 0
         for(i = 0; i < count; i++) {
-            lineBatch = Array(batch.length);
-            scatterBatch = Array(batch.length);
-            for(var j = 0; j < batch.length; j++) {
-                lineBatch[j] = i === j;
-                scatterBatch[j] = i === j;
-            }
-            line.draw(lineBatch);
-            scatter.draw(scatterBatch);
+            scatter.draw(i)
+            line.draw(i)
         }
     }
 
@@ -136,10 +132,12 @@ function plot(container, plotinfo, cdata) {
                 height = layout.height;
 
             // makeCalcdata runs d2c (data-to-coordinate) on every point
-            var x = options.x;
-            var y = options.y;
+            var x = xaxis.makeCalcdata(options, 'x');
+            var y = yaxis.makeCalcdata(options, 'y');
+
             var xData = Array(x.length);
             var yData = Array(y.length);
+
 
             var isVisible = false;
             var hasLines = false;
@@ -212,7 +210,7 @@ function plot(container, plotinfo, cdata) {
             }
 
             // update lines
-            if(hasLines) {
+            if(hasLines && x.length > 1 && options.line) {
                 lineOptions = {};
                 lineOptions.positions = positions,
                 lineOptions.thickness = options.line.width,
