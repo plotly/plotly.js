@@ -122,6 +122,19 @@ describe('dragElement', function() {
         expect(countCoverSlip()).toEqual(0);
     });
 
+    it('should not add a cover slip div to the DOM when right click', function() {
+        function countCoverSlip() {
+            return d3.selectAll('.dragcover').size();
+        }
+
+        var options = { element: this.element, gd: this.gd };
+        dragElement.init(options);
+
+        options.element.onmousedown({button: 2})
+
+        expect(countCoverSlip()).toEqual(0);
+    });
+
     it('should fire off click event when down/up without dragging', function() {
         var options = { element: this.element, gd: this.gd };
         dragElement.init(options);
