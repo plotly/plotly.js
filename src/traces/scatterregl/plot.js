@@ -132,11 +132,11 @@ function plot(container, plotinfo, cdata) {
         // rendering requires proper batch sequence
         var last = 0
         for(i = 0; i < count; i++) {
-            if (lineBatch[i]) line2d.draw(i)
-            if (scatterBatch[i]) scatter2d.draw(i)
+            if (fillBatch[i]) fill2d.draw(i)
             if (errorXBatch[i]) errorX.draw(i)
             if (errorYBatch[i]) errorY.draw(i)
-            if (fillBatch[i]) fill2d.draw(i)
+            if (lineBatch[i]) line2d.draw(i)
+            if (scatterBatch[i]) scatter2d.draw(i)
         }
     }
 
@@ -191,7 +191,7 @@ function plot(container, plotinfo, cdata) {
                 hasErrorX = trace.error_x.visible === true;
                 hasErrorY = trace.error_y.visible === true;
                 hasMarkers = subTypes.hasMarkers(trace);
-                hasFill = hasLines && trace.fill;
+                hasFill = trace.fill;
             }
 
             // update viewport & range
@@ -301,19 +301,22 @@ function plot(container, plotinfo, cdata) {
                     pos.push(positions[positions.length - 1])
                 }
                 else {
-                    if (trace.fill === 'tonexty' && trace._prevtrace) {
-                        pos = positions.slice();
-                        var nextPos = [],
-                            nextX = trace._prevtrace.x,
-                            nextY = trace._prevtrace.y,
-                            len = nextX.length, xx, yy;
+                    var nextTrace = trace._nexttrace
+                    if (nextTrace && trace.fill === 'tonexty') {
+                        var pos = positions.slice()
 
-                        for (var i = len; i--;) {
+                        var nextPos = [],
+                            nextX = nextTrace.x,
+                            nextY = nextTrace.y,
+                            xx, yy;
+
+                        for (var i = nextX.length; i--;) {
                             xx = parseFloat(nextX[i]), yy = parseFloat(nextY[i]);
                             if (isNaN(xx) || isNaN(yy)) continue
                             pos.push(xx)
                             pos.push(yy)
                         }
+                        fillOptions.fill = nextTrace.fillcolor;
                     }
                 }
                 fillOptions.positions = pos
@@ -331,10 +334,6 @@ function plot(container, plotinfo, cdata) {
             if(hasMarkers) {
                 scatterOptions = {};
                 scatterOptions.positions = positions;
-
-                // TODO rewrite convert function so that
-                // we don't have to loop through the data another time
-
                 scatterOptions.sizes = new Array(len);
                 scatterOptions.markers = new Array(len);
                 scatterOptions.borderSizes = new Array(len);
