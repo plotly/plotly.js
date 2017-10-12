@@ -209,16 +209,19 @@ function plot(container, plotinfo, cdata) {
             // get error values
             var errorVals = ErrorBars.calcFromTrace(trace, layout);
 
-            var positions = getPositions(x, y),
-                len = positions.length * .5,
+            var len = x.length,
+                positions = [len * 2],
                 errorsX = new Float64Array(4 * len),
                 errorsY = new Float64Array(4 * len);
 
             var i, xx, yy, ex0, ex1, ey0, ey1, ptrX = 0, ptrY = 0;
 
             for(i = 0; i < len; ++i) {
-                xx = x[i];
-                yy = y[i];
+                xx = parseFloat(x[i]);
+                yy = parseFloat(y[i]);
+
+                positions[i * 2] = xx;
+                positions[i * 2 + 1] = yy;
 
                 ex0 = errorsX[ptrX++] = xx - errorVals[i].xs || 0;
                 ex1 = errorsX[ptrX++] = errorVals[i].xh - xx || 0;
@@ -269,8 +272,10 @@ function plot(container, plotinfo, cdata) {
                 var lineWidth = lineOptions.thickness,
                     dashes = (DASHES[trace.line.dash] || [1]).slice();
 
+
                 for(i = 0; i < dashes.length; ++i) dashes[i] *= lineWidth;
 
+                lineOptions.dashes = dashes;
                 lineOptions.viewport = viewport;
                 lineOptions.range = range;
             }
@@ -281,22 +286,37 @@ function plot(container, plotinfo, cdata) {
                 fillOptions.thickness = 0;
                 fillOptions.viewport = viewport;
                 fillOptions.range = range;
-                // console.log(trace.fill, trace._prevtrace, trace._nexttrace)
 
+                var pos = []
                 if (trace.fill === 'tozeroy') {
-                    var pos = [positions[0], 0]
+                    pos = [positions[0], 0]
                     pos = pos.concat(positions)
                     pos.push(positions[positions.length - 2])
                     pos.push(0)
-                    fillOptions.positions = pos
                 }
                 else if (trace.fill === 'tozerox') {
-                    var pos = [0, positions[1]]
+                    pos = [0, positions[1]]
                     pos = pos.concat(positions)
                     pos.push(0)
                     pos.push(positions[positions.length - 1])
-                    fillOptions.positions = pos
                 }
+                else {
+                    if (trace.fill === 'tonexty' && trace._prevtrace) {
+                        pos = positions.slice();
+                        var nextPos = [],
+                            nextX = trace._prevtrace.x,
+                            nextY = trace._prevtrace.y,
+                            len = nextX.length, xx, yy;
+
+                        for (var i = len; i--;) {
+                            xx = parseFloat(nextX[i]), yy = parseFloat(nextY[i]);
+                            if (isNaN(xx) || isNaN(yy)) continue
+                            pos.push(xx)
+                            pos.push(yy)
+                        }
+                    }
+                }
+                fillOptions.positions = pos
             }
 
             var sizes, selIds;
@@ -450,22 +470,6 @@ function plot(container, plotinfo, cdata) {
     update(cdata);
 
     return update;
-}
-
-
-//pack x,y arrays into single positions array
-function getPositions (x, y) {
-    var len = Math.max(x.length, y.length) * 2
-    var positions = []
-
-    for (var i = 0, j = 0; i < len; i++) {
-        var xx = parseFloat(x[i])
-        var yy = parseFloat(y[i])
-        if (isNaN(xx) || isNaN(yy)) continue;
-        positions.push(xx);
-        positions.push(yy);
-    }
-    return positions
 }
 
 
