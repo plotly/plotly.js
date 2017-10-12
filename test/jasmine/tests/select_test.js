@@ -142,6 +142,7 @@ describe('Test select box and lasso in general:', function() {
             .map(function(v) { return 'id-' + v; });
         mockCopy.data[0].customdata = mockCopy.data[0].y
             .map(function(v) { return 'customdata-' + v; });
+        addInvisible(mockCopy);
 
         var gd;
         beforeEach(function(done) {
@@ -213,6 +214,7 @@ describe('Test select box and lasso in general:', function() {
     describe('lasso events', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.dragmode = 'lasso';
+        addInvisible(mockCopy);
 
         var gd;
         beforeEach(function(done) {
@@ -293,6 +295,9 @@ describe('Test select box and lasso in general:', function() {
     });
 
     it('should skip over non-visible traces', function(done) {
+        // note: this tests a mock with one or several invisible traces
+        // the invisible traces in the other tests test for multiple
+        // traces, with some visible and some not.
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.dragmode = 'select';
 
@@ -348,6 +353,21 @@ describe('Test select box and lasso in general:', function() {
         .then(resetAndLasso)
         .then(function() {
             checkPointCount(1, '(back to lasso case 0)');
+
+            mockCopy = Lib.extendDeep({}, mock);
+            mockCopy.layout.dragmode = 'select';
+            mockCopy.data[0].visible = false;
+            addInvisible(mockCopy);
+            return Plotly.newPlot(gd, mockCopy);
+        })
+        .then(resetAndSelect)
+        .then(function() {
+            checkPointCount(0, '(multiple invisible traces select)');
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        })
+        .then(resetAndLasso)
+        .then(function() {
+            checkPointCount(0, '(multiple invisible traces lasso)');
         })
         .catch(fail)
         .then(done);
@@ -502,6 +522,7 @@ describe('Test select box and lasso per trace:', function() {
         var fig = Lib.extendDeep({}, require('@mocks/ternary_simple'));
         fig.layout.width = 800;
         fig.layout.dragmode = 'select';
+        addInvisible(fig);
 
         Plotly.plot(gd, fig).then(function() {
             return _run(
@@ -545,6 +566,7 @@ describe('Test select box and lasso per trace:', function() {
 
         var fig = Lib.extendDeep({}, require('@mocks/scattercarpet'));
         fig.layout.dragmode = 'select';
+        addInvisible(fig);
 
         Plotly.plot(gd, fig).then(function() {
             return _run(
@@ -577,6 +599,7 @@ describe('Test select box and lasso per trace:', function() {
         fig.config = {
             mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
         };
+        addInvisible(fig);
 
         Plotly.plot(gd, fig).then(function() {
             return _run(
@@ -620,21 +643,26 @@ describe('Test select box and lasso per trace:', function() {
         var assertPoints = makeAssertPoints(['lon', 'lat']);
         var assertRanges = makeAssertRanges('geo');
         var assertLassoPoints = makeAssertLassoPoints('geo');
+        var fig = {
+            data: [{
+                type: 'scattergeo',
+                lon: [10, 20, 30],
+                lat: [10, 20, 30]
+            }, {
+                type: 'scattergeo',
+                lon: [-10, -20, -30],
+                lat: [10, 20, 30]
+            }],
+            layout: {
+                showlegend: false,
+                dragmode: 'select',
+                width: 800,
+                height: 600
+            }
+        };
+        addInvisible(fig);
 
-        Plotly.plot(gd, [{
-            type: 'scattergeo',
-            lon: [10, 20, 30],
-            lat: [10, 20, 30]
-        }, {
-            type: 'scattergeo',
-            lon: [-10, -20, -30],
-            lat: [10, 20, 30]
-        }], {
-            showlegend: false,
-            dragmode: 'select',
-            width: 800,
-            height: 600
-        })
+        Plotly.plot(gd, fig)
         .then(function() {
             return _run(
                 [[350, 200], [450, 400]],
@@ -686,6 +714,7 @@ describe('Test select box and lasso per trace:', function() {
         fig.layout.height = 450;
         fig.layout.dragmode = 'select';
         fig.layout.geo.scope = 'europe';
+        addInvisible(fig, false);
 
         Plotly.plot(gd, fig)
         .then(function() {
@@ -735,6 +764,7 @@ describe('Test select box and lasso per trace:', function() {
 
         var fig = Lib.extendDeep({}, require('@mocks/0'));
         fig.layout.dragmode = 'lasso';
+        addInvisible(fig);
 
         Plotly.plot(gd, fig)
         .then(function() {
@@ -788,6 +818,7 @@ describe('Test select box and lasso per trace:', function() {
         fig.layout.dragmode = 'lasso';
         fig.layout.width = 600;
         fig.layout.height = 500;
+        addInvisible(fig);
 
         Plotly.plot(gd, fig)
         .then(function() {
@@ -824,3 +855,16 @@ describe('Test select box and lasso per trace:', function() {
         .then(done);
     });
 });
+
+// to make sure none of the above tests fail with extraneous invisible traces,
+// add a bunch of them here
+function addInvisible(fig, canHaveLegend) {
+    var data = fig.data;
+    var inputData = Lib.extendDeep([], data);
+    for(var i = 0; i < inputData.length; i++) {
+        data.push(Lib.extendDeep({}, inputData[i], {visible: false}));
+        if(canHaveLegend !== false) data.push(Lib.extendDeep({}, inputData[i], {visible: 'legendonly'}));
+    }
+
+    if(inputData.length === 1 && fig.layout.showlegend !== true) fig.layout.showlegend = false;
+}
