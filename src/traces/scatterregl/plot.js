@@ -19,6 +19,7 @@ var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var DASHES = require('../../constants/gl2d_dashes');
 var createScatter = require('regl-scatter2d');
 var createLine = require('regl-line2d');
+var createError = require('regl-error2d');
 var Drawing = require('../../components/drawing');
 var svgSdf = require('svg-path-sdf');
 var createRegl = require('regl');
@@ -61,56 +62,77 @@ function plot(container, plotinfo, cdata) {
         pixelRatio: container._context.plotGlPixelRatio || global.devicePixelRatio
     });
 
-    var scatter = createScatter({
+    //FIXME: provide defaults to lazy init
+    var scatter2d, line2d, errorX, errorY, fill2d;
+    var scatter2d = createScatter({
         regl: regl,
         size: 12,
         color: [0, 0, 0, 1],
         borderSize: 1,
         borderColor: [0, 0, 0, 1]
     });
-    var line = createLine({
+    var line2d = createLine({
         regl: regl,
         color: [0, 0, 0, 1],
         thickness: 1,
         miterLimit: 2,
         dashes: [1]
     });
+    var errorX = createError(regl)
+    var errorY = createError(regl)
+    var fill2d = createLine(regl)
 
     var count = 0, viewport;
 
     function updateRange(range) {
         var batch = [];
-
+        range = {range: range};
         for(var i = 0; i < count; i++) {
             batch.push({
-                line: {range: range},
-                scatter: {range: range}
+                line: range,
+                scatter: range,
+                errorX: range,
+                errorY: range,
+                fill: range
             });
         }
 
         updateBatch(batch);
     }
 
+    //update multi-traces data and render in proper layers order
     function updateBatch(batch) {
-        var lineBatch = [], scatterBatch = [], i;
+        var lineBatch = [],
+            scatterBatch = [],
+            errorXBatch = [],
+            errorYBatch = [],
+            fillBatch = [],
+            i;
 
-        // update options of line and scatter components directly
         for(i = 0; i < batch.length; i++) {
-            lineBatch.push(batch[i].line || null);
-            scatterBatch.push(batch[i].scatter || null);
+            lineBatch.push(batch[i].line);
+            scatterBatch.push(batch[i].scatter);
+            errorXBatch.push(batch[i].errorX);
+            errorYBatch.push(batch[i].errorY);
+            fillBatch.push(batch[i].fill);
         }
 
-        line.update(lineBatch);
-        scatter.update(scatterBatch);
+        line2d.update(lineBatch);
+        scatter2d.update(scatterBatch);
+        errorX.update(errorXBatch);
+        errorY.update(errorYBatch);
+        fill2d.update(fillBatch);
 
         count = batch.length;
 
         // rendering requires proper batch sequence
-        //FIXME: add id/batch sequencing here
         var last = 0
         for(i = 0; i < count; i++) {
-            scatter.draw(i)
-            line.draw(i)
+            if (lineBatch[i]) line2d.draw(i)
+            if (scatterBatch[i]) scatter2d.draw(i)
+            if (errorXBatch[i]) errorX.draw(i)
+            if (errorYBatch[i]) errorY.draw(i)
+            if (fillBatch[i]) fill2d.draw(i)
         }
     }
 
@@ -121,7 +143,7 @@ function plot(container, plotinfo, cdata) {
         cdscatters.forEach(function(cdscatter) {
             if(!cdscatter) return;
 
-            var lineOptions, scatterOptions;
+            var lineOptions, scatterOptions, errorXOptions, errorYOptions, fillOptions;
 
             var options = cdscatter[0].trace;
             var xaxis = Axes.getFromId(container, options.xaxis || 'x'),
@@ -193,8 +215,6 @@ function plot(container, plotinfo, cdata) {
                 xData[i] = xx = getX(x[i]);
                 yData[i] = yy = getY(y[i]);
 
-                // if(isNaN(xx) || isNaN(yy)) continue;
-
                 positions[ptr++] = parseFloat(xx);
                 positions[ptr++] = parseFloat(yy);
 
@@ -207,6 +227,32 @@ function plot(container, plotinfo, cdata) {
                 errorsY[ptrY++] = 0;
                 ey0 = errorsY[ptrY++] = yy - errorVals[i].ys || 0;
                 ey1 = errorsY[ptrY++] = errorVals[i].yh - yy || 0;
+            }
+
+            if (hasErrorX) {
+                var errorOptions = options.error_x;
+                if(errorOptions.copy_ystyle) {
+                    errorOptions = options.error_y;
+                }
+                errorXOptions = {};
+                errorXOptions.positions = positions;
+                errorXOptions.errors = errorsX;
+                errorXOptions.capSize = errorOptions.width;
+                errorXOptions.lineWidth = errorOptions.thickness;
+                errorXOptions.color = convertColor(errorOptions.color, 1, 1);
+                errorXOptions.viewport = viewport;
+                errorXOptions.range = range;
+            }
+            if (hasErrorY) {
+                var errorOptions = options.error_y;
+                errorYOptions = {};
+                errorYOptions.positions = positions;
+                errorYOptions.errors = errorsY;
+                errorYOptions.capSize = errorOptions.width;
+                errorYOptions.lineWidth = errorOptions.thickness;
+                errorYOptions.color = convertColor(errorOptions.color, 1, 1);
+                errorYOptions.viewport = viewport;
+                errorYOptions.range = range;
             }
 
             // update lines
@@ -244,10 +290,6 @@ function plot(container, plotinfo, cdata) {
                 lineOptions.viewport = viewport;
                 lineOptions.range = range;
             }
-
-
-            // updateError('X', options, positions, errorsX);
-            // updateError('Y', options, positions, errorsY);
 
             var sizes, selIds;
 
@@ -366,7 +408,10 @@ function plot(container, plotinfo, cdata) {
 
             batch.push({
                 scatter: scatterOptions,
-                line: lineOptions
+                line: lineOptions,
+                errorX: errorXOptions,
+                errorY: errorYOptions,
+                fill: fillOptions
             });
 
             // add item for autorange routine
@@ -381,29 +426,6 @@ function plot(container, plotinfo, cdata) {
         });
 
         updateBatch(batch);
-    }
-
-
-    function updateError(axLetter, options, positions, errors) {
-        var errorObj = this['error' + axLetter],
-            errorOptions = options['error_' + axLetter.toLowerCase()];
-
-        if(axLetter.toLowerCase() === 'x' && errorOptions.copy_ystyle) {
-            errorOptions = options.error_y;
-        }
-
-        if(this['hasError' + axLetter]) {
-            errorObj.options.positions = positions;
-            errorObj.options.errors = errors;
-            errorObj.options.capSize = errorOptions.width;
-            errorObj.options.lineWidth = errorOptions.thickness;  // ballpark rescaling
-            errorObj.options.color = convertColor(errorOptions.color, 1, 1);
-
-            errorObj.update();
-        }
-        else {
-            errorObj.clear();
-        }
     }
 
     function clear() {
