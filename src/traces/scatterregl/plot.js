@@ -237,9 +237,9 @@ function plot(container, plotinfo, cdata) {
                 errorXOptions = {};
                 errorXOptions.positions = positions;
                 errorXOptions.errors = errorsX;
-                errorXOptions.capSize = errorOptions.width;
+                errorXOptions.capSize = errorOptions.width * 2;
                 errorXOptions.lineWidth = errorOptions.thickness;
-                errorXOptions.color = convertColor(errorOptions.color, 1, 1);
+                errorXOptions.color = errorOptions.color;
                 errorXOptions.viewport = viewport;
                 errorXOptions.range = range;
             }
@@ -248,9 +248,9 @@ function plot(container, plotinfo, cdata) {
                 errorYOptions = {};
                 errorYOptions.positions = positions;
                 errorYOptions.errors = errorsY;
-                errorYOptions.capSize = errorOptions.width;
+                errorYOptions.capSize = errorOptions.width * 2;
                 errorYOptions.lineWidth = errorOptions.thickness;
-                errorYOptions.color = convertColor(errorOptions.color, 1, 1);
+                errorYOptions.color = errorOptions.color;
                 errorYOptions.viewport = viewport;
                 errorYOptions.range = range;
             }
