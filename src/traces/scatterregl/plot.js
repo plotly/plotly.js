@@ -15,6 +15,7 @@ var ErrorBars = require('../../components/errorbars');
 var str2RGBArray = require('../../lib/str2rgbarray');
 var formatColor = require('../../lib/gl_format_color');
 var subTypes = require('../scatter/subtypes');
+var linkTraces = require('../scatter/link_traces');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var DASHES = require('../../constants/gl2d_dashes');
 var createScatter = require('regl-scatter2d');
@@ -43,6 +44,9 @@ module.exports = plot;
 function plot(container, plotinfo, cdata) {
     var layout = container._fullLayout;
     var subplotObj = layout._plots[plotinfo.id];
+
+    // that is needed for fills
+    linkTraces(container, plotinfo, cdata);
 
     if(subplotObj._scene) {
         subplotObj._scene(cdata);
@@ -145,41 +149,49 @@ function plot(container, plotinfo, cdata) {
 
             var lineOptions, scatterOptions, errorXOptions, errorYOptions, fillOptions;
 
-            var options = cdscatter[0].trace;
-            var xaxis = Axes.getFromId(container, options.xaxis || 'x'),
-                yaxis = Axes.getFromId(container, options.yaxis || 'y'),
-                selection = options.selection;
+            var trace = cdscatter[0].trace;
+            var xaxis = Axes.getFromId(container, trace.xaxis || 'x'),
+                yaxis = Axes.getFromId(container, trace.yaxis || 'y'),
+                selection = trace.selection;
             var vpSize = layout._size,
                 width = layout.width,
                 height = layout.height;
 
             // makeCalcdata runs d2c (data-to-coordinate) on every point
-            var x = xaxis.makeCalcdata(options, 'x');
-            var y = yaxis.makeCalcdata(options, 'y');
+            var x = xaxis.makeCalcdata(trace, 'x');
+            var y = yaxis.makeCalcdata(trace, 'y');
 
-            var xData = Array(x.length);
-            var yData = Array(y.length);
+            // add item for autorange routine
+            // former expandAxesFancy
+            Axes.expand(xaxis, x, {padded: true, ppad: sizes});
+            Axes.expand(yaxis, y, {padded: true, ppad: sizes});
 
+            // convert log axes
+            if (xaxis.type === 'log') x = x.map(xaxis.d2l)
+            if (yaxis.type === 'log') y = y.map(xaxis.d2l)
 
             var isVisible = false;
             var hasLines = false;
             var hasErrorX = false;
             var hasErrorY = false;
             var hasMarkers = false;
+            var hasFill = false;
 
-            if(options.visible !== true) {
+            if(trace.visible !== true) {
                 isVisible = false;
                 hasLines = false;
                 hasErrorX = false;
                 hasErrorY = false;
                 hasMarkers = false;
+                hasFill = false;
             }
             else {
                 isVisible = true;
-                hasLines = subTypes.hasLines(options);
-                hasErrorX = options.error_x.visible === true;
-                hasErrorY = options.error_y.visible === true;
-                hasMarkers = subTypes.hasMarkers(options);
+                hasLines = subTypes.hasLines(trace) && x.length > 1 && trace.line;
+                hasErrorX = trace.error_x.visible === true;
+                hasErrorY = trace.error_y.visible === true;
+                hasMarkers = subTypes.hasMarkers(trace);
+                hasFill = hasLines && trace.fill;
             }
 
             // update viewport & range
@@ -195,28 +207,18 @@ function plot(container, plotinfo, cdata) {
             ];
 
             // get error values
-            var errorVals = ErrorBars.calcFromTrace(options, layout);
+            var errorVals = ErrorBars.calcFromTrace(trace, layout);
 
-            var len = x.length,
-                positions = Array(2 * len),
+            var positions = getPositions(x, y),
+                len = positions.length * .5,
                 errorsX = new Float64Array(4 * len),
-                errorsY = new Float64Array(4 * len),
-                pId = 0,
-                ptr = 0,
-                ptrX = 0,
-                ptrY = 0;
+                errorsY = new Float64Array(4 * len);
 
-            var getX = (xaxis.type === 'log') ? xaxis.d2l : function(x) { return x; };
-            var getY = (yaxis.type === 'log') ? yaxis.d2l : function(y) { return y; };
-
-            var i, xx, yy, ex0, ex1, ey0, ey1;
+            var i, xx, yy, ex0, ex1, ey0, ey1, ptrX = 0, ptrY = 0;
 
             for(i = 0; i < len; ++i) {
-                xData[i] = xx = getX(x[i]);
-                yData[i] = yy = getY(y[i]);
-
-                positions[ptr++] = parseFloat(xx);
-                positions[ptr++] = parseFloat(yy);
+                xx = x[i];
+                yy = y[i];
 
                 ex0 = errorsX[ptrX++] = xx - errorVals[i].xs || 0;
                 ex1 = errorsX[ptrX++] = errorVals[i].xh - xx || 0;
@@ -230,9 +232,9 @@ function plot(container, plotinfo, cdata) {
             }
 
             if (hasErrorX) {
-                var errorOptions = options.error_x;
+                var errorOptions = trace.error_x;
                 if(errorOptions.copy_ystyle) {
-                    errorOptions = options.error_y;
+                    errorOptions = trace.error_y;
                 }
                 errorXOptions = {};
                 errorXOptions.positions = positions;
@@ -244,7 +246,7 @@ function plot(container, plotinfo, cdata) {
                 errorXOptions.range = range;
             }
             if (hasErrorY) {
-                var errorOptions = options.error_y;
+                var errorOptions = trace.error_y;
                 errorYOptions = {};
                 errorYOptions.positions = positions;
                 errorYOptions.errors = errorsY;
@@ -255,40 +257,46 @@ function plot(container, plotinfo, cdata) {
                 errorYOptions.range = range;
             }
 
-            // update lines
-            if(hasLines && x.length > 1 && options.line) {
+            if(hasLines) {
                 lineOptions = {};
                 lineOptions.positions = positions,
-                lineOptions.thickness = options.line.width,
-                lineOptions.color = options.line.color,
-                lineOptions.opacity = options.opacity,
-                lineOptions.join = options.opacity === 1.0 ? 'rect' : 'round';
+                lineOptions.thickness = trace.line.width,
+                lineOptions.color = trace.line.color,
+                lineOptions.opacity = trace.opacity,
+                lineOptions.join = trace.opacity === 1.0 ? 'rect' : 'round';
                 lineOptions.overlay = true;
 
                 var lineWidth = lineOptions.thickness,
-                    dashes = (DASHES[options.line.dash] || [1]).slice();
+                    dashes = (DASHES[trace.line.dash] || [1]).slice();
 
                 for(i = 0; i < dashes.length; ++i) dashes[i] *= lineWidth;
 
-                // FIXME: make regl renderer for fills
-                switch(options.fill) {
-                    case 'tozeroy':
-                        // lineOptions.fill = [false, true, false, false];
-                        break;
-                    case 'tozerox':
-                        // lineOptions.fill = [true, false, false, false];
-                        break;
-                    default:
-                        // lineOptions.fill = [false, false, false, false];
-                        break;
-                }
-                var fillColor = str2RGBArray(options.fillcolor);
-
-                lineOptions.dashes = dashes;
-                // lineOptions.fillColor = [fillColor, fillColor, fillColor, fillColor];
-
                 lineOptions.viewport = viewport;
                 lineOptions.range = range;
+            }
+
+            if (hasFill) {
+                fillOptions = {};
+                fillOptions.fill = trace.fillcolor;
+                fillOptions.thickness = 0;
+                fillOptions.viewport = viewport;
+                fillOptions.range = range;
+                // console.log(trace.fill, trace._prevtrace, trace._nexttrace)
+
+                if (trace.fill === 'tozeroy') {
+                    var pos = [positions[0], 0]
+                    pos = pos.concat(positions)
+                    pos.push(positions[positions.length - 2])
+                    pos.push(0)
+                    fillOptions.positions = pos
+                }
+                else if (trace.fill === 'tozerox') {
+                    var pos = [0, positions[1]]
+                    pos = pos.concat(positions)
+                    pos.push(0)
+                    pos.push(positions[positions.length - 1])
+                    fillOptions.positions = pos
+                }
             }
 
             var sizes, selIds;
@@ -313,11 +321,11 @@ function plot(container, plotinfo, cdata) {
                 scatterOptions.colors = new Array(len);
                 scatterOptions.borderColors = new Array(len);
 
-                var markerSizeFunc = makeBubbleSizeFn(options);
+                var markerSizeFunc = makeBubbleSizeFn(trace);
 
-                var markerOpts = options.marker;
+                var markerOpts = trace.marker;
                 var markerOpacity = markerOpts.opacity;
-                var traceOpacity = options.opacity;
+                var traceOpacity = trace.opacity;
                 var symbols = markerOpts.symbol;
 
                 var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len);
@@ -413,16 +421,6 @@ function plot(container, plotinfo, cdata) {
                 errorY: errorYOptions,
                 fill: fillOptions
             });
-
-            // add item for autorange routine
-            // former expandAxesFancy
-            Axes.expand(xaxis, x, {padded: true, ppad: sizes});
-            Axes.expand(yaxis, y, {padded: true, ppad: sizes});
-
-            // provide reference for selecting points
-            if(!cdscatter[0].glTrace) {
-                cdscatter[0].glTrace = this;
-            }
         });
 
         updateBatch(batch);
@@ -452,6 +450,22 @@ function plot(container, plotinfo, cdata) {
     update(cdata);
 
     return update;
+}
+
+
+//pack x,y arrays into single positions array
+function getPositions (x, y) {
+    var len = Math.max(x.length, y.length) * 2
+    var positions = []
+
+    for (var i = 0, j = 0; i < len; i++) {
+        var xx = parseFloat(x[i])
+        var yy = parseFloat(y[i])
+        if (isNaN(xx) || isNaN(yy)) continue;
+        positions.push(xx);
+        positions.push(yy);
+    }
+    return positions
 }
 
 
