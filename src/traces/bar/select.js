@@ -17,7 +17,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
     var node3 = cd[0].node3;
     var i;
 
-    if(trace.visible !== true) return;
+    if(trace.visible !== true) return [];
 
     if(polygon === false) {
         // clear selection
