@@ -499,6 +499,43 @@ describe('hover info', function() {
             .catch(fail)
             .then(done);
         });
+
+        it('should display correct label content with specified format', function(done) {
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                type: 'heatmap',
+                y: [0, 1],
+                z: [[1.11111, 2.2222, 3.33333], [4.44444, 5.55555, 6.66666]],
+                name: 'one',
+                zhoverformat: '.2f'
+            }, {
+                type: 'heatmap',
+                y: [2, 3],
+                z: [[1, 2, 3], [2, 2, 1]],
+                name: 'two'
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 100);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 3\nz: 2',
+                    name: 'two'
+                });
+            })
+            .then(function() {
+                _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 1\nz: 5.56',
+                    name: 'one'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
     });
 
     describe('hoverformat', function() {

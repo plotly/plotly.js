@@ -100,6 +100,17 @@ module.exports = extendFlat({}, {
         editType: 'plot',
         description: 'Sets the vertical gap (in pixels) between bricks.'
     },
+    zhoverformat: {
+        valType: 'string',
+        dflt: '',
+        role: 'style',
+        editType: 'none',
+        description: [
+            'Sets the hover text formatting rule using d3 formatting mini-languages',
+            'which are very similar to those in Python. See:',
+            'https://github.com/d3/d3-format/blob/master/README.md#locale_format'
+        ].join(' ')
+    },
 },
     colorscaleAttrs,
     { autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}) },
