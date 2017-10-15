@@ -1054,6 +1054,7 @@ function cleanPoint(d, hovermode) {
     fill('fontSize', 'hts', 'hoverlabel.font.size');
     fill('fontColor', 'htc', 'hoverlabel.font.color');
     fill('nameLength', 'hnl', 'hoverlabel.namelength');
+    fill('zformat', 'hzf', 'hoverlabel.zformat');
 
     d.posref = hovermode === 'y' ? (d.x0 + d.x1) / 2 : (d.y0 + d.y1) / 2;
 
@@ -1095,7 +1096,13 @@ function cleanPoint(d, hovermode) {
         d.yVal = d.ya.c2d(d.yLabelVal);
     }
 
-    if(d.zLabelVal !== undefined) d.zLabel = String(d.zLabelVal);
+    if(d.zLabelVal !== undefined) {
+        if(d.zformat !== undefined) {
+            d.zLabel = d3.format(d.zformat)(d.zLabelVal).replace(/-/g, constants.MINUS_SIGN);
+        } else {
+            d.zLabel = String(d.zLabelVal);
+        }
+    }
 
     // for box means and error bars, add the range to the label
     if(!isNaN(d.xerr) && !(d.xa.type === 'log' && d.xerr <= 0)) {

@@ -1,0 +1,39 @@
+{
+  "data": [
+    {
+      "z": [
+        [
+          0.123456789,
+          10.123456789,
+          20.123456789
+        ]
+      ],
+      "type": "heatmap"
+    },
+    {
+      "x": [0,1,2],
+      "y": [2, 2, 2],
+      "z": [
+          1.123456789,
+          2.123456789,
+          3.123456789
+        ],
+      "type": "heatmap",
+      "hoverlabel": {
+        "zformat": "undefined"
+      },
+      "zmin": 0,
+      "zmax": 20,
+      "showscale": false
+    }
+  ],
+  "layout": {
+    "title": "XXX",
+    "xaxis": {
+      "hoverformat": ".1f"
+    },
+    "hoverlabel": {
+      "zformat": ".2f"
+    }
+  }
+}
