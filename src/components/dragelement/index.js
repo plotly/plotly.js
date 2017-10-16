@@ -78,7 +78,7 @@ dragElement.init = function init(options) {
     element.ontouchstart = onStart;
 
     function onStart(e) {
-        if(e.button && e.button === 2) {    // right click
+        if(e.buttons && e.buttons === 2) {    // right click
             return;
         }
 

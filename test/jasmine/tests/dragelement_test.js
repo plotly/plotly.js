@@ -130,8 +130,7 @@ describe('dragElement', function() {
         var options = { element: this.element, gd: this.gd };
         dragElement.init(options);
 
-        options.element.onmousedown({button: 2})
-
+        mouseEvent('mousedown', this.x, this.y, { buttons: 2 });
         expect(countCoverSlip()).toEqual(0);
     });
 
