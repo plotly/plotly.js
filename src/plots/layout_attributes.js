@@ -168,14 +168,6 @@ module.exports = {
             'forked graphs from the plotly service (at https://plot.ly or on-premise).'
         ].join(' ')
     },
-    smith: {
-        // will become a boolean if/when we implement this
-        valType: 'enumerated',
-        role: 'info',
-        values: [false],
-        dflt: false,
-        editType: 'none'
-    },
     showlegend: {
         // handled in legend.supplyLayoutDefaults
         // but included here because it's not in the legend object
