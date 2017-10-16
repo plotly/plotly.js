@@ -132,8 +132,6 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                 .attr('class', 'points')
               .selectAll('path')
                 .data(function(d) {
-                    var pts = (trace.boxpoints === 'all') ? d.val :
-                            d.val.filter(function(v) { return (v < d.lf || v > d.uf); }),
                         // normally use IQR, but if this is 0 or too small, use max-min
                         typicalSpread = Math.max((d.max - d.min) / 10, d.q3 - d.q1),
                         minSpread = typicalSpread * 1e-9,
@@ -146,6 +144,10 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                         pmax,
                         jitterFactor,
                         newJitter;
+
+                    var pts = trace.boxpoints === 'all' ?
+                        d.pts :
+                        d.pts.filter(function(pt) { return (pt.v < d.lf || pt.v > d.uf); });
 
                     // dynamic jitter
                     if(trace.jitter) {
@@ -179,31 +181,32 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                         newJitter = trace.jitter * 2 / maxJitterFactor;
                     }
 
-                    return pts.map(function(v, i) {
-                        var posOffset = trace.pointpos,
-                            p;
-                        if(trace.jitter) {
-                            posOffset += newJitter * jitterFactors[i] * (rand() - 0.5);
-                        }
+                    // fills in 'x' and 'y' in calcdata 'pts' item
+                    for(i = 0; i < pts.length; i++) {
+                        var pt = pts[i];
+                        var v = pt.v;
+
+                        var jitterOffset = trace.jitter ?
+                            bdPos * (newJitter * jitterFactors[i] * (rand() - 0.5)) :
+                            0;
+
+                        var posPx = d.pos + bPos + bdPos * trace.pointpos + jitterOffset;
 
                         if(trace.orientation === 'h') {
-                            p = {
-                                y: d.pos + posOffset * bdPos + bPos,
-                                x: v
-                            };
+                            pt.y = posPx;
+                            pt.x = v;
                         } else {
-                            p = {
-                                x: d.pos + posOffset * bdPos + bPos,
-                                y: v
-                            };
+                            pt.x = posPx;
+                            pt.y = v;
                         }
 
                         // tag suspected outliers
                         if(trace.boxpoints === 'suspectedoutliers' && v < d.uo && v > d.lo) {
-                            p.so = true;
+                            pt.so = true;
                         }
-                        return p;
-                    });
+                    }
+
+                    return pts;
                 })
                 .enter().append('path')
                 .classed('point', true)
