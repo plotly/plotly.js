@@ -12,9 +12,8 @@ var scatterAttrs = require('../scatter/attributes');
 var colorAttrs = require('../../components/color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
-var scatterMarkerAttrs = scatterAttrs.marker,
-    scatterMarkerLineAttrs = scatterMarkerAttrs.line;
-
+var scatterMarkerAttrs = scatterAttrs.marker;
+var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
 module.exports = {
     y: {
@@ -159,9 +158,11 @@ module.exports = {
             {arrayOk: false, editType: 'style'}),
         line: {
             color: extendFlat({}, scatterMarkerLineAttrs.color,
-                {arrayOk: false, dflt: colorAttrs.defaultLine, editType: 'style'}),
+                {arrayOk: false, dflt: colorAttrs.defaultLine, editType: 'style'}
+            ),
             width: extendFlat({}, scatterMarkerLineAttrs.width,
-                {arrayOk: false, dflt: 0, editType: 'style'}),
+                {arrayOk: false, dflt: 0, editType: 'style'}
+            ),
             outliercolor: {
                 valType: 'color',
                 role: 'style',

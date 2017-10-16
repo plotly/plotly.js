@@ -13,7 +13,6 @@ var d3 = require('d3');
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
 
-
 // repeatable pseudorandom generator
 var randSeed = 2000000000;
 
@@ -31,15 +30,13 @@ function rand() {
 }
 
 // constants for dynamic jitter (ie less jitter for sparser points)
-var JITTERCOUNT = 5, // points either side of this to include
-    JITTERSPREAD = 0.01; // fraction of IQR to count as "dense"
-
+var JITTERCOUNT = 5; // points either side of this to include
+var JITTERSPREAD = 0.01; // fraction of IQR to count as "dense"
 
 module.exports = function plot(gd, plotinfo, cdbox) {
-    var fullLayout = gd._fullLayout,
-        xa = plotinfo.xaxis,
-        ya = plotinfo.yaxis,
-        posAxis, valAxis;
+    var fullLayout = gd._fullLayout;
+    var xa = plotinfo.xaxis;
+    var ya = plotinfo.yaxis;
 
     var boxtraces = plotinfo.plot.select('.boxlayer')
         .selectAll('g.trace.boxes')
@@ -48,21 +45,25 @@ module.exports = function plot(gd, plotinfo, cdbox) {
         .attr('class', 'trace boxes');
 
     boxtraces.each(function(d) {
-        var t = d[0].t,
-            trace = d[0].trace,
-            group = (fullLayout.boxmode === 'group' && gd.numboxes > 1),
-            // box half width
-            bdPos = t.dPos * (1 - fullLayout.boxgap) * (1 - fullLayout.boxgroupgap) / (group ? gd.numboxes : 1),
-            // box center offset
-            bPos = group ? 2 * t.dPos * (-0.5 + (t.boxnum + 0.5) / gd.numboxes) * (1 - fullLayout.boxgap) : 0,
-            // whisker width
-            wdPos = bdPos * trace.whiskerwidth;
+        var cd0 = d[0];
+        var t = cd0.t;
+        var trace = cd0.trace;
+
+        var group = (fullLayout.boxmode === 'group' && gd.numboxes > 1);
+        // box half width
+        var bdPos = t.dPos * (1 - fullLayout.boxgap) * (1 - fullLayout.boxgroupgap) / (group ? gd.numboxes : 1);
+        // box center offset
+        var bPos = group ? 2 * t.dPos * (-0.5 + (t.boxnum + 0.5) / gd.numboxes) * (1 - fullLayout.boxgap) : 0;
+        // whisker width
+        var wdPos = bdPos * trace.whiskerwidth;
+
         if(trace.visible !== true || t.emptybox) {
             d3.select(this).remove();
             return;
         }
 
         // set axis via orientation
+        var posAxis, valAxis;
         if(trace.orientation === 'h') {
             posAxis = ya;
             valAxis = xa;
