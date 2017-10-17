@@ -48,6 +48,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
         var cd0 = d[0];
         var t = cd0.t;
         var trace = cd0.trace;
+        var sel = cd0.node3 = d3.select(this);
 
         var group = (fullLayout.boxmode === 'group' && gd.numboxes > 1);
         // box half width
@@ -80,7 +81,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
         seed();
 
         // boxes and whiskers
-        d3.select(this).selectAll('path.box')
+        sel.selectAll('path.box')
             .data(Lib.identity)
             .enter().append('path')
             .style('vector-effect', 'non-scaling-stroke')
@@ -99,6 +100,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                         Math.min(q1, q3) + 1, Math.max(q1, q3) - 1),
                     lf = valAxis.c2p(trace.boxpoints === false ? d.min : d.lf, true),
                     uf = valAxis.c2p(trace.boxpoints === false ? d.max : d.uf, true);
+
                 if(trace.orientation === 'h') {
                     d3.select(this).attr('d',
                         'M' + m + ',' + pos0 + 'V' + pos1 + // median line
@@ -118,7 +120,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
 
         // draw points, if desired
         if(trace.boxpoints) {
-            d3.select(this).selectAll('g.points')
+            sel.selectAll('g.points')
                 // since box plot points get an extra level of nesting, each
                 // box needs the trace styling info
                 .data(function(d) {
@@ -212,9 +214,10 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                 .classed('point', true)
                 .call(Drawing.translatePoints, xa, ya);
         }
+
         // draw mean (and stdev diamond) if desired
         if(trace.boxmean) {
-            d3.select(this).selectAll('path.mean')
+            sel.selectAll('path.mean')
                 .data(Lib.identity)
                 .enter().append('path')
                 .attr('class', 'mean')
