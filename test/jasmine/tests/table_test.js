@@ -23,7 +23,18 @@ describe('table plots', function() {
     }
 
     it('should be able switch to table trace from another plot type', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/workspace_starter_state.json'));
+        var mock = {
+            data: [
+                {
+                    mode: 'markers',
+                    type: 'scatter'
+                }
+            ],
+            layout: {
+                hovermode: 'closest'
+            }
+        };
+
         initialize(mock, gd)
             .then(function() {
                 return Plotly.restyle(gd, {type: 'table'})
