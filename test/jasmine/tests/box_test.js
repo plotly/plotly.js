@@ -1,4 +1,15 @@
+var Plotly = require('@lib');
+var Lib = require('@src/lib');
+
 var Box = require('@src/traces/box');
+
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
+var mouseEvent = require('../assets/mouse_event');
+
+var customAssertions = require('../assets/custom_assertions');
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 describe('Test boxes supplyDefaults', function() {
     var traceIn;
@@ -99,5 +110,73 @@ describe('Test boxes supplyDefaults', function() {
         // we're on a date axis at this point.
         expect(traceOut.xcalendar).toBe('coptic');
         expect(traceOut.ycalendar).toBe('ethiopian');
+    });
+});
+
+describe('Test box hover:', function() {
+    var gd;
+
+    afterEach(destroyGraphDiv);
+
+    function run(specs) {
+        gd = createGraphDiv();
+
+        var fig = Lib.extendDeep(
+            {width: 700, height: 500},
+            specs.mock || require('@mocks/box_grouped.json')
+        );
+
+        if(specs.patch) {
+            fig = specs.patch(fig);
+        }
+
+        var pos = specs.pos || [200, 200];
+
+        return Plotly.plot(gd, fig).then(function() {
+            mouseEvent('mousemove', pos[0], pos[1]);
+            assertHoverLabelContent(specs);
+        });
+    }
+
+    [{
+        desc: 'base',
+        nums: ['0.55', '0', '0.3', '0.6', '0.7'],
+        name: ['radishes', '', '', '', ''],
+        axis: 'day 1',
+
+    }, {
+        desc: 'with mean',
+        patch: function(fig) {
+            fig.data.forEach(function(trace) {
+                trace.boxmean = true;
+            });
+            return fig;
+        },
+        nums: ['0.55', '0', '0.3', '0.6', '0.7', '0.45'],
+        name: ['radishes', '', '', '', '', ''],
+        axis: 'day 1',
+
+    }, {
+        desc: 'with sd',
+        patch: function(fig) {
+            fig.data.forEach(function(trace) {
+                trace.boxmean = 'sd';
+            });
+            return fig;
+        },
+        nums: ['0.55', '0', '0.3', '0.6', '0.7', '0.45 ± 0.2362908'],
+        name: ['radishes', '', '', '', '', ''],
+        axis: 'day 1',
+    }, {
+        desc: 'with boxpoints fences',
+        mock: require('@mocks/boxplots_outliercolordflt.json'),
+        pos: [350, 200],
+        nums: ['8.15', '0.75', '6.8', '10.25', '23.25', '5.25', '12'],
+        name: ['', '', '', '', '', '', ''],
+        axis: 'trace 0',
+    }].forEach(function(specs) {
+        it('should generate correct hover labels ' + specs.desc, function(done) {
+            run(specs).catch(fail).then(done);
+        });
     });
 });
