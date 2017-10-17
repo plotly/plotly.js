@@ -71,4 +71,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             coerce('marker.line.outlierwidth');
         }
     }
+
+    coerce('hoveron');
 };

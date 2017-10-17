@@ -174,6 +174,48 @@ describe('Test box hover:', function() {
         nums: ['8.15', '0.75', '6.8', '10.25', '23.25', '5.25', '12'],
         name: ['', '', '', '', '', '', ''],
         axis: 'trace 0',
+    }, {
+        desc: 'hoveron points | hovermode closest',
+        patch: function(fig) {
+            fig.data.forEach(function(trace) {
+                trace.boxpoints = 'all';
+                trace.hoveron = 'points';
+            });
+            fig.layout.hovermode = 'closest';
+            return fig;
+        },
+        nums: ['(day 1, 0.7)', '(day 1, 0.6)', '(day 1, 0.6)'],
+        name: ['radishes', 'radishes', 'radishes']
+    }, {
+        desc: 'hoveron points | hovermode x',
+        patch: function(fig) {
+            fig.data.forEach(function(trace) {
+                trace.boxpoints = 'all';
+                trace.hoveron = 'points';
+            });
+            fig.layout.hovermode = 'x';
+            return fig;
+        },
+        nums: ['0', '0.3', '0.5', '0.6', '0.6', '0.7'],
+        name: ['radishes', 'radishes', 'radishes', 'radishes', 'radishes', 'radishes'],
+        axis: 'day 1'
+    }, {
+        desc: 'hoveron boxes+points | hovermode x',
+        patch: function(fig) {
+            fig.data.forEach(function(trace) {
+                trace.boxpoints = 'all';
+                trace.hoveron = 'points+boxes';
+            });
+            fig.layout.hovermode = 'x';
+            return fig;
+        },
+        nums: [
+            '0', '0.7', '0.6', '0.6', '0.5', '0.3', '0', '0.7', '0.6', '0.3', '0.55'
+        ],
+        name: [
+            '', '', '', '', '', '', '', '', '', '', 'radishes'
+        ],
+        axis: 'day 1'
     }].forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
             run(specs).catch(fail).then(done);

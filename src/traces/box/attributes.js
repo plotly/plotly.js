@@ -203,5 +203,16 @@ module.exports = {
         },
         editType: 'plot'
     },
-    fillcolor: scatterAttrs.fillcolor
+    fillcolor: scatterAttrs.fillcolor,
+    hoveron: {
+        valType: 'flaglist',
+        flags: ['boxes', 'points'],
+        dflt: 'boxes',
+        role: 'info',
+        editType: 'style',
+        description: [
+            'Do the hover effects highlight individual boxes ',
+            'or jitter points or both?'
+        ].join(' ')
+    }
 };
