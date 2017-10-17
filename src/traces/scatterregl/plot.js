@@ -24,6 +24,7 @@ var createError = require('regl-error2d');
 var Drawing = require('../../components/drawing');
 var svgSdf = require('svg-path-sdf');
 var createRegl = require('regl');
+var Scatter = require('./');
 
 var DESELECTDIM = 0.2;
 var TRANSPARENT = [0, 0, 0, 0];
@@ -44,16 +45,24 @@ module.exports = plot;
 function plot(container, plotinfo, cdata) {
     var layout = container._fullLayout;
     var subplotObj = layout._plots[plotinfo.id];
+    var scene = subplotObj._scene ? subplotObj._scene : updateScene;
 
     // that is needed for fills
     linkTraces(container, plotinfo, cdata);
 
+    // put references to traces for selectPoints
+    cdata.forEach(function (cd) {
+        if (!cd[0] || !cd[0].trace) return;
+        cd[0].trace._scene = scene;
+    });
+
+    // avoid creating scene if it exists already
     if(subplotObj._scene) {
-        subplotObj._scene(cdata);
+        scene(cdata);
         return;
     }
     else {
-        subplotObj._scene = update;
+        subplotObj._scene = scene;
     }
 
     var canvas = container.querySelector('.gl-canvas-focus');
@@ -146,11 +155,11 @@ function plot(container, plotinfo, cdata) {
     }
 
     // update based on calc data
-    function update(cdscatters) {
+    function updateScene(cdscatters) {
         var batch = [];
 
         cdscatters.forEach(function(cdscatter, order) {
-            if(!cdscatter) return;
+            if(!cdscatter || !cdscatter[0] || !cdscatter[0].trace) return;
             var trace = cdscatter[0].trace;
             batch[order] = getTraceOptions(trace);
         });
@@ -160,27 +169,46 @@ function plot(container, plotinfo, cdata) {
 
     function getTraceOptions(trace) {
         var lineOptions, scatterOptions, errorXOptions, errorYOptions, fillOptions;
-        var xaxis = Axes.getFromId(container, trace.xaxis || 'x'),
-            yaxis = Axes.getFromId(container, trace.yaxis || 'y'),
-            selection = trace.selection;
+        var xaxis = Axes.getFromId(container, trace.xaxis || 'x');
+        var yaxis = Axes.getFromId(container, trace.yaxis || 'y');
+        var selection = trace.selection;
         var vpSize = layout._size,
             width = layout.width,
             height = layout.height;
         var sizes, selIds;
-
-        // makeCalcdata runs d2c (data-to-coordinate) on every point
-        var x = xaxis.makeCalcdata(trace, 'x');
-        var y = yaxis.makeCalcdata(trace, 'y');
-
-        // convert log axes
-        if(xaxis.type === 'log') x = x.map(xaxis.d2l);
-        if(yaxis.type === 'log') y = y.map(xaxis.d2l);
-
+        var i, l, xx, yy, ptrX = 0, ptrY = 0, errorOptions;
         var hasLines = false;
         var hasErrorX = false;
         var hasErrorY = false;
         var hasMarkers = false;
         var hasFill = false;
+
+        var x = trace._x;
+        var y = trace._y;
+        var count = Math.max(x.length, y.length);
+        var positions = trace._positions;
+
+        // convert log axes
+        // if(xaxis.type === 'log') {
+        //     for (i = 0, l = x.length; i < l; i++) {
+        //         x[i] = xaxis.d2l(x[i]);
+        //     }
+        // }
+        // else {
+        //     for (i = 0, l = x.length; i < l; i++) {
+        //         x[i] = parseFloat(x[i]);
+        //     }
+        // }
+        // if(yaxis.type === 'log') {
+        //     for (i = 0, l = y.length; i < l; i++) {
+        //         y[i] = yaxis.d2l(y[i]);
+        //     }
+        // }
+        // else {
+        //     for (i = 0, l = y.length; i < l; i++) {
+        //         y[i] = parseFloat(y[i]);
+        //     }
+        // }
 
         if(trace.visible !== true) {
             hasLines = false;
@@ -194,7 +222,7 @@ function plot(container, plotinfo, cdata) {
             hasErrorX = trace.error_x.visible === true;
             hasErrorY = trace.error_y.visible === true;
             hasMarkers = subTypes.hasMarkers(trace);
-            hasFill = trace.fill;
+            hasFill = trace.fill && trace.fill !== 'none';
         }
 
         // update viewport & range
@@ -210,35 +238,20 @@ function plot(container, plotinfo, cdata) {
         ];
 
         // get error values
-        var errorVals = ErrorBars.calcFromTrace(trace, layout);
+        var errorVals = (hasErrorX || hasErrorY) ? ErrorBars.calcFromTrace(trace, layout) : null;
 
-        var len = x.length,
-            positions = [len * 2],
-            errorsX = new Float64Array(4 * len),
-            errorsY = new Float64Array(4 * len),
+        var errorsX = new Float64Array(4 * count),
+            errorsY = new Float64Array(4 * count),
             linePositions;
 
-        var i, xx, yy, ptrX = 0, ptrY = 0, errorOptions;
-
-        for(i = 0; i < len; ++i) {
-            xx = parseFloat(x[i]);
-            yy = parseFloat(y[i]);
-
-            positions[i * 2] = xx;
-            positions[i * 2 + 1] = yy;
-
-            errorsX[ptrX++] = xx - errorVals[i].xs || 0;
-            errorsX[ptrX++] = errorVals[i].xh - xx || 0;
-            errorsX[ptrX++] = 0;
-            errorsX[ptrX++] = 0;
-
-            errorsY[ptrY++] = 0;
-            errorsY[ptrY++] = 0;
-            errorsY[ptrY++] = yy - errorVals[i].ys || 0;
-            errorsY[ptrY++] = errorVals[i].yh - yy || 0;
-        }
-
         if(hasErrorX) {
+            for(i = 0; i < count; ++i) {
+                errorsX[ptrX++] = x[i] - errorVals[i].xs || 0;
+                errorsX[ptrX++] = errorVals[i].xh - x[i] || 0;
+                errorsX[ptrX++] = 0;
+                errorsX[ptrX++] = 0;
+            }
+
             errorOptions = trace.error_x;
             if(errorOptions.copy_ystyle) {
                 errorOptions = trace.error_y;
@@ -254,6 +267,13 @@ function plot(container, plotinfo, cdata) {
         }
 
         if(hasErrorY) {
+            for(i = 0; i < count; ++i) {
+                errorsY[ptrY++] = 0;
+                errorsY[ptrY++] = 0;
+                errorsY[ptrY++] = y[i] - errorVals[i].ys || 0;
+                errorsY[ptrY++] = errorVals[i].yh - y[i] || 0;
+            }
+
             errorOptions = trace.error_y;
             errorYOptions = {};
             errorYOptions.positions = positions;
@@ -379,11 +399,11 @@ function plot(container, plotinfo, cdata) {
         if(hasMarkers) {
             scatterOptions = {};
             scatterOptions.positions = positions;
-            scatterOptions.sizes = new Array(len);
-            scatterOptions.markers = new Array(len);
-            scatterOptions.borderSizes = new Array(len);
-            scatterOptions.colors = new Array(len);
-            scatterOptions.borderColors = new Array(len);
+            scatterOptions.sizes = new Array(count);
+            scatterOptions.markers = new Array(count);
+            scatterOptions.borderSizes = new Array(count);
+            scatterOptions.colors = new Array(count);
+            scatterOptions.borderColors = new Array(count);
 
             var markerSizeFunc = makeBubbleSizeFn(trace);
 
@@ -392,14 +412,14 @@ function plot(container, plotinfo, cdata) {
             var traceOpacity = trace.opacity;
             var symbols = markerOpts.symbol;
 
-            var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len);
-            var borderSizes = convertNumber(markerOpts.line.width, len);
-            var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len);
+            var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, count);
+            var borderSizes = convertNumber(markerOpts.line.width, count);
+            var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, count);
             var size, symbol, symbolNumber, isOpen, isDimmed, _colors, _borderColors, bw, symbolFunc, symbolNoDot, symbolSdf, symbolNoFill, symbolPath, isDot;
 
-            sizes = convertArray(markerSizeFunc, markerOpts.size, len);
+            sizes = convertArray(markerSizeFunc, markerOpts.size, count);
 
-            for(i = 0; i < len; ++i) {
+            for(i = 0; i < count; ++i) {
                 symbol = Array.isArray(symbols) ? symbols[i] : symbols;
                 symbolNumber = Drawing.symbolNumber(symbol);
                 symbolFunc = Drawing.symbolFuncs[symbolNumber % 100];
@@ -478,11 +498,6 @@ function plot(container, plotinfo, cdata) {
             scatterOptions.range = range;
         }
 
-        // add item for autorange routine
-        // former expandAxesFancy
-        Axes.expand(xaxis, x, {padded: true, ppad: sizes});
-        Axes.expand(yaxis, y, {padded: true, ppad: sizes});
-
 
         return {
             scatter: scatterOptions,
@@ -511,12 +526,12 @@ function plot(container, plotinfo, cdata) {
         // regl.clear({color: [0, 0, 0, 0], depth: 1});
     }
 
-    update.range = updateRange;
-    update.clear = clear;
+    updateScene.range = updateRange;
+    updateScene.clear = clear;
 
-    update(cdata);
+    updateScene(cdata);
 
-    return update;
+    return updateScene;
 }
 
 
@@ -542,7 +557,6 @@ function _convertArray(convert, data, count) {
 
     return result;
 }
-
 
 function convertColorScale(containerIn, markerOpacity, traceOpacity, count) {
     var colors = formatColor(containerIn, markerOpacity, count);
