@@ -134,22 +134,19 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                 .attr('class', 'points')
               .selectAll('path')
                 .data(function(d) {
-                        // normally use IQR, but if this is 0 or too small, use max-min
-                        typicalSpread = Math.max((d.max - d.min) / 10, d.q3 - d.q1),
-                        minSpread = typicalSpread * 1e-9,
-                        spreadLimit = typicalSpread * JITTERSPREAD,
-                        jitterFactors = [],
-                        maxJitterFactor = 0,
-                        i,
-                        i0, i1,
-                        pmin,
-                        pmax,
-                        jitterFactor,
-                        newJitter;
+                    var i;
 
                     var pts = trace.boxpoints === 'all' ?
                         d.pts :
                         d.pts.filter(function(pt) { return (pt.v < d.lf || pt.v > d.uf); });
+
+                    // normally use IQR, but if this is 0 or too small, use max-min
+                    var typicalSpread = Math.max((d.max - d.min) / 10, d.q3 - d.q1);
+                    var minSpread = typicalSpread * 1e-9;
+                    var spreadLimit = typicalSpread * JITTERSPREAD;
+                    var jitterFactors = [];
+                    var maxJitterFactor = 0;
+                    var newJitter;
 
                     // dynamic jitter
                     if(trace.jitter) {
@@ -160,20 +157,19 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                             for(i = 0; i < pts.length; i++) {
                                 jitterFactors[i] = 1;
                             }
-                        }
-                        else {
+                        } else {
                             for(i = 0; i < pts.length; i++) {
-                                i0 = Math.max(0, i - JITTERCOUNT);
-                                pmin = pts[i0];
-                                i1 = Math.min(pts.length - 1, i + JITTERCOUNT);
-                                pmax = pts[i1];
+                                var i0 = Math.max(0, i - JITTERCOUNT);
+                                var pmin = pts[i0].v;
+                                var i1 = Math.min(pts.length - 1, i + JITTERCOUNT);
+                                var pmax = pts[i1].v;
 
                                 if(trace.boxpoints !== 'all') {
-                                    if(pts[i] < d.lf) pmax = Math.min(pmax, d.lf);
+                                    if(pts[i].v < d.lf) pmax = Math.min(pmax, d.lf);
                                     else pmin = Math.max(pmin, d.uf);
                                 }
 
-                                jitterFactor = Math.sqrt(spreadLimit * (i1 - i0) / (pmax - pmin + minSpread)) || 0;
+                                var jitterFactor = Math.sqrt(spreadLimit * (i1 - i0) / (pmax - pmin + minSpread)) || 0;
                                 jitterFactor = Lib.constrain(Math.abs(jitterFactor), 0, 1);
 
                                 jitterFactors.push(jitterFactor);
