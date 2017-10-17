@@ -10,6 +10,20 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.31.1] -- 2017-10-16
+
+### Fixed
+- Fix IE and Edge SVG `toImage` support [#2068]
+- Return empty set during selections of `visible: false` traces [#2081]
+- Fix scroll glitch in `table` traces [#2064]
+- Fix handling of 1D header values in `table` [#2072]
+- Fix `table` line style defaults [#2074]
+- Do not attempt to start drag on right-click [#2087]
+- Phase out `alignment-baseline` attributes in SVG text nodes [#2076]
+- Listen to document events on drag instead of relying on
+  cover-slip node [#2075]
+
+
 ## [1.31.0] -- 2017-10-05
 
 ### Added

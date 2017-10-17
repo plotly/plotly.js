@@ -30,6 +30,10 @@ describe('dragElement', function() {
 
     afterEach(destroyGraphDiv);
 
+    function countCoverSlip() {
+        return d3.selectAll('.dragcover').size();
+    }
+
     it('should init drag element', function() {
         var options = { element: this.element, gd: this.gd };
         dragElement.init(options);
@@ -103,10 +107,6 @@ describe('dragElement', function() {
     });
 
     it('should add a cover slip div to the DOM', function() {
-        function countCoverSlip() {
-            return d3.selectAll('.dragcover').size();
-        }
-
         var options = { element: this.element, gd: this.gd };
         dragElement.init(options);
 
@@ -120,6 +120,24 @@ describe('dragElement', function() {
 
         mouseEvent('mouseup', this.x, this.y);
         expect(countCoverSlip()).toEqual(0);
+    });
+
+    it('should not add a cover slip div to the DOM when right click', function() {
+        var options = { element: this.element, gd: this.gd };
+        dragElement.init(options);
+
+        var mockObj = {
+            handleClick: function() {}
+        };
+        spyOn(mockObj, 'handleClick');
+
+        this.element.onclick = mockObj.handleClick;
+
+        mouseEvent('mousedown', this.x, this.y, { buttons: 2 });
+        expect(countCoverSlip()).toEqual(0);
+
+        mouseEvent('mouseup', this.x, this.y);
+        expect(mockObj.handleClick).not.toHaveBeenCalled();
     });
 
     it('should fire off click event when down/up without dragging', function() {
