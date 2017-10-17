@@ -102,18 +102,13 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
     if(cnt === 10000) {
         Lib.log('Infinite loop in contour?');
     }
-    var closedpath = equalPts(pts[0], pts[pts.length - 1], xtol, ytol),
-        totaldist = 0,
-        distThresholdFactor = 0.2 * pi.smoothing,
-        alldists = [],
-        cropstart = 0,
-        distgroup,
-        cnt2,
-        cnt3,
-        newpt,
-        ptcnt,
-        ptavg,
-        thisdist;
+    var closedpath = equalPts(pts[0], pts[pts.length - 1], xtol, ytol);
+    var totaldist = 0;
+    var distThresholdFactor = 0.2 * pi.smoothing;
+    var alldists = [];
+    var cropstart = 0;
+    var distgroup, cnt2, cnt3, newpt, ptcnt, ptavg, thisdist,
+        i, j, edgepathi, edgepathj;
 
     /*
      * Check for points that are too close together (<1/5 the average dist
@@ -198,41 +193,45 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
 
         // edge path - does it start where an existing edge path ends, or vice versa?
         var merged = false;
-        pi.edgepaths.forEach(function(edgepath, edgei) {
-            if(!merged && equalPts(edgepath[0], pts[pts.length - 1], xtol, ytol)) {
+        for(i = 0; i < pi.edgepaths.length; i++) {
+            edgepathi = pi.edgepaths[i];
+            if(!merged && equalPts(edgepathi[0], pts[pts.length - 1], xtol, ytol)) {
                 pts.pop();
                 merged = true;
 
                 // now does it ALSO meet the end of another (or the same) path?
                 var doublemerged = false;
-                pi.edgepaths.forEach(function(edgepath2, edgei2) {
-                    if(!doublemerged && equalPts(
-                            edgepath2[edgepath2.length - 1], pts[0], xtol, ytol)) {
+                for(j = 0; j < pi.edgepaths.length; j++) {
+                    edgepathj = pi.edgepaths[j];
+                    if(equalPts(edgepathj[edgepathj.length - 1], pts[0], xtol, ytol)) {
                         doublemerged = true;
-                        pts.splice(0, 1);
-                        pi.edgepaths.splice(edgei, 1);
-                        if(edgei2 === edgei) {
+                        pts.shift();
+                        pi.edgepaths.splice(i, 1);
+                        if(j === i) {
                             // the path is now closed
-                            pi.paths.push(pts.concat(edgepath2));
+                            pi.paths.push(pts.concat(edgepathj));
                         }
                         else {
-                            pi.edgepaths[edgei2] =
-                                pi.edgepaths[edgei2].concat(pts, edgepath2);
+                            if(j > i) j--;
+                            pi.edgepaths[j] = edgepathj.concat(pts, edgepathi);
                         }
+                        break;
                     }
-                });
+                }
                 if(!doublemerged) {
-                    pi.edgepaths[edgei] = pts.concat(edgepath);
+                    pi.edgepaths[i] = pts.concat(edgepathi);
                 }
             }
-        });
-        pi.edgepaths.forEach(function(edgepath, edgei) {
-            if(!merged && equalPts(edgepath[edgepath.length - 1], pts[0], xtol, ytol)) {
-                pts.splice(0, 1);
-                pi.edgepaths[edgei] = edgepath.concat(pts);
+        }
+        for(i = 0; i < pi.edgepaths.length; i++) {
+            if(merged) break;
+            edgepathi = pi.edgepaths[i];
+            if(equalPts(edgepathi[edgepathi.length - 1], pts[0], xtol, ytol)) {
+                pts.shift();
+                pi.edgepaths[i] = edgepathi.concat(pts);
                 merged = true;
             }
-        });
+        }
 
         if(!merged) pi.edgepaths.push(pts);
     }
