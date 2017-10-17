@@ -56,6 +56,7 @@ module.exports = function calc(gd, trace) {
         var n = Lib.findBin(pos[i], posBins);
         if(n >= 0 && n < pLen) {
             var pt = {v: v, i: i};
+            arraysToCalcdata(pt, trace, i);
             ptsPerBin[n].push(pt);
         }
     }
@@ -174,6 +175,18 @@ function initNestedArray(len) {
         arr[i] = [];
     }
     return arr;
+}
+
+function arraysToCalcdata(pt, trace, i) {
+    var trace2calc = {
+        text: 'tx'
+    };
+
+    for(var k in trace2calc) {
+        if(Array.isArray(trace[k])) {
+            pt[trace2calc[k]] = trace[k][i];
+        }
+    }
 }
 
 function sortByVal(a, b) { return a.v - b.v; }

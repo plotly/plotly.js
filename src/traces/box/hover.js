@@ -12,6 +12,7 @@ var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 var Fx = require('../../components/fx');
 var Color = require('../../components/color');
+var fillHoverText = require('../scatter/fill_hover_text');
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
@@ -170,6 +171,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                         yLabelVal: pt.y
                     });
 
+                    fillHoverText(pt, trace, pointData2);
                     closeData.push(pointData2);
                 }
             }

@@ -216,6 +216,33 @@ describe('Test box hover:', function() {
             '', '', '', '', '', '', '', '', '', '', 'radishes'
         ],
         axis: 'day 1'
+    }, {
+        desc: 'text items on hover',
+        patch: function(fig) {
+            fig.data.forEach(function(trace) {
+                trace.boxpoints = 'all';
+                trace.hoveron = 'points';
+                trace.text = trace.y.map(function(v) { return 'look:' + v; });
+            });
+            fig.layout.hovermode = 'closest';
+            return fig;
+        },
+        nums: ['(day 1, 0.7)\nlook:0.7', '(day 1, 0.6)\nlook:0.6', '(day 1, 0.6)\nlook:0.6'],
+        name: ['radishes', 'radishes', 'radishes']
+    }, {
+        desc: 'only text items on hover',
+        patch: function(fig) {
+            fig.data.forEach(function(trace) {
+                trace.boxpoints = 'all';
+                trace.hoveron = 'points';
+                trace.text = trace.y.map(function(v) { return 'look:' + v; });
+                trace.hoverinfo = 'text';
+            });
+            fig.layout.hovermode = 'closest';
+            return fig;
+        },
+        nums: ['look:0.7', 'look:0.6', 'look:0.6'],
+        name: ['', '', '']
     }].forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
             run(specs).catch(fail).then(done);
