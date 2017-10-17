@@ -212,11 +212,8 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
                             pi.paths.push(pts.concat(edgepathj));
                         }
                         else {
-                            if(j > i) {
-                                j--;
-                            }
-                            pi.edgepaths[j] =
-                                pi.edgepaths[j].concat(pts, edgepathj);
+                            if(j > i) j--;
+                            pi.edgepaths[j] = edgepathj.concat(pts, edgepathi);
                         }
                         break;
                     }
