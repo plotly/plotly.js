@@ -1,0 +1,11 @@
+{
+    "data": [
+        {
+            "mode": "markers",
+            "type": "scatter"
+        }
+    ],
+    "layout": {
+        "hovermode": "closest"
+    }
+}
