@@ -26,7 +26,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
 
     // TODO: include lines? that would require per-segment line properties
     var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
-    if(trace.visible !== true || hasOnlyLines) return [];
+    if(hasOnlyLines) return [];
 
     var opacity = Array.isArray(marker.opacity) ? 1 : marker.opacity;
 
