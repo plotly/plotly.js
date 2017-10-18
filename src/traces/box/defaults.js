@@ -70,8 +70,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             coerce('marker.line.outliercolor', traceOut.marker.color);
             coerce('marker.line.outlierwidth');
         }
+
+        coerce('text');
+    } else {
+        delete traceOut.marker;
     }
 
-    coerce('text');
     coerce('hoveron');
 };

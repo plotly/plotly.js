@@ -111,6 +111,44 @@ describe('Test boxes supplyDefaults', function() {
         expect(traceOut.xcalendar).toBe('coptic');
         expect(traceOut.ycalendar).toBe('ethiopian');
     });
+
+    it('should not coerce point attributes when boxpoints is false', function() {
+        traceIn = {
+            y: [1, 1, 2],
+            boxpoints: false
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+
+        expect(traceOut.boxpoints).toBe(false);
+        expect(traceOut.jitter).toBeUndefined();
+        expect(traceOut.pointpos).toBeUndefined();
+        expect(traceOut.marker).toBeUndefined();
+        expect(traceOut.text).toBeUndefined();
+    });
+
+    it('should default boxpoints to suspectedoutliers when marker.outliercolor is set & valid', function() {
+        traceIn = {
+            y: [1, 1, 2],
+            marker: {
+                outliercolor: 'blue'
+            }
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.boxpoints).toBe('suspectedoutliers');
+    });
+
+    it('should default boxpoints to suspectedoutliers when marker.line.outliercolor is set & valid', function() {
+        traceIn = {
+            y: [1, 1, 2],
+            marker: {
+                line: {outliercolor: 'blue'}
+            }
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.boxpoints).toBe('suspectedoutliers');
+        expect(traceOut.marker).toBeDefined();
+        expect(traceOut.text).toBeDefined();
+    });
 });
 
 describe('Test box hover:', function() {
