@@ -1160,6 +1160,38 @@
                             "editType": "colorbars",
                             "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
                         },
+                        "tickformatstops": {
+                            "items": {
+                                "tickformatstop": {
+                                    "dtickrange": {
+                                        "valType": "info_array",
+                                        "role": "info",
+                                        "items": [
+                                            {
+                                                "valType": "any",
+                                                "editType": "colorbars"
+                                            },
+                                            {
+                                                "valType": "any",
+                                                "editType": "colorbars"
+                                            }
+                                        ],
+                                        "editType": "colorbars",
+                                        "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                    },
+                                    "value": {
+                                        "valType": "string",
+                                        "dflt": "",
+                                        "role": "style",
+                                        "editType": "colorbars",
+                                        "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                    },
+                                    "editType": "colorbars",
+                                    "role": "object"
+                                }
+                            },
+                            "role": "object"
+                        },
                         "tickprefix": {
                             "valType": "string",
                             "dflt": "",
@@ -3603,6 +3635,38 @@
                             "editType": "colorbars",
                             "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
                         },
+                        "tickformatstops": {
+                            "items": {
+                                "tickformatstop": {
+                                    "dtickrange": {
+                                        "valType": "info_array",
+                                        "role": "info",
+                                        "items": [
+                                            {
+                                                "valType": "any",
+                                                "editType": "colorbars"
+                                            },
+                                            {
+                                                "valType": "any",
+                                                "editType": "colorbars"
+                                            }
+                                        ],
+                                        "editType": "colorbars",
+                                        "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                    },
+                                    "value": {
+                                        "valType": "string",
+                                        "dflt": "",
+                                        "role": "style",
+                                        "editType": "colorbars",
+                                        "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                    },
+                                    "editType": "colorbars",
+                                    "role": "object"
+                                }
+                            },
+                            "role": "object"
+                        },
                         "tickprefix": {
                             "valType": "string",
                             "dflt": "",
@@ -4848,6 +4912,38 @@
                         "editType": "colorbars",
                         "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
                     },
+                    "tickformatstops": {
+                        "items": {
+                            "tickformatstop": {
+                                "dtickrange": {
+                                    "valType": "info_array",
+                                    "role": "info",
+                                    "items": [
+                                        {
+                                            "valType": "any",
+                                            "editType": "colorbars"
+                                        },
+                                        {
+                                            "valType": "any",
+                                            "editType": "colorbars"
+                                        }
+                                    ],
+                                    "editType": "colorbars",
+                                    "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                },
+                                "value": {
+                                    "valType": "string",
+                                    "dflt": "",
+                                    "role": "style",
+                                    "editType": "colorbars",
+                                    "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                },
+                                "editType": "colorbars",
+                                "role": "object"
+                            }
+                        },
+                        "role": "object"
+                    },
                     "tickprefix": {
                         "valType": "string",
                         "dflt": "",
@@ -5899,6 +5995,38 @@
                             "role": "style",
                             "editType": "colorbars",
                             "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
+                        },
+                        "tickformatstops": {
+                            "items": {
+                                "tickformatstop": {
+                                    "dtickrange": {
+                                        "valType": "info_array",
+                                        "role": "info",
+                                        "items": [
+                                            {
+                                                "valType": "any",
+                                                "editType": "colorbars"
+                                            },
+                                            {
+                                                "valType": "any",
+                                                "editType": "colorbars"
+                                            }
+                                        ],
+                                        "editType": "colorbars",
+                                        "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                    },
+                                    "value": {
+                                        "valType": "string",
+                                        "dflt": "",
+                                        "role": "style",
+                                        "editType": "colorbars",
+                                        "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                    },
+                                    "editType": "colorbars",
+                                    "role": "object"
+                                }
+                            },
+                            "role": "object"
                         },
                         "tickprefix": {
                             "valType": "string",
@@ -7158,6 +7286,38 @@
                         "editType": "colorbars",
                         "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
                     },
+                    "tickformatstops": {
+                        "items": {
+                            "tickformatstop": {
+                                "dtickrange": {
+                                    "valType": "info_array",
+                                    "role": "info",
+                                    "items": [
+                                        {
+                                            "valType": "any",
+                                            "editType": "colorbars"
+                                        },
+                                        {
+                                            "valType": "any",
+                                            "editType": "colorbars"
+                                        }
+                                    ],
+                                    "editType": "colorbars",
+                                    "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                },
+                                "value": {
+                                    "valType": "string",
+                                    "dflt": "",
+                                    "role": "style",
+                                    "editType": "colorbars",
+                                    "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                },
+                                "editType": "colorbars",
+                                "role": "object"
+                            }
+                        },
+                        "role": "object"
+                    },
                     "tickprefix": {
                         "valType": "string",
                         "dflt": "",
@@ -8236,6 +8396,38 @@
                         "role": "style",
                         "editType": "colorbars",
                         "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
+                    },
+                    "tickformatstops": {
+                        "items": {
+                            "tickformatstop": {
+                                "dtickrange": {
+                                    "valType": "info_array",
+                                    "role": "info",
+                                    "items": [
+                                        {
+                                            "valType": "any",
+                                            "editType": "colorbars"
+                                        },
+                                        {
+                                            "valType": "any",
+                                            "editType": "colorbars"
+                                        }
+                                    ],
+                                    "editType": "colorbars",
+                                    "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                },
+                                "value": {
+                                    "valType": "string",
+                                    "dflt": "",
+                                    "role": "style",
+                                    "editType": "colorbars",
+                                    "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                },
+                                "editType": "colorbars",
+                                "role": "object"
+                            }
+                        },
+                        "role": "object"
                     },
                     "tickprefix": {
                         "valType": "string",
@@ -9808,6 +10000,38 @@
                         "editType": "colorbars",
                         "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
                     },
+                    "tickformatstops": {
+                        "items": {
+                            "tickformatstop": {
+                                "dtickrange": {
+                                    "valType": "info_array",
+                                    "role": "info",
+                                    "items": [
+                                        {
+                                            "valType": "any",
+                                            "editType": "colorbars"
+                                        },
+                                        {
+                                            "valType": "any",
+                                            "editType": "colorbars"
+                                        }
+                                    ],
+                                    "editType": "colorbars",
+                                    "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                },
+                                "value": {
+                                    "valType": "string",
+                                    "dflt": "",
+                                    "role": "style",
+                                    "editType": "colorbars",
+                                    "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                },
+                                "editType": "colorbars",
+                                "role": "object"
+                            }
+                        },
+                        "role": "object"
+                    },
                     "tickprefix": {
                         "valType": "string",
                         "dflt": "",
@@ -11184,6 +11408,38 @@
                             "role": "style",
                             "editType": "colorbars",
                             "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
+                        },
+                        "tickformatstops": {
+                            "items": {
+                                "tickformatstop": {
+                                    "dtickrange": {
+                                        "valType": "info_array",
+                                        "role": "info",
+                                        "items": [
+                                            {
+                                                "valType": "any",
+                                                "editType": "colorbars"
+                                            },
+                                            {
+                                                "valType": "any",
+                                                "editType": "colorbars"
+                                            }
+                                        ],
+                                        "editType": "colorbars",
+                                        "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                    },
+                                    "value": {
+                                        "valType": "string",
+                                        "dflt": "",
+                                        "role": "style",
+                                        "editType": "colorbars",
+                                        "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                    },
+                                    "editType": "colorbars",
+                                    "role": "object"
+                                }
+                            },
+                            "role": "object"
                         },
                         "tickprefix": {
                             "valType": "string",
@@ -12790,6 +13046,38 @@
                             "editType": "calc",
                             "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
                         },
+                        "tickformatstops": {
+                            "items": {
+                                "tickformatstop": {
+                                    "dtickrange": {
+                                        "valType": "info_array",
+                                        "role": "info",
+                                        "items": [
+                                            {
+                                                "valType": "any",
+                                                "editType": "calc"
+                                            },
+                                            {
+                                                "valType": "any",
+                                                "editType": "calc"
+                                            }
+                                        ],
+                                        "editType": "calc",
+                                        "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                    },
+                                    "value": {
+                                        "valType": "string",
+                                        "dflt": "",
+                                        "role": "style",
+                                        "editType": "calc",
+                                        "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                    },
+                                    "editType": "calc",
+                                    "role": "object"
+                                }
+                            },
+                            "role": "object"
+                        },
                         "tickprefix": {
                             "valType": "string",
                             "dflt": "",
@@ -14193,6 +14481,38 @@
                         "editType": "calc",
                         "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
                     },
+                    "tickformatstops": {
+                        "items": {
+                            "tickformatstop": {
+                                "dtickrange": {
+                                    "valType": "info_array",
+                                    "role": "info",
+                                    "items": [
+                                        {
+                                            "valType": "any",
+                                            "editType": "calc"
+                                        },
+                                        {
+                                            "valType": "any",
+                                            "editType": "calc"
+                                        }
+                                    ],
+                                    "editType": "calc",
+                                    "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                },
+                                "value": {
+                                    "valType": "string",
+                                    "dflt": "",
+                                    "role": "style",
+                                    "editType": "calc",
+                                    "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                },
+                                "editType": "calc",
+                                "role": "object"
+                            }
+                        },
+                        "role": "object"
+                    },
                     "tickprefix": {
                         "valType": "string",
                         "dflt": "",
@@ -15455,6 +15775,38 @@
                         "role": "style",
                         "editType": "colorbars",
                         "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
+                    },
+                    "tickformatstops": {
+                        "items": {
+                            "tickformatstop": {
+                                "dtickrange": {
+                                    "valType": "info_array",
+                                    "role": "info",
+                                    "items": [
+                                        {
+                                            "valType": "any",
+                                            "editType": "colorbars"
+                                        },
+                                        {
+                                            "valType": "any",
+                                            "editType": "colorbars"
+                                        }
+                                    ],
+                                    "editType": "colorbars",
+                                    "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                },
+                                "value": {
+                                    "valType": "string",
+                                    "dflt": "",
+                                    "role": "style",
+                                    "editType": "colorbars",
+                                    "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                },
+                                "editType": "colorbars",
+                                "role": "object"
+                            }
+                        },
+                        "role": "object"
                     },
                     "tickprefix": {
                         "valType": "string",
@@ -16814,6 +17166,38 @@
                             "editType": "calc",
                             "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
                         },
+                        "tickformatstops": {
+                            "items": {
+                                "tickformatstop": {
+                                    "dtickrange": {
+                                        "valType": "info_array",
+                                        "role": "info",
+                                        "items": [
+                                            {
+                                                "valType": "any",
+                                                "editType": "calc"
+                                            },
+                                            {
+                                                "valType": "any",
+                                                "editType": "calc"
+                                            }
+                                        ],
+                                        "editType": "calc",
+                                        "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                    },
+                                    "value": {
+                                        "valType": "string",
+                                        "dflt": "",
+                                        "role": "style",
+                                        "editType": "calc",
+                                        "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                    },
+                                    "editType": "calc",
+                                    "role": "object"
+                                }
+                            },
+                            "role": "object"
+                        },
                         "tickprefix": {
                             "valType": "string",
                             "dflt": "",
@@ -17819,6 +18203,38 @@
                         "editType": "colorbars",
                         "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
                     },
+                    "tickformatstops": {
+                        "items": {
+                            "tickformatstop": {
+                                "dtickrange": {
+                                    "valType": "info_array",
+                                    "role": "info",
+                                    "items": [
+                                        {
+                                            "valType": "any",
+                                            "editType": "colorbars"
+                                        },
+                                        {
+                                            "valType": "any",
+                                            "editType": "colorbars"
+                                        }
+                                    ],
+                                    "editType": "colorbars",
+                                    "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                },
+                                "value": {
+                                    "valType": "string",
+                                    "dflt": "",
+                                    "role": "style",
+                                    "editType": "colorbars",
+                                    "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                },
+                                "editType": "colorbars",
+                                "role": "object"
+                            }
+                        },
+                        "role": "object"
+                    },
                     "tickprefix": {
                         "valType": "string",
                         "dflt": "",
@@ -18726,6 +19142,38 @@
                             "role": "style",
                             "editType": "calc",
                             "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
+                        },
+                        "tickformatstops": {
+                            "items": {
+                                "tickformatstop": {
+                                    "dtickrange": {
+                                        "valType": "info_array",
+                                        "role": "info",
+                                        "items": [
+                                            {
+                                                "valType": "any",
+                                                "editType": "calc"
+                                            },
+                                            {
+                                                "valType": "any",
+                                                "editType": "calc"
+                                            }
+                                        ],
+                                        "editType": "calc",
+                                        "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                    },
+                                    "value": {
+                                        "valType": "string",
+                                        "dflt": "",
+                                        "role": "style",
+                                        "editType": "calc",
+                                        "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                    },
+                                    "editType": "calc",
+                                    "role": "object"
+                                }
+                            },
+                            "role": "object"
                         },
                         "tickprefix": {
                             "valType": "string",
@@ -20334,6 +20782,38 @@
                         "editType": "calc",
                         "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
                     },
+                    "tickformatstops": {
+                        "items": {
+                            "tickformatstop": {
+                                "dtickrange": {
+                                    "valType": "info_array",
+                                    "role": "info",
+                                    "items": [
+                                        {
+                                            "valType": "any",
+                                            "editType": "calc"
+                                        },
+                                        {
+                                            "valType": "any",
+                                            "editType": "calc"
+                                        }
+                                    ],
+                                    "editType": "calc",
+                                    "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                },
+                                "value": {
+                                    "valType": "string",
+                                    "dflt": "",
+                                    "role": "style",
+                                    "editType": "calc",
+                                    "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                },
+                                "editType": "calc",
+                                "role": "object"
+                            }
+                        },
+                        "role": "object"
+                    },
                     "tickprefix": {
                         "valType": "string",
                         "dflt": "",
@@ -21343,6 +21823,38 @@
                             "role": "style",
                             "editType": "colorbars",
                             "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
+                        },
+                        "tickformatstops": {
+                            "items": {
+                                "tickformatstop": {
+                                    "dtickrange": {
+                                        "valType": "info_array",
+                                        "role": "info",
+                                        "items": [
+                                            {
+                                                "valType": "any",
+                                                "editType": "colorbars"
+                                            },
+                                            {
+                                                "valType": "any",
+                                                "editType": "colorbars"
+                                            }
+                                        ],
+                                        "editType": "colorbars",
+                                        "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                    },
+                                    "value": {
+                                        "valType": "string",
+                                        "dflt": "",
+                                        "role": "style",
+                                        "editType": "colorbars",
+                                        "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                    },
+                                    "editType": "colorbars",
+                                    "role": "object"
+                                }
+                            },
+                            "role": "object"
                         },
                         "tickprefix": {
                             "valType": "string",
@@ -22801,6 +23313,38 @@
                             "editType": "calc",
                             "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
                         },
+                        "tickformatstops": {
+                            "items": {
+                                "tickformatstop": {
+                                    "dtickrange": {
+                                        "valType": "info_array",
+                                        "role": "info",
+                                        "items": [
+                                            {
+                                                "valType": "any",
+                                                "editType": "calc"
+                                            },
+                                            {
+                                                "valType": "any",
+                                                "editType": "calc"
+                                            }
+                                        ],
+                                        "editType": "calc",
+                                        "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                    },
+                                    "value": {
+                                        "valType": "string",
+                                        "dflt": "",
+                                        "role": "style",
+                                        "editType": "calc",
+                                        "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                    },
+                                    "editType": "calc",
+                                    "role": "object"
+                                }
+                            },
+                            "role": "object"
+                        },
                         "tickprefix": {
                             "valType": "string",
                             "dflt": "",
@@ -23611,6 +24155,38 @@
                         "editType": "calc",
                         "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
                     },
+                    "tickformatstops": {
+                        "items": {
+                            "tickformatstop": {
+                                "dtickrange": {
+                                    "valType": "info_array",
+                                    "role": "info",
+                                    "items": [
+                                        {
+                                            "valType": "any",
+                                            "editType": "calc"
+                                        },
+                                        {
+                                            "valType": "any",
+                                            "editType": "calc"
+                                        }
+                                    ],
+                                    "editType": "calc",
+                                    "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                },
+                                "value": {
+                                    "valType": "string",
+                                    "dflt": "",
+                                    "role": "style",
+                                    "editType": "calc",
+                                    "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                },
+                                "editType": "calc",
+                                "role": "object"
+                            }
+                        },
+                        "role": "object"
+                    },
                     "categoryorder": {
                         "valType": "enumerated",
                         "values": [
@@ -24084,6 +24660,38 @@
                         "role": "style",
                         "editType": "calc",
                         "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
+                    },
+                    "tickformatstops": {
+                        "items": {
+                            "tickformatstop": {
+                                "dtickrange": {
+                                    "valType": "info_array",
+                                    "role": "info",
+                                    "items": [
+                                        {
+                                            "valType": "any",
+                                            "editType": "calc"
+                                        },
+                                        {
+                                            "valType": "any",
+                                            "editType": "calc"
+                                        }
+                                    ],
+                                    "editType": "calc",
+                                    "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                },
+                                "value": {
+                                    "valType": "string",
+                                    "dflt": "",
+                                    "role": "style",
+                                    "editType": "calc",
+                                    "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                },
+                                "editType": "calc",
+                                "role": "object"
+                            }
+                        },
+                        "role": "object"
                     },
                     "categoryorder": {
                         "valType": "enumerated",
@@ -25486,6 +26094,38 @@
                             "editType": "colorbars",
                             "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
                         },
+                        "tickformatstops": {
+                            "items": {
+                                "tickformatstop": {
+                                    "dtickrange": {
+                                        "valType": "info_array",
+                                        "role": "info",
+                                        "items": [
+                                            {
+                                                "valType": "any",
+                                                "editType": "colorbars"
+                                            },
+                                            {
+                                                "valType": "any",
+                                                "editType": "colorbars"
+                                            }
+                                        ],
+                                        "editType": "colorbars",
+                                        "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                    },
+                                    "value": {
+                                        "valType": "string",
+                                        "dflt": "",
+                                        "role": "style",
+                                        "editType": "colorbars",
+                                        "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                    },
+                                    "editType": "colorbars",
+                                    "role": "object"
+                                }
+                            },
+                            "role": "object"
+                        },
                         "tickprefix": {
                             "valType": "string",
                             "dflt": "",
@@ -26616,6 +27256,38 @@
                         "role": "style",
                         "editType": "colorbars",
                         "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
+                    },
+                    "tickformatstops": {
+                        "items": {
+                            "tickformatstop": {
+                                "dtickrange": {
+                                    "valType": "info_array",
+                                    "role": "info",
+                                    "items": [
+                                        {
+                                            "valType": "any",
+                                            "editType": "colorbars"
+                                        },
+                                        {
+                                            "valType": "any",
+                                            "editType": "colorbars"
+                                        }
+                                    ],
+                                    "editType": "colorbars",
+                                    "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                },
+                                "value": {
+                                    "valType": "string",
+                                    "dflt": "",
+                                    "role": "style",
+                                    "editType": "colorbars",
+                                    "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                },
+                                "editType": "colorbars",
+                                "role": "object"
+                            }
+                        },
+                        "role": "object"
                     },
                     "tickprefix": {
                         "valType": "string",
@@ -28461,15 +29133,6 @@
                 "editType": "plot",
                 "description": "Determines whether or not a text link citing the data source is placed at the bottom-right cored of the figure. Has only an effect only on graphs that have been generated via forked graphs from the plotly service (at https://plot.ly or on-premise)."
             },
-            "smith": {
-                "valType": "enumerated",
-                "role": "info",
-                "values": [
-                    false
-                ],
-                "dflt": false,
-                "editType": "none"
-            },
             "showlegend": {
                 "valType": "boolean",
                 "role": "info",
@@ -29001,6 +29664,38 @@
                     "role": "style",
                     "editType": "ticks",
                     "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
+                },
+                "tickformatstops": {
+                    "items": {
+                        "tickformatstop": {
+                            "dtickrange": {
+                                "valType": "info_array",
+                                "role": "info",
+                                "items": [
+                                    {
+                                        "valType": "any",
+                                        "editType": "ticks"
+                                    },
+                                    {
+                                        "valType": "any",
+                                        "editType": "ticks"
+                                    }
+                                ],
+                                "editType": "ticks",
+                                "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                            },
+                            "value": {
+                                "valType": "string",
+                                "dflt": "",
+                                "role": "style",
+                                "editType": "ticks",
+                                "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                            },
+                            "editType": "ticks",
+                            "role": "object"
+                        }
+                    },
+                    "role": "object"
                 },
                 "hoverformat": {
                     "valType": "string",
@@ -29868,6 +30563,38 @@
                     "editType": "ticks",
                     "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
                 },
+                "tickformatstops": {
+                    "items": {
+                        "tickformatstop": {
+                            "dtickrange": {
+                                "valType": "info_array",
+                                "role": "info",
+                                "items": [
+                                    {
+                                        "valType": "any",
+                                        "editType": "ticks"
+                                    },
+                                    {
+                                        "valType": "any",
+                                        "editType": "ticks"
+                                    }
+                                ],
+                                "editType": "ticks",
+                                "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                            },
+                            "value": {
+                                "valType": "string",
+                                "dflt": "",
+                                "role": "style",
+                                "editType": "ticks",
+                                "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                            },
+                            "editType": "ticks",
+                            "role": "object"
+                        }
+                    },
+                    "role": "object"
+                },
                 "hoverformat": {
                     "valType": "string",
                     "dflt": "",
@@ -30400,6 +31127,38 @@
                         "editType": "plot",
                         "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
                     },
+                    "tickformatstops": {
+                        "items": {
+                            "tickformatstop": {
+                                "dtickrange": {
+                                    "valType": "info_array",
+                                    "role": "info",
+                                    "items": [
+                                        {
+                                            "valType": "any",
+                                            "editType": "plot"
+                                        },
+                                        {
+                                            "valType": "any",
+                                            "editType": "plot"
+                                        }
+                                    ],
+                                    "editType": "plot",
+                                    "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                },
+                                "value": {
+                                    "valType": "string",
+                                    "dflt": "",
+                                    "role": "style",
+                                    "editType": "plot",
+                                    "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                },
+                                "editType": "plot",
+                                "role": "object"
+                            }
+                        },
+                        "role": "object"
+                    },
                     "hoverformat": {
                         "valType": "string",
                         "dflt": "",
@@ -30727,6 +31486,38 @@
                         "editType": "plot",
                         "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
                     },
+                    "tickformatstops": {
+                        "items": {
+                            "tickformatstop": {
+                                "dtickrange": {
+                                    "valType": "info_array",
+                                    "role": "info",
+                                    "items": [
+                                        {
+                                            "valType": "any",
+                                            "editType": "plot"
+                                        },
+                                        {
+                                            "valType": "any",
+                                            "editType": "plot"
+                                        }
+                                    ],
+                                    "editType": "plot",
+                                    "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                },
+                                "value": {
+                                    "valType": "string",
+                                    "dflt": "",
+                                    "role": "style",
+                                    "editType": "plot",
+                                    "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                },
+                                "editType": "plot",
+                                "role": "object"
+                            }
+                        },
+                        "role": "object"
+                    },
                     "hoverformat": {
                         "valType": "string",
                         "dflt": "",
@@ -31053,6 +31844,38 @@
                         "role": "style",
                         "editType": "plot",
                         "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
+                    },
+                    "tickformatstops": {
+                        "items": {
+                            "tickformatstop": {
+                                "dtickrange": {
+                                    "valType": "info_array",
+                                    "role": "info",
+                                    "items": [
+                                        {
+                                            "valType": "any",
+                                            "editType": "plot"
+                                        },
+                                        {
+                                            "valType": "any",
+                                            "editType": "plot"
+                                        }
+                                    ],
+                                    "editType": "plot",
+                                    "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                },
+                                "value": {
+                                    "valType": "string",
+                                    "dflt": "",
+                                    "role": "style",
+                                    "editType": "plot",
+                                    "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                },
+                                "editType": "plot",
+                                "role": "object"
+                            }
+                        },
+                        "role": "object"
                     },
                     "hoverformat": {
                         "valType": "string",
@@ -31723,6 +32546,38 @@
                         "editType": "plot",
                         "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
                     },
+                    "tickformatstops": {
+                        "items": {
+                            "tickformatstop": {
+                                "dtickrange": {
+                                    "valType": "info_array",
+                                    "role": "info",
+                                    "items": [
+                                        {
+                                            "valType": "any",
+                                            "editType": "plot"
+                                        },
+                                        {
+                                            "valType": "any",
+                                            "editType": "plot"
+                                        }
+                                    ],
+                                    "editType": "plot",
+                                    "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                },
+                                "value": {
+                                    "valType": "string",
+                                    "dflt": "",
+                                    "role": "style",
+                                    "editType": "plot",
+                                    "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                },
+                                "editType": "plot",
+                                "role": "object"
+                            }
+                        },
+                        "role": "object"
+                    },
                     "hoverformat": {
                         "valType": "string",
                         "dflt": "",
@@ -32234,6 +33089,38 @@
                         "editType": "plot",
                         "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
                     },
+                    "tickformatstops": {
+                        "items": {
+                            "tickformatstop": {
+                                "dtickrange": {
+                                    "valType": "info_array",
+                                    "role": "info",
+                                    "items": [
+                                        {
+                                            "valType": "any",
+                                            "editType": "plot"
+                                        },
+                                        {
+                                            "valType": "any",
+                                            "editType": "plot"
+                                        }
+                                    ],
+                                    "editType": "plot",
+                                    "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                },
+                                "value": {
+                                    "valType": "string",
+                                    "dflt": "",
+                                    "role": "style",
+                                    "editType": "plot",
+                                    "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                },
+                                "editType": "plot",
+                                "role": "object"
+                            }
+                        },
+                        "role": "object"
+                    },
                     "hoverformat": {
                         "valType": "string",
                         "dflt": "",
@@ -32744,6 +33631,38 @@
                         "role": "style",
                         "editType": "plot",
                         "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format And for dates see: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
+                    },
+                    "tickformatstops": {
+                        "items": {
+                            "tickformatstop": {
+                                "dtickrange": {
+                                    "valType": "info_array",
+                                    "role": "info",
+                                    "items": [
+                                        {
+                                            "valType": "any",
+                                            "editType": "plot"
+                                        },
+                                        {
+                                            "valType": "any",
+                                            "editType": "plot"
+                                        }
+                                    ],
+                                    "editType": "plot",
+                                    "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*"
+                                },
+                                "value": {
+                                    "valType": "string",
+                                    "dflt": "",
+                                    "role": "style",
+                                    "editType": "plot",
+                                    "description": "string - dtickformat for described zoom level, the same as *tickformat*"
+                                },
+                                "editType": "plot",
+                                "role": "object"
+                            }
+                        },
+                        "role": "object"
                     },
                     "hoverformat": {
                         "valType": "string",

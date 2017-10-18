@@ -100,7 +100,8 @@ module.exports = function calc(gd, trace) {
     // (unless the shape is closed, then it's just filling the shape regardless)
     if(((trace.fill === 'tozeroy') || ((trace.fill === 'tonexty') && gd.firstscatter)) &&
             ((x[0] !== x[serieslen - 1]) || (y[0] !== y[serieslen - 1]))) {
-        yOptions.tozero = true;
+        //TODO: lets find a way to send a prop to also allow this value instead of just commenting it.
+        //yOptions.tozero = true;
     }
 
     // tight y: any x fill
