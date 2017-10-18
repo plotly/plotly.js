@@ -46,9 +46,11 @@ module.exports = function selectPoints(searchInfo, polygon) {
         }
     }
 
-    node3.selectAll('path').style('opacity', function(d) {
-        return d.dim ? DESELECTDIM : 1;
-    });
+    if(node3) {
+        node3.selectAll('path').style('opacity', function (d) {
+            return d.dim ? DESELECTDIM : 1;
+        });
+    }
 
     return selection;
 };
