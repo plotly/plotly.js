@@ -222,7 +222,7 @@ module.exports = {
         editType: 'style',
         description: [
             'Do the hover effects highlight individual boxes ',
-            'or jitter points or both?'
+            'or sample points or both?'
         ].join(' ')
     }
 };
