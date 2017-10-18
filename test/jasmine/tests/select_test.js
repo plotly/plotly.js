@@ -716,6 +716,12 @@ describe('Test select box and lasso per trace:', function() {
         fig.layout.geo.scope = 'europe';
         addInvisible(fig, false);
 
+        // add a trace with no locations which will then make trace invisible, lacking DOM elements
+        fig.data.push(Lib.extendDeep({}, fig.data[0]));
+        fig.data[1].text = [];
+        fig.data[1].locations = [];
+        fig.data[1].z = [];
+
         Plotly.plot(gd, fig)
         .then(function() {
             return _run(

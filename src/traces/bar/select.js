@@ -13,11 +13,8 @@ var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 module.exports = function selectPoints(searchInfo, polygon) {
     var cd = searchInfo.cd;
     var selection = [];
-    var trace = cd[0].trace;
     var node3 = cd[0].node3;
     var i;
-
-    if(trace.visible !== true) return [];
 
     if(polygon === false) {
         // clear selection
