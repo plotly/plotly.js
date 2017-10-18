@@ -235,8 +235,8 @@ describe('Test box hover:', function() {
             fig.layout.hovermode = 'closest';
             return fig;
         },
-        nums: ['(day 1, 0.7)', '(day 1, 0.6)', '(day 1, 0.6)'],
-        name: ['radishes', 'radishes', 'radishes']
+        nums: '(day 1, 0.7)',
+        name: 'radishes'
     }, {
         desc: 'hoveron points | hovermode x',
         patch: function(fig) {
@@ -247,11 +247,11 @@ describe('Test box hover:', function() {
             fig.layout.hovermode = 'x';
             return fig;
         },
-        nums: ['0', '0.3', '0.5', '0.6', '0.6', '0.7'],
-        name: ['radishes', 'radishes', 'radishes', 'radishes', 'radishes', 'radishes'],
+        nums: '0.7',
+        name: 'radishes',
         axis: 'day 1'
     }, {
-        desc: 'hoveron boxes+points | hovermode x',
+        desc: 'hoveron boxes+points | hovermode x (hover on box only - same result as base)',
         patch: function(fig) {
             fig.data.forEach(function(trace) {
                 trace.boxpoints = 'all';
@@ -260,12 +260,22 @@ describe('Test box hover:', function() {
             fig.layout.hovermode = 'x';
             return fig;
         },
-        nums: [
-            '0', '0.7', '0.6', '0.6', '0.5', '0.3', '0', '0.7', '0.6', '0.3', '0.55'
-        ],
-        name: [
-            '', '', '', '', '', '', '', '', '', '', 'radishes'
-        ],
+        nums: ['0.55', '0', '0.3', '0.6', '0.7'],
+        name: ['radishes', '', '', '', ''],
+        axis: 'day 1'
+    }, {
+        desc: 'hoveron boxes+points | hovermode x (box AND closest point)',
+        patch: function(fig) {
+            fig.data.forEach(function(trace) {
+                trace.boxpoints = 'all';
+                trace.hoveron = 'points+boxes';
+                trace.pointpos = 0;
+            });
+            fig.layout.hovermode = 'x';
+            return fig;
+        },
+        nums: ['0.6', '0.55', '0', '0.3', '0.6', '0.7'],
+        name: ['radishes', 'radishes', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'text items on hover',
@@ -278,8 +288,8 @@ describe('Test box hover:', function() {
             fig.layout.hovermode = 'closest';
             return fig;
         },
-        nums: ['(day 1, 0.7)\nlook:0.7', '(day 1, 0.6)\nlook:0.6', '(day 1, 0.6)\nlook:0.6'],
-        name: ['radishes', 'radishes', 'radishes']
+        nums: '(day 1, 0.7)\nlook:0.7',
+        name: 'radishes'
     }, {
         desc: 'only text items on hover',
         patch: function(fig) {
@@ -292,8 +302,8 @@ describe('Test box hover:', function() {
             fig.layout.hovermode = 'closest';
             return fig;
         },
-        nums: ['look:0.7', 'look:0.6', 'look:0.6'],
-        name: ['', '', '']
+        nums: 'look:0.7',
+        name: ''
     }].forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
             run(specs).catch(fail).then(done);

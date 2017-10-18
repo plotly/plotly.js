@@ -179,26 +179,23 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                         newJitter = trace.jitter * 2 / maxJitterFactor;
                     }
 
-                    // fills in 'x' and 'y' (with and w/o jitter offset) in calcdata 'pts' item
+                    // fills in 'x' and 'y' in calcdata 'pts' item
                     for(i = 0; i < pts.length; i++) {
                         var pt = pts[i];
                         var v = pt.v;
 
                         var jitterOffset = trace.jitter ?
-                            bdPos * (newJitter * jitterFactors[i] * (rand() - 0.5)) :
+                            (newJitter * jitterFactors[i] * (rand() - 0.5)) :
                             0;
 
-                        var posPxNoJitter = d.pos + bPos + bdPos * trace.pointpos;
-                        var posPx = posPxNoJitter + jitterOffset;
+                        var posPx = d.pos + bPos + bdPos * (trace.pointpos + jitterOffset);
 
                         if(trace.orientation === 'h') {
                             pt.y = posPx;
-                            pt.yh = posPxNoJitter;
-                            pt.x = pt.xh = v;
+                            pt.x = v;
                         } else {
                             pt.x = posPx;
-                            pt.xh = posPxNoJitter;
-                            pt.y = pt.yh = v;
+                            pt.y = v;
                         }
 
                         // tag suspected outliers

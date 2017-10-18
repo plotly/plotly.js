@@ -23,16 +23,15 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var hoveron = trace.hoveron;
     var marker = trace.marker || {};
 
-    // output hover points array
-    var closeData = [];
+    // output hover points components
+    var closeBoxData = [];
+    var closePtData;
     // x/y/effective distance functions
     var dx, dy, distfn;
     // orientation-specific fields
     var posLetter, valLetter, posAxis, valAxis;
     // calcdata item
     var di;
-    // hover point item extended from pointData
-    var pointData2;
     // loop indices
     var i, j;
 
@@ -105,7 +104,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
                 // copy out to a new object for each value to label
                 var val = valAxis.c2p(di[attr], true);
-                pointData2 = Lib.extendFlat({}, pointData);
+                var pointData2 = Lib.extendFlat({}, pointData);
+
                 pointData2[valLetter + '0'] = pointData2[valLetter + '1'] = val;
                 pointData2[valLetter + 'LabelVal'] = di[attr];
                 pointData2.attr = attr;
@@ -116,7 +116,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                 // only keep name on the first item (median)
                 pointData.name = '';
 
-                closeData.push(pointData2);
+                closeBoxData.push(pointData2);
             }
         }
     }
@@ -125,58 +125,71 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         var xPx = xa.c2p(xval);
         var yPx = ya.c2p(yval);
 
-        // do not take jitter into consideration in compare hover modes
-        var kx, ky;
-        if(hovermode === 'closest') {
-            kx = 'x';
-            ky = 'y';
-        } else {
-            kx = 'xh';
-            ky = 'yh';
-        }
-
         dx = function(di) {
             var rad = Math.max(3, di.mrc || 0);
-            return Math.max(Math.abs(xa.c2p(di[kx]) - xPx) - rad, 1 - 3 / rad);
+            return Math.max(Math.abs(xa.c2p(di.x) - xPx) - rad, 1 - 3 / rad);
         };
         dy = function(di) {
             var rad = Math.max(3, di.mrc || 0);
-            return Math.max(Math.abs(ya.c2p(di[ky]) - yPx) - rad, 1 - 3 / rad);
+            return Math.max(Math.abs(ya.c2p(di.y) - yPx) - rad, 1 - 3 / rad);
         };
-        distfn = Fx.getDistanceFunction(hovermode, dx, dy);
+        distfn = Fx.quadrature(dx, dy);
+
+        // show one point per trace
+        var ijClosest = false;
+        var pt;
 
         for(i = 0; i < cd.length; i++) {
             di = cd[i];
 
             for(j = 0; j < (di.pts || []).length; j++) {
-                var pt = di.pts[j];
+                pt = di.pts[j];
 
                 var newDistance = distfn(pt);
                 if(newDistance <= pointData.distance) {
                     pointData.distance = newDistance;
-
-                    var xc = xa.c2p(pt.x, true);
-                    var yc = ya.c2p(pt.y, true);
-                    var rad = pt.mrc || 1;
-
-                    pointData2 = Lib.extendFlat({}, pointData, {
-                        // corresponds to index in x/y input data array
-                        index: pt.i,
-                        color: marker.color,
-                        x0: xc - rad,
-                        x1: xc + rad,
-                        xLabelVal: pt.x,
-                        y0: yc - rad,
-                        y1: yc + rad,
-                        yLabelVal: pt.y
-                    });
-
-                    fillHoverText(pt, trace, pointData2);
-                    closeData.push(pointData2);
+                    ijClosest = [i, j];
                 }
             }
         }
+
+        if(ijClosest) {
+            di = cd[ijClosest[0]];
+            pt = di.pts[ijClosest[1]];
+
+            var xc = xa.c2p(pt.x, true);
+            var yc = ya.c2p(pt.y, true);
+            var rad = pt.mrc || 1;
+
+            closePtData = Lib.extendFlat({}, pointData, {
+                // corresponds to index in x/y input data array
+                index: pt.i,
+                color: marker.color,
+                name: trace.name,
+                x0: xc - rad,
+                x1: xc + rad,
+                xLabelVal: pt.x,
+                y0: yc - rad,
+                y1: yc + rad,
+                yLabelVal: pt.y
+            });
+            fillHoverText(pt, trace, closePtData);
+        }
     }
 
-    return closeData;
+    // In closest mode, show only one point or stats for one box, and points have priority
+    // If there's a point in range and hoveron has points, show the best single point only.
+    // If hoveron has boxes and there's no point in range (or hoveron doesn't have points), show the box stats.
+    if(hovermode === 'closest') {
+        if(closePtData) return [closePtData];
+        return closeBoxData;
+    }
+
+    // Otherwise in compare mode, allow a point AND the box stats to be labeled
+    // If there are multiple boxes in range (ie boxmode = 'overlay') we'll see stats for all of them.
+    if(closePtData) {
+        closeBoxData.push(closePtData);
+        return closeBoxData;
+    }
+    return closeBoxData;
 };
