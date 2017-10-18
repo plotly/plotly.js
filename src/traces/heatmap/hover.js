@@ -11,6 +11,7 @@
 
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
+var Axes = require('../../plots/cartesian/axes');
 
 var MAXDIST = Fx.constants.MAXDIST;
 
@@ -26,6 +27,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
         y = cd0.y,
         z = cd0.z,
         zmask = cd0.zmask,
+        zmin = trace.zmin,
+        zmax = trace.zmax,
+        zhoverformat = trace.zhoverformat,
+        _separators = trace._separators,
         x2 = x,
         y2 = y,
         xl,
@@ -99,6 +104,16 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
         text = cd0.text[ny][nx];
     }
 
+    var zLabel;
+    var dummyAx = { // dummy axis for formatting the z value
+        type: 'linear',
+        range: [zmin, zmax],
+        hoverformat: zhoverformat,
+        _separators: _separators
+    };
+    var zLabelObj = Axes.tickText(dummyAx, zVal, 'hover');
+    zLabel = zLabelObj.text;
+
     return [Lib.extendFlat(pointData, {
         index: [ny, nx],
         // never let a 2D override 1D type as closest point
@@ -110,6 +125,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
         xLabelVal: xl,
         yLabelVal: yl,
         zLabelVal: zVal,
+        zLabel: zLabel,
         text: text
     })];
 };

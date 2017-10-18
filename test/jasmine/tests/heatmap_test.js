@@ -616,10 +616,11 @@ describe('heatmap hover', function() {
         return hoverData;
     }
 
-    function assertLabels(hoverPoint, xLabel, yLabel, zLabel, text) {
-        expect(hoverPoint.xLabelVal).toEqual(xLabel, 'have correct x label');
-        expect(hoverPoint.yLabelVal).toEqual(yLabel, 'have correct y label');
-        expect(hoverPoint.zLabelVal).toEqual(zLabel, 'have correct z label');
+    function assertLabels(hoverPoint, xLabelVal, yLabelVal, zLabelVal, zLabel, text) {
+        expect(hoverPoint.xLabelVal).toEqual(xLabelVal, 'have correct x label value');
+        expect(hoverPoint.yLabelVal).toEqual(yLabelVal, 'have correct y label value');
+        expect(hoverPoint.zLabelVal).toEqual(zLabelVal, 'have correct z label value');
+        expect(hoverPoint.zLabel).toEqual(zLabel, 'have correct z label');
         expect(hoverPoint.text).toEqual(text, 'have correct text label');
     }
 
@@ -640,14 +641,14 @@ describe('heatmap hover', function() {
             var pt = _hover(gd, 0.5, 0.5)[0];
 
             expect(pt.index).toEqual([1, 0], 'have correct index');
-            assertLabels(pt, 1, 1, 4);
+            assertLabels(pt, 1, 1, 4, '4');
         });
 
         it('should find closest point (case 2) and should', function() {
             var pt = _hover(gd, 1.5, 0.5)[0];
 
             expect(pt.index).toEqual([0, 0], 'have correct index');
-            assertLabels(pt, 2, 0.2, 6);
+            assertLabels(pt, 2, 0.2, 6, '6');
         });
     });
 
@@ -673,13 +674,47 @@ describe('heatmap hover', function() {
             var pt = _hover(gd, 0.5, 0.5)[0];
 
             expect(pt.index).toEqual([0, 0], 'have correct index');
-            assertLabels(pt, 1, 1, 10, 'a');
+            assertLabels(pt, 1, 1, 10, '10', 'a');
 
             Plotly.relayout(gd, 'xaxis.range', [1, 2]).then(function() {
                 var pt2 = _hover(gd, 1.5, 0.5)[0];
 
                 expect(pt2.index).toEqual([0, 1], 'have correct index');
-                assertLabels(pt2, 2, 1, 4, 'b');
+                assertLabels(pt2, 2, 1, 4, '4', 'b');
+            })
+            .then(done);
+        });
+
+    });
+
+    describe('for hovering with specific number format', function() {
+
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                type: 'heatmap',
+                x: [1, 2, 3],
+                y: [1, 1, 1],
+                z: [0.123456789, 2.9999, 4],
+                zhoverformat: '.2f'
+            }])
+            .then(done);
+        });
+
+        afterAll(destroyGraphDiv);
+
+        it('should find closest point and should', function(done) {
+            var pt = _hover(gd, 0.5, 0.5)[0];
+
+            expect(pt.index).toEqual([0, 0], 'have correct index');
+            assertLabels(pt, 1, 1, 0.123456789, '0.12');
+
+            Plotly.relayout(gd, 'xaxis.range', [1, 2]).then(function() {
+                var pt2 = _hover(gd, 1.5, 0.5)[0];
+
+                expect(pt2.index).toEqual([0, 1], 'have correct index');
+                assertLabels(pt2, 2, 1, 2.9999, '3.00');
             })
             .then(done);
         });
