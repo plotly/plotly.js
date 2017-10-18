@@ -180,8 +180,7 @@ describe('Test box hover:', function() {
         desc: 'base',
         nums: ['0.55', '0', '0.3', '0.6', '0.7'],
         name: ['radishes', '', '', '', ''],
-        axis: 'day 1',
-
+        axis: 'day 1'
     }, {
         desc: 'with mean',
         patch: function(fig) {
@@ -192,8 +191,7 @@ describe('Test box hover:', function() {
         },
         nums: ['0.55', '0', '0.3', '0.6', '0.7', '0.45'],
         name: ['radishes', '', '', '', '', ''],
-        axis: 'day 1',
-
+        axis: 'day 1'
     }, {
         desc: 'with sd',
         patch: function(fig) {
@@ -204,14 +202,29 @@ describe('Test box hover:', function() {
         },
         nums: ['0.55', '0', '0.3', '0.6', '0.7', '0.45 ± 0.2362908'],
         name: ['radishes', '', '', '', '', ''],
-        axis: 'day 1',
+        axis: 'day 1'
     }, {
         desc: 'with boxpoints fences',
         mock: require('@mocks/boxplots_outliercolordflt.json'),
         pos: [350, 200],
         nums: ['8.15', '0.75', '6.8', '10.25', '23.25', '5.25', '12'],
         name: ['', '', '', '', '', '', ''],
-        axis: 'trace 0',
+        axis: 'trace 0'
+    }, {
+        desc: 'with overlaid boxes',
+        patch: function(fig) {
+            fig.layout.boxmode = 'overlay';
+            return fig;
+        },
+        nums: [
+            '0.3', '0.45', '0.6', '1', '0.55', '0.2',
+            '0.6', '0.7', '0.45', '0.1', '0.6', '0.9'
+        ],
+        name: [
+            '', 'kale', '', '', 'radishes', '',
+            '', '', 'carrots', '', '', ''
+        ],
+        axis: 'day 1'
     }, {
         desc: 'hoveron points | hovermode closest',
         patch: function(fig) {
