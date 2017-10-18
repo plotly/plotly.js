@@ -11,13 +11,9 @@
 var extend = require('object-assign');
 var Axes = require('../../plots/cartesian/axes');
 var kdtree = require('kdgrass');
-var Lib = require('../../lib');
 var Fx = require('../../components/fx');
-var getTraceColor = require('../scatter/get_trace_color');
-var ErrorBars = require('../../components/errorbars');
 var MAXDIST = Fx.constants.MAXDIST;
 var subtypes = require('../scatter/subtypes');
-var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
 var calcColorscales = require('../scatter/colorscale_calc');
 
 var Scatter = extend({}, require('../scatter/index'));
@@ -30,27 +26,42 @@ Scatter.categories = ['gl', 'gl2d', 'symbols', 'errorBarsOK', 'markerColorscale'
 Scatter.plot = require('./plot');
 
 Scatter.calc = function calc(gd, trace) {
-	var positions
+    var positions;
 
-    var xa = Axes.getFromId(gd, trace.xaxis || 'x');
-    var ya = Axes.getFromId(gd, trace.yaxis || 'y');
+    var xaxis = Axes.getFromId(gd, trace.xaxis || 'x');
+    var yaxis = Axes.getFromId(gd, trace.yaxis || 'y');
 
     // makeCalcdata runs d2c (data-to-coordinate) on every point
-    var x = xa.makeCalcdata(trace, 'x');
-    var y = ya.makeCalcdata(trace, 'y');
+    var x = xaxis.type === 'linear' ? trace.x : xaxis.makeCalcdata(trace, 'x');
+    var y = yaxis.type === 'linear' ? trace.y : yaxis.makeCalcdata(trace, 'y');
 
     var serieslen = Math.max(x.length, y.length),
-    	i;
+        i, l;
 
-    // create the "calculated data" to plot
-    positions = new Array(serieslen*2);
+    // calculate axes range
+    // FIXME: probably we may want to have more complex ppad calculation
+    // FIXME: that is pretty slow thing here @etpinard your assistance required
+    Axes.expand(xaxis, x, 0);
+    Axes.expand(yaxis, y, 0);
 
-    for(i = 0; i < serieslen; i++) {
-        positions[i*2] = x[i]
-        positions[i*2 + 1] = y[i];
+    // convert log axes
+    if(xaxis.type === 'log') {
+        for(i = 0, l = x.length; i < l; i++) {
+            x[i] = xaxis.d2l(x[i]);
+        }
+    }
+    if(yaxis.type === 'log') {
+        for(i = 0, l = y.length; i < l; i++) {
+            y[i] = yaxis.d2l(y[i]);
+        }
     }
 
-    calcColorscales(trace);
+    positions = new Array(serieslen * 2);
+
+    for(i = 0; i < serieslen; i++) {
+        positions[i * 2] = parseFloat(x[i]);
+        positions[i * 2 + 1] = parseFloat(y[i]);
+    }
 
     // TODO: delegate this to webworker if possible
     // FIXME: make sure it is a good place to store the tree
@@ -61,8 +72,7 @@ Scatter.calc = function calc(gd, trace) {
     trace._y = y;
     trace._positions = positions;
 
-    Axes.expand(xa, x, 0);
-    Axes.expand(ya, y, 0);
+    calcColorscales(trace);
 
     return [{x: false, y: false, trace: trace}];
 };
@@ -71,9 +81,7 @@ Scatter.hoverPoints = function hover(pointData, xval, yval) {
     var cd = pointData.cd,
         trace = cd[0].trace,
         xa = pointData.xa,
-        ya = pointData.ya,
-        positions = trace
-        ._positions,
+        positions = trace._positions,
         // hoveron = trace.hoveron || '',
         tree = trace._tree;
 
@@ -98,7 +106,7 @@ Scatter.hoverPoints = function hover(pointData, xval, yval) {
     pointData.index = id;
 
     if(id !== undefined) {
-    	//FIXME: make proper hover eval here
+        // FIXME: make proper hover eval here
         // the closest data point
         // var di = cd[pointData.index],
         //     xc = xa.c2p(di.x, true),
@@ -140,7 +148,7 @@ Scatter.selectPoints = function select(searchInfo, polygon) {
 
     var scene = cd[0] && cd[0].trace && cd[0].trace._scene;
 
-    if (!scene) return;
+    if(!scene) return;
 
     var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
     if(trace.visible !== true || hasOnlyLines) return;
@@ -172,4 +180,3 @@ Scatter.selectPoints = function select(searchInfo, polygon) {
 
     return selection;
 };
-

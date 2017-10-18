@@ -24,7 +24,6 @@ var createError = require('regl-error2d');
 var Drawing = require('../../components/drawing');
 var svgSdf = require('svg-path-sdf');
 var createRegl = require('regl');
-var Scatter = require('./');
 
 var DESELECTDIM = 0.2;
 var TRANSPARENT = [0, 0, 0, 0];
@@ -36,7 +35,7 @@ var SYMBOL_STROKE = SYMBOL_SIZE / 20;
 var SYMBOL_SDF = {};
 var SYMBOL_SVG_CIRCLE = Drawing.symbolFuncs[0](SYMBOL_SIZE * 0.05);
 
-var convertNumber, convertColorBase;
+var convertNumber;
 
 
 module.exports = plot;
@@ -51,8 +50,8 @@ function plot(container, plotinfo, cdata) {
     linkTraces(container, plotinfo, cdata);
 
     // put references to traces for selectPoints
-    cdata.forEach(function (cd) {
-        if (!cd[0] || !cd[0].trace) return;
+    cdata.forEach(function(cd) {
+        if(!cd[0] || !cd[0].trace) return;
         cd[0].trace._scene = scene;
     });
 
@@ -176,7 +175,7 @@ function plot(container, plotinfo, cdata) {
             width = layout.width,
             height = layout.height;
         var sizes, selIds;
-        var i, l, xx, yy, ptrX = 0, ptrY = 0, errorOptions;
+        var i, xx, yy, ptrX = 0, ptrY = 0, errorOptions;
         var hasLines = false;
         var hasErrorX = false;
         var hasErrorY = false;
@@ -187,28 +186,6 @@ function plot(container, plotinfo, cdata) {
         var y = trace._y;
         var count = Math.max(x.length, y.length);
         var positions = trace._positions;
-
-        // convert log axes
-        // if(xaxis.type === 'log') {
-        //     for (i = 0, l = x.length; i < l; i++) {
-        //         x[i] = xaxis.d2l(x[i]);
-        //     }
-        // }
-        // else {
-        //     for (i = 0, l = x.length; i < l; i++) {
-        //         x[i] = parseFloat(x[i]);
-        //     }
-        // }
-        // if(yaxis.type === 'log') {
-        //     for (i = 0, l = y.length; i < l; i++) {
-        //         y[i] = yaxis.d2l(y[i]);
-        //     }
-        // }
-        // else {
-        //     for (i = 0, l = y.length; i < l; i++) {
-        //         y[i] = parseFloat(y[i]);
-        //     }
-        // }
 
         if(trace.visible !== true) {
             hasLines = false;
@@ -399,105 +376,113 @@ function plot(container, plotinfo, cdata) {
         if(hasMarkers) {
             scatterOptions = {};
             scatterOptions.positions = positions;
-            scatterOptions.sizes = new Array(count);
-            scatterOptions.markers = new Array(count);
-            scatterOptions.borderSizes = new Array(count);
-            scatterOptions.colors = new Array(count);
-            scatterOptions.borderColors = new Array(count);
 
             var markerSizeFunc = makeBubbleSizeFn(trace);
-
             var markerOpts = trace.marker;
             var markerOpacity = markerOpts.opacity;
             var traceOpacity = trace.opacity;
             var symbols = markerOpts.symbol;
 
-            var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, count);
-            var borderSizes = convertNumber(markerOpts.line.width, count);
-            var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, count);
-            var size, symbol, symbolNumber, isOpen, isDimmed, _colors, _borderColors, bw, symbolFunc, symbolNoDot, symbolSdf, symbolNoFill, symbolPath, isDot;
+            if(Array.isArray(markerOpts.color) || Array.isArray(markerOpts.size)) {
+                scatterOptions.sizes = new Array(count);
+                scatterOptions.markers = new Array(count);
+                scatterOptions.borderSizes = new Array(count);
+                scatterOptions.colors = new Array(count);
+                scatterOptions.borderColors = new Array(count);
 
-            sizes = convertArray(markerSizeFunc, markerOpts.size, count);
+                var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, count);
+                var borderSizes = convertNumber(markerOpts.line.width, count);
+                var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, count);
+                var size, symbol, symbolNumber, isOpen, isDimmed, _colors, _borderColors, bw, symbolFunc, symbolNoDot, symbolSdf, symbolNoFill, symbolPath, isDot;
 
-            for(i = 0; i < count; ++i) {
-                symbol = Array.isArray(symbols) ? symbols[i] : symbols;
-                symbolNumber = Drawing.symbolNumber(symbol);
-                symbolFunc = Drawing.symbolFuncs[symbolNumber % 100];
-                symbolNoDot = !!Drawing.symbolNoDot[symbolNumber % 100];
-                symbolNoFill = !!Drawing.symbolNoFill[symbolNumber % 100];
+                sizes = convertArray(markerSizeFunc, markerOpts.size, count);
 
-                isOpen = /-open/.test(symbol);
-                isDot = /-dot/.test(symbol);
-                isDimmed = selIds && !selIds[i];
+                for(i = 0; i < count; ++i) {
+                    symbol = Array.isArray(symbols) ? symbols[i] : symbols;
+                    symbolNumber = Drawing.symbolNumber(symbol);
+                    symbolFunc = Drawing.symbolFuncs[symbolNumber % 100];
+                    symbolNoDot = !!Drawing.symbolNoDot[symbolNumber % 100];
+                    symbolNoFill = !!Drawing.symbolNoFill[symbolNumber % 100];
 
-                _colors = colors;
+                    isOpen = /-open/.test(symbol);
+                    isDot = /-dot/.test(symbol);
+                    isDimmed = selIds && !selIds[i];
 
-                if(isOpen) {
-                    _borderColors = colors;
-                } else {
-                    _borderColors = borderColors;
-                }
+                    _colors = colors;
 
-                // See  https://github.com/plotly/plotly.js/pull/1781#discussion_r121820798
-                // for more info on this logic
-                size = sizes[i];
-                bw = borderSizes[i];
-
-                scatterOptions.sizes[i] = size;
-
-                if(symbol === 'circle') {
-                    scatterOptions.markers[i] = null;
-                }
-                else {
-                    // get symbol sdf from cache or generate it
-                    if(SYMBOL_SDF[symbol]) {
-                        symbolSdf = SYMBOL_SDF[symbol];
+                    if(isOpen) {
+                        _borderColors = colors;
                     } else {
-                        if(isDot && !symbolNoDot) {
-                            symbolPath = symbolFunc(SYMBOL_SIZE * 1.1) + SYMBOL_SVG_CIRCLE;
-                        }
-                        else {
-                            symbolPath = symbolFunc(SYMBOL_SIZE);
-                        }
-
-                        symbolSdf = svgSdf(symbolPath, {
-                            w: SYMBOL_SDF_SIZE,
-                            h: SYMBOL_SDF_SIZE,
-                            viewBox: [-SYMBOL_SIZE, -SYMBOL_SIZE, SYMBOL_SIZE, SYMBOL_SIZE],
-                            stroke: symbolNoFill ? SYMBOL_STROKE : -SYMBOL_STROKE
-                        });
-                        SYMBOL_SDF[symbol] = symbolSdf;
+                        _borderColors = borderColors;
                     }
 
-                    scatterOptions.markers[i] = symbolSdf || null;
-                }
-                scatterOptions.borderSizes[i] = 0.5 * bw;
+                    // See  https://github.com/plotly/plotly.js/pull/1781#discussion_r121820798
+                    // for more info on this logic
+                    size = sizes[i];
+                    bw = borderSizes[i];
 
-                var optColors = scatterOptions.colors;
-                var dim = isDimmed ? DESELECTDIM : 1;
-                if(!optColors[i]) optColors[i] = [];
-                if(isOpen || symbolNoFill) {
-                    optColors[i][0] = TRANSPARENT[0];
-                    optColors[i][1] = TRANSPARENT[1];
-                    optColors[i][2] = TRANSPARENT[2];
-                    optColors[i][3] = TRANSPARENT[3];
-                } else {
-                    optColors[i][0] = _colors[4 * i + 0] * 255;
-                    optColors[i][1] = _colors[4 * i + 1] * 255;
-                    optColors[i][2] = _colors[4 * i + 2] * 255;
-                    optColors[i][3] = dim * _colors[4 * i + 3] * 255;
+                    scatterOptions.sizes[i] = size;
+
+                    if(symbol === 'circle') {
+                        scatterOptions.markers[i] = null;
+                    }
+                    else {
+                        // get symbol sdf from cache or generate it
+                        if(SYMBOL_SDF[symbol]) {
+                            symbolSdf = SYMBOL_SDF[symbol];
+                        } else {
+                            if(isDot && !symbolNoDot) {
+                                symbolPath = symbolFunc(SYMBOL_SIZE * 1.1) + SYMBOL_SVG_CIRCLE;
+                            }
+                            else {
+                                symbolPath = symbolFunc(SYMBOL_SIZE);
+                            }
+
+                            symbolSdf = svgSdf(symbolPath, {
+                                w: SYMBOL_SDF_SIZE,
+                                h: SYMBOL_SDF_SIZE,
+                                viewBox: [-SYMBOL_SIZE, -SYMBOL_SIZE, SYMBOL_SIZE, SYMBOL_SIZE],
+                                stroke: symbolNoFill ? SYMBOL_STROKE : -SYMBOL_STROKE
+                            });
+                            SYMBOL_SDF[symbol] = symbolSdf;
+                        }
+
+                        scatterOptions.markers[i] = symbolSdf || null;
+                    }
+                    scatterOptions.borderSizes[i] = 0.5 * bw;
+
+                    var optColors = scatterOptions.colors;
+                    var dim = isDimmed ? DESELECTDIM : 1;
+                    if(!optColors[i]) optColors[i] = [];
+                    if(isOpen || symbolNoFill) {
+                        optColors[i][0] = TRANSPARENT[0];
+                        optColors[i][1] = TRANSPARENT[1];
+                        optColors[i][2] = TRANSPARENT[2];
+                        optColors[i][3] = TRANSPARENT[3];
+                    } else {
+                        optColors[i][0] = _colors[4 * i + 0] * 255;
+                        optColors[i][1] = _colors[4 * i + 1] * 255;
+                        optColors[i][2] = _colors[4 * i + 2] * 255;
+                        optColors[i][3] = dim * _colors[4 * i + 3] * 255;
+                    }
+                    if(!scatterOptions.borderColors[i]) scatterOptions.borderColors[i] = [];
+                    scatterOptions.borderColors[i][0] = _borderColors[4 * i + 0] * 255;
+                    scatterOptions.borderColors[i][1] = _borderColors[4 * i + 1] * 255;
+                    scatterOptions.borderColors[i][2] = _borderColors[4 * i + 2] * 255;
+                    scatterOptions.borderColors[i][3] = dim * _borderColors[4 * i + 3] * 255;
                 }
-                if(!scatterOptions.borderColors[i]) scatterOptions.borderColors[i] = [];
-                scatterOptions.borderColors[i][0] = _borderColors[4 * i + 0] * 255;
-                scatterOptions.borderColors[i][1] = _borderColors[4 * i + 1] * 255;
-                scatterOptions.borderColors[i][2] = _borderColors[4 * i + 2] * 255;
-                scatterOptions.borderColors[i][3] = dim * _borderColors[4 * i + 3] * 255;
+            }
+            // shortcut update for single color
+            else {
+                scatterOptions.color = markerOpts.color;
+                scatterOptions.opacity = traceOpacity * markerOpacity;
+                scatterOptions.size = markerSizeFunc(markerOpts.size);
+                scatterOptions.borderSizes = 0;
             }
 
             scatterOptions.viewport = viewport;
             scatterOptions.range = range;
         }
-
 
         return {
             scatter: scatterOptions,
@@ -536,7 +521,6 @@ function plot(container, plotinfo, cdata) {
 
 
 convertNumber = convertArray.bind(null, function(x) { return +x; });
-convertColorBase = convertArray.bind(null, str2RGBArray);
 
 // handle the situation where values can be array-like or not array like
 function convertArray(convert, data, count) {

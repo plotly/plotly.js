@@ -270,7 +270,6 @@ function fillColor(colorIn, colorOut, offsetIn, offsetOut, isDimmed) {
 }
 
 proto.update = function(options, cdscatter) {
-        console.time('update')
     if(options.visible !== true) {
         this.isVisible = false;
         this.hasLines = false;
@@ -326,7 +325,6 @@ proto.update = function(options, cdscatter) {
     if(cdscatter && cdscatter[0] && !cdscatter[0]._glTrace) {
         cdscatter[0]._glTrace = this;
     }
-        console.timeEnd('update')
 };
 
 // We'd ideally know that all values are of fast types; sampling gives no certainty but faster
