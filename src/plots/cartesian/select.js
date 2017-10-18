@@ -23,11 +23,6 @@ var MINSELECT = constants.MINSELECT;
 
 function getAxId(ax) { return ax._id; }
 
-function visible(searchInfo) {
-    var cd0 = searchInfo.cd[0];
-    return cd0 && cd0.trace && cd0.trace.visible === true;
-}
-
 module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     var zoomLayer = dragOptions.gd._fullLayout._zoomlayer,
         dragBBox = dragOptions.element.getBoundingClientRect(),
@@ -79,7 +74,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     for(i = 0; i < gd.calcdata.length; i++) {
         cd = gd.calcdata[i];
         trace = cd[0].trace;
-        if(!trace._module || !trace._module.selectPoints) continue;
+        if(trace.visible !== true || !trace._module || !trace._module.selectPoints) continue;
 
         if(dragOptions.subplot) {
             if(
@@ -195,7 +190,6 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 selection = [];
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
-                    if(!visible(searchInfo)) continue;
                     var thisSelection = fillSelectionItem(
                         searchInfo.selectPoints(searchInfo, poly), searchInfo
                     );
@@ -224,7 +218,6 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 outlines.remove();
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
-                    if(!visible(searchInfo)) continue;
                     searchInfo.selectPoints(searchInfo, false);
                 }
 
