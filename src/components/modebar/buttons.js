@@ -213,6 +213,9 @@ function handleCartesian(gd, ev) {
                     }
                 }
                 else {
+                    //TODO: here is where the issue happens with small ranges
+                    // we should find a way to change the zooming, because it is being done usign a ratio,
+                    //which in small ranges it doesnt change almost anything.
                     var rangeNow = [
                         ax.r2l(ax.range[0]),
                         ax.r2l(ax.range[1]),
