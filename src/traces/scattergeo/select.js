@@ -22,7 +22,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
     var di, lonlat, x, y, i;
 
     var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
-    if(trace.visible !== true || hasOnlyLines) return [];
+    if(hasOnlyLines) return [];
 
     var marker = trace.marker;
     var opacity = Array.isArray(marker.opacity) ? 1 : marker.opacity;
