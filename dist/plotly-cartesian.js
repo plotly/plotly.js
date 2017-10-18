@@ -15320,6 +15320,7 @@ module.exports = overrideAll({
     }),
     tickangle: axesAttrs.tickangle,
     tickformat: axesAttrs.tickformat,
+    tickformatstops: axesAttrs.tickformatstops,
     tickprefix: axesAttrs.tickprefix,
     showtickprefix: axesAttrs.showtickprefix,
     ticksuffix: axesAttrs.ticksuffix,
@@ -23422,6 +23423,9 @@ function handleCartesian(gd, ev) {
                     }
                 }
                 else {
+                    //TODO: here is where the issue happens with small ranges
+                    // we should find a way to change the zooming, because it is being done usign a ratio,
+                    //which in small ranges it doesnt change almost anything.
                     var rangeNow = [
                         ax.r2l(ax.range[0]),
                         ax.r2l(ax.range[1]),
@@ -42131,7 +42135,7 @@ function tickTextObj(ax, x, text) {
 
 function formatDate(ax, out, hover, extraPrecision) {
     var tr = ax._tickround,
-        fmt = (hover && ax.hoverformat) || ax.tickformat;
+        fmt = (hover && ax.hoverformat) || axes.getTickFormat(ax);
 
     if(extraPrecision) {
         // second or sub-second precision: extra always shows max digits.
@@ -42187,7 +42191,8 @@ function formatDate(ax, out, hover, extraPrecision) {
 
 function formatLog(ax, out, hover, extraPrecision, hideexp) {
     var dtick = ax.dtick,
-        x = out.x;
+        x = out.x,
+        tickformat = ax.tickformat;
 
     if(hideexp === 'never') {
         // If this is a hover label, then we must *never* hide the exponent
@@ -42201,7 +42206,7 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
 
     if(extraPrecision && ((typeof dtick !== 'string') || dtick.charAt(0) !== 'L')) dtick = 'L3';
 
-    if(ax.tickformat || (typeof dtick === 'string' && dtick.charAt(0) === 'L')) {
+    if(tickformat || (typeof dtick === 'string' && dtick.charAt(0) === 'L')) {
         out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
     }
     else if(isNumeric(dtick) || ((dtick.charAt(0) === 'D') && (Lib.mod(x + 0.01, 1) < 0.1))) {
@@ -42296,7 +42301,7 @@ function numFormat(v, ax, fmtoverride, hover) {
         tickRound = ax._tickround,
         exponentFormat = fmtoverride || ax.exponentformat || 'B',
         exponent = ax._tickexponent,
-        tickformat = ax.tickformat,
+        tickformat = axes.getTickFormat(ax),
         separatethousands = ax.separatethousands;
 
     // special case for hover: set exponent just for this value, and
@@ -42396,6 +42401,76 @@ function numFormat(v, ax, fmtoverride, hover) {
     if(isNeg) return MINUS_SIGN + v;
     return v;
 }
+
+axes.getTickFormat = function(ax) {
+    var i;
+
+    function convertToMs(dtick) {
+        return typeof dtick !== 'string' ? dtick : Number(dtick.replace('M', '')) * ONEAVGMONTH;
+    }
+
+    function compareLogTicks(left, right) {
+        var priority = ['L', 'D'];
+        if(typeof left === typeof right) {
+            if(typeof left === 'number') {
+                return left - right;
+            } else {
+                var leftPriority = priority.indexOf(left.charAt(0));
+                var rightPriority = priority.indexOf(right.charAt(0));
+                if(leftPriority === rightPriority) {
+                    return Number(left.replace(/(L|D)/g, '')) - Number(right.replace(/(L|D)/g, ''));
+                } else {
+                    return leftPriority - rightPriority;
+                }
+            }
+        } else {
+            return typeof left === 'number' ? 1 : -1;
+        }
+    }
+
+    function isProperStop(dtick, range, convert) {
+        var convertFn = convert || function(x) { return x;};
+        var leftDtick = range[0];
+        var rightDtick = range[1];
+        return ((!leftDtick && typeof leftDtick !== 'number') || convertFn(leftDtick) <= convertFn(dtick)) &&
+               ((!rightDtick && typeof rightDtick !== 'number') || convertFn(rightDtick) >= convertFn(dtick));
+    }
+
+    function isProperLogStop(dtick, range) {
+        var isLeftDtickNull = range[0] === null;
+        var isRightDtickNull = range[1] === null;
+        var isDtickInRangeLeft = compareLogTicks(dtick, range[0]) >= 0;
+        var isDtickInRangeRight = compareLogTicks(dtick, range[1]) <= 0;
+        return (isLeftDtickNull || isDtickInRangeLeft) && (isRightDtickNull || isDtickInRangeRight);
+    }
+
+    var tickstop;
+    if(ax.tickformatstops && ax.tickformatstops.length > 0) {
+        switch(ax.type) {
+            case 'date':
+            case 'linear': {
+                for(i = 0; i < ax.tickformatstops.length; i++) {
+                    if(isProperStop(ax.dtick, ax.tickformatstops[i].dtickrange, convertToMs)) {
+                        tickstop = ax.tickformatstops[i];
+                        break;
+                    }
+                }
+                break;
+            }
+            case 'log': {
+                for(i = 0; i < ax.tickformatstops.length; i++) {
+                    if(isProperLogStop(ax.dtick, ax.tickformatstops[i].dtickrange)) {
+                        tickstop = ax.tickformatstops[i];
+                        break;
+                    }
+                }
+                break;
+            }
+            default:
+        }
+    }
+    return tickstop ? tickstop.value : ax.tickformat;
+};
 
 axes.subplotMatch = /^x([0-9]*)y([0-9]*)$/;
 
@@ -46004,6 +46079,28 @@ module.exports = {
         editType: 'ticks',
         
     },
+    tickformatstops: {
+        _isLinkedToArray: 'tickformatstop',
+
+        dtickrange: {
+            valType: 'info_array',
+            
+            items: [
+                {valType: 'any', editType: 'ticks'},
+                {valType: 'any', editType: 'ticks'}
+            ],
+            editType: 'ticks',
+            
+        },
+        value: {
+            valType: 'string',
+            dflt: '',
+            
+            editType: 'ticks',
+            
+        },
+        editType: 'ticks'
+    },
     hoverformat: {
         valType: 'string',
         dflt: '',
@@ -47344,7 +47441,7 @@ module.exports = function setConvert(ax, fullLayout) {
 'use strict';
 
 var Lib = require('../../lib');
-
+var layoutAttributes = require('./layout_attributes');
 
 /**
  * options: inherits font, outerTicks, noHover from axes.handleAxisDefaults
@@ -47374,6 +47471,7 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
 
         if(axType !== 'category') {
             var tickFormat = coerce('tickformat');
+            tickformatstopsDefaults(containerIn, containerOut);
             if(!tickFormat && axType !== 'date') {
                 coerce('showexponent', showAttrDflt);
                 coerce('exponentformat');
@@ -47415,7 +47513,30 @@ function getShowAttrDflt(containerIn) {
     }
 }
 
-},{"../../lib":156}],215:[function(require,module,exports){
+function tickformatstopsDefaults(tickformatIn, tickformatOut) {
+    var valuesIn = tickformatIn.tickformatstops;
+    var valuesOut = tickformatOut.tickformatstops = [];
+
+    if(!Array.isArray(valuesIn)) return;
+
+    var valueIn, valueOut;
+
+    function coerce(attr, dflt) {
+        return Lib.coerce(valueIn, valueOut, layoutAttributes.tickformatstops, attr, dflt);
+    }
+
+    for(var i = 0; i < valuesIn.length; i++) {
+        valueIn = valuesIn[i];
+        valueOut = {};
+
+        coerce('dtickrange');
+        coerce('value');
+
+        valuesOut.push(valueOut);
+    }
+}
+
+},{"../../lib":156,"./layout_attributes":207}],215:[function(require,module,exports){
 /**
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
@@ -48706,14 +48827,6 @@ module.exports = {
         editType: 'plot',
         
     },
-    smith: {
-        // will become a boolean if/when we implement this
-        valType: 'enumerated',
-        
-        values: [false],
-        dflt: false,
-        editType: 'none'
-    },
     showlegend: {
         // handled in legend.supplyLayoutDefaults
         // but included here because it's not in the legend object
@@ -49910,7 +50023,6 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 
     coerce('separators');
     coerce('hidesources');
-    coerce('smith');
 
     Registry.getComponentMethod(
         'calendars',
@@ -53056,6 +53168,7 @@ module.exports = {
     tickfont: axesAttrs.tickfont,
     tickangle: axesAttrs.tickangle,
     tickformat: axesAttrs.tickformat,
+    tickformatstops: axesAttrs.tickformatstops,
     hoverformat: axesAttrs.hoverformat,
     // lines and grids
     showline: extendFlat({}, axesAttrs.showline, {dflt: true}),
@@ -58598,18 +58711,13 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
     if(cnt === 10000) {
         Lib.log('Infinite loop in contour?');
     }
-    var closedpath = equalPts(pts[0], pts[pts.length - 1], xtol, ytol),
-        totaldist = 0,
-        distThresholdFactor = 0.2 * pi.smoothing,
-        alldists = [],
-        cropstart = 0,
-        distgroup,
-        cnt2,
-        cnt3,
-        newpt,
-        ptcnt,
-        ptavg,
-        thisdist;
+    var closedpath = equalPts(pts[0], pts[pts.length - 1], xtol, ytol);
+    var totaldist = 0;
+    var distThresholdFactor = 0.2 * pi.smoothing;
+    var alldists = [];
+    var cropstart = 0;
+    var distgroup, cnt2, cnt3, newpt, ptcnt, ptavg, thisdist,
+        i, j, edgepathi, edgepathj;
 
     /*
      * Check for points that are too close together (<1/5 the average dist
@@ -58694,41 +58802,45 @@ function makePath(pi, loc, edgeflag, xtol, ytol) {
 
         // edge path - does it start where an existing edge path ends, or vice versa?
         var merged = false;
-        pi.edgepaths.forEach(function(edgepath, edgei) {
-            if(!merged && equalPts(edgepath[0], pts[pts.length - 1], xtol, ytol)) {
+        for(i = 0; i < pi.edgepaths.length; i++) {
+            edgepathi = pi.edgepaths[i];
+            if(!merged && equalPts(edgepathi[0], pts[pts.length - 1], xtol, ytol)) {
                 pts.pop();
                 merged = true;
 
                 // now does it ALSO meet the end of another (or the same) path?
                 var doublemerged = false;
-                pi.edgepaths.forEach(function(edgepath2, edgei2) {
-                    if(!doublemerged && equalPts(
-                            edgepath2[edgepath2.length - 1], pts[0], xtol, ytol)) {
+                for(j = 0; j < pi.edgepaths.length; j++) {
+                    edgepathj = pi.edgepaths[j];
+                    if(equalPts(edgepathj[edgepathj.length - 1], pts[0], xtol, ytol)) {
                         doublemerged = true;
-                        pts.splice(0, 1);
-                        pi.edgepaths.splice(edgei, 1);
-                        if(edgei2 === edgei) {
+                        pts.shift();
+                        pi.edgepaths.splice(i, 1);
+                        if(j === i) {
                             // the path is now closed
-                            pi.paths.push(pts.concat(edgepath2));
+                            pi.paths.push(pts.concat(edgepathj));
                         }
                         else {
-                            pi.edgepaths[edgei2] =
-                                pi.edgepaths[edgei2].concat(pts, edgepath2);
+                            if(j > i) j--;
+                            pi.edgepaths[j] = edgepathj.concat(pts, edgepathi);
                         }
+                        break;
                     }
-                });
+                }
                 if(!doublemerged) {
-                    pi.edgepaths[edgei] = pts.concat(edgepath);
+                    pi.edgepaths[i] = pts.concat(edgepathi);
                 }
             }
-        });
-        pi.edgepaths.forEach(function(edgepath, edgei) {
-            if(!merged && equalPts(edgepath[edgepath.length - 1], pts[0], xtol, ytol)) {
-                pts.splice(0, 1);
-                pi.edgepaths[edgei] = edgepath.concat(pts);
+        }
+        for(i = 0; i < pi.edgepaths.length; i++) {
+            if(merged) break;
+            edgepathi = pi.edgepaths[i];
+            if(equalPts(edgepathi[edgepathi.length - 1], pts[0], xtol, ytol)) {
+                pts.shift();
+                pi.edgepaths[i] = edgepathi.concat(pts);
                 merged = true;
             }
-        });
+        }
 
         if(!merged) pi.edgepaths.push(pts);
     }
@@ -64720,7 +64832,8 @@ module.exports = function calc(gd, trace) {
     // (unless the shape is closed, then it's just filling the shape regardless)
     if(((trace.fill === 'tozeroy') || ((trace.fill === 'tonexty') && gd.firstscatter)) &&
             ((x[0] !== x[serieslen - 1]) || (y[0] !== y[serieslen - 1]))) {
-        yOptions.tozero = true;
+        //TODO: lets find a way to send a prop to also allow this value instead of just commenting it.
+        //yOptions.tozero = true;
     }
 
     // tight y: any x fill
