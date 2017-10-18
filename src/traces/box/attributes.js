@@ -217,7 +217,7 @@ module.exports = {
     hoveron: {
         valType: 'flaglist',
         flags: ['boxes', 'points'],
-        dflt: 'boxes',
+        dflt: 'boxes+points',
         role: 'info',
         editType: 'style',
         description: [
