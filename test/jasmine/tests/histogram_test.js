@@ -423,7 +423,7 @@ describe('Test histogram', function() {
             var trace4 = {x: [1, 1.2, 1.4, 1.6], yaxis: 'y2'};
 
             expect(calcPositions(trace1, [trace2, trace3, trace4])).toEqual([1, 2, 3, 4]);
-            expect(calcPositions(trace3)).toBeCloseToArray([0.9, 1.1, 1.3], 5);
+            expect(calcPositions(trace3)).toBeCloseToArray([1.1, 1.3], 5);
         });
 
         describe('cumulative distribution functions', function() {
