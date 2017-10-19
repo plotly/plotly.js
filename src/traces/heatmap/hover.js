@@ -27,8 +27,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
         y = cd0.y,
         z = cd0.z,
         zmask = cd0.zmask,
-        zmin = trace.zmin,
-        zmax = trace.zmax,
+        range = [trace.zmin, trace.zmax],
         zhoverformat = trace.zhoverformat,
         _separators = trace._separators,
         x2 = x,
@@ -105,9 +104,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
     }
 
     var zLabel;
-    var dummyAx = { // dummy axis for formatting the z value
+    // dummy axis for formatting the z value
+    var dummyAx = {
         type: 'linear',
-        range: [zmin, zmax],
+        range: range,
         hoverformat: zhoverformat,
         _separators: _separators
     };
