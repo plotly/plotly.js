@@ -93,6 +93,8 @@ module.exports = function plot(gd, wrappedTraceHolders) {
         .append('g')
         .classed(c.cn.yColumn, true);
 
+    yColumn.exit().remove();
+
     yColumn
         .attr('transform', function(d) {return 'translate(' + d.x + ' 0)';})
         .call(d3.behavior.drag()
@@ -242,7 +244,7 @@ function renderScrollbarKit(tableControlView, gd, bypassVisibleBar) {
 
     function calcTotalHeight(d) {
         var blocks = d.rowBlocks;
-        return firstRowAnchor(blocks, blocks.length - 1) + rowsHeight(blocks[blocks.length - 1], Infinity);
+        return firstRowAnchor(blocks, blocks.length - 1) + (blocks.length ? rowsHeight(blocks[blocks.length - 1], Infinity) : 1);
     }
 
     var scrollbarKit = tableControlView.selectAll('.' + c.cn.scrollbarKit)
@@ -288,7 +290,7 @@ function renderScrollbarKit(tableControlView, gd, bypassVisibleBar) {
 
     scrollbarSlider
         .attr('transform', function(d) {
-            return 'translate(0 ' + d.scrollbarState.topY + ')';
+            return 'translate(0 ' + (d.scrollbarState.topY || 0) + ')';
         });
 
     var scrollbarGlyph = scrollbarSlider.selectAll('.' + c.cn.scrollbarGlyph)
@@ -603,7 +605,7 @@ function headerBlock(d) {return d.type === 'header';}
  */
 
 function headerHeight(d) {
-    var headerBlocks = d.rowBlocks[0].auxiliaryBlocks;
+    var headerBlocks = d.rowBlocks.length ? d.rowBlocks[0].auxiliaryBlocks : [];
     return headerBlocks.reduce(function(p, n) {return p + rowsHeight(n, Infinity);}, 0);
 }
 
@@ -643,6 +645,7 @@ function findPagesAndCacheHeights(blocks, scrollY, scrollHeight) {
 
 function updateBlockYPosition(gd, cellsColumnBlock, tableControlView) {
     var d = flatData(cellsColumnBlock)[0];
+    if(d === undefined) return;
     var blocks = d.rowBlocks;
     var calcdata = d.calcdata;
 
