@@ -104,7 +104,7 @@ dragElement.init = function init(options) {
 
         if(options.prepFn) options.prepFn(e, startX, startY);
 
-        if(hasHover) {
+        if(hasHover && (!e.buttons || (e.buttons && e.buttons !== 2))) {
             dragCover = coverSlip();
             dragCover.style.cursor = window.getComputedStyle(element).cursor;
         }

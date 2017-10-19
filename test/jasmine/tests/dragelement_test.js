@@ -137,7 +137,7 @@ describe('dragElement', function() {
         expect(countCoverSlip()).toEqual(0);
 
         mouseEvent('mouseup', this.x, this.y);
-        expect(mockObj.handleClick).not.toHaveBeenCalled();
+        expect(mockObj.handleClick).toHaveBeenCalled();
     });
 
     it('should fire off click event when down/up without dragging', function() {
