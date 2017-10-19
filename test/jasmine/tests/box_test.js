@@ -178,7 +178,7 @@ describe('Test box hover:', function() {
 
     [{
         desc: 'base',
-        nums: ['0.55', '0', '0.3', '0.6', '0.7'],
+        nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7'],
         name: ['radishes', '', '', '', ''],
         axis: 'day 1'
     }, {
@@ -189,7 +189,7 @@ describe('Test box hover:', function() {
             });
             return fig;
         },
-        nums: ['0.55', '0', '0.3', '0.6', '0.7', '0.45'],
+        nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7', 'mean: 0.45'],
         name: ['radishes', '', '', '', '', ''],
         axis: 'day 1'
     }, {
@@ -200,14 +200,20 @@ describe('Test box hover:', function() {
             });
             return fig;
         },
-        nums: ['0.55', '0', '0.3', '0.6', '0.7', '0.45 ± 0.2362908'],
+        nums: [
+            'median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7',
+            'mean ± σ: 0.45 ± 0.2362908'
+        ],
         name: ['radishes', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'with boxpoints fences',
         mock: require('@mocks/boxplots_outliercolordflt.json'),
         pos: [350, 200],
-        nums: ['8.15', '0.75', '6.8', '10.25', '23.25', '5.25', '12'],
+        nums: [
+            'median: 8.15', 'min: 0.75', 'q1: 6.8',
+            'q3: 10.25', 'max: 23.25', 'lower fence: 5.25', 'upper fence: 12'
+        ],
         name: ['', '', '', '', '', '', ''],
         axis: 'trace 0'
     }, {
@@ -217,8 +223,8 @@ describe('Test box hover:', function() {
             return fig;
         },
         nums: [
-            '0.3', '0.45', '0.6', '1', '0.55', '0.2',
-            '0.6', '0.7', '0.45', '0.1', '0.6', '0.9'
+            'q1: 0.3', 'median: 0.45', 'q3: 0.6', 'max: 1', 'median: 0.55', 'min: 0.2',
+            'q3: 0.6', 'max: 0.7', 'median: 0.45', 'min: 0.1', 'q3: 0.6', 'max: 0.9'
         ],
         name: [
             '', 'kale', '', '', 'radishes', '',
@@ -260,7 +266,7 @@ describe('Test box hover:', function() {
             fig.layout.hovermode = 'x';
             return fig;
         },
-        nums: ['0.55', '0', '0.3', '0.6', '0.7'],
+        nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7'],
         name: ['radishes', '', '', '', ''],
         axis: 'day 1'
     }, {
@@ -274,7 +280,7 @@ describe('Test box hover:', function() {
             fig.layout.hovermode = 'x';
             return fig;
         },
-        nums: ['0.6', '0.55', '0', '0.3', '0.6', '0.7'],
+        nums: ['0.6', 'median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7'],
         name: ['radishes', 'radishes', '', '', '', ''],
         axis: 'day 1'
     }, {

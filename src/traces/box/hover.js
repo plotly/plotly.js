@@ -92,9 +92,16 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
             // box plots: each "point" gets many labels
             var usedVals = {};
             var attrs = ['med', 'min', 'q1', 'q3', 'max'];
+            var prefixes = ['median', 'min', 'q1', 'q3', 'max'];
 
-            if(trace.boxmean) attrs.push('mean');
-            if(trace.boxpoints) [].push.apply(attrs, ['lf', 'uf']);
+            if(trace.boxmean) {
+                attrs.push('mean');
+                prefixes.push(trace.boxmean === 'sd' ? 'mean ± σ' : 'mean');
+            }
+            if(trace.boxpoints) {
+                attrs.push('lf', 'uf');
+                prefixes.push('lower fence', 'upper fence');
+            }
 
             for(i = 0; i < attrs.length; i++) {
                 var attr = attrs[i];
@@ -103,12 +110,13 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                 usedVals[di[attr]] = true;
 
                 // copy out to a new object for each value to label
-                var val = valAxis.c2p(di[attr], true);
+                var val = di[attr];
+                var valPx = valAxis.c2p(val, true);
                 var pointData2 = Lib.extendFlat({}, pointData);
 
-                pointData2[valLetter + '0'] = pointData2[valLetter + '1'] = val;
-                pointData2[valLetter + 'LabelVal'] = di[attr];
-                pointData2.attr = attr;
+                pointData2[valLetter + '0'] = pointData2[valLetter + '1'] = valPx;
+                pointData2[valLetter + 'LabelVal'] = val;
+                pointData2[valLetter + 'Label'] = prefixes[i] + ': ' + Axes.hoverLabelText(valAxis, val);
 
                 if(attr === 'mean' && ('sd' in di) && trace.boxmean === 'sd') {
                     pointData2[valLetter + 'err'] = di.sd;
