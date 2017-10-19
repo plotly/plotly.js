@@ -1,0 +1,289 @@
+var Plotly = require('@lib/index');
+var Lib = require('@src/lib');
+var Plots = require('@src/plots/plots');
+var Table = require('@src/traces/table');
+var cn = require('@src/traces/table/constants').cn;
+
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+
+var mockMulti = require('@mocks/table_latex_multitrace.json');
+
+// mock with two columns; lowest column count of general case
+var mock2 = Lib.extendDeep({}, mockMulti);
+mock2.data = [mock2.data[2]]; // keep the subplot with two columns
+
+// mock with one column as special case
+var mock1 = Lib.extendDeep({}, mock2);
+mock1.data[0].header.values = mock1.data[0].header.values.slice(0, 1);
+mock1.data[0].cells.values = mock1.data[0].cells.values.slice(0, 1);
+
+// mock with zero columns; special case, as no column can be rendered
+var mock0 = Lib.extendDeep({}, mock1);
+mock0.data[0].header.values = [];
+mock0.data[0].cells.values = [];
+
+var mock = require('@mocks/table_plain_birds.json');
+
+describe('table initialization tests', function() {
+
+    'use strict';
+
+    describe('table global defaults', function() {
+
+        it('should not coerce trace opacity', function() {
+            var gd = Lib.extendDeep({}, mock1);
+
+            Plots.supplyDefaults(gd);
+
+            expect(gd._fullData[0].opacity).toBeUndefined();
+        });
+
+        it('should use global font as label, tick and range font defaults', function() {
+            var gd = Lib.extendDeep({}, mock1);
+            delete gd.data[0].header.font;
+            delete gd.data[0].cells.font;
+            gd.layout.font = {
+                family: 'Gravitas',
+                size: 20,
+                color: 'blue'
+            };
+
+            Plots.supplyDefaults(gd);
+
+            var expected = {
+                family: 'Gravitas',
+                size: 20,
+                color: 'blue'
+            };
+
+            expect(gd._fullData[0].header.font).toEqual(expected);
+            expect(gd._fullData[0].cells.font).toEqual(expected);
+        });
+    });
+
+    describe('table defaults', function() {
+
+        function _supply(traceIn) {
+            var traceOut = { visible: true },
+                defaultColor = '#777',
+                layout = { font: {family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444'} };
+
+            Table.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+            return traceOut;
+        }
+
+        it('\'line\' specification should yield a default color', function() {
+            var fullTrace = _supply({});
+            expect(fullTrace.header.fill.color).toEqual('#777');
+            expect(fullTrace.cells.fill.color).toEqual('#777');
+        });
+
+        it('\'domain\' specification should have a default', function() {
+            var fullTrace = _supply({});
+            expect(fullTrace.domain).toEqual({x: [0, 1], y: [0, 1]});
+        });
+
+        it('\'*.values\' specification should have a default of an empty array', function() {
+            var fullTrace = _supply({});
+            expect(fullTrace.header.values).toEqual([]);
+            expect(fullTrace.cells.values).toEqual([]);
+        });
+
+        it('\'header\' should be used with default values where attributes are not provided', function() {
+            var fullTrace = _supply({
+                header: {
+                    values: ['A'],
+                    alienProperty: 'Alpha Centauri'
+                },
+                cells: {
+                    values: [1, 2], // otherwise header.values will become []
+                    alienProperty: 'Betelgeuse'
+                }
+            });
+            expect(fullTrace.header).toEqual({
+                values: ['A'], // only one column remains
+                format: [],
+                align: 'center',
+                height: 28,
+                line: { width: 1, color: 'grey' },
+                fill: { color: '#777' },
+                font: {family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444'}
+            });
+
+            expect(fullTrace.cells).toEqual({
+                values: [1, 2],
+                format: [],
+                align: 'center',
+                height: 28,
+                line: { width: 1, color: 'grey' },
+                fill: { color: '#777' },
+                font: {family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444'}
+            });
+        });
+    });
+});
+
+describe('table', function() {
+
+    afterEach(destroyGraphDiv);
+
+    describe('edge cases', function() {
+
+        it('Works with more than one column', function(done) {
+
+            var mockCopy = Lib.extendDeep({}, mock2);
+            var gd = createGraphDiv();
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+                expect(gd.data.length).toEqual(1);
+                expect(gd.data[0].header.values.length).toEqual(2);
+                expect(gd.data[0].cells.values.length).toEqual(2);
+                expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(2);
+                done();
+            });
+        });
+
+        it('Works with one column', function(done) {
+
+            var mockCopy = Lib.extendDeep({}, mock1);
+            var gd = createGraphDiv();
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+                expect(gd.data.length).toEqual(1);
+                expect(gd.data[0].header.values.length).toEqual(1);
+                expect(gd.data[0].cells.values.length).toEqual(1);
+                expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(1);
+                done();
+            });
+        });
+
+        it('Does not error with zero columns', function(done) {
+
+            var mockCopy = Lib.extendDeep({}, mock0);
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+                expect(gd.data.length).toEqual(1);
+                expect(gd.data[0].header.values.length).toEqual(0);
+                expect(gd.data[0].cells.values.length).toEqual(0);
+                expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(0);
+                done();
+            });
+        });
+
+        it('Does not raise an error with zero lines', function(done) {
+
+            var mockCopy = Lib.extendDeep({}, mock2);
+
+            mockCopy.layout.width = 320;
+            mockCopy.data[0].header.values = [[], []];
+            mockCopy.data[0].cells.values = [[], []];
+
+            var gd = createGraphDiv();
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+
+                expect(gd.data.length).toEqual(1);
+                expect(gd.data[0].header.values.length).toEqual(2);
+                expect(gd.data[0].cells.values.length).toEqual(2);
+                expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(2);
+                done();
+            });
+        });
+    });
+
+    describe('basic use', function() {
+        var mockCopy,
+            gd;
+
+        beforeEach(function(done) {
+            mockCopy = Lib.extendDeep({}, mock);
+            mockCopy.data[0].domain = {
+                x: [0.1, 0.9],
+                y: [0.05, 0.85]
+            };
+            gd = createGraphDiv();
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('`Plotly.plot` should have proper fields on `gd.data` on initial rendering', function() {
+
+            expect(gd.data.length).toEqual(1);
+            expect(gd.data[0].header.values.length).toEqual(7);
+            expect(gd.data[0].cells.values.length).toEqual(7);
+            expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7); // one dimension is `visible: false`
+        });
+
+        it('Calling `Plotly.plot` again should add the new table trace', function(done) {
+
+            var reversedMockCopy = Lib.extendDeep({}, mockCopy);
+            reversedMockCopy.data[0].header.values = reversedMockCopy.data[0].header.values.slice().reverse();
+            reversedMockCopy.data[0].cells.values = reversedMockCopy.data[0].cells.values.slice().reverse();
+            reversedMockCopy.data[0].domain.y = [0, 0.3];
+
+            Plotly.plot(gd, reversedMockCopy.data, reversedMockCopy.layout).then(function() {
+                expect(gd.data.length).toEqual(2);
+                expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7 * 2);
+                done();
+            });
+
+        });
+
+        it('Calling `Plotly.restyle` with a string path should amend the preexisting table', function(done) {
+
+            expect(gd.data.length).toEqual(1);
+
+            Plotly.restyle(gd, 'header.fill.color', 'magenta').then(function() {
+
+                expect(gd.data.length).toEqual(1);
+
+                expect(gd.data[0].header.fill.color).toEqual('magenta');
+                expect(gd.data[0].header.values.length).toEqual(7);
+                expect(gd.data[0].cells.values.length).toEqual(7);
+                expect(gd.data[0].header.line.color).toEqual('lightgray'); // no change relative to original mock value
+                expect(gd.data[0].cells.line.color).toEqual(['grey']); // no change relative to original mock value
+
+                done();
+            });
+
+        });
+
+        it('Calling `Plotly.restyle` for a `header.values` change should amend the preexisting one', function(done) {
+
+            function restyleValues(what, key, setterValue) {
+
+                // array values need to be wrapped in an array; unwrapping here for value comparison
+                var value = Lib.isArray(setterValue) ? setterValue[0] : setterValue;
+
+                return function() {
+                    return Plotly.restyle(gd, what + '.values[' + key + ']', setterValue).then(function() {
+                        expect(gd.data[0][what].values[key]).toEqual(value, 'for column \'' + key + '\'');
+                        expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7);
+                    });
+                };
+            }
+
+            restyleValues('cells', 0, [['new cell content 1', 'new cell content 2']])()
+                .then(restyleValues('cells', 2, [[0, 0.1]]))
+                .then(restyleValues('header', 1, [['Species top', 'Species bottom']]))
+                .then(done);
+        });
+
+        it('Calling `Plotly.relayout` with string should amend the preexisting parcoords', function(done) {
+            expect(gd.layout.width).toEqual(1000);
+            Plotly.relayout(gd, 'width', 500).then(function() {
+                expect(gd.data.length).toEqual(1);
+                expect(gd.layout.width).toEqual(500);
+                done();
+            });
+        });
+
+        it('Calling `Plotly.relayout` with object should amend the preexisting parcoords', function(done) {
+            expect(gd.layout.width).toEqual(1000);
+            Plotly.relayout(gd, {width: 500}).then(function() {
+                expect(gd.data.length).toEqual(1);
+                expect(gd.layout.width).toEqual(500);
+                done();
+            });
+        });
+    });
+});
