@@ -1063,14 +1063,13 @@ function cleanPoint(d, hovermode) {
     d.y0 = Lib.constrain(d.y0, 0, d.ya._length);
     d.y1 = Lib.constrain(d.y1, 0, d.ya._length);
 
-    // and convert the x and y label values into objects
-    // formatted as text, with font info
+    // and convert the x and y label values into formatted text
     if(d.xLabelVal !== undefined) {
-        d.xLabel = ('xLabel' in d) ? d.xLabel : Axes.hoverLabelText(d.xa, d.xLabelVal);
+        d.xLabel = ('xLabel' in d) ? d.xLabel : getDimText(d, 'x');
         d.xVal = d.xa.c2d(d.xLabelVal);
     }
     if(d.yLabelVal !== undefined) {
-        d.yLabel = ('yLabel' in d) ? d.yLabel : Axes.hoverLabelText(d.ya, d.yLabelVal);
+        d.yLabel = ('yLabel' in d) ? d.yLabel : getDimText(d, 'y');
         d.yVal = d.ya.c2d(d.yLabelVal);
     }
     if(d.zLabelVal !== undefined) d.zLabel = String(d.zLabelVal);
@@ -1111,6 +1110,24 @@ function cleanPoint(d, hovermode) {
     }
 
     return d;
+}
+
+// get text for either a value range (val0 .. val1) if it exists,
+// or single value (val) if the range does not exist
+function getDimText(d, axLetter) {
+    var val = d[axLetter + 'LabelVal'];
+    var val0 = d[axLetter + 'LabelVal0'];
+    var val1 = d[axLetter + 'LabelVal1'];
+    var ax = d[axLetter + 'a'];
+
+    if(val0 !== undefined && val1 !== undefined) {
+        var text0 = Axes.hoverLabelText(ax, val0);
+        var text1 = Axes.hoverLabelText(ax, val1);
+
+        if(text0 === text1) return text0;
+        return text0 + ' - ' + text1;
+    }
+    return Axes.hoverLabelText(ax, val);
 }
 
 function createSpikelines(hoverData, opts) {
