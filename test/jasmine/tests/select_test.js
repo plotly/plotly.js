@@ -815,6 +815,63 @@ describe('Test select box and lasso per trace:', function() {
         .then(done);
     });
 
+    it('should work for date/category traces', function(done) {
+        var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
+
+        var fig = {
+            data: [{
+                x: ['2017-01-01', '2017-02-01', '2017-03-01'],
+                y: ['a', 'b', 'c']
+            }, {
+                type: 'bar',
+                x: ['2017-01-01', '2017-02-02', '2017-03-01'],
+                y: ['a', 'b', 'c']
+            }],
+            layout: {
+                dragmode: 'lasso',
+                width: 400,
+                height: 400
+            }
+        };
+        addInvisible(fig);
+
+        var x0 = 100;
+        var y0 = 100;
+        var x1 = 250;
+        var y1 = 250;
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            return _run(
+                [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]],
+                function() {
+                    assertPoints([
+                        [0, '2017-02-01', 'b'],
+                        [1, '2017-02-02', 'b']
+                    ]);
+                },
+                null, LASSOEVENTS, 'date/category lasso'
+            );
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'select');
+        })
+        .then(function() {
+            return _run(
+                [[x0, y0], [x1, y1]],
+                function() {
+                    assertPoints([
+                        [0, '2017-02-01', 'b'],
+                        [1, '2017-02-02', 'b']
+                    ]);
+                },
+                null, BOXEVENTS, 'date/category select'
+            );
+        })
+        .catch(fail)
+        .then(done);
+    });
+
     it('should work for histogram traces', function(done) {
         var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
         var assertRanges = makeAssertRanges();
@@ -854,7 +911,60 @@ describe('Test select box and lasso per trace:', function() {
                     ]);
                     assertRanges([[1.66, 3.59], [0.69, 2.17]]);
                 },
-                null, BOXEVENTS, 'bar select'
+                null, BOXEVENTS, 'histogram select'
+            );
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should work for box traces', function(done) {
+        var assertPoints = makeAssertPoints(['curveNumber', 'y', 'x']);
+        var assertRanges = makeAssertRanges();
+        var assertLassoPoints = makeAssertLassoPoints();
+
+        var fig = Lib.extendDeep({}, require('@mocks/box_grouped'));
+        fig.data.forEach(function(trace) {
+            trace.boxpoints = 'all';
+        });
+        fig.layout.dragmode = 'lasso';
+        fig.layout.width = 600;
+        fig.layout.height = 500;
+        addInvisible(fig);
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            return _run(
+                [[200, 200], [400, 200], [400, 350], [200, 350], [200, 200]],
+                function() {
+                    assertPoints([
+                        [0, 0.2, 'day 2'], [0, 0.3, 'day 2'], [0, 0.5, 'day 2'], [0, 0.7, 'day 2'],
+                        [1, 0.2, 'day 2'], [1, 0.5, 'day 2'], [1, 0.7, 'day 2'], [1, 0.7, 'day 2'],
+                        [2, 0.3, 'day 1'], [2, 0.6, 'day 1'], [2, 0.6, 'day 1']
+                    ]);
+                    assertLassoPoints([
+                        ['day 1', 'day 2', 'day 2', 'day 1', 'day 1'],
+                        [0.71, 0.71, 0.1875, 0.1875, 0.71]
+                    ]);
+                },
+                null, LASSOEVENTS, 'box lasso'
+            );
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'select');
+        })
+        .then(function() {
+            return _run(
+                [[200, 200], [400, 350]],
+                function() {
+                    assertPoints([
+                        [0, 0.2, 'day 2'], [0, 0.3, 'day 2'], [0, 0.5, 'day 2'], [0, 0.7, 'day 2'],
+                        [1, 0.2, 'day 2'], [1, 0.5, 'day 2'], [1, 0.7, 'day 2'], [1, 0.7, 'day 2'],
+                        [2, 0.3, 'day 1'], [2, 0.6, 'day 1'], [2, 0.6, 'day 1']
+                    ]);
+                    assertRanges([['day 1', 'day 2'], [0.1875, 0.71]]);
+                },
+                null, BOXEVENTS, 'box select'
             );
         })
         .catch(fail)
