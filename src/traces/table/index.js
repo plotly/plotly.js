@@ -18,7 +18,7 @@ Table.plot = require('./plot');
 Table.moduleType = 'trace';
 Table.name = 'table';
 Table.basePlotModule = require('./base_plot');
-Table.categories = [];
+Table.categories = ['noOpacity'];
 Table.meta = {
     description: [
         'Table view for detailed data viewing.',

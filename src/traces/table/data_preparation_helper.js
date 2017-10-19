@@ -16,11 +16,12 @@ module.exports = function calc(gd, trace) {
     var headerValues = trace.header.values.map(function(c) {
         return Array.isArray(c) ? c : [c];
     });
+    var cellsValues = trace.cells.values;
     var domain = trace.domain;
     var groupWidth = Math.floor(gd._fullLayout._size.w * (domain.x[1] - domain.x[0]));
     var groupHeight = Math.floor(gd._fullLayout._size.h * (domain.y[1] - domain.y[0]));
-    var headerRowHeights = headerValues[0].map(function() {return trace.header.height;});
-    var rowHeights = trace.cells.values[0].map(function() {return trace.cells.height;});
+    var headerRowHeights = headerValues.length ? headerValues[0].map(function() {return trace.header.height;}) : [];
+    var rowHeights = cellsValues.length ? cellsValues[0].map(function() {return trace.cells.height;}) : [];
     var headerHeight = headerRowHeights.reduce(function(a, b) {return a + b;}, 0);
     var scrollHeight = groupHeight - headerHeight;
     var minimumFillHeight = scrollHeight + c.uplift;
