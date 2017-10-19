@@ -2,6 +2,7 @@ var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var Plots = require('@src/plots/plots');
 var Table = require('@src/traces/table');
+var attributes = require('@src/traces/table/attributes');
 var cn = require('@src/traces/table/constants').cn;
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -76,8 +77,8 @@ describe('table initialization tests', function() {
 
         it('\'line\' specification should yield a default color', function() {
             var fullTrace = _supply({});
-            expect(fullTrace.header.fill.color).toEqual('#777');
-            expect(fullTrace.cells.fill.color).toEqual('#777');
+            expect(fullTrace.header.fill.color).toEqual(attributes.header.fill.color.dflt);
+            expect(fullTrace.cells.fill.color).toEqual(attributes.cells.fill.color.dflt);
         });
 
         it('\'domain\' specification should have a default', function() {
@@ -108,7 +109,7 @@ describe('table initialization tests', function() {
                 align: 'center',
                 height: 28,
                 line: { width: 1, color: 'grey' },
-                fill: { color: '#777' },
+                fill: { color: attributes.header.fill.color.dflt },
                 font: {family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444'}
             });
 
@@ -116,9 +117,9 @@ describe('table initialization tests', function() {
                 values: [1, 2],
                 format: [],
                 align: 'center',
-                height: 28,
+                height: 20,
                 line: { width: 1, color: 'grey' },
-                fill: { color: '#777' },
+                fill: { color: attributes.cells.fill.color.dflt },
                 font: {family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444'}
             });
         });

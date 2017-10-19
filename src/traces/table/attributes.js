@@ -183,7 +183,7 @@ module.exports = overrideAll({
 
         height: {
             valType: 'number',
-            dflt: 28,
+            dflt: 20,
             role: 'style',
             description: 'The height of cells.'
         },

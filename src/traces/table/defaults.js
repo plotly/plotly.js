@@ -42,7 +42,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('header.height');
     coerce('header.line.width');
     coerce('header.line.color');
-    coerce('header.fill.color', defaultColor);
+    coerce('header.fill.color');
     Lib.coerceFont(coerce, 'header.font', Lib.extendFlat({}, layout.font));
 
     defaultColumnOrder(traceOut, coerce);
@@ -55,6 +55,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('cells.height');
     coerce('cells.line.width');
     coerce('cells.line.color');
-    coerce('cells.fill.color', defaultColor);
+    coerce('cells.fill.color');
     Lib.coerceFont(coerce, 'cells.font', Lib.extendFlat({}, layout.font));
 };
