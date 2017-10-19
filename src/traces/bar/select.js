@@ -12,6 +12,8 @@ var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 module.exports = function selectPoints(searchInfo, polygon) {
     var cd = searchInfo.cd;
+    var xa = searchInfo.xaxis;
+    var ya = searchInfo.yaxis;
     var selection = [];
     var trace = cd[0].trace;
     var node3 = cd[0].node3;
@@ -31,8 +33,8 @@ module.exports = function selectPoints(searchInfo, polygon) {
             if(polygon.contains(di.ct)) {
                 selection.push({
                     pointNumber: i,
-                    x: di.x,
-                    y: di.y
+                    x: xa.c2d(di.x),
+                    y: ya.c2d(di.y)
                 });
                 di.dim = 0;
             } else {

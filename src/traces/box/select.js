@@ -38,8 +38,8 @@ module.exports = function selectPoints(searchInfo, polygon) {
                 if(polygon.contains([x, y])) {
                     selection.push({
                         pointNumber: pt.i,
-                        x: pt.x,
-                        y: pt.y
+                        x: xa.c2d(pt.x),
+                        y: ya.c2d(pt.y)
                     });
                     pt.dim = 0;
                 } else {
