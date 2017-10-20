@@ -19,22 +19,18 @@ var cleanBins = require('../histogram/clean_bins');
 
 
 module.exports = function calc(gd, trace) {
-    var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
-        x = trace.x ? xa.makeCalcdata(trace, 'x') : [],
-        ya = Axes.getFromId(gd, trace.yaxis || 'y'),
-        y = trace.y ? ya.makeCalcdata(trace, 'y') : [],
-        xcalendar = trace.xcalendar,
-        ycalendar = trace.ycalendar,
-        xr2c = function(v) { return xa.r2c(v, 0, xcalendar); },
-        yr2c = function(v) { return ya.r2c(v, 0, ycalendar); },
-        xc2r = function(v) { return xa.c2r(v, 0, xcalendar); },
-        yc2r = function(v) { return ya.c2r(v, 0, ycalendar); },
-        x0,
-        dx,
-        y0,
-        dy,
-        z,
-        i;
+    var xa = Axes.getFromId(gd, trace.xaxis || 'x');
+    var x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
+    var ya = Axes.getFromId(gd, trace.yaxis || 'y');
+    var y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
+    var xcalendar = trace.xcalendar;
+    var ycalendar = trace.ycalendar;
+    var xr2c = function(v) { return xa.r2c(v, 0, xcalendar); };
+    var yr2c = function(v) { return ya.r2c(v, 0, ycalendar); };
+    var xc2r = function(v) { return xa.c2r(v, 0, xcalendar); };
+    var yc2r = function(v) { return ya.c2r(v, 0, ycalendar); };
+
+    var i, n, m;
 
     cleanBins(trace, xa, 'x');
     cleanBins(trace, ya, 'y');
@@ -79,33 +75,31 @@ module.exports = function calc(gd, trace) {
     }
 
     // make the empty bin array & scale the map
-    z = [];
-    var onecol = [],
-        zerocol = [],
-        nonuniformBinsX = (typeof(trace.xbins.size) === 'string'),
-        nonuniformBinsY = (typeof(trace.ybins.size) === 'string'),
-        xbins = nonuniformBinsX ? [] : trace.xbins,
-        ybins = nonuniformBinsY ? [] : trace.ybins,
-        total = 0,
-        n,
-        m,
-        counts = [],
-        norm = trace.histnorm,
-        func = trace.histfunc,
-        densitynorm = (norm.indexOf('density') !== -1),
-        extremefunc = (func === 'max' || func === 'min'),
-        sizeinit = (extremefunc ? null : 0),
-        binfunc = binFunctions.count,
-        normfunc = normFunctions[norm],
-        doavg = false,
-        xinc = [],
-        yinc = [];
+    var z = [];
+    var onecol = [];
+    var zerocol = [];
+    var nonuniformBinsX = (typeof(trace.xbins.size) === 'string');
+    var nonuniformBinsY = (typeof(trace.ybins.size) === 'string');
+    var xbins = nonuniformBinsX ? [] : trace.xbins;
+    var ybins = nonuniformBinsY ? [] : trace.ybins;
+    var total = 0;
+    var counts = [];
+    var norm = trace.histnorm;
+    var func = trace.histfunc;
+    var densitynorm = (norm.indexOf('density') !== -1);
+    var extremefunc = (func === 'max' || func === 'min');
+    var sizeinit = (extremefunc ? null : 0);
+    var binfunc = binFunctions.count;
+    var normfunc = normFunctions[norm];
+    var doavg = false;
+    var xinc = [];
+    var yinc = [];
 
     // set a binning function other than count?
     // for binning functions: check first for 'z',
     // then 'mc' in case we had a colored scatter plot
     // and want to transfer these colors to the 2D histo
-    // TODO: this is why we need a data picker in the popover...
+    // TODO: axe this, make it the responsibility of the app changing type? or an impliedEdit?
     var rawCounterData = ('z' in trace) ?
         trace.z :
         (('marker' in trace && Array.isArray(trace.marker.color)) ?
@@ -129,10 +123,9 @@ module.exports = function calc(gd, trace) {
     if(nonuniformBinsX) xbins.push(i);
 
     var nx = onecol.length;
-    x0 = trace.xbins.start;
-    var x0c = xr2c(x0);
-    dx = (i - x0c) / nx;
-    x0 = xc2r(x0c + dx / 2);
+    var x0c = xr2c(trace.xbins.start);
+    var dx = (i - x0c) / nx;
+    var x0 = xc2r(x0c + dx / 2);
 
     binspec = trace.ybins;
     binStart = yr2c(binspec.start);
@@ -147,10 +140,9 @@ module.exports = function calc(gd, trace) {
     if(nonuniformBinsY) ybins.push(i);
 
     var ny = z.length;
-    y0 = trace.ybins.start;
-    var y0c = yr2c(y0);
-    dy = (i - y0c) / ny;
-    y0 = yc2r(y0c + dy / 2);
+    var y0c = yr2c(trace.ybins.start);
+    var dy = (i - y0c) / ny;
+    var y0 = yc2r(y0c + dy / 2);
 
     if(densitynorm) {
         xinc = onecol.map(function(v, i) {
