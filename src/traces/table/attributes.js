@@ -48,7 +48,10 @@ module.exports = overrideAll({
         arrayOk: true,
         dflt: null,
         role: 'style',
-        description: 'The width of cells.'
+        description: [
+            'The width of columns expressed as a ratio. Columns fill the available width',
+            'in proportion of their specified column widths.'
+        ].join(' ')
     },
 
     columnorder: {
