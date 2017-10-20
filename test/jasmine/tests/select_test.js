@@ -717,10 +717,11 @@ describe('Test select box and lasso per trace:', function() {
         addInvisible(fig, false);
 
         // add a trace with no locations which will then make trace invisible, lacking DOM elements
-        fig.data.push(Lib.extendDeep({}, fig.data[0]));
-        fig.data[1].text = [];
-        fig.data[1].locations = [];
-        fig.data[1].z = [];
+        var emptyChoroplethTrace = Lib.extendDeep({}, fig.data[0]);
+        emptyChoroplethTrace.text = [];
+        emptyChoroplethTrace.locations = [];
+        emptyChoroplethTrace.z = [];
+        fig.data.push(emptyChoroplethTrace);
 
         Plotly.plot(gd, fig)
         .then(function() {
