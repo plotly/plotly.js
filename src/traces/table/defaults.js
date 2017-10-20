@@ -11,9 +11,9 @@
 var Lib = require('../../lib');
 var attributes = require('./attributes');
 
-function defaultColumnOrder(traceIn, coerce) {
-    var specifiedColumnOrder = traceIn.columnorder || [];
-    var commonLength = traceIn.header.values.length;
+function defaultColumnOrder(traceOut, coerce) {
+    var specifiedColumnOrder = traceOut.columnorder || [];
+    var commonLength = traceOut.header.values.length;
     var truncated = specifiedColumnOrder.slice(0, commonLength);
     var sorted = truncated.slice().sort(function(a, b) {return a - b;});
     var oneStepped = truncated.map(function(d) {return sorted.indexOf(d);});
@@ -28,28 +28,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var fontDflt = {
-        family: layout.font.family,
-        size: layout.font.size,
-        color: layout.font.color
-    };
-
     coerce('domain.x');
     coerce('domain.y');
 
     coerce('columnwidth');
-    defaultColumnOrder(traceIn, coerce);
-
-    coerce('cells.values');
-    coerce('cells.format');
-    coerce('cells.align');
-    coerce('cells.prefix');
-    coerce('cells.suffix');
-    coerce('cells.height');
-    coerce('cells.line.width');
-    coerce('cells.line.color');
-    coerce('cells.fill.color');
-    Lib.coerceFont(coerce, 'cells.font', fontDflt);
 
     coerce('header.values');
     coerce('header.format');
@@ -61,5 +43,18 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('header.line.width');
     coerce('header.line.color');
     coerce('header.fill.color');
-    Lib.coerceFont(coerce, 'header.font', fontDflt);
+    Lib.coerceFont(coerce, 'header.font', Lib.extendFlat({}, layout.font));
+
+    defaultColumnOrder(traceOut, coerce);
+
+    coerce('cells.values');
+    coerce('cells.format');
+    coerce('cells.align');
+    coerce('cells.prefix');
+    coerce('cells.suffix');
+    coerce('cells.height');
+    coerce('cells.line.width');
+    coerce('cells.line.color');
+    coerce('cells.fill.color');
+    Lib.coerceFont(coerce, 'cells.font', Lib.extendFlat({}, layout.font));
 };
