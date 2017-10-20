@@ -18,12 +18,15 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
     pointData = pts[0];
     var di = pointData.cd[pointData.index];
+    var trace = pointData.cd[0].trace;
 
-    var posLetter = pointData.cd[0].trace.orientation === 'h' ? 'y' : 'x';
+    if(!trace.cumulative.enabled) {
+        var posLetter = trace.orientation === 'h' ? 'y' : 'x';
 
-    pointData[posLetter + 'LabelVal0'] = di.p0;
-    pointData[posLetter + 'LabelVal1'] = di.p1;
-    pointData.pts = di.pts;
+        pointData[posLetter + 'LabelVal0'] = di.p0;
+        pointData[posLetter + 'LabelVal1'] = di.p1;
+        pointData.pts = di.pts;
+    }
 
     return pts;
 };

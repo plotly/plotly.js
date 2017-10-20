@@ -171,15 +171,19 @@ module.exports = function calc(gd, trace) {
             var cdi = {
                 p: pos[i],
                 s: size[i],
-                b: 0,
-                pts: inputPoints[i]
+                b: 0
             };
-            if(uniqueValsPerBin) {
-                cdi.p0 = cdi.p1 = (inputPoints[i].length) ? pos0[inputPoints[i][0]] : pos[i];
-            }
-            else {
-                cdi.p0 = roundFn(binEdges[i]);
-                cdi.p1 = roundFn(binEdges[i + 1], true);
+
+            // pts and p0/p1 don't seem to make much sense for cumulative distributions
+            if(!cumulativeSpec.enabled) {
+                cdi.pts = inputPoints[i];
+                if(uniqueValsPerBin) {
+                    cdi.p0 = cdi.p1 = (inputPoints[i].length) ? pos0[inputPoints[i][0]] : pos[i];
+                }
+                else {
+                    cdi.p0 = roundFn(binEdges[i]);
+                    cdi.p1 = roundFn(binEdges[i + 1], true);
+                }
             }
             cd.push(cdi);
         }

@@ -18,9 +18,12 @@ module.exports = function eventData(out, pt) {
     out.yaxis = pt.ya;
 
     // specific to histogram
-    out.pointNumbers = pt.pts;
-    out.binNumber = out.pointNumber;
-    delete out.pointNumber;
+    // CDFs do not have pts (yet?)
+    if(pt.pts) {
+        out.pointNumbers = pt.pts;
+        out.binNumber = out.pointNumber;
+        delete out.pointNumber;
+    }
 
     return out;
 };
