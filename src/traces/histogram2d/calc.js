@@ -32,47 +32,13 @@ module.exports = function calc(gd, trace) {
 
     var i, n, m;
 
-    cleanBins(trace, xa, 'x');
-    cleanBins(trace, ya, 'y');
-
     var serieslen = Math.min(x.length, y.length);
     if(x.length > serieslen) x.splice(serieslen, x.length - serieslen);
     if(y.length > serieslen) y.splice(serieslen, y.length - serieslen);
 
-
     // calculate the bins
-    if(trace.autobinx || !trace.xbins ||
-            trace.xbins.start === null || trace.xbins.end === null) {
-        trace.xbins = Axes.autoBin(x, xa, trace.nbinsx, '2d', xcalendar);
-        if(trace.type === 'histogram2dcontour') {
-            // the "true" last argument reverses the tick direction (which we can't
-            // just do with a minus sign because of month bins)
-            trace.xbins.start = xc2r(Axes.tickIncrement(
-                xr2c(trace.xbins.start), trace.xbins.size, true, xcalendar));
-            trace.xbins.end = xc2r(Axes.tickIncrement(
-                xr2c(trace.xbins.end), trace.xbins.size, false, xcalendar));
-        }
-
-        // copy bin info back to the source data.
-        trace._input.xbins = trace.xbins;
-        // note that it's possible to get here with an explicit autobin: false
-        // if the bins were not specified.
-        // in that case this will remain in the trace, so that future updates
-        // which would change the autobinning will not do so.
-        trace._input.autobinx = trace.autobinx;
-    }
-    if(trace.autobiny || !trace.ybins ||
-            trace.ybins.start === null || trace.ybins.end === null) {
-        trace.ybins = Axes.autoBin(y, ya, trace.nbinsy, '2d', ycalendar);
-        if(trace.type === 'histogram2dcontour') {
-            trace.ybins.start = yc2r(Axes.tickIncrement(
-                yr2c(trace.ybins.start), trace.ybins.size, true, ycalendar));
-            trace.ybins.end = yc2r(Axes.tickIncrement(
-                yr2c(trace.ybins.end), trace.ybins.size, false, ycalendar));
-        }
-        trace._input.ybins = trace.ybins;
-        trace._input.autobiny = trace.autobiny;
-    }
+    cleanAndAutobin(trace, 'x', x, xa, xr2c, xc2r, xcalendar);
+    cleanAndAutobin(trace, 'y', y, ya, yr2c, yc2r, ycalendar);
 
     // make the empty bin array & scale the map
     var z = [];
@@ -110,12 +76,12 @@ module.exports = function calc(gd, trace) {
     }
 
     // decrease end a little in case of rounding errors
-    var binspec = trace.xbins,
-        binStart = xr2c(binspec.start),
-        binEnd = xr2c(binspec.end) +
-            (binStart - Axes.tickIncrement(binStart, binspec.size, false, xcalendar)) / 1e6;
+    var binSpec = trace.xbins,
+        binStart = xr2c(binSpec.start),
+        binEnd = xr2c(binSpec.end) +
+            (binStart - Axes.tickIncrement(binStart, binSpec.size, false, xcalendar)) / 1e6;
 
-    for(i = binStart; i < binEnd; i = Axes.tickIncrement(i, binspec.size, false, xcalendar)) {
+    for(i = binStart; i < binEnd; i = Axes.tickIncrement(i, binSpec.size, false, xcalendar)) {
         onecol.push(sizeinit);
         if(nonuniformBinsX) xbins.push(i);
         if(doavg) zerocol.push(0);
@@ -127,15 +93,15 @@ module.exports = function calc(gd, trace) {
     var dx = (i - x0c) / nx;
     var x0 = xc2r(x0c + dx / 2);
 
-    binspec = trace.ybins;
-    binStart = yr2c(binspec.start);
-    binEnd = yr2c(binspec.end) +
-        (binStart - Axes.tickIncrement(binStart, binspec.size, false, ycalendar)) / 1e6;
+    binSpec = trace.ybins;
+    binStart = yr2c(binSpec.start);
+    binEnd = yr2c(binSpec.end) +
+        (binStart - Axes.tickIncrement(binStart, binSpec.size, false, ycalendar)) / 1e6;
 
-    for(i = binStart; i < binEnd; i = Axes.tickIncrement(i, binspec.size, false, ycalendar)) {
-        z.push(onecol.concat());
+    for(i = binStart; i < binEnd; i = Axes.tickIncrement(i, binSpec.size, false, ycalendar)) {
+        z.push(onecol.slice());
         if(nonuniformBinsY) ybins.push(i);
-        if(doavg) counts.push(zerocol.concat());
+        if(doavg) counts.push(zerocol.slice());
     }
     if(nonuniformBinsY) ybins.push(i);
 
@@ -145,33 +111,14 @@ module.exports = function calc(gd, trace) {
     var y0 = yc2r(y0c + dy / 2);
 
     if(densitynorm) {
-        xinc = onecol.map(function(v, i) {
-            if(nonuniformBinsX) return 1 / (xbins[i + 1] - xbins[i]);
-            return 1 / dx;
-        });
-        yinc = z.map(function(v, i) {
-            if(nonuniformBinsY) return 1 / (ybins[i + 1] - ybins[i]);
-            return 1 / dy;
-        });
+        xinc = makeIncrements(onecol.length, xbins, dx, nonuniformBinsX);
+        yinc = makeIncrements(z.length, ybins, dy, nonuniformBinsY);
     }
 
     // for date axes we need bin bounds to be calcdata. For nonuniform bins
     // we already have this, but uniform with start/end/size they're still strings.
-    if(!nonuniformBinsX && xa.type === 'date') {
-        xbins = {
-            start: xr2c(xbins.start),
-            end: xr2c(xbins.end),
-            size: xbins.size
-        };
-    }
-    if(!nonuniformBinsY && ya.type === 'date') {
-        ybins = {
-            start: yr2c(ybins.start),
-            end: yr2c(ybins.end),
-            size: ybins.size
-        };
-    }
-
+    if(!nonuniformBinsX && xa.type === 'date') xbins = binsToCalc(xr2c, xbins);
+    if(!nonuniformBinsY && ya.type === 'date') ybins = binsToCalc(yr2c, ybins);
 
     // put data into bins
     for(i = 0; i < serieslen; i++) {
@@ -199,3 +146,52 @@ module.exports = function calc(gd, trace) {
         z: z
     };
 };
+
+function cleanAndAutobin(trace, axLetter, data, ax, r2c, c2r, calendar) {
+    var binSpecAttr = axLetter + 'bins';
+    var autoBinAttr = 'autobin' + axLetter;
+    var binSpec = trace[binSpecAttr];
+
+    cleanBins(trace, ax, axLetter);
+
+    if(trace[autoBinAttr] || !binSpec || binSpec.start === null || binSpec.end === null) {
+        binSpec = Axes.autoBin(data, ax, trace['nbins' + axLetter], '2d', calendar);
+        if(trace.type === 'histogram2dcontour') {
+            // the "true" last argument reverses the tick direction (which we can't
+            // just do with a minus sign because of month bins)
+            binSpec.start = c2r(Axes.tickIncrement(
+                r2c(binSpec.start), binSpec.size, true, calendar));
+            binSpec.end = c2r(Axes.tickIncrement(
+                r2c(binSpec.end), binSpec.size, false, calendar));
+        }
+
+        // copy bin info back to the source data.
+        trace._input[binSpecAttr] = trace[binSpecAttr] = binSpec;
+        // note that it's possible to get here with an explicit autobin: false
+        // if the bins were not specified.
+        // in that case this will remain in the trace, so that future updates
+        // which would change the autobinning will not do so.
+        trace._input[autoBinAttr] = trace[autoBinAttr];
+    }
+}
+
+function makeIncrements(len, bins, dv, nonuniform) {
+    var out = new Array(len);
+    var i;
+    if(nonuniform) {
+        for(i = 0; i < len; i++) out[i] = 1 / (bins[i + 1] - bins[i]);
+    }
+    else {
+        var inc = 1 / dv;
+        for(i = 0; i < len; i++) out[i] = inc;
+    }
+    return out;
+}
+
+function binsToCalc(r2c, bins) {
+    return {
+        start: r2c(bins.start),
+        end: r2c(bins.end),
+        size: bins.size
+    };
+}
