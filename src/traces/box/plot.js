@@ -13,7 +13,6 @@ var d3 = require('d3');
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
 
-
 // repeatable pseudorandom generator
 var randSeed = 2000000000;
 
@@ -31,15 +30,13 @@ function rand() {
 }
 
 // constants for dynamic jitter (ie less jitter for sparser points)
-var JITTERCOUNT = 5, // points either side of this to include
-    JITTERSPREAD = 0.01; // fraction of IQR to count as "dense"
-
+var JITTERCOUNT = 5; // points either side of this to include
+var JITTERSPREAD = 0.01; // fraction of IQR to count as "dense"
 
 module.exports = function plot(gd, plotinfo, cdbox) {
-    var fullLayout = gd._fullLayout,
-        xa = plotinfo.xaxis,
-        ya = plotinfo.yaxis,
-        posAxis, valAxis;
+    var fullLayout = gd._fullLayout;
+    var xa = plotinfo.xaxis;
+    var ya = plotinfo.yaxis;
 
     var boxtraces = plotinfo.plot.select('.boxlayer')
         .selectAll('g.trace.boxes')
@@ -48,21 +45,26 @@ module.exports = function plot(gd, plotinfo, cdbox) {
         .attr('class', 'trace boxes');
 
     boxtraces.each(function(d) {
-        var t = d[0].t,
-            trace = d[0].trace,
-            group = (fullLayout.boxmode === 'group' && gd.numboxes > 1),
-            // box half width
-            bdPos = t.dPos * (1 - fullLayout.boxgap) * (1 - fullLayout.boxgroupgap) / (group ? gd.numboxes : 1),
-            // box center offset
-            bPos = group ? 2 * t.dPos * (-0.5 + (t.boxnum + 0.5) / gd.numboxes) * (1 - fullLayout.boxgap) : 0,
-            // whisker width
-            wdPos = bdPos * trace.whiskerwidth;
+        var cd0 = d[0];
+        var t = cd0.t;
+        var trace = cd0.trace;
+        var sel = cd0.node3 = d3.select(this);
+
+        var group = (fullLayout.boxmode === 'group' && gd.numboxes > 1);
+        // box half width
+        var bdPos = t.dPos * (1 - fullLayout.boxgap) * (1 - fullLayout.boxgroupgap) / (group ? gd.numboxes : 1);
+        // box center offset
+        var bPos = group ? 2 * t.dPos * (-0.5 + (t.boxnum + 0.5) / gd.numboxes) * (1 - fullLayout.boxgap) : 0;
+        // whisker width
+        var wdPos = bdPos * trace.whiskerwidth;
+
         if(trace.visible !== true || t.emptybox) {
             d3.select(this).remove();
             return;
         }
 
         // set axis via orientation
+        var posAxis, valAxis;
         if(trace.orientation === 'h') {
             posAxis = ya;
             valAxis = xa;
@@ -79,7 +81,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
         seed();
 
         // boxes and whiskers
-        d3.select(this).selectAll('path.box')
+        sel.selectAll('path.box')
             .data(Lib.identity)
             .enter().append('path')
             .style('vector-effect', 'non-scaling-stroke')
@@ -98,6 +100,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                         Math.min(q1, q3) + 1, Math.max(q1, q3) - 1),
                     lf = valAxis.c2p(trace.boxpoints === false ? d.min : d.lf, true),
                     uf = valAxis.c2p(trace.boxpoints === false ? d.max : d.uf, true);
+
                 if(trace.orientation === 'h') {
                     d3.select(this).attr('d',
                         'M' + m + ',' + pos0 + 'V' + pos1 + // median line
@@ -117,7 +120,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
 
         // draw points, if desired
         if(trace.boxpoints) {
-            d3.select(this).selectAll('g.points')
+            sel.selectAll('g.points')
                 // since box plot points get an extra level of nesting, each
                 // box needs the trace styling info
                 .data(function(d) {
@@ -131,20 +134,19 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                 .attr('class', 'points')
               .selectAll('path')
                 .data(function(d) {
-                    var pts = (trace.boxpoints === 'all') ? d.val :
-                            d.val.filter(function(v) { return (v < d.lf || v > d.uf); }),
-                        // normally use IQR, but if this is 0 or too small, use max-min
-                        typicalSpread = Math.max((d.max - d.min) / 10, d.q3 - d.q1),
-                        minSpread = typicalSpread * 1e-9,
-                        spreadLimit = typicalSpread * JITTERSPREAD,
-                        jitterFactors = [],
-                        maxJitterFactor = 0,
-                        i,
-                        i0, i1,
-                        pmin,
-                        pmax,
-                        jitterFactor,
-                        newJitter;
+                    var i;
+
+                    var pts = trace.boxpoints === 'all' ?
+                        d.pts :
+                        d.pts.filter(function(pt) { return (pt.v < d.lf || pt.v > d.uf); });
+
+                    // normally use IQR, but if this is 0 or too small, use max-min
+                    var typicalSpread = Math.max((d.max - d.min) / 10, d.q3 - d.q1);
+                    var minSpread = typicalSpread * 1e-9;
+                    var spreadLimit = typicalSpread * JITTERSPREAD;
+                    var jitterFactors = [];
+                    var maxJitterFactor = 0;
+                    var newJitter;
 
                     // dynamic jitter
                     if(trace.jitter) {
@@ -155,20 +157,19 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                             for(i = 0; i < pts.length; i++) {
                                 jitterFactors[i] = 1;
                             }
-                        }
-                        else {
+                        } else {
                             for(i = 0; i < pts.length; i++) {
-                                i0 = Math.max(0, i - JITTERCOUNT);
-                                pmin = pts[i0];
-                                i1 = Math.min(pts.length - 1, i + JITTERCOUNT);
-                                pmax = pts[i1];
+                                var i0 = Math.max(0, i - JITTERCOUNT);
+                                var pmin = pts[i0].v;
+                                var i1 = Math.min(pts.length - 1, i + JITTERCOUNT);
+                                var pmax = pts[i1].v;
 
                                 if(trace.boxpoints !== 'all') {
-                                    if(pts[i] < d.lf) pmax = Math.min(pmax, d.lf);
+                                    if(pts[i].v < d.lf) pmax = Math.min(pmax, d.lf);
                                     else pmin = Math.max(pmin, d.uf);
                                 }
 
-                                jitterFactor = Math.sqrt(spreadLimit * (i1 - i0) / (pmax - pmin + minSpread)) || 0;
+                                var jitterFactor = Math.sqrt(spreadLimit * (i1 - i0) / (pmax - pmin + minSpread)) || 0;
                                 jitterFactor = Lib.constrain(Math.abs(jitterFactor), 0, 1);
 
                                 jitterFactors.push(jitterFactor);
@@ -178,39 +179,41 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                         newJitter = trace.jitter * 2 / maxJitterFactor;
                     }
 
-                    return pts.map(function(v, i) {
-                        var posOffset = trace.pointpos,
-                            p;
-                        if(trace.jitter) {
-                            posOffset += newJitter * jitterFactors[i] * (rand() - 0.5);
-                        }
+                    // fills in 'x' and 'y' in calcdata 'pts' item
+                    for(i = 0; i < pts.length; i++) {
+                        var pt = pts[i];
+                        var v = pt.v;
+
+                        var jitterOffset = trace.jitter ?
+                            (newJitter * jitterFactors[i] * (rand() - 0.5)) :
+                            0;
+
+                        var posPx = d.pos + bPos + bdPos * (trace.pointpos + jitterOffset);
 
                         if(trace.orientation === 'h') {
-                            p = {
-                                y: d.pos + posOffset * bdPos + bPos,
-                                x: v
-                            };
+                            pt.y = posPx;
+                            pt.x = v;
                         } else {
-                            p = {
-                                x: d.pos + posOffset * bdPos + bPos,
-                                y: v
-                            };
+                            pt.x = posPx;
+                            pt.y = v;
                         }
 
                         // tag suspected outliers
                         if(trace.boxpoints === 'suspectedoutliers' && v < d.uo && v > d.lo) {
-                            p.so = true;
+                            pt.so = true;
                         }
-                        return p;
-                    });
+                    }
+
+                    return pts;
                 })
                 .enter().append('path')
                 .classed('point', true)
                 .call(Drawing.translatePoints, xa, ya);
         }
+
         // draw mean (and stdev diamond) if desired
         if(trace.boxmean) {
-            d3.select(this).selectAll('path.mean')
+            sel.selectAll('path.mean')
                 .data(Lib.identity)
                 .enter().append('path')
                 .attr('class', 'mean')

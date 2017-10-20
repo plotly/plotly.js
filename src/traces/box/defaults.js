@@ -19,9 +19,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var y = coerce('y'),
-        x = coerce('x'),
-        defaultOrientation;
+    var y = coerce('y');
+    var x = coerce('x');
+
+    var defaultOrientation;
 
     if(y && y.length) {
         defaultOrientation = 'v';
@@ -40,17 +41,19 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('orientation', defaultOrientation);
 
     coerce('line.color', (traceIn.marker || {}).color || defaultColor);
-    coerce('line.width', 2);
+    coerce('line.width');
     coerce('fillcolor', Color.addOpacity(traceOut.line.color, 0.5));
 
     coerce('whiskerwidth');
     coerce('boxmean');
 
-    var outlierColorDflt = Lib.coerce2(traceIn, traceOut, attributes, 'marker.outliercolor'),
-        lineoutliercolor = coerce('marker.line.outliercolor'),
-        boxpoints = outlierColorDflt ||
-                    lineoutliercolor ? coerce('boxpoints', 'suspectedoutliers') :
-                    coerce('boxpoints');
+    var outlierColorDflt = Lib.coerce2(traceIn, traceOut, attributes, 'marker.outliercolor');
+    var lineoutliercolor = coerce('marker.line.outliercolor');
+
+    var boxpoints = coerce(
+        'boxpoints',
+        (outlierColorDflt || lineoutliercolor) ? 'suspectedoutliers' : undefined
+    );
 
     if(boxpoints) {
         coerce('jitter', boxpoints === 'all' ? 0.3 : 0);
@@ -67,5 +70,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             coerce('marker.line.outliercolor', traceOut.marker.color);
             coerce('marker.line.outlierwidth');
         }
+
+        coerce('text');
+    } else {
+        delete traceOut.marker;
     }
+
+    coerce('hoveron');
 };

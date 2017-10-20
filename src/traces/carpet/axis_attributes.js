@@ -10,6 +10,8 @@
 
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../../components/color/attributes');
+var axesAttrs = require('../../plots/cartesian/layout_attributes');
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
 module.exports = {
     color: {
@@ -290,6 +292,7 @@ module.exports = {
             '*%H~%M~%S.%2f* would display *09~15~23.46*'
         ].join(' ')
     },
+    tickformatstops: overrideAll(axesAttrs.tickformatstops, 'calc', 'from-root'),
     categoryorder: {
         valType: 'enumerated',
         values: [

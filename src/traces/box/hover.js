@@ -12,96 +12,192 @@ var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 var Fx = require('../../components/fx');
 var Color = require('../../components/color');
+var fillHoverText = require('../scatter/fill_hover_text');
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
-    // closest mode: handicap box plots a little relative to others
-    var cd = pointData.cd,
-        trace = cd[0].trace,
-        t = cd[0].t,
-        xa = pointData.xa,
-        ya = pointData.ya,
-        closeData = [],
-        dx, dy, distfn, boxDelta,
-        posLetter, posAxis,
-        val, valLetter, valAxis;
+    var cd = pointData.cd;
+    var xa = pointData.xa;
+    var ya = pointData.ya;
 
-    // adjust inbox w.r.t. to calculate box size
-    boxDelta = (hovermode === 'closest') ? 2.5 * t.bdPos : t.bdPos;
+    var trace = cd[0].trace;
+    var hoveron = trace.hoveron;
+    var marker = trace.marker || {};
 
-    if(trace.orientation === 'h') {
-        dx = function(di) {
-            return Fx.inbox(di.min - xval, di.max - xval);
-        };
-        dy = function(di) {
-            var pos = di.pos + t.bPos - yval;
-            return Fx.inbox(pos - boxDelta, pos + boxDelta);
-        };
-        posLetter = 'y';
-        posAxis = ya;
-        valLetter = 'x';
-        valAxis = xa;
-    } else {
-        dx = function(di) {
-            var pos = di.pos + t.bPos - xval;
-            return Fx.inbox(pos - boxDelta, pos + boxDelta);
-        };
-        dy = function(di) {
-            return Fx.inbox(di.min - yval, di.max - yval);
-        };
-        posLetter = 'x';
-        posAxis = xa;
-        valLetter = 'y';
-        valAxis = ya;
-    }
+    // output hover points components
+    var closeBoxData = [];
+    var closePtData;
+    // x/y/effective distance functions
+    var dx, dy, distfn;
+    // orientation-specific fields
+    var posLetter, valLetter, posAxis, valAxis;
+    // calcdata item
+    var di;
+    // loop indices
+    var i, j;
 
-    distfn = Fx.getDistanceFunction(hovermode, dx, dy);
-    Fx.getClosest(cd, distfn, pointData);
+    if(hoveron.indexOf('boxes') !== -1) {
+        var t = cd[0].t;
 
-    // skip the rest (for this trace) if we didn't find a close point
-    if(pointData.index === false) return;
+        // closest mode: handicap box plots a little relative to others
+        // adjust inbox w.r.t. to calculate box size
+        var boxDelta = (hovermode === 'closest') ? 2.5 * t.bdPos : t.bdPos;
 
-    // create the item(s) in closedata for this point
-
-    // the closest data point
-    var di = cd[pointData.index],
-        lc = trace.line.color,
-        mc = (trace.marker || {}).color;
-    if(Color.opacity(lc) && trace.line.width) pointData.color = lc;
-    else if(Color.opacity(mc) && trace.boxpoints) pointData.color = mc;
-    else pointData.color = trace.fillcolor;
-
-    pointData[posLetter + '0'] = posAxis.c2p(di.pos + t.bPos - t.bdPos, true);
-    pointData[posLetter + '1'] = posAxis.c2p(di.pos + t.bPos + t.bdPos, true);
-
-    Axes.tickText(posAxis, posAxis.c2l(di.pos), 'hover').text;
-    pointData[posLetter + 'LabelVal'] = di.pos;
-
-    // box plots: each "point" gets many labels
-    var usedVals = {},
-        attrs = ['med', 'min', 'q1', 'q3', 'max'],
-        attr,
-        pointData2;
-    if(trace.boxmean) attrs.push('mean');
-    if(trace.boxpoints) [].push.apply(attrs, ['lf', 'uf']);
-
-    for(var i = 0; i < attrs.length; i++) {
-        attr = attrs[i];
-
-        if(!(attr in di) || (di[attr] in usedVals)) continue;
-        usedVals[di[attr]] = true;
-
-        // copy out to a new object for each value to label
-        val = valAxis.c2p(di[attr], true);
-        pointData2 = Lib.extendFlat({}, pointData);
-        pointData2[valLetter + '0'] = pointData2[valLetter + '1'] = val;
-        pointData2[valLetter + 'LabelVal'] = di[attr];
-        pointData2.attr = attr;
-
-        if(attr === 'mean' && ('sd' in di) && trace.boxmean === 'sd') {
-            pointData2[valLetter + 'err'] = di.sd;
+        if(trace.orientation === 'h') {
+            dx = function(di) {
+                return Fx.inbox(di.min - xval, di.max - xval);
+            };
+            dy = function(di) {
+                var pos = di.pos + t.bPos - yval;
+                return Fx.inbox(pos - boxDelta, pos + boxDelta);
+            };
+            posLetter = 'y';
+            posAxis = ya;
+            valLetter = 'x';
+            valAxis = xa;
+        } else {
+            dx = function(di) {
+                var pos = di.pos + t.bPos - xval;
+                return Fx.inbox(pos - boxDelta, pos + boxDelta);
+            };
+            dy = function(di) {
+                return Fx.inbox(di.min - yval, di.max - yval);
+            };
+            posLetter = 'x';
+            posAxis = xa;
+            valLetter = 'y';
+            valAxis = ya;
         }
-        pointData.name = ''; // only keep name on the first item (median)
-        closeData.push(pointData2);
+
+        distfn = Fx.getDistanceFunction(hovermode, dx, dy);
+        Fx.getClosest(cd, distfn, pointData);
+
+        // skip the rest (for this trace) if we didn't find a close point
+        // and create the item(s) in closedata for this point
+        if(pointData.index !== false) {
+            di = cd[pointData.index];
+
+            var lc = trace.line.color;
+            var mc = marker.color;
+
+            if(Color.opacity(lc) && trace.line.width) pointData.color = lc;
+            else if(Color.opacity(mc) && trace.boxpoints) pointData.color = mc;
+            else pointData.color = trace.fillcolor;
+
+            pointData[posLetter + '0'] = posAxis.c2p(di.pos + t.bPos - t.bdPos, true);
+            pointData[posLetter + '1'] = posAxis.c2p(di.pos + t.bPos + t.bdPos, true);
+
+            Axes.tickText(posAxis, posAxis.c2l(di.pos), 'hover').text;
+            pointData[posLetter + 'LabelVal'] = di.pos;
+
+            // box plots: each "point" gets many labels
+            var usedVals = {};
+            var attrs = ['med', 'min', 'q1', 'q3', 'max'];
+            var prefixes = ['median', 'min', 'q1', 'q3', 'max'];
+
+            if(trace.boxmean) {
+                attrs.push('mean');
+                prefixes.push(trace.boxmean === 'sd' ? 'mean ± σ' : 'mean');
+            }
+            if(trace.boxpoints) {
+                attrs.push('lf', 'uf');
+                prefixes.push('lower fence', 'upper fence');
+            }
+
+            for(i = 0; i < attrs.length; i++) {
+                var attr = attrs[i];
+
+                if(!(attr in di) || (di[attr] in usedVals)) continue;
+                usedVals[di[attr]] = true;
+
+                // copy out to a new object for each value to label
+                var val = di[attr];
+                var valPx = valAxis.c2p(val, true);
+                var pointData2 = Lib.extendFlat({}, pointData);
+
+                pointData2[valLetter + '0'] = pointData2[valLetter + '1'] = valPx;
+                pointData2[valLetter + 'LabelVal'] = val;
+                pointData2[valLetter + 'Label'] = prefixes[i] + ': ' + Axes.hoverLabelText(valAxis, val);
+
+                if(attr === 'mean' && ('sd' in di) && trace.boxmean === 'sd') {
+                    pointData2[valLetter + 'err'] = di.sd;
+                }
+                // only keep name on the first item (median)
+                pointData.name = '';
+
+                closeBoxData.push(pointData2);
+            }
+        }
     }
-    return closeData;
+
+    if(hoveron.indexOf('points') !== -1) {
+        var xPx = xa.c2p(xval);
+        var yPx = ya.c2p(yval);
+
+        dx = function(di) {
+            var rad = Math.max(3, di.mrc || 0);
+            return Math.max(Math.abs(xa.c2p(di.x) - xPx) - rad, 1 - 3 / rad);
+        };
+        dy = function(di) {
+            var rad = Math.max(3, di.mrc || 0);
+            return Math.max(Math.abs(ya.c2p(di.y) - yPx) - rad, 1 - 3 / rad);
+        };
+        distfn = Fx.quadrature(dx, dy);
+
+        // show one point per trace
+        var ijClosest = false;
+        var pt;
+
+        for(i = 0; i < cd.length; i++) {
+            di = cd[i];
+
+            for(j = 0; j < (di.pts || []).length; j++) {
+                pt = di.pts[j];
+
+                var newDistance = distfn(pt);
+                if(newDistance <= pointData.distance) {
+                    pointData.distance = newDistance;
+                    ijClosest = [i, j];
+                }
+            }
+        }
+
+        if(ijClosest) {
+            di = cd[ijClosest[0]];
+            pt = di.pts[ijClosest[1]];
+
+            var xc = xa.c2p(pt.x, true);
+            var yc = ya.c2p(pt.y, true);
+            var rad = pt.mrc || 1;
+
+            closePtData = Lib.extendFlat({}, pointData, {
+                // corresponds to index in x/y input data array
+                index: pt.i,
+                color: marker.color,
+                name: trace.name,
+                x0: xc - rad,
+                x1: xc + rad,
+                xLabelVal: pt.x,
+                y0: yc - rad,
+                y1: yc + rad,
+                yLabelVal: pt.y
+            });
+            fillHoverText(pt, trace, closePtData);
+        }
+    }
+
+    // In closest mode, show only one point or stats for one box, and points have priority
+    // If there's a point in range and hoveron has points, show the best single point only.
+    // If hoveron has boxes and there's no point in range (or hoveron doesn't have points), show the box stats.
+    if(hovermode === 'closest') {
+        if(closePtData) return [closePtData];
+        return closeBoxData;
+    }
+
+    // Otherwise in compare mode, allow a point AND the box stats to be labeled
+    // If there are multiple boxes in range (ie boxmode = 'overlay') we'll see stats for all of them.
+    if(closePtData) {
+        closeBoxData.push(closePtData);
+        return closeBoxData;
+    }
+    return closeBoxData;
 };

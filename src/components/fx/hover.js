@@ -1065,36 +1065,15 @@ function cleanPoint(d, hovermode) {
 
     // and convert the x and y label values into objects
     // formatted as text, with font info
-    var logOffScale;
     if(d.xLabelVal !== undefined) {
-        logOffScale = (d.xa.type === 'log' && d.xLabelVal <= 0);
-        var xLabelObj = Axes.tickText(d.xa,
-                d.xa.c2l(logOffScale ? -d.xLabelVal : d.xLabelVal), 'hover');
-        if(logOffScale) {
-            if(d.xLabelVal === 0) d.xLabel = '0';
-            else d.xLabel = '-' + xLabelObj.text;
-        }
-        // TODO: should we do something special if the axis calendar and
-        // the data calendar are different? Somehow display both dates with
-        // their system names? Right now it will just display in the axis calendar
-        // but users could add the other one as text.
-        else d.xLabel = xLabelObj.text;
+        d.xLabel = ('xLabel' in d) ? d.xLabel : Axes.hoverLabelText(d.xa, d.xLabelVal);
         d.xVal = d.xa.c2d(d.xLabelVal);
     }
-
     if(d.yLabelVal !== undefined) {
-        logOffScale = (d.ya.type === 'log' && d.yLabelVal <= 0);
-        var yLabelObj = Axes.tickText(d.ya,
-                d.ya.c2l(logOffScale ? -d.yLabelVal : d.yLabelVal), 'hover');
-        if(logOffScale) {
-            if(d.yLabelVal === 0) d.yLabel = '0';
-            else d.yLabel = '-' + yLabelObj.text;
-        }
-        // TODO: see above TODO
-        else d.yLabel = yLabelObj.text;
+        d.yLabel = ('yLabel' in d) ? d.yLabel : Axes.hoverLabelText(d.ya, d.yLabelVal);
         d.yVal = d.ya.c2d(d.yLabelVal);
     }
-
+  
     // Traces like heatmaps generate the zLabel in their hoverPoints function
     if(d.zLabelVal !== undefined && d.zLabel === undefined) {
         d.zLabel = String(d.zLabelVal);

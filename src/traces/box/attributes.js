@@ -12,9 +12,8 @@ var scatterAttrs = require('../scatter/attributes');
 var colorAttrs = require('../../components/color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
-var scatterMarkerAttrs = scatterAttrs.marker,
-    scatterMarkerLineAttrs = scatterMarkerAttrs.line;
-
+var scatterMarkerAttrs = scatterAttrs.marker;
+var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
 module.exports = {
     y: {
@@ -63,6 +62,16 @@ module.exports = {
             'missing and the position axis is categorical'
         ].join(' ')
     },
+    text: extendFlat({}, scatterAttrs.text, {
+        description: [
+            'Sets the text elements associated with each sample value.',
+            'If a single string, the same string appears over',
+            'all the data points.',
+            'If an array of string, the items are mapped in order to the',
+            'this trace\'s (x,y) coordinates.',
+            'To be seen, trace `hoverinfo` must contain a *text* flag.'
+        ].join(' ')
+    }),
     whiskerwidth: {
         valType: 'number',
         min: 0,
@@ -159,9 +168,11 @@ module.exports = {
             {arrayOk: false, editType: 'style'}),
         line: {
             color: extendFlat({}, scatterMarkerLineAttrs.color,
-                {arrayOk: false, dflt: colorAttrs.defaultLine, editType: 'style'}),
+                {arrayOk: false, dflt: colorAttrs.defaultLine, editType: 'style'}
+            ),
             width: extendFlat({}, scatterMarkerLineAttrs.width,
-                {arrayOk: false, dflt: 0, editType: 'style'}),
+                {arrayOk: false, dflt: 0, editType: 'style'}
+            ),
             outliercolor: {
                 valType: 'color',
                 role: 'style',
@@ -202,5 +213,16 @@ module.exports = {
         },
         editType: 'plot'
     },
-    fillcolor: scatterAttrs.fillcolor
+    fillcolor: scatterAttrs.fillcolor,
+    hoveron: {
+        valType: 'flaglist',
+        flags: ['boxes', 'points'],
+        dflt: 'boxes+points',
+        role: 'info',
+        editType: 'style',
+        description: [
+            'Do the hover effects highlight individual boxes ',
+            'or sample points or both?'
+        ].join(' ')
+    }
 };

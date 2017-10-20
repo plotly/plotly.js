@@ -24,7 +24,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
     // to not insert data-driven 'circle-opacity' when we don't need to
     trace._hasDimmedPts = false;
 
-    if(trace.visible !== true || !subtypes.hasMarkers(trace)) return [];
+    if(!subtypes.hasMarkers(trace)) return [];
 
     if(polygon === false) {
         for(i = 0; i < cd.length; i++) {

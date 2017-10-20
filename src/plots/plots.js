@@ -1137,7 +1137,6 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 
     coerce('separators');
     coerce('hidesources');
-    coerce('smith');
 
     Registry.getComponentMethod(
         'calendars',

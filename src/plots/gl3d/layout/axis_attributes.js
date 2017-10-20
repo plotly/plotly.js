@@ -101,6 +101,7 @@ module.exports = overrideAll({
     exponentformat: axesAttrs.exponentformat,
     separatethousands: axesAttrs.separatethousands,
     tickformat: axesAttrs.tickformat,
+    tickformatstops: axesAttrs.tickformatstops,
     hoverformat: axesAttrs.hoverformat,
     // lines and grids
     showline: axesAttrs.showline,

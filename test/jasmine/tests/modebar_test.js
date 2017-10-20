@@ -154,7 +154,6 @@ describe('ModeBar', function() {
     });
 
     describe('manageModeBar', function() {
-
         function getButtons(list) {
             for(var i = 0; i < list.length; i++) {
                 for(var j = 0; j < list[i].length; j++) {
@@ -174,9 +173,9 @@ describe('ModeBar', function() {
             });
 
             expect(modeBar.hasButtons(buttons)).toBe(true, 'modeBar.hasButtons');
-            expect(countGroups(modeBar)).toEqual(expectedGroupCount, 'correct group count');
-            expect(countButtons(modeBar)).toEqual(expectedButtonCount, 'correct button count');
-            expect(countLogo(modeBar)).toEqual(1, 'correct logo count');
+            expect(countGroups(modeBar)).toBe(expectedGroupCount, 'correct group count');
+            expect(countButtons(modeBar)).toBe(expectedButtonCount, 'correct button count');
+            expect(countLogo(modeBar)).toBe(1, 'correct logo count');
         }
 
         it('creates mode bar (unselectable cartesian version)', function() {
@@ -197,7 +196,7 @@ describe('ModeBar', function() {
             checkButtons(modeBar, buttons, 1);
         });
 
-        it('creates mode bar (selectable cartesian version)', function() {
+        it('creates mode bar (selectable scatter version)', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
                 ['zoom2d', 'pan2d', 'select2d', 'lasso2d'],
@@ -212,6 +211,30 @@ describe('ModeBar', function() {
                 type: 'scatter',
                 visible: true,
                 mode: 'markers',
+                _module: {selectPoints: true}
+            }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (selectable box version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['zoom2d', 'pan2d', 'select2d', 'lasso2d'],
+                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
+                ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._basePlotModules = [{ name: 'cartesian' }];
+            gd._fullLayout.xaxis = {fixedrange: false};
+            gd._fullData = [{
+                type: 'box',
+                visible: true,
+                boxpoints: 'all',
                 _module: {selectPoints: true}
             }];
 

@@ -26,7 +26,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
     var scene = glTrace.scene;
 
     var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
-    if(trace.visible !== true || hasOnlyLines) return [];
+    if(hasOnlyLines) return [];
 
     // filter out points by visible scatter ones
     if(polygon === false) {
@@ -41,8 +41,8 @@ module.exports = function selectPoints(searchInfo, polygon) {
             if(polygon.contains([x, y])) {
                 selection.push({
                     pointNumber: i,
-                    x: di.x,
-                    y: di.y
+                    x: xa.c2d(di.x),
+                    y: ya.c2d(di.y)
                 });
                 di.dim = 0;
             }

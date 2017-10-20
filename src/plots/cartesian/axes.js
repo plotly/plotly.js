@@ -1216,6 +1216,21 @@ axes.tickText = function(ax, x, hover) {
     return out;
 };
 
+axes.hoverLabelText = function(ax, val) {
+    var logOffScale = (ax.type === 'log' && val <= 0);
+    var tx = axes.tickText(ax, ax.c2l(logOffScale ? -val : val), 'hover').text;
+
+    if(logOffScale) {
+        return val === 0 ? '0' : '-' + tx;
+    }
+
+    // TODO: should we do something special if the axis calendar and
+    // the data calendar are different? Somehow display both dates with
+    // their system names? Right now it will just display in the axis calendar
+    // but users could add the other one as text.
+    return tx;
+};
+
 function tickTextObj(ax, x, text) {
     var tf = ax.tickfont || {};
 
@@ -1232,7 +1247,7 @@ function tickTextObj(ax, x, text) {
 
 function formatDate(ax, out, hover, extraPrecision) {
     var tr = ax._tickround,
-        fmt = (hover && ax.hoverformat) || ax.tickformat;
+        fmt = (hover && ax.hoverformat) || axes.getTickFormat(ax);
 
     if(extraPrecision) {
         // second or sub-second precision: extra always shows max digits.
@@ -1288,7 +1303,8 @@ function formatDate(ax, out, hover, extraPrecision) {
 
 function formatLog(ax, out, hover, extraPrecision, hideexp) {
     var dtick = ax.dtick,
-        x = out.x;
+        x = out.x,
+        tickformat = ax.tickformat;
 
     if(hideexp === 'never') {
         // If this is a hover label, then we must *never* hide the exponent
@@ -1302,7 +1318,7 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
 
     if(extraPrecision && ((typeof dtick !== 'string') || dtick.charAt(0) !== 'L')) dtick = 'L3';
 
-    if(ax.tickformat || (typeof dtick === 'string' && dtick.charAt(0) === 'L')) {
+    if(tickformat || (typeof dtick === 'string' && dtick.charAt(0) === 'L')) {
         out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
     }
     else if(isNumeric(dtick) || ((dtick.charAt(0) === 'D') && (Lib.mod(x + 0.01, 1) < 0.1))) {
@@ -1397,7 +1413,7 @@ function numFormat(v, ax, fmtoverride, hover) {
         tickRound = ax._tickround,
         exponentFormat = fmtoverride || ax.exponentformat || 'B',
         exponent = ax._tickexponent,
-        tickformat = ax.tickformat,
+        tickformat = axes.getTickFormat(ax),
         separatethousands = ax.separatethousands;
 
     // special case for hover: set exponent just for this value, and
@@ -1497,6 +1513,76 @@ function numFormat(v, ax, fmtoverride, hover) {
     if(isNeg) return MINUS_SIGN + v;
     return v;
 }
+
+axes.getTickFormat = function(ax) {
+    var i;
+
+    function convertToMs(dtick) {
+        return typeof dtick !== 'string' ? dtick : Number(dtick.replace('M', '')) * ONEAVGMONTH;
+    }
+
+    function compareLogTicks(left, right) {
+        var priority = ['L', 'D'];
+        if(typeof left === typeof right) {
+            if(typeof left === 'number') {
+                return left - right;
+            } else {
+                var leftPriority = priority.indexOf(left.charAt(0));
+                var rightPriority = priority.indexOf(right.charAt(0));
+                if(leftPriority === rightPriority) {
+                    return Number(left.replace(/(L|D)/g, '')) - Number(right.replace(/(L|D)/g, ''));
+                } else {
+                    return leftPriority - rightPriority;
+                }
+            }
+        } else {
+            return typeof left === 'number' ? 1 : -1;
+        }
+    }
+
+    function isProperStop(dtick, range, convert) {
+        var convertFn = convert || function(x) { return x;};
+        var leftDtick = range[0];
+        var rightDtick = range[1];
+        return ((!leftDtick && typeof leftDtick !== 'number') || convertFn(leftDtick) <= convertFn(dtick)) &&
+               ((!rightDtick && typeof rightDtick !== 'number') || convertFn(rightDtick) >= convertFn(dtick));
+    }
+
+    function isProperLogStop(dtick, range) {
+        var isLeftDtickNull = range[0] === null;
+        var isRightDtickNull = range[1] === null;
+        var isDtickInRangeLeft = compareLogTicks(dtick, range[0]) >= 0;
+        var isDtickInRangeRight = compareLogTicks(dtick, range[1]) <= 0;
+        return (isLeftDtickNull || isDtickInRangeLeft) && (isRightDtickNull || isDtickInRangeRight);
+    }
+
+    var tickstop;
+    if(ax.tickformatstops && ax.tickformatstops.length > 0) {
+        switch(ax.type) {
+            case 'date':
+            case 'linear': {
+                for(i = 0; i < ax.tickformatstops.length; i++) {
+                    if(isProperStop(ax.dtick, ax.tickformatstops[i].dtickrange, convertToMs)) {
+                        tickstop = ax.tickformatstops[i];
+                        break;
+                    }
+                }
+                break;
+            }
+            case 'log': {
+                for(i = 0; i < ax.tickformatstops.length; i++) {
+                    if(isProperLogStop(ax.dtick, ax.tickformatstops[i].dtickrange)) {
+                        tickstop = ax.tickformatstops[i];
+                        break;
+                    }
+                }
+                break;
+            }
+            default:
+        }
+    }
+    return tickstop ? tickstop.value : ax.tickformat;
+};
 
 axes.subplotMatch = /^x([0-9]*)y([0-9]*)$/;
 

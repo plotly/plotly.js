@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v1.31.0
+* plotly.js (finance) v1.31.1
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -16907,10 +16907,12 @@ dragElement.unhoverRaw = unhover.raw;
  *          e is the original event
  */
 dragElement.init = function init(options) {
-    var gd = options.gd,
-        numClicks = 1,
-        DBLCLICKDELAY = interactConstants.DBLCLICKDELAY,
-        startX,
+    var gd = options.gd;
+    var numClicks = 1;
+    var DBLCLICKDELAY = interactConstants.DBLCLICKDELAY;
+    var element = options.element;
+
+    var startX,
         startY,
         newMouseDownTime,
         cursor,
@@ -16919,12 +16921,16 @@ dragElement.init = function init(options) {
 
     if(!gd._mouseDownTime) gd._mouseDownTime = 0;
 
-    options.element.style.pointerEvents = 'all';
+    element.style.pointerEvents = 'all';
 
-    options.element.onmousedown = onStart;
-    options.element.ontouchstart = onStart;
+    element.onmousedown = onStart;
+    element.ontouchstart = onStart;
 
     function onStart(e) {
+        if(e.buttons && e.buttons === 2) {    // right click
+            return;
+        }
+
         // make dragging and dragged into properties of gd
         // so that others can look at and modify them
         gd._dragged = false;
@@ -16949,29 +16955,28 @@ dragElement.init = function init(options) {
 
         if(hasHover) {
             dragCover = coverSlip();
-            dragCover.style.cursor = window.getComputedStyle(options.element).cursor;
+            dragCover.style.cursor = window.getComputedStyle(element).cursor;
         }
         else {
             // document acts as a dragcover for mobile, bc we can't create dragcover dynamically
             dragCover = document;
             cursor = window.getComputedStyle(document.documentElement).cursor;
-            document.documentElement.style.cursor = window.getComputedStyle(options.element).cursor;
+            document.documentElement.style.cursor = window.getComputedStyle(element).cursor;
         }
 
-        dragCover.addEventListener('mousemove', onMove);
-        dragCover.addEventListener('mouseup', onDone);
-        dragCover.addEventListener('mouseout', onDone);
-        dragCover.addEventListener('touchmove', onMove);
-        dragCover.addEventListener('touchend', onDone);
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onDone);
+        document.addEventListener('touchmove', onMove);
+        document.addEventListener('touchend', onDone);
 
         return Lib.pauseEvent(e);
     }
 
     function onMove(e) {
-        var offset = pointerOffset(e),
-            dx = offset[0] - startX,
-            dy = offset[1] - startY,
-            minDrag = options.minDrag || constants.MINDRAG;
+        var offset = pointerOffset(e);
+        var dx = offset[0] - startX;
+        var dy = offset[1] - startY;
+        var minDrag = options.minDrag || constants.MINDRAG;
 
         if(Math.abs(dx) < minDrag) dx = 0;
         if(Math.abs(dy) < minDrag) dy = 0;
@@ -16986,11 +16991,10 @@ dragElement.init = function init(options) {
     }
 
     function onDone(e) {
-        dragCover.removeEventListener('mousemove', onMove);
-        dragCover.removeEventListener('mouseup', onDone);
-        dragCover.removeEventListener('mouseout', onDone);
-        dragCover.removeEventListener('touchmove', onMove);
-        dragCover.removeEventListener('touchend', onDone);
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onDone);
+        document.removeEventListener('touchmove', onMove);
+        document.removeEventListener('touchend', onDone);
 
         if(hasHover) {
             Lib.removeElement(dragCover);
@@ -29606,7 +29610,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.31.0';
+exports.version = '1.31.1';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -53392,7 +53396,11 @@ var fileSaver = function(url, name) {
 
         // IE 10+ (native saveAs)
         if(typeof navigator !== 'undefined' && navigator.msSaveBlob) {
-            navigator.msSaveBlob(new Blob([url]), name);
+            // At this point we are only dealing with a SVG encoded as
+            // a data URL (since IE only supports SVG)
+            var encoded = url.split(/^data:image\/svg\+xml,/)[1];
+            var svg = decodeURIComponent(encoded);
+            navigator.msSaveBlob(new Blob([svg]), name);
             resolve(name);
         }
 
@@ -53827,7 +53835,7 @@ module.exports = function toSVG(gd, format, scale) {
         // url in svg are single quoted
         //   since we changed double to single
         //   we'll need to change these to double-quoted
-        s = s.replace(/(\('#)([^']*)('\))/gi, '(\"$2\")');
+        s = s.replace(/(\('#)([^']*)('\))/gi, '(\"#$2\")');
         // font names with spaces will be escaped single-quoted
         //   we'll need to change these to double-quoted
         s = s.replace(/(\\')/gi, '\"');
@@ -54965,7 +54973,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
     var node3 = cd[0].node3;
     var i;
 
-    if(trace.visible !== true) return;
+    if(trace.visible !== true) return [];
 
     if(polygon === false) {
         // clear selection
@@ -62391,7 +62399,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
 
     // TODO: include lines? that would require per-segment line properties
     var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
-    if(trace.visible !== true || hasOnlyLines) return;
+    if(trace.visible !== true || hasOnlyLines) return [];
 
     var opacity = Array.isArray(marker.opacity) ? 1 : marker.opacity;
 
