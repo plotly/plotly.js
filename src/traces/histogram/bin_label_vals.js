@@ -78,7 +78,6 @@ module.exports = function getBinSpanLabelRound(leftGap, rightGap, binEdges, pa, 
         var roundedV = digit * Math.round(v / digit);
         // if we rounded down and we could round up and still be < leftGap
         // (or what leftGap values round to), do that
-        // TODO: is the `digit / 2` correct or is that too much leeway?
         if(roundedV + (digit / 10) < v && roundedV + (digit * 0.9) < v + leftGap) {
             roundedV += digit;
         }
@@ -130,7 +129,6 @@ function biggestGuaranteedDigitChanged(dv, isDate) {
     if(isDate && dv > oneSec) {
         // this is supposed to be the biggest *guaranteed* change
         // so compare to the longest month and year across any calendar,
-        // (TODO: does 1.1 do that? I think so...)
         // and we'll iterate back up later
         // note: does not support rounding larger than one year. We could add
         // that if anyone wants it, but seems unusual and not strictly necessary.
