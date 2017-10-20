@@ -1073,7 +1073,7 @@ function cleanPoint(d, hovermode) {
         d.yLabel = ('yLabel' in d) ? d.yLabel : Axes.hoverLabelText(d.ya, d.yLabelVal);
         d.yVal = d.ya.c2d(d.yLabelVal);
     }
-  
+
     // Traces like heatmaps generate the zLabel in their hoverPoints function
     if(d.zLabelVal !== undefined && d.zLabel === undefined) {
         d.zLabel = String(d.zLabelVal);
