@@ -192,7 +192,7 @@ describe('table', function() {
         });
     });
 
-    describe('basic use', function() {
+    describe('basic use and basic data restyling', function() {
         var mockCopy,
             gd;
 
@@ -211,7 +211,7 @@ describe('table', function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].header.values.length).toEqual(7);
             expect(gd.data[0].cells.values.length).toEqual(7);
-            expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7); // one dimension is `visible: false`
+            expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7);
         });
 
         it('Calling `Plotly.plot` again should add the new table trace', function(done) {
@@ -269,7 +269,7 @@ describe('table', function() {
                 .then(done);
         });
 
-        it('Calling `Plotly.relayout` with string should amend the preexisting parcoords', function(done) {
+        it('Calling `Plotly.relayout` with string should amend the preexisting table', function(done) {
             expect(gd.layout.width).toEqual(1000);
             Plotly.relayout(gd, 'width', 500).then(function() {
                 expect(gd.data.length).toEqual(1);
@@ -278,13 +278,55 @@ describe('table', function() {
             });
         });
 
-        it('Calling `Plotly.relayout` with object should amend the preexisting parcoords', function(done) {
+        it('Calling `Plotly.relayout` with object should amend the preexisting table', function(done) {
             expect(gd.layout.width).toEqual(1000);
             Plotly.relayout(gd, {width: 500}).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.layout.width).toEqual(500);
                 done();
             });
+        });
+    });
+
+    describe('more restyling tests with scenegraph queries', function() {
+        var mockCopy,
+            gd;
+
+        beforeEach(function(done) {
+            mockCopy = Lib.extendDeep({}, mock2);
+            gd = createGraphDiv();
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('Calling `Plotly.restyle` for a `header.values` change should amend the preexisting one', function(done) {
+
+            function restyleValues(what, fun, setterValue) {
+
+                var value = Lib.isArray(setterValue) ? setterValue[0] : setterValue;
+
+                return function() {
+                    return Plotly.restyle(gd, what, setterValue).then(function() {
+                        expect(fun(gd)).toEqual(value, what + ':::' + value);
+                        expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(2);
+                        expect(document.querySelectorAll('.' + cn.columnBlock).length).toEqual(6);
+                        expect(document.querySelectorAll('.' + cn.columnCell).length).toEqual(6);
+                        expect(document.querySelectorAll('.' + cn.cellRect).length).toEqual(6);
+                        expect(document.querySelectorAll('.' + cn.cellTextHolder).length).toEqual(6);
+                    });
+                };
+            }
+
+            restyleValues('cells.fill.color', function(gd) {return gd.data[0].cells.fill.color;}, [['green', 'red']])()
+                .then(restyleValues('cells.line.color', function(gd) {return gd.data[0].cells.line.color;}, [['magenta', 'blue']]))
+                .then(restyleValues('cells.line.width', function(gd) {return gd.data[0].cells.line.width;}, [[5, 3]]))
+                .then(restyleValues('cells.format', function(gd) {return gd.data[0].cells.format;}, [['', '']]))
+                .then(restyleValues('cells.prefix', function(gd) {return gd.data[0].cells.prefix;}, [['p1']]))
+                .then(restyleValues('cells.suffix', function(gd) {return gd.data[0].cells.suffix;}, [['s1']]))
+                .then(restyleValues('header.fill.color', function(gd) {return gd.data[0].header.fill.color;}, [['yellow', 'purple']]))
+                .then(restyleValues('header.line.color', function(gd) {return gd.data[0].header.line.color;}, [['green', 'red']]))
+                .then(restyleValues('header.line.width', function(gd) {return gd.data[0].header.line.width;}, [[2, 6]]))
+                .then(restyleValues('header.format', function(gd) {return gd.data[0].header.format;}, [['', '']]))
+                .then(done);
         });
     });
 });
