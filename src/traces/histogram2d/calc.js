@@ -16,6 +16,7 @@ var binFunctions = require('../histogram/bin_functions');
 var normFunctions = require('../histogram/norm_functions');
 var doAvg = require('../histogram/average');
 var cleanBins = require('../histogram/clean_bins');
+var getBinSpanLabelRound = require('../histogram/bin_label_vals');
 
 
 module.exports = function calc(gd, trace) {
@@ -30,7 +31,7 @@ module.exports = function calc(gd, trace) {
     var xc2r = function(v) { return xa.c2r(v, 0, xcalendar); };
     var yc2r = function(v) { return ya.c2r(v, 0, ycalendar); };
 
-    var i, n, m;
+    var i, j, n, m;
 
     var serieslen = Math.min(x.length, y.length);
     if(x.length > serieslen) x.splice(serieslen, x.length - serieslen);
@@ -46,10 +47,13 @@ module.exports = function calc(gd, trace) {
     var zerocol = [];
     var nonuniformBinsX = (typeof(trace.xbins.size) === 'string');
     var nonuniformBinsY = (typeof(trace.ybins.size) === 'string');
-    var xbins = nonuniformBinsX ? [] : trace.xbins;
-    var ybins = nonuniformBinsY ? [] : trace.ybins;
+    var xEdges = [];
+    var yEdges = [];
+    var xbins = nonuniformBinsX ? xEdges : trace.xbins;
+    var ybins = nonuniformBinsY ? yEdges : trace.ybins;
     var total = 0;
     var counts = [];
+    var inputPoints = [];
     var norm = trace.histnorm;
     var func = trace.histfunc;
     var densitynorm = (norm.indexOf('density') !== -1);
@@ -83,10 +87,10 @@ module.exports = function calc(gd, trace) {
 
     for(i = binStart; i < binEnd; i = Axes.tickIncrement(i, binSpec.size, false, xcalendar)) {
         onecol.push(sizeinit);
-        if(nonuniformBinsX) xbins.push(i);
+        xEdges.push(i);
         if(doavg) zerocol.push(0);
     }
-    if(nonuniformBinsX) xbins.push(i);
+    xEdges.push(i);
 
     var nx = onecol.length;
     var x0c = xr2c(trace.xbins.start);
@@ -100,10 +104,13 @@ module.exports = function calc(gd, trace) {
 
     for(i = binStart; i < binEnd; i = Axes.tickIncrement(i, binSpec.size, false, ycalendar)) {
         z.push(onecol.slice());
-        if(nonuniformBinsY) ybins.push(i);
+        yEdges.push(i);
+        var ipCol = new Array(nx);
+        for(j = 0; j < nx; j++) ipCol[j] = [];
+        inputPoints.push(ipCol);
         if(doavg) counts.push(zerocol.slice());
     }
-    if(nonuniformBinsY) ybins.push(i);
+    yEdges.push(i);
 
     var ny = z.length;
     var y0c = yr2c(trace.ybins.start);
@@ -121,11 +128,36 @@ module.exports = function calc(gd, trace) {
     if(!nonuniformBinsY && ya.type === 'date') ybins = binsToCalc(yr2c, ybins);
 
     // put data into bins
+    var uniqueValsPerX = true;
+    var uniqueValsPerY = true;
+    var xVals = new Array(nx);
+    var yVals = new Array(ny);
+    var xGapLow = Infinity;
+    var xGapHigh = Infinity;
+    var yGapLow = Infinity;
+    var yGapHigh = Infinity;
     for(i = 0; i < serieslen; i++) {
-        n = Lib.findBin(x[i], xbins);
-        m = Lib.findBin(y[i], ybins);
+        var xi = x[i];
+        var yi = y[i];
+        n = Lib.findBin(xi, xbins);
+        m = Lib.findBin(yi, ybins);
         if(n >= 0 && n < nx && m >= 0 && m < ny) {
             total += binfunc(n, i, z[m], rawCounterData, counts[m]);
+            inputPoints[m][n].push(i);
+
+            if(uniqueValsPerX) {
+                if(xVals[n] === undefined) xVals[n] = xi;
+                else if(xVals[n] !== xi) uniqueValsPerX = false;
+            }
+            if(uniqueValsPerY) {
+                if(yVals[n] === undefined) yVals[n] = yi;
+                else if(yVals[n] !== yi) uniqueValsPerY = false;
+            }
+
+            xGapLow = Math.min(xGapLow, xi - xEdges[n]);
+            xGapHigh = Math.min(xGapHigh, xEdges[n + 1] - xi);
+            yGapLow = Math.min(yGapLow, yi - yEdges[m]);
+            yGapHigh = Math.min(yGapHigh, yEdges[m + 1] - yi);
         }
     }
     // normalize, if needed
@@ -138,12 +170,15 @@ module.exports = function calc(gd, trace) {
 
     return {
         x: x,
+        xRanges: getRanges(xEdges, uniqueValsPerX && xVals, xGapLow, xGapHigh, xa, xcalendar),
         x0: x0,
         dx: dx,
         y: y,
+        yRanges: getRanges(yEdges, uniqueValsPerY && yVals, yGapLow, yGapHigh, ya, ycalendar),
         y0: y0,
         dy: dy,
-        z: z
+        z: z,
+        pts: inputPoints
     };
 };
 
@@ -194,4 +229,18 @@ function binsToCalc(r2c, bins) {
         end: r2c(bins.end),
         size: bins.size
     };
+}
+
+function getRanges(edges, uniqueVals, gapLow, gapHigh, ax, calendar) {
+    var i;
+    var len = edges.length - 1;
+    var out = new Array(len);
+    if(uniqueVals) {
+        for(i = 0; i < len; i++) out[i] = [uniqueVals[i], uniqueVals[i]];
+    }
+    else {
+        var roundFn = getBinSpanLabelRound(gapLow, gapHigh, edges, ax, calendar);
+        for(i = 0; i < len; i++) out[i] = [roundFn(edges[i]), roundFn(edges[i + 1], true)];
+    }
+    return out;
 }
