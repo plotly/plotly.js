@@ -96,14 +96,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     pointData[posLetter + '0'] = pa.c2p(minPos(di), true);
     pointData[posLetter + '1'] = pa.c2p(maxPos(di), true);
     pointData[posLetter + 'LabelVal'] = di.p;
-    // for histograms
-    if(di.p0 !== undefined && di.p1 !== undefined) {
-        pointData[posLetter + 'LabelVal0'] = di.p0;
-        pointData[posLetter + 'LabelVal1'] = di.p1;
-    }
-
-    // for histograms
-    if(di.pts) pointData.pts = di.pts;
 
     fillHoverText(di, trace, pointData);
     ErrorBars.hoverInfo(di, trace, pointData);
