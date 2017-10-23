@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v1.31.1
+* plotly.js (finance) v1.31.2
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -29610,7 +29610,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.31.1';
+exports.version = '1.31.2';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -46637,7 +46637,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     for(i = 0; i < gd.calcdata.length; i++) {
         cd = gd.calcdata[i];
         trace = cd[0].trace;
-        if(!trace._module || !trace._module.selectPoints) continue;
+        if(trace.visible !== true || !trace._module || !trace._module.selectPoints) continue;
 
         if(dragOptions.subplot) {
             if(
@@ -54969,11 +54969,8 @@ var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 module.exports = function selectPoints(searchInfo, polygon) {
     var cd = searchInfo.cd;
     var selection = [];
-    var trace = cd[0].trace;
     var node3 = cd[0].node3;
     var i;
-
-    if(trace.visible !== true) return [];
 
     if(polygon === false) {
         // clear selection
@@ -62399,7 +62396,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
 
     // TODO: include lines? that would require per-segment line properties
     var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
-    if(trace.visible !== true || hasOnlyLines) return [];
+    if(hasOnlyLines) return [];
 
     var opacity = Array.isArray(marker.opacity) ? 1 : marker.opacity;
 

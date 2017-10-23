@@ -1,5 +1,5 @@
 /**
-* plotly.js (mapbox) v1.31.1
+* plotly.js (mapbox) v1.31.2
 * Copyright 2012-2017, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -63562,7 +63562,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.31.1';
+exports.version = '1.31.2';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -80706,7 +80706,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     for(i = 0; i < gd.calcdata.length; i++) {
         cd = gd.calcdata[i];
         trace = cd[0].trace;
-        if(!trace._module || !trace._module.selectPoints) continue;
+        if(trace.visible !== true || !trace._module || !trace._module.selectPoints) continue;
 
         if(dragOptions.subplot) {
             if(
@@ -91649,7 +91649,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
 
     // TODO: include lines? that would require per-segment line properties
     var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
-    if(trace.visible !== true || hasOnlyLines) return [];
+    if(hasOnlyLines) return [];
 
     var opacity = Array.isArray(marker.opacity) ? 1 : marker.opacity;
 
@@ -92848,7 +92848,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
     // to not insert data-driven 'circle-opacity' when we don't need to
     trace._hasDimmedPts = false;
 
-    if(trace.visible !== true || !subtypes.hasMarkers(trace)) return [];
+    if(!subtypes.hasMarkers(trace)) return [];
 
     if(polygon === false) {
         for(i = 0; i < cd.length; i++) {
