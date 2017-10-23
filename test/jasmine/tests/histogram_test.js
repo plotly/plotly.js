@@ -1,9 +1,11 @@
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
+var setConvert = require('@src/plots/cartesian/set_convert');
 
 var supplyDefaults = require('@src/traces/histogram/defaults');
 var calc = require('@src/traces/histogram/calc');
+var getBinSpanLabelRound = require('@src/traces/histogram/bin_label_vals');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -662,5 +664,209 @@ describe('Test histogram', function() {
             .catch(fail)
             .then(done);
         });
+    });
+});
+
+describe('getBinSpanLabelRound', function() {
+    function _test(leftGap, rightGap, edges, calendar, expected) {
+        var ax = {type: 'not date'};
+        // only date axes have any different treatment here. We could explicitly
+        // test category
+        if(calendar) {
+            ax = {type: 'date', calendar: 'gregorian', range: [0, 1e7]};
+            setConvert(ax);
+        }
+
+        var roundFn = getBinSpanLabelRound(leftGap, rightGap, edges, ax, calendar);
+
+        var j = 0;
+        var PREC = calendar ? 1 : 6;
+        edges.forEach(function(edge, i) {
+            if(i) {
+                expect(roundFn(edge, true)).toBeCloseTo(expected[j], PREC, 'right ' + i);
+                j++;
+            }
+            if(i < edges.length - 1) {
+                expect(roundFn(edge)).toBeCloseTo(expected[j], PREC, 'left ' + i);
+                j++;
+            }
+        });
+    }
+
+    it('works when the bin edges are round numbers and data are "continuous"', function() {
+        _test(0.05, 0.3, [0, 2, 4, 6], false, [0, 1.9, 2, 3.9, 4, 5.9]);
+        _test(0, 0.1, [0, 1, 2], false, [0, 0.9, 1, 1.9]);
+        _test(0, 0.001, [0, 1, 2], false, [0, 0.999, 1, 1.999]);
+        _test(0.1, 0.1, [115, 125, 135], false, [115, 124.9, 125, 134.9]);
+        _test(0.1, 0.01, [115, 125, 135], false, [115, 124.99, 125, 134.99]);
+        _test(10, 100, [5000, 6000, 7000], false, [5000, 5900, 6000, 6900]);
+
+        // too small of a right gap: stop disambiguating data at the edge
+        _test(0, 0.0009, [0, 1, 2], false, [0, 1, 1, 2]);
+        _test(0.1, 0.009, [115, 125, 135], false, [115, 125, 125, 135]);
+    });
+
+    it('works when the bins are shifted to be less round than the data', function() {
+        // integer or category data look like this - though categories don't even
+        // get here normally, unless you explicitly ask to bin multiple categories
+        // together, because uniqueValsPerBin will be true
+        _test(0.5, 0.5, [-0.5, 4.5, 9.5], false, [0, 4, 5, 9]);
+
+        _test(0.013, 0.087, [-0.013, 0.987, 1.987], false, [0, 0.9, 1, 1.9]);
+        _test(500, 500, [4500, 9500, 14500], false, [5000, 9000, 10000, 14000]);
+    });
+
+    var jan17 = Date.UTC(2017, 0, 1);
+    var feb17 = Date.UTC(2017, 1, 1);
+    var mar17 = Date.UTC(2017, 2, 1);
+    var jan18 = Date.UTC(2018, 0, 1);
+    var jan19 = Date.UTC(2019, 0, 1);
+    var j2116 = Date.UTC(2116, 0, 1);
+    var j2117 = Date.UTC(2117, 0, 1);
+    var j2216 = Date.UTC(2216, 0, 1);
+    var j2217 = Date.UTC(2217, 0, 1);
+    var sec = 1000;
+    var min = 60 * sec;
+    var hr = 60 * min;
+    var day = 24 * hr;
+
+    it('rounds dates to full fields (if larger than seconds) - round bin edges case', function() {
+        // sub-second & 1-second resolution
+        _test(0, 0.1, [jan17, jan17 + 1, jan17 + 2], 'gregorian',
+            [jan17, jan17 + 0.9, jan17 + 1, jan17 + 1.9]);
+        _test(1, 3, [jan17, jan17 + 20, jan17 + 40], 'gregorian',
+            [jan17, jan17 + 19, jan17 + 20, jan17 + 39]);
+        _test(5, 35, [jan17, jan17 + 1000, jan17 + 2000], 'gregorian',
+            [jan17, jan17 + 990, jan17 + 1000, jan17 + 1990]);
+        _test(0, 100, [jan17, jan17 + 20000, jan17 + 40000], 'gregorian',
+            [jan17, jan17 + 19900, jan17 + 20000, jan17 + 39900]);
+        _test(100, 2000, [jan17, jan17 + 10000, jan17 + 20000], 'gregorian',
+            [jan17, jan17 + 9000, jan17 + 10000, jan17 + 19000]);
+
+        // > second, only go to the next full field
+        // 30 sec gap - still show seconds
+        _test(0, 30 * sec, [jan17, jan17 + 5 * min, jan17 + 10 * min], 'gregorian',
+            [jan17, jan17 + 5 * min - sec, jan17 + 5 * min, jan17 + 10 * min - sec]);
+        // 1-minute gap round to minutes
+        _test(10 * sec, min, [jan17, jan17 + 5 * min, jan17 + 10 * min], 'gregorian',
+            [jan17, jan17 + 4 * min, jan17 + 5 * min, jan17 + 9 * min]);
+        // 30-minute gap - still show minutes
+        _test(0, 30 * min, [jan17, jan17 + day, jan17 + 2 * day], 'gregorian',
+            [jan17, jan17 + day - min, jan17 + day, jan17 + 2 * day - min]);
+        // 1-hour gap - round to hours
+        _test(0, hr, [jan17, jan17 + day, jan17 + 2 * day], 'gregorian',
+            [jan17, jan17 + day - hr, jan17 + day, jan17 + 2 * day - hr]);
+        // 12-hour gap - still hours
+        _test(0, 12 * hr, [jan17, feb17, mar17], 'gregorian',
+            [jan17, feb17 - hr, feb17, mar17 - hr]);
+        // 1-day gap - round to days
+        _test(0, day, [jan17, feb17, mar17], 'gregorian',
+            [jan17, feb17 - day, feb17, mar17 - day]);
+        // 15-day gap - still days
+        _test(0, 15 * day, [jan17, jan18, jan19], 'gregorian',
+            [jan17, jan18 - day, jan18, jan19 - day]);
+        // 28-day gap STILL gets days - in principle this might happen with data
+        // that's actually monthly, if the bins edges fall on different months
+        // (ie not full years) but that's a very weird edge case so I'll ignore it!
+        _test(0, 28 * day, [jan17, jan18, jan19], 'gregorian',
+            [jan17, jan18 - day, jan18, jan19 - day]);
+        // 31-day gap - months
+        _test(0, 31 * day, [jan17, jan18, jan19], 'gregorian',
+            [jan17, Date.UTC(2017, 11, 1), jan18, Date.UTC(2018, 11, 1)]);
+        // 365-day gap - years have enough buffer to handle leap vs nonleap years
+        _test(0, 365 * day, [jan17, j2117, j2217], 'gregorian',
+            [jan17, j2116, j2117, j2216]);
+        // no bigger rounding than years
+        _test(0, 40 * 365 * day, [jan17, j2117, j2217], 'gregorian',
+            [jan17, j2116, j2117, j2216]);
+    });
+
+    it('rounds dates to full fields (if larger than seconds) - round data case', function() {
+        // sub-second & 1-second resolution
+        _test(0.05, 0.05, [jan17 - 0.05, jan17 + 0.95, jan17 + 1.95], 'gregorian',
+            [jan17, jan17 + 0.9, jan17 + 1, jan17 + 1.9]);
+        _test(0.5, 3.5, [jan17 - 0.5, jan17 + 19.5, jan17 + 39.5], 'gregorian',
+            [jan17, jan17 + 19, jan17 + 20, jan17 + 39]);
+        _test(5, 35, [jan17 - 5, jan17 + 995, jan17 + 1995], 'gregorian',
+            [jan17, jan17 + 990, jan17 + 1000, jan17 + 1990]);
+        _test(50, 50, [jan17 - 50, jan17 + 19950, jan17 + 39950], 'gregorian',
+            [jan17, jan17 + 19900, jan17 + 20000, jan17 + 39900]);
+        _test(500, 2500, [jan17 - 500, jan17 + 9500, jan17 + 19500], 'gregorian',
+            [jan17, jan17 + 9000, jan17 + 10000, jan17 + 19000]);
+
+        // > second, only go to the next full field
+        // 30 sec gap - still show seconds
+        _test(15 * sec, 15 * sec, [jan17 - 15 * sec, jan17 + 5 * min - 15 * sec, jan17 + 10 * min - 15 * sec], 'gregorian',
+            [jan17 - 15 * sec, jan17 + 5 * min - 16 * sec, jan17 + 5 * min - 15 * sec, jan17 + 10 * min - 16 * sec]);
+        // 1-minute gap round to minutes
+        _test(30 * sec, 30 * sec, [jan17 - 30 * sec, jan17 + 5 * min - 30 * sec, jan17 + 10 * min - 30 * sec], 'gregorian',
+            [jan17, jan17 + 4 * min, jan17 + 5 * min, jan17 + 9 * min]);
+        // 30-minute gap - still show minutes
+        _test(15 * min, 15 * min, [jan17 - 15 * min, jan17 + day - 15 * min, jan17 + 2 * day - 15 * min], 'gregorian',
+            [jan17 - 15 * min, jan17 + day - 16 * min, jan17 + day - 15 * min, jan17 + 2 * day - 16 * min]);
+        // 1-hour gap - round to hours
+        _test(30 * min, 30 * min, [jan17 - 30 * min, jan17 + day - 30 * min, jan17 + 2 * day - 30 * min], 'gregorian',
+            [jan17, jan17 + day - hr, jan17 + day, jan17 + 2 * day - hr]);
+        // 12-hour gap - still hours
+        _test(6 * hr, 6 * hr, [jan17 - 6 * hr, feb17 - 6 * hr, mar17 - 6 * hr], 'gregorian',
+            [jan17 - 6 * hr, feb17 - 7 * hr, feb17 - 6 * hr, mar17 - 7 * hr]);
+        // 1-day gap - round to days
+        _test(12 * hr, 12 * hr, [jan17 - 12 * hr, feb17 - 12 * hr, mar17 - 12 * hr], 'gregorian',
+            [jan17, feb17 - day, feb17, mar17 - day]);
+        // 15-day gap - still days
+        _test(7 * day, 8 * day, [jan17 - 7 * day, jan18 - 7 * day, jan19 - 7 * day], 'gregorian',
+            [jan17 - 7 * day, jan18 - 8 * day, jan18 - 7 * day, jan19 - 8 * day]);
+        // 28-day gap STILL gets days - in principle this might happen with data
+        // that's actually monthly, if the bins edges fall on different months
+        // (ie not full years) but that's a very weird edge case so I'll ignore it!
+        _test(14 * day, 14 * day, [jan17 - 14 * day, jan18 - 14 * day, jan19 - 14 * day], 'gregorian',
+            [jan17 - 14 * day, jan18 - 15 * day, jan18 - 14 * day, jan19 - 15 * day]);
+        // 31-day gap - months
+        _test(15 * day, 16 * day, [jan17 - 15 * day, jan18 - 15 * day, jan19 - 15 * day], 'gregorian',
+            [jan17, Date.UTC(2017, 11, 1), jan18, Date.UTC(2018, 11, 1)]);
+        // 365-day gap - years have enough buffer to handle leap vs nonleap years
+        _test(182 * day, 183 * day, [jan17 - 182 * day, j2117 - 182 * day, j2217 - 182 * day], 'gregorian',
+            [jan17, j2116, j2117, j2216]);
+        // no bigger rounding than years
+        _test(20 * 365 * day, 20 * 365 * day, [jan17, j2117, j2217], 'gregorian',
+            [jan17, j2116, j2117, j2216]);
+    });
+
+    it('rounds (mostly) correctly when using world calendars', function() {
+        var cn = 'chinese';
+        var cn8 = Lib.dateTime2ms('1995-08-01', cn);
+        var cn8i = Lib.dateTime2ms('1995-08i-01', cn);
+        var cn9 = Lib.dateTime2ms('1995-09-01', cn);
+
+        var cn1_00 = Lib.dateTime2ms('2000-01-01', cn);
+        var cn1_01 = Lib.dateTime2ms('2001-01-01', cn);
+        var cn1_02 = Lib.dateTime2ms('2002-01-01', cn);
+        var cn1_10 = Lib.dateTime2ms('2010-01-01', cn);
+        var cn1_20 = Lib.dateTime2ms('2020-01-01', cn);
+
+        _test(100, 2000, [cn8i, cn8i + 10000, cn8i + 20000], cn,
+            [cn8i, cn8i + 9000, cn8i + 10000, cn8i + 19000]);
+        _test(500, 2500, [cn8i - 500, cn8i + 9500, cn8i + 19500], cn,
+            [cn8i, cn8i + 9000, cn8i + 10000, cn8i + 19000]);
+
+        _test(0, day, [cn8, cn8i, cn9], cn,
+            [cn8, cn8i - day, cn8i, cn9 - day]);
+        _test(12 * hr, 12 * hr, [cn8 - 12 * hr, cn8i - 12 * hr, cn9 - 12 * hr], cn,
+            [cn8, cn8i - day, cn8i, cn9 - day]);
+
+        _test(0, 28 * day, [cn1_00, cn1_01, cn1_02], cn,
+            [cn1_00, Lib.dateTime2ms('2000-12-01', cn), cn1_01, Lib.dateTime2ms('2001-12-01', cn)]);
+        _test(14 * day, 14 * day, [cn1_00 - 14 * day, cn1_01 - 14 * day, cn1_02 - 14 * day], cn,
+            [cn1_00, Lib.dateTime2ms('2000-12-01', cn), cn1_01, Lib.dateTime2ms('2001-12-01', cn)]);
+
+        _test(0, 353 * day, [cn1_00, cn1_10, cn1_20], cn,
+            [cn1_00, Lib.dateTime2ms('2009-01-01', cn), cn1_10, Lib.dateTime2ms('2019-01-01', cn)]);
+        // occasionally we give extra precision for world dates (month when it should be year
+        // or day when it should be month). That's better than doing the opposite... not going
+        // to fix now, too many edge cases, better not to complicate the logic for them all.
+        _test(176 * day, 177 * day, [cn1_00 - 176 * day, cn1_10 - 176 * day, cn1_20 - 176 * day], cn, [
+            Lib.dateTime2ms('1999-08-01', cn), Lib.dateTime2ms('2009-07-01', cn),
+            Lib.dateTime2ms('2009-08-01', cn), Lib.dateTime2ms('2019-07-01', cn)
+        ]);
     });
 });
