@@ -10,6 +10,7 @@
 'use strict';
 
 var barHover = require('../bar/hover');
+var hoverLabelText = require('../../plots/cartesian/axes').hoverLabelText;
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var pts = barHover(pointData, xval, yval, hovermode);
@@ -23,8 +24,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     if(!trace.cumulative.enabled) {
         var posLetter = trace.orientation === 'h' ? 'y' : 'x';
 
-        pointData[posLetter + 'LabelVal0'] = di.p0;
-        pointData[posLetter + 'LabelVal1'] = di.p1;
+        pointData[posLetter + 'Label'] = hoverLabelText(pointData[posLetter + 'a'], di.p0, di.p1);
         pointData.pts = di.pts;
     }
 
