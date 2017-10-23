@@ -10,6 +10,14 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.31.2] -- 2017-10-23
+
+### Fixed
+- Fix multiple `table` restyle bugs [#2107]
+- Fix selection work when `visible: false` choropleth traces are present [#2099, #2109]
+- Fix (another) contour generation bug [#2091]
+
+
 ## [1.31.1] -- 2017-10-16
 
 ### Fixed
