@@ -69,7 +69,7 @@ ScatterRegl.calc = function calc(container, trace) {
         fillOptions = stash.fill = {};
     var selection = trace.selection;
     var sizes, selIds;
-    var hasLines, hasErrorX, hasErrorY, hasMarkers, hasFill;
+    var isVisible, hasLines, hasErrorX, hasErrorY, hasError, hasMarkers, hasFill;
     var linePositions;
 
     // calculate axes range
@@ -108,8 +108,24 @@ ScatterRegl.calc = function calc(container, trace) {
     stash._y = y;
     stash._positions = positions;
 
+    if(trace.visible !== true) {
+        isVisible = false;
+        hasLines = false;
+        hasErrorX = false;
+        hasErrorY = false;
+        hasMarkers = false;
+    }
+    else {
+        isVisible = true;
+        hasLines = subTypes.hasLines(trace);
+        hasErrorX = trace.error_x.visible === true;
+        hasErrorY = trace.error_y.visible === true;
+        hasError = hasErrorX || hasErrorY;
+        hasMarkers = subTypes.hasMarkers(trace);
+    }
+
     // get error values
-    var errorVals = (hasErrorX || hasErrorY) ? ErrorBars.calcFromTrace(trace, layout) : null;
+    var errorVals = hasError ? ErrorBars.calcFromTrace(trace, layout) : null;
 
     if(hasErrorX) {
         var errorsX = new Float64Array(4 * count);
@@ -329,9 +345,20 @@ ScatterRegl.calc = function calc(container, trace) {
         }
     }
 
+    // make sure scene exists
+    var scene = subplot._scene;
+    if (!subplot._scene) {
+        scene = subplot._scene = {}
+    }
+
+    // mark renderers required for the data
+    if (!scene.renderError && hasError) scene.renderError = true;
+    if (!scene.renderLine && hasLines) scene.renderLine = true;
+    if (!scene.renderMarkers && hasError) scene.renderMarkers = true;
+    if (!scene.renderFill && hasFill) scene.renderFill = true;
+
     return [{x: false, y: false, t: stash, trace: trace}];
 };
-
 
 //TODO: manages selection, range, viewport, that's it
 ScatterRegl.plot = function plot(container, plotinfo, cdata) {
@@ -537,6 +564,7 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
 function getSymbolSdf(symbol) {
     if(symbol === 'circle') return null
 
+    var symbolPath, symbolSdf;
     var symbolNumber = Drawing.symbolNumber(symbol);
     var symbolFunc = Drawing.symbolFuncs[symbolNumber % 100];
     var symbolNoDot = !!Drawing.symbolNoDot[symbolNumber % 100];
