@@ -40,15 +40,28 @@ module.exports = function getBinSpanLabelRound(leftGap, rightGap, binEdges, pa, 
     var dv2 = leftGap - dv1;
     var edge0 = binEdges[0];
     var edge1 = binEdges[1];
-    var regions = [
-        [edge0 + dv0, edge0 + dv1],
-        [edge0 + dv1, edge0 + dv2],
-        [edge1 + dv0, edge1 + dv1],
-        [edge1 + dv1, edge1 + dv2]
-    ];
-    var digit = Infinity;
-    for(var i = 0; i < regions.length; i++) {
-        digit = Math.min(digit, biggestDigitChanged(regions[i], pa, calendar));
+    var leftDigit = Math.min(
+        biggestDigitChanged(edge0 + dv1, edge0 + dv2, pa, calendar),
+        biggestDigitChanged(edge1 + dv1, edge1 + dv2, pa, calendar)
+    );
+    var rightDigit = Math.min(
+        biggestDigitChanged(edge0 + dv0, edge0 + dv1, pa, calendar),
+        biggestDigitChanged(edge1 + dv0, edge1 + dv1, pa, calendar)
+    );
+
+    // normally we try to make the label for the right edge different from
+    // the left edge label, so it's unambiguous which bin gets data on the edge.
+    // but if this results in more than 3 extra digits (or for dates, more than
+    // 2 fields ie hr&min or min&sec, which is 3600x), it'll be more clutter than
+    // useful so keep the label cleaner instead
+    var digit, disambiguateEdges;
+    if(leftDigit > rightDigit && rightDigit < Math.abs(edge1 - edge0) / 4000) {
+        digit = leftDigit;
+        disambiguateEdges = false;
+    }
+    else {
+        digit = Math.min(leftDigit, rightDigit);
+        disambiguateEdges = true;
     }
 
     if(pa.type === 'date' && digit > oneDay) {
@@ -59,14 +72,14 @@ module.exports = function getBinSpanLabelRound(leftGap, rightGap, binEdges, pa, 
             var dateStr = pa.c2d(v, oneYear, calendar);
             var dashPos = dateStr.indexOf('-', dashExclude);
             if(dashPos > 0) dateStr = dateStr.substr(0, dashPos);
-            var roundedV = pa.d2c(dateStr, calendar);
+            var roundedV = pa.d2c(dateStr, 0, calendar);
 
             if(roundedV < v) {
                 var nextV = tickIncrement(roundedV, increment, false, calendar);
                 if((roundedV + nextV) / 2 < v + leftGap) roundedV = nextV;
             }
 
-            if(isRightEdge) {
+            if(isRightEdge && disambiguateEdges) {
                 return tickIncrement(roundedV, increment, true, calendar);
             }
 
@@ -83,7 +96,7 @@ module.exports = function getBinSpanLabelRound(leftGap, rightGap, binEdges, pa, 
         }
         // finally for the right edge back off one digit - but only if we can do that
         // and not clip off any data that's potentially in the bin
-        if(isRightEdge) {
+        if(isRightEdge && disambiguateEdges) {
             roundedV -= digit;
         }
         return roundedV;
@@ -97,10 +110,7 @@ module.exports = function getBinSpanLabelRound(leftGap, rightGap, binEdges, pa, 
  * 100 to round to hundreds. returns oneMonth or oneYear for month or year rounding,
  * so that Math.min will work, rather than 'M1' and 'M12'
  */
-function biggestDigitChanged(region, pa, calendar) {
-    var v1 = region[0];
-    var v2 = region[1];
-
+function biggestDigitChanged(v1, v2, pa, calendar) {
     // are we crossing zero? can't say anything.
     // in principle this doesn't apply to dates but turns out this doesn't matter.
     if(v1 * v2 <= 0) return Infinity;
