@@ -1221,7 +1221,7 @@ axes.hoverLabelText = function(ax, val) {
     var tx = axes.tickText(ax, ax.c2l(logOffScale ? -val : val), 'hover').text;
 
     if(logOffScale) {
-        return val === 0 ? '0' : '-' + tx;
+        return val === 0 ? '0' : MINUS_SIGN + tx;
     }
 
     // TODO: should we do something special if the axis calendar and
