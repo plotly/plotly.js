@@ -45,8 +45,6 @@ var ScatterRegl = module.exports = extend({}, require('../scatter'));
 ScatterRegl.name = 'scatterregl';
 ScatterRegl.categories = ['gl', 'gl2d', 'regl', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend', 'scatter-like'];
 
-ScatterRegl.basePlotModule = require('./base');
-
 
 ScatterRegl.calc = function calc(container, trace) {
     var layout = container._fullLayout;

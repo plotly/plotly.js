@@ -13,6 +13,7 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 var hasHover = require('has-hover');
+var createRegl = require('regl');
 
 var Plotly = require('../plotly');
 var Lib = require('../lib');
@@ -195,14 +196,31 @@ Plotly.plot = function(gd, data, layout, config) {
         }
 
         fullLayout._glcanvas = fullLayout._glcontainer.selectAll('.gl-canvas').data(fullLayout._has('gl') ? [{
-            key: 'contextLayer'
+            key: 'contextLayer',
+            context: true,
+            pick: false
         }, {
-            key: 'focusLayer'
+            key: 'focusLayer',
+            context: false,
+            pick: false
         }, {
-            key: 'pickLayer'
+            key: 'pickLayer',
+            context: false,
+            pick: true
         }] : []);
 
         fullLayout._glcanvas.enter().append('canvas')
+            .each(function (d) {
+                d.regl = createRegl({
+                    canvas: this,
+                    attributes: {
+                        antialias: !d.pick,
+                        preserveDrawingBuffer: true
+                    },
+                    extensions: ['ANGLE_instanced_arrays', 'OES_element_index_uint'],
+                    pixelRatio: gd._context.plotGlPixelRatio || global.devicePixelRatio
+                });
+            })
             .attr('class', function(d) {
                 return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
             })
