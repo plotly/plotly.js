@@ -8,7 +8,6 @@
 
 'use strict';
 
-var createREGL = require('regl');
 var glslify = require('glslify');
 var c = require('./constants');
 var vertexShaderSource = glslify('./shaders/vertex.glsl');
@@ -202,13 +201,7 @@ module.exports = function(canvasGL, d, scatter) {
     var points = makePoints(sampleCount, dimensionCount, initialDims, color);
     var attributes = makeAttributes(sampleCount, points);
 
-    var regl = createREGL({
-        canvas: canvasGL,
-        attributes: {
-            preserveDrawingBuffer: true,
-            antialias: !pick
-        }
-    });
+    var regl = d.regl
 
     var paletteTexture = regl.texture({
         shape: [256, 1],
@@ -439,11 +432,15 @@ module.exports = function(canvasGL, d, scatter) {
         return pixelArray;
     }
 
+    function destroy() {
+        paletteTexture.destroy()
+    }
+
     return {
         setColorDomain: setColorDomain,
         render: renderGLParcoords,
         readPixel: readPixel,
         readPixels: readPixels,
-        destroy: regl.destroy
+        destroy: destroy
     };
 };

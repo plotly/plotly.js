@@ -298,8 +298,6 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
     var parcoordsLineLayer = parcoordsLineLayers.selectAll('.gl-canvas')
         .each(function(d) {
             var key = d.key;
-            d.context = key === 'contextLayer';
-            d.pick = key === 'pickLayer';
 
             // FIXME: figure out how to handle multiple instances
             d.viewModel = vm[0];

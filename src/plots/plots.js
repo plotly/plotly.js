@@ -124,6 +124,43 @@ plots.getSubplotIds = function getSubplotIds(layout, type) {
     return subplotIds;
 };
 
+/**
+ * Get the data trace(s) associated with a given subplot.
+ *
+ * @param {array} data  plotly full data array.
+ * @param {string} type subplot type to look for.
+ * @param {string} subplotId subplot id to look for.
+ *
+ * @return {array} list of trace objects.
+ *
+ */
+plots.getSubplotData = function getSubplotData(data, type, subplotId) {
+    if(!plots.subplotsRegistry[type]) return [];
+
+    var attr = plots.subplotsRegistry[type].attr,
+        subplotData = [],
+        trace;
+
+    for(var i = 0; i < data.length; i++) {
+        trace = data[i];
+
+        if(type === 'gl2d' && plots.traceIs(trace, 'gl2d')) {
+            var spmatch = Plotly.Axes.subplotMatch,
+                subplotX = 'x' + subplotId.match(spmatch)[1],
+                subplotY = 'y' + subplotId.match(spmatch)[2];
+
+            if(trace[attr[0]] === subplotX && trace[attr[1]] === subplotY) {
+                subplotData.push(trace);
+            }
+        }
+        else {
+            if(trace[attr] === subplotId) subplotData.push(trace);
+        }
+    }
+
+    return subplotData;
+};
+
 
 /**
  * Get calcdata traces(s) associated with a given subplot
@@ -944,7 +981,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
         var subplotType = subplotTypes[i];
 
         // done below (only when visible is true)
-        // TODO unified this pattern
+        // TODO unify this pattern
         if(['cartesian', 'gl2d'].indexOf(subplotType) !== -1) continue;
 
         var attr = subplotsRegistry[subplotType].attr;
