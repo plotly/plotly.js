@@ -12,13 +12,14 @@ var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 
-
 module.exports = function setPositions(gd, plotinfo) {
     var fullLayout = gd._fullLayout;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
     var orientations = ['v', 'h'];
 
+    // TODO figure this out
+    // should violins and boxes share 'num' fields?
     var numKey = '_numBoxes';
 
     var posAxis, i, j, k;
@@ -84,8 +85,10 @@ module.exports = function setPositions(gd, plotinfo) {
             gd.calcdata[boxListIndex][0].t.dPos = dPos;
         }
 
-        var gap = fullLayout.boxgap;
-        var groupgap = fullLayout.boxgroupgap;
+        // TODO this won't work when both boxes and violins are present
+        // on same graph
+        var gap = fullLayout.boxgap || fullLayout.violingap;
+        var groupgap = fullLayout.boxgroupgap || fullLayout.violingroupgap;
 
         // autoscale the x axis - including space for points if they're off the side
         // TODO: this will overdo it if the outermost boxes don't have

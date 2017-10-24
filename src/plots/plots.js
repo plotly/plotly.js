@@ -2160,6 +2160,7 @@ plots.doCalcdata = function(gd, traces) {
 
     // how many box/violins plots do we have (in case they're grouped)
     fullLayout._numBoxes = 0;
+    fullLayout._numViolins = 0;
 
     // for calculating avg luminosity of heatmaps
     gd._hmpixcount = 0;

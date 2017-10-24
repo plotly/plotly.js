@@ -161,7 +161,8 @@ function plotPoints(sel, plotinfo, trace, t) {
     var bdPos = t.bdPos;
     var bPos = t.bPos;
 
-    var mode = trace.boxpoints;
+    // TODO ... unfortunately
+    var mode = trace.boxpoints || trace.points;
 
     // repeatable pseudorandom number generator
     seed();
