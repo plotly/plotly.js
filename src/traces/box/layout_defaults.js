@@ -12,11 +12,7 @@ var Registry = require('../../registry');
 var Lib = require('../../lib');
 var layoutAttributes = require('./layout_attributes');
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    function coerce(attr, dflt) {
-        return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
-    }
-
+function _supply(layoutIn, layoutOut, fullData, coerce, prefix) {
     var hasBoxes;
     for(var i = 0; i < fullData.length; i++) {
         if(Registry.traceIs(fullData[i], 'box')) {
@@ -26,7 +22,19 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
     if(!hasBoxes) return;
 
-    coerce('boxmode');
-    coerce('boxgap');
-    coerce('boxgroupgap');
+    coerce(prefix + 'mode');
+    coerce(prefix + 'gap');
+    coerce(prefix + 'groupgap');
+}
+
+function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
+    function coerce(attr, dflt) {
+        return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
+    }
+    _supply(layoutIn, layoutOut, fullData, coerce, 'box');
+}
+
+module.exports = {
+    supplyLayoutDefaults: supplyLayoutDefaults,
+    _supply: _supply
 };

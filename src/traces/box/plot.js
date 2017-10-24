@@ -33,7 +33,7 @@ function rand() {
 var JITTERCOUNT = 5; // points either side of this to include
 var JITTERSPREAD = 0.01; // fraction of IQR to count as "dense"
 
-module.exports = function plot(gd, plotinfo, cdbox) {
+function plot(gd, plotinfo, cdbox) {
     var fullLayout = gd._fullLayout;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
@@ -78,9 +78,6 @@ module.exports = function plot(gd, plotinfo, cdbox) {
         t.bPos = bPos;
         t.bdPos = bdPos;
 
-        // repeatable pseudorandom number generator
-        seed();
-
         // boxes and whiskers
         sel.selectAll('path.box')
             .data(Lib.identity)
@@ -121,95 +118,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
 
         // draw points, if desired
         if(trace.boxpoints) {
-            sel.selectAll('g.points')
-                // since box plot points get an extra level of nesting, each
-                // box needs the trace styling info
-                .data(function(d) {
-                    d.forEach(function(v) {
-                        v.t = t;
-                        v.trace = trace;
-                    });
-                    return d;
-                })
-                .enter().append('g')
-                .attr('class', 'points')
-              .selectAll('path')
-                .data(function(d) {
-                    var i;
-
-                    var pts = trace.boxpoints === 'all' ?
-                        d.pts :
-                        d.pts.filter(function(pt) { return (pt.v < d.lf || pt.v > d.uf); });
-
-                    // normally use IQR, but if this is 0 or too small, use max-min
-                    var typicalSpread = Math.max((d.max - d.min) / 10, d.q3 - d.q1);
-                    var minSpread = typicalSpread * 1e-9;
-                    var spreadLimit = typicalSpread * JITTERSPREAD;
-                    var jitterFactors = [];
-                    var maxJitterFactor = 0;
-                    var newJitter;
-
-                    // dynamic jitter
-                    if(trace.jitter) {
-                        if(typicalSpread === 0) {
-                            // edge case of no spread at all: fall back to max jitter
-                            maxJitterFactor = 1;
-                            jitterFactors = new Array(pts.length);
-                            for(i = 0; i < pts.length; i++) {
-                                jitterFactors[i] = 1;
-                            }
-                        } else {
-                            for(i = 0; i < pts.length; i++) {
-                                var i0 = Math.max(0, i - JITTERCOUNT);
-                                var pmin = pts[i0].v;
-                                var i1 = Math.min(pts.length - 1, i + JITTERCOUNT);
-                                var pmax = pts[i1].v;
-
-                                if(trace.boxpoints !== 'all') {
-                                    if(pts[i].v < d.lf) pmax = Math.min(pmax, d.lf);
-                                    else pmin = Math.max(pmin, d.uf);
-                                }
-
-                                var jitterFactor = Math.sqrt(spreadLimit * (i1 - i0) / (pmax - pmin + minSpread)) || 0;
-                                jitterFactor = Lib.constrain(Math.abs(jitterFactor), 0, 1);
-
-                                jitterFactors.push(jitterFactor);
-                                maxJitterFactor = Math.max(jitterFactor, maxJitterFactor);
-                            }
-                        }
-                        newJitter = trace.jitter * 2 / maxJitterFactor;
-                    }
-
-                    // fills in 'x' and 'y' in calcdata 'pts' item
-                    for(i = 0; i < pts.length; i++) {
-                        var pt = pts[i];
-                        var v = pt.v;
-
-                        var jitterOffset = trace.jitter ?
-                            (newJitter * jitterFactors[i] * (rand() - 0.5)) :
-                            0;
-
-                        var posPx = d.pos + bPos + bdPos * (trace.pointpos + jitterOffset);
-
-                        if(trace.orientation === 'h') {
-                            pt.y = posPx;
-                            pt.x = v;
-                        } else {
-                            pt.x = posPx;
-                            pt.y = v;
-                        }
-
-                        // tag suspected outliers
-                        if(trace.boxpoints === 'suspectedoutliers' && v < d.uo && v > d.lo) {
-                            pt.so = true;
-                        }
-                    }
-
-                    return pts;
-                })
-                .enter().append('path')
-                .classed('point', true)
-                .call(Drawing.translatePoints, xa, ya);
+            plotPoints(sel, plotinfo, trace, t);
         }
 
         // draw mean (and stdev diamond) if desired
@@ -244,4 +153,111 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                 });
         }
     });
+}
+
+function plotPoints(sel, plotinfo, trace, t) {
+    var xa = plotinfo.xaxis;
+    var ya = plotinfo.yaxis;
+    var bdPos = t.bdPos;
+    var bPos = t.bPos;
+
+    var mode = trace.boxpoints;
+
+    // repeatable pseudorandom number generator
+    seed();
+
+    sel.selectAll('g.points')
+        // since box plot points get an extra level of nesting, each
+        // box needs the trace styling info
+        .data(function(d) {
+            d.forEach(function(v) {
+                v.t = t;
+                v.trace = trace;
+            });
+            return d;
+        })
+        .enter().append('g')
+        .attr('class', 'points')
+      .selectAll('path')
+        .data(function(d) {
+            var i;
+
+            var pts = mode === 'all' ?
+                d.pts :
+                d.pts.filter(function(pt) { return (pt.v < d.lf || pt.v > d.uf); });
+
+            // normally use IQR, but if this is 0 or too small, use max-min
+            var typicalSpread = Math.max((d.max - d.min) / 10, d.q3 - d.q1);
+            var minSpread = typicalSpread * 1e-9;
+            var spreadLimit = typicalSpread * JITTERSPREAD;
+            var jitterFactors = [];
+            var maxJitterFactor = 0;
+            var newJitter;
+
+            // dynamic jitter
+            if(trace.jitter) {
+                if(typicalSpread === 0) {
+                    // edge case of no spread at all: fall back to max jitter
+                    maxJitterFactor = 1;
+                    jitterFactors = new Array(pts.length);
+                    for(i = 0; i < pts.length; i++) {
+                        jitterFactors[i] = 1;
+                    }
+                } else {
+                    for(i = 0; i < pts.length; i++) {
+                        var i0 = Math.max(0, i - JITTERCOUNT);
+                        var pmin = pts[i0].v;
+                        var i1 = Math.min(pts.length - 1, i + JITTERCOUNT);
+                        var pmax = pts[i1].v;
+
+                        if(mode !== 'all') {
+                            if(pts[i].v < d.lf) pmax = Math.min(pmax, d.lf);
+                            else pmin = Math.max(pmin, d.uf);
+                        }
+
+                        var jitterFactor = Math.sqrt(spreadLimit * (i1 - i0) / (pmax - pmin + minSpread)) || 0;
+                        jitterFactor = Lib.constrain(Math.abs(jitterFactor), 0, 1);
+
+                        jitterFactors.push(jitterFactor);
+                        maxJitterFactor = Math.max(jitterFactor, maxJitterFactor);
+                    }
+                }
+                newJitter = trace.jitter * 2 / maxJitterFactor;
+            }
+
+            // fills in 'x' and 'y' in calcdata 'pts' item
+            for(i = 0; i < pts.length; i++) {
+                var pt = pts[i];
+                var v = pt.v;
+
+                var jitterOffset = trace.jitter ?
+                    (newJitter * jitterFactors[i] * (rand() - 0.5)) :
+                    0;
+
+                var posPx = d.pos + bPos + bdPos * (trace.pointpos + jitterOffset);
+
+                if(trace.orientation === 'h') {
+                    pt.y = posPx;
+                    pt.x = v;
+                } else {
+                    pt.x = posPx;
+                    pt.y = v;
+                }
+
+                // tag suspected outliers
+                if(mode === 'suspectedoutliers' && v < d.uo && v > d.lo) {
+                    pt.so = true;
+                }
+            }
+
+            return pts;
+        })
+        .enter().append('path')
+        .classed('point', true)
+        .call(Drawing.translatePoints, xa, ya);
+}
+
+module.exports = {
+    plot: plot,
+    plotPoints: plotPoints
 };

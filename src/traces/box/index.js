@@ -12,11 +12,11 @@ var Box = {};
 
 Box.attributes = require('./attributes');
 Box.layoutAttributes = require('./layout_attributes');
-Box.supplyDefaults = require('./defaults');
-Box.supplyLayoutDefaults = require('./layout_defaults');
+Box.supplyDefaults = require('./defaults').supplyDefaults;
+Box.supplyLayoutDefaults = require('./layout_defaults').supplyLayoutDefaults;
 Box.calc = require('./calc');
 Box.setPositions = require('./set_positions');
-Box.plot = require('./plot');
+Box.plot = require('./plot').plot;
 Box.style = require('./style');
 Box.hoverPoints = require('./hover');
 Box.selectPoints = require('./select');
