@@ -49,12 +49,13 @@ module.exports = function plot(gd, plotinfo, cdbox) {
         var t = cd0.t;
         var trace = cd0.trace;
         var sel = cd0.node3 = d3.select(this);
+        var numBoxes = fullLayout._numBoxes;
 
-        var group = (fullLayout.boxmode === 'group' && gd.numboxes > 1);
+        var group = (fullLayout.boxmode === 'group' && numBoxes > 1);
         // box half width
-        var bdPos = t.dPos * (1 - fullLayout.boxgap) * (1 - fullLayout.boxgroupgap) / (group ? gd.numboxes : 1);
+        var bdPos = t.dPos * (1 - fullLayout.boxgap) * (1 - fullLayout.boxgroupgap) / (group ? numBoxes : 1);
         // box center offset
-        var bPos = group ? 2 * t.dPos * (-0.5 + (t.boxnum + 0.5) / gd.numboxes) * (1 - fullLayout.boxgap) : 0;
+        var bPos = group ? 2 * t.dPos * (-0.5 + (t.num + 0.5) / numBoxes) * (1 - fullLayout.boxgap) : 0;
         // whisker width
         var wdPos = bdPos * trace.whiskerwidth;
 

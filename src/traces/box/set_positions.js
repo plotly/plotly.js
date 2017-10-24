@@ -14,10 +14,13 @@ var Lib = require('../../lib');
 
 
 module.exports = function setPositions(gd, plotinfo) {
-    var fullLayout = gd._fullLayout,
-        xa = plotinfo.xaxis,
-        ya = plotinfo.yaxis,
-        orientations = ['v', 'h'];
+    var fullLayout = gd._fullLayout;
+    var xa = plotinfo.xaxis;
+    var ya = plotinfo.yaxis;
+    var orientations = ['v', 'h'];
+
+    var numKey = '_numBoxes';
+
     var posAxis, i, j, k;
 
     for(i = 0; i < orientations.length; ++i) {
@@ -63,12 +66,14 @@ module.exports = function setPositions(gd, plotinfo) {
         // box plots - update dPos based on multiple traces
         // and then use for posAxis autorange
 
-        var boxdv = Lib.distinctVals(boxpointlist),
-            dPos = boxdv.minDiff / 2;
+        var boxdv = Lib.distinctVals(boxpointlist);
+        var dPos = boxdv.minDiff / 2;
 
         // if there's no duplication of x points,
-        // disable 'group' mode by setting numboxes=1
-        if(boxpointlist.length === boxdv.vals.length) gd.numboxes = 1;
+        // disable 'group' mode by setting counter to 1
+        if(boxpointlist.length === boxdv.vals.length) {
+            fullLayout[numKey] = 1;
+        }
 
         // check for forced minimum dtick
         Axes.minDtick(posAxis, boxdv.minDiff, boxdv.vals[0], true);
@@ -79,11 +84,13 @@ module.exports = function setPositions(gd, plotinfo) {
             gd.calcdata[boxListIndex][0].t.dPos = dPos;
         }
 
+        var gap = fullLayout.boxgap;
+        var groupgap = fullLayout.boxgroupgap;
+
         // autoscale the x axis - including space for points if they're off the side
         // TODO: this will overdo it if the outermost boxes don't have
         // their points as far out as the other boxes
-        var padfactor = (1 - fullLayout.boxgap) * (1 - fullLayout.boxgroupgap) *
-                dPos / gd.numboxes;
+        var padfactor = (1 - gap) * (1 - groupgap) * dPos / fullLayout[numKey];
         Axes.expand(posAxis, boxdv.vals, {
             vpadminus: dPos + minPad * padfactor,
             vpadplus: dPos + maxPad * padfactor

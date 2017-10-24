@@ -15,10 +15,13 @@ var Axes = require('../../plots/cartesian/axes');
 
 // outlier definition based on http://www.physics.csbsju.edu/stats/box2.html
 module.exports = function calc(gd, trace) {
+    var fullLayout = gd._fullLayout;
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
     var orientation = trace.orientation;
     var cd = [];
+
+    var numKey = '_numBoxes';
 
     var i;
     var valAxis, valLetter;
@@ -37,7 +40,7 @@ module.exports = function calc(gd, trace) {
     }
 
     var val = valAxis.makeCalcdata(trace, valLetter);
-    var pos = getPos(trace, posLetter, posAxis, val, gd.numboxes);
+    var pos = getPos(trace, posLetter, posAxis, val, fullLayout[numKey]);
 
     var dv = Lib.distinctVals(pos);
     var posDistinct = dv.vals;
@@ -115,10 +118,11 @@ module.exports = function calc(gd, trace) {
 
     if(cd.length > 0) {
         cd[0].t = {
-            boxnum: gd.numboxes,
+            num: fullLayout[numKey],
             dPos: dPos
         };
-        gd.numboxes++;
+
+        fullLayout[numKey]++;
         return cd;
     } else {
         return [{t: {emptybox: true}}];
@@ -130,7 +134,7 @@ module.exports = function calc(gd, trace) {
 // so if you want one box
 // per trace, set x0 (y0) to the x (y) value or category for this trace
 // (or set x (y) to a constant array matching y (x))
-function getPos(trace, posLetter, posAxis, val, numboxes) {
+function getPos(trace, posLetter, posAxis, val, num) {
     if(posLetter in trace) {
         return posAxis.makeCalcdata(trace, posLetter);
     }
@@ -150,7 +154,7 @@ function getPos(trace, posLetter, posAxis, val, numboxes) {
     )) {
         pos0 = trace.name;
     } else {
-        pos0 = numboxes;
+        pos0 = num;
     }
 
     var pos0c = posAxis.d2c(pos0, 0, trace[posLetter + 'calendar']);
