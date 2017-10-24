@@ -261,6 +261,44 @@ describe('Test select box and lasso in general:', function() {
             .then(done);
         });
 
+        it('should set selected points in graph data', function(done) {
+            resetEvents(gd);
+
+            drag(lassoPath);
+
+            selectedPromise.then(function() {
+                expect(selectingCnt).toBe(3, 'with the correct selecting count');
+                expect(gd.data[0].selectedpoints).toEqual([10]);
+
+                return doubleClick(250, 200);
+            })
+            .then(deselectPromise)
+            .then(function() {
+                expect(gd.data[0].selectedpoints).toBeUndefined();
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('should set selected points in full data', function(done) {
+            resetEvents(gd);
+
+            drag(lassoPath);
+
+            selectedPromise.then(function() {
+                expect(selectingCnt).toBe(3, 'with the correct selecting count');
+                expect(gd._fullData[0].selectedpoints).toEqual([10]);
+
+                return doubleClick(250, 200);
+            })
+            .then(deselectPromise)
+            .then(function() {
+                expect(gd._fullData[0].selectedpoints).toBeUndefined();
+            })
+            .catch(fail)
+            .then(done);
+        });
+
         it('should trigger selecting/selected/deselect events for touches', function(done) {
             resetEvents(gd);
 

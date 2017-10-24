@@ -377,6 +377,110 @@ module.exports = {
     },
         colorAttributes('marker')
     ),
+    selected: {
+        marker: extendFlat({
+            opacity: {
+                valType: 'number',
+                min: 0,
+                max: 1,
+                arrayOk: true,
+                role: 'style',
+                editType: 'style',
+                description: 'Sets the marker opacity of selected points.'
+            },
+            size: {
+                valType: 'number',
+                min: 0,
+                dflt: 6,
+                arrayOk: true,
+                role: 'style',
+                editType: 'calcIfAutorange',
+                description: 'Sets the marker size (in px) of selected points.'
+            },
+            line: extendFlat({
+                width: {
+                    valType: 'number',
+                    min: 0,
+                    arrayOk: true,
+                    role: 'style',
+                    editType: 'style',
+                    description: 'Sets the width (in px) of the lines bounding selected marker points.'
+                },
+                editType: 'calc'
+            },
+                colorAttributes('marker.line')
+            ),
+            editType: 'calc'
+        },
+            colorAttributes('marker')
+        )
+    },
+    unselected: {
+        marker: extendFlat({
+            opacity: {
+                valType: 'number',
+                min: 0,
+                max: 1,
+                arrayOk: true,
+                role: 'style',
+                editType: 'style',
+                description: 'Sets the marker opacity of unselected points, applied only when a selection exists.'
+            },
+            size: {
+                valType: 'number',
+                min: 0,
+                dflt: 6,
+                arrayOk: true,
+                role: 'style',
+                editType: 'calcIfAutorange',
+                description: 'Sets the marker size (in px) of unselected points.'
+            },
+            line: extendFlat({
+                width: {
+                    valType: 'number',
+                    min: 0,
+                    arrayOk: true,
+                    role: 'style',
+                    editType: 'style',
+                    description: 'Sets the width (in px) of the lines bounding unselected marker points.'
+                },
+                editType: 'calc'
+            },
+                colorAttributes('marker.line')
+            ),
+            editType: 'calc'
+        },
+            colorAttributes('marker')
+        )
+    },
+    selectedpoints: {
+        valType: 'data_array',
+        role: 'info',
+        arrayOk: true,
+        editType: 'calc',
+        description: 'Integer index of selected points.',
+    },
+    selectedids: {
+        valType: 'data_array',
+        role: 'info',
+        arrayOk: true,
+        editType: 'calc',
+        description: 'ID of selected points.',
+    },
+    hoverpoints: {
+        valType: 'data_array',
+        role: 'info',
+        arrayOk: true,
+        editType: 'calc',
+        description: 'Integer index of hovered points.',
+    },
+    hoverids: {
+        valType: 'data_array',
+        role: 'info',
+        arrayOk: true,
+        editType: 'calc',
+        description: 'ID of hovered points.',
+    },
     textposition: {
         valType: 'enumerated',
         values: [

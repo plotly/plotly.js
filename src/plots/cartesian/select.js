@@ -201,7 +201,11 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                     else selection = thisSelection;
                 }
 
+
                 eventData = {points: selection};
+
+                updateSelectionState(gd, eventData);
+
                 fillRangeItems(eventData, poly, pts);
                 dragOptions.gd.emit('plotly_selecting', eventData);
             }
@@ -221,14 +225,55 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                     searchInfo.selectPoints(searchInfo, false);
                 }
 
+                updateSelectionState(gd, {points: []});
+
                 gd.emit('plotly_deselect', null);
             }
             else {
+                updateSelectionState(gd, eventData);
+
                 dragOptions.gd.emit('plotly_selected', eventData);
             }
         });
     };
 };
+
+function updateSelectionState(gd, eventData) {
+    var i, pt, trace, fullTrace;
+    var data = gd.data;
+    var fullData = gd._fullData;
+
+    // Remove existing from data:
+    for(i = 0; i < data.length; i++) {
+        if(data[i].selectedpoints) delete data[i].selectedpoints;
+    }
+
+    // Remove existing from fullData:
+    for(i = 0; i < fullData.length; i++) {
+        if(fullData[i].selectedpoints) delete fullData[i].selectedpoints;
+    }
+
+    if(!eventData || !eventData.points) {
+        return;
+    }
+
+    var pts = eventData.points;
+    for(i = 0; i < pts.length; i++) {
+        pt = pts[i];
+        trace = pt.data;
+        fullTrace = pt.fullData;
+
+        if(!trace.selectedpoints) {
+            trace.selectedpoints = [];
+        }
+        trace.selectedpoints.push(pt.pointNumber);
+
+        if(!fullTrace.selectedpoints) {
+            fullTrace.selectedpoints = [];
+        }
+        fullTrace.selectedpoints.push(pt.pointNumber);
+    }
+}
 
 function fillSelectionItem(selection, searchInfo) {
     if(Array.isArray(selection)) {
