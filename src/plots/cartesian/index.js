@@ -48,12 +48,13 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
         }
     }
 
-    // clear gl frame, if any
-    for(var id in fullLayout._plots) {
-        var scatterScene = fullLayout._plots[id]._scene;
-        if(scatterScene && scatterScene.clear) {
-            scatterScene.clear();
-        }
+    // clear gl frame, if any, since we preserve drawing buffer
+    if (fullLayout._glcanvas.size()) {
+        fullLayout._glcanvas.each(function (d) {
+            d.regl.clear({
+                color: true
+            });
+        })
     }
 
     for(i = 0; i < subplots.length; i++) {

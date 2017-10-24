@@ -195,48 +195,50 @@ Plotly.plot = function(gd, data, layout, config) {
             }
         }
 
-        fullLayout._glcanvas = fullLayout._glcontainer.selectAll('.gl-canvas').data(fullLayout._has('gl') ? [{
-            key: 'contextLayer',
-            context: true,
-            pick: false
-        }, {
-            key: 'focusLayer',
-            context: false,
-            pick: false
-        }, {
-            key: 'pickLayer',
-            context: false,
-            pick: true
-        }] : []);
+        if (!fullLayout._glcanvas) {
+            fullLayout._glcanvas = fullLayout._glcontainer.selectAll('.gl-canvas').data(fullLayout._has('gl') ? [{
+                key: 'contextLayer',
+                context: true,
+                pick: false
+            }, {
+                key: 'focusLayer',
+                context: false,
+                pick: false
+            }, {
+                key: 'pickLayer',
+                context: false,
+                pick: true
+            }] : []);
 
-        fullLayout._glcanvas.enter().append('canvas')
-            .each(function (d) {
-                d.regl = createRegl({
-                    canvas: this,
-                    attributes: {
-                        antialias: !d.pick,
-                        preserveDrawingBuffer: true
-                    },
-                    extensions: ['ANGLE_instanced_arrays', 'OES_element_index_uint'],
-                    pixelRatio: gd._context.plotGlPixelRatio || global.devicePixelRatio
-                });
-            })
-            .attr('class', function(d) {
-                return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
-            })
-            .style({
-                'position': 'absolute',
-                'top': 0,
-                'left': 0,
-                'width': '100%',
-                'height': '100%',
-                'pointer-events': 'none',
-                'overflow': 'visible'
-            })
-            .attr('width', fullLayout.width)
-            .attr('height', fullLayout.height);
+            fullLayout._glcanvas.enter().append('canvas')
+                .each(function (d) {
+                    d.regl = createRegl({
+                        canvas: this,
+                        attributes: {
+                            antialias: !d.pick,
+                            preserveDrawingBuffer: true
+                        },
+                        extensions: ['ANGLE_instanced_arrays', 'OES_element_index_uint'],
+                        pixelRatio: gd._context.plotGlPixelRatio || global.devicePixelRatio
+                    });
+                })
+                .attr('class', function(d) {
+                    return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
+                })
+                .style({
+                    'position': 'absolute',
+                    'top': 0,
+                    'left': 0,
+                    'width': '100%',
+                    'height': '100%',
+                    'pointer-events': 'none',
+                    'overflow': 'visible'
+                })
+                .attr('width', fullLayout.width)
+                .attr('height', fullLayout.height);
 
-        fullLayout._glcanvas.exit().remove();
+            fullLayout._glcanvas.exit().remove();
+        }
 
         return Lib.syncOrAsync([
             subroutines.layoutStyles
