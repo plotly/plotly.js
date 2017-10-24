@@ -37,28 +37,10 @@ module.exports = function plot(gd, cdpie) {
         var pieGroup = d3.select(this);
         var cd0 = cd[0];
         var trace = cd0.trace;
-        var tiltRads = 0; // trace.tilt * Math.PI / 180,
-        var depthLength = (trace.depth||0) * cd0.r * Math.sin(tiltRads) / 2;
-        var tiltAxis = trace.tiltaxis || 0;
-        var tiltAxisRads = tiltAxis * Math.PI / 180;
-        var depthVector = [
-            depthLength * Math.sin(tiltAxisRads),
-            depthLength * Math.cos(tiltAxisRads)
-        ];
-        var rSmall = cd0.r * Math.cos(tiltRads);
-
-        var pieParts = pieGroup.selectAll('g.part')
-            .data(trace.tilt ? ['top', 'sides'] : ['top']);
-
-        pieParts.enter().append('g').attr('class', function(d) {
-            return d + ' part';
-        });
-        pieParts.exit().remove();
-        pieParts.order();
 
         setCoords(cd);
 
-        pieGroup.selectAll('.top').each(function() {
+        pieGroup.each(function() {
             var slices = d3.select(this).selectAll('g.slice').data(cd);
 
             slices.enter().append('g')
@@ -83,8 +65,8 @@ module.exports = function plot(gd, cdpie) {
 
                 quadrants[pt.pxmid[1] < 0 ? 0 : 1][pt.pxmid[0] < 0 ? 0 : 1].push(pt);
 
-                var cx = cd0.cx + depthVector[0];
-                var cy = cd0.cy + depthVector[1];
+                var cx = cd0.cx;
+                var cy = cd0.cy;
                 var sliceTop = d3.select(this);
                 var slicePath = sliceTop.selectAll('path.surface').data([pt]);
                 var hasHoverData = false;
@@ -201,7 +183,7 @@ module.exports = function plot(gd, cdpie) {
                 pt.cyFinal = cy;
 
                 function arc(start, finish, cw, scale) {
-                    return 'a' + (scale * cd0.r) + ',' + (scale * rSmall) + ' ' + tiltAxis + ' ' +
+                    return 'a' + (scale * cd0.r) + ',' + (scale * cd0.r) + ' 0 ' +
                         pt.largeArc + (cw ? ' 1 ' : ' 0 ') +
                         (scale * (finish[0] - start[0])) + ',' + (scale * (finish[1] - start[1]));
                 }
@@ -269,7 +251,6 @@ module.exports = function plot(gd, cdpie) {
                         .call(svgTextUtils.convertToTspans, gd);
 
                     // position the text relative to the slice
-                    // TODO: so far this only accounts for flat
                     var textBB = Drawing.bBox(sliceText.node());
                     var transform;
 
@@ -566,7 +547,7 @@ function scootLabels(quadrants, trace) {
 function scalePies(cdpie, plotSize) {
     var scaleGroups = [];
 
-    var pieBoxWidth, pieBoxHeight, i, j, cd0, trace, tiltAxisRads,
+    var pieBoxWidth, pieBoxHeight, i, j, cd0, trace,
         maxPull, scaleGroup, minPxPerValUnit;
 
     // first figure out the center and maximum radius for each pie
@@ -575,7 +556,6 @@ function scalePies(cdpie, plotSize) {
         trace = cd0.trace;
         pieBoxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]);
         pieBoxHeight = plotSize.h * (trace.domain.y[1] - trace.domain.y[0]);
-        tiltAxisRads = trace.tiltaxis * Math.PI / 180;
 
         maxPull = trace.pull;
         if(Array.isArray(maxPull)) {
@@ -585,10 +565,7 @@ function scalePies(cdpie, plotSize) {
             }
         }
 
-        cd0.r = Math.min(
-                pieBoxWidth / maxExtent(trace.tilt, Math.sin(tiltAxisRads), trace.depth),
-                pieBoxHeight / maxExtent(trace.tilt, Math.cos(tiltAxisRads), trace.depth)
-            ) / (2 + 2 * maxPull);
+        cd0.r = Math.min(pieBoxWidth, pieBoxHeight) / (2 + 2 * maxPull);
 
         cd0.cx = plotSize.l + plotSize.w * (trace.domain.x[1] + trace.domain.x[0]) / 2;
         cd0.cy = plotSize.t + plotSize.h * (2 - trace.domain.y[1] - trace.domain.y[0]) / 2;
@@ -624,14 +601,12 @@ function scalePies(cdpie, plotSize) {
 function setCoords(cd) {
     var cd0 = cd[0];
     var trace = cd0.trace;
-    var tilt = trace.tilt;
     var currentAngle = trace.rotation * Math.PI / 180;
     var angleFactor = 2 * Math.PI / cd0.vTotal;
     var firstPt = 'px0';
     var lastPt = 'px1';
 
-    var tiltAxisRads, tiltAxisSin, tiltAxisCos, tiltRads, crossTilt,
-        inPlane, i, cdi, currentCoords;
+    var i, cdi, currentCoords;
 
     if(trace.direction === 'counterclockwise') {
         for(i = 0; i < cd.length; i++) {
@@ -645,26 +620,8 @@ function setCoords(cd) {
         lastPt = 'px0';
     }
 
-    if(tilt) {
-        tiltRads = tilt * Math.PI / 180;
-        tiltAxisRads = trace.tiltaxis * Math.PI / 180;
-        crossTilt = Math.sin(tiltAxisRads) * Math.cos(tiltAxisRads);
-        inPlane = 1 - Math.cos(tiltRads);
-        tiltAxisSin = Math.sin(tiltAxisRads);
-        tiltAxisCos = Math.cos(tiltAxisRads);
-    }
-
     function getCoords(angle) {
-        var xFlat = cd0.r * Math.sin(angle);
-        var yFlat = -cd0.r * Math.cos(angle);
-
-        if(!tilt) return [xFlat, yFlat];
-
-        return [
-            xFlat * (1 - inPlane * tiltAxisSin * tiltAxisSin) + yFlat * crossTilt * inPlane,
-            xFlat * crossTilt * inPlane + yFlat * (1 - inPlane * tiltAxisCos * tiltAxisCos),
-            Math.sin(tiltRads) * (yFlat * tiltAxisCos - xFlat * tiltAxisSin)
-        ];
+        return [cd0.r * Math.sin(angle), -cd0.r * Math.cos(angle)];
     }
 
     currentCoords = getCoords(currentAngle);
@@ -686,12 +643,4 @@ function setCoords(cd) {
 
         cdi.largeArc = (cdi.v > cd0.vTotal / 2) ? 1 : 0;
     }
-}
-
-function maxExtent(tilt, tiltAxisFraction, depth) {
-    if(!tilt) return 1;
-    var sinTilt = Math.sin(tilt * Math.PI / 180);
-    return Math.max(0.01, // don't let it go crazy if you tilt the pie totally on its side
-        depth * sinTilt * Math.abs(tiltAxisFraction) +
-        2 * Math.sqrt(1 - sinTilt * sinTilt * tiltAxisFraction * tiltAxisFraction));
 }
