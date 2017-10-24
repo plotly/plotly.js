@@ -598,6 +598,34 @@ describe('hover info', function() {
             .catch(fail)
             .then(done);
         });
+
+        it('will show a category range if you ask nicely', function(done) {
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                // even though the data aren't regularly spaced, each bin only has
+                // one data value in it so we see exactly that value
+                x: [
+                    'bread', 'cheese', 'artichokes', 'soup', 'beans', 'nuts',
+                    'pizza', 'potatoes', 'burgers', 'beans', 'beans', 'beans'
+                ],
+                xbins: {start: -0.5, end: 8.5, size: 3},
+                type: 'histogram'
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 200);
+                assertHoverLabelContent({
+                    nums: '6',
+                    axis: 'soup - nuts'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
     });
 
     describe('histogram2d hover info', function() {
