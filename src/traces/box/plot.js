@@ -59,7 +59,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
         // whisker width
         var wdPos = bdPos * trace.whiskerwidth;
 
-        if(trace.visible !== true || t.emptybox) {
+        if(trace.visible !== true || t.empty) {
             d3.select(this).remove();
             return;
         }

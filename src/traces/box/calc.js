@@ -125,7 +125,7 @@ module.exports = function calc(gd, trace) {
         fullLayout[numKey]++;
         return cd;
     } else {
-        return [{t: {emptybox: true}}];
+        return [{t: {empty: true}}];
     }
 };
 
