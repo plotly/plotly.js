@@ -178,7 +178,7 @@ describe('pie hovering', function() {
             expect(unhoverData.points.length).toEqual(1);
 
             var fields = [
-                'v', 'label', 'color', 'i', 'hidden',
+                'v', 'label', 'color', 'i', 'pts', 'hidden',
                 'text', 'px1', 'pxmid', 'midangle',
                 'px0', 'largeArc',
                 'pointNumber', 'curveNumber',
@@ -405,12 +405,12 @@ describe('Test event property of interactions on a pie plot:', function() {
 
             var pt = futureData.points[0];
             expect(Object.keys(pt)).toEqual(jasmine.arrayContaining([
-                'v', 'label', 'color', 'i', 'hidden', 'vTotal', 'text', 't',
+                'v', 'label', 'color', 'i', 'pts', 'hidden', 'vTotal', 'text', 't',
                 'trace', 'r', 'cx', 'cy', 'px1', 'pxmid', 'midangle', 'px0',
                 'largeArc', 'cxFinal', 'cyFinal',
                 'pointNumber', 'curveNumber'
             ]));
-            expect(Object.keys(pt).length).toBe(21);
+            expect(Object.keys(pt).length).toBe(22);
 
             expect(typeof pt.color).toEqual(typeof '#1f77b4', 'points[0].color');
             expect(pt.cx).toEqual(200, 'points[0].cx');

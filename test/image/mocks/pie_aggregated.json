@@ -1,0 +1,39 @@
+{
+  "data": [
+    {
+        "labels": [
+            "Alice",
+            "Bob",
+            "Charlie",
+            "Charlie",
+            "Charlie",
+            "Alice"
+        ],
+        "type": "pie",
+        "domain": {"x": [0, 0.4]}
+    },
+    {
+        "labels": [
+            "Alice",
+            "Alice",
+            "Allison",
+            "Alys",
+            "Elise",
+            "Allison",
+            "Alys",
+            "Alys"
+        ],
+        "values": [
+            10, 20, 30, 40, 50, 60, 70, 80
+        ],
+        "marker": {"colors": ["", "", "#ccc"]},
+        "type": "pie",
+        "domain": {"x": [0.5, 1]},
+        "textinfo": "label+value+percent"
+    }
+  ],
+  "layout": {
+    "height": 300,
+    "width": 500
+  }
+}

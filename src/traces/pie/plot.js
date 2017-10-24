@@ -95,7 +95,19 @@ module.exports = function plot(gd, cdpie) {
                     // in case fullLayout or fullData has changed without a replot
                     var fullLayout2 = gd._fullLayout;
                     var trace2 = gd._fullData[trace.index];
-                    var hoverinfo = Fx.castHoverinfo(trace2, fullLayout2, pt.i);
+
+                    var hoverinfo = trace2.hoverinfo;
+                    if(Array.isArray(hoverinfo)) {
+                        // super hacky: we need to pull out the *first* hoverinfo from
+                        // pt.pts, then put it back into an array in a dummy trace
+                        // and call castHoverinfo on that.
+                        // TODO: do we want to have Fx.castHoverinfo somehow handle this?
+                        // it already takes an array for index, for 2D, so this seems tricky.
+                        hoverinfo = Fx.castHoverinfo({
+                            hoverinfo: [helpers.castOption(hoverinfo, pt.pts)],
+                            _module: trace._module
+                        }, fullLayout2, 0);
+                    }
 
                     if(hoverinfo === 'all') hoverinfo = 'label+text+value+percent+name';
 
@@ -115,18 +127,14 @@ module.exports = function plot(gd, cdpie) {
 
                     if(hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
                     if(hoverinfo.indexOf('text') !== -1) {
-                        if(trace2.hovertext) {
-                            thisText.push(
-                                Array.isArray(trace2.hovertext) ?
-                                    trace2.hovertext[pt.i] :
-                                    trace2.hovertext
-                            );
-                        } else if(trace2.text && trace2.text[pt.i]) {
-                            thisText.push(trace2.text[pt.i]);
-                        }
+                        var texti = helpers.castOption(trace2.hovertext || trace2.text, pt.pts);
+                        if(texti) thisText.push(texti);
                     }
                     if(hoverinfo.indexOf('value') !== -1) thisText.push(helpers.formatPieValue(pt.v, separators));
                     if(hoverinfo.indexOf('percent') !== -1) thisText.push(helpers.formatPiePercent(pt.v / cd0.vTotal, separators));
+
+                    var hoverLabel = trace.hoverlabel;
+                    var hoverFont = hoverLabel.font;
 
                     Fx.loneHover({
                         x0: hoverCenterX - rInscribed * cd0.r,
@@ -135,11 +143,11 @@ module.exports = function plot(gd, cdpie) {
                         text: thisText.join('<br>'),
                         name: hoverinfo.indexOf('name') !== -1 ? trace2.name : undefined,
                         idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
-                        color: Fx.castHoverOption(trace, pt.i, 'bgcolor') || pt.color,
-                        borderColor: Fx.castHoverOption(trace, pt.i, 'bordercolor'),
-                        fontFamily: Fx.castHoverOption(trace, pt.i, 'font.family'),
-                        fontSize: Fx.castHoverOption(trace, pt.i, 'font.size'),
-                        fontColor: Fx.castHoverOption(trace, pt.i, 'font.color')
+                        color: helpers.castOption(hoverLabel.bgcolor, pt.pts) || pt.color,
+                        borderColor: helpers.castOption(hoverLabel.bordercolor, pt.pts),
+                        fontFamily: helpers.castOption(hoverFont.family, pt.pts),
+                        fontSize: helpers.castOption(hoverFont.size, pt.pts),
+                        fontColor: helpers.castOption(hoverFont.color, pt.pts)
                     }, {
                         container: fullLayout2._hoverlayer.node(),
                         outerContainer: fullLayout2._paper.node(),
@@ -182,7 +190,7 @@ module.exports = function plot(gd, cdpie) {
                     .on('click', handleClick);
 
                 if(trace.pull) {
-                    var pull = +(Array.isArray(trace.pull) ? trace.pull[pt.i] : trace.pull) || 0;
+                    var pull = +helpers.castOption(trace.pull, pt.pts) || 0;
                     if(pull > 0) {
                         cx += pull * pt.pxmid[0];
                         cy += pull * pt.pxmid[1];
@@ -233,8 +241,7 @@ module.exports = function plot(gd, cdpie) {
                 }
 
                 // add text
-                var textPosition = Array.isArray(trace.textposition) ?
-                        trace.textposition[pt.i] : trace.textposition,
+                var textPosition = helpers.castOption(trace.textposition, pt.pts),
                     sliceTextGroup = sliceTop.selectAll('g.slicetext')
                     .data(pt.text && (textPosition !== 'none') ? [0] : []);
 
@@ -492,7 +499,12 @@ function scootLabels(quadrants, trace) {
             otherPt = wholeSide[i];
 
             // overlap can only happen if the other point is pulled more than this one
-            if(otherPt === thisPt || ((trace.pull[thisPt.i] || 0) >= trace.pull[otherPt.i] || 0)) continue;
+            if(otherPt === thisPt || (
+                (helpers.castOption(trace.pull, thisPt.pts) || 0) >=
+                (helpers.castOption(trace.pull, otherPt.pts) || 0))
+            ) {
+                continue;
+            }
 
             if((thisPt.pxmid[1] - otherPt.pxmid[1]) * yDiffSign > 0) {
                 // closer to the equator - by construction all of these happen first

@@ -19,13 +19,14 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var coerceFont = Lib.coerceFont;
 
     var vals = coerce('values');
-    if(!Array.isArray(vals) || !vals.length) {
-        traceOut.visible = false;
-        return;
-    }
-
     var labels = coerce('labels');
     if(!Array.isArray(labels)) {
+        if(!Array.isArray(vals) || !vals.length) {
+            // must have at least one of vals or labels
+            traceOut.visible = false;
+            return;
+        }
+
         coerce('label0');
         coerce('dlabel');
     }

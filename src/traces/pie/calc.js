@@ -16,18 +16,18 @@ var helpers = require('./helpers');
 
 module.exports = function calc(gd, trace) {
     var vals = trace.values,
+        hasVals = Array.isArray(vals) && vals.length,
         labels = trace.labels,
+        colors = trace.marker.colors,
         cd = [],
         fullLayout = gd._fullLayout,
         colorMap = fullLayout._piecolormap,
         allThisTraceLabels = {},
-        needDefaults = false,
         vTotal = 0,
         hiddenLabels = fullLayout.hiddenlabels || [],
         i,
         v,
         label,
-        color,
         hidden,
         pt;
 
@@ -38,46 +38,60 @@ module.exports = function calc(gd, trace) {
         }
     }
 
-    for(i = 0; i < vals.length; i++) {
-        v = vals[i];
-        if(!isNumeric(v)) continue;
-        v = +v;
-        if(v < 0) continue;
+    function pullColor(color, label) {
+        if(!color) return false;
+
+        color = tinycolor(color);
+        if(!color.isValid()) return false;
+
+        color = Color.addOpacity(color, color.getAlpha());
+        if(!colorMap[label]) colorMap[label] = color;
+
+        return color;
+    }
+
+    var seriesLen = (hasVals ? vals : labels).length;
+
+    for(i = 0; i < seriesLen; i++) {
+        if(hasVals) {
+            v = vals[i];
+            if(!isNumeric(v)) continue;
+            v = +v;
+            if(v < 0) continue;
+        }
+        else v = 1;
 
         label = labels[i];
         if(label === undefined || label === '') label = i;
         label = String(label);
-        // only take the first occurrence of any given label.
-        // TODO: perhaps (optionally?) sum values for a repeated label?
-        if(allThisTraceLabels[label] === undefined) allThisTraceLabels[label] = true;
-        else continue;
 
-        color = tinycolor(trace.marker.colors[i]);
-        if(color.isValid()) {
-            color = Color.addOpacity(color, color.getAlpha());
-            if(!colorMap[label]) {
-                colorMap[label] = color;
+        var thisLabelIndex = allThisTraceLabels[label];
+        if(thisLabelIndex === undefined) {
+            allThisTraceLabels[label] = cd.length;
+
+            hidden = hiddenLabels.indexOf(label) !== -1;
+
+            if(!hidden) vTotal += v;
+
+            cd.push({
+                v: v,
+                label: label,
+                color: pullColor(colors[i]),
+                i: i,
+                pts: [i],
+                hidden: hidden
+            });
+        }
+        else {
+            pt = cd[thisLabelIndex];
+            pt.v += v;
+            pt.pts.push(i);
+            if(!pt.hidden) vTotal += v;
+
+            if(pt.color === false && colors[i]) {
+                pt.color = pullColor(colors[i], label);
             }
         }
-        // have we seen this label and assigned a color to it in a previous trace?
-        else if(colorMap[label]) color = colorMap[label];
-        // color needs a default - mark it false, come back after sorting
-        else {
-            color = false;
-            needDefaults = true;
-        }
-
-        hidden = hiddenLabels.indexOf(label) !== -1;
-
-        if(!hidden) vTotal += v;
-
-        cd.push({
-            v: v,
-            label: label,
-            color: color,
-            i: i,
-            hidden: hidden
-        });
     }
 
     if(trace.sort) cd.sort(function(a, b) { return b.v - a.v; });
@@ -88,10 +102,14 @@ module.exports = function calc(gd, trace) {
      * in the order slices will be displayed
      */
 
-    if(needDefaults) {
-        for(i = 0; i < cd.length; i++) {
-            pt = cd[i];
-            if(pt.color === false) {
+    for(i = 0; i < cd.length; i++) {
+        pt = cd[i];
+        if(pt.color === false) {
+            // have we seen this label and assigned a color to it in a previous trace?
+            if(colorMap[pt.label]) {
+                pt.color = colorMap[pt.label];
+            }
+            else {
                 colorMap[pt.label] = pt.color = nextDefaultColor(fullLayout._piedefaultcolorcount);
                 fullLayout._piedefaultcolorcount++;
             }
@@ -113,7 +131,10 @@ module.exports = function calc(gd, trace) {
         for(i = 0; i < cd.length; i++) {
             pt = cd[i];
             thisText = hasLabel ? [pt.label] : [];
-            if(hasText && trace.text[pt.i]) thisText.push(trace.text[pt.i]);
+            if(hasText) {
+                var texti = helpers.getFirstFilled(trace.text, pt.pts);
+                if(texti) thisText.push(texti);
+            }
             if(hasValue) thisText.push(helpers.formatPieValue(pt.v, separators));
             if(hasPercent) thisText.push(helpers.formatPiePercent(pt.v / vTotal, separators));
             pt.text = thisText.join('<br>');
