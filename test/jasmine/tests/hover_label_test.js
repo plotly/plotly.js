@@ -458,12 +458,22 @@ describe('hover info', function() {
         });
     });
 
-    describe('\'hover info for x/y/z traces', function() {
-        function _hover(gd, xpx, ypx) {
-            Fx.hover(gd, { xpx: xpx, ypx: ypx }, 'xy');
-            Lib.clearThrottle();
-        }
+    function _hover(gd, xpx, ypx) {
+        Fx.hover(gd, { xpx: xpx, ypx: ypx }, 'xy');
+        Lib.clearThrottle();
+    }
 
+    function _hoverNatural(gd, xpx, ypx) {
+        var gdBB = gd.getBoundingClientRect();
+        var dragger = gd.querySelector('.nsewdrag');
+        var clientX = xpx + gdBB.left + gd._fullLayout._size.l;
+        var clientY = ypx + gdBB.top + gd._fullLayout._size.t;
+
+        Fx.hover(gd, { clientX: clientX, clientY: clientY, target: dragger}, 'xy');
+        Lib.clearThrottle();
+    }
+
+    describe('\'hover info for x/y/z traces', function() {
         it('should display correct label content', function(done) {
             var gd = createGraphDiv();
 
@@ -494,6 +504,173 @@ describe('hover info', function() {
                 assertHoverLabelContent({
                     nums: 'x: 1\ny: 1\nz: 2',
                     name: 'one'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+    });
+
+    describe('hover info for negative data on a log axis', function() {
+        it('shows negative data even though it is infinitely off-screen', function(done) {
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, [{x: [1, 2, 3], y: [1, -5, 10]}], {
+                yaxis: {type: 'log'},
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 200);
+                assertHoverLabelContent({
+                    nums: '\u22125', // unicode minus
+                    axis: '2'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+    });
+
+    describe('histogram hover info', function() {
+        it('shows the data range when bins have multiple values', function(done) {
+            var gd = createGraphDiv();
+            var pts;
+
+            Plotly.plot(gd, [{
+                x: [0, 2, 3, 4, 5, 6, 7],
+                xbins: {start: -0.5, end: 8.5, size: 3},
+                type: 'histogram'
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                gd.on('plotly_hover', function(e) { pts = e.points; });
+
+                _hoverNatural(gd, 250, 200);
+                assertHoverLabelContent({
+                    nums: '3',
+                    axis: '3 - 5'
+                });
+            })
+            .then(function() {
+                expect(pts.length).toBe(1);
+                var pt = pts[0];
+
+                expect(pt.curveNumber).toBe(0);
+                expect(pt.binNumber).toBe(1);
+                expect(pt.pointNumbers).toEqual([2, 3, 4]);
+                expect(pt.x).toBe(4);
+                expect(pt.y).toBe(3);
+                expect(pt.data).toBe(gd.data[0]);
+                expect(pt.fullData).toBe(gd._fullData[0]);
+                expect(pt.xaxis).toBe(gd._fullLayout.xaxis);
+                expect(pt.yaxis).toBe(gd._fullLayout.yaxis);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('shows the exact data when bins have single values', function(done) {
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                // even though the data aren't regularly spaced, each bin only has
+                // one data value in it so we see exactly that value
+                x: [0, 0, 3.3, 3.3, 3.3, 7, 7],
+                xbins: {start: -0.5, end: 8.5, size: 3},
+                type: 'histogram'
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 200);
+                assertHoverLabelContent({
+                    nums: '3',
+                    axis: '3.3'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('will show a category range if you ask nicely', function(done) {
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                // even though the data aren't regularly spaced, each bin only has
+                // one data value in it so we see exactly that value
+                x: [
+                    'bread', 'cheese', 'artichokes', 'soup', 'beans', 'nuts',
+                    'pizza', 'potatoes', 'burgers', 'beans', 'beans', 'beans'
+                ],
+                xbins: {start: -0.5, end: 8.5, size: 3},
+                type: 'histogram'
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 200);
+                assertHoverLabelContent({
+                    nums: '6',
+                    axis: 'soup - nuts'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+    });
+
+    describe('histogram2d hover info', function() {
+        it('shows the data range when bins have multiple values', function(done) {
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                x: [0, 2, 3, 4, 5, 6, 7],
+                y: [1, 3, 4, 5, 6, 7, 8],
+                xbins: {start: -0.5, end: 8.5, size: 3},
+                ybins: {start: 0.5, end: 9.5, size: 3},
+                type: 'histogram2d'
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 200);
+                assertHoverLabelContent({
+                    nums: 'x: 3 - 5\ny: 4 - 6\nz: 3'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('shows the exact data when bins have single values', function(done) {
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                x: [0, 0, 3.3, 3.3, 3.3, 7, 7],
+                y: [2, 2, 4.2, 4.2, 4.2, 8.8, 8.8],
+                xbins: {start: -0.5, end: 8.5, size: 3},
+                ybins: {start: 0.5, end: 9.5, size: 3},
+                type: 'histogram2d'
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 200);
+                assertHoverLabelContent({
+                    nums: 'x: 3.3\ny: 4.2\nz: 3'
                 });
             })
             .catch(fail)
