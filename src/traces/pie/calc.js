@@ -15,21 +15,18 @@ var Color = require('../../components/color');
 var helpers = require('./helpers');
 
 module.exports = function calc(gd, trace) {
-    var vals = trace.values,
-        hasVals = Array.isArray(vals) && vals.length,
-        labels = trace.labels,
-        colors = trace.marker.colors,
-        cd = [],
-        fullLayout = gd._fullLayout,
-        colorMap = fullLayout._piecolormap,
-        allThisTraceLabels = {},
-        vTotal = 0,
-        hiddenLabels = fullLayout.hiddenlabels || [],
-        i,
-        v,
-        label,
-        hidden,
-        pt;
+    var vals = trace.values;
+    var hasVals = Array.isArray(vals) && vals.length;
+    var labels = trace.labels;
+    var colors = trace.marker.colors;
+    var cd = [];
+    var fullLayout = gd._fullLayout;
+    var colorMap = fullLayout._piecolormap;
+    var allThisTraceLabels = {};
+    var vTotal = 0;
+    var hiddenLabels = fullLayout.hiddenlabels || [];
+
+    var i, v, label, hidden, pt;
 
     if(trace.dlabel) {
         labels = new Array(vals.length);
@@ -121,12 +118,13 @@ module.exports = function calc(gd, trace) {
 
     // now insert text
     if(trace.textinfo && trace.textinfo !== 'none') {
-        var hasLabel = trace.textinfo.indexOf('label') !== -1,
-            hasText = trace.textinfo.indexOf('text') !== -1,
-            hasValue = trace.textinfo.indexOf('value') !== -1,
-            hasPercent = trace.textinfo.indexOf('percent') !== -1,
-            separators = fullLayout.separators,
-            thisText;
+        var hasLabel = trace.textinfo.indexOf('label') !== -1;
+        var hasText = trace.textinfo.indexOf('text') !== -1;
+        var hasValue = trace.textinfo.indexOf('value') !== -1;
+        var hasPercent = trace.textinfo.indexOf('percent') !== -1;
+        var separators = fullLayout.separators;
+
+        var thisText;
 
         for(i = 0; i < cd.length; i++) {
             pt = cd[i];

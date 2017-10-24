@@ -14,9 +14,9 @@ var styleOne = require('./style_one');
 
 module.exports = function style(gd) {
     gd._fullLayout._pielayer.selectAll('.trace').each(function(cd) {
-        var cd0 = cd[0],
-            trace = cd0.trace,
-            traceSelection = d3.select(this);
+        var cd0 = cd[0];
+        var trace = cd0.trace;
+        var traceSelection = d3.select(this);
 
         traceSelection.style({opacity: trace.opacity});
 

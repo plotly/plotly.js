@@ -34,18 +34,18 @@ module.exports = function plot(gd, cdpie) {
     pieGroups.order();
 
     pieGroups.each(function(cd) {
-        var pieGroup = d3.select(this),
-            cd0 = cd[0],
-            trace = cd0.trace,
-            tiltRads = 0, // trace.tilt * Math.PI / 180,
-            depthLength = (trace.depth||0) * cd0.r * Math.sin(tiltRads) / 2,
-            tiltAxis = trace.tiltaxis || 0,
-            tiltAxisRads = tiltAxis * Math.PI / 180,
-            depthVector = [
-                depthLength * Math.sin(tiltAxisRads),
-                depthLength * Math.cos(tiltAxisRads)
-            ],
-            rSmall = cd0.r * Math.cos(tiltRads);
+        var pieGroup = d3.select(this);
+        var cd0 = cd[0];
+        var trace = cd0.trace;
+        var tiltRads = 0; // trace.tilt * Math.PI / 180,
+        var depthLength = (trace.depth||0) * cd0.r * Math.sin(tiltRads) / 2;
+        var tiltAxis = trace.tiltaxis || 0;
+        var tiltAxisRads = tiltAxis * Math.PI / 180;
+        var depthVector = [
+            depthLength * Math.sin(tiltAxisRads),
+            depthLength * Math.cos(tiltAxisRads)
+        ];
+        var rSmall = cd0.r * Math.cos(tiltRads);
 
         var pieParts = pieGroup.selectAll('g.part')
             .data(trace.tilt ? ['top', 'sides'] : ['top']);
@@ -66,10 +66,10 @@ module.exports = function plot(gd, cdpie) {
             slices.exit().remove();
 
             var quadrants = [
-                    [[], []], // y<0: x<0, x>=0
-                    [[], []] // y>=0: x<0, x>=0
-                ],
-                hasOutsideText = false;
+                [[], []], // y<0: x<0, x>=0
+                [[], []] // y>=0: x<0, x>=0
+            ];
+            var hasOutsideText = false;
 
             slices.each(function(pt) {
                 if(pt.hidden) {
@@ -83,11 +83,11 @@ module.exports = function plot(gd, cdpie) {
 
                 quadrants[pt.pxmid[1] < 0 ? 0 : 1][pt.pxmid[0] < 0 ? 0 : 1].push(pt);
 
-                var cx = cd0.cx + depthVector[0],
-                    cy = cd0.cy + depthVector[1],
-                    sliceTop = d3.select(this),
-                    slicePath = sliceTop.selectAll('path.surface').data([pt]),
-                    hasHoverData = false;
+                var cx = cd0.cx + depthVector[0];
+                var cy = cd0.cy + depthVector[1];
+                var sliceTop = d3.select(this);
+                var slicePath = sliceTop.selectAll('path.surface').data([pt]);
+                var hasHoverData = false;
 
                 function handleMouseOver(evt) {
                     evt.originalEvent = d3.event;
@@ -119,11 +119,11 @@ module.exports = function plot(gd, cdpie) {
                         return;
                     }
 
-                    var rInscribed = getInscribedRadiusFraction(pt, cd0),
-                        hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed),
-                        hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed),
-                        separators = fullLayout.separators,
-                        thisText = [];
+                    var rInscribed = getInscribedRadiusFraction(pt, cd0);
+                    var hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed);
+                    var hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed);
+                    var separators = fullLayout.separators;
+                    var thisText = [];
 
                     if(hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
                     if(hoverinfo.indexOf('text') !== -1) {
@@ -241,8 +241,8 @@ module.exports = function plot(gd, cdpie) {
                 }
 
                 // add text
-                var textPosition = helpers.castOption(trace.textposition, pt.pts),
-                    sliceTextGroup = sliceTop.selectAll('g.slicetext')
+                var textPosition = helpers.castOption(trace.textposition, pt.pts);
+                var sliceTextGroup = sliceTop.selectAll('g.slicetext')
                     .data(pt.text && (textPosition !== 'none') ? [0] : []);
 
                 sliceTextGroup.enter().append('g')
@@ -270,8 +270,8 @@ module.exports = function plot(gd, cdpie) {
 
                     // position the text relative to the slice
                     // TODO: so far this only accounts for flat
-                    var textBB = Drawing.bBox(sliceText.node()),
-                        transform;
+                    var textBB = Drawing.bBox(sliceText.node());
+                    var transform;
 
                     if(textPosition === 'outside') {
                         transform = transformOutsideText(textBB, pt);
@@ -287,8 +287,8 @@ module.exports = function plot(gd, cdpie) {
                         }
                     }
 
-                    var translateX = cx + pt.pxmid[0] * transform.rCenter + (transform.x || 0),
-                        translateY = cy + pt.pxmid[1] * transform.rCenter + (transform.y || 0);
+                    var translateX = cx + pt.pxmid[0] * transform.rCenter + (transform.x || 0);
+                    var translateY = cy + pt.pxmid[1] * transform.rCenter + (transform.y || 0);
 
                     // save some stuff to use later ensure no labels overlap
                     if(transform.outside) {
@@ -316,20 +316,21 @@ module.exports = function plot(gd, cdpie) {
             slices.each(function(pt) {
                 if(pt.labelExtraX || pt.labelExtraY) {
                     // first move the text to its new location
-                    var sliceTop = d3.select(this),
-                        sliceText = sliceTop.select('g.slicetext text');
+                    var sliceTop = d3.select(this);
+                    var sliceText = sliceTop.select('g.slicetext text');
 
                     sliceText.attr('transform', 'translate(' + pt.labelExtraX + ',' + pt.labelExtraY + ')' +
                         sliceText.attr('transform'));
 
                     // then add a line to the new location
-                    var lineStartX = pt.cxFinal + pt.pxmid[0],
-                        lineStartY = pt.cyFinal + pt.pxmid[1],
-                        textLinePath = 'M' + lineStartX + ',' + lineStartY,
-                        finalX = (pt.yLabelMax - pt.yLabelMin) * (pt.pxmid[0] < 0 ? -1 : 1) / 4;
+                    var lineStartX = pt.cxFinal + pt.pxmid[0];
+                    var lineStartY = pt.cyFinal + pt.pxmid[1];
+                    var textLinePath = 'M' + lineStartX + ',' + lineStartY;
+                    var finalX = (pt.yLabelMax - pt.yLabelMin) * (pt.pxmid[0] < 0 ? -1 : 1) / 4;
+
                     if(pt.labelExtraX) {
-                        var yFromX = pt.labelExtraX * pt.pxmid[1] / pt.pxmid[0],
-                            yNet = pt.yLabelMid + pt.labelExtraY - (pt.cyFinal + pt.pxmid[1]);
+                        var yFromX = pt.labelExtraX * pt.pxmid[1] / pt.pxmid[0];
+                        var yNet = pt.yLabelMid + pt.labelExtraY - (pt.cyFinal + pt.pxmid[1]);
 
                         if(Math.abs(yFromX) > Math.abs(yNet)) {
                             textLinePath +=
@@ -375,11 +376,11 @@ module.exports = function plot(gd, cdpie) {
 
 
 function transformInsideText(textBB, pt, cd0) {
-    var textDiameter = Math.sqrt(textBB.width * textBB.width + textBB.height * textBB.height),
-        textAspect = textBB.width / textBB.height,
-        halfAngle = Math.PI * Math.min(pt.v / cd0.vTotal, 0.5),
-        ring = 1 - cd0.trace.hole,
-        rInscribed = getInscribedRadiusFraction(pt, cd0),
+    var textDiameter = Math.sqrt(textBB.width * textBB.width + textBB.height * textBB.height);
+    var textAspect = textBB.width / textBB.height;
+    var halfAngle = Math.PI * Math.min(pt.v / cd0.vTotal, 0.5);
+    var ring = 1 - cd0.trace.hole;
+    var rInscribed = getInscribedRadiusFraction(pt, cd0),
 
         // max size text can be inserted inside without rotating it
         // this inscribes the text rectangle in a circle, which is then inscribed
@@ -396,34 +397,34 @@ function transformInsideText(textBB, pt, cd0) {
     if(transform.scale >= 1) return transform;
 
         // max size if text is rotated radially
-    var Qr = textAspect + 1 / (2 * Math.tan(halfAngle)),
-        maxHalfHeightRotRadial = cd0.r * Math.min(
-            1 / (Math.sqrt(Qr * Qr + 0.5) + Qr),
-            ring / (Math.sqrt(textAspect * textAspect + ring / 2) + textAspect)
-        ),
-        radialTransform = {
-            scale: maxHalfHeightRotRadial * 2 / textBB.height,
-            rCenter: Math.cos(maxHalfHeightRotRadial / cd0.r) -
-                maxHalfHeightRotRadial * textAspect / cd0.r,
-            rotate: (180 / Math.PI * pt.midangle + 720) % 180 - 90
-        },
+    var Qr = textAspect + 1 / (2 * Math.tan(halfAngle));
+    var maxHalfHeightRotRadial = cd0.r * Math.min(
+        1 / (Math.sqrt(Qr * Qr + 0.5) + Qr),
+        ring / (Math.sqrt(textAspect * textAspect + ring / 2) + textAspect)
+    );
+    var radialTransform = {
+        scale: maxHalfHeightRotRadial * 2 / textBB.height,
+        rCenter: Math.cos(maxHalfHeightRotRadial / cd0.r) -
+            maxHalfHeightRotRadial * textAspect / cd0.r,
+        rotate: (180 / Math.PI * pt.midangle + 720) % 180 - 90
+    };
 
         // max size if text is rotated tangentially
-        aspectInv = 1 / textAspect,
-        Qt = aspectInv + 1 / (2 * Math.tan(halfAngle)),
-        maxHalfWidthTangential = cd0.r * Math.min(
-            1 / (Math.sqrt(Qt * Qt + 0.5) + Qt),
-            ring / (Math.sqrt(aspectInv * aspectInv + ring / 2) + aspectInv)
-        ),
-        tangentialTransform = {
-            scale: maxHalfWidthTangential * 2 / textBB.width,
-            rCenter: Math.cos(maxHalfWidthTangential / cd0.r) -
-                maxHalfWidthTangential / textAspect / cd0.r,
-            rotate: (180 / Math.PI * pt.midangle + 810) % 180 - 90
-        },
-        // if we need a rotated transform, pick the biggest one
-        // even if both are bigger than 1
-        rotatedTransform = tangentialTransform.scale > radialTransform.scale ?
+    var aspectInv = 1 / textAspect;
+    var Qt = aspectInv + 1 / (2 * Math.tan(halfAngle));
+    var maxHalfWidthTangential = cd0.r * Math.min(
+        1 / (Math.sqrt(Qt * Qt + 0.5) + Qt),
+        ring / (Math.sqrt(aspectInv * aspectInv + ring / 2) + aspectInv)
+    );
+    var tangentialTransform = {
+        scale: maxHalfWidthTangential * 2 / textBB.width,
+        rCenter: Math.cos(maxHalfWidthTangential / cd0.r) -
+            maxHalfWidthTangential / textAspect / cd0.r,
+        rotate: (180 / Math.PI * pt.midangle + 810) % 180 - 90
+    };
+    // if we need a rotated transform, pick the biggest one
+    // even if both are bigger than 1
+    var rotatedTransform = tangentialTransform.scale > radialTransform.scale ?
             tangentialTransform : radialTransform;
 
     if(transform.scale < 1 && rotatedTransform.scale > transform.scale) return rotatedTransform;
@@ -438,10 +439,10 @@ function getInscribedRadiusFraction(pt, cd0) {
 }
 
 function transformOutsideText(textBB, pt) {
-    var x = pt.pxmid[0],
-        y = pt.pxmid[1],
-        dx = textBB.width / 2,
-        dy = textBB.height / 2;
+    var x = pt.pxmid[0];
+    var y = pt.pxmid[1];
+    var dx = textBB.width / 2;
+    var dy = textBB.height / 2;
 
     if(x < 0) dx *= -1;
     if(y < 0) dy *= -1;
@@ -457,19 +458,9 @@ function transformOutsideText(textBB, pt) {
 }
 
 function scootLabels(quadrants, trace) {
-    var xHalf,
-        yHalf,
-        equatorFirst,
-        farthestX,
-        farthestY,
-        xDiffSign,
-        yDiffSign,
-        thisQuad,
-        oppositeQuad,
-        wholeSide,
-        i,
-        thisQuadOutside,
-        firstOppositeOutsidePt;
+    var xHalf, yHalf, equatorFirst, farthestX, farthestY,
+        xDiffSign, yDiffSign, thisQuad, oppositeQuad,
+        wholeSide, i, thisQuadOutside, firstOppositeOutsidePt;
 
     function topFirst(a, b) { return a.pxmid[1] - b.pxmid[1]; }
     function bottomFirst(a, b) { return b.pxmid[1] - a.pxmid[1]; }
@@ -477,17 +468,14 @@ function scootLabels(quadrants, trace) {
     function scootOneLabel(thisPt, prevPt) {
         if(!prevPt) prevPt = {};
 
-        var prevOuterY = prevPt.labelExtraY + (yHalf ? prevPt.yLabelMax : prevPt.yLabelMin),
-            thisInnerY = yHalf ? thisPt.yLabelMin : thisPt.yLabelMax,
-            thisOuterY = yHalf ? thisPt.yLabelMax : thisPt.yLabelMin,
-            thisSliceOuterY = thisPt.cyFinal + farthestY(thisPt.px0[1], thisPt.px1[1]),
-            newExtraY = prevOuterY - thisInnerY,
-            xBuffer,
-            i,
-            otherPt,
-            otherOuterY,
-            otherOuterX,
-            newExtraX;
+        var prevOuterY = prevPt.labelExtraY + (yHalf ? prevPt.yLabelMax : prevPt.yLabelMin);
+        var thisInnerY = yHalf ? thisPt.yLabelMin : thisPt.yLabelMax;
+        var thisOuterY = yHalf ? thisPt.yLabelMax : thisPt.yLabelMin;
+        var thisSliceOuterY = thisPt.cyFinal + farthestY(thisPt.px0[1], thisPt.px1[1]);
+        var newExtraY = prevOuterY - thisInnerY;
+
+        var xBuffer, i, otherPt, otherOuterY, otherOuterX, newExtraX;
+
         // make sure this label doesn't overlap other labels
         // this *only* has us move these labels vertically
         if(newExtraY * yDiffSign > 0) thisPt.labelExtraY = newExtraY;
@@ -576,17 +564,10 @@ function scootLabels(quadrants, trace) {
 }
 
 function scalePies(cdpie, plotSize) {
-    var pieBoxWidth,
-        pieBoxHeight,
-        i,
-        j,
-        cd0,
-        trace,
-        tiltAxisRads,
-        maxPull,
-        scaleGroups = [],
-        scaleGroup,
-        minPxPerValUnit;
+    var scaleGroups = [];
+
+    var pieBoxWidth, pieBoxHeight, i, j, cd0, trace, tiltAxisRads,
+        maxPull, scaleGroup, minPxPerValUnit;
 
     // first figure out the center and maximum radius for each pie
     for(i = 0; i < cdpie.length; i++) {
@@ -641,22 +622,16 @@ function scalePies(cdpie, plotSize) {
 }
 
 function setCoords(cd) {
-    var cd0 = cd[0],
-        trace = cd0.trace,
-        tilt = trace.tilt,
-        tiltAxisRads,
-        tiltAxisSin,
-        tiltAxisCos,
-        tiltRads,
-        crossTilt,
-        inPlane,
-        currentAngle = trace.rotation * Math.PI / 180,
-        angleFactor = 2 * Math.PI / cd0.vTotal,
-        firstPt = 'px0',
-        lastPt = 'px1',
-        i,
-        cdi,
-        currentCoords;
+    var cd0 = cd[0];
+    var trace = cd0.trace;
+    var tilt = trace.tilt;
+    var currentAngle = trace.rotation * Math.PI / 180;
+    var angleFactor = 2 * Math.PI / cd0.vTotal;
+    var firstPt = 'px0';
+    var lastPt = 'px1';
+
+    var tiltAxisRads, tiltAxisSin, tiltAxisCos, tiltRads, crossTilt,
+        inPlane, i, cdi, currentCoords;
 
     if(trace.direction === 'counterclockwise') {
         for(i = 0; i < cd.length; i++) {
@@ -680,8 +655,8 @@ function setCoords(cd) {
     }
 
     function getCoords(angle) {
-        var xFlat = cd0.r * Math.sin(angle),
-            yFlat = -cd0.r * Math.cos(angle);
+        var xFlat = cd0.r * Math.sin(angle);
+        var yFlat = -cd0.r * Math.cos(angle);
 
         if(!tilt) return [xFlat, yFlat];
 
