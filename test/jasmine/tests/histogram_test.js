@@ -460,7 +460,7 @@ describe('Test histogram', function() {
                 ]);
             });
 
-            // TODO: fix p0, p1 (pts?) for CDFs, or perhaps just ditch them all?
+            // p0, p1, and pts have been omitted from CDFs for now
             var CDFs = [
                 {p: [2, 7, 12, 17], s: [1, 3, 6, 10]},
                 {
