@@ -358,6 +358,28 @@ ScatterRegl.calc = function calc(container, trace) {
             errorXOptions: [],
             errorYOptions: []
         };
+
+        scene.updateRange = function updateRange (range) {
+            var opts = Array(scene.count).fill({range: range});
+            if (scene.fill2d) scene.fill2d.update(opts);
+            if (scene.scatter2d) scene.scatter2d.update(opts);
+            if (scene.line2d) scene.line2d.update(opts);
+            if (scene.error2d) scene.error2d.update(opts.concat(opts));
+            scene.draw();
+        };
+
+        // draw traces in proper order
+        scene.draw = function draw () {
+            for (var i = 0; i < scene.count; i++) {
+                if (scene.line2d) scene.line2d.draw(i);
+                if (scene.error2d) {
+                    scene.error2d.draw(i);
+                    scene.error2d.draw(i + scene.count);
+                }
+                if (scene.scatter2d) scene.scatter2d.draw(i);
+                if (scene.fill2d) scene.fill2d.draw(i);
+            }
+        };
     }
 
     // mark renderers required for the data
@@ -459,19 +481,7 @@ ScatterRegl.plot = function plot(container, plotinfo, cdata) {
         scene.scatter2d.update(vpRange);
     }
 
-    // draw traces in proper order
-    for (var i = 0; i < scene.count; i++) {
-        if (scene.line2d) scene.line2d.draw(i);
-        if (scene.error2d) {
-            scene.error2d.draw(i);
-            scene.error2d.draw(i + scene.count);
-        }
-        if (scene.scatter2d) scene.scatter2d.draw(i);
-        if (scene.fill2d) scene.fill2d.draw(i);
-    }
-
-    //reset batch
-    // batch.length = 0;
+    scene.draw();
 
     return;
     cdata.map(function(cdscatter, order) {
