@@ -463,6 +463,16 @@ describe('hover info', function() {
         Lib.clearThrottle();
     }
 
+    function _hoverNatural(gd, xpx, ypx) {
+        var gdBB = gd.getBoundingClientRect();
+        var dragger = gd.querySelector('.nsewdrag');
+        var clientX = xpx + gdBB.left + gd._fullLayout._size.l;
+        var clientY = ypx + gdBB.top + gd._fullLayout._size.t;
+
+        Fx.hover(gd, { clientX: clientX, clientY: clientY, target: dragger}, 'xy');
+        Lib.clearThrottle();
+    }
+
     describe('\'hover info for x/y/z traces', function() {
         it('should display correct label content', function(done) {
             var gd = createGraphDiv();
@@ -526,6 +536,7 @@ describe('hover info', function() {
     describe('histogram hover info', function() {
         it('shows the data range when bins have multiple values', function(done) {
             var gd = createGraphDiv();
+            var pts;
 
             Plotly.plot(gd, [{
                 x: [0, 2, 3, 4, 5, 6, 7],
@@ -537,11 +548,27 @@ describe('hover info', function() {
                 margin: {l: 0, t: 0, r: 0, b: 0}
             })
             .then(function() {
-                _hover(gd, 250, 200);
+                gd.on('plotly_hover', function(e) { pts = e.points; });
+
+                _hoverNatural(gd, 250, 200);
                 assertHoverLabelContent({
                     nums: '3',
                     axis: '3 - 5'
                 });
+            })
+            .then(function() {
+                expect(pts.length).toBe(1);
+                var pt = pts[0];
+
+                expect(pt.curveNumber).toBe(0);
+                expect(pt.binNumber).toBe(1);
+                expect(pt.pointNumbers).toEqual([2, 3, 4]);
+                expect(pt.x).toBe(4);
+                expect(pt.y).toBe(3);
+                expect(pt.data).toBe(gd.data[0]);
+                expect(pt.fullData).toBe(gd._fullData[0]);
+                expect(pt.xaxis).toBe(gd._fullLayout.xaxis);
+                expect(pt.yaxis).toBe(gd._fullLayout.yaxis);
             })
             .catch(fail)
             .then(done);
