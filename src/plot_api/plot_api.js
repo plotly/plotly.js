@@ -2848,6 +2848,7 @@ function makePlotFramework(gd) {
         .classed('shapelayer', true);
 
     fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
+    fullLayout._menulayer = fullLayout._toppaper.append('g').classed('menulayer', true);
     fullLayout._zoomlayer = fullLayout._toppaper.append('g').classed('zoomlayer', true);
     fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
 

@@ -54,7 +54,7 @@ module.exports = function draw(gd) {
      */
 
     // draw update menu container
-    var menus = fullLayout._infolayer
+    var menus = fullLayout._menulayer
         .selectAll('g.' + constants.containerClassName)
         .data(menuData.length > 0 ? [0] : []);
 
