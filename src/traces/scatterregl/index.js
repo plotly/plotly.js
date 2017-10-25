@@ -567,14 +567,15 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
 
 ScatterRegl.hoverPoints = function hover(pointData, xval, yval) {
     var cd = pointData.cd,
+        stash = cd[0].t,
         trace = cd[0].trace,
         xa = pointData.xa,
         ya = pointData.ya,
-        positions = trace.positions,
-        x = trace.x,
-        y = trace.y,
-        // hoveron = trace.hoveron || '',
-        tree = trace.tree;
+        positions = stash.positions,
+        x = stash.x,
+        y = stash.y,
+        // hoveron = stash.hoveron || '',
+        tree = stash.tree;
 
     if(!tree) return [pointData];
 
@@ -604,38 +605,37 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval) {
         y: y[id]
     };
 
-    // that is single-item arrays_to_calcdata excerpt, bc we don't have to do it beforehead for 1e6 points
-    mergeProp(trace.text, 'tx');
-    mergeProp(trace.hovertext, 'htx');
-    mergeProp(trace.customdata, 'data');
-    mergeProp(trace.textposition, 'tp');
-    if(trace.textfont) {
-        mergeProp(trace.textfont.size, 'ts');
-        mergeProp(trace.textfont.color, 'tc');
-        mergeProp(trace.textfont.family, 'tf');
+    // that is single-item arrays_to_calcdata excerpt, since we are doing it for a single point and we don't have to do it beforehead for 1e6 points
+    di.tx = Array.isArray(trace.text) ? trace.text[id] : trace.text;
+    di.htx = Array.isArray(trace.hovertext) ? trace.hovertext[id] : trace.hovertext;
+    di.data = Array.isArray(trace.customdata) ? trace.customdata[id] : trace.customdata;
+    di.tp = Array.isArray(trace.textposition) ? trace.textposition[id] : trace.textposition;
+
+    var font = trace.textfont
+    if(font) {
+        di.ts = Array.isArray(font.size) ? font.size[id] : font.size;
+        di.tc = Array.isArray(font.color) ? font.color[id] : font.color;
+        di.tf = Array.isArray(font.family) ? font.family[id] : font.family;
     }
 
     var marker = trace.marker;
     if(marker) {
-        mergeProp(marker.size, 'ms');
-        mergeProp(marker.opacity, 'mo');
-        mergeProp(marker.symbol, 'mx');
-        mergeProp(marker.color, 'mc');
-
-        var markerLine = marker.line;
-        if(marker.line) {
-            mergeProp(markerLine.color, 'mlc');
-            mergeProp(markerLine.width, 'mlw');
-        }
-        var markerGradient = marker.gradient;
-        if(markerGradient && markerGradient.type !== 'none') {
-            mergeProp(markerGradient.type, 'mgt');
-            mergeProp(markerGradient.color, 'mgc');
-        }
+        di.ms = Array.isArray(marker.size) ? marker.size[id] : marker.size;
+        di.mo = Array.isArray(marker.opacity) ? marker.opacity[id] : marker.opacity;
+        di.mx = Array.isArray(marker.symbol) ? marker.symbol[id] : marker.symbol;
+        di.mc = Array.isArray(marker.color) ? marker.color[id] : marker.color;
     }
 
-    function mergeProp(list, short) {
-        if (Array.isArray(list)) di[short] = list[id]
+    var line = marker && marker.line;
+    if(line) {
+        di.mlc = Array.isArray(line.color) ? line.color[id] : line.color;
+        di.mlw = Array.isArray(line.width) ? line.width[id] : line.width;
+    }
+
+    var grad = marker && marker.gradient;
+    if(grad && grad.type !== 'none') {
+        di.mgt = Array.isArray(grad.type) ? grad.type[id] : grad.type;
+        di.mgc = Array.isArray(grad.color) ? grad.color[id] : grad.color;
     }
 
     var xc = xa.c2p(di.x, true),
