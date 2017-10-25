@@ -155,7 +155,7 @@ exports.loneHover = function loneHover(hoverItem, opts) {
 
 // The actual implementation is here:
 function _hover(gd, evt, subplot, noHoverEvent) {
-    if((subplot === 'pie' || subplot === 'sankey') && !noHoverEvent) {
+    if(subplot === 'sankey' && !noHoverEvent) {
         gd.emit('plotly_hover', {
             event: evt.originalEvent,
             points: [evt]

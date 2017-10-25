@@ -16,6 +16,7 @@ var Drawing = require('../../components/drawing');
 var svgTextUtils = require('../../lib/svg_text_utils');
 
 var helpers = require('./helpers');
+var eventData = require('./event_data');
 
 module.exports = function plot(gd, cdpie) {
     var fullLayout = gd._fullLayout;
@@ -69,14 +70,22 @@ module.exports = function plot(gd, cdpie) {
                 var cy = cd0.cy;
                 var sliceTop = d3.select(this);
                 var slicePath = sliceTop.selectAll('path.surface').data([pt]);
-                var hasHoverData = false;
 
-                function handleMouseOver(evt) {
-                    evt.originalEvent = d3.event;
+                // hover state vars
+                // have we drawn a hover label, so it should be cleared later
+                var hasHoverLabel = false;
+                // have we emitted a hover event, so later an unhover event should be emitted
+                // note that click events do not depend on this - you can still get them
+                // with hovermode: false or if you were earlier dragging, then clicked
+                // in the same slice that you moused up in
+                var hasHoverEvent = false;
 
+                function handleMouseOver() {
                     // in case fullLayout or fullData has changed without a replot
                     var fullLayout2 = gd._fullLayout;
                     var trace2 = gd._fullData[trace.index];
+
+                    if(gd._dragging || fullLayout2.hovermode === false) return;
 
                     var hoverinfo = trace2.hoverinfo;
                     if(Array.isArray(hoverinfo)) {
@@ -95,68 +104,78 @@ module.exports = function plot(gd, cdpie) {
 
                     // in case we dragged over the pie from another subplot,
                     // or if hover is turned off
-                    if(gd._dragging || fullLayout2.hovermode === false ||
-                            hoverinfo === 'none' || hoverinfo === 'skip' || !hoverinfo) {
-                        Fx.hover(gd, evt, 'pie');
-                        return;
+                    if(hoverinfo !== 'none' && hoverinfo !== 'skip' && hoverinfo) {
+                        var rInscribed = getInscribedRadiusFraction(pt, cd0);
+                        var hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed);
+                        var hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed);
+                        var separators = fullLayout.separators;
+                        var thisText = [];
+
+                        if(hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
+                        if(hoverinfo.indexOf('text') !== -1) {
+                            var texti = helpers.castOption(trace2.hovertext || trace2.text, pt.pts);
+                            if(texti) thisText.push(texti);
+                        }
+                        if(hoverinfo.indexOf('value') !== -1) thisText.push(helpers.formatPieValue(pt.v, separators));
+                        if(hoverinfo.indexOf('percent') !== -1) thisText.push(helpers.formatPiePercent(pt.v / cd0.vTotal, separators));
+
+                        var hoverLabel = trace.hoverlabel;
+                        var hoverFont = hoverLabel.font;
+
+                        Fx.loneHover({
+                            x0: hoverCenterX - rInscribed * cd0.r,
+                            x1: hoverCenterX + rInscribed * cd0.r,
+                            y: hoverCenterY,
+                            text: thisText.join('<br>'),
+                            name: hoverinfo.indexOf('name') !== -1 ? trace2.name : undefined,
+                            idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
+                            color: helpers.castOption(hoverLabel.bgcolor, pt.pts) || pt.color,
+                            borderColor: helpers.castOption(hoverLabel.bordercolor, pt.pts),
+                            fontFamily: helpers.castOption(hoverFont.family, pt.pts),
+                            fontSize: helpers.castOption(hoverFont.size, pt.pts),
+                            fontColor: helpers.castOption(hoverFont.color, pt.pts)
+                        }, {
+                            container: fullLayout2._hoverlayer.node(),
+                            outerContainer: fullLayout2._paper.node(),
+                            gd: gd
+                        });
+
+                        hasHoverLabel = true;
                     }
 
-                    var rInscribed = getInscribedRadiusFraction(pt, cd0);
-                    var hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed);
-                    var hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed);
-                    var separators = fullLayout.separators;
-                    var thisText = [];
-
-                    if(hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
-                    if(hoverinfo.indexOf('text') !== -1) {
-                        var texti = helpers.castOption(trace2.hovertext || trace2.text, pt.pts);
-                        if(texti) thisText.push(texti);
-                    }
-                    if(hoverinfo.indexOf('value') !== -1) thisText.push(helpers.formatPieValue(pt.v, separators));
-                    if(hoverinfo.indexOf('percent') !== -1) thisText.push(helpers.formatPiePercent(pt.v / cd0.vTotal, separators));
-
-                    var hoverLabel = trace.hoverlabel;
-                    var hoverFont = hoverLabel.font;
-
-                    Fx.loneHover({
-                        x0: hoverCenterX - rInscribed * cd0.r,
-                        x1: hoverCenterX + rInscribed * cd0.r,
-                        y: hoverCenterY,
-                        text: thisText.join('<br>'),
-                        name: hoverinfo.indexOf('name') !== -1 ? trace2.name : undefined,
-                        idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
-                        color: helpers.castOption(hoverLabel.bgcolor, pt.pts) || pt.color,
-                        borderColor: helpers.castOption(hoverLabel.bordercolor, pt.pts),
-                        fontFamily: helpers.castOption(hoverFont.family, pt.pts),
-                        fontSize: helpers.castOption(hoverFont.size, pt.pts),
-                        fontColor: helpers.castOption(hoverFont.color, pt.pts)
-                    }, {
-                        container: fullLayout2._hoverlayer.node(),
-                        outerContainer: fullLayout2._paper.node(),
-                        gd: gd
+                    gd.emit('plotly_hover', {
+                        points: [eventData(pt, trace2)],
+                        event: d3.event
                     });
-
-                    Fx.hover(gd, evt, 'pie');
-
-                    hasHoverData = true;
+                    hasHoverEvent = true;
                 }
 
                 function handleMouseOut(evt) {
-                    evt.originalEvent = d3.event;
-                    gd.emit('plotly_unhover', {
-                        event: d3.event,
-                        points: [evt]
-                    });
+                    var fullLayout2 = gd._fullLayout;
+                    var trace2 = gd._fullData[trace.index];
 
-                    if(hasHoverData) {
-                        Fx.loneUnhover(fullLayout._hoverlayer.node());
-                        hasHoverData = false;
+                    if(hasHoverEvent) {
+                        evt.originalEvent = d3.event;
+                        gd.emit('plotly_unhover', {
+                            points: [eventData(pt, trace2)],
+                            event: d3.event
+                        });
+                        hasHoverEvent = false;
+                    }
+
+                    if(hasHoverLabel) {
+                        Fx.loneUnhover(fullLayout2._hoverlayer.node());
+                        hasHoverLabel = false;
                     }
                 }
 
                 function handleClick() {
-                    gd._hoverdata = [pt];
-                    gd._hoverdata.trace = cd0.trace;
+                    var fullLayout2 = gd._fullLayout;
+                    var trace2 = gd._fullData[trace.index];
+
+                    if(gd._dragging || fullLayout2.hovermode === false) return;
+
+                    gd._hoverdata = [eventData(pt, trace2)];
                     Fx.click(gd, d3.event);
                 }
 
