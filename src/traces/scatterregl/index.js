@@ -115,12 +115,12 @@ ScatterRegl.calc = function calc(container, trace) {
     calcColorscales(trace);
 
     // TODO: delegate this to webworker if possible (potential )
-    stash._tree = kdtree(positions, 512);
+    stash.tree = kdtree(positions, 512);
 
     // stash data
-    stash._x = x;
-    stash._y = y;
-    stash._positions = positions;
+    stash.x = x;
+    stash.y = y;
+    stash.positions = positions;
 
     if(trace.visible !== true) {
         isVisible = false;
@@ -128,14 +128,16 @@ ScatterRegl.calc = function calc(container, trace) {
         hasErrorX = false;
         hasErrorY = false;
         hasMarkers = false;
+        hasFill = false;
     }
     else {
         isVisible = true;
-        hasLines = subTypes.hasLines(trace);
+        hasLines = subTypes.hasLines(trace) && positions.length > 2;
         hasErrorX = trace.error_x.visible === true;
         hasErrorY = trace.error_y.visible === true;
         hasError = hasErrorX || hasErrorY;
         hasMarkers = subTypes.hasMarkers(trace);
+        hasFill = !!trace.fill && trace.fill != 'none';
     }
 
     // get error values
@@ -244,42 +246,6 @@ ScatterRegl.calc = function calc(container, trace) {
         fillOptions.fill = trace.fillcolor;
         fillOptions.thickness = 0;
         fillOptions.closed = true;
-
-        var pos = [], srcPos = linePositions || positions;
-        if(trace.fill === 'tozeroy') {
-            pos = [srcPos[0], 0];
-            pos = pos.concat(srcPos);
-            pos.push(srcPos[srcPos.length - 2]);
-            pos.push(0);
-        }
-        else if(trace.fill === 'tozerox') {
-            pos = [0, srcPos[1]];
-            pos = pos.concat(srcPos);
-            pos.push(0);
-            pos.push(srcPos[srcPos.length - 1]);
-        }
-        else {
-            var nextTrace = trace._nexttrace;
-            if(nextTrace && trace.fill === 'tonexty') {
-                pos = srcPos.slice();
-
-                // FIXME: overcalculation here
-                var nextOptions = getTraceOptions(nextTrace);
-
-                if(nextOptions && nextOptions.line) {
-                    var nextPos = nextOptions.line.positions;
-
-                    for(i = Math.floor(nextPos.length / 2); i--;) {
-                        xx = nextPos[i * 2], yy = nextPos[i * 2 + 1];
-                        if(isNaN(xx) || isNaN(yy)) continue;
-                        pos.push(xx);
-                        pos.push(yy);
-                    }
-                    fillOptions.fill = nextTrace.fillcolor;
-                }
-            }
-        }
-        fillOptions.positions = pos;
     }
 
     if(hasMarkers) {
@@ -382,9 +348,11 @@ ScatterRegl.calc = function calc(container, trace) {
 
     // make sure scene exists
     var scene = subplot._scene;
+
     if (!subplot._scene) {
         scene = subplot._scene = {
             count: 0,
+            dirty: true,
             lineOptions: [],
             fillOptions: [],
             scatterOptions: [],
@@ -393,26 +361,44 @@ ScatterRegl.calc = function calc(container, trace) {
         };
 
         scene.updateRange = function updateRange (range) {
-            var opts = Array(scene.count).fill({range: range});
+            var opts = Array(scene.count);
+            var rangeOpts = {range: range};
+            for (var i = 0; i < scene.count; i++) {
+                opts[i] = rangeOpts;
+            }
             if (scene.fill2d) scene.fill2d.update(opts);
             if (scene.scatter2d) scene.scatter2d.update(opts);
             if (scene.line2d) scene.line2d.update(opts);
             if (scene.error2d) scene.error2d.update(opts.concat(opts));
+
             scene.draw();
         };
 
         // draw traces in proper order
         scene.draw = function draw () {
             for (var i = 0; i < scene.count; i++) {
+                if (scene.fill2d) scene.fill2d.draw(i);
                 if (scene.line2d) scene.line2d.draw(i);
                 if (scene.error2d) {
                     scene.error2d.draw(i);
                     scene.error2d.draw(i + scene.count);
                 }
                 if (scene.scatter2d) scene.scatter2d.draw(i);
-                if (scene.fill2d) scene.fill2d.draw(i);
             }
+
+            scene.dirty = false;
         };
+    }
+
+    // In case if we have scene from the last calc - reset data
+    if (!scene.dirty) {
+        scene.dirty = true;
+        scene.count = 0;
+        scene.lineOptions = [];
+        scene.fillOptions = [];
+        scene.scatterOptions = [];
+        scene.errorXOptions = [];
+        scene.errorYOptions = [];
     }
 
     // mark renderers required for the data
@@ -436,24 +422,91 @@ ScatterRegl.calc = function calc(container, trace) {
 ScatterRegl.plot = function plot(container, subplot, cdata) {
     var layout = container._fullLayout;
     var scene = subplot._scene;
+
+    // we may have more subplots than initialized data due to Axes.getSubplots method
+    if (!scene) return;
+
     var vpSize = layout._size, width = layout.width, height = layout.height;
     var regl = layout._glcanvas.data()[1].regl;
 
     // that is needed for fills
     linkTraces(container, subplot, cdata);
 
-    // make sure scenes are created
-    if (scene.error2d === true) {
-        scene.error2d = createError(regl);
-    }
-    if (scene.line2d === true) {
-        scene.line2d = createLine(regl);
-    }
-    if (scene.scatter2d === true) {
-        scene.scatter2d = createScatter(regl);
-    }
-    if (scene.fill2d === true) {
-        scene.fill2d = createLine(regl);
+    if (scene.dirty) {
+        // make sure scenes are created
+        if (scene.error2d === true) {
+            scene.error2d = createError(regl);
+        }
+        if (scene.line2d === true) {
+            scene.line2d = createLine(regl);
+        }
+        if (scene.scatter2d === true) {
+            scene.scatter2d = createScatter(regl);
+        }
+        if (scene.fill2d === true) {
+            scene.fill2d = createLine(regl);
+        }
+
+        if (scene.line2d) {
+            scene.line2d.update(scene.lineOptions);
+        }
+        if (scene.error2d) {
+            var errorBatch = (scene.errorXOptions || []).concat(scene.errorYOptions || []);
+            scene.error2d.update(errorBatch);
+        }
+        if (scene.scatter2d) {
+            scene.scatter2d.update(scene.scatterOptions);
+        }
+        // fill requires linked traces, so we generate it's positions here
+        if (scene.fill2d) {
+            scene.fillOptions.forEach(function (fillOptions, i) {
+                var cdscatter = cdata[i]
+                if(!cdscatter || !cdscatter[0] || !cdscatter[0].trace) return;
+                var cd = cdscatter[0];
+                var trace = cd.trace;
+                var stash = cd.t;
+                var lineOptions = scene.lineOptions[i]
+
+                var pos = [], srcPos = (lineOptions && lineOptions.positions) || stash.positions;
+
+                if(trace.fill === 'tozeroy') {
+                    pos = [srcPos[0], 0];
+                    pos = pos.concat(srcPos);
+                    pos.push(srcPos[srcPos.length - 2]);
+                    pos.push(0);
+                }
+                else if(trace.fill === 'tozerox') {
+                    pos = [0, srcPos[1]];
+                    pos = pos.concat(srcPos);
+                    pos.push(0);
+                    pos.push(srcPos[srcPos.length - 1]);
+                }
+                else {
+                    var nextTrace = trace._nexttrace;
+                    if(nextTrace && trace.fill === 'tonexty') {
+                        pos = srcPos.slice();
+
+                        // FIXME: overcalculation here
+                        var nextOptions = scene.lineOptions[i + 1];
+
+                        if(nextOptions) {
+                            var nextPos = nextOptions.positions;
+
+                            for(i = Math.floor(nextPos.length / 2); i--;) {
+                                var xx = nextPos[i * 2], yy = nextPos[i * 2 + 1];
+                                if(isNaN(xx) || isNaN(yy)) continue;
+                                pos.push(xx);
+                                pos.push(yy);
+                            }
+                            fillOptions.fill = nextTrace.fillcolor;
+                        }
+                    }
+                }
+                fillOptions.positions = pos;
+            });
+
+            scene.fill2d.update(scene.fillOptions);
+        }
     }
 
     // provide viewport and range
@@ -484,32 +537,15 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
 
     // uploat batch data to GPU
     if (scene.fill2d) {
-        if (scene.fillOptions) {
-            scene.fill2d.update(scene.fillOptions);
-            scene.fillOptions = null;
-        }
         scene.fill2d.update(vpRange);
     }
     if (scene.line2d) {
-        if (scene.lineOptions) {
-            scene.line2d.update(scene.lineOptions);
-            scene.lineOptions = null;
-        }
         scene.line2d.update(vpRange);
     }
     if (scene.error2d) {
-        if (scene.errorXOptions || scene.errorYOptions) {
-            var errorBatch = (scene.errorXOptions || []).concat(scene.errorYOptions || []);
-            scene.error2d.update(errorBatch);
-            scene.errorXOptions = scene.errorYOptions = null;
-        }
         scene.error2d.update(vpRange.concat(vpRange));
     }
     if (scene.scatter2d) {
-        if (scene.scatterOptions) {
-            scene.scatter2d.update(scene.scatterOptions);
-            scene.scatterOptions = null;
-        }
         scene.scatter2d.update(vpRange);
     }
 
@@ -527,8 +563,6 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
         }
         // TODO: recalculate fill area here since we can't calc connected traces beforehead
     });
-
-    scene.update(batch);
 };
 
 ScatterRegl.hoverPoints = function hover(pointData, xval, yval) {
@@ -536,11 +570,11 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval) {
         trace = cd[0].trace,
         xa = pointData.xa,
         ya = pointData.ya,
-        positions = trace._positions,
-        x = trace._x,
-        y = trace._y,
+        positions = trace.positions,
+        x = trace.x,
+        y = trace.y,
         // hoveron = trace.hoveron || '',
-        tree = trace._tree;
+        tree = trace.tree;
 
     if(!tree) return [pointData];
 
