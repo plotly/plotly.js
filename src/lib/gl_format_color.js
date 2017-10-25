@@ -59,7 +59,7 @@ function formatColor(containerIn, opacityIn, len) {
 
     if(isArrayColorIn) {
         getColor = function(c, i) {
-            //FIXME: there is double work, considering that sclFunc does the opposite
+            // FIXME: there is double work, considering that sclFunc does the opposite
             return c[i] === undefined ? colorDfltRgba : rgba(sclFunc(c[i]));
         };
     }

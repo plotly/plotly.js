@@ -195,7 +195,7 @@ Plotly.plot = function(gd, data, layout, config) {
             }
         }
 
-        if (!fullLayout._glcanvas) {
+        if(!fullLayout._glcanvas) {
             fullLayout._glcanvas = fullLayout._glcontainer.selectAll('.gl-canvas').data(fullLayout._has('gl') ? [{
                 key: 'contextLayer',
                 context: true,
@@ -211,7 +211,7 @@ Plotly.plot = function(gd, data, layout, config) {
             }] : []);
 
             fullLayout._glcanvas.enter().append('canvas')
-                .each(function (d) {
+                .each(function(d) {
                     d.regl = createRegl({
                         canvas: this,
                         attributes: {

@@ -713,12 +713,12 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         // clear gl frame, if any, since we preserve drawing buffer
         // FIXME: code duplication with cartesian.plot
-        if (fullLayout._glcanvas.size()) {
-            fullLayout._glcanvas.each(function (d) {
+        if(fullLayout._glcanvas.size()) {
+            fullLayout._glcanvas.each(function(d) {
                 d.regl.clear({
                     color: true
                 });
-            })
+            });
         }
 
         for(i = 0; i < subplots.length; i++) {

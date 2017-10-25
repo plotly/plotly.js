@@ -201,7 +201,7 @@ module.exports = function(canvasGL, d, scatter) {
     var points = makePoints(sampleCount, dimensionCount, initialDims, color);
     var attributes = makeAttributes(sampleCount, points);
 
-    var regl = d.regl
+    var regl = d.regl;
 
     var paletteTexture = regl.texture({
         shape: [256, 1],
@@ -433,7 +433,7 @@ module.exports = function(canvasGL, d, scatter) {
     }
 
     function destroy() {
-        paletteTexture.destroy()
+        paletteTexture.destroy();
     }
 
     return {
