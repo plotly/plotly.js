@@ -9,7 +9,7 @@
 
 'use strict';
 
-var appendArrayPointValues = require('../../components/fx/helpers').appendArrayPointValues;
+var appendArrayMultiPointValues = require('../../components/fx/helpers').appendArrayMultiPointValues;
 
 
 // Note: like other eventData routines, this creates the data for hover/unhover/click events
@@ -35,7 +35,7 @@ module.exports = function eventData(pt, trace) {
     // Add extra data arrays to the output
     // notice that this is the multi-point version ('s' on the end!)
     // so added data will be arrays matching the pointNumbers array.
-    appendArrayPointValues(out, trace, pt.pts);
+    appendArrayMultiPointValues(out, trace, pt.pts);
 
     return out;
 };
