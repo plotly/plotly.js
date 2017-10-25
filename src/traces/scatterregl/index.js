@@ -31,7 +31,6 @@ var Plots = require('../../plots/plots');
 
 var MAXDIST = Fx.constants.MAXDIST;
 var DESELECTDIM = 0.2;
-var TRANSPARENT = [0, 0, 0, 0];
 var SYMBOL_SDF_SIZE = 200;
 var SYMBOL_SIZE = 20;
 var SYMBOL_STROKE = SYMBOL_SIZE / 20;
@@ -60,7 +59,7 @@ ScatterRegl.calc = function calc(container, trace) {
     var x = xaxis.type === 'linear' ? trace.x : xaxis.makeCalcdata(trace, 'x');
     var y = yaxis.type === 'linear' ? trace.y : yaxis.makeCalcdata(trace, 'y');
 
-    var count = Math.max(x.length, y.length), i, l, xx, yy, ptrX = 0, ptrY = 0;
+    var count = Math.max(x ? x.length : 0, y ? y.length: 0), i, l, xx, yy, ptrX = 0, ptrY = 0;
     var lineOptions, scatterOptions, errorOptions, errorXOptions, errorYOptions, fillOptions;
     var selection = trace.selection;
     var sizes, selIds;
@@ -88,8 +87,9 @@ ScatterRegl.calc = function calc(container, trace) {
     // we need hi-precision for scatter2d
     positions = new Array(count * 2);
     for(i = 0; i < count; i++) {
-        positions[i * 2] = +x[i];
-        positions[i * 2 + 1] = +y[i];
+        // if no x defined, we are creating simple int sequence (API)
+        positions[i * 2] = x ? +x[i] : i;
+        positions[i * 2 + 1] = y ? +y[i] : i;
     }
 
     calcColorscales(trace);
@@ -270,42 +270,50 @@ ScatterRegl.calc = function calc(container, trace) {
         var markerSizeFunc = makeBubbleSizeFn(trace);
         var markerOpts = trace.marker;
 
+        //get basic symbol info
+        var multiMarker = Array.isArray(markerOpts.symbol);
+        var symbolNumber, isOpen, symbol, noFill;
+        if (!multiMarker) {
+            symbolNumber = Drawing.symbolNumber(markerOpts.symbol);
+            isOpen = /-open/.test(markerOpts.symbol);
+            noFill = !!Drawing.symbolNoFill[symbolNumber % 100];
+        }
         //prepare colors
-        if (Array.isArray(markerOpts.color) || Array.isArray(markerOpts.line.color)) {
+        if (multiMarker || Array.isArray(markerOpts.color) || Array.isArray(markerOpts.line.color) || Array.isArray(markerOpts.line)) {
             scatterOptions.colors = new Array(count);
             scatterOptions.borderColors = new Array(count);
 
-            var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, count);
-            var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, count);
-            var _colors, _borderColors, bw;
+            var colors = formatColor(markerOpts, markerOpts.opacity, count);
+            var borderColors = formatColor(markerOpts.line, markerOpts.opacity, count);
 
-            for(i = 0; i < count; ++i) {
-                _colors = colors;
-
-                if(isOpen) {
-                    _borderColors = colors;
-                } else {
-                    _borderColors = borderColors;
+            if (!Array.isArray(borderColors[0])) {
+                var borderColor = borderColors;
+                borderColors = Array(count);
+                for (i = 0; i < count; i++) {
+                    borderColors[i] = borderColor;
                 }
-
-                var optColors = scatterOptions.colors;
-                if(!optColors[i]) optColors[i] = [];
-                if(isOpen || symbolNoFill) {
-                    optColors[i][0] = TRANSPARENT[0];
-                    optColors[i][1] = TRANSPARENT[1];
-                    optColors[i][2] = TRANSPARENT[2];
-                    optColors[i][3] = TRANSPARENT[3];
-                } else {
-                    optColors[i][0] = _colors[4 * i + 0] * 255;
-                    optColors[i][1] = _colors[4 * i + 1] * 255;
-                    optColors[i][2] = _colors[4 * i + 2] * 255;
-                    optColors[i][3] = _colors[4 * i + 3] * 255;
+            }
+            if (!Array.isArray(colors[0])) {
+                var color = colors;
+                colors = Array(count);
+                for (i = 0; i < count; i++) {
+                    colors[i] = color;
                 }
-                if(!scatterOptions.borderColors[i]) scatterOptions.borderColors[i] = [];
-                scatterOptions.borderColors[i][0] = _borderColors[4 * i + 0] * 255;
-                scatterOptions.borderColors[i][1] = _borderColors[4 * i + 1] * 255;
-                scatterOptions.borderColors[i][2] = _borderColors[4 * i + 2] * 255;
-                scatterOptions.borderColors[i][3] = dim * _borderColors[4 * i + 3] * 255;
+            }
+
+            scatterOptions.colors = colors;
+            scatterOptions.borderColors = borderColors;
+
+            for (i = 0; i < count; i++) {
+                if (multiMarker) {
+                    symbol = markerOpts.symbol[i];
+                    isOpen = /-open/.test(symbol);
+                }
+                if (isOpen) {
+                    borderColors[i] = colors[i].slice();
+                    colors[i] = colors[i].slice();
+                    colors[i][3] = 0;
+                }
             }
 
             scatterOptions.opacity = trace.opacity;
@@ -314,6 +322,12 @@ ScatterRegl.calc = function calc(container, trace) {
             scatterOptions.color = markerOpts.color;
             scatterOptions.borderColor = markerOpts.line.color;
             scatterOptions.opacity = trace.opacity * markerOpts.opacity;
+
+            if (isOpen) {
+                scatterOptions.borderColor = scatterOptions.color.slice();
+                scatterOptions.color = scatterOptions.color.slice();
+                scatterOptions.color[3] = 0;
+            }
         }
 
         //prepare markers
@@ -694,32 +708,6 @@ function _convertArray(convert, data, count) {
         result[i] = (i >= data.length) ?
             convert(data0) :
             convert(data[i]);
-    }
-
-    return result;
-}
-
-function convertColorScale(containerIn, markerOpacity, traceOpacity, count) {
-    var colors = formatColor(containerIn, markerOpacity, count);
-
-    colors = Array.isArray(colors[0]) ?
-        colors :
-        _convertArray(Lib.identity, [colors], count);
-
-    return _convertColor(
-        colors,
-        convertNumber(traceOpacity, count),
-        count
-    );
-}
-
-function _convertColor(colors, opacities, count) {
-    var result = new Array(4 * count);
-
-    for(var i = 0; i < count; ++i) {
-        for(var j = 0; j < 3; ++j) result[4 * i + j] = colors[i][j];
-
-        result[4 * i + 3] = colors[i][3] * opacities[i];
     }
 
     return result;
