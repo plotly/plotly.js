@@ -65,6 +65,33 @@ describe('Pie traces:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('can sum values or count labels', function(done) {
+        Plotly.newPlot(gd, [{
+            labels: ['a', 'b', 'c', 'a', 'b', 'a'],
+            values: [1, 2, 3, 4, 5, 6],
+            type: 'pie',
+            domain: {x: [0, 0.45]}
+        }, {
+            labels: ['d', 'e', 'f', 'd', 'e', 'd'],
+            type: 'pie',
+            domain: {x: [0.55, 1]}
+        }])
+        .then(function() {
+            var expected = [
+                [['a', 11], ['b', 7], ['c', 3]],
+                [['d', 3], ['e', 2], ['f', 1]]
+            ];
+            for(var i = 0; i < 2; i++) {
+                for(var j = 0; j < 3; j++) {
+                    expect(gd.calcdata[i][j].label).toBe(expected[i][j][0], i + ',' + j);
+                    expect(gd.calcdata[i][j].v).toBe(expected[i][j][1], i + ',' + j);
+                }
+            }
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('pie hovering', function() {
