@@ -328,16 +328,33 @@ ScatterRegl.calc = function calc(container, trace) {
 
         //prepare sizes
         if(Array.isArray(markerOpts.size) || Array.isArray(markerOpts.line.width)) {
-            scatterOptions.sizes = new Array(count);
-            scatterOptions.borderSizes = new Array(count);
+            var size;
+            var sizes = scatterOptions.sizes = new Array(count);
+            var borderSizes = scatterOptions.borderSizes = new Array(count);
 
-            var borderSizes = convertNumber(markerOpts.line.width, count);
-            var sizes = convertArray(markerSizeFunc, markerOpts.size, count);
+            if (Array.isArray(markerOpts.size)) {
+                for(i = 0; i < count; ++i) {
+                    sizes[i] = markerSizeFunc(markerOpts.size[i]);
+                }
+            }
+            else {
+                size = markerSizeFunc(markerOpts.size);
+                for(i = 0; i < count; ++i) {
+                    sizes[i] = size;
+                }
+            }
 
-            for(i = 0; i < count; ++i) {
-                // See  https://github.com/plotly/plotly.js/pull/1781#discussion_r121820798
-                scatterOptions.sizes[i] = sizes[i];
-                scatterOptions.borderSizes[i] = 0.5 * borderSizes[i];
+            // See  https://github.com/plotly/plotly.js/pull/1781#discussion_r121820798
+            if (Array.isArray(markerOpts.line.width)) {
+                for(i = 0; i < count; ++i) {
+                    borderSizes[i] = markerOpts.line.width[i] * .5;
+                }
+            }
+            else {
+                size = markerSizeFunc(markerOpts.line.width) * .5;
+                for(i = 0; i < count; ++i) {
+                    borderSizes[i] = size;
+                }
             }
         }
         else {
@@ -741,26 +758,4 @@ function getSymbolSdf(symbol) {
     SYMBOL_SDF[symbol] = symbolSdf;
 
     return symbolSdf || null;
-}
-
-var convertNumber = convertArray.bind(null, function(x) { return +x; });
-
-// handle the situation where values can be array-like or not array like
-function convertArray(convert, data, count) {
-    if(!Array.isArray(data)) data = [data];
-
-    return _convertArray(convert, data, count);
-}
-
-function _convertArray(convert, data, count) {
-    var result = new Array(count),
-        data0 = data[0];
-
-    for(var i = 0; i < count; ++i) {
-        result[i] = (i >= data.length) ?
-            convert(data0) :
-            convert(data[i]);
-    }
-
-    return result;
 }
