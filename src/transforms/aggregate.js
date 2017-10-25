@@ -215,19 +215,27 @@ exports.calcTransform = function(gd, trace, opts) {
     var groupArray = Lib.getTargetArray(trace, {target: groups});
     if(!groupArray) return;
 
-    var i, vi, groupIndex;
+    var i, vi, groupIndex, newGrouping;
 
     var groupIndices = {};
+    var groupToPoints = {};
+    var indexToPoints = {};
     var groupings = [];
     for(i = 0; i < groupArray.length; i++) {
         vi = groupArray[i];
         groupIndex = groupIndices[vi];
         if(groupIndex === undefined) {
             groupIndices[vi] = groupings.length;
-            groupings.push([i]);
+            newGrouping = [i];
+            groupings.push(newGrouping);
+            groupToPoints[vi] = newGrouping;
+            indexToPoints[groupIndices[vi]] = newGrouping;
         }
         else groupings[groupIndex].push(i);
     }
+
+    opts.groupToPoints = groupToPoints;
+    opts.indexToPoints = indexToPoints;
 
     var aggregations = opts.aggregations;
 
