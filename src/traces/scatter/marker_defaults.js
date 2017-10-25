@@ -39,6 +39,15 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
     }
 
+    coerce('selected.marker.opacity', isBubble ? 0.7 : 1);
+    coerce('unselected.marker.opacity', 0.5);
+
+    coerce('selected.marker.color', defaultColor);
+    coerce('unselected.marker.color', defaultColor);
+
+    coerce('selected.marker.size')
+    coerce('unselected.marker.size')
+
     if(!opts.noLine) {
         // if there's a line with a different color than the marker, use
         // that line color as the default marker line color

@@ -204,10 +204,15 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
 
                 eventData = {points: selection};
 
-                updateSelectionState(gd, eventData);
+                updatedSelectedState(gd, eventData);
 
                 fillRangeItems(eventData, poly, pts);
                 dragOptions.gd.emit('plotly_selecting', eventData);
+
+                var bpms = gd._fullLayout._basePlotModules;
+                for (var i = 0; i < bpms.length; i++) {
+                    bpms[i].plot(gd, null, {duration: 0});
+                }
             }
         );
     };
@@ -225,20 +230,25 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                     searchInfo.selectPoints(searchInfo, false);
                 }
 
-                updateSelectionState(gd, {points: []});
+                updatedSelectedState(gd, {points: []});
 
                 gd.emit('plotly_deselect', null);
             }
             else {
-                updateSelectionState(gd, eventData);
+                updatedSelectedState(gd, eventData);
 
                 dragOptions.gd.emit('plotly_selected', eventData);
+            }
+
+            var bpms = gd._fullLayout._basePlotModules;
+            for (var i = 0; i < bpms.length; i++) {
+                bpms[i].plot(gd, null, {duration: 0});
             }
         });
     };
 };
 
-function updateSelectionState(gd, eventData) {
+function updatedSelectedState(gd, eventData) {
     var i, pt, trace, fullTrace;
     var data = gd.data;
     var fullData = gd._fullData;

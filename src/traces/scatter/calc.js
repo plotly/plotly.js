@@ -17,6 +17,7 @@ var BADNUM = require('../../constants/numerical').BADNUM;
 var subTypes = require('./subtypes');
 var calcColorscale = require('./colorscale_calc');
 var arraysToCalcdata = require('./arrays_to_calcdata');
+var applySelectionToCalcdata = require('./apply_selection_to_calcdata');
 
 
 module.exports = function calc(gd, trace) {
@@ -30,6 +31,10 @@ module.exports = function calc(gd, trace) {
         marker,
         s,
         i;
+
+    var selectedPointIndex = {};
+    var hoverPointIndex =  {};
+    var idIndex;
 
     // cancel minimum tick spacings (only applies to bars and boxes)
     xa._minDtick = 0;
@@ -123,6 +128,8 @@ module.exports = function calc(gd, trace) {
     }
 
     arraysToCalcdata(cd, trace);
+
+    applySelectionToCalcdata(cd);
 
     gd.firstscatter = false;
     return cd;
