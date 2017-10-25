@@ -49,8 +49,8 @@ ScatterRegl.calc = function calc(container, trace) {
     var layout = container._fullLayout;
     var positions;
     var stash = {};
-    var xaxis = Axes.getFromId(container, trace.xaxis || 'x');
-    var yaxis = Axes.getFromId(container, trace.yaxis || 'y');
+    var xaxis = Axes.getFromId(container, trace.xaxis);
+    var yaxis = Axes.getFromId(container, trace.yaxis);
 
     //FIXME: find a better way to obtain subplot object from trace
     var subplot = layout._plots[trace.xaxis + trace.yaxis];
@@ -66,12 +66,6 @@ ScatterRegl.calc = function calc(container, trace) {
     var isVisible, hasLines, hasErrorX, hasErrorY, hasError, hasMarkers, hasFill;
     var linePositions;
 
-    // calculate axes range
-    // FIXME: probably we may want to have more complex ppad calculation
-    // FIXME: that is pretty slow thing here @etpinard your assistance required
-    Axes.expand(xaxis, x, 0);
-    Axes.expand(yaxis, y, 0);
-
     // convert log axes
     if(xaxis.type === 'log') {
         for(i = 0, l = x.length; i < l; i++) {
@@ -86,16 +80,41 @@ ScatterRegl.calc = function calc(container, trace) {
 
     // we need hi-precision for scatter2d
     positions = new Array(count * 2);
+    var xbounds = [Infinity, -Infinity], ybounds = [Infinity, -Infinity]
+
     for(i = 0; i < count; i++) {
         // if no x defined, we are creating simple int sequence (API)
-        positions[i * 2] = x ? +x[i] : i;
-        positions[i * 2 + 1] = y ? +y[i] : i;
+        // we use parseFloat because it gives NaN (we need that for empty values to avoid drawing lines) and it is incredibly fast
+        xx = x ? parseFloat(x[i]) : i;
+        yy = y ? parseFloat(y[i]) : i;
+
+        if (xbounds[0] > xx) xbounds[0] = xx;
+        if (xbounds[1] < xx) xbounds[1] = xx;
+        if (ybounds[0] > yy) ybounds[0] = yy;
+        if (ybounds[1] < yy) ybounds[1] = yy;
+
+        positions[i * 2] = xx;
+        positions[i * 2 + 1] = yy;
+    }
+
+    // calculate axes range
+    var pad = 20;
+    if (xaxis._min) {
+        xaxis._min.push({ val: xbounds[0], pad: pad });
+    }
+    if (xaxis._max) {
+        xaxis._max.push({ val: xbounds[1], pad: pad });
+    }
+    if (yaxis._min) {
+        yaxis._min.push({ val: ybounds[0], pad: pad });
+    }
+    if (yaxis._max) {
+        yaxis._max.push({ val: ybounds[1], pad: pad });
     }
 
     calcColorscales(trace);
 
     // TODO: delegate this to webworker if possible (potential )
-    // FIXME: make sure it is a good place to store the tree
     stash._tree = kdtree(positions, 512);
 
     // stash data
@@ -414,15 +433,14 @@ ScatterRegl.calc = function calc(container, trace) {
 };
 
 //TODO: manages selection, range, viewport, that's it
-ScatterRegl.plot = function plot(container, plotinfo, cdata) {
+ScatterRegl.plot = function plot(container, subplot, cdata) {
     var layout = container._fullLayout;
-    var subplot = layout._plots[plotinfo.id];
     var scene = subplot._scene;
     var vpSize = layout._size, width = layout.width, height = layout.height;
     var regl = layout._glcanvas.data()[1].regl;
 
     // that is needed for fills
-    linkTraces(container, plotinfo, cdata);
+    linkTraces(container, subplot, cdata);
 
     // make sure scenes are created
     if (scene.error2d === true) {
