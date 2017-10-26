@@ -218,7 +218,6 @@ exports.calcTransform = function(gd, trace, opts) {
     var i, vi, groupIndex, newGrouping;
 
     var groupIndices = {};
-    var groupToPoints = {};
     var indexToPoints = {};
     var groupings = [];
     for(i = 0; i < groupArray.length; i++) {
@@ -228,13 +227,11 @@ exports.calcTransform = function(gd, trace, opts) {
             groupIndices[vi] = groupings.length;
             newGrouping = [i];
             groupings.push(newGrouping);
-            groupToPoints[vi] = newGrouping;
             indexToPoints[groupIndices[vi]] = newGrouping;
         }
         else groupings[groupIndex].push(i);
     }
 
-    opts.groupToPoints = groupToPoints;
     opts.indexToPoints = indexToPoints;
 
     var aggregations = opts.aggregations;
