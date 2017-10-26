@@ -245,7 +245,7 @@ describe('multiple transforms:', function() {
             groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
             styles: [{
                 target: 'a',
-                value: {marker: {color: 'red'}},
+                value: {marker: {color: 'red'}}
             }, {
                 target: 'b',
                 value: {marker: {color: 'blue'}}
@@ -277,7 +277,55 @@ describe('multiple transforms:', function() {
         }]
     }];
 
+    var mockData2 = [{
+        x:              [1,  2,  3,  4,  5],
+        y:              [2,  3,  1,  7,  9],
+        marker: {size: [10, 20, 20, 20, 10]},
+        transforms: [
+            {
+                type: 'filter',
+                operation: '>',
+                value: 2,
+                target: 'y'
+            },
+            {
+                type: 'aggregate',
+                groups: 'marker.size',
+                aggregations: [
+                    {target: 'x', func: 'sum'}, //20: 6, 10: 5
+                    {target: 'y', func: 'avg'}  //20: 5, 10: 9
+                ]
+            },
+            {
+                type: 'filter',
+                operation: '<',
+                value: 6,
+                target: 'x'
+            }
+        ]
+    }];
+
     afterEach(destroyGraphDiv);
+
+    fit('Plotly.plot should plot the transform traces - filter|aggregate|filter', function(done) {
+        var data = Lib.extendDeep([], mockData2);
+
+        Plotly.plot(gd, data).then(function() {
+            expect(gd.data.length).toEqual(1);
+
+            // this would be the result if we didn't have a second filter
+            // expect(gd._fullData[0].x).toEqual([6, 5]);
+            // expect(gd._fullData[0].y).toEqual([5, 9]);
+            // expect(gd._fullData[0].marker.size).toEqual([20, 10]);
+
+            expect(gd._fullData[0].x).toEqual([5]);
+            expect(gd._fullData[0].y).toEqual([9]);
+            expect(gd._fullData[0].marker.size).toEqual([10]);
+
+            done();
+        });
+    });
+
 
     it('Plotly.plot should plot the transform traces', function(done) {
         var data = Lib.extendDeep([], mockData0);
