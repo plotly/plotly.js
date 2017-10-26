@@ -23,6 +23,8 @@ var locationmodeToIdFinder = {
 };
 
 exports.locationToFeature = function(locationmode, location, features) {
+    if(!location || typeof location !== 'string') return false;
+
     var locationId = getLocationId(locationmode, location);
 
     if(locationId) {

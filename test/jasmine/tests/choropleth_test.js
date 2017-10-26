@@ -160,3 +160,29 @@ describe('Test choropleth hover:', function() {
         .then(done);
     });
 });
+
+describe('choropleth bad data', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should not throw an error with bad locations', function(done) {
+        spyOn(Lib, 'warn');
+        Plotly.newPlot(gd, [{
+            locations: ['canada', 0, null, '', 'utopia'],
+            z: [1, 2, 3, 4, 5],
+            locationmode: 'country names',
+            type: 'choropleth'
+        }])
+        .then(function() {
+            // only utopia warns - others are silently ignored
+            expect(Lib.warn).toHaveBeenCalledTimes(1);
+        })
+        .catch(fail)
+        .then(done);
+    });
+});
