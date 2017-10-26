@@ -34,4 +34,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     handleContoursDefaults(traceIn, traceOut, coerce);
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
+
+    coerce('zhoverformat');
+    // Needed for formatting of hoverlabel if format is not explicitly specified
+    traceOut._separators = layout.separators;
 };

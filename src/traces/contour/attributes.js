@@ -30,6 +30,7 @@ module.exports = extendFlat({
     transpose: heatmapAttrs.transpose,
     xtype: heatmapAttrs.xtype,
     ytype: heatmapAttrs.ytype,
+    zhoverformat: heatmapAttrs.zhoverformat,
 
     connectgaps: heatmapAttrs.connectgaps,
 

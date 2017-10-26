@@ -40,4 +40,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('connectgaps', hasColumns(traceOut) && (traceOut.zsmooth !== false));
 
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
+
+    coerce('zhoverformat');
+    traceOut._separators = layout.separators; // Needed for formatting of hoverlabel if format is not explicitly specified
 };
