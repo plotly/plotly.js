@@ -108,8 +108,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
                 delete traceOut.line.maxcolor;
             }
 
-            // TODO: These shouldb e deleted in accordance with toolpanel convention, but
-            // we can't becuase we require them so that it magically makes the contour
+            // TODO: These should be deleted in accordance with toolpanel convention, but
+            // we can't because we require them so that it magically makes the contour
             // parts of the code happy:
             // delete traceOut.contours.start;
             // delete traceOut.contours.end;
@@ -141,7 +141,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
                 coerce('ncontours');
             }
 
-            handleStyleDefaults(traceIn, traceOut, coerce, layout);
+            handleStyleDefaults(traceIn, traceOut, coerce, layout, {hasHover: false});
 
             delete traceOut.value;
             delete traceOut.operation;

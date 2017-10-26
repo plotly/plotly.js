@@ -474,9 +474,12 @@ describe('hover info', function() {
     }
 
     describe('\'hover info for x/y/z traces', function() {
-        it('should display correct label content', function(done) {
-            var gd = createGraphDiv();
+        var gd;
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
 
+        it('should display correct label content', function(done) {
             Plotly.plot(gd, [{
                 type: 'heatmap',
                 y: [0, 1],
@@ -510,20 +513,20 @@ describe('hover info', function() {
             .then(done);
         });
 
-        it('should display correct label content with specified format', function(done) {
-            var gd = createGraphDiv();
-
+        it('should display correct label content with specified format - heatmap', function(done) {
             Plotly.plot(gd, [{
                 type: 'heatmap',
                 y: [0, 1],
                 z: [[1.11111, 2.2222, 3.33333], [4.44444, 5.55555, 6.66666]],
                 name: 'one',
-                zhoverformat: '.2f'
+                zhoverformat: '.2f',
+                showscale: false
             }, {
                 type: 'heatmap',
                 y: [2, 3],
                 z: [[1, 2, 3], [2, 2, 1]],
-                name: 'two'
+                name: 'two',
+                showscale: false
             }], {
                 width: 500,
                 height: 400,
@@ -538,6 +541,121 @@ describe('hover info', function() {
             })
             .then(function() {
                 _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 1\nz: 5.56',
+                    name: 'one'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('should display correct label content with specified format - contour', function(done) {
+            Plotly.plot(gd, [{
+                type: 'contour',
+                y: [0, 1],
+                z: [[1.11111, 2.2222, 3.33333], [4.44444, 5.55555, 6.66666]],
+                name: 'one',
+                zhoverformat: '.2f',
+                showscale: false
+            }, {
+                type: 'contour',
+                y: [2, 3],
+                z: [[1, 2, 3], [2, 2, 1]],
+                name: 'two',
+                showscale: false
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 50);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 3\nz: 2',
+                    name: 'two'
+                });
+            })
+            .then(function() {
+                _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 1\nz: 5.56',
+                    name: 'one'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('should display correct label content with specified format - histogram2d', function(done) {
+            Plotly.plot(gd, [{
+                type: 'histogram2d',
+                x: [0, 1, 2, 0, 1, 2, 1],
+                y: [0, 0, 0, 1, 1, 1, 1],
+                z: [1.11111, 2.2222, 3.3333, 4.4444, 4.4444, 6.6666, 1.1111],
+                histfunc: 'sum',
+                name: 'one',
+                zhoverformat: '.2f',
+                showscale: false
+            }, {
+                type: 'histogram2d',
+                x: [0, 1, 2, 0, 1, 2, 1, 2, 0, 1, 2],
+                y: [2, 2, 2, 3, 3, 3, 2, 2, 3, 3, 2],
+                name: 'two',
+                showscale: false
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 100);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 3\nz: 2',
+                    name: 'two'
+                });
+            })
+            .then(function() {
+                _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 1\nz: 5.56',
+                    name: 'one'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('should display correct label content with specified format - histogram2dcontour', function(done) {
+            Plotly.plot(gd, [{
+                type: 'histogram2dcontour',
+                x: [0, 1, 2, 0, 1, 2, 1],
+                y: [0, 0, 0, 1, 1, 1, 1],
+                z: [1.11111, 2.2222, 3.3333, 4.4444, 4.4444, 6.6666, 1.1111],
+                histfunc: 'sum',
+                name: 'one',
+                zhoverformat: '.2f',
+                showscale: false
+            }, {
+                type: 'histogram2dcontour',
+                x: [0, 1, 2, 0, 1, 2, 1, 2, 0, 1, 2],
+                y: [2, 2, 2, 3, 3, 3, 2, 2, 3, 3, 2],
+                name: 'two',
+                showscale: false
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 50);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 3\nz: 2',
+                    name: 'two'
+                });
+            })
+            .then(function() {
+                _hover(gd, 250, 270);
                 assertHoverLabelContent({
                     nums: 'x: 1\ny: 1\nz: 5.56',
                     name: 'one'
