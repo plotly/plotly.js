@@ -805,12 +805,11 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
     var hasOnlyLines = (!subTypes.hasMarkers(trace) && !subTypes.hasText(trace));
     if(trace.visible !== true || hasOnlyLines) return selection;
 
-    // filter out points by visible scatter ones
-    if(polygon === false) {
-        // clear selection
-        console.log('clear')
-        for(i = 0; i < cd.length; i++) cd[i].dim = 0;
+    // degenerate polygon does not enable selection
+    if(polygon === false || polygon.degenerate) {
+        if (scene.scatter2d) scene.scatter2d.canvas.style.opacity = 1;
     }
+    // filter out points by visible scatter ones
     else {
         for(var i = 0; i < stash.count; i++) {
             if(polygon.contains([stash.xpx[i], stash.ypx[i]])) {

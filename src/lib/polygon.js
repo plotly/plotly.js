@@ -151,6 +151,16 @@ polygon.tester = function tester(ptsIn) {
         return crossings % 2 === 1;
     }
 
+    // detect if poly is degenerate
+    var degenerate = true;
+    var lastPt = pts[0];
+    for(var i = 1; i < pts.length; i++) {
+        if(lastPt[0] !== pts[i][0] || lastPt[1] !== pts[i][1]) {
+            degenerate = false;
+            break;
+        }
+    }
+
     return {
         xmin: xmin,
         xmax: xmax,
@@ -158,7 +168,8 @@ polygon.tester = function tester(ptsIn) {
         ymax: ymax,
         pts: pts,
         contains: isRect ? rectContains : contains,
-        isRect: isRect
+        isRect: isRect,
+        degenerate: degenerate
     };
 };
 
