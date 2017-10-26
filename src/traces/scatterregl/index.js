@@ -618,7 +618,7 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
     }
     else {
         if (scene.select2d) scene.select2d.regl.clear({color: true});
-        scene.scatter2d.canvas.style.opacity = 1;
+        if (scene.scatter2d) scene.scatter2d.canvas.style.opacity = 1;
     }
 
     // provide viewport and range
@@ -823,7 +823,7 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
         }
 
         // adjust selection transparency via canvas opacity
-        scene.scatter2d.canvas.style.opacity = DESELECTDIM;
+        if (scene.scatter2d) scene.scatter2d.canvas.style.opacity = DESELECTDIM;
     }
 
     return selection;
