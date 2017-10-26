@@ -404,11 +404,11 @@ ScatterRegl.calc = function calc(container, trace) {
             select2d: null
         };
 
-        scene.updateRange = function updateRange(range) {
+        // apply new option to all regl components
+        scene.update = function update(opt) {
             var opts = Array(scene.count);
-            var rangeOpts = {range: range};
             for(var i = 0; i < scene.count; i++) {
-                opts[i] = rangeOpts;
+                opts[i] = opt;
             }
             if(scene.fill2d) scene.fill2d.update(opts);
             if(scene.scatter2d) scene.scatter2d.update(opts);
@@ -452,6 +452,10 @@ ScatterRegl.calc = function calc(container, trace) {
             });
 
             scene.select2d.draw(options);
+
+            //FIXME: this can be a strong guess, possibly we can redraw scene once
+            scene.scatter2d.regl.clear({color: true});
+            scene.draw();
         }
     }
 
@@ -618,7 +622,6 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
     }
     else {
         if (scene.select2d) scene.select2d.regl.clear({color: true});
-        if (scene.scatter2d) scene.scatter2d.canvas.style.opacity = 1;
     }
 
     // provide viewport and range
@@ -653,6 +656,13 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
         }
         else {
             stash.xpx = stash.ypx = null;
+
+            //reset opacities
+            if (scene.scatter2d) {
+                scene.scatter2d.update(scene.scatterOptions.map(function (opt) {
+                        return {opacity: opt.opacity}
+                }));
+            }
         }
 
         return {
@@ -814,7 +824,11 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
 
     // degenerate polygon does not enable selection
     if(polygon === false || polygon.degenerate) {
-        if (scene.scatter2d) scene.scatter2d.canvas.style.opacity = 1;
+        if (scene.scatter2d) {
+            scene.scatter2d.update(scene.scatterOptions.map(function (opt) {
+                return {opacity: opt.opacity}
+            }));
+        };
     }
     // filter out points by visible scatter ones
     else {
@@ -829,7 +843,11 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
         }
 
         // adjust selection transparency via canvas opacity
-        if (scene.scatter2d) scene.scatter2d.canvas.style.opacity = DESELECTDIM;
+        if (scene.scatter2d) {
+            scene.scatter2d.update(scene.scatterOptions.map(function (opt) {
+                return {opacity: opt.opacity * DESELECTDIM}
+            }));
+        };
     }
 
     return selection;

@@ -750,12 +750,12 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 editY2 = editY && !ya2.fixedrange && (ya.indexOf(ya2) !== -1);
 
             // scattergl translate
-            if(subplot._scene && subplot._scene.updateRange) {
+            if(subplot._scene && subplot._scene.update) {
                 // FIXME: possibly we could update axis internal _r and _rl here
                 var xaRange = Lib.simpleMap(xa2.range, xa2.r2l),
                     yaRange = Lib.simpleMap(ya2.range, ya2.r2l);
-                subplot._scene.updateRange(
-                    [xaRange[0], yaRange[0], xaRange[1], yaRange[1]]
+                subplot._scene.update(
+                    {range: [xaRange[0], yaRange[0], xaRange[1], yaRange[1]]}
                 );
             }
 
