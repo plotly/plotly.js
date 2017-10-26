@@ -89,7 +89,8 @@ exports.quadrature = function quadrature(dx, dy) {
  *
  * @param {object} pointData : point data object (gets mutated here)
  * @param {object} trace : full trace object
- * @param {number} pointNumber : point number
+ * @param {number|Array(number)} pointNumber : point number. May be a length-2 array
+ *     [row, col] to dig into 2D arrays
  */
 exports.appendArrayPointValue = function(pointData, trace, pointNumber) {
     var arrayAttrs = trace._arrayAttrs;
@@ -100,22 +101,68 @@ exports.appendArrayPointValue = function(pointData, trace, pointNumber) {
 
     for(var i = 0; i < arrayAttrs.length; i++) {
         var astr = arrayAttrs[i];
-        var key;
-
-        if(astr === 'ids') key = 'id';
-        else if(astr === 'locations') key = 'location';
-        else key = astr;
+        var key = getPointKey(astr);
 
         if(pointData[key] === undefined) {
             var val = Lib.nestedProperty(trace, astr).get();
+            var pointVal = getPointData(val, pointNumber);
 
-            if(Array.isArray(pointNumber)) {
-                if(Array.isArray(val) && Array.isArray(val[pointNumber[0]])) {
-                    pointData[key] = val[pointNumber[0]][pointNumber[1]];
-                }
-            } else {
-                pointData[key] = val[pointNumber];
-            }
+            if(pointVal !== undefined) pointData[key] = pointVal;
         }
     }
 };
+
+/**
+ * Appends values inside array attributes corresponding to given point number array
+ * For use when pointData references a plot entity that arose (or potentially arose)
+ * from multiple points in the input data
+ *
+ * @param {object} pointData : point data object (gets mutated here)
+ * @param {object} trace : full trace object
+ * @param {Array(number)|Array(Array(number))} pointNumbers : Array of point numbers.
+ *     Each entry in the array may itself be a length-2 array [row, col] to dig into 2D arrays
+ */
+exports.appendArrayMultiPointValues = function(pointData, trace, pointNumbers) {
+    var arrayAttrs = trace._arrayAttrs;
+
+    if(!arrayAttrs) {
+        return;
+    }
+
+    for(var i = 0; i < arrayAttrs.length; i++) {
+        var astr = arrayAttrs[i];
+        var key = getPointKey(astr);
+
+        if(pointData[key] === undefined) {
+            var val = Lib.nestedProperty(trace, astr).get();
+            var keyVal = new Array(pointNumbers.length);
+
+            for(var j = 0; j < pointNumbers.length; j++) {
+                keyVal[j] = getPointData(val, pointNumbers[j]);
+            }
+            pointData[key] = keyVal;
+        }
+    }
+};
+
+var pointKeyMap = {
+    ids: 'id',
+    locations: 'location',
+    labels: 'label',
+    values: 'value',
+    'marker.colors': 'color'
+};
+
+function getPointKey(astr) {
+    return pointKeyMap[astr] || astr;
+}
+
+function getPointData(val, pointNumber) {
+    if(Array.isArray(pointNumber)) {
+        if(Array.isArray(val) && Array.isArray(val[pointNumber[0]])) {
+            return val[pointNumber[0]][pointNumber[1]];
+        }
+    } else {
+        return val[pointNumber];
+    }
+}

@@ -155,14 +155,6 @@ exports.loneHover = function loneHover(hoverItem, opts) {
 
 // The actual implementation is here:
 function _hover(gd, evt, subplot, noHoverEvent) {
-    if((subplot === 'pie' || subplot === 'sankey') && !noHoverEvent) {
-        gd.emit('plotly_hover', {
-            event: evt.originalEvent,
-            points: [evt]
-        });
-        return;
-    }
-
     if(!subplot) subplot = 'xy';
 
     // if the user passed in an array of subplots,

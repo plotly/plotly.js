@@ -24,7 +24,13 @@ module.exports = {
     labels: {
         valType: 'data_array',
         editType: 'calc',
-        description: 'Sets the sector labels.'
+        description: [
+            'Sets the sector labels.',
+            'If `labels` entries are duplicated, we sum associated `values`',
+            'or simply count occurrences if `values` is not provided.',
+            'For other array attributes (including color) we use the first',
+            'non-empty entry among all occurrences of the label.'
+        ].join(' ')
     },
     // equivalent of x0 and dx, if label is missing
     label0: {
@@ -50,7 +56,10 @@ module.exports = {
     values: {
         valType: 'data_array',
         editType: 'calc',
-        description: 'Sets the values of the sectors of this pie chart.'
+        description: [
+            'Sets the values of the sectors of this pie chart.',
+            'If omitted, we count occurrences of each label.'
+        ].join(' ')
     },
 
     marker: {
