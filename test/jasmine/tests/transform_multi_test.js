@@ -278,8 +278,8 @@ describe('multiple transforms:', function() {
     }];
 
     var mockData2 = [{
-        x:              [1,  2,  3,  4,  5],
-        y:              [2,  3,  1,  7,  9],
+        x: [1, 2, 3, 4, 5],
+        y: [2, 3, 1, 7, 9],
         marker: {size: [10, 20, 20, 20, 10]},
         transforms: [
             {
@@ -292,8 +292,8 @@ describe('multiple transforms:', function() {
                 type: 'aggregate',
                 groups: 'marker.size',
                 aggregations: [
-                    {target: 'x', func: 'sum'}, //20: 6, 10: 5
-                    {target: 'y', func: 'avg'}  //20: 5, 10: 9
+                    {target: 'x', func: 'sum'}, // 20: 6, 10: 5
+                    {target: 'y', func: 'avg'}  // 20: 5, 10: 9
                 ]
             },
             {
@@ -307,13 +307,13 @@ describe('multiple transforms:', function() {
 
     afterEach(destroyGraphDiv);
 
-    fit('Plotly.plot should plot the transform traces - filter|aggregate|filter', function(done) {
+    it('Plotly.plot should plot the transform traces - filter|aggregate|filter', function(done) {
         var data = Lib.extendDeep([], mockData2);
 
         Plotly.plot(gd, data).then(function() {
             expect(gd.data.length).toEqual(1);
 
-            // this would be the result if we didn't have a second filter
+            // this would be the result if we didn't have a second filter - kept for test case overview
             // expect(gd._fullData[0].x).toEqual([6, 5]);
             // expect(gd._fullData[0].y).toEqual([5, 9]);
             // expect(gd._fullData[0].marker.size).toEqual([20, 10]);
@@ -321,6 +321,10 @@ describe('multiple transforms:', function() {
             expect(gd._fullData[0].x).toEqual([5]);
             expect(gd._fullData[0].y).toEqual([9]);
             expect(gd._fullData[0].marker.size).toEqual([10]);
+
+            expect(gd._fullData[0].transforms[0].indexToPoints).toEqual({0: [1], 1: [3], 2: [4]});
+            expect(gd._fullData[0].transforms[1].indexToPoints).toEqual({0: [1, 3], 1: [4]});
+            expect(gd._fullData[0].transforms[2].indexToPoints).toEqual({0: [4]});
 
             done();
         });

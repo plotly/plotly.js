@@ -220,6 +220,12 @@ exports.calcTransform = function(gd, trace, opts) {
     var groupIndices = {};
     var indexToPoints = {};
     var groupings = [];
+
+    var prevTransforms = trace.transforms.filter(function(tr) {return tr.indexToPoints;});
+    var originalPointsAccessor = prevTransforms.length ?
+        function(i) {return prevTransforms[prevTransforms.length - 1].indexToPoints[i];} :
+        function(i) {return [i];};
+
     for(i = 0; i < groupArray.length; i++) {
         vi = groupArray[i];
         groupIndex = groupIndices[vi];
@@ -227,9 +233,12 @@ exports.calcTransform = function(gd, trace, opts) {
             groupIndices[vi] = groupings.length;
             newGrouping = [i];
             groupings.push(newGrouping);
-            indexToPoints[groupIndices[vi]] = newGrouping;
+            indexToPoints[groupIndices[vi]] = originalPointsAccessor(i);
         }
-        else groupings[groupIndex].push(i);
+        else {
+            groupings[groupIndex].push(i);
+            indexToPoints[groupIndices[vi]] = indexToPoints[groupIndices[vi]].concat(originalPointsAccessor(i));
+        }
     }
 
     opts.indexToPoints = indexToPoints;
