@@ -184,11 +184,18 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         }
 
         selection = [];
+
+        var traceSelections = [], traceSelection;
         for(i = 0; i < searchTraces.length; i++) {
             searchInfo = searchTraces[i];
-            [].push.apply(selection, fillSelectionItem(
-                searchInfo.selectPoints(searchInfo, poly), searchInfo
-            ));
+            traceSelection = searchInfo.selectPoints(searchInfo, poly);
+            traceSelections.push(traceSelection);
+            selection = selection.concat(fillSelectionItem(traceSelection, searchInfo));
+        }
+
+        // update scatterregl scene
+        if (plotinfo._scene) {
+            plotinfo._scene.select(traceSelections);
         }
 
         eventData = {points: selection};
