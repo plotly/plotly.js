@@ -31,6 +31,8 @@ var polygon = module.exports = {};
  *          returns boolean: is pt inside the polygon (including on its edges)
  */
 polygon.tester = function tester(ptsIn) {
+    if(Array.isArray(ptsIn[0][0])) return polygon.multitester(ptsIn);
+
     var pts = ptsIn.slice(),
         xmin = pts[0][0],
         xmax = xmin,
@@ -157,6 +159,43 @@ polygon.tester = function tester(ptsIn) {
         pts: pts,
         contains: isRect ? rectContains : contains,
         isRect: isRect
+    };
+};
+
+/**
+ * Test multiple polygons
+ */
+polygon.multitester = function multitester(list) {
+    var testers = [],
+        xmin = list[0][0][0],
+        xmax = xmin,
+        ymin = list[0][0][1],
+        ymax = ymin;
+
+    for(var i = 0; i < list.length; i++) {
+        var tester = polygon.tester(list[i]);
+        testers.push(tester);
+        xmin = Math.min(xmin, tester.xmin);
+        xmax = Math.max(xmax, tester.xmax);
+        ymin = Math.min(ymin, tester.ymin);
+        ymax = Math.max(ymax, tester.ymax);
+    }
+
+    function contains(pt, arg) {
+        for(var i = 0; i < testers.length; i++) {
+            if(testers[i].contains(pt, arg)) return true;
+        }
+        return false;
+    }
+
+    return {
+        xmin: xmin,
+        xmax: xmax,
+        ymin: ymin,
+        ymax: ymax,
+        pts: [],
+        contains: contains,
+        isRect: false
     };
 };
 

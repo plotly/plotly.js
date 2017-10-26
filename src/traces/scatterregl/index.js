@@ -26,9 +26,9 @@ var createScatter = require('regl-scatter2d');
 var createLine = require('regl-line2d');
 var createError = require('regl-error2d');
 var svgSdf = require('svg-path-sdf');
+var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 var MAXDIST = Fx.constants.MAXDIST;
-var DESELECTDIM = 0.2;
 var SYMBOL_SDF_SIZE = 200;
 var SYMBOL_SIZE = 20;
 var SYMBOL_STROKE = SYMBOL_SIZE / 20;
@@ -522,7 +522,7 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
     if(!scene) return;
 
     var vpSize = layout._size, width = layout.width, height = layout.height;
-    var regl = layout._glcanvas.data()[1].regl;
+    var regl = layout._glcanvas.data()[0].regl;
 
     // that is needed for fills
     linkTraces(container, subplot, cdata);
@@ -608,14 +608,13 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
     var dragmode = layout.dragmode;
     if (dragmode === 'lasso' || dragmode === 'select') {
         if(!scene.select2d && scene.scatter2d) {
-            var selectRegl = layout._glcanvas.data()[0].regl;
+            var selectRegl = layout._glcanvas.data()[1].regl;
 
             scene.select2d = createScatter(selectRegl);
+
+            //TODO: modify options here according to the proposed selection options
             scene.select2d.update(scene.scatterOptions);
         }
-
-        // adjust selection transparency via canvas opacity
-        scene.scatter2d.canvas.style.opacity = DESELECTDIM;
     }
     else {
         if (scene.select2d) scene.select2d.regl.clear({color: true});
@@ -822,6 +821,9 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
                 });
             }
         }
+
+        // adjust selection transparency via canvas opacity
+        scene.scatter2d.canvas.style.opacity = DESELECTDIM;
     }
 
     return selection;
