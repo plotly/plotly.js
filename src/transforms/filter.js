@@ -170,6 +170,8 @@ exports.calcTransform = function(gd, trace, opts) {
     var d2c = Axes.getDataToCoordFunc(gd, trace, target, targetArray);
     var filterFunc = getFilterFunc(opts, d2c, targetCalendar);
     var originalArrays = {};
+    var indexToPoints = {};
+    var index = 0;
 
     function forAllAttrs(fn, index) {
         for(var j = 0; j < arrayAttrs.length; j++) {
@@ -204,10 +206,33 @@ exports.calcTransform = function(gd, trace, opts) {
     forAllAttrs(initFn);
 
     // loop through filter array, fill trace arrays if passed
-    for(var i = 0; i < len; i++) {
-        var passed = filterFunc(targetArray[i]);
-        if(passed) forAllAttrs(fillFn, i);
+
+    var prevTransforms = trace.transforms.filter(function(tr) {return tr.indexToPoints;});
+
+    if(prevTransforms.length > 0) {
+
+        var prevTransform = prevTransforms[prevTransforms.length - 1];
+        var prevIndexToPoints = prevTransform.indexToPoints;
+
+        for(var i = 0; i < len; i++) {
+            var passed = filterFunc(targetArray[i]);
+            if(passed) {
+                forAllAttrs(fillFn, i);
+                indexToPoints[index++] = prevIndexToPoints[i];
+            }
+        }
+    } else {
+        for(var i = 0; i < len; i++) {
+            var passed = filterFunc(targetArray[i]);
+            if(passed) {
+                forAllAttrs(fillFn, i);
+                indexToPoints[index++] = [i];
+            }
+        }
     }
+
+    opts.indexToPoints = indexToPoints;
+    console.log(indexToPoints)
 };
 
 function getFilterFunc(opts, d2c, targetCalendar) {
