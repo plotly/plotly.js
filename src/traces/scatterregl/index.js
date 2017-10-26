@@ -92,7 +92,7 @@ ScatterRegl.calc = function calc(container, trace) {
 
     // we don't build a tree for log axes since it takes long to convert log2px
     // and it is also
-    if (count > 1e4 && xaxis.type !== 'log' && yaxis.type !== 'log') {
+    if (xaxis.type !== 'log' && yaxis.type !== 'log') {
         // FIXME: delegate this to webworker
         stash.tree = kdtree(positions, 512);
     }
@@ -694,11 +694,17 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval) {
         x = stash.x,
         y = stash.y,
         xpx = xa.c2p(xval),
-        ypx = xa.c2p(yval),
+        ypx = ya.c2p(yval),
         ids;
 
     // FIXME: make sure this is a proper way to calc search radius
     if (stash.tree) {
+        // ids = stash.tree.range(
+        //     xval - MAXDIST / xa._m, yval - MAXDIST / ya._m,
+        //     xval + MAXDIST / xa._m, yval + MAXDIST / ya._m
+        // );
+
+        //FIXME: this works only for the case of linear points
         ids = stash.tree.within(xval, yval, MAXDIST / xa._m);
     }
     else if (stash.ids) {
@@ -707,12 +713,13 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval) {
     else return [pointData];
 
     // pick the id closest to the point
-    var min = MAXDIST, id = ids[0], ptx, pty;
+    // note that point possibly may not be found
+    var min = MAXDIST, id, ptx, pty;
 
     for(var i = 0; i < ids.length; i++) {
         ptx = trace.x[ids[i]];
         pty = trace.y[ids[i]];
-        var dx = xa.c2p(ptx) - xpx, dy = xa.c2p(pty) - ypx;
+        var dx = xa.c2p(ptx) - xpx, dy = ya.c2p(pty) - ypx;
 
         var dist = Math.sqrt(dx * dx + dy * dy);
         if(dist < min) {
@@ -727,8 +734,8 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval) {
 
     // the closest data point
     var di = {
-        x: x[id],
-        y: y[id]
+        x: trace.x[id],
+        y: trace.y[id]
     };
 
     // that is single-item arrays_to_calcdata excerpt, since we are doing it for a single point and we don't have to do it beforehead for 1e6 points
