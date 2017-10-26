@@ -205,34 +205,21 @@ exports.calcTransform = function(gd, trace, opts) {
     // copy all original array attribute values, and clear arrays in trace
     forAllAttrs(initFn);
 
-    // loop through filter array, fill trace arrays if passed
-
     var prevTransforms = trace.transforms.filter(function(tr) {return tr.indexToPoints;});
+    var originalPointsAccessor = prevTransforms.length ?
+        function(i) {return prevTransforms[prevTransforms.length - 1].indexToPoints[i];} :
+        function(i) {return [i];};
 
-    if(prevTransforms.length > 0) {
-
-        var prevTransform = prevTransforms[prevTransforms.length - 1];
-        var prevIndexToPoints = prevTransform.indexToPoints;
-
-        for(var i = 0; i < len; i++) {
-            var passed = filterFunc(targetArray[i]);
-            if(passed) {
-                forAllAttrs(fillFn, i);
-                indexToPoints[index++] = prevIndexToPoints[i];
-            }
-        }
-    } else {
-        for(var i = 0; i < len; i++) {
-            var passed = filterFunc(targetArray[i]);
-            if(passed) {
-                forAllAttrs(fillFn, i);
-                indexToPoints[index++] = [i];
-            }
+    // loop through filter array, fill trace arrays if passed
+    for(var i = 0; i < len; i++) {
+        var passed = filterFunc(targetArray[i]);
+        if(passed) {
+            forAllAttrs(fillFn, i);
+            indexToPoints[index++] = originalPointsAccessor(i);
         }
     }
 
     opts.indexToPoints = indexToPoints;
-    console.log(indexToPoints)
 };
 
 function getFilterFunc(opts, d2c, targetCalendar) {

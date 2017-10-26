@@ -143,7 +143,7 @@ describe('filter transforms calc:', function() {
         expect(out[0].x).toEqual([0, 1]);
         expect(out[0].y).toEqual([1, 2]);
         expect(out[0].z).toEqual(['2016-10-21', '2016-12-02']);
-        expect(out[0].transforms[0].indexToPoints).toEqual({0: [3], 1 :[4]});
+        expect(out[0].transforms[0].indexToPoints).toEqual({0: [3], 1: [4]});
     });
 
     it('should use the calendar from the target attribute if target is a string', function() {
@@ -262,7 +262,7 @@ describe('filter transforms calc:', function() {
         expect(out[0].x).toEqual([-2, 2, 3]);
         expect(out[0].y).toEqual([3, 3, 1]);
         expect(out[0].marker.color).toEqual([0.3, 0.3, 0.4]);
-        expect(out[0].transforms[0].indexToPoints).toEqual({0: [2], 1 :[5], 2: [6]});
+        expect(out[0].transforms[0].indexToPoints).toEqual({0: [2], 1: [5], 2: [6]});
     });
 
     it('filters should handle array on base trace attributes', function() {
@@ -316,8 +316,8 @@ describe('filter transforms calc:', function() {
 
         expect(out[0].x).toEqual([1, 2]);
         expect(out[0].y).toEqual([2, 3]);
-        expect(out[0].transforms[0].indexToPoints).toEqual({0: [4], 1 :[5], 2: [6]});
-        expect(out[0].transforms[1].indexToPoints).toEqual({0: [4], 1 :[5]});
+        expect(out[0].transforms[0].indexToPoints).toEqual({0: [4], 1: [5], 2: [6]});
+        expect(out[0].transforms[1].indexToPoints).toEqual({0: [4], 1: [5]});
     });
 
     it('filters should chain as AND (case 2)', function() {
@@ -343,7 +343,7 @@ describe('filter transforms calc:', function() {
 
         expect(out[0].x).toEqual([3]);
         expect(out[0].y).toEqual([1]);
-        expect(out[0].transforms[0].indexToPoints).toEqual({0: [4], 1 :[5], 2: [6]});
+        expect(out[0].transforms[0].indexToPoints).toEqual({0: [4], 1: [5], 2: [6]});
         expect(out[0].transforms[2].indexToPoints).toEqual({0: [6]});
     });
 
