@@ -57,8 +57,21 @@ ScatterRegl.calc = function calc(container, trace) {
     // makeCalcdata runs d2c (data-to-coordinate) on every point
     var x = xaxis.type === 'linear' ? trace.x : xaxis.makeCalcdata(trace, 'x');
     var y = yaxis.type === 'linear' ? trace.y : yaxis.makeCalcdata(trace, 'y');
-
     var count = Math.max(x ? x.length : 0, y ? y.length : 0), i, l, xx, yy, ptrX = 0, ptrY = 0;
+
+    if (!x) {
+        x = Array(count)
+        for (let i = 0; i < count; i++) {
+            x[i] = i
+        }
+    }
+    if (!y) {
+        y = Array(count)
+        for (let i = 0; i < count; i++) {
+            y[i] = i
+        }
+    }
+
     var lineOptions, scatterOptions, errorXOptions, errorYOptions, fillOptions;
     var isVisible, hasLines, hasErrorX, hasErrorY, hasError, hasMarkers, hasFill;
     var linePositions;
@@ -81,8 +94,8 @@ ScatterRegl.calc = function calc(container, trace) {
     for(i = 0; i < count; i++) {
         // if no x defined, we are creating simple int sequence (API)
         // we use parseFloat because it gives NaN (we need that for empty values to avoid drawing lines) and it is incredibly fast
-        xx = x ? parseFloat(x[i]) : i;
-        yy = y ? parseFloat(y[i]) : i;
+        xx = parseFloat(x[i]);
+        yy = parseFloat(y[i]);
 
         positions[i * 2] = xx;
         positions[i * 2 + 1] = yy;
@@ -362,16 +375,16 @@ ScatterRegl.calc = function calc(container, trace) {
 
             // update axes fast
             var pad = scatterOptions.size;
-            if(xaxis._min && !xaxis._min.length) {
+            if(xaxis._min) {
                 xaxis._min.push({ val: xbounds[0], pad: pad });
             }
-            if(xaxis._max && !xaxis._max.length) {
+            if(xaxis._max) {
                 xaxis._max.push({ val: xbounds[1], pad: pad });
             }
-            if(yaxis._min && !yaxis._min.length) {
+            if(yaxis._min) {
                 yaxis._min.push({ val: ybounds[0], pad: pad });
             }
-            if(yaxis._max && !yaxis._max.length) {
+            if(yaxis._max) {
                 yaxis._max.push({ val: ybounds[1], pad: pad });
             }
         }
