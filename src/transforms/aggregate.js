@@ -11,6 +11,7 @@
 var Axes = require('../plots/cartesian/axes');
 var Lib = require('../lib');
 var PlotSchema = require('../plot_api/plot_schema');
+var pointsAccessorFunction = require('./helpers').pointsAccessorFunction;
 var BADNUM = require('../constants/numerical').BADNUM;
 
 exports.moduleType = 'transform';
@@ -221,10 +222,7 @@ exports.calcTransform = function(gd, trace, opts) {
     var indexToPoints = {};
     var groupings = [];
 
-    var prevTransforms = trace.transforms.filter(function(tr) {return tr._indexToPoints;});
-    var originalPointsAccessor = prevTransforms.length ?
-        function(i) {return prevTransforms[prevTransforms.length - 1]._indexToPoints[i];} :
-        function(i) {return [i];};
+    var originalPointsAccessor = pointsAccessorFunction(trace.transforms, opts);
 
     for(i = 0; i < groupArray.length; i++) {
         vi = groupArray[i];
@@ -237,7 +235,7 @@ exports.calcTransform = function(gd, trace, opts) {
         }
         else {
             groupings[groupIndex].push(i);
-            indexToPoints[groupIndices[vi]] = indexToPoints[groupIndices[vi]].concat(originalPointsAccessor(i));
+            indexToPoints[groupIndices[vi]] = (indexToPoints[groupIndices[vi]] || []).concat(originalPointsAccessor(i));
         }
     }
 

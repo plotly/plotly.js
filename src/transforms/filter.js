@@ -11,6 +11,7 @@
 var Lib = require('../lib');
 var Registry = require('../registry');
 var Axes = require('../plots/cartesian/axes');
+var pointsAccessorFunction = require('./helpers').pointsAccessorFunction;
 
 var COMPARISON_OPS = ['=', '!=', '<', '>=', '>', '<='];
 var INTERVAL_OPS = ['[]', '()', '[)', '(]', '][', ')(', '](', ')['];
@@ -205,10 +206,7 @@ exports.calcTransform = function(gd, trace, opts) {
     // copy all original array attribute values, and clear arrays in trace
     forAllAttrs(initFn);
 
-    var prevTransforms = trace.transforms.filter(function(tr) {return tr._indexToPoints;});
-    var originalPointsAccessor = prevTransforms.length ?
-        function(i) {return prevTransforms[prevTransforms.length - 1]._indexToPoints[i];} :
-        function(i) {return [i];};
+    var originalPointsAccessor = pointsAccessorFunction(trace.transforms, opts);
 
     // loop through filter array, fill trace arrays if passed
     for(var i = 0; i < len; i++) {
