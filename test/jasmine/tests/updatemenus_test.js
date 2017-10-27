@@ -671,6 +671,10 @@ describe('update menus interactions', function() {
             // fold up buttons whenever new menus are added
             assertMenus([0, 0]);
 
+            // dropdown buttons container should still be on top of headers (and non-dropdown buttons)
+            var gButton = d3.select('.updatemenu-dropdown-button-group');
+            expect(gButton.node().nextSibling).toBe(null);
+
             return Plotly.relayout(gd, {
                 'updatemenus[0].bgcolor': null,
                 'paper_bgcolor': 'black'
@@ -826,7 +830,7 @@ describe('update menus interaction with other components:', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('buttons show be drawn above sliders', function(done) {
+    it('draws buttons above sliders', function(done) {
 
         Plotly.plot(createGraphDiv(), [{
             x: [1, 2, 3],
@@ -869,19 +873,12 @@ describe('update menus interaction with other components:', function() {
         })
         .then(function() {
             var infoLayer = d3.select('g.infolayer');
-            var containerClassNames = ['slider-container', 'updatemenu-container'];
-            var list = [];
-
-            infoLayer.selectAll('*').each(function() {
-                var className = d3.select(this).attr('class');
-
-                if(containerClassNames.indexOf(className) !== -1) {
-                    list.push(className);
-                }
-            });
-
-            expect(list).toEqual(containerClassNames);
+            var menuLayer = d3.select('g.menulayer');
+            expect(infoLayer.selectAll('.slider-container').size()).toBe(1);
+            expect(menuLayer.selectAll('.updatemenu-container').size()).toBe(1);
+            expect(infoLayer.node().nextSibling).toBe(menuLayer.node());
         })
+        .catch(fail)
         .then(done);
     });
 });
