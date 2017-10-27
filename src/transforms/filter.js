@@ -205,9 +205,9 @@ exports.calcTransform = function(gd, trace, opts) {
     // copy all original array attribute values, and clear arrays in trace
     forAllAttrs(initFn);
 
-    var prevTransforms = trace.transforms.filter(function(tr) {return tr.indexToPoints;});
+    var prevTransforms = trace.transforms.filter(function(tr) {return tr._indexToPoints;});
     var originalPointsAccessor = prevTransforms.length ?
-        function(i) {return prevTransforms[prevTransforms.length - 1].indexToPoints[i];} :
+        function(i) {return prevTransforms[prevTransforms.length - 1]._indexToPoints[i];} :
         function(i) {return [i];};
 
     // loop through filter array, fill trace arrays if passed
@@ -219,7 +219,7 @@ exports.calcTransform = function(gd, trace, opts) {
         }
     }
 
-    opts.indexToPoints = indexToPoints;
+    opts._indexToPoints = indexToPoints;
 };
 
 function getFilterFunc(opts, d2c, targetCalendar) {

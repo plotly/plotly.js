@@ -322,9 +322,9 @@ describe('multiple transforms:', function() {
             expect(gd._fullData[0].y).toEqual([9]);
             expect(gd._fullData[0].marker.size).toEqual([10]);
 
-            expect(gd._fullData[0].transforms[0].indexToPoints).toEqual({0: [1], 1: [3], 2: [4]});
-            expect(gd._fullData[0].transforms[1].indexToPoints).toEqual({0: [1, 3], 1: [4]});
-            expect(gd._fullData[0].transforms[2].indexToPoints).toEqual({0: [4]});
+            expect(gd._fullData[0].transforms[0]._indexToPoints).toEqual({0: [1], 1: [3], 2: [4]});
+            expect(gd._fullData[0].transforms[1]._indexToPoints).toEqual({0: [1, 3], 1: [4]});
+            expect(gd._fullData[0].transforms[2]._indexToPoints).toEqual({0: [4]});
 
             done();
         });

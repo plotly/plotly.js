@@ -61,7 +61,7 @@ describe('aggregate', function() {
         expect(traceOut.marker.line.width).toEqual([4, 1]);
 
         var transform = traceOut.transforms[0];
-        var inverseMapping = transform.indexToPoints;
+        var inverseMapping = transform._indexToPoints;
         expect(inverseMapping).toEqual({0: [0, 2, 3, 4], 1: [1]});
     });
 
@@ -169,7 +169,7 @@ describe('aggregate', function() {
         expect(traceOut.text).toEqual(['b', 'b']);
 
         var transform = traceOut.transforms[0];
-        var inverseMapping = transform.indexToPoints;
+        var inverseMapping = transform._indexToPoints;
         expect(inverseMapping).toEqual({0: [0, 1], 1: [2, 3]});
     });
 
@@ -195,7 +195,7 @@ describe('aggregate', function() {
         expect(traceOut.marker.size).toEqual([10, 20]);
 
         var transform = traceOut.transforms[0];
-        var inverseMapping = transform.indexToPoints;
+        var inverseMapping = transform._indexToPoints;
         expect(inverseMapping).toEqual({0: [0, 1, 4], 1: [2, 3]});
     });
 
@@ -217,7 +217,7 @@ describe('aggregate', function() {
         expect(traceOut.marker.size).toEqual([10, 20]);
 
         var transform = traceOut.transforms[0];
-        var inverseMapping = transform.indexToPoints;
+        var inverseMapping = transform._indexToPoints;
         expect(inverseMapping).toEqual({0: [0, 1, 4], 1: [2, 3]});
     });
 
