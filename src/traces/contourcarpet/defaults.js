@@ -80,7 +80,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             // If there's a fill color, use it at full opacity for the line color
             var lineDfltColor = traceOut.fillcolor ? addOpacity(traceOut.fillcolor, 1) : defaultColor;
 
-            handleStyleDefaults(traceIn, traceOut, coerce, layout, lineDfltColor, 2);
+            handleStyleDefaults(traceIn, traceOut, coerce, layout, {
+                hasHover: false,
+                defaultColor: lineDfltColor,
+                defaultWidth: 2
+            });
 
             if(contours.operation === '=') {
                 coerce('line.color', defaultColor);
