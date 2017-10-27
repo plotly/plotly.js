@@ -97,6 +97,9 @@ module.exports = function draw(gd) {
 
     // remove exiting header, remove dropped buttons and reset margins
     if(headerGroups.enter().size()) {
+        // make sure gButton is on top of all headers
+        gButton.node().parentNode.appendChild(gButton.node());
+
         gButton
             .call(removeAllButtons)
             .attr(constants.menuIndexAttrName, '-1');
@@ -135,13 +138,12 @@ module.exports = function draw(gd) {
     });
 };
 
+/**
+ * get only visible menus for display
+ */
 function makeMenuData(fullLayout) {
-    var contOpts = fullLayout[constants.name],
-        menuData = [];
-
-    // Filter visible dropdowns and attach '_index' to each
-    // fullLayout options object to be used for 'object constancy'
-    // in the data join key function.
+    var contOpts = fullLayout[constants.name];
+    var menuData = [];
 
     for(var i = 0; i < contOpts.length; i++) {
         var item = contOpts[i];
@@ -154,7 +156,7 @@ function makeMenuData(fullLayout) {
 
 // Note that '_index' is set at the default step,
 // it corresponds to the menu index in the user layout update menu container.
-// Because a menu can b set invisible,
+// Because a menu can be set invisible,
 // this is a more 'consistent' field than the index in the menuData.
 function keyFunction(menuOpts) {
     return menuOpts._index;

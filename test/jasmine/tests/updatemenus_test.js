@@ -671,6 +671,10 @@ describe('update menus interactions', function() {
             // fold up buttons whenever new menus are added
             assertMenus([0, 0]);
 
+            // dropdown buttons container should still be on top of headers (and non-dropdown buttons)
+            var gButton = d3.select('.updatemenu-dropdown-button-group');
+            expect(gButton.node().nextSibling).toBe(null);
+
             return Plotly.relayout(gd, {
                 'updatemenus[0].bgcolor': null,
                 'paper_bgcolor': 'black'
