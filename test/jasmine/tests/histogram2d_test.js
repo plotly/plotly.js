@@ -20,14 +20,26 @@ describe('Test histogram2d', function() {
             traceOut = {};
         });
 
-        it('should set zsmooth to false when zsmooth is empty', function() {
+        it('should quit early if there is no data', function() {
             traceIn = {};
             supplyDefaults(traceIn, traceOut, '', {});
+            expect(traceOut.visible).toBe(false);
+            ['zsmooth', 'xgap', 'ygap', 'calendar'].forEach(function(v) {
+                expect(traceOut[v]).toBeUndefined(v);
+            });
+        });
+
+        it('should set zsmooth to false when zsmooth is empty', function() {
+            traceIn = {x: [1, 2], y: [1, 2]};
+            supplyDefaults(traceIn, traceOut, '', {});
+            expect(traceOut.visible).not.toBe(false);
             expect(traceOut.zsmooth).toBe(false);
         });
 
         it('doesnt step on zsmooth when zsmooth is set', function() {
             traceIn = {
+                x: [1, 2],
+                y: [1, 2],
                 zsmooth: 'fast'
             };
             supplyDefaults(traceIn, traceOut, '', {});
@@ -35,7 +47,7 @@ describe('Test histogram2d', function() {
         });
 
         it('should set xgap and ygap to 0 when xgap and ygap are empty', function() {
-            traceIn = {};
+            traceIn = {x: [1, 2], y: [1, 2]};
             supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.xgap).toBe(0);
             expect(traceOut.ygap).toBe(0);
@@ -43,6 +55,8 @@ describe('Test histogram2d', function() {
 
         it('shouldnt step on xgap and ygap when xgap and ygap are set', function() {
             traceIn = {
+                x: [1, 2],
+                y: [1, 2],
                 xgap: 10,
                 ygap: 5
             };
@@ -53,6 +67,8 @@ describe('Test histogram2d', function() {
 
         it('shouldnt coerce gap when zsmooth is set', function() {
             traceIn = {
+                x: [1, 2],
+                y: [1, 2],
                 xgap: 10,
                 ygap: 5,
                 zsmooth: 'best'

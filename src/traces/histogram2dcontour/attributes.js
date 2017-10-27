@@ -33,7 +33,8 @@ module.exports = extendFlat({
     autocontour: contourAttrs.autocontour,
     ncontours: contourAttrs.ncontours,
     contours: contourAttrs.contours,
-    line: contourAttrs.line
+    line: contourAttrs.line,
+    zhoverformat: histogram2dAttrs.zhoverformat
 },
     colorscaleAttrs, {
         zmin: extendFlat({}, colorscaleAttrs.zmin, {editType: 'calc'}),
