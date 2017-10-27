@@ -39,7 +39,7 @@ var SYMBOL_SVG_CIRCLE = Drawing.symbolFuncs[0](SYMBOL_SIZE * 0.05);
 var ScatterRegl = module.exports = extend({}, require('../scatter'));
 
 
-ScatterRegl.name = 'scatterregl';
+ScatterRegl.name = 'scattergl';
 ScatterRegl.categories = ['gl', 'gl2d', 'regl', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend', 'scatter-like'];
 
 
