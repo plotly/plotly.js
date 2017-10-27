@@ -8,7 +8,7 @@
 
 'use strict';
 
-var scatterglAttrs = require('../scattergl/attributes');
+var scatterglAttrs = require('../scatter/attributes');
 
 module.exports = {
     x: scatterglAttrs.x,
