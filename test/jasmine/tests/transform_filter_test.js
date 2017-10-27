@@ -62,7 +62,7 @@ describe('filter transforms defaults:', function() {
         traceIn = {
             x: [1, 2, 3],
             transforms: [{
-                type: 'filter',
+                type: 'filter'
             }, {
                 type: 'filter',
                 target: 0
@@ -143,6 +143,7 @@ describe('filter transforms calc:', function() {
         expect(out[0].x).toEqual([0, 1]);
         expect(out[0].y).toEqual([1, 2]);
         expect(out[0].z).toEqual(['2016-10-21', '2016-12-02']);
+        expect(out[0].transforms[0]._indexToPoints).toEqual({0: [3], 1: [4]});
     });
 
     it('should use the calendar from the target attribute if target is a string', function() {
@@ -261,13 +262,14 @@ describe('filter transforms calc:', function() {
         expect(out[0].x).toEqual([-2, 2, 3]);
         expect(out[0].y).toEqual([3, 3, 1]);
         expect(out[0].marker.color).toEqual([0.3, 0.3, 0.4]);
+        expect(out[0].transforms[0]._indexToPoints).toEqual({0: [2], 1: [5], 2: [6]});
     });
 
     it('filters should handle array on base trace attributes', function() {
         var out = _transform([Lib.extendDeep({}, base, {
             hoverinfo: ['x', 'y', 'text', 'name', 'none', 'skip', 'all'],
             hoverlabel: {
-                bgcolor: ['red', 'green', 'blue', 'black', 'yellow', 'cyan', 'pink'],
+                bgcolor: ['red', 'green', 'blue', 'black', 'yellow', 'cyan', 'pink']
             },
             transforms: [{
                 type: 'filter',
@@ -314,6 +316,8 @@ describe('filter transforms calc:', function() {
 
         expect(out[0].x).toEqual([1, 2]);
         expect(out[0].y).toEqual([2, 3]);
+        expect(out[0].transforms[0]._indexToPoints).toEqual({0: [4], 1: [5], 2: [6]});
+        expect(out[0].transforms[1]._indexToPoints).toEqual({0: [4], 1: [5]});
     });
 
     it('filters should chain as AND (case 2)', function() {
@@ -339,6 +343,8 @@ describe('filter transforms calc:', function() {
 
         expect(out[0].x).toEqual([3]);
         expect(out[0].y).toEqual([1]);
+        expect(out[0].transforms[0]._indexToPoints).toEqual({0: [4], 1: [5], 2: [6]});
+        expect(out[0].transforms[2]._indexToPoints).toEqual({0: [6]});
     });
 
     it('should preserve gaps in data when `preservegaps` is turned on', function() {
