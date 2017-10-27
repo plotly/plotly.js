@@ -40,7 +40,7 @@ var ScatterRegl = module.exports = extend({}, require('../scatter'));
 
 
 ScatterRegl.name = 'scattergl';
-ScatterRegl.categories = ['gl', 'gl2d', 'regl', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend', 'scatter-like'];
+ScatterRegl.categories = ['gl', 'regl', 'cartesian', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend', 'scatter-like'];
 
 
 ScatterRegl.calc = function calc(container, trace) {
@@ -660,7 +660,7 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
             //reset opacities
             if (scene.scatter2d) {
                 scene.scatter2d.update(scene.scatterOptions.map(function (opt) {
-                        return {opacity: opt.opacity}
+                        return {opacity: opt ? opt.opacity : 1}
                 }));
             }
         }
