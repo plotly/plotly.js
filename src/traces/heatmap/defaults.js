@@ -30,8 +30,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     coerce('text');
-    coerce('connectgaps', hasColumns(traceOut) && (traceOut.zsmooth !== false));
 
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
+
+    coerce('connectgaps', hasColumns(traceOut) && (traceOut.zsmooth !== false));
+
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
 };
