@@ -34,7 +34,7 @@ var SYMBOL_SIZE = 20;
 var SYMBOL_STROKE = SYMBOL_SIZE / 20;
 var SYMBOL_SDF = {};
 var SYMBOL_SVG_CIRCLE = Drawing.symbolFuncs[0](SYMBOL_SIZE * 0.05);
-
+var TOO_MANY_POINTS = 1e5;
 
 var ScatterRegl = module.exports = extend({}, require('../scatter'));
 
@@ -356,12 +356,12 @@ ScatterRegl.calc = function calc(container, trace) {
                 }
             }
 
-            // FIXME: this slows down big number of points
-            Axes.expand(xaxis, trace.x, { padded: true, ppad: sizes });
-            Axes.expand(yaxis, trace.y, { padded: true, ppad: sizes });
+            Axes.expand(xaxis, x, { padded: true, ppad: sizes });
+            Axes.expand(yaxis, y, { padded: true, ppad: sizes });
         }
         else {
-            scatterOptions.size = markerSizeFunc(markerOpts && markerOpts.size || 10);
+            // console.log(x, xOptions, xa._min)
+            var size = scatterOptions.size = markerSizeFunc(markerOpts && markerOpts.size || 10);
             scatterOptions.borderSizes = markerOpts.line.width * 0.5;
 
             // axes bounds
@@ -373,8 +373,13 @@ ScatterRegl.calc = function calc(container, trace) {
                 if(ybounds[1] < yy) ybounds[1] = yy;
             }
 
-            if (!xaxis.autorange) {
-                // update axes fast
+            // FIXME: is there a better way to separate expansion?
+            if (count < TOO_MANY_POINTS) {
+                Axes.expand(xaxis, x, { padded: true, ppad: size });
+                Axes.expand(yaxis, y, { padded: true, ppad: size });
+            }
+            // update axes fast for big number of points
+            else {
                 var pad = scatterOptions.size;
                 if(xaxis._min) {
                     xaxis._min.push({ val: xbounds[0], pad: pad });
@@ -382,8 +387,7 @@ ScatterRegl.calc = function calc(container, trace) {
                 if(xaxis._max) {
                     xaxis._max.push({ val: xbounds[1], pad: pad });
                 }
-            }
-            if (!yaxis.autorange) {
+
                 if(yaxis._min) {
                     yaxis._min.push({ val: ybounds[0], pad: pad });
                 }
