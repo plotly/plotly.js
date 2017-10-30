@@ -16,6 +16,7 @@ var Drawing = require('../../components/drawing');
 var svgTextUtils = require('../../lib/svg_text_utils');
 
 var helpers = require('./helpers');
+var eventData = require('./event_data');
 
 module.exports = function plot(gd, cdpie) {
     var fullLayout = gd._fullLayout;
@@ -34,31 +35,13 @@ module.exports = function plot(gd, cdpie) {
     pieGroups.order();
 
     pieGroups.each(function(cd) {
-        var pieGroup = d3.select(this),
-            cd0 = cd[0],
-            trace = cd0.trace,
-            tiltRads = 0, // trace.tilt * Math.PI / 180,
-            depthLength = (trace.depth||0) * cd0.r * Math.sin(tiltRads) / 2,
-            tiltAxis = trace.tiltaxis || 0,
-            tiltAxisRads = tiltAxis * Math.PI / 180,
-            depthVector = [
-                depthLength * Math.sin(tiltAxisRads),
-                depthLength * Math.cos(tiltAxisRads)
-            ],
-            rSmall = cd0.r * Math.cos(tiltRads);
-
-        var pieParts = pieGroup.selectAll('g.part')
-            .data(trace.tilt ? ['top', 'sides'] : ['top']);
-
-        pieParts.enter().append('g').attr('class', function(d) {
-            return d + ' part';
-        });
-        pieParts.exit().remove();
-        pieParts.order();
+        var pieGroup = d3.select(this);
+        var cd0 = cd[0];
+        var trace = cd0.trace;
 
         setCoords(cd);
 
-        pieGroup.selectAll('.top').each(function() {
+        pieGroup.each(function() {
             var slices = d3.select(this).selectAll('g.slice').data(cd);
 
             slices.enter().append('g')
@@ -66,10 +49,10 @@ module.exports = function plot(gd, cdpie) {
             slices.exit().remove();
 
             var quadrants = [
-                    [[], []], // y<0: x<0, x>=0
-                    [[], []] // y>=0: x<0, x>=0
-                ],
-                hasOutsideText = false;
+                [[], []], // y<0: x<0, x>=0
+                [[], []] // y>=0: x<0, x>=0
+            ];
+            var hasOutsideText = false;
 
             slices.each(function(pt) {
                 if(pt.hidden) {
@@ -83,90 +66,116 @@ module.exports = function plot(gd, cdpie) {
 
                 quadrants[pt.pxmid[1] < 0 ? 0 : 1][pt.pxmid[0] < 0 ? 0 : 1].push(pt);
 
-                var cx = cd0.cx + depthVector[0],
-                    cy = cd0.cy + depthVector[1],
-                    sliceTop = d3.select(this),
-                    slicePath = sliceTop.selectAll('path.surface').data([pt]),
-                    hasHoverData = false;
+                var cx = cd0.cx;
+                var cy = cd0.cy;
+                var sliceTop = d3.select(this);
+                var slicePath = sliceTop.selectAll('path.surface').data([pt]);
 
-                function handleMouseOver(evt) {
-                    evt.originalEvent = d3.event;
+                // hover state vars
+                // have we drawn a hover label, so it should be cleared later
+                var hasHoverLabel = false;
+                // have we emitted a hover event, so later an unhover event should be emitted
+                // note that click events do not depend on this - you can still get them
+                // with hovermode: false or if you were earlier dragging, then clicked
+                // in the same slice that you moused up in
+                var hasHoverEvent = false;
 
+                function handleMouseOver() {
                     // in case fullLayout or fullData has changed without a replot
                     var fullLayout2 = gd._fullLayout;
                     var trace2 = gd._fullData[trace.index];
-                    var hoverinfo = Fx.castHoverinfo(trace2, fullLayout2, pt.i);
+
+                    if(gd._dragging || fullLayout2.hovermode === false) return;
+
+                    var hoverinfo = trace2.hoverinfo;
+                    if(Array.isArray(hoverinfo)) {
+                        // super hacky: we need to pull out the *first* hoverinfo from
+                        // pt.pts, then put it back into an array in a dummy trace
+                        // and call castHoverinfo on that.
+                        // TODO: do we want to have Fx.castHoverinfo somehow handle this?
+                        // it already takes an array for index, for 2D, so this seems tricky.
+                        hoverinfo = Fx.castHoverinfo({
+                            hoverinfo: [helpers.castOption(hoverinfo, pt.pts)],
+                            _module: trace._module
+                        }, fullLayout2, 0);
+                    }
 
                     if(hoverinfo === 'all') hoverinfo = 'label+text+value+percent+name';
 
                     // in case we dragged over the pie from another subplot,
                     // or if hover is turned off
-                    if(gd._dragging || fullLayout2.hovermode === false ||
-                            hoverinfo === 'none' || hoverinfo === 'skip' || !hoverinfo) {
-                        Fx.hover(gd, evt, 'pie');
-                        return;
-                    }
+                    if(hoverinfo !== 'none' && hoverinfo !== 'skip' && hoverinfo) {
+                        var rInscribed = getInscribedRadiusFraction(pt, cd0);
+                        var hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed);
+                        var hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed);
+                        var separators = fullLayout.separators;
+                        var thisText = [];
 
-                    var rInscribed = getInscribedRadiusFraction(pt, cd0),
-                        hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed),
-                        hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed),
-                        separators = fullLayout.separators,
-                        thisText = [];
-
-                    if(hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
-                    if(hoverinfo.indexOf('text') !== -1) {
-                        if(trace2.hovertext) {
-                            thisText.push(
-                                Array.isArray(trace2.hovertext) ?
-                                    trace2.hovertext[pt.i] :
-                                    trace2.hovertext
-                            );
-                        } else if(trace2.text && trace2.text[pt.i]) {
-                            thisText.push(trace2.text[pt.i]);
+                        if(hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
+                        if(hoverinfo.indexOf('text') !== -1) {
+                            var texti = helpers.castOption(trace2.hovertext || trace2.text, pt.pts);
+                            if(texti) thisText.push(texti);
                         }
+                        if(hoverinfo.indexOf('value') !== -1) thisText.push(helpers.formatPieValue(pt.v, separators));
+                        if(hoverinfo.indexOf('percent') !== -1) thisText.push(helpers.formatPiePercent(pt.v / cd0.vTotal, separators));
+
+                        var hoverLabel = trace.hoverlabel;
+                        var hoverFont = hoverLabel.font;
+
+                        Fx.loneHover({
+                            x0: hoverCenterX - rInscribed * cd0.r,
+                            x1: hoverCenterX + rInscribed * cd0.r,
+                            y: hoverCenterY,
+                            text: thisText.join('<br>'),
+                            name: hoverinfo.indexOf('name') !== -1 ? trace2.name : undefined,
+                            idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
+                            color: helpers.castOption(hoverLabel.bgcolor, pt.pts) || pt.color,
+                            borderColor: helpers.castOption(hoverLabel.bordercolor, pt.pts),
+                            fontFamily: helpers.castOption(hoverFont.family, pt.pts),
+                            fontSize: helpers.castOption(hoverFont.size, pt.pts),
+                            fontColor: helpers.castOption(hoverFont.color, pt.pts)
+                        }, {
+                            container: fullLayout2._hoverlayer.node(),
+                            outerContainer: fullLayout2._paper.node(),
+                            gd: gd
+                        });
+
+                        hasHoverLabel = true;
                     }
-                    if(hoverinfo.indexOf('value') !== -1) thisText.push(helpers.formatPieValue(pt.v, separators));
-                    if(hoverinfo.indexOf('percent') !== -1) thisText.push(helpers.formatPiePercent(pt.v / cd0.vTotal, separators));
 
-                    Fx.loneHover({
-                        x0: hoverCenterX - rInscribed * cd0.r,
-                        x1: hoverCenterX + rInscribed * cd0.r,
-                        y: hoverCenterY,
-                        text: thisText.join('<br>'),
-                        name: hoverinfo.indexOf('name') !== -1 ? trace2.name : undefined,
-                        idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
-                        color: Fx.castHoverOption(trace, pt.i, 'bgcolor') || pt.color,
-                        borderColor: Fx.castHoverOption(trace, pt.i, 'bordercolor'),
-                        fontFamily: Fx.castHoverOption(trace, pt.i, 'font.family'),
-                        fontSize: Fx.castHoverOption(trace, pt.i, 'font.size'),
-                        fontColor: Fx.castHoverOption(trace, pt.i, 'font.color')
-                    }, {
-                        container: fullLayout2._hoverlayer.node(),
-                        outerContainer: fullLayout2._paper.node(),
-                        gd: gd
+                    gd.emit('plotly_hover', {
+                        points: [eventData(pt, trace2)],
+                        event: d3.event
                     });
-
-                    Fx.hover(gd, evt, 'pie');
-
-                    hasHoverData = true;
+                    hasHoverEvent = true;
                 }
 
                 function handleMouseOut(evt) {
-                    evt.originalEvent = d3.event;
-                    gd.emit('plotly_unhover', {
-                        event: d3.event,
-                        points: [evt]
-                    });
+                    var fullLayout2 = gd._fullLayout;
+                    var trace2 = gd._fullData[trace.index];
 
-                    if(hasHoverData) {
-                        Fx.loneUnhover(fullLayout._hoverlayer.node());
-                        hasHoverData = false;
+                    if(hasHoverEvent) {
+                        evt.originalEvent = d3.event;
+                        gd.emit('plotly_unhover', {
+                            points: [eventData(pt, trace2)],
+                            event: d3.event
+                        });
+                        hasHoverEvent = false;
+                    }
+
+                    if(hasHoverLabel) {
+                        Fx.loneUnhover(fullLayout2._hoverlayer.node());
+                        hasHoverLabel = false;
                     }
                 }
 
                 function handleClick() {
-                    gd._hoverdata = [pt];
-                    gd._hoverdata.trace = cd0.trace;
+                    var fullLayout2 = gd._fullLayout;
+                    var trace2 = gd._fullData[trace.index];
+
+                    if(gd._dragging || fullLayout2.hovermode === false) return;
+
+                    gd._hoverdata = [eventData(pt, trace2)];
                     Fx.click(gd, d3.event);
                 }
 
@@ -182,7 +191,7 @@ module.exports = function plot(gd, cdpie) {
                     .on('click', handleClick);
 
                 if(trace.pull) {
-                    var pull = +(Array.isArray(trace.pull) ? trace.pull[pt.i] : trace.pull) || 0;
+                    var pull = +helpers.castOption(trace.pull, pt.pts) || 0;
                     if(pull > 0) {
                         cx += pull * pt.pxmid[0];
                         cy += pull * pt.pxmid[1];
@@ -193,7 +202,7 @@ module.exports = function plot(gd, cdpie) {
                 pt.cyFinal = cy;
 
                 function arc(start, finish, cw, scale) {
-                    return 'a' + (scale * cd0.r) + ',' + (scale * rSmall) + ' ' + tiltAxis + ' ' +
+                    return 'a' + (scale * cd0.r) + ',' + (scale * cd0.r) + ' 0 ' +
                         pt.largeArc + (cw ? ' 1 ' : ' 0 ') +
                         (scale * (finish[0] - start[0])) + ',' + (scale * (finish[1] - start[1]));
                 }
@@ -233,9 +242,8 @@ module.exports = function plot(gd, cdpie) {
                 }
 
                 // add text
-                var textPosition = Array.isArray(trace.textposition) ?
-                        trace.textposition[pt.i] : trace.textposition,
-                    sliceTextGroup = sliceTop.selectAll('g.slicetext')
+                var textPosition = helpers.castOption(trace.textposition, pt.pts);
+                var sliceTextGroup = sliceTop.selectAll('g.slicetext')
                     .data(pt.text && (textPosition !== 'none') ? [0] : []);
 
                 sliceTextGroup.enter().append('g')
@@ -262,9 +270,8 @@ module.exports = function plot(gd, cdpie) {
                         .call(svgTextUtils.convertToTspans, gd);
 
                     // position the text relative to the slice
-                    // TODO: so far this only accounts for flat
-                    var textBB = Drawing.bBox(sliceText.node()),
-                        transform;
+                    var textBB = Drawing.bBox(sliceText.node());
+                    var transform;
 
                     if(textPosition === 'outside') {
                         transform = transformOutsideText(textBB, pt);
@@ -280,8 +287,8 @@ module.exports = function plot(gd, cdpie) {
                         }
                     }
 
-                    var translateX = cx + pt.pxmid[0] * transform.rCenter + (transform.x || 0),
-                        translateY = cy + pt.pxmid[1] * transform.rCenter + (transform.y || 0);
+                    var translateX = cx + pt.pxmid[0] * transform.rCenter + (transform.x || 0);
+                    var translateY = cy + pt.pxmid[1] * transform.rCenter + (transform.y || 0);
 
                     // save some stuff to use later ensure no labels overlap
                     if(transform.outside) {
@@ -309,20 +316,21 @@ module.exports = function plot(gd, cdpie) {
             slices.each(function(pt) {
                 if(pt.labelExtraX || pt.labelExtraY) {
                     // first move the text to its new location
-                    var sliceTop = d3.select(this),
-                        sliceText = sliceTop.select('g.slicetext text');
+                    var sliceTop = d3.select(this);
+                    var sliceText = sliceTop.select('g.slicetext text');
 
                     sliceText.attr('transform', 'translate(' + pt.labelExtraX + ',' + pt.labelExtraY + ')' +
                         sliceText.attr('transform'));
 
                     // then add a line to the new location
-                    var lineStartX = pt.cxFinal + pt.pxmid[0],
-                        lineStartY = pt.cyFinal + pt.pxmid[1],
-                        textLinePath = 'M' + lineStartX + ',' + lineStartY,
-                        finalX = (pt.yLabelMax - pt.yLabelMin) * (pt.pxmid[0] < 0 ? -1 : 1) / 4;
+                    var lineStartX = pt.cxFinal + pt.pxmid[0];
+                    var lineStartY = pt.cyFinal + pt.pxmid[1];
+                    var textLinePath = 'M' + lineStartX + ',' + lineStartY;
+                    var finalX = (pt.yLabelMax - pt.yLabelMin) * (pt.pxmid[0] < 0 ? -1 : 1) / 4;
+
                     if(pt.labelExtraX) {
-                        var yFromX = pt.labelExtraX * pt.pxmid[1] / pt.pxmid[0],
-                            yNet = pt.yLabelMid + pt.labelExtraY - (pt.cyFinal + pt.pxmid[1]);
+                        var yFromX = pt.labelExtraX * pt.pxmid[1] / pt.pxmid[0];
+                        var yNet = pt.yLabelMid + pt.labelExtraY - (pt.cyFinal + pt.pxmid[1]);
 
                         if(Math.abs(yFromX) > Math.abs(yNet)) {
                             textLinePath +=
@@ -368,11 +376,11 @@ module.exports = function plot(gd, cdpie) {
 
 
 function transformInsideText(textBB, pt, cd0) {
-    var textDiameter = Math.sqrt(textBB.width * textBB.width + textBB.height * textBB.height),
-        textAspect = textBB.width / textBB.height,
-        halfAngle = Math.PI * Math.min(pt.v / cd0.vTotal, 0.5),
-        ring = 1 - cd0.trace.hole,
-        rInscribed = getInscribedRadiusFraction(pt, cd0),
+    var textDiameter = Math.sqrt(textBB.width * textBB.width + textBB.height * textBB.height);
+    var textAspect = textBB.width / textBB.height;
+    var halfAngle = Math.PI * Math.min(pt.v / cd0.vTotal, 0.5);
+    var ring = 1 - cd0.trace.hole;
+    var rInscribed = getInscribedRadiusFraction(pt, cd0),
 
         // max size text can be inserted inside without rotating it
         // this inscribes the text rectangle in a circle, which is then inscribed
@@ -389,34 +397,34 @@ function transformInsideText(textBB, pt, cd0) {
     if(transform.scale >= 1) return transform;
 
         // max size if text is rotated radially
-    var Qr = textAspect + 1 / (2 * Math.tan(halfAngle)),
-        maxHalfHeightRotRadial = cd0.r * Math.min(
-            1 / (Math.sqrt(Qr * Qr + 0.5) + Qr),
-            ring / (Math.sqrt(textAspect * textAspect + ring / 2) + textAspect)
-        ),
-        radialTransform = {
-            scale: maxHalfHeightRotRadial * 2 / textBB.height,
-            rCenter: Math.cos(maxHalfHeightRotRadial / cd0.r) -
-                maxHalfHeightRotRadial * textAspect / cd0.r,
-            rotate: (180 / Math.PI * pt.midangle + 720) % 180 - 90
-        },
+    var Qr = textAspect + 1 / (2 * Math.tan(halfAngle));
+    var maxHalfHeightRotRadial = cd0.r * Math.min(
+        1 / (Math.sqrt(Qr * Qr + 0.5) + Qr),
+        ring / (Math.sqrt(textAspect * textAspect + ring / 2) + textAspect)
+    );
+    var radialTransform = {
+        scale: maxHalfHeightRotRadial * 2 / textBB.height,
+        rCenter: Math.cos(maxHalfHeightRotRadial / cd0.r) -
+            maxHalfHeightRotRadial * textAspect / cd0.r,
+        rotate: (180 / Math.PI * pt.midangle + 720) % 180 - 90
+    };
 
         // max size if text is rotated tangentially
-        aspectInv = 1 / textAspect,
-        Qt = aspectInv + 1 / (2 * Math.tan(halfAngle)),
-        maxHalfWidthTangential = cd0.r * Math.min(
-            1 / (Math.sqrt(Qt * Qt + 0.5) + Qt),
-            ring / (Math.sqrt(aspectInv * aspectInv + ring / 2) + aspectInv)
-        ),
-        tangentialTransform = {
-            scale: maxHalfWidthTangential * 2 / textBB.width,
-            rCenter: Math.cos(maxHalfWidthTangential / cd0.r) -
-                maxHalfWidthTangential / textAspect / cd0.r,
-            rotate: (180 / Math.PI * pt.midangle + 810) % 180 - 90
-        },
-        // if we need a rotated transform, pick the biggest one
-        // even if both are bigger than 1
-        rotatedTransform = tangentialTransform.scale > radialTransform.scale ?
+    var aspectInv = 1 / textAspect;
+    var Qt = aspectInv + 1 / (2 * Math.tan(halfAngle));
+    var maxHalfWidthTangential = cd0.r * Math.min(
+        1 / (Math.sqrt(Qt * Qt + 0.5) + Qt),
+        ring / (Math.sqrt(aspectInv * aspectInv + ring / 2) + aspectInv)
+    );
+    var tangentialTransform = {
+        scale: maxHalfWidthTangential * 2 / textBB.width,
+        rCenter: Math.cos(maxHalfWidthTangential / cd0.r) -
+            maxHalfWidthTangential / textAspect / cd0.r,
+        rotate: (180 / Math.PI * pt.midangle + 810) % 180 - 90
+    };
+    // if we need a rotated transform, pick the biggest one
+    // even if both are bigger than 1
+    var rotatedTransform = tangentialTransform.scale > radialTransform.scale ?
             tangentialTransform : radialTransform;
 
     if(transform.scale < 1 && rotatedTransform.scale > transform.scale) return rotatedTransform;
@@ -431,10 +439,10 @@ function getInscribedRadiusFraction(pt, cd0) {
 }
 
 function transformOutsideText(textBB, pt) {
-    var x = pt.pxmid[0],
-        y = pt.pxmid[1],
-        dx = textBB.width / 2,
-        dy = textBB.height / 2;
+    var x = pt.pxmid[0];
+    var y = pt.pxmid[1];
+    var dx = textBB.width / 2;
+    var dy = textBB.height / 2;
 
     if(x < 0) dx *= -1;
     if(y < 0) dy *= -1;
@@ -450,19 +458,9 @@ function transformOutsideText(textBB, pt) {
 }
 
 function scootLabels(quadrants, trace) {
-    var xHalf,
-        yHalf,
-        equatorFirst,
-        farthestX,
-        farthestY,
-        xDiffSign,
-        yDiffSign,
-        thisQuad,
-        oppositeQuad,
-        wholeSide,
-        i,
-        thisQuadOutside,
-        firstOppositeOutsidePt;
+    var xHalf, yHalf, equatorFirst, farthestX, farthestY,
+        xDiffSign, yDiffSign, thisQuad, oppositeQuad,
+        wholeSide, i, thisQuadOutside, firstOppositeOutsidePt;
 
     function topFirst(a, b) { return a.pxmid[1] - b.pxmid[1]; }
     function bottomFirst(a, b) { return b.pxmid[1] - a.pxmid[1]; }
@@ -470,17 +468,14 @@ function scootLabels(quadrants, trace) {
     function scootOneLabel(thisPt, prevPt) {
         if(!prevPt) prevPt = {};
 
-        var prevOuterY = prevPt.labelExtraY + (yHalf ? prevPt.yLabelMax : prevPt.yLabelMin),
-            thisInnerY = yHalf ? thisPt.yLabelMin : thisPt.yLabelMax,
-            thisOuterY = yHalf ? thisPt.yLabelMax : thisPt.yLabelMin,
-            thisSliceOuterY = thisPt.cyFinal + farthestY(thisPt.px0[1], thisPt.px1[1]),
-            newExtraY = prevOuterY - thisInnerY,
-            xBuffer,
-            i,
-            otherPt,
-            otherOuterY,
-            otherOuterX,
-            newExtraX;
+        var prevOuterY = prevPt.labelExtraY + (yHalf ? prevPt.yLabelMax : prevPt.yLabelMin);
+        var thisInnerY = yHalf ? thisPt.yLabelMin : thisPt.yLabelMax;
+        var thisOuterY = yHalf ? thisPt.yLabelMax : thisPt.yLabelMin;
+        var thisSliceOuterY = thisPt.cyFinal + farthestY(thisPt.px0[1], thisPt.px1[1]);
+        var newExtraY = prevOuterY - thisInnerY;
+
+        var xBuffer, i, otherPt, otherOuterY, otherOuterX, newExtraX;
+
         // make sure this label doesn't overlap other labels
         // this *only* has us move these labels vertically
         if(newExtraY * yDiffSign > 0) thisPt.labelExtraY = newExtraY;
@@ -492,7 +487,12 @@ function scootLabels(quadrants, trace) {
             otherPt = wholeSide[i];
 
             // overlap can only happen if the other point is pulled more than this one
-            if(otherPt === thisPt || ((trace.pull[thisPt.i] || 0) >= trace.pull[otherPt.i] || 0)) continue;
+            if(otherPt === thisPt || (
+                (helpers.castOption(trace.pull, thisPt.pts) || 0) >=
+                (helpers.castOption(trace.pull, otherPt.pts) || 0))
+            ) {
+                continue;
+            }
 
             if((thisPt.pxmid[1] - otherPt.pxmid[1]) * yDiffSign > 0) {
                 // closer to the equator - by construction all of these happen first
@@ -564,17 +564,10 @@ function scootLabels(quadrants, trace) {
 }
 
 function scalePies(cdpie, plotSize) {
-    var pieBoxWidth,
-        pieBoxHeight,
-        i,
-        j,
-        cd0,
-        trace,
-        tiltAxisRads,
-        maxPull,
-        scaleGroups = [],
-        scaleGroup,
-        minPxPerValUnit;
+    var scaleGroups = [];
+
+    var pieBoxWidth, pieBoxHeight, i, j, cd0, trace,
+        maxPull, scaleGroup, minPxPerValUnit;
 
     // first figure out the center and maximum radius for each pie
     for(i = 0; i < cdpie.length; i++) {
@@ -582,7 +575,6 @@ function scalePies(cdpie, plotSize) {
         trace = cd0.trace;
         pieBoxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]);
         pieBoxHeight = plotSize.h * (trace.domain.y[1] - trace.domain.y[0]);
-        tiltAxisRads = trace.tiltaxis * Math.PI / 180;
 
         maxPull = trace.pull;
         if(Array.isArray(maxPull)) {
@@ -592,10 +584,7 @@ function scalePies(cdpie, plotSize) {
             }
         }
 
-        cd0.r = Math.min(
-                pieBoxWidth / maxExtent(trace.tilt, Math.sin(tiltAxisRads), trace.depth),
-                pieBoxHeight / maxExtent(trace.tilt, Math.cos(tiltAxisRads), trace.depth)
-            ) / (2 + 2 * maxPull);
+        cd0.r = Math.min(pieBoxWidth, pieBoxHeight) / (2 + 2 * maxPull);
 
         cd0.cx = plotSize.l + plotSize.w * (trace.domain.x[1] + trace.domain.x[0]) / 2;
         cd0.cy = plotSize.t + plotSize.h * (2 - trace.domain.y[1] - trace.domain.y[0]) / 2;
@@ -629,22 +618,14 @@ function scalePies(cdpie, plotSize) {
 }
 
 function setCoords(cd) {
-    var cd0 = cd[0],
-        trace = cd0.trace,
-        tilt = trace.tilt,
-        tiltAxisRads,
-        tiltAxisSin,
-        tiltAxisCos,
-        tiltRads,
-        crossTilt,
-        inPlane,
-        currentAngle = trace.rotation * Math.PI / 180,
-        angleFactor = 2 * Math.PI / cd0.vTotal,
-        firstPt = 'px0',
-        lastPt = 'px1',
-        i,
-        cdi,
-        currentCoords;
+    var cd0 = cd[0];
+    var trace = cd0.trace;
+    var currentAngle = trace.rotation * Math.PI / 180;
+    var angleFactor = 2 * Math.PI / cd0.vTotal;
+    var firstPt = 'px0';
+    var lastPt = 'px1';
+
+    var i, cdi, currentCoords;
 
     if(trace.direction === 'counterclockwise') {
         for(i = 0; i < cd.length; i++) {
@@ -658,26 +639,8 @@ function setCoords(cd) {
         lastPt = 'px0';
     }
 
-    if(tilt) {
-        tiltRads = tilt * Math.PI / 180;
-        tiltAxisRads = trace.tiltaxis * Math.PI / 180;
-        crossTilt = Math.sin(tiltAxisRads) * Math.cos(tiltAxisRads);
-        inPlane = 1 - Math.cos(tiltRads);
-        tiltAxisSin = Math.sin(tiltAxisRads);
-        tiltAxisCos = Math.cos(tiltAxisRads);
-    }
-
     function getCoords(angle) {
-        var xFlat = cd0.r * Math.sin(angle),
-            yFlat = -cd0.r * Math.cos(angle);
-
-        if(!tilt) return [xFlat, yFlat];
-
-        return [
-            xFlat * (1 - inPlane * tiltAxisSin * tiltAxisSin) + yFlat * crossTilt * inPlane,
-            xFlat * crossTilt * inPlane + yFlat * (1 - inPlane * tiltAxisCos * tiltAxisCos),
-            Math.sin(tiltRads) * (yFlat * tiltAxisCos - xFlat * tiltAxisSin)
-        ];
+        return [cd0.r * Math.sin(angle), -cd0.r * Math.cos(angle)];
     }
 
     currentCoords = getCoords(currentAngle);
@@ -699,12 +662,4 @@ function setCoords(cd) {
 
         cdi.largeArc = (cdi.v > cd0.vTotal / 2) ? 1 : 0;
     }
-}
-
-function maxExtent(tilt, tiltAxisFraction, depth) {
-    if(!tilt) return 1;
-    var sinTilt = Math.sin(tilt * Math.PI / 180);
-    return Math.max(0.01, // don't let it go crazy if you tilt the pie totally on its side
-        depth * sinTilt * Math.abs(tiltAxisFraction) +
-        2 * Math.sqrt(1 - sinTilt * sinTilt * tiltAxisFraction * tiltAxisFraction));
 }

@@ -11,6 +11,7 @@
 var Lib = require('../lib');
 var Registry = require('../registry');
 var Axes = require('../plots/cartesian/axes');
+var pointsAccessorFunction = require('./helpers').pointsAccessorFunction;
 
 var COMPARISON_OPS = ['=', '!=', '<', '>=', '>', '<='];
 var INTERVAL_OPS = ['[]', '()', '[)', '(]', '][', ')(', '](', ')['];
@@ -170,6 +171,8 @@ exports.calcTransform = function(gd, trace, opts) {
     var d2c = Axes.getDataToCoordFunc(gd, trace, target, targetArray);
     var filterFunc = getFilterFunc(opts, d2c, targetCalendar);
     var originalArrays = {};
+    var indexToPoints = {};
+    var index = 0;
 
     function forAllAttrs(fn, index) {
         for(var j = 0; j < arrayAttrs.length; j++) {
@@ -203,11 +206,18 @@ exports.calcTransform = function(gd, trace, opts) {
     // copy all original array attribute values, and clear arrays in trace
     forAllAttrs(initFn);
 
+    var originalPointsAccessor = pointsAccessorFunction(trace.transforms, opts);
+
     // loop through filter array, fill trace arrays if passed
     for(var i = 0; i < len; i++) {
         var passed = filterFunc(targetArray[i]);
-        if(passed) forAllAttrs(fillFn, i);
+        if(passed) {
+            forAllAttrs(fillFn, i);
+            indexToPoints[index++] = originalPointsAccessor(i);
+        }
     }
+
+    opts._indexToPoints = indexToPoints;
 };
 
 function getFilterFunc(opts, d2c, targetCalendar) {

@@ -45,7 +45,8 @@ module.exports = extendFlat({},
 
         xgap: heatmapAttrs.xgap,
         ygap: heatmapAttrs.ygap,
-        zsmooth: heatmapAttrs.zsmooth
+        zsmooth: heatmapAttrs.zsmooth,
+        zhoverformat: heatmapAttrs.zhoverformat
     },
     colorscaleAttrs,
     { autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}) },

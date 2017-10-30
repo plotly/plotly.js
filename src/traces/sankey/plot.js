@@ -128,10 +128,11 @@ module.exports = function plot(gd, calcData) {
     };
 
     var linkHover = function(element, d, sankey) {
-        var evt = d.link;
-        evt.originalEvent = d3.event;
         d3.select(element).call(linkHoveredStyle.bind(0, d, sankey, true));
-        Fx.hover(gd, evt, 'sankey');
+        gd.emit('plotly_hover', {
+            event: d3.event,
+            points: [d.link]
+        });
     };
 
     var linkHoverFollow = function(element, d) {
@@ -185,10 +186,11 @@ module.exports = function plot(gd, calcData) {
     };
 
     var nodeHover = function(element, d, sankey) {
-        var evt = d.node;
-        evt.originalEvent = d3.event;
         d3.select(element).call(nodeHoveredStyle, d, sankey);
-        Fx.hover(gd, evt, 'sankey');
+        gd.emit('plotly_hover', {
+            event: d3.event,
+            points: [d.node]
+        });
     };
 
     var nodeHoverFollow = function(element, d) {

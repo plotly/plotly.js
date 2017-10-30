@@ -40,14 +40,15 @@ module.exports = function calc(gd, trace) {
         y0,
         dy,
         z,
-        i;
+        i,
+        binned;
 
     // cancel minimum tick spacings (only applies to bars and boxes)
     xa._minDtick = 0;
     ya._minDtick = 0;
 
     if(isHist) {
-        var binned = histogram2dCalc(gd, trace);
+        binned = histogram2dCalc(gd, trace);
         x = binned.x;
         x0 = binned.x0;
         dx = binned.dx;
@@ -127,6 +128,12 @@ module.exports = function calc(gd, trace) {
     }
 
     var cd0 = {x: xArray, y: yArray, z: z, text: trace.text};
+
+    if(isHist) {
+        cd0.xRanges = binned.xRanges;
+        cd0.yRanges = binned.yRanges;
+        cd0.pts = binned.pts;
+    }
 
     // auto-z and autocolorscale if applicable
     colorscaleCalc(trace, z, '', 'z');
