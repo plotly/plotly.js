@@ -322,7 +322,7 @@ ScatterRegl.calc = function calc(container, trace) {
         }
 
         // prepare sizes and expand axes
-        var multiSize = scatterOptions.multiSize = markerOpts && (Array.isArray(markerOpts.size) || Array.isArray(markerOpts.line.width));
+        var multiSize = markerOpts && (Array.isArray(markerOpts.size) || Array.isArray(markerOpts.line.width));
         var msx, msy, xbounds = [Infinity, -Infinity], ybounds = [Infinity, -Infinity];
         var markerSizeFunc = makeBubbleSizeFn(trace);
 
@@ -355,6 +355,10 @@ ScatterRegl.calc = function calc(container, trace) {
                     borderSizes[i] = size;
                 }
             }
+
+            // FIXME: this slows down big number of points
+            Axes.expand(xaxis, trace.x, { padded: true, ppad: sizes });
+            Axes.expand(yaxis, trace.y, { padded: true, ppad: sizes });
         }
         else {
             scatterOptions.size = markerSizeFunc(markerOpts && markerOpts.size || 10);
@@ -368,8 +372,25 @@ ScatterRegl.calc = function calc(container, trace) {
                 if(ybounds[0] > yy) ybounds[0] = yy;
                 if(ybounds[1] < yy) ybounds[1] = yy;
             }
-            scatterOptions.xbounds = xbounds;
-            scatterOptions.ybounds = ybounds;
+
+            if (!xaxis.autorange) {
+                // update axes fast
+                var pad = scatterOptions.size;
+                if(xaxis._min) {
+                    xaxis._min.push({ val: xbounds[0], pad: pad });
+                }
+                if(xaxis._max) {
+                    xaxis._max.push({ val: xbounds[1], pad: pad });
+                }
+            }
+            if (!yaxis.autorange) {
+                if(yaxis._min) {
+                    yaxis._min.push({ val: ybounds[0], pad: pad });
+                }
+                if(yaxis._max) {
+                    yaxis._max.push({ val: ybounds[1], pad: pad });
+                }
+            }
         }
     }
 
@@ -621,7 +642,7 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
     }
 
     // provide viewport and range
-    var vpRange = cdata.map(function(cdscatter, i) {
+    var vpRange = cdata.map(function(cdscatter) {
         if(!cdscatter || !cdscatter[0] || !cdscatter[0].trace) return;
         var cd = cdscatter[0];
         var trace = cd.trace;
@@ -640,7 +661,6 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
             (height - vpSize.t) - (1 - yaxis.domain[1]) * vpSize.h
         ];
 
-        // handle selection here
         if (dragmode === 'lasso' || dragmode === 'select') {
             //precalculate px coords since we are not going to pan during select
             var xpx = Array(stash.count), ypx = Array(stash.count);
@@ -659,33 +679,6 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
                 scene.scatter2d.update(scene.scatterOptions.map(function (opt) {
                         return {opacity: opt ? opt.opacity : 1}
                 }));
-            }
-        }
-
-        // axes expand does not trigger right at the calc stage, so we do it here
-        if (scene.scatter2d) {
-            var scatterOptions = scene.scatterOptions[i];
-            if (scatterOptions.multiSize) {
-                // FIXME: this slows down big number of points
-                Axes.expand(xaxis, trace.x, { padded: true, ppad: scatterOptions.sizes });
-                Axes.expand(yaxis, trace.y, { padded: true, ppad: scatterOptions.sizes });
-            }
-            // update axes fast
-            else {
-                var pad = scatterOptions.sizes;
-                console.log(scatterOptions.xbounds)
-                if(xaxis._min) {
-                    xaxis._min.push({ val: scatterOptions.xbounds[0], pad: pad });
-                }
-                if(xaxis._max) {
-                    xaxis._max.push({ val: scatterOptions.xbounds[1], pad: pad });
-                }
-                if(yaxis._min) {
-                    yaxis._min.push({ val: scatterOptions.ybounds[0], pad: pad });
-                }
-                if(yaxis._max) {
-                    yaxis._max.push({ val: scatterOptions.ybounds[1], pad: pad });
-                }
             }
         }
 
@@ -751,8 +744,8 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval) {
     var min = MAXDIST, id, ptx, pty;
 
     for(var i = 0; i < ids.length; i++) {
-        ptx = trace.x[ids[i]];
-        pty = trace.y[ids[i]];
+        ptx = x[ids[i]];
+        pty = y[ids[i]];
         var dx = xa.c2p(ptx) - xpx, dy = ya.c2p(pty) - ypx;
 
         var dist = Math.sqrt(dx * dx + dy * dy);
@@ -768,8 +761,8 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval) {
 
     // the closest data point
     var di = {
-        x: trace.x[id],
-        y: trace.y[id]
+        x: x[id],
+        y: y[id]
     };
 
     // that is single-item arrays_to_calcdata excerpt, since we are doing it for a single point and we don't have to do it beforehead for 1e6 points
