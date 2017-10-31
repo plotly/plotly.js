@@ -118,10 +118,33 @@ module.exports = {
     },
     fillcolor: boxAttrs.fillcolor,
 
-    // TODO update description
-    points: boxAttrs.boxpoints,
-    jitter: boxAttrs.jitter,
-    pointpos: boxAttrs.pointpos,
+    points: extendFlat({}, boxAttrs.boxpoints, {
+        description: [
+            'If *outliers*, only the sample points lying outside the whiskers',
+            'are shown',
+            'If *suspectedoutliers*, the outlier points are shown and',
+            'points either less than 4*Q1-3*Q3 or greater than 4*Q3-3*Q1',
+            'are highlighted (see `outliercolor`)',
+            'If *all*, all sample points are shown',
+            'If *false*, only the violins are shown with no sample points'
+        ].join(' ')
+    }),
+    jitter: extendFlat({}, boxAttrs.jitter, {
+        description: [
+            'Sets the amount of jitter in the sample points drawn.',
+            'If *0*, the sample points align along the distribution axis.',
+            'If *1*, the sample points are drawn in a random jitter of width',
+            'equal to the width of the violins.'
+        ].join(' ')
+    }),
+    pointpos: extendFlat({}, boxAttrs.pointpos, {
+        description: [
+            'Sets the position of the sample points in relation to the violins.',
+            'If *0*, the sample points are places over the center of the violins.',
+            'Positive (negative) values correspond to positions to the',
+            'right (left) for vertical violins and above (below) for horizontal violins.'
+        ].join(' ')
+    }),
     marker: boxAttrs.marker,
     text: boxAttrs.text,
 
@@ -130,7 +153,9 @@ module.exports = {
         dflt: false,
         role: 'info',
         editType: 'plot',
-        description: '.'
+        description: [
+            'Determines if an miniature box plot is drawn inside the violins. '
+        ].join(' ')
     },
     innerboxwidth: {
         valType: 'number',
@@ -139,26 +164,30 @@ module.exports = {
         dflt: 0.25,
         role: 'info',
         editType: 'plot',
-        description: '...'
+        description: [
+            'Sets the width of the inner box plots relative to',
+            'the violins\' width.',
+            'For example, with 1, the inner box plots are as wide as the violins.'
+        ].join(' ')
     },
     innerboxlinecolor: {
         valType: 'color',
         role: 'style',
         editType: 'style',
-        description: ''
+        description: 'Sets the inner box plot bounding line color.'
     },
     innerboxfillcolor: {
         valType: 'color',
         role: 'style',
         editType: 'style',
-        description: ''
+        description: 'Sets the inner box plot fill color.'
     },
     innerboxlinewidth: {
         valType: 'number',
         min: 0,
         role: 'style',
         editType: 'style',
-        description: ''
+        description: 'Sets the inner box plot bounding line width.'
     },
 
     showmeanline: {
@@ -166,20 +195,25 @@ module.exports = {
         dflt: false,
         role: 'info',
         editType: 'plot',
-        description: 'Toggle'
+        description: [
+            'Determines if a line corresponding to the sample\'s mean is shown',
+            'inside the violins.',
+            'If `showinnerbox` is turned on, the mean line is drawn inside the inner box.',
+            'Otherwise, the mean line is drawn from one side of the violin to other.'
+        ].join(' ')
     },
     meanlinecolor: {
         valType: 'color',
         role: 'style',
         editType: 'style',
-        description: ''
+        description: 'Sets the mean line color.'
     },
     meanlinewidth: {
         valType: 'number',
         min: 0,
         role: 'style',
         editType: 'style',
-        description: ''
+        description: 'Sets the mean line width.'
     },
 
     side: {

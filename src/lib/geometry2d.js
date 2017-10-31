@@ -214,7 +214,7 @@ exports.findPointOnPath = function findPointOnPath(path, val, coord, opts) {
     var iterationLimit = opts.iterationLimit || 30;
 
     // if path starts at a val greater than the path tail (like on vertical violins),
-    // we must flip the sign of the compute diff.
+    // we must flip the sign of the computed diff.
     var mul = path.getPointAtLength(0)[coord] > path.getPointAtLength(pathLength)[coord] ? -1 : 1;
 
     var i = 0;
