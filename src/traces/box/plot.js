@@ -64,8 +64,8 @@ function plot(gd, plotinfo, cdbox) {
             return;
         }
 
-        // set axis via orientation
         var posAxis, valAxis;
+
         if(trace.orientation === 'h') {
             posAxis = ya;
             valAxis = xa;
@@ -77,91 +77,90 @@ function plot(gd, plotinfo, cdbox) {
         // save the box size and box position for use by hover
         t.bPos = bPos;
         t.bdPos = bdPos;
+        t.wdPos = wdPos;
 
         // boxes and whiskers
-        sel.selectAll('path.box')
-            .data(Lib.identity)
-            .enter().append('path')
-            .style('vector-effect', 'non-scaling-stroke')
-            .attr('class', 'box')
-            .each(function(d) {
-                var posc = posAxis.c2p(d.pos + bPos, true),
-                    pos0 = posAxis.c2p(d.pos + bPos - bdPos, true),
-                    pos1 = posAxis.c2p(d.pos + bPos + bdPos, true),
-                    posw0 = posAxis.c2p(d.pos + bPos - wdPos, true),
-                    posw1 = posAxis.c2p(d.pos + bPos + wdPos, true),
-                    q1 = valAxis.c2p(d.q1, true),
-                    q3 = valAxis.c2p(d.q3, true),
-                    // make sure median isn't identical to either of the
-                    // quartiles, so we can see it
-                    m = Lib.constrain(valAxis.c2p(d.med, true),
-                        Math.min(q1, q3) + 1, Math.max(q1, q3) - 1),
-                    lf = valAxis.c2p(trace.boxpoints === false ? d.min : d.lf, true),
-                    uf = valAxis.c2p(trace.boxpoints === false ? d.max : d.uf, true);
-
-                if(trace.orientation === 'h') {
-                    d3.select(this).attr('d',
-                        'M' + m + ',' + pos0 + 'V' + pos1 + // median line
-                        'M' + q1 + ',' + pos0 + 'V' + pos1 + 'H' + q3 + 'V' + pos0 + 'Z' + // box
-                        'M' + q1 + ',' + posc + 'H' + lf + 'M' + q3 + ',' + posc + 'H' + uf + // whiskers
-                        ((trace.whiskerwidth === 0) ? '' : // whisker caps
-                            'M' + lf + ',' + posw0 + 'V' + posw1 + 'M' + uf + ',' + posw0 + 'V' + posw1));
-                } else {
-                    d3.select(this).attr('d',
-                        'M' + pos0 + ',' + m + 'H' + pos1 + // median line
-                        'M' + pos0 + ',' + q1 + 'H' + pos1 + 'V' + q3 + 'H' + pos0 + 'Z' + // box
-                        'M' + posc + ',' + q1 + 'V' + lf + 'M' + posc + ',' + q3 + 'V' + uf + // whiskers
-                        ((trace.whiskerwidth === 0) ? '' : // whisker caps
-                            'M' + posw0 + ',' + lf + 'H' + posw1 + 'M' + posw0 + ',' + uf + 'H' + posw1));
-                }
-            });
+        plotBoxAndWhiskers(sel, {pos: posAxis, val: valAxis}, trace, t);
 
         // draw points, if desired
         if(trace.boxpoints) {
-            plotPoints(sel, plotinfo, trace, t);
+            plotPoints(sel, {x: xa, y: ya}, trace, t);
         }
 
         // draw mean (and stdev diamond) if desired
         if(trace.boxmean) {
-            sel.selectAll('path.mean')
-                .data(Lib.identity)
-                .enter().append('path')
-                .attr('class', 'mean')
-                .style({
-                    fill: 'none',
-                    'vector-effect': 'non-scaling-stroke'
-                })
-                .each(function(d) {
-                    var posc = posAxis.c2p(d.pos + bPos, true),
-                        pos0 = posAxis.c2p(d.pos + bPos - bdPos, true),
-                        pos1 = posAxis.c2p(d.pos + bPos + bdPos, true),
-                        m = valAxis.c2p(d.mean, true),
-                        sl = valAxis.c2p(d.mean - d.sd, true),
-                        sh = valAxis.c2p(d.mean + d.sd, true);
-                    if(trace.orientation === 'h') {
-                        d3.select(this).attr('d',
-                            'M' + m + ',' + pos0 + 'V' + pos1 +
-                            ((trace.boxmean !== 'sd') ? '' :
-                                'm0,0L' + sl + ',' + posc + 'L' + m + ',' + pos0 + 'L' + sh + ',' + posc + 'Z'));
-                    }
-                    else {
-                        d3.select(this).attr('d',
-                            'M' + pos0 + ',' + m + 'H' + pos1 +
-                            ((trace.boxmean !== 'sd') ? '' :
-                                'm0,0L' + posc + ',' + sl + 'L' + pos0 + ',' + m + 'L' + posc + ',' + sh + 'Z'));
-                    }
-                });
+            plotBoxMean(sel, {pos: posAxis, val: valAxis}, trace, t);
         }
     });
 }
 
-function plotPoints(sel, plotinfo, trace, t) {
-    var xa = plotinfo.xaxis;
-    var ya = plotinfo.yaxis;
+function plotBoxAndWhiskers(sel, axes, trace, t) {
+    var posAxis = axes.pos;
+    var valAxis = axes.val;
+    var bPos = t.bPos;
+    var wdPos = t.wdPos || 0;
+    var bPosPxOffset = t.bPosPxOffset || 0;
+    var whiskerWidth = trace.whiskerwidth || 0;
+
+    // to support for one-sided box
+    var bdPos0;
+    var bdPos1;
+    if(Array.isArray(t.bdPos)) {
+        bdPos0 = t.bdPos[0];
+        bdPos1 = t.bdPos[1];
+    } else {
+        bdPos0 = t.bdPos;
+        bdPos1 = t.bdPos;
+    }
+
+    sel.selectAll('path.box')
+        .data(Lib.identity)
+        .enter().append('path')
+        .style('vector-effect', 'non-scaling-stroke')
+        .attr('class', 'box')
+        .each(function(d) {
+            var pos = d.pos;
+            var posc = posAxis.c2p(pos + bPos, true) + bPosPxOffset;
+            var pos0 = posAxis.c2p(pos + bPos - bdPos0, true) + bPosPxOffset;
+            var pos1 = posAxis.c2p(pos + bPos + bdPos1, true) + bPosPxOffset;
+            var posw0 = posAxis.c2p(pos + bPos - wdPos, true) + bPosPxOffset;
+            var posw1 = posAxis.c2p(pos + bPos + wdPos, true) + bPosPxOffset;
+            var q1 = valAxis.c2p(d.q1, true);
+            var q3 = valAxis.c2p(d.q3, true);
+            // make sure median isn't identical to either of the
+            // quartiles, so we can see it
+            var m = Lib.constrain(
+                valAxis.c2p(d.med, true),
+                Math.min(q1, q3) + 1, Math.max(q1, q3) - 1
+            );
+            var lf = valAxis.c2p(trace.boxpoints === false ? d.min : d.lf, true);
+            var uf = valAxis.c2p(trace.boxpoints === false ? d.max : d.uf, true);
+
+            if(trace.orientation === 'h') {
+                d3.select(this).attr('d',
+                    'M' + m + ',' + pos0 + 'V' + pos1 + // median line
+                    'M' + q1 + ',' + pos0 + 'V' + pos1 + 'H' + q3 + 'V' + pos0 + 'Z' + // box
+                    'M' + q1 + ',' + posc + 'H' + lf + 'M' + q3 + ',' + posc + 'H' + uf + // whiskers
+                    ((whiskerWidth === 0) ? '' : // whisker caps
+                        'M' + lf + ',' + posw0 + 'V' + posw1 + 'M' + uf + ',' + posw0 + 'V' + posw1));
+            } else {
+                d3.select(this).attr('d',
+                    'M' + pos0 + ',' + m + 'H' + pos1 + // median line
+                    'M' + pos0 + ',' + q1 + 'H' + pos1 + 'V' + q3 + 'H' + pos0 + 'Z' + // box
+                    'M' + posc + ',' + q1 + 'V' + lf + 'M' + posc + ',' + q3 + 'V' + uf + // whiskers
+                    ((whiskerWidth === 0) ? '' : // whisker caps
+                        'M' + posw0 + ',' + lf + 'H' + posw1 + 'M' + posw0 + ',' + uf + 'H' + posw1));
+            }
+        });
+}
+
+function plotPoints(sel, axes, trace, t) {
+    var xa = axes.x;
+    var ya = axes.y;
     var bdPos = t.bdPos;
     var bPos = t.bPos;
 
-    // TODO ... unfortunately
+    // to support violin innerbox
     var mode = trace.boxpoints || trace.points;
 
     // repeatable pseudorandom number generator
@@ -258,7 +257,60 @@ function plotPoints(sel, plotinfo, trace, t) {
         .call(Drawing.translatePoints, xa, ya);
 }
 
+function plotBoxMean(sel, axes, trace, t) {
+    var posAxis = axes.pos;
+    var valAxis = axes.val;
+    var bPos = t.bPos;
+    var bPosPxOffset = t.bPosPxOffset || 0;
+
+    // to support for one-sided box
+    var bdPos0;
+    var bdPos1;
+    if(Array.isArray(t.bdPos)) {
+        bdPos0 = t.bdPos[0];
+        bdPos1 = t.bdPos[1];
+    } else {
+        bdPos0 = t.bdPos;
+        bdPos1 = t.bdPos;
+    }
+
+    sel.selectAll('path.mean')
+        .data(Lib.identity)
+        .enter().append('path')
+        .attr('class', 'mean')
+        .style({
+            fill: 'none',
+            'vector-effect': 'non-scaling-stroke'
+        })
+        .each(function(d) {
+            var posc = posAxis.c2p(d.pos + bPos, true) + bPosPxOffset;
+            var pos0 = posAxis.c2p(d.pos + bPos - bdPos0, true) + bPosPxOffset;
+            var pos1 = posAxis.c2p(d.pos + bPos + bdPos1, true) + bPosPxOffset;
+            var m = valAxis.c2p(d.mean, true);
+            var sl = valAxis.c2p(d.mean - d.sd, true);
+            var sh = valAxis.c2p(d.mean + d.sd, true);
+
+            if(trace.orientation === 'h') {
+                d3.select(this).attr('d',
+                    'M' + m + ',' + pos0 + 'V' + pos1 +
+                    (trace.boxmean === 'sd' ?
+                        'm0,0L' + sl + ',' + posc + 'L' + m + ',' + pos0 + 'L' + sh + ',' + posc + 'Z' :
+                        '')
+                );
+            } else {
+                d3.select(this).attr('d',
+                    'M' + pos0 + ',' + m + 'H' + pos1 +
+                    (trace.boxmean === 'sd' ?
+                        'm0,0L' + posc + ',' + sl + 'L' + pos0 + ',' + m + 'L' + posc + ',' + sh + 'Z' :
+                        '')
+                );
+            }
+        });
+}
+
 module.exports = {
     plot: plot,
-    plotPoints: plotPoints
+    plotBoxAndWhiskers: plotBoxAndWhiskers,
+    plotPoints: plotPoints,
+    plotBoxMean: plotBoxMean
 };
