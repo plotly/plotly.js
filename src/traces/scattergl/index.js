@@ -80,12 +80,15 @@ ScatterRegl.calc = function calc(container, trace) {
     if(xaxis.type === 'log') {
         var rawx = Array(x.length);
         for(i = 0, l = x.length; i < l; i++) {
-            rawx[i] = x[i]
+            rawx[i] = x[i];
             x[i] = xaxis.d2l(x[i]);
         }
     }
     else {
         rawx = x;
+        for(i = 0, l = x.length; i < l; i++) {
+            x[i] = parseFloat(x[i]);
+        }
     }
     if(yaxis.type === 'log') {
         var rawy = Array(y.length);
@@ -96,6 +99,9 @@ ScatterRegl.calc = function calc(container, trace) {
     }
     else {
         rawy = y;
+        for(i = 0, l = y.length; i < l; i++) {
+            y[i] = parseFloat(y[i]);
+        }
     }
 
     // we need hi-precision for scatter2d
