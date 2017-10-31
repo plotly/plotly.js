@@ -58,7 +58,6 @@ ScatterRegl.calc = function calc(container, trace) {
     var x = xaxis.type === 'linear' ? trace.x : xaxis.makeCalcdata(trace, 'x');
     var y = yaxis.type === 'linear' ? trace.y : yaxis.makeCalcdata(trace, 'y');
     var count = Math.max(x ? x.length : 0, y ? y.length : 0), i, l, xx, yy, ptrX = 0, ptrY = 0;
-
     if (!x) {
         x = Array(count)
         for (let i = 0; i < count; i++) {
@@ -76,16 +75,27 @@ ScatterRegl.calc = function calc(container, trace) {
     var isVisible, hasLines, hasErrorX, hasErrorY, hasError, hasMarkers, hasFill;
     var linePositions;
 
-    // convert log axes
+    // get log converted positions
+    var rawx, rawy;
     if(xaxis.type === 'log') {
+        var rawx = Array(x.length);
         for(i = 0, l = x.length; i < l; i++) {
+            rawx[i] = x[i]
             x[i] = xaxis.d2l(x[i]);
         }
     }
+    else {
+        rawx = x;
+    }
     if(yaxis.type === 'log') {
+        var rawy = Array(y.length);
         for(i = 0, l = y.length; i < l; i++) {
+            rawy[i] = y[i]
             y[i] = yaxis.d2l(y[i]);
         }
+    }
+    else {
+        rawy = y;
     }
 
     // we need hi-precision for scatter2d
@@ -119,6 +129,8 @@ ScatterRegl.calc = function calc(container, trace) {
     // stash data
     stash.x = x;
     stash.y = y;
+    stash.rawx = rawx;
+    stash.rawy = rawy;
     stash.positions = positions;
     stash.count = count;
 
@@ -240,17 +252,17 @@ ScatterRegl.calc = function calc(container, trace) {
 
         // If we have data with gaps, we ought to use rect joins
         // FIXME: get rid of this
-        var hasNaNs = false;
+        var hasNaN = false;
         for (i = 0; i < linePositions.length; i++) {
             if (isNaN(linePositions[i])) {
-                hasNaNs = true;
+                hasNaN = true;
                 break;
             }
         }
-        lineOptions.join = (hasNaNs || linePositions.length > TOO_MANY_POINTS) && !hasMarkers ? 'rect' : 'round'
+        lineOptions.join = (hasNaN || linePositions.length > TOO_MANY_POINTS) ? 'rect' : hasMarkers ? 'rect' : 'round';
 
         // fill gaps
-        if (hasNaNs && trace.connectgaps) {
+        if (hasNaN && trace.connectgaps) {
             var lastX = linePositions[0], lastY = linePositions[1];
             for (i = 0; i < linePositions.length; i+=2) {
                 if (isNaN(linePositions[i]) || isNaN(linePositions[i + 1])) {
@@ -382,8 +394,8 @@ ScatterRegl.calc = function calc(container, trace) {
                 }
             }
 
-            Axes.expand(xaxis, x, { padded: true, ppad: sizes });
-            Axes.expand(yaxis, y, { padded: true, ppad: sizes });
+            Axes.expand(xaxis, stash.rawx, { padded: true, ppad: sizes });
+            Axes.expand(yaxis, stash.rawy, { padded: true, ppad: sizes });
         }
         else {
             var size = scatterOptions.size = markerSizeFunc(markerOpts && markerOpts.size || 10);
@@ -400,8 +412,8 @@ ScatterRegl.calc = function calc(container, trace) {
 
             // FIXME: is there a better way to separate expansion?
             if (count < TOO_MANY_POINTS) {
-                Axes.expand(xaxis, x, { padded: true, ppad: size });
-                Axes.expand(yaxis, y, { padded: true, ppad: size });
+                Axes.expand(xaxis, stash.rawx, { padded: true, ppad: size });
+                Axes.expand(yaxis, stash.rawy, { padded: true, ppad: size });
             }
             // update axes fast for big number of points
             else {
@@ -686,7 +698,10 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
         var yaxis = Axes.getFromId(container, trace.yaxis || 'y');
 
         var range = [
-            xaxis._rl[0], yaxis._rl[0], xaxis._rl[1], yaxis._rl[1]
+            xaxis.range[0],
+            yaxis.range[0],
+            xaxis.range[1],
+            yaxis.range[1]
         ];
 
         var viewport = [
