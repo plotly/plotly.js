@@ -161,8 +161,8 @@ ScatterRegl.calc = function calc(container, trace) {
         var errorsX = new Float64Array(4 * count);
 
         for(i = 0; i < count; ++i) {
-            errorsX[ptrX++] = x[i] - errorVals[i].xs || 0;
-            errorsX[ptrX++] = errorVals[i].xh - x[i] || 0;
+            errorsX[ptrX++] = rawx[i] - errorVals[i].xs || 0;
+            errorsX[ptrX++] = errorVals[i].xh - rawx[i] || 0;
             errorsX[ptrX++] = 0;
             errorsX[ptrX++] = 0;
         }
@@ -186,8 +186,8 @@ ScatterRegl.calc = function calc(container, trace) {
         for(i = 0; i < count; ++i) {
             errorsY[ptrY++] = 0;
             errorsY[ptrY++] = 0;
-            errorsY[ptrY++] = y[i] - errorVals[i].ys || 0;
-            errorsY[ptrY++] = errorVals[i].yh - y[i] || 0;
+            errorsY[ptrY++] = rawy[i] - errorVals[i].ys || 0;
+            errorsY[ptrY++] = errorVals[i].yh - rawy[i] || 0;
         }
 
         errorYOptions.positions = positions;
@@ -471,8 +471,7 @@ ScatterRegl.calc = function calc(container, trace) {
             if(scene.fill2d) scene.fill2d.update(opts);
             if(scene.scatter2d) scene.scatter2d.update(opts);
             if(scene.line2d) scene.line2d.update(opts);
-            if(scene.error2d) scene.error2d.update(opts.concat(opts));
-
+            if(scene.error2d) scene.error2d.update([].push.apply(opts, opts));
             scene.draw();
         };
 
@@ -768,8 +767,8 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval) {
         xa = pointData.xa,
         ya = pointData.ya,
         positions = stash.positions,
-        x = stash.x,
-        y = stash.y,
+        x = stash.rawx,
+        y = stash.rawy,
         xpx = xa.c2p(xval),
         ypx = ya.c2p(yval),
         ids;
