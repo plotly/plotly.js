@@ -1,0 +1,58 @@
+{
+    "data": [{
+        "type": "violin",
+        "x": [
+            "1798-01-01",
+            "1798-04-04",
+            "1798-05-05",
+            "1798-05-05",
+            "1798-07-05",
+            "1798-07-22",
+            "1799-01-01"
+        ],
+        "orientation": "h",
+        "xcalendar": "discworld",
+        "name": "discworld dates",
+        "showinnerbox": true,
+        "xaxis": "x",
+        "yaxis": "y"
+    }, {
+        "type": "violin",
+        "x": [
+            "A",
+            "B",
+            "C",
+            "C",
+            "C",
+            "D",
+            "G"
+        ],
+        "orientation": "h",
+        "name": "categories",
+        "showinnerbox": true,
+        "xaxis": "x2",
+        "yaxis": "y2"
+        
+    }],
+    "layout": {
+        "xaxis": {
+            "anchor": "y"
+        },
+        "xaxis2": {
+            "anchor": "y2",
+            "categoryarray": ["A", "B", "C", "D", "E", "F", "G"]
+        },
+        "yaxis": {
+            "anchor": "x",
+            "domain": [0, 0.48]
+        },
+        "yaxis2": {
+            "anchor": "x2",
+            "domain": [0.52, 1]
+        },
+        "margin": {
+            "l": 100
+        },
+        "showlegend": false
+    }
+}

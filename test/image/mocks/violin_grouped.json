@@ -19,7 +19,8 @@
             }
         },
         "points": "all",
-        "jitter": 0
+        "jitter": 0,
+        "span": [0, null]
     }, {
         "type": "violin",
         "name": "radishes",
@@ -40,7 +41,8 @@
             }
         },
         "points": "all",
-        "jitter": 0
+        "jitter": 0,
+        "span": [0, null]
     }, {
          "type": "violin",
          "name": "carrots",
@@ -61,8 +63,8 @@
             }
          },
         "points": "all",
-        "jitter": 0
-    }, {
+        "jitter": 0,
+        "span": [0, null]
     }],
     "layout": {
         "yaxis": {
