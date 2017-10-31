@@ -18,7 +18,7 @@ Box.calc = require('./calc');
 Box.setPositions = require('./set_positions');
 Box.plot = require('./plot').plot;
 Box.style = require('./style');
-Box.hoverPoints = require('./hover');
+Box.hoverPoints = require('./hover').hoverPoints;
 Box.selectPoints = require('./select');
 
 Box.moduleType = 'trace';
