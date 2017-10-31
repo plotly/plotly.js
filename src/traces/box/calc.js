@@ -18,16 +18,16 @@ module.exports = function calc(gd, trace) {
     var fullLayout = gd._fullLayout;
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
-    var orientation = trace.orientation;
     var cd = [];
 
-    var numKey = '_numBoxes';
+    // N.B. violin reuses same Box.calc
+    var numKey = trace.type === 'violin' ? '_numViolins' : '_numBoxes';
 
     var i;
     var valAxis, valLetter;
     var posAxis, posLetter;
 
-    if(orientation === 'h') {
+    if(trace.orientation === 'h') {
         valAxis = xa;
         valLetter = 'x';
         posAxis = ya;
@@ -119,7 +119,9 @@ module.exports = function calc(gd, trace) {
     if(cd.length > 0) {
         cd[0].t = {
             num: fullLayout[numKey],
-            dPos: dPos
+            dPos: dPos,
+            posLetter: posLetter,
+            valLetter: valLetter
         };
 
         fullLayout[numKey]++;

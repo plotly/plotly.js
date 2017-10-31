@@ -8,23 +8,22 @@
 
 'use strict';
 
-var Registry = require('../../registry');
 var Lib = require('../../lib');
 var layoutAttributes = require('./layout_attributes');
 
-function _supply(layoutIn, layoutOut, fullData, coerce, prefix) {
-    var hasBoxes;
+function _supply(layoutIn, layoutOut, fullData, coerce, traceType) {
+    var hasTraceType;
     for(var i = 0; i < fullData.length; i++) {
-        if(Registry.traceIs(fullData[i], 'box')) {
-            hasBoxes = true;
+        if(fullData[i].type === traceType) {
+            hasTraceType = true;
             break;
         }
     }
-    if(!hasBoxes) return;
+    if(!hasTraceType) return;
 
-    coerce(prefix + 'mode');
-    coerce(prefix + 'gap');
-    coerce(prefix + 'groupgap');
+    coerce(traceType + 'mode');
+    coerce(traceType + 'gap');
+    coerce(traceType + 'groupgap');
 }
 
 function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {

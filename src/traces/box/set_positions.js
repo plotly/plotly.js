@@ -8,48 +8,37 @@
 
 'use strict';
 
-var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 
-module.exports = function setPositions(gd, plotinfo) {
-    var fullLayout = gd._fullLayout;
+var orientations = ['v', 'h'];
+
+function setPositions(gd, plotinfo) {
+    var calcdata = gd.calcdata;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
-    var orientations = ['v', 'h'];
 
-    // TODO figure this out
-    // should violins and boxes share 'num' fields?
-    var numKey = '_numBoxes';
-
-    var posAxis, i, j, k;
-
-    for(i = 0; i < orientations.length; ++i) {
-        var orientation = orientations[i],
-            boxlist = [],
-            boxpointlist = [],
-            minPad = 0,
-            maxPad = 0,
-            cd,
-            t,
-            trace;
-
-        // set axis via orientation
-        if(orientation === 'h') posAxis = ya;
-        else posAxis = xa;
+    for(var i = 0; i < orientations.length; i++) {
+        var orientation = orientations[i];
+        var posAxis = orientation === 'h' ? ya : xa;
+        var boxList = [];
+        var minPad = 0;
+        var maxPad = 0;
 
         // make list of boxes
-        for(j = 0; j < gd.calcdata.length; ++j) {
-            cd = gd.calcdata[j];
-            t = cd[0].t;
-            trace = cd[0].trace;
+        for(var j = 0; j < calcdata.length; j++) {
+            var cd = calcdata[j];
+            var t = cd[0].t;
+            var trace = cd[0].trace;
 
             if(trace.visible === true && trace.type === 'box' &&
                     !t.empty &&
                     trace.orientation === orientation &&
                     trace.xaxis === xa._id &&
-                    trace.yaxis === ya._id) {
-                boxlist.push(j);
+                    trace.yaxis === ya._id
+              ) {
+                boxList.push(j);
+
                 if(trace.boxpoints !== false) {
                     minPad = Math.max(minPad, trace.jitter - trace.pointpos - 1);
                     maxPad = Math.max(maxPad, trace.jitter + trace.pointpos - 1);
@@ -57,46 +46,64 @@ module.exports = function setPositions(gd, plotinfo) {
             }
         }
 
-        // make list of box points
-        for(j = 0; j < boxlist.length; j++) {
-            cd = gd.calcdata[boxlist[j]];
-            for(k = 0; k < cd.length; k++) boxpointlist.push(cd[k].pos);
-        }
-        if(!boxpointlist.length) continue;
-
-        // box plots - update dPos based on multiple traces
-        // and then use for posAxis autorange
-
-        var boxdv = Lib.distinctVals(boxpointlist);
-        var dPos = boxdv.minDiff / 2;
-
-        // if there's no duplication of x points,
-        // disable 'group' mode by setting counter to 1
-        if(boxpointlist.length === boxdv.vals.length) {
-            fullLayout[numKey] = 1;
-        }
-
-        // check for forced minimum dtick
-        Axes.minDtick(posAxis, boxdv.minDiff, boxdv.vals[0], true);
-
-        // set the width of all boxes
-        for(i = 0; i < boxlist.length; i++) {
-            var boxListIndex = boxlist[i];
-            gd.calcdata[boxListIndex][0].t.dPos = dPos;
-        }
-
-        // TODO this won't work when both boxes and violins are present
-        // on same graph
-        var gap = fullLayout.boxgap || fullLayout.violingap;
-        var groupgap = fullLayout.boxgroupgap || fullLayout.violingroupgap;
-
-        // autoscale the x axis - including space for points if they're off the side
-        // TODO: this will overdo it if the outermost boxes don't have
-        // their points as far out as the other boxes
-        var padfactor = (1 - gap) * (1 - groupgap) * dPos / fullLayout[numKey];
-        Axes.expand(posAxis, boxdv.vals, {
-            vpadminus: dPos + minPad * padfactor,
-            vpadplus: dPos + maxPad * padfactor
-        });
+        setPositionOffset('box', gd, boxList, posAxis, [minPad, maxPad]);
     }
+}
+
+function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
+    var calcdata = gd.calcdata;
+    var fullLayout = gd._fullLayout;
+    var pointList = [];
+
+    // N.B. reused in violin
+    var numKey = traceType === 'violin' ? '_numViolins' : '_numBoxes';
+
+    var i, j, calcTrace;
+
+    // make list of box points
+    for(i = 0; i < boxList.length; i++) {
+        calcTrace = calcdata[boxList[i]];
+        for(j = 0; j < calcTrace.length; j++) {
+            pointList.push(calcTrace[j].pos);
+        }
+    }
+
+    if(!pointList.length) return;
+
+    // box plots - update dPos based on multiple traces
+    // and then use for posAxis autorange
+    var boxdv = Lib.distinctVals(pointList);
+    var dPos = boxdv.minDiff / 2;
+
+    // if there's no duplication of x points,
+    // disable 'group' mode by setting counter to 1
+    if(pointList.length === boxdv.vals.length) {
+        fullLayout[numKey] = 1;
+    }
+
+    // check for forced minimum dtick
+    Axes.minDtick(posAxis, boxdv.minDiff, boxdv.vals[0], true);
+
+    // set the width of all boxes
+    for(i = 0; i < boxList.length; i++) {
+        calcTrace = calcdata[boxList[i]];
+        calcTrace[0].t.dPos = dPos;
+    }
+
+    var gap = fullLayout[traceType + 'gap'];
+    var groupgap = fullLayout[traceType + 'groupgap'];
+    var padfactor = (1 - gap) * (1 - groupgap) * dPos / fullLayout[numKey];
+
+    // autoscale the x axis - including space for points if they're off the side
+    // TODO: this will overdo it if the outermost boxes don't have
+    // their points as far out as the other boxes
+    Axes.expand(posAxis, boxdv.vals, {
+        vpadminus: dPos + pad[0] * padfactor,
+        vpadplus: dPos + pad[1] * padfactor
+    });
+}
+
+module.exports = {
+    setPositions: setPositions,
+    setPositionOffset: setPositionOffset
 };

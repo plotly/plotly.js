@@ -14,7 +14,7 @@ module.exports = {
     supplyDefaults: require('./defaults'),
     supplyLayoutDefaults: require('./layout_defaults'),
     calc: require('./calc'),
-    setPositions: require('../box/set_positions'),
+    setPositions: require('./set_positions'),
     plot: require('./plot'),
     style: require('./style'),
     hoverPoints: require('../box/hover'),

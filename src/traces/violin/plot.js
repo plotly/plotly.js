@@ -30,7 +30,7 @@ module.exports = function plot(gd, plotinfo, cd) {
         var t = cd0.t;
         var trace = cd0.trace;
         var sel = cd0.node3 = d3.select(this);
-        var numViolins = fullLayout._numBoxes;
+        var numViolins = fullLayout._numViolins;
         var group = (fullLayout.violinmode === 'group' && numViolins > 1);
         // violin max half width
         var bdPos = t.bdPos = t.dPos * (1 - fullLayout.violingap) * (1 - fullLayout.violingroupgap) / (group ? numViolins : 1);

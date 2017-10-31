@@ -11,7 +11,6 @@
 var boxLayoutAttrs = require('../box/layout_attributes');
 
 // TODO update descriptions
-// ... or maybe just reuse box* attributes?
 module.exports = {
     violinmode: boxLayoutAttrs.boxmode,
     violingap: boxLayoutAttrs.boxgap,
