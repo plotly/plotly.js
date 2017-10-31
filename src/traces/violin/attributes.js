@@ -99,12 +99,6 @@ module.exports = {
         ].join(' ')
     },
 
-    // TODO need attribute(s) similar to 'boxmean' to toggle lines for:
-    // - mean
-    // - median
-    // - std
-    // - quartiles
-
     line: {
         color: {
             valType: 'color',
@@ -123,6 +117,70 @@ module.exports = {
         editType: 'plot'
     },
     fillcolor: boxAttrs.fillcolor,
+
+    // TODO update description
+    points: boxAttrs.boxpoints,
+    jitter: boxAttrs.jitter,
+    pointpos: boxAttrs.pointpos,
+    marker: boxAttrs.marker,
+    text: boxAttrs.text,
+
+    showinnerbox: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'info',
+        editType: 'plot',
+        description: '.'
+    },
+    innerboxwidth: {
+        valType: 'number',
+        min: 0,
+        max: 1,
+        dflt: 0.25,
+        role: 'info',
+        editType: 'plot',
+        description: '...'
+    },
+    innerboxlinecolor: {
+        valType: 'color',
+        role: 'style',
+        editType: 'style',
+        description: ''
+    },
+    innerboxfillcolor: {
+        valType: 'color',
+        role: 'style',
+        editType: 'style',
+        description: ''
+    },
+    innerboxlinewidth: {
+        valType: 'number',
+        min: 0,
+        role: 'style',
+        editType: 'style',
+        description: ''
+    },
+
+    showmeanline: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'info',
+        editType: 'plot',
+        description: 'Toggle'
+    },
+    meanlinecolor: {
+        valType: 'color',
+        role: 'style',
+        editType: 'style',
+        description: ''
+    },
+    meanlinewidth: {
+        valType: 'number',
+        min: 0,
+        role: 'style',
+        editType: 'style',
+        description: ''
+    },
     hoveron: boxAttrs.hoveron
 
     side: {

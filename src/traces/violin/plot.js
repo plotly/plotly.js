@@ -13,6 +13,7 @@ var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
 var boxPlot = require('../box/plot');
 var linePoints = require('../scatter/line_points');
+var helpers = require('./helpers');
 
 module.exports = function plot(gd, plotinfo, cd) {
     var fullLayout = gd._fullLayout;
@@ -128,10 +129,68 @@ module.exports = function plot(gd, plotinfo, cd) {
 
             });
 
-        if(trace.points) {
-            boxPlot.plotPoints(sel, plotinfo, trace, t);
+        if(trace.showinnerbox) {
+            var innerBoxWidth = trace.innerboxwidth;
+            var innerBoxLineWidth = trace.innerboxlinewidth;
+            var bdPosScaled;
+            var bPosPxOffset;
+
+            if(hasBothSides) {
+                bdPosScaled = bdPos * innerBoxWidth;
+                bPosPxOffset = 0;
+            } else if(hasPositiveSide) {
+                bdPosScaled = [0, bdPos * innerBoxWidth / 2];
+                bPosPxOffset = -innerBoxLineWidth;
+            } else {
+                bdPosScaled = [bdPos * innerBoxWidth / 2, 0];
+                bPosPxOffset = innerBoxLineWidth;
+            }
+
+            // do not draw whiskers on inner boxes
+            trace.whiskerwidth = 0;
+
+            boxPlot.plotBoxAndWhiskers(sel, {pos: posAxis, val: valAxis}, trace, {
+                bPos: bPos,
+                bdPos: bdPosScaled,
+                bPosPxOffset: bPosPxOffset
+            });
+
+            // if both showinnerbox and showmeanline are turned on, show mean
+            // line inside inner box
+
+            if(trace.showmeanline) {
+                boxPlot.plotBoxMean(sel, {pos: posAxis, val: valAxis}, trace, {
+                    bPos: bPos,
+                    bdPos: bdPosScaled,
+                    bPosPxOffset: bPosPxOffset
+                });
+            }
+        }
+        else {
+            if(trace.showmeanline) {
+                sel.selectAll('path.mean')
+                    .data(Lib.identity)
+                    .enter().append('path')
+                    .attr('class', 'mean')
+                    .style({
+                        fill: 'none',
+                        'vector-effect': 'non-scaling-stroke'
+                    })
+                    .each(function(d) {
+                        var v = valAxis.c2p(d.mean, true);
+                        var p = helpers.getPositionOnKdePath(d, trace, v);
+
+                        d3.select(this).attr('d',
+                            trace.orientation === 'h' ?
+                                'M' + v + ',' + p[0] + 'V' + p[1] :
+                                'M' + p[0] + ',' + v + 'H' + p[1]
+                        );
+                    });
+            }
         }
 
-        // TODO quartile line etc
+        if(trace.points) {
+            boxPlot.plotPoints(sel, {x: xa, y: ya}, trace, t);
+        }
     });
 };

@@ -35,4 +35,31 @@ exports.makeKDE = function(calcItem, trace, vals) {
     };
 };
 
+exports.getPositionOnKdePath = function(calcItem, trace, valuePx) {
+    var posLetter, valLetter;
+
+    if(trace.orientation === 'h') {
+        posLetter = 'y';
+        valLetter = 'x';
+    } else {
+        posLetter = 'x';
+        valLetter = 'y';
+    }
+
+    var pointOnPath = Lib.findPointOnPath(
+        calcItem.path,
+        valuePx,
+        valLetter,
+        {pathLength: calcItem.pathLength}
+    );
+
+    var posCenterPx = calcItem.posCenterPx;
+    var posOnPath0 = pointOnPath[posLetter];
+    var posOnPath1 = trace.side === 'both' ?
+        2 * posCenterPx - posOnPath0 :
+        posCenterPx;
+
+    return [posOnPath0, posOnPath1];
+};
+
 exports.extractVal = function(o) { return o.v; };
