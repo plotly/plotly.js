@@ -190,7 +190,6 @@ ScatterRegl.calc = function calc(container, trace) {
         lineOptions.thickness = trace.line.width;
         lineOptions.color = trace.line.color;
         lineOptions.opacity = trace.opacity;
-        lineOptions.join = trace.opacity === 1.0 ? 'rect' : 'round';
         lineOptions.overlay = true;
 
         var dashes = (DASHES[trace.line.dash] || [1]).slice();
@@ -238,6 +237,33 @@ ScatterRegl.calc = function calc(container, trace) {
         else {
             linePositions = positions;
         }
+
+        // If we have data with gaps, we ought to use rect joins
+        // FIXME: get rid of this
+        var hasNaNs = false;
+        for (i = 0; i < linePositions.length; i++) {
+            if (isNaN(linePositions[i])) {
+                hasNaNs = true;
+                break;
+            }
+        }
+        lineOptions.join = (hasNaNs || linePositions.length > TOO_MANY_POINTS) && !hasMarkers ? 'rect' : 'round'
+
+        // fill gaps
+        if (hasNaNs && trace.connectgaps) {
+            var lastX = linePositions[0], lastY = linePositions[1];
+            for (i = 0; i < linePositions.length; i+=2) {
+                if (isNaN(linePositions[i]) || isNaN(linePositions[i + 1])) {
+                    linePositions[i] = lastX
+                    linePositions[i + 1] = lastY
+                }
+                else {
+                    lastX = linePositions[i];
+                    lastY = linePositions[i + 1];
+                }
+            }
+        }
+
         lineOptions.positions = linePositions;
     }
 
@@ -360,7 +386,6 @@ ScatterRegl.calc = function calc(container, trace) {
             Axes.expand(yaxis, y, { padded: true, ppad: sizes });
         }
         else {
-            // console.log(x, xOptions, xa._min)
             var size = scatterOptions.size = markerSizeFunc(markerOpts && markerOpts.size || 10);
             scatterOptions.borderSizes = markerOpts.line.width * 0.5;
 
@@ -478,6 +503,12 @@ ScatterRegl.calc = function calc(container, trace) {
             scene.scatter2d.regl.clear({color: true});
             scene.draw();
         }
+    }
+    else {
+        if (hasFill && !scene.fill2d) scene.fill2d = true;
+        if (hasMarkers && !scene.marker2d) scene.marker2d = true;
+        if (hasLines && !scene.line2d) scene.line2d = true;
+        if (hasError && !scene.error2d) scene.error2d = true;
     }
 
     // In case if we have scene from the last calc - reset data
