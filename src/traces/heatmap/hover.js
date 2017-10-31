@@ -15,7 +15,7 @@ var Axes = require('../../plots/cartesian/axes');
 
 var MAXDIST = Fx.constants.MAXDIST;
 
-module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour) {
+module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLayer, contour) {
     // never let a heatmap override another type as closest point
     if(pointData.distance < MAXDIST) return;
 

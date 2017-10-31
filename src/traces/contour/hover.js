@@ -11,7 +11,6 @@
 
 var heatmapHoverPoints = require('../heatmap/hover');
 
-
-module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
-    return heatmapHoverPoints(pointData, xval, yval, hovermode, true);
+module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLayer) {
+    return heatmapHoverPoints(pointData, xval, yval, hovermode, hoverLayer, true);
 };
