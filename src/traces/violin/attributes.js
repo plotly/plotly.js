@@ -9,7 +9,6 @@
 'use strict';
 
 var boxAttrs = require('../box/attributes');
-var scatterAttrs = require('../scatter/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = {
@@ -26,62 +25,79 @@ module.exports = {
         ].join(' ')
     }),
 
+    kernel: {
+        valType: 'enumerated',
+        values: ['gaussian', 'epanechnikov'],
+        dflt: 'gaussian',
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Determines which kernel is used to compute the kernel density estimation.'
+        ].join(' ')
+    },
     bandwidth: {
         valType: 'number',
         min: 0,
         role: 'info',
-        editType: 'plot',
+        editType: 'calc',
         description: [
             'Sets the bandwidth used to compute the kernel density estimate.',
             'By default, the bandwidth is determined by Silverman\'s rule of thumb.'
         ].join(' ')
     },
-    scaleby: {
+
+    scalegroup: {
+        valType: 'string',
+        role: 'info',
+        dflt: '',
+        editType: 'calc',
+        description: [
+            'If there are multiple violins that should be sized according to',
+            'to some metric (see `scalemode`), link them by providing a non-empty group id here',
+            'shared by every trace in the same group.'
+        ].join(' ')
+    },
+    scalemode: {
         valType: 'enumerated',
-        values: ['width', 'area', 'count'],
+        values: ['width', 'count'],
         dflt: 'width',
         role: 'info',
         editType: 'calc',
         description: [
-            'Sets the method by which the width of each violin is determined.',
+            'Sets the metric by which the width of each violin is determined.',
             '*width* means each violin has the same (max) width',
-            '*area* means each violin has the same area',
             '*count* means the violins are scaled by the number of sample points making',
             'up each violin.'
         ].join('')
     },
+
+    spanmode: {
+        valType: 'enumerated',
+        values: ['soft', 'hard', 'manual'],
+        dflt: 'soft',
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Sets the method by which the span in data space where the density function will be computed.',
+            '*soft* means the span goes from the sample\'s minimum value minus two bandwidths',
+            'to the sample\'s maximum value plus two bandwidths.',
+            '*hard* means the span goes from the sample\'s minimum to its maximum value.',
+            'For custom span settings, use mode *manual* and fill in the `span` attribute.'
+        ].join(' ')
+    },
     span: {
         valType: 'info_array',
         items: [
-            {valType: 'any', editType: 'plot'},
-            {valType: 'any', editType: 'plot'}
+            {valType: 'any', editType: 'calc'},
+            {valType: 'any', editType: 'calc'}
         ],
         role: 'info',
-        editType: 'plot',
+        editType: 'calc',
         description: [
             'Sets the span in data space for which the density function will be computed.',
-            'By default, the span goes from the minimum value to maximum value in the sample.'
+            'Has an effect only when `spanmode` is set to *manual*.'
         ].join(' ')
     },
-    side: {
-        valType: 'enumerated',
-        values: ['both', 'left', 'right'],
-        dflt: 'both',
-        role: 'info',
-        editType: 'plot',
-        description: [
-            'Determines which side of the position line the density function making up',
-            'one half of a is plotting.',
-            'Useful when comparing two violin traces under *overlay* mode, where one trace.'
-        ].join(' ')
-    },
-
-    // TODO update description
-    points: boxAttrs.boxpoints,
-    jitter: boxAttrs.jitter,
-    pointpos: boxAttrs.pointpos,
-    marker: boxAttrs.marker,
-    text: boxAttrs.text,
 
     // TODO need attribute(s) similar to 'boxmean' to toggle lines for:
     // - mean
@@ -104,10 +120,22 @@ module.exports = {
             editType: 'style',
             description: 'Sets the width (in px) of line bounding the violin(s).'
         },
-        smoothing: scatterAttrs.line.smoothing,
         editType: 'plot'
     },
-
     fillcolor: boxAttrs.fillcolor,
     hoveron: boxAttrs.hoveron
+
+    side: {
+        valType: 'enumerated',
+        values: ['both', 'positive', 'negative'],
+        dflt: 'both',
+        role: 'info',
+        editType: 'plot',
+        description: [
+            'Determines on which side of the position value the density function making up',
+            'one half of a violin is plotted.',
+            'Useful when comparing two violin traces under *overlay* mode, where one trace',
+            'has `side` set to *positive* and the other to *negative*.'
+        ].join(' ')
+    },
 };

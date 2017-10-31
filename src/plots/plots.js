@@ -2162,6 +2162,9 @@ plots.doCalcdata = function(gd, traces) {
     fullLayout._numBoxes = 0;
     fullLayout._numViolins = 0;
 
+    // initialize violin per-scale-group stats container
+    fullLayout._violinScaleGroupStats = {};
+
     // for calculating avg luminosity of heatmaps
     gd._hmpixcount = 0;
     gd._hmlumcount = 0;

@@ -19,6 +19,18 @@ module.exports = function plot(gd, plotinfo, cd) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
+    function makePath(pts) {
+        var segments = linePoints(pts, {
+            xaxis: xa,
+            yaxis: ya,
+            connectGaps: true,
+            baseTolerance: 0.75,
+            shape: 'spline',
+            simplify: true
+        });
+        return Drawing.smoothopen(segments[0], 1);
+    }
+
     var traces = plotinfo.plot.select('.violinlayer')
         .selectAll('g.trace.violins')
             .data(cd)
@@ -42,45 +54,78 @@ module.exports = function plot(gd, plotinfo, cd) {
             return;
         }
 
+        var valAxis = plotinfo[t.valLetter + 'axis'];
+        var posAxis = plotinfo[t.posLetter + 'axis'];
+        var hasBothSides = trace.side === 'both';
+        var hasPositiveSide = hasBothSides || trace.side === 'positive';
+        var hasNegativeSide = hasBothSides || trace.side === 'negative';
+        var groupStats = fullLayout._violinScaleGroupStats[trace.scalegroup];
+
         sel.selectAll('path.violin')
             .data(Lib.identity)
             .enter().append('path')
             .style('vector-effect', 'non-scaling-stroke')
             .attr('class', 'violin')
             .each(function(d) {
+                var pathSel = d3.select(this);
                 var density = d.density;
-                var lineData = [];
-                var i;
+                var len = density.length;
+                var posCenter = d.pos + bPos;
+                var posCenterPx = posAxis.c2p(posCenter);
+                var scale;
 
-                // TODO add scale by 'area' and by 'count'
-                var scale = d.violinMaxWidth / bdPos;
-
-                // TODO add support for one-sided violins
-                for(i = 0; i < density.length; i++) {
-                    lineData.push({
-                        x: d.pos + bPos + (density[i].v / scale),
-                        y: density[i].t
-                    });
-                }
-                for(i--; i >= 0; i--) {
-                    lineData.push({
-                        x: d.pos + bPos - (density[i].v / scale),
-                        y: density[i].t
-                    });
+                switch(trace.scalemode) {
+                    case 'width':
+                        scale = groupStats.maxWidth / bdPos;
+                        break;
+                    case 'count':
+                        scale = (groupStats.maxWidth / bdPos) * (groupStats.maxCount / len);
+                        break;
                 }
 
-                var segments = linePoints(lineData, {
-                    xaxis: xa,
-                    yaxis: ya,
-                    connectGaps: true,
-                    baseTolerance: 0.75,
-                    shape: 'spline',
-                    simplify: true
-                });
+                var pathPos, pathNeg, path;
+                var i, k, pts, pt;
 
-                var path = Drawing.smoothclosed(segments[0], trace.line.smoothing);
+                if(hasPositiveSide) {
+                    pts = new Array(len);
+                    for(i = 0; i < len; i++) {
+                        pt = pts[i] = {};
+                        pt[t.posLetter] = posCenter + (density[i].v / scale);
+                        pt[t.valLetter] = density[i].t;
+                    }
+                    pathPos = makePath(pts);
+                }
 
-                d3.select(this).attr('d', path);
+                if(hasNegativeSide) {
+                    pts = new Array(len);
+                    for(k = 0, i = len - 1; k < len; k++, i--) {
+                        pt = pts[k] = {};
+                        pt[t.posLetter] = posCenter - (density[i].v / scale);
+                        pt[t.valLetter] = density[i].t;
+                    }
+                    pathNeg = makePath(pts);
+                }
+
+                if(hasBothSides) {
+                    path = pathPos + 'L' + pathNeg.substr(1) + 'Z';
+                }
+                else {
+                    var startPt = [posCenterPx, valAxis.c2p(density[0].t)];
+                    var endPt = [posCenterPx, valAxis.c2p(density[len - 1].t)];
+
+                    if(trace.orientation === 'h') {
+                        startPt.reverse();
+                        endPt.reverse();
+                    }
+
+                    if(hasPositiveSide) {
+                        path = 'M' + startPt + 'L' + pathPos.substr(1) + 'L' + endPt;
+                    } else {
+                        path = 'M' + endPt + 'L' + pathNeg.substr(1) + 'L' + startPt;
+                    }
+                }
+                pathSel.attr('d', path);
+
             });
 
         if(trace.points) {

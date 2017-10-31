@@ -22,15 +22,17 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     boxDefaults.handleSampleDefaults(traceIn, traceOut, coerce, layout);
     if(traceOut.visible === false) return;
 
+    coerce('kernel');
     coerce('bandwidth');
-    coerce('scaleby');
-    coerce('span');
+    coerce('scalegroup', traceOut.name);
+    coerce('scalemode');
     coerce('side');
 
-    coerce('line.color', (traceIn.marker || {}).color || defaultColor);
-    coerce('line.width');
-    coerce('line.smoothing');
-    coerce('fillcolor', Color.addOpacity(traceOut.line.color, 0.5));
+    var span = coerce('span');
+    var spanmodeDflt;
+    if(Array.isArray(span)) spanmodeDflt = 'manual';
+    coerce('spanmode', spanmodeDflt);
+
 
     boxDefaults.handlePointsDefaults(traceIn, traceOut, coerce, {prefix: ''});
 };
