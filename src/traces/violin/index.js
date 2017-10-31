@@ -23,9 +23,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'violin',
     basePlotModule: require('../../plots/cartesian'),
-    // TODO
-    // - should maybe rename 'box' category to something more general
-    categories: ['cartesian', 'symbols', 'oriented', 'box', 'showLegend'],
+    categories: ['cartesian', 'symbols', 'oriented', 'box-violin', 'showLegend'],
     meta: {
         description: [
             'In vertical (horizontal) violin plots,',
