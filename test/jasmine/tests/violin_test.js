@@ -4,6 +4,7 @@ var Plots = require('@src/plots/plots');
 
 var Violin = require('@src/traces/violin');
 
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
@@ -187,6 +188,46 @@ describe('Test violin calc:', function() {
         expect(cd[0].span).toBeCloseToArray([0, 4.28], 'defaults to soft bound');
     });
 
+    it('should honor set bandwidth in span calculations', function() {
+        var y = [1, 1, 2, 2, 3];
+        var bw = 0.1;
+
+        _calc({
+            y: y,
+            bandwidth: bw
+        });
+        expect(cd[0].bandwidth).toBeCloseTo(0.1);
+        expect(cd[0].span).toBeCloseToArray([0.8, 3.2]);
+
+        _calc({
+            y: y,
+            bandwidth: bw,
+            spanmode: 'hard'
+        });
+        expect(cd[0].span).toBeCloseToArray([1, 3]);
+
+        _calc({
+            y: y,
+            bandwidth: bw,
+            span: [0, 0]
+        });
+        expect(cd[0].span).toBeCloseToArray([-1, 1], 'cleans up invalid range');
+
+        _calc({
+            y: y,
+            bandwidth: bw,
+            span: [null, 5]
+        });
+        expect(cd[0].span).toBeCloseToArray([0.8, 5], 'defaults to soft bound');
+
+        _calc({
+            y: y,
+            bandwidth: bw,
+            span: [0, null]
+        });
+        expect(cd[0].span).toBeCloseToArray([0, 3.2], 'defaults to soft bound');
+    });
+
     it('should fill in scale-group stats', function() {
         _calc({
             name: 'one',
@@ -345,10 +386,89 @@ describe('Test violin hover:', function() {
         pos: [180, 240],
         nums: 'look:0.7',
         name: ''
+    }, {
+        desc: 'one-sided violin under hovermode closest',
+        // hoveron: 'kde+points'
+        // hovermode: 'closest'
+        // width: 400
+        // height: 700
+        mock: require('@mocks/violin_side-by-side.json'),
+        pos: [250, 300],
+        nums: '(x: 42.43046, kde: 0.083, Saturday)',
+        name: ''
+    }, {
+        desc: 'one-sided violin under hovermode y',
+        // hoveron: 'kde+points'
+        // width: 400
+        // height: 700
+        mock: require('@mocks/violin_side-by-side.json'),
+        patch: function(fig) {
+            fig.layout.hovermode = 'y';
+            return fig;
+        },
+        pos: [250, 300],
+        nums: 'x: 42.43046, kde: 0.083',
+        name: '',
+        axis: 'Saturday'
     }]
     .forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
             run(specs).catch(fail).then(done);
+        });
+    });
+
+    describe('KDE lines inside violin under *kde* hoveron flag', function() {
+        var fig;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+
+            fig = Lib.extendDeep({}, require('@mocks/violin_old-faithful.json'), {
+                layout: {width: 500, height: 500}
+            });
+            fig.data[0].points = false;
+        });
+
+        function assertViolinHoverLine(pos) {
+            var line = d3.select('.hoverlayer').selectAll('line');
+
+            expect(line.size()).toBe(1, 'only one violin line at a time');
+            expect(line.attr('class').indexOf('violinline')).toBe(0, 'correct class name');
+            expect([
+                line.attr('x1'), line.attr('y1'),
+                line.attr('x2'), line.attr('y2')
+            ]).toBeCloseToArray(pos, 'line position');
+        }
+
+        it('should show in two-sided base case', function(done) {
+            Plotly.plot(gd, fig).then(function() {
+                mouseEvent('mousemove', 250, 250);
+                assertViolinHoverLine([299.35, 250, 200.65, 250]);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('should show in one-sided positive case', function(done) {
+            fig.data[0].side = 'positive';
+
+            Plotly.plot(gd, fig).then(function() {
+                mouseEvent('mousemove', 300, 250);
+                assertViolinHoverLine([299.35, 250, 250, 250]);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('should show in one-sided negative case', function(done) {
+            fig.data[0].side = 'negative';
+
+            Plotly.plot(gd, fig).then(function() {
+                mouseEvent('mousemove', 200, 250);
+                assertViolinHoverLine([200.65, 250, 250, 250]);
+            })
+            .catch(fail)
+            .then(done);
         });
     });
 });
