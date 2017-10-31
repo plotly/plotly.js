@@ -16,14 +16,16 @@
     },
     "data": [
         {
-            "text": "sample length: 32",
             "hoveron": "points+kde",
+            "text": "sample length: 32",
+            "showmeanline": true,
             "legendgroup": "F",
             "scalegroup": "F",
             "points": "all",
-            "pointpos": 0.1,
+            "pointpos": 1,
             "jitter": 0,
             "scalemode": "count",
+            "showinnerbox": true,
             "marker": {
                 "line": {
                     "width": 2,
@@ -79,14 +81,16 @@
             "orientation": "h"
         },
         {
-            "text": "sample length: 30",
             "hoveron": "points+kde",
+            "text": "sample length: 30",
+            "showmeanline": true,
             "legendgroup": "M",
             "scalegroup": "M",
             "points": "all",
-            "pointpos": -0.1,
+            "pointpos": -0.6,
             "jitter": 0,
             "scalemode": "count",
+            "showinnerbox": true,
             "marker": {
                 "line": {
                     "width": 2,
@@ -140,14 +144,16 @@
             "orientation": "h"
         },
         {
-            "text": "sample length: 9",
             "hoveron": "points+kde",
+            "text": "sample length: 9",
+            "showmeanline": true,
             "legendgroup": "F",
             "scalegroup": "F",
             "points": "all",
-            "pointpos": 0.1,
+            "pointpos": 0.4,
             "jitter": 0,
             "scalemode": "count",
+            "showinnerbox": true,
             "marker": {
                 "line": {
                     "width": 2,
@@ -180,14 +186,16 @@
             "orientation": "h"
         },
         {
-            "text": "sample length: 10",
             "hoveron": "points+kde",
+            "text": "sample length: 10",
+            "showmeanline": true,
             "legendgroup": "M",
             "scalegroup": "M",
             "points": "all",
-            "pointpos": -0.1,
+            "pointpos": -0.3,
             "jitter": 0,
             "scalemode": "count",
+            "showinnerbox": true,
             "marker": {
                 "line": {
                     "width": 2,
@@ -221,14 +229,16 @@
             "orientation": "h"
         },
         {
-            "text": "sample length: 28",
             "hoveron": "points+kde",
+            "text": "sample length: 28",
+            "showmeanline": true,
             "legendgroup": "F",
             "scalegroup": "F",
             "points": "all",
-            "pointpos": 0.1,
+            "pointpos": 0.55,
             "jitter": 0,
             "scalemode": "count",
+            "showinnerbox": true,
             "marker": {
                 "line": {
                     "width": 2,
@@ -280,14 +290,16 @@
             "orientation": "h"
         },
         {
-            "text": "sample length: 59",
             "hoveron": "points+kde",
+            "text": "sample length: 59",
+            "showmeanline": true,
             "legendgroup": "M",
             "scalegroup": "M",
             "points": "all",
-            "pointpos": -0.1,
+            "pointpos": -1.1,
             "jitter": 0,
             "scalemode": "count",
+            "showinnerbox": true,
             "marker": {
                 "line": {
                     "width": 2,
@@ -370,14 +382,16 @@
             "orientation": "h"
         },
         {
-            "text": "sample length: 18",
             "hoveron": "points+kde",
+            "text": "sample length: 18",
+            "showmeanline": true,
             "legendgroup": "F",
             "scalegroup": "F",
             "points": "all",
-            "pointpos": 0.1,
+            "pointpos": 0.45,
             "jitter": 0,
             "scalemode": "count",
+            "showinnerbox": true,
             "marker": {
                 "line": {
                     "width": 2,
@@ -419,14 +433,16 @@
             "orientation": "h"
         },
         {
-            "text": "sample length: 58",
             "hoveron": "points+kde",
+            "text": "sample length: 58",
+            "showmeanline": true,
             "legendgroup": "M",
             "scalegroup": "M",
             "points": "all",
-            "pointpos": -0.1,
+            "pointpos": -0.9,
             "jitter": 0,
             "scalemode": "count",
+            "showinnerbox": true,
             "marker": {
                 "line": {
                     "width": 2,
