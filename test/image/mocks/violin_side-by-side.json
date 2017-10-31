@@ -9,13 +9,15 @@
         "legend": {
             "tracegroupgap": 0
         },
-        "violingap": 0.05,
+        "violingap": 0,
         "violingroupgap": 0,
         "violinmode": "overlay",
         "height": 700
     },
     "data": [
         {
+            "text": "sample length: 32",
+            "hoveron": "points+kde",
             "legendgroup": "F",
             "scalegroup": "F",
             "points": "all",
@@ -77,6 +79,8 @@
             "orientation": "h"
         },
         {
+            "text": "sample length: 30",
+            "hoveron": "points+kde",
             "legendgroup": "M",
             "scalegroup": "M",
             "points": "all",
@@ -136,6 +140,8 @@
             "orientation": "h"
         },
         {
+            "text": "sample length: 9",
+            "hoveron": "points+kde",
             "legendgroup": "F",
             "scalegroup": "F",
             "points": "all",
@@ -174,6 +180,8 @@
             "orientation": "h"
         },
         {
+            "text": "sample length: 10",
+            "hoveron": "points+kde",
             "legendgroup": "M",
             "scalegroup": "M",
             "points": "all",
@@ -213,6 +221,8 @@
             "orientation": "h"
         },
         {
+            "text": "sample length: 28",
+            "hoveron": "points+kde",
             "legendgroup": "F",
             "scalegroup": "F",
             "points": "all",
@@ -270,6 +280,8 @@
             "orientation": "h"
         },
         {
+            "text": "sample length: 59",
+            "hoveron": "points+kde",
             "legendgroup": "M",
             "scalegroup": "M",
             "points": "all",
@@ -358,6 +370,8 @@
             "orientation": "h"
         },
         {
+            "text": "sample length: 18",
+            "hoveron": "points+kde",
             "legendgroup": "F",
             "scalegroup": "F",
             "points": "all",
@@ -405,6 +419,8 @@
             "orientation": "h"
         },
         {
+            "text": "sample length: 58",
+            "hoveron": "points+kde",
             "legendgroup": "M",
             "scalegroup": "M",
             "points": "all",

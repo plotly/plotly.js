@@ -80,7 +80,7 @@ module.exports = function plot(gd, plotinfo, cd) {
                         scale = groupStats.maxWidth / bdPos;
                         break;
                     case 'count':
-                        scale = (groupStats.maxWidth / bdPos) * (groupStats.maxCount / len);
+                        scale = (groupStats.maxWidth / bdPos) * (groupStats.maxCount / d.pts.length);
                         break;
                 }
 
@@ -133,7 +133,6 @@ module.exports = function plot(gd, plotinfo, cd) {
                 d.posDensityScale = scale * bdPos;
                 d.path = pathSel.node();
                 d.pathLength = d.path.getTotalLength() / (hasBothSides ? 2 : 1);
-
             });
 
         if(trace.showinnerbox) {
