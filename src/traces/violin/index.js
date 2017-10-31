@@ -17,7 +17,7 @@ module.exports = {
     setPositions: require('./set_positions'),
     plot: require('./plot'),
     style: require('./style'),
-    hoverPoints: require('../box/hover'),
+    hoverPoints: require('./hover'),
     selectPoints: require('../box/select'),
 
     moduleType: 'trace',

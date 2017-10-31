@@ -62,4 +62,10 @@ exports.getPositionOnKdePath = function(calcItem, trace, valuePx) {
     return [posOnPath0, posOnPath1];
 };
 
+exports.getKdeValue = function(calcItem, trace, valueDist) {
+    var vals = calcItem.pts.map(exports.extractVal);
+    var kde = exports.makeKDE(calcItem, trace, vals);
+    return kde(valueDist) / calcItem.posDensityScale;
+};
+
 exports.extractVal = function(o) { return o.v; };

@@ -127,6 +127,13 @@ module.exports = function plot(gd, plotinfo, cd) {
                 }
                 pathSel.attr('d', path);
 
+                // save a few things used in getPositionOnKdePath, getKdeValue
+                // on hover and for showmeanline
+                d.posCenterPx = posCenterPx;
+                d.posDensityScale = scale * bdPos;
+                d.path = pathSel.node();
+                d.pathLength = d.path.getTotalLength() / (hasBothSides ? 2 : 1);
+
             });
 
         if(trace.showinnerbox) {

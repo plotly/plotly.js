@@ -181,7 +181,6 @@ module.exports = {
         editType: 'style',
         description: ''
     },
-    hoveron: boxAttrs.hoveron
 
     side: {
         valType: 'enumerated',
@@ -196,4 +195,17 @@ module.exports = {
             'has `side` set to *positive* and the other to *negative*.'
         ].join(' ')
     },
+
+    hoveron: {
+        valType: 'flaglist',
+        flags: ['violins', 'points', 'kde'],
+        dflt: 'violins+points+kde',
+        extras: ['all'],
+        role: 'info',
+        editType: 'style',
+        description: [
+            'Do the hover effects highlight individual violins',
+            'or sample points or the kernel density estimate or any combination of them?'
+        ].join(' ')
+    }
 };

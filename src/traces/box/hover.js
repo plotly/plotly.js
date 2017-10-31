@@ -51,23 +51,48 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
     var ya = pointData.ya;
     var trace = cd[0].trace;
     var t = cd[0].t;
+    var isViolin = trace.type === 'violin';
     var closeBoxData = [];
 
     var pLetter, vLetter, pAxis, vAxis, vVal, pVal, dx, dy;
 
     // closest mode: handicap box plots a little relative to others
     // adjust inbox w.r.t. to calculate box size
-    var boxDelta = (hovermode === 'closest') ? 2.5 * t.bdPos : t.bdPos;
+    var boxDelta = (hovermode === 'closest' && !isViolin) ? 2.5 * t.bdPos : t.bdPos;
     var shiftPos = function(di) { return di.pos + t.bPos - pVal; };
+    var dPos;
 
-    var dPos = function(di) {
-        var pos = shiftPos(di);
-        return Fx.inbox(pos - boxDelta, pos + boxDelta);
-    };
+    if(isViolin && trace.side !== 'both') {
+        if(trace.side === 'positive') {
+            dPos = function(di) {
+                var pos = shiftPos(di);
+                return Fx.inbox(pos, pos + boxDelta);
+            };
+        }
+        if(trace.side === 'negative') {
+            dPos = function(di) {
+                var pos = shiftPos(di);
+                return Fx.inbox(pos - boxDelta, pos);
+            };
+        }
+    } else {
+        dPos = function(di) {
+            var pos = shiftPos(di);
+            return Fx.inbox(pos - boxDelta, pos + boxDelta);
+        };
+    }
 
-    var dVal = function(di) {
-        return Fx.inbox(di.min - vVal, di.max - vVal);
-    };
+    var dVal;
+
+    if(isViolin) {
+        dVal = function(di) {
+            return Fx.inbox(di.span[0] - vVal, di.span[1] - vVal);
+        };
+    } else {
+        dVal = function(di) {
+            return Fx.inbox(di.min - vVal, di.max - vVal);
+        };
+    }
 
     if(trace.orientation === 'h') {
         vVal = xval;
@@ -115,11 +140,11 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
     var attrs = ['med', 'min', 'q1', 'q3', 'max'];
     var prefixes = ['median', 'min', 'q1', 'q3', 'max'];
 
-    if(trace.boxmean) {
+    if(trace.boxmean || trace.showmeanline) {
         attrs.push('mean');
         prefixes.push(trace.boxmean === 'sd' ? 'mean ± σ' : 'mean');
     }
-    if(trace.boxpoints) {
+    if(trace.boxpoints || trace.points) {
         attrs.push('lf', 'uf');
         prefixes.push('lower fence', 'upper fence');
     }
