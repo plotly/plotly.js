@@ -10,18 +10,18 @@
 
 var Lib = require('../../lib');
 
+// Maybe add kernels more down the road,
+// but note that the default `spanmode: 'soft'` bounds might have
+// to become kernel-dependent
 var kernels = {
     gaussian: function(v) {
         return (1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * v * v);
-    },
-    epanechnikov: function(v) {
-        return Math.abs(v) <= 1 ? 0.75 * (1 - v * v) : 0;
     }
 };
 
 exports.makeKDE = function(calcItem, trace, vals) {
     var len = vals.length;
-    var kernel = kernels[trace.kernel];
+    var kernel = kernels.gaussian;
     var bandwidth = calcItem.bandwidth;
     var factor = 1 / (len * bandwidth);
 

@@ -25,7 +25,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     boxDefaults.handleSampleDefaults(traceIn, traceOut, coerce, layout);
     if(traceOut.visible === false) return;
 
-    coerce('kernel');
     coerce('bandwidth');
     coerce('scalegroup', traceOut.name);
     coerce('scalemode');

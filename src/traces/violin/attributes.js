@@ -25,16 +25,6 @@ module.exports = {
         ].join(' ')
     }),
 
-    kernel: {
-        valType: 'enumerated',
-        values: ['gaussian', 'epanechnikov'],
-        dflt: 'gaussian',
-        role: 'info',
-        editType: 'calc',
-        description: [
-            'Determines which kernel is used to compute the kernel density estimation.'
-        ].join(' ')
-    },
     bandwidth: {
         valType: 'number',
         min: 0,
