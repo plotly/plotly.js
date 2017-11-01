@@ -117,7 +117,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         fillRangeItems = plotinfo.fillRangeItems;
     } else {
         if(mode === 'select') {
-            //FIXME: this is regression
+            // FIXME: this is regression
             fillRangeItems = function(eventData, currentPolygon) {
                 var ranges = eventData.range = {};
 
@@ -126,7 +126,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                     var axLetter = ax._id.charAt(0);
                     var x = axLetter === 'x';
 
-                    //FIXME: this should be fixed to read xmin/xmax, ymin/ymax
+                    // FIXME: this should be fixed to read xmin/xmax, ymin/ymax
                     ranges[ax._id] = [
                         ax.p2d(currentPolygon[0][x ? 0 : 1]),
                         ax.p2d(currentPolygon[2][x ? 0 : 1])
@@ -212,7 +212,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         }
 
         // update scatterregl scene
-        if (plotinfo._scene) {
+        if(plotinfo._scene) {
             plotinfo._scene.select(traceSelections);
         }
 

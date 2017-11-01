@@ -58,27 +58,27 @@ ScatterRegl.calc = function calc(container, trace) {
     var x = xaxis.type === 'linear' ? trace.x : xaxis.makeCalcdata(trace, 'x');
     var y = yaxis.type === 'linear' ? trace.y : yaxis.makeCalcdata(trace, 'y');
     var count = Math.max(x ? x.length : 0, y ? y.length : 0), i, l, xx, yy, ptrX = 0, ptrY = 0;
-    if (!x) {
-        x = Array(count)
-        for (let i = 0; i < count; i++) {
-            x[i] = i
+    if(!x) {
+        x = Array(count);
+        for(i = 0; i < count; i++) {
+            x[i] = i;
         }
     }
-    if (!y) {
-        y = Array(count)
-        for (let i = 0; i < count; i++) {
-            y[i] = i
+    if(!y) {
+        y = Array(count);
+        for(i = 0; i < count; i++) {
+            y[i] = i;
         }
     }
 
     var lineOptions, scatterOptions, errorXOptions, errorYOptions, fillOptions;
-    var isVisible, hasLines, hasErrorX, hasErrorY, hasError, hasMarkers, hasFill;
+    var hasLines, hasErrorX, hasErrorY, hasError, hasMarkers, hasFill;
     var linePositions;
 
     // get log converted positions
     var rawx, rawy;
     if(xaxis.type === 'log') {
-        var rawx = Array(x.length);
+        rawx = Array(x.length);
         for(i = 0, l = x.length; i < l; i++) {
             rawx[i] = x[i];
             x[i] = xaxis.d2l(x[i]);
@@ -91,9 +91,9 @@ ScatterRegl.calc = function calc(container, trace) {
         }
     }
     if(yaxis.type === 'log') {
-        var rawy = Array(y.length);
+        rawy = Array(y.length);
         for(i = 0, l = y.length; i < l; i++) {
-            rawy[i] = y[i]
+            rawy[i] = y[i];
             y[i] = yaxis.d2l(y[i]);
         }
     }
@@ -121,13 +121,13 @@ ScatterRegl.calc = function calc(container, trace) {
 
     // we don't build a tree for log axes since it takes long to convert log2px
     // and it is also
-    if (xaxis.type !== 'log' && yaxis.type !== 'log') {
+    if(xaxis.type !== 'log' && yaxis.type !== 'log') {
         // FIXME: delegate this to webworker
         stash.tree = kdtree(positions, 512);
     }
     else {
         var ids = stash.ids = Array(count);
-        for (i = 0; i < count; i++) {
+        for(i = 0; i < count; i++) {
             ids[i] = i;
         }
     }
@@ -141,7 +141,6 @@ ScatterRegl.calc = function calc(container, trace) {
     stash.count = count;
 
     if(trace.visible !== true) {
-        isVisible = false;
         hasLines = false;
         hasErrorX = false;
         hasErrorY = false;
@@ -149,7 +148,6 @@ ScatterRegl.calc = function calc(container, trace) {
         hasFill = false;
     }
     else {
-        isVisible = true;
         hasLines = subTypes.hasLines(trace) && positions.length > 2;
         hasErrorX = trace.error_x.visible === true;
         hasErrorY = trace.error_y.visible === true;
@@ -259,8 +257,8 @@ ScatterRegl.calc = function calc(container, trace) {
         // If we have data with gaps, we ought to use rect joins
         // FIXME: get rid of this
         var hasNaN = false;
-        for (i = 0; i < linePositions.length; i++) {
-            if (isNaN(linePositions[i])) {
+        for(i = 0; i < linePositions.length; i++) {
+            if(isNaN(linePositions[i])) {
                 hasNaN = true;
                 break;
             }
@@ -268,12 +266,12 @@ ScatterRegl.calc = function calc(container, trace) {
         lineOptions.join = (hasNaN || linePositions.length > TOO_MANY_POINTS) ? 'rect' : hasMarkers ? 'rect' : 'round';
 
         // fill gaps
-        if (hasNaN && trace.connectgaps) {
+        if(hasNaN && trace.connectgaps) {
             var lastX = linePositions[0], lastY = linePositions[1];
-            for (i = 0; i < linePositions.length; i+=2) {
-                if (isNaN(linePositions[i]) || isNaN(linePositions[i + 1])) {
-                    linePositions[i] = lastX
-                    linePositions[i + 1] = lastY
+            for(i = 0; i < linePositions.length; i += 2) {
+                if(isNaN(linePositions[i]) || isNaN(linePositions[i + 1])) {
+                    linePositions[i] = lastX;
+                    linePositions[i + 1] = lastY;
                 }
                 else {
                     lastX = linePositions[i];
@@ -367,12 +365,12 @@ ScatterRegl.calc = function calc(container, trace) {
 
         // prepare sizes and expand axes
         var multiSize = markerOpts && (Array.isArray(markerOpts.size) || Array.isArray(markerOpts.line.width));
-        var msx, msy, xbounds = [Infinity, -Infinity], ybounds = [Infinity, -Infinity];
+        var xbounds = [Infinity, -Infinity], ybounds = [Infinity, -Infinity];
         var markerSizeFunc = makeBubbleSizeFn(trace);
+        var size, sizes;
 
         if(multiSize) {
-            var size;
-            var sizes = scatterOptions.sizes = new Array(count);
+            sizes = scatterOptions.sizes = new Array(count);
             var borderSizes = scatterOptions.borderSizes = new Array(count);
 
             if(Array.isArray(markerOpts.size)) {
@@ -404,12 +402,12 @@ ScatterRegl.calc = function calc(container, trace) {
             Axes.expand(yaxis, stash.rawy, { padded: true, ppad: sizes });
         }
         else {
-            var size = scatterOptions.size = markerSizeFunc(markerOpts && markerOpts.size || 10);
+            size = scatterOptions.size = markerSizeFunc(markerOpts && markerOpts.size || 10);
             scatterOptions.borderSizes = markerOpts.line.width * 0.5;
 
             // axes bounds
             for(i = 0; i < count; i++) {
-                xx = x[i], yy = y[i]
+                xx = x[i], yy = y[i];
                 if(xbounds[0] > xx) xbounds[0] = xx;
                 if(xbounds[1] < xx) xbounds[1] = xx;
                 if(ybounds[0] > yy) ybounds[0] = yy;
@@ -417,7 +415,7 @@ ScatterRegl.calc = function calc(container, trace) {
             }
 
             // FIXME: is there a better way to separate expansion?
-            if (count < TOO_MANY_POINTS) {
+            if(count < TOO_MANY_POINTS) {
                 Axes.expand(xaxis, stash.rawx, { padded: true, ppad: size });
                 Axes.expand(yaxis, stash.rawy, { padded: true, ppad: size });
             }
@@ -440,7 +438,7 @@ ScatterRegl.calc = function calc(container, trace) {
             }
         }
     }
-    //expand no-markers axes
+    // expand no-markers axes
     else {
         Axes.expand(xaxis, stash.rawx, { padded: true });
         Axes.expand(yaxis, stash.rawy, { padded: true });
@@ -503,34 +501,34 @@ ScatterRegl.calc = function calc(container, trace) {
 
         // highlight selected points
         scene.select = function select(selection) {
-            if (!scene.select2d) return;
+            if(!scene.select2d) return;
 
             scene.select2d.regl.clear({color: true});
 
-            if (!selection.length) return;
+            if(!selection.length) return;
 
-            var options = selection.map(function (points) {
-                if (!points || !points.length) return null;
+            var options = selection.map(function(points) {
+                if(!points || !points.length) return null;
 
                 var elements = Array(points.length);
-                for (var i = 0; i < points.length; i++) {
+                for(var i = 0; i < points.length; i++) {
                     elements[i] = points[i].pointNumber;
                 }
-                return elements
+                return elements;
             });
 
             scene.select2d.draw(options);
 
-            //FIXME: this can be a strong guess, possibly we can redraw scene once
+            // FIXME: this can be a strong guess, possibly we can redraw scene once
             scene.scatter2d.regl.clear({color: true});
             scene.draw();
-        }
+        };
     }
     else {
-        if (hasFill && !scene.fill2d) scene.fill2d = true;
-        if (hasMarkers && !scene.marker2d) scene.marker2d = true;
-        if (hasLines && !scene.line2d) scene.line2d = true;
-        if (hasError && !scene.error2d) scene.error2d = true;
+        if(hasFill && !scene.fill2d) scene.fill2d = true;
+        if(hasMarkers && !scene.marker2d) scene.marker2d = true;
+        if(hasLines && !scene.line2d) scene.line2d = true;
+        if(hasError && !scene.error2d) scene.error2d = true;
     }
 
     // In case if we have scene from the last calc - reset data
@@ -552,7 +550,7 @@ ScatterRegl.calc = function calc(container, trace) {
     scene.scatterOptions.push(scatterOptions);
     scene.count++;
 
-    //stash scene ref
+    // stash scene ref
     stash.scene = scene;
 
     return [{x: false, y: false, t: stash, trace: trace}];
@@ -684,18 +682,18 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
 
     // make sure selection layer is initialized if we require selection
     var dragmode = layout.dragmode;
-    if (dragmode === 'lasso' || dragmode === 'select') {
+    if(dragmode === 'lasso' || dragmode === 'select') {
         if(!scene.select2d && scene.scatter2d) {
             var selectRegl = layout._glcanvas.data()[1].regl;
 
             scene.select2d = createScatter(selectRegl);
 
-            //TODO: modify options here according to the proposed selection options
+            // TODO: modify options here according to the proposed selection options
             scene.select2d.update(scene.scatterOptions);
         }
     }
     else {
-        if (scene.select2d) scene.select2d.regl.clear({color: true});
+        if(scene.select2d) scene.select2d.regl.clear({color: true});
     }
 
     // provide viewport and range
@@ -721,8 +719,8 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
             (height - vpSize.t) - (1 - yaxis.domain[1]) * vpSize.h
         ];
 
-        if (dragmode === 'lasso' || dragmode === 'select') {
-            //precalculate px coords since we are not going to pan during select
+        if(dragmode === 'lasso' || dragmode === 'select') {
+            // precalculate px coords since we are not going to pan during select
             var xpx = Array(stash.count), ypx = Array(stash.count);
             for(var i = 0; i < stash.count; i++) {
                 xpx[i] = xaxis.c2p(trace.x[i]);
@@ -734,10 +732,10 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
         else {
             stash.xpx = stash.ypx = null;
 
-            //reset opacities
-            if (scene.scatter2d) {
-                scene.scatter2d.update(scene.scatterOptions.map(function (opt) {
-                        return {opacity: opt ? opt.opacity : 1}
+            // reset opacities
+            if(scene.scatter2d) {
+                scene.scatter2d.update(scene.scatterOptions.map(function(opt) {
+                    return {opacity: opt ? opt.opacity : 1};
                 }));
             }
         }
@@ -761,7 +759,7 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
     if(scene.scatter2d) {
         scene.scatter2d.update(vpRange);
     }
-    if (scene.select2d) {
+    if(scene.select2d) {
         scene.select2d.update(vpRange);
     }
 
@@ -777,17 +775,15 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval, hovermode) {
         trace = cd[0].trace,
         xa = pointData.xa,
         ya = pointData.ya,
-        positions = stash.positions,
         x = stash.rawx,
         y = stash.rawy,
-        scene = stash.scene,
         xpx = xa.c2p(xval),
         ypx = ya.c2p(yval),
         ids;
 
     // FIXME: make sure this is a proper way to calc search radius
-    if (stash.tree) {
-        if (hovermode === 'x') {
+    if(stash.tree) {
+        if(hovermode === 'x') {
             ids = stash.tree.range(
                 xa.p2c(xpx - MAXDIST), ya._rl[0],
                 xa.p2c(xpx + MAXDIST), ya._rl[1]
@@ -800,19 +796,19 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval, hovermode) {
             );
         }
     }
-    else if (stash.ids) {
+    else if(stash.ids) {
         ids = stash.ids;
     }
     else return [pointData];
 
     // pick the id closest to the point
     // note that point possibly may not be found
-    var min = MAXDIST, id, ptx, pty, i;
+    var min = MAXDIST, id, ptx, pty, i, dx, dy, dist;
 
-    if (hovermode === 'x') {
+    if(hovermode === 'x') {
         for(i = 0; i < ids.length; i++) {
             ptx = x[ids[i]];
-            var dx = Math.abs(xa.c2p(ptx) - xpx);
+            dx = Math.abs(xa.c2p(ptx) - xpx);
             if(dx < min) {
                 min = dx;
                 id = ids[i];
@@ -823,9 +819,9 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval, hovermode) {
         for(i = 0; i < ids.length; i++) {
             ptx = x[ids[i]];
             pty = y[ids[i]];
-            var dx = xa.c2p(ptx) - xpx, dy = ya.c2p(pty) - ypx;
+            dx = xa.c2p(ptx) - xpx, dy = ya.c2p(pty) - ypx;
 
-            var dist = Math.sqrt(dx * dx + dy * dy);
+            dist = Math.sqrt(dx * dx + dy * dy);
             if(dist < min) {
                 min = dist;
                 id = ids[i];
@@ -904,8 +900,6 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval, hovermode) {
 
 ScatterRegl.selectPoints = function select(searchInfo, polygon) {
     var cd = searchInfo.cd,
-        xa = searchInfo.xaxis,
-        ya = searchInfo.yaxis,
         selection = [],
         trace = cd[0].trace,
         stash = cd[0].t,
@@ -921,11 +915,11 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
 
     // degenerate polygon does not enable selection
     if(polygon === false || polygon.degenerate) {
-        if (scene.scatter2d) {
-            scene.scatter2d.update(scene.scatterOptions.map(function (opt) {
-                return {opacity: opt.opacity}
+        if(scene.scatter2d) {
+            scene.scatter2d.update(scene.scatterOptions.map(function(opt) {
+                return {opacity: opt.opacity};
             }));
-        };
+        }
     }
     // filter out points by visible scatter ones
     else {
@@ -940,11 +934,11 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
         }
 
         // adjust selection transparency via canvas opacity
-        if (scene.scatter2d) {
-            scene.scatter2d.update(scene.scatterOptions.map(function (opt) {
-                return {opacity: opt.opacity * DESELECTDIM}
+        if(scene.scatter2d) {
+            scene.scatter2d.update(scene.scatterOptions.map(function(opt) {
+                return {opacity: opt.opacity * DESELECTDIM};
             }));
-        };
+        }
     }
 
     return selection;
