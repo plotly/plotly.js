@@ -51,7 +51,7 @@ ScatterRegl.calc = function calc(container, trace) {
     var yaxis = Axes.getFromId(container, trace.yaxis);
     var markerOpts = trace.marker;
 
-    // FIXME: find a better way to obtain subplot object from trace
+    // FIXME: is it the best way to obtain subplot object from trace
     var subplot = layout._plots[trace.xaxis + trace.yaxis];
 
     // makeCalcdata runs d2c (data-to-coordinate) on every point
@@ -440,6 +440,11 @@ ScatterRegl.calc = function calc(container, trace) {
             }
         }
     }
+    //expand no-markers axes
+    else {
+        Axes.expand(xaxis, stash.rawx, { padded: true });
+        Axes.expand(yaxis, stash.rawy, { padded: true });
+    }
 
 
     // make sure scene exists
@@ -703,10 +708,10 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
         var yaxis = Axes.getFromId(container, trace.yaxis || 'y');
 
         var range = [
-            xaxis.range[0],
-            yaxis.range[0],
-            xaxis.range[1],
-            yaxis.range[1]
+            xaxis._rl[0],
+            yaxis._rl[0],
+            xaxis._rl[1],
+            yaxis._rl[1]
         ];
 
         var viewport = [
@@ -766,7 +771,7 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
 };
 
 
-ScatterRegl.hoverPoints = function hover(pointData, xval, yval) {
+ScatterRegl.hoverPoints = function hover(pointData, xval, yval, hovermode) {
     var cd = pointData.cd,
         stash = cd[0].t,
         trace = cd[0].trace,
@@ -775,6 +780,7 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval) {
         positions = stash.positions,
         x = stash.rawx,
         y = stash.rawy,
+        scene = stash.scene,
         xpx = xa.c2p(xval),
         ypx = ya.c2p(yval),
         ids;
@@ -787,7 +793,18 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval) {
         // );
 
         //FIXME: this works only for the case of linear points
-        ids = stash.tree.within(xval, yval, MAXDIST / xa._m);
+        if (hovermode === 'x') {
+            ids = stash.tree.range(
+                xa.p2c(xpx - MAXDIST), ya._rl[0],
+                xa.p2c(xpx + MAXDIST), ya._rl[1]
+            );
+        }
+        else {
+            ids = stash.tree.range(
+                xa.p2c(xpx - MAXDIST), ya.p2c(ypx + MAXDIST),
+                xa.p2c(xpx + MAXDIST), ya.p2c(ypx - MAXDIST)
+            );
+        }
     }
     else if (stash.ids) {
         ids = stash.ids;
@@ -796,17 +813,29 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval) {
 
     // pick the id closest to the point
     // note that point possibly may not be found
-    var min = MAXDIST, id, ptx, pty;
+    var min = MAXDIST, id, ptx, pty, i;
 
-    for(var i = 0; i < ids.length; i++) {
-        ptx = x[ids[i]];
-        pty = y[ids[i]];
-        var dx = xa.c2p(ptx) - xpx, dy = ya.c2p(pty) - ypx;
+    if (hovermode === 'x') {
+        for(i = 0; i < ids.length; i++) {
+            ptx = x[ids[i]];
+            var dx = Math.abs(xa.c2p(ptx) - xpx);
+            if(dx < min) {
+                min = dx;
+                id = ids[i];
+            }
+        }
+    }
+    else {
+        for(i = 0; i < ids.length; i++) {
+            ptx = x[ids[i]];
+            pty = y[ids[i]];
+            var dx = xa.c2p(ptx) - xpx, dy = ya.c2p(pty) - ypx;
 
-        var dist = Math.sqrt(dx * dx + dy * dy);
-        if(dist < min) {
-            min = dist;
-            id = ids[i];
+            var dist = Math.sqrt(dx * dx + dy * dy);
+            if(dist < min) {
+                min = dist;
+                id = ids[i];
+            }
         }
     }
 
