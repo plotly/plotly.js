@@ -180,8 +180,10 @@ module.exports = {
                 role: 'style',
                 editType: 'style',
                 description: 'Sets the inner box plot bounding line width.'
-            }
-        }
+            },
+            editType: 'style'
+        },
+        editType: 'plot'
     },
 
     meanline: {
@@ -209,7 +211,8 @@ module.exports = {
             role: 'style',
             editType: 'style',
             description: 'Sets the mean line width.'
-        }
+        },
+        editType: 'plot'
     },
 
     side: {
