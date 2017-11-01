@@ -19,6 +19,10 @@ module.exports = function style(gd) {
         .each(function(d) {
             var trace = d[0].trace;
             var sel = d3.select(this);
+            var box = trace.box || {};
+            var boxLine = box.line || {};
+            var meanline = trace.meanline || {};
+            var meanLineWidth = meanline.width;
 
             sel.selectAll('path.violin')
                 .style('stroke-width', trace.line.width + 'px')
@@ -26,20 +30,18 @@ module.exports = function style(gd) {
                 .call(Color.fill, trace.fillcolor);
 
             sel.selectAll('path.box')
-                .style('stroke-width', trace.innerboxlinewidth + 'px')
-                .call(Color.stroke, trace.innerboxlinecolor)
-                .call(Color.fill, trace.innerboxfillcolor);
+                .style('stroke-width', boxLine.width + 'px')
+                .call(Color.stroke, boxLine.color)
+                .call(Color.fill, box.fillcolor);
 
             sel.selectAll('g.points path')
                 .call(Drawing.pointStyle, trace, gd);
-
-            var meanLineWidth = trace.meanlinewidth;
 
             sel.selectAll('path.mean')
                 .style({
                     'stroke-width': meanLineWidth + 'px',
                     'stroke-dasharray': (2 * meanLineWidth) + 'px,' + meanLineWidth + 'px'
                 })
-                .call(Color.stroke, trace.meanlinecolor);
+                .call(Color.stroke, meanline.color);
         });
 };

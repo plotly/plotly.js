@@ -16,16 +16,20 @@
     },
     "data": [
         {
-            "hoveron": "points+kde",
             "text": "sample length: 32",
-            "showmeanline": true,
+            "hoveron": "points+kde",
+            "meanline": {
+                "visible": true
+            },
             "legendgroup": "F",
             "scalegroup": "F",
             "points": "all",
             "pointpos": 1,
+            "box": {
+                "visible": true
+            },
             "jitter": 0,
             "scalemode": "count",
-            "showinnerbox": true,
             "marker": {
                 "line": {
                     "width": 2,
@@ -81,16 +85,20 @@
             "orientation": "h"
         },
         {
-            "hoveron": "points+kde",
             "text": "sample length: 30",
-            "showmeanline": true,
+            "hoveron": "points+kde",
+            "meanline": {
+                "visible": true
+            },
             "legendgroup": "M",
             "scalegroup": "M",
             "points": "all",
             "pointpos": -0.6,
+            "box": {
+                "visible": true
+            },
             "jitter": 0,
             "scalemode": "count",
-            "showinnerbox": true,
             "marker": {
                 "line": {
                     "width": 2,
@@ -144,16 +152,20 @@
             "orientation": "h"
         },
         {
-            "hoveron": "points+kde",
             "text": "sample length: 9",
-            "showmeanline": true,
+            "hoveron": "points+kde",
+            "meanline": {
+                "visible": true
+            },
             "legendgroup": "F",
             "scalegroup": "F",
             "points": "all",
             "pointpos": 0.4,
+            "box": {
+                "visible": true
+            },
             "jitter": 0,
             "scalemode": "count",
-            "showinnerbox": true,
             "marker": {
                 "line": {
                     "width": 2,
@@ -186,16 +198,20 @@
             "orientation": "h"
         },
         {
-            "hoveron": "points+kde",
             "text": "sample length: 10",
-            "showmeanline": true,
+            "hoveron": "points+kde",
+            "meanline": {
+                "visible": true
+            },
             "legendgroup": "M",
             "scalegroup": "M",
             "points": "all",
             "pointpos": -0.3,
+            "box": {
+                "visible": true
+            },
             "jitter": 0,
             "scalemode": "count",
-            "showinnerbox": true,
             "marker": {
                 "line": {
                     "width": 2,
@@ -229,16 +245,20 @@
             "orientation": "h"
         },
         {
-            "hoveron": "points+kde",
             "text": "sample length: 28",
-            "showmeanline": true,
+            "hoveron": "points+kde",
+            "meanline": {
+                "visible": true
+            },
             "legendgroup": "F",
             "scalegroup": "F",
             "points": "all",
             "pointpos": 0.55,
+            "box": {
+                "visible": true
+            },
             "jitter": 0,
             "scalemode": "count",
-            "showinnerbox": true,
             "marker": {
                 "line": {
                     "width": 2,
@@ -290,16 +310,20 @@
             "orientation": "h"
         },
         {
-            "hoveron": "points+kde",
             "text": "sample length: 59",
-            "showmeanline": true,
+            "hoveron": "points+kde",
+            "meanline": {
+                "visible": true
+            },
             "legendgroup": "M",
             "scalegroup": "M",
             "points": "all",
             "pointpos": -1.1,
+            "box": {
+                "visible": true
+            },
             "jitter": 0,
             "scalemode": "count",
-            "showinnerbox": true,
             "marker": {
                 "line": {
                     "width": 2,
@@ -382,16 +406,20 @@
             "orientation": "h"
         },
         {
-            "hoveron": "points+kde",
             "text": "sample length: 18",
-            "showmeanline": true,
+            "hoveron": "points+kde",
+            "meanline": {
+                "visible": true
+            },
             "legendgroup": "F",
             "scalegroup": "F",
             "points": "all",
             "pointpos": 0.45,
+            "box": {
+                "visible": true
+            },
             "jitter": 0,
             "scalemode": "count",
-            "showinnerbox": true,
             "marker": {
                 "line": {
                     "width": 2,
@@ -433,16 +461,20 @@
             "orientation": "h"
         },
         {
-            "hoveron": "points+kde",
             "text": "sample length: 58",
-            "showmeanline": true,
+            "hoveron": "points+kde",
+            "meanline": {
+                "visible": true
+            },
             "legendgroup": "M",
             "scalegroup": "M",
             "points": "all",
             "pointpos": -0.9,
+            "box": {
+                "visible": true
+            },
             "jitter": 0,
             "scalemode": "count",
-            "showinnerbox": true,
             "marker": {
                 "line": {
                     "width": 2,

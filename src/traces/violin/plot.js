@@ -60,6 +60,8 @@ module.exports = function plot(gd, plotinfo, cd) {
         var hasBothSides = trace.side === 'both';
         var hasPositiveSide = hasBothSides || trace.side === 'positive';
         var hasNegativeSide = hasBothSides || trace.side === 'negative';
+        var hasBox = trace.box && trace.box.visible;
+        var hasMeanLine = trace.meanline && trace.meanline.visible;
         var groupStats = fullLayout._violinScaleGroupStats[trace.scalegroup];
 
         sel.selectAll('path.violin')
@@ -128,28 +130,28 @@ module.exports = function plot(gd, plotinfo, cd) {
                 pathSel.attr('d', path);
 
                 // save a few things used in getPositionOnKdePath, getKdeValue
-                // on hover and for showmeanline
+                // on hover and for meanline draw block below
                 d.posCenterPx = posCenterPx;
                 d.posDensityScale = scale * bdPos;
                 d.path = pathSel.node();
                 d.pathLength = d.path.getTotalLength() / (hasBothSides ? 2 : 1);
             });
 
-        if(trace.showinnerbox) {
-            var innerBoxWidth = trace.innerboxwidth;
-            var innerBoxLineWidth = trace.innerboxlinewidth;
+        if(hasBox) {
+            var boxWidth = trace.box.width;
+            var boxLineWidth = trace.box.line.width;
             var bdPosScaled;
             var bPosPxOffset;
 
             if(hasBothSides) {
-                bdPosScaled = bdPos * innerBoxWidth;
+                bdPosScaled = bdPos * boxWidth;
                 bPosPxOffset = 0;
             } else if(hasPositiveSide) {
-                bdPosScaled = [0, bdPos * innerBoxWidth / 2];
-                bPosPxOffset = -innerBoxLineWidth;
+                bdPosScaled = [0, bdPos * boxWidth / 2];
+                bPosPxOffset = -boxLineWidth;
             } else {
-                bdPosScaled = [bdPos * innerBoxWidth / 2, 0];
-                bPosPxOffset = innerBoxLineWidth;
+                bdPosScaled = [bdPos * boxWidth / 2, 0];
+                bPosPxOffset = boxLineWidth;
             }
 
             // do not draw whiskers on inner boxes
@@ -161,10 +163,8 @@ module.exports = function plot(gd, plotinfo, cd) {
                 bPosPxOffset: bPosPxOffset
             });
 
-            // if both showinnerbox and showmeanline are turned on, show mean
-            // line inside inner box
-
-            if(trace.showmeanline) {
+            // if both box and meanline are visible, show mean line inside box
+            if(hasMeanLine) {
                 boxPlot.plotBoxMean(sel, {pos: posAxis, val: valAxis}, trace, {
                     bPos: bPos,
                     bdPos: bdPosScaled,
@@ -173,7 +173,7 @@ module.exports = function plot(gd, plotinfo, cd) {
             }
         }
         else {
-            if(trace.showmeanline) {
+            if(hasMeanLine) {
                 sel.selectAll('path.mean')
                     .data(Lib.identity)
                     .enter().append('path')

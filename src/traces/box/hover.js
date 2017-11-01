@@ -140,7 +140,7 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
     var attrs = ['med', 'min', 'q1', 'q3', 'max'];
     var prefixes = ['median', 'min', 'q1', 'q3', 'max'];
 
-    if(trace.boxmean || trace.showmeanline) {
+    if(trace.boxmean || (trace.meanline || {}).visible) {
         attrs.push('mean');
         prefixes.push(trace.boxmean === 'sd' ? 'mean ± σ' : 'mean');
     }

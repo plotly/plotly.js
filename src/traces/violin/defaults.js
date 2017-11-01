@@ -41,25 +41,15 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     boxDefaults.handlePointsDefaults(traceIn, traceOut, coerce, {prefix: ''});
 
-    var show;
+    var boxWidth = coerce2('box.width');
+    var boxFillColor = coerce2('box.fillcolor', fillColor);
+    var boxLineColor = coerce2('box.line.color', lineColor);
+    var boxLineWidth = coerce2('box.line.width', lineWidth);
+    var boxVisible = coerce('box.visible', Boolean(boxWidth || boxFillColor || boxLineColor || boxLineWidth));
+    if(!boxVisible) delete traceOut.box;
 
-    var innerBoxWidth = coerce2('innerboxwidth');
-    var innerBoxFillColor = coerce2('innerboxfillcolor', fillColor);
-    var innerBoxLineColor = coerce2('innerboxlinecolor', lineColor);
-    var innerBoxLineWidth = coerce2('innerboxlinewidth', lineWidth);
-    show = coerce('showinnerbox', Boolean(innerBoxWidth || innerBoxFillColor || innerBoxLineColor || innerBoxLineWidth));
-    if(!show) {
-        delete traceOut.innerboxwidth;
-        delete traceOut.innerboxfillcolor;
-        delete traceOut.innerboxlinecolor;
-        delete traceOut.innerboxlinewidth;
-    }
-
-    var meanLineColor = coerce2('meanlinecolor', lineColor);
-    var meanLineWidth = coerce2('meanlinewidth', lineWidth);
-    show = coerce('showmeanline', Boolean(meanLineColor || meanLineWidth));
-    if(!show) {
-        delete traceOut.meanlinecolor;
-        delete traceOut.meanlinewidth;
-    }
+    var meanLineColor = coerce2('meanline.color', lineColor);
+    var meanLineWidth = coerce2('meanline.width', lineWidth);
+    var meanLineVisible = coerce('meanline.visible', Boolean(meanLineColor || meanLineWidth));
+    if(!meanLineVisible) delete traceOut.meanline;
 };

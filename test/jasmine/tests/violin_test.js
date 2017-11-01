@@ -103,26 +103,28 @@ describe('Test violin defaults', function() {
         expect(traceOut.spanmode).toBe('soft');
     });
 
-    it('should default show* attributes when one of their corresponding style attributes is set & valid', function() {
+    it('should default *.visible attributes when one of their corresponding style attributes is set & valid', function() {
         _supply({
             y: [1, 2, 1],
-            innerboxwidth: 0.1,
-            meanlinecolor: 'red'
+            box: { width: 0.1 },
+            meanline: { color: 'red' }
         });
-        expect(traceOut.showinnerbox).toBe(true);
-        expect(traceOut.showmeanline).toBe(true);
+        expect(traceOut.box.visible).toBe(true);
+        expect(traceOut.meanline.visible).toBe(true);
 
         _supply({
             y: [1, 2, 1],
-            showinnerbox: false,
-            showmeanline: false,
-            innerboxwidth: 0.1,
-            meanlinecolor: 'red'
+            box: {
+                visible: false,
+                width: 0.1
+            },
+            meanline: {
+                visible: false,
+                color: 'red'
+            }
         });
-        expect(traceOut.showinnerbox).toBe(false);
-        expect(traceOut.innerboxwidth).toBeUndefined();
-        expect(traceOut.showmeanline).toBe(false);
-        expect(traceOut.meanlinecolor).toBeUndefined();
+        expect(traceOut.box).toBeUndefined();
+        expect(traceOut.meanline).toBeUndefined();
     });
 
     it('should use violin style settings to default inner style attribute', function() {
@@ -130,14 +132,14 @@ describe('Test violin defaults', function() {
             y: [1, 2, 1],
             fillcolor: 'red',
             line: {color: 'blue', width: 10},
-            showinnerbox: true,
-            showmeanline: true,
+            box: {visible: true},
+            meanline: {visible: true}
         });
-        expect(traceOut.innerboxfillcolor).toBe('red');
-        expect(traceOut.innerboxlinecolor).toBe('blue');
-        expect(traceOut.innerboxlinewidth).toBe(10);
-        expect(traceOut.meanlinecolor).toBe('blue');
-        expect(traceOut.meanlinewidth).toBe(10);
+        expect(traceOut.box.fillcolor).toBe('red');
+        expect(traceOut.box.line.color).toBe('blue');
+        expect(traceOut.box.line.width).toBe(10);
+        expect(traceOut.meanline.color).toBe('blue');
+        expect(traceOut.meanline.width).toBe(10);
     });
 });
 
@@ -275,7 +277,7 @@ describe('Test violin hover:', function() {
         desc: 'with mean',
         patch: function(fig) {
             fig.data.forEach(function(trace) {
-                trace.showmeanline = true;
+                trace.meanline = {visible: true};
             });
             return fig;
         },

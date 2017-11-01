@@ -160,7 +160,7 @@ function plotPoints(sel, axes, trace, t) {
     var bdPos = t.bdPos;
     var bPos = t.bPos;
 
-    // to support violin innerbox
+    // to support violin points
     var mode = trace.boxpoints || trace.points;
 
     // repeatable pseudorandom number generator

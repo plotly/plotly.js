@@ -13,7 +13,7 @@
         "orientation": "h",
         "xcalendar": "discworld",
         "name": "discworld dates",
-        "showinnerbox": true,
+        "box": {"visible": true},
         "xaxis": "x",
         "yaxis": "y"
     }, {
@@ -29,7 +29,7 @@
         ],
         "orientation": "h",
         "name": "categories",
-        "showinnerbox": true,
+        "box": {"visible": true},
         "xaxis": "x2",
         "yaxis": "y2"
         

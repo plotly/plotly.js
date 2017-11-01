@@ -138,72 +138,78 @@ module.exports = {
     marker: boxAttrs.marker,
     text: boxAttrs.text,
 
-    showinnerbox: {
-        valType: 'boolean',
-        dflt: false,
-        role: 'info',
-        editType: 'plot',
-        description: [
-            'Determines if an miniature box plot is drawn inside the violins. '
-        ].join(' ')
-    },
-    innerboxwidth: {
-        valType: 'number',
-        min: 0,
-        max: 1,
-        dflt: 0.25,
-        role: 'info',
-        editType: 'plot',
-        description: [
-            'Sets the width of the inner box plots relative to',
-            'the violins\' width.',
-            'For example, with 1, the inner box plots are as wide as the violins.'
-        ].join(' ')
-    },
-    innerboxlinecolor: {
-        valType: 'color',
-        role: 'style',
-        editType: 'style',
-        description: 'Sets the inner box plot bounding line color.'
-    },
-    innerboxfillcolor: {
-        valType: 'color',
-        role: 'style',
-        editType: 'style',
-        description: 'Sets the inner box plot fill color.'
-    },
-    innerboxlinewidth: {
-        valType: 'number',
-        min: 0,
-        role: 'style',
-        editType: 'style',
-        description: 'Sets the inner box plot bounding line width.'
+    box: {
+        visible: {
+            valType: 'boolean',
+            dflt: false,
+            role: 'info',
+            editType: 'plot',
+            description: [
+                'Determines if an miniature box plot is drawn inside the violins. '
+            ].join(' ')
+        },
+        width: {
+            valType: 'number',
+            min: 0,
+            max: 1,
+            dflt: 0.25,
+            role: 'info',
+            editType: 'plot',
+            description: [
+                'Sets the width of the inner box plots relative to',
+                'the violins\' width.',
+                'For example, with 1, the inner box plots are as wide as the violins.'
+            ].join(' ')
+        },
+        fillcolor: {
+            valType: 'color',
+            role: 'style',
+            editType: 'style',
+            description: 'Sets the inner box plot fill color.'
+        },
+        line: {
+            color: {
+                valType: 'color',
+                role: 'style',
+                editType: 'style',
+                description: 'Sets the inner box plot bounding line color.'
+            },
+            width: {
+                valType: 'number',
+                min: 0,
+                role: 'style',
+                editType: 'style',
+                description: 'Sets the inner box plot bounding line width.'
+            }
+        }
     },
 
-    showmeanline: {
-        valType: 'boolean',
-        dflt: false,
-        role: 'info',
-        editType: 'plot',
-        description: [
-            'Determines if a line corresponding to the sample\'s mean is shown',
-            'inside the violins.',
-            'If `showinnerbox` is turned on, the mean line is drawn inside the inner box.',
-            'Otherwise, the mean line is drawn from one side of the violin to other.'
-        ].join(' ')
-    },
-    meanlinecolor: {
-        valType: 'color',
-        role: 'style',
-        editType: 'style',
-        description: 'Sets the mean line color.'
-    },
-    meanlinewidth: {
-        valType: 'number',
-        min: 0,
-        role: 'style',
-        editType: 'style',
-        description: 'Sets the mean line width.'
+    meanline: {
+        visible: {
+            valType: 'boolean',
+            dflt: false,
+            role: 'info',
+            editType: 'plot',
+            description: [
+                'Determines if a line corresponding to the sample\'s mean is shown',
+                'inside the violins.',
+                'If `box.visible` is turned on, the mean line is drawn inside the inner box.',
+                'Otherwise, the mean line is drawn from one side of the violin to other.'
+            ].join(' ')
+        },
+        color: {
+            valType: 'color',
+            role: 'style',
+            editType: 'style',
+            description: 'Sets the mean line color.'
+        },
+        width: {
+            valType: 'number',
+            min: 0,
+            role: 'style',
+            editType: 'style',
+            description: 'Sets the mean line width.'
+        }
     },
 
     side: {
