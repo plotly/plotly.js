@@ -435,7 +435,7 @@ describe('Test Plots', function() {
             var expectedUndefined = [
                 'data', 'layout', '_fullData', '_fullLayout', 'calcdata', 'framework',
                 'empty', 'fid', 'undoqueue', 'undonum', 'autoplay', 'changed',
-                '_promises', '_redrawTimer', 'firstscatter', 'numboxes',
+                '_promises', '_redrawTimer', 'firstscatter',
                 '_transitionData', '_transitioning', '_hmpixcount', '_hmlumcount',
                 '_dragging', '_dragged', '_hoverdata', '_snapshotInProgress', '_editing',
                 '_replotPending', '_mouseDownTime', '_legendMouseDownTime'

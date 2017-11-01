@@ -971,6 +971,58 @@ describe('Test select box and lasso per trace:', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('should work for violin traces', function(done) {
+        var assertPoints = makeAssertPoints(['curveNumber', 'y', 'x']);
+        var assertRanges = makeAssertRanges();
+        var assertLassoPoints = makeAssertLassoPoints();
+
+        var fig = Lib.extendDeep({}, require('@mocks/violin_grouped'));
+        fig.layout.dragmode = 'lasso';
+        fig.layout.width = 600;
+        fig.layout.height = 500;
+        addInvisible(fig);
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            return _run(
+                [[200, 200], [400, 200], [400, 350], [200, 350], [200, 200]],
+                function() {
+                    assertPoints([
+                        [0, 0.3, 'day 2'], [0, 0.5, 'day 2'], [0, 0.7, 'day 2'], [0, 0.9, 'day 2'],
+                        [1, 0.5, 'day 2'], [1, 0.7, 'day 2'], [1, 0.7, 'day 2'], [1, 0.8, 'day 2'],
+                        [1, 0.9, 'day 2'],
+                        [2, 0.3, 'day 1'], [2, 0.6, 'day 1'], [2, 0.6, 'day 1'], [2, 0.9, 'day 1']
+                    ]);
+                    assertLassoPoints([
+                        ['day 1', 'day 2', 'day 2', 'day 1', 'day 1'],
+                        [1.02, 1.02, 0.27, 0.27, 1.02]
+                    ]);
+                },
+                null, LASSOEVENTS, 'violin lasso'
+            );
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'select');
+        })
+        .then(function() {
+            return _run(
+                [[200, 200], [400, 350]],
+                function() {
+                    assertPoints([
+                        [0, 0.3, 'day 2'], [0, 0.5, 'day 2'], [0, 0.7, 'day 2'], [0, 0.9, 'day 2'],
+                        [1, 0.5, 'day 2'], [1, 0.7, 'day 2'], [1, 0.7, 'day 2'], [1, 0.8, 'day 2'],
+                        [1, 0.9, 'day 2'],
+                        [2, 0.3, 'day 1'], [2, 0.6, 'day 1'], [2, 0.6, 'day 1'], [2, 0.9, 'day 1']
+                    ]);
+                    assertRanges([['day 1', 'day 2'], [0.27, 1.02]]);
+                },
+                null, BOXEVENTS, 'violin select'
+            );
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
 
 // to make sure none of the above tests fail with extraneous invisible traces,
