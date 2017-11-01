@@ -17,6 +17,7 @@ module.exports = function getTraceColor(trace, di) {
     var lc, tc;
 
     // TODO: text modes
+
     if(trace.mode === 'lines') {
         lc = trace.line.color;
         return (lc && Color.opacity(lc)) ?

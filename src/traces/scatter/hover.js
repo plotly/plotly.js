@@ -52,7 +52,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
         Fx.getClosest(cd, distfn, pointData);
 
-
         // skip the rest (for this trace) if we didn't find a close point
         if(pointData.index !== false) {
 
