@@ -2264,12 +2264,12 @@ function _relayout(gd, aobj) {
                     ai.match(/^(bar|box|font)/)) {
                 flags.docalc = true;
             }
-            else if(fullLayout._has('gl2d') &&
+            else if((fullLayout._has('gl2d') || fullLayout._has('regl')) &&
                 (ai.indexOf('axis') !== -1 || ai === 'plot_bgcolor')
             ) {
                 flags.doplot = true;
             }
-            else if(fullLayout._has('gl2d') &&
+            else if((fullLayout._has('gl2d') || fullLayout._has('regl')) &&
                 (ai === 'dragmode' &&
                 (vi === 'lasso' || vi === 'select') &&
                 !(vOld === 'lasso' || vOld === 'select'))

@@ -787,12 +787,6 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval, hovermode) {
 
     // FIXME: make sure this is a proper way to calc search radius
     if (stash.tree) {
-        // ids = stash.tree.range(
-        //     xval - MAXDIST / xa._m, yval - MAXDIST / ya._m,
-        //     xval + MAXDIST / xa._m, yval + MAXDIST / ya._m
-        // );
-
-        //FIXME: this works only for the case of linear points
         if (hovermode === 'x') {
             ids = stash.tree.range(
                 xa.p2c(xpx - MAXDIST), ya._rl[0],
@@ -914,7 +908,9 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
         ya = searchInfo.yaxis,
         selection = [],
         trace = cd[0].trace,
-        stash = cd[0].t;
+        stash = cd[0].t,
+        x = stash.x,
+        y = stash.y;
 
     var scene = stash.scene;
 
@@ -937,8 +933,8 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
             if(polygon.contains([stash.xpx[i], stash.ypx[i]])) {
                 selection.push({
                     pointNumber: i,
-                    x: trace.x[i],
-                    y: trace.y[i]
+                    x: x[i],
+                    y: y[i]
                 });
             }
         }
