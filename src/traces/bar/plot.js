@@ -156,14 +156,13 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
         var textSelection = bar.append('text')
             .text(text)
             .attr({
-                'class': 'bartext',
+                'class': 'bartext bartext-' + textPosition,
                 transform: '',
                 'text-anchor': 'middle',
                 // prohibit tex interpretation until we can handle
                 // tex and regular text together
                 'data-notex': 1
             })
-            .classed('bartext-' + textPosition, true)
             .call(Drawing.font, textFont)
             .call(svgTextUtils.convertToTspans, gd);
 
@@ -208,6 +207,7 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     if(textPosition === 'auto') {
         if(isOutmostBar) {
             // draw text using insideTextFont and check if it fits inside bar
+            textPosition = 'inside';
             textSelection = appendTextNode(bar, text, insideTextFont);
 
             textBB = Drawing.bBox(textSelection.node()),
