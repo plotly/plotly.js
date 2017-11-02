@@ -65,6 +65,33 @@ describe('Pie traces:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('can sum values or count labels', function(done) {
+        Plotly.newPlot(gd, [{
+            labels: ['a', 'b', 'c', 'a', 'b', 'a'],
+            values: [1, 2, 3, 4, 5, 6],
+            type: 'pie',
+            domain: {x: [0, 0.45]}
+        }, {
+            labels: ['d', 'e', 'f', 'd', 'e', 'd'],
+            type: 'pie',
+            domain: {x: [0.55, 1]}
+        }])
+        .then(function() {
+            var expected = [
+                [['a', 11], ['b', 7], ['c', 3]],
+                [['d', 3], ['e', 2], ['f', 1]]
+            ];
+            for(var i = 0; i < 2; i++) {
+                for(var j = 0; j < 3; j++) {
+                    expect(gd.calcdata[i][j].label).toBe(expected[i][j][0], i + ',' + j);
+                    expect(gd.calcdata[i][j].v).toBe(expected[i][j][1], i + ',' + j);
+                }
+            }
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('pie hovering', function() {
@@ -141,24 +168,6 @@ describe('pie hovering', function() {
 
         it('should contain the correct fields', function() {
 
-            /*
-             * expected = [{
-             *         v: 4,
-             *         label: '3',
-             *         color: '#ff7f0e',
-             *         i: 3,
-             *         hidden: false,
-             *         text: '26.7%',
-             *         px1: [0,-60],
-             *         pxmid: [-44.588689528643656,-40.14783638153149],
-             *         midangle: -0.8377580409572781,
-             *         px0: [-59.67131372209641,6.2717077960592],
-             *         largeArc: 0,
-             *         cxFinal: 200,
-             *         cyFinal: 160,
-             *         originalEvent: MouseEvent
-             *     }];
-             */
             var hoverData,
                 unhoverData;
 
@@ -178,19 +187,17 @@ describe('pie hovering', function() {
             expect(unhoverData.points.length).toEqual(1);
 
             var fields = [
-                'v', 'label', 'color', 'i', 'hidden',
-                'text', 'px1', 'pxmid', 'midangle',
-                'px0', 'largeArc',
-                'pointNumber', 'curveNumber',
-                'cxFinal', 'cyFinal',
-                'originalEvent'
+                'curveNumber', 'pointNumber', 'pointNumbers',
+                'data', 'fullData',
+                'label', 'color', 'value',
+                'i', 'v'
             ];
 
-            expect(Object.keys(hoverData.points[0])).toEqual(fields);
-            expect(hoverData.points[0].i).toEqual(3);
+            expect(Object.keys(hoverData.points[0]).sort()).toEqual(fields.sort());
+            expect(hoverData.points[0].pointNumber).toEqual(3);
 
-            expect(Object.keys(unhoverData.points[0])).toEqual(fields);
-            expect(unhoverData.points[0].i).toEqual(3);
+            expect(Object.keys(unhoverData.points[0]).sort()).toEqual(fields.sort());
+            expect(unhoverData.points[0].pointNumber).toEqual(3);
         });
 
         it('should fire hover event when moving from one slice to another', function(done) {
@@ -355,7 +362,7 @@ describe('pie hovering', function() {
 });
 
 
-describe('Test event property of interactions on a pie plot:', function() {
+describe('Test event data of interactions on a pie plot:', function() {
     var mock = require('@mocks/pie_simple.json');
 
     var mockCopy, gd;
@@ -376,9 +383,36 @@ describe('Test event property of interactions on a pie plot:', function() {
     beforeEach(function() {
         gd = createGraphDiv();
         mockCopy = Lib.extendDeep({}, mock);
+        Lib.extendFlat(mockCopy.data[0], {
+            ids: ['marge', 'homer', 'bart', 'lisa', 'maggie'],
+            customdata: [{1: 2}, {3: 4}, {5: 6}, {7: 8}, {9: 10}]
+        });
     });
 
     afterEach(destroyGraphDiv);
+
+    function checkEventData(data) {
+        var point = data.points[0];
+
+        expect(point.curveNumber).toBe(0);
+        expect(point.pointNumber).toBe(4);
+        expect(point.pointNumbers).toEqual([4]);
+        expect(point.data).toBe(gd.data[0]);
+        expect(point.fullData).toBe(gd._fullData[0]);
+        expect(point.label).toBe('4');
+        expect(point.value).toBe(5);
+        expect(point.color).toBe('#1f77b4');
+        expect(point.id).toEqual(['maggie']);
+        expect(point.customdata).toEqual([{9: 10}]);
+
+        // for backward compat - i/v to be removed at some point?
+        expect(point.i).toBe(point.pointNumber);
+        expect(point.v).toBe(point.value);
+
+        var evt = data.event;
+        expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
+        expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
+    }
 
     describe('click events', function() {
         var futureData;
@@ -400,43 +434,24 @@ describe('Test event property of interactions on a pie plot:', function() {
             click(pointPos[0], pointPos[1]);
             expect(futureData.points.length).toEqual(1);
 
-            var trace = futureData.points.trace;
-            expect(typeof trace).toEqual(typeof {}, 'points.trace');
+            checkEventData(futureData);
+        });
 
-            var pt = futureData.points[0];
-            expect(Object.keys(pt)).toEqual(jasmine.arrayContaining([
-                'v', 'label', 'color', 'i', 'hidden', 'vTotal', 'text', 't',
-                'trace', 'r', 'cx', 'cy', 'px1', 'pxmid', 'midangle', 'px0',
-                'largeArc', 'cxFinal', 'cyFinal',
-                'pointNumber', 'curveNumber'
-            ]));
-            expect(Object.keys(pt).length).toBe(21);
+        it('should not contain pointNumber if aggregating', function() {
+            var values = gd.data[0].values;
+            var labels = [];
+            for(var i = 0; i < values.length; i++) labels.push(i);
+            Plotly.restyle(gd, {
+                labels: [labels.concat(labels)],
+                values: [values.concat(values)]
+            });
 
-            expect(typeof pt.color).toEqual(typeof '#1f77b4', 'points[0].color');
-            expect(pt.cx).toEqual(200, 'points[0].cx');
-            expect(pt.cxFinal).toEqual(200, 'points[0].cxFinal');
-            expect(pt.cy).toEqual(160, 'points[0].cy');
-            expect(pt.cyFinal).toEqual(160, 'points[0].cyFinal');
-            expect(pt.hidden).toEqual(false, 'points[0].hidden');
-            expect(pt.i).toEqual(4, 'points[0].i');
-            expect(pt.pointNumber).toEqual(4, 'points[0].pointNumber');
-            expect(pt.label).toEqual('4', 'points[0].label');
-            expect(pt.largeArc).toEqual(0, 'points[0].largeArc');
-            expect(pt.midangle).toEqual(1.0471975511965976, 'points[0].midangle');
-            expect(pt.px0).toEqual([0, -60], 'points[0].px0');
-            expect(pt.px1).toEqual([51.96152422706632, 29.999999999999986], 'points[0].px1');
-            expect(pt.pxmid).toEqual([51.96152422706631, -30.000000000000007], 'points[0].pxmid');
-            expect(pt.r).toEqual(60, 'points[0].r');
-            expect(typeof pt.t).toEqual(typeof {}, 'points[0].t');
-            expect(pt.text).toEqual('33.3%', 'points[0].text');
-            expect(typeof pt.trace).toEqual(typeof {}, 'points[0].trace');
-            expect(pt.v).toEqual(5, 'points[0].v');
-            expect(pt.vTotal).toEqual(15, 'points[0].vTotal');
-            expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
+            click(pointPos[0], pointPos[1]);
+            expect(futureData.points.length).toEqual(1);
 
-            var evt = futureData.event;
-            expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
-            expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
+            expect(futureData.points[0].pointNumber).toBeUndefined();
+            expect(futureData.points[0].i).toBeUndefined();
+            expect(futureData.points[0].pointNumbers).toEqual([4, 9]);
         });
     });
 
@@ -466,42 +481,9 @@ describe('Test event property of interactions on a pie plot:', function() {
             click(pointPos[0], pointPos[1], clickOpts);
             expect(futureData.points.length).toEqual(1);
 
-            var trace = futureData.points.trace;
-            expect(typeof trace).toEqual(typeof {}, 'points.trace');
-
-            var pt = futureData.points[0];
-            expect(Object.keys(pt)).toEqual(jasmine.arrayContaining([
-                'v', 'label', 'color', 'i', 'hidden', 'vTotal', 'text', 't',
-                'trace', 'r', 'cx', 'cy', 'px1', 'pxmid', 'midangle', 'px0',
-                'largeArc', 'cxFinal', 'cyFinal',
-                'pointNumber', 'curveNumber'
-            ]));
-
-            expect(typeof pt.color).toEqual(typeof '#1f77b4', 'points[0].color');
-            expect(pt.cx).toEqual(200, 'points[0].cx');
-            expect(pt.cxFinal).toEqual(200, 'points[0].cxFinal');
-            expect(pt.cy).toEqual(160, 'points[0].cy');
-            expect(pt.cyFinal).toEqual(160, 'points[0].cyFinal');
-            expect(pt.hidden).toEqual(false, 'points[0].hidden');
-            expect(pt.i).toEqual(4, 'points[0].i');
-            expect(pt.pointNumber).toEqual(4, 'points[0].pointNumber');
-            expect(pt.label).toEqual('4', 'points[0].label');
-            expect(pt.largeArc).toEqual(0, 'points[0].largeArc');
-            expect(pt.midangle).toEqual(1.0471975511965976, 'points[0].midangle');
-            expect(pt.px0).toEqual([0, -60], 'points[0].px0');
-            expect(pt.px1).toEqual([51.96152422706632, 29.999999999999986], 'points[0].px1');
-            expect(pt.pxmid).toEqual([51.96152422706631, -30.000000000000007], 'points[0].pxmid');
-            expect(pt.r).toEqual(60, 'points[0].r');
-            expect(typeof pt.t).toEqual(typeof {}, 'points[0].t');
-            expect(pt.text).toEqual('33.3%', 'points[0].text');
-            expect(typeof pt.trace).toEqual(typeof {}, 'points[0].trace');
-            expect(pt.v).toEqual(5, 'points[0].v');
-            expect(pt.vTotal).toEqual(15, 'points[0].vTotal');
-            expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
+            checkEventData(futureData);
 
             var evt = futureData.event;
-            expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
-            expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
             Object.getOwnPropertyNames(clickOpts).forEach(function(opt) {
                 expect(evt[opt]).toEqual(clickOpts[opt], 'event.' + opt);
             });
@@ -512,7 +494,8 @@ describe('Test event property of interactions on a pie plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            futureData = undefined;
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
 
             gd.on('plotly_hover', function(data) {
                 futureData = data;
@@ -522,11 +505,19 @@ describe('Test event property of interactions on a pie plot:', function() {
         it('should contain the correct fields', function() {
             mouseEvent('mouseover', pointPos[0], pointPos[1]);
 
-            var point0 = futureData.points[0],
-                evt = futureData.event;
-            expect(point0.originalEvent).toEqual(evt, 'points');
-            expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
-            expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
+            checkEventData(futureData);
+        });
+
+        it('should not emit a hover if you\'re dragging', function() {
+            gd._dragging = true;
+            mouseEvent('mouseover', pointPos[0], pointPos[1]);
+            expect(futureData).toBeUndefined();
+        });
+
+        it('should not emit a hover if hover is disabled', function() {
+            Plotly.relayout(gd, 'hovermode', false);
+            mouseEvent('mouseover', pointPos[0], pointPos[1]);
+            expect(futureData).toBeUndefined();
         });
     });
 
@@ -534,7 +525,8 @@ describe('Test event property of interactions on a pie plot:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            futureData = undefined;
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
 
             gd.on('plotly_unhover', function(data) {
                 futureData = data;
@@ -542,13 +534,15 @@ describe('Test event property of interactions on a pie plot:', function() {
         });
 
         it('should contain the correct fields', function() {
+            mouseEvent('mouseover', pointPos[0], pointPos[1]);
             mouseEvent('mouseout', pointPos[0], pointPos[1]);
 
-            var point0 = futureData.points[0],
-                evt = futureData.event;
-            expect(point0.originalEvent).toEqual(evt, 'points');
-            expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
-            expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
+            checkEventData(futureData);
+        });
+
+        it('should not emit an unhover if you didn\'t first hover', function() {
+            mouseEvent('mouseout', pointPos[0], pointPos[1]);
+            expect(futureData).toBeUndefined();
         });
     });
 });

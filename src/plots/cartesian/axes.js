@@ -28,6 +28,7 @@ var ONEHOUR = constants.ONEHOUR;
 var ONEMIN = constants.ONEMIN;
 var ONESEC = constants.ONESEC;
 var MINUS_SIGN = constants.MINUS_SIGN;
+var BADNUM = constants.BADNUM;
 
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 
@@ -1216,12 +1217,28 @@ axes.tickText = function(ax, x, hover) {
     return out;
 };
 
-axes.hoverLabelText = function(ax, val) {
+/**
+ * create text for a hover label on this axis, with special handling of
+ * log axes (where negative values can't be displayed but can appear in hover text)
+ *
+ * @param {object} ax: the axis to format text for
+ * @param {number} val: calcdata value to format
+ * @param {Optional(number)} val2: a second value to display
+ *
+ * @returns {string} `val` formatted as a string appropriate to this axis, or
+ *     `val` and `val2` as a range (ie '<val> - <val2>') if `val2` is provided and
+ *     it's different from `val`.
+ */
+axes.hoverLabelText = function(ax, val, val2) {
+    if(val2 !== BADNUM && val2 !== val) {
+        return axes.hoverLabelText(ax, val) + ' - ' + axes.hoverLabelText(ax, val2);
+    }
+
     var logOffScale = (ax.type === 'log' && val <= 0);
     var tx = axes.tickText(ax, ax.c2l(logOffScale ? -val : val), 'hover').text;
 
     if(logOffScale) {
-        return val === 0 ? '0' : '-' + tx;
+        return val === 0 ? '0' : MINUS_SIGN + tx;
     }
 
     // TODO: should we do something special if the axis calendar and

@@ -179,8 +179,8 @@ function isSelectable(fullData) {
             if(scatterSubTypes.hasMarkers(trace) || scatterSubTypes.hasText(trace)) {
                 selectable = true;
             }
-        } else if(Registry.traceIs(trace, 'box')) {
-            if(trace.boxpoints === 'all') {
+        } else if(Registry.traceIs(trace, 'box-violin')) {
+            if(trace.boxpoints === 'all' || trace.points === 'all') {
                 selectable = true;
             }
         }

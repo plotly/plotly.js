@@ -13,7 +13,8 @@ var colorscaleDefaults = require('../../components/colorscale/defaults');
 var Lib = require('../../lib');
 
 
-module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout, defaultColor, defaultWidth) {
+module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout, opts) {
+    if(!opts) opts = {};
     var coloring = coerce('contours.coloring');
 
     var showLines;
@@ -21,8 +22,8 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout,
     if(coloring === 'fill') showLines = coerce('contours.showlines');
 
     if(showLines !== false) {
-        if(coloring !== 'lines') lineColor = coerce('line.color', defaultColor || '#000');
-        coerce('line.width', defaultWidth === undefined ? 0.5 : defaultWidth);
+        if(coloring !== 'lines') lineColor = coerce('line.color', opts.defaultColor || '#000');
+        coerce('line.width', opts.defaultWidth === undefined ? 0.5 : opts.defaultWidth);
         coerce('line.dash');
     }
 
@@ -43,5 +44,11 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout,
             color: lineColor
         });
         coerce('contours.labelformat');
+    }
+
+    if(opts.hasHover !== false) {
+        coerce('zhoverformat');
+        // Needed for formatting of hoverlabel if format is not explicitly specified
+        traceOut._separators = layout.separators;
     }
 };

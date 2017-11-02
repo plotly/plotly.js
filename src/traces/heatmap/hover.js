@@ -11,10 +11,11 @@
 
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
+var Axes = require('../../plots/cartesian/axes');
 
 var MAXDIST = Fx.constants.MAXDIST;
 
-module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour) {
+module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLayer, contour) {
     // never let a heatmap override another type as closest point
     if(pointData.distance < MAXDIST) return;
 
@@ -26,6 +27,9 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
         y = cd0.y,
         z = cd0.z,
         zmask = cd0.zmask,
+        range = [trace.zmin, trace.zmax],
+        zhoverformat = trace.zhoverformat,
+        _separators = trace._separators,
         x2 = x,
         y2 = y,
         xl,
@@ -99,6 +103,17 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
         text = cd0.text[ny][nx];
     }
 
+    var zLabel;
+    // dummy axis for formatting the z value
+    var dummyAx = {
+        type: 'linear',
+        range: range,
+        hoverformat: zhoverformat,
+        _separators: _separators
+    };
+    var zLabelObj = Axes.tickText(dummyAx, zVal, 'hover');
+    zLabel = zLabelObj.text;
+
     return [Lib.extendFlat(pointData, {
         index: [ny, nx],
         // never let a 2D override 1D type as closest point
@@ -110,6 +125,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
         xLabelVal: xl,
         yLabelVal: yl,
         zLabelVal: zVal,
+        zLabel: zLabel,
         text: text
     })];
 };
