@@ -248,6 +248,7 @@ module.exports = function draw(gd, id) {
         // now draw the elements
         var container = fullLayout._infolayer.selectAll('g.' + id).data([0]);
         container.enter().append('g').classed(id, true)
+            .classed('colorbar', true)
             .each(function() {
                 var s = d3.select(this);
                 s.append('rect').classed('cbbg', true);
