@@ -214,6 +214,16 @@ module.exports = {
         editType: 'plot'
     },
     fillcolor: scatterAttrs.fillcolor,
+
+    selected: {
+        marker: scatterAttrs.selected.marker,
+        editType: 'style'
+    },
+    unselected: {
+        marker: scatterAttrs.unselected.marker,
+        editType: 'style'
+    },
+
     hoveron: {
         valType: 'flaglist',
         flags: ['boxes', 'points'],

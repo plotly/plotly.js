@@ -193,6 +193,15 @@ function arraysToCalcdata(pt, trace, i) {
             pt[trace2calc[k]] = trace[k][i];
         }
     }
+
+    var selectedpoints = trace.selectedpoints;
+
+    // TODO this is slow
+    if(Array.isArray(selectedpoints)) {
+        if(selectedpoints.indexOf(pt.i) !== -1) {
+            pt.selected = 1;
+        }
+    }
 }
 
 function sortByVal(a, b) { return a.v - b.v; }
