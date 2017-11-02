@@ -8,17 +8,19 @@
 
 'use strict';
 
-var shapeAttrs = require('../../components/shapes/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var plotAttrs = require('../../plots/attributes');
 var colorAttrs = require('../../components/color/attributes');
+var fxAttrs = require('../../components/fx/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
-module.exports = {
+module.exports = overrideAll({
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
-        flags: ['label', 'text', 'value', 'percent', 'name']
+        flags: ['label', 'text', 'value', 'percent', 'name'],
     }),
+    hoverlabel: fxAttrs.hoverlabel, // needs editType override
     domain: {
         x: {
             valType: 'info_array',
@@ -91,7 +93,9 @@ module.exports = {
         ].join(' ')
     },
 
-    textfont: fontAttrs,
+    textfont: fontAttrs({
+        description: 'Sets the font for node labels'
+    }),
 
     node: {
         label: {
@@ -100,7 +104,9 @@ module.exports = {
             role: 'info',
             description: 'The shown name of the node.'
         },
-        color: extendFlat({}, shapeAttrs.fillcolor, {
+        color: {
+            valType: 'color',
+            role: 'style',
             arrayOk: true,
             description: [
                 'Sets the `node` color. It can be a single value, or an array for specifying color for each `node`.',
@@ -108,7 +114,7 @@ module.exports = {
                 'to have a variety of colors. These defaults are not fully opaque, to allow some visibility of',
                 'what is beneath the node.'
             ].join(' ')
-        }),
+        },
         line: {
             color: {
                 valType: 'color',
@@ -156,13 +162,15 @@ module.exports = {
             role: 'info',
             description: 'The shown name of the link.'
         },
-        color: extendFlat({}, shapeAttrs.fillcolor, {
+        color: {
+            valType: 'color',
+            role: 'style',
             arrayOk: true,
             description: [
                 'Sets the `link` color. It can be a single value, or an array for specifying color for each `link`.',
                 'If `link.color` is omitted, then by default, a translucent grey link will be used.'
             ].join(' ')
-        }),
+        },
         line: {
             color: {
                 valType: 'color',
@@ -204,4 +212,4 @@ module.exports = {
         },
         description: 'The links of the Sankey plot.'
     }
-};
+}, 'calc', 'nested');

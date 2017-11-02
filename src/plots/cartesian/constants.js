@@ -7,25 +7,25 @@
 */
 
 'use strict';
+var counterRegex = require('../../lib').counterRegex;
 
 
 module.exports = {
 
     idRegex: {
-        x: /^x([2-9]|[1-9][0-9]+)?$/,
-        y: /^y([2-9]|[1-9][0-9]+)?$/
+        x: counterRegex('x'),
+        y: counterRegex('y')
     },
 
-    attrRegex: {
-        x: /^xaxis([2-9]|[1-9][0-9]+)?$/,
-        y: /^yaxis([2-9]|[1-9][0-9]+)?$/
-    },
+    attrRegex: counterRegex('[xy]axis'),
 
     // axis match regular expression
-    xAxisMatch: /^xaxis[0-9]*$/,
-    yAxisMatch: /^yaxis[0-9]*$/,
+    xAxisMatch: counterRegex('xaxis'),
+    yAxisMatch: counterRegex('yaxis'),
 
     // pattern matching axis ids and names
+    // note that this is more permissive than counterRegex, as
+    // id2name, name2id, and cleanId accept "x1" etc
     AX_ID_PATTERN: /^[xyz][0-9]*$/,
     AX_NAME_PATTERN: /^[xyz]axis[0-9]*$/,
 
@@ -47,22 +47,23 @@ module.exports = {
     // delay before a redraw (relayout) after smooth panning and zooming
     REDRAWDELAY: 50,
 
+    // throttling limit (ms) for selectPoints calls
+    SELECTDELAY: 100,
+
+    // cache ID suffix for throttle
+    SELECTID: '-select',
+
     // last resort axis ranges for x and y axes if we have no data
     DFLTRANGEX: [-1, 6],
     DFLTRANGEY: [-1, 4],
 
-    // Layers to keep trace types in the right order.
-    // from back to front:
-    // 1. heatmaps, 2D histos and contour maps
-    // 2. bars / 1D histos
-    // 3. errorbars for bars and scatter
-    // 4. scatter
-    // 5. box plots
+    // Layers to keep trace types in the right order
     traceLayerClasses: [
         'imagelayer',
         'maplayer',
         'barlayer',
         'carpetlayer',
+        'violinlayer',
         'boxlayer',
         'scatterlayer'
     ],

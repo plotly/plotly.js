@@ -91,13 +91,17 @@
   "layout": {
     "geo": {
       "projection": {
-        "type": "natural earth"
+        "type": "natural earth",
+        "rotation": {"lon": 0}
       },
       "lonaxis": { 
         "range": [-80, -65]
       },
       "lataxis": { 
         "range": [42, 51]
+      },
+      "center": {
+        "lon": -72.5
       },
       "showland": true
     },

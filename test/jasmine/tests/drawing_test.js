@@ -5,14 +5,9 @@ var svgTextUtils = require('@src/lib/svg_text_utils');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
-var customMatchers = require('../assets/custom_matchers');
 
 describe('Drawing', function() {
     'use strict';
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     describe('setClipUrl', function() {
 
@@ -349,6 +344,11 @@ describe('Drawing', function() {
             g.attr('transform', 'translate(1, 2)');
             Drawing.setTextPointsScale(g, 4, 5);
             expect(g.attr('transform')).toEqual('translate(8,9) scale(4,5) translate(-8,-9) translate(1, 2)');
+        });
+
+        it('should not break when <text> is not present', function() {
+            text.remove();
+            expect(function() { Drawing.setTextPointsScale(g, 4, 5); }).not.toThrow();
         });
     });
 

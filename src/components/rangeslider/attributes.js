@@ -15,12 +15,14 @@ module.exports = {
         valType: 'color',
         dflt: colorAttributes.background,
         role: 'style',
+        editType: 'calc',
         description: 'Sets the background color of the range slider.'
     },
     bordercolor: {
         valType: 'color',
         dflt: colorAttributes.defaultLine,
         role: 'style',
+        editType: 'calc',
         description: 'Sets the border color of the range slider.'
     },
     borderwidth: {
@@ -28,12 +30,14 @@ module.exports = {
         dflt: 0,
         min: 0,
         role: 'style',
+        editType: 'calc',
         description: 'Sets the border color of the range slider.'
     },
     autorange: {
         valType: 'boolean',
         dflt: true,
         role: 'style',
+        editType: 'calc',
         description: [
             'Determines whether or not the range slider range is',
             'computed in relation to the input data.',
@@ -44,9 +48,10 @@ module.exports = {
         valType: 'info_array',
         role: 'info',
         items: [
-            {valType: 'any'},
-            {valType: 'any'}
+            {valType: 'any', editType: 'calc'},
+            {valType: 'any', editType: 'calc'}
         ],
+        editType: 'calc',
         description: [
             'Sets the range of the range slider.',
             'If not set, defaults to the full xaxis range.',
@@ -66,6 +71,7 @@ module.exports = {
         min: 0,
         max: 1,
         role: 'style',
+        editType: 'calc',
         description: [
             'The height of the range slider as a fraction of the',
             'total plot area height.'
@@ -75,9 +81,11 @@ module.exports = {
         valType: 'boolean',
         dflt: true,
         role: 'info',
+        editType: 'calc',
         description: [
             'Determines whether or not the range slider will be visible.',
             'If visible, perpendicular axes will be set to `fixedrange`'
         ].join(' ')
-    }
+    },
+    editType: 'calc'
 };

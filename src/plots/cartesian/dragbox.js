@@ -401,7 +401,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return;
         }
 
-        var zoom = Math.exp(-Math.min(Math.max(wheelDelta, -20), 20) / 100),
+        var zoom = Math.exp(-Math.min(Math.max(wheelDelta, -20), 20) / 200),
             gbb = mainplot.draglayer.select('.nsewdrag')
                 .node().getBoundingClientRect(),
             xfrac = (e.clientX - gbb.left) / gbb.width,
@@ -548,7 +548,6 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         updateSubplots([x0, y0, pw - dx, ph - dy]);
 
-        // FIXME: Etienne I need help with that, ideally we should do event emitter
         if(plotinfo.ondrag) plotinfo.ondrag.call([x0, y0, pw - dx, ph - dy]);
 
         ticksAndAnnotations(yActive, xActive);
@@ -964,11 +963,13 @@ function showSelect(zoomlayer, dragOptions) {
         paths.push(ppts.join('L') + 'L' + ppts[0]);
     }
 
-    outlines.enter()
-        .append('path')
-        .attr('class', function(d) { return 'select-outline select-outline-' + d; })
-        .attr('transform', 'translate(' + xs + ', ' + ys + ')')
-        .attr('d', 'M' + paths.join('M') + 'Z');
+    if(paths.length) {
+        outlines.enter()
+            .append('path')
+            .attr('class', function(d) { return 'select-outline select-outline-' + d; })
+            .attr('transform', 'translate(' + xs + ', ' + ys + ')')
+            .attr('d', 'M' + paths.join('M') + 'Z');
+    }
 }
 
 function updateZoombox(zb, corners, box, path0, dimmed, lum) {

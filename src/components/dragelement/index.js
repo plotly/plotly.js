@@ -58,10 +58,12 @@ dragElement.unhoverRaw = unhover.raw;
  *          e is the original event
  */
 dragElement.init = function init(options) {
-    var gd = options.gd,
-        numClicks = 1,
-        DBLCLICKDELAY = interactConstants.DBLCLICKDELAY,
-        startX,
+    var gd = options.gd;
+    var numClicks = 1;
+    var DBLCLICKDELAY = interactConstants.DBLCLICKDELAY;
+    var element = options.element;
+
+    var startX,
         startY,
         newMouseDownTime,
         cursor,
@@ -70,12 +72,16 @@ dragElement.init = function init(options) {
 
     if(!gd._mouseDownTime) gd._mouseDownTime = 0;
 
-    options.element.style.pointerEvents = 'all';
+    element.style.pointerEvents = 'all';
 
-    options.element.onmousedown = onStart;
-    options.element.ontouchstart = onStart;
+    element.onmousedown = onStart;
+    element.ontouchstart = onStart;
 
     function onStart(e) {
+        if(e.buttons && e.buttons === 2) {    // right click
+            return;
+        }
+
         // make dragging and dragged into properties of gd
         // so that others can look at and modify them
         gd._dragged = false;
@@ -100,29 +106,28 @@ dragElement.init = function init(options) {
 
         if(hasHover) {
             dragCover = coverSlip();
-            dragCover.style.cursor = window.getComputedStyle(options.element).cursor;
+            dragCover.style.cursor = window.getComputedStyle(element).cursor;
         }
         else {
             // document acts as a dragcover for mobile, bc we can't create dragcover dynamically
             dragCover = document;
             cursor = window.getComputedStyle(document.documentElement).cursor;
-            document.documentElement.style.cursor = window.getComputedStyle(options.element).cursor;
+            document.documentElement.style.cursor = window.getComputedStyle(element).cursor;
         }
 
-        dragCover.addEventListener('mousemove', onMove);
-        dragCover.addEventListener('mouseup', onDone);
-        dragCover.addEventListener('mouseout', onDone);
-        dragCover.addEventListener('touchmove', onMove);
-        dragCover.addEventListener('touchend', onDone);
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onDone);
+        document.addEventListener('touchmove', onMove);
+        document.addEventListener('touchend', onDone);
 
         return Lib.pauseEvent(e);
     }
 
     function onMove(e) {
-        var offset = pointerOffset(e),
-            dx = offset[0] - startX,
-            dy = offset[1] - startY,
-            minDrag = options.minDrag || constants.MINDRAG;
+        var offset = pointerOffset(e);
+        var dx = offset[0] - startX;
+        var dy = offset[1] - startY;
+        var minDrag = options.minDrag || constants.MINDRAG;
 
         if(Math.abs(dx) < minDrag) dx = 0;
         if(Math.abs(dy) < minDrag) dy = 0;
@@ -137,11 +142,10 @@ dragElement.init = function init(options) {
     }
 
     function onDone(e) {
-        dragCover.removeEventListener('mousemove', onMove);
-        dragCover.removeEventListener('mouseup', onDone);
-        dragCover.removeEventListener('mouseout', onDone);
-        dragCover.removeEventListener('touchmove', onMove);
-        dragCover.removeEventListener('touchend', onDone);
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onDone);
+        document.removeEventListener('touchmove', onMove);
+        document.removeEventListener('touchend', onDone);
 
         if(hasHover) {
             Lib.removeElement(dragCover);

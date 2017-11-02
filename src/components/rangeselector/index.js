@@ -13,8 +13,8 @@ module.exports = {
     name: 'rangeselector',
 
     schema: {
-        layout: {
-            'xaxis.rangeselector': require('./attributes')
+        subplots: {
+            xaxis: {rangeselector: require('./attributes')}
         }
     },
 

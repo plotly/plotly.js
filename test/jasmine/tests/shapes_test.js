@@ -10,7 +10,6 @@ var Plots = PlotlyInternal.Plots;
 var Axes = PlotlyInternal.Axes;
 
 var d3 = require('d3');
-var customMatchers = require('../assets/custom_matchers');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -19,10 +18,6 @@ var drag = require('../assets/drag');
 
 describe('Test shapes defaults:', function() {
     'use strict';
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     function _supply(layoutIn, layoutOut) {
         layoutOut = layoutOut || {};
@@ -469,10 +464,6 @@ describe('shapes edge cases', function() {
 
     var gd;
 
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
-
     beforeEach(function() { gd = createGraphDiv(); });
 
     afterEach(destroyGraphDiv);
@@ -511,10 +502,6 @@ describe('shapes autosize', function() {
     'use strict';
 
     var gd;
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     afterEach(destroyGraphDiv);
 

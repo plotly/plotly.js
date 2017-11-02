@@ -13,6 +13,7 @@ var render = require('./render');
 var Fx = require('../../components/fx');
 var Color = require('../../components/color');
 var Lib = require('../../lib');
+var cn = require('./constants').cn;
 
 function renderableValuePresent(d) {return d !== '';}
 
@@ -50,7 +51,7 @@ function relatedNodes(l) {
 function nodeHoveredStyle(sankeyNode, d, sankey) {
     if(d && sankey) {
         ownTrace(sankey, d)
-            .selectAll('.sankeyLink')
+            .selectAll('.' + cn.sankeyLink)
             .filter(relatedLinks(d))
             .call(linkHoveredStyle.bind(0, d, sankey, false));
     }
@@ -59,7 +60,7 @@ function nodeHoveredStyle(sankeyNode, d, sankey) {
 function nodeNonHoveredStyle(sankeyNode, d, sankey) {
     if(d && sankey) {
         ownTrace(sankey, d)
-            .selectAll('.sankeyLink')
+            .selectAll('.' + cn.sankeyLink)
             .filter(relatedLinks(d))
             .call(linkNonHoveredStyle.bind(0, d, sankey, false));
     }
@@ -73,14 +74,14 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
 
     if(label) {
         ownTrace(sankey, d)
-            .selectAll('.sankeyLink')
+            .selectAll('.' + cn.sankeyLink)
             .filter(function(l) {return l.link.label === label;})
             .style('fill-opacity', 0.4);
     }
 
     if(visitNodes) {
         ownTrace(sankey, d)
-            .selectAll('.sankeyNode')
+            .selectAll('.' + cn.sankeyNode)
             .filter(relatedNodes(d))
             .call(nodeHoveredStyle);
     }
@@ -94,14 +95,14 @@ function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
 
     if(label) {
         ownTrace(sankey, d)
-            .selectAll('.sankeyLink')
+            .selectAll('.' + cn.sankeyLink)
             .filter(function(l) {return l.link.label === label;})
             .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
     }
 
     if(visitNodes) {
         ownTrace(sankey, d)
-            .selectAll('.sankeyNode')
+            .selectAll(cn.sankeyNode)
             .filter(relatedNodes(d))
             .call(nodeNonHoveredStyle);
     }
@@ -127,15 +128,16 @@ module.exports = function plot(gd, calcData) {
     };
 
     var linkHover = function(element, d, sankey) {
-        var evt = d.link;
-        evt.originalEvent = d3.event;
         d3.select(element).call(linkHoveredStyle.bind(0, d, sankey, true));
-        Fx.hover(gd, evt, 'sankey');
+        gd.emit('plotly_hover', {
+            event: d3.event,
+            points: [d.link]
+        });
     };
 
     var linkHoverFollow = function(element, d) {
         var trace = d.link.trace;
-        var rootBBox = gd.getBoundingClientRect();
+        var rootBBox = gd._fullLayout._paperdiv.node().getBoundingClientRect();
         var boundingBox = element.getBoundingClientRect();
         var hoverCenterX = boundingBox.left + boundingBox.width / 2;
         var hoverCenterY = boundingBox.top + boundingBox.height / 2;
@@ -145,7 +147,7 @@ module.exports = function plot(gd, calcData) {
             y: hoverCenterY - rootBBox.top,
             name: d3.format(d.valueFormat)(d.link.value) + d.valueSuffix,
             text: [
-                d.link.label,
+                d.link.label || '',
                 ['Source:', d.link.source.label].join(' '),
                 ['Target:', d.link.target.label].join(' ')
             ].filter(renderableValuePresent).join('<br>'),
@@ -184,16 +186,17 @@ module.exports = function plot(gd, calcData) {
     };
 
     var nodeHover = function(element, d, sankey) {
-        var evt = d.node;
-        evt.originalEvent = d3.event;
         d3.select(element).call(nodeHoveredStyle, d, sankey);
-        Fx.hover(gd, evt, 'sankey');
+        gd.emit('plotly_hover', {
+            event: d3.event,
+            points: [d.node]
+        });
     };
 
     var nodeHoverFollow = function(element, d) {
         var trace = d.node.trace;
-        var nodeRect = d3.select(element).select('.nodeRect');
-        var rootBBox = gd.getBoundingClientRect();
+        var nodeRect = d3.select(element).select('.' + cn.nodeRect);
+        var rootBBox = gd._fullLayout._paperdiv.node().getBoundingClientRect();
         var boundingBox = nodeRect.node().getBoundingClientRect();
         var hoverCenterX0 = boundingBox.left - 2 - rootBBox.left;
         var hoverCenterX1 = boundingBox.right + 2 - rootBBox.left;

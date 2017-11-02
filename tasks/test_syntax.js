@@ -53,7 +53,8 @@ function assertJasmineSuites() {
 /*
  * tests about the contents of source (and lib) files:
  * - check for header comment
- * - check that we don't have .classList
+ * - check that we don't have any features that break in IE
+ * - check that we don't use getComputedStyle unexpectedly
  */
 function assertSrcContents() {
     var licenseSrc = constants.licenseSrc;
@@ -68,6 +69,8 @@ function assertSrcContents() {
 
     // Forbidden in IE in any context
     var IE_BLACK_LIST = ['classList'];
+
+    var getComputedStyleCnt = 0;
 
     glob(combineGlobs([srcGlob, libGlob]), function(err, files) {
         files.forEach(function(file) {
@@ -85,11 +88,19 @@ function assertSrcContents() {
                     if(source === 'Math.sign') {
                         logs.push(file + ' : contains Math.sign (IE failure)');
                     }
+                    else if(source === 'window.getComputedStyle') {
+                        getComputedStyleCnt++;
+                    }
                     else if(IE_BLACK_LIST.indexOf(lastPart) !== -1) {
                         logs.push(file + ' : contains .' + lastPart + ' (IE failure)');
                     }
                     else if(IE_SVG_BLACK_LIST.indexOf(lastPart) !== -1) {
                         logs.push(file + ' : contains .' + lastPart + ' (IE failure in SVG)');
+                    }
+                }
+                else if(node.type === 'Identifier' && node.source() === 'getComputedStyle') {
+                    if(node.parent.source() !== 'window.getComputedStyle') {
+                        logs.push(file + ': getComputedStyle must be called as a `window` property.');
                     }
                 }
             });
@@ -105,6 +116,34 @@ function assertSrcContents() {
                 logs.push(file + ' : has incorrect header information.');
             }
         });
+
+        /*
+         * window.getComputedStyle calls are restricted, so we want to be
+         * explicit about it whenever we add or remove these calls. This is
+         * the reason d3.selection.style is forbidden as a getter.
+         *
+         * The rule is:
+         * - You MAY NOT call getComputedStyle during rendering a plot, EXCEPT
+         *   in calculating autosize for the plot (which only makes sense if
+         *   the plot is displayed). Other uses of getComputedStyle while
+         *   rendering will fail, at least in Chrome, if the plot div is not
+         *   attached to the DOM.
+         *
+         * - You MAY call getComputedStyle during interactions (hover etc)
+         *   because at that point it's known that the plot is displayed.
+         *
+         * - You must use the explicit `window.getComputedStyle` rather than
+         *   the implicit global scope `getComputedStyle` for jsdom compat.
+         *
+         * - If you use conforms to these rules, you may update
+         *   KNOWN_GET_COMPUTED_STYLE_CALLS to count the new use.
+         */
+        var KNOWN_GET_COMPUTED_STYLE_CALLS = 5;
+        if(getComputedStyleCnt !== KNOWN_GET_COMPUTED_STYLE_CALLS) {
+            logs.push('Expected ' + KNOWN_GET_COMPUTED_STYLE_CALLS +
+                ' window.getComputedStyle calls, found ' + getComputedStyleCnt +
+                '. See ' + __filename + ' for details how to proceed.');
+        }
 
         log('correct headers and contents in lib/ and src/', logs);
     });

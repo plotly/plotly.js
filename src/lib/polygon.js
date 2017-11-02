@@ -207,7 +207,8 @@ polygon.multitester = function multitester(list) {
         ymax: ymax,
         pts: [],
         contains: contains,
-        isRect: false
+        isRect: false,
+        degenerate: false
     };
 };
 

@@ -11,6 +11,7 @@
 var Lib = require('../lib');
 var Registry = require('../registry');
 var Axes = require('../plots/cartesian/axes');
+var pointsAccessorFunction = require('./helpers').pointsAccessorFunction;
 
 var COMPARISON_OPS = ['=', '!=', '<', '>=', '>', '<='];
 var INTERVAL_OPS = ['[]', '()', '[)', '(]', '][', ')(', '](', ')['];
@@ -24,6 +25,8 @@ exports.attributes = {
     enabled: {
         valType: 'boolean',
         dflt: true,
+        role: 'info',
+        editType: 'calc',
         description: [
             'Determines whether this filter transform is enabled or disabled.'
         ].join(' ')
@@ -34,6 +37,8 @@ exports.attributes = {
         noBlank: true,
         arrayOk: true,
         dflt: 'x',
+        role: 'info',
+        editType: 'calc',
         description: [
             'Sets the filter target by which the filter is applied.',
 
@@ -53,6 +58,8 @@ exports.attributes = {
             .concat(INTERVAL_OPS)
             .concat(SET_OPS),
         dflt: '=',
+        role: 'info',
+        editType: 'calc',
         description: [
             'Sets the filter operation.',
 
@@ -82,6 +89,8 @@ exports.attributes = {
     value: {
         valType: 'any',
         dflt: 0,
+        role: 'info',
+        editType: 'calc',
         description: [
             'Sets the value or values by which to filter.',
 
@@ -106,6 +115,8 @@ exports.attributes = {
     preservegaps: {
         valType: 'boolean',
         dflt: false,
+        role: 'info',
+        editType: 'calc',
         description: [
             'Determines whether or not gaps in data arrays produced by the filter operation',
             'are preserved.',
@@ -113,6 +124,7 @@ exports.attributes = {
             'with `connectgaps` set to *false*.'
         ].join(' ')
     },
+    editType: 'calc'
 };
 
 exports.supplyDefaults = function(transformIn) {
@@ -159,6 +171,8 @@ exports.calcTransform = function(gd, trace, opts) {
     var d2c = Axes.getDataToCoordFunc(gd, trace, target, targetArray);
     var filterFunc = getFilterFunc(opts, d2c, targetCalendar);
     var originalArrays = {};
+    var indexToPoints = {};
+    var index = 0;
 
     function forAllAttrs(fn, index) {
         for(var j = 0; j < arrayAttrs.length; j++) {
@@ -192,11 +206,18 @@ exports.calcTransform = function(gd, trace, opts) {
     // copy all original array attribute values, and clear arrays in trace
     forAllAttrs(initFn);
 
+    var originalPointsAccessor = pointsAccessorFunction(trace.transforms, opts);
+
     // loop through filter array, fill trace arrays if passed
     for(var i = 0; i < len; i++) {
         var passed = filterFunc(targetArray[i]);
-        if(passed) forAllAttrs(fillFn, i);
+        if(passed) {
+            forAllAttrs(fillFn, i);
+            indexToPoints[index++] = originalPointsAccessor(i);
+        }
     }
+
+    opts._indexToPoints = indexToPoints;
 };
 
 function getFilterFunc(opts, d2c, targetCalendar) {

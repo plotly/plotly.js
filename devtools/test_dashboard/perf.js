@@ -42,7 +42,7 @@ window.timeit = function(f, n, nchunk, arg) {
     times.sort();
     var min = (times[0]).toFixed(4);
     var max = (times[n - 1]).toFixed(4);
-    var median = (times[Math.ceil(n / 2)]).toFixed(4);
+    var median = (times[Math.min(Math.ceil(n / 2), n - 1)]).toFixed(4);
     var mean = (totalTime / n).toFixed(4);
     console.log((f.name || 'function') + ' timing (ms) - min: ' + min +
         '  max: ' + max +

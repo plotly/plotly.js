@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -14,6 +13,7 @@ var Fx = require('../../components/fx');
 var ErrorBars = require('../../components/errorbars');
 var getTraceColor = require('./get_trace_color');
 var Color = require('../../components/color');
+var fillHoverText = require('./fill_hover_text');
 
 var MAXDIST = Fx.constants.MAXDIST;
 
@@ -73,11 +73,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                 yLabelVal: di.y
             });
 
-            if(di.htx) pointData.text = di.htx;
-            else if(trace.hovertext) pointData.text = trace.hovertext;
-            else if(di.tx) pointData.text = di.tx;
-            else if(trace.text) pointData.text = trace.text;
-
+            fillHoverText(di, trace, pointData);
             ErrorBars.hoverInfo(di, trace, pointData);
 
             return [pointData];

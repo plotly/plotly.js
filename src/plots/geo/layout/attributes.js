@@ -14,6 +14,7 @@ module.exports = {
         valType: 'subplotid',
         role: 'info',
         dflt: 'geo',
+        editType: 'calc',
         description: [
             'Sets a reference between this trace\'s geospatial coordinates and',
             'a geographic map.',

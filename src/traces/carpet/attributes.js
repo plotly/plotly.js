@@ -8,15 +8,24 @@
 
 'use strict';
 
-var extendFlat = require('../../lib/extend').extendFlat;
 var fontAttrs = require('../../plots/font_attributes');
 var axisAttrs = require('./axis_attributes');
 var colorAttrs = require('../../components/color/attributes');
+
+var carpetFont = fontAttrs({
+    editType: 'calc',
+    description: 'The default font used for axis & tick labels on this carpet'
+});
+// TODO: inherit from global font
+carpetFont.family.dflt = '"Open Sans", verdana, arial, sans-serif';
+carpetFont.size.dflt = 12;
+carpetFont.color.dflt = colorAttrs.defaultLine;
 
 module.exports = {
     carpet: {
         valType: 'string',
         role: 'info',
+        editType: 'calc',
         description: [
             'An identifier for this carpet, so that `scattercarpet` and',
             '`scattercontour` traces can specify a carpet plot on which',
@@ -25,6 +34,7 @@ module.exports = {
     },
     x: {
         valType: 'data_array',
+        editType: 'calc+clearAxisTypes',
         description: [
             'A two dimensional array of x coordinates at each carpet point.',
             'If ommitted, the plot is a cheater plot and the xaxis is hidden',
@@ -33,10 +43,12 @@ module.exports = {
     },
     y: {
         valType: 'data_array',
+        editType: 'calc+clearAxisTypes',
         description: 'A two dimensional array of y coordinates at each carpet point.'
     },
     a: {
         valType: 'data_array',
+        editType: 'calc',
         description: [
             'An array containing values of the first parameter value'
         ].join(' ')
@@ -45,6 +57,7 @@ module.exports = {
         valType: 'number',
         dflt: 0,
         role: 'info',
+        editType: 'calc',
         description: [
             'Alternate to `a`.',
             'Builds a linear space of a coordinates.',
@@ -56,6 +69,7 @@ module.exports = {
         valType: 'number',
         dflt: 1,
         role: 'info',
+        editType: 'calc',
         description: [
             'Sets the a coordinate step.',
             'See `a0` for more info.'
@@ -63,12 +77,14 @@ module.exports = {
     },
     b: {
         valType: 'data_array',
+        editType: 'calc',
         description: 'A two dimensional array of y coordinates at each carpet point.'
     },
     b0: {
         valType: 'number',
         dflt: 0,
         role: 'info',
+        editType: 'calc',
         description: [
             'Alternate to `b`.',
             'Builds a linear space of a coordinates.',
@@ -80,6 +96,7 @@ module.exports = {
         valType: 'number',
         dflt: 1,
         role: 'info',
+        editType: 'calc',
         description: [
             'Sets the b coordinate step.',
             'See `b0` for more info.'
@@ -89,28 +106,20 @@ module.exports = {
         valType: 'number',
         role: 'info',
         dflt: 1,
+        editType: 'calc',
         description: [
             'The shift applied to each successive row of data in creating a cheater plot.',
             'Only used if `x` is been ommitted.'
         ].join(' ')
     },
-    aaxis: extendFlat({}, axisAttrs),
-    baxis: extendFlat({}, axisAttrs),
-    font: {
-        family: extendFlat({}, fontAttrs.family, {
-            dflt: '"Open Sans", verdana, arial, sans-serif'
-        }),
-        size: extendFlat({}, fontAttrs.size, {
-            dflt: 12
-        }),
-        color: extendFlat({}, fontAttrs.color, {
-            dflt: colorAttrs.defaultLine
-        }),
-    },
+    aaxis: axisAttrs,
+    baxis: axisAttrs,
+    font: carpetFont,
     color: {
         valType: 'color',
         dflt: colorAttrs.defaultLine,
         role: 'style',
+        editType: 'plot',
         description: [
             'Sets default for all colors associated with this axis',
             'all at once: line, font, tick, and grid colors.',

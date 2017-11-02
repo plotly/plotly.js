@@ -10,10 +10,61 @@
 
 var colorAttrs = require('../../../components/color/attributes');
 var constants = require('../constants');
-var geoAxesAttrs = require('./axis_attributes');
+var overrideAll = require('../../../plot_api/edit_types').overrideAll;
 
+var geoAxesAttrs = {
+    range: {
+        valType: 'info_array',
+        role: 'info',
+        items: [
+            {valType: 'number'},
+            {valType: 'number'}
+        ],
+        description: [
+            'Sets the range of this axis (in degrees),',
+            'sets the map\'s clipped coordinates.'
+        ].join(' ')
+    },
+    showgrid: {
+        valType: 'boolean',
+        role: 'info',
+        dflt: false,
+        description: 'Sets whether or not graticule are shown on the map.'
+    },
+    tick0: {
+        valType: 'number',
+        role: 'info',
+        description: [
+            'Sets the graticule\'s starting tick longitude/latitude.'
+        ].join(' ')
+    },
+    dtick: {
+        valType: 'number',
+        role: 'info',
+        description: [
+            'Sets the graticule\'s longitude/latitude tick step.'
+        ].join(' ')
+    },
+    gridcolor: {
+        valType: 'color',
+        role: 'style',
+        dflt: colorAttrs.lightLine,
+        description: [
+            'Sets the graticule\'s stroke color.'
+        ].join(' ')
+    },
+    gridwidth: {
+        valType: 'number',
+        role: 'style',
+        min: 0,
+        dflt: 1,
+        description: [
+            'Sets the graticule\'s stroke width (in px).'
+        ].join(' ')
+    }
+};
 
-module.exports = {
+module.exports = overrideAll({
     domain: {
         x: {
             valType: 'info_array',
@@ -24,8 +75,11 @@ module.exports = {
             ],
             dflt: [0, 1],
             description: [
-                'Sets the horizontal domain of this map',
-                '(in plot fraction).'
+                'Sets the maximum horizontal domain of this map',
+                '(in plot fraction).',
+                'Note that geo subplots are constrained by domain.',
+                'In general, when `projection.scale` is set to 1.',
+                'a map will fit either its x or y domain, but not both. '
             ].join(' ')
         },
         y: {
@@ -37,8 +91,11 @@ module.exports = {
             ],
             dflt: [0, 1],
             description: [
-                'Sets the vertical domain of this map',
-                '(in plot fraction).'
+                'Sets the maximum vertical domain of this map',
+                '(in plot fraction).',
+                'Note that geo subplots are constrained by domain.',
+                'In general, when `projection.scale` is set to 1.',
+                'a map will fit either its x or y domain, but not both. '
             ].join(' ')
         }
     },
@@ -74,7 +131,8 @@ module.exports = {
                 role: 'info',
                 description: [
                     'Rotates the map along parallels',
-                    '(in degrees East).'
+                    '(in degrees East).',
+                    'Defaults to the center of the `lonaxis.range` values.'
                 ].join(' ')
             },
             lat: {
@@ -111,9 +169,32 @@ module.exports = {
             valType: 'number',
             role: 'info',
             min: 0,
-            max: 10,
             dflt: 1,
-            description: 'Zooms in or out on the map view.'
+            description: [
+                'Zooms in or out on the map view.',
+                'A scale of *1* corresponds to the largest zoom level',
+                'that fits the map\'s lon and lat ranges. '
+            ].join(' ')
+        },
+    },
+    center: {
+        lon: {
+            valType: 'number',
+            role: 'info',
+            description: [
+                'Sets the longitude of the map\'s center.',
+                'By default, the map\'s longitude center lies at the middle of the longitude range',
+                'for scoped projection and above `projection.rotation.lon` otherwise.'
+            ].join(' ')
+        },
+        lat: {
+            valType: 'number',
+            role: 'info',
+            description: [
+                'Sets the latitude of the map\'s center.',
+                'For all projection types, the map\'s latitude center lies',
+                'at the middle of the latitude range by default.'
+            ].join(' ')
         }
     },
     showcoastlines: {
@@ -254,4 +335,4 @@ module.exports = {
     },
     lonaxis: geoAxesAttrs,
     lataxis: geoAxesAttrs
-};
+}, 'plot', 'from-root');

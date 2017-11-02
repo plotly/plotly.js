@@ -45,12 +45,13 @@ module.exports = function plot(gd, plotinfo, cdbar) {
     bartraces.append('g')
         .attr('class', 'points')
         .each(function(d) {
-            var t = d[0].t,
-                trace = d[0].trace,
-                poffset = t.poffset,
-                poffsetIsArray = Array.isArray(poffset);
+            var sel = d[0].node3 = d3.select(this);
+            var t = d[0].t;
+            var trace = d[0].trace;
+            var poffset = t.poffset;
+            var poffsetIsArray = Array.isArray(poffset);
 
-            d3.select(this).selectAll('g.point')
+            sel.selectAll('g.point')
                 .data(Lib.identity)
               .enter().append('g').classed('point', true)
                 .each(function(di, i) {
@@ -69,12 +70,18 @@ module.exports = function plot(gd, plotinfo, cdbar) {
                         y1 = ya.c2p(p1, true);
                         x0 = xa.c2p(s0, true);
                         x1 = xa.c2p(s1, true);
+
+                        // for selections
+                        di.ct = [x1, (y0 + y1) / 2];
                     }
                     else {
                         x0 = xa.c2p(p0, true);
                         x1 = xa.c2p(p1, true);
                         y0 = ya.c2p(s0, true);
                         y1 = ya.c2p(s1, true);
+
+                        // for selections
+                        di.ct = [(x0 + x1) / 2, y1];
                     }
 
                     if(!isNumeric(x0) || !isNumeric(x1) ||

@@ -10,8 +10,11 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var selectButton = require('../assets/modebar_button');
-var customMatchers = require('../assets/custom_matchers');
 var delay = require('../assets/delay');
+
+var customAssertions = require('../assets/custom_assertions');
+var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 function countCanvases() {
     return d3.selectAll('canvas').size();
@@ -33,30 +36,9 @@ describe('Test gl3d plots', function() {
     var mock3 = require('@mocks/gl3d_autocolorscale');
 
     function assertHoverText(xLabel, yLabel, zLabel, textLabel) {
-        var node = d3.selectAll('g.hovertext');
-        expect(node.size()).toEqual(1, 'hover text group');
-
-        var tspan = d3.selectAll('g.hovertext').selectAll('tspan')[0];
-        expect(tspan[0].innerHTML).toEqual(xLabel, 'x val');
-        expect(tspan[1].innerHTML).toEqual(yLabel, 'y val');
-        expect(tspan[2].innerHTML).toEqual(zLabel, 'z val');
-
-        if(textLabel) {
-            expect(tspan[3].innerHTML).toEqual(textLabel, 'text label');
-        }
-    }
-
-    function assertHoverLabelStyle(bgColor, borderColor, fontSize, fontFamily, fontColor) {
-        var node = d3.selectAll('g.hovertext');
-
-        var path = node.select('path');
-        expect(path.style('fill')).toEqual(bgColor, 'bgcolor');
-        expect(path.style('stroke')).toEqual(borderColor, 'bordercolor');
-
-        var text = node.select('text.nums');
-        expect(parseInt(text.style('font-size'))).toEqual(fontSize, 'font.size');
-        expect(text.style('font-family').split(',')[0]).toEqual(fontFamily, 'font.family');
-        expect(text.style('fill')).toEqual(fontColor, 'font.color');
+        var content = [xLabel, yLabel, zLabel];
+        if(textLabel) content.push(textLabel);
+        assertHoverLabelContent({nums: content.join('\n')});
     }
 
     function assertEventData(x, y, z, curveNumber, pointNumber, extra) {
@@ -111,7 +93,13 @@ describe('Test gl3d plots', function() {
                 'marker.color': 'orange',
                 'marker.line.color': undefined
             });
-            assertHoverLabelStyle('rgb(0, 0, 255)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)');
+            assertHoverLabelStyle(d3.selectAll('g.hovertext'), {
+                bgcolor: 'rgb(0, 0, 255)',
+                bordercolor: 'rgb(255, 255, 255)',
+                fontSize: 13,
+                fontFamily: 'Arial',
+                fontColor: 'rgb(255, 255, 255)'
+            }, 'initial');
 
             return Plotly.restyle(gd, {
                 x: [['2016-01-11', '2016-01-12', '2017-01-01', '2017-02-01']]
@@ -165,7 +153,13 @@ describe('Test gl3d plots', function() {
         })
         .then(_hover)
         .then(function() {
-            assertHoverLabelStyle('rgb(0, 128, 0)', 'rgb(255, 255, 255)', 20, 'Arial', 'rgb(255, 255, 255)');
+            assertHoverLabelStyle(d3.selectAll('g.hovertext'), {
+                bgcolor: 'rgb(0, 128, 0)',
+                bordercolor: 'rgb(255, 255, 255)',
+                fontSize: 20,
+                fontFamily: 'Arial',
+                fontColor: 'rgb(255, 255, 255)'
+            }, 'restyled');
 
             return Plotly.relayout(gd, {
                 'hoverlabel.bordercolor': 'yellow',
@@ -175,7 +169,13 @@ describe('Test gl3d plots', function() {
         })
         .then(_hover)
         .then(function() {
-            assertHoverLabelStyle('rgb(0, 128, 0)', 'rgb(255, 255, 0)', 20, 'Roboto', 'rgb(0, 255, 255)');
+            assertHoverLabelStyle(d3.selectAll('g.hovertext'), {
+                bgcolor: 'rgb(0, 128, 0)',
+                bordercolor: 'rgb(255, 255, 0)',
+                fontSize: 20,
+                fontFamily: 'Roboto',
+                fontColor: 'rgb(0, 255, 255)'
+            }, 'restyle #2');
 
             return Plotly.restyle(gd, 'hoverinfo', [[null, null, 'y', null]]);
         })
@@ -216,7 +216,13 @@ describe('Test gl3d plots', function() {
         .then(function() {
             assertHoverText('x: 1', 'y: 2', 'z: 43', 'one two');
             assertEventData(1, 2, 43, 0, [1, 2]);
-            assertHoverLabelStyle('rgb(68, 68, 68)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)');
+            assertHoverLabelStyle(d3.selectAll('g.hovertext'), {
+                bgcolor: 'rgb(68, 68, 68)',
+                bordercolor: 'rgb(255, 255, 255)',
+                fontSize: 13,
+                fontFamily: 'Arial',
+                fontColor: 'rgb(255, 255, 255)'
+            }, 'initial');
 
             Plotly.restyle(gd, {
                 'hoverinfo': [[
@@ -239,7 +245,13 @@ describe('Test gl3d plots', function() {
                 'hoverinfo': 'y',
                 'hoverlabel.font.color': 'cyan'
             });
-            assertHoverLabelStyle('rgb(255, 255, 255)', 'rgb(68, 68, 68)', 9, 'Arial', 'rgb(0, 255, 255)');
+            assertHoverLabelStyle(d3.selectAll('g.hovertext'), {
+                bgcolor: 'rgb(255, 255, 255)',
+                bordercolor: 'rgb(68, 68, 68)',
+                fontSize: 9,
+                fontFamily: 'Arial',
+                fontColor: 'rgb(0, 255, 255)'
+            }, 'restyle');
 
             var label = d3.selectAll('g.hovertext');
 
@@ -430,10 +442,6 @@ describe('Test gl3d modebar handlers', function() {
         expect(camera.eye.y).toBeCloseTo(eyeY);
         expect(camera.eye.z).toBeCloseTo(eyeZ);
     }
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     beforeEach(function(done) {
         gd = createGraphDiv();
@@ -828,10 +836,6 @@ describe('Test gl2d plots', function() {
     var gd;
 
     var mock = require('@mocks/gl2d_10.json');
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     beforeEach(function() {
         gd = createGraphDiv();
@@ -1308,10 +1312,6 @@ describe('Test gl plot side effects', function() {
 describe('Test gl2d interactions', function() {
     var gd;
 
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
-
     beforeEach(function() {
         gd = createGraphDiv();
     });
@@ -1369,10 +1369,6 @@ describe('Test gl2d interactions', function() {
 
 describe('Test gl3d annotations', function() {
     var gd;
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     beforeEach(function() {
         gd = createGraphDiv();

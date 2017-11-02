@@ -11,6 +11,7 @@
 
 var polybool = require('poly-bool');
 var polygon = require('../../lib/polygon');
+var throttle = require('../../lib/throttle');
 var color = require('../../components/color');
 var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
 
@@ -66,31 +67,30 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
 
 
     // find the traces to search for selection points
-    var searchTraces = [],
-        gd = dragOptions.gd,
-        i,
-        cd,
-        trace,
-        searchInfo,
-        selection = [],
-        eventData;
+    var searchTraces = [];
+    var gd = dragOptions.gd;
+    var throttleID = gd._fullLayout._uid + constants.SELECTID;
+    var selection = [];
+    var i, cd, trace, searchInfo, eventData;
 
     for(i = 0; i < gd.calcdata.length; i++) {
         cd = gd.calcdata[i];
         trace = cd[0].trace;
-        if(!trace._module || !trace._module.selectPoints) continue;
+        if(trace.visible !== true || !trace._module || !trace._module.selectPoints) continue;
 
         if(dragOptions.subplot) {
-            if(trace.subplot !== dragOptions.subplot) continue;
-
-            searchTraces.push({
-                selectPoints: trace._module.selectPoints,
-                cd: cd,
-                xaxis: dragOptions.xaxes[0],
-                yaxis: dragOptions.yaxes[0]
-            });
-        }
-        else {
+            if(
+                trace.subplot === dragOptions.subplot ||
+                trace.geo === dragOptions.subplot
+            ) {
+                searchTraces.push({
+                    selectPoints: trace._module.selectPoints,
+                    cd: cd,
+                    xaxis: dragOptions.xaxes[0],
+                    yaxis: dragOptions.yaxes[0]
+                });
+            }
+        } else {
             if(xAxisIds.indexOf(trace.xaxis) === -1) continue;
             if(yAxisIds.indexOf(trace.yaxis) === -1) continue;
 
@@ -156,24 +156,36 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             if(dy < Math.min(dx * 0.6, MINSELECT)) {
                 // horizontal motion: make a vertical box
                 currentPolygon = [[x0, 0], [x0, ph], [x1, ph], [x1, 0]];
+                currentPolygon.xmin = Math.min(x0, x1);
+                currentPolygon.xmax = Math.max(x0, x1);
+                currentPolygon.ymin = Math.min(0, ph);
+                currentPolygon.ymax = Math.max(0, ph);
                 // extras to guide users in keeping a straight selection
-                corners.attr('d', 'M' + Math.min(x0, x1) + ',' + (y0 - MINSELECT) +
+                corners.attr('d', 'M' + currentPolygon.xmin + ',' + (y0 - MINSELECT) +
                     'h-4v' + (2 * MINSELECT) + 'h4Z' +
-                    'M' + (Math.max(x0, x1) - 1) + ',' + (y0 - MINSELECT) +
+                    'M' + (currentPolygon.xmax - 1) + ',' + (y0 - MINSELECT) +
                     'h4v' + (2 * MINSELECT) + 'h-4Z');
 
             }
             else if(dx < Math.min(dy * 0.6, MINSELECT)) {
                 // vertical motion: make a horizontal box
                 currentPolygon = [[0, y0], [0, y1], [pw, y1], [pw, y0]];
-                corners.attr('d', 'M' + (x0 - MINSELECT) + ',' + Math.min(y0, y1) +
+                currentPolygon.xmin = Math.min(0, pw);
+                currentPolygon.xmax = Math.max(0, pw);
+                currentPolygon.ymin = Math.min(y0, y1);
+                currentPolygon.ymax = Math.max(y0, y1);
+                corners.attr('d', 'M' + (x0 - MINSELECT) + ',' + currentPolygon.ymin +
                     'v-4h' + (2 * MINSELECT) + 'v4Z' +
-                    'M' + (x0 - MINSELECT) + ',' + (Math.max(y0, y1) - 1) +
+                    'M' + (x0 - MINSELECT) + ',' + (currentPolygon.ymax - 1) +
                     'v4h' + (2 * MINSELECT) + 'v-4Z');
             }
             else {
                 // diagonal motion
                 currentPolygon = [[x0, y0], [x0, y1], [x1, y1], [x1, y0]];
+                currentPolygon.xmin = Math.min(x0, x1);
+                currentPolygon.xmax = Math.max(x0, x1);
+                currentPolygon.ymin = Math.min(y0, y1);
+                currentPolygon.ymax = Math.max(y0, y1);
                 corners.attr('d', 'M0,0Z');
             }
         }
@@ -181,9 +193,10 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             filterPoly.addPt([x1, y1]);
             currentPolygon = filterPoly.filtered;
         }
+        outlines.attr('d', 'M' + paths.join('M') + 'Z');
 
         // create outline & tester
-        if(dragOptions.polygons.length) {
+        if(dragOptions.polygons && dragOptions.polygons.length) {
             mergedPolygons = polybool(dragOptions.mergedPolygons, [currentPolygon], 'or');
             testPoly = multipolygonTester(dragOptions.polygons.concat([currentPolygon]));
         }
@@ -200,48 +213,65 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         }
         outlines.attr('d', 'M' + paths.join('M') + 'Z');
 
-        // select points
-        selection = [];
+        throttle.throttle(
+            throttleID,
+            constants.SELECTDELAY,
+            function() {
+                selection = [];
 
-        var traceSelections = [], traceSelection;
-        for(i = 0; i < searchTraces.length; i++) {
-            searchInfo = searchTraces[i];
-            traceSelection = searchInfo.selectPoints(searchInfo, testPoly);
-            traceSelections.push(traceSelection);
-            selection = selection.concat(fillSelectionItem(traceSelection, searchInfo));
-        }
+                var traceSelections = [], traceSelection;
+                for(i = 0; i < searchTraces.length; i++) {
+                    searchInfo = searchTraces[i];
 
-        // update scatterregl scene
-        if(plotinfo._scene) {
-            plotinfo._scene.select(traceSelections);
-        }
+                    traceSelection = searchInfo.selectPoints(searchInfo, testPoly);
+                    traceSelections.push(traceSelection);
 
-        eventData = {points: selection};
-        fillRangeItems(eventData, currentPolygon, filterPoly);
-        dragOptions.gd.emit('plotly_selecting', eventData);
+                    var thisSelection = fillSelectionItem(
+                        traceSelection, searchInfo
+                    );
+                    if(selection.length) {
+                        for(var j = 0; j < thisSelection.length; j++) {
+                            selection.push(thisSelection[j]);
+                        }
+                    }
+                    else selection = thisSelection;
+                }
+
+                eventData = {points: selection};
+                fillRangeItems(eventData, currentPolygon, filterPoly);
+                dragOptions.gd.emit('plotly_selecting', eventData);
+            }
+        );
     };
 
     dragOptions.doneFn = function(dragged, numclicks) {
         corners.remove();
-        if(!dragged && numclicks === 2) {
-            // clear selection on doubleclick
-            outlines.remove();
-            for(i = 0; i < searchTraces.length; i++) {
-                searchInfo = searchTraces[i];
-                searchInfo.selectPoints(searchInfo, false);
+
+        throttle.done(throttleID).then(function() {
+            throttle.clear(throttleID);
+
+            if(!dragged && numclicks === 2) {
+                // clear selection on doubleclick
+                outlines.remove();
+                for(i = 0; i < searchTraces.length; i++) {
+                    searchInfo = searchTraces[i];
+                    searchInfo.selectPoints(searchInfo, false);
+                }
+
+                gd.emit('plotly_deselect', null);
+            }
+            else {
+                dragOptions.gd.emit('plotly_selected', eventData);
             }
 
-            gd.emit('plotly_deselect', null);
-        }
-        else {
-            dragOptions.gd.emit('plotly_selected', eventData);
-        }
+            if(currentPolygon && dragOptions.polygons) {
+                // save last polygons
+                dragOptions.polygons.push(currentPolygon);
 
-        // save last polygons
-        dragOptions.polygons.push(currentPolygon);
-
-        // we have to keep reference to arrays, therefore just replace items
-        dragOptions.mergedPolygons.splice.apply(dragOptions.mergedPolygons, [0, dragOptions.mergedPolygons.length].concat(mergedPolygons));
+                // we have to keep reference to arrays, therefore just replace items
+                dragOptions.mergedPolygons.splice.apply(dragOptions.mergedPolygons, [0, dragOptions.mergedPolygons.length].concat(mergedPolygons));
+            }
+        });
     };
 };
 

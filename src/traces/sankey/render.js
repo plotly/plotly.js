@@ -16,12 +16,11 @@ var Drawing = require('../../components/drawing');
 var d3sankey = require('@plotly/d3-sankey').sankey;
 var d3Force = require('d3-force');
 var Lib = require('../../lib');
+var keyFun = require('../../lib/gup').keyFun;
+var repeat = require('../../lib/gup').repeat;
+var unwrap = require('../../lib/gup').unwrap;
 
 // basic data utilities
-
-function keyFun(d) {return d.key;}
-function repeat(d) {return [d];} // d3 data binding convention
-function unwrap(d) {return d[0];} // plotly data structure convention
 
 function persistOriginalPlace(nodes) {
     var i, distinctLayerPositions = [];
@@ -181,8 +180,8 @@ function nodeModel(uniqueKeys, d, n) {
     var tc = tinycolor(n.color),
         zoneThicknessPad = c.nodePadAcross,
         zoneLengthPad = d.nodePad / 2,
-        visibleThickness = n.dx + 0.5,
-        visibleLength = n.dy - 0.5;
+        visibleThickness = n.dx,
+        visibleLength = Math.max(0.5, n.dy);
 
     var basicKey = n.label;
     var foundKey = uniqueKeys[basicKey];
@@ -203,7 +202,7 @@ function nodeModel(uniqueKeys, d, n) {
         textFont: d.textFont,
         size: d.horizontal ? d.height : d.width,
         visibleWidth: Math.ceil(visibleThickness),
-        visibleHeight: Math.ceil(visibleLength),
+        visibleHeight: visibleLength,
         zoneX: -zoneThicknessPad,
         zoneY: -zoneLengthPad,
         zoneWidth: visibleThickness + 2 * zoneThicknessPad,
@@ -227,14 +226,10 @@ function nodeModel(uniqueKeys, d, n) {
 
 // rendering snippets
 
-function crispLinesOnEnd(sankeyNode) {
-    d3.select(sankeyNode.node().parentNode).style('shape-rendering', 'crispEdges');
-}
-
 function updateNodePositions(sankeyNode) {
     sankeyNode
         .attr('transform', function(d) {
-            return 'translate(' + (d.node.x - 0.5) + ', ' + (d.node.y - d.node.dy / 2 + 0.5) + ')';
+            return 'translate(' + d.node.x.toFixed(3) + ', ' + (d.node.y - d.node.dy / 2).toFixed(3) + ')';
         });
 }
 
@@ -247,7 +242,6 @@ function linkPath(d) {
 }
 
 function updateNodeShapes(sankeyNode) {
-    d3.select(sankeyNode.node().parentNode).style('shape-rendering', 'optimizeSpeed');
     sankeyNode.call(updateNodePositions);
 }
 
@@ -325,7 +319,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
 
         .on('dragstart', function(d) {
             if(d.arrangement === 'fixed') return;
-            this.parentNode.appendChild(this); // bring element to top (painter's algo)
+            Lib.raiseToTop(this);
             d.interactionState.dragInProgress = d.node;
             saveCurrentDragPosition(d.node);
             if(d.interactionState.hovered) {
@@ -360,7 +354,6 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks) {
             if(d.arrangement !== 'snap') {
                 d.sankey.relayout();
                 updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink);
-                sankeyNode.call(crispLinesOnEnd);
             }
         })
 
@@ -414,17 +407,13 @@ function snappingForce(sankeyNode, forceKey, nodes, d) {
         }
         if(!d.interactionState.dragInProgress && maxVelocity < 0.1 && d.forceLayouts[forceKey].alpha() > 0) {
             d.forceLayouts[forceKey].alpha(0);
-            window.setTimeout(function() {
-                sankeyNode.call(crispLinesOnEnd);
-            }, 30); // geome on move, crisp when static
         }
     };
 }
 
 // scene graph
-
 module.exports = function(svg, styledData, layout, callbacks) {
-    var sankey = svg.selectAll('.sankey')
+    var sankey = svg.selectAll('.' + c.cn.sankey)
         .data(styledData
                 .filter(function(d) {return unwrap(d).trace.visible;})
                 .map(sankeyModel.bind(null, layout)),
@@ -435,7 +424,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     sankey.enter()
         .append('g')
-        .classed('sankey', true)
+        .classed(c.cn.sankey, true)
         .style('box-sizing', 'content-box')
         .style('position', 'absolute')
         .style('left', 0)
@@ -448,15 +437,15 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .ease(c.ease).duration(c.duration)
         .attr('transform', sankeyTransform);
 
-    var sankeyLinks = sankey.selectAll('.sankeyLinks')
+    var sankeyLinks = sankey.selectAll('.' + c.cn.sankeyLinks)
         .data(repeat, keyFun);
 
     sankeyLinks.enter()
         .append('g')
-        .classed('sankeyLinks', true)
+        .classed(c.cn.sankeyLinks, true)
         .style('fill', 'none');
 
-    var sankeyLink = sankeyLinks.selectAll('.sankeyLink')
+    var sankeyLink = sankeyLinks.selectAll('.' + c.cn.sankeyLink)
         .data(function(d) {
             var uniqueKeys = {};
             return d.sankey.links()
@@ -466,7 +455,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     sankeyLink.enter()
         .append('path')
-        .classed('sankeyLink', true)
+        .classed(c.cn.sankeyLink, true)
         .attr('d', linkPath)
         .call(attachPointerEvents, sankey, callbacks.linkEvents);
 
@@ -490,13 +479,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('opacity', 0)
         .remove();
 
-    var sankeyNodeSet = sankey.selectAll('.sankeyNodeSet')
+    var sankeyNodeSet = sankey.selectAll('.' + c.cn.sankeyNodeSet)
         .data(repeat, keyFun);
 
     sankeyNodeSet.enter()
         .append('g')
-        .style('shape-rendering', 'geometricPrecision')
-        .classed('sankeyNodeSet', true);
+        .classed(c.cn.sankeyNodeSet, true);
 
     sankeyNodeSet
         .style('cursor', function(d) {
@@ -507,7 +495,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
             }
         });
 
-    var sankeyNode = sankeyNodeSet.selectAll('.sankeyNode')
+    var sankeyNode = sankeyNodeSet.selectAll('.' + c.cn.sankeyNode)
         .data(function(d) {
             var nodes = d.sankey.nodes();
             var uniqueKeys = {};
@@ -519,7 +507,7 @@ module.exports = function(svg, styledData, layout, callbacks) {
 
     sankeyNode.enter()
         .append('g')
-        .classed('sankeyNode', true)
+        .classed(c.cn.sankeyNode, true)
         .call(updateNodePositions)
         .call(attachPointerEvents, sankey, callbacks.nodeEvents);
 
@@ -535,12 +523,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('opacity', 0)
         .remove();
 
-    var nodeRect = sankeyNode.selectAll('.nodeRect')
+    var nodeRect = sankeyNode.selectAll('.' + c.cn.nodeRect)
         .data(repeat);
 
     nodeRect.enter()
         .append('rect')
-        .classed('nodeRect', true)
+        .classed(c.cn.nodeRect, true)
         .call(sizeNode);
 
     nodeRect
@@ -554,12 +542,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .ease(c.ease).duration(c.duration)
         .call(sizeNode);
 
-    var nodeCapture = sankeyNode.selectAll('.nodeCapture')
+    var nodeCapture = sankeyNode.selectAll('.' + c.cn.nodeCapture)
         .data(repeat);
 
     nodeCapture.enter()
         .append('rect')
-        .classed('nodeCapture', true)
+        .classed(c.cn.nodeCapture, true)
         .style('fill-opacity', 0);
 
     nodeCapture
@@ -568,12 +556,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .attr('width', function(d) {return d.zoneWidth;})
         .attr('height', function(d) {return d.zoneHeight;});
 
-    var nodeCentered = sankeyNode.selectAll('.nodeCentered')
+    var nodeCentered = sankeyNode.selectAll('.' + c.cn.nodeCentered)
         .data(repeat);
 
     nodeCentered.enter()
         .append('g')
-        .classed('nodeCentered', true)
+        .classed(c.cn.nodeCentered, true)
         .attr('transform', nodeCentering);
 
     nodeCentered
@@ -581,12 +569,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .ease(c.ease).duration(c.duration)
         .attr('transform', nodeCentering);
 
-    var nodeLabelGuide = nodeCentered.selectAll('.nodeLabelGuide')
+    var nodeLabelGuide = nodeCentered.selectAll('.' + c.cn.nodeLabelGuide)
         .data(repeat);
 
     nodeLabelGuide.enter()
         .append('path')
-        .classed('nodeLabelGuide', true)
+        .classed(c.cn.nodeLabelGuide, true)
         .attr('id', function(d) {return d.uniqueNodeLabelPathId;})
         .attr('d', textGuidePath)
         .attr('transform', sankeyInverseTransform);
@@ -597,12 +585,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .attr('d', textGuidePath)
         .attr('transform', sankeyInverseTransform);
 
-    var nodeLabel = nodeCentered.selectAll('.nodeLabel')
+    var nodeLabel = nodeCentered.selectAll('.' + c.cn.nodeLabel)
         .data(repeat);
 
     nodeLabel.enter()
         .append('text')
-        .classed('nodeLabel', true)
+        .classed(c.cn.nodeLabel, true)
         .attr('transform', textFlip)
         .style('user-select', 'none')
         .style('cursor', 'default')
@@ -619,12 +607,12 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .ease(c.ease).duration(c.duration)
         .attr('transform', textFlip);
 
-    var nodeLabelTextPath = nodeLabel.selectAll('.nodeLabelTextPath')
+    var nodeLabelTextPath = nodeLabel.selectAll('.' + c.cn.nodeLabelTextPath)
         .data(repeat);
 
     nodeLabelTextPath.enter()
         .append('textPath')
-        .classed('nodeLabelTextPath', true)
+        .classed(c.cn.nodeLabelTextPath, true)
         .attr('alignment-baseline', 'middle')
         .attr('xlink:href', function(d) {return '#' + d.uniqueNodeLabelPathId;})
         .attr('startOffset', nodeTextOffset)

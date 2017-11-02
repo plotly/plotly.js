@@ -39,6 +39,7 @@ module.exports = {
     tickfont: axesAttrs.tickfont,
     tickangle: axesAttrs.tickangle,
     tickformat: axesAttrs.tickformat,
+    tickformatstops: axesAttrs.tickformatstops,
     hoverformat: axesAttrs.hoverformat,
     // lines and grids
     showline: extendFlat({}, axesAttrs.showline, {dflt: true}),

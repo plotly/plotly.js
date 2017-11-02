@@ -13,6 +13,10 @@ var delay = require('../assets/delay');
 var doubleClick = require('../assets/double_click');
 var fail = require('../assets/fail_test');
 
+var customAssertions = require('../assets/custom_assertions');
+var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+
 describe('hover info', function() {
     'use strict';
 
@@ -39,10 +43,10 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
-            expect(d3.selectAll('g.hovertext').select('text').html()).toEqual('1');
+            assertHoverLabelContent({
+                nums: '1',
+                axis: '0.388'
+            });
         });
     });
 
@@ -66,9 +70,7 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(0);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
+            assertHoverLabelContent({axis: '0.388'});
         });
     });
 
@@ -92,9 +94,7 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(0);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').select('text').html()).toEqual('1');
+            assertHoverLabelContent({nums: '1'});
         });
     });
 
@@ -122,10 +122,9 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(0);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').select('text').html())
-                .toEqual('hover text  with spaces  not newlines');
+            assertHoverLabelContent({
+                nums: 'hover text  with spaces  not newlines'
+            });
         });
     });
 
@@ -151,12 +150,11 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
-            expect(d3.selectAll('g.hovertext').select('text.nums').selectAll('tspan').size()).toEqual(2);
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('1');
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('hover text');
+            assertHoverLabelContent({
+                nums: '1\nhover text',
+                name: 'PV learning ...',
+                axis: '0.388'
+            });
         });
     });
 
@@ -189,13 +187,11 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
-            expect(d3.selectAll('g.hovertext').select('text.nums').selectAll('tspan').size()).toEqual(2);
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('1');
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('hover text');
-            expect(d3.selectAll('g.hovertext').selectAll('text.name').node().innerHTML).toEqual('&lt;img src=x o...');
+            assertHoverLabelContent({
+                nums: '1\nhover text',
+                name: '&lt;img src=x o...',
+                axis: '0.388'
+            });
         });
     });
 
@@ -212,10 +208,10 @@ describe('hover info', function() {
             Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
         });
 
-        it('responds to hover y+text', function() {
+        it('responds to hover y', function() {
             Fx.hover('graph', evt, 'xy');
 
-            expect(d3.selectAll('g.hovertext').selectAll('text.nums').node().innerHTML).toEqual('1e+9');
+            assertHoverLabelContent({nums: '1e+9'});
         });
     });
 
@@ -241,11 +237,9 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(0);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').selectAll('tspan').size()).toEqual(2);
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('1');
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('hover text');
+            assertHoverLabelContent({
+                nums: '1\nhover text'
+            });
         });
     });
 
@@ -271,10 +265,10 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
-            expect(d3.selectAll('g.hovertext').select('text').html()).toEqual('hover text');
+            assertHoverLabelContent({
+                nums: 'hover text',
+                axis: '0.388'
+            });
         });
     });
 
@@ -291,8 +285,10 @@ describe('hover info', function() {
         it('responds to hover x+text', function() {
             Fx.hover('graph', evt, 'xy');
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388 ± 1');
+            assertHoverLabelContent({
+                nums: '1',
+                axis: '0.388 ± 1'
+            });
         });
     });
 
@@ -309,8 +305,10 @@ describe('hover info', function() {
         it('responds to hover x+text', function() {
             Fx.hover('graph', evt, 'xy');
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
+            assertHoverLabelContent({
+                nums: '1',
+                axis: '0.388'
+            });
         });
     });
 
@@ -327,8 +325,10 @@ describe('hover info', function() {
         it('responds to hover x+text', function() {
             Fx.hover('graph', evt, 'xy');
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
+            assertHoverLabelContent({
+                nums: '1',
+                axis: '0.388'
+            });
         });
     });
 
@@ -354,11 +354,9 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(0);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('hover');
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('text');
-            expect(d3.selectAll('g.hovertext').select('text').selectAll('tspan').size()).toEqual(2);
+            assertHoverLabelContent({
+                nums: 'hover\ntext'
+            });
         });
     });
 
@@ -376,6 +374,7 @@ describe('hover info', function() {
             Fx.hover('graph', evt, 'xy');
 
             expect(gd._hoverdata, undefined);
+            assertHoverLabelContent({});
         });
     });
 
@@ -399,8 +398,7 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.388);
             expect(hoverTrace.y).toEqual(1);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(0);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(0);
+            assertHoverLabelContent({});
         });
     });
 
@@ -431,12 +429,9 @@ describe('hover info', function() {
             expect(hoverTrace.x).toEqual(0.33);
             expect(hoverTrace.y).toEqual(1.25);
 
-            expect(d3.selectAll('g.axistext').size()).toEqual(0);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-
-            var expectations = ['PV learning ...', '(0.33, 1.25)'];
-            d3.selectAll('g.hovertext').selectAll('text').each(function(_, i) {
-                expect(d3.select(this).html()).toEqual(expectations[i]);
+            assertHoverLabelContent({
+                nums: '(0.33, 1.25)',
+                name: 'PV learning ...'
             });
         });
 
@@ -455,37 +450,36 @@ describe('hover info', function() {
                 expect(hoverTrace.x).toEqual(0.33);
                 expect(hoverTrace.y).toEqual(1.25);
 
-                expect(d3.selectAll('g.axistext').size()).toEqual(0);
-                expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-
-                var text = d3.selectAll('g.hovertext').select('text');
-                expect(text.size()).toEqual(1);
-                expect(text.html()).toEqual('PV learning ...');
-
-                done();
-            });
+                assertHoverLabelContent({
+                    nums: 'PV learning ...'
+                });
+            })
+            .then(done);
         });
     });
 
+    function _hover(gd, xpx, ypx) {
+        Fx.hover(gd, { xpx: xpx, ypx: ypx }, 'xy');
+        Lib.clearThrottle();
+    }
+
+    function _hoverNatural(gd, xpx, ypx) {
+        var gdBB = gd.getBoundingClientRect();
+        var dragger = gd.querySelector('.nsewdrag');
+        var clientX = xpx + gdBB.left + gd._fullLayout._size.l;
+        var clientY = ypx + gdBB.top + gd._fullLayout._size.t;
+
+        Fx.hover(gd, { clientX: clientX, clientY: clientY, target: dragger}, 'xy');
+        Lib.clearThrottle();
+    }
+
     describe('\'hover info for x/y/z traces', function() {
-        function _hover(gd, xpx, ypx) {
-            Fx.hover(gd, { xpx: xpx, ypx: ypx }, 'xy');
-            delete gd._lastHoverTime;
-        }
-
-        function _assert(nameLabel, lines) {
-            expect(d3.select('g.axistext').size()).toEqual(0, 'no common label');
-
-            var sel = d3.select('g.hovertext');
-            expect(sel.select('text.name').html()).toEqual(nameLabel, 'name label');
-            sel.select('text.nums').selectAll('tspan').each(function(_, i) {
-                expect(d3.select(this).html()).toEqual(lines[i], 'lines ' + i);
-            });
-        }
+        var gd;
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
 
         it('should display correct label content', function(done) {
-            var gd = createGraphDiv();
-
             Plotly.plot(gd, [{
                 type: 'heatmap',
                 y: [0, 1],
@@ -503,11 +497,336 @@ describe('hover info', function() {
             })
             .then(function() {
                 _hover(gd, 250, 100);
-                _assert('two', ['x: 1', 'y: 3', 'z: 2']);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 3\nz: 2',
+                    name: 'two'
+                });
             })
             .then(function() {
                 _hover(gd, 250, 300);
-                _assert('one', ['x: 1', 'y: 1', 'z: 2']);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 1\nz: 2',
+                    name: 'one'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('should display correct label content with specified format - heatmap', function(done) {
+            Plotly.plot(gd, [{
+                type: 'heatmap',
+                y: [0, 1],
+                z: [[1.11111, 2.2222, 3.33333], [4.44444, 5.55555, 6.66666]],
+                name: 'one',
+                zhoverformat: '.2f',
+                showscale: false
+            }, {
+                type: 'heatmap',
+                y: [2, 3],
+                z: [[1, 2, 3], [2, 2, 1]],
+                name: 'two',
+                showscale: false
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 100);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 3\nz: 2',
+                    name: 'two'
+                });
+            })
+            .then(function() {
+                _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 1\nz: 5.56',
+                    name: 'one'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('should display correct label content with specified format - contour', function(done) {
+            Plotly.plot(gd, [{
+                type: 'contour',
+                y: [0, 1],
+                z: [[1.11111, 2.2222, 3.33333], [4.44444, 5.55555, 6.66666]],
+                name: 'one',
+                zhoverformat: '.2f',
+                showscale: false
+            }, {
+                type: 'contour',
+                y: [2, 3],
+                z: [[1, 2, 3], [2, 2, 1]],
+                name: 'two',
+                showscale: false
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 50);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 3\nz: 2',
+                    name: 'two'
+                });
+            })
+            .then(function() {
+                _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 1\nz: 5.56',
+                    name: 'one'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('should display correct label content with specified format - histogram2d', function(done) {
+            Plotly.plot(gd, [{
+                type: 'histogram2d',
+                x: [0, 1, 2, 0, 1, 2, 1],
+                y: [0, 0, 0, 1, 1, 1, 1],
+                z: [1.11111, 2.2222, 3.3333, 4.4444, 4.4444, 6.6666, 1.1111],
+                histfunc: 'sum',
+                name: 'one',
+                zhoverformat: '.2f',
+                showscale: false
+            }, {
+                type: 'histogram2d',
+                x: [0, 1, 2, 0, 1, 2, 1, 2, 0, 1, 2],
+                y: [2, 2, 2, 3, 3, 3, 2, 2, 3, 3, 2],
+                name: 'two',
+                showscale: false
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 100);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 3\nz: 2',
+                    name: 'two'
+                });
+            })
+            .then(function() {
+                _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 1\nz: 5.56',
+                    name: 'one'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('should display correct label content with specified format - histogram2dcontour', function(done) {
+            Plotly.plot(gd, [{
+                type: 'histogram2dcontour',
+                x: [0, 1, 2, 0, 1, 2, 1],
+                y: [0, 0, 0, 1, 1, 1, 1],
+                z: [1.11111, 2.2222, 3.3333, 4.4444, 4.4444, 6.6666, 1.1111],
+                histfunc: 'sum',
+                name: 'one',
+                zhoverformat: '.2f',
+                showscale: false
+            }, {
+                type: 'histogram2dcontour',
+                x: [0, 1, 2, 0, 1, 2, 1, 2, 0, 1, 2],
+                y: [2, 2, 2, 3, 3, 3, 2, 2, 3, 3, 2],
+                name: 'two',
+                showscale: false
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 50);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 3\nz: 2',
+                    name: 'two'
+                });
+            })
+            .then(function() {
+                _hover(gd, 250, 270);
+                assertHoverLabelContent({
+                    nums: 'x: 1\ny: 1\nz: 5.56',
+                    name: 'one'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+    });
+
+    describe('hover info for negative data on a log axis', function() {
+        it('shows negative data even though it is infinitely off-screen', function(done) {
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, [{x: [1, 2, 3], y: [1, -5, 10]}], {
+                yaxis: {type: 'log'},
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 200);
+                assertHoverLabelContent({
+                    nums: '\u22125', // unicode minus
+                    axis: '2'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+    });
+
+    describe('histogram hover info', function() {
+        it('shows the data range when bins have multiple values', function(done) {
+            var gd = createGraphDiv();
+            var pts;
+
+            Plotly.plot(gd, [{
+                x: [0, 2, 3, 4, 5, 6, 7],
+                xbins: {start: -0.5, end: 8.5, size: 3},
+                type: 'histogram'
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                gd.on('plotly_hover', function(e) { pts = e.points; });
+
+                _hoverNatural(gd, 250, 200);
+                assertHoverLabelContent({
+                    nums: '3',
+                    axis: '3 - 5'
+                });
+            })
+            .then(function() {
+                expect(pts.length).toBe(1);
+                var pt = pts[0];
+
+                expect(pt.curveNumber).toBe(0);
+                expect(pt.binNumber).toBe(1);
+                expect(pt.pointNumbers).toEqual([2, 3, 4]);
+                expect(pt.x).toBe(4);
+                expect(pt.y).toBe(3);
+                expect(pt.data).toBe(gd.data[0]);
+                expect(pt.fullData).toBe(gd._fullData[0]);
+                expect(pt.xaxis).toBe(gd._fullLayout.xaxis);
+                expect(pt.yaxis).toBe(gd._fullLayout.yaxis);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('shows the exact data when bins have single values', function(done) {
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                // even though the data aren't regularly spaced, each bin only has
+                // one data value in it so we see exactly that value
+                x: [0, 0, 3.3, 3.3, 3.3, 7, 7],
+                xbins: {start: -0.5, end: 8.5, size: 3},
+                type: 'histogram'
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 200);
+                assertHoverLabelContent({
+                    nums: '3',
+                    axis: '3.3'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('will show a category range if you ask nicely', function(done) {
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                // even though the data aren't regularly spaced, each bin only has
+                // one data value in it so we see exactly that value
+                x: [
+                    'bread', 'cheese', 'artichokes', 'soup', 'beans', 'nuts',
+                    'pizza', 'potatoes', 'burgers', 'beans', 'beans', 'beans'
+                ],
+                xbins: {start: -0.5, end: 8.5, size: 3},
+                type: 'histogram'
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 200);
+                assertHoverLabelContent({
+                    nums: '6',
+                    axis: 'soup - nuts'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+    });
+
+    describe('histogram2d hover info', function() {
+        it('shows the data range when bins have multiple values', function(done) {
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                x: [0, 2, 3, 4, 5, 6, 7],
+                y: [1, 3, 4, 5, 6, 7, 8],
+                xbins: {start: -0.5, end: 8.5, size: 3},
+                ybins: {start: 0.5, end: 9.5, size: 3},
+                type: 'histogram2d'
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 200);
+                assertHoverLabelContent({
+                    nums: 'x: 3 - 5\ny: 4 - 6\nz: 3'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('shows the exact data when bins have single values', function(done) {
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, [{
+                x: [0, 0, 3.3, 3.3, 3.3, 7, 7],
+                y: [2, 2, 4.2, 4.2, 4.2, 8.8, 8.8],
+                xbins: {start: -0.5, end: 8.5, size: 3},
+                ybins: {start: 0.5, end: 9.5, size: 3},
+                type: 'histogram2d'
+            }], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 250, 200);
+                assertHoverLabelContent({
+                    nums: 'x: 3.3\ny: 4.2\nz: 3'
+                });
             })
             .catch(fail)
             .then(done);
@@ -515,7 +834,6 @@ describe('hover info', function() {
     });
 
     describe('hoverformat', function() {
-
         var data = [{
                 x: [1, 2, 3],
                 y: [0.12345, 0.23456, 0.34567]
@@ -534,10 +852,10 @@ describe('hover info', function() {
             Plotly.plot(this.gd, data, layout);
             mouseEvent('mousemove', 303, 213);
 
-            var hovers = d3.selectAll('g.hovertext');
-
-            expect(hovers.size()).toEqual(1);
-            expect(hovers.select('text')[0][0].textContent).toEqual('0.23');
+            assertHoverLabelContent({
+                nums: '0.23',
+                axis: '2'
+            });
         });
 
         it('should display the correct format when ticklabels false', function() {
@@ -545,15 +863,14 @@ describe('hover info', function() {
             Plotly.plot(this.gd, data, layout);
             mouseEvent('mousemove', 303, 213);
 
-            var hovers = d3.selectAll('g.hovertext');
-
-            expect(hovers.size()).toEqual(1);
-            expect(hovers.select('text')[0][0].textContent).toEqual('0.23');
+            assertHoverLabelContent({
+                nums: '0.23',
+                axis: '2'
+            });
         });
     });
 
     describe('textmode', function() {
-
         var data = [{
                 x: [1, 2, 3, 4],
                 y: [2, 3, 4, 5],
@@ -572,28 +889,26 @@ describe('hover info', function() {
 
         it('should show text labels', function() {
             mouseEvent('mousemove', 108, 303);
-            var hovers = d3.selectAll('g.hovertext');
-            expect(hovers.size()).toEqual(1);
-            expect(hovers.select('text')[0][0].textContent).toEqual('test');
+            assertHoverLabelContent({
+                nums: 'test'
+            });
         });
 
         it('should show number labels', function() {
             mouseEvent('mousemove', 363, 173);
-            var hovers = d3.selectAll('g.hovertext');
-            expect(hovers.size()).toEqual(1);
-            expect(hovers.select('text')[0][0].textContent).toEqual('42');
+            assertHoverLabelContent({
+                nums: '42'
+            });
         });
 
         it('should not show null text labels', function() {
             mouseEvent('mousemove', 229, 239);
-            var hovers = d3.selectAll('g.hovertext');
-            expect(hovers.size()).toEqual(0);
+            assertHoverLabelContent({});
         });
 
         it('should not show undefined text labels', function() {
             mouseEvent('mousemove', 493, 108);
-            var hovers = d3.selectAll('g.hovertext');
-            expect(hovers.size()).toEqual(0);
+            assertHoverLabelContent({});
         });
     });
 
@@ -687,18 +1002,14 @@ describe('hover info on stacked subplots', function() {
                     y: 1000
                 }));
 
-            // There should be a single label on the x-axis with the shared x value, 3.
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('3');
-
-            // There should be two points being hovered over, in two different traces, one in each plot.
-            expect(d3.selectAll('g.hovertext').size()).toEqual(2);
-            var textNodes = d3.selectAll('g.hovertext').selectAll('text');
-
-            expect(textNodes[0][0].innerHTML).toEqual('trace 1');
-            expect(textNodes[0][1].innerHTML).toEqual('110');
-            expect(textNodes[1][0].innerHTML).toEqual('trace 2');
-            expect(textNodes[1][1].innerHTML).toEqual('1000');
+            assertHoverLabelContent({
+                // There should be 2 pts being hovered over,
+                // in two different traces, one in each plot.
+                nums: ['110', '1000'],
+                name: ['trace 1', 'trace 2'],
+                // There should be a single label on the x-axis with the shared x value, 3'
+                axis: '3'
+            });
         });
     });
 
@@ -745,20 +1056,15 @@ describe('hover info on stacked subplots', function() {
                     y: 0
                 }));
 
-            // There should be a single label on the y-axis with the shared y value, 0.
-            expect(d3.selectAll('g.axistext').size()).toEqual(1);
-            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0');
 
-            // There should be three points being hovered over, in three different traces, one in each plot.
-            expect(d3.selectAll('g.hovertext').size()).toEqual(3);
-            var textNodes = d3.selectAll('g.hovertext').selectAll('text');
-
-            expect(textNodes[0][0].innerHTML).toEqual('Who put the bomp in the bomp bah bomp bah bomp');
-            expect(textNodes[0][1].innerHTML).toEqual('1');
-            expect(textNodes[1][0].innerHTML).toEqual('Wh');
-            expect(textNodes[1][1].innerHTML).toEqual('2.1');
-            expect(textNodes[2][0].innerHTML).toEqual('Who put...');
-            expect(textNodes[2][1].innerHTML).toEqual('3');
+            assertHoverLabelContent({
+                // There should be three points being hovered over, in three different traces,
+                // one in each plot.
+                nums: ['1', '2.1', '3'],
+                name: ['Who put the bomp in the bomp bah bomp bah bomp', 'Wh', 'Who put...'],
+                // There should be a single label on the y-axis with the shared y value, 0.
+                axis: '0'
+            });
         });
     });
 });
@@ -775,27 +1081,17 @@ describe('hover info on overlaid subplots', function() {
         Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(function() {
             mouseEvent('mousemove', 768, 345);
 
-            var axisText = d3.selectAll('g.axistext'),
-                hoverText = d3.selectAll('g.hovertext');
-
-            expect(axisText.size()).toEqual(1, 'with 1 label on axis');
-            expect(hoverText.size()).toEqual(2, 'with 2 labels on the overlaid pts');
-
-            expect(axisText.select('text').html()).toEqual('1', 'with correct axis label');
-
-            var textNodes = hoverText.selectAll('text');
-
-            expect(textNodes[0][0].innerHTML).toEqual('Take Rate', 'with correct hover labels');
-            expect(textNodes[0][1].innerHTML).toEqual('0.35', 'with correct hover labels');
-            expect(textNodes[1][0].innerHTML).toEqual('Revenue', 'with correct hover labels');
-            expect(textNodes[1][1].innerHTML).toEqual('2,352.5', 'with correct hover labels');
-
-        }).then(done);
+            assertHoverLabelContent({
+                nums: ['0.35', '2,352.5'],
+                name: ['Take Rate', 'Revenue'],
+                axis: '1'
+            });
+        })
+        .then(done);
     });
 });
 
 describe('hover after resizing', function() {
-    'use strict';
 
     var gd;
     afterEach(destroyGraphDiv);
@@ -810,51 +1106,52 @@ describe('hover after resizing', function() {
         });
     }
 
-    function assertLabelCount(pos, cnt, msg) {
-        delete gd._lastHoverTime;
+    function check(pos, expectation, msg) {
+        Lib.clearThrottle();
         mouseEvent('mousemove', pos[0], pos[1]);
-
-        var hoverText = d3.selectAll('g.hovertext');
-        expect(hoverText.size()).toBe(cnt, msg);
+        assertHoverLabelContent({
+            nums: expectation[0],
+            name: expectation[1],
+            axis: expectation[2]
+        }, msg);
     }
 
     it('should work', function(done) {
-        var data = [{ y: [2, 1, 2] }],
-            layout = { width: 600, height: 500 };
         gd = createGraphDiv();
 
-        var pos0 = [305, 403],
-            pos1 = [401, 122];
+        var data = [{ y: [2, 1, 2] }];
+        var layout = { width: 600, height: 500 };
+
+        var pos0 = [305, 403];
+        var pos1 = [401, 122];
 
         Plotly.plot(gd, data, layout).then(function() {
-
             // to test https://github.com/plotly/plotly.js/issues/1044
-
             return _click(pos0);
         })
         .then(function() {
-            return assertLabelCount(pos0, 1, 'before resize, showing pt label');
+            return check(pos0, ['1', null, '1'], 'before resize, showing pt label');
         })
         .then(function() {
-            return assertLabelCount(pos1, 0, 'before resize, not showing blank spot');
+            return check(pos1, [null, null, null], 'before resize, not showing blank spot');
         })
         .then(function() {
             return Plotly.relayout(gd, 'width', 500);
         })
         .then(function() {
-            return assertLabelCount(pos0, 0, 'after resize, not showing blank spot');
+            return check(pos0, [null, null, null], 'after resize, not showing blank spot');
         })
         .then(function() {
-            return assertLabelCount(pos1, 1, 'after resize, showing pt label');
+            return check(pos1, ['2', null, '2'], 'after resize, showing pt label');
         })
         .then(function() {
             return Plotly.relayout(gd, 'width', 600);
         })
         .then(function() {
-            return assertLabelCount(pos0, 1, 'back to initial, showing pt label');
+            return check(pos0, ['1', null, '1'], 'back to initial, showing pt label');
         })
         .then(function() {
-            return assertLabelCount(pos1, 0, 'back to initial, not showing blank spot');
+            return check(pos1, [null, null, null], 'back to initial, not showing blank spot');
         })
         .then(done);
     });
@@ -1076,14 +1373,15 @@ describe('Test hover label custom styling:', function() {
         if(expectation === null) {
             expect(g.size()).toBe(0);
         } else {
-            var path = g.select('path');
-            expect(path.style('fill')).toEqual(expectation.path[0], 'bgcolor');
-            expect(path.style('stroke')).toEqual(expectation.path[1], 'bordercolor');
-
-            var text = g.select({hovertext: 'text.nums', axistext: 'text'}[className]);
-            expect(parseInt(text.style('font-size'))).toEqual(expectation.text[0], 'font.size');
-            expect(text.style('font-family').split(',')[0]).toEqual(expectation.text[1], 'font.family');
-            expect(text.style('fill')).toEqual(expectation.text[2], 'font.color');
+            assertHoverLabelStyle(g, {
+                bgcolor: expectation.path[0],
+                bordercolor: expectation.path[1],
+                fontSize: expectation.text[0],
+                fontFamily: expectation.text[1],
+                fontColor: expectation.text[2]
+            },
+            '',
+            {hovertext: 'text.nums', axistext: 'text'}[className]);
         }
     }
 
@@ -1097,7 +1395,7 @@ describe('Test hover label custom styling:', function() {
 
     function _hover(gd, opts) {
         Fx.hover(gd, opts);
-        delete gd._lastHoverTime;
+        Lib.clearThrottle();
     }
 
     it('should work for x/y cartesian traces', function(done) {

@@ -10,6 +10,74 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.31.2] -- 2017-10-23
+
+### Fixed
+- Fix multiple `table` restyle bugs [#2107]
+- Fix selection work when `visible: false` choropleth traces are present [#2099, #2109]
+- Fix (another) contour generation bug [#2091]
+
+
+## [1.31.1] -- 2017-10-16
+
+### Fixed
+- Fix IE and Edge SVG `toImage` support [#2068]
+- Return empty set during selections of `visible: false` traces [#2081]
+- Fix scroll glitch in `table` traces [#2064]
+- Fix handling of 1D header values in `table` [#2072]
+- Fix `table` line style defaults [#2074]
+- Do not attempt to start drag on right-click [#2087]
+- Phase out `alignment-baseline` attributes in SVG text nodes [#2076]
+- Listen to document events on drag instead of relying on
+  cover-slip node [#2075]
+
+
+## [1.31.0] -- 2017-10-05
+
+### Added
+- Add `table` trace type [#2030]
+- Add `geo.center` making geo views fully reproducible using layout attributes [#2030]
+- Add lasso and select-box drag modes to `scattergeo` and `choropleth` traces
+  [#2030]
+- Add lasso and select-box drag modes to `bar` and `histogram` traces [#2045]
+- Add `scale` option to `Plotly.toImage` and `Plotly.downloadImage` [#1979]
+- Add `plot-schema.json` to `dist/`[#1999]
+
+### Changed
+- Throttle lasso and select-box events for smoother behavior [#2040]
+- Harmonize gl3d and gl2d zoom speed with cartesian behavior [#2041]
+
+### Fixed
+- Fix numerous `restyle` and `relayout` bugs [#1999]
+- Fix handling of extreme off-plot data points in scatter lines [#2060]
+- Fix `hoverinfo` array support for `scattergeo`, `choropleth`,
+  `scatterternary` and `scattermapbox` traces [#2055]
+- Fix `Plotly.plot` MathJax promise chain resolution [#1991]
+- Fix legend double-click trace isolation behavior for graphs with
+  `visible: false` traces [#2019]
+- Fix legend visibility toggling for traces with `groupby` transforms [#2019]
+- Fix single-bin histogram edge case [#2028]
+- Fix autorange for bar with base zero [#2050]
+- Fix annotations arrow rendering when graph div is off the DOM [#2046]
+- Fix hover for graphs with `scattergeo` markers outside 'usa' scope [#2030]
+- Fix handling of cross anti-meridian geo `lonaxis` ranges [#2030]
+- Fix miter limit for lines on geo subplots [#2030]
+- Fix `marker.opacity` handling for `scattergeo` bubbles [#2030]
+- Fix layout animation of secondary axes [#1999]
+- Fix `sankey` hover text placement for empty `link.label` items [#2016]
+- Fix `sankey` rendering of nodes with very small values [#2017, #2021]
+- Fix `sankey` hover label positioning on pages that style the
+  'svg-container' div node [#2027]
+- Fix aggregation transforms restyle calls [#2031]
+
+
+## [1.30.1] -- 2017-09-06
+
+### Fixed
+- Fix shapes on overlaid axes [#1975]
+- Correctly clear cartesian axis titles on full axis updates [#1981]
+- Make cartesian hover spikes work when no tick labels are present [#1980]
+
 ## [1.30.0] -- 2017-08-21
 
 ### Added

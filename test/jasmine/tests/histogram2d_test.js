@@ -20,14 +20,26 @@ describe('Test histogram2d', function() {
             traceOut = {};
         });
 
-        it('should set zsmooth to false when zsmooth is empty', function() {
+        it('should quit early if there is no data', function() {
             traceIn = {};
             supplyDefaults(traceIn, traceOut, '', {});
+            expect(traceOut.visible).toBe(false);
+            ['zsmooth', 'xgap', 'ygap', 'calendar'].forEach(function(v) {
+                expect(traceOut[v]).toBeUndefined(v);
+            });
+        });
+
+        it('should set zsmooth to false when zsmooth is empty', function() {
+            traceIn = {x: [1, 2], y: [1, 2]};
+            supplyDefaults(traceIn, traceOut, '', {});
+            expect(traceOut.visible).not.toBe(false);
             expect(traceOut.zsmooth).toBe(false);
         });
 
         it('doesnt step on zsmooth when zsmooth is set', function() {
             traceIn = {
+                x: [1, 2],
+                y: [1, 2],
                 zsmooth: 'fast'
             };
             supplyDefaults(traceIn, traceOut, '', {});
@@ -35,7 +47,7 @@ describe('Test histogram2d', function() {
         });
 
         it('should set xgap and ygap to 0 when xgap and ygap are empty', function() {
-            traceIn = {};
+            traceIn = {x: [1, 2], y: [1, 2]};
             supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.xgap).toBe(0);
             expect(traceOut.ygap).toBe(0);
@@ -43,6 +55,8 @@ describe('Test histogram2d', function() {
 
         it('shouldnt step on xgap and ygap when xgap and ygap are set', function() {
             traceIn = {
+                x: [1, 2],
+                y: [1, 2],
                 xgap: 10,
                 ygap: 5
             };
@@ -53,6 +67,8 @@ describe('Test histogram2d', function() {
 
         it('shouldnt coerce gap when zsmooth is set', function() {
             traceIn = {
+                x: [1, 2],
+                y: [1, 2],
                 xgap: 10,
                 ygap: 5,
                 zsmooth: 'best'
@@ -169,42 +185,42 @@ describe('Test histogram2d', function() {
                 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4,
                 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4];
             Plotly.newPlot(gd, [{type: 'histogram2d', x: x1, y: y1}]);
-            expect(gd._fullData[0].xbins).toEqual({start: 0.5, end: 4.5, size: 1});
-            expect(gd._fullData[0].ybins).toEqual({start: 0.5, end: 4.5, size: 1});
+            expect(gd._fullData[0].xbins).toEqual({start: 0.5, end: 4.5, size: 1, _count: 4});
+            expect(gd._fullData[0].ybins).toEqual({start: 0.5, end: 4.5, size: 1, _count: 4});
             expect(gd._fullData[0].autobinx).toBe(true);
             expect(gd._fullData[0].autobiny).toBe(true);
 
             // same range but fewer samples increases sizes
             Plotly.restyle(gd, {x: [[1, 3, 4]], y: [[1, 2, 4]]});
-            expect(gd._fullData[0].xbins).toEqual({start: -0.5, end: 5.5, size: 2});
-            expect(gd._fullData[0].ybins).toEqual({start: -0.5, end: 5.5, size: 2});
+            expect(gd._fullData[0].xbins).toEqual({start: -0.5, end: 5.5, size: 2, _count: 3});
+            expect(gd._fullData[0].ybins).toEqual({start: -0.5, end: 5.5, size: 2, _count: 3});
             expect(gd._fullData[0].autobinx).toBe(true);
             expect(gd._fullData[0].autobiny).toBe(true);
 
             // larger range
             Plotly.restyle(gd, {x: [[10, 30, 40]], y: [[10, 20, 40]]});
-            expect(gd._fullData[0].xbins).toEqual({start: -0.5, end: 59.5, size: 20});
-            expect(gd._fullData[0].ybins).toEqual({start: -0.5, end: 59.5, size: 20});
+            expect(gd._fullData[0].xbins).toEqual({start: -0.5, end: 59.5, size: 20, _count: 3});
+            expect(gd._fullData[0].ybins).toEqual({start: -0.5, end: 59.5, size: 20, _count: 3});
             expect(gd._fullData[0].autobinx).toBe(true);
             expect(gd._fullData[0].autobiny).toBe(true);
 
             // explicit changes to bin settings
             Plotly.restyle(gd, 'xbins.start', 12);
-            expect(gd._fullData[0].xbins).toEqual({start: 12, end: 59.5, size: 20});
-            expect(gd._fullData[0].ybins).toEqual({start: -0.5, end: 59.5, size: 20});
+            expect(gd._fullData[0].xbins).toEqual({start: 12, end: 59.5, size: 20, _count: 3});
+            expect(gd._fullData[0].ybins).toEqual({start: -0.5, end: 59.5, size: 20, _count: 3});
             expect(gd._fullData[0].autobinx).toBe(false);
             expect(gd._fullData[0].autobiny).toBe(true);
 
             Plotly.restyle(gd, {'ybins.end': 12, 'ybins.size': 3});
-            expect(gd._fullData[0].xbins).toEqual({start: 12, end: 59.5, size: 20});
-            expect(gd._fullData[0].ybins).toEqual({start: -0.5, end: 12, size: 3});
+            expect(gd._fullData[0].xbins).toEqual({start: 12, end: 59.5, size: 20, _count: 3});
+            expect(gd._fullData[0].ybins).toEqual({start: -0.5, end: 12, size: 3, _count: 3});
             expect(gd._fullData[0].autobinx).toBe(false);
             expect(gd._fullData[0].autobiny).toBe(false);
 
             // restart autobin
             Plotly.restyle(gd, {autobinx: true, autobiny: true});
-            expect(gd._fullData[0].xbins).toEqual({start: -0.5, end: 59.5, size: 20});
-            expect(gd._fullData[0].ybins).toEqual({start: -0.5, end: 59.5, size: 20});
+            expect(gd._fullData[0].xbins).toEqual({start: -0.5, end: 59.5, size: 20, _count: 3});
+            expect(gd._fullData[0].ybins).toEqual({start: -0.5, end: 59.5, size: 20, _count: 3});
             expect(gd._fullData[0].autobinx).toBe(true);
             expect(gd._fullData[0].autobiny).toBe(true);
         });
@@ -217,15 +233,15 @@ describe('Test histogram2d', function() {
                 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4,
                 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4];
             Plotly.newPlot(gd, [{type: 'histogram2d', x: x1, y: y1, autobinx: false, autobiny: false}]);
-            expect(gd._fullData[0].xbins).toEqual({start: 0.5, end: 4.5, size: 1});
-            expect(gd._fullData[0].ybins).toEqual({start: 0.5, end: 4.5, size: 1});
+            expect(gd._fullData[0].xbins).toEqual({start: 0.5, end: 4.5, size: 1, _count: 4});
+            expect(gd._fullData[0].ybins).toEqual({start: 0.5, end: 4.5, size: 1, _count: 4});
             expect(gd._fullData[0].autobinx).toBe(false);
             expect(gd._fullData[0].autobiny).toBe(false);
 
             // with autobin false this will no longer update the bins.
             Plotly.restyle(gd, {x: [[1, 3, 4]], y: [[1, 2, 4]]});
-            expect(gd._fullData[0].xbins).toEqual({start: 0.5, end: 4.5, size: 1});
-            expect(gd._fullData[0].ybins).toEqual({start: 0.5, end: 4.5, size: 1});
+            expect(gd._fullData[0].xbins).toEqual({start: 0.5, end: 4.5, size: 1, _count: 4});
+            expect(gd._fullData[0].ybins).toEqual({start: 0.5, end: 4.5, size: 1, _count: 4});
             expect(gd._fullData[0].autobinx).toBe(false);
             expect(gd._fullData[0].autobiny).toBe(false);
         });

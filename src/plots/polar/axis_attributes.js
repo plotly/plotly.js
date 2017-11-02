@@ -11,6 +11,7 @@
 
 var axesAttrs = require('../cartesian/layout_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
 var domainAttr = extendFlat({}, axesAttrs.domain, {
     description: [
@@ -86,7 +87,7 @@ function mergeAttrs(axisName, nonCommonAttrs) {
     return extendFlat({}, nonCommonAttrs, commonAttrs);
 }
 
-module.exports = {
+module.exports = overrideAll({
     radialaxis: mergeAttrs('radial', {
         range: {
             valType: 'info_array',
@@ -145,4 +146,4 @@ module.exports = {
             ].join(' ')
         }
     }
-};
+}, 'plot', 'nested');

@@ -9,20 +9,19 @@
 
 'use strict';
 
-var Geo = require('./geo');
-
+var createGeo = require('./geo');
 var Plots = require('../../plots/plots');
+var counterRegex = require('../../lib').counterRegex;
 
+var GEO = 'geo';
 
-exports.name = 'geo';
+exports.name = GEO;
 
-exports.attr = 'geo';
+exports.attr = GEO;
 
-exports.idRoot = 'geo';
+exports.idRoot = GEO;
 
-exports.idRegex = /^geo([2-9]|[1-9][0-9]+)?$/;
-
-exports.attrRegex = /^geo([2-9]|[1-9][0-9]+)?$/;
+exports.idRegex = exports.attrRegex = counterRegex(GEO);
 
 exports.attributes = require('./layout/attributes');
 
@@ -31,29 +30,31 @@ exports.layoutAttributes = require('./layout/layout_attributes');
 exports.supplyLayoutDefaults = require('./layout/defaults');
 
 exports.plot = function plotGeo(gd) {
-    var fullLayout = gd._fullLayout,
-        calcData = gd.calcdata,
-        geoIds = Plots.getSubplotIds(fullLayout, 'geo');
+    var fullLayout = gd._fullLayout;
+    var calcData = gd.calcdata;
+    var geoIds = Plots.getSubplotIds(fullLayout, GEO);
 
     /**
      * If 'plotly-geo-assets.js' is not included,
      * initialize object to keep reference to every loaded topojson
      */
     if(window.PlotlyGeoAssets === undefined) {
-        window.PlotlyGeoAssets = { topojson: {} };
+        window.PlotlyGeoAssets = {topojson: {}};
     }
 
     for(var i = 0; i < geoIds.length; i++) {
-        var geoId = geoIds[i],
-            geoCalcData = Plots.getSubplotCalcData(calcData, 'geo', geoId),
-            geo = fullLayout[geoId]._subplot;
+        var geoId = geoIds[i];
+        var geoCalcData = Plots.getSubplotCalcData(calcData, GEO, geoId);
+        var geoLayout = fullLayout[geoId];
+        var geo = geoLayout._subplot;
 
         if(!geo) {
-            geo = new Geo({
+            geo = createGeo({
                 id: geoId,
                 graphDiv: gd,
                 container: fullLayout._geolayer.node(),
-                topojsonURL: gd._context.topojsonURL
+                topojsonURL: gd._context.topojsonURL,
+                staticPlot: gd._context.staticPlot
             });
 
             fullLayout[geoId]._subplot = geo;
@@ -64,7 +65,7 @@ exports.plot = function plotGeo(gd) {
 };
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    var oldGeoKeys = Plots.getSubplotIds(oldFullLayout, 'geo');
+    var oldGeoKeys = Plots.getSubplotIds(oldFullLayout, GEO);
 
     for(var i = 0; i < oldGeoKeys.length; i++) {
         var oldGeoKey = oldGeoKeys[i];
@@ -74,5 +75,15 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
             oldGeo.framework.remove();
             oldGeo.clipDef.remove();
         }
+    }
+};
+
+exports.updateFx = function(fullLayout) {
+    var subplotIds = Plots.getSubplotIds(fullLayout, GEO);
+
+    for(var i = 0; i < subplotIds.length; i++) {
+        var subplotLayout = fullLayout[subplotIds[i]];
+        var subplotObj = subplotLayout._subplot;
+        subplotObj.updateFx(fullLayout, subplotLayout);
     }
 };
