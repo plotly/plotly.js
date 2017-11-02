@@ -289,7 +289,7 @@ describe('Test axes', function() {
             }];
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut._basePlotModules).toEqual([]);
+            expect(layoutOut._basePlotModules[0].name).toEqual('cartesian');
         });
 
         it('should detect orphan axes (gl2d + cartesian case)', function() {
