@@ -48,7 +48,7 @@ module.exports = extendFlat({
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         editType: 'calc',
         flags: ['location', 'z', 'text', 'name']
-    }),
+    })
 },
     extendDeepAll({}, colorscaleAttrs, {
         zmax: {editType: 'calc'},
