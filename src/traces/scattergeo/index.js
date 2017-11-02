@@ -16,6 +16,7 @@ ScatterGeo.supplyDefaults = require('./defaults');
 ScatterGeo.colorbar = require('../scatter/colorbar');
 ScatterGeo.calc = require('./calc');
 ScatterGeo.plot = require('./plot');
+ScatterGeo.style = require('./style');
 ScatterGeo.hoverPoints = require('./hover');
 ScatterGeo.eventData = require('./event_data');
 ScatterGeo.selectPoints = require('./select');
