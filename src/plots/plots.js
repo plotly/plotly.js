@@ -1022,6 +1022,11 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
             traceOut.visible = !!traceOut.visible;
         }
 
+        if(_module && _module.selectPoints) {
+            coerce('selectedpoints');
+            coerce('selectedids');
+        }
+
         plots.supplyTransformDefaults(traceIn, traceOut, layout);
     }
 

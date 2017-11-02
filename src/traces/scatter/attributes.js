@@ -433,18 +433,6 @@ module.exports = {
             },
             editType: 'style'
         },
-    selectedpoints: {
-        valType: 'any',
-        role: 'info',
-        editType: 'calc',
-        description: 'Array containing integer indices of selected points.',
-    },
-    selectedids: {
-        valType: 'any',
-        role: 'info',
-        editType: 'calc',
-        description: 'Array containing `ids` of selected points.',
-    },
         editType: 'style'
     },
 
