@@ -153,20 +153,6 @@ module.exports = {
                         'The default value is false, so that `parcoords` colorscale can default to `Viridis`.'
                     ].join(' ')
                 }
-
-                colorscale: {dflt: colorscales.Viridis},
-                autocolorscale: {
-                    dflt: false,
-                    description: [
-                        'Has an effect only if line.color` is set to a numerical array.',
-                        'Determines whether the colorscale is a default palette (`autocolorscale: true`)',
-                        'or the palette determined by `line.colorscale`.',
-                        'In case `colorscale` is unspecified or `autocolorscale` is true, the default ',
-                        'palette will be chosen according to whether numbers in the `color` array are',
-                        'all positive, all negative or mixed.',
-                        'The default value is false, so that `parcoords` colorscale can default to `Viridis`.'
-                    ].join(' ')
-                }
             }
         ),
 

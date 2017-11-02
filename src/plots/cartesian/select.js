@@ -193,7 +193,6 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             filterPoly.addPt([x1, y1]);
             currentPolygon = filterPoly.filtered;
         }
-        outlines.attr('d', 'M' + paths.join('M') + 'Z');
 
         // create outline & tester
         if(dragOptions.polygons && dragOptions.polygons.length) {
