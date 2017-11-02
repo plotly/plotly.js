@@ -140,7 +140,10 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 // to pan (or to zoom if it already is pan) on shift
                 if(e.shiftKey) {
                     if(dragModeNow === 'pan') dragModeNow = 'zoom';
-                    else dragModeNow = 'pan';
+                    else if(!isSelectOrLasso(dragModeNow)) dragModeNow = 'pan';
+                }
+                else if(e.ctrlKey) {
+                    dragModeNow = 'pan';
                 }
             }
             // all other draggers just pan
@@ -168,12 +171,30 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             else if(isSelectOrLasso(dragModeNow)) {
                 dragOptions.xaxes = xa;
                 dragOptions.yaxes = ya;
+
+                // take over selection polygons from prev mode, if any
+                if(e.shiftKey && plotinfo.selection.polygons && !dragOptions.polygons) {
+                    dragOptions.polygons = plotinfo.selection.polygons;
+                    dragOptions.mergedPolygons = plotinfo.selection.mergedPolygons;
+                }
+                // create new polygons, if shift mode
+                else if(!e.shiftKey || (e.shiftKey && !plotinfo.selection.polygons)) {
+                    plotinfo.selection = {};
+                    plotinfo.selection.polygons = dragOptions.polygons = [];
+                    dragOptions.mergedPolygons = plotinfo.selection.mergedPolygons = [];
+                }
+
                 prepSelect(e, startX, startY, dragOptions, dragModeNow);
             }
         }
     };
 
     dragElement.init(dragOptions);
+
+    // FIXME: this hack highlights selection once we enter select/lasso mode
+    if(isSelectOrLasso(gd._fullLayout.dragmode) && plotinfo.selection) {
+        showSelect(zoomlayer, dragOptions);
+    }
 
     var x0,
         y0,
@@ -526,6 +547,9 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
 
         updateSubplots([x0, y0, pw - dx, ph - dy]);
+
+        if(plotinfo.ondrag) plotinfo.ondrag.call([x0, y0, pw - dx, ph - dy]);
+
         ticksAndAnnotations(yActive, xActive);
     }
 
@@ -902,6 +926,29 @@ function clearSelect(zoomlayer) {
     zoomlayer.selectAll('.select-outline').remove();
 }
 
+function showSelect(zoomlayer, dragOptions) {
+    var outlines = zoomlayer.selectAll('path.select-outline').data([1, 2]),
+        plotinfo = dragOptions.plotinfo,
+        xaxis = plotinfo.xaxis,
+        yaxis = plotinfo.yaxis,
+        selection = plotinfo.selection,
+        polygons = selection.mergedPolygons,
+        xs = xaxis._offset,
+        ys = yaxis._offset,
+        paths = [];
+
+    for(var i = 0; i < polygons.length; i++) {
+        var ppts = polygons[i];
+        paths.push(ppts.join('L') + 'L' + ppts[0]);
+    }
+
+    outlines.enter()
+        .append('path')
+        .attr('class', function(d) { return 'select-outline select-outline-' + d; })
+        .attr('transform', 'translate(' + xs + ', ' + ys + ')')
+        .attr('d', 'M' + paths.join('M') + 'Z');
+}
+
 function updateZoombox(zb, corners, box, path0, dimmed, lum) {
     zb.attr('d',
         path0 + 'M' + (box.l) + ',' + (box.t) + 'v' + (box.h) +
@@ -924,9 +971,7 @@ function removeZoombox(gd) {
 }
 
 function isSelectOrLasso(dragmode) {
-    var modes = ['lasso', 'select'];
-
-    return modes.indexOf(dragmode) !== -1;
+    return dragmode === 'lasso' || dragmode === 'select';
 }
 
 function xCorners(box, y0) {
