@@ -264,8 +264,9 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 // save last polygons
                 dragOptions.polygons.push(currentPolygon);
 
-                // we have to keep reference to arrays, therefore just replace items
-                dragOptions.mergedPolygons.splice.apply(dragOptions.mergedPolygons, [0, dragOptions.mergedPolygons.length].concat(mergedPolygons));
+                // we have to keep reference to arrays container
+                dragOptions.mergedPolygons.length = 0;
+                [].push.apply(dragOptions.mergedPolygons, mergedPolygons);
             }
         });
     };
