@@ -51,7 +51,6 @@ var marker = extendFlat({
     }
 });
 
-
 module.exports = {
     x: scatterAttrs.x,
     x0: scatterAttrs.x0,
@@ -159,6 +158,9 @@ module.exports = {
     },
 
     marker: marker,
+
+    selected: scatterAttrs.selected,
+    unselected: scatterAttrs.unselected,
 
     r: scatterAttrs.r,
     t: scatterAttrs.t,

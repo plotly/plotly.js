@@ -15,6 +15,7 @@ var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 
 var arraysToCalcdata = require('../bar/arrays_to_calcdata');
+var calcSelection = require('../scatter/calc_selection');
 var binFunctions = require('./bin_functions');
 var normFunctions = require('./norm_functions');
 var doAvg = require('./average');
@@ -196,6 +197,7 @@ module.exports = function calc(gd, trace) {
     }
 
     arraysToCalcdata(cd, trace);
+    calcSelection(cd, trace);
 
     return cd;
 };

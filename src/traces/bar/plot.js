@@ -42,10 +42,14 @@ module.exports = function plot(gd, plotinfo, cdbar) {
     bartraces.enter().append('g')
         .attr('class', 'trace bars');
 
+    bartraces.each(function(d) {
+        d[0].node3 = d3.select(this);
+    });
+
     bartraces.append('g')
         .attr('class', 'points')
         .each(function(d) {
-            var sel = d[0].node3 = d3.select(this);
+            var sel = d3.select(this);
             var t = d[0].t;
             var trace = d[0].trace;
             var poffset = t.poffset;
@@ -146,6 +150,8 @@ module.exports = function plot(gd, plotinfo, cdbar) {
 };
 
 function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
+    var textPosition;
+
     function appendTextNode(bar, text, textFont) {
         var textSelection = bar.append('text')
             .text(text)
@@ -157,6 +163,7 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
                 // tex and regular text together
                 'data-notex': 1
             })
+            .classed('bartext-' + textPosition, true)
             .call(Drawing.font, textFont)
             .call(svgTextUtils.convertToTspans, gd);
 
@@ -170,7 +177,7 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     var text = getText(trace, i);
     if(!text) return;
 
-    var textPosition = getTextPosition(trace, i);
+    textPosition = getTextPosition(trace, i);
     if(textPosition === 'none') return;
 
     var textFont = getTextFont(trace, i, gd._fullLayout.font),

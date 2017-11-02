@@ -36,9 +36,32 @@ module.exports = function style(gd, cd) {
     s.selectAll('g.points').each(function(d) {
         var sel = d3.select(this);
         var pts = sel.selectAll('.point');
+        var txs = sel.selectAll('text');
         var trace = d[0].trace;
 
         Drawing.pointStyle(pts, trace, gd);
+        Drawing.selectedPointStyle(pts, trace);
+
+        txs.each(function(d) {
+            var tx = d3.select(this);
+            var textFont;
+
+            if(tx.classed('bartext-inside')) {
+                textFont = trace.insidetextfont;
+            } else if(tx.classed('bartext-outside')) {
+                textFont = trace.outsidetextfont;
+            }
+            if(!textFont) textFont = trace.textfont;
+
+            function cast(k) {
+                var cont = textFont[k];
+                return Array.isArray(cont) ? cont[d.i] : cont;
+            }
+
+            Drawing.font(tx, cast('family'), cast('size'), cast('color'));
+        });
+
+        Drawing.selectedTextStyle(txs, trace);
     });
 
     ErrorBars.style(s);
