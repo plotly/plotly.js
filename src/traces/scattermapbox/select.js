@@ -20,15 +20,11 @@ module.exports = function selectPoints(searchInfo, polygon) {
 
     var di, lonlat, x, y, i;
 
-    // flag used in ./convert.js
-    // to not insert data-driven 'circle-opacity' when we don't need to
-    trace._hasDimmedPts = false;
-
     if(!subtypes.hasMarkers(trace)) return [];
 
     if(polygon === false) {
         for(i = 0; i < cd.length; i++) {
-            cd[i].dim = 0;
+            cd[i].selected = 0;
         }
     } else {
         for(i = 0; i < cd.length; i++) {
@@ -38,20 +34,17 @@ module.exports = function selectPoints(searchInfo, polygon) {
             y = ya.c2p(lonlat);
 
             if(polygon.contains([x, y])) {
-                trace._hasDimmedPts = true;
                 selection.push({
                     pointNumber: i,
                     lon: lonlat[0],
                     lat: lonlat[1]
                 });
-                di.dim = 0;
+                di.selected = 1;
             } else {
-                di.dim = 1;
+                di.selected = 0;
             }
         }
     }
-
-    trace._glTrace.update(cd);
 
     return selection;
 };

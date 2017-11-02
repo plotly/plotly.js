@@ -110,7 +110,7 @@ describe('scattermapbox defaults', function() {
 describe('scattermapbox convert', function() {
     'use strict';
 
-    function _convert(trace, selected) {
+    function _convert(trace) {
         var gd = { data: [trace] };
         Plots.supplyDefaults(gd);
 
@@ -118,18 +118,6 @@ describe('scattermapbox convert', function() {
         Plots.doCalcdata(gd, fullTrace);
 
         var calcTrace = gd.calcdata[0];
-
-        if(selected) {
-            var hasDimmedPts = false;
-
-            selected.forEach(function(v, i) {
-                if(v) hasDimmedPts = true;
-                calcTrace[i].dim = v;
-            });
-
-            fullTrace._hasDimmedPts = hasDimmedPts;
-        }
-
         return convert(calcTrace);
     }
 
@@ -226,36 +214,41 @@ describe('scattermapbox convert', function() {
         };
 
         var specs = [{
-            patch: {},
-            selected: [0, 1, 1],
-            expected: {stops: [[0, 1], [1, 0.2]], props: [0, 1, 1]}
-        }, {
-            patch: {opacity: 0.5},
-            selected: [0, 1, 1],
-            expected: {stops: [[0, 0.5], [1, 0.1]], props: [0, 1, 1]}
+            patch: {
+                selectedpoints: [1, 2]
+            },
+            expected: {stops: [[0, 0.2], [1, 1]], props: [0, 1, 1]}
         }, {
             patch: {
-                marker: {opacity: 0.6}
+                opacity: 0.5,
+                selectedpoints: [1, 2]
             },
-            selected: [1, 0, 1],
-            expected: {stops: [[0, 0.12], [1, 0.6]], props: [0, 1, 0]}
+            expected: {stops: [[0, 0.1], [1, 0.5]], props: [0, 1, 1]}
         }, {
             patch: {
-                marker: {opacity: [0.5, 1, 0.6]}
+                marker: {opacity: 0.6},
+                selectedpoints: [1, 2]
             },
-            selected: [1, 0, 1],
-            expected: {stops: [[0, 0.1], [1, 1], [2, 0.12]], props: [0, 1, 2]}
+            expected: {stops: [[0, 0.12], [1, 0.6]], props: [0, 1, 1]}
         }, {
             patch: {
-                marker: {opacity: [2, null, -0.6]}
+                marker: {
+                    opacity: [0.5, 1, 0.6],
+                },
+                selectedpoints: [0, 2]
             },
-            selected: [1, 1, 1],
-            expected: {stops: [[0, 0.2], [1, 0]], props: [0, 1, 1]}
+            expected: {stops: [[0, 0.5], [1, 0.2], [2, 0.6]], props: [0, 1, 2]}
+        }, {
+            patch: {
+                marker: {opacity: [2, null, -0.6]},
+                selectedpoints: [0, 1, 2]
+            },
+            expected: {stops: [[0, 1], [1, 0]], props: [0, 1, 1]}
         }];
 
         specs.forEach(function(s, i) {
             var msg0 = '- case ' + i + ' ';
-            var opts = _convert(Lib.extendDeep({}, _base, s.patch), s.selected);
+            var opts = _convert(Lib.extendDeep({}, _base, s.patch));
 
             expect(opts.circle.paint['circle-opacity'].stops)
                 .toEqual(s.expected.stops, msg0 + 'stops');

@@ -185,8 +185,15 @@ function makeCircleGeoJSON(calcTrace, hash) {
         sizeFn = makeBubbleSizeFn(trace);
     }
 
-    function combineOpacities(d, mo) {
-        return trace.opacity * mo * (d.dim ? DESELECTDIM : 1);
+    var combineOpacities;
+    if(trace.selectedpoints) {
+        combineOpacities = function(d, mo) {
+            return trace.opacity * mo * (d.selected ? 1 : DESELECTDIM);
+        };
+    } else {
+        combineOpacities = function(d, mo) {
+            return trace.opacity * mo;
+        };
     }
 
     var opacityFn;
@@ -195,7 +202,7 @@ function makeCircleGeoJSON(calcTrace, hash) {
             var mo = isNumeric(d.mo) ? +Lib.constrain(d.mo, 0, 1) : 0;
             return combineOpacities(d, mo);
         };
-    } else if(trace._hasDimmedPts) {
+    } else if(trace.selectedpoints) {
         opacityFn = function(d) {
             return combineOpacities(d, marker.opacity);
         };
@@ -343,7 +350,7 @@ function calcCircleOpacity(trace, hash) {
     var marker = trace.marker;
     var out;
 
-    if(Array.isArray(marker.opacity) || trace._hasDimmedPts) {
+    if(Array.isArray(marker.opacity) || trace.selectedpoints) {
         var vals = Object.keys(hash[OPACITY_PROP]);
         var stops = [];
 

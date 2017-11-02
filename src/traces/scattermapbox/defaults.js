@@ -16,9 +16,8 @@ var handleMarkerDefaults = require('../scatter/marker_defaults');
 var handleLineDefaults = require('../scatter/line_defaults');
 var handleTextDefaults = require('../scatter/text_defaults');
 var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
-
+var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 var attributes = require('./attributes');
-
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -41,7 +40,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noLine: true});
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noLine: true, noSelect: true});
 
         // array marker.size and marker.color are only supported with circles
 
@@ -53,10 +52,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             if(Array.isArray(marker.size)) marker.size = marker.size[0];
             if(Array.isArray(marker.color)) marker.color = marker.color[0];
         }
+
+        // only marker.opacity for now
+        var mo = traceOut.marker.opacity;
+        var moEffective = Array.isArray(mo) ? 1 : mo;
+        coerce('selected.marker.opacity', moEffective);
+        coerce('unselected.marker.opacity', DESELECTDIM * moEffective);
     }
 
     if(subTypes.hasText(traceOut)) {
-        handleTextDefaults(traceIn, traceOut, layout, coerce);
+        handleTextDefaults(traceIn, traceOut, layout, coerce, {noSelect: true});
     }
 
     coerce('fill');
