@@ -158,9 +158,9 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 currentPolygon.ymin = Math.min(0, ph);
                 currentPolygon.ymax = Math.max(0, ph);
                 // extras to guide users in keeping a straight selection
-                corners.attr('d', 'M' + Math.min(x0, x1) + ',' + (y0 - MINSELECT) +
+                corners.attr('d', 'M' + currentPolygon.xmin + ',' + (y0 - MINSELECT) +
                     'h-4v' + (2 * MINSELECT) + 'h4Z' +
-                    'M' + (Math.max(x0, x1) - 1) + ',' + (y0 - MINSELECT) +
+                    'M' + (currentPolygon.xmax - 1) + ',' + (y0 - MINSELECT) +
                     'h4v' + (2 * MINSELECT) + 'h-4Z');
 
             }
@@ -171,9 +171,9 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 currentPolygon.xmax = Math.max(0, pw);
                 currentPolygon.ymin = Math.min(y0, y1);
                 currentPolygon.ymax = Math.max(y0, y1);
-                corners.attr('d', 'M' + (x0 - MINSELECT) + ',' + Math.min(y0, y1) +
+                corners.attr('d', 'M' + (x0 - MINSELECT) + ',' + currentPolygon.ymin +
                     'v-4h' + (2 * MINSELECT) + 'v4Z' +
-                    'M' + (x0 - MINSELECT) + ',' + (Math.max(y0, y1) - 1) +
+                    'M' + (x0 - MINSELECT) + ',' + (currentPolygon.ymax - 1) +
                     'v4h' + (2 * MINSELECT) + 'v-4Z');
             }
             else {
