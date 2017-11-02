@@ -249,8 +249,6 @@ drawing.symbolNumber = function(v) {
 };
 
 function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerLine, gd) {
-    // only scatter & box plots get marker path and opacity
-    // bars, histograms don't
     if(Registry.traceIs(trace, 'symbols')) {
         var sizeFn = makeBubbleSizeFn(trace);
 
@@ -277,11 +275,12 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
 
             return drawing.symbolFuncs[xBase](r) +
                 (x >= 200 ? DOTPATH : '');
-        })
-        .style('opacity', function(d) {
-            return (d.mo + 1 || marker.opacity + 1) - 1;
         });
     }
+
+    sel.style('opacity', function(d) {
+        return (d.mo + 1 || marker.opacity + 1) - 1;
+    });
 
     var perPointGradient = false;
 
@@ -410,7 +409,6 @@ drawing.singlePointStyle = function(d, sel, trace, markerScale, lineScale, gd) {
     var marker = trace.marker;
 
     singlePointStyle(d, sel, trace, markerScale, lineScale, marker, marker.line, gd);
-
 };
 
 drawing.pointStyle = function(s, trace, gd) {

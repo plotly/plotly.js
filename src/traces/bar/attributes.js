@@ -38,7 +38,17 @@ var marker = extendFlat({
     editType: 'calc'
 }, colorAttributes('marker'), {
     showscale: scatterMarkerAttrs.showscale,
-    colorbar: colorbarAttrs
+    colorbar: colorbarAttrs,
+    opacity: {
+        valType: 'number',
+        arrayOk: true,
+        dflt: 1,
+        min: 0,
+        max: 1,
+        role: 'style',
+        editType: 'style',
+        description: 'Sets the opacity of the bars.'
+    }
 });
 
 
