@@ -84,6 +84,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             ) {
                 searchTraces.push({
                     selectPoints: trace._module.selectPoints,
+                    style: trace._module.style,
                     cd: cd,
                     xaxis: dragOptions.xaxes[0],
                     yaxis: dragOptions.yaxes[0]
@@ -95,6 +96,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
 
             searchTraces.push({
                 selectPoints: trace._module.selectPoints,
+                style: trace._module.style,
                 cd: cd,
                 xaxis: axes.getFromId(gd, trace.xaxis),
                 yaxis: axes.getFromId(gd, trace.yaxis)
@@ -206,11 +208,6 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 updateSelectedState(gd, searchTraces, eventData);
                 fillRangeItems(eventData, poly, pts);
                 dragOptions.gd.emit('plotly_selecting', eventData);
-
-                var bpms = gd._fullLayout._basePlotModules;
-                for (var i = 0; i < bpms.length; i++) {
-                    bpms[i].plot(gd, null, {duration: 0});
-                }
             }
         );
     };
@@ -233,11 +230,6 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             }
             else {
                 dragOptions.gd.emit('plotly_selected', eventData);
-            }
-
-            var bpms = gd._fullLayout._basePlotModules;
-            for (var i = 0; i < bpms.length; i++) {
-                bpms[i].plot(gd, null, {duration: 0});
             }
         });
     };
@@ -269,6 +261,11 @@ function updateSelectedState(gd, searchTraces, eventData) {
             delete searchInfo.cd[0].trace.selectedpoints;
             delete searchInfo.cd[0].trace._input.selectedpoints;
         }
+    }
+
+    for(i = 0; i < searchTraces.length; i++) {
+        searchInfo = searchTraces[i];
+        if(searchInfo.style) searchInfo.style(gd, searchInfo.cd);
     }
 }
 
