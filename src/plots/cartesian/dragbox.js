@@ -942,11 +942,13 @@ function showSelect(zoomlayer, dragOptions) {
         paths.push(ppts.join('L') + 'L' + ppts[0]);
     }
 
-    outlines.enter()
-        .append('path')
-        .attr('class', function(d) { return 'select-outline select-outline-' + d; })
-        .attr('transform', 'translate(' + xs + ', ' + ys + ')')
-        .attr('d', 'M' + paths.join('M') + 'Z');
+    if(paths.length) {
+        outlines.enter()
+            .append('path')
+            .attr('class', function(d) { return 'select-outline select-outline-' + d; })
+            .attr('transform', 'translate(' + xs + ', ' + ys + ')')
+            .attr('d', 'M' + paths.join('M') + 'Z');
+    }
 }
 
 function updateZoombox(zb, corners, box, path0, dimmed, lum) {

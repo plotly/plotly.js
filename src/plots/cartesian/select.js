@@ -117,17 +117,16 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         fillRangeItems = plotinfo.fillRangeItems;
     } else {
         if(mode === 'select') {
-            fillRangeItems = function(eventData, currentPolygon) {
+            fillRangeItems = function(eventData, poly) {
                 var ranges = eventData.range = {};
 
                 for(i = 0; i < allAxes.length; i++) {
                     var ax = allAxes[i];
                     var axLetter = ax._id.charAt(0);
-                    var x = axLetter === 'x';
 
                     ranges[ax._id] = [
-                        ax.p2d(currentPolygon[0][x ? 0 : 1]),
-                        ax.p2d(currentPolygon[2][x ? 0 : 1])
+                        ax.p2d(poly[axLetter + 'min']),
+                        ax.p2d(poly[axLetter + 'max'])
                     ].sort(ascending);
                 }
             };
@@ -154,6 +153,10 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             if(dy < Math.min(dx * 0.6, MINSELECT)) {
                 // horizontal motion: make a vertical box
                 currentPolygon = [[x0, 0], [x0, ph], [x1, ph], [x1, 0]];
+                currentPolygon.xmin = Math.min(x0, x1);
+                currentPolygon.xmax = Math.max(x0, x1);
+                currentPolygon.ymin = Math.min(0, ph);
+                currentPolygon.ymax = Math.max(0, ph);
                 // extras to guide users in keeping a straight selection
                 corners.attr('d', 'M' + Math.min(x0, x1) + ',' + (y0 - MINSELECT) +
                     'h-4v' + (2 * MINSELECT) + 'h4Z' +
@@ -164,6 +167,10 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             else if(dx < Math.min(dy * 0.6, MINSELECT)) {
                 // vertical motion: make a horizontal box
                 currentPolygon = [[0, y0], [0, y1], [pw, y1], [pw, y0]];
+                currentPolygon.xmin = Math.min(0, pw);
+                currentPolygon.xmax = Math.max(0, pw);
+                currentPolygon.ymin = Math.min(y0, y1);
+                currentPolygon.ymax = Math.max(y0, y1);
                 corners.attr('d', 'M' + (x0 - MINSELECT) + ',' + Math.min(y0, y1) +
                     'v-4h' + (2 * MINSELECT) + 'v4Z' +
                     'M' + (x0 - MINSELECT) + ',' + (Math.max(y0, y1) - 1) +
@@ -172,6 +179,10 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             else {
                 // diagonal motion
                 currentPolygon = [[x0, y0], [x0, y1], [x1, y1], [x1, y0]];
+                currentPolygon.xmin = Math.min(x0, x1);
+                currentPolygon.xmax = Math.max(x0, x1);
+                currentPolygon.ymin = Math.min(y0, y1);
+                currentPolygon.ymax = Math.max(y0, y1);
                 corners.attr('d', 'M0,0Z');
             }
         }
@@ -181,7 +192,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         }
 
         // create outline & tester
-        if(dragOptions.polygons.length) {
+        if(dragOptions.polygons && dragOptions.polygons.length) {
             mergedPolygons = polybool(dragOptions.mergedPolygons, [currentPolygon], 'or');
             testPoly = multipolygonTester(dragOptions.polygons.concat([currentPolygon]));
         }
@@ -231,6 +242,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
 
     dragOptions.doneFn = function(dragged, numclicks) {
         corners.remove();
+
         throttle.done(throttleID).then(function() {
             throttle.clear(throttleID);
 
@@ -248,11 +260,13 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 dragOptions.gd.emit('plotly_selected', eventData);
             }
 
-            // save last polygons
-            dragOptions.polygons.push(currentPolygon);
+            if(currentPolygon && dragOptions.polygons) {
+                // save last polygons
+                dragOptions.polygons.push(currentPolygon);
 
-            // we have to keep reference to arrays, therefore just replace items
-            dragOptions.mergedPolygons.splice.apply(dragOptions.mergedPolygons, [0, dragOptions.mergedPolygons.length].concat(mergedPolygons));
+                // we have to keep reference to arrays, therefore just replace items
+                dragOptions.mergedPolygons.splice.apply(dragOptions.mergedPolygons, [0, dragOptions.mergedPolygons.length].concat(mergedPolygons));
+            }
         });
     };
 };
