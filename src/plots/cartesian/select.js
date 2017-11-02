@@ -24,7 +24,9 @@ var MINSELECT = constants.MINSELECT;
 function getAxId(ax) { return ax._id; }
 
 module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
-    var zoomLayer = dragOptions.gd._fullLayout._zoomlayer,
+    var gd = dragOptions.gd,
+        fullLayout = gd._fullLayout,
+        zoomLayer = fullLayout._zoomlayer,
         dragBBox = dragOptions.element.getBoundingClientRect(),
         plotinfo = dragOptions.plotinfo,
         xs = plotinfo.xaxis._offset,
@@ -66,8 +68,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
 
     // find the traces to search for selection points
     var searchTraces = [];
-    var gd = dragOptions.gd;
-    var throttleID = gd._fullLayout._uid + constants.SELECTID;
+    var throttleID = fullLayout._uid + constants.SELECTID;
     var selection = [];
     var i, cd, trace, searchInfo, eventData;
 
@@ -201,11 +202,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                     else selection = thisSelection;
                 }
 
-
                 eventData = {points: selection};
-
-                updatedSelectedState(gd, eventData);
-
+                updateSelectedState(gd, searchTraces, eventData);
                 fillRangeItems(eventData, poly, pts);
                 dragOptions.gd.emit('plotly_selecting', eventData);
 
@@ -230,13 +228,10 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                     searchInfo.selectPoints(searchInfo, false);
                 }
 
-                updatedSelectedState(gd, {points: []});
-
+                updateSelectedState(gd, searchTraces);
                 gd.emit('plotly_deselect', null);
             }
             else {
-                updatedSelectedState(gd, eventData);
-
                 dragOptions.gd.emit('plotly_selected', eventData);
             }
 
@@ -248,40 +243,32 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     };
 };
 
-function updatedSelectedState(gd, eventData) {
-    var i, pt, trace, fullTrace;
-    var data = gd.data;
-    var fullData = gd._fullData;
+function updateSelectedState(gd, searchTraces, eventData) {
+    var i, searchInfo;
 
-    // Remove existing from data:
-    for(i = 0; i < data.length; i++) {
-        if(data[i].selectedpoints) delete data[i].selectedpoints;
-    }
+    if(eventData) {
+        var pts = eventData.points || [];
 
-    // Remove existing from fullData:
-    for(i = 0; i < fullData.length; i++) {
-        if(fullData[i].selectedpoints) delete fullData[i].selectedpoints;
-    }
-
-    if(!eventData || !eventData.points) {
-        return;
-    }
-
-    var pts = eventData.points;
-    for(i = 0; i < pts.length; i++) {
-        pt = pts[i];
-        trace = pt.data;
-        fullTrace = pt.fullData;
-
-        if(!trace.selectedpoints) {
-            trace.selectedpoints = [];
+        for(i = 0; i < searchTraces.length; i++) {
+            searchInfo = searchTraces[i];
+            searchInfo.cd[0].trace.selectedpoints = [];
+            searchInfo.cd[0].trace._input.selectedpoints = [];
         }
-        trace.selectedpoints.push(pt.pointNumber);
 
-        if(!fullTrace.selectedpoints) {
-            fullTrace.selectedpoints = [];
+        for(i = 0; i < pts.length; i++) {
+            var pt = pts[i];
+            var ptNumber = pt.pointNumber;
+
+            pt.data.selectedpoints.push(ptNumber);
+            pt.fullData.selectedpoints.push(ptNumber);
         }
-        fullTrace.selectedpoints.push(pt.pointNumber);
+    }
+    else {
+        for(i = 0; i < searchTraces.length; i++) {
+            searchInfo = searchTraces[i];
+            delete searchInfo.cd[0].trace.selectedpoints;
+            delete searchInfo.cd[0].trace._input.selectedpoints;
+        }
     }
 }
 
