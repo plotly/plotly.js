@@ -9,7 +9,7 @@
 
 'use strict';
 
-var polybool = require('poly-bool');
+var polybool = require('polybooljs');
 var polygon = require('../../lib/polygon');
 var throttle = require('../../lib/throttle');
 var color = require('../../components/color');
@@ -193,7 +193,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
 
         // create outline & tester
         if(dragOptions.polygons && dragOptions.polygons.length) {
-            mergedPolygons = polybool(dragOptions.mergedPolygons, [currentPolygon], 'or');
+            mergedPolygons = joinPolygons(dragOptions.mergedPolygons, currentPolygon);
             testPoly = multipolygonTester(dragOptions.polygons.concat([currentPolygon]));
         }
         else {
@@ -270,6 +270,18 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         });
     };
 };
+
+function joinPolygons(list, poly) {
+    var res = polybool.union({
+        regions: list,
+        inverted: false
+    }, {
+        regions: [poly],
+        inverted: false
+    });
+
+    return res.regions;
+}
 
 function fillSelectionItem(selection, searchInfo) {
     if(Array.isArray(selection)) {
