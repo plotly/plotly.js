@@ -22,6 +22,7 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var alignment = require('../../constants/alignment');
 var LINE_SPACING = alignment.LINE_SPACING;
+var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 var subTypes = require('../../traces/scatter/subtypes');
 var makeBubbleSizeFn = require('../../traces/scatter/make_bubble_size_func');
@@ -426,6 +427,35 @@ drawing.pointStyle = function(s, trace, gd) {
     });
 };
 
+drawing.selectedPointStyle = function(s, trace) {
+    if(!s.size() || !trace.selectedpoints) return;
+
+    var selectedAttrs = trace.selected || {};
+    var unselectedAttrs = trace.unselected || {};
+
+    s.style('opacity', function(d) {
+        return d.selected ?
+            (selectedAttrs.marker || {}).opacity :
+            (unselectedAttrs.marker || {}).opacity;
+    });
+
+    // which is slightly different than:
+    // ((d.mo + 1 || opacity + 1) - 1) * (d.dim ? DESELECTDIM : 1);
+    // in https://github.com/plotly/plotly.js/blob/master/src/traces/scatter/select.js
+
+    s.each(function(d) {
+        var pt = d3.select(this);
+        var smc = (selectedAttrs.marker || {}).color;
+        var usmc = (unselectedAttrs.marker || {}).color;
+
+        if(d.selected) {
+            if(smc) Color.fill(pt, smc);
+        } else {
+            if(usmc) Color.fill(pt, usmc);
+        }
+    });
+};
+
 drawing.tryColorscale = function(marker, prefix) {
     var cont = prefix ? Lib.nestedProperty(marker, prefix).get() : marker,
         scl = cont.colorscale,
@@ -480,6 +510,31 @@ drawing.textPointStyle = function(s, trace, gd) {
 
         // fix the overall text group position
         pgroup.attr('transform', 'translate(' + dx + ',' + dy + ')');
+    });
+};
+
+drawing.selectedTextStyle = function(s, trace) {
+    if(!s.size() || !trace.selectedpoints) return;
+
+    var selectedAttrs = trace.selected || {};
+    var unselectedAttrs = trace.unselected || {};
+
+    s.each(function(d) {
+        var tx = d3.select(this);
+        var tc = d.tc || trace.textfont.color;
+        var stc = (selectedAttrs.textfont || {}).color;
+        var utc = (unselectedAttrs.textfont || {}).color;
+        var tc2;
+
+        if(d.selected) {
+            if(stc) tc2 = stc;
+            else tc2 = Color.addOpacity(tc, 1);
+        } else {
+            if(utc) tc2 = utc;
+            else tc2 = Color.addOpacity(tc, DESELECTDIM);
+        }
+
+        Color.fill(tx, tc2);
     });
 };
 

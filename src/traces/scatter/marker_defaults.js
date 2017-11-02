@@ -12,6 +12,7 @@
 var Color = require('../../components/color');
 var hasColorscale = require('../../components/colorscale/has_colorscale');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
+var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 var subTypes = require('./subtypes');
 
@@ -19,6 +20,7 @@ var subTypes = require('./subtypes');
  * opts: object of flags to control features not all marker users support
  *   noLine: caller does not support marker lines
  *   gradient: caller supports gradients
+ *   noSelect: caller does not support selected/unselected attribute containers
  */
 module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout, coerce, opts) {
     var isBubble = subTypes.isBubble(traceIn),
@@ -31,7 +33,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
     if(lineColor) defaultColor = lineColor;
 
     coerce('marker.symbol');
-    coerce('marker.opacity', isBubble ? 0.7 : 1);
+    var mo = coerce('marker.opacity', isBubble ? 0.7 : 1);
     coerce('marker.size');
 
     coerce('marker.color', defaultColor);
@@ -39,14 +41,14 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
     }
 
-    coerce('selected.marker.opacity', isBubble ? 0.7 : 1);
-    coerce('unselected.marker.opacity', 0.5);
+    if(!opts.noSelect) {
+        var moEffective = Array.isArray(mo) ? 1 : mo;
+        coerce('selected.marker.opacity', moEffective);
+        coerce('unselected.marker.opacity', DESELECTDIM * moEffective);
 
-    coerce('selected.marker.color', defaultColor);
-    coerce('unselected.marker.color', defaultColor);
-
-    coerce('selected.marker.size')
-    coerce('unselected.marker.size')
+        coerce('selected.marker.color');
+        coerce('unselected.marker.color');
+    }
 
     if(!opts.noLine) {
         // if there's a line with a different color than the marker, use
