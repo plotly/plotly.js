@@ -186,6 +186,7 @@ polygon.multitester = function multitester(list) {
 
     for(var i = 0; i < list.length; i++) {
         var tester = polygon.tester(list[i]);
+        tester.subtract = list[i].subtract;
         testers.push(tester);
         xmin = Math.min(xmin, tester.xmin);
         xmax = Math.max(xmax, tester.xmax);
@@ -194,10 +195,15 @@ polygon.multitester = function multitester(list) {
     }
 
     function contains(pt, arg) {
+        var yes = false;
         for(var i = 0; i < testers.length; i++) {
-            if(testers[i].contains(pt, arg)) return true;
+            if(testers[i].contains(pt, arg)) {
+                // if contained by subtract polygon - exclude the point
+                yes = testers[i].subtract === false;
+            }
         }
-        return false;
+
+        return yes;
     }
 
     return {
