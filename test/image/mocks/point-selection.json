@@ -19,7 +19,7 @@
     "unselected": {
       "marker": {
         "color": "green",
-        "opacity": 0.5
+        "opacity": 0.2
       }
     },
     "transforms": [{
@@ -39,7 +39,7 @@
       "size": 12
     },
     "textposition": "top left",
-    "selectedpoints": [],
+    "selectedpoints": [1, 2],
     "selected": {
       "marker": {
         "color": "green"
@@ -48,7 +48,7 @@
     "unselected": {
       "marker": {
         "color": "blue",
-        "opacity": 0.5
+        "opacity": 0.2
       }
     },
     "transforms": [{
