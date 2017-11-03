@@ -11,6 +11,7 @@
 
 var createGeo = require('./geo');
 var Plots = require('../../plots/plots');
+var getSubplotCalcData = require('../../plots/get_calcdata').getSubplotCalcData;
 var counterRegex = require('../../lib').counterRegex;
 
 var GEO = 'geo';
@@ -44,7 +45,7 @@ exports.plot = function plotGeo(gd) {
 
     for(var i = 0; i < geoIds.length; i++) {
         var geoId = geoIds[i];
-        var geoCalcData = Plots.getSubplotCalcData(calcData, GEO, geoId);
+        var geoCalcData = getSubplotCalcData(calcData, GEO, geoId);
         var geoLayout = fullLayout[geoId];
         var geo = geoLayout._subplot;
 

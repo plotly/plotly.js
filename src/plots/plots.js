@@ -162,31 +162,6 @@ plots.getSubplotData = function getSubplotData(data, type, subplotId) {
     return subplotData;
 };
 
-/**
- * Get calcdata traces(s) associated with a given subplot
- *
- * @param {array} calcData (as in gd.calcdata)
- * @param {string} type subplot type
- * @param {string} subplotId subplot id to look for
- *
- * @return {array} array of calcdata traces
- */
-plots.getSubplotCalcData = function(calcData, type, subplotId) {
-    if(!plots.subplotsRegistry[type]) return [];
-
-    var attr = plots.subplotsRegistry[type].attr;
-    var subplotCalcData = [];
-
-    for(var i = 0; i < calcData.length; i++) {
-        var calcTrace = calcData[i],
-            trace = calcTrace[0].trace;
-
-        if(trace[attr] === subplotId) subplotCalcData.push(calcTrace);
-    }
-
-    return subplotCalcData;
-};
-
 // in some cases the browser doesn't seem to know how big
 // the text is at first, so it needs to draw it,
 // then wait a little, then draw it again

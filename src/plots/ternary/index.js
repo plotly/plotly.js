@@ -12,6 +12,7 @@
 var Ternary = require('./ternary');
 
 var Plots = require('../../plots/plots');
+var getSubplotCalcData = require('../../plots/get_calcdata').getSubplotCalcData;
 var counterRegex = require('../../lib').counterRegex;
 var TERNARY = 'ternary';
 
@@ -36,7 +37,7 @@ exports.plot = function plotTernary(gd) {
 
     for(var i = 0; i < ternaryIds.length; i++) {
         var ternaryId = ternaryIds[i],
-            ternaryCalcData = Plots.getSubplotCalcData(calcData, TERNARY, ternaryId),
+            ternaryCalcData = getSubplotCalcData(calcData, TERNARY, ternaryId),
             ternary = fullLayout[ternaryId]._subplot;
 
         // If ternary is not instantiated, create one!

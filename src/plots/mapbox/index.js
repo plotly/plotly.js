@@ -13,6 +13,7 @@ var mapboxgl = require('mapbox-gl');
 
 var Lib = require('../../lib');
 var Plots = require('../plots');
+var getSubplotCalcData = require('../../plots/get_calcdata').getSubplotCalcData;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 var createMapbox = require('./mapbox');
@@ -58,7 +59,7 @@ exports.plot = function plotMapbox(gd) {
 
     for(var i = 0; i < mapboxIds.length; i++) {
         var id = mapboxIds[i],
-            subplotCalcData = Plots.getSubplotCalcData(calcData, MAPBOX, id),
+            subplotCalcData = getSubplotCalcData(calcData, MAPBOX, id),
             opts = fullLayout[id],
             mapbox = opts._subplot;
 

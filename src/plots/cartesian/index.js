@@ -12,6 +12,7 @@
 var d3 = require('d3');
 var Lib = require('../../lib');
 var Plots = require('../plots');
+var getModuleCalcData = require('../get_calcdata').getModuleCalcData;
 
 var axisIds = require('./axis_ids');
 var constants = require('./constants');
@@ -127,15 +128,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
         if(_module.basePlotModule.name !== 'cartesian') continue;
 
         // plot all traces of this type on this subplot at once
-        var cdModule = [];
-        for(var k = 0; k < cdSubplot.length; k++) {
-            var cd = cdSubplot[k],
-                trace = cd[0].trace;
-
-            if((trace._module === _module) && (trace.visible === true)) {
-                cdModule.push(cd);
-            }
-        }
+        var cdModule = getModuleCalcData(cdSubplot, _module);
 
         _module.plot(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
     }

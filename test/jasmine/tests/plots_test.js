@@ -596,7 +596,9 @@ describe('Test Plots', function() {
         });
     });
 
-    describe('Plots.getSubplotCalcData', function() {
+    describe('getSubplotCalcData', function() {
+        var getSubplotCalcData = require('@src/plots/get_calcdata').getSubplotCalcData;
+
         var trace0 = { geo: 'geo2' };
         var trace1 = { subplot: 'ternary10' };
         var trace2 = { subplot: 'ternary10' };
@@ -608,22 +610,22 @@ describe('Test Plots', function() {
         ];
 
         it('should extract calcdata traces associated with subplot (1)', function() {
-            var out = Plots.getSubplotCalcData(cd, 'geo', 'geo2');
+            var out = getSubplotCalcData(cd, 'geo', 'geo2');
             expect(out).toEqual([[{ trace: trace0 }]]);
         });
 
         it('should extract calcdata traces associated with subplot (2)', function() {
-            var out = Plots.getSubplotCalcData(cd, 'ternary', 'ternary10');
+            var out = getSubplotCalcData(cd, 'ternary', 'ternary10');
             expect(out).toEqual([[{ trace: trace1 }], [{ trace: trace2 }]]);
         });
 
         it('should return [] when no calcdata traces where found', function() {
-            var out = Plots.getSubplotCalcData(cd, 'geo', 'geo');
+            var out = getSubplotCalcData(cd, 'geo', 'geo');
             expect(out).toEqual([]);
         });
 
         it('should return [] when subplot type is invalid', function() {
-            var out = Plots.getSubplotCalcData(cd, 'non-sense', 'geo2');
+            var out = getSubplotCalcData(cd, 'non-sense', 'geo2');
             expect(out).toEqual([]);
         });
     });
