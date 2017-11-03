@@ -173,12 +173,12 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 dragOptions.yaxes = ya;
 
                 // take over selection polygons from prev mode, if any
-                if((e.shiftKey || e.altKey) && plotinfo.selection.polygons && !dragOptions.polygons) {
+                if((e.shiftKey || e.altKey) && (plotinfo.selection && plotinfo.selection.polygons) && !dragOptions.polygons) {
                     dragOptions.polygons = plotinfo.selection.polygons;
                     dragOptions.mergedPolygons = plotinfo.selection.mergedPolygons;
                 }
                 // create new polygons, if shift mode
-                else if((!e.shiftKey && !e.altKey) || ((e.shiftKey || e.altKey) && !plotinfo.selection.polygons)) {
+                else if((!e.shiftKey && !e.altKey) || ((e.shiftKey || e.altKey) && !plotinfo.selection)) {
                     plotinfo.selection = {};
                     plotinfo.selection.polygons = dragOptions.polygons = [];
                     plotinfo.selection.mergedPolygons = dragOptions.mergedPolygons = [];
